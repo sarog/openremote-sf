@@ -6,12 +6,9 @@
  */
 package org.openremote.manager.online.controller;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import java.security.cert.Certificate;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Controller servlet which handles the REST API implementation for home controller registration.
@@ -19,6 +16,7 @@ import java.io.IOException;
  * TODO : document the API
  *
  * @author <a href="mailto:juha@juhalindfors.com">Juha Lindfors</a>
+ * @version $Id: $
  */
 public class Registration extends HttpServlet
 {
