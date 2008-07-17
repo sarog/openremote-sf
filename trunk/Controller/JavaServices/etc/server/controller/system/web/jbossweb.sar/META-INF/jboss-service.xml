@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: $ -->
+
+<server> 
+   <!-- 
+       JBoss Web Service
+       
+       This is a wrapper around the WarDeployer bean deployed in
+       deployers/jboss-web.deployer/war-deployers-beans.xml.  This wrapper
+       controls the lifecycle of the JBoss Web runtime exposed by the
+       WarDeployer bean.
+   -->   
+   <mbean code="org.jboss.web.tomcat.service.deployers.TomcatDeployerWrapper"
+      name="jboss.web:service=WebServer">
+      
+    <!-- Inject the TomcatDeployer -->
+    <attribute name="TomcatDeployer">
+       <inject bean="WarDeployer"/>
+    </attribute> 
+    
+    <!-- 
+       Do not configure other JMX attributes via this file.
+       Use the WarDeployer bean in deployers/jboss-web.deployer/war-deployers-beans.xml
+    -->
+      
+   </mbean>
+</server>
