@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ |
+ | OpenRemote, the Internet-enabled Home.
+ |
+ | This work is licensed under Creative Commons Attribution-Noncommercial-Share Alike 3.0
+ | United States, http://creativecommons.org/licenses/by-nc-sa/3.0/us/
+ |
+ +-->
+
+<!--
+ |  Build file for OpenRemote Controller
+ |
+ |  Author: Juha Lindfors
+ |
+ |  $Id: $
+ +-->
+<project name = "OpenRemote Controller" basedir = ".." default = "package">
+
+  <!--
+   |
+   | INIT:
+   |
+   |  Initializes default properties.
+   +-->
+  <target name = "init">
+
+    <!--
+     | Java source directory
+     +-->
+    <property name = "src.dir" value = "src"/>
+
+    <!--
+     | All build artifacts should go into this directory.
+     +-->
+    <property name = "output.dir"  value = "output"/>
+
+    <!--
+     | Directory for compiled Java classes.
+     +-->
+    <property name = "output.classes.dir"  value = "${output.dir}/classes"/>
+
+    <!--
+     | Directory for various other configuration files, scripts, application packaging, etc.
+     +-->
+    <property name = "etc.dir"  value = "etc"/>
+
+    <!--
+     | Directory for external Java libraries required for compilation.
+     +-->
+    <property name = "lib.dir" value = "lib"/>
+
+    <!--
+     | Directory for server bootstrap libraries
+     +-->
+    <property name = "bootstrap.lib.dir" value = "${etc.dir}/lib"/>
+
+    <!--
+     | Controller server directory.
+     +-->
+    <property name = "controller.server" value = "${etc.dir}/server"/>
+
+    <!--
+     | Root directory of controller server configuration
+     +-->
+    <property name = "controller.root" value = "${controller.server}/controller"/>
+
+    <!--
+     | Controller server configuration libraries (as opposed to bootstrap libs)
+     +-->
+    <property name = "controller.lib" value = "${controller.root}/lib"/>
+
+  </target>
+
+
+
+  <!--
+   | CLEAN:
+   |
+   | Cleans up the output directory for this project.
+   +-->
+  <target name = "clean" depends = "init"
+          description = "deletes output directory">
+
+    <delete dir = "${output.dir}"/>
+
+  </target>
+
+
+
+  <!--
+   | COMPILE:
+   |
+   | Run javac on all Java source.
+   +-->
+  <target name = "compile" depends = "init"
+          description = "compile all Java source code">
+
+    
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Compiling Java classes..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <mkdir dir = "${output.classes.dir}"/>
+
+    <path id = "compile.classpath">
+      <pathelement path = "${lib.dir}/bouncycastle/1.3.9/bcprov-jdk16-139.jar"/>
+      <pathelement path = "${controller.lib}/servlet-api.jar"/>
+      <pathelement path = "${bootstrap.lib.dir}/jboss-kernel.jar"/>
+      <pathelement path = "${bootstrap.lib.dir}/jboss-common-core.jar"/>
+      <pathelement path = "${bootstrap.lib.dir}/jboss-logging-spi.jar"/>
+    </path>
+
+    <javac srcdir = "${src.dir}" destdir = "${output.classes.dir}" target = "1.6">
+      <classpath>
+        <path refid = "compile.classpath"/>
+      </classpath>
+
+      <compilerarg value = "-Xlint:all"/>
+    </javac>
+
+  </target>
+
+
+
+  <!--
+   | PACKAGE:
+   |
+   | Packages OpenRemote Controller Java Services
+   +-->
+  <target name = "package" depends = "compile"
+          description = "packages OpenRemote Controller Java Services">
+
+    <property name = "controller.bin" value = "${etc.dir}/bin"/>
+
+    <property name = "server.root" value = "${output.dir}/server/controller"/>
+    <property name = "server.system" value = "${server.root}/system"/>
+    <property name = "server.services" value = "${server.system}/services"/>
+    <property name = "server.startup" value = "${server.system}/startup"/>
+    
+
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Creating Controller Configuration..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <copy todir = "${output.dir}/bin">
+      <fileset dir = "${controller.bin}">
+        <include name = "**"/>
+      </fileset>
+    </copy>
+
+    <copy todir = "${output.dir}/server">
+      <fileset dir = "${controller.server}">
+        <include name = "**"/>
+      </fileset>
+    </copy>
+
+    <copy todir = "${output.dir}/lib">
+      <fileset dir = "${bootstrap.lib.dir}">
+        <include name = "**"/>
+      </fileset>
+    </copy>
+
+
+    <echo message = ""/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Copying Startup Classes..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <copy todir = "${server.startup}/startup.beans">
+      <fileset dir = "${output.dir}/classes">
+        <include name = "org/openremote/controller/core/**"/>
+      </fileset>
+    </copy>
+
+
+    <echo message = ""/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Copying Client REST Implementation..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <copy todir = "${server.services}/ClientCommand.war/WEB-INF/classes">
+      <fileset dir = "${output.dir}/classes">
+        <include name = "org/openremote/controller/client/**"/>
+      </fileset>
+    </copy>
+
+  </target>
+
+</project>
+
