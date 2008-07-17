@@ -632,7 +632,6 @@ public class Bootstrap
   {
     List<URL> homeURLs = getHomeURLs();
 
-
     try
     {
       byte[] encodedCertificate = certificate.getEncoded();
@@ -653,7 +652,9 @@ public class Bootstrap
 
       // TODO ....
 
-      log.info(response);
+      if (response != HttpURLConnection.HTTP_OK)
+        throw new Error("got response " + response);
+
     }
     catch (CertificateEncodingException e)
     {

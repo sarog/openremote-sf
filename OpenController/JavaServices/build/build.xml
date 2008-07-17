@@ -183,7 +183,7 @@
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
 
-    <copy todir = "${server.services}/ClientREST.war/WEB-INF/classes">
+    <copy todir = "${server.services}/ClientCommand.war/WEB-INF/classes">
       <fileset dir = "${output.dir}/classes">
         <include name = "org/openremote/controller/client/**"/>
       </fileset>

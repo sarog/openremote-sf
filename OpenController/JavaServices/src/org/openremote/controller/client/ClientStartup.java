@@ -97,7 +97,7 @@ public class ClientStartup implements ServletContextListener
       try
       {
         // TODO : remove when JBAS-4310 is fixed (fixed with jboss-vfs Beta15)
-        ClientREST.workaround_JBAS_4310_for_MSWindows(kernel);
+        ClientCommand.workaround_JBAS_4310_for_MSWindows(kernel);
       }
       catch (Throwable t)
       {

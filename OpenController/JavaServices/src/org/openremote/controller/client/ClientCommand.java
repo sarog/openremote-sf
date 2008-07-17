@@ -33,7 +33,7 @@ import org.jboss.kernel.Kernel;
  *
  * @author <a href="mailto:juha@juhalindfors.com">Juha Lindfors</a>
  */
-public class ClientREST extends HttpServlet
+public class ClientCommand extends HttpServlet
 {
 
   // TODO : logging
