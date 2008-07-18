@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ |
+ | OpenRemote, the Internet-enabled Home.
+ |
+ | This work is licensed under Creative Commons Attribution-Noncommercial-Share Alike 3.0
+ | United States, http://creativecommons.org/licenses/by-nc-sa/3.0/us/
+ |
+ +-->
+
+<!--
+ |  Build file for OpenRemote Online Manager
+ |
+ |  Author: Juha Lindfors
+ |
+ |  $Id: $
+ +-->
+<project name = "OpenRemote Online Manager" basedir = ".." default = "package">
+
+  <!--
+   |
+   | INIT:
+   |
+   |  Initializes default properties.
+   +-->
+  <target name = "init">
+
+    <!--
+     | Java source directory
+     +-->
+    <property name = "src.dir" value = "src"/>
+
+    <!--
+     | All build artifacts should go into this directory.
+     +-->
+    <property name = "output.dir"  value = "output"/>
+
+    <!--
+     | Directory for compiled Java classes.
+     +-->
+    <property name = "output.classes.dir"  value = "${output.dir}/classes"/>
+
+    <!--
+     | Directory for various other configuration files, scripts, application packaging, etc.
+     +-->
+    <property name = "etc.dir"  value = "etc"/>
+
+    <!--
+     | Directory for external Java libraries required for compilation.
+     +-->
+    <property name = "lib.dir" value = "lib"/>
+
+    <!--
+     | External libraries from JBoss distribution the Online Manager is deployed with.
+     +-->
+    <property name = "jboss.lib.dir" value = "${lib.dir}/jboss/4.2.2.GA"/>
+
+  </target>
+
+
+
+  <!--
+   | CLEAN:
+   |
+   | Cleans up the output directory for this project.
+   +-->
+  <target name = "clean" depends = "init"
+          description = "deletes output directory">
+
+    <delete dir = "${output.dir}"/>
+
+  </target>
+
+
+
+  <!--
+   | COMPILE:
+   |
+   | Run javac on all Java source.
+   +-->
+  <target name = "compile" depends = "init"
+          description = "compile all Java source code">
+
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Compiling Java classes..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <mkdir dir = "${output.classes.dir}"/>
+
+    <path id = "compile.classpath">
+      <pathelement path = "${jboss.lib.dir}/servlet-api.jar"/>
+      <pathelement path = "${jboss.lib.dir}/ejb3-persistence.jar"/>
+      <pathelement path = "${jboss.lib.dir}/jboss-ejb3x.jar"/>
+    </path>
+
+    <javac srcdir = "${src.dir}" destdir = "${output.classes.dir}" target = "1.6">
+      <classpath>
+        <path refid = "compile.classpath"/>
+      </classpath>
+
+      <compilerarg value = "-Xlint:all"/>
+    </javac>
+
+  </target>
+
+
+
+  <!--
+   | PACKAGE:
+   |
+   | Packages the compiled classes into JAR archives.
+   +-->
+  <target name = "package" depends = "compile"
+          description = "packages compiled classes into Java archives">
+
+
+    <property name = "onlinemanager.sar" value = "${output.dir}/OnlineManager.sar"/>
+    <property name = "onlinemanager.ear" value = "${onlinemanager.sar}/OnlineManager.ear"/>
+    <property name = "onlinemanager.src" value = "${etc.dir}/OnlineManager.ear"/>
+
+    <property name = "controllerregistration.war" value = "${onlinemanager.ear}/ControllerRegistration.war"/>
+    <property name = "controllerregistration.src" value = "${onlinemanager.src}/ControllerRegistration.war"/>
+
+    <property name = "userregistration.jar" value = "${onlinemanager.ear}/UserRegistration.jar"/>
+    <property name = "userregistration.src" value = "${onlinemanager.src}/UserRegistration.jar"/>
+
+
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Creating OnlineManager.ear..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <copy todir = "${onlinemanager.ear}">
+      <fileset dir = "${onlinemanager.src}">
+        <include name = "**"/>
+      </fileset>
+    </copy>
+
+    <!-- Controller Registration REST component -->
+
+    <echo message = ""/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Packaging Controller Registration REST interface... "/>
+    <echo message = " (ControllerRegistration.war)"/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <copy todir = "${controllerregistration.war}/WEB-INF/classes">
+      <fileset dir = "${output.dir}/classes">
+        <include name = "org/openremote/manager/online/controller/**"/>
+      </fileset>
+    </copy>
+
+    <echo message = ""/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Packaging User Registration Components... "/>
+    <echo message = " (UserRegistration.jar)"/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <copy todir = "${userregistration.jar}">
+      <fileset dir = "${output.dir}/classes">
+        <include name = "org/openremote/manager/online/user/**"/>
+      </fileset>
+    </copy>
+
+
+    <!--
+    <copy todir = "${openremote.sar}">
+      <fileset dir = "${etc.dir}/community/SiteCertificate.sar">
+        <include name = "**"/>
+      </fileset>
+    </copy>
+
+    <copy todir = "${openremote.sar}">
+      <fileset dir = "${output.dir}/classes">
+        <include name = "org/openremote/community/site/**"/>
+      </fileset>
+    </copy>
+    -->
+
+  </target>
+
+
+</project>
+
