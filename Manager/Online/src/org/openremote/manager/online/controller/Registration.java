@@ -21,15 +21,15 @@ import javax.servlet.http.HttpServletResponse;
 public class Registration extends HttpServlet
 {
 
-  @Override public void doGet(HttpServletRequest request, HttpServletResponse response)
+  @Override public void doPut(HttpServletRequest request, HttpServletResponse response)
   {
     try
     {
-
+      System.out.println(request);
     }
     catch (Throwable t)
     {
-
+      System.out.println(t);
     }
   }
 }

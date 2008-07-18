@@ -90,6 +90,8 @@
 
     <path id = "compile.classpath">
       <pathelement path = "${jboss.lib.dir}/servlet-api.jar"/>
+      <pathelement path = "${jboss.lib.dir}/ejb3-persistence.jar"/>
+      <pathelement path = "${jboss.lib.dir}/jboss-ejb3x.jar"/>
     </path>
 
     <javac srcdir = "${src.dir}" destdir = "${output.classes.dir}" target = "1.6">
@@ -114,40 +116,55 @@
 
 
     <property name = "onlinemanager.sar" value = "${output.dir}/OnlineManager.sar"/>
-
     <property name = "onlinemanager.ear" value = "${onlinemanager.sar}/OnlineManager.ear"/>
-    <property name = "onlinemanager.pkg" value = "${etc.dir}/OnlineManager.ear"/>
+    <property name = "onlinemanager.src" value = "${etc.dir}/OnlineManager.ear"/>
 
     <property name = "controllerregistration.war" value = "${onlinemanager.ear}/ControllerRegistration.war"/>
-    <property name = "controllerregistration.pkg" value = "${etc.dir}/ControllerRegistration.war"/>
+    <property name = "controllerregistration.src" value = "${onlinemanager.src}/ControllerRegistration.war"/>
+
+    <property name = "userregistration.jar" value = "${onlinemanager.ear}/UserRegistration.jar"/>
+    <property name = "userregistration.src" value = "${onlinemanager.src}/UserRegistration.jar"/>
 
 
-    <!-- Enterprise archive wrapper for servlet and EJB components -->
-    
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Creating OnlineManager.ear..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
     <copy todir = "${onlinemanager.ear}">
-      <fileset dir = "${onlinemanager.pkg}">
+      <fileset dir = "${onlinemanager.src}">
         <include name = "**"/>
       </fileset>
     </copy>
 
     <!-- Controller Registration REST component -->
 
+    <echo message = ""/>
     <echo message = "--------------------------------------------------------------------"/>
-    <echo message = " Packaging ControllerRegistration.war..."/>
+    <echo message = " Packaging Controller Registration REST interface... "/>
+    <echo message = " (ControllerRegistration.war)"/>
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
-
-    <copy todir = "${controllerregistration.war}">
-      <fileset dir = "${controllerregistration.pkg}">
-        <include name = "**"/>
-      </fileset>
-    </copy>
 
     <copy todir = "${controllerregistration.war}/WEB-INF/classes">
       <fileset dir = "${output.dir}/classes">
         <include name = "org/openremote/manager/online/controller/**"/>
       </fileset>
     </copy>
+
+    <echo message = ""/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Packaging User Registration Components... "/>
+    <echo message = " (UserRegistration.jar)"/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <copy todir = "${userregistration.jar}">
+      <fileset dir = "${output.dir}/classes">
+        <include name = "org/openremote/manager/online/user/**"/>
+      </fileset>
+    </copy>
+
 
     <!--
     <copy todir = "${openremote.sar}">

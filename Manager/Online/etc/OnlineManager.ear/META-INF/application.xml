@@ -18,6 +18,8 @@
  |    * ControllerRegistration.war    REST interface for home controller to register with the
  |                                    OpenRemote Online Manager
  |
+ |    * UserRegistration.jar          Model classes for user and controller data
+ |
  | Author: Juha Lindfors
  | Revision: $Id: $
  +-->
@@ -40,6 +42,10 @@
       <web-uri>ControllerRegistration.war</web-uri>
       <context-root>ControllerRegistration</context-root>
     </web>
+  </module>
+
+  <module>
+    <ejb>UserRegistration.jar</ejb>
   </module>
 
 </application>
