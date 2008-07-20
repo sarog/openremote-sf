@@ -8,6 +8,7 @@ package org.openremote.manager.online.user.model;
 
 
 import java.util.Map;
+import java.security.cert.Certificate;
 import javax.ejb.Local;
 
 /**
@@ -34,5 +35,6 @@ import javax.ejb.Local;
 
   FormValidation registerNewUser(Map<String, String[]> values);
 
+  void addCertificate(String serialNumber, Certificate certificate);
 
 }
