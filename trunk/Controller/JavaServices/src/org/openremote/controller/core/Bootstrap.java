@@ -75,7 +75,6 @@ import org.jboss.util.naming.NonSerializableFactory;
  *
  * @see #JNDI_FILESYSTEM_CONTEXT
  * @see #JNDI_FILESYSTEM_DOWNLOADS
- * @see # JNDI_FILESYSTEM_DOWNLOADS
  * @see #JNDI_KERNEL
  * @see #JNDI_SERIALNUMBER
  *
@@ -685,6 +684,8 @@ public class Bootstrap
    * @param contentLength
    *
    * @return
+   *
+   * @throws Error
    */
   private Connection getControllerRegistrationConnection(int contentLength)
   {
@@ -693,13 +694,24 @@ public class Bootstrap
 
     List<URL> homeURLs = getHomeURLs();
 
+    String serialNumber = null;
+
+    try
+    {
+      serialNumber = (String)new InitialContext().lookup(JNDI_SERIALNUMBER);
+    }
+    catch (NamingException e)
+    {
+      throw new Error(e);   // TODO
+    }
+
     while (true)
     {
       for (URL homeURL : homeURLs)
       {
         try
         {
-          URL url = new URL(homeURL, CONTROLLER_REGISTRATION_URN);
+          URL url = new URL(homeURL, CONTROLLER_REGISTRATION_URN + "/" + serialNumber);
 
           log.info("Attempting to connect to " + url);
 
