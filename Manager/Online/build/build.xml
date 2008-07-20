@@ -120,10 +120,8 @@
     <property name = "onlinemanager.src" value = "${etc.dir}/OnlineManager.ear"/>
 
     <property name = "controllerregistration.war" value = "${onlinemanager.ear}/ControllerRegistration.war"/>
-    <property name = "controllerregistration.src" value = "${onlinemanager.src}/ControllerRegistration.war"/>
-
     <property name = "userregistration.jar" value = "${onlinemanager.ear}/UserRegistration.jar"/>
-    <property name = "userregistration.src" value = "${onlinemanager.src}/UserRegistration.jar"/>
+    <property name = "userregistration.war" value = "${onlinemanager.ear}/UserRegistration.war"/>
 
 
     <echo message = "--------------------------------------------------------------------"/>
@@ -156,12 +154,19 @@
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = " Packaging User Registration Components... "/>
     <echo message = " (UserRegistration.jar)"/>
+    <echo message = " (UserRegistration.war)"/>
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
 
     <copy todir = "${userregistration.jar}">
       <fileset dir = "${output.dir}/classes">
-        <include name = "org/openremote/manager/online/user/**"/>
+        <include name = "org/openremote/manager/online/user/model/**"/>
+      </fileset>
+    </copy>
+
+    <copy todir = "${userregistration.war}/WEB-INF/classes">
+      <fileset dir = "${output.dir}/classes">
+        <include name = "org/openremote/manager/online/user/view/**"/>
       </fileset>
     </copy>
 
