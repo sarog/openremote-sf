@@ -7,6 +7,7 @@
 package org.openremote.manager.online.user.model;
 
 import java.security.PublicKey;
+import java.security.cert.Certificate;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -17,28 +18,10 @@ import javax.persistence.ManyToOne;
 /**
  * An entity representing a registered controller.   <p>
  *
- * This entity contains values for the controller serial number, the public key of a registered
- * controller (used in authentication and encryption), registration status and a reference to the
- * owner of the box.  <p>
- *
- * A controller registration is done in multiple phases which are represented by the status field
- * of this entity. Initial phase includes serial number registration by the user when they first
- * login to the website and register the serial number of their controller. In the second phase the
- * controller calls back to the online manager with its serial number and providing its
- * public key for storage. In the final phase of the registration process the controller
- * acknowledges it has received the default profile and is fully functional.
- *
  * @author <a href="mailto:juha@juhalindfors.com">Juha Lindfors</a>
  */
 @Entity public class Controller
 {
-
-  // Enums ----------------------------------------------------------------------------------------
-
-  public static enum RegistrationStatus
-  {
-    REGISTRATION_INITIALIZED, PUBLIC_KEY_REGISTERED, REGISTRATION_COMPLETE
-  }
 
 
   // Instance Fields ------------------------------------------------------------------------------
@@ -53,19 +36,6 @@ import javax.persistence.ManyToOne;
    * one the controller will be automatically sending back as part of the registration process.
    */
   private String serialNumber;
-
-  /**
-   * Public certificate of the controller stored as part of the second phase of the
-   * registration process.
-   *
-   * TODO
-   */
-  private byte[] key;
-
-  /**
-   * TODO
-   */
-  @Enumerated(EnumType.STRING) private RegistrationStatus status;
 
   /**
    * The owner of this controller. User's primary key is stored as a foreign key reference for this
@@ -91,17 +61,16 @@ import javax.persistence.ManyToOne;
   {
     setUser(user);
     setSerialNumber(serialNumber);
-    setStatus(RegistrationStatus.REGISTRATION_INITIALIZED);
   }
 
 
 
   // Protected Instance Methods -------------------------------------------------------------------
 
-  protected void setPublicKey(PublicKey key)
+  protected void setCertificate(Certificate certificate)
   {
-    this.key = key.getEncoded();
-    setStatus(RegistrationStatus.PUBLIC_KEY_REGISTERED);
+    // TODO : certificate should go into trust store, key alias into database
+
   }
 
 
@@ -117,8 +86,4 @@ import javax.persistence.ManyToOne;
     this.serialNumber = serialNumber;
   }
 
-  private void setStatus(RegistrationStatus status)
-  {
-    this.status = status;
-  }
 }
