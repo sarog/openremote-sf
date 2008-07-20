@@ -24,7 +24,7 @@
 
   <servlet>
     <servlet-name>Registration</servlet-name>
-    <servlet-class>org.openremote.manager.online.controller.Registration</servlet-class>
+    <servlet-class>org.openremote.manager.online.rest.ControllerRegistration</servlet-class>
   </servlet>
 
   <servlet-mapping>
