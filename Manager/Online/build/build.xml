@@ -146,7 +146,7 @@
 
     <copy todir = "${controllerregistration.war}/WEB-INF/classes">
       <fileset dir = "${output.dir}/classes">
-        <include name = "org/openremote/manager/online/controller/**"/>
+        <include name = "org/openremote/manager/online/rest/**"/>
       </fileset>
     </copy>
 
