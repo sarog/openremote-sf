@@ -7,9 +7,11 @@
 package org.openremote.manager.online.user.model;
 
 import java.util.Map;
+import java.security.cert.Certificate;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  * Manages user registration.
@@ -99,6 +101,21 @@ import javax.persistence.PersistenceContext;
     System.out.println("Added box SN: " + serialNumber + " to user " + loginName);
 
     return FormValidation.OK;
+  }
+
+
+  public void addCertificate(String serialNumber, Certificate certificate)
+  {
+    System.out.println(certificate);
+    
+    Query findControllerWithSerial = persistence.createQuery(
+        "select controller from Controller controller where controller.serialNumber = '" + serialNumber + "'"
+    );
+
+    Controller controller = (Controller)findControllerWithSerial.getSingleResult();
+    controller.setCertificate(certificate);
+
+    persistence.persist(controller);
   }
 
 
