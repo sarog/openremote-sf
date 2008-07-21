@@ -9,6 +9,7 @@ package org.openremote.manager.online.user.model;
 
 import java.util.Map;
 import java.security.cert.Certificate;
+import java.net.HttpURLConnection;
 import javax.ejb.Local;
 
 /**
@@ -30,11 +31,62 @@ import javax.ejb.Local;
     INVALID_EMAIL, MISSING_MANDATORY_FIELD
   }
 
+  public enum AddCertificateResponse
+  {
+    /*
+     * 10.2.5 - 204 No Content
+     *
+     * The server has fulfilled the request but does not need to return an entity-body, and might
+     * want to return updated metainformation. The response MAY include new or updated meta-
+     * information in the form of entity-headers, which if present SHOULD be associated with the
+     * requested variant.
+     *
+     * The 204 response MUST NOT include a message-body, and thus is always terminated by the first 
+     * empty line after the header fields.
+     */
+    OK(HttpURLConnection.HTTP_NO_CONTENT),
+
+    /*
+     * 10.4.5 - 404 Not Found
+     *
+     * The server has not found anything matching the Request-URI. No indication is given of
+     * whether the condition is temporary or permanent. The 410 (Gone) status code SHOULD be used
+     * if the server knows, through some internally configurable mechanism, that an old resource
+     * is permanently unavailable and has no forwarding address. This status code is commonly used
+     * when the server does not wish to reveal exactly why the request has been refused, or when
+     * no other response is applicable.
+     */
+    CONTROLLER_NOT_REGISTERED(HttpURLConnection.HTTP_NOT_FOUND),
+
+    /*
+     * 10.5.1 - 500 Internal Server Error
+     *
+     * The server encountered an unexpected condition which prevented it from fulfilling
+     * the request.
+     */
+    SYSTEM_ERROR(HttpURLConnection.HTTP_INTERNAL_ERROR);
+
+
+    // Enum Implementation ------------------------------------------------------------------------
+
+    private int httpResponseCode = HttpURLConnection.HTTP_OK;
+
+    AddCertificateResponse(int httpResponseCode)
+    {
+      this.httpResponseCode = httpResponseCode;
+    }
+
+    public int getHttpResponseCode()
+    {
+      return httpResponseCode;
+    }
+  }
+
 
   // Interface Methods ----------------------------------------------------------------------------
 
   FormValidation registerNewUser(Map<String, String[]> values);
 
-  void addCertificate(String serialNumber, Certificate certificate);
+  AddCertificateResponse addCertificate(String serialNumber, Certificate certificate);
 
 }
