@@ -12,6 +12,9 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.NoResultException;
 
 /**
  * Manages user registration.
@@ -25,7 +28,7 @@ import javax.persistence.Query;
   private EntityManager persistence;
 
 
-  // Implements Registration --------------------------------------------------------------------------
+  // Implements Registration ----------------------------------------------------------------------
 
   public FormValidation registerNewUser(Map<String, String[]> values)
   {
@@ -104,18 +107,57 @@ import javax.persistence.Query;
   }
 
 
-  public void addCertificate(String serialNumber, Certificate certificate)
+  public AddCertificateResponse addCertificate(String serialNumber, Certificate certificate)
   {
-    System.out.println(certificate);
-    
-    Query findControllerWithSerial = persistence.createQuery(
-        "select controller from Controller controller where controller.serialNumber = '" + serialNumber + "'"
-    );
+    try
+    {
+      Query findControllerWithSerial = persistence.createQuery(
+          "select controller from Controller controller where controller.serialNumber = '" + serialNumber + "'"
+      );
 
-    Controller controller = (Controller)findControllerWithSerial.getSingleResult();
-    controller.setCertificate(certificate);
+      Controller controller = (Controller)findControllerWithSerial.getSingleResult();
+      controller.setCertificate(certificate);
 
-    persistence.persist(controller);
+      persistence.persist(controller);
+
+      System.out.println(certificate);
+
+      return AddCertificateResponse.OK;
+    }
+    catch (NoResultException e)
+    {
+      // thrown by query.getSingleResult() -- Note that the Hibernate EM 3.2.1 (in JBAS 4.2.2)
+      // omits this exception in the Javadocs although the exception does get raised in case
+      // of empty result set (fixed in the SVN trunk of the latest Hibernate jpa-api).
+
+      return AddCertificateResponse.CONTROLLER_NOT_REGISTERED;
+    }
+    catch (EntityNotFoundException e)
+    {
+      // Hibernate EntityManager 3.2.1 (used by JBoss 4.2.2.GA) query.getSingleResult() Javadoc
+      // claims to throw this exception although this is probably a mistake, see the comment
+      // above on NoResultException -- handling this regardless just in case.
+
+      return AddCertificateResponse.CONTROLLER_NOT_REGISTERED;
+    }
+    catch (NonUniqueResultException e)
+    {
+      System.out.println("Implementation error, controller serial is not unique: " + e);
+
+      return AddCertificateResponse.SYSTEM_ERROR;
+    }
+    catch (IllegalStateException e)
+    {
+      System.out.println("ImplementationError: " + e);
+
+      return AddCertificateResponse.SYSTEM_ERROR;
+    }
+    catch (IllegalArgumentException e)
+    {
+      System.out.println("ImplementationError: " + e);
+
+      return AddCertificateResponse.SYSTEM_ERROR;
+    }
   }
 
 
