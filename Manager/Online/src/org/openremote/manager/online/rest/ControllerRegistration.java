@@ -44,7 +44,9 @@ public class ControllerRegistration extends HttpServlet
       Certificate certificate = certFactory.generateCertificate(new BufferedInputStream(request.getInputStream()));
 
       Registration registration = (Registration)new InitialContext().lookup(REGISTRATION_SESSION);
-      registration.addCertificate(serialNumber, certificate);
+      Registration.AddCertificateResponse certResponse = registration.addCertificate(serialNumber, certificate);
+
+      response.setStatus(certResponse.getHttpResponseCode());
     }
     catch (NamingException e)
     {
