@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
@@ -38,6 +39,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.Iterator;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -330,7 +332,9 @@ public class Bootstrap
       certificate = getPublicCertificate();
     }
 
-    registerCertificate(certificate);
+
+    ControllerRegistrationConnection connection = new ControllerRegistrationConnection();
+    connection.sendCertificate(certificate);
 
     log.info("#################################################################################");
     log.info("  Registration Complete.");
@@ -622,142 +626,6 @@ public class Bootstrap
     }
   }
 
-  /**
-   * TODO
-   *
-   * @param certificate
-   */
-  private void registerCertificate(Certificate certificate)
-  {
-    List<URL> homeURLs = getHomeURLs();
-
-    try
-    {
-      byte[] encodedCertificate = certificate.getEncoded();
-
-      Connection con = getControllerRegistrationConnection(encodedCertificate.length);
-      
-      try
-      {
-        con.getOutput().write(encodedCertificate);
-      }
-      finally
-      {
-        con.getOutput().flush();
-        con.getOutput().close();
-      }
-
-      int response = con.getConnection().getResponseCode();
-
-      // TODO ....
-
-      if (response != HttpURLConnection.HTTP_OK)
-        throw new Error("got response " + response);
-
-    }
-    catch (CertificateEncodingException e)
-    {
-      // TODO
-      throw new Error("Implementation Error: " + e, e);
-    }
-    catch (ConnectException e)
-    {
-      // TODO
-      throw new Error(e);
-    }
-    catch (UnknownServiceException e)
-    {
-
-    }
-    catch (IOException e)
-    {
-      // TODO
-      throw new Error("Is this where it hits??", e);
-    }
-
-  }
-
-
-  /**
-   * TODO
-   *
-   * @param contentLength
-   *
-   * @return
-   *
-   * @throws Error
-   */
-  private Connection getControllerRegistrationConnection(int contentLength)
-  {
-    // TODO : this should be externalized to configuration
-    final String CONTROLLER_REGISTRATION_URN = "ControllerRegistration";
-
-    List<URL> homeURLs = getHomeURLs();
-
-    String serialNumber = null;
-
-    try
-    {
-      serialNumber = (String)new InitialContext().lookup(JNDI_SERIALNUMBER);
-    }
-    catch (NamingException e)
-    {
-      throw new Error(e);   // TODO
-    }
-
-    while (true)
-    {
-      for (URL homeURL : homeURLs)
-      {
-        try
-        {
-          URL url = new URL(homeURL, CONTROLLER_REGISTRATION_URN + "/" + serialNumber);
-
-          log.info("Attempting to connect to " + url);
-
-          // TODO: connect via proxy
-
-          HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-
-          connection.setDoOutput(true);
-          connection.setDoInput(true);
-          connection.setAllowUserInteraction(false);
-          connection.setUseCaches(false);
-          connection.setRequestMethod("PUT");
-          connection.setRequestProperty("Content-Type", "application/octet-stream");
-          connection.setRequestProperty("Content-Length", Integer.toString(contentLength));
-          connection.setRequestProperty("User-Agent", getUserAgent());
-
-          Connection con = new Connection();
-          con.httpConnection = connection;
-          con.output = new BufferedOutputStream(connection.getOutputStream());
-
-          return con;
-        }
-        catch (MalformedURLException e)
-        {
-          log.warn("Configuration error: " + homeURL + " is not valid URL.");
-        }
-        catch (IOException e)
-        {
-          log.debug("Failed to connect to " + homeURL + ": " + e.toString(), e);
-        }
-        catch (ClassCastException e)
-        {
-          // TODO
-          log.warn(e);
-        }
-      }
-
-      try
-      {
-        log.info("Failed to connect to controller registration service. Will try again in 60 seconds...");
-
-        Thread.sleep(1000*60 /* 60 seconds */);
-      }
-      catch (InterruptedException ignored) {}
-    }
-  }
 
   /**
    * TODO
@@ -947,21 +815,145 @@ public class Bootstrap
   // Nested Classes -------------------------------------------------------------------------------
 
   /**
-   * Simple holder
+   * TODO
+   *
+   *
    */
-  private class Connection
+  private class ControllerRegistrationConnection
   {
-    HttpURLConnection httpConnection;
-    BufferedOutputStream output;
 
-    HttpURLConnection getConnection()
+    // Constants ----------------------------------------------------------------------------------
+
+    // TODO : this should be externalized to configuration
+    private final static String CONTROLLER_REGISTRATION_URN = "ControllerRegistration";
+
+
+    // Instance Fields ----------------------------------------------------------------------------
+
+    private List<URL> homeURLs = getHomeURLs();
+    private Iterator<URL> urlListPosition = homeURLs.iterator();
+    private String serialNumber = null;
+
+
+    // Constructors -------------------------------------------------------------------------------
+
+    /**
+     * TODO
+     *
+     */
+    private ControllerRegistrationConnection()
     {
-      return httpConnection;
+      try
+      {
+        serialNumber = (String)new InitialContext().lookup(JNDI_SERIALNUMBER);
+      }
+      catch (NamingException e)
+      {
+        // TODO
+        throw new Error(e);
+      }
     }
 
-    BufferedOutputStream getOutput()
+
+    /**
+     *
+     * @param certificate
+     *
+     * @return
+     *
+     * @throws Error    TODO
+     */
+    private void sendCertificate(Certificate certificate)
     {
-      return output;
+      while (true)
+      {
+        while (urlListPosition.hasNext())
+        {
+          URL homeURL = urlListPosition.next();
+
+          try
+          {
+            URL url = new URL(homeURL, CONTROLLER_REGISTRATION_URN + "/" + serialNumber);
+
+            log.info("Attempting to connect to " + url);
+
+            byte[] encodedCertificate = certificate.getEncoded();
+
+            // TODO: connect via proxy
+
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setAllowUserInteraction(false);
+            connection.setUseCaches(false);
+            connection.setRequestMethod("PUT");
+            connection.setRequestProperty("Content-Type", "application/octet-stream");
+            connection.setRequestProperty("Content-Length", Integer.toString(encodedCertificate.length));
+            connection.setRequestProperty("User-Agent", getUserAgent());
+
+            BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
+
+            try
+            {
+              out.write(encodedCertificate);
+              out.flush();
+            }
+            finally
+            {
+              out.close();
+            }
+
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_NO_CONTENT)
+              return;
+
+            if (responseCode == HttpURLConnection.HTTP_NOT_FOUND)
+            {
+              // TODO
+              log.info("You haven't created a user account yet!");
+            }
+
+          }
+          catch (MalformedURLException e)
+          {
+            log.warn("Configuration error: " + homeURL + " is not valid URL.");
+          }
+          catch (ConnectException e)
+          {
+            log.debug("Cannot connect to " + homeURL + ": " + e + ". Moving on...");
+          }
+          catch (UnknownServiceException e)
+          {
+
+          }
+          catch (IOException e)
+          {
+            log.debug("Failed to send certificate to " + homeURL + ": " + e.toString(), e);
+          }
+          catch (CertificateEncodingException e)
+          {
+            // TODO
+
+            throw new Error("Can't register due to implementation error: " + e, e);
+          }
+        }
+
+        try
+        {
+          log.info("Failed to connect to controller registration service. Will try again in 60 seconds...");
+
+          // TODO : externalize the delay into configuration
+
+          Thread.sleep(1000*60 /* 60 seconds */);
+        }
+        catch (InterruptedException ignored) {}
+
+        urlListPosition = homeURLs.iterator();
+      }
     }
   }
+
+
 }
