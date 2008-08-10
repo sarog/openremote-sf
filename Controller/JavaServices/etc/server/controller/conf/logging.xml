@@ -21,6 +21,7 @@
       <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
       <param name="File" value="${jboss.server.log.dir}/server.log"/>
       <param name="Append" value="false"/>
+     <param name="Threshold" value="INFO"/>
 
       <!-- Rollover at midnight each day -->
       <param name="DatePattern" value="'.'yyyy-MM-dd"/>
@@ -85,17 +86,6 @@
    -->
 
 
-   <!-- Security AUDIT Appender -->
-   <appender name="AUDIT" class="org.jboss.logging.appender.DailyRollingFileAppender">
-      <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
-      <param name="File" value="${jboss.server.log.dir}/audit.log"/>
-      <param name="Append" value="true"/>
-      <param name="DatePattern" value="'.'yyyy-MM-dd"/>
-      <layout class="org.apache.log4j.PatternLayout">
-         <param name="ConversionPattern" value="%d %-5p [%c] (%t:%x) %m%n"/>
-      </layout>
-   </appender>
-
    
    <!-- ================ -->
    <!-- Limit categories -->
@@ -116,13 +106,7 @@
    <category name="org.jgroups">
       <priority value="WARN"/>
    </category>
-   
 
-   <!-- Category specifically for Security Audit Provider -->
-   <category name="org.jboss.security.audit.providers.LogAuditProvider" additivity="false">
-     <priority value="TRACE"/>
-     <appender-ref ref="AUDIT"/>
-   </category>
    
    <!-- Limit the org.jboss.serial (jboss-serialization) to INFO as its DEBUG is verbose -->
    <category name="org.jboss.serial">
