@@ -193,13 +193,13 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
     <echo message = ""/>
     <echo message = "--------------------------------------------------------------------"/>
-    <echo message = " Copying Client REST Implementation..."/>
+    <echo message = " Copying Console REST Command Implementation..."/>
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
 
-    <copy todir = "${server.services}/ClientCommand.war/WEB-INF/classes">
+    <copy todir = "${server.services}/ConsoleCommand.war/WEB-INF/classes">
       <fileset dir = "${output.dir}/classes">
-        <include name = "org/openremote/controller/client/**"/>
+        <include name = "org/openremote/controller/console/**"/>
       </fileset>
     </copy>
 

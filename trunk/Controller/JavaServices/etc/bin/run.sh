@@ -195,7 +195,7 @@ fi
 # Display our environment
 echo "---------------------------------------------------------------------------"
 echo ""
-echo "  OpenRemote Controller V0.1"
+echo "  OpenRemote Controller V0.2"
 echo ""
 echo "---------------------------------------------------------------------------"
 echo ""
