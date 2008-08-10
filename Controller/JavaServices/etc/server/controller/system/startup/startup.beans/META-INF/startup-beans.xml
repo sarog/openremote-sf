@@ -8,7 +8,7 @@
 
 
 <!--
- | Bootstraps the OpenRemote Controller services.
+ | Bootstraps the OpenRemote Controller Java Services.
  |
  | Author: Juha Lindfors
  | Revision: $Id: $
@@ -19,9 +19,62 @@
 
 
   <bean name = "Bootstrap" class = "org.openremote.controller.core.Bootstrap">
+
+    <!--
+     | Inject a reference to the kernel itself so the bootstrap or other Java services
+     | may later access it. Mandatory property.
+     +-->
     <property name = "kernel">
       <inject bean = "jboss.kernel:service=Kernel"/>
     </property>
+
+
+    <!--
+     | URLs listing the Online Manager(s) this controller will attempt to connect to when
+     | registering itself.
+     |
+     | This is a mandatory configuration attribute although an empty list is accepted.
+     +-->
+    <property name = "onlineManagerURLs">
+      <list elementClass = "java.net.URL">
+        <value>http://localhost:8080</value>
+        <value>http://localhost:8081</value>
+        <value>http://localhost:8082</value>
+        <value>http://localhost:8083</value>
+      </list>
+    </property>
+
+
+    <!-- ==========================================================================================
+     |
+     | Optional Configuration Properties.
+     |
+     | The properties below allow customization of the controller registration process.
+     | They are not mandatory and in many cases the implementation defaults are sufficient.
+     |
+     | If you want to customize the registration process, uncomment the relevant properties
+     | below.
+     |
+     +========================================================================================= -->
+
+    <!--
+     | The delay in *seconds* the controller will wait in case it has failed to connect with
+     | the OpenRemote Online Manager before attempting to reconnect.
+     |
+     |     <property name = "registrationReattemptDelay">60</property>
+     |
+     +-->
+
+    <!--
+     | The web context name appended to the URL values in 'onlineManagerURLs' that hosts the
+     | REST API for controller registration.
+     |
+     | Note that at the moment all URLs must host the REST interface at the same web context path.
+     |
+     |     <property name = "controllerRegistrationWebContext">ControllerRegistration</property>
+     |
+     +-->
+
   </bean>
 
 </deployment>
