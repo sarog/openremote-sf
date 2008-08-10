@@ -80,7 +80,6 @@ import org.jboss.util.naming.NonSerializableFactory;
  *
  * <pre>
  * /kernel                -- non-serializable reference to the microkernel itself
- * /serialnumber          -- String containing the serial number of this box    TODO: this is going away
  * /filesystem/root       -- java.io.File representing root configuration directory of the server
  * /filesystem/downloads  -- java.io.File representing the download directory of the server
  * </pre>
@@ -93,7 +92,6 @@ import org.jboss.util.naming.NonSerializableFactory;
  * @see #JNDI_FILESYSTEM_CONTEXT
  * @see #JNDI_FILESYSTEM_DOWNLOADS
  * @see #JNDI_KERNEL
- * @see #JNDI_SERIALNUMBER    TODO: this is going away
  *
  * @author <a href="mailto:juha@juhalindfors.com">Juha Lindfors</a>
  * @version $Id: $
@@ -125,11 +123,6 @@ public class Bootstrap
    * JNDI lookup name for org.jboss.kernel.Kernel reference bound to JNDI.
    */
   public final static String JNDI_KERNEL = "/kernel";
-
-  /**
-   * JNDI lookup name for the controller serial number string.    TODO: this is going away
-   */
-  public final static String JNDI_SERIALNUMBER = "/serialnumber";
 
   /**
    * Root logging category for controller Java services. It's recommended that loggers use this
@@ -314,10 +307,6 @@ public class Bootstrap
       // Initialize JNDI entries...
 
       naming = new InitialContext();
-
-      // bind the serial number to JNDI...
-
-      naming.bind(JNDI_SERIALNUMBER, "123456789");    // TODO : this will go away
 
       // create the '/filesystem' subcontext in JNDI...
 
@@ -750,10 +739,6 @@ public class Bootstrap
      */
     private Iterator<URL> urlListPosition = serviceURLs.iterator();
 
-    /**
-     * Controller serial number
-     */
-    private String serialNumber = null;
 
 
     // Constructors -------------------------------------------------------------------------------
@@ -766,22 +751,10 @@ public class Bootstrap
      * more than one instance of ControllerRegistrationConnection is ever created by the
      * enclosing class (currently it is instantiated just once) then care should be taken
      * to treat the static members as immutable references -- mutating the values after the
-     * service initialization is likely to land you in trouble!
+     * service initialization is likely to get you in trouble!
      */
     private ControllerRegistrationConnection()
     {
-      try
-      {
-        serialNumber = (String)new InitialContext().lookup(JNDI_SERIALNUMBER);
-      }
-      catch (NamingException e)
-      {
-        // TODO :
-        //    probably need to get rid of the serial number model -- it won't support
-        //    the DIY controller builders
-
-        throw new Error(e);
-      }
     }
 
 
@@ -819,7 +792,7 @@ public class Bootstrap
 
           try
           {
-            URL url = new URL(homeURL, controllerRegistrationWebContext + "/" + serialNumber);
+            URL url = new URL(homeURL, controllerRegistrationWebContext);
 
             log.info("Attempting to connect to " + url);
 
