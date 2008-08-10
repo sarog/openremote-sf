@@ -19,7 +19,7 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.openremote.controller.client;
+package org.openremote.controller.console;
 
 import java.io.IOException;
 import java.io.BufferedInputStream;
@@ -48,7 +48,7 @@ import org.jboss.kernel.Kernel;
  *
  * @author <a href="mailto:juha@juhalindfors.com">Juha Lindfors</a>
  */
-public class ClientCommand extends HttpServlet
+public class HttpCommand extends HttpServlet
 {
 
   // TODO : logging
@@ -177,7 +177,7 @@ public class ClientCommand extends HttpServlet
 
     // Kernel will be found from application context...
 
-    Kernel kernel = (Kernel)getServletContext().getAttribute(ClientStartup.KERNEL_ATTRIBUTE);
+    Kernel kernel = (Kernel)getServletContext().getAttribute(HttpCommandStartup.KERNEL_ATTRIBUTE);
 
     // And invoke assuming device name is a bean name in
     // the kernel, and command is a no-arg method in the bean...
@@ -248,7 +248,7 @@ public class ClientCommand extends HttpServlet
       // We've got the complete download.
       // Time to do the switch from tmp to real.
 
-      File downloads = (File)getServletContext().getAttribute(ClientStartup.SERVER_DOWNLOADS_ATTRIBUTE);
+      File downloads = (File)getServletContext().getAttribute(HttpCommandStartup.SERVER_DOWNLOADS_ATTRIBUTE);
 
       // Split the original URL and use the last
       // name (assuming valid filename) as a package
@@ -354,7 +354,7 @@ public class ClientCommand extends HttpServlet
     // TODO : Remove once JBAS-4310 is fixed
     file = workaround_JBAS_4310_for_MSWindows(file, true /*deploy*/);
 
-    Kernel kernel = (Kernel)getServletContext().getAttribute(ClientStartup.KERNEL_ATTRIBUTE);
+    Kernel kernel = (Kernel)getServletContext().getAttribute(HttpCommandStartup.KERNEL_ATTRIBUTE);
 
     try
     {
@@ -420,7 +420,7 @@ public class ClientCommand extends HttpServlet
       // TODO : remove once JBAS-4310 is fixed
       File _download = workaround_JBAS_4310_for_MSWindows(download, false /* undeploy */);
 
-      Kernel kernel = (Kernel)getServletContext().getAttribute(ClientStartup.KERNEL_ATTRIBUTE);
+      Kernel kernel = (Kernel)getServletContext().getAttribute(HttpCommandStartup.KERNEL_ATTRIBUTE);
 
       try
       {

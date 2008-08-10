@@ -19,7 +19,7 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.openremote.controller.client;
+package org.openremote.controller.console;
 
 import java.io.File;
 import javax.naming.Context;
@@ -53,7 +53,7 @@ import org.jboss.kernel.Kernel;
  *
  * @author <a href = "mailto:juha@juhalindfors.com">Juha Lindfors</a>
  */
-public class ClientStartup implements ServletContextListener
+public class HttpCommandStartup implements ServletContextListener
 {
 
   // Constants ------------------------------------------------------------------------------------
@@ -112,14 +112,14 @@ public class ClientStartup implements ServletContextListener
       try
       {
         // TODO : remove when JBAS-4310 is fixed (fixed with jboss-vfs Beta15)
-        ClientCommand.workaround_JBAS_4310_for_MSWindows(kernel);
+        HttpCommand.workaround_JBAS_4310_for_MSWindows(kernel);
       }
       catch (Throwable t)
       {
         System.out.println(t);
       }
 
-      System.out.println("Client command REST interface online.");
+      System.out.println("Console command REST interface online.");
     }
     catch (NamingException e)
     {
