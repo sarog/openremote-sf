@@ -304,8 +304,8 @@ public class Bootstrap
 
       setSecurityProvider();
 
-      // Initialize JNDI entries...
-
+      // Establish component environment in JNDI...
+      
       naming = new InitialContext();
 
       // create the '/filesystem' subcontext in JNDI...
@@ -325,7 +325,7 @@ public class Bootstrap
     }
     catch (NamingException e)
     {
-      throw new Error("Cannot initialize naming context: " + e, e);
+      Status.controllerStartedWithError("Cannot initialize naming context: " + e, e);
     }
   }
 
@@ -356,9 +356,7 @@ public class Bootstrap
     }
     catch (NamingException e)
     {
-      log.fatal("Unable to bind kernel reference to JNDI: " + e.toString(), e);
-
-      // TODO : server status
+      Status.controllerStartedWithError("Unable to bind kernel reference to JNDI: " + e, e) ;
     }
   }
 
@@ -430,13 +428,11 @@ public class Bootstrap
 
     if (ControllerRegistrationConnection.serviceURLs == null)
     {
-      log.error("Configuration error: missing Online Manager URL(s).");
+      Status.controllerStartedWithWarning("Configuration error: missing Online Manager URL(s).");
 
       // just to avoid NPE, empty list means we won't connect to anything...
 
       setOnlineManagerURLs(new ArrayList<URL>());
-
-      // TODO : server status
     }
 
 
@@ -454,13 +450,10 @@ public class Bootstrap
       // catch implementation errors (of course, these would *never* happen), and keep the
       // server responsive
 
-      // TODO : set server status
-
-      log.error(
-          "Registration failed due to software implementation error. " +
-          "Software update may be necessary (" + e + ").", e
-      );
+      Status.controllerStartedWithError("Registration failed due to software implementation error.", e) ;
     }
+
+    Status.controllerStarted();
   }
 
 
@@ -479,7 +472,13 @@ public class Bootstrap
 
     final File defaultProfile = new File(downloadDir, DEFAULT_PROFILE_PACKAGE);
 
-    return AccessController.doPrivileged(
+    /*
+     * PRIVILEGED ACCESS:
+     *   do not expose the method in public API (directly or indirectly) and keep the
+     *   the implementation as minimal as possible
+     */
+
+    boolean hasDefaultProfile = AccessController.doPrivileged(
 
         new PrivilegedAction<Boolean>()
         {
@@ -496,6 +495,11 @@ public class Bootstrap
           }
         }
     );
+
+    if (hasDefaultProfile)
+      Status.controllerRegistered();
+
+    return hasDefaultProfile;
   }
 
 
@@ -510,9 +514,7 @@ public class Bootstrap
    */
   private void initializeDefaultProfile()
   {
-    log.info("#################################################################################");
-    log.info("  Default profile not found. Initiating registration process...");
-    log.info("#################################################################################");
+    Status.controllerNotRegistered();
 
     Certificate certificate;
 
@@ -539,11 +541,6 @@ public class Bootstrap
     ControllerRegistrationConnection connection = new ControllerRegistrationConnection();
     connection.sendCertificate(certificate);
 
-    log.info("#################################################################################");
-    log.info("  Registration Complete.");
-    log.info("#################################################################################");
-
-    // TODO : set server status
   }
 
 
@@ -584,9 +581,9 @@ public class Bootstrap
     }
     catch (SecurityException e)
     {
-      log.warn("Cannot install security provider due to security manager restrictions.", e);
-
-      // TODO : server status
+      Status.controllerStartedWithWarning(
+          "Cannot install security provider due to security manager restrictions."
+      );
     }
 
     if (providerPosition == -1)
@@ -628,6 +625,9 @@ public class Bootstrap
     private static int reattemptDelay = 60*1000;    // 60 seconds
 
 
+    private static Logger log = Logger.getLogger(ROOT_LOG_CATEGORY + ".REGISTRATION");
+
+
     /**
      * Returns a user agent string for outgoing HTTP requests from this controller. This should
      * be included with all HTTP request headers.
@@ -644,14 +644,14 @@ public class Bootstrap
      * An example user agent string is:
      *   "OpenRemote Controller/1.0 [eng]"
      *
-     * Note that the language bracket may have no content if the current Java VM locale doesn't
-     * return a language code.
+     * Note that the language bracket may fall back to default language Locale.ENGLISH if
+     * the current Java VM locale doesn't return a language code.
      *
      * @return user agent string for OpenRemote Controller
      */
     private static String getUserAgent()
     {
-      String language = "";
+      String language;
 
       try
       {
@@ -659,12 +659,12 @@ public class Bootstrap
       }
       catch (MissingResourceException e)
       {
-        log.warn(
+        Status.controllerStartedWithWarning(
             "Current locale " + Locale.getDefault() + " does not specify a language. " +
-            "Localization features may be disabled. (" + e + ")"
+            "Defaulting to English. (" + e + ")"
         );
 
-        // TODO : server status
+        language = "eng";
       }
 
       return "OpenRemote Controller/0.1 [" + language + "]";
@@ -775,7 +775,7 @@ public class Bootstrap
      *                However, catching and handling this error may still keep the controller
      *                in a responsive state (albeit unable to register).
      */
-    private void sendCertificate(Certificate certificate)
+    private void sendCertificate(final Certificate certificate)
     {
       // TODO :
       //  - allow breaking this loop if it looks like the connection will never be made, most
@@ -784,112 +784,126 @@ public class Bootstrap
       //    that facilitates proxy configuration, could be through OpenRemote Online Manager)
       //  - handle redirect requests from the server
 
-      while (true)
+      Thread registrationProcess = new Thread(new Runnable()
       {
-        while (urlListPosition.hasNext())
-        {
-          URL homeURL = urlListPosition.next();
+        public void run() {
 
-          try
+          while (true)
           {
-            URL url = new URL(homeURL, controllerRegistrationWebContext);
+            while (urlListPosition.hasNext())
+            {
+              URL homeURL = urlListPosition.next();
 
-            log.info("Attempting to connect to " + url);
+              try
+              {
+                URL url = new URL(homeURL, controllerRegistrationWebContext);
 
-            byte[] encodedCertificate = certificate.getEncoded();
+                log.info("Attempting to connect to " + url);
 
-            // TODO: connect via proxy
+                byte[] encodedCertificate = certificate.getEncoded();
 
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+                // TODO: connect via proxy
 
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setAllowUserInteraction(false);
-            connection.setUseCaches(false);
-            connection.setRequestMethod("PUT");
-            connection.setRequestProperty("Content-Type", "application/octet-stream");
-            connection.setRequestProperty("Content-Length", Integer.toString(encodedCertificate.length));
-            connection.setRequestProperty("User-Agent", getUserAgent());
+                HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 
-            BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+                connection.setAllowUserInteraction(false);
+                connection.setUseCaches(false);
+                connection.setRequestMethod("PUT");
+                connection.setRequestProperty("Content-Type", "application/octet-stream");
+                connection.setRequestProperty("Content-Length", Integer.toString(encodedCertificate.length));
+                connection.setRequestProperty("User-Agent", getUserAgent());
+
+                BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
+
+                try
+                {
+                  out.write(encodedCertificate);
+                  out.flush();
+                }
+                finally
+                {
+                  out.close();
+                }
+
+                int responseCode = connection.getResponseCode();
+
+                if (responseCode == HttpURLConnection.HTTP_NO_CONTENT)
+                {
+                  log.info("#################################################################################");
+                  log.info("  Registration Complete.");
+                  log.info("#################################################################################");
+
+                  Status.controllerRegistered();
+                  
+                  return;
+                }
+
+                if (responseCode == HttpURLConnection.HTTP_NOT_FOUND)
+                {
+                  log.info("You haven't created a user account yet!");
+                }
+              }
+              catch (ClassCastException e)
+              {
+                // This may occur when trying to cast URLconnection down to HttpURLConnection.
+                // Assuming the controller was configured with an URL scheme other than http
+                // the cast will fail.
+
+                log.warn("Configuration error: " + homeURL + " is not a HTTP URL.");
+              }
+              catch (MalformedURLException e)
+              {
+                log.warn("Configuration error: " + homeURL + " is not valid URL.");
+              }
+              catch (ConnectException e)
+              {
+                log.debug("Cannot connect to " + homeURL + ": " + e + ". Moving on...");
+              }
+              catch (CertificateEncodingException e)
+              {
+                throw new Error("Can't register due to certificate implementation error: " + e, e);
+              }
+              catch (UnknownServiceException e)
+              {
+                throw new Error("Can't register due to HTTP connection implementation error: " + e, e);
+              }
+              catch (ProtocolException e)
+              {
+                throw new Error("Implementation Error: unknown HTTP method - " + e, e);
+              }
+              catch (IOException e)
+              {
+                log.debug("Failed to send certificate to " + homeURL + ": " + e.toString(), e);
+              }
+            }
 
             try
             {
-              out.write(encodedCertificate);
-              out.flush();
+              int seconds = reattemptDelay / 1000;
+
+              log.info(
+                  "Failed to connect to controller registration service. " +
+                  "Will try again in " + seconds + " seconds..."
+              );
+
+              Thread.sleep(reattemptDelay);
             }
-            finally
+            catch (InterruptedException ignored)
             {
-              out.close();
+              // TODO: allow breaking this loop
             }
 
-            int responseCode = connection.getResponseCode();
-
-            if (responseCode == HttpURLConnection.HTTP_NO_CONTENT)
-              return;
-
-            if (responseCode == HttpURLConnection.HTTP_NOT_FOUND)
-            {
-              // TODO : server status
-
-              log.info("You haven't created a user account yet!");
-            }
-          }
-          catch (ClassCastException e)
-          {
-            // This may occur when trying to cast URLconnection down to HttpURLConnection.
-            // Assuming the controller was configured with an URL scheme other than http
-            // the cast will fail.
-
-            log.warn("Configuration error: " + homeURL + " is not a HTTP URL.");
-          }
-          catch (MalformedURLException e)
-          {
-            log.warn("Configuration error: " + homeURL + " is not valid URL.");
-          }
-          catch (ConnectException e)
-          {
-            log.debug("Cannot connect to " + homeURL + ": " + e + ". Moving on...");
-          }
-          catch (CertificateEncodingException e)
-          {
-            throw new Error("Can't register due to certificate implementation error: " + e, e);
-          }
-          catch (UnknownServiceException e)
-          {
-            throw new Error("Can't register due to HTTP connection implementation error: " + e, e);
-          }
-          catch (ProtocolException e)
-          {
-            throw new Error("Implementation Error: unknown HTTP method - " + e, e);
-          }
-          catch (IOException e)
-          {
-            log.debug("Failed to send certificate to " + homeURL + ": " + e.toString(), e);
+            urlListPosition = serviceURLs.iterator();
           }
         }
+      });
 
-        try
-        {
-          int seconds = reattemptDelay / 1000;
-
-          log.info(
-              "Failed to connect to controller registration service. " +
-              "Will try again in " + seconds + " seconds..."
-          );
-
-          Thread.sleep(reattemptDelay);
-        }
-        catch (InterruptedException ignored)
-        {
-          // TODO: allow breaking this loop
-        }
-
-        urlListPosition = serviceURLs.iterator();
-      }
+      registrationProcess.setName("Controller Registration Thread");
+      registrationProcess.start();
     }
   }
-
 
 
   // Nested Class Controller KeyStore -------------------------------------------------------------
@@ -1334,12 +1348,10 @@ public class Bootstrap
         }
         catch (InvalidParameterException e)
         {
-          log.warn(
+          Status.controllerStartedWithWarning(
               "Security provider '" + keyGen.getProvider().getName() + "' does not support " +
-              KEY_SIZE + " bit keysize. Falling back to default keysize.", e
+              KEY_SIZE + " bit keysize. Falling back to default keysize."              
           );
-
-          // TODO : server status
         }
 
         log.info("Generating key...");
@@ -1431,4 +1443,130 @@ public class Bootstrap
 
   }
 
+
+  // Nested Class Status --------------------------------------------------------------------------
+
+  /**
+   * TODO
+   * 
+   */
+  private static class Status
+  {
+
+    // Enums --------------------------------------------------------------------------------------
+
+    enum Registration
+    {
+      UNKNOWN, REGISTERED, UNREGISTERED
+    }
+
+    enum Controller
+    {
+      STARTING, START_WITH_ERROR, START_WITH_WARNING, STARTED
+    }
+
+
+    // Class Members ------------------------------------------------------------------------------
+
+    static
+    {
+      try
+      {
+        Context naming = new InitialContext();
+        Context status = naming.createSubcontext("Status");
+
+        status.rebind("Registration", Registration.UNKNOWN.toString());
+        status.rebind("Controller", Controller.STARTING.toString());
+        
+        jndiStatus = status;    
+      }
+      catch (Throwable t)
+      {
+        log.error("Cannot report status due to naming service initialization error: " + t, t);
+      }
+    }
+
+
+    private static Context jndiStatus;
+
+
+    private static void controllerStarted()
+    {
+      try
+      {
+        log.info("Controller started.");
+
+        jndiStatus.rebind("Controller", Controller.STARTED.toString());
+      }
+      catch (NamingException e)
+      {
+        log.warn("Cannot report status: " + e, e);
+      }
+    }
+
+    private static void controllerStartedWithError(String message, Throwable t)
+    {
+      try
+      {
+        // TODO: list errors
+
+        log.fatal(message, t);
+
+        jndiStatus.rebind("Controller", Controller.START_WITH_ERROR.toString());
+      }
+      catch (NamingException e)
+      {
+        log.warn("Unable to report status: " + t, t);
+      }
+    }
+
+
+
+    private static void controllerStartedWithWarning(String message)
+    {
+     try
+     {
+       // TODO : list warnings
+
+       log.error(message);
+
+       jndiStatus.rebind("Controller", Controller.START_WITH_WARNING.toString());
+     }
+     catch (NamingException e)
+     {
+       log.warn("Unable to report status: " + e, e);
+     }
+    }
+
+
+    private static void controllerRegistered()
+    {
+      try
+      {
+        jndiStatus.rebind("Registration", Registration.REGISTERED.toString());
+      }
+      catch (NamingException e)
+      {
+        log.warn("Unable to report status: " + e, e);
+      }
+    }
+
+
+    private static void controllerNotRegistered()
+    {
+      try
+      {
+        log.info("#################################################################################");
+        log.info("  Default profile not found. Initiating registration process...");
+        log.info("#################################################################################");
+
+        jndiStatus.rebind("Registration", Registration.UNREGISTERED.toString());
+      }
+      catch (NamingException e)
+      {
+        log.warn("Unable to report status: " + e, e);        
+      }
+    }
+
+  }
 }
