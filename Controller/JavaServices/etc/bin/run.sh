@@ -179,7 +179,7 @@ fi
 JAVA_OPTS="-Dprogram.name=$PROGNAME -Djboss.server.name=controller $JAVA_OPTS"
 
 # Set JVM options
-JAVA_OPTS="-Xms64m -Xmx64m -XX:MaxPermSize=24m $JAVA_OPTS"
+JAVA_OPTS="-Xms64m -Xmx64m -XX:MaxPermSize=32m $JAVA_OPTS"
 
 # Setup the java endorsed dirs
 ORC_ENDORSED_DIRS="$ORC_HOME/lib/endorsed"
