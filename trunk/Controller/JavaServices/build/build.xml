@@ -180,6 +180,19 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
     <echo message = ""/>
     <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Copying Status Servlet Classes..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <copy todir = "${server.startup}/ControllerStatus.war/WEB-INF/classes">
+      <fileset dir = "${output.dir}/classes">
+        <include name = "org/openremote/controller/console/HttpStatus*"/>
+      </fileset>
+    </copy>
+
+
+    <echo message = ""/>
+    <echo message = "--------------------------------------------------------------------"/>
     <echo message = " Copying Startup Classes..."/>
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
