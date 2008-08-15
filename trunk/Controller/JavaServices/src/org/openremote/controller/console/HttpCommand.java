@@ -44,7 +44,7 @@ import org.jboss.kernel.Kernel;
 
 
 /**
- * A client REST interface for receiving commands from the remote control using HTTP protocol.
+ * A console REST interface for receiving commands from the remote control using HTTP protocol.
  *
  * @author <a href="mailto:juha@juhalindfors.com">Juha Lindfors</a>
  */
