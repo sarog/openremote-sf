@@ -39,6 +39,8 @@ public class Router
   public void setKernel(Kernel kernel)
   {
     this.kernel = kernel;
+
+    System.out.println("Router initialized.");
   }
 
   public void route(String translatorID, Object msg)

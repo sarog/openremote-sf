@@ -216,6 +216,16 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
       </fileset>
     </copy>
 
+    <echo message = ""/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Copying Control Protocol Router Implementation..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <jar destfile = "${server.services}/router.beans/Router.jar"
+         basedir  = "${output.dir}/classes"
+         includes = "org/openremote/controller/router/**"/>
+
   </target>
 
 </project>
