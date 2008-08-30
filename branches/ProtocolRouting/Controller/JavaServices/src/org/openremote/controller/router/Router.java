@@ -47,9 +47,9 @@ public class Router
   {
       Message message = new Message(msg);                                   // (2)
 
-      Address destinationAddress = AddressTable.lookup(message.getAddress());           // (3)
+//      Address destinationAddress = AddressTable.lookup(message.getAddress());           // (3)
 
-      message.setAddress(destinationAddress);
+//      message.setAddress(destinationAddress);
 
       message.send();                                                                   // (5)
   }

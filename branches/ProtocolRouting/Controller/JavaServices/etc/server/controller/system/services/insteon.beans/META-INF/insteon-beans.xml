@@ -46,13 +46,16 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
       <inject bean = "jboss.kernel:service=Kernel"/>
     </property>
 
+
     <!--
-     | Dependency to control protocol router service. This dependency will order the deployments
-     | so that the INSTEON protocol handler is always deployed after the router has been
-     | initialized.
+     | Service dependencies.
+     |
+     | These explicit dependencies will order the deployments so that the INSTEON protocol handler
+     | is always deployed after the router and address table services have been initialized.
      +-->
     <depends>ControlProtocol/Router</depends>
-    
+    <depends>ControlProtocol/AddressTable</depends>
+
   </bean>
 
 </deployment>

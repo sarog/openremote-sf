@@ -32,6 +32,9 @@ public class InsteonProtocolHandler
 
   private boolean running = true;
 
+  private String uniqueDeviceIdentifier = null;
+
+
 
   // Public Instance Methods ----------------------------------------------------------------------
 
@@ -50,6 +53,11 @@ public class InsteonProtocolHandler
 
     System.out.println("INSTEON protocol handler starting...");
 
+    // get unique device identifier for this protocol handler
+
+    uniqueDeviceIdentifier = getUniqueDeviceIdentifier();
+    System.out.println("UID = " + uniqueDeviceIdentifier);
+    
     // listen for incoming INSTEON messages...
 
     Thread thread = new Thread(new Runnable()
@@ -157,7 +165,7 @@ public class InsteonProtocolHandler
   {
     if (isDeviceIdentificationBroadcast(insteonMessage))
     {
-      return createInsteonDeviceRegistrationMessage(insteonMessage);
+      return createDeviceRegistrationMessage(insteonMessage);
     }
 
     // TODO: regular insteon commands
@@ -167,10 +175,15 @@ public class InsteonProtocolHandler
     return "";
   }
 
-  private String createInsteonDeviceRegistrationMessage(byte[] deviceIdentificationBroadcast)
+  private String createDeviceRegistrationMessage(byte[] deviceIdentificationBroadcast)
   {
-
-    System.out.println("REGISTRATION MESSAGE");
+    StringBuilder builder = new StringBuilder(1024);
+    builder.append("header\n");
+    builder.append("{\n");
+    builder.append("  version = 1\n");
+    builder.append("  hop = 1\n");
+    //builder.append("  uid = FF)
+    builder.append("  class = DeviceRegistration.INSTEON\n");
     
     return "";
   }
@@ -189,5 +202,22 @@ public class InsteonProtocolHandler
     System.out.println("CHECK: " + Integer.toHexString(flags) );
     
     return flags == 0x08;
+  }
+
+  private String getUniqueDeviceIdentifier()
+  {
+    try
+    {
+      return (String) kernel.getBus().invoke(
+          "ControlProtocol/AddressTable",
+          "assignDeviceID",
+          null,
+          null
+      );
+    }
+    catch (Throwable t)
+    {
+      throw new Error(t);
+    }
   }
 }
