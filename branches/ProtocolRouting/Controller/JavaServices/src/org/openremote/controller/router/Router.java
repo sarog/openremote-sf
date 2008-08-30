@@ -43,9 +43,9 @@ public class Router
     System.out.println("Router initialized.");
   }
 
-  public void route(String translatorID, Object msg)
+  public void route(String msg)
   {
-      Message message = translate(translatorID, msg);                                   // (2)
+      Message message = new Message(msg);                                   // (2)
 
       Address destinationAddress = AddressTable.lookup(message.getAddress());           // (3)
 
@@ -54,6 +54,7 @@ public class Router
       message.send();                                                                   // (5)
   }
 
+  /*
   public Message translate(String id, Object msg)
   {
     try
@@ -72,6 +73,7 @@ public class Router
       throw new Error(t);
     }
   }
+  */
 
 }
 

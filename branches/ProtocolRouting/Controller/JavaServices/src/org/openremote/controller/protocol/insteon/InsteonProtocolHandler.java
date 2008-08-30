@@ -60,10 +60,10 @@ public class InsteonProtocolHandler
 
         try
         {
+          serverSocket = new ServerSocket(11111);
+          
           while (running)
           {
-            serverSocket = new ServerSocket(1111);
-
             final Socket socket = serverSocket.accept();
 
             Thread socketThread = new Thread(new Runnable()
@@ -97,7 +97,7 @@ public class InsteonProtocolHandler
                   try
                   {
                     kernel.getBus().invoke(
-                        "Router",
+                        "ControlProtocol/Router",
                         "route",
                         new Object[] { controlMessage },
                         new String[] { String.class.getName() }
@@ -110,7 +110,18 @@ public class InsteonProtocolHandler
                 }
                 catch (IOException e)
                 {
-                  System.out.println(e);
+                  System.out.println("Socket Exception: " + e);
+                }
+                finally
+                {
+                  try
+                  {
+                    socket.close();
+                  }
+                  catch (IOException e)
+                  {
+                    System.out.println(e);
+                  }
                 }
               }
             });
@@ -120,7 +131,7 @@ public class InsteonProtocolHandler
         }
         catch (IOException e)
         {
-          System.out.println(e);
+          System.out.println("Server exception: " + e);
         }
         finally
         {
@@ -151,12 +162,16 @@ public class InsteonProtocolHandler
 
     // TODO: regular insteon commands
 
+    System.out.println("I THINK IT WAS A REGULAR INSTEON MSG");
+    
     return "";
   }
 
   private String createInsteonDeviceRegistrationMessage(byte[] deviceIdentificationBroadcast)
   {
 
+    System.out.println("REGISTRATION MESSAGE");
+    
     return "";
   }
 
@@ -164,8 +179,15 @@ public class InsteonProtocolHandler
   {
     int flags = insteonMessage[6];
 
-    flags = flags >> 4 & 0x000000FF;
+    if (flags < 0)
+      flags *= -1;
 
-    return flags == 0x1000;
+    System.out.println("INSTEON MSG FLAGS: " + flags);
+
+    flags = (flags >>> 4) & 0x000000FF;
+
+    System.out.println("CHECK: " + Integer.toHexString(flags) );
+    
+    return flags == 0x08;
   }
 }
