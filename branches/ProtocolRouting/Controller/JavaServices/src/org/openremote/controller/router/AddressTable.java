@@ -22,6 +22,9 @@
 package org.openremote.controller.router;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  *
@@ -29,16 +32,16 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class AddressTable
 {
-/*
-    public static Address lookup(Address address)
-    {
-      return new Address("destination");
-    }
-*/
+
+
 
   // Instance Fields ------------------------------------------------------------------------------
 
   private AtomicInteger deviceIdSequence = new AtomicInteger(1);
+
+  private AtomicInteger addressSequence = new AtomicInteger(1);
+
+  private Map<Integer, Message> addressTable = new ConcurrentHashMap<Integer, Message>();
 
 
   // Public Instance Methods ----------------------------------------------------------------------
@@ -67,5 +70,14 @@ public class AddressTable
       prefix = "0";
 
     return prefix + Integer.toHexString(id).toUpperCase();
+  }
+
+  public void addDevice(Message msg)
+  {
+    int address = addressSequence.getAndIncrement();
+
+    addressTable.put(address, msg);
+
+    System.out.println("Device registered!");
   }
 }

@@ -33,27 +33,13 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
             xmlns = "urn:jboss:bean-deployer:2.0">
 
 
-
   <bean name  = "ControlProtocol/AddressTable"
         class = "org.openremote.controller.router.AddressTable">
-
   </bean>
 
-  
 
   <bean name  = "ControlProtocol/Router"
         class = "org.openremote.controller.router.Router">
-
-    <!--
-     | Inject a reference to the kernel itself to gain access to the invocation bus. This is used
-     | to reach the actual protocol handlers and translators.
-     |
-     | Mandatory property.
-     +-->
-    <property name = "kernel">
-      <inject bean = "jboss.kernel:service=Kernel"/>
-    </property>
-
   </bean>
 
 </deployment>

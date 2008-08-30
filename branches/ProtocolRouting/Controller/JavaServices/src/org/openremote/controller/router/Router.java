@@ -22,6 +22,9 @@
 package org.openremote.controller.router;
 
 import org.jboss.kernel.Kernel;
+import org.jboss.kernel.spi.dependency.KernelControllerContext;
+import org.jboss.beans.metadata.api.annotations.Inject;
+import org.jboss.beans.metadata.api.annotations.FromContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,20 +36,30 @@ import java.util.Map;
 public class Router
 {
 
-  private Kernel kernel = null;
+  private KernelControllerContext serviceContext = null;
 
 
-  public void setKernel(Kernel kernel)
+  @Inject(fromContext = FromContext.CONTEXT)
+  public void setServiceContext(KernelControllerContext ctx)
   {
-    this.kernel = kernel;
+    this.serviceContext = ctx;
+  }
 
+  public void start()
+  {
     System.out.println("Router initialized.");
   }
 
+
   public void route(String msg)
   {
-      Message message = new Message(msg);                                   // (2)
+    Message message = new Message(msg);                                   // (2)
 
+    if (message.isDeviceRegistrationMessage())
+    {
+      registerDevice(message);
+    }
+    
 //      Address destinationAddress = AddressTable.lookup(message.getAddress());           // (3)
 
 //      message.setAddress(destinationAddress);
@@ -54,26 +67,24 @@ public class Router
       message.send();                                                                   // (5)
   }
 
-  /*
-  public Message translate(String id, Object msg)
+
+  // Private Instance Methods ---------------------------------------------------------------------
+
+  private void registerDevice(Message msg)
   {
     try
     {
-      String message = (String)kernel.getBus().invoke(
-          id,
-          "translateMessage",
+      serviceContext.getKernel().getBus().invoke(
+          "ControlProtocol/AddressTable",
+          "addDevice",
           new Object[] { msg },
-          new String[] { Object.class.getName() }
+          new String[] { Message.class.getName() }
       );
-
-      return new Message(message);
     }
     catch (Throwable t)
     {
-      throw new Error(t);
+      System.out.println(t);
     }
   }
-  */
-
 }
 

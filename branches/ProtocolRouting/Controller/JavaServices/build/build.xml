@@ -122,6 +122,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
       <pathelement path = "${controller.root}/system/services/security/bcprov-jdk16-139.jar"/>
       <pathelement path = "${controller.lib}/servlet-api.jar"/>
       <pathelement path = "${bootstrap.lib.dir}/jboss-kernel.jar"/>
+      <pathelement path = "${bootstrap.lib.dir}/jboss-dependency.jar"/>
       <pathelement path = "${bootstrap.lib.dir}/jboss-common-core.jar"/>
       <pathelement path = "${bootstrap.lib.dir}/jboss-logging-spi.jar"/>
     </path>

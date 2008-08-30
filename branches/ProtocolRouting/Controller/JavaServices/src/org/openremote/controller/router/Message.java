@@ -28,16 +28,32 @@ package org.openremote.controller.router;
 public class Message
 {
 
+  // Instance Fields ------------------------------------------------------------------------------
+
+  private boolean isDeviceRegistrationMessage = false;
+
+
   // Constructors ---------------------------------------------------------------------------------
 
   public Message(String messageFormat)
   {
+    if (messageFormat.contains("class = DeviceRegistration."))
+    {
+      isDeviceRegistrationMessage = true;
+
+    }
 
   }
 
 
   // Instance Methods -----------------------------------------------------------------------------
 
+  public boolean isDeviceRegistrationMessage()
+  {
+    return isDeviceRegistrationMessage;
+  }
+
+  
   public Address getAddress()
   {
 

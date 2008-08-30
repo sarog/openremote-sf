@@ -1,6 +1,9 @@
 package org.openremote.controller.protocol.insteon;
 
 import org.jboss.kernel.Kernel;
+import org.jboss.kernel.spi.dependency.KernelControllerContext;
+import org.jboss.beans.metadata.api.annotations.Inject;
+import org.jboss.beans.metadata.api.annotations.FromContext;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -46,19 +49,20 @@ public class InsteonProtocolHandler
 
   private int serverPort = DEFAULT_PORT;
 
+  private String serviceName = null;
 
 
   // Public Instance Methods ----------------------------------------------------------------------
 
-  /**
-   * TODO
-   *
-   * @param kernel
-   */
-  public void setKernel(Kernel kernel)
+
+  @Inject (fromContext = FromContext.CONTEXT)
+  public void setContext(KernelControllerContext ctx)
   {
-    this.kernel = kernel;
+    this.kernel = ctx.getKernel();
+
+    this.serviceName = ctx.getBeanMetaData().getName();
   }
+
 
   public void setPort(int port)
   {
@@ -125,7 +129,7 @@ public class InsteonProtocolHandler
                     return;
                   }
 
-                  String controlMessage = createInsteonMessage(message);
+                  String controlMessage = createMessage(message);
 
                   try
                   {
@@ -186,7 +190,7 @@ public class InsteonProtocolHandler
 
   // Private Instance Methods ---------------------------------------------------------------------
 
-  private String createInsteonMessage(byte[] insteonMessage)
+  private String createMessage(byte[] insteonMessage)
   {
     if (isDeviceIdentificationBroadcast(insteonMessage))
     {
@@ -210,14 +214,21 @@ public class InsteonProtocolHandler
     builder.append("  uid = FF");
     builder.append(uniqueDeviceIdentifier);
     builder.append("01\n");
-    builder.append("  source = OpenRemote.InsteonBridge.");
-    builder.append(getIPSourceInstance());
+    builder.append("  source = OpenRemote.");
+    builder.append(serviceName);
     builder.append(":");
     builder.append(getPort());
     builder.append("\n");
     builder.append("  class = DeviceRegistration.INSTEON\n");
-    builder.append("}");
+    builder.append("}\n");
 
+    builder.append("INSTEON Device Identification Broadcast\n");
+    builder.append("{\n");
+    builder.append("  FromAddress=");
+    builder.append(getInsteonFromAddress(deviceIdentificationBroadcast));
+    builder.append("\n");
+    builder.append("}");
+    
     System.out.println(builder.toString());
     
     return builder.toString();
@@ -236,7 +247,7 @@ public class InsteonProtocolHandler
 
     System.out.println("CHECK: " + Integer.toHexString(flags) );
     
-    return flags == 0x08;
+    return flags == 0x08 && insteonMessage[7] == 0x01;
   }
 
   private String getUniqueDeviceIdentifier()
@@ -255,7 +266,7 @@ public class InsteonProtocolHandler
       throw new Error(t);
     }
   }
-
+/*
   private String getIPSourceInstance()
   {
     byte[] raw = inetAddress.getAddress();
@@ -268,5 +279,29 @@ public class InsteonProtocolHandler
     }
 
     return builder.substring(0, builder.length() - 1);
+  }
+*/
+  private String getInsteonFromAddress(byte[] insteonMessage)
+  {
+    int[] addressBytes = new int[3];
+
+    for (int i = 0; i < 3; ++i)
+    {
+      addressBytes[i] = insteonMessage[i] & 0x000000FF;
+    }
+
+    StringBuilder builder = new StringBuilder(6);
+
+    for (int address : addressBytes)
+    {
+      if (address <= 0x0F)
+      {
+        builder.append("0");
+      }
+
+      builder.append(Integer.toHexString(address).toUpperCase());
+    }
+
+    return builder.toString();
   }
 }

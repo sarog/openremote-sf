@@ -42,10 +42,11 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
      |
      | Mandatory property.
      +-->
+    <!--
     <property name = "kernel">
       <inject bean = "jboss.kernel:service=Kernel"/>
     </property>
-
+    -->
 
     <!--
      | Service dependencies.
