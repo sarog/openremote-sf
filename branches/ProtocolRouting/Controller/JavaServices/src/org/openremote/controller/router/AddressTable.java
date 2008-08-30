@@ -52,8 +52,20 @@ public class AddressTable
   {
     int id = deviceIdSequence.getAndIncrement();
 
+    if (id > 0xFFFF)
+      throw new Error("Out of device IDs");
+    
     id &= 0x0000FFFF;
 
-    return Integer.toHexString(id).toUpperCase();
+    String prefix = "";
+
+    if (id <= 0xF)
+      prefix = "000";
+    else if (id <= 0xFF)
+      prefix = "00";
+    else if (id <= 0xFFF)
+      prefix = "0";
+
+    return prefix + Integer.toHexString(id).toUpperCase();
   }
 }
