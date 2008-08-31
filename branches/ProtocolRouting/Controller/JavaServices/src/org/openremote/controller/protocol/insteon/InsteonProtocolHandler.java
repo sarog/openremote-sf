@@ -1,15 +1,14 @@
 package org.openremote.controller.protocol.insteon;
 
-import org.jboss.kernel.Kernel;
-import org.jboss.kernel.spi.dependency.KernelControllerContext;
-import org.jboss.beans.metadata.api.annotations.Inject;
 import org.jboss.beans.metadata.api.annotations.FromContext;
+import org.jboss.beans.metadata.api.annotations.Inject;
+import org.jboss.kernel.spi.dependency.KernelControllerContext;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.InetAddress;
-import java.io.IOException;
-import java.io.BufferedInputStream;
 
 /**
  * Sender and receiver of standard and extended INSTEON messages.  <p>
@@ -35,12 +34,6 @@ public class InsteonProtocolHandler
 
   // Instance Fields ------------------------------------------------------------------------------
   
-  /**
-   * We will get to the control protocol router via kernel's invocation bus. This reference
-   * will be injected to this bean by the microcontainer upon deployment.
-   */
-  private Kernel kernel = null;
-
   private boolean running = true;
 
   private String uniqueDeviceIdentifier = null;
@@ -51,16 +44,15 @@ public class InsteonProtocolHandler
 
   private String serviceName = null;
 
+  private KernelControllerContext serviceCtx;
 
-  // Public Instance Methods ----------------------------------------------------------------------
 
+  // Microcontainer Component Methods -------------------------------------------------------------
 
   @Inject (fromContext = FromContext.CONTEXT)
-  public void setContext(KernelControllerContext ctx)
+  public void setServiceContext(KernelControllerContext ctx)
   {
-    this.kernel = ctx.getKernel();
-
-    this.serviceName = ctx.getBeanMetaData().getName();
+    this.serviceCtx = ctx;
   }
 
 
@@ -76,14 +68,14 @@ public class InsteonProtocolHandler
 
   public void start()
   {
-
     System.out.println("INSTEON protocol handler starting...");
 
     // get unique device identifier for this protocol handler
 
     uniqueDeviceIdentifier = getUniqueDeviceIdentifier();
+
     System.out.println("UID = " + uniqueDeviceIdentifier);
-    
+
     // listen for incoming INSTEON messages...
 
     Thread thread = new Thread(new Runnable()
@@ -133,7 +125,7 @@ public class InsteonProtocolHandler
 
                   try
                   {
-                    kernel.getBus().invoke(
+                    serviceCtx.getKernel().getBus().invoke(
                         "ControlProtocol/Router",
                         "route",
                         new Object[] { controlMessage },
@@ -186,6 +178,11 @@ public class InsteonProtocolHandler
 
     System.out.println("INSTEON protocol handler started.");
   }
+
+
+  // Public Instance Methods ----------------------------------------------------------------------
+
+
 
 
   // Private Instance Methods ---------------------------------------------------------------------
@@ -254,7 +251,7 @@ public class InsteonProtocolHandler
   {
     try
     {
-      return (String) kernel.getBus().invoke(
+      return (String) serviceCtx.getKernel().getBus().invoke(
           "ControlProtocol/AddressTable",
           "assignDeviceID",
           null,
@@ -266,21 +263,7 @@ public class InsteonProtocolHandler
       throw new Error(t);
     }
   }
-/*
-  private String getIPSourceInstance()
-  {
-    byte[] raw = inetAddress.getAddress();
-    StringBuilder builder = new StringBuilder(18);
 
-    for (byte octet : raw)
-    {
-      builder.append(octet);
-      builder.append(".");
-    }
-
-    return builder.substring(0, builder.length() - 1);
-  }
-*/
   private String getInsteonFromAddress(byte[] insteonMessage)
   {
     int[] addressBytes = new int[3];
