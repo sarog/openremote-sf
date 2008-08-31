@@ -34,7 +34,6 @@ public class AddressTable
 {
 
 
-
   // Instance Fields ------------------------------------------------------------------------------
 
   private AtomicInteger deviceIdSequence = new AtomicInteger(1);
@@ -58,8 +57,6 @@ public class AddressTable
     if (id > 0xFFFF)
       throw new Error("Out of device IDs");
     
-    id &= 0x0000FFFF;
-
     String prefix = "";
 
     if (id <= 0xF)

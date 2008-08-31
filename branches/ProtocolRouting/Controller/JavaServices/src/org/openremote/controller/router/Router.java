@@ -53,18 +53,18 @@ public class Router
 
   public void route(String msg)
   {
-    Message message = new Message(msg);                                   // (2)
+    Message message = new Message(msg);
 
     if (message.isDeviceRegistrationMessage())
     {
       registerDevice(message);
     }
     
-//      Address destinationAddress = AddressTable.lookup(message.getAddress());           // (3)
+    Address destinationAddress = AddressTable.lookup(message.getAddress());
 
-//      message.setAddress(destinationAddress);
+    message.setAddress(destinationAddress);
 
-      message.send();                                                                   // (5)
+    message.send();
   }
 
 
