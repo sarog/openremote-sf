@@ -59,11 +59,13 @@ public class Router
     {
       registerDevice(message);
     }
-    
+
+    /*
     Address destinationAddress = AddressTable.lookup(message.getAddress());
 
     message.setAddress(destinationAddress);
-
+    */
+    
     message.send();
   }
 
