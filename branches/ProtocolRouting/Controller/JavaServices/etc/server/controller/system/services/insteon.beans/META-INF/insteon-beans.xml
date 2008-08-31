@@ -37,18 +37,6 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
         class = "org.openremote.controller.protocol.insteon.InsteonProtocolHandler">
 
     <!--
-     | Inject a reference to the kernel itself to gain access to the invocation bus. This is used
-     | to reach the control protocol router.
-     |
-     | Mandatory property.
-     +-->
-    <!--
-    <property name = "kernel">
-      <inject bean = "jboss.kernel:service=Kernel"/>
-    </property>
-    -->
-
-    <!--
      | Service dependencies.
      |
      | These explicit dependencies will order the deployments so that the INSTEON protocol handler

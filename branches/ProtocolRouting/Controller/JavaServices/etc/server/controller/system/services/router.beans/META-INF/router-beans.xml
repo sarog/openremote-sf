@@ -37,7 +37,6 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
         class = "org.openremote.controller.router.AddressTable">
   </bean>
 
-
   <bean name  = "ControlProtocol/Router"
         class = "org.openremote.controller.router.Router">
   </bean>
