@@ -120,6 +120,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
     <path id = "compile.classpath">
       <pathelement path = "${controller.root}/system/services/security/bcprov-jdk16-139.jar"/>
+      <pathelement path = "${controller.root}/system/services/x10.beans/x10.jar"/>
       <pathelement path = "${controller.lib}/servlet-api.jar"/>
       <pathelement path = "${bootstrap.lib.dir}/jboss-kernel.jar"/>
       <pathelement path = "${bootstrap.lib.dir}/jboss-dependency.jar"/>
@@ -236,6 +237,16 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <jar destfile = "${server.services}/insteon.beans/INSTEON.jar"
          basedir  = "${output.dir}/classes"
          includes = "org/openremote/controller/protocol/insteon/**"/>
+
+    <echo message = ""/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Copying X10 Protocol Handler Implementation..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <jar destfile = "${server.services}/x10.beans/X10Service.jar"
+         basedir  = "${output.dir}/classes"
+         includes = "org/openremote/controller/protocol/x10/**"/>
 
   </target>
 
