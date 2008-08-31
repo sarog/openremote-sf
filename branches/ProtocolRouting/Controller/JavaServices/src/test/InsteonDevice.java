@@ -28,6 +28,7 @@ package test;
  */
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.net.ServerSocket;
 import java.io.IOException;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -37,7 +38,17 @@ public class InsteonDevice
   
   public static void main(String... args)
   {
+    if (args.length >= 1)
+      startReceiver(Integer.parseInt(args[0]));
+    else
+      startReceiver(2222);
 
+    sendDeviceIDBroadcast();
+  }
+
+
+  private static void sendDeviceIDBroadcast()
+  {
     BufferedOutputStream output = null;
 
     try
@@ -56,9 +67,9 @@ public class InsteonDevice
 
       // To Address ...
 
-      message[3] = 0x00;    // TODO : device id broadcast
-      message[4] = 0x00;
-      message[5] = 0x00;
+      message[3] = (byte)0xA0;    // device id broadcast
+      message[4] = (byte)0x81;
+      message[5] = (byte)0xCC;
 
       // Flags...
 
@@ -67,7 +78,7 @@ public class InsteonDevice
       // Command...
 
       message[7] = 0x01;
-      message[8] = 0x00;
+      message[8] = (byte)0xFF;
 
       // CRC...
 
@@ -98,5 +109,70 @@ public class InsteonDevice
     }
   }
 
-  
+
+  private static void startReceiver(int port)
+  {
+    try
+    {
+      final ServerSocket serverSocket = new ServerSocket(port);
+
+      Thread listener = new Thread(new Runnable()
+      {
+        public void run()
+        {
+          while (true)
+          {
+            try
+            {
+              final Socket socket = serverSocket.accept();
+
+              Thread socketThread = new Thread(new Runnable()
+              {
+                public void run()
+                {
+                  try
+                  {
+                    BufferedInputStream input = new BufferedInputStream(socket.getInputStream());
+
+                    byte[] message = new byte[10];
+
+                    int bytesRead = input.read(message);
+
+                    if (bytesRead != 10)
+                    {
+                      System.out.println("was expecting 10 bytes");
+                      return;
+                    }
+
+                    handleMessage(message);
+                  }
+                  catch (IOException e)
+                  {
+                    System.out.println(e);
+                  }
+                }
+              });
+
+              socketThread.run();
+            }
+            catch (IOException e)
+            {
+              System.out.println(e);
+            }
+          }
+        }
+      });
+
+      listener.start();
+    }
+    catch (IOException e)
+    {
+      System.out.println(e);
+    }
+  }
+
+  private static void handleMessage(byte[] message)
+  {
+    System.out.println("GOT MESSAGE!");
+  }
 }

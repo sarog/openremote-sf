@@ -59,11 +59,7 @@ public class InsteonProtocolHandler
 
   private String uniqueDeviceIdentifier = null;
 
-  private InetAddress inetAddress = null;
-
   private int serverPort = DEFAULT_PORT;
-
-  private String serviceName = null;
 
   private KernelControllerContext serviceCtx;
 
@@ -108,8 +104,6 @@ public class InsteonProtocolHandler
         try
         {
           serverSocket = new ServerSocket(getPort());
-
-          inetAddress = serverSocket.getInetAddress();
 
 
           while (running)
@@ -233,7 +227,7 @@ public class InsteonProtocolHandler
     builder.append(uniqueDeviceIdentifier);
     builder.append("01\n");
     builder.append("  source = OpenRemote.");
-    builder.append(serviceName);
+    builder.append(serviceCtx.getBeanMetaData().getName());
     builder.append(":");
     builder.append(getPort());
     builder.append("\n");
@@ -242,9 +236,11 @@ public class InsteonProtocolHandler
 
     builder.append("INSTEON Device Identification Broadcast\n");
     builder.append("{\n");
-    builder.append("  FromAddress=");
-    builder.append(getInsteonFromAddress(deviceIdentificationBroadcast));
-    builder.append("\n");
+    builder.append("  FromAddress=").append(getInsteonFromAddress(deviceIdentificationBroadcast)).append("\n");
+    builder.append("  DeviceCategory=").append(getInsteonDeviceCategory(deviceIdentificationBroadcast)).append("\n");
+    builder.append("  DeviceDescriptor=").append(getInsteonDeviceDescriptor(deviceIdentificationBroadcast)).append("\n");
+    builder.append("  FirmwareRevision=").append(getInsteonFirmwareRevision(deviceIdentificationBroadcast)).append("\n");
+    builder.append("  DeviceAttributes=").append(getInsteonDeviceAttributes(deviceIdentificationBroadcast)).append("\n");
     builder.append("}");
     
     System.out.println(builder.toString());
@@ -307,5 +303,45 @@ public class InsteonProtocolHandler
     }
 
     return builder.toString();
+  }
+
+  private String getInsteonDeviceCategory(byte[] insteonMessage)
+  {
+    int category = insteonMessage[3] & 0xF0;
+
+    if (category <= 0x0F)
+      return "0" + Integer.toHexString(category).toUpperCase();
+    else
+      return Integer.toHexString(category).toUpperCase();
+  }
+
+  private String getInsteonDeviceDescriptor(byte[] insteonMessage)
+  {
+    int descriptorMSB = insteonMessage[3] & 0x0F;
+    int descriptorLSB = insteonMessage[4];
+
+    String lsbValue;
+
+    if (descriptorLSB <= 0x0F)
+      lsbValue = "0" + Integer.toHexString(descriptorLSB & 0x000000FF).toUpperCase();
+    else
+      lsbValue = Integer.toHexString(descriptorLSB & 0x000000FF).toUpperCase();
+
+    return Integer.toHexString(descriptorMSB) + lsbValue;
+  }
+
+  private String getInsteonFirmwareRevision(byte[] insteonMessage)
+  {
+    int revision = insteonMessage[5];
+
+    return Integer.toHexString(revision & 0x000000FF).toUpperCase();
+  }
+
+  private String getInsteonDeviceAttributes(byte[] insteonMessage)
+  {
+
+    int attributes = insteonMessage[8];
+
+    return Integer.toHexString(attributes & 0x000000FF).toUpperCase();
   }
 }
