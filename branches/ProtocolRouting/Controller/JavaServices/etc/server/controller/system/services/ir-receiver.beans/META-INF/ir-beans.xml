@@ -36,7 +36,6 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   <bean name  = "Input/Infrared/BenQ-VT3080"
         class = "org.openremote.controller.input.InfraredReceiver">
 
-    <property name = "infraredCommandLength">2</property>
 
     <property name = "infraredCommandMap">
 
@@ -55,7 +54,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
               version = 1
               hop = 1
               uid = FF0001
-              source = OpenRemote.Infrared:BenQ.Vt3080
+              source = OpenRemote.Infrared:BenQ.VT3080
               class = Infrared.Command
             }
 
@@ -69,7 +68,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
         </entry>
 
         <!--
-         | Button '2' ==> INSTEON
+         | Button '2' ==> INSTEON Command 0100 to
          +-->
         <entry>
           <key>A05F</key>
@@ -80,7 +79,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
               version = 1
               hop = 1
               uid = FF0001
-              source = OpenRemote.Infrared:BenQ.Vt3080
+              source = OpenRemote.Infrared:BenQ.VT3080
               class = Infrared.Command
             }
 
@@ -99,6 +98,40 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
       </map>
     </property>
 
+    
+    <!--
+     | Service dependencies.
+     |
+     | These explicit dependencies will order the deployments so that the IR receiver
+     | is always deployed after the router and address table services have been initialized.
+     +-->
+    <depends>ControlProtocol/Router</depends>
+    <depends>ControlProtocol/AddressTable</depends>
+
+
+
+    <!-- ==========================================================================================
+     |
+     | Optional Configuration Properties.
+     |
+     | The properties below allow customization of the infrared receiver implementation.
+     | They are not mandatory and in many cases the implementation defaults are sufficient.
+     |
+     | If you want to customize the infrared receiver, uncomment the relevant properties
+     | below.
+     |
+     +========================================================================================= -->
+
+
+    <!--
+     | Determines the expected infrared command length in bytes.
+     |
+     | Defaults to 16 bit IR command (2 bytes).
+     |
+     |   <property name = "infraredCommandLength">2</property>
+     |
+     +-->
+    
   </bean>
 
 
