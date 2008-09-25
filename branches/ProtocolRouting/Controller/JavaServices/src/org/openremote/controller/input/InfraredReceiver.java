@@ -166,12 +166,12 @@ public class InfraredReceiver
                   }
                   catch (Throwable t)
                   {
-                    System.out.println(t);
+                    log.error("Error routing the command: " + t, t);
                   }
                 }
                 catch (IOException e)
                 {
-                  System.out.println("Socket Exception: " + e);
+                  log.error("Error reading the incoming command: " + e, e);
                 }
                 finally
                 {
@@ -181,7 +181,7 @@ public class InfraredReceiver
                   }
                   catch (IOException e)
                   {
-                    System.out.println(e);
+                    log.debug("Failed to close socket: " + e, e);
                   }
                 }
               }
@@ -192,7 +192,7 @@ public class InfraredReceiver
         }
         catch (IOException e)
         {
-          System.out.println("Server exception: " + e);
+          log.error("Error creating infrared receiver socket: " + e, e);
         }
         finally
         {
@@ -221,8 +221,24 @@ public class InfraredReceiver
     // TODO: this is where the mapping created in online manager comes to play --
     // TODO: IR command is mapped to internal message which is a command to a registered device
 
+    StringBuilder builder = new StringBuilder(8);
 
-    return infraredToCommandMessageMap.get(infraredCommand);
+    for (byte commandByte : infraredCommand)
+    {
+      int commandBits = commandByte & 0xFF;
+
+      builder.append(Integer.toHexString(commandBits).toUpperCase());
+    }
+
+    // TODO: log at debug
+    log.info("Looking for message for IR command 0x" + builder.toString());
+
+    String command = infraredToCommandMessageMap.get(builder.toString());
+
+    // TODO: log at debug
+    log.info("Found message: " + command);
+
+    return command;
   }
 
 
