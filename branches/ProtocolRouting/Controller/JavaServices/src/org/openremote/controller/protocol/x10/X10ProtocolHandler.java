@@ -24,10 +24,13 @@ package org.openremote.controller.protocol.x10;
 import org.jboss.beans.metadata.api.annotations.Inject;
 import org.jboss.beans.metadata.api.annotations.FromContext;
 import org.jboss.kernel.spi.dependency.KernelControllerContext;
+import org.jboss.logging.Logger;
+import org.openremote.controller.core.Bootstrap;
 import x10.net.SocketController;
 import x10.Command;
 
 import java.io.IOException;
+import java.net.ConnectException;
 
 /**
  * Wrapper for SocketController in X10 Java project.
@@ -42,6 +45,12 @@ public class X10ProtocolHandler
   public final static int DEFAULT_PORT = 9999;
 
   public final static String DEFAULT_HOST = "127.168.0.1";
+
+
+  // Class Members --------------------------------------------------------------------------------
+
+  private final static Logger log = Logger.getLogger(Bootstrap.ROOT_LOG_CATEGORY + ".X10");
+
 
 
   // Instance Fields ------------------------------------------------------------------------------
@@ -89,9 +98,17 @@ public class X10ProtocolHandler
 
       socketController.addCommand(new Command("A1", Command.ALL_LIGHTS_ON));
     }
+    catch (ConnectException e)
+    {
+      log.warn("Unable to connect to X10 daemon. Has it been started?");
+
+      // TODO : service status
+    }
     catch (IOException e)
     {
-      throw new Error(e);
+      log.warn(e);
+
+      // TODO : service status
     }
   }
 }

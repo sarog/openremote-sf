@@ -219,18 +219,13 @@ public class InsteonProtocolHandler
   private String createDeviceRegistrationMessage(byte[] deviceIdentificationBroadcast)
   {
     StringBuilder builder = new StringBuilder(1024);
+
     builder.append("header\n");
     builder.append("{\n");
     builder.append("  version = 1\n");
     builder.append("  hop = 1\n");
-    builder.append("  uid = FF");
-    builder.append(uniqueDeviceIdentifier);
-    builder.append("01\n");
-    builder.append("  source = OpenRemote.");
-    builder.append(serviceCtx.getBeanMetaData().getName());
-    builder.append(":");
-    builder.append(getPort());
-    builder.append("\n");
+    builder.append("  uid = FF").append(uniqueDeviceIdentifier).append("01\n");
+    builder.append("  source = OpenRemote.").append(serviceCtx.getBeanMetaData().getName()).append(":").append(getPort()).append("\n");
     builder.append("  class = DeviceRegistration.INSTEON\n");
     builder.append("}\n");
 
