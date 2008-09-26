@@ -21,17 +21,31 @@
 */
 package org.openremote.controller.router;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.ConcurrentHashMap;
+import org.jboss.logging.Logger;
+import org.openremote.controller.core.Bootstrap;
+
 import java.util.Map;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * TODO: Does various addess assignment and translation services.
  *
  * @author <a href="mailto:juha@juhalindfors.com">Juha Lindfors</a>
  */
 public class AddressTable
 {
+
+  // Constants ------------------------------------------------------------------------------------
+
+  public final static String LOG_CATEGORY = "CONTROL PROTOCOL ROUTING TABLE";
+
+  public final static String GLOBAL_ADDRESS_PREFIX = "OpenRemote.GlobalAddress";
+
+
+  // Class Members --------------------------------------------------------------------------------
+
+  private final static Logger log = Logger.getLogger(Bootstrap.ROOT_LOG_CATEGORY + "." + LOG_CATEGORY);
 
 
   // Instance Fields ------------------------------------------------------------------------------
@@ -40,15 +54,19 @@ public class AddressTable
 
   private AtomicInteger addressSequence = new AtomicInteger(1);
 
-  private Map<Integer, Message> addressTable = new ConcurrentHashMap<Integer, Message>();
+  private Map<String, Message> addressTable = new ConcurrentHashMap<String, Message>();
+
+
+  // MC Component Methods -------------------------------------------------------------------------
+
+  public void start()
+  {
+    log.info("Control Protocol Routing Table Available.");
+  }
 
 
   // Public Instance Methods ----------------------------------------------------------------------
 
-  public void start()
-  {
-    System.out.println("Control Protocol Address Table Available.");
-  }
   
   public String assignDeviceID()
   {
@@ -73,8 +91,23 @@ public class AddressTable
   {
     int address = addressSequence.getAndIncrement();
 
-    addressTable.put(address, msg);
+    String globalAddress = GLOBAL_ADDRESS_PREFIX + "." + Integer.toString(address);
 
-    System.out.println("Device registered!");
+    addressTable.put(globalAddress, msg);
+
+    log.info("Registered device at address '" + globalAddress + "': \n " + msg);
+  }
+
+  public String lookup(String domainAddress)
+  {
+    if (!addressTable.containsKey(domainAddress))
+    {
+      log.warn("Domain address '" + domainAddress + "' not found in address table.");
+
+      return "/dev/null";
+    }
+
+    else
+      return addressTable.get(domainAddress).getAddress();
   }
 }
