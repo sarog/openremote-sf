@@ -56,6 +56,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
               uid = FF0001
               source = OpenRemote.Infrared:BenQ.VT3080
               class = Infrared.Command
+              target = OpenRemote.X10-Gateway.1
             }
 
             X10 Command
@@ -81,6 +82,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
               uid = FF0001
               source = OpenRemote.Infrared:BenQ.VT3080
               class = Infrared.Command
+              target = OpenRemote.INSTEON-Gateway.1
             }
 
             INSTEON Command
