@@ -21,23 +21,36 @@
 */
 package org.openremote.controller.router;
 
-import org.jboss.kernel.Kernel;
-import org.jboss.kernel.spi.dependency.KernelControllerContext;
-import org.jboss.beans.metadata.api.annotations.Inject;
 import org.jboss.beans.metadata.api.annotations.FromContext;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.jboss.beans.metadata.api.annotations.Inject;
+import org.jboss.kernel.spi.dependency.KernelControllerContext;
+import org.jboss.logging.Logger;
+import org.openremote.controller.core.Bootstrap;
 
 /**
- *
+ * TODO: Routing of control protocol messages in the controller.
+ * 
  * @author <a href="mailto:juha@juhalindfors.com">Juha Lindfors</a>
  */
 public class Router
 {
 
+  // Constants ------------------------------------------------------------------------------------
+
+  public final static String LOG_CATEGORY = "CONTROL PROTOCOL ROUTER";
+
+
+  // Class Members --------------------------------------------------------------------------------
+
+  private static Logger log = Logger.getLogger(Bootstrap.ROOT_LOG_CATEGORY + "." + LOG_CATEGORY);
+
+
+  // Instance Fields ------------------------------------------------------------------------------
+
   private KernelControllerContext serviceContext = null;
 
+
+  // MC Component Methods -------------------------------------------------------------------------
 
   @Inject(fromContext = FromContext.CONTEXT)
   public void setServiceContext(KernelControllerContext ctx)
@@ -47,9 +60,11 @@ public class Router
 
   public void start()
   {
-    System.out.println("Router initialized.");
+    log.info("Control Protocol Router initialized.");
   }
 
+
+  // Public Instance Methods ----------------------------------------------------------------------
 
   public void route(String msg)
   {
@@ -60,13 +75,29 @@ public class Router
       registerDevice(message);
     }
 
-    /*
-    Address destinationAddress = AddressTable.lookup(message.getAddress());
+    // TODO : AddressTable component name should be injected
 
-    message.setAddress(destinationAddress);
-    */
+    try
+    {
+      String destinationAddress =  (String)serviceContext.getKernel().getBus().invoke(
+          "ControlProtocol/AddressTable",
+          "lookup",
+          new Object[] { message.getAddress() },
+          new String[] { String.class.getName() }
+      );
+
+      // TODO : debug level logging
+
+      log.info("Message address '" + message.getAddress() + "' translated to '" + destinationAddress + "'.");
+
+      message.setAddress(destinationAddress);
     
-    message.send();
+      message.send();
+    }
+    catch (Throwable t)
+    {
+      log.error("Error invoking AddressTable.lookup(): " + t);
+    }
   }
 
 
@@ -74,6 +105,8 @@ public class Router
 
   private void registerDevice(Message msg)
   {
+    // TODO : AddressTable component name should be injected
+
     try
     {
       serviceContext.getKernel().getBus().invoke(
@@ -85,7 +118,7 @@ public class Router
     }
     catch (Throwable t)
     {
-      System.out.println(t);
+      log.error("Error invoking AddressTable.addDevice(): " + t);
     }
   }
 }
