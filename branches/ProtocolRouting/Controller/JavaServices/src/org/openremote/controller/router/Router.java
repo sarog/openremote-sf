@@ -79,7 +79,7 @@ public class Router
 
     try
     {
-      String destinationAddress =  (String)serviceContext.getKernel().getBus().invoke(
+      String descriptorString =  (String)serviceContext.getKernel().getBus().invoke(
           "ControlProtocol/AddressTable",
           "lookup",
           new Object[] { message.getAddress() },
@@ -88,11 +88,18 @@ public class Router
 
       // TODO : debug level logging
 
-      log.info("Message address '" + message.getAddress() + "' translated to '" + destinationAddress + "'.");
+      log.info("Message address '" + message.getAddress() + "' translated to '" + descriptorString + "'.");
 
-      message.setAddress(destinationAddress);
-    
-      message.send();
+      Message deviceDescriptor = new Message(descriptorString);
+
+      String invoker = deviceDescriptor.getComponentName();
+
+      serviceContext.getKernel().getBus().invoke(
+          invoker,
+          "sendCommand",
+          new Object[] { msg },
+          new String[] { String.class.getName() }
+      );
     }
     catch (Throwable t)
     {

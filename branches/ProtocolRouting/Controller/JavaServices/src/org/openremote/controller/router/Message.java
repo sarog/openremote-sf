@@ -51,6 +51,9 @@ public class Message
     TARGET
   }
 
+  public final static String OPENREMOTE_COMPONENT_BLOCK = "OpenRemote Component";
+
+
 
   // Constants ------------------------------------------------------------------------------------
 
@@ -70,7 +73,11 @@ public class Message
 
   private String versionHeader, hopHeader, uidHeader, sourceHeader, classHeader, targetHeader;
 
+  private String componentName;
+  
   private Map<String, String> optionalHeaders = new HashMap<String, String>();
+
+  private Map<String, String> messageBlocks = new HashMap<String, String>();
 
 
   // Constructors ---------------------------------------------------------------------------------
@@ -97,6 +104,10 @@ public class Message
       isDeviceRegistrationMessage = true;
     }
 
+    while (blockTokenizer.hasMoreTokens())
+    {
+      addMessageBlock(blockTokenizer.nextToken().trim(), blockTokenizer.nextToken().trim());
+    }
   }
 
 
@@ -122,9 +133,21 @@ public class Message
     return sourceHeader;
   }
 
+
+
   public String getMessageClass()
   {
     return classHeader;
+  }
+
+  public String getTarget()
+  {
+    return targetHeader;
+  }
+
+  public String getComponentName()
+  {
+    return componentName;
   }
 
   public boolean isDeviceRegistrationMessage()
@@ -143,10 +166,74 @@ public class Message
     this.targetHeader = destinationAddress;
   }
 
+  public void addMessageBlock(String blockID, String properties)
+  {
+    if (blockID.equalsIgnoreCase(OPENREMOTE_COMPONENT_BLOCK))
+    {
+      StringTokenizer tokenizer = new StringTokenizer(properties, "\n");
 
-  public void send()
+      while (tokenizer.hasMoreTokens())
+      {
+        String property = tokenizer.nextToken().trim();
+
+        if (property.startsWith("ComponentName"))
+        {
+          StringTokenizer propertyTokenizer = new StringTokenizer(property, "=");
+
+          propertyTokenizer.nextToken();
+
+          componentName = propertyTokenizer.nextToken().trim();
+        }
+      }
+    }
+    
+    messageBlocks.put(blockID, properties);  
+  }
+
+  public void send(String invokerComponentName)
   {
 
+    // TODO : should be debug level logging...
+
+    log.info("Invoking: '" + invokerComponentName + "'.");
+
+    
+    
+  }
+
+
+  // Object Overrides -----------------------------------------------------------------------------
+
+
+  @Override public String toString()
+  {
+    StringBuilder builder = new StringBuilder(1024);
+
+    builder
+        .append("header\n")
+        .append("{\n")
+        .append("  version = ").append(getVersion()).append("\n")
+        .append("  hop = ").append(getHop()).append("\n")
+        .append("  uid = ").append(getUID()).append("\n")
+        .append("  source = ").append(getSource()).append("\n")
+        .append("  class = ").append(getClass()).append("\n");
+
+    if (targetHeader != null)
+      builder.append("  target = ").append(getTarget()).append("\n");
+
+    builder.append("}\n");
+
+    for (String messageBlock : messageBlocks.keySet())
+    {
+      builder
+          .append("\n")
+          .append(messageBlock).append("\n")
+          .append("{\n")
+          .append(messageBlocks.get(messageBlock)).append("\n")
+          .append("}\n");
+    }
+
+    return builder.toString();
   }
 
 
@@ -240,4 +327,5 @@ public class Message
       }
     }
   }
+
 }

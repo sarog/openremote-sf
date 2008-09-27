@@ -31,6 +31,7 @@ import x10.Command;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.util.StringTokenizer;
 
 /**
  * Wrapper for SocketController in X10 Java project.
@@ -46,29 +47,92 @@ public class X10ProtocolHandler
 
   public final static String DEFAULT_HOST = "127.168.0.1";
 
+  public final static String LOG_CATEGORY = "X10 GATEWAY";
+
 
   // Class Members --------------------------------------------------------------------------------
 
-  private final static Logger log = Logger.getLogger(Bootstrap.ROOT_LOG_CATEGORY + ".X10");
 
+  private final static Logger log = Logger.getLogger(Bootstrap.ROOT_LOG_CATEGORY + "." + LOG_CATEGORY);
 
 
   // Instance Fields ------------------------------------------------------------------------------
 
-  private KernelControllerContext serviceCtx;
+  private KernelControllerContext serviceContext;
 
   private int remotePort = DEFAULT_PORT;
 
   private String remoteHost = DEFAULT_HOST;
 
 
-  // Microcontainer Component Methods -------------------------------------------------------------
+  // MC Component Methods -------------------------------------------------------------------------
 
   @Inject(fromContext = FromContext.CONTEXT)
   public void setServiceContext(KernelControllerContext ctx)
   {
-    this.serviceCtx = ctx;
+    this.serviceContext = ctx;
   }
+
+  public void start()
+  {
+    String uniqueDeviceIdentifier = getUniqueDeviceIdentifier();
+
+    // TODO: AddressTable component name should be injected...
+
+    StringBuilder builder = new StringBuilder(1024);
+
+    builder
+        .append("header\n")
+        .append("{\n")
+        .append("  version = 1\n")
+        .append("  hop = 1 \n")
+        .append("  uid = FF").append(uniqueDeviceIdentifier).append("01 \n")
+        .append("  source = OpenRemote.")
+            .append(serviceContext.getBeanMetaData().getName()).append(":")
+            .append(getRemoteControllerHost()).append(":").append(getRemoteControllerPort()).append("\n")
+        .append("  class = Registration.Gateway.X10 \n")
+        .append("} \n");
+
+    String msg = builder.toString();
+
+    try
+    {
+      serviceContext.getKernel().getBus().invoke(
+          "ControlProtocol/AddressTable",
+          "addDevice",
+          new Object[] { msg, serviceContext },
+          new String[] { String.class.getName(), KernelControllerContext.class.getName()}
+      );
+    }
+    catch (Throwable t)
+    {
+      log.error("Unable to register X10 control protocol gateway: " + t);
+    }
+
+    try
+    {
+      SocketController socketController = new SocketController(remoteHost, remotePort);
+
+      // just playing...
+
+      socketController.addCommand(new Command("A1", Command.ALL_LIGHTS_ON));
+    }
+    catch (ConnectException e)
+    {
+      log.warn("Unable to connect to X10 daemon. Has it been started?");
+
+      // TODO : service status
+    }
+    catch (IOException e)
+    {
+      log.warn(e);
+
+      // TODO : service status
+    }
+  }
+
+
+  // JavaBean Properties --------------------------------------------------------------------------
 
   public void setRemoteControllerPort(int port)
   {
@@ -90,25 +154,60 @@ public class X10ProtocolHandler
     return remoteHost;
   }
 
-  public void start()
+
+  // Public Instance Methods ----------------------------------------------------------------------
+
+  public void sendCommand(String messageFormat)
   {
+    StringTokenizer tokenizer = new StringTokenizer(messageFormat, "{}");
+
+    while (tokenizer.hasMoreTokens())
+    {
+      String token = tokenizer.nextToken().trim();
+
+      if (token.equalsIgnoreCase("X10 Command"))
+      {
+        String properties = tokenizer.nextToken().trim();
+
+        StringTokenizer propertyTokenizer = new StringTokenizer(properties, "=\n");
+
+        propertyTokenizer.nextToken();  // should be X10 address field...
+
+        String x10Address = propertyTokenizer.nextToken();
+
+        propertyTokenizer.nextToken();  // should be X10 command field...
+
+        String x10Command = propertyTokenizer.nextToken();
+
+
+        System.out.println("!!! INVOKED " + x10Address + ":" + x10Command);
+      }
+    }
+    
+  }
+
+
+  // Private Instance Methods ---------------------------------------------------------------------
+
+
+  private String getUniqueDeviceIdentifier()
+  {
+
+    // TODO : AddressTable component name should be injected...
+
     try
     {
-      SocketController socketController = new SocketController(remoteHost, remotePort);
-
-      socketController.addCommand(new Command("A1", Command.ALL_LIGHTS_ON));
+      return (String) serviceContext.getKernel().getBus().invoke(
+          "ControlProtocol/AddressTable",
+          "assignDeviceID",
+          null,
+          null
+      );
     }
-    catch (ConnectException e)
+    catch (Throwable t)
     {
-      log.warn("Unable to connect to X10 daemon. Has it been started?");
-
-      // TODO : service status
-    }
-    catch (IOException e)
-    {
-      log.warn(e);
-
-      // TODO : service status
+      throw new Error(t);
     }
   }
+
 }

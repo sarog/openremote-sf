@@ -22,9 +22,11 @@
 package org.openremote.controller.router;
 
 import org.jboss.logging.Logger;
+import org.jboss.kernel.spi.dependency.KernelControllerContext;
 import org.openremote.controller.core.Bootstrap;
 
 import java.util.Map;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -55,6 +57,8 @@ public class AddressTable
   private AtomicInteger addressSequence = new AtomicInteger(1);
 
   private Map<String, Message> addressTable = new ConcurrentHashMap<String, Message>();
+
+  private Map<String, Integer> gatewayIdentifierCounter = new HashMap<String, Integer>();
 
 
   // MC Component Methods -------------------------------------------------------------------------
@@ -87,17 +91,32 @@ public class AddressTable
     return prefix + Integer.toHexString(id).toUpperCase();
   }
 
+  public void addDevice(String msgFormat, KernelControllerContext serviceContext)
+  {
+    Message msg = new Message(msgFormat);
+
+    String componentName = serviceContext.getBeanMetaData().getName();
+
+    msg.addMessageBlock("OpenRemote Component", "ComponentName = " + componentName);
+
+    this.addDevice(msg);
+  }
+
+  @Deprecated
   public void addDevice(Message msg)
   {
     int address = addressSequence.getAndIncrement();
 
     String globalAddress = GLOBAL_ADDRESS_PREFIX + "." + Integer.toString(address);
 
+    msg.setAddress(globalAddress);
+
     addressTable.put(globalAddress, msg);
 
     log.info("Registered device at address '" + globalAddress + "': \n " + msg);
   }
 
+  
   public String lookup(String domainAddress)
   {
     if (!addressTable.containsKey(domainAddress))
@@ -108,6 +127,6 @@ public class AddressTable
     }
 
     else
-      return addressTable.get(domainAddress).getAddress();
+      return addressTable.get(domainAddress).toString();
   }
 }
