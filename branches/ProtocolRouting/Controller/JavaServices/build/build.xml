@@ -248,6 +248,9 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
          basedir  = "${output.dir}/classes"
          includes = "org/openremote/controller/protocol/x10/**"/>
 
+    <jar destfile = "${server.services}/x10.beans/openremote-protocolhandler-spi.jar"
+         basedir  = "${output.dir}/classes"
+         includes = "org/openremote/controller/protocol/spi/**"/>
 
     <echo message = ""/>
     <echo message = "--------------------------------------------------------------------"/>
