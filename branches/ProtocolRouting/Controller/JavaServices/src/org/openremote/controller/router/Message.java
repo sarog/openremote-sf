@@ -41,6 +41,7 @@ public class Message
 
   // Enums ----------------------------------------------------------------------------------------
 
+  @Deprecated
   private enum MandatoryHeader
   {
     VERSION, HOP, UID, SOURCE, CLASS
@@ -84,30 +85,32 @@ public class Message
 
   public Message(String messageFormat)
   {
-    final String HEADER = "header";
-
     messageFormat = messageFormat.trim();
 
-    if (!messageFormat.startsWith(HEADER))
-      throw new Error();
+    if (!messageFormat.startsWith("header"))
+    {
+      // TODO
 
-    messageFormat = messageFormat.substring(HEADER.length()).trim();
+      throw new Error();
+    }
 
     StringTokenizer blockTokenizer = new StringTokenizer(messageFormat, "{}");
 
-    String headerBlock = blockTokenizer.nextToken();
+    blockTokenizer.nextToken();   // remove 'header' string...
+    
+    parseHeaders(blockTokenizer.nextToken());
 
-    parseHeaders(headerBlock);
+    while (blockTokenizer.hasMoreTokens())
+    {
+      addMessageBlock(blockTokenizer.nextToken().trim(), blockTokenizer.nextToken().trim());
+    }
 
     if (classHeader.startsWith(DEVICE_REGISTRATION_MSG_PREFIX))
     {
       isDeviceRegistrationMessage = true;
     }
 
-    while (blockTokenizer.hasMoreTokens())
-    {
-      addMessageBlock(blockTokenizer.nextToken().trim(), blockTokenizer.nextToken().trim());
-    }
+
   }
 
 
@@ -216,7 +219,7 @@ public class Message
         .append("  hop = ").append(getHop()).append("\n")
         .append("  uid = ").append(getUID()).append("\n")
         .append("  source = ").append(getSource()).append("\n")
-        .append("  class = ").append(getClass()).append("\n");
+        .append("  class = ").append(getMessageClass()).append("\n");
 
     if (targetHeader != null)
       builder.append("  target = ").append(getTarget()).append("\n");
@@ -250,7 +253,7 @@ public class Message
     if (!elements[0].trim().equalsIgnoreCase(MandatoryHeader.VERSION.name()))
       throw new Error("no version");
 
-    versionHeader = elements[1].trim().toLowerCase();
+    versionHeader = elements[1].trim();
 
 
     // Mandatory 'Hop' header....
@@ -260,7 +263,7 @@ public class Message
     if (!elements[0].trim().equalsIgnoreCase(MandatoryHeader.HOP.name()))
       throw new Error("no hop");
 
-    hopHeader = elements[1].trim().toLowerCase();
+    hopHeader = elements[1].trim();
 
 
     // Mandatory 'UID' header...
@@ -270,7 +273,7 @@ public class Message
     if (!elements[0].trim().equalsIgnoreCase(MandatoryHeader.UID.name()))
       throw new Error("no uid");
 
-    uidHeader = elements[1].trim().toLowerCase();
+    uidHeader = elements[1].trim();
 
 
     // Mandatory 'Source' header...
@@ -280,7 +283,7 @@ public class Message
     if (!elements[0].trim().equalsIgnoreCase(MandatoryHeader.SOURCE.name()))
       throw new Error("no source");
 
-    sourceHeader = elements[1].trim().toLowerCase();
+    sourceHeader = elements[1].trim();
 
 
     // Mandatory 'Class' header...
@@ -290,7 +293,7 @@ public class Message
     if (!elements[0].trim().equalsIgnoreCase(MandatoryHeader.CLASS.name()))
       throw new Error("no class");
 
-    classHeader = elements[1].trim().toLowerCase();
+    classHeader = elements[1].trim();
 
 
     // Other headers...
