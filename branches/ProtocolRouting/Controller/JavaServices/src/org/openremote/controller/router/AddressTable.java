@@ -74,6 +74,8 @@ public class AddressTable
   
   public String assignDeviceID()
   {
+    // TODO : class wrapper that separates network id, device id, and device subaddress fields
+    
     int id = deviceIdSequence.getAndIncrement();
 
     if (id > 0xFFFF)
@@ -88,9 +90,17 @@ public class AddressTable
     else if (id <= 0xFFF)
       prefix = "0";
 
-    return prefix + Integer.toHexString(id).toUpperCase();
+    return "FF" + prefix + Integer.toHexString(id).toUpperCase() + "01";
   }
 
+  public void registerDevice(String msgFormat)
+  {
+    Message msg = new Message(msgFormat);
+
+    this.addDevice(msg);
+  }
+
+  @Deprecated
   public void addDevice(String msgFormat, KernelControllerContext serviceContext)
   {
     Message msg = new Message(msgFormat);
@@ -128,5 +138,12 @@ public class AddressTable
 
     else
       return addressTable.get(domainAddress).toString();
+  }
+
+  public String getNextFreeAddress()
+  {
+    int address = addressSequence.getAndIncrement();
+
+    return GLOBAL_ADDRESS_PREFIX + "." + Integer.toString(address);
   }
 }
