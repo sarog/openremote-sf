@@ -21,6 +21,17 @@
 */
 package org.openremote.controller.output;
 
+import org.jboss.logging.Logger;
+import org.jboss.beans.metadata.api.annotations.Inject;
+import org.jboss.beans.metadata.api.annotations.FromContext;
+import org.jboss.kernel.spi.dependency.KernelControllerContext;
+import org.openremote.controller.core.Bootstrap;
+
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.net.URL;
+import java.util.Enumeration;
+
 
 /**
  *
@@ -28,4 +39,98 @@ package org.openremote.controller.output;
  */
 public class SerialTransmitter
 {
+
+
+  // Constants ------------------------------------------------------------------------------------
+
+  public final static String LOG_CATEGORY = "SERIAL TRANSMITTER";
+
+
+  // Class Members --------------------------------------------------------------------------------
+
+
+  private final static Logger log = Logger.getLogger(Bootstrap.ROOT_LOG_CATEGORY + "." + LOG_CATEGORY);
+
+  static
+  {
+    try
+    {
+      String os = getOperatingSystem();
+
+      if (os.toLowerCase().startsWith("windows"))
+      {
+        loadDLL();
+      }
+
+      else
+      {
+        log.error(
+            "Your operating system is not currently recognized (your system reports your operating " +
+            "system as '" + os + "'). The native libraries required for serial port communication " +
+            "have not been loaded and this service is unlikely to operate correctly."
+        );
+
+        // TODO : service status
+      }
+    }
+    catch (Throwable t)
+    {
+      log.error("Error initializing service: " + t, t);
+
+      // TODO : service status
+    }
+  }
+
+
+  private static void loadDLL()
+  {
+
+  }
+  
+  private static String getOperatingSystem()
+  {
+    return AccessController.doPrivileged(
+        new PrivilegedAction<String>()
+        {
+          public String run()
+          {
+            return System.getProperty("os.name");
+          }
+        }
+    );
+  }
+
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+  private KernelControllerContext serviceContext;
+
+
+  // MC Component Methods -------------------------------------------------------------------------
+
+  @Inject(fromContext = FromContext.CONTEXT)
+  public void setServiceContext(KernelControllerContext ctx)
+  {
+    this.serviceContext = ctx;
+  }
+
+  public void start()
+  {
+    try
+    {
+      Enumeration<URL> resources = Thread.currentThread().getContextClassLoader().getResources("rxtxSerial.dll");
+
+      while (resources.hasMoreElements() )
+      {
+        log.info(resources.nextElement());
+      }
+    }
+    catch (Throwable t)
+    {
+      log.error(t, t);
+
+    }
+  }
+
+
 }
