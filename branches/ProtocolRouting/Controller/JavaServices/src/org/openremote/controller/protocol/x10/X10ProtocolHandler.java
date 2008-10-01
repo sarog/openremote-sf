@@ -28,8 +28,10 @@ import org.jboss.logging.Logger;
 import org.openremote.controller.core.Bootstrap;
 import org.openremote.controller.protocol.spi.MessageFactory;
 import org.openremote.controller.protocol.spi.MandatoryHeader;
+import org.openremote.controller.protocol.spi.ProtocolHandler;
 import static org.openremote.controller.protocol.spi.MessageFactory.GATEWAY_REGISTRATION_MESSAGE_CLASS;
 import static org.openremote.controller.protocol.spi.MessageFactory.X10_CONTROL_PROTOCOL;
+import static org.openremote.controller.protocol.spi.MessageFactory.Version.VERSION_1_0_0;
 import x10.net.SocketController;
 import x10.Command;
 import x10.Controller;
@@ -53,7 +55,7 @@ import java.util.List;
  *
  * @author <a href = "mailto:juha@juhalindfors.com">Juha Lindfors</a>
  */
-public class X10ProtocolHandler
+public class X10ProtocolHandler extends ProtocolHandler
 {
 
   // Constants ------------------------------------------------------------------------------------
@@ -72,7 +74,7 @@ public class X10ProtocolHandler
    */
 
   // TODO :
-  public final static String MESSAGE_SERIALIZATION_VERSION = MessageFactory.VERSION_1;
+  //public final static String MESSAGE_SERIALIZATION_VERSION = MessageFactory.VERSION_1;
 
   
   // Enums ----------------------------------------------------------------------------------------
@@ -127,7 +129,7 @@ public class X10ProtocolHandler
    * Service context for this component. Service context can be used to access the microcontainer
    * and kernel that is used to deploy this component.
    */
-  private KernelControllerContext serviceContext;
+  //private KernelControllerContext serviceContext;
 
   /**
    * Remote host for Java X10 socket controller
@@ -169,22 +171,20 @@ public class X10ProtocolHandler
 
 
 
-  // MC Component Methods -------------------------------------------------------------------------
+  // Constructors ---------------------------------------------------------------------------------
 
-  /**
-   * Injects the microcontainer context (service context) at component deployment time (prior
-   * to component start).
-   *
-   * @param ctx   a service context which allows access to other deployed services and their
-   *              configuration and metadata via the microcontainer deployment framework (kernel)
-   */
-  @Inject(fromContext = FromContext.CONTEXT)
-  public void setServiceContext(KernelControllerContext ctx)
+  public X10ProtocolHandler()
   {
-    this.serviceContext = ctx;
+    super(MessageFactory.Version.VERSION_1_0_0);
   }
 
+
+  // MC Component Methods -------------------------------------------------------------------------
+
+
   /**
+   * TODO
+   *
    * Start is invoked by the microcontainer before component deployment is complete and after
    * all configuration properties have been injected and/or set.  We can initialize the component
    * here and make it 'ready'.  <p>
@@ -197,14 +197,14 @@ public class X10ProtocolHandler
    * The X10 controller will be instantiated here based on the configuration settings. Either
    * socket based IPC mode (default) or IN_VM direct serial using CM11A or CM17A can be configured.
    */
-  public void start()
+  @Override public void startService()
   {
 
     // TODO : create MessageFactory as part of the SPI
 
     String msg = createGatewayRegistrationMessage();
 
-    registerGateway(msg);
+    super.registerControlProtocolGateway(msg);
 
 
 
@@ -252,6 +252,18 @@ public class X10ProtocolHandler
 
   // JavaBean Properties --------------------------------------------------------------------------
 
+  /*
+  public void setProtocolHandler(ProtocolHandler handler)
+  {
+    this.handler = handler;
+  }
+
+  public ProtocolHandler getProtocolHandler()
+  {
+    return this.handler;
+  }
+  */
+  
   public void setRemoteControllerPort(int port)
   {
     this.remotePort = port;
@@ -352,7 +364,7 @@ public class X10ProtocolHandler
   {
     StringBuilder builder = new StringBuilder(1024);
 
-    builder.append(createMessageHeaderBlock());
+    builder.append(super.createMessageHeaderBlock());
     builder.append(createOpenRemoteComponentBlock());
     builder.append(createControlProtocolGatewayBlock());
 
@@ -367,6 +379,8 @@ public class X10ProtocolHandler
    *
    * @throws Error    TODO
    */
+
+/*
   private String createMessageHeaderBlock()
   {
     // start block...
@@ -416,7 +430,7 @@ public class X10ProtocolHandler
 
     return builder.append("\n}\n").toString();
   }
-
+*/
 
   private String createOpenRemoteComponentBlock()
   {
@@ -484,75 +498,7 @@ public class X10ProtocolHandler
     return builder.append("}\n\n").toString();
   }
 
-  /**
-   * Asks for the address table component to assign a unique device ID to this control protocol
-   * gateway
-   *
-   * @return    TODO
-   */
-  private String getDeviceUID()
-  {
-    // TODO : AddressTable component name should be injected...
 
-    try
-    {
-      return (String) serviceContext.getKernel().getBus().invoke(
-          "ControlProtocol/AddressTable",
-          "assignDeviceID",
-          null,
-          null
-      );
-    }
-    catch (Throwable t)
-    {
-      // TODO
 
-      throw new Error(t);
-    }
-  }
 
-  private String getAddress()
-  {
-    // TODO : AddressTable component name should be injected...
-
-    try
-    {
-      return (String) serviceContext.getKernel().getBus().invoke(
-          "ControlProtocol/AddressTable",
-          "getNextFreeAddress",
-          null,
-          null
-      );
-    }
-    catch (Throwable t)
-    {
-      // TODO
-
-      throw new Error(t);
-    }
-  }
-
-  private void registerGateway(String msg)
-  {
-    // TODO: AddressTable component name should be injected...
-
-    try
-    {
-      serviceContext.getKernel().getBus().invoke(
-          "ControlProtocol/AddressTable",
-          "registerDevice",
-          new Object[] { msg },
-          new String[] { String.class.getName() }
-      );
-    }
-    catch (Throwable t)
-    {
-      log.error("Unable to register X10 control protocol gateway: " + t);
-    }    
-  }
-
-  private String getComponentName()
-  {
-    return serviceContext.getBeanMetaData().getName();
-  }
 }

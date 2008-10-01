@@ -21,10 +21,10 @@
 */
 package org.openremote.controller.protocol.spi;
 
-import java.util.Iterator;
-import java.util.List;
+import org.jboss.kernel.Kernel;
+
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -58,19 +58,153 @@ public class MessageFactory
 
   public final static String X10_INVM_PROTOCOL_GATEWAY_COMMS_PROPERTY = "Port";
   public final static String X10_INVM_PROTOCOL_GATEWAY_MODULE_PROPERTY = "Module";
-  
+
+
+  // Enums ----------------------------------------------------------------------------------------
+
+  public enum Version
+  {
+    VERSION_1_0_0
+  }
+
 
   // Class Members --------------------------------------------------------------------------------
 
-  public static List<MandatoryHeader> getMandatoryHeaders(String serializationVersion)
+  public static List<MandatoryHeader> getMandatoryHeaders(Version serializationVersion)
   {
-    ArrayList<MandatoryHeader> list = new ArrayList<MandatoryHeader>(5);
-    list.add(MandatoryHeader.VERSION);
-    list.add(MandatoryHeader.HOP);
-    list.add(MandatoryHeader.UID);
-    list.add(MandatoryHeader.SOURCE);
-    list.add(MandatoryHeader.CLASS);
+    switch (serializationVersion)
+    {
+      case VERSION_1_0_0:
+        ArrayList<MandatoryHeader> list = new ArrayList<MandatoryHeader>(5);
+        list.add(MandatoryHeader.VERSION);
+        list.add(MandatoryHeader.HOP);
+        list.add(MandatoryHeader.UID);
+        list.add(MandatoryHeader.SOURCE);
+        list.add(MandatoryHeader.CLASS);
 
-    return list;
+        return list;
+
+      default:
+        throw new Error(
+            "Implementation Error: mandatory header property list has not been created for " +
+            "version " + serializationVersion
+        );
+    }
   }
+
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+  private Kernel kernel = null;
+
+
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  public MessageFactory(Kernel kernel)
+  {
+    this.kernel = kernel;
+  }
+
+
+  public String createHeaderBlock(Version serializationVersion)
+  {
+    // start block...
+
+    StringBuilder builder = new StringBuilder(256);
+    builder.append(MessageFactory.HEADER_BLOCK).append("\n{\n  ");
+
+    // add mandatory headers...
+
+    for (MandatoryHeader header : MessageFactory.getMandatoryHeaders(serializationVersion))
+    {
+      builder.append(header.name()).append(" = ");
+
+      switch (header)
+      {
+        case VERSION:
+          builder.append(serializationVersion).append("\n  ");
+          break;
+
+        case HOP:
+          builder.append("1\n  ");
+          break;
+
+        case UID:
+          builder.append(getDeviceUID()).append("\n  ");
+          break;
+
+        case SOURCE:
+          builder.append(getAddress())/*.append(":").append(getComponentName())*/.append("\n  ");
+          break;
+
+        case CLASS:
+          builder
+              .append(GATEWAY_REGISTRATION_MESSAGE_CLASS).append(".")
+              .append(X10_CONTROL_PROTOCOL).append("\n  ");
+          break;
+
+        default:
+          throw new Error(
+              "Implementation Error. Unexpected mandatory header for version " +
+              serializationVersion + " of message serialization format: " + header
+          );
+      }
+    }
+
+    // end block....
+
+    return builder.append("\n}\n").toString();
+  }
+
+
+  /**
+   * Asks for the address table component to assign a unique device ID to this control protocol
+   * gateway
+   *
+   * @return    TODO
+   */
+  private String getDeviceUID()
+  {
+    // TODO : AddressTable component name should be injected...
+
+    try
+    {
+      return (String) kernel.getBus().invoke(
+          "ControlProtocol/AddressTable",
+          "assignDeviceID",
+          null,
+          null
+      );
+    }
+    catch (Throwable t)
+    {
+      // TODO
+
+      throw new Error(t);
+    }
+  }
+
+  private String getAddress()
+  {
+    // TODO : AddressTable component name should be injected...
+
+    try
+    {
+      return (String) kernel.getBus().invoke(
+          "ControlProtocol/AddressTable",
+          "getNextFreeAddress",
+          null,
+          null
+      );
+    }
+    catch (Throwable t)
+    {
+      // TODO
+
+      throw new Error(t);
+    }
+  }
+
+
 }
