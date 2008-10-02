@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This is just hacked together mumbo jumbo for now.
  *
  * @author <a href = "mailto:juha@juhalindfors.com">Juha Lindfors</a>
  */
@@ -107,6 +108,9 @@ public class MessageFactory
   }
 
 
+
+  // Public Instance Methods ----------------------------------------------------------------------
+  
   public String createHeaderBlock(Version serializationVersion)
   {
     // start block...
@@ -156,6 +160,36 @@ public class MessageFactory
 
     return builder.append("\n}\n").toString();
   }
+
+
+  public String createOpenRemoteComponentBlock(String componentName, Version serializationVersion)
+  {
+    switch (serializationVersion)
+    {
+      case VERSION_1_0_0:
+
+        // start block...
+
+        StringBuilder builder = new StringBuilder(256);
+        builder.append(OPENREMOTE_COMPONENT_BLOCK).append("\n{\n  ");
+
+        // Add component name...
+
+        builder.append(COMPONENT_NAME_PROPERTY).append(" = ").append(componentName).append("\n");
+
+        // End block...
+
+        return builder.append("}\n\n").toString();
+
+      default:
+        throw new Error(
+            "TODO"  // TODO
+        );
+    }
+  }
+
+
+  // Private Instance Methods ---------------------------------------------------------------------
 
 
   /**

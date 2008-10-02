@@ -21,27 +21,19 @@
 */
 package org.openremote.controller.protocol.x10;
 
-import org.jboss.beans.metadata.api.annotations.Inject;
-import org.jboss.beans.metadata.api.annotations.FromContext;
-import org.jboss.kernel.spi.dependency.KernelControllerContext;
 import org.jboss.logging.Logger;
 import org.openremote.controller.core.Bootstrap;
 import org.openremote.controller.protocol.spi.MessageFactory;
-import org.openremote.controller.protocol.spi.MandatoryHeader;
 import org.openremote.controller.protocol.spi.ProtocolHandler;
-import static org.openremote.controller.protocol.spi.MessageFactory.GATEWAY_REGISTRATION_MESSAGE_CLASS;
-import static org.openremote.controller.protocol.spi.MessageFactory.X10_CONTROL_PROTOCOL;
-import static org.openremote.controller.protocol.spi.MessageFactory.Version.VERSION_1_0_0;
-import x10.net.SocketController;
-import x10.Command;
-import x10.Controller;
 import x10.CM11ASerialController;
 import x10.CM17ASerialController;
+import x10.Command;
+import x10.Controller;
+import x10.net.SocketController;
 
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.StringTokenizer;
-import java.util.List;
 
 /**
  * This is a control protocol gateway for X10. It's a wrapper around The Java X10 Project API
@@ -68,13 +60,6 @@ public class X10ProtocolHandler extends ProtocolHandler
    * Value: {@value}
    */
   public final static String LOG_CATEGORY = "X10-GATEWAY";
-
-  /**
-   *
-   */
-
-  // TODO :
-  //public final static String MESSAGE_SERIALIZATION_VERSION = MessageFactory.VERSION_1;
 
   
   // Enums ----------------------------------------------------------------------------------------
@@ -126,12 +111,6 @@ public class X10ProtocolHandler extends ProtocolHandler
   // Instance Fields ------------------------------------------------------------------------------
 
   /**
-   * Service context for this component. Service context can be used to access the microcontainer
-   * and kernel that is used to deploy this component.
-   */
-  //private KernelControllerContext serviceContext;
-
-  /**
    * Remote host for Java X10 socket controller
    */
   private String remoteHost = "127.168.0.1";
@@ -179,91 +158,11 @@ public class X10ProtocolHandler extends ProtocolHandler
   }
 
 
-  // MC Component Methods -------------------------------------------------------------------------
-
-
-  /**
-   * TODO
-   *
-   * Start is invoked by the microcontainer before component deployment is complete and after
-   * all configuration properties have been injected and/or set.  We can initialize the component
-   * here and make it 'ready'.  <p>
-   *
-   * The X10 gateway will be registered with the control protocol routing service and receive
-   * a device address. The X10 commands may then be initiated from several different sources and
-   * X10 events can be distributed and made accessible in a heterogeneous scene management
-   * environment.  <p>
-   *
-   * The X10 controller will be instantiated here based on the configuration settings. Either
-   * socket based IPC mode (default) or IN_VM direct serial using CM11A or CM17A can be configured.
-   */
-  @Override public void startService()
-  {
-
-    // TODO : create MessageFactory as part of the SPI
-
-    String msg = createGatewayRegistrationMessage();
-
-    super.registerControlProtocolGateway(msg);
-
-
-
-    if (controllerMode == Mode.IPC)
-    {
-      try
-      {
-          x10Controller = new SocketController(remoteHost, remotePort);
-      }
-      catch (ConnectException e)
-      {
-        log.warn("Unable to connect to X10 daemon. Has it been started?");
-
-        // TODO : service status
-      }
-      catch (IOException e)
-      {
-        log.warn("I/O error from X10 daemon: " + e, e);
-
-        // TODO : service status
-      }
-    }
-
-    else
-    {
-      try
-      {
-        if (serialModule == SerialPortModule.CM11A)
-        {
-          x10Controller = new CM11ASerialController(commPortIdentifier);
-        }
-
-        else
-        {
-          x10Controller = new CM17ASerialController(commPortIdentifier);
-        }
-      }
-      catch (IOException e)
-      {
-        log.error("Unable to initialize in-vm X10 serial module: " + e, e);
-      }
-    }
-  }
 
 
   // JavaBean Properties --------------------------------------------------------------------------
 
-  /*
-  public void setProtocolHandler(ProtocolHandler handler)
-  {
-    this.handler = handler;
-  }
 
-  public ProtocolHandler getProtocolHandler()
-  {
-    return this.handler;
-  }
-  */
-  
   public void setRemoteControllerPort(int port)
   {
     this.remotePort = port;
@@ -315,10 +214,46 @@ public class X10ProtocolHandler extends ProtocolHandler
   }
 
 
+
+  // ProtocolHandler Overrides --------------------------------------------------------------------
+
+  /**
+   * TODO
+   *
+   * Start is invoked by the microcontainer before component deployment is complete and after
+   * all configuration properties have been injected and/or set.  We can initialize the component
+   * here and make it 'ready'.  <p>
+   *
+   * The X10 gateway will be registered with the control protocol routing service and receive
+   * a device address. The X10 commands may then be initiated from several different sources and
+   * X10 events can be distributed and made accessible in a heterogeneous scene management
+   * environment.  <p>
+   *
+   * The X10 controller will be instantiated here based on the configuration settings. Either
+   * socket based IPC mode (default) or IN_VM direct serial using CM11A or CM17A can be configured.
+   */
+  @Override public void startService()
+  {
+    // Add properties specific to this X10 protocol handler for registration with router...
+
+    addGatewayProperties();
+
+    // Send registration message, this will assign an address to this X10 gateway...
+
+    registerControlProtocolGateway();
+
+    // Start X10 controller in either IPC or IN_VM mode depending on configuration...
+
+    startX10Controller();
+  }
+
+
   // Public Instance Methods ----------------------------------------------------------------------
 
   public void sendCommand(String messageFormat)
   {
+    // TODO : Add Message to SPI...
+
     StringTokenizer tokenizer = new StringTokenizer(messageFormat, "{}");
 
     while (tokenizer.hasMoreTokens())
@@ -359,130 +294,80 @@ public class X10ProtocolHandler extends ProtocolHandler
 
   // Private Instance Methods ---------------------------------------------------------------------
 
-
-  private String createGatewayRegistrationMessage()
+  private void startX10Controller()
   {
-    StringBuilder builder = new StringBuilder(1024);
-
-    builder.append(super.createMessageHeaderBlock());
-    builder.append(createOpenRemoteComponentBlock());
-    builder.append(createControlProtocolGatewayBlock());
-
-    return builder.toString();
-  }
-
-
-  /**
-   * TODO
-   *
-   * @return
-   *
-   * @throws Error    TODO
-   */
-
-/*
-  private String createMessageHeaderBlock()
-  {
-    // start block...
-
-    StringBuilder builder = new StringBuilder(256);
-    builder.append(MessageFactory.HEADER_BLOCK).append("\n{\n  ");
-
-    // add mandatory headers...
-
-    for (MandatoryHeader header : MessageFactory.getMandatoryHeaders(MESSAGE_SERIALIZATION_VERSION))
+    if (controllerMode == Mode.IPC)
     {
-      builder.append(header.name()).append(" = ");
-
-      switch (header)
+      try
       {
-        case VERSION:
-          builder.append(MESSAGE_SERIALIZATION_VERSION).append("\n  ");
-          break;
+          x10Controller = new SocketController(remoteHost, remotePort);
+      }
+      catch (ConnectException e)
+      {
+        log.warn("Unable to connect to X10 daemon. Has it been started?");
 
-        case HOP:
-          builder.append("1\n  ");
-          break;
+        // TODO : service status
+      }
+      catch (IOException e)
+      {
+        log.warn("I/O error from X10 daemon: " + e, e);
 
-        case UID:
-          builder.append(getDeviceUID()).append("\n  ");
-          break;
-
-        case SOURCE:
-          builder.append(getAddress()).append(":").append(getComponentName()).append("\n  ");
-          break;
-
-        case CLASS:
-          builder
-              .append(GATEWAY_REGISTRATION_MESSAGE_CLASS).append(".")
-              .append(X10_CONTROL_PROTOCOL).append("\n  ");
-          break;
-
-        default:
-          throw new Error(
-              "Implementation Error. Unexpected mandatory header for version " +
-              MESSAGE_SERIALIZATION_VERSION + " of message serialization format: " + header
-          );
+        // TODO : service status
       }
     }
 
-    // end block....
+    else
+    {
+      try
+      {
+        if (serialModule == SerialPortModule.CM11A)
+        {
+          x10Controller = new CM11ASerialController(commPortIdentifier);
+        }
 
-    return builder.append("\n}\n").toString();
-  }
-*/
-
-  private String createOpenRemoteComponentBlock()
-  {
-    // start block...
-
-    StringBuilder builder = new StringBuilder(256);
-    builder.append(MessageFactory.OPENREMOTE_COMPONENT_BLOCK).append("\n{\n  ");
-
-    // Add component name...
-
-    builder
-        .append(MessageFactory.COMPONENT_NAME_PROPERTY).append(" = ")
-        .append(getComponentName()).append("\n");
-
-    // End block...
-
-    return builder.append("}\n\n").toString();
+        else
+        {
+          x10Controller = new CM17ASerialController(commPortIdentifier);
+        }
+      }
+      catch (IOException e)
+      {
+        log.error("Unable to initialize in-vm X10 serial module: " + e, e);
+      }
+    }
   }
 
 
-  private String createControlProtocolGatewayBlock()
+  private void addGatewayProperties()
   {
-    // start block...
-
-    StringBuilder builder = new StringBuilder(256);
-    builder.append(MessageFactory.PROTOCOL_GATEWAY_BLOCK).append("\n{\n  ");
-
-    // Add IPC properties...
-
-    builder
-        .append(MessageFactory.PROTOCOL_GATEWAY_MODE_PROPERTY).append(" = ")
-        .append(controllerMode.name()).append("\n  ");
+    super.addGatewayProperty(MessageFactory.PROTOCOL_GATEWAY_MODE_PROPERTY, controllerMode.name());
 
     switch (controllerMode)
     {
       case IPC:
-        builder
-            .append(MessageFactory.IPC_PROTOCOL_GATEWAY_IPADDRESS_PROPERTY).append(" = ")
-            .append(getRemoteControllerHost()).append("\n  ");
+        super.addGatewayProperty(
+            MessageFactory.IPC_PROTOCOL_GATEWAY_IPADDRESS_PROPERTY,
+            getRemoteControllerHost()
+        );
 
-        builder
-            .append(MessageFactory.IPC_PROTOCOL_GATEWAY_PORT_PROPERTY).append(" = ")
-            .append(getRemoteControllerPort()).append("\n  ");
+        super.addGatewayProperty(
+            MessageFactory.IPC_PROTOCOL_GATEWAY_PORT_PROPERTY,
+            String.valueOf(getRemoteControllerPort())
+        );
+
         break;
 
       case IN_VM:
-        builder
-            .append(MessageFactory.X10_INVM_PROTOCOL_GATEWAY_COMMS_PROPERTY).append(" = ")
-            .append(getCommPortIdentifier()).append("\n  ");
-        builder
-            .append(MessageFactory.X10_INVM_PROTOCOL_GATEWAY_MODULE_PROPERTY).append(" = ")
-            .append(getSerialPortModule()).append("\n  ");
+        super.addGatewayProperty(
+            MessageFactory.X10_INVM_PROTOCOL_GATEWAY_COMMS_PROPERTY,
+            getCommPortIdentifier()
+        );
+
+        super.addGatewayProperty(
+            MessageFactory.X10_INVM_PROTOCOL_GATEWAY_MODULE_PROPERTY,
+            getSerialPortModule()
+        );
+
         break;
 
       default:
@@ -490,15 +375,7 @@ public class X10ProtocolHandler extends ProtocolHandler
             "Implementation Error: nothing known about controller mode: " + controllerMode + ". " +
             "The codebase must be updated to handle this case."
         );
-        
     }
-
-    // End block...
-
-    return builder.append("}\n\n").toString();
   }
-
-
-
 
 }

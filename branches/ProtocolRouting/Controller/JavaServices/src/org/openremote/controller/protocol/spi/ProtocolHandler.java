@@ -21,13 +21,14 @@
 */
 package org.openremote.controller.protocol.spi;
 
-import org.jboss.beans.metadata.api.annotations.Inject;
 import org.jboss.beans.metadata.api.annotations.FromContext;
+import org.jboss.beans.metadata.api.annotations.Inject;
 import org.jboss.kernel.spi.dependency.KernelControllerContext;
 import org.jboss.logging.Logger;
 import org.openremote.controller.core.Bootstrap;
 
-import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -54,7 +55,13 @@ public class ProtocolHandler
 
   private MessageFactory.Version messageVersion;
 
+  /**
+   * Service context for this component. Service context can be used to access the microcontainer
+   * and kernel that is used to deploy this component.
+   */
   private KernelControllerContext serviceContext;
+
+  private List<String> gatewayProperties = new ArrayList<String>(5);
 
 
 
@@ -94,11 +101,6 @@ public class ProtocolHandler
     startService();
   }
 
-  // TODO : this should be annotation based instead
-
-  public void startService()
-  {
-  }
 
 
   // Public Instance Methods ----------------------------------------------------------------------
@@ -106,14 +108,39 @@ public class ProtocolHandler
 
   // Protected Instance Methods -------------------------------------------------------------------
 
-  protected String createMessageHeaderBlock()
+
+  protected void startService()
   {
-    return messageFactory.createHeaderBlock(messageVersion); 
+    // TODO : this should be annotation based instead
   }
 
+/*
 
-  protected void registerControlProtocolGateway(String msg)
+  ... This will be part of the input in the SPI...
+
+
+  protected void sendMessage(String messageFormat)
   {
+    // version should be the one embedded in the message, and match to the supported messageversion format...
+
+    this.sendCommand(MessageFactory.createMessage(messageFormat, messageVersion));
+  }
+
+  protected void sendCommand(Message msg)
+  {
+    log.warn(getComponentName() + " does not implement sendCommand(), message ignored");
+  }
+*/
+  
+
+  protected void registerControlProtocolGateway()
+  {
+    StringBuilder builder = new StringBuilder(1024);
+
+    builder.append(messageFactory.createHeaderBlock(messageVersion));
+    builder.append(messageFactory.createOpenRemoteComponentBlock(getComponentName(), messageVersion));
+    builder.append(createGatewayBlock());
+
     // TODO: AddressTable component name should be injected...
 
     try
@@ -121,7 +148,7 @@ public class ProtocolHandler
       serviceContext.getKernel().getBus().invoke(
           "ControlProtocol/AddressTable",
           "registerDevice",
-          new Object[] { msg },
+          new Object[] { builder.toString() },
           new String[] { String.class.getName() }
       );
     }
@@ -132,8 +159,40 @@ public class ProtocolHandler
   }
 
 
+  protected void addGatewayProperty(String name, String value)
+  {
+    gatewayProperties.add(name + " = " + value);
+  }
+
+
   protected String getComponentName()
   {
     return serviceContext.getBeanMetaData().getName();
   }
+
+
+  // Private Instance Methods ---------------------------------------------------------------------
+
+  private String createGatewayBlock()
+  {
+    if (gatewayProperties.isEmpty())
+        return "";
+
+    // start block...
+
+    StringBuilder builder = new StringBuilder(256);
+    builder.append(MessageFactory.PROTOCOL_GATEWAY_BLOCK).append("\n{\n  ");
+
+    // Add gateway specific properties...
+
+    for (String property : gatewayProperties)
+    {
+      builder.append("  ").append(property).append("\n");
+    }
+
+    // End block...
+
+    return builder.append("}\n\n").toString();
+  }
+
 }
