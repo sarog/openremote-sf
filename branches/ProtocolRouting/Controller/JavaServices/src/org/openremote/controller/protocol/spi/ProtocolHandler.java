@@ -23,12 +23,15 @@ package org.openremote.controller.protocol.spi;
 
 import org.jboss.beans.metadata.api.annotations.FromContext;
 import org.jboss.beans.metadata.api.annotations.Inject;
+import org.jboss.beans.metadata.api.annotations.Start;
+import org.jboss.beans.metadata.spi.AnnotationMetaData;
 import org.jboss.kernel.spi.dependency.KernelControllerContext;
 import org.jboss.logging.Logger;
 import org.openremote.controller.core.Bootstrap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -94,11 +97,15 @@ public class ProtocolHandler
   }
 
 
-  public void start()
+  @Start public void start()
   {
     messageFactory = new MessageFactory(serviceContext.getKernel());
 
+    log.info("Starting " + getComponentName());
+
     startService();
+
+    log.info("Started " + getComponentName());
   }
 
 
