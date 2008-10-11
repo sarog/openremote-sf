@@ -121,6 +121,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <path id = "compile.classpath">
       <pathelement path = "${controller.root}/system/services/security/bcprov-jdk16-139.jar"/>
       <pathelement path = "${controller.root}/system/services/x10.beans/x10.jar"/>
+      <pathelement path = "${controller.root}/system/services/serial-transmitter.beans/RXTXcomm.jar"/>
       <pathelement path = "${controller.lib}/servlet-api.jar"/>
       <pathelement path = "${bootstrap.lib.dir}/jboss-kernel.jar"/>
       <pathelement path = "${bootstrap.lib.dir}/jboss-dependency.jar"/>
