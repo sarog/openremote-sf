@@ -30,31 +30,31 @@
 //  when you spot them. I've overdocumented the code in the hope of making errors or wrong
 //  assumptions more glaring.
 //
+//  Currently the daemon accepts following options from the command line:
+//
+//   -h, --help     prints supported command line options
+//   -p, --port     sets the listening port of this I/O daemon
+//
+//
 //  Author: Juha Lindfors (juha@juhalindfors.com)
 //
 // ------------------------------------------------------------------------------------------------
 
-
-/**
- * Define platform -- this defines various macros in Windows specific 'apr.h'
- */
-#define WIN32
 
 #include <stdio.h>
 
 #include <apr_file_io.h>
 #include <apr_network_io.h>
 #include <apr_strings.h>
+#include <apr_getopt.h>
+
 
 /**
- * TODO
+ * Sets the default listening port for the daemon if nothing else is defined from the command
+ * line options.
  */
 #define DEFAULT_PORT		    9999
 
-/**
- * TODO
- */
-#define NO_PARENT_POOL     NULL
 
 /**
  * TODO
@@ -73,6 +73,16 @@ static void            handle_incoming_connections(apr_socket_t *serversocket, a
 static void            read_message(apr_socket_t *clientsocket, apr_pool_t *mempool);
 static void            print_error_status(apr_status_t status);
 static void            exit_with_error();
+static apr_status_t    parse_options(int argc, const char *argv[], apr_pool_t *mempool);
+static void            print_help_and_exit();
+static void            configure_server_port(const char *port_argument_value);
+
+
+static struct configuration
+{
+  int port;
+
+} *config;
 
 
 // ------------------------------------------------------------------------------------------------
@@ -104,21 +114,30 @@ int main(int argc, const char *argv[])
   apr_status_t status;
 
 
+
   // Function Body ------------------------------------------------------------------------------
 
 
   /**
-   * Initialize APR
-   *
-   * Creates an APR memory pool and updates our 'mempool' pointer to it. Additionally APR
-   * attempts to handle cross-platform issues wrt argv. There isn't much documentation around
-   * what APR application init does exactly though.
+   * Initialize APR. Creates an APR memory pool and updates our 'mempool' pointer to it.
    */
   if ((status = init(&mempool, argc, argv)) != APR_SUCCESS)
   {
     print_error_status(status);
     exit_with_error();
   }
+
+  /**
+   * Parse command line options
+   *
+   * TODO
+   */
+  if ((status = parse_options(argc, argv, mempool)) != APR_SUCCESS)
+  {
+    print_error_status(status);
+    exit_with_error();
+  }
+
 
   /**
    * Start the server socket.
@@ -197,7 +216,7 @@ static apr_status_t create_server_socket(apr_socket_t **serversocket, apr_pool_t
    *
    * 3) APR_INET is IPv4 address family -- use APR_INET6 for IPv6, see apr_network_io.h
    *
-   * 4) configured physical port number -- TODO: this needs to come from argv
+   * 4) configured physical port number
    *
    * 5) socket address flags, 0 == no flags. See APR_IPV4_ADDR_OK and APR_IPV6_ADDR_OK
    *    in apr_network_io.h
@@ -205,7 +224,7 @@ static apr_status_t create_server_socket(apr_socket_t **serversocket, apr_pool_t
    * 6) mempool pointer as per the APR API conventions
    */
   if ((status = apr_sockaddr_info_get(
-      &socket_address, localhost, APR_INET, DEFAULT_PORT, 0, mempool)) != APR_SUCCESS)
+      &socket_address, localhost, APR_INET, config->port, 0, mempool)) != APR_SUCCESS)
   {
     return status;
   }
@@ -248,7 +267,7 @@ static apr_status_t create_server_socket(apr_socket_t **serversocket, apr_pool_t
   }
 
   /**
-   * Bind the sucker -- this will blow up if somebody's already bound to the same port.
+   * Bind the listening socket to a physical port.
    */
   if ((status = apr_socket_bind(newsocket, socket_address)) != APR_SUCCESS)
   {
@@ -320,23 +339,32 @@ static void handle_incoming_connections(apr_socket_t *serversocket, apr_pool_t *
 
 
 /**
- * TODO: currently just a dumb reader of stream, no protocol
+ * TODO
  *
  */
 static void read_message(apr_socket_t *socket, apr_pool_t *mempool)
 {
-  char buffer[8192];
-  apr_size_t len = sizeof(buffer);
-  apr_status_t status = apr_socket_recv(socket, buffer, &len);
-  buffer[len] = '\0';
+  char module_id[9];
 
-  printf("RECEIVED:  \n%s\n", buffer);
+  const char *ping_module_id = "FFFFFFFF";
 
+  apr_size_t len = sizeof(module_id);
+  apr_status_t status = apr_socket_recv(socket, module_id, &len);
+
+  module_id[8] = '\0';
+
+  printf("RECEIVED MODULE ID: %s\n", module_id);
+
+  if (strncmp(module_id, ping_module_id, 8) == 0)
   {
-    const char *response = "Nothing to see here yet! \n\n";
+    const char *response = "I AM HERE";
+
+    printf("Responding to a ping...\n");
+
     apr_size_t len = strlen(response);
     apr_socket_send(socket, response, &len);
   }
+  
 }
 
 
@@ -365,26 +393,26 @@ static apr_status_t init(apr_pool_t **mempool, int argc, const char *argv[])
   const char * const *args = argv;
 
 
+
   // Function Body --------------------------------------------------------------------------------
 
-
-  // Register to invoke apr_terminate at process exit -- apr_terminate() will tear down any APR
-  // internal data structures which aren't torn down automatically. An APR program must call this
-  // function at termination once it has stopped using APR services.
-
-  int success = atexit(apr_terminate);
-
-  if (success != 0)
+  /**
+   * Register to invoke apr_terminate at process exit -- apr_terminate() will tear down any APR
+   * internal data structures which aren't torn down automatically. An APR program must call this
+   * function at termination once it has stopped using APR services.
+   */
+  if (atexit(apr_terminate) != 0)
   {
     printf("WARNING: Error registering cleanup function(s).\n");
   }
 
-  printf("Starting I/O daemon...\n");
+  printf("Starting OpenRemote I/O daemon...\n");
 
-  // Set up an application with normalized argc, argv (and optionally env) in order to deal with
-  // platform-specific oddities, such as Win32 services, code pages and signals. This must be the
-  // first function called for any APR program. This should only be done once per process.
-
+  /**
+   * Set up an application with normalized argc, argv (and optionally env) in order to deal with
+   * platform-specific oddities, such as Win32 services, code pages and signals. This must be the
+   * first function called for any APR program. This should only be done once per process.
+   */
   status = apr_app_initialize(&argc, &args, NULL /* no env */);
 
   if (status != APR_SUCCESS)
@@ -392,7 +420,7 @@ static apr_status_t init(apr_pool_t **mempool, int argc, const char *argv[])
 
   // Create APR memory pool...
 
-  status = apr_pool_create(&newpool, NO_PARENT_POOL);
+  status = apr_pool_create(&newpool, NULL /* No parent pool */);
 
   if (status != APR_SUCCESS)
     return status;
@@ -420,7 +448,6 @@ static apr_status_t init(apr_pool_t **mempool, int argc, const char *argv[])
 }
 
 
-
 static void print_error_status(apr_status_t status)
 {
   char errbuf[1024];
@@ -438,5 +465,125 @@ static void exit_with_error()
   apr_terminate();
 
   exit(EXIT_FAILURE);
+}
+
+/**
+ * TODO
+ */
+static apr_status_t parse_options(int argc, const char *argv[], apr_pool_t *mempool)
+{
+
+  /**
+   * TODO
+   */
+  apr_getopt_t *opt;
+
+  apr_status_t status;
+
+  int option_character;
+
+  const char *option_argument;
+
+  /**
+   * TODO
+   */
+  static const apr_getopt_option_t option_list[] =
+  {
+    {
+      "port", 'p', TRUE, "listening port for the I/O daemon"
+    },
+
+    {
+      "help", 'h', FALSE, "display available options"
+    },
+
+    {
+      NULL, 0, 0, NULL
+    }
+  };
+
+
+  // Function Body --------------------------------------------------------------------------------
+
+  apr_getopt_init(&opt, mempool, argc, argv);
+
+  config = apr_palloc(mempool, sizeof(config));
+
+  while ((status = apr_getopt_long(opt, option_list, &option_character, &option_argument)) == APR_SUCCESS)
+  {
+    switch (option_character)
+    {
+      case 'h':
+
+        print_help_and_exit();
+
+        break;
+
+      case 'p':
+
+        configure_server_port(option_argument);
+
+        break;
+    }
+  }
+
+  if (status == APR_EOF)
+    return APR_SUCCESS;
+  else
+    return status;
+}
+
+
+/**
+ * TODO
+ */
+static void print_help_and_exit()
+{
+  // TODO
+
+  printf("\nHelp should be written here.\n");
+  printf("\n");
+  printf("-p, --port        I/O daemon listening port\n");
+  printf("-h, --help        this message\n\n");
+
+  apr_terminate();
+
+  exit(0);
+}
+
+
+/**
+ * TODO
+ */
+static void configure_server_port(const char *port_argument_value)
+{
+  config->port = DEFAULT_PORT;
+
+  long int port_number;
+
+  /**
+   * Strtol() returns the converted value, if any. Zero (FALSE) is returned and errno *may* be set
+   * to EINVAL if conversion cannot be made.
+   *
+   * NOTE: not getting EINVAL on cygwin so either I'm doing something wrong or Cygwin takes the
+   *       "maybe" quite literally. In any case, it makes distinguishing between valid zero value
+   *       and failed conversion a bit tricky.
+   *
+   * Using base 0 allows a decimal constant, octal constant or hexadecimal constant preceded by
+   * a + or - sign.
+   */
+  port_number = strtol(port_argument_value, NULL, 0 /* base */);
+
+  if (port_number < 0 || port_number > 65535)
+  {
+    printf(
+      "\n[WARNING] Invalid port number %d, falling back to default port %d...\n\n",
+      port_number, DEFAULT_PORT
+    );
+    
+    port_number = DEFAULT_PORT;
+  }
+
+  config->port = port_number;
 }
 
