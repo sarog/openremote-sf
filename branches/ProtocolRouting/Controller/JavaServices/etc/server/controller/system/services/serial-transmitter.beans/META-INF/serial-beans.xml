@@ -34,11 +34,18 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
             xmlns = "urn:jboss:bean-deployer:2.0">
 
 
+  <!--
   <bean name  = "Output/Serial"
-        class = "org.openremote.controller.output.SerialTransmitter">
+        class = "org.openremote.controller.output.InVMSerialTransmitter">
 
     <property name = "commPort">COM9</property>
     
+  </bean>
+  -->
+
+  <bean name  = "Output/Serial"
+        class = "org.openremote.controller.output.SerialTransmitter">
+
   </bean>
 
 
