@@ -86,14 +86,14 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
     <!--
      | The 'Remote Controller Port' property below specifies the port number the serial module
-     | I/O process uses to communicate with controller in IPC mode. The default port is 9999.
+     | I/O process uses to communicate with controller in IPC mode. The default port is 10000.
      | Only change this if the serial I/O process binds to a different port.
      |
      | Note that if 'IN_VM' mode is used instead of the default 'IPC' mode this property has
      | no meaning and should be commented out.
      |
      |
-     |    <property name = "remoteControllerPort">9999</property>
+     |    <property name = "remoteControllerPort">10000</property>
      |
      +-->
 
