@@ -48,7 +48,7 @@ public class InfraredReceiver
   /**
    * Default port this protocol handler binds to listen to incoming infrared commands: {@value}
    */
-  public final static int DEFAULT_PORT = 8888;
+  public final static int DEFAULT_PORT = 7777;
 
 
   // Class Members --------------------------------------------------------------------------------
@@ -76,36 +76,6 @@ public class InfraredReceiver
   public void setServiceContext(KernelControllerContext ctx)
   {
     this.serviceCtx = ctx;
-  }
-
-  public void setPort(int port)
-  {
-    this.serverPort = port;
-  }
-
-  public int getPort()
-  {
-    return serverPort;
-  }
-
-  public int getInfraredCommandLength()
-  {
-    return commandLength;
-  }
-
-  public void setInfraredCommandLength(int sizeInBytes)
-  {
-    commandLength = sizeInBytes;
-  }
-
-  public Map<String, String> getInfraredCommandMap()
-  {
-    return infraredToCommandMessageMap;
-  }
-
-  public void setInfraredCommandMap(Map<String, String> map)
-  {
-    this.infraredToCommandMessageMap = map;
   }
 
 
@@ -149,9 +119,8 @@ public class InfraredReceiver
 
                   if (bytesRead != commandLength)
                   {
-                    log.error("Unexpected IR command size. Was expecting " + commandLength * 8 + " bits.");  
+                    log.error("Unexpected IR command size. Was expecting " + commandLength * 8 + " bits.");
                   }
-
 
                   String controlMessage = createMessage(irCommand);
 
@@ -213,14 +182,45 @@ public class InfraredReceiver
 
 
 
+  // JavaBean Properties --------------------------------------------------------------------------
+
+  public void setPort(int port)
+  {
+    this.serverPort = port;
+  }
+
+  public int getPort()
+  {
+    return serverPort;
+  }
+
+  public int getInfraredCommandLength()
+  {
+    return commandLength;
+  }
+
+  public void setInfraredCommandLength(int sizeInBytes)
+  {
+    commandLength = sizeInBytes;
+  }
+
+  public Map<String, String> getInfraredCommandMap()
+  {
+    return infraredToCommandMessageMap;
+  }
+
+  public void setInfraredCommandMap(Map<String, String> map)
+  {
+    this.infraredToCommandMessageMap = map;
+  }
+
+
+
+
   // Private Instance Methods ---------------------------------------------------------------------
 
   private String createMessage(byte[] infraredCommand)
   {
-
-    // TODO: this is where the mapping created in online manager comes to play --
-    // TODO: IR command is mapped to internal message which is a command to a registered device
-
     StringBuilder builder = new StringBuilder(8);
 
     for (byte commandByte : infraredCommand)
