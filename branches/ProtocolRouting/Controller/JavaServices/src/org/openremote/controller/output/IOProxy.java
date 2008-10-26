@@ -10,6 +10,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.security.PrivilegedExceptionAction;
+import java.security.PrivilegedActionException;
 import java.io.IOException;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -70,25 +72,34 @@ public class IOProxy
 
     log.info("Sending Bytes to I/O Daemon...");
 
-    socket = getConnection();
-
-    log.info("Connected to : " + socket.getInetAddress() + ":" + socket.getPort());
-    log.info("(" + socket.getLocalAddress() + ":" + socket.getLocalPort() + ")");
-    
     try
     {
-      ping();
+      socket = getConnection();
+
+      log.info("Connected to : " + socket.getInetAddress() + ":" + socket.getPort());
+      log.info("(" + socket.getLocalAddress() + ":" + socket.getLocalPort() + ")");
+
+      try
+      {
+        ping();
+      }
+      catch (IOException e)
+      {
+        log.error("PING FAILED: " + e);
+      }
     }
     catch (IOException e)
     {
-      log.error("PING FAILED: " + e);
+      log.error("Unable to create connection to I/O daemon, has it been started?");
     }
+
+    // TODO : boolean return on success
   }
 
 
   // Private Instance Methods ---------------------------------------------------------------------
 
-  private Socket getConnection()
+  private Socket getConnection() throws IOException
   {
     if (socket != null)
     {
@@ -104,28 +115,39 @@ public class IOProxy
       }
     }
 
-    return AccessController.doPrivileged(new PrivilegedAction<Socket>()
+    try
     {
-      public Socket run()
+      return AccessController.doPrivileged(new PrivilegedExceptionAction<Socket>()
       {
-        try
+        public Socket run() throws IOException
         {
-          return new Socket((String)null /* loopback interface */, nativeIODaemonPort);
+          try
+          {
+            return new Socket((String)null /* loopback interface */, nativeIODaemonPort);
+          }
+          catch (UnknownHostException e)
+          {
+            throw new Error(); // TODO
+          }
+          catch (SecurityException e)
+          {
+            throw new Error();  // TODO
+          }
         }
-        catch (UnknownHostException e)
-        {
-          throw new Error(); // TODO
-        }
-        catch (IOException e)
-        {
-          throw new Error("IOException: " + e); // TODO
-        }
-        catch (SecurityException e)
-        {
-          throw new Error();  // TODO
-        }
+      });
+    }
+    catch (PrivilegedActionException e)
+    {
+      Exception ioe = e.getException();
+
+      if (ioe instanceof IOException)
+      {
+        throw (IOException)ioe;
       }
-    });
+
+      else
+        throw new Error(ioe);   // TODO
+    }
   }
 
   private boolean ping() throws IOException
