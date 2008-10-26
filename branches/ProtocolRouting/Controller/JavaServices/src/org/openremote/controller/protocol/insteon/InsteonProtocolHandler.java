@@ -231,11 +231,11 @@ public class InsteonProtocolHandler
 
     builder.append("INSTEON Device Identification Broadcast\n");
     builder.append("{\n");
-    builder.append("  FromAddress=").append(getInsteonFromAddress(deviceIdentificationBroadcast)).append("\n");
-    builder.append("  DeviceCategory=").append(getInsteonDeviceCategory(deviceIdentificationBroadcast)).append("\n");
-    builder.append("  DeviceDescriptor=").append(getInsteonDeviceDescriptor(deviceIdentificationBroadcast)).append("\n");
-    builder.append("  FirmwareRevision=").append(getInsteonFirmwareRevision(deviceIdentificationBroadcast)).append("\n");
-    builder.append("  DeviceAttributes=").append(getInsteonDeviceAttributes(deviceIdentificationBroadcast)).append("\n");
+    builder.append("  FromAddress = ").append(getInsteonFromAddress(deviceIdentificationBroadcast)).append("\n");
+    builder.append("  DeviceCategory = ").append(getInsteonDeviceCategory(deviceIdentificationBroadcast)).append("\n");
+    builder.append("  DeviceDescriptor = ").append(getInsteonDeviceDescriptor(deviceIdentificationBroadcast)).append("\n");
+    builder.append("  FirmwareRevision = ").append(getInsteonFirmwareRevision(deviceIdentificationBroadcast)).append("\n");
+    builder.append("  DeviceAttributes = ").append(getInsteonDeviceAttributes(deviceIdentificationBroadcast)).append("\n");
     builder.append("}");
     
     System.out.println(builder.toString());
