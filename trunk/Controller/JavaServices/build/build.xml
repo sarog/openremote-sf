@@ -120,8 +120,11 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
     <path id = "compile.classpath">
       <pathelement path = "${controller.root}/system/services/security/bcprov-jdk16-139.jar"/>
+      <pathelement path = "${controller.root}/system/services/x10.beans/x10.jar"/>
+      <pathelement path = "${controller.root}/system/services/serial-transmitter.beans/RXTXcomm.jar"/>
       <pathelement path = "${controller.lib}/servlet-api.jar"/>
       <pathelement path = "${bootstrap.lib.dir}/jboss-kernel.jar"/>
+      <pathelement path = "${bootstrap.lib.dir}/jboss-dependency.jar"/>
       <pathelement path = "${bootstrap.lib.dir}/jboss-common-core.jar"/>
       <pathelement path = "${bootstrap.lib.dir}/jboss-logging-spi.jar"/>
     </path>
@@ -215,6 +218,61 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
         <include name = "org/openremote/controller/console/**"/>
       </fileset>
     </copy>
+
+    <echo message = ""/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Copying Control Protocol Router Implementation..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <jar destfile = "${server.services}/router.beans/Router.jar"
+         basedir  = "${output.dir}/classes"
+         includes = "org/openremote/controller/router/**"/>
+
+    <echo message = ""/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Copying INSTEON Protocol Handler Implementation..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <jar destfile = "${server.services}/insteon.beans/INSTEON.jar"
+         basedir  = "${output.dir}/classes"
+         includes = "org/openremote/controller/protocol/insteon/**"/>
+
+    <echo message = ""/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Copying X10 Protocol Handler Implementation..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <jar destfile = "${server.services}/x10.beans/X10Service.jar"
+         basedir  = "${output.dir}/classes"
+         includes = "org/openremote/controller/protocol/x10/**"/>
+
+    <jar destfile = "${server.services}/x10.beans/openremote-protocolhandler-spi.jar"
+         basedir  = "${output.dir}/classes"
+         includes = "org/openremote/controller/protocol/spi/**"/>
+
+    <echo message = ""/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Copying Infrared Receiver Implementation..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <jar destfile = "${server.services}/ir-receiver.beans/IR-Receiver.jar"
+         basedir  = "${output.dir}/classes"
+         includes = "org/openremote/controller/input/**"/>
+
+    <echo message = ""/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Copying Serial Transmitter Implementation..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <jar destfile = "${server.services}/serial-transmitter.beans/serial-transmitter.jar"
+         basedir  = "${output.dir}/classes"
+         includes = "org/openremote/controller/output/**"/>
+
 
   </target>
 
