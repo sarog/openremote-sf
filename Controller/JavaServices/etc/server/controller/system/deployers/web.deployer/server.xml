@@ -8,8 +8,8 @@
 
    <Service name="jboss.web">
 
-      <!-- A HTTP/1.1 Connector on port 8080 -->
-      <Connector protocol="HTTP/1.1" port="1800" address="${jboss.bind.address}" 
+      <!-- A HTTP/1.1 Connector  -->
+      <Connector protocol="HTTP/1.1" port="8888" address="${jboss.bind.address}"
                connectionTimeout="20000" redirectPort="8443" />
 
       <!-- Add this option to the connector to avoid problems with 

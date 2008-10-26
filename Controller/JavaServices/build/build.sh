@@ -37,4 +37,3 @@
 export ANT_HOME=../../../Tools/apache-ant-1.7.0
 export PATH="$PATH:$ANT_HOME/lib/native"
 $ANT_HOME/bin/ant -lib $ANT_HOME/lib/external "$@"
-
