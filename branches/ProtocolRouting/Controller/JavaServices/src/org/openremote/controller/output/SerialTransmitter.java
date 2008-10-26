@@ -22,25 +22,11 @@
 package org.openremote.controller.output;
 
 import org.jboss.logging.Logger;
+import org.jboss.kernel.spi.dependency.KernelControllerContext;
 import org.jboss.beans.metadata.api.annotations.Inject;
 import org.jboss.beans.metadata.api.annotations.FromContext;
 import org.jboss.beans.metadata.api.annotations.Start;
-import org.jboss.beans.metadata.api.annotations.Stop;
-import org.jboss.kernel.spi.dependency.KernelControllerContext;
 import org.openremote.controller.core.Bootstrap;
-
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.net.URL;
-import java.util.Enumeration;
-import java.io.IOException;
-import java.io.BufferedOutputStream;
-
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.SerialPort;
-import gnu.io.PortInUseException;
-
 
 /**
  *
@@ -48,7 +34,6 @@ import gnu.io.PortInUseException;
  */
 public class SerialTransmitter
 {
-
 
   // Constants ------------------------------------------------------------------------------------
 
@@ -65,13 +50,7 @@ public class SerialTransmitter
 
   private KernelControllerContext serviceContext;
 
-  private String commPort = "/dev/ttyS0";
-
-  private SerialPort serial;
-
-  private BufferedOutputStream out;
-
-
+  private int ioDaemonPort = 9999;
 
   // MC Component Methods -------------------------------------------------------------------------
 
@@ -81,161 +60,25 @@ public class SerialTransmitter
     this.serviceContext = ctx;
   }
 
-  @Start public void start()
+  @Start
+  public void start()
   {
-
-    loadNativeSerialLib();
+    log.info("Starting Serial Transmitter...");
+    
+    // TODO: inject the name
 
     try
     {
-      CommPortIdentifier commPortId = CommPortIdentifier.getPortIdentifier(commPort);
-
-      // TODO : This is blocking... best to do in another thread to keep deployments rolling...
-
-      serial = (SerialPort)commPortId.open("OpenRemote Serial Transmitter", 2000);
-
-      out = new BufferedOutputStream(serial.getOutputStream());
-    }
-    catch (NoSuchPortException e)
-    {
-      throw new Error(e);   // TODO
-    }
-    catch (PortInUseException e)
-    {
-      throw new Error(e);   // TODO
-    }
-    catch (IOException e)
-    {
-      throw new Error(e);   // TODO
-    }
-    finally
-    {
-    }
-  }
-
-  @Stop public void stop()
-  {
-    if (out != null)
-    {
-      try
-      {
-        out.close();
-      }
-      catch (IOException e)
-      {
-        log.debug("Error closing IO stream: " + e, e);
-      }
-    }
-
-    if (serial != null)
-      serial.close();    
-  }
-
-
-  // JavaBean Properties --------------------------------------------------------------------------
-
-  public void setCommPort(String commPort)
-  {
-    this.commPort = commPort;
-  }
-
-  public String getCommPort()
-  {
-    return commPort;
-  }
-  
-
-  // Private Instance Methods ---------------------------------------------------------------------
-
-  private void loadNativeSerialLib()
-  {
-    String os = getOperatingSystem();
-
-    if (os.toLowerCase().startsWith("windows"))
-    {
-      loadWindowsDLL();
-    }
-/*
-    else if (os.toLowerCase().startsWith("linux"))
-    {
-      loadLinuxSO();
-    }
-*/
-    else
-    {
-      log.error(
-          "Your operating system is not currently recognized (your system reports your operating " +
-          "system as '" + os + "'). The native libraries required for serial port communication " +
-          "have not been loaded and this service is unlikely to operate correctly."
+      serviceContext.getKernel().getBus().invoke(
+          "Output/IOProxy",
+          "sendBytes",
+          new Object[] { IOModule.PING, new byte[] {} },
+          new String[] { IOModule.class.getName(), new byte[] {}.getClass().getName() }
       );
-
-      // TODO : service status
+    }
+    catch (Throwable t)
+    {
+      throw new Error(t);
     }
   }
-
-  
-  private void loadWindowsDLL()
-  {
-    // TODO : this is debug level logging...
-
-    log.info("Searching for rxtxSerial.dll");
-
-    final URL url = Thread.currentThread().getContextClassLoader().getResource("rxtxSerial.dll");
-
-    if (url == null)
-      throw new Error("could not load rxtxSerial.dll");   // TODO
-
-    AccessController.doPrivileged(
-        new PrivilegedAction<Void>()
-        {
-          public Void run()
-          {
-            try
-            {
-              Runtime.getRuntime().load(url.getPath());
-
-              return null;
-            }
-            catch (SecurityException e)
-            {
-              throw new Error(e);   // TODO
-            }
-            catch (UnsatisfiedLinkError e)
-            {
-              throw new Error("DLL not found: " + e);   // TODO
-            }
-          }
-        }
-    );
-
-    log.info("Loaded " + url);      // TODO : debug log
-  }
-
-
-  private void loadLinuxSO()
-  {
-
-  }
-
-
-  private String getOperatingSystem()
-  {
-    return AccessController.doPrivileged(
-        new PrivilegedAction<String>()
-        {
-          public String run()
-          {
-            try
-            {
-              return System.getProperty("os.name");
-            }
-            catch (SecurityException e)
-            {
-              throw new Error(e);   // TODO
-            }
-          }
-        }
-    );
-  }
-
 }
