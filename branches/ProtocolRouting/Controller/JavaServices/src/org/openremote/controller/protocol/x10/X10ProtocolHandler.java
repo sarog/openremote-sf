@@ -118,7 +118,7 @@ public class X10ProtocolHandler extends ProtocolHandler
   /**
    * Port number for Java X10 socket controller
    */
-  private int remotePort = 9999;
+  private int remotePort = 10000;
 
   /**
    * X10 controller. This is initialized based on configuration at component deployment phase --
