@@ -200,7 +200,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
 
-    <copy todir = "${server.startup}/startup.beans">
+    <copy todir = "${server.startup}/bootstrap">
       <fileset dir = "${output.dir}/classes">
         <include name = "org/openremote/controller/core/**"/>
       </fileset>
