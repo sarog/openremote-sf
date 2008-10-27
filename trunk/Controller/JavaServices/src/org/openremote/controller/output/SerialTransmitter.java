@@ -29,6 +29,7 @@ import org.jboss.beans.metadata.api.annotations.Start;
 import org.openremote.controller.core.Bootstrap;
 
 /**
+ *  TODO
  *
  * @author <a href = "mailto:juha@juhalindfors.com">Juha Lindfors</a>
  */
@@ -37,33 +38,58 @@ public class SerialTransmitter
 
   // Constants ------------------------------------------------------------------------------------
 
-  public final static String LOG_CATEGORY = "SERIAL TRANSMITTER";
+  /**
+   * Log category name for this component. The actual full log category can be constructed by
+   * appending {@link org.openremote.controller.core.Bootstrap#ROOT_LOG_CATEGORY} and this
+   * string using a dot '.' separator (ROOT_LOG_CATEGORY.LOG_CATEGORY).
+   *
+   * Value: {@value}
+   */
+  public final static String LOG_CATEGORY = "RAW SERIAL TRANSMITTER";
 
 
   // Class Members --------------------------------------------------------------------------------
 
-
+  /**
+   * Logger API for this component. Currently uses the JBoss logging API.
+   */
   private final static Logger log = Logger.getLogger(Bootstrap.ROOT_LOG_CATEGORY + "." + LOG_CATEGORY);
 
 
   // Instance Fields ------------------------------------------------------------------------------
 
+  /**
+   * Service context for this component. Service context can be used to access the microcontainer
+   * and kernel that is used to deploy this component.
+   */
   private KernelControllerContext serviceContext;
 
-  private int ioDaemonPort = 9999;
 
   // MC Component Methods -------------------------------------------------------------------------
 
+  /**
+   * Injects the microcontainer context (service context) at component deployment time (prior
+   * to component start).
+   *
+   * @param ctx   a service context which allows access to other deployed services and their
+   *              configuration and metadata via the microcontainer deployment framework (kernel)
+   */
   @Inject(fromContext = FromContext.CONTEXT)
   public void setServiceContext(KernelControllerContext ctx)
   {
     this.serviceContext = ctx;
   }
 
-  @Start
-  public void start()
+  /**
+   * Start is invoked by the microcontainer before component deployment is complete and after
+   * all configuration properties have been injected and/or set.  We can initialize the component
+   * here and make it 'ready'.  <p>
+   *
+   * TODO
+   */
+  @Start public void start()
   {
-    log.info("Starting Serial Transmitter...");
+    log.info("Starting Raw Serial Transmitter...");
     
     // TODO: inject the name
 
