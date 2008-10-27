@@ -55,9 +55,9 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <property name = "output.classes.dir"  value = "${output.dir}/classes"/>
 
     <!--
-     | Directory for various other configuration files, scripts, application packaging, etc.
+     | Directory for runtime configuration files, scripts, application packaging, etc.
      +-->
-    <property name = "etc.dir"  value = "etc"/>
+    <property name = "runtime.dir"  value = "runtime"/>
 
     <!--
      | Directory for external Java libraries required for compilation.
@@ -67,12 +67,12 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <!--
      | Directory for server bootstrap libraries
      +-->
-    <property name = "bootstrap.lib.dir" value = "${etc.dir}/lib"/>
+    <property name = "bootstrap.lib.dir" value = "${runtime.dir}/lib"/>
 
     <!--
      | Controller server directory.
      +-->
-    <property name = "controller.server" value = "${etc.dir}/server"/>
+    <property name = "controller.server" value = "${runtime.dir}/server"/>
 
     <!--
      | Root directory of controller server configuration
@@ -149,7 +149,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   <target name = "package" depends = "compile"
           description = "packages OpenRemote Controller Java Services">
 
-    <property name = "controller.bin" value = "${etc.dir}/bin"/>
+    <property name = "controller.bin" value = "${runtime.dir}/bin"/>
 
     <property name = "server.root" value = "${output.dir}/server/controller"/>
     <property name = "server.system" value = "${server.root}/system"/>
