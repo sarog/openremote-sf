@@ -34,7 +34,31 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
 
   <bean name  = "Output/IOProxy"
-        class = "org.openremote.controller.output.IOProxy">
+        class = "org.openremote.controller.daemon.IOProxy">
+
+    <!-- ==========================================================================================
+     |
+     | Optional Configuration Properties.
+     |
+     | The properties below allow customization of the I/O proxy instance. They are not mandatory
+     | and in many cases the implementation defaults are sufficient.
+     |
+     | If you want to customize the I/O proxy, uncomment the relevant properties below.
+     |
+     +========================================================================================= -->
+
+
+    <!--
+     | The 'port' property below specifies the port number of the operating system level
+     | native daemon that this component delegates I/O operations to. By default, port 9999
+     | is used.
+     |
+     | Notice that the default I/O daemon implementation only allows connections from within
+     | the same host address.
+     |
+     |    <property name = "port">9999</property>
+     |
+     +-->
 
   </bean>
 
