@@ -24,6 +24,7 @@ package org.openremote.controller.input;
 import org.jboss.logging.Logger;
 import org.jboss.beans.metadata.api.annotations.Inject;
 import org.jboss.beans.metadata.api.annotations.FromContext;
+import org.jboss.beans.metadata.api.annotations.Start;
 import org.jboss.kernel.spi.dependency.KernelControllerContext;
 import org.openremote.controller.core.Bootstrap;
 
@@ -79,7 +80,7 @@ public class InfraredReceiver
   }
 
 
-  public void start()
+  @Start public void init()
   {
     log.info("Infrared Receiver Starting...");
 
@@ -126,6 +127,8 @@ public class InfraredReceiver
 
                   try
                   {
+                    // TODO : inject name
+
                     serviceCtx.getKernel().getBus().invoke(
                         "ControlProtocol/Router",
                         "route",

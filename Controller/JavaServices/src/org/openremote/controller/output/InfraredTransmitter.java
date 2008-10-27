@@ -22,7 +22,9 @@
 package org.openremote.controller.output;
 
 /**
- *
+ * TODO: just a placeholder for now, this would talk to I/O proxy which hooks up with OS level
+ *       driver for IR
+ * 
  * @author <a href = "mailto:juha@juhalindfors.com">Juha Lindfors</a>
  */
 public class InfraredTransmitter
