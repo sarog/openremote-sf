@@ -120,8 +120,8 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
     <path id = "compile.classpath">
       <pathelement path = "${controller.root}/system/services/security/bcprov-jdk16-139.jar"/>
-      <pathelement path = "${controller.root}/system/services/x10.beans/x10.jar"/>
-      <pathelement path = "${controller.root}/system/services/serial-transmitter.beans/RXTXcomm.jar"/>
+      <pathelement path = "${controller.root}/system/services/x10/x10.jar"/>
+      <pathelement path = "${controller.root}/system/services/serial-transmitter/RXTXcomm.jar"/>
       <pathelement path = "${controller.lib}/servlet-api.jar"/>
       <pathelement path = "${bootstrap.lib.dir}/jboss-kernel.jar"/>
       <pathelement path = "${bootstrap.lib.dir}/jboss-dependency.jar"/>
@@ -225,7 +225,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
 
-    <jar destfile = "${server.services}/router.beans/Router.jar"
+    <jar destfile = "${server.services}/router/Router.jar"
          basedir  = "${output.dir}/classes"
          includes = "org/openremote/controller/router/**"/>
 
@@ -235,7 +235,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
 
-    <jar destfile = "${server.services}/insteon.beans/INSTEON.jar"
+    <jar destfile = "${server.services}/insteon/INSTEON.jar"
          basedir  = "${output.dir}/classes"
          includes = "org/openremote/controller/protocol/insteon/**"/>
 
@@ -245,11 +245,11 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
 
-    <jar destfile = "${server.services}/x10.beans/X10Service.jar"
+    <jar destfile = "${server.services}/x10/X10Service.jar"
          basedir  = "${output.dir}/classes"
          includes = "org/openremote/controller/protocol/x10/**"/>
 
-    <jar destfile = "${server.services}/x10.beans/openremote-protocolhandler-spi.jar"
+    <jar destfile = "${server.services}/x10/openremote-protocolhandler-spi.jar"
          basedir  = "${output.dir}/classes"
          includes = "org/openremote/controller/protocol/spi/**"/>
 
@@ -259,7 +259,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
 
-    <jar destfile = "${server.services}/ir-receiver.beans/IR-Receiver.jar"
+    <jar destfile = "${server.services}/ir-receiver/IR-Receiver.jar"
          basedir  = "${output.dir}/classes"
          includes = "org/openremote/controller/input/**"/>
 
@@ -269,7 +269,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
 
-    <jar destfile = "${server.services}/serial-transmitter.beans/serial-transmitter.jar"
+    <jar destfile = "${server.services}/serial-transmitter/serial-transmitter.jar"
          basedir  = "${output.dir}/classes"
          includes = "org/openremote/controller/output/**"/>
 
