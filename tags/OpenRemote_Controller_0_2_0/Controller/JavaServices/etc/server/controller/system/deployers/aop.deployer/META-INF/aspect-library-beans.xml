@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Aspect  Deployer
+-->
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+
+   <!-- Aspect Library -->
+   <bean name="AspectLibrary" class="org.jboss.aspects.library.JBossAspectLibrary">
+      <property name="aspectManager"><inject bean="AspectManager"/></property>
+   </bean>
+
+   <!-- Add the JMX -->
+   <aop:lifecycle-configure xmlns:aop="urn:jboss:aop-beans:1.0"
+               name="JMXAdvice"
+               class="org.jboss.system.microcontainer.jmx.ServiceControllerLifecycleCallback"
+               classes="@org.jboss.aop.microcontainer.aspects.jmx.JMX"
+               manager-bean="AspectManager"
+               manager-property="aspectManager">
+      <property name="serviceController"><inject bean="JMXKernel" property="serviceController"/></property>
+   </aop:lifecycle-configure>
+
+</deployment>

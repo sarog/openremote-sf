@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+OpenRemote, the Home of the Digital Home.
+Copyright 2008, OpenRemote Inc.
+
+See the contributors.txt file in the distribution for a
+full listing of individual contributors.
+
+This is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3.0 of
+the License, or (at your option) any later version.
+
+This software is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+You should have received a copy of the GNU General Public
+License along with this software; if not, write to the Free
+Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+
+<!--
+ | X10 Control Protocol Gateway.
+ |
+ | This service implements an X10 gateway in the controller. The gateway can be configured to
+ | work either in 'IPC' or 'IN_VM' mode. Currently CM11A and CM17A modules are supported. Notice
+ | that 'IN_VM' mode is platform specific and requires platform specific binaries. The actual
+ | X10 protocol implementation is based on the Java X10 Project by Wade Wassenberg.
+ |
+ | Author: Juha Lindfors
+ | Revision: $Id: $
+ +-->
+<deployment xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation = "urn:jboss:bean-deployer:2.0 bean-deployer_2_0.xsd"
+            xmlns = "urn:jboss:bean-deployer:2.0">
+
+
+  <bean name  = "ControlProtocol/Gateway/X10"
+        class = "org.openremote.controller.protocol.x10.X10ProtocolHandler">
+
+    <!--
+     | Service dependencies.
+     |
+     | These explicit dependencies will order the deployments so that the X10 protocol handler
+     | is always deployed after the router and address table services have been initialized.
+     +-->
+    <depends>ControlProtocol/Router</depends>
+    <depends>ControlProtocol/AddressTable</depends>
+
+
+    <!-- ==========================================================================================
+     |
+     | Optional Configuration Properties.
+     |
+     | The properties below allow customization of the X10 Gateway instance. They are not mandatory
+     | and in many cases the implementation defaults are sufficient.
+     |
+     | If you want to customize the X10 Gateway, uncomment the relevant properties below.
+     |
+     +========================================================================================= -->
+
+
+    <!--
+     | The default mode for X10 gateway is to use inter-process communication ('IPC' mode) where
+     | the I/O to serial module (CM11|15|17) is done in a separate process from the main
+     | controller process. The Java X10 project achieves this via socket abstraction.
+     |
+     | Alternatively 'IN_VM' mode can be configured where a single process is used for the
+     | controller and all device communication. The trade-off is between system stability
+     | and system resource usage ('IPC' mode provides greater resilience in case of failures
+     | whereas 'IN_VM' mode can conserve some resources)
+     |
+     | Default mode is 'IPC'.
+     |
+     |
+     |    <property name = "mode">IPC</property>
+     |
+     |                    or
+     |
+     |    <property name = "mode">IN_VM</property>
+     |
+     +-->
+
+    <!--
+     | The 'Remote Controller Port' property below specifies the port number the serial module
+     | I/O process uses to communicate with controller in IPC mode. The default port is 10000.
+     | Only change this if the serial I/O process binds to a different port.
+     |
+     | Note that if 'IN_VM' mode is used instead of the default 'IPC' mode this property has
+     | no meaning and should be commented out.
+     |
+     |
+     |    <property name = "remoteControllerPort">10000</property>
+     |
+     +-->
+
+    <!--
+     | For IPC mode the host name or IP address of the serial module I/O process. For most cases
+     | this is the same host (127.168.0.1 or 'localhost') as for the controller process. Should
+     | you have an extraordinary setup where the processes are on different hosts or 'localhost'
+     | is not resolving as expected, configure the property below accordingly.
+     |
+     | Note that if 'IN_VM' mode is used instead of the default 'IPC' mode this property has
+     | no meaning and should be commented out.
+     |
+     |
+     |    <property name = "remoteControllerHost">127.168.0.1</property>
+     |
+     +-->
+
+
+    <!--
+     | For 'IN_VM' mode you must specify which serial module is connected to the serial port
+     | you use for X10 communication. Current valid values are 'CM11A' (RJ11 'phone jack')
+     | and 'CM17A' ('Firecracker' radio-frequency interface).
+     |
+     | Note that this property has no meaning when the default 'IPC' mode is used and should
+     | only be uncommented for 'IN_VM' mode.
+     |
+     |
+     |    <property name = "serialPortModule">CM11A</property>
+     |
+     +-->
+
+    <!--
+     | For 'IN_VM' mode you must specify a communications port identifier that is resolved to
+     | a serial port in the underlying operating system in use. For example, for MS Windows
+     | systems this could be 'COM1' or 'COM9' depending on the setup.
+     |
+     | Note that this property has no meaning when the default 'IPC' mode is used and should
+     | only be uncommented for 'IN_VM' mode.
+     |
+     |
+     |    <property name = "commPortIdentifier">COM1</property>
+     |
+     +-->
+    
+  </bean>
+
+</deployment>
