@@ -27,6 +27,7 @@ import org.jboss.beans.metadata.api.annotations.Inject;
 import org.jboss.beans.metadata.api.annotations.FromContext;
 import org.jboss.beans.metadata.api.annotations.Start;
 import org.openremote.controller.core.Bootstrap;
+import org.openremote.controller.daemon.IOModule;
 
 /**
  *  TODO
