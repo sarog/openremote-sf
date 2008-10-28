@@ -11,6 +11,7 @@ import static org.openremote.controller.daemon.IOModule.PingProtocol.PING_RESPON
 import static org.openremote.controller.daemon.IOProxy.OperatingSystem.WINDOWS_XP;
 import static org.openremote.controller.daemon.IOProxy.OperatingSystem.MAC_OSX;
 import static org.openremote.controller.daemon.IOProxy.OperatingSystem.LINUX;
+import static org.openremote.controller.daemon.IOProxy.OperatingSystem.WINDOWS_VISTA;
 import org.openremote.controller.daemon.IOModule;
 
 import java.net.*;
@@ -28,6 +29,10 @@ import java.io.File;
  */
 public class IOProxy
 {
+
+  // TODO : service status
+
+
   // Constants ------------------------------------------------------------------------------------
 
   /**
@@ -84,21 +89,6 @@ public class IOProxy
 
 
   /**
-   * Injects the microcontainer context (service context) at component deployment time (prior
-   * to component start).
-   *
-   * @param ctx   a service context which allows access to other deployed services and their
-   *              configuration and metadata via the microcontainer deployment framework (kernel)
-   */
-  @Inject(fromContext = FromContext.CONTEXT)
-  public void setServiceContext(KernelControllerContext ctx)
-  {
-    //this.serviceContext = ctx;    TODO
-
-    log.info("FROM CTX: " + ctx.getBeanMetaData().getClassLoader());
-  }
-  
-  /**
    * This method is invoked by the microcontainer before component deployment is complete and after
    * all configuration properties have been injected and/or set.  We can initialize the component
    * here and make it 'ready'.  <p>
@@ -107,9 +97,6 @@ public class IOProxy
    */
   @Start public void setup()
   {
-    log.fatal("CTX AT START: " + Thread.currentThread().getContextClassLoader());
-    log.fatal("AT START: " + IOProxy.class.getClassLoader());
-    
     log.info("I/O Proxy started.");
   }
 
@@ -206,51 +193,191 @@ public class IOProxy
   // Private Instance Methods ---------------------------------------------------------------------
 
 
+  /**
+   * TODO
+   *
+   * @param resourcePath
+   * @return
+   */
+  private String getFileResourceFromJBossMCLoader(String resourcePath)
+  {
+    log.info(IOProxy.class.getClassLoader());
+
+    // NOTE ON THE CHOICE OF CLASSLOADER:
+    //
+    // This is very specific to the middleware platform being used (and without a doubt what
+    // particular version of the said middleware is being used). The current description applies
+    // to the JBoss MC version the OpenRemote Controller has been tested against.
+    //
+    // The context classloader in the current MC version is the one of the invoking service.
+    // This means it's no good to us since it has zero visibility to the resources in our package.
+    //
+    // The classloader that loaded this class will have visibility to the top-level deployment
+    // and down, including all the resource files that are included within. This works as long
+    // as the top level directory (since we are using exploded deployments) has a '.' notation
+    // somewhere in the name which identifies it as a deployment package rather than just a
+    // regular directory used for grouping other deployment packages (in the latter case we'd
+    // get a classloader for each 'deployable' inside the directory which doesn't help us finding
+    // the additional resources that are not recognized as anything deployable).
+    //
+    //
+    // NOTE ON THE RETURNED URL
+    //
+    // If the resource is found the returned URL is actually a JBoss MC specific URI with
+    // virtual file system (VFS) schema. We'll just grab the host and file part of that URL
+    // (it's a local file anyway since we deploy all files in regular directory) and reconstruct
+    // them what should be a valid absolute file path to the resource in question.
+
+    URL url = IOProxy.class.getClassLoader().getResource(resourcePath);
+
+    if (url == null)
+    {
+      log.error("Cannot find native executable: " + resourcePath);
+
+      return null;    // TODO : maybe error instead
+    }
+
+    //return url.getHost() + File.separator + url.getFile();
+    try
+    {
+      return new File(new URL("file", url.getHost(), url.getFile()).toURI()).getAbsolutePath();
+    }
+    catch (URISyntaxException e)
+    {
+      log.error(e);   // TODO
+
+      return null;
+    }
+    catch (MalformedURLException e)
+    {
+      log.error(e);   // TODO
+
+      return null;
+    }
+  }
+
+
+  /**
+   * TODO
+   *
+   * @return
+   */
   private boolean startNativeDaemon()
   {
+    log.debug("Attempting to start native I/O daemon...");
+
     try
     {
       // can throw an error if O/S is not supported...
 
       OperatingSystem OS = getOperatingSystem();
 
-      log.info("OS: " + OS);
-      
-//      URL url = Thread.currentThread().getContextClassLoader().getResource(OS.getNativeProcessPath());
+      log.debug("Operating system: " + OS);
 
-      log.info("PARENT LOADER: " + IOProxy.class.getClassLoader().getParent());
-      log.info("CLASS LOADER: " + IOProxy.class.getClassLoader());
-      log.info("CTX LOADER: " + Thread.currentThread().getContextClassLoader());
-      
-//      URL url = Thread.currentThread().getContextClassLoader().getResource("iodaemon-1.0.0.exe");
-      URL url = Thread.currentThread().getContextClassLoader().getResource("native/cygwin/iodaemon-1.0.0.exe");
+      String absoluteCommandPath = getFileResourceFromJBossMCLoader(OS.getNativeProcessPath());
 
-      if (url == null)
-      {
-//        log.error("Cannot find native executable: " + OS.getNativeProcessPath());
-        log.error("Cannot find native executable: ");
-
-        return false;
-      }
-      
-      log.info("Resource: " + url);
+      ProcessBuilder builder = new ProcessBuilder(
+          absoluteCommandPath,
+          "--port",
+          String.valueOf(getPort())
+      );
 
       try
       {
-        URI fileURI = new URL("file", url.getHost(), url.getFile()).toURI();
+        // Starting a process may cause a security exception if security manager is installed
+        // and execution rights are denied. Not executing this in a privileged block as it seems
+        // a fundamentally bad idea (the started process would not be within Java security
+        // sandbox anyway.
+        //
+        // This means any use of security manager requires that process execution access is
+        // granted explicitly.
+        
+        Process daemon = builder.start();
 
-        log.info("RESULTING URI: " + fileURI);
-      }
-      catch (URISyntaxException e)
-      {
-        log.fatal(e);
-      }
-      catch (MalformedURLException e)
-      {
-        log.fatal(e);
-      }
+        log.info(absoluteCommandPath + " started...");
+        
+        final BufferedInputStream in = new BufferedInputStream(daemon.getInputStream());
+        final BufferedInputStream err = new BufferedInputStream(daemon.getErrorStream());
 
-      ProcessBuilder builder = new ProcessBuilder();  
+        Runnable daemonOutputReader = new Runnable()
+        {
+          public void run()
+          {
+            int len = 0;
+            byte[] buffer = new byte[256];
+
+            while (len != -1)
+            {
+              try
+              {
+                len = in.read(buffer, 0, buffer.length);
+
+                log.info("[OUT] " + new String(buffer));
+              }
+              catch (IOException e)
+              {
+                log.error("Failed to read the input stream of external daemon process: " + e, e);
+
+                len = -1;
+              }
+            }
+          }
+        };
+
+        Runnable daemonErrorReader = new Runnable()
+        {
+          public void run()
+          {
+            int len = 0;
+            byte[] buffer = new byte[256];
+
+            while (len != -1)
+            {
+              try
+              {
+                len = err.read(buffer, 0, buffer.length);
+
+                log.info("[ERR] " + new String(buffer));
+              }
+              catch (IOException e)
+              {
+                log.error("Failed to read the input stream of external daemon process: " + e, e);
+
+                len = -1;
+              }
+            }
+          }
+        };
+
+        Thread outputReader = new Thread(daemonOutputReader);
+        outputReader.setDaemon(true);
+        outputReader.setName("Input reader for external process " + absoluteCommandPath);
+        outputReader.start();
+
+        Thread errorReader = new Thread(daemonErrorReader);
+        errorReader.setDaemon(true);
+        errorReader.setName("Error reader for external process " + absoluteCommandPath);
+        errorReader.start();
+
+        return true;
+      }
+      catch (IOException e)
+      {
+        log.error("Starting the native daemon process failed: " + e, e);
+
+        return false;
+      }
+      catch (SecurityException securityexception)
+      {
+        log.error(
+            "Security manager has denied external process execution. " +
+            "Permission should be set as 'FilePermission(" + absoluteCommandPath +
+            ", \"execute\")' or 'autoStart' property should be set to false. " +
+            "(" + securityexception + ")"
+        );
+
+        return false;
+      }
     }
     catch (Error e)
     {
@@ -259,7 +386,7 @@ public class IOProxy
       return false;
     }
 
-    return false;   // TODO REMOVE THIS
+    // TODO: STOP method to kill the external process, if any
   }
 
 
@@ -284,22 +411,10 @@ public class IOProxy
         }
       }
     }
-/*
-    else
-    {
-      try
-      {
-        ping();
 
-        return socket;
-      }
-      catch (IOException e)
-      {
-        log.info("No existing or broken connection to IODaemon, creating a connection...");
-      }
-    }
-*/
-    throw new Error("HOW DID I GET HERE?");
+    ping();
+
+    return connection;
   }
 
 
@@ -355,6 +470,12 @@ public class IOProxy
   }
 
 
+  /**
+   * TODO
+   *
+   * @return
+   * @throws IOException
+   */
   private boolean ping() throws IOException
   {
     log.info("Pinging I/O Daemon....");
@@ -414,6 +535,9 @@ public class IOProxy
     if (osIdentifier.startsWith(WINDOWS_XP.getOSIdentifier()))
       return WINDOWS_XP;
 
+    else if (osIdentifier.startsWith(WINDOWS_VISTA.getOSIdentifier()))
+      return WINDOWS_VISTA;
+
     else if (osIdentifier.startsWith(MAC_OSX.getOSIdentifier()))
       return MAC_OSX;
 
@@ -437,11 +561,10 @@ public class IOProxy
 
   protected enum OperatingSystem
   {
-    WINDOWS_XP("Windows XP", "iodaemon-1.0.0.exe"),
-
-    MAC_OSX("Mac OS X", ""),  // TODO
-
-    LINUX("Linux", "");       // TODO
+    WINDOWS_VISTA ("Windows Vista", "native/cygwin/iodaemon-1.0.0.exe"),
+    WINDOWS_XP    ("Windows XP",    "native/cygwin/iodaemon-1.0.0.exe"),
+    MAC_OSX       ("Mac OS X",      ""),  // TODO
+    LINUX         ("Linux",         "");     // TODO
 
 
     // Instance Fields ----------------------------------------------------------------------------
