@@ -26,6 +26,9 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  | Low level serial port (RS-232) transmitter. This can be used to send raw bytes to serial
  | port. Higher level APIs can be built on top of this service.
  |
+ | Internally the default implementation uses I/O proxy to talk to native layers for serial
+ | implementation.
+ |
  | Author: Juha Lindfors
  | Revision: $Id: $
  +-->
@@ -34,18 +37,10 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
             xmlns = "urn:jboss:bean-deployer:2.0">
 
 
-  <!--
-  <bean name  = "Output/Serial"
-        class = "org.openremote.controller.output.InVMSerialTransmitter">
-
-    <property name = "commPort">COM9</property>
-    
-  </bean>
-  -->
-
   <bean name  = "Output/Serial"
         class = "org.openremote.controller.output.SerialTransmitter">
 
+    <depends>Output/IOProxy</depends>
   </bean>
 
 
