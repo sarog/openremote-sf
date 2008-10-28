@@ -21,9 +21,9 @@
 */
 package test;
 
+import x10.Command;
 import x10.Controller;
 import x10.UnitListener;
-import x10.Command;
 import x10.net.ControllerServer;
 
 /**

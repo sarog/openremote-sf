@@ -21,16 +21,16 @@
 */
 package org.openremote.controller.console;
 
-import java.io.IOException;
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.BufferedOutputStream;
-import java.io.InputStream;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileInputStream;
-import java.net.URL;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLConnection;
 import java.security.AccessController;
 import java.security.PrivilegedAction;

@@ -21,6 +21,10 @@
 */
 package org.openremote.controller.protocol.x10;
 
+import java.io.IOException;
+import java.net.ConnectException;
+import java.util.StringTokenizer;
+
 import org.jboss.logging.Logger;
 import org.openremote.controller.core.Bootstrap;
 import org.openremote.controller.protocol.spi.MessageFactory;
@@ -30,10 +34,6 @@ import x10.CM17ASerialController;
 import x10.Command;
 import x10.Controller;
 import x10.net.SocketController;
-
-import java.io.IOException;
-import java.net.ConnectException;
-import java.util.StringTokenizer;
 
 /**
  * This is a control protocol gateway for X10. It's a wrapper around The Java X10 Project API

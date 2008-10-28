@@ -21,11 +21,11 @@
 */
 package org.openremote.controller.output;
 
-import org.jboss.logging.Logger;
-import org.jboss.kernel.spi.dependency.KernelControllerContext;
-import org.jboss.beans.metadata.api.annotations.Inject;
 import org.jboss.beans.metadata.api.annotations.FromContext;
+import org.jboss.beans.metadata.api.annotations.Inject;
 import org.jboss.beans.metadata.api.annotations.Start;
+import org.jboss.kernel.spi.dependency.KernelControllerContext;
+import org.jboss.logging.Logger;
 import org.openremote.controller.core.Bootstrap;
 import org.openremote.controller.daemon.IOModule;
 

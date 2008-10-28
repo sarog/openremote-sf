@@ -1,26 +1,27 @@
 package org.openremote.controller.daemon;
 
-import org.jboss.beans.metadata.api.annotations.Start;
-import org.jboss.beans.metadata.api.annotations.Inject;
-import org.jboss.beans.metadata.api.annotations.FromContext;
-import org.jboss.logging.Logger;
-import org.jboss.kernel.spi.dependency.KernelControllerContext;
-import org.openremote.controller.core.Bootstrap;
-import static org.openremote.controller.daemon.IOModule.PingProtocol.PING_MESSAGE;
-import static org.openremote.controller.daemon.IOModule.PingProtocol.PING_RESPONSE;
-import static org.openremote.controller.daemon.IOProxy.OperatingSystem.WINDOWS_XP;
-import static org.openremote.controller.daemon.IOProxy.OperatingSystem.MAC_OSX;
-import static org.openremote.controller.daemon.IOProxy.OperatingSystem.LINUX;
-import static org.openremote.controller.daemon.IOProxy.OperatingSystem.WINDOWS_VISTA;
-import org.openremote.controller.daemon.IOModule;
-
-import java.net.*;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.io.IOException;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.Socket;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
+import org.jboss.beans.metadata.api.annotations.Start;
+import org.jboss.logging.Logger;
+import org.openremote.controller.core.Bootstrap;
+import static org.openremote.controller.daemon.IOModule.PingProtocol.PING_MESSAGE;
+import static org.openremote.controller.daemon.IOModule.PingProtocol.PING_RESPONSE;
+import static org.openremote.controller.daemon.IOProxy.OperatingSystem.LINUX;
+import static org.openremote.controller.daemon.IOProxy.OperatingSystem.MAC_OSX;
+import static org.openremote.controller.daemon.IOProxy.OperatingSystem.WINDOWS_VISTA;
+import static org.openremote.controller.daemon.IOProxy.OperatingSystem.WINDOWS_XP;
 
 /**
  * TODO
