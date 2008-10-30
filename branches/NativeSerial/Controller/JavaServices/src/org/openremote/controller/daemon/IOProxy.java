@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -22,8 +21,10 @@ import java.security.PrivilegedActionException;
 import org.jboss.beans.metadata.api.annotations.Start;
 import org.jboss.logging.Logger;
 import org.openremote.controller.core.Bootstrap;
-import static org.openremote.controller.daemon.IOModule.PingProtocol.PING_MESSAGE;
-import static org.openremote.controller.daemon.IOModule.PingProtocol.PING_RESPONSE;
+import static org.openremote.controller.daemon.IOModule.ControlProtocol.PING_MESSAGE;
+import static org.openremote.controller.daemon.IOModule.ControlProtocol.PING_RESPONSE;
+import static org.openremote.controller.daemon.IOModule.ControlProtocol.KILL_MESSAGE;
+import static org.openremote.controller.daemon.IOModule.ControlProtocol.KILL_RESPONSE;
 import static org.openremote.controller.daemon.IOProxy.OperatingSystem.LINUX;
 import static org.openremote.controller.daemon.IOProxy.OperatingSystem.MAC_OSX;
 import static org.openremote.controller.daemon.IOProxy.OperatingSystem.WINDOWS_VISTA;
@@ -183,35 +184,50 @@ public class IOProxy
    *
    * @param ioModule
    * @param bytes
+   *
+   * @return
    */
-  public void sendBytes(IOModule ioModule, byte[] bytes)
+  public boolean sendBytes(IOModule ioModule, byte[] bytes)
   {
-
-    // TODO : this should be debug (or even trace)
-    log.info("Sending Bytes to I/O Daemon...");
-
     try
     {
       getConnection();
-
-      log.info("Connected to : " + connection.getInetAddress() + ":" + connection.getPort());
-      log.info("(" + connection.getLocalAddress() + ":" + connection.getLocalPort() + ")");
-
-      try
-      {
-        ping();
-      }
-      catch (IOException e)
-      {
-        log.error("PING FAILED: " + e);
-      }
     }
     catch (IOException e)
     {
-      log.error("Unable to create connection to I/O daemon, has it been started?");
+      log.error("Send failed. Unable to create connection to I/O daemon: " + e, e);
+
+      return false;
+    }
+    catch (Throwable t)
+    {
+      log.error("Send failed due to system error: " + t, t);
+
+      return false;
     }
 
-    // TODO : boolean return on success
+    try
+    {
+      BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
+
+      out.write(ioModule.getModuleID().getBytes());
+      out.write(IOModule.getMessageLength(bytes.length).getBytes());
+      out.write(bytes);
+      out.flush();
+      
+      return true;
+    }
+    catch (Throwable t)
+    {
+      StringBuilder builder = new StringBuilder(1024);
+
+      for (byte b : bytes)
+        builder.append("0x").append(Integer.toHexString(b).toUpperCase()).append(" ");
+
+      log.error("Sending '" + builder.toString() + "' failed: " + t, t);
+
+      return false;
+    }
   }
 
 
@@ -221,66 +237,365 @@ public class IOProxy
   /**
    * TODO
    *
-   * @param resourcePath
-   * @return
+   *
+   * @throws IOException
+   *
+   * @throws Error    may throw an error if more serious issues with getting the connection
+   *                  such as failing to access the loopback interface or security manager
+   *                  denying access
    */
-  private String getFileResourceFromJBossMCLoader(String resourcePath)
+  private void getConnection() throws IOException
   {
-    log.debug("Using classloader: " + IOProxy.class.getClassLoader());
-
-    // NOTE ON THE CHOICE OF CLASSLOADER:
-    //
-    // This is very specific to the middleware platform being used (and without a doubt what
-    // particular version of the said middleware is being used). The current description applies
-    // to the JBoss MC version the OpenRemote Controller has been tested against.
-    //
-    // The context classloader in the current MC version is the one of the invoking service.
-    // This means it's no good to us since it has zero visibility to the resources in our package.
-    //
-    // The classloader that loaded this class will have visibility to the top-level deployment
-    // and down, including all the resource files that are included within. This works as long
-    // as the top level directory (since we are using exploded deployments) has a '.' notation
-    // somewhere in the name which identifies it as a deployment package rather than just a
-    // regular directory used for grouping other deployment packages (in the latter case we'd
-    // get a classloader for each 'deployable' inside the directory which doesn't help us finding
-    // the additional resources that are not recognized as anything deployable).
-    //
-    //
-    // NOTE ON THE RETURNED URL
-    //
-    // If the resource is found the returned URL is actually a JBoss MC specific URI with
-    // virtual file system (VFS) schema. We'll just grab the host and file part of that URL
-    // (it's a local file anyway since we deploy all files in regular directory) and reconstruct
-    // them what should be a valid absolute file path to the resource in question.
-
-    URL url = IOProxy.class.getClassLoader().getResource(resourcePath);
-
-    if (url == null)
+    if (connection != null)
     {
-      log.error("Cannot find native executable: " + resourcePath);
+      // returns true if everything's ok, otherwise returns false and attempts to close
+      // the existing connection and shut down the native daemon too if autostart is enabled...
 
-      return null;    // TODO : maybe error instead
+      if (testExistingConnection())
+        return;
     }
 
-    //return url.getHost() + File.separator + url.getFile();
+    // Don't have a connection yet, or the connection might have been broken (and now closed).
+    // Try to create new one... should that fail try to autostart native daemon
+    // (if feature enabled) and then create the connection...
+
     try
     {
-      return new File(new URL("file", url.getHost(), url.getFile()).toURI()).getAbsolutePath();
-    }
-    catch (URISyntaxException e)
-    {
-      log.error(e);   // TODO
+      // May throw IOException if native daemon has not been started, or error if something
+      // more serious... nevertheless, keep trying.
+      //
+      // Note that createConnection may throw an Error in case of a more serious problem with
+      // creating socket connection (or denied by security manager)
 
-      return null;
+      if (createConnection())
+        return;
     }
-    catch (MalformedURLException e)
+    catch (Throwable t)
     {
-      log.error(e);   // TODO
+      // Failing to create connection... if autostart not enabled not much more we can do
+      // so rethrow...
 
-      return null;
+      if (!autoStartNativeDaemon)
+      {
+        throw new IOException(
+            "Could not connect to native I/O daemon. Autostart is not enabled, therefore " +
+            "the native I/O daemon must be started manually, or restarted if it has stopped " +
+            "responding. (" + t + ")", t);
+      }
+
+      // otherwise, keep trying...
+
+      log.info("Initial attempt at connecting to native I/O daemon failed: " + t);
+    }
+
+    // either broken connection or can't create connection, last chance is to try to spawn
+    // a new daemon process ourselves (we should only be here is autostart is enabled)...
+    //
+    // this will throw an IOException if something fails...
+
+    startNativeDaemon();
+
+    // Try to create the connection one last time, if still won't work, no choice but to bail
+    // out... (note that createconnection can throw IOException or Error up the call stack)
+
+    if (!createConnection())
+    {
+      throw new IOException(
+          "Failed to create connection after restarting the native I/O daemon, giving up..."
+      );
+    }
+
+    // Finally if we get a connection after (re-)start of daemon, test it with ping
+    // (will throw IO Exception is something goes wrong)...
+
+    ping();
+  }
+
+
+  /**
+   * TODO
+   *
+   * @throws IOException TODO
+   *
+   * @throws Error  if the loopback interface cannot be resolved or the security manager
+   *                prevents connecting to the local I/O daemon
+   *
+   * @return true if socket connection was succesfully created; false otherwise
+   */
+  private boolean createConnection() throws IOException
+  {
+    try
+    {
+      return AccessController.doPrivileged(new PrivilegedExceptionAction<Boolean>()
+      {
+        public Boolean run() throws IOException
+        {
+
+          String loopbackInterface = null;
+
+          try
+          {
+            loopbackInterface = InetAddress.getByName(null).getHostName();
+
+            connection = new Socket(loopbackInterface, nativeIODaemonPort);
+
+            // TODO : set socket properties
+
+            return connection.isConnected();
+          }
+          catch (UnknownHostException exception)
+          {
+            // We connect to loopback interface (localhost) so this shouldn't happen....
+
+            throw new Error(
+                "Unable to connect to loopback interface (" +
+                loopbackInterface + ":" + nativeIODaemonPort + "): " + exception.toString(),
+                exception
+            );
+          }
+          catch (SecurityException securityexception)
+          {
+            throw new Error(
+                "Caller's security domain prevents socket connection to '"
+                + loopbackInterface + ":" + nativeIODaemonPort + "': " + securityexception.toString(),
+                securityexception
+            );
+          }
+        }
+      });
+    }
+    catch (PrivilegedActionException e)
+    {
+      Exception shouldBeIOException = e.getException();
+
+      if (shouldBeIOException instanceof IOException)
+      {
+        throw (IOException)shouldBeIOException;
+      }
+
+      else
+      {
+        throw new Error("Something strange happened: " + e, e);   // don't know what this is
+      }
     }
   }
 
+  /**
+   * TODO
+   *
+   * @return
+   */
+  private boolean testExistingConnection()
+  {
+    // test that the existing connection is still alive and ping the daemon...
+
+    if (connection.isConnected())
+    {
+      try
+      {
+        ping();
+
+        // if ping returns succesfully, everything's ok...
+
+        return true;
+      }
+      catch (Throwable error)
+      {
+        // Connection looks alive but daemon does not answer ping... may mean daemon is hanging.
+        // Try to kill it and close the connection. The calling method should then proceed
+        // to try to re-establish the connection.
+        //
+        // Only kill the daemon though if autostart has been enabled...
+
+        if (autoStartNativeDaemon)
+        {
+          log.warn(
+              "Pinging native I/O daemon failed. Will attempt to restart the daemon and " +
+              "re-establish connection... (" + error +")", error
+          );
+
+          killDaemon();
+        }
+
+        else
+        {
+          log.warn(
+              "Pinging native I/O daemon failed. Will attempt to re-establish connection. " +
+              "However, if the native daemon has failed it may need to be restarted manually " +
+              "(autostart feature has been turned off)."
+          );
+        }
+      }
+    }
+
+    // We have a connection but something's wrong with it, either not connected anymore
+    // or daemon is not answering the ping.... close the connection. Calling method can attempt
+    // to restart daemon and recreate connection
+
+    try
+    {
+      connection.close();
+    }
+    catch (Throwable t)
+    {
+      log.debug("Error closing an already invalid connection: " + t, t);
+    }
+    finally
+    {
+      connection = null;
+    }
+
+    return false;
+  }
+
+
+  /**
+   * Simple ping message to the native I/O daemon that expects a response back. This is mainly
+   * used to ensure the native I/O daemon has not failed due to implementation errors or other
+   * process related crashes (rather than network I/O problems).
+   *
+   * @throws IOException  if ping fails for any reason -- due to connection problems, protocol
+   *                      implementation error, etc.
+   */
+  private void ping() throws IOException
+  {
+    if (log.isTraceEnabled())
+      log.trace("Pinging I/O Daemon....");
+
+    // TODO : connection should be nested class
+
+    BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
+    BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
+
+    out.write(PING_MESSAGE.getBytes());
+    out.flush();
+
+    if (log.isTraceEnabled())
+      log.trace("Wrote : " + PING_MESSAGE.getMessage());
+
+    byte[] buffer = new byte[PING_RESPONSE.getLength()];
+
+    int len = in.read(buffer, 0, buffer.length);
+
+    if (len == PING_RESPONSE.getLength() && new String(buffer).equals(PING_RESPONSE.getMessage()))
+    {
+      log.debug("Ping OK.");
+    }
+    else
+    {
+      throw new IOException(
+          "Ping failed. Likely cause is protocol mismatch or implementation error. Was " +
+          "expecting response of '" + PING_RESPONSE.getMessage() + "' but received '" +
+          new String(buffer) + "' instead."
+      );
+    }
+  }
+
+  /**
+   * TODO
+   */
+  private void killDaemon()
+  {
+    try
+    {
+      BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
+      BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
+
+      out.write(KILL_MESSAGE.getBytes());
+      out.flush();
+
+      byte[] buffer = new byte[KILL_RESPONSE.getLength()];
+
+      int len = in.read(buffer, 0, buffer.length);
+
+      if (len == KILL_RESPONSE.getLength() && new String(buffer).equals(KILL_RESPONSE.getMessage()))
+      {
+        log.debug("Daemon shutdown delivered.");
+      }
+      else
+      {
+        log.debug("Daemon did not respond to shutdown command.");
+      }      
+    }
+    catch (Throwable t)
+    {
+      log.debug("Daemon shutdown failed: " + t, t);
+    }
+  }
+
+
+  /**
+   * TODO
+   *
+   * @throws IOException
+   */
+  private void startNativeDaemon() throws IOException
+  {
+    log.info("Attempting to start native I/O daemon...");
+
+    try
+    {
+      // can throw an error if O/S is not supported...
+
+      OperatingSystem OS = getOperatingSystem();
+
+      log.debug("Operating system: " + OS);
+
+      // TODO: returned string could be null
+      String absoluteCommandPath = getFileResourceFromJBossMCLoader(OS.getNativeProcessPath());
+
+      // Start the native daemon -- configure the port to whatever was configured for this
+      // service...
+      
+      ProcessBuilder builder = new ProcessBuilder(
+          absoluteCommandPath,
+          "--port",
+          String.valueOf(getPort())
+      );
+
+      log.debug("Native daemon: " + absoluteCommandPath);
+
+      try
+      {
+        // Starting a process may cause a security exception if security manager is installed
+        // and execution rights are denied. Not executing this in a privileged block as it seems
+        // a fundamentally bad idea (the started process would not be within Java security
+        // sandbox anyway).
+        //
+        // This means any use of security manager requires that process execution rights are
+        // granted explicitly.
+
+        Process daemon = builder.start();
+
+        addProcessShutdownHook(daemon);
+
+        attachProcessOutputs(
+            new File(absoluteCommandPath).getName(),
+            daemon.getInputStream(),
+            daemon.getErrorStream()
+        );
+      }
+      catch (SecurityException securityexception)
+      {
+        // rethrow as I/O Exception...
+
+        throw new IOException(
+            "Security manager has denied external process execution. " +
+            "Permission should be set as 'FilePermission(" + absoluteCommandPath +
+            ", \"execute\")' or 'autoStart' property should be set to false. " +
+            "(" + securityexception + ")", securityexception
+        );
+      }
+    }
+    catch (Error e)
+    {
+      // rethrow as I/O Exception...
+
+      throw new IOException(e.getMessage(), e);
+    }
+
+    // TODO: @STOP method to kill the external process, if any
+  }
 
   /**
    * TODO
@@ -392,236 +707,66 @@ public class IOProxy
   /**
    * TODO
    *
-   * @throws IOException
-   */
-  private void startNativeDaemon() throws IOException
-  {
-    log.info("Attempting to start native I/O daemon...");
-
-    try
-    {
-      // can throw an error if O/S is not supported...
-
-      OperatingSystem OS = getOperatingSystem();
-
-      log.debug("Operating system: " + OS);
-
-      // TODO: returned string could be null
-      String absoluteCommandPath = getFileResourceFromJBossMCLoader(OS.getNativeProcessPath());
-
-      // Start the native daemon -- configure the port to whatever was configured for this
-      // service...
-      
-      ProcessBuilder builder = new ProcessBuilder(
-          absoluteCommandPath,
-          "--port",
-          String.valueOf(getPort())
-      );
-
-      log.debug("Native daemon: " + absoluteCommandPath);
-
-      try
-      {
-        // Starting a process may cause a security exception if security manager is installed
-        // and execution rights are denied. Not executing this in a privileged block as it seems
-        // a fundamentally bad idea (the started process would not be within Java security
-        // sandbox anyway).
-        //
-        // This means any use of security manager requires that process execution rights are
-        // granted explicitly.
-
-        Process daemon = builder.start();
-
-        addProcessShutdownHook(daemon);
-
-        attachProcessOutputs(
-            new File(absoluteCommandPath).getName(),
-            daemon.getInputStream(),
-            daemon.getErrorStream()
-        );
-      }
-      catch (SecurityException securityexception)
-      {
-        // rethrow as I/O Exception...
-
-        throw new IOException(
-            "Security manager has denied external process execution. " +
-            "Permission should be set as 'FilePermission(" + absoluteCommandPath +
-            ", \"execute\")' or 'autoStart' property should be set to false. " +
-            "(" + securityexception + ")", securityexception
-        );
-      }
-    }
-    catch (Error e)
-    {
-      // rethrow as I/O Exception...
-
-      throw new IOException(e.getMessage(), e);
-    }
-
-    // TODO: STOP method to kill the external process, if any
-  }
-
-
-  /**
-   * TODO
-   *
-   *
-   * @throws IOException
-   */
-  private void getConnection() throws IOException
-  {
-    if (connection == null)
-    {
-      // if don't have a connection yet, try to create one... should that fail try to
-      // autostart native daemon (if feature enabled) and then create the connection...
-
-      try
-      {
-        // may throw IOException if native daemon has not been started, or error if something
-        // more serious... nevertheless, keep trying.
-
-        if (createConnection())
-          return;
-      }
-      catch (Throwable t)
-      {
-        // autostart not enabled and connection failed, rethrow...
-
-        if (!autoStartNativeDaemon)
-        {
-          throw new IOException(
-              "Could not connect to native I/O daemon. Autostart is not enabled, therefore " +
-              "the native I/O daemon must be started manually, or restarted if it has stopped " +
-              "responding. (" + t + ")", t);
-        }
-
-        // otherwise, keep trying...
-        
-        log.info("Initial attempt at connecting to native I/O daemon failed: " + t);
-      }
-
-      if (autoStartNativeDaemon)
-      {
-        startNativeDaemon();
-
-        if (!createConnection())
-        {
-          throw new IOException("Creating");  // TODO
-        }
-      }
-
-      else
-      {
-
-      }
-
-    }
-
-    // TODO : test return value
-    ping();
-
-  }
-
-
-  /**
-   * TODO
-   *
-   * @throws IOException TODO
-   *
-   * @throws Error  if the loopback interface cannot be resolved or the security manager
-   *                prevents connecting to the local I/O daemon
-   *
-   * @return true if socket connection was succesfully created; false otherwise
-   */
-  private boolean createConnection() throws IOException
-  {
-    try
-    {
-      return AccessController.doPrivileged(new PrivilegedExceptionAction<Boolean>()
-      {
-        public Boolean run() throws IOException
-        {
-
-          String loopbackInterface = null;
-
-          try
-          {
-            loopbackInterface = InetAddress.getByName(null).getHostName();
-
-            connection = new Socket(loopbackInterface, nativeIODaemonPort);
-
-            // TODO : set socket properties
-
-            return connection.isConnected();
-          }
-          catch (UnknownHostException exception)
-          {
-            // We connect to loopback interface (localhost) so this shouldn't happen....
-
-            throw new Error(
-                "Unable to connect to loopback interface (" +
-                loopbackInterface + ":" + nativeIODaemonPort + "): " + exception.toString(),
-                exception
-            );
-          }
-          catch (SecurityException securityexception)
-          {
-            throw new Error(
-                "Caller's security domain prevents socket connection to '"
-                + loopbackInterface + ":" + nativeIODaemonPort + "': " + securityexception.toString(),
-                securityexception
-            );
-          }
-        }
-      });
-    }
-    catch (PrivilegedActionException e)
-    {
-      Exception shouldBeIOException = e.getException();
-
-      if (shouldBeIOException instanceof IOException)
-      {
-        throw (IOException)shouldBeIOException;
-      }
-
-      else
-      {
-        throw new Error(e);   // don't know what this is
-      }
-    }
-  }
-
-
-  /**
-   * TODO
-   *
+   * @param resourcePath
    * @return
-   * @throws IOException
    */
-  private boolean ping() throws IOException
+  private String getFileResourceFromJBossMCLoader(String resourcePath)
   {
-    log.info("Pinging I/O Daemon....");
-    
-    BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
-    BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
+    log.debug("Using classloader: " + IOProxy.class.getClassLoader());
 
-    out.write(PING_MESSAGE.getBytes());
-    out.flush();
+    // NOTE ON THE CHOICE OF CLASSLOADER:
+    //
+    // This is very specific to the middleware platform being used (and without a doubt what
+    // particular version of the said middleware is being used). The current description applies
+    // to the JBoss MC version the OpenRemote Controller has been tested against.
+    //
+    // The context classloader in the current MC version is the one of the invoking service.
+    // This means it's no good to us since it has zero visibility to the resources in our package.
+    //
+    // The classloader that loaded this class will have visibility to the top-level deployment
+    // and down, including all the resource files that are included within. This works as long
+    // as the top level directory (since we are using exploded deployments) has a '.' notation
+    // somewhere in the name which identifies it as a deployment package rather than just a
+    // regular directory used for grouping other deployment packages (in the latter case we'd
+    // get a classloader for each 'deployable' inside the directory which doesn't help us finding
+    // the additional resources that are not recognized as anything deployable).
+    //
+    //
+    // NOTE ON THE RETURNED URL
+    //
+    // If the resource is found the returned URL is actually a JBoss MC specific URI with
+    // virtual file system (VFS) schema. We'll just grab the host and file part of that URL
+    // (it's a local file anyway since we deploy all files in regular directory) and reconstruct
+    // them what should be a valid absolute file path to the resource in question.
 
-    log.info("Wrote : " + PING_MESSAGE.getMessage());
+    URL url = IOProxy.class.getClassLoader().getResource(resourcePath);
 
-    byte[] buffer = new byte[PING_RESPONSE.getLength()];
-
-    int len = in.read(buffer, 0, buffer.length);
-
-    if (len == PING_RESPONSE.getLength() && new String(buffer).equals(PING_RESPONSE.getMessage()))
+    if (url == null)
     {
-      log.info("IT'S ALIVE!!");
+      log.error("Cannot find native executable: " + resourcePath);
+
+      return null;    // TODO : maybe error instead
     }
-    
-    return true;
+
+    //return url.getHost() + File.separator + url.getFile();
+    try
+    {
+      return new File(new URL("file", url.getHost(), url.getFile()).toURI()).getAbsolutePath();
+    }
+    catch (URISyntaxException e)
+    {
+      log.error(e);   // TODO
+
+      return null;
+    }
+    catch (MalformedURLException e)
+    {
+      log.error(e);   // TODO
+
+      return null;
+    }
   }
+
 
 
   /**

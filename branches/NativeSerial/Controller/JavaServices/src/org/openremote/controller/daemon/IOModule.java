@@ -28,20 +28,53 @@ package org.openremote.controller.daemon;
  */
 public enum IOModule
 {
-  SERIAL(0x00000101),
-  PING(0xFFFFFFFF);
+  RAW_SERIAL  ("R_SERIAL"),
+  CONTROL     ("_CONTROL");
 
 
+  // Class Members ------------------------------------------------------------------------------
 
+  /**
+   * Returns message length field for message header as specified in the protocol -- an
+   * uppercase hex value with leading '0X' including leading zeroes up to string of length 10.
+   *
+   * @param value integer value to translate
+   *
+   * @return a ten character long hex string in uppercase with leading zeroes, such as
+   *         '0X0000DEAD', '0XCAFEBABE' or '0X00000005'
+   */
+  protected static String getMessageLength(int value)
+  {
+    String hexValue = Integer.toHexString(value).toUpperCase();
+
+    // add leading zeroes....
+
+    if (value <= 0xF)
+      return "0X0000000" + hexValue;
+    if (value <= 0xFF)
+      return "0X000000" + hexValue;
+    if (value <= 0xFFF)
+      return "0X00000" + hexValue;
+    if (value <= 0xFFFF)
+      return "0X0000" + hexValue;
+    if (value <= 0xFFFFF)
+      return "0X000" + hexValue;
+    if (value <= 0xFFFFFF)
+      return "0X00" + hexValue;
+    if (value <= 0xFFFFFFF)
+      return "0X0" + hexValue;
+
+    return "0X" + hexValue;
+  }
 
   // Instance Fields ------------------------------------------------------------------------------
 
-  private int moduleID;
+  private String moduleID;
 
 
   // Constructors ---------------------------------------------------------------------------------
 
-  private IOModule(int moduleID)
+  private IOModule(String moduleID)
   {
     this.moduleID = moduleID;
   }
@@ -51,18 +84,23 @@ public enum IOModule
 
   public String getModuleID()
   {
-    return Integer.toHexString(moduleID).toUpperCase();
+    return moduleID;
   }
 
 
   // Nested Enums ---------------------------------------------------------------------------------
 
   private final static String PING_PAYLOAD = "ARE YOU THERE";
+  private final static String KILL_PAYLOAD = "D1ED1ED1E";
 
-  protected static enum PingProtocol
+  protected static enum ControlProtocol
   {
-    PING_MESSAGE(PING.getModuleID(), String.valueOf(PING_PAYLOAD.length()), PING_PAYLOAD),
-    PING_RESPONSE("I AM HERE");
+    PING_MESSAGE(CONTROL.getModuleID(), getMessageLength(PING_PAYLOAD.length()), PING_PAYLOAD),
+    PING_RESPONSE("I AM HERE"),
+
+    KILL_MESSAGE(CONTROL.getModuleID(), getMessageLength(KILL_PAYLOAD.length()), KILL_PAYLOAD),
+    KILL_RESPONSE("GOODBYE CRUEL WORLD");
+
 
 
     // Instance Fields ----------------------------------------------------------------------------
@@ -72,7 +110,7 @@ public enum IOModule
 
     // Constructors -------------------------------------------------------------------------------
 
-    PingProtocol(String... args)
+    ControlProtocol(String... args)
     {
       StringBuilder builder = new StringBuilder(1024);
 
@@ -99,5 +137,7 @@ public enum IOModule
     {
       return getMessage().length();
     }
+
+
   }
 }
