@@ -99,7 +99,7 @@ public class SerialTransmitter
       serviceContext.getKernel().getBus().invoke(
           "Output/IOProxy",
           "sendBytes",
-          new Object[] { IOModule.PING, new byte[] {} },
+          new Object[] { IOModule.CONTROL, "D1ED1ED1E".getBytes() },
           new String[] { IOModule.class.getName(), new byte[] {}.getClass().getName() }
       );
     }
