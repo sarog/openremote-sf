@@ -60,6 +60,21 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
      |
      +-->
 
+    <!--
+     | The 'autoStart' property below allows this I/O proxy to attempt to start the corresponding
+     | native I/O daemon if initial connection the the specified port does not succeed. If auto-
+     | start is used, the native daemon will be configured to listen to the port specified with
+     | this service's 'port' attribute (see above).
+     |
+     | Notice that due to security manager restrictions, creating a new process may be disallowed.
+     | In such deployments the 'autoStart' should be set to 'false'.
+     |
+     | By default, the value is 'true'
+     |
+     |    <property name = "autoStart">false</property>
+     |
+     +-->
+
   </bean>
 
 

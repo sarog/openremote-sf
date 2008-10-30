@@ -4,6 +4,10 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.Socket;
@@ -12,6 +16,8 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.security.PrivilegedExceptionAction;
+import java.security.PrivilegedActionException;
 
 import org.jboss.beans.metadata.api.annotations.Start;
 import org.jboss.logging.Logger;
@@ -24,7 +30,9 @@ import static org.openremote.controller.daemon.IOProxy.OperatingSystem.WINDOWS_V
 import static org.openremote.controller.daemon.IOProxy.OperatingSystem.WINDOWS_XP;
 
 /**
- * TODO
+ * This is the Java side of the native I/O daemon that implements I/O operations.
+ *
+ * TODO: autostart
  *
  * @author <a href = "mailto:juha@juhalindfors.com">Juha Lindfors</a>
  */
@@ -32,7 +40,6 @@ public class IOProxy
 {
 
   // TODO : service status
-
 
   // Constants ------------------------------------------------------------------------------------
 
@@ -48,11 +55,16 @@ public class IOProxy
   /**
    * This is the default port of the operating system level native daemon that low level I/O
    * operations are delegated to.
+   *
+   * Value: {@value}
    */
   public final static int DEFAULT_NATIVE_IODAEMON_PORT = 9999;
 
   /**
-   * TODO
+   * Default autostart mode determines whether this I/O proxy should attempt to start its
+   * native counterpart automatically if the initial attempt to connect fails.
+   *
+   * Value: {@value}
    */
   public final static boolean DEFAULT_AUTOSTART_MODE = true;
 
@@ -80,10 +92,10 @@ public class IOProxy
   private int nativeIODaemonPort = DEFAULT_NATIVE_IODAEMON_PORT;
 
   /**
-   * TODO
+   * Indicates whether this I/O proxy should attempt to spawn the native I/O daemon process
+   * itself should connecting to it fail (possibly because it was not started).
    */
   private boolean autoStartNativeDaemon = DEFAULT_AUTOSTART_MODE;
-
 
 
   // MC Component Methods -------------------------------------------------------------------------
@@ -108,17 +120,18 @@ public class IOProxy
    * Returns the port number this component uses to connect to the native operating system level
    * I/O daemon.
    *
-   * @return  port number between [0...65535]
+   * @return  port number between [0..65535]
    */
   public int getPort()
   {
     return nativeIODaemonPort;
   }
 
-
   /**
    * Sets the port number this component will use to attempt to connect to the native operating
-   * system level I/O daemon
+   * system level I/O daemon.  <p>
+   *
+   * This value can be injected by the microcontainer if configured in the service's XML descriptor.
    *
    * @param port    port number between [0...65535]
    */
@@ -136,11 +149,12 @@ public class IOProxy
     nativeIODaemonPort = port;
   }
 
-
   /**
-   * TODO
+   * Indicates whether this I/O proxy has autostart mode enabled. Autostart means that the
+   * proxy may attempt to spawn the corresponding native I/O daemon automatically should
+   * connecting to it fail.
    *
-   * @return
+   * @return true if autostart enabled; false otherwise
    */
   public boolean isAutoStart()
   {
@@ -148,9 +162,13 @@ public class IOProxy
   }
 
   /**
-   * TODO
+   * Sets the autostart mode for this I/O proxy instance. Autostart means that the
+   * proxy may attempt to spawn the corresponding native I/O daemon automatically should
+   * connecting to it fail.    <p>
    *
-   * @param enabled
+   * This value can be injected by the microcontainer if configured in the service's XML descriptor.
+   *
+   * @param enabled   true to enable, false to disable
    */
   public void setAutoStart(boolean enabled)
   {
@@ -160,15 +178,21 @@ public class IOProxy
 
   // Public Instance Methods ----------------------------------------------------------------------
 
+  /**
+   * TODO
+   *
+   * @param ioModule
+   * @param bytes
+   */
   public void sendBytes(IOModule ioModule, byte[] bytes)
   {
 
-    // TODO : this should be trace
+    // TODO : this should be debug (or even trace)
     log.info("Sending Bytes to I/O Daemon...");
 
     try
     {
-      connection = getConnection();
+      getConnection();
 
       log.info("Connected to : " + connection.getInetAddress() + ":" + connection.getPort());
       log.info("(" + connection.getLocalAddress() + ":" + connection.getLocalPort() + ")");
@@ -202,7 +226,7 @@ public class IOProxy
    */
   private String getFileResourceFromJBossMCLoader(String resourcePath)
   {
-    log.info(IOProxy.class.getClassLoader());
+    log.debug("Using classloader: " + IOProxy.class.getClassLoader());
 
     // NOTE ON THE CHOICE OF CLASSLOADER:
     //
@@ -261,11 +285,118 @@ public class IOProxy
   /**
    * TODO
    *
-   * @return
+   * @param filename
+   * @param processOut
+   * @param processErr
    */
-  private boolean startNativeDaemon()
+  private void attachProcessOutputs(String filename, InputStream processOut, InputStream processErr)
   {
-    log.debug("Attempting to start native I/O daemon...");
+    final BufferedReader in = new BufferedReader(new InputStreamReader(processOut));
+    final BufferedReader err = new BufferedReader(new InputStreamReader(processErr));
+
+    Runnable daemonOutputReader = new Runnable()
+    {
+      public void run()
+      {
+        log.debug("Started native I/O daemon standard output reader.");
+
+        String output;
+
+        try
+        {
+          while ((output = in.readLine()) != null)
+          {
+            log.info("[OUT] " + output);
+          }
+        }
+        catch (IOException e)
+        {
+          log.error("Failed to read the output stream of external daemon process: " + e, e);
+        }
+        finally
+        {
+          log.debug("Finished native I/O daemon standard output reader.");
+        }
+      }
+    };
+
+    Runnable daemonErrorReader = new Runnable()
+    {
+      public void run()
+      {
+        log.debug("Started native I/O daemon standard output reader.");
+
+        String output;
+
+        try
+        {
+          while ((output = err.readLine()) != null)
+          {
+            log.info("[ERR] " + output);
+          }
+        }
+        catch (IOException e)
+        {
+          log.error("Failed to read the error stream of external daemon process: " + e, e);
+        }
+        finally
+        {
+          log.debug("Finished native I/O daemon standard error reader.");
+        }
+      }
+    };
+
+    Thread outputReader = new Thread(daemonOutputReader);
+    outputReader.setDaemon(true);
+    outputReader.setName("Input reader for external process " + filename);
+    outputReader.start();
+
+    Thread errorReader = new Thread(daemonErrorReader);
+    errorReader.setDaemon(true);
+    errorReader.setName("Error reader for external process " + filename);
+    errorReader.start();
+  }
+
+  /**
+   * TODO
+   *
+   * @param daemon
+   */
+  private void addProcessShutdownHook(final Process daemon)
+  {
+    Runnable daemonKillThread = new Runnable()
+    {
+      public void run()
+      {
+        // TODO : send kill first, wait for timeout, then forcibly kill if necessary
+
+        daemon.destroy();
+      }
+    };
+
+    Thread thread = new Thread(daemonKillThread, "Shutdwon hook for I/O daemon process");
+
+    try
+    {
+      Runtime.getRuntime().addShutdownHook(thread);
+    }
+    catch (Throwable t)
+    {
+      log.warn(
+          "Adding external I/O daemon shutdown hook failed. The external process may " +
+          "need to be killed manually. (" + t + ")", t
+      );
+    }
+  }
+
+  /**
+   * TODO
+   *
+   * @throws IOException
+   */
+  private void startNativeDaemon() throws IOException
+  {
+    log.info("Attempting to start native I/O daemon...");
 
     try
     {
@@ -275,116 +406,57 @@ public class IOProxy
 
       log.debug("Operating system: " + OS);
 
+      // TODO: returned string could be null
       String absoluteCommandPath = getFileResourceFromJBossMCLoader(OS.getNativeProcessPath());
 
+      // Start the native daemon -- configure the port to whatever was configured for this
+      // service...
+      
       ProcessBuilder builder = new ProcessBuilder(
           absoluteCommandPath,
           "--port",
           String.valueOf(getPort())
       );
 
+      log.debug("Native daemon: " + absoluteCommandPath);
+
       try
       {
         // Starting a process may cause a security exception if security manager is installed
         // and execution rights are denied. Not executing this in a privileged block as it seems
         // a fundamentally bad idea (the started process would not be within Java security
-        // sandbox anyway.
+        // sandbox anyway).
         //
-        // This means any use of security manager requires that process execution access is
+        // This means any use of security manager requires that process execution rights are
         // granted explicitly.
-        
+
         Process daemon = builder.start();
 
-        log.info(absoluteCommandPath + " started...");
-        
-        final BufferedInputStream in = new BufferedInputStream(daemon.getInputStream());
-        final BufferedInputStream err = new BufferedInputStream(daemon.getErrorStream());
+        addProcessShutdownHook(daemon);
 
-        Runnable daemonOutputReader = new Runnable()
-        {
-          public void run()
-          {
-            int len = 0;
-            byte[] buffer = new byte[256];
-
-            while (len != -1)
-            {
-              try
-              {
-                len = in.read(buffer, 0, buffer.length);
-
-                log.info("[OUT] " + new String(buffer));
-              }
-              catch (IOException e)
-              {
-                log.error("Failed to read the input stream of external daemon process: " + e, e);
-
-                len = -1;
-              }
-            }
-          }
-        };
-
-        Runnable daemonErrorReader = new Runnable()
-        {
-          public void run()
-          {
-            int len = 0;
-            byte[] buffer = new byte[256];
-
-            while (len != -1)
-            {
-              try
-              {
-                len = err.read(buffer, 0, buffer.length);
-
-                log.info("[ERR] " + new String(buffer));
-              }
-              catch (IOException e)
-              {
-                log.error("Failed to read the input stream of external daemon process: " + e, e);
-
-                len = -1;
-              }
-            }
-          }
-        };
-
-        Thread outputReader = new Thread(daemonOutputReader);
-        outputReader.setDaemon(true);
-        outputReader.setName("Input reader for external process " + absoluteCommandPath);
-        outputReader.start();
-
-        Thread errorReader = new Thread(daemonErrorReader);
-        errorReader.setDaemon(true);
-        errorReader.setName("Error reader for external process " + absoluteCommandPath);
-        errorReader.start();
-
-        return true;
-      }
-      catch (IOException e)
-      {
-        log.error("Starting the native daemon process failed: " + e, e);
-
-        return false;
+        attachProcessOutputs(
+            new File(absoluteCommandPath).getName(),
+            daemon.getInputStream(),
+            daemon.getErrorStream()
+        );
       }
       catch (SecurityException securityexception)
       {
-        log.error(
+        // rethrow as I/O Exception...
+
+        throw new IOException(
             "Security manager has denied external process execution. " +
             "Permission should be set as 'FilePermission(" + absoluteCommandPath +
             ", \"execute\")' or 'autoStart' property should be set to false. " +
-            "(" + securityexception + ")"
+            "(" + securityexception + ")", securityexception
         );
-
-        return false;
       }
     }
     catch (Error e)
     {
-      log.error(e.getMessage(), e);
+      // rethrow as I/O Exception...
 
-      return false;
+      throw new IOException(e.getMessage(), e);
     }
 
     // TODO: STOP method to kill the external process, if any
@@ -394,80 +466,130 @@ public class IOProxy
   /**
    * TODO
    *
-   * @return
    *
    * @throws IOException
    */
-  private Socket getConnection() throws IOException
+  private void getConnection() throws IOException
   {
     if (connection == null)
     {
-      if (!createConnection() && autoStartNativeDaemon)
+      // if don't have a connection yet, try to create one... should that fail try to
+      // autostart native daemon (if feature enabled) and then create the connection...
+
+      try
+      {
+        // may throw IOException if native daemon has not been started, or error if something
+        // more serious... nevertheless, keep trying.
+
+        if (createConnection())
+          return;
+      }
+      catch (Throwable t)
+      {
+        // autostart not enabled and connection failed, rethrow...
+
+        if (!autoStartNativeDaemon)
+        {
+          throw new IOException(
+              "Could not connect to native I/O daemon. Autostart is not enabled, therefore " +
+              "the native I/O daemon must be started manually, or restarted if it has stopped " +
+              "responding. (" + t + ")", t);
+        }
+
+        // otherwise, keep trying...
+        
+        log.info("Initial attempt at connecting to native I/O daemon failed: " + t);
+      }
+
+      if (autoStartNativeDaemon)
       {
         startNativeDaemon();
 
         if (!createConnection())
         {
-          throw new IOException();  // TODO
+          throw new IOException("Creating");  // TODO
         }
       }
+
+      else
+      {
+
+      }
+
     }
 
+    // TODO : test return value
     ping();
 
-    return connection;
   }
 
 
   /**
    * TODO
    *
+   * @throws IOException TODO
+   *
    * @throws Error  if the loopback interface cannot be resolved or the security manager
    *                prevents connecting to the local I/O daemon
    *
    * @return true if socket connection was succesfully created; false otherwise
    */
-  private boolean createConnection()
+  private boolean createConnection() throws IOException
   {
-    return AccessController.doPrivileged(new PrivilegedAction<Boolean>()
+    try
     {
-      public Boolean run()
+      return AccessController.doPrivileged(new PrivilegedExceptionAction<Boolean>()
       {
-
-        String loopbackInterface = null;
-
-        try
+        public Boolean run() throws IOException
         {
-          loopbackInterface = InetAddress.getByName(null).getHostName();
 
-          connection = new Socket(loopbackInterface, nativeIODaemonPort);
+          String loopbackInterface = null;
 
-          return connection.isConnected();
-        }
-        catch (UnknownHostException exception)
-        {
-          // We connect to loopback interface (localhost) so this shouldn't happen....
+          try
+          {
+            loopbackInterface = InetAddress.getByName(null).getHostName();
 
-          throw new Error(
-              "Unable to connect to loopback interface (" +
-              loopbackInterface + ":" + nativeIODaemonPort + "): " + exception.toString(),
-              exception
-          );
+            connection = new Socket(loopbackInterface, nativeIODaemonPort);
+
+            // TODO : set socket properties
+
+            return connection.isConnected();
+          }
+          catch (UnknownHostException exception)
+          {
+            // We connect to loopback interface (localhost) so this shouldn't happen....
+
+            throw new Error(
+                "Unable to connect to loopback interface (" +
+                loopbackInterface + ":" + nativeIODaemonPort + "): " + exception.toString(),
+                exception
+            );
+          }
+          catch (SecurityException securityexception)
+          {
+            throw new Error(
+                "Caller's security domain prevents socket connection to '"
+                + loopbackInterface + ":" + nativeIODaemonPort + "': " + securityexception.toString(),
+                securityexception
+            );
+          }
         }
-        catch (IOException e)
-        {
-          return false;
-        }
-        catch (SecurityException securityexception)
-        {
-          throw new Error(
-              "Caller's security domain prevents socket connection to '"
-              + loopbackInterface + ":" + nativeIODaemonPort + "': " + securityexception.toString(),
-              securityexception
-          );
-        }
+      });
+    }
+    catch (PrivilegedActionException e)
+    {
+      Exception shouldBeIOException = e.getException();
+
+      if (shouldBeIOException instanceof IOException)
+      {
+        throw (IOException)shouldBeIOException;
       }
-    });
+
+      else
+      {
+        throw new Error(e);   // don't know what this is
+      }
+    }
   }
 
 
