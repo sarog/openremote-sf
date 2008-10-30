@@ -289,6 +289,7 @@ static apr_status_t create_server_socket(apr_socket_t **serversocket, apr_pool_t
   *serversocket = newsocket;
 
   printf("OpenRemote I/O Daemon listening on %s:%d...\n", socket_address->hostname, socket_address->port);
+  fflush(stdout);
 
   return APR_SUCCESS;
 }
@@ -333,6 +334,7 @@ static void handle_incoming_connections(apr_socket_t *serversocket, apr_pool_t *
     else
     {
       printf("APR ERROR CODE %d", status);   // TODO
+      fflush(stdout);
     }
   }
 }
@@ -354,12 +356,14 @@ static void read_message(apr_socket_t *socket, apr_pool_t *mempool)
   module_id[8] = '\0';
 
   printf("RECEIVED MODULE ID: %s\n", module_id);
-
+  fflush(stdout);
+  
   if (strncmp(module_id, ping_module_id, 8) == 0)
   {
     const char *response = "I AM HERE";
 
     printf("Responding to a ping...\n");
+    fflush(stdout);
 
     apr_size_t len = strlen(response);
     apr_socket_send(socket, response, &len);
@@ -404,9 +408,11 @@ static apr_status_t init(apr_pool_t **mempool, int argc, const char *argv[])
   if (atexit(apr_terminate) != 0)
   {
     printf("WARNING: Error registering cleanup function(s).\n");
+    fflush(stdout);
   }
 
   printf("Starting OpenRemote I/O daemon...\n");
+  fflush(stdout);
 
   /**
    * Set up an application with normalized argc, argv (and optionally env) in order to deal with
@@ -440,6 +446,7 @@ static apr_status_t init(apr_pool_t **mempool, int argc, const char *argv[])
         "Failed to set memory pool size threshold to %d, continuing with default " \
         "memory pool size (unlimited?)", MAX_POOL_SIZE
     );
+    fflush(stdout);
   }
 
   *mempool = newpool;
@@ -455,6 +462,7 @@ static void print_error_status(apr_status_t status)
   apr_strerror(status, errbuf, sizeof(errbuf));
 
   printf("OpenRemote I/O Daemon Error: %d, %s\n", status, errbuf);
+  fflush(stdout);
 }
 
 static void exit_with_error()
@@ -545,6 +553,7 @@ static void print_help_and_exit()
   printf("\n");
   printf("-p, --port        I/O daemon listening port\n");
   printf("-h, --help        this message\n\n");
+  fflush(stdout);
 
   apr_terminate();
 
@@ -580,10 +589,10 @@ static void configure_server_port(const char *port_argument_value)
       "\n[WARNING] Invalid port number %d, falling back to default port %d...\n\n",
       port_number, DEFAULT_PORT
     );
+    fflush(stdout);
     
     port_number = DEFAULT_PORT;
   }
 
   config->port = port_number;
 }
-
