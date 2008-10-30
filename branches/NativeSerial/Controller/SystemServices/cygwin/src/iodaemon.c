@@ -76,6 +76,7 @@ static void            exit_with_error();
 static apr_status_t    parse_options(int argc, const char *argv[], apr_pool_t *mempool);
 static void            print_help_and_exit();
 static void            configure_server_port(const char *port_argument_value);
+static void            receive_error(apr_status_t status, apr_socket_t *clientsocket, apr_size_t len);
 
 
 static struct configuration
@@ -341,36 +342,181 @@ static void handle_incoming_connections(apr_socket_t *serversocket, apr_pool_t *
 
 
 /**
- * TODO
+ * This one parses the incoming message on the socket and sends the appropriate response.
  *
+ * The message structure is string based for the sake of simplicity and expects the following
+ * format:
+ *
+ *  - First 8 characters are a module identifier. This indicates what I/O module the message
+ *    is intended for. Current valid values are:
+ *
+ *       _CONTROL    Control id for giving commands to the daemon itself
+ *       R_SERIAL    Serial module to write uninterpreted bytes to
+ *
+ *
+ *  - Next 10 characters are a message payload length. This must be a correct value for the
+ *    length of the rest of the message payload.
+ *
+ *    Message length is a 10 character long hexadecimal value, in uppercase and with leading
+ *    '0X' characters. It must always be exactly 10 characters long so the actual value is padded
+ *    with leading zeroes. Payload size zero is *not* a valid value.
+ *
+ *    Examples of valid values are:
+ *
+ *       '0X0000DEAD', '0XCAFEBABE' and '0X0000000D'
+ *
+ *  - The remainder of the message string is the I/O module specific payload. The length is
+ *    determined by the previous message payload length header. The content of the payload
+ *    is specific to the I/O module. See below for protocol details of each module.
  */
 static void read_message(apr_socket_t *socket, apr_pool_t *mempool)
 {
-  char module_id[9];
+  static const int moduleid_header_len = 8;
+  static const int msglength_header_len = 10;
 
-  const char *ping_module_id = "FFFFFFFF";
+  char module_id[moduleid_header_len + 1];
+  char message_length[msglength_header_len + 1];
 
-  apr_size_t len = sizeof(module_id);
-  apr_status_t status = apr_socket_recv(socket, module_id, &len);
+  char *payload;
+  int char_size = sizeof(char);
 
-  module_id[8] = '\0';
+  apr_size_t payload_size;
+  apr_size_t len;
+  apr_status_t status;
 
-  printf("RECEIVED MODULE ID: %s\n", module_id);
-  fflush(stdout);
-  
-  if (strncmp(module_id, ping_module_id, 8) == 0)
+  static const char *control_id = "_CONTROL";
+  static const char *serial_id  = "R_SERIAL";
+
+
+  // Function Body --------------------------------------------------------------------------------
+
+  /**
+   * Read first eight characters as module ID... (and make it into string on the last extra char)
+   */
+  len = sizeof(module_id) - char_size;
+
+  status = apr_socket_recv(socket, module_id, &len);
+
+  if (status != APR_SUCCESS || len != moduleid_header_len)
   {
-    const char *response = "I AM HERE";
-
-    printf("Responding to a ping...\n");
-    fflush(stdout);
-
-    apr_size_t len = strlen(response);
-    apr_socket_send(socket, response, &len);
+    receive_error(status, socket, len);
+    return;
   }
+
+  module_id[moduleid_header_len] = '\0';
+
+
+  /**
+   * Read following ten characters as message payload length hex string and convert to int,
+   * then allocate required memory chunk for the payload from the pool...
+   */
+  len = sizeof(message_length) - char_size;
+
+  status = apr_socket_recv(socket, message_length, &len);
+
+  if (status != APR_SUCCESS || len != msglength_header_len)
+  {
+    receive_error(status, socket, len);
+    return;
+  }
+
+  message_length[msglength_header_len] = '\0';
+  long int msglen = strtol(message_length, NULL, 16 /* base 16 hex */);
+
+  if (msglen == 0)
+  {
+    receive_error(-1, socket, -1);
+    return;
+  }
+
+  payload_size = char_size * msglen + char_size;
+  payload = apr_pcalloc(mempool, payload_size);
+
+
+  /**
+   * Finally read in the payload.
+   */
+  len = payload_size - char_size;
+
+  status = apr_socket_recv(socket, payload, &len);
+
+  if (status != APR_SUCCESS || len != payload_size - char_size)
+  {
+    receive_error(status, socket, len);
+    return;
+  }
+
+  printf("======= PAYLOAD: %s\n", payload);
+  fflush(stdout);
+
   
+  /**
+   * CONTROL PROTOCOL
+   *
+   * For giving control commands to the daemon itself. Supported commands are:
+   *
+   *  - PING ("ARE YOU THERE")
+   *
+   *      Only requires "I AM HERE" response, no other action
+   *
+   *  - KILL ("D1ED1ED1E")
+   *
+   *      Respond with "GOODBYE CRUEL WORLD" and execute an orderly shutdown
+   */
+  if (strncmp(module_id, control_id, 8) == 0)
+  {
+    static const char *ping_request = "ARE YOU THERE";
+    static const char *ping_response = "I AM HERE";
+
+    static const char *kill_request = "D1ED1ED1E";
+    static const char *kill_response = "GOODBYE CRUEL WORLD";
+
+    if (strcmp(payload, ping_request) == 0)
+    {
+      printf("Responding to a ping...\n");
+      fflush(stdout);
+
+      // TODO : check socket send status
+      apr_size_t len = strlen(ping_response);
+      apr_socket_send(socket, ping_response, &len);
+
+      // TODO : close socket?
+    }
+
+    else if (strcmp(payload, kill_request) == 0)
+    {
+      printf("Shutting down...\n");
+      fflush(stdout);
+
+      // TODO : check socket send status
+      apr_size_t len = strlen(kill_response);
+      apr_socket_send(socket, kill_response, &len);
+
+      apr_socket_close(socket);
+      apr_pool_destroy(mempool);
+      apr_terminate();
+      exit(0);
+    }
+  }
 }
 
+
+static void receive_error(apr_status_t status, apr_socket_t *client_socket, apr_size_t len)
+{
+  printf("Receive error: ");
+
+  if (status == -1 && len == -1)
+  {
+    printf("message size conversion error\n");
+  }
+
+  else
+  {
+    print_error_status(status);
+  }
+
+  apr_socket_close(client_socket);
+}
 
 /**
  *
@@ -573,10 +719,6 @@ static void configure_server_port(const char *port_argument_value)
   /**
    * Strtol() returns the converted value, if any. Zero (FALSE) is returned and errno *may* be set
    * to EINVAL if conversion cannot be made.
-   *
-   * NOTE: not getting EINVAL on cygwin so either I'm doing something wrong or Cygwin takes the
-   *       "maybe" quite literally. In any case, it makes distinguishing between valid zero value
-   *       and failed conversion a bit tricky.
    *
    * Using base 0 allows a decimal constant, octal constant or hexadecimal constant preceded by
    * a + or - sign.
