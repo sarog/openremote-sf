@@ -28,6 +28,7 @@ import org.jboss.kernel.spi.dependency.KernelControllerContext;
 import org.jboss.logging.Logger;
 import org.openremote.controller.core.Bootstrap;
 import org.openremote.controller.daemon.IOModule;
+import static org.openremote.controller.daemon.IOModule.RAW_SERIAL;
 
 /**
  *  TODO
@@ -48,6 +49,73 @@ public class SerialTransmitter
    */
   public final static String LOG_CATEGORY = "RAW SERIAL TRANSMITTER";
 
+
+  // Enums ----------------------------------------------------------------------------------------
+
+  enum Parity
+  {
+    EVEN ("E"),
+    ODD  ("O"),
+    NONE ("N");
+
+    private String serialFormat;
+
+    private Parity(String serialFormat)
+    {
+      this.serialFormat = serialFormat;
+    }
+
+    private String getSerialFormat()
+    {
+      return serialFormat;
+    }
+  }
+
+  enum StopBit
+  {
+    ONE ("1"),
+    TWO ("2"),
+    ONE_HALF ("9");
+
+    private String serialFormat;
+
+    private StopBit(String serialFormat)
+    {
+      this.serialFormat = serialFormat;
+    }
+
+    private String getSerialFormat()
+    {
+      return serialFormat;
+    }
+  }
+
+  enum DataBit
+  {
+    FIVE  ("5"),
+    SIX   ("6"),
+    SEVEN ("7"),
+    EIGHT ("8");
+
+    private String serialFormat;
+
+    private DataBit(String serialFormat)
+    {
+      this.serialFormat = serialFormat;
+    }
+
+    private String getSerialFormat()
+    {
+      return serialFormat;
+    }
+  }
+
+  enum FlowControl
+  {
+    SOFTWARE,
+    HARDWARE
+  }
+  
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -96,10 +164,24 @@ public class SerialTransmitter
 
     try
     {
+      String optionsPayload =
+          DataBit.EIGHT.getSerialFormat() +
+          Parity.NONE.getSerialFormat() +
+          StopBit.ONE.getSerialFormat();
+
+      String serialCommand = "";
+
+      String payload = optionsPayload + serialCommand;
+
       serviceContext.getKernel().getBus().invoke(
           "Output/IOProxy",
           "sendBytes",
-          new Object[] { IOModule.CONTROL, "D1ED1ED1E".getBytes() },
+
+          new Object[]
+          {
+              RAW_SERIAL,
+              payload.getBytes()
+          },
           new String[] { IOModule.class.getName(), new byte[] {}.getClass().getName() }
       );
     }
