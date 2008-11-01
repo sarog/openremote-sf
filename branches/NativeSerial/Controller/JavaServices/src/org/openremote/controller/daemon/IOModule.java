@@ -29,7 +29,7 @@ package org.openremote.controller.daemon;
 public enum IOModule
 {
   RAW_SERIAL  ("R_SERIAL"),
-  CONTROL     ("_CONTROL");
+  CONTROL     ("DCONTROL");
 
 
   // Class Members ------------------------------------------------------------------------------
