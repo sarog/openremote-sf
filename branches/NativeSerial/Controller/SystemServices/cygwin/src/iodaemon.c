@@ -26,14 +26,17 @@
 //  devices in the native operating system. The socket I/O is based on Apache Portable Runtime (APR)
 //  library.
 //
+//  The socket semantics here are blocking (Java style) and the daemon is therefore itself
+//  multithreaded.
+//
 //  My C is more than rusty so don't expect miracles here. Please send patches and corrections
 //  when you spot them. I've overdocumented the code in the hope of making errors or wrong
 //  assumptions more glaring.
 //
-//  Currently the daemon accepts following options from the command line:
-//
-//   -h, --help     prints supported command line options
-//   -p, --port     sets the listening port of this I/O daemon
+//  Also you will notice the extensive use of type definitions to make the final source have a very
+//  Java like feeling. If that gives you an allergic reaction then too bad for you. Hopefully it
+//  makes the thing a bit more bearable for any Java developer looking at it. If you're a C hacker
+//  you already know how to make it look like the way you like.
 //
 //
 //  Author: Juha Lindfors (juha@juhalindfors.com)
@@ -47,13 +50,16 @@
 #include <apr_network_io.h>
 #include <apr_strings.h>
 #include <apr_getopt.h>
+#include <apr_thread_proc.h>
+
+#include <orc/iodaemon.h>
 
 
 /**
  * Sets the default listening port for the daemon if nothing else is defined from the command
  * line options.
  */
-#define DEFAULT_PORT		    9999
+#define DEFAULT_PORT		  9999
 
 
 /**
@@ -65,46 +71,38 @@
 #define MAX_POOL_SIZE     32
 
 
-// Function Prototypes ----------------------------------------------------------------------------
+/**
+ * TODO
+ *
+ */
+static Configuration config;
 
-static apr_status_t    init(apr_pool_t **mempool, int argc, const char *argv[]);
-static apr_status_t    create_server_socket(apr_socket_t **serversocket, apr_pool_t *mempool);
-static void            handle_incoming_connections(apr_socket_t *serversocket, apr_pool_t *mempool);
-static void            read_message(apr_socket_t *clientsocket, apr_pool_t *mempool);
-static void            print_error_status(apr_status_t status);
-static void            exit_with_error();
-static apr_status_t    parse_options(int argc, const char *argv[], apr_pool_t *mempool);
-static void            print_help_and_exit();
-static void            configure_server_port(const char *port_argument_value);
-static void            receive_error(apr_status_t status, apr_socket_t *clientsocket, apr_size_t len);
+/**
+ * TODO
+ *
+ * Pointer to APR implementation of a memory pool. Most APR API calls require this.
+ */
+static MemPool mempool;
 
 
-static struct configuration
+
+/**
+ *  MAIN:
+ *
+ *  First initialize APR and create the necessary memory pool, then bind a listening socket
+ *  into local loopback address and finally parse protocol from incoming client connection(s).
+ *
+ *  Currently the daemon accepts following options from the command line:
+ *
+ *     -h, --help     prints supported command line options
+ *     -p, --port     sets the listening port of this I/O daemon
+ */
+int main(int argc, String argv[])
 {
-  int port;
-
-} *config;
-
-
-// ------------------------------------------------------------------------------------------------
-//
-//   MAIN:
-//
-//   First initialize APR and create the necessary memory pool, then bind a listening socket
-//   into local loopback address and finally parse protocol from incoming client connection.
-//
-// ------------------------------------------------------------------------------------------------
-int main(int argc, const char *argv[])
-{
-  /**
-   * Pointer to APR implementation of a memory pool. Most APR API calls require this.
-   */
-  apr_pool_t *mempool = NULL;
-
   /**
    * Pointer to a listening server side socket.
    */
-  apr_socket_t *serversocket;
+  Socket serversocket;
 
   /**
    * Type for specifying an error or status code. See apr_errno.h for possible values.
@@ -112,7 +110,7 @@ int main(int argc, const char *argv[])
    * For investigating specific error values, use the appropriate macros in apr_errno.h to
    * handle platform specific codes.
    */
-  apr_status_t status;
+  Status status;
 
 
 
@@ -124,8 +122,8 @@ int main(int argc, const char *argv[])
    */
   if ((status = init(&mempool, argc, argv)) != APR_SUCCESS)
   {
-    print_error_status(status);
-    exit_with_error();
+    printErrorStatus(status);
+    exitWithError();
   }
 
   /**
@@ -133,33 +131,35 @@ int main(int argc, const char *argv[])
    *
    * TODO
    */
-  if ((status = parse_options(argc, argv, mempool)) != APR_SUCCESS)
+  if ((status = parseOptions(argc, argv)) != APR_SUCCESS)
   {
-    print_error_status(status);
-    exit_with_error();
+    printErrorStatus(status);
+    exitWithError();
   }
 
 
   /**
    * Start the server socket.
    *
-   * This is a blocking TCP socket (our concurrency scale requirements are low) so any work
-   * should be dished out to a separate thread.
+   * This is a blocking TCP socket (our concurrency scale requirements are low) so the
+   * socket accept() routine will create new thread per incoming connection.
    *
    * Pointer 'serversocket' will be set to point to the created socket structure.
    */
-  if ((status = create_server_socket(&serversocket, mempool)) != APR_SUCCESS)
+  if ((status = createServerSocket(&serversocket)) != APR_SUCCESS)
   {
-    print_error_status(status);
-    exit_with_error();
+    printErrorStatus(status);
+    exitWithError();
   }
+
 
   /**
    * Start handling incoming client connections
    */
-  handle_incoming_connections(serversocket, mempool);
+  handleIncomingConnections(serversocket);
 
-  // Clean exit...
+
+  // TODO: Clean exit... currently handleIncomingConnections() is an infinite loop...
 
   apr_pool_destroy(mempool);
   apr_terminate();
@@ -170,38 +170,35 @@ int main(int argc, const char *argv[])
 /**
  * Binds a server socket and starts listening for incoming connections.
  *
- * The style of this function follows the APR API conventions:
- *
- * 1) The first argument 'server_socket' is an 'out' parameter -- the pointer will be initialized
+ * 1) The first argument 'serverSocket' is a result parameter -- the pointer will be initialized
  *    to point to the created server socket which the caller may then use.
  *
- * 2) The second argument is an 'in' parameter that must be a pointer to an already created
- *    APR memory pool.
+ * 2) The second argument must be a pointer to an already created APR memory pool.
  */
-static apr_status_t create_server_socket(apr_socket_t **serversocket, apr_pool_t *mempool)
+Private Status createServerSocket(SocketResult socketResult)
 {
   /**
    * APR API return type. See the comments in the main() for details.
    */
-  apr_status_t status;
+  Status status;
 
   /**
-   * Temporary 'out' param for the apr_create_socket() call -- we'll initialize the socket
+   * Temporary result param for the apr_create_socket() call -- we'll initialize the socket
    * in this function (socket options, etc.) and then pass it back to the caller via the
-   * 'serversocket' out param of this function.
+   * 'socketResult' result param of this function.
    */
-  apr_socket_t *newsocket;
+  Socket newsocket;
 
   /**
-   * An 'out' parameter for apr_sockaddr_info_get() call.
+   * A result parameter for apr_sockaddr_info_get() call.
    */
-  apr_sockaddr_t *socket_address;
+  SocketAddress socketAddress;
 
   /**
    * Specify a loopback address for the server socket. This ensures that only connections from
    * the same host are allowed.
    */
-  const char *localhost = "127.0.0.1";
+  String localhost = "127.0.0.1";
 
 
   // Function Body --------------------------------------------------------------------------------
@@ -210,7 +207,7 @@ static apr_status_t create_server_socket(apr_socket_t **serversocket, apr_pool_t
   /**
    * Specifying a socket address.
    *
-   * 1) socket_address is an 'out' parameter as per APR conventions
+   * 1) socketAddress is a result parameter
    *
    * 2) We intend to accept connections from the same host only, therefore using a loopback
    *    address for this server socket.
@@ -221,11 +218,9 @@ static apr_status_t create_server_socket(apr_socket_t **serversocket, apr_pool_t
    *
    * 5) socket address flags, 0 == no flags. See APR_IPV4_ADDR_OK and APR_IPV6_ADDR_OK
    *    in apr_network_io.h
-   *
-   * 6) mempool pointer as per the APR API conventions
    */
   if ((status = apr_sockaddr_info_get(
-      &socket_address, localhost, APR_INET, config->port, 0, mempool)) != APR_SUCCESS)
+      &socketAddress, localhost, APR_INET, config->port, 0, mempool)) != APR_SUCCESS)
   {
     return status;
   }
@@ -233,16 +228,14 @@ static apr_status_t create_server_socket(apr_socket_t **serversocket, apr_pool_t
   /**
    * Create the socket based on the socket address.
    *
-   * 1) Socket 'out' parameter.
+   * 1) Socket is a result parameter.
    *
-   * 2) IP address family from socket_address we created earlier.
+   * 2) IP address family from socketAddress we created earlier.
    *
    * 3 & 4) accept streaming TCP connections (see sockets.h and apr_network_io.h respectively)
-   *
-   * 5) memory pool pointer as per APR API conventions
    */
   if ((status = apr_socket_create(
-      &newsocket, socket_address->family, SOCK_STREAM, APR_PROTO_TCP, mempool)) != APR_SUCCESS)
+      &newsocket, socketAddress->family, SOCK_STREAM, APR_PROTO_TCP, mempool)) != APR_SUCCESS)
   {
     return status;
   }
@@ -250,14 +243,13 @@ static apr_status_t create_server_socket(apr_socket_t **serversocket, apr_pool_t
   /**
    * Server socket options:
    *
-   *  - blocking socket -- this is not for highly scalable server, we are going to serve one
-   *    local (albeit potentially multithreaded) process only
+   *  - blocking socket
    *
    *  - socket timeout: -1 means reads and writes on this socket will block as well, not sure if
    *    this makes any difference for a listening server socket (it will just spawn client sockets
    *    from [blocking] accept() call)
    */
-  if ((status = apr_socket_opt_set(newsocket, APR_SO_NONBLOCK, 0)) != APR_SUCCESS)
+  if ((status = apr_socket_opt_set(newsocket, APR_SO_NONBLOCK, FALSE)) != APR_SUCCESS)
   {
     return status;
   }
@@ -270,7 +262,7 @@ static apr_status_t create_server_socket(apr_socket_t **serversocket, apr_pool_t
   /**
    * Bind the listening socket to a physical port.
    */
-  if ((status = apr_socket_bind(newsocket, socket_address)) != APR_SUCCESS)
+  if ((status = apr_socket_bind(newsocket, socketAddress)) != APR_SUCCESS)
   {
     return status;
   }
@@ -285,31 +277,39 @@ static apr_status_t create_server_socket(apr_socket_t **serversocket, apr_pool_t
   }
 
   /**
-   * Set our 'out' param, report success and return APR_SUCCESS
+   * Set our result param, report success and return APR_SUCCESS
    */
-  *serversocket = newsocket;
+  *socketResult = newsocket;
 
-  printf("OpenRemote I/O Daemon listening on %s:%d...\n", socket_address->hostname, socket_address->port);
-  fflush(stdout);
+  loginfo("OpenRemote I/O Daemon listening on %s:%d...", socketAddress->hostname, socketAddress->port);
 
   return APR_SUCCESS;
 }
 
 
 /**
- * TODO
+ * Runs in a loop, blocking on accept() taking in connections and sending each incoming
+ * client connection off to a new thread to handle.
+ *
+ * @param serverSocket    the bound server socket which accepts incoming connections
  */
-static void handle_incoming_connections(apr_socket_t *serversocket, apr_pool_t *mempool)
+Private void handleIncomingConnections(Socket serverSocket)
 {
   /**
    * Pointer to client socket we will get back from accept()
    */
-  apr_socket_t *clientsocket;
+  Socket clientSocket;
 
   /**
    * APR status, see main() for more details.
    */
-  apr_status_t status;
+  Status status;
+
+  ThreadAttributes threadAttributes;
+
+  Thread thread;
+
+  SocketThreadContext threadContext;
 
 
   // Function Body --------------------------------------------------------------------------------
@@ -319,25 +319,69 @@ static void handle_incoming_connections(apr_socket_t *serversocket, apr_pool_t *
   {
     // this will block since we have a blocking server socket...
 
-    if ((status = apr_socket_accept(&clientsocket, serversocket, mempool)) == APR_SUCCESS)
+    if ((status = apr_socket_accept(&clientSocket, serverSocket, mempool)) == APR_SUCCESS)
     {
-      // TODO : this should be spawned to a new socket asap
-      // TODO : also set timeout on blocking client socket I/O
-      
-      apr_socket_opt_set(clientsocket, APR_SO_NONBLOCK, 0);
-      apr_socket_timeout_set(clientsocket, -1);
+      if ((status = apr_threadattr_create(&threadAttributes, mempool)) != APR_SUCCESS)
+      {
+    	  logerror("Cannot create new thread: %s", getErrorStatus(status));
+    	  continue;
+      }
 
-      read_message(clientsocket, mempool);
+      /**
+       * Establish socket thread context with some data (currently just pointer
+       * to the client socket).
+       */
+      threadContext = apr_pcalloc(mempool, SocketThreadContextSize);
+      threadContext->socket = clientSocket;
 
-      apr_socket_close(clientsocket);
+      apr_thread_create(&thread, threadAttributes, socketThread, threadContext, mempool);
     }
-
     else
     {
-      printf("APR ERROR CODE %d", status);   // TODO
-      fflush(stdout);
+      logerror("Listening socket accept() failed: %s", getErrorStatus(status));
+      exitWithError();
     }
   }
+}
+
+
+/**
+ * This is the client socket thread implementation. It unmarshals the socket thread
+ * context, sets the client socket options and starts running in a loop to read
+ * incoming client messages.
+ *
+ * The client socket is blocking (hence we are here in our own thread) with no time out.
+ * The socket is configured with keep-alive connection. In practice this means the
+ * client side (Java side in our case) opens one or few connections and keeps using
+ * the persistent connection(s) to multiplex I/O operations.
+ */
+Private Runnable socketThread(Thread thread, Any socketThreadContext)
+{
+  SocketThreadContext ctx = socketThreadContext;
+
+  apr_socket_opt_set(ctx->socket, APR_SO_NONBLOCK, FALSE);
+  apr_socket_opt_set(ctx->socket, APR_SO_KEEPALIVE, TRUE);
+  apr_socket_timeout_set(ctx->socket, -1);
+
+  int running = TRUE;
+  int status  = TRUE;
+
+  while (running)
+  {
+    status = readMessage(ctx->socket);
+
+    if (status != PROTOCOL_MESSAGE_READ_OK)
+    {
+      running = FALSE;
+    }
+  }
+
+  if ((status = apr_socket_close(ctx->socket)) != APR_SUCCESS)
+  {
+    logerror("Could not close socket: %s", getErrorStatus(status));
+  }
+
+  return NULL;
 }
 
 
@@ -350,8 +394,8 @@ static void handle_incoming_connections(apr_socket_t *serversocket, apr_pool_t *
  *  - First 8 characters are a module identifier. This indicates what I/O module the message
  *    is intended for. Current valid values are:
  *
- *       _CONTROL    Control id for giving commands to the daemon itself
- *       R_SERIAL    Serial module to write uninterpreted bytes to
+ *       DCONTROL    Control id for giving commands to the daemon itself
+ *       R_SERIAL    Serial module to write uninterpreted (raw) bytes to serial port(s)
  *
  *
  *  - Next 10 characters are a message payload length. This must be a correct value for the
@@ -369,26 +413,27 @@ static void handle_incoming_connections(apr_socket_t *serversocket, apr_pool_t *
  *    determined by the previous message payload length header. The content of the payload
  *    is specific to the I/O module. See below for protocol details of each module.
  */
-static void read_message(apr_socket_t *socket, apr_pool_t *mempool)
+Private int readMessage(Socket socket)
 {
   static const int moduleid_header_len = 8;
   static const int msglength_header_len = 10;
 
+  static String control_id = "DCONTROL";
+  static String serial_id  = "R_SERIAL";
+
+  static int char_size = sizeof(char);
+
   char module_id[moduleid_header_len + 1];
   char message_length[msglength_header_len + 1];
-
   char *payload;
-  int char_size = sizeof(char);
 
   apr_size_t payload_size;
   apr_size_t len;
-  apr_status_t status;
-
-  static const char *control_id = "_CONTROL";
-  static const char *serial_id  = "R_SERIAL";
+  Status status;
 
 
   // Function Body --------------------------------------------------------------------------------
+
 
   /**
    * Read first eight characters as module ID... (and make it into string on the last extra char)
@@ -399,8 +444,19 @@ static void read_message(apr_socket_t *socket, apr_pool_t *mempool)
 
   if (status != APR_SUCCESS || len != moduleid_header_len)
   {
-    receive_error(status, socket, len);
-    return;
+    if (status != APR_SUCCESS)
+    {
+      logerror("Receive error: %s", getErrorStatus(status));
+    }
+
+    else
+    {
+      module_id[len] = '\0';
+      logerror("Was expecting %d bytes of module ID header, got %d instead ('%s')", \
+               moduleid_header_len, len, module_id);
+    }
+
+    return PROTOCOL_RECEIVE_ERROR_SOCKET_CLOSED;
   }
 
   module_id[moduleid_header_len] = '\0';
@@ -416,8 +472,19 @@ static void read_message(apr_socket_t *socket, apr_pool_t *mempool)
 
   if (status != APR_SUCCESS || len != msglength_header_len)
   {
-    receive_error(status, socket, len);
-    return;
+    if (status != APR_SUCCESS)
+    {
+      logerror("Receive error: %s", getErrorStatus(status));
+    }
+
+    else
+    {
+      message_length[len] = '\0';
+      logerror("Was expecting %d bytes of message length header, got %d instead ('%s')", \
+               msglength_header_len, len, message_length);
+    }
+
+    return PROTOCOL_RECEIVE_ERROR_SOCKET_CLOSED;
   }
 
   message_length[msglength_header_len] = '\0';
@@ -425,13 +492,15 @@ static void read_message(apr_socket_t *socket, apr_pool_t *mempool)
 
   if (msglen == 0)
   {
-    receive_error(-1, socket, -1);
-    return;
+    logerror("Unable to convert '%s' to integer.", message_length);
+
+    return PROTOCOL_RECEIVE_ERROR_SOCKET_CLOSED;
   }
 
   payload_size = char_size * msglen + char_size;
   payload = apr_pcalloc(mempool, payload_size);
 
+  // TODO : validate payload size against module id
 
   /**
    * Finally read in the payload.
@@ -442,14 +511,26 @@ static void read_message(apr_socket_t *socket, apr_pool_t *mempool)
 
   if (status != APR_SUCCESS || len != payload_size - char_size)
   {
-    receive_error(status, socket, len);
-    return;
+    if (status != APR_SUCCESS)
+    {
+      logerror("Receive error: %s", getErrorStatus(status));
+    }
+
+    else
+    {
+      payload[len] = '\0';
+      logerror("Was expecting %d bytes of payload, got %d instead ('%s')", \
+                payload_size - char_size, len, payload);
+    }
+
+    return PROTOCOL_RECEIVE_ERROR_SOCKET_CLOSED;
   }
 
-  printf("======= PAYLOAD: %s\n", payload);
-  fflush(stdout);
+  payload[len] = '\0';
 
-  
+  logdebug("PAYLOAD: %s", payload);
+
+
   /**
    * CONTROL PROTOCOL
    *
@@ -465,28 +546,24 @@ static void read_message(apr_socket_t *socket, apr_pool_t *mempool)
    */
   if (strncmp(module_id, control_id, 8) == 0)
   {
-    static const char *ping_request = "ARE YOU THERE";
-    static const char *ping_response = "I AM HERE";
+    static String ping_request = "ARE YOU THERE";
+    static String ping_response = "I AM HERE";
 
-    static const char *kill_request = "D1ED1ED1E";
-    static const char *kill_response = "GOODBYE CRUEL WORLD";
+    static String kill_request = "D1ED1ED1E";
+    static String kill_response = "GOODBYE CRUEL WORLD";
 
     if (strcmp(payload, ping_request) == 0)
     {
-      printf("Responding to a ping...\n");
-      fflush(stdout);
+      logdebug("%s", "Responding to a ping...");
 
       // TODO : check socket send status
       apr_size_t len = strlen(ping_response);
       apr_socket_send(socket, ping_response, &len);
-
-      // TODO : close socket?
     }
 
     else if (strcmp(payload, kill_request) == 0)
     {
-      printf("Shutting down...\n");
-      fflush(stdout);
+      loginfo("%s", "Shutting down...");
 
       // TODO : check socket send status
       apr_size_t len = strlen(kill_response);
@@ -494,48 +571,55 @@ static void read_message(apr_socket_t *socket, apr_pool_t *mempool)
 
       apr_socket_close(socket);
       apr_pool_destroy(mempool);
+
       apr_terminate();
       exit(0);
     }
   }
-}
 
-
-static void receive_error(apr_status_t status, apr_socket_t *client_socket, apr_size_t len)
-{
-  printf("Receive error: ");
-
-  if (status == -1 && len == -1)
+  /**
+   *  SERIAL PROTOCOL
+   *
+   *  Payload is expected to start with a 3 character configuration string, specifying
+   *  number of data bits, parity and number of stop bits.
+   *
+   *  For example, serial options for 8 databits, no parity, one stop bit would start with '8N1'.
+   *  Seven databits with even parity and two stop bits would be '7E2'. Odd parity is indicated
+   *  with character 'O'.
+   *
+   *  TODO
+   */
+  else if (strncmp(module_id, serial_id, 8) == 0)
   {
-    printf("message size conversion error\n");
+    char databit = payload[0];
+    char parity  = payload[char_size];
+    char stopbit = payload[char_size*2];
+
+    logdebug("Serial Options: %c%c%c", databit, parity, stopbit);
   }
 
-  else
-  {
-    print_error_status(status);
-  }
-
-  apr_socket_close(client_socket);
+  return PROTOCOL_MESSAGE_READ_OK;
 }
+
 
 /**
  *
  * TODO
  *
  */
-static apr_status_t init(apr_pool_t **mempool, int argc, const char *argv[])
+Private Status init(MemPoolResult mempool, int argc, String argv[])
 {
   /**
    * Type for specifying an error or status code. See apr_errno.h for possible values. If you
    * want to investigate specific error values, use the appropriate macros to handle cross
    * platform issues.
    */
-  apr_status_t status;
+  Status status;
 
   /**
    * TODO
    */
-  apr_pool_t *newpool;
+  MemPool newpool;
 
   /**
    * TODO
@@ -580,7 +664,7 @@ static apr_status_t init(apr_pool_t **mempool, int argc, const char *argv[])
   // Set the max limit on the memory pool size so some memory will return back to the system,
   // eventually. This is done via apr_allocator_t reference.
 
-  apr_allocator_t* pool_allocator = apr_pool_allocator_get(newpool);
+  apr_allocator_t *pool_allocator = apr_pool_allocator_get(newpool);
 
   if (pool_allocator)
   {
@@ -596,12 +680,12 @@ static apr_status_t init(apr_pool_t **mempool, int argc, const char *argv[])
   }
 
   *mempool = newpool;
-  
+
   return status;
 }
 
 
-static void print_error_status(apr_status_t status)
+Private void printErrorStatus(Status status)
 {
   char errbuf[1024];
 
@@ -611,7 +695,16 @@ static void print_error_status(apr_status_t status)
   fflush(stdout);
 }
 
-static void exit_with_error()
+Private String getErrorStatus(Status status)
+{
+  char errbuf[1024];
+
+  apr_strerror(status, errbuf, sizeof(errbuf));
+
+  return apr_pstrdup(mempool, errbuf);
+}
+
+Private void exitWithError()
 {
   // apr_terminate should also be registered with atexit() but it doesn't
   // seem to hurt to do it twice...
@@ -624,7 +717,7 @@ static void exit_with_error()
 /**
  * TODO
  */
-static apr_status_t parse_options(int argc, const char *argv[], apr_pool_t *mempool)
+Private Status parseOptions(int argc, String argv[])
 {
 
   /**
@@ -632,16 +725,16 @@ static apr_status_t parse_options(int argc, const char *argv[], apr_pool_t *memp
    */
   apr_getopt_t *opt;
 
-  apr_status_t status;
+  Status status;
 
-  int option_character;
+  int optionCharacter;
 
-  const char *option_argument;
+  String optionArgument;
 
   /**
    * TODO
    */
-  static const apr_getopt_option_t option_list[] =
+  static const apr_getopt_option_t optionList[] =
   {
     {
       "port", 'p', TRUE, "listening port for the I/O daemon"
@@ -661,21 +754,24 @@ static apr_status_t parse_options(int argc, const char *argv[], apr_pool_t *memp
 
   apr_getopt_init(&opt, mempool, argc, argv);
 
-  config = apr_palloc(mempool, sizeof(config));
+  config = apr_palloc(mempool, ConfigurationSize);
 
-  while ((status = apr_getopt_long(opt, option_list, &option_character, &option_argument)) == APR_SUCCESS)
+  config->port = DEFAULT_PORT;
+
+
+  while ((status = apr_getopt_long(opt, optionList, &optionCharacter, &optionArgument)) == APR_SUCCESS)
   {
-    switch (option_character)
+    switch (optionCharacter)
     {
       case 'h':
 
-        print_help_and_exit();
+        printHelpAndExit();
 
         break;
 
       case 'p':
 
-        configure_server_port(option_argument);
+        configureServerPort(optionArgument);
 
         break;
     }
@@ -691,7 +787,7 @@ static apr_status_t parse_options(int argc, const char *argv[], apr_pool_t *memp
 /**
  * TODO
  */
-static void print_help_and_exit()
+Private void printHelpAndExit()
 {
   // TODO
 
@@ -702,7 +798,6 @@ static void print_help_and_exit()
   fflush(stdout);
 
   apr_terminate();
-
   exit(0);
 }
 
@@ -710,10 +805,8 @@ static void print_help_and_exit()
 /**
  * TODO
  */
-static void configure_server_port(const char *port_argument_value)
+Private void configureServerPort(String portArgumentValue)
 {
-  config->port = DEFAULT_PORT;
-
   long int port_number;
 
   /**
@@ -723,7 +816,7 @@ static void configure_server_port(const char *port_argument_value)
    * Using base 0 allows a decimal constant, octal constant or hexadecimal constant preceded by
    * a + or - sign.
    */
-  port_number = strtol(port_argument_value, NULL, 0 /* base */);
+  port_number = strtol(portArgumentValue, NULL, 0 /* base */);
 
   if (port_number < 0 || port_number > 65535)
   {
@@ -732,9 +825,10 @@ static void configure_server_port(const char *port_argument_value)
       port_number, DEFAULT_PORT
     );
     fflush(stdout);
-    
+
     port_number = DEFAULT_PORT;
   }
 
   config->port = port_number;
 }
+
