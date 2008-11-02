@@ -30,7 +30,10 @@
 #  Revision: $Id: $
 ##
 
-version=1.0.0
+daemon_version=1.0.0
+cygwin_apr_version=1.2.12
+macosx_apr_vresion=1.3.3
+
 
 echo "--------------------------------------------------"
 echo " Copying files to JavaServices/runtime..."
@@ -45,9 +48,10 @@ then
 	echo " Cygwin:"
 	echo ""
 
-	cp output/cygwin/iodaemon-$version.exe $cygwin_target
-	cp ../cygwin/apr-1.2.2/LICENSE $cygwin_target
-	cp ../cygwin/apr-1.2.2/NOTICE $cygwin_target
+	cp output/cygwin/iodaemon-$daemon_version.exe $cygwin_target
+	cp ../cygwin/apr-$cygwin_apr_version/LICENSE.txt $cygwin_target/APR-LICENSE.txt
+	cp ../cygwin/apr-$cygwin_apr_version/NOTICE.txt $cygwin_target/APR-NOTICE.txt
+   	cp ../cygwin/apr-$cygwin_apr_version/win32/libapr-1.dll $cygwin_target
 
 	echo " Done."
 fi
@@ -57,11 +61,11 @@ then
 	echo " Mac OS X:"
 	echo ""
 
-	executable_name=iodaemon-$(echo $version)
+	executable_name=iodaemon-$(echo $daemon_version)
 
 	cp ./output/macosx/$executable_name $macosx_target
-	cp ../macosx/apr-1.3.3/LICENSE $macosx_target
-	cp ../macosx/apr-1.3.3/NOTICE $macosx_target
+	cp ../macosx/apr-$(echo $macosx_apr_version)/LICENSE $macosx_target
+	cp ../macosx/apr-$(echo $macosx_apr_version)/NOTICE $macosx_target
 
 	echo " Done."
 fi
