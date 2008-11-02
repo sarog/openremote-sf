@@ -78,8 +78,6 @@
 static Configuration config;
 
 /**
- * TODO
- *
  * Pointer to APR implementation of a memory pool. Most APR API calls require this.
  */
 static MemPool mempool;
@@ -96,6 +94,13 @@ static MemPool mempool;
  *
  *     -h, --help     prints supported command line options
  *     -p, --port     sets the listening port of this I/O daemon
+ *
+ *
+ *  TODO : fix pool handling for threads
+ *  TODO : thread exit for portability
+ *  TODO : mempool error handler
+ *  TODO : mempool data & statistics
+ *  TODO : log to fprintf(...)
  */
 int main(int argc, String argv[])
 {
@@ -122,20 +127,15 @@ int main(int argc, String argv[])
    */
   if ((status = init(&mempool, argc, argv)) != APR_SUCCESS)
   {
-    printErrorStatus(status);
-    exitWithError();
+    logerror("Unable to initialize I/O daemon: %s", status);
+    cleanup();
+    exit(EXIT_FAILURE);
   }
 
   /**
-   * Parse command line options
-   *
-   * TODO
+   * Parse command line options. See the function header for all valid options.
    */
-  if ((status = parseOptions(argc, argv)) != APR_SUCCESS)
-  {
-    printErrorStatus(status);
-    exitWithError();
-  }
+  parseOptions(argc, argv);
 
 
   /**
@@ -148,10 +148,10 @@ int main(int argc, String argv[])
    */
   if ((status = createServerSocket(&serversocket)) != APR_SUCCESS)
   {
-    printErrorStatus(status);
-    exitWithError();
+    logerror("Cannot create server socket: %s", getErrorStatus(status));
+    cleanup();
+    exit(EXIT_FAILURE);
   }
-
 
   /**
    * Start handling incoming client connections
@@ -161,8 +161,7 @@ int main(int argc, String argv[])
 
   // TODO: Clean exit... currently handleIncomingConnections() is an infinite loop...
 
-  apr_pool_destroy(mempool);
-  apr_terminate();
+  cleanup();
   exit(0);
 }
 
@@ -339,7 +338,8 @@ Private void handleIncomingConnections(Socket serverSocket)
     else
     {
       logerror("Listening socket accept() failed: %s", getErrorStatus(status));
-      exitWithError();
+      cleanup();
+      exit(EXIT_FAILURE);
     }
   }
 }
@@ -370,7 +370,7 @@ Private Runnable socketThread(Thread thread, Any socketThreadContext)
   {
     status = readMessage(ctx->socket);
 
-    if (status != PROTOCOL_MESSAGE_READ_OK)
+    if (status != PROTOCOL_MESSAGE_OK)
     {
       running = FALSE;
     }
@@ -415,19 +415,17 @@ Private Runnable socketThread(Thread thread, Any socketThreadContext)
  */
 Private int readMessage(Socket socket)
 {
-  static const int moduleid_header_len = 8;
-  static const int msglength_header_len = 10;
+  static const int moduleidHeaderLength = 8;
+  static const int msglengthHeaderLength = 10;
 
-  static String control_id = "DCONTROL";
-  static String serial_id  = "R_SERIAL";
+  static String controlIDString = "DCONTROL";
+  static String serialIDString  = "R_SERIAL";
 
-  static int char_size = sizeof(char);
-
-  char module_id[moduleid_header_len + 1];
-  char message_length[msglength_header_len + 1];
+  char moduleIDHeader[moduleidHeaderLength + 1];
+  char msgLengthHeader[msglengthHeaderLength + 1];
   char *payload;
 
-  apr_size_t payload_size;
+  apr_size_t payloadSize;
   apr_size_t len;
   Status status;
 
@@ -438,11 +436,11 @@ Private int readMessage(Socket socket)
   /**
    * Read first eight characters as module ID... (and make it into string on the last extra char)
    */
-  len = sizeof(module_id) - char_size;
+  len = sizeof(moduleIDHeader) - charSize;
 
-  status = apr_socket_recv(socket, module_id, &len);
+  status = apr_socket_recv(socket, moduleIDHeader, &len);
 
-  if (status != APR_SUCCESS || len != moduleid_header_len)
+  if (status != APR_SUCCESS || len != moduleidHeaderLength)
   {
     if (status != APR_SUCCESS)
     {
@@ -451,26 +449,26 @@ Private int readMessage(Socket socket)
 
     else
     {
-      module_id[len] = '\0';
+      moduleIDHeader[len] = '\0';
       logerror("Was expecting %d bytes of module ID header, got %d instead ('%s')", \
-               moduleid_header_len, len, module_id);
+               moduleidHeaderLength, len, moduleIDHeader);
     }
 
-    return PROTOCOL_RECEIVE_ERROR_SOCKET_CLOSED;
+    return PROTOCOL_RECEIVE_ERROR;
   }
 
-  module_id[moduleid_header_len] = '\0';
+  moduleIDHeader[moduleidHeaderLength] = '\0';
 
 
   /**
    * Read following ten characters as message payload length hex string and convert to int,
    * then allocate required memory chunk for the payload from the pool...
    */
-  len = sizeof(message_length) - char_size;
+  len = sizeof(msgLengthHeader) - charSize;
 
-  status = apr_socket_recv(socket, message_length, &len);
+  status = apr_socket_recv(socket, msgLengthHeader, &len);
 
-  if (status != APR_SUCCESS || len != msglength_header_len)
+  if (status != APR_SUCCESS || len != msglengthHeaderLength)
   {
     if (status != APR_SUCCESS)
     {
@@ -479,37 +477,37 @@ Private int readMessage(Socket socket)
 
     else
     {
-      message_length[len] = '\0';
+      msgLengthHeader[len] = '\0';
       logerror("Was expecting %d bytes of message length header, got %d instead ('%s')", \
-               msglength_header_len, len, message_length);
+               msglengthHeaderLength, len, msgLengthHeader);
     }
 
-    return PROTOCOL_RECEIVE_ERROR_SOCKET_CLOSED;
+    return PROTOCOL_RECEIVE_ERROR;
   }
 
-  message_length[msglength_header_len] = '\0';
-  long int msglen = strtol(message_length, NULL, 16 /* base 16 hex */);
+  msgLengthHeader[msglengthHeaderLength] = '\0';
+  long int msglen = strtol(msgLengthHeader, NULL, 16 /* base 16 hex */);
 
   if (msglen == 0)
   {
-    logerror("Unable to convert '%s' to integer.", message_length);
+    logerror("Unable to convert '%s' to integer.", msgLengthHeader);
 
-    return PROTOCOL_RECEIVE_ERROR_SOCKET_CLOSED;
+    return PROTOCOL_RECEIVE_ERROR;
   }
 
-  payload_size = char_size * msglen + char_size;
-  payload = apr_pcalloc(mempool, payload_size);
+  payloadSize = charSize * msglen + charSize;
+  payload = apr_pcalloc(mempool, payloadSize);
 
   // TODO : validate payload size against module id
 
   /**
    * Finally read in the payload.
    */
-  len = payload_size - char_size;
+  len = payloadSize - charSize;
 
   status = apr_socket_recv(socket, payload, &len);
 
-  if (status != APR_SUCCESS || len != payload_size - char_size)
+  if (status != APR_SUCCESS || len != payloadSize - charSize)
   {
     if (status != APR_SUCCESS)
     {
@@ -520,85 +518,136 @@ Private int readMessage(Socket socket)
     {
       payload[len] = '\0';
       logerror("Was expecting %d bytes of payload, got %d instead ('%s')", \
-                payload_size - char_size, len, payload);
+                payloadSize - charSize, len, payload);
     }
 
-    return PROTOCOL_RECEIVE_ERROR_SOCKET_CLOSED;
+    return PROTOCOL_RECEIVE_ERROR;
   }
 
   payload[len] = '\0';
 
   logdebug("PAYLOAD: %s", payload);
 
+  /**
+   * Control Protocol
+   */
+  if (strncmp(moduleIDHeader, controlIDString, 8) == 0)
+  {
+    handleControlProtocol(socket, payload);
+  }
 
   /**
-   * CONTROL PROTOCOL
-   *
-   * For giving control commands to the daemon itself. Supported commands are:
-   *
-   *  - PING ("ARE YOU THERE")
-   *
-   *      Only requires "I AM HERE" response, no other action
-   *
-   *  - KILL ("D1ED1ED1E")
-   *
-   *      Respond with "GOODBYE CRUEL WORLD" and execute an orderly shutdown
+   * Serial Protocol
    */
-  if (strncmp(module_id, control_id, 8) == 0)
+  else if (strncmp(moduleIDHeader, serialIDString, 8) == 0)
   {
-    static String ping_request = "ARE YOU THERE";
-    static String ping_response = "I AM HERE";
+    handleSerialProtocol(socket, payload);
+  }
 
-    static String kill_request = "D1ED1ED1E";
-    static String kill_response = "GOODBYE CRUEL WORLD";
+  return PROTOCOL_MESSAGE_OK;
+}
 
-    if (strcmp(payload, ping_request) == 0)
+
+/**
+ * CONTROL PROTOCOL
+ *
+ * For giving control commands to the daemon itself. Supported commands are:
+ *
+ *  - PING ("ARE YOU THERE")
+ *
+ *      Only requires "I AM HERE" response, no other action
+ *
+ *  - KILL ("D1ED1ED1E")
+ *
+ *      Respond with "GOODBYE CRUEL WORLD" and execute an orderly shutdown
+ */
+Private int handleControlProtocol(Socket socket, String payload)
+{
+  static String pingRequest = "ARE YOU THERE";
+  static String pingResponse = "I AM HERE";
+
+  static String killRequest = "D1ED1ED1E";
+  static String killResponse = "GOODBYE CRUEL WORLD";
+
+  Status status;
+
+  /**
+   * PING:
+   *   REQ:   ARE YOU THERE
+   *   RSP:   I AM HERE
+   */
+  if (strcmp(payload, pingRequest) == 0)
+  {
+    logdebug("%s", "Responding to a ping...");
+
+    apr_size_t len = strlen(pingResponse);
+    status = apr_socket_send(socket, pingResponse, &len);
+
+    if (status != APR_SUCCESS || len != strlen(pingResponse))
     {
-      logdebug("%s", "Responding to a ping...");
+      if (status != APR_SUCCESS)
+      {
+        logerror("Sending ping response failed: %s", getErrorStatus(status));
+      }
+      else
+      {
+        logerror("Failed to send full response, only %d out of %d bytes sent.", \
+                 len, strlen(pingResponse));
+      }
 
-      // TODO : check socket send status
-      apr_size_t len = strlen(ping_response);
-      apr_socket_send(socket, ping_response, &len);
-    }
-
-    else if (strcmp(payload, kill_request) == 0)
-    {
-      loginfo("%s", "Shutting down...");
-
-      // TODO : check socket send status
-      apr_size_t len = strlen(kill_response);
-      apr_socket_send(socket, kill_response, &len);
-
-      apr_socket_close(socket);
-      apr_pool_destroy(mempool);
-
-      apr_terminate();
-      exit(0);
+      return PROTOCOL_SEND_ERROR;
     }
   }
 
   /**
-   *  SERIAL PROTOCOL
-   *
-   *  Payload is expected to start with a 3 character configuration string, specifying
-   *  number of data bits, parity and number of stop bits.
-   *
-   *  For example, serial options for 8 databits, no parity, one stop bit would start with '8N1'.
-   *  Seven databits with even parity and two stop bits would be '7E2'. Odd parity is indicated
-   *  with character 'O'.
-   *
-   *  TODO
+   * KILL:
+   *  REQ:    D1ED1ED1E
+   *  RSP:    GOODBYE CRUEL WORLD
    */
-  else if (strncmp(module_id, serial_id, 8) == 0)
+  else if (strcmp(payload, killRequest) == 0)
   {
-    char databit = payload[0];
-    char parity  = payload[char_size];
-    char stopbit = payload[char_size*2];
+    loginfo("%s", "Shutting down...");
 
-    logdebug("Serial Options: %c%c%c", databit, parity, stopbit);
+    apr_size_t len = strlen(killResponse);
+
+    if ((status = apr_socket_send(socket, killResponse, &len)) != APR_SUCCESS)
+    {
+      logerror("Failed to respond to shutdown request: %s", status);
+    }
+
+    if ((status = apr_socket_close(socket)) != APR_SUCCESS)
+    {
+      logerror("Failed to close socket: %s", status);
+    }
+
+    cleanup();
+    exit(0);
   }
 
-  return PROTOCOL_MESSAGE_READ_OK;
+  return PROTOCOL_MESSAGE_OK;
+}
+
+/**
+ *  SERIAL PROTOCOL
+ *
+ *  Payload is expected to start with a 3 character configuration string, specifying
+ *  number of data bits, parity and number of stop bits.
+ *
+ *  For example, serial options for 8 databits, no parity, one stop bit would start with '8N1'.
+ *  Seven databits with even parity and two stop bits would be '7E2'. Odd parity is indicated
+ *  with character 'O'.
+ *
+ *  TODO
+ */
+Private void handleSerialProtocol(Socket socket, String payload)
+{
+
+  char databit = payload[0];
+  char parity  = payload[charSize];
+  char stopbit = payload[charSize*2];
+
+  logdebug("Serial Options: %c%c%c", databit, parity, stopbit);
+
 }
 
 
@@ -637,33 +686,33 @@ Private Status init(MemPoolResult mempool, int argc, String argv[])
    */
   if (atexit(apr_terminate) != 0)
   {
-    printf("WARNING: Error registering cleanup function(s).\n");
-    fflush(stdout);
+    logwarn("%s", "Error registering cleanup function(s).");
   }
 
-  printf("Starting OpenRemote I/O daemon...\n");
-  fflush(stdout);
+  loginfo("%s", "Starting OpenRemote I/O daemon...");
 
   /**
    * Set up an application with normalized argc, argv (and optionally env) in order to deal with
    * platform-specific oddities, such as Win32 services, code pages and signals. This must be the
    * first function called for any APR program. This should only be done once per process.
    */
-  status = apr_app_initialize(&argc, &args, NULL /* no env */);
-
-  if (status != APR_SUCCESS)
+  if ((status = apr_app_initialize(&argc, &args, NULL /* no env */)) != APR_SUCCESS)
+  {
     return status;
+  }
 
-  // Create APR memory pool...
-
-  status = apr_pool_create(&newpool, NULL /* No parent pool */);
-
-  if (status != APR_SUCCESS)
+  /**
+   *  Create APR memory pool...
+   */
+  if ((status = apr_pool_create(&newpool, NULL /* No parent pool */)) != APR_SUCCESS)
+  {
     return status;
+  }
 
-  // Set the max limit on the memory pool size so some memory will return back to the system,
-  // eventually. This is done via apr_allocator_t reference.
-
+  /**
+   * Set the max limit on the memory pool size so some memory will return back to the system,
+   * eventually.
+   */
   apr_allocator_t *pool_allocator = apr_pool_allocator_get(newpool);
 
   if (pool_allocator)
@@ -672,11 +721,10 @@ Private Status init(MemPoolResult mempool, int argc, String argv[])
   }
   else
   {
-    printf(
+    logwarn(
         "Failed to set memory pool size threshold to %d, continuing with default " \
         "memory pool size (unlimited?)", MAX_POOL_SIZE
     );
-    fflush(stdout);
   }
 
   *mempool = newpool;
@@ -684,17 +732,9 @@ Private Status init(MemPoolResult mempool, int argc, String argv[])
   return status;
 }
 
-
-Private void printErrorStatus(Status status)
-{
-  char errbuf[1024];
-
-  apr_strerror(status, errbuf, sizeof(errbuf));
-
-  printf("OpenRemote I/O Daemon Error: %d, %s\n", status, errbuf);
-  fflush(stdout);
-}
-
+/**
+ * Returns a pointer to a string containing a formatted APR error status.
+ */
 Private String getErrorStatus(Status status)
 {
   char errbuf[1024];
@@ -704,25 +744,12 @@ Private String getErrorStatus(Status status)
   return apr_pstrdup(mempool, errbuf);
 }
 
-Private void exitWithError()
-{
-  // apr_terminate should also be registered with atexit() but it doesn't
-  // seem to hurt to do it twice...
-
-  apr_terminate();
-
-  exit(EXIT_FAILURE);
-}
-
 /**
- * TODO
+ * Parses command line options using getopt() conventions. See main() for all supported
+ * command line options.
  */
-Private Status parseOptions(int argc, String argv[])
+Private void parseOptions(int argc, String argv[])
 {
-
-  /**
-   * TODO
-   */
   apr_getopt_t *opt;
 
   Status status;
@@ -731,9 +758,6 @@ Private Status parseOptions(int argc, String argv[])
 
   String optionArgument;
 
-  /**
-   * TODO
-   */
   static const apr_getopt_option_t optionList[] =
   {
     {
@@ -777,33 +801,40 @@ Private Status parseOptions(int argc, String argv[])
     }
   }
 
-  if (status == APR_EOF)
-    return APR_SUCCESS;
-  else
-    return status;
+  if (status != APR_EOF)
+  {
+    logerror("Error parsing command line options: %s", getErrorStatus(status));
+  }
 }
 
 
 /**
- * TODO
+ * Prints help to standard output stream
  */
 Private void printHelpAndExit()
 {
-  // TODO
-
-  printf("\nHelp should be written here.\n");
+  printf("\nOpenRemote I/O daemon accepts the following command line arguments:\n");
   printf("\n");
   printf("-p, --port        I/O daemon listening port\n");
   printf("-h, --help        this message\n\n");
   fflush(stdout);
 
-  apr_terminate();
+  cleanup();
   exit(0);
+}
+
+/**
+ * Clean up the resources before exit;
+ */
+Private void cleanup()
+{
+  apr_pool_destroy(mempool);
+  apr_terminate();
 }
 
 
 /**
- * TODO
+ * Configures server's listening port from command line arguments.
  */
 Private void configureServerPort(String portArgumentValue)
 {
@@ -820,11 +851,8 @@ Private void configureServerPort(String portArgumentValue)
 
   if (port_number < 0 || port_number > 65535)
   {
-    printf(
-      "\n[WARNING] Invalid port number %d, falling back to default port %d...\n\n",
-      port_number, DEFAULT_PORT
-    );
-    fflush(stdout);
+    logwarn("Invalid port number %d, falling back to default port %d...",
+            port_number, DEFAULT_PORT);
 
     port_number = DEFAULT_PORT;
   }

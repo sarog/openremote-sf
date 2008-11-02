@@ -42,10 +42,17 @@
     printf("[DEBUG] " content "\n", args);  \
     fflush(stdout);
 
+#define logwarn(content, args...)           \
+    printf("[WARN] " content "+n", args);   \
+    fflush(stdout);
 
-#define PROTOCOL_RECEIVE_ERROR_SOCKET_CLOSED    -1
-#define PROTOCOL_MESSAGE_READ_OK                 0
 
+#define PROTOCOL_RECEIVE_ERROR            -1
+#define PROTOCOL_SEND_ERROR               -2
+#define PROTOCOL_MESSAGE_OK                0
+
+
+// Vocabulary -------------------------------------------------------------------------------------
 
 typedef apr_socket_t      *Socket;
 typedef Socket            *SocketResult;
@@ -60,6 +67,7 @@ typedef void              *Any;
 
 #define Runnable          void *APR_THREAD_FUNC
 #define Private           static
+#define charSize          sizeof(char)
 
 
 typedef struct socket_thread_context
@@ -84,14 +92,15 @@ typedef struct configuration
 Private Status    init(MemPoolResult mempool, int argc, String argv[]);
 Private Status    createServerSocket(SocketResult socketResult);
 Private int       readMessage(Socket socket);
-Private void      printErrorStatus(Status status);
-Private void      exitWithError();
-Private Status    parseOptions(int argc, String argv[]);
+Private void      cleanup();
+Private void      parseOptions(int argc, String argv[]);
 Private void      printHelpAndExit();
 Private void      configureServerPort(String portArgumentValue);
 Private void      handleIncomingConnections(Socket serverSocket);
 Private Runnable  socketThread(Thread thread, void *socket_thread_context);
 Private String    getErrorStatus(Status status);
+Private int       handleControlProtocol(Socket socket, String payload);
+Private void      handleSerialProtocol(Socket socket, String payload);
 
 
 
