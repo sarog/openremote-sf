@@ -47,9 +47,10 @@ echo OpenRemote I/O Daemon Build for Linux
 echo --------------------------------------------
 echo Compiling...
 
+cflags=$(../linux/apr-1.3.3/bin/apr-1-config --cflags)
 cppflags=$(../linux/apr-1.3.3/bin/apr-1-config --cppflags)
 
-gcc $cppflags  \
+gcc $cflags $cppflags  \
     ../src/iodaemon.c 		\
     -L../linux/apr-1.3.3/lib 	\
     -lapr-1 			\
