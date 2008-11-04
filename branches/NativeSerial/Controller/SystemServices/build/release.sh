@@ -32,8 +32,8 @@
 
 daemon_version=1.0.0
 cygwin_apr_version=1.2.12
-macosx_apr_vresion=1.3.3
-
+macosx_apr_version=1.3.3
+linux_apr_version=1.3.3
 
 echo "--------------------------------------------------"
 echo " Copying files to JavaServices/runtime..."
@@ -41,7 +41,7 @@ echo ""
 
 cygwin_target=../../JavaServices/runtime/server/controller/system/services/io-proxy.service/native/cygwin
 macosx_target=../../JavaServices/runtime/server/controller/system/services/io-proxy.service/native/macosx
-
+linux_target=../../JavaServices/runtime/server/controller/system/services/io-proxy.service/native/linux
 
 if [ -d "./output/cygwin" ]
 then
@@ -66,10 +66,25 @@ then
 	cp ./output/macosx/$executable_name $macosx_target
 	cp ../macosx/apr-$(echo $macosx_apr_version)/LICENSE $macosx_target
 	cp ../macosx/apr-$(echo $macosx_apr_version)/NOTICE $macosx_target
+        cp ../macosx/apr/$(echo $macosx_apr_version)/lib/libapr-1.dylib $macosx_target
 
 	echo " Done."
 fi
 
+if [ -d "./output/linux" ]
+then
+	echo " Linux:"
+	echo ""
+
+	executable_name=iodaemon-$(echo $daemon_version)
+
+	cp ./output/linux/$executable_name $linux_target
+	cp ../linux/apr-$(echo $linux_apr_version)/LICENSE $linux_target
+	cp ../linux/apr-$(echo $linux_apr_version)/NOTICE $linux_target
+	cp ../linux/apr-$(echo $linux_apr_version)/lib/libapr-1.so $linux_target
+
+	echo " Done."
+fi
 echo "----------------------------------------------------"
 
 
