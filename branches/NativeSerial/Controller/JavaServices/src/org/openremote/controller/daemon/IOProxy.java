@@ -831,8 +831,8 @@ public class IOProxy
   {
     WINDOWS_VISTA ("Windows Vista", "native/cygwin/iodaemon-1.0.0.exe"),
     WINDOWS_XP    ("Windows XP",    "native/cygwin/iodaemon-1.0.0.exe"),
-    MAC_OSX       ("Mac OS X",      ""),  // TODO
-    LINUX         ("Linux",         "");     // TODO
+    MAC_OSX       ("Mac OS X",      "native/macosx/iodaemon-1.0.0"),
+    LINUX         ("Linux",         "native/linux/iodaemon-1.0.0");
 
 
     // Instance Fields ----------------------------------------------------------------------------
