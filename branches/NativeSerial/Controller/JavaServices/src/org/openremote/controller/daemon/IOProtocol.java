@@ -58,6 +58,16 @@ package org.openremote.controller.daemon;
 public class IOProtocol
 {
 
+  // Constants ------------------------------------------------------------------------------------
+
+  /**
+   * TODO
+   */
+  protected final static String HEXADECIMAL_VALUE_PREFIX = "0x";
+
+
+  // Class Members --------------------------------------------------------------------------------
+
   /**
    * Creates a byte array that is a valid I/O protocol message. A valid I/O protocol message
    * starts with a 8 byte I/O module identifier header, followed by a 10 byte message length
@@ -99,7 +109,7 @@ public class IOProtocol
    * @return a ten character long hex string in uppercase with leading zeroes, such as
    *         '0X0000DEAD', '0XCAFEBABE' or '0X00000005'
    */
-  protected static String getMessageLength(int value)
+  @Deprecated protected static String getMessageLength(int value)
   {
     String hexValue = Integer.toHexString(value).toUpperCase();
 
@@ -122,4 +132,55 @@ public class IOProtocol
 
     return "0X" + hexValue;
   }
+
+  /**
+   * TODO
+   *
+   * @param value
+   * @param maxStringLength
+   * @param padToSize
+   * @param hexPrefix
+   *
+   * @return
+   *
+   * @throws Error  TODO
+   */
+  protected static String createHexString(int value, int maxStringLength,
+                                          boolean padToSize, boolean hexPrefix)
+  {
+
+    String hexValue = Integer.toHexString(value).toUpperCase();
+
+    if (hexValue.length() > maxStringLength)
+      throw new Error("value too large");     // TODO
+
+    if (!hexPrefix && !padToSize)
+      return hexValue;
+
+    if (hexPrefix)
+    {
+      hexValue = HEXADECIMAL_VALUE_PREFIX + hexValue;
+
+      if (hexValue.length() > maxStringLength)
+        throw new Error("value too large");   // TODO
+
+      if (!padToSize)
+        return hexValue;
+    }
+
+    int padding = maxStringLength - hexValue.length();
+    StringBuilder builder = new StringBuilder(hexValue);
+    int offset = 0;
+
+    if (hexPrefix)
+      offset = HEXADECIMAL_VALUE_PREFIX.length();
+
+    for (int i = 0; i < padding; ++i)
+    {
+      builder.insert(offset, "0");
+    }
+
+    return builder.toString();
+  }
+
 }

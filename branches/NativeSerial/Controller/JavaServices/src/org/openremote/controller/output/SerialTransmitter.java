@@ -113,38 +113,9 @@ public class SerialTransmitter
   {
     log.info("Starting Raw Serial Transmitter...");
 
+    // TODO : this should be driven by the scripting engine...
+
     openPort("/dev/ttyS0", databits, parity, stopbits, getBaudRate());
-
-    // TODO: inject the name
-/*
-    try
-    {
-      String optionsPayload =
-          SerialProtocol.DataBits.EIGHT.getSerialFormat() +
-          SerialProtocol.Parity.NONE.getSerialFormat() +
-          SerialProtocol.StopBits.ONE.getSerialFormat();
-
-      String serialCommand = "";
-
-      String payload = optionsPayload + serialCommand;
-
-      serviceContext.getKernel().getBus().invoke(
-          "Output/IOProxy",
-          "sendBytes",
-
-          new Object[]
-          {
-              RAW_SERIAL,
-              payload.getBytes()
-          },
-          new String[] { IOModule.class.getName(), new byte[] {}.getClass().getName() }
-      );
-    }
-    catch (Throwable t)
-    {
-      throw new Error(t);
-    }
-*/    
   }
 
   // JavaBean Methods -----------------------------------------------------------------------------
@@ -236,7 +207,12 @@ public class SerialTransmitter
                                           SerialProtocol.StopBits stopbits,
                                           int baudrate)
   {
-    byte[] payload = SerialProtocol.createOpenPortMessage(portID, baudrate, databits, parity, stopbits);
+
+    byte[] payload = SerialProtocol.createOpenPortMessage(
+        portID, baudrate, databits, parity, stopbits
+    );
+
+    // TODO: inject the name
 
     try
     {
