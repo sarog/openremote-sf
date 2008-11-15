@@ -40,6 +40,11 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   <bean name  = "Output/Serial"
         class = "org.openremote.controller.output.SerialTransmitter">
 
+    <property name = "baudRate">57600</property>
+    <property name = "dataBits">8</property>
+    <property name = "parity">NONE</property>
+    <property name = "stopBits">1</property>
+    
     <depends>Output/IOProxy</depends>
   </bean>
 
