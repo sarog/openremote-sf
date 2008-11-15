@@ -21,10 +21,6 @@ import java.security.PrivilegedActionException;
 import org.jboss.beans.metadata.api.annotations.Start;
 import org.jboss.logging.Logger;
 import org.openremote.controller.core.Bootstrap;
-import static org.openremote.controller.daemon.IOModule.ControlProtocol.PING_MESSAGE;
-import static org.openremote.controller.daemon.IOModule.ControlProtocol.PING_RESPONSE;
-import static org.openremote.controller.daemon.IOModule.ControlProtocol.KILL_MESSAGE;
-import static org.openremote.controller.daemon.IOModule.ControlProtocol.KILL_RESPONSE;
 import static org.openremote.controller.daemon.IOProxy.OperatingSystem.LINUX;
 import static org.openremote.controller.daemon.IOProxy.OperatingSystem.MAC_OSX;
 import static org.openremote.controller.daemon.IOProxy.OperatingSystem.WINDOWS_VISTA;
@@ -210,9 +206,9 @@ public class IOProxy
     {
       BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
 
-      out.write(ioModule.getModuleID().getBytes());
-      out.write(IOModule.getMessageLength(bytes.length).getBytes());
-      out.write(bytes);
+      byte[] payload = IOProtocol.createMessage(ioModule, bytes);
+
+      out.write(payload);
       out.flush();
       
       return true;
@@ -467,17 +463,17 @@ public class IOProxy
     BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
     BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
 
-    out.write(PING_MESSAGE.getBytes());
+    out.write(ControlProtocol.PING_REQUEST.getBytes());
     out.flush();
 
     if (log.isTraceEnabled())
-      log.trace("Wrote : " + PING_MESSAGE.getMessage());
+      log.trace("Wrote : " + ControlProtocol.PING_REQUEST);
 
-    byte[] buffer = new byte[PING_RESPONSE.getLength()];
+    byte[] buffer = new byte[ControlProtocol.PING_RESPONSE.length()];
 
     int len = in.read(buffer, 0, buffer.length);
 
-    if (len == PING_RESPONSE.getLength() && new String(buffer).equals(PING_RESPONSE.getMessage()))
+    if (len == ControlProtocol.PING_RESPONSE.length() && new String(buffer).equals(ControlProtocol.PING_RESPONSE))
     {
       log.debug("Ping OK.");
     }
@@ -485,7 +481,7 @@ public class IOProxy
     {
       throw new IOException(
           "Ping failed. Likely cause is protocol mismatch or implementation error. Was " +
-          "expecting response of '" + PING_RESPONSE.getMessage() + "' but received '" +
+          "expecting response of '" + ControlProtocol.PING_RESPONSE + "' but received '" +
           new String(buffer) + "' instead."
       );
     }
@@ -501,14 +497,14 @@ public class IOProxy
       BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
       BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
 
-      out.write(KILL_MESSAGE.getBytes());
+      out.write(ControlProtocol.KILL_REQUEST.getBytes());
       out.flush();
 
-      byte[] buffer = new byte[KILL_RESPONSE.getLength()];
+      byte[] buffer = new byte[ControlProtocol.KILL_RESPONSE.length()];
 
       int len = in.read(buffer, 0, buffer.length);
 
-      if (len == KILL_RESPONSE.getLength() && new String(buffer).equals(KILL_RESPONSE.getMessage()))
+      if (len == ControlProtocol.KILL_RESPONSE.length() && new String(buffer).equals(ControlProtocol.KILL_RESPONSE))
       {
         log.debug("Daemon shutdown delivered.");
       }

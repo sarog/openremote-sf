@@ -22,58 +22,47 @@
 package org.openremote.controller.daemon;
 
 /**
- * TODO
+ * Defines the various I/O module identifiers that have implementations on the native I/O
+ * daemon.  <p>
+ *
+ * The IOModule field is also a header on the I/O protocol message defined by
+ * {@link org.openremote.controller.daemon.IOProtocol} class.
  *
  * @author <a href = "mailto:juha@juhalindfors.com">Juha Lindfors</a>
+ *
+ * @see org.openremote.controller.daemon.IOProtocol
  */
 public enum IOModule
 {
+  /**
+   * I/O protocol header identifying the payload as targeted for undefined (raw) serial
+   * device.
+   */
   RAW_SERIAL  ("R_SERIAL"),
+
+  /**
+   * I/O protocol header identifying the payload as targeted for controlling the native I/O
+   * daemon instance itself.
+   */
   CONTROL     ("DCONTROL");
 
 
-  // Class Members ------------------------------------------------------------------------------
-
-  /**
-   * Returns message length field for message header as specified in the protocol -- an
-   * uppercase hex value with leading '0X' including leading zeroes up to string of length 10.
-   *
-   * @param value integer value to translate
-   *
-   * @return a ten character long hex string in uppercase with leading zeroes, such as
-   *         '0X0000DEAD', '0XCAFEBABE' or '0X00000005'
-   */
-  protected static String getMessageLength(int value)
-  {
-    String hexValue = Integer.toHexString(value).toUpperCase();
-
-    // add leading zeroes....
-
-    if (value <= 0xF)
-      return "0X0000000" + hexValue;
-    if (value <= 0xFF)
-      return "0X000000" + hexValue;
-    if (value <= 0xFFF)
-      return "0X00000" + hexValue;
-    if (value <= 0xFFFF)
-      return "0X0000" + hexValue;
-    if (value <= 0xFFFFF)
-      return "0X000" + hexValue;
-    if (value <= 0xFFFFFF)
-      return "0X00" + hexValue;
-    if (value <= 0xFFFFFFF)
-      return "0X0" + hexValue;
-
-    return "0X" + hexValue;
-  }
-
   // Instance Fields ------------------------------------------------------------------------------
 
+  /**
+   * Contains the exact byte serialization format for a given I/O module header. This must
+   * match to the protocol handler implementation on the native I/O daemon side.
+   */
   private String moduleID;
 
 
   // Constructors ---------------------------------------------------------------------------------
 
+  /**
+   * Stores the given byte serialization format of a I/O module header.
+   *
+   * @param moduleID  string serialization format of the I/O module header
+   */
   private IOModule(String moduleID)
   {
     this.moduleID = moduleID;
@@ -82,62 +71,18 @@ public enum IOModule
 
   // Instance Methods -----------------------------------------------------------------------------
 
-  public String getModuleID()
+  /**
+   * Returns the string serialization format of a given I/O module header. <p>
+   *
+   * The returned string is used as a header sent as part of the I/O protocol message to the
+   * native I/O daemon (which must have an I/O module implementation mapped to this exact string
+   * header).
+   *
+   * @return  I/O module identifier string serialization format
+   */
+  protected String getModuleID()
   {
     return moduleID;
   }
 
-
-  // Nested Enums ---------------------------------------------------------------------------------
-
-  private final static String PING_PAYLOAD = "ARE YOU THERE";
-  private final static String KILL_PAYLOAD = "D1ED1ED1E";
-
-  protected static enum ControlProtocol
-  {
-    PING_MESSAGE(CONTROL.getModuleID(), getMessageLength(PING_PAYLOAD.length()), PING_PAYLOAD),
-    PING_RESPONSE("I AM HERE"),
-
-    KILL_MESSAGE(CONTROL.getModuleID(), getMessageLength(KILL_PAYLOAD.length()), KILL_PAYLOAD),
-    KILL_RESPONSE("GOODBYE CRUEL WORLD");
-
-
-
-    // Instance Fields ----------------------------------------------------------------------------
-
-    private String message = "";
-
-
-    // Constructors -------------------------------------------------------------------------------
-
-    ControlProtocol(String... args)
-    {
-      StringBuilder builder = new StringBuilder(1024);
-
-      for (String arg : args)
-        builder.append(arg);
-
-      message = builder.toString();
-    }
-
-
-    // Instance Methods ---------------------------------------------------------------------------
-
-    public String getMessage()
-    {
-      return message;
-    }
-
-    public byte[] getBytes()
-    {
-      return getMessage().getBytes();
-    }
-
-    public int getLength()
-    {
-      return getMessage().length();
-    }
-
-
-  }
 }
