@@ -30,23 +30,14 @@
 //--------------------------------------------------------------------------------------------------
 
 
-#define loginfo(content, args...)           \
-    printf("[INFO] " content "\n", args);   \
-    fflush(stdout);
-
-#define logerror(content, args...)          \
-    printf("[ERROR] " content "\n", args);  \
-    fflush(stdout);
-
-#define logdebug(content, args...)          \
-    printf("[DEBUG] " content "\n", args);  \
-    fflush(stdout);
-
-#define logwarn(content, args...)           \
-    printf("[WARN] " content "+n", args);   \
-    fflush(stdout);
+#include "org/openremote/controller/daemon/Vocabulary.h"
+#include "org/openremote/controller/daemon/APRVocabulary.h"
 
 
+
+/**
+ * Function return values.
+ */
 #define PROTOCOL_RECEIVE_ERROR            -1
 #define PROTOCOL_SEND_ERROR               -2
 #define PROTOCOL_MESSAGE_OK                0
@@ -54,20 +45,7 @@
 
 // Vocabulary -------------------------------------------------------------------------------------
 
-typedef apr_socket_t      *Socket;
-typedef Socket            *SocketResult;
-typedef apr_sockaddr_t    *SocketAddress;
-typedef apr_pool_t        *MemPool;
-typedef MemPool           *MemPoolResult;
-typedef apr_thread_t      *Thread;
-typedef apr_threadattr_t  *ThreadAttributes;
-typedef apr_status_t       Status;
-typedef const char        *String;
-typedef void              *Any;
-
 #define Runnable          void *APR_THREAD_FUNC
-#define Private           static
-#define charSize          sizeof(char)
 
 
 typedef struct socket_thread_context
@@ -87,6 +65,7 @@ typedef struct configuration
 
 
 
+
 // Function Prototypes ----------------------------------------------------------------------------
 
 Private Status    init(MemPoolResult mempool, int argc, String argv[]);
@@ -100,7 +79,6 @@ Private void      handleIncomingConnections(Socket serverSocket);
 Private Runnable  socketThread(Thread thread, void *socket_thread_context);
 Private String    getErrorStatus(Status status);
 Private int       handleControlProtocol(Socket socket, String payload);
-Private void      handleSerialProtocol(Socket socket, String payload);
 
 
 
