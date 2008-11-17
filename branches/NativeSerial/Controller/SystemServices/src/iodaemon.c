@@ -44,16 +44,11 @@
 // ------------------------------------------------------------------------------------------------
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "apr_getopt.h"
+#include "apr_strings.h"
 
-#include <apr_file_io.h>
-#include <apr_network_io.h>
-#include <apr_strings.h>
-#include <apr_getopt.h>
-#include <apr_thread_proc.h>
-
-#include <orc/iodaemon.h>
+#include "org/openremote/controller/daemon/IODaemon.h"
+#include "org/openremote/controller/daemon/Log.h"
 
 
 /**
@@ -128,7 +123,7 @@ int main(int argc, String argv[])
    */
   if ((status = init(&mempool, argc, argv)) != APR_SUCCESS)
   {
-    logerror("Unable to initialize I/O daemon: %s", status);
+    logerror("Unable to initialize I/O daemon: %s", getErrorStatus(status));
     cleanup();
     exit(EXIT_FAILURE);
   }
@@ -389,8 +384,14 @@ Private Runnable socketThread(Thread thread, Any socketThreadContext)
 /**
  * This one parses the incoming message on the socket and sends the appropriate response.
  *
- * The message structure is string based for the sake of simplicity and expects the following
- * format:
+ * The message structure is ASCII character based for the sake of simplicity and expects
+ * the following format:
+ *
+ * +----------------+--------------------+------------/.../------------+
+ * |  [Module ID]   |  [Payload Length]  |     Arbitrary payload       |
+ * |   (8 bytes)    |     (10 bytes)     |                             |
+ * +----------------+--------------------+------------/.../------------+
+ *
  *
  *  - First 8 characters are a module identifier. This indicates what I/O module the message
  *    is intended for. Current valid values are:
@@ -413,6 +414,10 @@ Private Runnable socketThread(Thread thread, Any socketThreadContext)
  *  - The remainder of the message string is the I/O module specific payload. The length is
  *    determined by the previous message payload length header. The content of the payload
  *    is specific to the I/O module. See below for protocol details of each module.
+ *
+ *
+ * TODO : make the message length header format less stringent
+ * TODO : make it string based with \0 separator for fields
  */
 Private int readMessage(Socket socket)
 {
@@ -499,8 +504,6 @@ Private int readMessage(Socket socket)
   payloadSize = charSize * msglen + charSize;
   payload = apr_pcalloc(mempool, payloadSize);
 
-  // TODO : validate payload size against module id
-
   /**
    * Finally read in the payload.
    */
@@ -572,6 +575,8 @@ Private int handleControlProtocol(Socket socket, String payload)
 
   Status status;
 
+  // TODO : strlen checks
+
   /**
    * PING:
    *   REQ:   ARE YOU THERE
@@ -613,12 +618,12 @@ Private int handleControlProtocol(Socket socket, String payload)
 
     if ((status = apr_socket_send(socket, killResponse, &len)) != APR_SUCCESS)
     {
-      logerror("Failed to respond to shutdown request: %s", status);
+      logerror("Failed to respond to shutdown request: %s", getErrorStatus(status));
     }
 
     if ((status = apr_socket_close(socket)) != APR_SUCCESS)
     {
-      logerror("Failed to close socket: %s", status);
+      logerror("Failed to close socket: %s", getErrorStatus(status));
     }
 
     cleanup();
@@ -627,30 +632,6 @@ Private int handleControlProtocol(Socket socket, String payload)
 
   return PROTOCOL_MESSAGE_OK;
 }
-
-/**
- *  SERIAL PROTOCOL
- *
- *  Payload is expected to start with a 3 character configuration string, specifying
- *  number of data bits, parity and number of stop bits.
- *
- *  For example, serial options for 8 databits, no parity, one stop bit would start with '8N1'.
- *  Seven databits with even parity and two stop bits would be '7E2'. Odd parity is indicated
- *  with character 'O'.
- *
- *  TODO
- */
-Private void handleSerialProtocol(Socket socket, String payload)
-{
-
-  char databit = payload[0];
-  char parity  = payload[charSize];
-  char stopbit = payload[charSize*2];
-
-  logdebug("Serial Options: %c%c%c", databit, parity, stopbit);
-
-}
-
 
 /**
  *
@@ -852,7 +833,7 @@ Private void configureServerPort(String portArgumentValue)
 
   if (port_number < 0 || port_number > 65535)
   {
-    logwarn("Invalid port number %d, falling back to default port %d...",
+    logwarn("Invalid port number %ld, falling back to default port %d...",
             port_number, DEFAULT_PORT);
 
     port_number = DEFAULT_PORT;
