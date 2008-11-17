@@ -22,7 +22,7 @@
 
 //--------------------------------------------------------------------------------------------------
 //
-// Header definitions for iodaemon.c
+// Non-shared definitions of iodaemon.c
 //
 //
 // Author: Juha Lindfors (juha@juhalindfors.com)
@@ -64,6 +64,10 @@ typedef struct configuration
 #define ConfigurationSize         sizeof(Configuration)
 
 
+
+// External Dependencies --------------------------------------------------------------------------
+
+Public void handleSerialProtocol(Socket socket, String payload);
 
 
 // Function Prototypes ----------------------------------------------------------------------------

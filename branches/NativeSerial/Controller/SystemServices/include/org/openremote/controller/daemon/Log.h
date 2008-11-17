@@ -22,17 +22,14 @@
 
 //--------------------------------------------------------------------------------------------------
 //
-// TODO
+// TODO : Some logging macros. These need to go to /var/logs eventually but for now just print on
+//        standard out.
 //
 //
 // Author: Juha Lindfors (juha@juhalindfors.com)
 //
 //--------------------------------------------------------------------------------------------------
 
-/**
- * Some logging macros. These need to go to /var/logs eventually but for now just print on
- * standard out.
- */
 #define loginfo(content, args...)           \
     printf("[INFO] " content "\n", args);   \
     fflush(stdout);

@@ -22,7 +22,13 @@
 
 //--------------------------------------------------------------------------------------------------
 //
-// Header definitions for iodaemon.c
+// Vocabulary for APR types.
+//
+// APR works pretty hard to make their structures read only which sort of plays into the whole
+// OO idea. So just to go an extra step and define the vocabulary similar to Java's. These are
+// pointers to internal structures I have no visibility to, so let's treat them as such.
+//
+// And I don't care if you don't like it.
 //
 //
 // Author: Juha Lindfors (juha@juhalindfors.com)
@@ -36,12 +42,12 @@
 
 // Vocabulary -------------------------------------------------------------------------------------
 
-typedef apr_socket_t      *Socket;
-typedef Socket            *SocketResult;
-typedef apr_sockaddr_t    *SocketAddress;
-typedef apr_pool_t        *MemPool;
-typedef MemPool           *MemPoolResult;
-typedef apr_thread_t      *Thread;
-typedef apr_threadattr_t  *ThreadAttributes;
+typedef apr_socket_t *     Socket;
+typedef Socket *           SocketResult;
+typedef apr_sockaddr_t *   SocketAddress;
+typedef apr_pool_t *       MemPool;
+typedef MemPool *          MemPoolResult;
+typedef apr_thread_t *     Thread;
+typedef apr_threadattr_t * ThreadAttributes;
 typedef apr_status_t       Status;
 

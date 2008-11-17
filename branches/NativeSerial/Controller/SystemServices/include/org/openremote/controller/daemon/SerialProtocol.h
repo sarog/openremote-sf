@@ -22,16 +22,13 @@
 
 //--------------------------------------------------------------------------------------------------
 //
-// TODO
+// Shared datatypes of serial protocol implementation.
 //
 //
 // Author: Juha Lindfors (juha@juhalindfors.com)
 //
 //--------------------------------------------------------------------------------------------------
 
-
-
-// Shared Datastructures --------------------------------------------------------------------------
 
 enum DataBits {
   FIVE = 5,
@@ -59,3 +56,6 @@ typedef enum DataBits  DataBits;
 typedef enum StopBits  StopBits;
 typedef enum Parity    Parity;
 
+typedef DataBits *     DataBitsResult;
+typedef Parity *       ParityResult;
+typedef StopBits *     StopBitsResult;

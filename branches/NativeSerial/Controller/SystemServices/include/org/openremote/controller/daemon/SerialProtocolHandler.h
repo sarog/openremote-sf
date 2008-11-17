@@ -30,10 +30,16 @@
 
 #include "org/openremote/controller/daemon/Vocabulary.h"
 #include "org/openremote/controller/daemon/APRVocabulary.h"
+#include "org/openremote/controller/daemon/IOProtocol.h"
 
 
 // Function Prototypes ----------------------------------------------------------------------------
 
-Public void handleSerialProtocol(Socket socket, String payload);
+Public ProtocolStatus handleSerialProtocol(Socket socket, String payload);
 
-Private void handleOpenPortCommand();
+Private ProtocolStatus handleOpenPortCommand(String commandParameters);
+Private ProtocolStatus parseDataBits(DataBitsResult result, char c);
+Private ProtocolStatus parseStopBits(StopBitsResult result, char c);
+Private ProtocolStatus parseParity(ParityResult result, char c);
+
+

@@ -22,14 +22,23 @@
 
 //--------------------------------------------------------------------------------------------------
 //
-// Non-shared definitions of serial.c
+// Shared datatypes of I/O protocol implementation.
 //
 //
 // Author: Juha Lindfors (juha@juhalindfors.com)
 //
 //--------------------------------------------------------------------------------------------------
 
-#include "org/openremote/controller/daemon/Vocabulary.h"
-#include "org/openremote/controller/daemon/SerialProtocol.h"
 
+enum ProtocolStatus {
+  PROTOCOL_MESSAGE_OK       =  0,
+  PROTOCOL_RECEIVE_ERROR    = -1,
+  PROTOCOL_SEND_ERROR       = -2,
+  PROTOCOL_PARSE_ERROR      = -3
+};
+
+
+// Vocabulary -------------------------------------------------------------------------------------
+
+typedef enum ProtocolStatus  ProtocolStatus;
 
