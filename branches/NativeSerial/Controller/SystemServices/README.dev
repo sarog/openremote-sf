@@ -1,0 +1,20 @@
+
+Building
+========
+
+The build scripts for Cygwin, Mac OS X and Linux are in the build
+directory. Full makefiles to follow soon.
+
+
+Apache Portable Runtime
+=======================
+
+OS specific binaries and includes for APR are found in cygwin/, 
+linux/, macosx/ directories.
+
+
+Source
+======
+
+OpenRemote I/O daemon sources and include files are in src/
+and include/ directories.
