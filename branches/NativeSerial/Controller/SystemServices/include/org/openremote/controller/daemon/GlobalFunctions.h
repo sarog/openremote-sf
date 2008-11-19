@@ -22,61 +22,41 @@
 
 //--------------------------------------------------------------------------------------------------
 //
-// Non-shared definitions of iodaemon.c
+// Declarations of globally available functions in this app.
 //
 //
 // Author: Juha Lindfors (juha@juhalindfors.com)
 //
 //--------------------------------------------------------------------------------------------------
 
+#ifndef ORC_DAEMON_GLOBALFUNCTIONS_H
+#define ORC_DAEMON_GLOBALFUNCTIONS_H
 
 #include "org/openremote/controller/daemon/Vocabulary.h"
 #include "org/openremote/controller/daemon/APRVocabulary.h"
-
-
+#include "org/openremote/controller/daemon/IOProtocol.h"
 
 /**
- * TODO: should be an enum
- *
- * Function return values.
+ * ControlProtocolHandler.c
  */
-#define PROTOCOL_RECEIVE_ERROR            -1
-#define PROTOCOL_SEND_ERROR               -2
-#define PROTOCOL_MESSAGE_OK                0
+int handleControlProtocol(Socket socket, String payload);
+
+/**
+ * SerialProtocolHandler.c
+ */
+ProtocolStatus handleSerialProtocol(Socket socket, String payload);
+
+/**
+ * IOProtocolHandler.c
+ */
+int readMessage(Socket socket, MemPool memoryPool);
+
+/**
+ * IODaemon.c
+ */
+String    getErrorStatus(Status status);
+void      cleanup();
 
 
-// Vocabulary -------------------------------------------------------------------------------------
-
-#define Runnable          void *APR_THREAD_FUNC
-
-
-typedef struct socket_thread_context
-{
-  Socket        socket;
-} *SocketThreadContext;
-
-#define SocketThreadContextSize    sizeof(SocketThreadContext)
-
-typedef struct configuration
-{
-  int port;
-
-} *Configuration;
-
-#define ConfigurationSize         sizeof(Configuration)
-
-
-
-
-// Function Prototypes ----------------------------------------------------------------------------
-
-static Status    init(MemPoolResult mempool, int argc, String argv[]);
-static Status    createServerSocket(SocketResult socketResult);
-static void      parseOptions(int argc, String argv[]);
-static void      printHelpAndExit();
-static void      configureServerPort(String portArgumentValue);
-static void      handleIncomingConnections(Socket serverSocket);
-static Runnable  socketThread(Thread thread, void *socket_thread_context);
-
-
+#endif
 

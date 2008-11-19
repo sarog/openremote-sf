@@ -22,20 +22,22 @@
 
 //--------------------------------------------------------------------------------------------------
 //
-// TODO
+// A couple of very generic type definitions used almost everywhere in the code.
 //
 //
 // Author: Juha Lindfors (juha@juhalindfors.com)
 //
 //--------------------------------------------------------------------------------------------------
 
+#ifndef ORC_DAEMON_VOCABULARY_H
+#define ORC_DAEMON_VOCABULARY_H
+
 
 typedef const char        *String;
 typedef void              *Any;
 
-#define Private           static
-#define Public
 #define charSize          sizeof(char)
 
 
+#endif
 

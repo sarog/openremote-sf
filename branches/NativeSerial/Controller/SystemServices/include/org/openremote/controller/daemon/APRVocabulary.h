@@ -35,6 +35,9 @@
 //
 //--------------------------------------------------------------------------------------------------
 
+#ifndef ORC_DAEMON_APRVOCABULARY_H
+#define ORC_DAEMON_APRVOCABULARY_H
+
 #include "apr_network_io.h"
 #include "apr_thread_proc.h"
 
@@ -51,3 +54,4 @@ typedef apr_thread_t *     Thread;
 typedef apr_threadattr_t * ThreadAttributes;
 typedef apr_status_t       Status;
 
+#endif

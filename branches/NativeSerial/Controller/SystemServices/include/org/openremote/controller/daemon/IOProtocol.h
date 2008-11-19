@@ -29,7 +29,13 @@
 //
 //--------------------------------------------------------------------------------------------------
 
+#ifndef ORC_DAEMON_IOPROTOCOL_H
+#define ORC_DAEMON_IOPROTOCOL_H
 
+
+/**
+ * Defines response codes from protocol handler(s).
+ */
 enum ProtocolStatus {
   PROTOCOL_MESSAGE_OK       =  0,
   PROTOCOL_RECEIVE_ERROR    = -1,
@@ -42,3 +48,4 @@ enum ProtocolStatus {
 
 typedef enum ProtocolStatus  ProtocolStatus;
 
+#endif

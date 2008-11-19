@@ -30,6 +30,9 @@
 //--------------------------------------------------------------------------------------------------
 
 
+/**
+ * Serial device data bits.
+ */
 enum DataBits {
   FIVE = 5,
   SIX = 6,
@@ -37,12 +40,18 @@ enum DataBits {
   EIGHT = 8
 };
 
+/**
+ * Serial device parity.
+ */
 enum Parity {
   NONE = 0,
   ODD = 1,
   EVEN = 2
 };
 
+/**
+ * Serial device stop bits.
+ */
 enum StopBits {
   ONE = 1,
   TWO = 2,
@@ -56,6 +65,9 @@ typedef enum DataBits  DataBits;
 typedef enum StopBits  StopBits;
 typedef enum Parity    Parity;
 
+/**
+ * Result arguments
+ */
 typedef DataBits *     DataBitsResult;
 typedef Parity *       ParityResult;
 typedef StopBits *     StopBitsResult;

@@ -35,11 +35,9 @@
 
 // Function Prototypes ----------------------------------------------------------------------------
 
-Public ProtocolStatus handleSerialProtocol(Socket socket, String payload);
-
-Private ProtocolStatus handleOpenPortCommand(String commandParameters);
-Private ProtocolStatus parseDataBits(DataBitsResult result, char c);
-Private ProtocolStatus parseStopBits(StopBitsResult result, char c);
-Private ProtocolStatus parseParity(ParityResult result, char c);
+static ProtocolStatus handleOpenPortCommand(String commandParameters);
+static ProtocolStatus parseDataBits(DataBitsResult result, char c);
+static ProtocolStatus parseStopBits(StopBitsResult result, char c);
+static ProtocolStatus parseParity(ParityResult result, char c);
 
 
