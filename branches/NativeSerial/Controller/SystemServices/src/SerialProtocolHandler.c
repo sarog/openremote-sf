@@ -59,6 +59,8 @@
 //
 // ------------------------------------------------------------------------------------------------
 
+
+#include "org/openremote/controller/daemon/GlobalFunctions.h"
 #include "org/openremote/controller/daemon/SerialProtocol.h"
 #include "org/openremote/controller/daemon/SerialProtocolHandler.h"
 #include "org/openremote/controller/daemon/Log.h"
@@ -72,7 +74,7 @@
  *  @param  payload   TODO
  *
  */
-Public ProtocolStatus handleSerialProtocol(Socket socket, String payload)
+ProtocolStatus handleSerialProtocol(Socket socket, String payload)
 {
   static String openPortCommand = "OPEN PORT";
 
@@ -92,6 +94,10 @@ Public ProtocolStatus handleSerialProtocol(Socket socket, String payload)
     handleOpenPortCommand(commandParameters);
   }
 }
+
+
+// LOCAL FUNCTIONS --------------------------------------------------------------------------------
+
 
 /**
  * Parses the command parameters from the "OPEN PORT" command.
@@ -135,7 +141,7 @@ Public ProtocolStatus handleSerialProtocol(Socket socket, String payload)
  *
  * @param commandParameters TODO
  */
-Private ProtocolStatus handleOpenPortCommand(String commandParameters)
+static ProtocolStatus handleOpenPortCommand(String commandParameters)
 {
   logtrace("%s", "Parsing command parameters for serial 'OPEN PORT' command.");
 
@@ -224,7 +230,7 @@ Private ProtocolStatus handleOpenPortCommand(String commandParameters)
  *
  * @return          PROTOCOL_MESSAGE_OK if translation successful, PROTOCOL_PARSE_ERROR otherwise
  */
-Private ProtocolStatus parseDataBits(DataBitsResult result, char c)
+static ProtocolStatus parseDataBits(DataBitsResult result, char c)
 {
   logtrace("Resolving data bits from '%c'...", c);
 
@@ -263,7 +269,7 @@ Private ProtocolStatus parseDataBits(DataBitsResult result, char c)
  *
  * @return          PROTOCOL_MESSAGE_OK if translation successful, PROTOCOL_PARSE_ERROR otherwise
  */
-Private ProtocolStatus parseStopBits(StopBitsResult result, char c)
+static ProtocolStatus parseStopBits(StopBitsResult result, char c)
 {
   logtrace("Resolving stop bits from '%c'...", c);
 
@@ -297,7 +303,7 @@ Private ProtocolStatus parseStopBits(StopBitsResult result, char c)
  *
  * @return        PROTOCOL_MESSAGE_OK if translation successful, PROTOCOL_PARSE_ERROR otherwise
  */
-Private ProtocolStatus parseParity(ParityResult result, char c)
+static ProtocolStatus parseParity(ParityResult result, char c)
 {
   logtrace("Resolving parity from '%c'...", c);
 
