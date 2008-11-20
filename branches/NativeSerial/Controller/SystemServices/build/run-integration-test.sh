@@ -22,38 +22,26 @@
 ## 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 ###############################################################################
 
+
 ##
-# Clean things up... make file coming soon.
+#  Runs ANT build for running Java based integration tests.
+#
+#    - sets an explicit ANT_HOME to the Ant distribution in 'Tools' directory
+#    - defines additional external library classpaths to run Ant
+#
+#
+#  Notice that Java is just the language used for the test battery to test the
+#  integration level (socket level) use of OR native I/O daemon -- that is, 
+#  it *does not* test the Java API and bindings built on top of the socket level 
+#  integration on the "JavaServices" side of the equation. In practice this means
+#  that if any changes are made to the tests run by this script then the 
+#  corresponding tests on the "JavaServices" side must also be run against the
+#  final executable to guarantee full integration.
 #
 #  Author: Juha Lindfors
 #  Revision: $Id: $
 ##
 
-
-echo "----------------------------------------------"
-echo " Deleting output directories..."
-echo ""
-
-if ( [ -d "./output" ] || [ -d "./test-output" ] )
-then
-	if [ -d "./output" ]
-	then
-		rm -r output
-	fi
-
-        if [ -d "./test-output" ]
-	then
-		rm -r test-output
-	fi
-
-	echo ""
-	echo " Done."
-	echo "----------------------------------------------"
-
-else 
-	echo ""
-	echo " Nothing to clean."
-	echo "----------------------------------------------"
-fi
-
-
+export ANT_HOME=../../../Tools/apache-ant-1.7.0
+export PATH="$PATH:$ANT_HOME/lib/native"
+$ANT_HOME/bin/ant -lib $ANT_HOME/lib/external "$@"
