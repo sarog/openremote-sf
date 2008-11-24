@@ -115,10 +115,6 @@ int main(int argc, String argv[])
   Status status;
 
 
-
-  // Function Body ------------------------------------------------------------------------------
-
-
   /**
    * Initialize APR. Creates an APR memory pool and updates our 'mempool' pointer to it.
    */
@@ -179,8 +175,12 @@ String getErrorStatus(Status status)
  */
 void cleanup()
 {
+  logtrace("%s", "Cleaning up...");
+
   apr_pool_destroy(mempool);
   apr_terminate();
+
+  logtrace("%s", "Clean up done.");
 }
 
 
@@ -219,9 +219,6 @@ static Status createServerSocket(SocketResult socketResult)
    * the same host are allowed.
    */
   String localhost = "127.0.0.1";
-
-
-  // Function Body --------------------------------------------------------------------------------
 
 
   /**
@@ -284,6 +281,7 @@ static Status createServerSocket(SocketResult socketResult)
    */
   if ((status = apr_socket_bind(newsocket, socketAddress)) != APR_SUCCESS)
   {
+    logtrace("%s", "Bind failed.");
     return status;
   }
 
@@ -339,6 +337,8 @@ static void handleIncomingConnections(Socket serverSocket)
   {
     // this will block since we have a blocking server socket...
 
+    logtrace("%s", "Waiting at server socket accept()...");
+
     if ((status = apr_socket_accept(&clientSocket, serverSocket, mempool)) == APR_SUCCESS)
     {
       if ((status = apr_threadattr_create(&threadAttributes, mempool)) != APR_SUCCESS)
@@ -388,6 +388,11 @@ static Runnable socketThread(Thread thread, Any socketThreadContext)
 
   int running = TRUE;
   int status  = TRUE;
+
+  static int numberOfThreads = 0;
+
+  logtrace("Number of threads %d", numberOfThreads);
+
 
   while (running)
   {
@@ -520,8 +525,6 @@ static void parseOptions(int argc, String argv[])
     }
   };
 
-
-  // Function Body --------------------------------------------------------------------------------
 
   apr_getopt_init(&opt, mempool, argc, argv);
 
