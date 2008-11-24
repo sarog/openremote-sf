@@ -47,10 +47,10 @@ fi
 
 cp ../cygwin/apr-$(echo $apr_version)/win32/libapr-1.dll ./output/cygwin
 
-gcc ../src/iodaemon.c ../src/serial.c ../src/SerialProtocolHandler.c \
-	-DWIN32       \
+gcc ../src/IODaemon.c ../src/Serial.c ../src/SerialProtocolHandler.c ../src/IOProtocolHandler.c ../src/ControlProtocolHandler.c \
+	-DWIN32      \
 	-L../cygwin/apr-$apr_version/lib \
-	-llibapr-1    \
+	-llibapr-1 -lcrypt   \
 	-o output/cygwin/iodaemon-$daemon_version.exe \
 	-I../cygwin/apr-$apr_version/include \
 	-I../include \
