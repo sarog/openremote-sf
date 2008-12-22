@@ -51,7 +51,7 @@ cflags=$(../linux/apr-1.3.3/bin/apr-1-config --cflags)
 cppflags=$(../linux/apr-1.3.3/bin/apr-1-config --cppflags)
 
 gcc $cflags $cppflags  \
-    ../src/iodaemon.c ../src/serial.c ../src/SerialProtocol.c 		\
+    ../src/IODaemon.c ../src/SerialProtocolHandler.c ../src/IOProtocolHandler.c ../src/ControlProtocolHandler.c \
     -L../linux/apr-1.3.3/lib 	\
     -lapr-1 			\
     -o output/linux/iodaemon-1.0.0 \
