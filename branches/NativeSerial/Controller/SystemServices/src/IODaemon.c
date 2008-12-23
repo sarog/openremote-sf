@@ -43,6 +43,7 @@
 //
 // ------------------------------------------------------------------------------------------------
 
+#include <stdlib.h>
 
 #include "apr_getopt.h"
 #include "apr_strings.h"
@@ -93,8 +94,6 @@ static MemPool mempool;
  *     -p, --port     sets the listening port of this I/O daemon
  *
  *
- *  TODO : fix pool handling for threads
- *  TODO : thread exit for portability
  *  TODO : mempool error handler
  *  TODO : mempool data & statistics
  *  TODO : log to fprintf(...)
@@ -149,17 +148,24 @@ int main(int argc, String argv[])
   /**
    * Start handling incoming client connections
    */
-  handleIncomingConnections(serversocket);
-
-
-  // TODO: Clean exit... currently handleIncomingConnections() is an infinite loop...
+  status = handleIncomingConnections(serversocket);
 
   cleanup();
-  exit(0);
+
+  if (status != APR_SUCCESS)
+  {
+    exit(EXIT_FAILURE);
+  }
+  else
+  {
+    exit(0);
+  }
 }
 
 /**
  * Returns a pointer to a string containing a formatted APR error status.
+ *
+ * @param status    APR status value
  */
 String getErrorStatus(Status status)
 {
@@ -167,17 +173,20 @@ String getErrorStatus(Status status)
 
   apr_strerror(status, errbuf, sizeof(errbuf));
 
+  /* allocate duplicate from the pool and return a pointer to it... */
+
   return apr_pstrdup(mempool, errbuf);
 }
 
 /**
- * Clean up the resources before exit;
+ * Clean up the resources before exit
  */
 void cleanup()
 {
   logtrace("%s", "Cleaning up...");
 
   apr_pool_destroy(mempool);
+
   apr_terminate();
 
   logtrace("%s", "Clean up done.");
@@ -190,10 +199,9 @@ void cleanup()
 /**
  * Binds a server socket and starts listening for incoming connections.
  *
- * 1) The first argument 'serverSocket' is a result parameter -- the pointer will be initialized
- *    to point to the created server socket which the caller may then use.
- *
- * 2) The second argument must be a pointer to an already created APR memory pool.
+ * @param  serverSocket  result parameter -- the pointer will be initialized
+ *                       to point to the created server socket which the caller
+ *                       may then use.
  */
 static Status createServerSocket(SocketResult socketResult)
 {
@@ -205,7 +213,7 @@ static Status createServerSocket(SocketResult socketResult)
   /**
    * Temporary result param for the apr_create_socket() call -- we'll initialize the socket
    * in this function (socket options, etc.) and then pass it back to the caller via the
-   * 'socketResult' result param of this function.
+   * 'socketResult' result param.
    */
   Socket newsocket;
 
@@ -260,11 +268,11 @@ static Status createServerSocket(SocketResult socketResult)
   /**
    * Server socket options:
    *
-   *  - blocking socket
+   *  - APR_SO_NONBLOCK=FALSE ==> blocking socket
    *
-   *  - socket timeout: -1 means reads and writes on this socket will block as well, not sure if
-   *    this makes any difference for a listening server socket (it will just spawn client sockets
-   *    from [blocking] accept() call)
+   *  - socket timeout = -1   ==> reads and writes on this socket will block as well, not sure if
+   *                              this makes any difference for a listening server socket (it will
+   *                              just spawn client sockets from blocking accept() call)
    */
   if ((status = apr_socket_opt_set(newsocket, APR_SO_NONBLOCK, FALSE)) != APR_SUCCESS)
   {
@@ -281,7 +289,7 @@ static Status createServerSocket(SocketResult socketResult)
    */
   if ((status = apr_socket_bind(newsocket, socketAddress)) != APR_SUCCESS)
   {
-    logtrace("%s", "Bind failed.");
+    logtrace("Bind failed: %s", getErrorStatus(status));
     return status;
   }
 
@@ -311,7 +319,7 @@ static Status createServerSocket(SocketResult socketResult)
  *
  * @param serverSocket    the bound server socket which accepts incoming connections
  */
-static void handleIncomingConnections(Socket serverSocket)
+static Status handleIncomingConnections(Socket serverSocket)
 {
   /**
    * Pointer to client socket we will get back from accept()
@@ -323,24 +331,37 @@ static void handleIncomingConnections(Socket serverSocket)
    */
   Status status;
 
+  // TODO
   ThreadAttributes threadAttributes;
 
+  // TODO
   Thread thread;
 
+  /**
+   * Data structure to use for passing contextual data to the thread. There are also
+   * apr_thread_data accessor functions to set key/value pairs to APR threads. In theory,
+   * those could be used instead.
+   */
   SocketThreadContext threadContext;
 
+  /**
+   * Once set to false, we will exit the loop and this process...
+   */
+  static int acceptingConnections = TRUE;
 
-  // Function Body --------------------------------------------------------------------------------
 
-
-  while (TRUE)
+  while (acceptingConnections)
   {
-    // this will block since we have a blocking server socket...
-
     logtrace("%s", "Waiting at server socket accept()...");
+
+
+    /* The accept() will block since we have a blocking server socket... */
 
     if ((status = apr_socket_accept(&clientSocket, serverSocket, mempool)) == APR_SUCCESS)
     {
+
+      /* Create thread attributes... */
+
       if ((status = apr_threadattr_create(&threadAttributes, mempool)) != APR_SUCCESS)
       {
     	  logerror("Cannot create new thread: %s", getErrorStatus(status));
@@ -351,18 +372,28 @@ static void handleIncomingConnections(Socket serverSocket)
        * Establish socket thread context with some data (currently just pointer
        * to the client socket).
        */
+
       threadContext = apr_pcalloc(mempool, SocketThreadContextSize);
       threadContext->socket = clientSocket;
 
-      apr_thread_create(&thread, threadAttributes, socketThread, threadContext, mempool);
+      /* Spawn the thread... */
+
+      if ((status = apr_thread_create(&thread, threadAttributes,
+                                      socketThread, threadContext, mempool)) != APR_SUCCESS)
+      {
+        logerror("Cannot create a new thread: %s", getErrorStatus(status));
+        continue;
+      }
     }
     else
     {
       logerror("Listening socket accept() failed: %s", getErrorStatus(status));
-      cleanup();
-      exit(EXIT_FAILURE);
+
+      acceptingConnections = FALSE;
     }
   }
+
+  return status;
 }
 
 
@@ -391,7 +422,7 @@ static Runnable socketThread(Thread thread, Any socketThreadContext)
 
   static int numberOfThreads = 0;
 
-  logtrace("Number of threads %d", numberOfThreads);
+  logtrace("Number of threads %d", ++numberOfThreads);
 
 
   while (running)
@@ -408,6 +439,12 @@ static Runnable socketThread(Thread thread, Any socketThreadContext)
   {
     logerror("Could not close socket: %s", getErrorStatus(status));
   }
+
+  numberOfThreads--;
+
+  apr_pool_destroy(threadMemPool);
+
+  apr_thread_exit(thread, status);
 
   return NULL;
 }
