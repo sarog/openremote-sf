@@ -43,6 +43,8 @@
 //
 // ------------------------------------------------------------------------------------------------
 
+#include <stdlib.h>
+
 #include "org/openremote/controller/daemon/GlobalFunctions.h"
 #include "org/openremote/controller/daemon/Log.h"
 
