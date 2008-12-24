@@ -75,7 +75,7 @@ static Status    createServerSocket(SocketResult socketResult);
 static void      parseOptions(int argc, String argv[]);
 static void      printHelpAndExit();
 static void      configureServerPort(String portArgumentValue);
-static void      handleIncomingConnections(Socket serverSocket);
+static Status    handleIncomingConnections(Socket serverSocket);
 static Runnable  socketThread(Thread thread, void *socket_thread_context);
 
 
