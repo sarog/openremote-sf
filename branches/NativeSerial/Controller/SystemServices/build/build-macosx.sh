@@ -48,7 +48,10 @@ echo OpenRemote I/O Daemon Build for Mac OSX
 echo --------------------------------------------
 echo Compiling...
 
-gcc ../src/iodaemon.c ../src/serial.c ../src/SerialProtocol.c \
+gcc ../src/IODaemon.c \
+    ../src/IOProtocolHandler.c \
+    ../src/ControlProtocolHandler.c \
+    ../src/SerialProtocolHandler.c \
     -L../macosx/apr-1.3.3/lib \
     -lapr-1 \
     -o output/macosx/iodaemon-1.0.0 \
