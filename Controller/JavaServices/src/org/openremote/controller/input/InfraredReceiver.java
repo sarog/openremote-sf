@@ -21,19 +21,19 @@
 */
 package org.openremote.controller.input;
 
-import org.jboss.logging.Logger;
-import org.jboss.beans.metadata.api.annotations.Inject;
-import org.jboss.beans.metadata.api.annotations.FromContext;
-import org.jboss.beans.metadata.api.annotations.Start;
-import org.jboss.kernel.spi.dependency.KernelControllerContext;
-import org.openremote.controller.core.Bootstrap;
-
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.util.Map;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
+import java.util.Map;
+
+import org.jboss.beans.metadata.api.annotations.FromContext;
+import org.jboss.beans.metadata.api.annotations.Inject;
+import org.jboss.beans.metadata.api.annotations.Start;
+import org.jboss.kernel.spi.dependency.KernelControllerContext;
+import org.jboss.logging.Logger;
+import org.openremote.controller.core.Bootstrap;
 
 /**
  * Mock infrared receiver for incoming IR codes (from native layer) to Java runtime via socket

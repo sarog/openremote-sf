@@ -21,15 +21,14 @@
 */
 package org.openremote.controller.protocol.insteon;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
 import org.jboss.beans.metadata.api.annotations.FromContext;
 import org.jboss.beans.metadata.api.annotations.Inject;
 import org.jboss.kernel.spi.dependency.KernelControllerContext;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 /**
  * Sender and receiver of standard and extended INSTEON messages.  <p>

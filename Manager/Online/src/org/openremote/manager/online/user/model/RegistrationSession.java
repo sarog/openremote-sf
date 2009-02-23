@@ -116,7 +116,7 @@ import javax.persistence.NoResultException;
 
     persistence.persist(controller);
 
-    System.out.println("Added box SN: " + serialNumber + " to user " + loginName);
+    // System.out.println("Added box SN: " + serialNumber + " to user " + loginName);
 
     return FormValidation.OK;
   }

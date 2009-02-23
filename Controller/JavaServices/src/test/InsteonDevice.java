@@ -26,12 +26,13 @@ package test;
  *
  * @author <a href="mailto:juha@juhalindfors.com">Juha Lindfors</a>
  */
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.net.ServerSocket;
-import java.io.IOException;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class InsteonDevice
 {

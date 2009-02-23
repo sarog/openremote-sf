@@ -21,14 +21,14 @@
 */
 package org.openremote.controller.router;
 
-import org.jboss.logging.Logger;
-import org.jboss.kernel.spi.dependency.KernelControllerContext;
-import org.openremote.controller.core.Bootstrap;
-
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.jboss.kernel.spi.dependency.KernelControllerContext;
+import org.jboss.logging.Logger;
+import org.openremote.controller.core.Bootstrap;
 
 /**
  * TODO: Does various addess assignment and translation services.
