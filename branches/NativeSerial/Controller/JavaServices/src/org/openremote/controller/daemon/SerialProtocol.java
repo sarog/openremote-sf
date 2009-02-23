@@ -156,7 +156,7 @@ public class SerialProtocol
   /**
    * TODO
    */
-  public enum FlowControl
+  private enum FlowControl
   {
     SOFTWARE,
     HARDWARE
@@ -165,6 +165,7 @@ public class SerialProtocol
 
 
   // Class Members --------------------------------------------------------------------------------
+
 
   /**
    * Logger API for this component. Currently uses the JBoss logging API.
@@ -189,11 +190,11 @@ public class SerialProtocol
    * The payload for serial 'open port' command is as follows:
    *
    * <pre>
-   * +------------------+--+------/.../------+--+--------------------+--+------+
-   * |   "OPEN PORT"    |\0|   [Port ID]     |\0|   Baud Rate        |\0| DPS  |
-   * |  (9 byte string) |  | Arbitrary len.  |  |  (10 byte string)  |  | 3 b  |
-   * |                  |  | e.g /dev/ttyS0  |  |                    |  |      |
-   * +------------------+--+------/.../------+--+--------------------+--+------+
+   * +------------------+--+------/.../------+--+--------------------+--+------+--+
+   * |   "OPEN PORT"    |\0|   [Port ID]     |\0|   Baud Rate        |\0| DPS  |\0|
+   * |  (9 byte string) |  | Arbitrary len.  |  |  (10 byte string)  |  |  3   |  |
+   * |                  |  | e.g /dev/ttyS0  |  |                    |  | bytes|  |
+   * +------------------+--+------/.../------+--+--------------------+--+------+--+
    * </pre>
    *
    * Fields in the payload are separated by a zero byte (string end identifier in C). <p>
@@ -210,16 +211,17 @@ public class SerialProtocol
    * The last field contains a 3 byte string representation of the serial port data bits, parity
    * and stop bits in that order. <p>
    *
-   * The first byte is a string value of serial connection data bits, for example "8".  <p>
+   * The first byte of DPS is a character value of serial connection data bits, for example "8".  <p>
    *
-   * The second byte is the parity, one of {@link Parity#ODD}, {@link Parity#EVEN}
+   * The second byte of DPS is the parity, one of {@link Parity#ODD}, {@link Parity#EVEN}
    * or {@link Parity#NONE}. The corresponding character values are 'O', 'E' and 'N'.  <p>
    *
-   * The third byte is number of stop bits, either {@link StopBits#ONE}, {@link StopBits#TWO}
+   * The third byte of DPS is number of stop bits, either {@link StopBits#ONE}, {@link StopBits#TWO}
    * or {@link StopBits#ONE_HALF}, characters '1', '2', '9', respectively.  <p>
    *
    * Therefore, a serial connection to be opened with 8 databits, no parity and single stop bit
-   * would be represented by DPS string '8N1'.
+   * would be represented by DPS string '8N1'. Seven databits with even parity and one stop bit
+   * would be '7E1'.
    *
    * @param portID
    * @param baudrate
@@ -228,6 +230,8 @@ public class SerialProtocol
    * @param stopBits
    * @return
    */
+  // TODO : make the baud rate string requirements less stringent
+
   public static byte[] createOpenPortMessage(String portID, int baudrate, DataBits databits,
                                              Parity parity, StopBits stopBits)
   {
@@ -244,8 +248,9 @@ public class SerialProtocol
     final int BAUDRATE_OFFSET         = SECOND_SEPARATOR_OFFSET + SEPARATOR_SIZE;
     final int THIRD_SEPARATOR_OFFSET  = BAUDRATE_OFFSET + BAUDRATE_SIZE;
     final int DPS_OFFSET              = THIRD_SEPARATOR_OFFSET + SEPARATOR_SIZE;
+    final int FOURTH_SEPARATOR_OFFSET = DPS_OFFSET + DPS_SIZE;
 
-    int arraySize = DPS_OFFSET + DPS_SIZE;
+    int arraySize = FOURTH_SEPARATOR_OFFSET + SEPARATOR_SIZE;
 
     byte[] message  = new byte[arraySize];
     byte[] bauds    = IOProtocol.createHexString(baudrate, BAUDRATE_SIZE, true, true).getBytes();
@@ -258,8 +263,10 @@ public class SerialProtocol
     System.arraycopy(bauds, 0, message, BAUDRATE_OFFSET, BAUDRATE_SIZE);
     System.arraycopy(fieldSeparator, 0, message, THIRD_SEPARATOR_OFFSET, SEPARATOR_SIZE);
     System.arraycopy(dps, 0, message, DPS_OFFSET, DPS_SIZE);
+    System.arraycopy(fieldSeparator, 0, message, FOURTH_SEPARATOR_OFFSET, SEPARATOR_SIZE);
 
-    log.debug(new String(message));
+    if (log.isTraceEnabled())
+      log.trace("Constructed serial 'open port' payload: '" + new String(message) + "'");
 
     return message;
   }

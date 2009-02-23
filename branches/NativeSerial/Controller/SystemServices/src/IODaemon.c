@@ -35,8 +35,7 @@
 //
 //  Also you will notice the extensive use of type definitions to make the final source have a very
 //  Java like feeling. If that gives you an allergic reaction then too bad for you. Hopefully it
-//  makes the thing a bit more bearable for any Java developer looking at it. If you're a C hacker
-//  you already know how to make it look like the way you like.
+//  makes the thing a bit more bearable for any Java developer looking at it.
 //
 //
 //  Author: Juha Lindfors (juha@juhalindfors.com)
@@ -150,6 +149,9 @@ int main(int argc, String argv[])
    */
   status = handleIncomingConnections(serversocket);
 
+  /**
+   * Exit the daemon (either by request or due to error)...
+   */
   cleanup();
 
   if (status != APR_SUCCESS)
@@ -158,7 +160,7 @@ int main(int argc, String argv[])
   }
   else
   {
-    exit(0);
+    exit(EXIT_SUCCESS);
   }
 }
 
