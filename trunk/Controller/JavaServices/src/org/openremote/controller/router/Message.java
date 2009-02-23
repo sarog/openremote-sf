@@ -21,13 +21,13 @@
 */
 package org.openremote.controller.router;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
+
 import org.jboss.logging.Logger;
 import org.openremote.controller.core.Bootstrap;
-
-import java.util.StringTokenizer;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Arrays;
 
 /**
  * TODO: Internal message presentation.  <p>

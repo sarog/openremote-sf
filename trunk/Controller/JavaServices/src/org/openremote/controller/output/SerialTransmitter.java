@@ -21,14 +21,20 @@
 */
 package org.openremote.controller.output;
 
-import org.jboss.logging.Logger;
-import org.jboss.kernel.spi.dependency.KernelControllerContext;
-import org.jboss.beans.metadata.api.annotations.Inject;
 import org.jboss.beans.metadata.api.annotations.FromContext;
+import org.jboss.beans.metadata.api.annotations.Inject;
 import org.jboss.beans.metadata.api.annotations.Start;
+import org.jboss.kernel.spi.dependency.KernelControllerContext;
+import org.jboss.logging.Logger;
 import org.openremote.controller.core.Bootstrap;
+import org.openremote.controller.daemon.IOModule;
+import org.openremote.controller.daemon.SerialProtocol;
+import static org.openremote.controller.daemon.IOModule.RAW_SERIAL;
 
 /**
+ * This is the low level Java API for raw serial communications. Internally it delegates
+ * actual I/O operations to I/O proxy (which in turns delegates to OS native layers).
+ *
  *  TODO
  *
  * @author <a href = "mailto:juha@juhalindfors.com">Juha Lindfors</a>
@@ -48,6 +54,10 @@ public class SerialTransmitter
   public final static String LOG_CATEGORY = "RAW SERIAL TRANSMITTER";
 
 
+  // Enums ----------------------------------------------------------------------------------------
+
+
+
   // Class Members --------------------------------------------------------------------------------
 
   /**
@@ -63,6 +73,18 @@ public class SerialTransmitter
    * and kernel that is used to deploy this component.
    */
   private KernelControllerContext serviceContext;
+
+  // TODO
+  private SerialProtocol.Parity parity;
+
+  // TODO
+  private SerialProtocol.DataBits databits;
+
+  // TODO
+  private SerialProtocol.StopBits stopbits;
+
+  // TODO
+  private int baudrate;
 
 
   // MC Component Methods -------------------------------------------------------------------------
@@ -90,7 +112,106 @@ public class SerialTransmitter
   @Start public void start()
   {
     log.info("Starting Raw Serial Transmitter...");
-    
+
+    // TODO : this should be driven by the scripting engine...
+
+    openPort("/dev/ttyS0", databits, parity, stopbits, getBaudRate());
+  }
+
+  // JavaBean Methods -----------------------------------------------------------------------------
+
+  public void setBaudRate(int baudrate)
+  {
+    if (baudrate < 0)
+      throw new IllegalArgumentException("Baud rate must be positive (got " + baudrate + ")");
+
+    this.baudrate = baudrate;
+  }
+
+  public int getBaudRate()
+  {
+    return this.baudrate;
+  }
+
+  public void setParity(String parity)
+  {
+    if (parity == null)
+      throw new IllegalArgumentException("Null parity");
+
+    parity = parity.trim().toUpperCase();
+
+    if (parity.equalsIgnoreCase("N") || parity.equalsIgnoreCase("NONE"))
+      this.parity = SerialProtocol.Parity.NONE;
+    else if (parity.equalsIgnoreCase("O") || parity.equalsIgnoreCase("ODD"))
+      this.parity = SerialProtocol.Parity.ODD;
+    else if (parity.equalsIgnoreCase("E") || parity.equalsIgnoreCase("EVEN"))
+      this.parity = SerialProtocol.Parity.EVEN;
+    else
+      this.parity = SerialProtocol.Parity.valueOf(parity);
+  }
+
+  public String getParity()
+  {
+    return parity.toString();
+  }
+
+  public void setDataBits(String databits)
+  {
+    if (databits.equals("5"))
+      this.databits = SerialProtocol.DataBits.FIVE;
+    else if (databits.equals("6"))
+      this.databits = SerialProtocol.DataBits.SIX;
+    else if (databits.equals("7"))
+      this.databits = SerialProtocol.DataBits.SEVEN;
+    else if (databits.equals("8"))
+      this.databits = SerialProtocol.DataBits.EIGHT;
+    else
+      throw new Error("Configuration error: unknown databit value '" + databits + "'.");  
+
+      // TODO : service state
+  }
+
+  public String getDataBits()
+  {
+    return databits.getSerialFormat();
+  }
+
+  public void setStopBits(String stopbits)
+  {
+    if (stopbits == null)
+      throw new IllegalArgumentException("Null stopbits");
+
+    stopbits = stopbits.trim().toUpperCase();
+
+    if (stopbits.equalsIgnoreCase("1") || stopbits.equalsIgnoreCase("ONE"))
+      this.stopbits = SerialProtocol.StopBits.ONE;
+    else if (stopbits.equalsIgnoreCase("2") || stopbits.equalsIgnoreCase("TWO"))
+      this.stopbits = SerialProtocol.StopBits.TWO;
+    else if (stopbits.equalsIgnoreCase("1.5") || stopbits.equalsIgnoreCase("ONE HALF") || stopbits.equalsIgnoreCase("ONE AND HALF"))
+      this.stopbits = SerialProtocol.StopBits.ONE_HALF;
+    else
+      this.stopbits = SerialProtocol.StopBits.valueOf(stopbits);
+  }
+
+  public String getStopBits()
+  {
+    return stopbits.toString();
+  }
+
+  // Public Instance Methods ----------------------------------------------------------------------
+
+  
+  public void /* TODO: return */ openPort(String portID,
+                                          SerialProtocol.DataBits databits,
+                                          SerialProtocol.Parity parity,
+                                          SerialProtocol.StopBits stopbits,
+                                          int baudrate)
+  {
+
+    byte[] payload = SerialProtocol.createOpenPortMessage(
+        portID, baudrate, databits, parity, stopbits
+    );
+
     // TODO: inject the name
 
     try
@@ -98,13 +219,18 @@ public class SerialTransmitter
       serviceContext.getKernel().getBus().invoke(
           "Output/IOProxy",
           "sendBytes",
-          new Object[] { IOModule.PING, new byte[] {} },
+
+          new Object[]
+          {
+              RAW_SERIAL,
+              payload
+          },
           new String[] { IOModule.class.getName(), new byte[] {}.getClass().getName() }
       );
     }
     catch (Throwable t)
     {
-      throw new Error(t);
+      System.out.println("openPort() error : " + t);
     }
   }
 }

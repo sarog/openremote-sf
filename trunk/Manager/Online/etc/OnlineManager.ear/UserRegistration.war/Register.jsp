@@ -25,7 +25,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
     <meta name = "revision" content = "$Id: $"/>
     <meta name = "author"   content = "Juha Lindfors"/>
-    <meta name = "license"  content = "Creative Commons BY-NC-SA 3.0 US"/>
+    <meta name = "license"  content = "GPLv3"/>
     <meta name = "description" content = "OpenRemote User Registration"/>
     <meta name = "keywords" content = "openremote, register"/>
   </head>

@@ -42,7 +42,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <!--
      | Java source directory
      +-->
-    <property name = "src.dir" value = "src"/>
+    <property name = "src.dir" value = "src/org"/>
 
     <!--
      | All build artifacts should go into this directory.
@@ -120,8 +120,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
     <path id = "compile.classpath">
       <pathelement path = "${controller.root}/system/services/security/bcprov-jdk16-139.jar"/>
-      <pathelement path = "${controller.root}/system/services/x10/x10.jar"/>
-      <pathelement path = "${controller.root}/system/services/serial-transmitter/RXTXcomm.jar"/>
+      <pathelement path = "${controller.root}/system/services/x10.service/x10.jar"/>
       <pathelement path = "${controller.lib}/servlet-api.jar"/>
       <pathelement path = "${bootstrap.lib.dir}/jboss-kernel.jar"/>
       <pathelement path = "${bootstrap.lib.dir}/jboss-dependency.jar"/>
@@ -188,7 +187,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <echo message = ""/>
 
     <copy todir = "${server.startup}/ControllerStatus.war/WEB-INF/classes">
-      <fileset dir = "${output.dir}/classes">
+      <fileset dir = "${output.classes.dir}">
         <include name = "org/openremote/controller/console/HttpStatus*"/>
       </fileset>
     </copy>
@@ -201,7 +200,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <echo message = ""/>
 
     <copy todir = "${server.startup}/bootstrap.beans">
-      <fileset dir = "${output.dir}/classes">
+      <fileset dir = "${output.classes.dir}">
         <include name = "org/openremote/controller/core/**"/>
       </fileset>
     </copy>
@@ -214,7 +213,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <echo message = ""/>
 
     <copy todir = "${server.services}/ConsoleCommand.war/WEB-INF/classes">
-      <fileset dir = "${output.dir}/classes">
+      <fileset dir = "${output.classes.dir}">
         <include name = "org/openremote/controller/console/**"/>
       </fileset>
     </copy>
@@ -225,8 +224,8 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
 
-    <jar destfile = "${server.services}/router/Router.jar"
-         basedir  = "${output.dir}/classes"
+    <jar destfile = "${server.services}/router.service/Router.jar"
+         basedir  = "${output.classes.dir}"
          includes = "org/openremote/controller/router/**"/>
 
     <echo message = ""/>
@@ -235,8 +234,8 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
 
-    <jar destfile = "${server.services}/insteon/INSTEON.jar"
-         basedir  = "${output.dir}/classes"
+    <jar destfile = "${server.services}/insteon.service/INSTEON.jar"
+         basedir  = "${output.classes.dir}"
          includes = "org/openremote/controller/protocol/insteon/**"/>
 
     <echo message = ""/>
@@ -245,12 +244,12 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
 
-    <jar destfile = "${server.services}/x10/X10Service.jar"
-         basedir  = "${output.dir}/classes"
+    <jar destfile = "${server.services}/x10.service/X10Service.jar"
+         basedir  = "${output.classes.dir}"
          includes = "org/openremote/controller/protocol/x10/**"/>
 
-    <jar destfile = "${server.services}/x10/openremote-protocolhandler-spi.jar"
-         basedir  = "${output.dir}/classes"
+    <jar destfile = "${server.services}/x10.service/openremote-protocolhandler-spi.jar"
+         basedir  = "${output.classes.dir}"
          includes = "org/openremote/controller/protocol/spi/**"/>
 
     <echo message = ""/>
@@ -259,8 +258,8 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
 
-    <jar destfile = "${server.services}/ir-receiver/IR-Receiver.jar"
-         basedir  = "${output.dir}/classes"
+    <jar destfile = "${server.services}/ir-receiver.service/IR-Receiver.jar"
+         basedir  = "${output.classes.dir}"
          includes = "org/openremote/controller/input/**"/>
 
     <echo message = ""/>
@@ -269,10 +268,19 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
 
-    <jar destfile = "${server.services}/serial-transmitter/serial-transmitter.jar"
-         basedir  = "${output.dir}/classes"
+    <jar destfile = "${server.services}/serial-transmitter.service/serial-transmitter.jar"
+         basedir  = "${output.classes.dir}"
          includes = "org/openremote/controller/output/**"/>
 
+    <echo message = ""/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Copying I/O Proxy Implementation..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <jar destfile = "${server.services}/io-proxy.service/io-proxy.jar"
+         basedir  = "${output.classes.dir}"
+         includes = "org/openremote/controller/daemon/**"/>
 
   </target>
 

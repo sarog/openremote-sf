@@ -21,10 +21,10 @@
 */
 package org.openremote.controller.protocol.spi;
 
-import org.jboss.kernel.Kernel;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jboss.kernel.Kernel;
 
 /**
  * This is just hacked together mumbo jumbo for now.
