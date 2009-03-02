@@ -50,6 +50,9 @@
 	<bean id="codeService"
 		class="org.openremote.beehive.serviceHibernateImpl.CodeServiceImpl"
 		parent="abstractService" />
-
+    <bean id="scraperService"
+		class="org.openremote.beehive.serviceHibernateImpl.WebscraperServiceImpl"
+		parent="abstractService" >
+	</bean>
 
 </beans>

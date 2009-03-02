@@ -6,5 +6,5 @@
     <import resource="datasource.xml"/>
     <import resource="applicationContext.xml"/>
     <import resource="classpath:org/openremote/beehive/serviceHibernateImpl/spring-service-hibernate-impl.xml"/>
-
+    <import resource="spring-quartz.xml"/>
 </beans>
