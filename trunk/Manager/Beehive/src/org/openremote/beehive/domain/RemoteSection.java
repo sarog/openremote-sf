@@ -1,3 +1,23 @@
+/* OpenRemote, the Home of the Digital Home.
+ * Copyright 2008, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ * 
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ * 
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.openremote.beehive.domain;
 
 import java.io.File;
@@ -16,162 +36,162 @@ import javax.persistence.Table;
 import org.openremote.beehive.utils.StringUtil;
 
 /**
- * A configuration section in a LIRC configuration file linked with a model.
- * It is possible to have more than one remote configuration in a configuration file.
- * Each remote configuration in a file should go to the database as a separate remote record.
- * User can later combine multiple sections into a single configuration file which can support multiple remote devices.
- *
+ * A configuration section in a LIRC configuration file linked with a model. It is possible to have more than one remote
+ * configuration in a configuration file. Each remote configuration in a file should go to the database as a separate
+ * remote record. User can later combine multiple sections into a single configuration file which can support multiple
+ * remote devices.
+ * 
  * @author Dan 2009-2-6
  */
 @Entity
 @Table(name = "remote_section")
 @SuppressWarnings("serial")
 public class RemoteSection extends BusinessEntity {
-	
-	private String name;
 
-    private boolean raw;
-    
-    private String comment;
+   private String name;
 
-    private Model model;
+   private boolean raw;
 
-    private List<RemoteOption> remoteOptions;
+   private String comment;
 
-    private List<Code> codes;
+   private Model model;
 
-    public final static String BEGIN_REMOTE = "begin remote";
-	public final static String BEGIN_CODES = "begin codes";
-	public final static String END_CODES = "end codes";
-	public final static String END_REMOTE = "end remote";
-	public final static String BEGIN_RAW_CODES = "begin raw_codes";
-	public final static String END_RAW_CODES = "end raw_codes";
+   private List<RemoteOption> remoteOptions;
 
-    public RemoteSection() {
-        remoteOptions = new ArrayList<RemoteOption>();
-        codes = new ArrayList<Code>();
-        comment = "";
-    }
+   private List<Code> codes;
 
-    public String beginRemoteTag() {
-        return StringUtil.lineSeparator() + BEGIN_REMOTE
-				+ StringUtil.lineSeparator();
-    }
+   public final static String BEGIN_REMOTE = "begin remote";
+   public final static String BEGIN_CODES = "begin codes";
+   public final static String END_CODES = "end codes";
+   public final static String END_REMOTE = "end remote";
+   public final static String BEGIN_RAW_CODES = "begin raw_codes";
+   public final static String END_RAW_CODES = "end raw_codes";
 
-    @Column(nullable = false)
-    public String getName() {
-		return name;
-	}
+   public RemoteSection() {
+      remoteOptions = new ArrayList<RemoteOption>();
+      codes = new ArrayList<Code>();
+      comment = "";
+   }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+   public String beginRemoteTag() {
+      return StringUtil.lineSeparator() + BEGIN_REMOTE + StringUtil.lineSeparator();
+   }
 
-    @Column(nullable = false)
-    public boolean isRaw() {
-        return raw;
-    }
+   @Column(nullable = false)
+   public String getName() {
+      return name;
+   }
 
-    public void setRaw(boolean raw) {
-        this.raw = raw;
-    }
-    
-    @Column(columnDefinition = "text")
-    public String getComment() {
-		return comment;
-	}
+   public void setName(String name) {
+      this.name = name;
+   }
 
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
+   @Column(nullable = false)
+   public boolean isRaw() {
+      return raw;
+   }
 
-	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    public Model getModel() {
-        return model;
-    }
+   public void setRaw(boolean raw) {
+      this.raw = raw;
+   }
 
-    public void setModel(Model model) {
-        this.model = model;
-    }
+   @Column(columnDefinition = "text")
+   public String getComment() {
+      return comment;
+   }
 
-    @OneToMany(mappedBy = "remoteSection", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    public List<RemoteOption> getRemoteOptions() {
-        return remoteOptions;
-    }
+   public void setComment(String comment) {
+      this.comment = comment;
+   }
 
-    public void setRemoteOptions(List<RemoteOption> remoteOptions) {
-        this.remoteOptions = remoteOptions;
-    }
+   @ManyToOne(fetch = FetchType.LAZY)
+   @JoinColumn(nullable = false)
+   public Model getModel() {
+      return model;
+   }
 
-    @OneToMany(mappedBy = "remoteSection", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    public List<Code> getCodes() {
-        return codes;
-    }
+   public void setModel(Model model) {
+      this.model = model;
+   }
 
-    public void setCodes(List<Code> codes) {
-        this.codes = codes;
-    }
+   @OneToMany(mappedBy = "remoteSection", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+   public List<RemoteOption> getRemoteOptions() {
+      return remoteOptions;
+   }
 
-    private String allOptionText() {
-        String text = "";
-        for (RemoteOption remoteOption : getRemoteOptions()) {
-            text += remoteOption.textLine();
-        }
-        return text + StringUtil.lineSeparator();
-    }
-    /**
-     * Gets all the text including tags, options and codes. 
-     * 
-     * @return text string
-     */
-    public String allText() {
-        String text = comment;
-        text += beginRemoteTag();
-        text += allOptionText();
-        text += allCodeText();
-        text += endRemoteTag();
-        return text + StringUtil.lineSeparator();
-    }
+   public void setRemoteOptions(List<RemoteOption> remoteOptions) {
+      this.remoteOptions = remoteOptions;
+   }
 
-    private String allCodeText() {
-        String text = beginCodeTag();
-        for (Code code : getCodes()) {
-            text += code.textLine();
-        }
-        text += StringUtil.lineSeparator();
-        text += endCodeTag();
-        return text + StringUtil.lineSeparator();
-    }
+   @OneToMany(mappedBy = "remoteSection", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+   public List<Code> getCodes() {
+      return codes;
+   }
 
-    private String endCodeTag() {
-        String tag = END_CODES;
-        if (raw) {
-            tag = END_RAW_CODES;
-        }
-        return "      " + tag + StringUtil.doubleLineSeparator();
-    }
+   public void setCodes(List<Code> codes) {
+      this.codes = codes;
+   }
 
-    private String beginCodeTag() {
-        String tag = BEGIN_CODES;
-        if (raw) {
-            tag = BEGIN_RAW_CODES;
-        }
-        return "      " + tag + StringUtil.lineSeparator();
-    }
+   private String allOptionText() {
+      String text = "";
+      for (RemoteOption remoteOption : getRemoteOptions()) {
+         text += remoteOption.textLine();
+      }
+      return text + StringUtil.lineSeparator();
+   }
 
-    private String endRemoteTag() {
-        return END_REMOTE + StringUtil.doubleLineSeparator();
-    }
-    /**
-	 * Gets a relative file path, e.g. sigma_designs\realmagic\REALMagic_SIR in WINDOWS ,
-	 * sigma_designs/realmagic/REALMagic_SIR in Linux
-	 * 
-	 * @return a relative file path
-	 */
-	public String filePath() {
-		return model.getVendor().getName() + File.separator + model.getName()
-				+ File.separator + name;
-	}
+   /**
+    * Gets all the text including tags, options and codes.
+    * 
+    * @return text string
+    */
+   public String allText() {
+      String text = comment;
+      text += beginRemoteTag();
+      text += allOptionText();
+      text += allCodeText();
+      text += endRemoteTag();
+      return text + StringUtil.lineSeparator();
+   }
+
+   private String allCodeText() {
+      String text = beginCodeTag();
+      for (Code code : getCodes()) {
+         text += code.textLine();
+      }
+      text += StringUtil.lineSeparator();
+      text += endCodeTag();
+      return text + StringUtil.lineSeparator();
+   }
+
+   private String endCodeTag() {
+      String tag = END_CODES;
+      if (raw) {
+         tag = END_RAW_CODES;
+      }
+      return "      " + tag + StringUtil.doubleLineSeparator();
+   }
+
+   private String beginCodeTag() {
+      String tag = BEGIN_CODES;
+      if (raw) {
+         tag = BEGIN_RAW_CODES;
+      }
+      return "      " + tag + StringUtil.lineSeparator();
+   }
+
+   private String endRemoteTag() {
+      return END_REMOTE + StringUtil.doubleLineSeparator();
+   }
+
+   /**
+    * Gets a relative file path, e.g. sigma_designs\realmagic\REALMagic_SIR in WINDOWS ,
+    * sigma_designs/realmagic/REALMagic_SIR in Linux
+    * 
+    * @return a relative file path
+    */
+   public String filePath() {
+      return model.getVendor().getName() + File.separator + model.getName() + File.separator + name;
+   }
 
 }
