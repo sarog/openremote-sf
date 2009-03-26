@@ -7,7 +7,7 @@
             <props>
                 <prop key="lirc.htm">modelController</prop>
                 <prop key="remoteSection.htm">remoteSectionController</prop>
-                <prop key="beehiveDatabase.htm">beehiveDatabaseController</prop>
+                <prop key="index.htm">beehiveDatabaseController</prop>
             </props>
         </property>
     </bean>

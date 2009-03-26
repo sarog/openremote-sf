@@ -64,6 +64,14 @@
         <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
 
+    <filter>
+        <filter-name>JSONCallbackFilter</filter-name>
+        <filter-class>org.openremote.beehive.rest.JSONCallbackFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>JSONCallbackFilter</filter-name>
+        <url-pattern>/rest/*</url-pattern>
+    </filter-mapping>
 
     <filter>
         <filter-name>encodingFilter</filter-name>

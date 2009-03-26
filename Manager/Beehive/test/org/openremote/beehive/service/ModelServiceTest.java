@@ -24,13 +24,20 @@ public class ModelServiceTest extends TestBase {
 //    }
     
     public void testExportText(){
-    	System.out.println(service.exportText(1L));
+//    	System.out.println(service.exportText(1L));
     }
     
     public void testExportFile(){
-    	System.out.println(service.exportText(1L));
+//    	System.out.println(service.exportText(1L));
     }
-
-
-
+    
+    public void testUpdate(){
+//    	String[] paths = {"/sky/Rev4","/sky/RC-56"}; 
+//    	service.update(paths, "update two file", "username");
+    }
+    
+    public void testRollback(){
+    	String path = "/";
+    	service.rollback(path, 101, "tomsky");
+    }
 }

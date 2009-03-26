@@ -1,3 +1,23 @@
+/* OpenRemote, the Home of the Digital Home.
+ * Copyright 2008, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ * 
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ * 
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.openremote.beehive.rest;
 
 import java.util.ArrayList;
@@ -9,29 +29,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.openremote.beehive.api.dto.VendorDTO;
 
 /**
- * In order to let  rest service to serialize list of vendor
- * User: allenwei
- * Date: 2009-2-10
- * Time: 13:48:42
+ * In order to let rest service to serialize list of vendor User: allenwei Date: 2009-2-10 Time: 13:48:42
  */
 @XmlRootElement(name = "vendors")
 public class VendorListing {
 
-    private List<VendorDTO> vendors = new ArrayList<VendorDTO>();
+   private List<VendorDTO> vendors = new ArrayList<VendorDTO>();
 
-    public VendorListing() {
-    }
+   public VendorListing() {
+   }
 
-    public VendorListing(List<VendorDTO> vendors) {
-        this.vendors.addAll(vendors);
-    }
+   public VendorListing(List<VendorDTO> vendors) {
+      this.vendors.addAll(vendors);
+   }
 
-    @XmlElement(name = "vendor")
-    public List<VendorDTO> getVendors() {
-        return vendors;
-    }
+   @XmlElement(name = "vendor")
+   public List<VendorDTO> getVendors() {
+      return vendors;
+   }
 
-    public void setVendors(List<VendorDTO> vendors) {
-        this.vendors = vendors;
-    }
+   public void setVendors(List<VendorDTO> vendors) {
+      this.vendors = vendors;
+   }
 }
