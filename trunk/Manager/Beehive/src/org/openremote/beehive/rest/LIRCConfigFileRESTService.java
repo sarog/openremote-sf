@@ -42,6 +42,7 @@ public class LIRCConfigFileRESTService {
     * @param vendorName
     * @return content of lirc configuration file
     */
+   @Path("lirc.conf")
    @GET
    @Produces("text/plain")
    public String getLIRCConfigFile(@PathParam("vendor_name") String vendorName,

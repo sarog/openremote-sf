@@ -29,16 +29,16 @@ package org.openremote.beehive.repo;
 public class DifferenceLine {
    public static final int EMPTY_NUMBER = -1;
 
-   public static final int NOT_CHANGED = 0;
-   public static final int ADDED = 1;
-   public static final int DELETED = 2;
-   public static final int MODIFIED = 3;
+   public static final char NOT_CHANGED = 'N';
+   public static final char ADDED = 'A';
+   public static final char DELETED = 'D';
+   public static final char MODIFIED = 'M';
 
    protected int number = DifferenceLine.EMPTY_NUMBER;
-   protected int type;
+   protected char type;
    protected String line;
 
-   public DifferenceLine(int number, int type, String line) {
+   public DifferenceLine(int number, char type, String line) {
       this.number = number;
       this.type = type;
       this.line = line;
@@ -52,11 +52,11 @@ public class DifferenceLine {
       this.number = number;
    }
 
-   public int getType() {
+   public char getType() {
       return this.type;
    }
 
-   public void setType(int type) {
+   public void setType(char type) {
       this.type = type;
    }
 

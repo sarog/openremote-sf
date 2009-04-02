@@ -36,8 +36,11 @@ import java.util.regex.Pattern;
 public class DifferenceModel {
 
    protected List<DifferenceArea> areas = new ArrayList<DifferenceArea>();
+   protected int addedItemsCount = 0;
+   protected int modifiedItemsCount = 0;
+   protected int deletedItemsCount = 0;
 
-   protected static class DifferenceArea {
+   protected class DifferenceArea {
       protected int leftIndex;
       protected int leftSize;
       protected int rightIndex;
@@ -85,10 +88,13 @@ public class DifferenceModel {
             } else if ("-".equals(operation)) {
                ret.add(new DifferenceLine(number++, DifferenceLine.DELETED, line));
                previousOperation = "-";
+               deletedItemsCount++;
             } else if ("+".equals(operation)) {
                if ("-".equals(previousOperation)) {
                   DifferenceLine l = (DifferenceLine) ret.get(ret.size() - 1);
                   l.setType(DifferenceLine.MODIFIED);
+                  modifiedItemsCount++;
+                  deletedItemsCount--;
                } else {
                   ret.add(new DifferenceLine(DifferenceLine.EMPTY_NUMBER, DifferenceLine.NOT_CHANGED, ""));
                }
@@ -120,6 +126,7 @@ public class DifferenceModel {
                   l.setNumber(number++);
                } else {
                   ret.add(new DifferenceLine(number++, DifferenceLine.ADDED, line));
+                  addedItemsCount++;
                }
                previousOperation = "+";
             }
@@ -268,5 +275,17 @@ public class DifferenceModel {
          ret.add(new DifferenceLine(i, DifferenceLine.NOT_CHANGED, lines[i]));
       }
       return ret;
+   }
+
+   public int getAddedItemsCount() {
+      return addedItemsCount;
+   }
+
+   public int getModifiedItemsCount() {
+      return modifiedItemsCount;
+   }
+
+   public int getDeletedItemsCount() {
+      return deletedItemsCount;
    }
 }

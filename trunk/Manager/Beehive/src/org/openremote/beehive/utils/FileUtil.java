@@ -357,4 +357,28 @@ public class FileUtil {
 
       }
    }
+   
+   public static StringBuffer readFileToString(File file) {
+      StringBuffer strBuffer = new StringBuffer();
+      InputStream is = null;
+      byte[] buffer = null;
+      int count = 0;
+      try {
+         is = new FileInputStream(file);
+         do {
+            buffer = new byte[1024];
+            count = is.read(buffer, 0, buffer.length);
+            strBuffer.append(new String(buffer));
+         } while (count != -1);
+      } catch (IOException e) {
+         e.printStackTrace();
+      } finally {
+         try {
+            is.close();
+         } catch (IOException e) {
+            e.printStackTrace();
+         }
+      }
+      return strBuffer;
+   }
 }

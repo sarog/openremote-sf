@@ -43,12 +43,15 @@ public class CodeDTO extends BusinessEntityDTO {
 
    private String name;
 
+   private String remoteName;
+
    private String value;
 
    private String comment;
 
    public CodeDTO() {
       value = "";
+      remoteName = "";
       comment = "";
    }
 
@@ -79,4 +82,12 @@ public class CodeDTO extends BusinessEntityDTO {
    public boolean isBlankComment() {
       return StringUtils.isBlank(getComment());
    }
+
+    public String getRemoteName() {
+        return remoteName;
+    }
+
+    public void setRemoteName(String remoteName) {
+        this.remoteName = remoteName;
+    }
 }

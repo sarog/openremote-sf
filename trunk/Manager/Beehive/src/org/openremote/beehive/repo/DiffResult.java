@@ -33,7 +33,8 @@ import java.util.List;
 public class DiffResult {
    private List<DifferenceLine> leftLines;
    private List<DifferenceLine> rightLines;
-
+   private ChangeCount changeCount;
+   
    public List<Line> getLeft() {
       List<Line> left = new ArrayList<Line>();
       if (leftLines != null) {
@@ -60,12 +61,11 @@ public class DiffResult {
 
    public class Line {
       protected DifferenceLine data;
-
       public Line(DifferenceLine data) {
          this.data = data;
       }
 
-      public int getChangeType() {
+      public char getChangeType() {
          return this.data.getType();
       }
 
@@ -80,18 +80,6 @@ public class DiffResult {
       public String getLine() {
          return this.data.getLine();
       }
-
-      public String getBackground() {
-         if (this.data.getType() == DifferenceLine.ADDED) {
-            return "#E0FFE0";
-         } else if (this.data.getType() == DifferenceLine.DELETED) {
-            return "#FFE3E3";
-         } else if (this.data.getType() == DifferenceLine.MODIFIED) {
-            return "#FEFFB2";
-         } else {
-            return "#FFFFFF";
-         }
-      }
    }
 
    private List<Line> getLines(List<DifferenceLine> diffLines) {
@@ -100,5 +88,13 @@ public class DiffResult {
          ret.add(new Line((DifferenceLine) i.next()));
       }
       return ret;
+   }
+
+   public ChangeCount getChangeCount() {
+      return changeCount;
+   }
+
+   public void setChangeCount(ChangeCount changeCount) {
+      this.changeCount = changeCount;
    }
 }

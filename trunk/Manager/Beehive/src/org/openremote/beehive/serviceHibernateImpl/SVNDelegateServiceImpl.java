@@ -38,6 +38,7 @@ import org.openremote.beehive.Configuration;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.domain.Vendor;
 import org.openremote.beehive.repo.Actions;
+import org.openremote.beehive.repo.ChangeCount;
 import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.DifferenceModel;
@@ -220,33 +221,39 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       String uuid = UUID.randomUUID().toString();
       File file = new File(configuration.getWorkCopyDir() + path);
       File tempFile = new File(configuration.getWorkCopyDir() + File.separator + uuid);
-      try {
-         svnClient.diff(file, tempFile, true);
-         String strDiff = FileUtils.readFileToString(tempFile, "UTF8");
-         tempFile.delete();
-         InputStream is = svnClient.getContent(file, SVNRevision.HEAD);
-         String left = StringUtil.readStringInInputStream(is).toString();
-         ISVNStatus[] status = svnClient.getStatus(file, false, true);
-         String right = FileUtils.readFileToString(file, "UTF8");
-         if (SVNStatusKind.NORMAL.equals(status[0].getTextStatus())) {
-            dr.setLeft(null);
-            dr.setRight(null);
-         } else if (SVNStatusKind.UNVERSIONED.equals(status[0].getTextStatus())) {
-            dr.setLeft(null);
-            dr.setRight(DifferenceModel.getUntouchedLines(right));
-         } else if (SVNStatusKind.DELETED.equals(status[0].getTextStatus())
-               || SVNStatusKind.MISSING.equals(status[0].getTextStatus())) {
-            dr.setLeft(DifferenceModel.getUntouchedLines(left));
-            dr.setRight(null);
-         } else {
-            DifferenceModel diff = new DifferenceModel(strDiff);
-            dr.setLeft(diff.getLeftLines(left));
-            dr.setRight(diff.getRightLines(right));
-         }
-      } catch (IOException e) {
-         logger.error("The IOException!", e);
-      } catch (SVNClientException e) {
-         logger.error("The SVNClientException!", e);
+      if(!file.isDirectory()){
+         try {
+            svnClient.diff(file, tempFile, true);
+            String strDiff = FileUtils.readFileToString(tempFile, "UTF8");
+            tempFile.delete();
+            InputStream is = svnClient.getContent(file, SVNRevision.HEAD);
+            String left = StringUtil.readStringInInputStream(is).toString();
+            ISVNStatus[] status = svnClient.getStatus(file, false, true);
+            String right = null;
+            if (SVNStatusKind.NORMAL.equals(status[0].getTextStatus())) {
+               dr.setLeft(null);
+               dr.setRight(null);
+            } else if (SVNStatusKind.UNVERSIONED.equals(status[0].getTextStatus())) {
+               dr.setLeft(null);
+               right =FileUtil.readFileToString(file).toString();
+               dr.setRight(DifferenceModel.getUntouchedLines(right));
+            } else if (SVNStatusKind.DELETED.equals(status[0].getTextStatus())
+                  || SVNStatusKind.MISSING.equals(status[0].getTextStatus())) {
+               dr.setLeft(DifferenceModel.getUntouchedLines(left));
+               dr.setRight(null);
+            } else {
+               DifferenceModel diff = new DifferenceModel(strDiff);
+               right =FileUtil.readFileToString(file).toString();
+               dr.setLeft(diff.getLeftLines(left));
+               dr.setRight(diff.getRightLines(right));
+               ChangeCount changeCount= new ChangeCount(diff.getAddedItemsCount(),diff.getModifiedItemsCount(),diff.getDeletedItemsCount());
+               dr.setChangeCount(changeCount);
+            }
+         } catch (IOException e) {
+            logger.error("The IOException!", e);
+         } catch (SVNClientException e) {
+            logger.error("The SVNClientException!", e);
+         }         
       }
       return dr;
 
@@ -263,7 +270,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          SVNUrl svnUrl = new SVNUrl(configuration.getSvnDir() + url);
          svnClient
                .diff(svnUrl, new SVNRevision.Number(revision - 1), new SVNRevision.Number(revision), tempFile, false);
-         String strDiff = FileUtils.readFileToString(tempFile, "UTF8");
+         String strDiff = FileUtil.readFileToString(tempFile).toString();
          tempFile.delete();
          InputStream leftIS = svnClient.getContent(svnUrl, new SVNRevision.Number(revision - 1));
          String left = StringUtil.readStringInInputStream(leftIS).toString();
@@ -440,18 +447,19 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
     * {@inheritDoc}
     */
    public DiffStatus getDiffStatus(String path) {
+	  String workDir = new File(configuration.getWorkCopyDir()).getPath();
       File filePath = new File(configuration.getWorkCopyDir() + path);
       DiffStatus ds = new DiffStatus();
       try {
          ISVNStatus[] status = svnClient.getStatus(filePath, true, false);
          for (ISVNStatus state : status) {
             if (SVNStatusKind.UNVERSIONED == state.getTextStatus()) {
-               addFile(ds, state.getFile());
+               addFile(ds, state.getFile(), workDir);
             } else if (SVNStatusKind.DELETED == state.getTextStatus() || SVNStatusKind.MISSING == state.getTextStatus()) {
-               Element e = ds.new Element(state.getFile().getPath(), Actions.DELETE);
+               Element e = ds.new Element(state.getFile().getPath().replace(workDir, "").replaceAll("\\\\", "/"), Actions.DELETE);
                ds.addElement(e);
             } else if (SVNStatusKind.MODIFIED == state.getTextStatus()) {
-               Element e = ds.new Element(state.getFile().getPath(), Actions.MODIFY);
+               Element e = ds.new Element(state.getFile().getPath().replace(workDir, "").replaceAll("\\\\", "/"), Actions.MODIFY);
                ds.addElement(e);
             }
          }
@@ -511,15 +519,15 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
     * This method is add unVersion file or directory to the diffStatus
     * 
     */
-   private void addFile(DiffStatus ds, File file) {
+   private void addFile(DiffStatus ds, File file, String workDir) {
       if (file.isDirectory()) {
-         Element e1 = ds.new Element(file.getPath(), Actions.ADD);
+         Element e1 = ds.new Element(file.getPath().replace(workDir, "").replaceAll("\\\\", "/"), Actions.ADD);
          ds.addElement(e1);
          for (File subFile : file.listFiles()) {
-            addFile(ds, subFile);
+            addFile(ds, subFile, workDir);
          }
       } else {
-         Element e1 = ds.new Element(file.getPath(), Actions.ADD);
+         Element e1 = ds.new Element(file.getPath().replace(workDir, "").replaceAll("\\\\", "/"), Actions.ADD);
          ds.addElement(e1);
       }
    }
