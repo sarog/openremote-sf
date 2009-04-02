@@ -61,7 +61,7 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
 
    public void scraperFiles() {
       try {
-         ScraperConfiguration config = new ScraperConfiguration(getClass().getResource("/remotes.xml").getPath());
+         ScraperConfiguration config = new ScraperConfiguration(getClass().getResource("/remotes.xml").getPath());         
          Scraper scraper = new Scraper(config, configuration.getScrapDir());
          scraper.setDebug(true);
          // long startTime = System.currentTimeMillis();
