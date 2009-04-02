@@ -17,15 +17,7 @@
     
     <bean id="remoteActionXMLParser" class="org.openremote.controller.utils.RemoteActionXMLParser">
         <property name="configXMLPath" value="${action.xml.path}" />
-        <property name="events">
-            <props>
-                <prop key="irEvent"></prop>
-                <prop key="knxEvent"></prop>
-                <prop key="x10Event"></prop>
-            </props>
-        </property>
     </bean>
     
-    <bean id="irEventBuilder" class="org.openremote.controller.service.impl.ButtonCommandServiceImpl"></bean>
 
 </beans>
