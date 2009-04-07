@@ -27,6 +27,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -172,5 +173,28 @@ public class StringUtil {
          }
       }
       return strBuffer;
+   }
+
+
+   /**
+    * Parse a String contrain some long to array.
+    *   If some of long parse fail, this method will ignore it can continue.
+    * @param str String
+    * @param seperator seperator
+    * @return ArrayList<Long>
+    */
+   public static ArrayList<Long> parseStringIds(String str,String seperator) {
+      ArrayList<Long> result = new ArrayList<Long>();
+      String[] ids =  str.split(seperator);
+      for (String id : ids) {
+         long l = 0;
+         try {
+            l = Long.parseLong(id);
+         } catch (NumberFormatException e) {
+            continue;
+         }
+         result.add(l);
+      }
+      return result;
    }
 }
