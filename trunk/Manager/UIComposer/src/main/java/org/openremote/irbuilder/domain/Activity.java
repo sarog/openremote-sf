@@ -34,11 +34,11 @@ import java.util.List;
 public class Activity extends BusinessEntity {
 
    @XStreamAsAttribute
-   String name;
+   private String name;
    @XStreamAsAttribute
-   String icon;
+   private String icon;
    @XStreamImplicit
-   List<Screen> screens = new ArrayList<Screen>();
+   private List<Screen> screens = new ArrayList<Screen>();
 
    public String getName() {
       return name;

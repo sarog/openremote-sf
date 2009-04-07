@@ -13,35 +13,33 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
  * http://www.fsf.org.
  */
-package org.openremote.irbuilder.domain;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
+package org.openremote.irbuilder.service;
 
-import java.util.ArrayList;
+import java.io.File;
 
 /**
- * @author allen.wei
+ * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
-@XStreamAlias("openremote")
-public class ControllerWrapper {
+public interface ZipService {
+   /**
+    * compress files into zip
+    * 
+    * @param outputFilePath
+    *           output file path
+    * @param files
+    *           files
+    * @return compressed file
+    */
+   File compress(String outputFilePath, File... files);
 
-   private ArrayList<ControllerButton> buttons = new ArrayList<ControllerButton>();
-   @XStreamAlias("events")
-   private EventsWrapper eventsWrapper;
-
-   public EventsWrapper getEventsWrapper() {
-      return eventsWrapper;
-   }
-
-   public void setEventsWrapper(EventsWrapper eventsWrapper) {
-      this.eventsWrapper = eventsWrapper;
-   }
-
-   public ArrayList<ControllerButton> getButtons() {
-      return buttons;
-   }
-
-   public void setButtons(ArrayList<ControllerButton> buttons) {
-      this.buttons = buttons;
-   }
+   /**
+    * 
+    * @param filePath
+    *           write file to path
+    * @param str
+    *           file content
+    * @return generated file
+    */
+   File writeStringToFile(String filePath, String str);
 }

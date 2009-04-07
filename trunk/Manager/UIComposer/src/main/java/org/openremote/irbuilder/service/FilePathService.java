@@ -16,27 +16,55 @@
 
 package org.openremote.irbuilder.service;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
-public interface XMLService {
+public interface FilePathService {
    /**
-    * Generates Controller part XML
+    * Gets temp folder
     * 
-    * @param data
-    *           JSON String
-    * @return Generated XML String
+    * @param req
+    *           HttpServletRequest
+    * @return folder absolute path
     */
-   String controllerXmlBuilder(String data);
+   String tempFolder(HttpServletRequest req);
 
    /**
-    * Generates iPhone part XML
+    * Gets iphone xml path
     * 
-    * @param data
-    *           JSON String
-    * @return Generated XML String
+    * @param req
+    *           HttpServletRequest
+    * @return file absolute path
     */
-   String iPhoneXmlBuilder(String data);
+   String iPhoneXmlFilePath(HttpServletRequest req);
 
-   String readLircFile(String url);
+   /**
+    * Gets controller xml file path
+    * 
+    * @param req
+    *           HttpServletRequest
+    * @return file absolute path
+    */
+   String controllerXmlFilePath(HttpServletRequest req);
+
+   /**
+    * Gets lirc.conf file path
+    * 
+    * @param req
+    *           HttpServletRequest
+    * @return file absolute path
+    */
+   String lircFilePath(HttpServletRequest req);
+
+   /**
+    * Gets compressed file path
+    * 
+    * @param req
+    *           HttpServletRequest
+    * @return file absolute path
+    */
+   String openremoteZipFilePath(HttpServletRequest req);
+
 }

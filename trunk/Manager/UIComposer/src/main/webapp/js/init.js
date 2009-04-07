@@ -1,6 +1,8 @@
 $(document).ready(function() {
-    $("#tabs").tabs();
-    bindEvent();
-    initDraggableAndDroppable();
-    $("#saveBtn").unbind().bind("click", postData);
+    MacroController.init();
+    TabController.init();
+    IPhoneController.init();
+    DownloadController.init();
 });
+
+
