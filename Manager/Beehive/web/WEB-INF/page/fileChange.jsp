@@ -33,7 +33,7 @@
          
          currentLeftLine = left_div.find("tr:first");
          currentRightLine = right_div.find("tr:first");
-           tr_height = currentLeftLine.height();
+         tr_height = currentLeftLine.height();
       });
       
       function previous(){
@@ -114,7 +114,7 @@
       }
 </script>
 </head>
-<body>
+<body tabId="1">
    <table class="infopanel" width="100%" border="0" cellpadding="0"
       cellspacing="0">
       <tr>

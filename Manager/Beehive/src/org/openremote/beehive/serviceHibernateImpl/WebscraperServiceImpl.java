@@ -61,6 +61,10 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
 
    public void scraperFiles() {
       try {
+         File scrapDir = new File(configuration.getScrapDir());
+         if(scrapDir.exists()){
+            FileUtils.deleteDirectory(scrapDir);            
+         }
          ScraperConfiguration config = new ScraperConfiguration(getClass().getResource("/remotes.xml").getPath());         
          Scraper scraper = new Scraper(config, configuration.getScrapDir());
          scraper.setDebug(true);
@@ -73,13 +77,11 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
                + configuration.getWorkCopyDir());
          svnDelegateService.copyFromScrapToWC(configuration.getScrapDir(), configuration.getWorkCopyDir());
          logger.info("Success copy LIRC files to workCopy!");
-         // FileUtils.deleteDirectory(new File(configuration.getScrapDir()));
          logger.info("Success delete files of " + configuration.getScrapDir());
       } catch (FileNotFoundException e) {
          logger.error("The file of remotes.xml not found!");
-      }
-      // catch (IOException e) {
-      // logger.error("Cae't delete the directory of "+configuration.getScrapDir());
-      // }
+      }catch (IOException e) {
+         logger.error("Cae't delete the directory of "+configuration.getScrapDir());
+       }
    }
 }
