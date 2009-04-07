@@ -114,7 +114,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 			</fileset>
 			<fileset dir="${src.dir}">
 				<include name="**/*.xml"/>
-			</fileset>
+			</fileset>			
 		</copy>
 
 		<javac destdir="${classes.dir}" classpathref="compile.path.id" debug="${build.debug}">
@@ -168,6 +168,9 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 			<fileset dir="web">
 				<exclude name="WEB-INF/classes/**/*.*" />
 				<exclude name="WEB-INF/lib/**/*.*" />
+			</fileset>
+			<fileset dir=".">
+				<include name="readme.txt"/>
 			</fileset>
 			<lib dir="${lib.dir}/core" />
 			<classes dir="${classes.dir}" />
