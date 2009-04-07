@@ -20,50 +20,52 @@
  */
 package org.openremote.beehive.rest;
 
-import org.apache.commons.lang.StringUtils;
 import org.openremote.beehive.api.dto.ModelDTO;
 import org.openremote.beehive.api.service.ModelService;
+import org.openremote.beehive.api.service.RemoteSectionService;
 import org.openremote.beehive.spring.SpringContext;
+import org.openremote.beehive.utils.StringUtil;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 
 /**
  * Exports restful service of LIRC config file export
  * 
  * @author allen.wei 2009-2-15
  */
-@Path("/lirc/{vendor_name}/{model_name}")
+@Path("/lirc.conf")
 public class LIRCConfigFileRESTService {
 
    /**
     * Shows lirc config file according to vendor name and model name Visits @ url "/{vendor_name}/{model_name}"
     * 
-    * @param vendorName
+    * @param sectionIds
     * @return content of lirc configuration file
     */
-   @Path("lirc.conf")
    @GET
    @Produces("text/plain")
-   public String getLIRCConfigFile(@PathParam("vendor_name") String vendorName,
-         @PathParam("model_name") String modelName) {
-      ModelDTO modelDTO = getModelService().loadByVendorNameAndModelName(vendorName, modelName);
-      if (modelDTO == null) {
-         throw new WebApplicationException(Response.Status.NOT_FOUND);
+   public String getLIRCConfigFile(@QueryParam("ids") String sectionIds) {
+      ArrayList<Long> ids = StringUtil.parseStringIds(sectionIds,",");
+      if (ids.size() == 0) {
+         return "";
       }
-      if (StringUtils.isBlank(getModelService().exportText(modelDTO.getOid()))) {
-         throw new WebApplicationException(Response.Status.NO_CONTENT);
+      StringBuffer lircStr = new StringBuffer();
+      for (long id : ids) {
+         lircStr.append(getRemoteSectionService().exportText(id));
+         lircStr.append(System.getProperty("line.separator"));
       }
-      return getModelService().exportText(modelDTO.getOid());
+      return lircStr.toString();
 
    }
 
    /**
-    * Retrieves instance of ModelService from spring IOC container
+    * Retrieves instance of RemoteSectionService from spring IOC container
     * 
-    * @return ModelService instance
+    * @return RemoteSectionService instance
     */
-   private ModelService getModelService() {
-      return (ModelService) SpringContext.getInstance().getBean("modelService");
+   private RemoteSectionService getRemoteSectionService() {
+      return (RemoteSectionService) SpringContext.getInstance().getBean("remoteSectionService");
    }
 }
