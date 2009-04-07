@@ -22,12 +22,12 @@ package org.openremote.beehive;
 
 public class Configuration {
 
-   public String downloadDir;
-   public String uploadDir;
-   public String downloadUrlRoot;
-   public String scrapDir;
-   public String workCopyDir;
-   public String svnDir;
+   private String downloadDir;
+   private String uploadDir;
+   private String downloadUrlRoot;
+   private String scrapDir;
+   private String workCopyDir;
+   private String svnDir;
 
    public String getDownloadDir() {
       return downloadDir;

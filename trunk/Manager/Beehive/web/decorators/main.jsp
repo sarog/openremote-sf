@@ -10,6 +10,11 @@
       <link href="css/default.css" type="text/css" rel="stylesheet" media="screen">
       <link href="css/table.css" type="text/css" rel="stylesheet" media="screen">
       <script type="text/javascript" src="jslib/jquery-1.3.1.min.js"></script>
+      <script type="text/javascript">
+            $(document).ready(function(){
+                $('#tab_<decorator:getProperty property="body.tabId"/>').addClass('activetab').removeClass("inactivetab");
+            });
+        </script>
       <decorator:head />
    </head>
    <body>
@@ -33,9 +38,9 @@
                   <tr>
                     <td><table border="0" cellpadding="0" cellspacing="0">
                         <tr>
-                          <td colspan="2" class="activetab" onClick="window.location='changes.html'"><img style="vertical-align: middle; margin-right: 3px;" title="Changes" alt="Changes" src="image/changes.gif"/>Changes </td>
-                          <td colspan="2" class="inactivetab" onClick="window.location='update.html'"><img style="vertical-align: middle; margin-right: 3px;" title="Update" alt="Update" src="image/update.gif"/>Sync </td>
-                          <td colspan="2" class="inactivetab" onClick="window.location='vendor_list.html'"><img style="vertical-align: middle; margin-right: 3px;" title="History" alt="History" src="image/history.gif"/>History </td>
+                          <td id="tab_1" colspan="2" class="inactivetab" onClick="window.location='changes.html'"><img style="vertical-align: middle; margin-right: 3px;" title="Changes" alt="Changes" src="image/changes.gif"/>Changes </td>
+                          <td id="tab_2" colspan="2" class="inactivetab" onClick="window.location='sync.html'"><img style="vertical-align: middle; margin-right: 3px;" title="Update" alt="Update" src="image/update.gif"/>Sync </td>
+                          <td id="tab_3" colspan="2" class="inactivetab" onClick="window.location='vendor_list.html'"><img style="vertical-align: middle; margin-right: 3px;" title="History" alt="History" src="image/history.gif"/>History </td>
                         </tr>
                     </table></td>
                   </tr>
