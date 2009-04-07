@@ -8,7 +8,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
+import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.LogMessage;
@@ -24,10 +26,16 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
  */
 public class LIRCRevisionChangesController extends MultiActionController {
    private SVNDelegateService svnDelegateService;
+   private ModelService modelService;
    private String indexView;
    private String changeView;
+   private String commitView;
    public void setIndexView(String indexView) {
       this.indexView = indexView;
+   }
+
+   public void setCommitView(String commitView) {
+      this.commitView = commitView;
    }
 
    public void setSvnDelegateService(SVNDelegateService svnDelegateService) {
@@ -36,6 +44,10 @@ public class LIRCRevisionChangesController extends MultiActionController {
 
    public void setChangeView(String changeView) {
       this.changeView = changeView;
+   }
+
+   public void setModelService(ModelService modelService) {
+      this.modelService = modelService;
    }
 
    public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
@@ -64,6 +76,18 @@ public class LIRCRevisionChangesController extends MultiActionController {
       mav.addObject("leftLines", leftLines);
       mav.addObject("rightLines", rightLines);
       mav.addObject("changeCount", dr.getChangeCount());
+      return mav;
+   }
+   
+   public ModelAndView commit(HttpServletRequest request, HttpServletResponse response ) throws SVNException{
+      String[] items = request.getParameterValues("items");
+      ModelAndView mav = new ModelAndView(commitView);
+      if(items != null){
+         modelService.update(items, "commit", "admin");
+         mav.addObject("commitStatus", "commit success,you have commit "+items.length+" items!");
+      }else{
+         mav.addObject("commitStatus", "commit falure,maybe you have not select any items!");
+      }
       return mav;
    }
 }

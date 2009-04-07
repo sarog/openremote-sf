@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.openremote.beehive.api.dto.ModelDTO;
+import org.openremote.beehive.exception.SVNException;
 
 /**
  * Business service for <code>ModelDTO</code>
@@ -118,8 +119,8 @@ public interface ModelService {
     */
    InputStream exportStream(long id);
 
-   void update(String[] paths, String message, String username);
+   void update(String[] paths, String message, String username) throws SVNException;
 
-   void rollback(String path, int revision, String username);
+   void rollback(String path, int revision, String username) throws SVNException;
 
 }

@@ -2,6 +2,7 @@ package org.openremote.beehive.service;
 
 import org.openremote.beehive.TestBase;
 import org.openremote.beehive.api.service.ModelService;
+import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.spring.SpringContext;
 
 public class ModelServiceTest extends TestBase {
@@ -32,12 +33,16 @@ public class ModelServiceTest extends TestBase {
     }
     
     public void testUpdate(){
-//    	String[] paths = {"/sky/Rev4","/sky/RC-56"}; 
-//    	service.update(paths, "update two file", "username");
+//    	String[] paths = {"/3m"}; 
+//    	try {
+//         service.update(paths, "update directory", "username");
+//      } catch (SVNException e) {
+//         e.printStackTrace();
+//      }
     }
     
     public void testRollback(){
-    	String path = "/";
-    	service.rollback(path, 101, "tomsky");
+//    	String path = "/";
+//    	service.rollback(path, 101, "tomsky");
     }
 }
