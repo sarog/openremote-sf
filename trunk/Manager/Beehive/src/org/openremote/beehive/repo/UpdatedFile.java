@@ -30,7 +30,7 @@ import java.io.File;
 public class UpdatedFile {
    private final File file;
    private final Character status;
-
+   private boolean dir = false;
    public UpdatedFile(File file, Character status) {
       this.file = file;
       this.status = status;
@@ -42,5 +42,13 @@ public class UpdatedFile {
 
    public Character getStatus() {
       return status;
+   }
+
+   public boolean isDir() {
+      return dir;
+   }
+
+   public void setDir(boolean isDir) {
+      this.dir = isDir;
    }
 }

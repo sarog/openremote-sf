@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.domain.Vendor;
+import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.repo.Actions;
 import org.openremote.beehive.repo.ChangeCount;
 import org.openremote.beehive.repo.DiffResult;
@@ -83,8 +84,9 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
 
    /**
     * {@inheritDoc}
+    * @throws SVNException 
     */
-   public List<UpdatedFile> commit(String[] paths, String message, String username) {
+   public List<UpdatedFile> commit(String[] paths, String message, String username) throws SVNException {
       svnClient.setUsername(username);
       List<UpdatedFile> updatedFiles = new ArrayList<UpdatedFile>();
       File[] files = new File[paths.length];
@@ -97,8 +99,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                if (fileStatus.length > 0) {
                   if (SVNStatusKind.UNVERSIONED == fileStatus[0].getTextStatus()) {
                      UpdatedFile addedFile = new UpdatedFile(fileStatus[0].getFile(), Actions.ADD);
-                     if (fileStatus[0].getFile().isDirectory()) {
-                        svnClient.addDirectory(fileStatus[0].getFile(), true);
+                     if (fileStatus[0].getFile().isFile()) {
+                        svnClient.addDirectory(fileStatus[0].getFile(), false);
                      } else {
                         svnClient.addFile(fileStatus[0].getFile());
                      }
@@ -106,7 +108,14 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                   } else if (SVNStatusKind.DELETED == fileStatus[0].getTextStatus()
                         || SVNStatusKind.MISSING == fileStatus[0].getTextStatus()) {
                      UpdatedFile deletedFile = new UpdatedFile(fileStatus[0].getFile(), Actions.DELETE);
+                     if(fileStatus[0].getFile().isDirectory()){
+                        deletedFile.setDir(true);
+                     }
                      if (SVNStatusKind.MISSING == fileStatus[0].getTextStatus()) {
+                        svnClient.update(files[i], SVNRevision.HEAD, true);
+                        if(files[i].isDirectory()){                           
+                           deletedFile.setDir(true);
+                        }
                         svnClient.remove(new File[] { fileStatus[0].getFile() }, true);
                      }
                      updatedFiles.add(deletedFile);
@@ -121,6 +130,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             svnClient.commit(files, message, true);
          } catch (SVNClientException e) {
             logger.error("The svnClientException!", e);
+            throw new SVNException("The svnClient cause Exception",e);
          }
       }
       return updatedFiles;

@@ -1,22 +1,17 @@
-/* OpenRemote, the Home of the Digital Home.
- * Copyright 2008, OpenRemote Inc.
+/*
+ * OpenRemote, the Home of the Digital Home. Copyright 2008, OpenRemote Inc.
  * 
- * See the contributors.txt file in the distribution for a
- * full listing of individual contributors.
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
  * 
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
  * 
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * 
- * You should have received a copy of the GNU General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
+ * http://www.fsf.org.
  */
 package org.openremote.beehive.serviceHibernateImpl;
 
@@ -39,6 +34,7 @@ import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.domain.Model;
 import org.openremote.beehive.domain.RemoteSection;
 import org.openremote.beehive.domain.Vendor;
+import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.file.LircConfFile;
 import org.openremote.beehive.repo.Actions;
 import org.openremote.beehive.repo.DiffStatus;
@@ -52,7 +48,6 @@ import org.openremote.beehive.utils.StringUtil;
  * @author allen.wei
  */
 public class ModelServiceImpl extends BaseAbstractService<Model> implements ModelService {
-
    private static Logger logger = Logger.getLogger(ModelServiceImpl.class.getName());
    private Configuration configuration;
    private SVNDelegateService svnDelegateService;
@@ -239,10 +234,13 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
       this.configuration = configuration;
    }
 
-   public void update(String[] paths, String message, String username) {
+   /**
+    * {@inheritDoc}
+    * @throws SVNException 
+    */
+   public void update(String[] paths, String message, String username) throws SVNException {
       List<UpdatedFile> updatedFiles = svnDelegateService.commit(paths, message, username);
       for (UpdatedFile updatedFile : updatedFiles) {
-         // File path = new File(updatedFile.getPath());
          String[] arr = FileUtil.splitPath(updatedFile.getFile());
          if (updatedFile.getStatus() == Actions.MODIFY) {
             String modelName = arr[arr.length - 1];
@@ -263,10 +261,10 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
             }
          } else if (updatedFile.getStatus() == Actions.DELETE) {
             String name = arr[arr.length - 1];
-            if (updatedFile.getFile().isFile()) {
-               deleteModel(name);
-            } else {
+            if (updatedFile.isDir()) {
                deleteVendor(name);
+            } else {
+               deleteModel(name);
             }
          }
       }
@@ -286,7 +284,11 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
       }
    }
 
-   public void rollback(String path, int revision, String username) {
+   /**
+    * {@inheritDoc}
+    * @throws SVNException 
+    */
+   public void rollback(String path, int revision, String username) throws SVNException {
       svnDelegateService.rollback(path, revision);
       DiffStatus diffStatus = svnDelegateService.getDiffStatus(path);
       String[] paths = new String[diffStatus.getDiffStatus().size()];

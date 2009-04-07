@@ -3,12 +3,13 @@
  */
 package org.openremote.beehive.service;
 
-import java.io.File;
+import java.util.List;
 
 import org.openremote.beehive.TestBase;
 import org.openremote.beehive.api.service.SVNDelegateService;
-import org.openremote.beehive.repo.DiffStatus;
-import org.openremote.beehive.repo.DiffStatus.Element;
+import org.openremote.beehive.repo.DiffResult;
+import org.openremote.beehive.repo.UpdatedFile;
+import org.openremote.beehive.repo.DiffResult.Line;
 import org.openremote.beehive.spring.SpringContext;
 
 /**
@@ -27,14 +28,19 @@ public class SVNDelegateServiceTest extends TestBase {
 //		String[] paths = {"/audiovox/Sirius_PNP2"};
 //		svnDelegateService.commit(paths, "modify /audiovox/Sirius_PNP2", "admin");
 		
-//		String path = "/";
+//		String path = "";
 //		DiffStatus diffStatus = svnDelegateService.getDiffStatus(path);
-//		String[] paths = new String[diffStatus.getDiffStatus().size()];
-//		String workDir = new File("c:/workCOpy").getPath();
-//		for (int i = 0; i < diffStatus.getDiffStatus().size(); i++) {
-//			paths[i] = diffStatus.getDiffStatus().get(i).getPath().replace(workDir, "");			
+//		for (Element element: diffStatus.getDiffStatus()) {
+//			System.out.println(element.getPath());
 //		}
 //		svnDelegateService.commit(paths, "commit all changes", "admin");
+	   
+//	   String[] paths = {"/3m","/3m/MP8640"};
+//	   List<UpdatedFile> updatedFiles = svnDelegateService.commit(paths, "remove", "admin");
+//	   System.out.println(updatedFiles.size());
+//	   for (UpdatedFile updatedFile : updatedFiles) {
+//         System.out.println(updatedFile.getFile().getPath()+"=="+updatedFile.getStatus()+"--"+updatedFile.isIsDir());
+//      }
 	}
 	
 	public void testRevert(){
@@ -65,10 +71,13 @@ public class SVNDelegateServiceTest extends TestBase {
 	}
 	
 	public void testGetLogs(){
-//		String path = "/sky";
+//		String path = "/abit/CD";
+//		svnDelegateService.getDiffStatus(path);
 //		List<LogMessage> lms = svnDelegateService.getLogs(path);
+//		System.out.println(lms.get(lms.size()-1).getRevision());
+	   
 //		for (LogMessage log : lms) {
-//			System.out.print(log.getRevision()+" , "+log.getAuthor()+" , "+log.getComment()+" actions= ");
+//			System.out.println(log.getRevision()+" , "+log.getAuthor()+" , "+log.getComment()+" actions= ");
 //			for (Character action : log.getActions()) {
 //				System.out.print(action+" ");
 //			}
@@ -94,24 +103,26 @@ public class SVNDelegateServiceTest extends TestBase {
 	 * this is test the workCopy with head version
 	 */
 	public void testDiff(){
-//		String url = "/sky/Rev4";
-//		DiffResult dr = svnDelegateService.diff(url, true);
-//		List<Line> leftLines = dr.getLeft();
+//		String url = "/abit/AU10";
+//		DiffResult dr = svnDelegateService.diff(url);
+//		List<Line> leftLines = dr.getLeft();		
+//		System.out.println(leftLines.size());
 //		if(leftLines.isEmpty()){
 //			System.out.println("--------------------------------");
 //		}else{
 //			for (Line leftLine : leftLines) {
-//				System.out.println(leftLine.getImage()+": "+leftLine.getLine());
+//				System.out.println(leftLine.getChangeType()+": "+leftLine.getLine());
 //			}
 //		}
 //		
 //		List<Line> rightLines = dr.getRight();
+//		System.out.println(rightLines.size());
 //		if(rightLines.isEmpty()){
 //			System.out.println("++++++++++++++++++++++++++++++++");
 //			
 //		}else{
 //			for (Line rightLine : rightLines) {
-//				System.out.println(rightLine.getImage()+": "+rightLine.getLine());
+//				System.out.println(rightLine.getChangeType()+": "+rightLine.getLine());
 //			}
 //		}
 	}
