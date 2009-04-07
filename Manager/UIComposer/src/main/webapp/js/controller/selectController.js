@@ -41,7 +41,6 @@ function fillModelSelect(vendor_name) {
         var model_name = select.find("option:selected").text();
         afterSelectModel(vendor_name, model_name);
     });
-
 }
 
 function afterSelectModel(vendor_name, model_name) {
@@ -70,16 +69,18 @@ function fillSectionSelect(vendor_name, model_name, sections) {
 }
 
 function showCommandBtns(vendor_name, model_name, section_id) {
+	
     getJSONData("/" + vendor_name + "/" + model_name + "/" + section_id + "/codes",
     function(data) {
         $("#command_container").html("");
         var codes = $.makeArray(data.codes.code);
         $(codes).each(function() {
-            HTMLBuilder.commandBtnBuilder(this).appendTo($("#command_container"));
+            HTMLBuilder.commandBtnBuilder(this,section_id).appendTo($("#command_container"));
         });
         $("<div class='clear'></div>").appendTo($("#command_container"));
         makeCommandBtnDraggable();
         $("#command_navigition").dialog("close");
+		$("#lircUrl").val(RESTAPIUrl+"/" + vendor_name + "/" + model_name + "/"+"lirc.conf");
     });
 
     $("#command_navigition option").remove();

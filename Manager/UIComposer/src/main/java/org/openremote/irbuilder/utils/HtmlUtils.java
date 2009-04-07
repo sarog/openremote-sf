@@ -13,35 +13,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
  * http://www.fsf.org.
  */
-package org.openremote.irbuilder.domain;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
-import java.util.ArrayList;
+package org.openremote.irbuilder.utils;
 
 /**
- * @author allen.wei
+ * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
-@XStreamAlias("openremote")
-public class ControllerWrapper {
+public class HtmlUtils {
 
-   private ArrayList<ControllerButton> buttons = new ArrayList<ControllerButton>();
-   @XStreamAlias("events")
-   private EventsWrapper eventsWrapper;
-
-   public EventsWrapper getEventsWrapper() {
-      return eventsWrapper;
+   private HtmlUtils() {
    }
 
-   public void setEventsWrapper(EventsWrapper eventsWrapper) {
-      this.eventsWrapper = eventsWrapper;
-   }
-
-   public ArrayList<ControllerButton> getButtons() {
-      return buttons;
-   }
-
-   public void setButtons(ArrayList<ControllerButton> buttons) {
-      this.buttons = buttons;
+   public static String unEncoderHTML(String str) {
+      str = str.replaceAll("&lt;", "<");
+      str = str.replaceAll("&gt;", ">");
+      str = str.replaceAll("&nbsp;", " ");
+      str = str.replaceAll("&quot;", "\"");
+      str = str.replaceAll("&apos;", "\'");
+      str = str.replaceAll("&amp;", "&");
+      return str;
    }
 }

@@ -1,25 +1,27 @@
 BUTTONID = 1;
-MACROBUTTONID = 1;
+// a hash contain all of infrared object, key is code id value is infrared model.
+InfraredCollection = {};
+
 
 HTMLBuilder = function() {
+	
     return {
 
-        KNXBtnBuilder: function(label, groupAddress) {
-            var button = HTMLBuilder.blueBtnBuilder(label);
+        KNXBtnBuilder: function(knx) {			
+            var button = HTMLBuilder.blueBtnBuilder(knx.label);
             button.addClass("knx_btn");
-            button.attr("eventId", BUTTONID++);
-            button.data("groupAddress", groupAddress);
+            button.attr("id", knx.elementId());
+            button.data("model", knx);
             return button;
 
         },
 
-        X10BtnBuilder: function(label, address, command) {
-            var button = HTMLBuilder.blueBtnBuilder(label);
+        X10BtnBuilder: function(x10) {
+            var button = HTMLBuilder.blueBtnBuilder(x10.label);
             button.addClass("x10_btn");
-            button.attr("eventId", BUTTONID++);
-            button.data("address", address);
-            button.data("command", command);
-            button.attr("title", label);
+            button.attr("id", x10.elementId());
+            button.data("model", x10);
+            button.attr("title", x10.label);
             return button;
 
         },
@@ -37,16 +39,13 @@ HTMLBuilder = function() {
         },
 
         iphoneBtnBuilder: function(commandBtn) {
-            var text = $(commandBtn).text();
+			var model = $(commandBtn).data("model");
+           
             var btn = $("<div class='iphone_btn'></div>");
-            if ($(commandBtn).hasClass("macro_btn")) {
-                btn.addClass("macro_btn");
-                btn.attr("macroId", $(commandBtn).attr("macroId"));
-            } else {
-                btn.attr("eventId", $(commandBtn).attr("eventId"));
-            }
+			btn.data("model",model);
+            btn.attr("title",model.label);
 
-            btn.attr("title", text);
+			var text = model.label;
             if (text.length > 5) {
                 btn.html(text.substr(0, 5) + "<br/>...");
             } else {
@@ -71,14 +70,18 @@ HTMLBuilder = function() {
             return deleteIcon;
         },
 
-        macroBtnBuilder: function(name) {
+        macroBtnBuilder: function(macro) {
             var template = $("#macro_template .macro_btn_defination").clone();
-            $(template).find(".macro_btn").attr("title", name);
+			var btn = $(template).find(".macro_btn");
+			
+			var name = macro.label;
+            btn.attr("title", macro.label);
             if (name.length > 14) {
                 name = name.substr(0, 14) + "...";
             }
-            $(template).find(".macro_btn").html(name);
-            $(template).find(".macro_btn").attr("macroId", MACROBUTTONID++);
+            btn.html(name);
+            btn.attr("id", macro.elementId());
+			btn.data("model",macro);
             return $(template);
         },
 
@@ -86,7 +89,7 @@ HTMLBuilder = function() {
             var macroCommandLi = $("<li><span></span></li>");
             macroCommandLi.addClass("macro_command");
             macroCommandLi.addClass("ui-state-default");
-            macroCommandLi.attr("eventId", draggable.attr("eventId"));
+            macroCommandLi.data("model",draggable.data("model"));
             macroCommandLi.find("span").addClass("ui-icon");
             macroCommandLi.find("span").addClass("ui-icon-arrowthick-2-n-s");
             var name = draggable.text();
@@ -98,9 +101,12 @@ HTMLBuilder = function() {
             return macroCommandLi;
         },
 
-        commandBtnBuilder: function(code) {
+        commandBtnBuilder: function(code,section_id) {
             var btn = $("<div></div>");
             btn.data("codeId", code.id);
+			btn.data("remoteName",code.remoteName);
+			btn.data("command", code.name);
+		    btn.data("sectionId",section_id);
             btn.addClass("command_btn");
             btn.addClass("blue_btn");
             var name = code.name;

@@ -13,35 +13,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
  * http://www.fsf.org.
  */
-package org.openremote.irbuilder.domain;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
-import java.util.ArrayList;
+package org.openremote.irbuilder.exception;
 
 /**
- * @author allen.wei
+ * Custom Exception when operate file faild.
+ * 
+ * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
-@XStreamAlias("openremote")
-public class ControllerWrapper {
-
-   private ArrayList<ControllerButton> buttons = new ArrayList<ControllerButton>();
-   @XStreamAlias("events")
-   private EventsWrapper eventsWrapper;
-
-   public EventsWrapper getEventsWrapper() {
-      return eventsWrapper;
+public class FileOperationException extends RuntimeException {
+   public FileOperationException(String s) {
+      super(s);
    }
 
-   public void setEventsWrapper(EventsWrapper eventsWrapper) {
-      this.eventsWrapper = eventsWrapper;
-   }
-
-   public ArrayList<ControllerButton> getButtons() {
-      return buttons;
-   }
-
-   public void setButtons(ArrayList<ControllerButton> buttons) {
-      this.buttons = buttons;
+   public FileOperationException(String s, Throwable throwable) {
+      super(s, throwable);
    }
 }
