@@ -1,0 +1,486 @@
+// !$*UTF8*$!
+{
+	08FB7793FE84155DC02AAC07 /* Project object */ = {
+		activeBuildConfigurationName = Debug;
+		activeExecutable = 30A5A25A0F8BCBEA000FCB89 /* KNX-Stack */;
+		activeTarget = 8DD76F960486AA7600D96B5E /* KNX-Stack */;
+		addToTargets = (
+			8DD76F960486AA7600D96B5E /* KNX-Stack */,
+		);
+		breakpoints = (
+		);
+		codeSenseManager = 30A5A2600F8BCC09000FCB89 /* Code sense */;
+		executables = (
+			30A5A25A0F8BCBEA000FCB89 /* KNX-Stack */,
+		);
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXErrorsWarningsDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXErrorsWarningsDataSource_LocationID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					300,
+					723,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXErrorsWarningsDataSource_TypeID,
+					PBXErrorsWarningsDataSource_MessageID,
+					PBXErrorsWarningsDataSource_LocationID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					833,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.XCSCMDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					20,
+					809,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_SCM_ColumnID,
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 260997482;
+			PBXWorkspaceStateSaveDate = 260997482;
+		};
+		perUserProjectItems = {
+			300C06CB0F8C6D4800E49112 = 300C06CB0F8C6D4800E49112 /* PBXTextBookmark */;
+			300C06EF0F8C6F8F00E49112 = 300C06EF0F8C6F8F00E49112 /* PBXTextBookmark */;
+			300C06F70F8C718700E49112 = 300C06F70F8C718700E49112 /* PBXTextBookmark */;
+			300C06F80F8C718700E49112 = 300C06F80F8C718700E49112 /* PBXTextBookmark */;
+			300C06F90F8C718700E49112 = 300C06F90F8C718700E49112 /* PBXTextBookmark */;
+			300C06FA0F8C718700E49112 = 300C06FA0F8C718700E49112 /* PBXTextBookmark */;
+			305B40B70F8E815D0030EB6E = 305B40B70F8E815D0030EB6E /* PBXTextBookmark */;
+			305B40B80F8E815D0030EB6E = 305B40B80F8E815D0030EB6E /* PBXTextBookmark */;
+			305B40B90F8E815D0030EB6E = 305B40B90F8E815D0030EB6E /* PBXTextBookmark */;
+			305B40BA0F8E815D0030EB6E = 305B40BA0F8E815D0030EB6E /* PBXTextBookmark */;
+			305B40BB0F8E815D0030EB6E = 305B40BB0F8E815D0030EB6E /* PBXTextBookmark */;
+			30A5A2B80F8BDCA5000FCB89 = 30A5A2B80F8BDCA5000FCB89 /* PBXTextBookmark */;
+			30A5A2B90F8BDCA5000FCB89 = 30A5A2B90F8BDCA5000FCB89 /* PBXTextBookmark */;
+			30A5A2CC0F8BDCA5000FCB89 = 30A5A2CC0F8BDCA5000FCB89 /* PBXTextBookmark */;
+			30A5A2CD0F8BDCA5000FCB89 = 30A5A2CD0F8BDCA5000FCB89 /* PBXTextBookmark */;
+			30A5A2CF0F8BDCA5000FCB89 = 30A5A2CF0F8BDCA5000FCB89 /* PBXTextBookmark */;
+			30A5A3150F8BE36D000FCB89 = 30A5A3150F8BE36D000FCB89 /* PBXTextBookmark */;
+			30A5A3200F8BE36D000FCB89 = 30A5A3200F8BE36D000FCB89 /* PBXTextBookmark */;
+			30A5A32A0F8BEC2E000FCB89 = 30A5A32A0F8BEC2E000FCB89 /* PBXTextBookmark */;
+			30A5A3560F8BEE91000FCB89 = 30A5A3560F8BEE91000FCB89 /* PBXTextBookmark */;
+		};
+		sourceControlManager = 30A5A25F0F8BCC09000FCB89 /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	08FB7796FE84155DC02AAC07 /* KNX-Stack.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 388}}";
+			sepNavSelRange = "{459, 0}";
+			sepNavVisRange = "{0, 459}";
+		};
+	};
+	300C06CB0F8C6D4800E49112 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 08FB7796FE84155DC02AAC07 /* KNX-Stack.m */;
+		name = "KNX-Stack.m: 20";
+		rLen = 0;
+		rLoc = 459;
+		rType = 0;
+		vrLen = 459;
+		vrLoc = 0;
+	};
+	300C06D70F8C6ECC00E49112 /* changes.txt */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1218, 1400}}";
+			sepNavSelRange = "{589, 0}";
+			sepNavVisRange = "{0, 1093}";
+		};
+	};
+	300C06EF0F8C6F8F00E49112 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 300C06D70F8C6ECC00E49112 /* changes.txt */;
+		name = "changes.txt: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1093;
+		vrLoc = 0;
+	};
+	300C06F70F8C718700E49112 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 30A5A2660F8BCC59000FCB89 /* AsyncUdpSocket.m */;
+		name = "AsyncUdpSocket.m: 14";
+		rLen = 0;
+		rLoc = 357;
+		rType = 0;
+		vrLen = 702;
+		vrLoc = 0;
+	};
+	300C06F80F8C718700E49112 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 30A5A28A0F8BD72E000FCB89 /* KNXtest.h */;
+		name = "KNXtest.h: 37";
+		rLen = 0;
+		rLoc = 1124;
+		rType = 0;
+		vrLen = 747;
+		vrLoc = 383;
+	};
+	300C06F90F8C718700E49112 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 32A70AAB03705E1F00C91783 /* KNX-Stack_Prefix.pch */;
+		name = "KNX-Stack_Prefix.pch: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 160;
+		vrLoc = 0;
+	};
+	300C06FA0F8C718700E49112 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 30A5A2660F8BCC59000FCB89 /* AsyncUdpSocket.m */;
+		name = "AsyncUdpSocket.m: 14";
+		rLen = 0;
+		rLoc = 357;
+		rType = 0;
+		vrLen = 702;
+		vrLoc = 0;
+	};
+	305B40B70F8E815D0030EB6E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 300C06D70F8C6ECC00E49112 /* changes.txt */;
+		name = "changes.txt: 13";
+		rLen = 0;
+		rLoc = 589;
+		rType = 0;
+		vrLen = 1093;
+		vrLoc = 0;
+	};
+	305B40B80F8E815D0030EB6E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 30A5A2650F8BCC59000FCB89 /* AsyncUdpSocket.h */;
+		name = "AsyncUdpSocket.h: 11";
+		rLen = 0;
+		rLoc = 296;
+		rType = 0;
+		vrLen = 978;
+		vrLoc = 0;
+	};
+	305B40B90F8E815D0030EB6E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 300C06D70F8C6ECC00E49112 /* changes.txt */;
+		name = "changes.txt: 13";
+		rLen = 0;
+		rLoc = 589;
+		rType = 0;
+		vrLen = 1093;
+		vrLoc = 0;
+	};
+	305B40BA0F8E815D0030EB6E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 30A5A2650F8BCC59000FCB89 /* AsyncUdpSocket.h */;
+		name = "AsyncUdpSocket.h: 11";
+		rLen = 0;
+		rLoc = 296;
+		rType = 0;
+		vrLen = 978;
+		vrLoc = 0;
+	};
+	305B40BB0F8E815D0030EB6E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 30A5A2660F8BCC59000FCB89 /* AsyncUdpSocket.m */;
+		name = "AsyncUdpSocket.m: 14";
+		rLen = 0;
+		rLoc = 357;
+		rType = 0;
+		vrLen = 702;
+		vrLoc = 0;
+	};
+	30A5A25A0F8BCBEA000FCB89 /* KNX-Stack */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 0;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = "KNX-Stack";
+		savedGlobals = {
+		};
+		sourceDirectories = (
+		);
+		variableFormatDictionary = {
+		};
+	};
+	30A5A25F0F8BCC09000FCB89 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+			repositoryName = Openremote;
+		};
+	};
+	30A5A2600F8BCC09000FCB89 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	30A5A2650F8BCC59000FCB89 /* AsyncUdpSocket.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 4522}}";
+			sepNavSelRange = "{296, 0}";
+			sepNavVisRange = "{0, 978}";
+		};
+	};
+	30A5A2660F8BCC59000FCB89 /* AsyncUdpSocket.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 28322}}";
+			sepNavSelRange = "{357, 0}";
+			sepNavVisRange = "{0, 702}";
+		};
+	};
+	30A5A2670F8BCC59000FCB89 /* KNXcEMIHeader.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 938}}";
+			sepNavSelRange = "{966, 0}";
+			sepNavVisRange = "{888, 624}";
+		};
+	};
+	30A5A2680F8BCC59000FCB89 /* KNXcEMIHeader.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 1414}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 999}";
+		};
+	};
+	30A5A2690F8BCC59000FCB89 /* KNXconnection.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 1610}}";
+			sepNavSelRange = "{3888, 326}";
+			sepNavVisRange = "{3503, 716}";
+		};
+	};
+	30A5A26A0F8BCC59000FCB89 /* KNXconnection.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 4620}}";
+			sepNavSelRange = "{1958, 0}";
+			sepNavVisRange = "{1459, 1175}";
+		};
+	};
+	30A5A26B0F8BCC59000FCB89 /* KNXCRI.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 616}}";
+			sepNavSelRange = "{961, 0}";
+			sepNavVisRange = "{145, 997}";
+		};
+	};
+	30A5A26F0F8BCC59000FCB89 /* KNXDeviceAddress.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 714}}";
+			sepNavSelRange = "{970, 0}";
+			sepNavVisRange = "{145, 1006}";
+		};
+	};
+	30A5A2710F8BCC59000FCB89 /* KNXHPAI.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 588}}";
+			sepNavSelRange = "{961, 0}";
+			sepNavVisRange = "{86, 967}";
+		};
+	};
+	30A5A2730F8BCC59000FCB89 /* KNXnetPacket.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 994}}";
+			sepNavSelRange = "{0, 892}";
+			sepNavVisRange = "{0, 990}";
+		};
+	};
+	30A5A2740F8BCC59000FCB89 /* KNXnetPacket.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 4354}}";
+			sepNavSelRange = "{4607, 0}";
+			sepNavVisRange = "{4508, 589}";
+		};
+	};
+	30A5A28A0F8BD72E000FCB89 /* KNXtest.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 546}}";
+			sepNavSelRange = "{1124, 0}";
+			sepNavVisRange = "{383, 747}";
+		};
+	};
+	30A5A28B0F8BD72E000FCB89 /* KNXtest.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {891, 1344}}";
+			sepNavSelRange = "{2181, 0}";
+			sepNavVisRange = "{1806, 383}";
+			sepNavWindowFrame = "{{15, 82}, {1114, 691}}";
+		};
+	};
+	30A5A2B80F8BDCA5000FCB89 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C6859EA3029092ED04C91782 /* KNX-Stack.1 */;
+		name = "KNX-Stack.1: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1370;
+		vrLoc = 0;
+	};
+	30A5A2B90F8BDCA5000FCB89 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 08FB7796FE84155DC02AAC07 /* KNX-Stack.m */;
+		name = "KNX-Stack.m: 8";
+		rLen = 0;
+		rLoc = 230;
+		rType = 0;
+		vrLen = 256;
+		vrLoc = 0;
+	};
+	30A5A2CC0F8BDCA5000FCB89 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 30A5A28A0F8BD72E000FCB89 /* KNXtest.h */;
+		name = "KNXtest.h: 1";
+		rLen = 0;
+		rLoc = 892;
+		rType = 0;
+		vrLen = 208;
+		vrLoc = 0;
+	};
+	30A5A2CD0F8BDCA5000FCB89 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 32A70AAB03705E1F00C91783 /* KNX-Stack_Prefix.pch */;
+		name = "KNX-Stack_Prefix.pch: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 160;
+		vrLoc = 0;
+	};
+	30A5A2CF0F8BDCA5000FCB89 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 30A5A28B0F8BD72E000FCB89 /* KNXtest.m */;
+		name = "KNXtest.m: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 193;
+		vrLoc = 0;
+	};
+	30A5A3150F8BE36D000FCB89 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 30A5A3160F8BE36D000FCB89 /* main.m */;
+		name = "main.m: 70";
+		rLen = 37;
+		rLoc = 1700;
+		rType = 0;
+		vrLen = 641;
+		vrLoc = 1142;
+	};
+	30A5A3160F8BE36D000FCB89 /* main.m */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.objc;
+		name = main.m;
+		path = /Users/joerg/Projekte/AGSocket/SocketTest/main.m;
+		sourceTree = "<absolute>";
+	};
+	30A5A3200F8BE36D000FCB89 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 30A5A3210F8BE36D000FCB89 /* main.m */;
+		name = "main.m: 70";
+		rLen = 37;
+		rLoc = 1700;
+		rType = 0;
+		vrLen = 641;
+		vrLoc = 1142;
+	};
+	30A5A3210F8BE36D000FCB89 /* main.m */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.objc;
+		name = main.m;
+		path = /Users/joerg/Projekte/AGSocket/SocketTest/main.m;
+		sourceTree = "<absolute>";
+	};
+	30A5A32A0F8BEC2E000FCB89 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C6859EA3029092ED04C91782 /* KNX-Stack.1 */;
+		name = "KNX-Stack.1: 7";
+		rLen = 0;
+		rLoc = 335;
+		rType = 0;
+		vrLen = 1370;
+		vrLoc = 0;
+	};
+	30A5A3560F8BEE91000FCB89 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 30A5A28B0F8BD72E000FCB89 /* KNXtest.m */;
+		name = "KNXtest.m: 72";
+		rLen = 0;
+		rLoc = 1807;
+		rType = 0;
+		vrLen = 553;
+		vrLoc = 1636;
+	};
+	32A70AAB03705E1F00C91783 /* KNX-Stack_Prefix.pch */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 388}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 160}";
+		};
+	};
+	8DD76F960486AA7600D96B5E /* KNX-Stack */ = {
+		activeExec = 0;
+		executables = (
+			30A5A25A0F8BCBEA000FCB89 /* KNX-Stack */,
+		);
+	};
+	C6859EA3029092ED04C91782 /* KNX-Stack.1 */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1011, 1106}}";
+			sepNavSelRange = "{335, 0}";
+			sepNavVisRange = "{0, 1370}";
+		};
+	};
+}
