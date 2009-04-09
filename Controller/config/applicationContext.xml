@@ -19,5 +19,28 @@
         <property name="configXMLPath" value="${action.xml.path}" />
     </bean>
     
+    <bean id="eventCommanderFactory" class="org.openremote.controller.commander.EventCommanderFactory">
+        <property name="eventCommanders">
+            <props>
+                <prop key="irEvent">irEventCommanderBuilder</prop>
+                <prop key="knxEvent">irEventCommanderBuilder</prop>
+                <prop key="x10Event">irEventCommanderBuilder</prop>
+            </props>
+        </property>
+    </bean>
+    
+	<bean id="eventFactory" class="org.openremote.controller.event.EventFactory">
+		<property name="eventBuilders">
+		    <props>
+		        <prop key="irEvent">irEventBuilder</prop>
+		        <prop key="knxEvent">irEventBuilder</prop>
+		        <prop key="x10Event">irEventBuilder</prop>
+		    </props>
+		</property>
+	</bean>
+    
+    <bean id="irEventBuilder" class="org.openremote.controller.event.IREventBuilder"></bean>
+    
+    <bean id="irEventCommanderBuilder" class="org.openremote.controller.commander.IREventCommanderBuilder"></bean>
 
 </beans>

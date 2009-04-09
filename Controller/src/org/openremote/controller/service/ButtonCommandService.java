@@ -20,8 +20,20 @@
  */
 package org.openremote.controller.service;
 
+
+
+/**
+ * The service for ButtonCommand.
+ * 
+ * @author Dan 2009-4-3
+ */
 public interface ButtonCommandService {
    
+   /**
+    * Trigger the command of button.
+    * 
+    * @param buttonID the button id
+    */
    void trigger(String buttonID);
 
 }
