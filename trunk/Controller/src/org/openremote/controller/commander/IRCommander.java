@@ -3,7 +3,7 @@ package org.openremote.controller.commander;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.domain.IREvent;
+import org.openremote.irbuilder.domain.IREvent;
 
 public class IRCommander extends Commander {
 

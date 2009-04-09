@@ -15,7 +15,7 @@
  */
 package org.openremote.controller.commander;
 
-import org.openremote.controller.domain.Event;
+import org.openremote.irbuilder.domain.Event;
 
 public abstract class Commander {
    
