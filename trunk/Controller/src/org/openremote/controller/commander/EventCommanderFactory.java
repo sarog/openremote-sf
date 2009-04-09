@@ -18,33 +18,48 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.utils;
+package org.openremote.controller.commander;
 
-import java.util.List;
+import java.util.Properties;
 
-import junit.framework.TestCase;
-
-import org.openremote.controller.commander.EventCommander;
 import org.openremote.controller.spring.SpringContext;
+import org.openremote.irbuilder.domain.Event;
+
 
 
 /**
- * The Class RemoteActionXMLParserTest.
+ * A factory for creating EventCommander objects.
  * 
  * @author Dan 2009-4-3
  */
-public class RemoteActionXMLParserTest extends TestCase {
+public class EventCommanderFactory {
    
-   /** The remote action xml parser. */
-   private RemoteActionXMLParser remoteActionXMLParser = (RemoteActionXMLParser) SpringContext.getInstance().getBean(
-         "remoteActionXMLParser");
+   /** The event commanders. */
+   private Properties eventCommanders;
+   
+   /**
+    * Gets the commander.
+    * 
+    * @param name the name
+    * @param event the event
+    * 
+    * @return the commander
+    */
+   public EventCommander getCommander(String name,Event event){
+      String builder = eventCommanders.getProperty(name);
+      EventCommanderBuilder eventCommanderBuilder = (EventCommanderBuilder) SpringContext.getInstance().getBean(builder);
+      return eventCommanderBuilder.build(event);
+   }
 
    /**
-    * Test find ir event by button id.
+    * Sets the event commanders.
+    * 
+    * @param eventCommanders the new event commanders
     */
-   public void testFindIREventByButtonID(){
-      List<EventCommander> list= remoteActionXMLParser.findEventCommandersByButtonID("4");
-      assertEquals(1, list.size());
+   public void setEventCommanders(Properties eventCommanders) {
+      this.eventCommanders = eventCommanders;
    }
    
+   
+
 }

@@ -27,16 +27,26 @@ import org.openremote.controller.service.ButtonCommandService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * The Class ButtonCommandController.
+ */
 public class ButtonCommandController extends AbstractController {
 
+   /** The button command service. */
    private ButtonCommandService buttonCommandService;
    
+   @Override
    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
       String buttonID = request.getParameter("id");
       buttonCommandService.trigger(buttonID);
       return null;
    }
 
+   /**
+    * Sets the button command service.
+    * 
+    * @param buttonCommandService the new button command service
+    */
    public void setButtonCommandService(ButtonCommandService buttonCommandService) {
       this.buttonCommandService = buttonCommandService;
    }

@@ -20,22 +20,35 @@
  */
 package org.openremote.controller.service.impl;
 
-import java.util.List;
-
-import org.openremote.controller.domain.Event;
+import org.openremote.controller.commander.EventCommander;
 import org.openremote.controller.service.ButtonCommandService;
 import org.openremote.controller.utils.RemoteActionXMLParser;
 
+
+/**
+ * A implementation for ButtonCommandService class.
+ * 
+ * @author Dan 2009-4-3
+ */
 public class ButtonCommandServiceImpl implements ButtonCommandService {
 
+   /** The remote action xml parser. */
    private RemoteActionXMLParser remoteActionXMLParser;
    
+   /**
+    * {@inheritDoc}
+    */
    public void trigger(String buttonID) {
-      List<Event> events = remoteActionXMLParser.findEventsByButtonID(buttonID);
-      for (Event event : events) {
-         event.getCommander().execute();
+      for (EventCommander eventCommander : remoteActionXMLParser.findEventCommandersByButtonID(buttonID)) {
+         eventCommander.execute();
       }
    }
+   
+   /**
+    * Sets the remote action xml parser.
+    * 
+    * @param remoteActionXMLParser the new remote action xml parser
+    */
    public void setRemoteActionXMLParser(RemoteActionXMLParser remoteActionXMLParser) {
       this.remoteActionXMLParser = remoteActionXMLParser;
    }

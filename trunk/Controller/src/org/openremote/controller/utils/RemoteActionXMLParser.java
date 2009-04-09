@@ -18,12 +18,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.openremote.controller.utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -34,36 +34,81 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.openremote.controller.domain.Event;
-import org.openremote.controller.domain.IREvent;
+import org.apache.log4j.Logger;
+import org.openremote.controller.commander.EventCommander;
+import org.openremote.controller.commander.EventCommanderFactory;
+import org.openremote.controller.event.EventFactory;
+import org.openremote.irbuilder.domain.Event;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+
+/**
+ * The Remote Action XML Parser.
+ * 
+ * @author Dan 2009-4-3
+ */
 public class RemoteActionXMLParser {
    
-   private Properties events;
+   /** The logger. */
+   private static Logger logger = Logger.getLogger(RemoteActionXMLParser.class.getName());
    
-   public String configXMLPath;
+   /** The config xml path. */
+   private String configXMLPath;
+   
+   /** The event factory. */
+   private EventFactory eventFactory;
+   
+   /** The event commander factory. */
+   private EventCommanderFactory eventCommanderFactory;
 
-   public List<Event> findEventsByButtonID(String buttonID) {
-      List<Event> events = new ArrayList<Event>();
-      Element button = query("//button[@id='" + buttonID + "']");
+
+
+   /**
+    * Find event commanders by button id.
+    * 
+    * @param buttonID the button id
+    * 
+    * @return the list< event commander>
+    */
+   public List<EventCommander> findEventCommandersByButtonID(String buttonID) {
+      List<EventCommander> commanders = new ArrayList<EventCommander>();
+      Element button = queryElementFromXMLById(buttonID);
       NodeList nodes = button.getChildNodes();
       for (int i = 0; i < nodes.getLength(); i++) {
          String eventID = nodes.item(i).getTextContent().trim();
-         Element element = query("//irEvent[@id='" + eventID + "']");
+         Element element = queryElementFromXMLById(eventID);
          if(element != null){
-            if(IREvent.NODE_NAME.equals(element.getNodeName())){
-               events.add(new IREvent(element.getAttribute("name"), element.getAttribute("command")));
-            }
+            Event event = eventFactory.getEvent(element);
+            commanders.add(eventCommanderFactory.getCommander(element.getNodeName(), event));
          }
       }
-      return events;
+      return commanders;
    }
    
-   private Element query(String xPath) {
+
+   /**
+    * Query element from xml by id.
+    * 
+    * @param id the id
+    * 
+    * @return the element
+    */
+   private Element queryElementFromXMLById(String id){
+      return queryElementFromXML("//*[@id='" + id + "']");
+   }
+   
+
+   /**
+    * Query element from xml.
+    * 
+    * @param xPath the x path
+    * 
+    * @return the element
+    */
+   private Element queryElementFromXML(String xPath) {
       DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
       domFactory.setNamespaceAware(true); // never forget this!
       Object result = null;
@@ -75,13 +120,13 @@ public class RemoteActionXMLParser {
          XPathExpression expr = xpath.compile(xPath);
          result = expr.evaluate(doc, XPathConstants.NODESET);
       } catch (XPathExpressionException e) {
-         e.printStackTrace();
+         logger.error("XPathExpression error while parsing the controller.xml", e);
       } catch (ParserConfigurationException e) {
-         e.printStackTrace();
+         logger.error("Can't parse the controller.xml", e);
       } catch (SAXException e) {
-         e.printStackTrace();
+         logger.error("Can't parse the controller.xml", e);
       } catch (IOException e) {
-         e.printStackTrace();
+         logger.error("Can't find the controller.xml", e);
       }
       NodeList nodes = (NodeList) result;
       if (nodes.getLength() > 0) {
@@ -90,15 +135,32 @@ public class RemoteActionXMLParser {
       return null;
    }
 
+   /**
+    * Sets the config xml path.
+    * 
+    * @param configXMLPath the new config xml path
+    */
    public void setConfigXMLPath(String configXMLPath) {
       this.configXMLPath = configXMLPath;
    }
 
-   public void setEvents(Properties events) {
-      this.events = events;
+   /**
+    * Sets the event factory.
+    * 
+    * @param eventFactory the new event factory
+    */
+   public void setEventFactory(EventFactory eventFactory) {
+      this.eventFactory = eventFactory;
    }
-   
-   
+
+   /**
+    * Sets the event commander factory.
+    * 
+    * @param eventCommanderFactory the new event commander factory
+    */
+   public void setEventCommanderFactory(EventCommanderFactory eventCommanderFactory) {
+      this.eventCommanderFactory = eventCommanderFactory;
+   }
    
    
 }

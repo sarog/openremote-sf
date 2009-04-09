@@ -18,33 +18,40 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.utils;
+package org.openremote.controller.commander;
 
-import java.util.List;
+import java.io.IOException;
 
-import junit.framework.TestCase;
-
-import org.openremote.controller.commander.EventCommander;
-import org.openremote.controller.spring.SpringContext;
+import org.apache.log4j.Logger;
+import org.openremote.irbuilder.domain.IREvent;
 
 
 /**
- * The Class RemoteActionXMLParserTest.
+ * The Class IREventCommander.
  * 
  * @author Dan 2009-4-3
  */
-public class RemoteActionXMLParserTest extends TestCase {
-   
-   /** The remote action xml parser. */
-   private RemoteActionXMLParser remoteActionXMLParser = (RemoteActionXMLParser) SpringContext.getInstance().getBean(
-         "remoteActionXMLParser");
+public class IREventCommander extends EventCommander {
 
+   /** The logger. */
+   private static Logger logger = Logger.getLogger(IREventCommander.class.getName());
+   
    /**
-    * Test find ir event by button id.
+    * {@inheritDoc}
     */
-   public void testFindIREventByButtonID(){
-      List<EventCommander> list= remoteActionXMLParser.findEventCommandersByButtonID("4");
-      assertEquals(1, list.size());
+   @Override
+   public void execute() {
+      IREvent irEvent = (IREvent)getEvent();
+      String cmd = "irsend send_once " + irEvent.getName() + " " + irEvent.getCommand();
+      try {
+         Process pro = Runtime.getRuntime().exec(cmd);
+         logger.info(cmd);
+         pro.waitFor();
+      } catch (InterruptedException e) {
+         logger.error(cmd+" was interrupted.",e);
+      } catch (IOException e) {
+         logger.error(cmd+" failed.",e);
+      }
    }
    
 }

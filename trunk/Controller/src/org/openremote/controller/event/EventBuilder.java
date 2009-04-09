@@ -18,33 +18,26 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.utils;
+package org.openremote.controller.event;
 
-import java.util.List;
-
-import junit.framework.TestCase;
-
-import org.openremote.controller.commander.EventCommander;
-import org.openremote.controller.spring.SpringContext;
+import org.openremote.irbuilder.domain.Event;
+import org.w3c.dom.Element;
 
 
 /**
- * The Class RemoteActionXMLParserTest.
+ * The Interface EventBuilder.
  * 
  * @author Dan 2009-4-3
  */
-public class RemoteActionXMLParserTest extends TestCase {
+public interface EventBuilder {
    
-   /** The remote action xml parser. */
-   private RemoteActionXMLParser remoteActionXMLParser = (RemoteActionXMLParser) SpringContext.getInstance().getBean(
-         "remoteActionXMLParser");
-
    /**
-    * Test find ir event by button id.
+    * Builds a  event from a DOM element.
+    * 
+    * @param element the element
+    * 
+    * @return the event
     */
-   public void testFindIREventByButtonID(){
-      List<EventCommander> list= remoteActionXMLParser.findEventCommandersByButtonID("4");
-      assertEquals(1, list.size());
-   }
+   Event build(Element element);
    
 }
