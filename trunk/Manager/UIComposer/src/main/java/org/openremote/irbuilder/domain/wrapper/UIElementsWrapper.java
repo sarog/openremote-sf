@@ -19,21 +19,36 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.openreomte.irbuilder.utilsTest;
+package org.openremote.irbuilder.domain.wrapper;
 
-import org.junit.Test;
-import org.junit.Assert;
-import org.openremote.irbuilder.utils.HtmlUtils;
-
-import java.io.File;
+import org.openremote.irbuilder.domain.Activity;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
-public class HtmlTest {
-   @Test
-   public void testHtmlUnEncoder() {
-      String str = "&apos;&gt;&apos;";
-      Assert.assertTrue(HtmlUtils.unEncoderHTML(str).equals("\'>\'"));
+public class UIElementsWrapper {
+   private ControllerWrapper controllerWrapper;
+   private IPhoneWrapper iPhoneWrapper;
+
+   public UIElementsWrapper(ControllerWrapper controllerWrapper, IPhoneWrapper iPhoneWrapper) {
+      this.controllerWrapper = controllerWrapper;
+      this.iPhoneWrapper = iPhoneWrapper;
+   }
+
+   public ControllerWrapper getControllerWrapper() {
+      return controllerWrapper;
+   }
+
+   public void setControllerWrapper(ControllerWrapper controllerWrapper) {
+      this.controllerWrapper = controllerWrapper;
+   }
+
+   public IPhoneWrapper getIPhoneWrapper() {
+      return iPhoneWrapper;
+   }
+
+   public void setIPhoneWrapper(IPhoneWrapper iPhoneWrapper) {
+      this.iPhoneWrapper = iPhoneWrapper;
    }
 }

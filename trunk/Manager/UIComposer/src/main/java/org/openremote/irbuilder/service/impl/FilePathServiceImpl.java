@@ -21,6 +21,10 @@ import org.springframework.stereotype.Repository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.util.UUID;
+import java.util.Properties;
 
 /**
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
@@ -30,35 +34,54 @@ public class FilePathServiceImpl implements FilePathService {
    /**
     * {@inheritDoc}
     */
-   public String tempFolder(HttpServletRequest req) {
-      return req.getRealPath("/") + File.separator + "tmp";
+   public String tempFolder() {
+      Properties properties = new Properties();
+      try {
+         File pFile = new File(getClass().getResource("/directoryConfig.properties").getFile());
+         properties.load(new FileInputStream(pFile));
+      } catch (IOException e) {
+         e.printStackTrace();
+         throw new  IllegalStateException("Can't read directoryConfig.properties file.",e);
+      }
+      if (properties.get("tmp.dir") != null) {
+         return properties.get("tmp.dir").toString();
+      } else {
+         throw new IllegalStateException("Can't find tmp.dir in properties, system initialize erro.");
+      }
    }
 
    /**
     * {@inheritDoc}
     */
-   public String iPhoneXmlFilePath(HttpServletRequest req) {
-      return tempFolder(req) + File.separator + "iphone.xml";
+   public String iPhoneXmlFilePath() {
+      return tempFolder() + File.separator + "iphone.xml"+"_"+UUID.randomUUID();
    }
 
    /**
     * {@inheritDoc}
     */
-   public String controllerXmlFilePath(HttpServletRequest req) {
-      return tempFolder(req) + File.separator + "controller.xml";
+   public String controllerXmlFilePath() {
+      return tempFolder() + File.separator + "controller.xml"+"_"+UUID.randomUUID();
+   }
+
+    /**
+    * {@inheritDoc}
+    */
+   public String panelDescFilePath() {
+       return tempFolder() + File.separator + "panel.irb"+"_"+UUID.randomUUID();
    }
 
    /**
     * {@inheritDoc}
     */
-   public String lircFilePath(HttpServletRequest req) {
-      return tempFolder(req) + File.separator + "lirc.conf";
+   public String lircFilePath() {
+      return tempFolder() + File.separator + "lirc.conf"+"_"+UUID.randomUUID();
    }
 
    /**
     * {@inheritDoc}
     */
-   public String openremoteZipFilePath(HttpServletRequest req) {
-      return tempFolder(req) + File.separator + "openremote.zip";
+   public String openremoteZipFilePath() {
+      return tempFolder() + File.separator + "openremote."+UUID.randomUUID()+".zip";
    }
 }

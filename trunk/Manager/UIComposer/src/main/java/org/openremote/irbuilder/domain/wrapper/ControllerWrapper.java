@@ -13,11 +13,14 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
  * http://www.fsf.org.
  */
-package org.openremote.irbuilder.domain;
+package org.openremote.irbuilder.domain.wrapper;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import java.util.ArrayList;
+
+import org.openremote.irbuilder.domain.ControllerButton;
+import org.openremote.irbuilder.domain.wrapper.EventsWrapper;
 
 /**
  * @author allen.wei

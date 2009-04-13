@@ -13,42 +13,28 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
  * http://www.fsf.org.
  */
-package org.openremote.irbuilder.domain;
+
+package org.openremote.irbuilder.domain.wrapper;
 
 import java.util.ArrayList;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import org.openremote.irbuilder.domain.Activity;
 
 /**
- * @author allen.wei
+ * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
-@XStreamAlias("events")
-public class EventsWrapper {
-   private ArrayList<IREvent> irEvents = new ArrayList<IREvent>();
-   private ArrayList<KNXEvent> knxEvents = new ArrayList<KNXEvent>();
-   private ArrayList<X10Event> x10Events = new ArrayList<X10Event>();
+@XStreamAlias("openremote")
+public class IPhoneWrapper {
+   @XStreamImplicit(itemFieldName = "activity")
+   private ArrayList<Activity> activities = new ArrayList<Activity>();
 
-   public ArrayList<KNXEvent> getKnxEvents() {
-      return knxEvents;
+   public ArrayList<Activity> getActivities() {
+      return activities;
    }
 
-   public void setKnxEvents(ArrayList<KNXEvent> knxEvents) {
-      this.knxEvents = knxEvents;
-   }
-
-   public ArrayList<X10Event> getX10Events() {
-      return x10Events;
-   }
-
-   public void setX10Events(ArrayList<X10Event> x10Events) {
-      this.x10Events = x10Events;
-   }
-
-   public ArrayList<IREvent> getIrEvents() {
-      return irEvents;
-   }
-
-   public void setIrEvents(ArrayList<IREvent> irEvents) {
-      this.irEvents = irEvents;
+   public void setActivities(ArrayList<Activity> activities) {
+      this.activities = activities;
    }
 }

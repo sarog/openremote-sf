@@ -22,6 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.MultipartFile;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,7 +39,7 @@ import java.net.URL;
  * @author allen.wei
  */
 @Controller
-public class ScreenController {
+public class MainController {
 
    @Autowired(required = true)
    private XMLService xmlService;
@@ -45,14 +49,23 @@ public class ScreenController {
    private FilePathService filePathService;
 
    @RequestMapping(value = "/download.htm", method = RequestMethod.POST)
-   public void download(String iphone, String controller,String restUrl,String ids, HttpServletRequest req, HttpServletResponse resp)
+   public void download(String iphone, String controller,String panel,String restUrl,String ids, HttpServletRequest req, HttpServletResponse resp)
          throws IOException {
-      File iphoneXMLFile = zipService.writeStringToFile(filePathService.iPhoneXmlFilePath(req), xmlService
+      File iphoneXMLFile = zipService.writeStringToFile(filePathService.iPhoneXmlFilePath(), xmlService
             .iPhoneXmlBuilder(iphone));
-      File controllerXMLFile = zipService.writeStringToFile(filePathService.controllerXmlFilePath(req), xmlService
+      File controllerXMLFile = zipService.writeStringToFile(filePathService.controllerXmlFilePath(), xmlService
             .controllerXmlBuilder(controller));
-      File lircFile = zipService.writeStringToFile(filePathService.lircFilePath(req), xmlService.readLircFile(restUrl+"?ids="+ids));
-      zipService.compress(filePathService.openremoteZipFilePath(req), iphoneXMLFile, controllerXMLFile, lircFile);
-      resp.getOutputStream().print("tmp/openremote.zip");
+      File panelDescFile = zipService.writeStringToFile(filePathService.panelDescFilePath(), panel);
+      File lircFile = zipService.writeStringToFile(filePathService.lircFilePath(), xmlService.readLircFile(restUrl+"?ids="+ids));
+      String fileName = zipService.compress(filePathService.openremoteZipFilePath(), iphoneXMLFile, controllerXMLFile, panelDescFile,lircFile).getName();
+      resp.getOutputStream().print("tmp/"+fileName);
    }
+
+   @RequestMapping(value = "/import.htm",method = RequestMethod.POST)
+   public void download(HttpServletRequest request,HttpServletResponse resp) throws IOException {
+      MultipartHttpServletRequest multipartRequest  =  (MultipartHttpServletRequest) request;
+      String result = zipService.getIrbFileFromZip(multipartRequest.getFile("zip_file").getInputStream());
+      resp.getWriter().print(result);
+   }
+ 
 }

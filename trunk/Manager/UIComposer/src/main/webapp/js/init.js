@@ -3,6 +3,8 @@ $(document).ready(function() {
     TabController.init();
     IPhoneController.init();
     DownloadController.init();
+	ImportController.init();
+
 });
 
 
