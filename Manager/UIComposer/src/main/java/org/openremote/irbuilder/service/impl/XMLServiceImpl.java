@@ -19,16 +19,24 @@ package org.openremote.irbuilder.service.impl;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import org.openremote.irbuilder.domain.*;
+import org.openremote.irbuilder.domain.wrapper.ControllerWrapper;
+import org.openremote.irbuilder.domain.wrapper.EventsWrapper;
+import org.openremote.irbuilder.domain.wrapper.IPhoneWrapper;
+import org.openremote.irbuilder.domain.wrapper.UIElementsWrapper;
 import org.openremote.irbuilder.service.XMLService;
 import org.openremote.irbuilder.utils.HtmlUtils;
 import org.openremote.irbuilder.exception.FileOperationException;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.apache.commons.io.IOUtils;
 
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
@@ -47,6 +55,11 @@ public class XMLServiceImpl implements XMLService {
 
    private ControllerWrapper parseJSON(String data) {
       XStream xStream = new XStream(new JettisonMappedXmlDriver());
+      return  (ControllerWrapper) controllerXstreamToJSONBuilder(xStream).fromXML(data);
+   }
+
+   private XStream controllerXstreamToJSONBuilder(XStream xStream) {
+      xStream.setMode(XStream.NO_REFERENCES);
       xStream.alias("openremote", ControllerWrapper.class);
       xStream.aliasField("events", ControllerWrapper.class, "eventsWrapper");
       xStream.alias("events", EventsWrapper.class);
@@ -55,7 +68,7 @@ public class XMLServiceImpl implements XMLService {
       xStream.alias("x10Event", X10Event.class);
       xStream.alias("button", ControllerButton.class);
       xStream.addImplicitCollection(ControllerButton.class, "eventIds", "event", Integer.class);
-      return  (ControllerWrapper) xStream.fromXML(data);
+      return xStream;
    }
 
    /**
@@ -73,6 +86,10 @@ public class XMLServiceImpl implements XMLService {
    private Activity parseActivity(String data) {
       XStream xStream = new XStream(new JettisonMappedXmlDriver());
 
+      return  (Activity) ActivityXStreamToJSONBuilder(xStream).fromXML(data);
+   }
+
+   private XStream ActivityXStreamToJSONBuilder(XStream xStream) {
       xStream.setMode(XStream.NO_REFERENCES);
       xStream.alias("activity", Activity.class);
       xStream.alias("screen", Screen.class);
@@ -80,8 +97,7 @@ public class XMLServiceImpl implements XMLService {
 
       xStream.addImplicitCollection(Activity.class, "screens", Screen.class);
       xStream.addImplicitCollection(Screen.class, "buttons", IPhoneButton.class);
-
-      return  (Activity) xStream.fromXML(data);
+      return xStream;
    }
 
    /**
@@ -120,5 +136,42 @@ public class XMLServiceImpl implements XMLService {
          }
       }
       return lircStrBuffer.toString();
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public String xmlImportedToJSON(InputStream iphoneXmlFileInputStream,InputStream controllerXmlInputStream) {
+      String iphoneXmlstr = null;
+      String controllerXmlstr = null;
+      try {
+         iphoneXmlstr = IOUtils.toString(iphoneXmlFileInputStream,"utf-8");
+         controllerXmlstr = IOUtils.toString(controllerXmlInputStream,"utf-8");
+      } catch (IOException e) {
+         e.printStackTrace();
+         throw new FileOperationException("Can't get data from uploaded file.",e);
+      }
+      if (iphoneXmlstr != null && controllerXmlstr != null) {
+         XStream fromControllerXml = new XStream();
+         XStream fromIphoneXml = new XStream();
+
+         fromControllerXml.processAnnotations(ControllerWrapper.class);
+         fromIphoneXml.processAnnotations(IPhoneWrapper.class);
+         
+         ControllerWrapper controllerWrapper = (ControllerWrapper)fromControllerXml.fromXML(controllerXmlstr);
+         IPhoneWrapper iPhoneWrapper = (IPhoneWrapper)fromIphoneXml.fromXML(iphoneXmlstr);
+
+         UIElementsWrapper uiElementsWrapper = new UIElementsWrapper(controllerWrapper,iPhoneWrapper);
+         
+         XStream toJSON = new XStream(new JettisonMappedXmlDriver());
+         toJSON.alias("ui",UIElementsWrapper.class);
+         toJSON.aliasField("controller",UIElementsWrapper.class,"controllerWrapper");
+         toJSON.aliasField("iphone",UIElementsWrapper.class,"iPhoneWrapper");
+         controllerXstreamToJSONBuilder(toJSON);
+         ActivityXStreamToJSONBuilder(toJSON);
+
+         return toJSON.toXML(uiElementsWrapper);   
+      }
+      return null; 
    }
 }

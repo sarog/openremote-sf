@@ -21,6 +21,9 @@
 package org.openremote.irbuilder.xstream;
 
 import org.openremote.irbuilder.domain.*;
+import org.openremote.irbuilder.domain.wrapper.ControllerWrapper;
+import org.openremote.irbuilder.domain.wrapper.EventsWrapper;
+
 /**
  * @author allen.wei
  */

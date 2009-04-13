@@ -24,47 +24,44 @@ import javax.servlet.http.HttpServletRequest;
 public interface FilePathService {
    /**
     * Gets temp folder
-    * 
-    * @param req
-    *           HttpServletRequest
+    *
     * @return folder absolute path
     */
-   String tempFolder(HttpServletRequest req);
+   String tempFolder();
 
    /**
     * Gets iphone xml path
-    * 
-    * @param req
-    *           HttpServletRequest
+    *
     * @return file absolute path
     */
-   String iPhoneXmlFilePath(HttpServletRequest req);
+   String iPhoneXmlFilePath();
 
    /**
     * Gets controller xml file path
-    * 
-    * @param req
-    *           HttpServletRequest
+    *
     * @return file absolute path
     */
-   String controllerXmlFilePath(HttpServletRequest req);
+   String controllerXmlFilePath();
+
+    /**
+    * Gets panel description file path
+    *
+    * @return file absolute path
+    */
+   String panelDescFilePath();
 
    /**
     * Gets lirc.conf file path
-    * 
-    * @param req
-    *           HttpServletRequest
+    *
     * @return file absolute path
     */
-   String lircFilePath(HttpServletRequest req);
+   String lircFilePath();
 
    /**
     * Gets compressed file path
     * 
-    * @param req
-    *           HttpServletRequest
     * @return file absolute path
     */
-   String openremoteZipFilePath(HttpServletRequest req);
+   String openremoteZipFilePath();
 
 }

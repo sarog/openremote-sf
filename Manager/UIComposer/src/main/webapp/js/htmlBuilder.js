@@ -2,7 +2,7 @@ BUTTONID = 1;
 // a hash contain all of infrared object, key is code id value is infrared model.
 InfraredCollection = {};
 
-
+//this us a singleton class
 HTMLBuilder = function() {
 	
     return {
@@ -38,14 +38,12 @@ HTMLBuilder = function() {
             return button;
         },
 
-        iphoneBtnBuilder: function(commandBtn) {
-			var model = $(commandBtn).data("model");
-           
+        iphoneBtnBuilder: function(iphoneBtn) {           
             var btn = $("<div class='iphone_btn'></div>");
-			btn.data("model",model);
-            btn.attr("title",model.label);
+			btn.data("model",iphoneBtn);
+            btn.attr("title",iphoneBtn.oModel.label);
 
-			var text = model.label;
+			var text = iphoneBtn.oModel.label;
             if (text.length > 5) {
                 btn.html(text.substr(0, 5) + "<br/>...");
             } else {
@@ -85,14 +83,14 @@ HTMLBuilder = function() {
             return $(template);
         },
 
-        macroLiBtnBuilder: function(draggable) {
+        macroLiBtnBuilder: function(model) {
             var macroCommandLi = $("<li><span></span></li>");
             macroCommandLi.addClass("macro_command");
             macroCommandLi.addClass("ui-state-default");
-            macroCommandLi.data("model",draggable.data("model"));
+            macroCommandLi.data("model",model);
             macroCommandLi.find("span").addClass("ui-icon");
             macroCommandLi.find("span").addClass("ui-icon-arrowthick-2-n-s");
-            var name = draggable.text();
+            var name = model.label;
             macroCommandLi.attr("title", name);
             if (name.length > 14) {
                 name = name.substr(0, 8) + "...";

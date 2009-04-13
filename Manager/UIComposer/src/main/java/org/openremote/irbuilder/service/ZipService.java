@@ -17,6 +17,7 @@
 package org.openremote.irbuilder.service;
 
 import java.io.File;
+import java.io.InputStream;
 
 /**
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
@@ -42,4 +43,6 @@ public interface ZipService {
     * @return generated file
     */
    File writeStringToFile(String filePath, String str);
+
+   String getIrbFileFromZip(InputStream inputStream); 
 }

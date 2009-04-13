@@ -22,30 +22,35 @@ var IPhoneController = function() {
             draggable.draggable('option', 'revert', true);
         } else {
             if (draggable.hasClass("command_btn")) {
-                if (typeof(draggable.attr("eventId")) == "undefined") {
+                if (draggable.attr("eventId") === undefined) {
                     draggable.data("model",Infrared.getInfraredModelWithDraggable(draggable));
                 }
             }
-            var btn = HTMLBuilder.iphoneBtnBuilder(draggable);
-
-            btn.click(function() {
-                selectIphoneBtn(btn);
-                HTMLBuilder.iphoneBtnDeleteIconBuilder().appendTo(this);
-            });
-            btn.appendTo(droppable);
-            makeIphoneBtnDraggable(btn);
+			var iphoneBtn;
+			if (draggable.data("model").className != "IphoneBtn")  {
+				iphoneBtn = new IphoneBtn();
+				iphoneBtn.id = BUTTONID++;
+				iphoneBtn.oModel = draggable.data("model");	
+			} else {
+				iphoneBtn = draggable.data("model");
+			}
+			 
+			IPhoneController.createIphoneBtn(iphoneBtn,droppable);
+            
             if (draggable.hasClass(".iphone_btn")) {
                 draggable.hide("fast",
                 function() {
-                    droppable.remove();
+                    draggable.remove();
                 });
             }
         }
 	}
 	
+	
+	
 	function makeIphoneBtnDraggable(items) {
 	    var btns;
-	    if (typeof(items) == 'undefined') {
+	    if (items === undefined) {
 	        btns = $(".iphone_btn");
 	    } else {
 	        btns = $(items);
@@ -61,11 +66,27 @@ var IPhoneController = function() {
 	    });
 	}
 	
+	
+	function selectIphoneBtn(btn) {
+	    $(".iphone_btn").removeClass("selected");
+	    $(".iphone_btn .delete_icon").remove();
+	    btn.addClass("selected");
+	}
+	
 	//static method
 	IPhoneController.init = function (){
 		makeTableCellDrappable();
 	};
 	
+	IPhoneController.createIphoneBtn = function (iphoneBtn,tableCell) {
+		var btn = HTMLBuilder.iphoneBtnBuilder(iphoneBtn);
+        btn.click(function() {
+        	selectIphoneBtn(btn);
+			HTMLBuilder.iphoneBtnDeleteIconBuilder().appendTo(this);
+        });
+        btn.appendTo($(tableCell));
+        makeIphoneBtnDraggable(btn);
+	};
 	
 	return IPhoneController;
 }();

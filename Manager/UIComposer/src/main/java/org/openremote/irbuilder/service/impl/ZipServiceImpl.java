@@ -16,20 +16,31 @@
 
 package org.openremote.irbuilder.service.impl;
 
-import org.openremote.irbuilder.service.ZipService;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.openremote.irbuilder.exception.FileOperationException;
+import org.openremote.irbuilder.service.FilePathService;
+import org.openremote.irbuilder.service.ZipService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.*;
-import java.util.zip.ZipOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 /**
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
 @Repository
 public class ZipServiceImpl implements ZipService {
+
    static final int BUFFER = 2048;
+
+   @Autowired
+   private FilePathService filePathService;
 
    /**
     * {@inheritDoc}
@@ -37,16 +48,11 @@ public class ZipServiceImpl implements ZipService {
    public File compress(String outputFilePath, File... files) {
       BufferedInputStream bufferedInputStream;
       File outputFile = new File(outputFilePath);
-      if (!outputFile.getParentFile().exists()) {
-         outputFile.getParentFile().mkdirs();
-      }
-      if (!outputFile.exists()) {
-         try {
-            outputFile.createNewFile();
-         } catch (IOException e) {
-            e.printStackTrace();
-            throw new FileOperationException("Can't access to the output file in path " + outputFilePath, e);
-         }
+      try {
+         FileUtils.touch(outputFile);
+      } catch (IOException e) {
+         e.printStackTrace();
+         throw new FileOperationException("create zip file fail.", e);
       }
       FileOutputStream fileOutputStream = null;
       ZipOutputStream zipOutputStream = null;
@@ -61,11 +67,10 @@ public class ZipServiceImpl implements ZipService {
             }
             fileInputStream = new FileInputStream(file);
             bufferedInputStream = new BufferedInputStream(fileInputStream, BUFFER);
-            ZipEntry entry = new ZipEntry(file.getName());
+            ZipEntry entry = new ZipEntry(fileNameRemoveUUID(file.getName()));
             entry.setSize(file.length());
             entry.setTime(file.lastModified());
             zipOutputStream.putNextEntry(entry);
-            System.out.println("add file " + file.getAbsolutePath());
 
             int count;
             while ((count = bufferedInputStream.read(data, 0, BUFFER)) != -1) {
@@ -94,39 +99,51 @@ public class ZipServiceImpl implements ZipService {
       return outputFile;
    }
 
+   private String fileNameRemoveUUID(String fileName) {
+      return fileName.substring(0, fileName.lastIndexOf("_"));
+   }
+
    /**
     * {@inheritDoc}
     */
    public File writeStringToFile(String filePath, String str) {
       File file = new File(filePath);
-      FileWriter fileWriter;
       try {
-         if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
-         }
-         if (!file.exists()) {
-            file.createNewFile();
-         }
-         fileWriter = new FileWriter(file);
+         FileUtils.touch(file);
+         FileUtils.writeStringToFile(file, str);
       } catch (IOException e) {
          e.printStackTrace();
-         throw new FileOperationException("Writes file " + filePath + " occurred IOException", e);
-      }
-      BufferedWriter buffreader = new BufferedWriter(fileWriter);
-      PrintWriter printWriter = new PrintWriter(buffreader);
-      printWriter.write(str);
-      printWriter.flush();
-
-      printWriter.close();
-
-      try {
-         buffreader.close();
-         fileWriter.close();
-      } catch (IOException e) {
-         e.printStackTrace();
-         throw new FileOperationException("Close resource occured IOException", e);
+         throw new FileOperationException("write String to file fail. file path is " + filePath, e);
       }
       return file;
+   }
+
+   public String getIrbFileFromZip(InputStream inputStream) {
+      ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+      ZipEntry zipEntry;
+      try {
+         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+            if (!zipEntry.isDirectory()) {
+               if ("irb".equalsIgnoreCase(getFileExt(zipEntry.getName()))) {
+                  return IOUtils.toString(zipInputStream);
+               }
+            }
+         }
+      } catch (IOException e) {
+         e.printStackTrace();
+      } finally {
+         try {
+            zipInputStream.closeEntry();
+         } catch (IOException e) {
+            e.printStackTrace();
+         }
+      }
+      return "";
+   }
+
+   private String getFileExt(String fileName) {
+      String[] parts = fileName.split("\\.");
+      return parts[parts.length - 1];
    }
 
 }

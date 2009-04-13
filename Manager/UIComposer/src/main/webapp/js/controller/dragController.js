@@ -1,11 +1,6 @@
-function initDraggableAndDroppable() {
-
-}
-
-
 function makeCommandBtnDraggable(items) {
     var btns;
-    if (typeof(items) == 'undefined') {
+    if (items === undefined) {
         btns = $(".blue_btn");
     } else {
         btns = items;
@@ -20,11 +15,5 @@ function makeCommandBtnDraggable(items) {
     });
 }
 
-function selectIphoneBtn(btn) {
-    $(".iphone_btn").removeClass("selected");
-    $(".iphone_btn .delete_icon").remove();
-    btn.addClass("selected");
-
-}
 
 

@@ -1,16 +1,11 @@
-jQuery.fn.showModalForm = function(title, buttons, allFields, openCallback) {
+jQuery.fn.showModalForm = function(title, buttons, openCallback) {
     var newButtons = {};
     newButtons.Cancel = function() {
-        if (typeof(allFields) != 'undefined') {
-            allFields.val('').removeClass('ui-state-error');
-        }
         $(this).dialog("close");
     };
     for (var p in buttons) {
         newButtons[p] = buttons[p];
     }
-
-
 
     this.find("input[type='text']").addClass("text");
     this.find("input[type='text']").addClass("ui-widget-content");
@@ -23,20 +18,16 @@ jQuery.fn.showModalForm = function(title, buttons, allFields, openCallback) {
         height: "auto",
         modal: true,
         title: title,
+		width:"auto",
         resizable: false,
         buttons: newButtons,
         close: function() {
-            if (typeof(allFields) == 'undefined') {
-                dialogElement.find("input").val('').removeClass('ui-state-error');
-                dialogElement.find("#validateTips").remove();
-            } else {
-                allFields.val('').removeClass('ui-state-error');
-            }
-
+           dialogElement.find("input").val('').removeClass('ui-state-error');
+           dialogElement.find("#validateTips").remove();
         },
         open: openCallback
     });
-    this.dialog("open");
+    this.dialog("open");	
 };
 
 jQuery.fn.closeModalForm = function() {
@@ -51,6 +42,7 @@ jQuery.fn.inputError = function() {
     this.addClass('ui-state-error');
 };
 
+
 jQuery.fn.updateTips = function(element, message) {
     this.find("input").removeClass("ui-state-error");
     element.inputError();
@@ -61,4 +53,22 @@ jQuery.fn.updateTips = function(element, message) {
         this.height(h);
     }
     this.find("#validateTips").text("").text(message).effect("highlight", 3000);
+};
+
+
+// add hover function, use jquery ui theme.
+jQuery.fn.UIHover = function() {
+	$(this).hover(function() {
+		$(this).addClass("ui-state-hover");
+	},function() {
+		$(this).removeClass("ui-state-hover");
+	});
+};
+
+jQuery.fn.enterKeyPressed = function (func) {
+	$(this).keypress(function (e) {
+	    if (e.which == 13) {
+			func();
+		}
+	});
 };
