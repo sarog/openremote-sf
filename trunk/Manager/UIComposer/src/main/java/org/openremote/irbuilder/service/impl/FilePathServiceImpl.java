@@ -72,10 +72,10 @@ public class FilePathServiceImpl implements FilePathService {
    }
 
    /**
-    * {@inheritDoc}
+    * {@inheritDoc}                                                    i
     */
    public String lircFilePath() {
-      return tempFolder() + File.separator + "lirc.conf"+"_"+UUID.randomUUID();
+      return tempFolder() + File.separator + "lircd.conf"+"_"+UUID.randomUUID();
    }
 
    /**
