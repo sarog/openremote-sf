@@ -48,6 +48,17 @@ public class MainController {
    @Autowired
    private FilePathService filePathService;
 
+   /**
+    * Compress received data to zip and finally print a relative path to frontend.
+    * @param iphone iphone part json 
+    * @param controller controller part json
+    * @param panel UI interface description
+    * @param restUrl rest API url
+    * @param ids section ids, server need to get combined lircd.conf file from beehive
+    * @param req HttpServletRequest
+    * @param resp HttpServletResponse
+    * @throws IOException
+    */
    @RequestMapping(value = "/download.htm", method = RequestMethod.POST)
    public void download(String iphone, String controller,String panel,String restUrl,String ids, HttpServletRequest req, HttpServletResponse resp)
          throws IOException {
@@ -61,6 +72,12 @@ public class MainController {
       resp.getOutputStream().print("tmp/"+fileName);
    }
 
+   /**
+    * User upload zip file, and server unzip the file then return  the ui interface description file content as String
+    * @param request
+    * @param resp
+    * @throws IOException
+    */
    @RequestMapping(value = "/import.htm",method = RequestMethod.POST)
    public void download(HttpServletRequest request,HttpServletResponse resp) throws IOException {
       MultipartHttpServletRequest multipartRequest  =  (MultipartHttpServletRequest) request;

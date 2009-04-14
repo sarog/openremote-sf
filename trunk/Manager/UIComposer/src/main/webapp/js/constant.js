@@ -13,37 +13,10 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
  * http://www.fsf.org.
  */
-var KNX = function() {
-	function KNX () {
-		var self = this;
-		self.id = -1;
-        //text ui interface display
-		self.label = "";
-		self.groupAddress = "";
-		// convenient way to get the Class name.
-		self.className = "KNX";
-
-        /**
-         * Get HTML elementId
-         */
-		this.elementId = function() {
-			return "knx"+self.id;
-		};	
-		
-	}
-
-    /**
-     * Create new instance from flat model (which have no private method).
-     * @param model flat model (which have no private method).
-     * @returns created new instance.
-     */
-	KNX.init = function(model) {
-		var knx = new KNX();
-		knx.id           = model.id          ;
-		knx.label        = model.label       ;
-		knx.groupAddress = model.groupAddress;
-		return knx;
-	};
-
-	return KNX;
-}();
+//in order to let button id keep increasing
+BUTTONID = 1;
+// a hash contain all of infrared object, key is code id value is infrared model.
+// this variable is used for record the infrared button you already dragged.
+InfraredCollection = {};
+// Define rest api url
+RESTAPIUrl = "http://openremote.finalist.hk/beehive/rest/lirc";

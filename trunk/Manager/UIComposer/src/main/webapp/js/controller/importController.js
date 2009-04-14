@@ -1,10 +1,27 @@
+/*
+ * OpenRemote, the Home of the Digital Home. Copyright 2008, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
+ * http://www.fsf.org.
+ */
 var ImportController = function() {
     function ImportController() {
-        // body...
-        }
+        // constructor
+     }
 
-
-
+    //private methods
+    /**
+     * Show upload from
+     */
     function showUploadForm() {
         var zipFile = $("#zip_file_input");
         $("#upload_form_container").showModalForm("Import", {
@@ -30,9 +47,13 @@ var ImportController = function() {
     }
 
 
-
+    /**
+     * Invoked after upload success.
+     * @param responseText responseText
+     * @param statusText statusText
+     */
     function uploadSuccess(responseText, statusText) {
-        ImportController.clear();
+        ImportController.cleanUp();
         var data = eval('(' + responseText + ')');
         var panel = data.panel;
         revertIphoneBtns(panel.iphoneBtns);
@@ -44,6 +65,10 @@ var ImportController = function() {
         $("#upload_form_container").closeModalForm();
     }
 
+    /**
+     * Revert the Iphone buttons
+     * @param iphoneBtns iphoneBtns object from descriptionFile
+     */
     function revertIphoneBtns(iphoneBtns) {
         for (var index in iphoneBtns) {
             var btn = iphoneBtns[index];
@@ -60,13 +85,21 @@ var ImportController = function() {
         }
     }
 
+    /**
+     * Find the table cell according to x and y.
+     * @param x
+     * @param y
+     */
     function findCell(x, y) {
         var tr = $("#dropable_table").find("tr")[y];
         var td = $(tr).find("td")[x];
         return td;
     }
 
-
+    /**
+     * Revert KNX buttons
+     * @param knxBtns knxBtns object from description file
+     */
     function revertKnxBtns(knxBtns) {
         for (var index in knxBtns) {
             var btn = knxBtns[index];
@@ -75,7 +108,10 @@ var ImportController = function() {
         }
     }
 
-
+    /**
+     * Revert X10 buttons
+     * @param x10Btns x10Btns object from description file
+     */
     function revertX10Btns(x10Btns) {
         for (var index in x10Btns) {
             var btn = x10Btns[index];
@@ -84,6 +120,10 @@ var ImportController = function() {
         }
     }
 
+    /**
+     * Revert Macro buttons
+     * @param macroBtns macroBtns object from description file
+     */
     function revertMacroBtns(macroBtns) {
         var macroArray = {};
         for (var index in macroBtns) {
@@ -101,7 +141,7 @@ var ImportController = function() {
                 }
 				
                 MacroController.createMacroSubli(subModel, $("#" + model.elementId()).next("ul"));
-
+                                               
 				if (subModel.className == "Infrared") {
 					InfraredCollection[subModel.codeId] = model;
 				}
@@ -109,6 +149,15 @@ var ImportController = function() {
         }
     }
 
+    //static method
+    ImportController.init = function() {
+        $("#uploadBtn").unbind().bind("click", showUploadForm);
+    };
+    
+    /**
+     * Build Model according to className.
+     * @param model
+     */
     ImportController.buildModel = function(model) {
         switch (model.className) {
         case 'Infrared':
@@ -130,14 +179,10 @@ var ImportController = function() {
         }
     };
 
-
-
-    //static method
-    ImportController.init = function() {
-        $("#uploadBtn").unbind().bind("click", showUploadForm);
-    };
-
-    ImportController.clear = function() {
+    /**
+     * Clean up the page.
+     */
+    ImportController.cleanUp = function() {
         $("#macro .macro_btn_defination").remove();
         $("#knx_container .knx_btn").remove();
         $("#x10_container .x10_btn").remove();

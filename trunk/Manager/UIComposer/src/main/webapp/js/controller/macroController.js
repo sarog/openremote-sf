@@ -1,3 +1,18 @@
+/*
+ * OpenRemote, the Home of the Digital Home. Copyright 2008, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
+ * http://www.fsf.org.
+ */
 var MacroController = function() {
 
     function MacroController() {
@@ -5,6 +20,9 @@ var MacroController = function() {
         };
 
     //private method
+    /**
+     * Make macro window draggable
+     */
     function makeMacroPanelDraggabe() {
         $("#macro").draggable({
             cursor: 'move',
@@ -12,20 +30,19 @@ var MacroController = function() {
         });
     }
 
-
-    //static method
-    MacroController.init = function() {
-        makeMacroPanelDraggabe();
-        $("#create_macro_btn").unbind().click(MacroController.showCreateDialog);
-    };
-
-    MacroController.showCreateDialog = function() {
+    /**
+     * Show create macro dialog.
+     */
+     function showCreateDialog () {
         $("#macro_name_form").showModalForm("Create Macro", {
             'Create': confirmCreateMacro
         });
         $("#macro_name_form").enterKeyPressed(confirmCreateMacro);
-    };
+    }
 
+    /**
+     * Invoke after confirm create macro.
+     */
     function confirmCreateMacro() {
         if ($.empty($("#macro_name_input").val())) {
             $("#macro_name_form").updateTips($("#macro_name_input"), "Macro Name is required");
@@ -40,6 +57,17 @@ var MacroController = function() {
             $("#macro_name_form").closeModalForm();
         }
     }
+    
+    //static method
+    MacroController.init = function() {
+        makeMacroPanelDraggabe();
+        $("#create_macro_btn").unbind().click(showCreateDialog);
+    };
+
+    /**
+     * Create macro button and add it to page.
+     * @param macro macro model
+     */
     MacroController.createMacroBtn = function(macro) {
         var macroBtn = HTMLBuilder.macroBtnBuilder(macro);
         $(macroBtn).appendTo($("#macro .item_container"));
@@ -47,7 +75,10 @@ var MacroController = function() {
         MacroController.makeMacroBtnDraggable(macroBtn.find(".blue_btn.macro_btn"));
     };
 
-
+    /**
+     * Prepare the macro button.Make Macro sub list sortable and droppable.
+     * @param btn macro button whose sub list you want to prepare
+     */
     MacroController.prepareMacroSublist = function(btn) {
         var buttons;
         if (btn === undefined) {
@@ -60,6 +91,10 @@ var MacroController = function() {
         MacroController.makeMacroSubListDroppable(buttons);
     };
 
+    /**
+     * Make macro sub list sortable.
+     * @param items macro button whose sub list you want to make it sortable.
+     */
     MacroController.makeMacroSublistSortable = function(items) {
         items.sortable({
             placeholder: 'ui-state-highlight',
@@ -69,6 +104,10 @@ var MacroController = function() {
 
     };
 
+    /**
+     * Make macro sub list droppable.
+     * @param items macro button whose sub list you want to make it droppable.
+     */
     MacroController.makeMacroSubListDroppable = function(items) {
         items.find(".macro_detail").droppable({
             hoverClass: 'ui-state-highlight',
@@ -79,6 +118,7 @@ var MacroController = function() {
                         return false;
                     }
 
+                    //Prevent circulative macro
                     if (draggable.data("model") !== undefined && draggable.data("model").className == "Macro") {
                         var draggableModel = draggable.data("model");
                         var macroBtnModel = $(this).prev(".macro_btn").data("model");
@@ -91,7 +131,6 @@ var MacroController = function() {
                             return false;
                         }
                     }
-
                     return true;
                 }
                 return false;
@@ -104,9 +143,20 @@ var MacroController = function() {
             }
         });
     };
+
+    /**
+     * Create sub li.
+     * @param model data model
+     * @param container which you want to add li into
+     */
     MacroController.createMacroSubli = function(model, container) {
         HTMLBuilder.macroLiBtnBuilder(model).appendTo(container);
     };
+
+    /**
+     * Make macro button draggable.
+     * @param items macro buttons which you want to make it draggable
+     */
     MacroController.makeMacroBtnDraggable = function(items) {
         var btns;
         if (items === undefined) {

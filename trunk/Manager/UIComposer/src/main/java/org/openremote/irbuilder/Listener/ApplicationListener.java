@@ -29,6 +29,8 @@ import java.util.Properties;
 import java.io.*;
 
 /**
+ * Write website absolute path to directoryConfig.properties
+ *  
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
 public class ApplicationListener implements ServletContextListener {
