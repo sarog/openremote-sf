@@ -1,4 +1,18 @@
-RESTAPIUrl = "http://openremote.finalist.hk/beehive/rest/lirc";
+/*
+ * OpenRemote, the Home of the Digital Home. Copyright 2008, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
+ * http://www.fsf.org.
+ */
 
 function fillVendorSelect() {
     var select = $("#vendor_select");
@@ -78,7 +92,7 @@ function showCommandBtns(vendor_name, model_name, section_id) {
             HTMLBuilder.commandBtnBuilder(this,section_id).appendTo($("#command_container"));
         });
         $("<div class='clear'></div>").appendTo($("#command_container"));
-        makeCommandBtnDraggable();
+        makeBtnDraggable();
         $("#command_navigition").dialog("close");
 		$("#lircUrl").val(RESTAPIUrl+"/" + vendor_name + "/" + model_name + "/"+"lirc.conf");
     });
@@ -87,16 +101,29 @@ function showCommandBtns(vendor_name, model_name, section_id) {
 
 }
 
+/**
+ * Show loading status to certain select.
+ * @param select  
+ */
 function loadingSelect(select) {
     $(select).find("option").remove();
     var opt = new Option("loading...", 0);
     select[0].options.add(opt);
 }
 
+/**
+ * Remove the loading status from select.
+ * @param select
+ */
 function loadingSelectDone(select) {
     select[0].options[0] = null;
 }
 
+/**
+ * Load JSON data from a remote url,using JSONP
+ * @param path url
+ * @param callback callback function with argument data which contain data server response.
+ */
 function getJSONData(path, callback) {
     $.ajax({
         type: "GET",

@@ -24,6 +24,19 @@ public class HtmlUtils {
    private HtmlUtils() {
    }
 
+   /**
+    * unEncoder Html
+    * Convert:
+    *   &lt    to "<"
+    *   &gt    to ">"
+    *   &nbsp  to " "
+    *   &quot  to """
+    *   &apos  to "'"
+    *   &amp   to "&"
+    * Notice:no contain quotation mark.
+    * @param str String you want to unEncode
+    * @return converted String
+    */
    public static String unEncoderHTML(String str) {
       str = str.replaceAll("&lt;", "<");
       str = str.replaceAll("&gt;", ">");

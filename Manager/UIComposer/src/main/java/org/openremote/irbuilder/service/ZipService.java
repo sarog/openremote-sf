@@ -35,7 +35,7 @@ public interface ZipService {
    File compress(String outputFilePath, File... files);
 
    /**
-    * 
+    * Writes String to certain path
     * @param filePath
     *           write file to path
     * @param str
@@ -44,5 +44,10 @@ public interface ZipService {
     */
    File writeStringToFile(String filePath, String str);
 
+   /**
+    * Gets irb file as String from zip file inputStream.
+    * @param inputStream  Zip file inputStream.
+    * @return irb file as String
+    */
    String getIrbFileFromZip(InputStream inputStream); 
 }
