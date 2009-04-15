@@ -79,7 +79,7 @@ var ImportController = function() {
             IPhoneController.createIphoneBtn(model, cell);
 			
 			if (btn.oModel.className == "Infrared") {
-				InfraredCollection[btn.oModel.codeId] = model;
+				InfraredCollection[btn.oModel.codeId] = oModel;
 			}
             
         }
@@ -109,7 +109,7 @@ var ImportController = function() {
     }
 
     /**
-     * Revert X10 buttons
+     * Revert X10 buttons	
      * @param x10Btns x10Btns object from description file
      */
     function revertX10Btns(x10Btns) {
@@ -143,7 +143,7 @@ var ImportController = function() {
                 MacroController.createMacroSubli(subModel, $("#" + model.elementId()).next("ul"));
                                                
 				if (subModel.className == "Infrared") {
-					InfraredCollection[subModel.codeId] = model;
+					InfraredCollection[subModel.codeId] = subModel;
 				}
             }
         }
@@ -159,24 +159,7 @@ var ImportController = function() {
      * @param model
      */
     ImportController.buildModel = function(model) {
-        switch (model.className) {
-        case 'Infrared':
-            return Infrared.init(model);
-            break;
-        case 'IphoneBtn':
-            return IphoneBtn.init(model);
-            break;
-        case 'KNX':
-            return KNX.init(model);
-            break;
-        case 'Macro':
-            return Macro.init(model);
-            break;
-        case 'X10':
-            return X10.init(model);
-            break;
-
-        }
+		return eval(model.className+'.init(model);');
     };
 
     /**
