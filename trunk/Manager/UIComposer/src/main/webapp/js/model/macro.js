@@ -20,7 +20,7 @@ var Macro = function() {
         //text ui interface display
 		self.label = "";
 		// convenient way to get the Class name.
-		self.className = "Macro";
+		self.className = getClassName(self);
 
          //public methods
 		/**

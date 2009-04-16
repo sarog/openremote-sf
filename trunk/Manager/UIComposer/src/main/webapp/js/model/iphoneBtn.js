@@ -24,7 +24,7 @@ var IphoneBtn = function() {
 		self.height = -1;
 		self.width = -1;
 		// convenient way to get the Class name.
-		self.className = "IphoneBtn";
+		self.className = getClassName(self);
 	}
 
     /**

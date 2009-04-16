@@ -17,7 +17,7 @@ var MacroController = function() {
 
     function MacroController() {
 
-        };
+    };
 
     //private method
     /**
@@ -70,7 +70,7 @@ var MacroController = function() {
      */
     MacroController.createMacroBtn = function(macro) {
         var macroBtn = HTMLBuilder.macroBtnBuilder(macro);
-        $(macroBtn).appendTo($("#macro .item_container"));
+        $(macroBtn).prependTo($("#macro .item_container"));
         MacroController.prepareMacroSublist(macroBtn);
         MacroController.makeMacroBtnDraggable(macroBtn.find(".blue_btn.macro_btn"));
     };
@@ -117,8 +117,9 @@ var MacroController = function() {
                     if (draggable.attr("id") == $(this).prev(".macro_btn").attr("id")) {
                         return false;
                     }
-
+					
                     //Prevent circulative macro
+					//TODO 
                     if (draggable.data("model") !== undefined && draggable.data("model").className == "Macro") {
                         var draggableModel = draggable.data("model");
                         var macroBtnModel = $(this).prev(".macro_btn").data("model");
