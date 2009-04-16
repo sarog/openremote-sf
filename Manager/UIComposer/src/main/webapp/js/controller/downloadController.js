@@ -16,7 +16,7 @@
 var DownloadController = function() {
     function DownloadController() {
         // constructor
-    }
+        }
 
     //private variable
     //To store selected section ids.
@@ -43,7 +43,8 @@ var DownloadController = function() {
 
         var buttonArray = new Array();
 
-        iteratorTableCell($("#dropable_table"), function(td, i, j) {
+        iteratorTableCell($("#dropable_table"),
+        function(td, i, j) {
             if (td.find(".iphone_btn").length == 1) {
                 var btnElement = td.find(".iphone_btn");
                 var iphoneBtn = btnElement.data("model");
@@ -62,9 +63,7 @@ var DownloadController = function() {
             }
         });
 
-        if (buttonArray.length != 0) {
-            screen.button = buttonArray;
-        }
+        screen.button = buttonArray;
 
         var screenAttr = new Array();
 
@@ -72,7 +71,9 @@ var DownloadController = function() {
 
         activity.screen = screenAttr;
 
-        var iphoneXml = JSON.stringify({
+        var iphoneXml = new EJS({
+            url: "template/_iphoneXML.ejs"
+        }).render({
             activity: activity
         });
 
@@ -83,13 +84,14 @@ var DownloadController = function() {
         $.post("download.htm", {
             iphone: iphoneXml,
             controller: controllerXml,
-            panel:panelDesc,
+            panel: panelDesc,
             restUrl: RESTAPIUrl + ".conf",
             ids: assembledSectionIds
         },
-                function(result) {
-                    window.location = result;
-                });
+        function(result) {
+            window.location = result;
+        });
+
     }
 
     function iteratorTableCell(table, block) {
@@ -115,30 +117,25 @@ var DownloadController = function() {
         openremote.events = new Object();
 
         var knxEvents = parseKNX();
-        if (knxEvents.length != 0) {
-            openremote.events.knxEvents = {
-                knxEvent: knxEvents
-            };
-        }
+        openremote.events.knxEvents = {
+            knxEvent: knxEvents
+        };
 
         var x10Events = parseX10();
-        if (x10Events.length != 0) {
-            openremote.events.x10Events = {
-                x10Event: x10Events
-            };
-        }
+        openremote.events.x10Events = {
+            x10Event: x10Events
+        };
 
         var irEvents = parseInfared();
-        if (irEvents.length != 0) {
-            openremote.events.irEvents = {
-                irEvent: irEvents
-            };
-        }
-
-        var data = JSON.stringify({
+        openremote.events.irEvents = {
+            irEvent: irEvents
+        };
+        var result = new EJS({
+            url: "template/_controllerXML.ejs"
+        }).render({
             openremote: openremote
         });
-        return data;
+        return result;
     }
 
 
@@ -153,16 +150,15 @@ var DownloadController = function() {
             var b = new Object();
             var iphoneBtn = btnModelHash[id];
             b.id = parseInt(id);
-            var event;
+            var event = new Array();
 
             if (iphoneBtn.oModel.className == "Macro") {
-                event = new Array();
                 var models = iphoneBtn.oModel.getSubModelsRecursively();
                 for (var index in models) {
                     event.push(models[index].id);
                 }
             } else {
-                event = iphoneBtn.oModel.id;
+                event.push(iphoneBtn.oModel.id);
             }
             b.event = event;
             buttons.push(b);
@@ -244,7 +240,8 @@ var DownloadController = function() {
             macroBtns.push(model);
         });
         var iphoneBtns = new Array();
-        iteratorTableCell($("#dropable_table"), function(td, i, j) {
+        iteratorTableCell($("#dropable_table"),
+        function(td, i, j) {
             if (td.find(".iphone_btn").length == 1) {
                 var btnElement = td.find(".iphone_btn");
                 var model = btnElement.data("model");
@@ -265,11 +262,11 @@ var DownloadController = function() {
         });
 
         var panel = {
-            iphoneBtns:iphoneBtns,
-            knxBtns:knxBtns,
-            x10Btns:x10Btns,
-            macroBtns:macroBtns,
-            maxId:BUTTONID
+            iphoneBtns: iphoneBtns,
+            knxBtns: knxBtns,
+            x10Btns: x10Btns,
+            macroBtns: macroBtns,
+            maxId: BUTTONID
         };
 
         var data = JSON.stringify({
@@ -286,4 +283,4 @@ var DownloadController = function() {
         $("a.button").UIHover();
     };
     return DownloadController;
-}();
+} ();

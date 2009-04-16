@@ -130,6 +130,8 @@ var TabController = function() {
         $("#create_knx_icon").unbind().bind("click", showCreateKNXDialog);
         $("#create_x10_icon").unbind().bind("click", showCreateX10Dialog);
         $("#select_command_icon").unbind().bind("click", selectCommand);
+
+		
     };
 
     /**

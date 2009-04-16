@@ -14,6 +14,7 @@
  * http://www.fsf.org.
  */
 var Infrared = function() {
+
 	function Infrared(){
 		var self = this;
 		self.id = -1;
@@ -25,7 +26,7 @@ var Infrared = function() {
 		//for indetificate each infrared item
 		self.codeId = -1;
 		// convenient way to get the Class name.
-		self.className = "Infrared";
+		self.className = getClassName(self);
 	}
 	//private method
     /**

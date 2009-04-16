@@ -20,3 +20,6 @@ BUTTONID = 1;
 InfraredCollection = {};
 // Define rest api url
 RESTAPIUrl = "http://openremote.finalist.hk/beehive/rest/lirc";
+
+
+

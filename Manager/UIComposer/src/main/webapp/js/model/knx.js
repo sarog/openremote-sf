@@ -21,7 +21,7 @@ var KNX = function() {
 		self.label = "";
 		self.groupAddress = "";
 		// convenient way to get the Class name.
-		self.className = "KNX";
+		self.className = getClassName(self);
 
         /**
          * Get HTML elementId

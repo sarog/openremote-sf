@@ -36,7 +36,7 @@
            </listener-class>
        </listener>
         <listener>
-            <listener-class>org.openremote.irbuilder.Listener.ApplicationListener</listener-class>
+            <listener-class>org.openremote.irbuilder.listener.ApplicationListener</listener-class>
         </listener>
     
 </web-app>

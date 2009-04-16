@@ -23,7 +23,7 @@ var X10 = function() {
 		self.address = "";
 		self.command = "";
 		// convenient way to get the Class name.
-		self.className = "X10";
+		self.className = getClassName(self);
 
         /**
          * Get HTML elementId

@@ -19,36 +19,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.openremote.irbuilder.domain.wrapper;
+package org.openremote.irbuilder.service;
 
-import org.openremote.irbuilder.domain.Activity;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
+import javax.annotation.Resource;
+import java.io.File;
+import java.io.InputStream;
 
 /**
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
-public class UIElementsWrapper {
-   private ControllerWrapper controllerWrapper;
-   private IPhoneWrapper iPhoneWrapper;
 
-   public UIElementsWrapper(ControllerWrapper controllerWrapper, IPhoneWrapper iPhoneWrapper) {
-      this.controllerWrapper = controllerWrapper;
-      this.iPhoneWrapper = iPhoneWrapper;
-   }
+public interface ResourceService {
+   File downloadZipResource(String controllerXML,String iphoneXML,String panelDesc,String RESTAPIUrl,String SectionIds);
+   public String getIrbFileFromZip(InputStream inputStream);
 
-   public ControllerWrapper getControllerWrapper() {
-      return controllerWrapper;
-   }
-
-   public void setControllerWrapper(ControllerWrapper controllerWrapper) {
-      this.controllerWrapper = controllerWrapper;
-   }
-
-   public IPhoneWrapper getIPhoneWrapper() {
-      return iPhoneWrapper;
-   }
-
-   public void setIPhoneWrapper(IPhoneWrapper iPhoneWrapper) {
-      this.iPhoneWrapper = iPhoneWrapper;
-   }
 }
