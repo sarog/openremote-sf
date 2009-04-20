@@ -19,3 +19,8 @@ function stringReplaceAll(aFindText, aRepText) {
     return this.replace(regexp, aRepText);
 }
 
+String.prototype.isNumber = isNumber;
+function isNumber () {
+	return (this.toString().match(/^[1-9]\d*$/) != null);
+}
+
