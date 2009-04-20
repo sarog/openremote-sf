@@ -55,46 +55,50 @@ var ImportController = function() {
     function uploadSuccess(responseText, statusText) {
         ImportController.cleanUp();
         var data = eval('(' + responseText + ')');
-        var panel = data.panel;
-        revertIphoneBtns(panel.iphoneBtns);
-        revertKnxBtns(panel.knxBtns);
-        revertX10Btns(panel.x10Btns);
-        revertMacroBtns(panel.macroBtns);
+        revertScreens(data.panel.screens);
+        revertKnxBtns(data.panel.knxBtns);
+        revertX10Btns(data.panel.x10Btns);
+        revertMacroBtns(data.panel.macroBtns);
 
-        BUTTONID = panel.maxId;
+        BUTTONID = data.panel.maxId;
         $("#upload_form_container").closeModalForm();
     }
+
+	
+	function revertScreens (screens) {
+		for (var index in screens) {
+			var o_screen = screens[index];
+			var screen = ImportController.buildModel(o_screen);
+			screen.buttons = new Array();
+			for (var index in o_screen.buttons) {
+				var btn = revertIphoneBtn(o_screen.buttons[index]);
+				screen.buttons.push(btn);
+			}
+			
+			ScreenViewController.createScreen(screen);
+			
+			ScreenView.setLastOptionSelected();
+			ScreenView.updateView(g_screens[ScreenView.getSelectedScreenId()]);
+		}
+	}
 
     /**
      * Revert the Iphone buttons
      * @param iphoneBtns iphoneBtns object from descriptionFile
      */
-    function revertIphoneBtns(iphoneBtns) {
-        for (var index in iphoneBtns) {
-            var btn = iphoneBtns[index];
-            var cell = findCell(btn.x, btn.y);
-            var oModel = ImportController.buildModel(btn.oModel);
-            btn.oModel = oModel;
-            var model = ImportController.buildModel(btn);
-            IPhoneController.createIphoneBtn(model, cell);
-			
-			if (btn.oModel.className == "Infrared") {
-				InfraredCollection[btn.oModel.codeId] = oModel;
-			}
-            
-        }
+    function revertIphoneBtn(btn) {
+        var oModel = ImportController.buildModel(btn.oModel);
+        var model = ImportController.buildModel(btn);
+		model.oModel = oModel; 
+		
+		if (btn.oModel.className == "Infrared") {
+			InfraredCollection[btn.oModel.codeId] = oModel;
+		}
+		return model;
+		
     }
 
-    /**
-     * Find the table cell according to x and y.
-     * @param x
-     * @param y
-     */
-    function findCell(x, y) {
-        var tr = $("#dropable_table").find("tr")[y];
-        var td = $(tr).find("td")[x];
-        return td;
-    }
+  
 
     /**
      * Revert KNX buttons

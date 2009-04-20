@@ -24,13 +24,7 @@ body {
 	padding: 0;
     background-color: #fff;
 }
-input, textarea, select {
-	border: 1px solid #7d858b;
-    background: #fff url(../img/input.bg.gif) 0 0 no-repeat;
-    font-size: 85%;
-    padding: 2px;
-    font-family: Andale Mono, Courier New, monospace;
-}
+
 ol, ul {
 	margin: 10px 0 10px 6px;
 }

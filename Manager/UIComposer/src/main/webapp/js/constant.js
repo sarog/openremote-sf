@@ -20,6 +20,9 @@ BUTTONID = 1;
 InfraredCollection = {};
 // Define rest api url
 RESTAPIUrl = "http://openremote.finalist.hk/beehive/rest/lirc";
+//Store Screen here 
+// key is screen id and value is screen model
+g_screens = {};
 
 
 
