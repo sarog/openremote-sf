@@ -50,6 +50,15 @@ public class LIRCRevisionChangesController extends MultiActionController {
       this.modelService = modelService;
    }
 
+   /**
+    * Default method in controller
+    * 
+    * @param request
+    *           HttpServletRequest
+    * @param response
+    *           HttpServletResponse
+    * @return ModelAndView
+    */
    public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
       ModelAndView mav = new ModelAndView(indexView);
       String path = "/";
@@ -61,6 +70,17 @@ public class LIRCRevisionChangesController extends MultiActionController {
       return mav;
    }
    
+   /**
+    * Show one file's difference between workCopy with svnrepo
+    * 
+    * @param request
+    *           HttpServletRequest
+    * @param response
+    *           HttpServletResponse
+    * @return ModelAndView
+    * @throws ServletRequestBindingException
+    *            Exception occured when missing path or action parameter
+    */
    public ModelAndView change(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
       ModelAndView mav = new ModelAndView(changeView);
       String path = ServletRequestUtils.getRequiredStringParameter(request, "path");
@@ -79,6 +99,15 @@ public class LIRCRevisionChangesController extends MultiActionController {
       return mav;
    }
    
+   /**
+    * @param request
+    *          HttpServletRequest
+    * @param response
+    *          HttpServletResponse
+    * @return ModelAndView
+    * @throws SVNException
+    *          Exception occured when modelService.update() failed
+    */
    public ModelAndView commit(HttpServletRequest request, HttpServletResponse response ) throws SVNException{
       String[] items = request.getParameterValues("items");
       ModelAndView mav = new ModelAndView(commitView);
