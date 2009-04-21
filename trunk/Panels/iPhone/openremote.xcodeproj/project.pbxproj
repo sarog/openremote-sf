@@ -18,7 +18,6 @@
 		799CC5C80F4D6CB0006195BD /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 799CC5C70F4D6CB0006195BD /* Default.png */; };
 		79BF34C80F4E5FE600989DCC /* ScreenView.m in Sources */ = {isa = PBXBuildFile; fileRef = 79BF34C70F4E5FE600989DCC /* ScreenView.m */; };
 		79BF34CB0F4E60E200989DCC /* ScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 79BF34CA0F4E60E200989DCC /* ScreenViewController.m */; };
-		8C1EFCF80F709964004B1F15 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C1EFCF70F709964004B1F15 /* Entitlements.plist */; };
 		8C6620F00F524EEC006A0976 /* ControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6620EF0F524EEC006A0976 /* ControlView.m */; };
 		8C6682010F53EE3D007C45D4 /* DirectoryDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6682000F53EE3D007C45D4 /* DirectoryDefinition.m */; };
 		8C6682490F53FFF5007C45D4 /* FileUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6682480F53FFF5007C45D4 /* FileUtils.m */; };
@@ -66,7 +65,6 @@
 		79BF34C90F4E60E200989DCC /* ScreenViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenViewController.h; sourceTree = "<group>"; };
 		79BF34CA0F4E60E200989DCC /* ScreenViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenViewController.m; sourceTree = "<group>"; };
 		79FEE18F0F4E864C0017B50D /* Definition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Definition.h; sourceTree = "<group>"; };
-		8C1EFCF70F709964004B1F15 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		8C6620EE0F524EEC006A0976 /* ControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlView.h; sourceTree = "<group>"; };
 		8C6620EF0F524EEC006A0976 /* ControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControlView.m; sourceTree = "<group>"; };
 		8C6681FF0F53EE3D007C45D4 /* DirectoryDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DirectoryDefinition.h; sourceTree = "<group>"; };
@@ -144,7 +142,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				8C1EFCF70F709964004B1F15 /* Entitlements.plist */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -316,7 +313,6 @@
 				8CA7603F0F57E57300ADF0C0 /* AirConditionerIcon.png in Resources */,
 				8CA7605C0F57E64E00ADF0C0 /* lightIcon.png in Resources */,
 				8CA7607B0F57EA7100ADF0C0 /* buttonHighlighted.png in Resources */,
-				8C1EFCF80F709964004B1F15 /* Entitlements.plist in Resources */,
 				8C679B720F7B14210058FF41 /* Settings.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -365,7 +361,7 @@
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = openremote;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "AB70F7E5-C25D-47CD-9F61-66E5BB21EA2D";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "50FC0691-69DB-4BE8-A1F8-70D2D85DB68F";
 			};
 			name = Debug;
 		};

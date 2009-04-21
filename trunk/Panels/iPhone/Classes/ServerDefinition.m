@@ -25,7 +25,7 @@
 }
 
 + (NSString *)sampleXmlUrl {
-	return [[self serverUrl] stringByAppendingPathComponent:@"sample.xml"];
+	return [[self serverUrl] stringByAppendingPathComponent:@"iphone.xml"];
 }
 
 + (NSString *)imageUrl {
@@ -33,7 +33,7 @@
 }
 
 + (NSString *)eventHandleRESTUrl {
-	return [[self serverUrl] stringByAppendingPathComponent:@"rest/handleEvent/"];
+	return [[self serverUrl] stringByAppendingPathComponent:@"cmd.htm"];
 }
 
 + (void)registerDefaultsFromSettingsBundle {

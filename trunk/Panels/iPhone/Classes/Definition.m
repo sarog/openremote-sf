@@ -185,6 +185,7 @@ NSString *const DefinationUpdateDidFinishedNotification = @"updateDidFinishedNot
 	
 	if ([elementName isEqualToString:@"activity"]) {		
 		//To let Activity to parse the
+		NSLog(@"Start at activity");
 		Activity *activity = [[Activity alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 		[activities addObject:activity];
 		[activity release];
