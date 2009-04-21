@@ -15,16 +15,17 @@
  */
 package org.openremote.irbuilder.controller;
 
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.openremote.irbuilder.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * @author allen.wei
@@ -37,33 +38,42 @@ public class MainController {
 
    /**
     * Compress received data to zip and finally print a relative path to frontend.
-    * @param iphone iphone part json 
-    * @param controller controller part json
-    * @param panel UI interface description
-    * @param restUrl rest API url
-    * @param ids section ids, server need to get combined lircd.conf file from beehive
-    * @param req HttpServletRequest
-    * @param resp HttpServletResponse
+    * 
+    * @param iphone
+    *           iphone part json
+    * @param controller
+    *           controller part json
+    * @param panel
+    *           UI interface description
+    * @param restUrl
+    *           rest API url
+    * @param ids
+    *           section ids, server need to get combined lircd.conf file from beehive
+    * @param req
+    *           HttpServletRequest
+    * @param resp
+    *           HttpServletResponse
     * @throws IOException
     */
    @RequestMapping(value = "/download.htm", method = RequestMethod.POST)
-   public void download(String iphone, String controller,String panel,String restUrl,String ids, HttpServletRequest req, HttpServletResponse resp)
-         throws IOException {
-      String fileName = resourceService.downloadZipResource(controller,iphone,panel,restUrl,ids).getName();
-      resp.getOutputStream().print("tmp/"+fileName);
+   public void download(String iphone, String controller, String panel, String restUrl, String ids,
+         HttpServletRequest req, HttpServletResponse resp) throws IOException {
+      String fileName = resourceService.downloadZipResource(controller, iphone, panel, restUrl, ids).getName();
+      resp.getOutputStream().print("tmp/" + fileName);
    }
 
    /**
-    * User upload zip file, and server unzip the file then return  the ui interface description file content as String
+    * User upload zip file, and server unzip the file then return the ui interface description file content as String
+    * 
     * @param request
     * @param resp
     * @throws IOException
     */
-   @RequestMapping(value = "/import.htm",method = RequestMethod.POST)
-   public void importZip(HttpServletRequest request,HttpServletResponse resp) throws IOException {
-      MultipartHttpServletRequest multipartRequest  =  (MultipartHttpServletRequest) request;
+   @RequestMapping(value = "/import.htm", method = RequestMethod.POST)
+   public void importZip(HttpServletRequest request, HttpServletResponse resp) throws IOException {
+      MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
       String result = resourceService.getIrbFileFromZip(multipartRequest.getFile("zip_file").getInputStream());
       resp.getWriter().print(result);
    }
- 
+
 }
