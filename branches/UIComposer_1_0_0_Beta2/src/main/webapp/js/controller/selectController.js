@@ -26,7 +26,7 @@ function fillVendorSelect() {
             select[0].options.add(opt);
         });
     });
-    select.change(function() {
+    select.unbind().change(function() {
         var vendor_name = select.find("option:selected").text();
         afterSelectVendor(vendor_name);
     });
@@ -51,7 +51,7 @@ function fillModelSelect(vendor_name) {
         });
 
     });
-    select.change(function() {
+    select.unbind().change(function() {
         var model_name = select.find("option:selected").text();
         afterSelectModel(vendor_name, model_name);
     });
