@@ -1,34 +1,29 @@
-/* OpenRemote, the Home of the Digital Home.
- * Copyright 2008, OpenRemote Inc.
+/*
+ * OpenRemote, the Home of the Digital Home. Copyright 2008, OpenRemote Inc.
  * 
- * See the contributors.txt file in the distribution for a
- * full listing of individual contributors.
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
  * 
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
  * 
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * 
- * You should have received a copy of the GNU General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
+ * http://www.fsf.org.
  */
 
 package org.openremote.irbuilder.configuration;
-
-import org.openremote.irbuilder.Constants;
-import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.UUID;
+
+import org.apache.log4j.Logger;
+import org.openremote.irbuilder.Constants;
 
 /**
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
@@ -47,7 +42,7 @@ public class PathConfig {
 
    /**
     * Gets temp folder
-    *
+    * 
     * @return folder absolute path
     */
    public String tempFolder() {
@@ -56,7 +51,7 @@ public class PathConfig {
          File pFile = new File(getClass().getResource("/directoryConfig.properties").getFile());
          properties.load(new FileInputStream(pFile));
       } catch (IOException e) {
-         logger.error("Can't read directoryConfig.properties file.",e);
+         logger.error("Can't read directoryConfig.properties file.", e);
          throw new IllegalStateException("Can't read directoryConfig.properties file.", e);
       }
       if (properties.get("tmp.dir") != null) {
@@ -69,7 +64,7 @@ public class PathConfig {
 
    /**
     * Gets iphone xml path
-    *
+    * 
     * @return file absolute path
     */
    public String iPhoneXmlFilePath() {
@@ -78,7 +73,7 @@ public class PathConfig {
 
    /**
     * Gets controller xml file path
-    *
+    * 
     * @return file absolute path
     */
    public String controllerXmlFilePath() {
@@ -87,16 +82,16 @@ public class PathConfig {
 
    /**
     * Gets panel description file path
-    *
+    * 
     * @return file absolute path
     */
    public String panelDescFilePath() {
-      return tempFolder() + File.separator + "panel."+ Constants.PANEL_DESC_FILE_EXT+"" + "_" + UUID.randomUUID();
+      return tempFolder() + File.separator + "panel." + Constants.PANEL_DESC_FILE_EXT + "" + "_" + UUID.randomUUID();
    }
 
    /**
     * Gets lirc.conf file path
-    *
+    * 
     * @return file absolute path
     */
    public String lircFilePath() {
@@ -105,7 +100,7 @@ public class PathConfig {
 
    /**
     * Gets compressed file path
-    *
+    * 
     * @return file absolute path
     */
    public String openremoteZipFilePath() {
