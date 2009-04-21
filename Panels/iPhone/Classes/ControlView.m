@@ -74,11 +74,11 @@
 	// DENNIS: You probably want to move this code to a 'Server' model class or something like that! Does not belong in a view class.
 
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition eventHandleRESTUrl]];
-	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"%d",control.eventID]];
+	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"?id=%d",control.eventID]];
 	//assemble put request 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
 	[request setURL:url];
-	[request setHTTPMethod:@"PUT"];
+	[request setHTTPMethod:@"POST"];
 
 	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
 										   
@@ -102,9 +102,9 @@
 	NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 	if (YES) {
 	//if ([result isEqualToString:@"true"]) {
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Result" message:[[[NSString alloc] initWithFormat: @"Send Put request with event id: %d success!",control.eventID] autorelease] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-		[alert show];
-		[alert release];
+		//UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Result" message:[[[NSString alloc] initWithFormat: @"Send Put request with event id: %d success!",control.eventID] autorelease] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+//		[alert show];
+//		[alert release];
 	}
 	[result release];
 }
