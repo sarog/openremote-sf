@@ -22,8 +22,7 @@ package org.openremote.controller.event;
 
 import java.util.Properties;
 
-import org.openremote.controller.spring.SpringContext;
-import org.openremote.irbuilder.domain.Event;
+import org.springframework.context.support.ApplicationObjectSupport;
 import org.w3c.dom.Element;
 
 
@@ -32,7 +31,7 @@ import org.w3c.dom.Element;
  * 
  * @author Dan 2009-4-3
  */
-public class EventFactory {
+public class EventFactory extends ApplicationObjectSupport{
    
    /** The event builders. */
    private Properties eventBuilders;
@@ -47,7 +46,7 @@ public class EventFactory {
    public Event getEvent(Element element) {
       String name = element.getNodeName();
       String builder = eventBuilders.getProperty(name);
-      EventBuilder eventBuilder = (EventBuilder) SpringContext.getInstance().getBean(builder);
+      EventBuilder eventBuilder = (EventBuilder) getApplicationContext().getBean(builder);
       return eventBuilder.build(element);
    }
 

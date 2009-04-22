@@ -20,7 +20,6 @@
  */
 package org.openremote.controller.event;
 
-import org.openremote.irbuilder.domain.Event;
 import org.w3c.dom.Element;
 
 

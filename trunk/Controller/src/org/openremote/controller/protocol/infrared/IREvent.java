@@ -18,40 +18,82 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.commander;
+package org.openremote.controller.protocol.infrared;
 
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-import org.openremote.irbuilder.domain.IREvent;
-
+import org.openremote.controller.event.Event;
 
 /**
- * The Class IREventCommander.
+ * The Infrared Event.
  * 
- * @author Dan 2009-4-3
+ * @author Dan 2009-4-20
  */
-public class IREventCommander extends EventCommander {
-
-   /** The logger. */
-   private static Logger logger = Logger.getLogger(IREventCommander.class.getName());
+public class IREvent extends Event {
    
+   /** The logger. */
+   private static Logger logger = Logger.getLogger(IREvent.class.getName());
+   
+   /** The remote device name. This name MUST be the name defined in lircd.conf */
+   private String name;
+   
+   /** The button command. Such as menu, play etc. */
+   private String command;
+   
+
+   /**
+    * Gets the command.
+    * 
+    * @return the command
+    */
+   public String getCommand() {
+      return command;
+   }
+
+   /**
+    * Sets the command.
+    * 
+    * @param command the new command
+    */
+   public void setCommand(String command) {
+      this.command = command;
+   }
+
+   /**
+    * Gets the name.
+    * 
+    * @return the name
+    */
+   public String getName() {
+      return name;
+   }
+
+   /**
+    * Sets the name.
+    * 
+    * @param name the new name
+    */
+   public void setName(String name) {
+      this.name = name;
+   }
+
    /**
     * {@inheritDoc}
     */
    @Override
-   public void execute() {
-      IREvent irEvent = (IREvent)getEvent();
-      String cmd = "irsend send_once " + irEvent.getName() + " " + irEvent.getCommand();
+   public void exec() {
+      String cmd = "irsend send_once " + getName() + " " + getCommand();
       try {
          Process pro = Runtime.getRuntime().exec(cmd);
          logger.info(cmd);
          pro.waitFor();
       } catch (InterruptedException e) {
-         logger.error(cmd+" was interrupted.",e);
+         logger.error(cmd + " was interrupted.", e);
       } catch (IOException e) {
-         logger.error(cmd+" failed.",e);
-      }
+         logger.error(cmd + " failed.", e);
+      }   
    }
    
+
 }

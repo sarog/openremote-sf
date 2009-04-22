@@ -18,28 +18,38 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.event;
+package org.openremote.controller.protocol.knx;
 
-import org.openremote.irbuilder.domain.Event;
-import org.openremote.irbuilder.domain.IREvent;
-import org.w3c.dom.Element;
-
+import org.openremote.controller.event.Event;
 
 /**
- * The Class IREventBuilder.
+ * The KNX Event.
  * 
- * @author Dan 2009-4-3
+ * @author Dan 2009-4-20
  */
-public class IREventBuilder implements EventBuilder {
+public class KNXEvent extends Event {
+   
+   /** The group address. */
+   private String groupAddress;
 
    /**
-    * {@inheritDoc}
+    * Gets the group address.
+    * 
+    * @return the group address
     */
-   public Event build(Element element) {
-      IREvent irEvent = new IREvent();
-      irEvent.setCommand(element.getAttribute("command"));
-      irEvent.setName(element.getAttribute("name"));
-      return irEvent;
+   public String getGroupAddress() {
+      return groupAddress;
    }
+
+   /**
+    * Sets the group address.
+    * 
+    * @param groupAddress the new group address
+    */
+   public void setGroupAddress(String groupAddress) {
+      this.groupAddress = groupAddress;
+   }
+   
+   
 
 }

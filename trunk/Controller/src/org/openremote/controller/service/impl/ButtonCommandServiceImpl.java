@@ -20,7 +20,10 @@
  */
 package org.openremote.controller.service.impl;
 
-import org.openremote.controller.commander.EventCommander;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.openremote.controller.event.Event;
 import org.openremote.controller.service.ButtonCommandService;
 import org.openremote.controller.utils.RemoteActionXMLParser;
 
@@ -36,11 +39,30 @@ public class ButtonCommandServiceImpl implements ButtonCommandService {
    private RemoteActionXMLParser remoteActionXMLParser;
    
    /**
+    * The Macro command execution delay.if you execute IR commands with irsend too fast, the receiving device won't be
+    * able to process them. For TV for example, you can usually send IR commands no faster than every 0.5 seconds.
+    *  So in the macro definition, there should be some delay between the command execution.
+    * */
+   private Long macroCmdExecutionDelay;
+   
+   /** The logger. */
+   private static Logger logger = Logger.getLogger(ButtonCommandServiceImpl.class.getName());
+   
+   /**
     * {@inheritDoc}
     */
    public void trigger(String buttonID) {
-      for (EventCommander eventCommander : remoteActionXMLParser.findEventCommandersByButtonID(buttonID)) {
-         eventCommander.execute();
+      List<Event> events = remoteActionXMLParser.findEventsByButtonID(buttonID);
+      for (Event event : events) {
+         event.exec();
+         try {
+            //if this is a macro, then there should be the delay
+            if (events.size() > 1) {
+               Thread.sleep(macroCmdExecutionDelay);
+            }
+         } catch (InterruptedException e) {
+            logger.error("ButtonCommandService was interrupted.", e);
+         }
       }
    }
    
@@ -52,5 +74,17 @@ public class ButtonCommandServiceImpl implements ButtonCommandService {
    public void setRemoteActionXMLParser(RemoteActionXMLParser remoteActionXMLParser) {
       this.remoteActionXMLParser = remoteActionXMLParser;
    }
+
+   /**
+    * Sets the macro cmd execution delay.
+    * 
+    * @param macroCmdExecutionDelay the new macro cmd execution delay
+    */
+   public void setMacroCmdExecutionDelay(Long macroCmdExecutionDelay) {
+      this.macroCmdExecutionDelay = macroCmdExecutionDelay;
+   }
+
+   
+   
    
 }

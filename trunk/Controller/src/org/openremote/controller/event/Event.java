@@ -18,42 +18,44 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.commander;
+package org.openremote.controller.event;
 
-import org.openremote.irbuilder.domain.Event;
 
 
 /**
- * The Class EventCommander.
+ * The common Event and it's executable ,the exec() method MUST be overridden, the default one does nothing.
  * 
- * @author Dan 2009-4-3
+ * @author Dan 2009-4-20
  */
-public abstract class EventCommander {
+public class Event implements Executable{
    
-   /** The event. */
-   private Event event;
-
+   /** The label. */
+   private String label;
+   
    /**
-    * Execute.
-    */
-   abstract public void execute();
-
-   /**
-    * Gets the event.
+    * Gets the label.
     * 
-    * @return the event
+    * @return the label
     */
-   public Event getEvent() {
-      return event;
+   public String getLabel() {
+      return label;
    }
 
    /**
-    * Sets the event.
+    * Sets the label.
     * 
-    * @param event the new event
+    * @param label the new label
     */
-   public void setEvent(Event event) {
-      this.event = event;
+   public void setLabel(String label) {
+      this.label = label;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void exec() {
+      ;//nothing
    }
    
+
 }

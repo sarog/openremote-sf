@@ -18,48 +18,58 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.commander;
+package org.openremote.controller.protocol.x10;
 
-import java.util.Properties;
-
-import org.openremote.controller.spring.SpringContext;
-import org.openremote.irbuilder.domain.Event;
-
-
+import org.openremote.controller.event.Event;
 
 /**
- * A factory for creating EventCommander objects.
+ * The X10 Event.
  * 
- * @author Dan 2009-4-3
+ * @author Dan 2009-4-20
  */
-public class EventCommanderFactory {
+public class X10Event extends Event {
    
-   /** The event commanders. */
-   private Properties eventCommanders;
+   /** The address. */
+   private String address;
    
+   /** The command. */
+   private String command;
+
    /**
-    * Gets the commander.
+    * Gets the address.
     * 
-    * @param name the name
-    * @param event the event
-    * 
-    * @return the commander
+    * @return the address
     */
-   public EventCommander getCommander(String name,Event event){
-      String builder = eventCommanders.getProperty(name);
-      EventCommanderBuilder eventCommanderBuilder = (EventCommanderBuilder) SpringContext.getInstance().getBean(builder);
-      return eventCommanderBuilder.build(event);
+   public String getAddress() {
+      return address;
    }
 
    /**
-    * Sets the event commanders.
+    * Sets the address.
     * 
-    * @param eventCommanders the new event commanders
+    * @param address the new address
     */
-   public void setEventCommanders(Properties eventCommanders) {
-      this.eventCommanders = eventCommanders;
+   public void setAddress(String address) {
+      this.address = address;
+   }
+
+   /**
+    * Gets the command.
+    * 
+    * @return the command
+    */
+   public String getCommand() {
+      return command;
+   }
+
+   /**
+    * Sets the command.
+    * 
+    * @param command the new command
+    */
+   public void setCommand(String command) {
+      this.command = command;
    }
    
    
-
 }

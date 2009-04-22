@@ -169,6 +169,9 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 				<exclude name="WEB-INF/classes/**/*.*" />
 				<exclude name="WEB-INF/lib/**/*.*" />
 			</fileset>
+			<fileset dir=".">
+				<include name="readme.txt"/>
+			</fileset>
 			<lib dir="${lib.dir}/core" />
 			<classes dir="${classes.dir}" />
 		</war>

@@ -18,25 +18,18 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.commander;
-
-import org.openremote.irbuilder.domain.Event;
-
+package org.openremote.controller.event;
 
 /**
- * The Class IREventCommanderBuilder.
+ * The Interface Executable.
  * 
- * @author Dan 2009-4-3
+ * @author Dan 2009-4-20
  */
-public class IREventCommanderBuilder implements EventCommanderBuilder {
-
+public interface Executable {
+   
    /**
-    * {@inheritDoc}
+    * Execute method, tells how to execute a event.
     */
-   public EventCommander build(Event event) {
-      IREventCommander commander = new IREventCommander();
-      commander.setEvent(event);
-      return commander;
-   }
+   void exec();
 
 }
