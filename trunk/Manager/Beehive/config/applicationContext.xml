@@ -22,6 +22,7 @@
                 <value>org.openremote.beehive.domain.RemoteSection</value>
                 <value>org.openremote.beehive.domain.RemoteOption</value>
                 <value>org.openremote.beehive.domain.Code</value>
+                <value>org.openremote.beehive.domain.Icon</value>
             </list>
         </property>
         <property name="mappingResources">
@@ -39,6 +40,7 @@
 		<property name="scrapDir" value="${scrap.dir}" />
 		<property name="workCopyDir" value="${workCopy.dir}" />
 		<property name="svnDir" value="${svn.dir}" />
+		<property name="iconsDir" value="${icons.dir}" />
 	</bean>
 	
 

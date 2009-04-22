@@ -18,38 +18,40 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.beehive.rest;
+package org.openremote.beehive.api.dto;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.ws.rs.core.Application;
 
 /**
- * Registers all the REST services User: allenwei Date: 2009-2-9 Time: 14:50:35
+ * Infrared Icons
+ * 
+ * @author Tomsky 2009-4-20
  */
-public class BeehiveApplication extends Application {
-   private Set<Object> singletons = new HashSet<Object>();
-   private Set<Class<?>> empty = new HashSet<Class<?>>();
+@SuppressWarnings("serial")
+public class IconDTO extends BusinessEntityDTO {
 
-   public BeehiveApplication() {
-      singletons.add(new VendorRESTService());
-      singletons.add(new ModelRESTService());
-      singletons.add(new LIRCConfigFileRESTService());
-      singletons.add(new RemoteSectionRESTService());
-      singletons.add(new RemoteOptionRESTService());
-      singletons.add(new CodeRESTService());
-      singletons.add(new IconRESTService());
-      
+   private String fileName;
+   
+   private String name;
+
+   public IconDTO() {
+      fileName = "";
+      name = "";
    }
 
-   @Override
-   public Set<Class<?>> getClasses() {
-      return empty;
+   public String getFileName() {
+      return fileName;
    }
 
-   @Override
-   public Set<Object> getSingletons() {
-      return singletons;
+   public void setFileName(String fileName) {
+      this.fileName = fileName;
    }
+
+   public String getName() {
+      return name;
+   }
+
+   public void setName(String name) {
+      this.name = name;
+   }
+
 }

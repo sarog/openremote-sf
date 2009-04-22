@@ -28,7 +28,8 @@ public class Configuration {
    private String scrapDir;
    private String workCopyDir;
    private String svnDir;
-
+   private String iconsDir;
+   
    public String getDownloadDir() {
       return downloadDir;
    }
@@ -75,6 +76,14 @@ public class Configuration {
 
    public void setSvnDir(String svnDir) {
       this.svnDir = svnDir;
+   }
+
+   public String getIconsDir() {
+      return iconsDir;
+   }
+
+   public void setIconsDir(String iconsDir) {
+      this.iconsDir = iconsDir;
    }
 
 }

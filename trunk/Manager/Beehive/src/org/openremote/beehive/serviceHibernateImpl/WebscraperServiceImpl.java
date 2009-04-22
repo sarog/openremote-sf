@@ -79,9 +79,9 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
          logger.info("Success copy LIRC files to workCopy!");
          logger.info("Success delete files of " + configuration.getScrapDir());
       } catch (FileNotFoundException e) {
-         logger.error("The file of remotes.xml not found!");
+         logger.error("The file of remotes.xml not found!",e);
       }catch (IOException e) {
-         logger.error("Cae't delete the directory of "+configuration.getScrapDir());
+         logger.error("Cae't delete the directory of "+configuration.getScrapDir(),e);
        }
    }
 }

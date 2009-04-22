@@ -53,7 +53,7 @@ public class ModelRESTService {
       if (list.size() == 0) {
          throw new WebApplicationException(Response.Status.NO_CONTENT);
       }
-      return new ModelListing(getModelService().findModelsByVendorName(vendorName));
+      return new ModelListing(list);
    }
 
    /**
