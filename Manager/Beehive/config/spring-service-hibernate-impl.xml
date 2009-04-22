@@ -59,4 +59,8 @@
 		class="org.openremote.beehive.serviceHibernateImpl.SVNDelegateServiceImpl"
 		parent="abstractService" >
 	</bean>
+	<bean id="iconService"
+      class="org.openremote.beehive.serviceHibernateImpl.IconServiceImpl"
+      parent="abstractService" >
+   </bean>
 </beans>
