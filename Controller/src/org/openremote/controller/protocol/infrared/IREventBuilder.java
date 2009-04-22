@@ -18,25 +18,28 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.commander;
+package org.openremote.controller.protocol.infrared;
 
-import org.openremote.irbuilder.domain.Event;
+import org.openremote.controller.event.Event;
+import org.openremote.controller.event.EventBuilder;
+import org.w3c.dom.Element;
 
 
 /**
- * The Interface EventCommanderBuilder.
+ * The Class IREventBuilder.
  * 
  * @author Dan 2009-4-3
  */
-public interface EventCommanderBuilder {
-   
+public class IREventBuilder implements EventBuilder {
+
    /**
-    * Builds the EventCommander.
-    * 
-    * @param event the event
-    * 
-    * @return the event commander
+    * {@inheritDoc}
     */
-   EventCommander build(Event event);
+   public Event build(Element element) {
+      IREvent irEvent = new IREvent();
+      irEvent.setCommand(element.getAttribute("command"));
+      irEvent.setName(element.getAttribute("name"));
+      return irEvent;
+   }
 
 }
