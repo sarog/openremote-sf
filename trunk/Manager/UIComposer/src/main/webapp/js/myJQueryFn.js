@@ -25,8 +25,8 @@ jQuery.fn.showModalForm = function(title, buttons, openCallback) {
     newButtons.Cancel = function() {
         $(this).dialog("close");
     };
-	
-	//in order to put default 'close' button at last.
+
+    //in order to put default 'close' button at last.
     for (var p in buttons) {
         newButtons[p] = buttons[p];
     }
@@ -42,17 +42,17 @@ jQuery.fn.showModalForm = function(title, buttons, openCallback) {
         height: "auto",
         modal: true,
         title: title,
-		width:"auto",
+        width: "auto",
         resizable: false,
         buttons: newButtons,
         close: function() {
-           dialogElement.find("input").val('').removeClass('ui-state-error');
-           dialogElement.find("#validateTips").remove();
+            dialogElement.find("input").val('').removeClass('ui-state-error');
+            dialogElement.find("#validateTips").remove();
         },
         open: openCallback
     });
-	// If autoOpen=true, we needn't to call open(), but the dialog can only open once.
-    this.dialog("open");	
+    // If autoOpen=true, we needn't to call open(), but the dialog can only open once.
+    this.dialog("open");
 };
 
 /**
@@ -69,7 +69,7 @@ jQuery.fn.closeModalForm = function() {
  * @returns true/false.
  */
 jQuery.empty = function(value) {
-    return $.trim(value+"") == "";
+    return $.trim(value + "") == "";
 };
 
 /**
@@ -112,11 +112,12 @@ jQuery.fn.updateTips = function(element, message) {
  * Use JQuery theme style 'ui-state-hover'
  */
 jQuery.fn.UIHover = function() {
-	$(this).hover(function() {
-		$(this).addClass("ui-state-hover");
-	},function() {
-		$(this).removeClass("ui-state-hover");
-	});
+    $(this).hover(function() {
+        $(this).addClass("ui-state-hover");
+    },
+    function() {
+        $(this).removeClass("ui-state-hover");
+    });
 };
 
 /**
@@ -124,14 +125,40 @@ jQuery.fn.UIHover = function() {
  * You can also pass some arguments to the function you passed in, just put after the func argument.
  * @param func function which invoked after enter key pressed.
  */
-jQuery.fn.enterKeyPressed = function (func) {
-	$(this).keypress(function (e) {
-	    if (e.which == 13) {
-			var args = [];
-			for (var i=1; i < arguments.length; i++) {
-				args.push(arguments[i]);
-			}
-			func.apply(this,args);
-		}
-	});
+jQuery.fn.enterKeyPressed = function(func) {
+    $(this).keypress(function(e) {
+        if (e.which == 13) {
+            var args = [];
+            for (var i = 1; i < arguments.length; i++) {
+                args.push(arguments[i]);
+            }
+            func.apply(this, args);
+        }
+    });
+};
+jQuery.fn.isInArea = function(container) {
+	var top = $(this).offset().top;
+	var left = $(this).offset().left;
+    var minTop  = $(container).offset().top;
+    var maxTop  = $(container).offset().top  + $(container).outerHeight();
+    var minLeft = $(container).offset().left;    
+    var maxLeft = $(container).offset().left + $(container).outerWidth();
+
+    if (top > maxTop || top < minTop || left > maxLeft || left < minLeft) {
+        return false;
+    }
+	return true;
+};
+
+jQuery.isCoordinateInArea = function(top,left,container) {
+	
+    var minTop  = $(container).offset().top;
+    var maxTop  = $(container).offset().top  + $(container).outerHeight();
+    var minLeft = $(container).offset().left;    
+    var maxLeft = $(container).offset().left + $(container).outerWidth();
+
+    if (top > maxTop || top < minTop || left > maxLeft || left < minLeft) {
+        return false;
+    }
+	return true;
 };

@@ -25,7 +25,28 @@ var IphoneBtn = function() {
 		self.width = -1;
 		// convenient way to get the Class name.
 		self.className = getClassName(self);
+		
+		self.fillArea = function() {
+			for (var i=0; i < self.width; i++) {
+				var x = self.x + i;
+				for (var j=0; j < self.height; j++) {
+					var y = self.y + j;
+					btnInArea[x][y] = true;
+				};
+			};
+		};
+		
+		self.clearArea = function() {
+			for (var i=0; i < self.width; i++) {
+				var x = self.x + i;
+				for (var j=0; j < self.height; j++) {
+					var y = self.y + j;
+					btnInArea[x][y] = false;
+				};
+			};
+		};
 	}
+	
 
     /**
      * Create new instance from flat model (which have no private method).

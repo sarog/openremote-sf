@@ -27,8 +27,10 @@ function fillVendorSelect() {
         });
     });
     select.unbind().change(function() {
-        var vendor_name = select.find("option:selected").text();
-        afterSelectVendor(vendor_name);
+        if (select.find("option:selected").val() != 0) {
+            var vendor_name = select.find("option:selected").text();
+            afterSelectVendor(vendor_name);
+        }
     });
 }
 
@@ -52,8 +54,10 @@ function fillModelSelect(vendor_name) {
 
     });
     select.unbind().change(function() {
-        var model_name = select.find("option:selected").text();
-        afterSelectModel(vendor_name, model_name);
+        if (select.find("option:selected").val() != 0) {
+            var model_name = select.find("option:selected").text();
+            afterSelectModel(vendor_name, model_name);
+        }
     });
 }
 
@@ -83,18 +87,18 @@ function fillSectionSelect(vendor_name, model_name, sections) {
 }
 
 function showCommandBtns(vendor_name, model_name, section_id) {
-	
+
     getJSONData("/" + vendor_name + "/" + model_name + "/" + section_id + "/codes",
     function(data) {
         $("#command_container").html("");
         var codes = $.makeArray(data.codes.code);
         $(codes).each(function() {
-            HTMLBuilder.commandBtnBuilder(this,section_id).appendTo($("#command_container"));
+            HTMLBuilder.commandBtnBuilder(this, section_id).appendTo($("#command_container"));
         });
         $("<div class='clear'></div>").appendTo($("#command_container"));
         makeBtnDraggable();
         $("#command_navigition").dialog("close");
-		$("#lircUrl").val(RESTAPIUrl+"/" + vendor_name + "/" + model_name + "/"+"lirc.conf");
+        $("#lircUrl").val(RESTAPIUrl + "/" + vendor_name + "/" + model_name + "/" + "lirc.conf");
     });
 
     $("#command_navigition option").remove();

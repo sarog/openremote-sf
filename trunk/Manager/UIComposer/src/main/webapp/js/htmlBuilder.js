@@ -19,7 +19,7 @@
  */
 HTMLBuilder = function() {
     return {
-        KNXBtnBuilder: function(knx) {			
+        KNXBtnBuilder: function(knx) {
             var button = HTMLBuilder.blueBtnBuilder(knx.label);
             button.addClass("knx_btn");
             button.attr("id", knx.elementId());
@@ -50,12 +50,12 @@ HTMLBuilder = function() {
             return button;
         },
 
-        iphoneBtnBuilder: function(iphoneBtn) {           
+        iphoneBtnBuilder: function(iphoneBtn) {
             var btn = $("<div class='iphone_btn'></div>");
-			btn.data("model",iphoneBtn);
-            btn.attr("title",iphoneBtn.oModel.label);
-
-			var text = iphoneBtn.oModel.label;
+            btn.data("model", iphoneBtn);
+            btn.attr("title", iphoneBtn.oModel.label);
+            btn.css("position", "absolute");
+            var text = iphoneBtn.oModel.label;
             if (text.length > 5) {
                 btn.html(text.substr(0, 5) + "<br/>...");
             } else {
@@ -64,34 +64,19 @@ HTMLBuilder = function() {
             return btn;
         },
 
-        iphoneBtnDeleteIconBuilder: function() {
-            var deleteIcon = $("<img class='delete_icon' src='image/delete_icon.png'>");
-            deleteIcon.click(function() {
-                if (confirm("Are you sure to delete this button?")) {
-                    $(this).parent(".iphone_btn").remove();
-                }
-            });
-            deleteIcon.hover(function() {
-                $(this).toggleClass("canMove");
-            },
-            function() {
-                $(this).toggleClass("canMove");
-            });
-            return deleteIcon;
-        },
 
         macroBtnBuilder: function(macro) {
             var template = $("#macro_template .macro_btn_defination").clone();
-			var btn = $(template).find(".macro_btn");
-			
-			var name = macro.label;
+            var btn = $(template).find(".macro_btn");
+
+            var name = macro.label;
             btn.attr("title", macro.label);
             if (name.length > 14) {
                 name = name.substr(0, 14) + "...";
             }
             btn.html(name);
             btn.attr("id", macro.elementId());
-			btn.data("model",macro);
+            btn.data("model", macro);
             return $(template);
         },
 
@@ -99,7 +84,7 @@ HTMLBuilder = function() {
             var macroCommandLi = $("<li><span></span></li>");
             macroCommandLi.addClass("macro_command");
             macroCommandLi.addClass("ui-state-default");
-            macroCommandLi.data("model",model);
+            macroCommandLi.data("model", model);
             macroCommandLi.find("span").addClass("ui-icon");
             macroCommandLi.find("span").addClass("ui-icon-arrowthick-2-n-s");
             var name = model.label;
@@ -111,12 +96,12 @@ HTMLBuilder = function() {
             return macroCommandLi;
         },
 
-        commandBtnBuilder: function(code,section_id) {
+        commandBtnBuilder: function(code, section_id) {
             var btn = $("<div></div>");
             btn.data("codeId", code.id);
-			btn.data("remoteName",code.remoteName);
-			btn.data("command", code.name);
-		    btn.data("sectionId",section_id);
+            btn.data("remoteName", code.remoteName);
+            btn.data("command", code.name);
+            btn.data("sectionId", section_id);
             btn.addClass("command_btn");
             btn.addClass("blue_btn");
             var name = code.name;

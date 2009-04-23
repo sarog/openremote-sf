@@ -16,9 +16,10 @@
 
 package org.openreomte.irbuilder.utilsTest;
 
-import org.junit.Assert;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.openremote.irbuilder.utils.HtmlUtils;
+
 
 /**
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
@@ -27,6 +28,6 @@ public class HtmlTest {
    @Test
    public void testHtmlUnEncoder() {
       String str = "&apos;&gt;&apos;";
-      Assert.assertTrue(HtmlUtils.unEncoderHTML(str).equals("\'>\'"));
+      assertTrue(HtmlUtils.unEncoderHTML(str).equals("\'>\'"));
    }
 }

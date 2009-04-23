@@ -1,11 +1,10 @@
 <table id="dropable_table" border="0" cellspacing="0" cellpadding="0">
-<% var height = 294/screen.row; %>
-<% var width = 196/screen.col; %>
+<% var height = Math.round(294/screen.row); %>
+<% var width = Math.round(196/screen.col); %>
 <% for (var row = 0; row < screen.row; row ++) { %>
 	<tr>
 		<% for (var col = 0; col < screen.col; col++) { %>
-		
-		<td style="height:<%=height %>px;width:<%=width %>px;" x="<%=col+1 %>" y="<%=row+1 %>"></td>
+		<td style="height:<%=height %>px;width:<%=width %>px;" x="<%=col %>" y="<%=row %>"></td>
 		<% } %>
 	</tr>
 <% } %>
