@@ -88,12 +88,14 @@ ScreenViewController = function() {
 		$("#screen_select").unbind().change(screenSelectChanged);
 		
 		$("#screen_select").click(screenSelectClicked);
+		
 	};
 	
 	ScreenViewController.createScreenAndUpdateView = function(screen) {
 		if (ScreenView.getSelectedScreenId() != 0) {
 			ScreenViewController.storeCurrentScreen();
 		}
+		$("#iphoneBtn_container .iphone_btn").remove();
 		ScreenViewController.createScreen(screen);
 		ScreenView.setLastOptionSelected();
 		screenSelectChanged();	
@@ -106,7 +108,7 @@ ScreenViewController = function() {
 	};
 	
 	ScreenViewController.getCurrentScreen = function() {
-		return g_screens[ScreenView.getSelectedScreenId];
+		return g_screens[ScreenView.getSelectedScreenId()];
 	};
 	
 	

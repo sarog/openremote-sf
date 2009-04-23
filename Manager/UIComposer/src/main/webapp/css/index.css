@@ -61,6 +61,7 @@ background: #fff url("../image/iphone_background.jpg") no-repeat top left;
 width: 269px;
 height: 500px;
 margin: 0 auto;
+position:relative;
 }
 
 #screen_select {
@@ -88,10 +89,13 @@ border: 1px dashed yellow;
 height: 49px;
 width: 49px;
 }
-
+#dropable_table_container {
+	position:absolute;
+	top:105px;
+	left:35px;
+}
 #dropable_table {
-margin-top: 105px;
-margin-left: 35px;
+
 border-collapse: collapse;
 }
 

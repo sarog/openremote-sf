@@ -14,121 +14,312 @@
  * http://www.fsf.org.
  */
 var IPhoneController = function() {
-	function IPhoneController () {
-		// body...
-	}
-	//private method
+    function IPhoneController() {
+        // body...
+        }
+
+    //private variable
+    //private method
     /**
      * Make the table cell droppable,Only accept 'blue_btn' and 'iphone_btn'.
      */
-	function makeTableCellDroppable() {
-	    $("#dropable_table td").droppable({
-	        hoverClass: 'hiLight',
-	        accept: function(draggable) {
-	            if (draggable.hasClass("blue_btn") || draggable.hasClass("iphone_btn")) {
-	                return true;
-	            }
-	            return false;
-	        },
-	        drop: function(event, ui) {
-	            draggableDroped(ui.draggable,$(this));
-	        }
-	    });
-	}
-
-    /**
-     * Invoked when the draggable dropped.
-     * @param draggable draggable item
-     * @param droppable droppable item
-     */
-	function draggableDroped (draggable,droppable) {
-		if ($(this).find(".iphone_btn").length > 0) {
-            draggable.draggable('option', 'revert', true);
-        } else {
-            if (draggable.hasClass("command_btn")) {
-                if (draggable.attr("eventId") === undefined) {
-                    draggable.data("model",Infrared.getInfraredModelWithDraggable(draggable));
+    function makeTableCellDroppable() {
+        $("#dropable_table").droppable({
+            accept: function(draggable) {
+                if (draggable.hasClass("blue_btn") || draggable.hasClass("iphone_btn")) {
+                    return true;
                 }
+                return false;
+            },
+            drop: function(event, ui) {
+                draggableDroped(ui.draggable, $(this), ui.helper);
             }
-			var iphoneBtn;
-			if (draggable.data("model").className != "IphoneBtn")  {
-				iphoneBtn = new IphoneBtn();
-				iphoneBtn.id = BUTTONID++;
-				iphoneBtn.oModel = draggable.data("model");	
-			} else {
-				iphoneBtn = draggable.data("model");
-			}
-			 
-			IPhoneController.createIphoneBtn(iphoneBtn,droppable);
-            
+        });
+    }
+
+	/**
+	 * Invoked when the draggable dropped.
+	 * @private
+	 * @param {JQuery Object} draggable draggable item
+	 * @param {JQuery Object} droppable droppable item
+	 * @param {JQuery Object} draggable helper
+	 */
+	
+    function draggableDroped(draggable, droppable, helper) {
+        var cell = $("#dropable_table td.hiLight");
+
+        if (cell.length == 0) {
+            draggable.draggable('option', 'revert', true);
+            return;
+        }
+
+        var x = parseInt(cell.attr("x"));
+        var y = parseInt(cell.attr("y"));
+
+        var iphoneBtn;
+        if (draggable.hasClass(".iphone_btn")) {
+            iphoneBtn = draggable.data("model");
+        }
+		//To avoid the case that this area have already had a button.
+        if (btnInArea[x][y]) {
+            draggable.draggable('option', 'revert', true);
+			// if this is a iphone button, we need to reFill the area.
             if (draggable.hasClass(".iphone_btn")) {
-                draggable.hide("fast",
-                function() {
-                    draggable.remove();
-                });
+                iphoneBtn.fillArea();
+            }
+            return;
+        }
+
+        var screen = ScreenViewController.getCurrentScreen();
+
+        if (draggable.hasClass(".iphone_btn")) {
+			// We are not allow drag a button on top of other button.
+            if (!canDrop(x, y, iphoneBtn, screen)) {
+                draggable.draggable('option', 'revert', true);
+                iphoneBtn.fillArea();
+                $("#dropable_table td.hiLight").removeClass("hiLight");
+                return;
             }
         }
-	}
+		
+		
+        if (draggable.hasClass("command_btn")) {
+            draggable.data("model", Infrared.getInfraredModelWithDraggable(draggable));
+        }
+		
+		// If we drag a button which is not iphone button, we need to create iphoneBtn model.
+        if (draggable.data("model").className != "IphoneBtn") {
+            iphoneBtn = new IphoneBtn();
+            iphoneBtn.id = BUTTONID++;
+            iphoneBtn.oModel = draggable.data("model");
+        }
+
+        var height = draggable.height();
+        var width = draggable.width();
+		
+
+        if (draggable.hasClass(".iphone_btn")) {
+			// Because of JQuery, we can't delete draggable immediately.
+            draggable.hide("fast",
+            function() {
+                draggable.remove();
+            });
+            iphoneBtn.clearArea();
+        } else {
+            iphoneBtn.height = 1;
+            iphoneBtn.width = 1;
+
+        }
+        iphoneBtn.x = x;
+        iphoneBtn.y = y;
+		//fill the area.
+        iphoneBtn.fillArea();
+        IPhoneController.createIphoneBtn(iphoneBtn);
+    }
 
 
     /**
      * Make iphone panel button draggable.
      * @param items buttons which you want to make it draggable
      */
-	function makeIphoneBtnDraggable(items) {
-	    var btns;
-	    if (items === undefined) {
-	        btns = $(".iphone_btn");
-	    } else {
-	        btns = $(items);
-	    }
+    function makeIphoneBtnDraggable(items) {
+        var btns;
+        if (items === undefined) {
+            btns = $(".iphone_btn");
+        } else {
+            btns = $(items);
+        }
 
-	    btns.draggable({
-	        cursor: 'hand',
-	        opacity: 0.75,
-	        start: function(event, ui) {
-	            $(this).draggable('option', 'revert', false);
-	        },
-	        containment: $("#dropable_table")
-	    });
-	}
+        btns.draggable({
+            cursor: 'hand',
+            opacity: 0.75,
+            start: function(event, ui) {
+                $(this).draggable('option', 'revert', false);
+                $(this).data("model").clearArea();
+            },
+            stop: function(event, ui) {
+                var top = ui.offset.top;
+                var left = ui.offset.left;
+				
+				// if dragggable draged out of the rang, the only thing we can do is remove it and create a new one at that position
+				// this is all because we not use helper in iphone button draggable, so JQuery will not help us move the button back when drag fail.
+                if (!$.isCoordinateInArea(top, left, $("#dropable_table"))) {
+                    IPhoneController.createIphoneBtn($(this).data("model"));
+                    $(this).remove();
+                    return;
+                }
+                var cell = $("#dropable_table td.hiLight");
+                var x = parseInt(cell.attr("x"));
+                var y = parseInt(cell.attr("y"));
+                var screen = ScreenViewController.getCurrentScreen();
+                var iphoneBtn = $(this).data("model");
+				
+				//If the button area out of the rang, we move the button back.
+                if (((x + iphoneBtn.width) > screen.col) || ((y + iphoneBtn.height) > screen.row)) {
+                    IPhoneController.createIphoneBtn($(this).data("model"));
+                    $(this).remove();
+                    $("#dropable_table td.hiLight").removeClass("hiLight");
+                    return;
+                }
+                $("#dropable_table td.hiLight").removeClass("hiLight");
+            },
+            drag: function(event, ui) {
+                $("#dropable_table td.hiLight").removeClass("hiLight");
+                var cell = findTableCellByCoordinate(ui.offset.top, ui.offset.left);
+                $(cell).addClass("hiLight");
+            },
+            cursorAt: {
+                left: 25,
+                top: 25
+            }
+        });
+    }
+	
+	/**
+	 * Describe what this method does
+	 * @private
+	 * @param {String|Object|Array|Boolean|Number} paramName Describe this parameter
+	 * @returns Describe what it returns
+	 * @type String|Object|Array|Boolean|Number
+	 */
+	
+    function makeIphoneBtnResizable(items) {
+        var btns;
+        if (items === undefined) {
+            btns = $(".iphone_btn");
+        } else {
+            btns = $(items);
+        }
+        btns.resizable({
+            grid: [50, 50],
+            start: function(event, ui) {
+                //TODO refactor it, pull out the cell width and height to class variable or instance variable.
+                var cellHeight = $("#dropable_table td:first").height();
+                var cellWeight = $("#dropable_table td:first").width();
+
+                var iphoneBtn = $(this).data("model");
+
+
+                var screen = ScreenViewController.getCurrentScreen();
+
+
+                var maxX = findMaxXWhenResize(iphoneBtn, screen);
+                var maxY = findMaxYWhenResize(iphoneBtn, screen);
+
+                btns.resizable('option', 'maxHeight', (maxY - iphoneBtn.y + 1) * cellHeight);
+                btns.resizable('option', 'maxWidth', (maxX - iphoneBtn.x + 1) * cellWeight);
+
+            },
+            stop: function(event, ui) {
+                var iphoneBtn = $(this).data("model");
+                iphoneBtn.clearArea();
+                var cellHeight = $("#dropable_table td:first").height();
+                var cellWeight = $("#dropable_table td:first").width();
+
+                if (ui.helper.width() != ui.originalSize.width) {
+                    var width = Math.round((ui.helper.width() - ui.originalSize.width) / cellWeight);
+                    iphoneBtn.width = iphoneBtn.width + width;
+                }
+                if (ui.helper.height() != ui.originalSize.height) {
+                    var height = Math.round((ui.helper.height() - ui.originalSize.height) / cellHeight);
+                    iphoneBtn.height = iphoneBtn.height + height;
+                }
+
+                iphoneBtn.fillArea();
+            }
+        });
+    }
+
+    function canDrop(x, y, iphoneBtn, screen) {
+        for (var tmpX = x; (tmpX < x + iphoneBtn.width) && tmpX < screen.col; tmpX++) {
+            for (var tmpY = y; (tmpY < y + iphoneBtn.height) && tmpY < screen.row; tmpY++) {
+                if (btnInArea[tmpX][tmpY]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+
+    function findMaxXWhenResize(iphoneBtn, screen) {
+        for (var maxX = iphoneBtn.x; maxX < screen.col - 1; maxX++) {
+            for (var tmpY = iphoneBtn.y; ((tmpY < screen.row) && (tmpY < iphoneBtn.y + iphoneBtn.height)); tmpY++) {
+                if ((btnInArea[maxX + 1][tmpY]) && ((maxX + 1) > (iphoneBtn.x + iphoneBtn.width - 1))) {
+                    //second condition is exclude button itself
+                    return maxX;
+                }
+            }
+        }
+        return maxX;
+    }
+
+
+    function findMaxYWhenResize(iphoneBtn, screen) {
+        for (var maxY = iphoneBtn.y; maxY < screen.row - 1; maxY++) {
+            for (var tmpX = iphoneBtn.x; ((tmpX < screen.col) && (tmpX < iphoneBtn.x + iphoneBtn.width)); tmpX++) {
+                if ((btnInArea[tmpX][maxY + 1] == true) && ((maxY + 1) > (iphoneBtn.y + iphoneBtn.height - 1))) {
+                    //second condition is exclude button itself
+                    return maxY;
+                }
+            }
+        }
+        return maxY;
+    }
+
+
+    function setIphoneBtnMaxHeightAndWidth(height, width) {
+        var btns;
+        if (items === undefined) {
+            btns = $(".iphone_btn");
+        } else {
+            btns = $(items);
+        }
+        btns.resizable({
+            grid: [50, 50],
+            maxHeight: height,
+            maxWidth: width
+        });
+    }
 
     /**
      * Invoked when the button have selected.
      * @param btn button which user selected
      */
-	function selectIphoneBtn(btn) {
-	    $(".iphone_btn").removeClass("selected");
-	    $(".iphone_btn .delete_icon").remove();
-	    btn.addClass("selected");
-	}
-	
-	//static method
-	IPhoneController.init = function (){
-		makeTableCellDroppable();
-	};
+    function selectIphoneBtn(btn) {
+        $(".iphone_btn").removeClass("selected");
+        $(".iphone_btn .delete_icon").remove();
+        btn.addClass("selected");
+    }
+
+    //static method
+    IPhoneController.init = function() {
+        makeTableCellDroppable();
+    };
 
     /**
      * Create iphone button and add it into page.
      * @param iphoneBtn iphoneBtn model
      * @param tableCell table cell which you want to add into
      */
-	IPhoneController.createIphoneBtn = function (iphoneBtn,tableCell) {
-		var btn = HTMLBuilder.iphoneBtnBuilder(iphoneBtn);
-        btn.click(function() {
-        	selectIphoneBtn(btn);
-			HTMLBuilder.iphoneBtnDeleteIconBuilder().appendTo(this);
-        });
-        btn.appendTo($(tableCell));
+    IPhoneController.createIphoneBtn = function(iphoneBtn) {
+		iphoneBtn.fillArea();
+        var tableCell = ScreenView.findCell(iphoneBtn.x, iphoneBtn.y);
+        var btn = HTMLBuilder.iphoneBtnBuilder(iphoneBtn);
+		
+        btn.css("top", $(tableCell).offset().top);
+        btn.css("left", $(tableCell).offset().left);
+        btn.css("height", $(tableCell).height() * iphoneBtn.height + iphoneBtn.height - 1);
+        btn.css("width", $(tableCell).width() * iphoneBtn.width + iphoneBtn.width - 1);
+        btn.appendTo($("#iphoneBtn_container"));
         makeIphoneBtnDraggable(btn);
-	};
-	
-	IPhoneController.createIphoneBtnWithModel = function (iphoneBtn) {
-		IPhoneController.createIphoneBtn(iphoneBtn,ScreenView.findCell(iphoneBtn.x,iphoneBtn.y));
-	};
-	
-	
+        makeIphoneBtnResizable(btn);
 
-	
-	return IPhoneController;
-}();
+		//Hack the JQuery Draggable,use can't draggable the button sidelong   
+		btn.find("div.ui-resizable-handle.ui-resizable-se").remove();
+    };
+
+
+    return IPhoneController;
+} ();
