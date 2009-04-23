@@ -18,6 +18,7 @@
 		799CC5C80F4D6CB0006195BD /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 799CC5C70F4D6CB0006195BD /* Default.png */; };
 		79BF34C80F4E5FE600989DCC /* ScreenView.m in Sources */ = {isa = PBXBuildFile; fileRef = 79BF34C70F4E5FE600989DCC /* ScreenView.m */; };
 		79BF34CB0F4E60E200989DCC /* ScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 79BF34CA0F4E60E200989DCC /* ScreenViewController.m */; };
+		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		8C6620F00F524EEC006A0976 /* ControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6620EF0F524EEC006A0976 /* ControlView.m */; };
 		8C6682010F53EE3D007C45D4 /* DirectoryDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6682000F53EE3D007C45D4 /* DirectoryDefinition.m */; };
 		8C6682490F53FFF5007C45D4 /* FileUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6682480F53FFF5007C45D4 /* FileUtils.m */; };
@@ -65,6 +66,7 @@
 		79BF34C90F4E60E200989DCC /* ScreenViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenViewController.h; sourceTree = "<group>"; };
 		79BF34CA0F4E60E200989DCC /* ScreenViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenViewController.m; sourceTree = "<group>"; };
 		79FEE18F0F4E864C0017B50D /* Definition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Definition.h; sourceTree = "<group>"; };
+		8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		8C6620EE0F524EEC006A0976 /* ControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlView.h; sourceTree = "<group>"; };
 		8C6620EF0F524EEC006A0976 /* ControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControlView.m; sourceTree = "<group>"; };
 		8C6681FF0F53EE3D007C45D4 /* DirectoryDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DirectoryDefinition.h; sourceTree = "<group>"; };
@@ -178,6 +180,7 @@
 				8D1107310486CEB800E47090 /* Info.plist */,
 				8C79DF2E0F5685EB0002E5EE /* LightsController.xib */,
 				8C679B710F7B14210058FF41 /* Settings.bundle */,
+				8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -314,6 +317,7 @@
 				8CA7605C0F57E64E00ADF0C0 /* lightIcon.png in Resources */,
 				8CA7607B0F57EA7100ADF0C0 /* buttonHighlighted.png in Resources */,
 				8C679B720F7B14210058FF41 /* Settings.bundle in Resources */,
+				8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -390,7 +394,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "8C9903CC-67F7-4E41-9B76-FA4AF2204F7F";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D7265412-380A-4ECE-AC79-651A57197CCF";
 				SDKROOT = iphoneos2.1;
 			};
 			name = distribute;
@@ -400,6 +404,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Finalist IT Group";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Finalist IT Group";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -408,6 +413,7 @@
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = openremote;
+				PROVISIONING_PROFILE = "D7265412-380A-4ECE-AC79-651A57197CCF";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D7265412-380A-4ECE-AC79-651A57197CCF";
 			};
 			name = distribute;

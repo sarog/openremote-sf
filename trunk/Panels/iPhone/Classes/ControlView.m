@@ -99,14 +99,14 @@
 
 //Shows alertView when the request successful
 - (void)definitionURLConnectionDidFinishLoading:(NSData *)data {
-	NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-	if (YES) {
-	//if ([result isEqualToString:@"true"]) {
-		//UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Result" message:[[[NSString alloc] initWithFormat: @"Send Put request with event id: %d success!",control.eventID] autorelease] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-//		[alert show];
-//		[alert release];
-	}
-	[result release];
+//	NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+//	if (YES) {
+//	//if ([result isEqualToString:@"true"]) {
+//		//UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Result" message:[[[NSString alloc] initWithFormat: @"Send Put request with event id: %d success!",control.eventID] autorelease] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+////		[alert show];
+////		[alert release];
+//	}
+//	[result release];
 }
 
 //override layoutSubviews method of UIView 
