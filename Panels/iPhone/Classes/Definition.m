@@ -90,10 +90,10 @@ NSString *const DefinationNeedNotUpdate = @"needNotUpdateNotification";
 	
 	[request release];
 	if (error ) {
-		[ViewHelper showAlertViewWithTitle:@"Can't Connect to Controller" Message:@"Make sure your server have been started and your the configuration of server url is correct."];
+		[ViewHelper showAlertViewWithTitle:@"Can't Connect to Controller" Message:@"Make sure your server has been started and your configuration of server url is correct."];
 		return NO;
 	} else if ([resp statusCode] != 200){
-		[ViewHelper showAlertViewWithTitle:@"Can't Connect to Controller" Message:@"We detect your server have started, but can't find controller application on the server, Make sure your url is correct."];
+		[ViewHelper showAlertViewWithTitle:@"Can't Connect to Controller" Message:@"We detect your server has been started, but can't find controller application on the server, Make sure your url is correct."];
 		return NO;
 	}
 	return YES;
@@ -106,7 +106,7 @@ NSString *const DefinationNeedNotUpdate = @"needNotUpdateNotification";
 	
 	[request release];
 	if ([resp statusCode] != 200 ){
-		[ViewHelper showAlertViewWithTitle:@"Can't Find Config File" Message:@"Make sure you have already put the config file into the controller."];
+		[ViewHelper showAlertViewWithTitle:@"Can't Find iphone.xml" Message:@"Make sure you have already put the iphone.xml into the controller."];
 		return NO;
 	}
 	return YES;
