@@ -22,7 +22,7 @@
 			<key>Key</key>
 			<string>serverUrl</string>
 			<key>DefaultValue</key>
-			<string>http://www.finalist.cn/ipoddemo</string>
+			<string>http://192.168.1.107:8080/controller</string>
 		</dict>
 	</array>
 </dict>
