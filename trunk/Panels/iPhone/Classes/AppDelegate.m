@@ -43,6 +43,8 @@
 	
 	//add a observer to defination upload task 
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateDidFinished) name:DefinationUpdateDidFinishedNotification object:[Definition sharedDefinition]];	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateDidFinished) name:DefinationNeedNotUpdate object:[Definition sharedDefinition]];	
+
 }
 
 //- (void)updateDidFinished {
@@ -70,6 +72,7 @@
 //}
 
 - (void)updateDidFinished {
+	NSLog(@"----------updateDidFinished------");
 	ActivitiesController *activityController = [[ActivitiesController alloc] init];
 	[activityController setTitle:@"Activities"];
 

@@ -28,6 +28,9 @@
 		8C79DDE20F5670200002E5EE /* ActivitiesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C79DDE10F5670200002E5EE /* ActivitiesController.m */; };
 		8C79DF2F0F5685EB0002E5EE /* LightsController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C79DF2E0F5685EB0002E5EE /* LightsController.xib */; };
 		8C79DF340F5686910002E5EE /* LightsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C79DF330F5686910002E5EE /* LightsController.m */; };
+		8C7BE4230FA0395F00F18AA1 /* ViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C7BE4220FA0395F00F18AA1 /* ViewHelper.m */; };
+		8C7BE48B0FA0431700F18AA1 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C7BE48A0FA0431700F18AA1 /* Reachability.m */; };
+		8C7BE4F60FA0471F00F18AA1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C7BE4F50FA0471F00F18AA1 /* SystemConfiguration.framework */; };
 		8CA75D4D0F5779F100ADF0C0 /* lightbulb_off.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA75D4B0F5779F100ADF0C0 /* lightbulb_off.png */; };
 		8CA75D4E0F5779F100ADF0C0 /* lightbulb.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA75D4C0F5779F100ADF0C0 /* lightbulb.png */; };
 		8CA75DD10F5781E600ADF0C0 /* AccelerometerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CA75DD00F5781E600ADF0C0 /* AccelerometerController.m */; };
@@ -82,6 +85,11 @@
 		8C79DF2E0F5685EB0002E5EE /* LightsController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LightsController.xib; sourceTree = "<group>"; };
 		8C79DF320F5686910002E5EE /* LightsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LightsController.h; sourceTree = "<group>"; };
 		8C79DF330F5686910002E5EE /* LightsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LightsController.m; sourceTree = "<group>"; };
+		8C7BE4210FA0395F00F18AA1 /* ViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewHelper.h; sourceTree = "<group>"; };
+		8C7BE4220FA0395F00F18AA1 /* ViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewHelper.m; sourceTree = "<group>"; };
+		8C7BE4890FA0431700F18AA1 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		8C7BE48A0FA0431700F18AA1 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		8C7BE4F50FA0471F00F18AA1 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		8CA75D4B0F5779F100ADF0C0 /* lightbulb_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lightbulb_off.png; sourceTree = "<group>"; };
 		8CA75D4C0F5779F100ADF0C0 /* lightbulb.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lightbulb.png; sourceTree = "<group>"; };
 		8CA75DCF0F5781E600ADF0C0 /* AccelerometerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccelerometerController.h; sourceTree = "<group>"; };
@@ -113,6 +121,7 @@
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
 				8CA75EC50F579B4C00ADF0C0 /* QuartzCore.framework in Frameworks */,
+				8C7BE4F60FA0471F00F18AA1 /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,6 +159,7 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				8CA75EC40F579B4C00ADF0C0 /* QuartzCore.framework */,
+				8C7BE4F50FA0471F00F18AA1 /* SystemConfiguration.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -198,12 +208,16 @@
 		8C72E7130F541F8C006CC0DF /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				8C7BE4890FA0431700F18AA1 /* Reachability.h */,
+				8C7BE48A0FA0431700F18AA1 /* Reachability.m */,
 				799CC3CC0F4D4EEA006195BD /* URLConnectionHelper.h */,
 				799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */,
 				8C6682470F53FFF5007C45D4 /* FileUtils.h */,
 				8C6682480F53FFF5007C45D4 /* FileUtils.m */,
 				8C72E7140F541FAB006CC0DF /* StringUtils.h */,
 				8C72E7150F541FAB006CC0DF /* StringUtils.m */,
+				8C7BE4210FA0395F00F18AA1 /* ViewHelper.h */,
+				8C7BE4220FA0395F00F18AA1 /* ViewHelper.m */,
 			);
 			name = utils;
 			sourceTree = "<group>";
@@ -346,6 +360,8 @@
 				955882DC0F56786700527BA2 /* PaginationController.m in Sources */,
 				8C79DF340F5686910002E5EE /* LightsController.m in Sources */,
 				8CA75DD10F5781E600ADF0C0 /* AccelerometerController.m in Sources */,
+				8C7BE4230FA0395F00F18AA1 /* ViewHelper.m in Sources */,
+				8C7BE48B0FA0431700F18AA1 /* Reachability.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

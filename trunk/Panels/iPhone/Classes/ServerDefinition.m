@@ -19,6 +19,7 @@
 		if (!serverUrl) {
 			[self registerDefaultsFromSettingsBundle];
 		}
+		serverUrl = [[defaults objectForKey:@"serverUrl"] stringByAppendingPathComponent:@""];
 		[serverUrl retain];
 	}
 	return  serverUrl;
