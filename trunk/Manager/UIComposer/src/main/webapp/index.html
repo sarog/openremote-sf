@@ -42,6 +42,8 @@
 </script>
 		<script type="text/javascript" src="js/view/screenView.js">
 </script>
+		<script type="text/javascript" src="js/view/inspectView.js">
+</script>
 		<script type="text/javascript" src="js/controller/dragController.js">
 </script>
 		<script type="text/javascript" src="js/controller/selectController.js">
@@ -57,6 +59,8 @@
 		<script type="text/javascript" src="js/controller/importController.js">
 </script>
 		<script type="text/javascript" src="js/controller/screenViewController.js">
+</script>
+		<script type="text/javascript" src="js/controller/inspectViewController.js">
 </script>
 		<script type="text/javascript" src="js/init.js">
 </script>
@@ -74,13 +78,33 @@
 			</div>
 			<div class="clear"></div>
 			<div id="main">
+					<div id="screen_tool_bar" class="grid_4 tool_bar">
+						<p align="center">
+							<select  id="screen_select">
+								<option value="0">Please Create a Screen</option>
+							</select>
+							<a id="creatScreenBtn" class="ui-state-default ui-corner-all button" href="#"><span class="ui-icon ui-icon-plusthick"></span>Create</a>
+						</p>
+					</div>
+					<div id="inspect_tool_bar" class="grid_8 tool_bar">
+						<div id="inspect_header" class="ui-widget-header ui-corner-left tool_bar">
+							<p>Inspect</p>
+						</div>
+						<div id="inspect_body" class="ui-widget-content tool_bar">
+								<p id="inspect_detail">
+								
+								</p>
+						</div>
+						<div id="inspect_button" class="ui-corner-right ui-widget-content tool_bar">
+							<p>
+									<a id="inspect_ok_btn" class="ui-state-default ui-corner-all button" href="#"><span class="ui-icon ui-icon-check"></span>OK</a>
+									<a id="inspect_delete_btn" class="ui-state-default ui-corner-all button" href="#"><span class="ui-icon ui-icon-trash"></span>Delete</a>
+							</p>
+						</div>
+						<div class="clear"></div>
+					</div>
 				<div id="left" class="grid_4">
-					<p align="center">
-						<select  id="screen_select">
-							<option value="0">Please Create a Screen</option>
-						</select>
-						<a id="creatScreenBtn" class="ui-state-default ui-corner-all button" href="#"><span class="ui-icon ui-icon-plusthick"></span>Create</a>
-					</p>
+				
 					<div id="iphone_backgroud">
 						
 						<div id="dropable_table_container">

@@ -90,8 +90,10 @@ var IPhoneController = function() {
 		// If we drag a button which is not iphone button, we need to create iphoneBtn model.
         if (draggable.data("model").className != "IphoneBtn") {
             iphoneBtn = new IphoneBtn();
+
             iphoneBtn.id = BUTTONID++;
             iphoneBtn.oModel = draggable.data("model");
+			iphoneBtn.label = draggable.data("model").label;
         }
 
         var height = draggable.height();
@@ -332,9 +334,28 @@ var IPhoneController = function() {
         makeIphoneBtnDraggable(btn);
         makeIphoneBtnResizable(btn);
 
+		btn.unbind().click(function() {
+			InspectView.updateView($(this).data("model"));
+		});
+
 		//Hack the JQuery Draggable,use can't draggable the button sidelong   
 		btn.find("div.ui-resizable-handle.ui-resizable-se").remove();
     };
+	
+	IPhoneController.updateIphoneBtn = function (iphoneBtn) {
+		var label = iphoneBtn.label;
+		if (label.length > 5) {
+            label = label.substr(0, 5) + "<br/>...";
+        }
+		$("#"+iphoneBtn.elementId()).find("span").html(label);
+		$("#"+iphoneBtn.elementId()).attr("title",iphoneBtn.label);
+	};
+	
+	
+	IPhoneController.deleteIphoneBtn = function (iphoneBtn) {
+		iphoneBtn.clearArea();
+		$("#"+iphoneBtn.elementId()).remove();
+	};
 
 
     return IPhoneController;
