@@ -72,7 +72,7 @@ var MacroController = function() {
         var macroBtn = HTMLBuilder.macroBtnBuilder(macro);
         $(macroBtn).prependTo($("#macro .item_container"));
         MacroController.prepareMacroSublist(macroBtn);
-        MacroController.makeMacroBtnDraggable(macroBtn.find(".blue_btn.macro_btn"));
+        makeBtnDraggable(macroBtn.find(".blue_btn.macro_btn"));
     };
 
     /**
@@ -152,27 +152,6 @@ var MacroController = function() {
      */
     MacroController.createMacroSubli = function(model, container) {
         HTMLBuilder.macroLiBtnBuilder(model).appendTo(container);
-    };
-
-    /**
-     * Make macro button draggable.
-     * @param items macro buttons which you want to make it draggable
-     */
-    MacroController.makeMacroBtnDraggable = function(items) {
-        var btns;
-        if (items === undefined) {
-            btns = $(".blue_btn");
-        } else {
-            btns = items;
-        }
-        btns.draggable({
-            zIndex: 2700,
-            cursor: 'move',
-            helper: 'clone',
-            start: function(event, ui) {
-                $(this).draggable('option', 'revert', false);
-            }
-        });
     };
 
 
