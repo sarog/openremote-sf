@@ -96,14 +96,12 @@ var IPhoneController = function() {
 
         var height = draggable.height();
         var width = draggable.width();
-		
 
         if (draggable.hasClass(".iphone_btn")) {
 			// Because of JQuery, we can't delete draggable immediately.
-            draggable.hide("fast",
-            function() {
-                draggable.remove();
-            });
+            draggable.hide(200,function() {
+				draggable.remove();
+			});
             iphoneBtn.clearArea();
         } else {
             iphoneBtn.height = 1;
@@ -147,7 +145,7 @@ var IPhoneController = function() {
                     IPhoneController.createIphoneBtn($(this).data("model"));
                     $(this).remove();
                     return;
-                }
+                } 
                 var cell = $("#dropable_table td.hiLight");
                 var x = parseInt(cell.attr("x"));
                 var y = parseInt(cell.attr("y"));
@@ -155,13 +153,25 @@ var IPhoneController = function() {
                 var iphoneBtn = $(this).data("model");
 				
 				//If the button area out of the rang, we move the button back.
-                if (((x + iphoneBtn.width) > screen.col) || ((y + iphoneBtn.height) > screen.row)) {
-                    IPhoneController.createIphoneBtn($(this).data("model"));
+                if (((x + iphoneBtn.width) > screen.col) || ((y + iphoneBtn.height) > screen.row) || cell.length == 0) {
+                    IPhoneController.createIphoneBtn(iphoneBtn);
                     $(this).remove();
                     $("#dropable_table td.hiLight").removeClass("hiLight");
                     return;
                 }
+				
+				//button in this area but cursor not in this area, so dropped event can't invoke, we must handle it here.
+				if (!$.isCoordinateInArea(event.pageY, event.pageX, $("#dropable_table"))) {
+					iphoneBtn.x = x;
+					iphoneBtn.y = y;
+					IPhoneController.createIphoneBtn(iphoneBtn);
+                    $(this).remove();
+                    $("#dropable_table td.hiLight").removeClass("hiLight");
+                    return;
+				}
                 $("#dropable_table td.hiLight").removeClass("hiLight");
+
+				
             },
             drag: function(event, ui) {
                 $("#dropable_table td.hiLight").removeClass("hiLight");
@@ -191,7 +201,7 @@ var IPhoneController = function() {
             btns = $(items);
         }
         btns.resizable({
-            grid: [50, 50],
+            grid: [49, 49],
             start: function(event, ui) {
                 //TODO refactor it, pull out the cell width and height to class variable or instance variable.
                 var cellHeight = $("#dropable_table td:first").height();
@@ -216,28 +226,34 @@ var IPhoneController = function() {
                 var cellHeight = $("#dropable_table td:first").height();
                 var cellWeight = $("#dropable_table td:first").width();
 
-                if (ui.helper.width() != ui.originalSize.width) {
-                    var width = Math.round((ui.helper.width() - ui.originalSize.width) / cellWeight);
+                if ($(this).width() != ui.originalSize.width) {
+                    var width = Math.round(($(this).width() - ui.originalSize.width) / cellWeight);
                     iphoneBtn.width = iphoneBtn.width + width;
                 }
-                if (ui.helper.height() != ui.originalSize.height) {
-                    var height = Math.round((ui.helper.height() - ui.originalSize.height) / cellHeight);
+                if ($(this).height() != ui.originalSize.height) {
+                    var height = Math.round(($(this).height() - ui.originalSize.height) / cellHeight);
                     iphoneBtn.height = iphoneBtn.height + height;
                 }
-
+				
                 iphoneBtn.fillArea();
-            }
+				makeIphoneBtnDraggable($(this));
+            },
+			helper: false
         });
     }
 
     function canDrop(x, y, iphoneBtn, screen) {
-        for (var tmpX = x; (tmpX < x + iphoneBtn.width) && tmpX < screen.col; tmpX++) {
-            for (var tmpY = y; (tmpY < y + iphoneBtn.height) && tmpY < screen.row; tmpY++) {
+        for (var tmpX = x;tmpX < x + iphoneBtn.width; tmpX++) {
+            for (var tmpY = y; tmpY < y + iphoneBtn.height; tmpY++) {
+				if (tmpX > screen.col - 1 || tmpY > screen.row - 1) {
+					return false;
+				}
                 if (btnInArea[tmpX][tmpY]) {
                     return false;
                 }
             }
         }
+		
         return true;
     }
 
@@ -277,7 +293,7 @@ var IPhoneController = function() {
             btns = $(items);
         }
         btns.resizable({
-            grid: [50, 50],
+            grid: [49, 49],
             maxHeight: height,
             maxWidth: width
         });
