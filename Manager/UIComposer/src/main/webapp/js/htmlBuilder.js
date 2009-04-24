@@ -51,15 +51,17 @@ HTMLBuilder = function() {
         },
 
         iphoneBtnBuilder: function(iphoneBtn) {
-            var btn = $("<div class='iphone_btn'></div>");
+            var btn = $("<div class='iphone_btn'><span></span></div>");
             btn.data("model", iphoneBtn);
-            btn.attr("title", iphoneBtn.oModel.label);
+           	btn.attr("title", iphoneBtn.label);
             btn.css("position", "absolute");
-            var text = iphoneBtn.oModel.label;
+			btn.attr("id",iphoneBtn.elementId());
+            var text = iphoneBtn.label;
+ 			
             if (text.length > 5) {
-                btn.html(text.substr(0, 5) + "<br/>...");
+                btn.find("span").html(text.substr(0, 5) + "<br/>...");
             } else {
-                btn.text(text);
+                btn.find("span").text(text);
             }
             return btn;
         },
