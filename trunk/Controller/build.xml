@@ -192,12 +192,13 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		  	  locale           ="${javadoc.locale}"
 		      defaultexcludes  = "yes"
 		      use              = "yes"
-		      header           = "controller Database API"
-		      doctitle         = "controller Database API Specification V1.0"
+		      header           = "Controller API"
+		      doctitle         = "Controller API Specification V1.0"
 		      nodeprecatedlist = "yes"
+		      classpath        = "${lib.dir}/core/log4j-1.2.11.jar;${lib.dir}/core/spring.jar;${lib.dir}/compile/javax.servlet.jar;"
 		      sourcepath       = "./${src.dir}"
 		      destdir          = "./${javadoc.dir}"
-		      packagenames     = "org.openremote.controller.api.dto, org.openremote.controller.api.service"
+		      packagenames     = "org.openremote.controller.*"
 		      additionalparam  = "-breakiterator"
 		  />
 	</target>
