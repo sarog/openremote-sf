@@ -195,6 +195,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		      header           = "Beehive Database API"
 		      doctitle         = "Beehive Database API Specification V1.0"
 		      nodeprecatedlist = "yes"
+		      classpath        = "${lib.dir}/core/commons-lang.jar"
 		      sourcepath       = "./${src.dir}"
 		      destdir          = "./${javadoc.dir}"
 		      packagenames     = "org.openremote.beehive.api.dto, org.openremote.beehive.api.service"
