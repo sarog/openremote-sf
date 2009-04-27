@@ -27,7 +27,7 @@
                             <td style="padding-left: 8px; padding-right: 7px;"><a href="http://www.openremote.org/"><img src="image/global.logo.gif" alt="openremote.org" title="openremote.org" style="margin: 0pt; padding: 0pt; vertical-align: middle;" border="0"></a> </td>
                             <td class="title" nowrap="nowrap">Beehive Administration Client</td>
                             <td width="100%"></td>
-                            <td style="padding-left: 8px; padding-right: 7px;" class="title"><a href="http://192.168.4.100:8080/svnwebclient/logout.jsp"> Logout </a> </td>
+                            <td style="padding-left: 8px; padding-right: 7px;" class="title"><a href="./j_security_logout">Logout</a></td>
                           </tr>
                       </table></td>
                   </tr>
