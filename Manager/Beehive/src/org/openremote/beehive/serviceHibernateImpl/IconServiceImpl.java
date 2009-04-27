@@ -35,9 +35,9 @@ public class IconServiceImpl extends BaseAbstractService<Icon> implements IconSe
     */
    @Override
    public List<IconDTO> findIconsByName(String name) {
-      if(genericDAO.getByNonIdField(Icon.class, "name", name) == null){
-         return loadAllIcons();
-      }
+//      if(genericDAO.getByNonIdField(Icon.class, "name", name) == null){
+//         return loadAllIcons();
+//      }
       DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Icon.class);
       detachedCriteria.add(Restrictions.eq("name", name));
       List<Icon> icons = genericDAO.findByDetachedCriteria(detachedCriteria);

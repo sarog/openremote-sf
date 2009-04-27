@@ -25,6 +25,7 @@
             LIRC configuration files</a>
         ] [
         <a class="regularLink" target="" href="#" title="Beehive Event History">Beehive Event History</a>
+        ] [<a href="./j_security_logout">Logout</a>
         ]
     </div>
     <div id="content">
