@@ -23,20 +23,20 @@ var TabController = function() {
      * Show create knx button dialog.
      */
     function showCreateKNXDialog() {
-      
+
         $("#create_KNX_dialog").showModalForm("Create KNX", {
             'Create': confirmCreateKNX
         });
-		$("#create_KNX_dialog").enterKeyPressed(confirmCreateKNX);
+        $("#create_KNX_dialog").enterKeyPressed(confirmCreateKNX);
     }
 
     /**
      * Invoked when user confirm create knx button.
      */
-	function confirmCreateKNX() {
-		var label = $("#knx_label_input");
-	    var groupAddress = $("#knx_group_address_input");
-		
+    function confirmCreateKNX() {
+        var label = $("#knx_label_input");
+        var groupAddress = $("#knx_group_address_input");
+
         var valid = true;
         if ($.empty(label.val())) {
             valid = false;
@@ -66,14 +66,14 @@ var TabController = function() {
         $("#create_x10_dialog").showModalForm("Create X10", {
             'Create': confirmCreateX10
         });
-		$("#create_x10_dialog").enterKeyPressed(confirmCreateX10);
+        $("#create_x10_dialog").enterKeyPressed(confirmCreateX10);
     }
 
     /**
      * Invoked when user confirm create x10 button.
      */
-	function confirmCreateX10 () {
-	    var label = $("#x10_label_input");
+    function confirmCreateX10() {
+        var label = $("#x10_label_input");
         var address = $("#x10_address_input");
         var command = $("#x10_command_input");
         var valid = true;
@@ -123,7 +123,6 @@ var TabController = function() {
     }
 
 
-
     //static method
     TabController.init = function() {
         $("#tabs").tabs();
@@ -131,7 +130,7 @@ var TabController = function() {
         $("#create_x10_icon").unbind().bind("click", showCreateX10Dialog);
         $("#select_command_icon").unbind().bind("click", selectCommand);
 
-		
+
     };
 
     /**
@@ -142,7 +141,26 @@ var TabController = function() {
         var btn = HTMLBuilder.KNXBtnBuilder(knx);
         btn.prependTo($("#knx_tab .item_container"));
         makeBtnDraggable(btn);
+        btn.unbind().click(function() {
+            InspectViewController.updateView($(this).data("model"));
+        });
     };
+
+    TabController.updateKnx = function (knx) {
+        var label = $.trim($("#inspect_knx_label").val());
+        var groupAddress = $.trim($("#inspect_knx_groupAddress").val());
+        knx.label = label;
+        knx.groupAddress = groupAddress;
+
+        var btn = $("#"+knx.elementId());
+		if (label.length > 5) {
+            label = label.substr(0, 5) + "...";
+        }
+		btn.attr("title",knx.label);
+        btn.text(label);
+        btn.data("model",knx);
+    };
+
 
     /**
      * Create x10 button and add it into page.
@@ -152,6 +170,26 @@ var TabController = function() {
         var btn = HTMLBuilder.X10BtnBuilder(x10);
         btn.prependTo($("#x10_tab .item_container"));
         makeBtnDraggable(btn);
+        btn.unbind().click(function() {
+            InspectViewController.updateView($(this).data("model"));
+        });
+    };
+
+	TabController.updateX10 = function (x10) {
+        var label = $.trim($("#inspect_x10_label").val());
+        var address = $.trim($("#inspect_x10_address").val());
+		var command = $.trim($("#inspect_x10_command").val());
+        x10.label = label;
+        x10.address = address;
+        x10.command = command;
+
+        var btn = $("#"+x10.elementId());
+		if (label.length > 5) {
+            label = label.substr(0, 5) + "...";
+        }
+		btn.attr("title",x10.label);
+        btn.text(label);
+        btn.data("model",x10);
     };
 
     return TabController;
