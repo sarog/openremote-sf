@@ -25,7 +25,7 @@ import java.io.InputStream;
 
 public interface ResourceService {
    File downloadZipResource(String controllerXML, String iphoneXML, String panelDesc, String RESTAPIUrl,
-         String SectionIds);
+         String SectionIds, String sessionId);
 
    public String getIrbFileFromZip(InputStream inputStream);
 
