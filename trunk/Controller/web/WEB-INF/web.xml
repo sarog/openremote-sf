@@ -22,6 +22,10 @@
         <param-value>/WEB-INF/classes/log4j.properties</param-value>
     </context-param>
 
+    <context-param>
+        <param-name>log4jRefreshInterval</param-name>
+        <param-value>60000</param-value>
+    </context-param>
 
     <servlet>
         <servlet-name>dispatcherServlet</servlet-name>
@@ -71,6 +75,10 @@
         </listener-class>
     </listener>
 
-
+	<listener>
+        <listener-class>
+        	org.springframework.web.util.Log4jConfigListener
+        </listener-class>
+    </listener>
 
 </web-app>
