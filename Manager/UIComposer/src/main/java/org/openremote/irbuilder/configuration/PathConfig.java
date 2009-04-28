@@ -61,14 +61,13 @@ public class PathConfig {
          throw new IllegalStateException("Can't find tmp.dir in properties, system initialize error.");
       }
    }
-
    /**
     * Gets iphone xml path
     * 
     * @return file absolute path
     */
-   public String iPhoneXmlFilePath() {
-      return tempFolder() + File.separator + "iphone.xml" + "_" + UUID.randomUUID();
+   public String iPhoneXmlFilePath(String sessionId) {
+      return sessionFolder(sessionId) + File.separator + "iphone.xml";
    }
 
    /**
@@ -76,8 +75,8 @@ public class PathConfig {
     * 
     * @return file absolute path
     */
-   public String controllerXmlFilePath() {
-      return tempFolder() + File.separator + "controller.xml" + "_" + UUID.randomUUID();
+   public String controllerXmlFilePath(String sessionId) {
+      return sessionFolder(sessionId) + File.separator + "controller.xml";
    }
 
    /**
@@ -85,8 +84,8 @@ public class PathConfig {
     * 
     * @return file absolute path
     */
-   public String panelDescFilePath() {
-      return tempFolder() + File.separator + "panel." + Constants.PANEL_DESC_FILE_EXT + "" + "_" + UUID.randomUUID();
+   public String panelDescFilePath(String sessionId) {
+      return sessionFolder(sessionId) + File.separator + "panel." + Constants.PANEL_DESC_FILE_EXT;
    }
 
    /**
@@ -94,8 +93,8 @@ public class PathConfig {
     * 
     * @return file absolute path
     */
-   public String lircFilePath() {
-      return tempFolder() + File.separator + "lircd.conf" + "_" + UUID.randomUUID();
+   public String lircFilePath(String sessionId) {
+      return sessionFolder(sessionId) + File.separator + "lircd.conf";
    }
 
    /**
@@ -103,8 +102,17 @@ public class PathConfig {
     * 
     * @return file absolute path
     */
-   public String openremoteZipFilePath() {
-      return tempFolder() + File.separator + "openremote." + UUID.randomUUID() + ".zip";
+   public String openremoteZipFilePath(String sessionId) {
+      return sessionFolder(sessionId) + File.separator + "openremote." + UUID.randomUUID() + ".zip";
    }
-
+   
+   /**
+    * Gets session folder path
+    * 
+    * @param iconName
+    * @return file absolute path
+    */
+   public String sessionFolder(String sessionId) {
+      return tempFolder() + File.separator + sessionId;
+   }
 }

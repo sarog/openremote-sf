@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -31,6 +33,7 @@ import org.openremote.irbuilder.Constants;
 import org.openremote.irbuilder.configuration.PathConfig;
 import org.openremote.irbuilder.exception.FileOperationException;
 import org.openremote.irbuilder.service.ResourceService;
+import org.openremote.irbuilder.utils.IphoneXmlParser;
 import org.openremote.irbuilder.utils.StringUtils;
 import org.openremote.irbuilder.utils.ZipUtils;
 import org.springframework.stereotype.Service;
@@ -41,22 +44,36 @@ import org.springframework.stereotype.Service;
 @Service(value = "resourceService")
 public class ResourceServiceImpl implements ResourceService {
    private static final Logger logger = Logger.getLogger(ResourceServiceImpl.class);
-
+   
    public File downloadZipResource(String controllerXML, String iphoneXML, String panelDesc, String RESTAPIUrl,
-         String SectionIds) {
-
-      File iphoneXMLFile = new File(PathConfig.getInstance().iPhoneXmlFilePath());
-      File controllerXMLFile = new File(PathConfig.getInstance().controllerXmlFilePath());
-      File panelDescFile = new File(PathConfig.getInstance().panelDescFilePath());
-      File lircdFile = new File(PathConfig.getInstance().lircFilePath());
-      File zipFile = new File(PathConfig.getInstance().openremoteZipFilePath());
-
+         String SectionIds, String sessionId) {
+      
+      File sessionFolder = new File(PathConfig.getInstance().sessionFolder(sessionId));
+      if(!sessionFolder.exists()){
+         sessionFolder.mkdirs();
+      }
+      File iphoneXMLFile = new File(PathConfig.getInstance().iPhoneXmlFilePath(sessionId));
+      File controllerXMLFile = new File(PathConfig.getInstance().controllerXmlFilePath(sessionId));
+      File panelDescFile = new File(PathConfig.getInstance().panelDescFilePath(sessionId));
+      File lircdFile = new File(PathConfig.getInstance().lircFilePath(sessionId));
+      File zipFile = new File(PathConfig.getInstance().openremoteZipFilePath(sessionId));
+      
+      String newIphoneXML = IphoneXmlParser.parserXML(iphoneXML, sessionFolder);
+      List<File> files = new ArrayList<File>();
+      for (File file : sessionFolder.listFiles()) {
+         files.add(file);
+      }
+      
       try {
-         FileUtils.writeStringToFile(iphoneXMLFile, iphoneXML);
+         FileUtils.writeStringToFile(iphoneXMLFile, newIphoneXML);
+         files.add(iphoneXMLFile);
          FileUtils.writeStringToFile(controllerXMLFile, controllerXML);
+         files.add(controllerXMLFile);
          FileUtils.writeStringToFile(panelDescFile, panelDesc);
+         files.add(panelDescFile);         
          FileUtils.copyURLToFile(buildLircRESTUrl(RESTAPIUrl, SectionIds), lircdFile);
-         ZipUtils.compress(zipFile.getAbsolutePath(), iphoneXMLFile, controllerXMLFile, panelDescFile, lircdFile);
+         files.add(lircdFile);
+         ZipUtils.compress(zipFile.getAbsolutePath(), files);
       } catch (IOException e) {
          logger.error("Compress zip file occur IOException", e);
          throw new FileOperationException("Compress zip file occur IOException", e);
@@ -64,7 +81,7 @@ public class ResourceServiceImpl implements ResourceService {
          FileUtils.deleteQuietly(iphoneXMLFile);
          FileUtils.deleteQuietly(controllerXMLFile);
          FileUtils.deleteQuietly(panelDescFile);
-         FileUtils.deleteQuietly(lircdFile);
+         FileUtils.deleteQuietly(lircdFile);         
       }
       return zipFile;
    }
