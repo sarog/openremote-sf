@@ -37,7 +37,7 @@ INSERT INTO `icon` VALUES ('8', 'play.png', 'play');
 INSERT INTO `icon` VALUES ('9', 'next.png', 'next');
 INSERT INTO `icon` VALUES ('10', 'fast_forward.png', 'fast_forward');
 INSERT INTO `icon` VALUES ('11', 'magnify+.png', 'magnify+');
-INSERT INTO `icon` VALUES ('12', 'magnigy-.png', 'magnigy-');
+INSERT INTO `icon` VALUES ('12', 'magnify-.png', 'magnify-');
 INSERT INTO `icon` VALUES ('13', 'vol_up.png', 'vol_up');
 INSERT INTO `icon` VALUES ('14', 'vol_down.png', 'vol_down');
 INSERT INTO `icon` VALUES ('15', 'pause.png', 'pause');
