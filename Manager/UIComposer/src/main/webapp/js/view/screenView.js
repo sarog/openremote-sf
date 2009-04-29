@@ -43,7 +43,7 @@ ScreenView = function() {
 	
 	ScreenView.updateInspeactView = function() {
 		
-	}
+	};
 	
 	ScreenView.getSelectedScreenId = function() {
 		return parseInt($("#screen_select").find("option:selected").val());

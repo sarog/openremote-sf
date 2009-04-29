@@ -16,7 +16,7 @@
 
 Screen = function() {
 	function Screen () {
-		self = this;
+		var self = this;
 		self.id = -1;
 		self.name = "";
 		self.label = self.name;
