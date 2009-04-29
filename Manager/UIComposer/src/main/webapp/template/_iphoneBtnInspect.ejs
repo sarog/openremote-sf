@@ -2,7 +2,7 @@
 <input type="text" class="text ui-widget-content ui-corner-all"  value="<%=label %>" id="inspect_iphoneBtn_label">
 <fieldset>
 <legend>Icon</legend>
-<% var _icon = (icon==""?DEFAULT_IPHONE_BTN_ICON:userDirPath+"/"+icon) %>
+<% var _icon = (icon==""?DEFAULT_IPHONE_BTN_ICON:icon) %>
 <img id="inspect_iphoneBtn_icon" src="<%=_icon %>">&nbsp;&nbsp;&nbsp;
 	<a id="inspect_change_icon" class="ui-state-default ui-corner-all button_without_icon" href="#" onclick="javascript:void(0);return false;">Change</a>
 </fieldset>
