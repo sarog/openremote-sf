@@ -35,10 +35,9 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.commander.EventCommander;
-import org.openremote.controller.commander.EventCommanderFactory;
+import org.openremote.controller.event.Event;
 import org.openremote.controller.event.EventFactory;
-import org.openremote.irbuilder.domain.Event;
+import org.springframework.context.support.ApplicationObjectSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -61,9 +60,6 @@ public class RemoteActionXMLParser {
    /** The event factory. */
    private EventFactory eventFactory;
    
-   /** The event commander factory. */
-   private EventCommanderFactory eventCommanderFactory;
-
 
 
    /**
@@ -73,19 +69,18 @@ public class RemoteActionXMLParser {
     * 
     * @return the list< event commander>
     */
-   public List<EventCommander> findEventCommandersByButtonID(String buttonID) {
-      List<EventCommander> commanders = new ArrayList<EventCommander>();
+   public List<Event> findEventsByButtonID(String buttonID) {
+      List<Event> events = new ArrayList<Event>();
       Element button = queryElementFromXMLById(buttonID);
       NodeList nodes = button.getChildNodes();
       for (int i = 0; i < nodes.getLength(); i++) {
          String eventID = nodes.item(i).getTextContent().trim();
          Element element = queryElementFromXMLById(eventID);
          if(element != null){
-            Event event = eventFactory.getEvent(element);
-            commanders.add(eventCommanderFactory.getCommander(element.getNodeName(), event));
+            events.add(eventFactory.getEvent(element));
          }
       }
-      return commanders;
+      return events;
    }
    
 
@@ -153,14 +148,6 @@ public class RemoteActionXMLParser {
       this.eventFactory = eventFactory;
    }
 
-   /**
-    * Sets the event commander factory.
-    * 
-    * @param eventCommanderFactory the new event commander factory
-    */
-   public void setEventCommanderFactory(EventCommanderFactory eventCommanderFactory) {
-      this.eventCommanderFactory = eventCommanderFactory;
-   }
-   
+
    
 }

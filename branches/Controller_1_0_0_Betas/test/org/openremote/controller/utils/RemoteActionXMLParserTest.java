@@ -24,7 +24,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.openremote.controller.commander.EventCommander;
+import org.openremote.controller.event.Event;
 import org.openremote.controller.spring.SpringContext;
 
 
@@ -43,7 +43,7 @@ public class RemoteActionXMLParserTest extends TestCase {
     * Test find ir event by button id.
     */
    public void testFindIREventByButtonID(){
-      //List<EventCommander> list= remoteActionXMLParser.findEventCommandersByButtonID("4");
+      //List<Event> list= remoteActionXMLParser.findEventsByButtonID("4");
       //assertEquals(1, list.size());
    }
    
