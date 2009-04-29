@@ -45,7 +45,7 @@ public class ResourceServiceImpl implements ResourceService {
    private static final Logger logger = Logger.getLogger(ResourceServiceImpl.class);
 
    public File downloadZipResource(String controllerXML, String iphoneXML, String panelDesc, String RESTAPIUrl,
-                                   String SectionIds, String sessionId) {
+                                   String sectionIds, String sessionId) {
 
       File sessionFolder = new File(PathConfig.getInstance().sessionFolder(sessionId));
       if (!sessionFolder.exists()) {
@@ -73,7 +73,13 @@ public class ResourceServiceImpl implements ResourceService {
          files.add(controllerXMLFile);
          FileUtils.writeStringToFile(panelDescFile, panelDesc);
          files.add(panelDescFile);
-         FileUtils.copyURLToFile(buildLircRESTUrl(RESTAPIUrl, SectionIds), lircdFile);
+         
+         if (sectionIds != "") {
+            FileUtils.copyURLToFile(buildLircRESTUrl(RESTAPIUrl, sectionIds), lircdFile);
+         } else {
+            FileUtils.writeStringToFile(lircdFile, "");
+         }
+
          files.add(lircdFile);
          ZipUtils.compress(zipFile.getAbsolutePath(), files);
       } catch (IOException e) {
