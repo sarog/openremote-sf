@@ -115,8 +115,10 @@ ScreenViewController = function() {
 	
 	ScreenViewController.storeCurrentScreen = function() {
 		//save previous screen
-		var preScreen = DownloadController.parseCurrentScreen(g_screens[ScreenView.getSelectedScreenId()]);
-		g_screens[preScreen.id] = preScreen;
+		if (ScreenView.getSelectedScreenId() != 0 ) {
+			var preScreen = DownloadController.parseCurrentScreen(g_screens[ScreenView.getSelectedScreenId()]);
+			g_screens[preScreen.id] = preScreen;
+		}
 	};
 	
 
