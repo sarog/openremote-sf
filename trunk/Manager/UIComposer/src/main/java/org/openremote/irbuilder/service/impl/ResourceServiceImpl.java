@@ -16,9 +16,7 @@
 
 package org.openremote.irbuilder.service.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,6 +26,7 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.openremote.irbuilder.Constants;
 import org.openremote.irbuilder.configuration.PathConfig;
@@ -44,12 +43,12 @@ import org.springframework.stereotype.Service;
 @Service(value = "resourceService")
 public class ResourceServiceImpl implements ResourceService {
    private static final Logger logger = Logger.getLogger(ResourceServiceImpl.class);
-   
+
    public File downloadZipResource(String controllerXML, String iphoneXML, String panelDesc, String RESTAPIUrl,
-         String SectionIds, String sessionId) {
-      
+                                   String SectionIds, String sessionId) {
+
       File sessionFolder = new File(PathConfig.getInstance().sessionFolder(sessionId));
-      if(!sessionFolder.exists()){
+      if (!sessionFolder.exists()) {
          sessionFolder.mkdirs();
       }
       File iphoneXMLFile = new File(PathConfig.getInstance().iPhoneXmlFilePath(sessionId));
@@ -57,20 +56,23 @@ public class ResourceServiceImpl implements ResourceService {
       File panelDescFile = new File(PathConfig.getInstance().panelDescFilePath(sessionId));
       File lircdFile = new File(PathConfig.getInstance().lircFilePath(sessionId));
       File zipFile = new File(PathConfig.getInstance().openremoteZipFilePath(sessionId));
-      
+
       String newIphoneXML = IphoneXmlParser.parserXML(iphoneXML, sessionFolder);
       List<File> files = new ArrayList<File>();
       for (File file : sessionFolder.listFiles()) {
+         if (FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("zip")) {
+            continue;
+         }
          files.add(file);
       }
-      
+
       try {
          FileUtils.writeStringToFile(iphoneXMLFile, newIphoneXML);
          files.add(iphoneXMLFile);
          FileUtils.writeStringToFile(controllerXMLFile, controllerXML);
          files.add(controllerXMLFile);
          FileUtils.writeStringToFile(panelDescFile, panelDesc);
-         files.add(panelDescFile);         
+         files.add(panelDescFile);
          FileUtils.copyURLToFile(buildLircRESTUrl(RESTAPIUrl, SectionIds), lircdFile);
          files.add(lircdFile);
          ZipUtils.compress(zipFile.getAbsolutePath(), files);
@@ -81,7 +83,7 @@ public class ResourceServiceImpl implements ResourceService {
          FileUtils.deleteQuietly(iphoneXMLFile);
          FileUtils.deleteQuietly(controllerXMLFile);
          FileUtils.deleteQuietly(panelDescFile);
-         FileUtils.deleteQuietly(lircdFile);         
+         FileUtils.deleteQuietly(lircdFile);
       }
       return zipFile;
    }
@@ -97,16 +99,40 @@ public class ResourceServiceImpl implements ResourceService {
       return lircUrl;
    }
 
-   public String getIrbFileFromZip(InputStream inputStream) {
+   public String getIrbFileFromZip(InputStream inputStream, String sessionId) {
+      File tmpDir = new File(PathConfig.getInstance().sessionFolder(sessionId));
+      if (tmpDir.exists() && tmpDir.isDirectory()) {
+         try {
+            FileUtils.deleteDirectory(tmpDir);
+         } catch (IOException e) {
+            logger.error("Delete temp dir Occur IOException", e);
+            throw new FileOperationException("Delete temp dir Occur IOException", e);
+         }
+      }
+      String irbFileContent = "";
       ZipInputStream zipInputStream = new ZipInputStream(inputStream);
       ZipEntry zipEntry;
+      FileOutputStream fileOutputStream = null;
       try {
          while ((zipEntry = zipInputStream.getNextEntry()) != null) {
             if (!zipEntry.isDirectory()) {
                if (Constants.PANEL_DESC_FILE_EXT.equalsIgnoreCase(StringUtils.getFileExt(zipEntry.getName()))) {
-                  return IOUtils.toString(zipInputStream);
+                  irbFileContent = IOUtils.toString(zipInputStream);
+               }
+               //TODO extract constant
+               if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|irb)")) {
+                  File file = new File(PathConfig.getInstance().sessionFolder(sessionId) + zipEntry.getName());
+                  FileUtils.touch(file);
+
+                  fileOutputStream = new FileOutputStream(file);
+                  int b;
+                  while ((b = zipInputStream.read()) != -1) {
+                     fileOutputStream.write(b);
+                  }
+                  fileOutputStream.close();
                }
             }
+
          }
       } catch (IOException e) {
          logger.error("Get Irb file from zip file Occur IOException", e);
@@ -114,12 +140,38 @@ public class ResourceServiceImpl implements ResourceService {
       } finally {
          try {
             zipInputStream.closeEntry();
+             if (fileOutputStream != null) {
+               fileOutputStream.close();
+            }
          } catch (IOException e) {
-            logger.error("Close zipInputStream Occur IOException while get Irb file from zip", e);
-            throw new FileOperationException("Close zipInputStream Occur IOException while get Irb file from zip", e);
+            logger.error("Clean Resource used occured IOException when import a file", e);
          }
+
       }
-      return "";
+      return irbFileContent;
    }
 
+   public File uploadImage(InputStream inputStream, String fileName, String sessionId) {
+      File file = new File(PathConfig.getInstance().sessionFolder(sessionId) + File.separator + fileName);
+      FileOutputStream fileOutputStream = null;
+      try {
+         FileUtils.touch(file);
+         fileOutputStream = new FileOutputStream(file);
+         IOUtils.copy(inputStream, fileOutputStream);
+      } catch (IOException e) {
+         logger.error("Save uploaded image to file occur IOException.", e);
+         throw new FileOperationException("Save uploaded image to file occur IOException.", e);
+      } finally {
+         try {
+            if (fileOutputStream != null) {
+               fileOutputStream.close();
+            }
+         } catch (IOException e) {
+            logger.error("Close FileOutputStream Occur IOException while save a uploaded image.", e);
+         }
+
+      }
+
+      return file;
+   }
 }

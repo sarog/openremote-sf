@@ -81,5 +81,8 @@
         --><listener>
             <listener-class>org.openremote.irbuilder.listener.ApplicationListener</listener-class>
         </listener>
+    <listener>
+            <listener-class>org.openremote.irbuilder.listener.SessionListener</listener-class>
+        </listener>
     
 </web-app>

@@ -11,6 +11,13 @@ function isArray(item) {
     return Object.prototype.toString.apply(item) === '[object Array]';
 }
 
+function getFileNameFromPath (path) {
+	if (path.lastIndexOf("/") != -1) {
+		return path.substr(path.lastIndexOf("/")+1,path.length -1);
+	}
+	return path;
+}
+
 
 String.prototype.replaceAll = stringReplaceAll;
 
@@ -23,4 +30,6 @@ String.prototype.isNumber = isNumber;
 function isNumber () {
 	return (this.toString().match(/^[1-9]\d*$/) != null);
 }
+
+
 

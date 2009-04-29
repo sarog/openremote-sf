@@ -24,6 +24,7 @@ var IphoneBtn = function() {
 		self.y = -1;
 		self.height = -1;
 		self.width = -1;
+		self.icon = "";
 		// convenient way to get the Class name.
 		self.className = getClassName(self);
 		
@@ -52,7 +53,11 @@ var IphoneBtn = function() {
 		};
 		
 		self.inspectViewTemplate = "template/_iphoneBtnInspect.ejs";
-		
+
+        self.afterShowInspect = function() {
+            IPhoneController.afterShowInspect();
+        };
+
 		self.updateModel = function() {
 			IPhoneController.updateIphoneBtn(self);
 		};
@@ -78,6 +83,9 @@ var IphoneBtn = function() {
 		iphoneBtn.height = model.height    ;
 		iphoneBtn.width  = model.width     ;
 		iphoneBtn.label  = model.label     ;
+		iphoneBtn.label  = model.label     ;
+		iphoneBtn.icon   = model.icon      ;
+		
 		return iphoneBtn;
 	};
 	
