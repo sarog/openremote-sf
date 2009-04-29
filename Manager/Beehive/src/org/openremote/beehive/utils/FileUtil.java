@@ -272,7 +272,7 @@ public class FileUtil {
    }
 
    /**
-    * Checks if it is ignored. lircrc,HTML,image,lircmd.conf will be ignored.
+    * Checks if it is ignored. lircrc,HTML,image,lircmd.conf,Thumbs.db will be ignored.
     * 
     * @param file
     *           a file to check
@@ -284,7 +284,8 @@ public class FileUtil {
       boolean isLircrc = path.endsWith(".lircrc");
       boolean isLircmd = path.indexOf("lircmd.conf") != -1;
       boolean isHtml = isHTML(file);
-      return isImage || isLircrc || isLircmd || isHtml;
+      boolean isThumbs = path.endsWith("Thumbs.db");
+      return isImage || isLircrc || isLircmd || isHtml || isThumbs;
    }
 
    /**
