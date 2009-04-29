@@ -31,8 +31,10 @@ var ImportController = function() {
                     return;
                 }
                 if (confirm("All your current work will clear, are you sure?")) {
-                    $("#upload_form").submit();
-					ImportController.getCurrentUserPath();
+                    
+					ImportController.getCurrentUserPath(function() {
+						$("#upload_form").submit();
+					});
                 }
 
             }
@@ -188,9 +190,10 @@ var ImportController = function() {
 		
     };
 
-	ImportController.getCurrentUserPath = function() {
+	ImportController.getCurrentUserPath = function(callback) {
 		$.get("currenUserPath.htm",function(data) {
 			userDirPath = data;
+			callback();
 		});
 	};
     return ImportController;
