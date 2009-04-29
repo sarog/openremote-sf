@@ -18,6 +18,11 @@
             /WEB-INF/classes/applicationContext-security.xml
         --></param-value>
     </context-param>
+    
+    <context-param>
+        <param-name>webAppRootKey</param-name>
+        <param-value>beehive.root</param-value>
+    </context-param> 
 
     <context-param>
         <param-name>log4jConfigLocation</param-name>
