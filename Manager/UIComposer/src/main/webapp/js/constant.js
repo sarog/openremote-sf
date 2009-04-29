@@ -16,7 +16,9 @@
 /*-----------  some constant   --------------------------*/
 
 // Define rest api url
-RESTAPIUrl = "http://openremote.finalist.hk/beehive/rest/lirc";
+RESTAPIUrl = "http://openremote.finalist.hk/beehive/rest";
+
+DEFAULT_IPHONE_BTN_ICON = "image/iphone_btn.jpg";
 
 /*-----------  store global data  --------------------------*/
 
@@ -35,6 +37,8 @@ g_screens = {};
 // "Notice":should clean up when delete infrared button from iphone panel.
 // "Notice":should clean up when delete iphone button.
 btnInArea = new Array();
+
+userDirPath = "";
 
 
 

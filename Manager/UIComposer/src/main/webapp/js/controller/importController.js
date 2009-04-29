@@ -32,7 +32,7 @@ var ImportController = function() {
                 }
                 if (confirm("All your current work will clear, are you sure?")) {
                     $("#upload_form").submit();
-
+					ImportController.getCurrentUserPath();
                 }
 
             }
@@ -53,25 +53,31 @@ var ImportController = function() {
      * @param statusText statusText
      */
     function uploadSuccess(responseText, statusText) {
+		
         ImportController.cleanUp();
         var data = eval('(' + responseText + ')');
         revertScreens(data.panel.screens);
         revertKnxBtns(data.panel.knxBtns);
         revertX10Btns(data.panel.x10Btns);
         revertMacroBtns(data.panel.macroBtns);
-
+		
         BUTTONID = data.panel.maxId;
         $("#upload_form_container").closeModalForm();
     }
 
 	
 	function revertScreens (screens) {
+		
+		
 		for (var index in screens) {
 			var o_screen = screens[index];
 			var screen = ImportController.buildModel(o_screen);
 			screen.buttons = new Array();
 			for (var index in o_screen.buttons) {
 				var btn = revertIphoneBtn(o_screen.buttons[index]);
+				if (btn.icon != "") {
+					btn.icon = userDirPath+ "/" + getFileNameFromPath(btn.icon);
+				}
 				screen.buttons.push(btn);
 			}
 			
@@ -127,7 +133,7 @@ var ImportController = function() {
     /**
      * Revert Macro buttons
      * @param macroBtns macroBtns object from description file
-     */
+     */ 
     function revertMacroBtns(macroBtns) {
         var macroArray = {};
         for (var index in macroBtns) {
@@ -181,5 +187,11 @@ var ImportController = function() {
 		g_screens = {};
 		
     };
+
+	ImportController.getCurrentUserPath = function() {
+		$.get("currenUserPath.htm",function(data) {
+			userDirPath = data;
+		});
+	};
     return ImportController;
 } ();

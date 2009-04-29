@@ -6,9 +6,6 @@ InspectView = function() {
 		},
 		getModel:function (model) {
 			return $("#inspect_tool_bar").data("model");
-		},
-		getLabelValue:function () {
-			return $("#button_label_input").val();
 		}
 	};
 }();

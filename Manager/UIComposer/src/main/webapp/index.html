@@ -44,6 +44,8 @@
 </script>
 		<script type="text/javascript" src="js/view/inspectView.js">
 </script>
+		<script type="text/javascript" src="js/view/changeIconView.js">
+</script>
 		<script type="text/javascript" src="js/controller/dragController.js">
 </script>
 		<script type="text/javascript" src="js/controller/selectController.js">
@@ -61,6 +63,8 @@
 		<script type="text/javascript" src="js/controller/screenViewController.js">
 </script>
 		<script type="text/javascript" src="js/controller/inspectViewController.js">
+</script>
+		<script type="text/javascript" src="js/controller/changeIconViewController.js">
 </script>
 		<script type="text/javascript" src="js/init.js">
 </script>
@@ -230,6 +234,25 @@
 								</select>
 						</div>
 					</div>
+					
+				</div>
+				<div id="change_icon_form">
+					<label for="fromBeehive"><input type="radio" name="iconType" class="change_icon_type" checked="true" id="fromBeehive">Select From Beehive</label>
+					<label for="fromUrl"><input type="radio" name="iconType" class="change_icon_type" id="fromUrl">From a URL</label>
+					<label for="fromUpload"><input type="radio" name="iconType" class="change_icon_type" id="fromUpload">Upload a Image</label>	
+					<fieldset>
+					<div id="change_icon_from_beehive" class="change_icon_from_container">
+
+					</div>
+					<div id="change_icon_from_url" class="change_icon_from_container">
+						<label for="icon_url_input">URL : <input type="text" id="icon_url_input" /></label>
+					</div>
+					<div id="change_icon_from_upload" class="change_icon_from_container">
+						<form id="upload_image_form" action="uploadImage.htm" method="post" enctype="multipart/form-data">
+						<label for="icon_file_name_input">File name : <input type="file" id="icon_file_name_input" name="image_file" /></label>
+						</form>
+					</div>
+					</fieldset>
 				</div>
 				<div id="upload_form_container" style="display:none">
 					<form id="upload_form" action="import.htm" method="post" enctype="multipart/form-data">
@@ -238,6 +261,7 @@
 							</fieldset>
 					</form>
 				</div>
+			
 				<div id="loading">
 					<img src="image/loading.gif" alt="loading" />
 				</div>
@@ -246,5 +270,6 @@
 		<div id="iphoneBtn_container">
 			
 		</div>
+			
 	</body>
 </html>

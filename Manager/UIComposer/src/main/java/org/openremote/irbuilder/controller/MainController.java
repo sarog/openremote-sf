@@ -74,8 +74,20 @@ public class MainController {
    @RequestMapping(value = "/import.htm", method = RequestMethod.POST)
    public void importZip(HttpServletRequest request, HttpServletResponse resp) throws IOException {
       MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-      String result = resourceService.getIrbFileFromZip(multipartRequest.getFile("zip_file").getInputStream());
+      String result = resourceService.getIrbFileFromZip(multipartRequest.getFile("zip_file").getInputStream(),request.getSession().getId());
       resp.getWriter().print(result);
+   }
+
+   @RequestMapping(value = "/uploadImage.htm", method = RequestMethod.POST)
+   public void uploadImage(HttpServletRequest request, HttpServletResponse resp) throws IOException {
+      MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+      File file = resourceService.uploadImage(multipartRequest.getFile("image_file").getInputStream(),multipartRequest.getFile("image_file").getOriginalFilename(),request.getSession().getId().toString());
+      resp.getWriter().print("tmp/"+request.getSession().getId()+"/"+file.getName());
+   }
+
+   @RequestMapping(value = "/currenUserPath.htm", method = RequestMethod.GET)
+   public void currenUserPath(HttpServletRequest request, HttpServletResponse resp) throws IOException {
+      resp.getWriter().print("tmp/"+request.getSession().getId());
    }
 
 }

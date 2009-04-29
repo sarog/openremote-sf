@@ -27,6 +27,10 @@ import org.openremote.irbuilder.Constants;
 
 /**
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
+ * eg:
+ * web.dir=/Users/finalist/dev/workspace/openremote/UIComposer/src/main/webapp/
+ * tmp.dir=/Users/finalist/dev/workspace/openremote/UIComposer/src/main/webapp/tmp/
+ *
  */
 public class PathConfig {
    private static final Logger logger = Logger.getLogger(PathConfig.class);
@@ -67,7 +71,7 @@ public class PathConfig {
     * @return file absolute path
     */
    public String iPhoneXmlFilePath(String sessionId) {
-      return sessionFolder(sessionId) + File.separator + "iphone.xml";
+      return sessionFolder(sessionId) + "iphone.xml";
    }
 
    /**
@@ -76,7 +80,7 @@ public class PathConfig {
     * @return file absolute path
     */
    public String controllerXmlFilePath(String sessionId) {
-      return sessionFolder(sessionId) + File.separator + "controller.xml";
+      return sessionFolder(sessionId) + "controller.xml";
    }
 
    /**
@@ -85,7 +89,7 @@ public class PathConfig {
     * @return file absolute path
     */
    public String panelDescFilePath(String sessionId) {
-      return sessionFolder(sessionId) + File.separator + "panel." + Constants.PANEL_DESC_FILE_EXT;
+      return sessionFolder(sessionId) + "panel." + Constants.PANEL_DESC_FILE_EXT;
    }
 
    /**
@@ -94,7 +98,7 @@ public class PathConfig {
     * @return file absolute path
     */
    public String lircFilePath(String sessionId) {
-      return sessionFolder(sessionId) + File.separator + "lircd.conf";
+      return sessionFolder(sessionId) + "lircd.conf";
    }
 
    /**
@@ -103,16 +107,16 @@ public class PathConfig {
     * @return file absolute path
     */
    public String openremoteZipFilePath(String sessionId) {
-      return sessionFolder(sessionId) + File.separator + "openremote." + UUID.randomUUID() + ".zip";
+      return sessionFolder(sessionId) + "openremote." + UUID.randomUUID() + ".zip";
    }
    
    /**
     * Gets session folder path
     * 
-    * @param iconName
+    * @param sessionId
     * @return file absolute path
     */
    public String sessionFolder(String sessionId) {
-      return tempFolder() + File.separator + sessionId;
+      return tempFolder() + sessionId + File.separator;
    }
 }

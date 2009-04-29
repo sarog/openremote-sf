@@ -60,6 +60,10 @@ HTMLBuilder = function() {
             }).render({
             	label:text
             }));
+			if (iphoneBtn.icon != "") {
+				btn.find("table").removeClass("iPhone_btn_cont");
+				btn.find("table .middle").html("<img src="+iphoneBtn.icon+">");
+			}
             btn.data("model", iphoneBtn);
            	btn.attr("title", iphoneBtn.label);
             btn.css("position", "absolute");

@@ -27,6 +27,7 @@ public interface ResourceService {
    File downloadZipResource(String controllerXML, String iphoneXML, String panelDesc, String RESTAPIUrl,
          String SectionIds, String sessionId);
 
-   public String getIrbFileFromZip(InputStream inputStream);
+   public String getIrbFileFromZip(InputStream inputStream,String sessionId);
+   public File uploadImage(InputStream inputStream,String fileName,String sessionId);
 
 }
