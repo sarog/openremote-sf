@@ -12,7 +12,7 @@
 
 	<c:set value="${exception}" var="ee" />
 	<jsp:useBean id="ee" type="java.lang.Exception" />
-	SVNException: <%=ee.getMessage()%>
+	Exception: <%=ee.getMessage()%>
 
 </body>
 </html>
