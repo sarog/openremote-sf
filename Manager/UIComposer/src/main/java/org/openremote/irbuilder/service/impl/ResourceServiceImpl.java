@@ -58,6 +58,29 @@ public class ResourceServiceImpl implements ResourceService {
       File zipFile = new File(PathConfig.getInstance().openremoteZipFilePath(sessionId));
 
       String newIphoneXML = IphoneXmlParser.parserXML(iphoneXML, sessionFolder);
+      
+       try {
+          
+         FileUtils.deleteQuietly(iphoneXMLFile);
+         FileUtils.deleteQuietly(controllerXMLFile);
+         FileUtils.deleteQuietly(panelDescFile);
+         FileUtils.deleteQuietly(lircdFile);
+
+         FileUtils.writeStringToFile(iphoneXMLFile, newIphoneXML);
+         FileUtils.writeStringToFile(controllerXMLFile, controllerXML);
+         FileUtils.writeStringToFile(panelDescFile, panelDesc);
+
+         if (sectionIds != "") {
+            FileUtils.copyURLToFile(buildLircRESTUrl(RESTAPIUrl, sectionIds), lircdFile);
+         } else {
+            FileUtils.writeStringToFile(lircdFile, "");
+         }
+
+      } catch (IOException e) {
+         logger.error("Compress zip file occur IOException", e);
+         throw new FileOperationException("Compress zip file occur IOException", e);
+      }
+
       List<File> files = new ArrayList<File>();
       for (File file : sessionFolder.listFiles()) {
          if (FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("zip")) {
@@ -66,31 +89,7 @@ public class ResourceServiceImpl implements ResourceService {
          files.add(file);
       }
 
-      try {
-         FileUtils.writeStringToFile(iphoneXMLFile, newIphoneXML);
-         files.add(iphoneXMLFile);
-         FileUtils.writeStringToFile(controllerXMLFile, controllerXML);
-         files.add(controllerXMLFile);
-         FileUtils.writeStringToFile(panelDescFile, panelDesc);
-         files.add(panelDescFile);
-         
-         if (sectionIds != "") {
-            FileUtils.copyURLToFile(buildLircRESTUrl(RESTAPIUrl, sectionIds), lircdFile);
-         } else {
-            FileUtils.writeStringToFile(lircdFile, "");
-         }
-
-         files.add(lircdFile);
-         ZipUtils.compress(zipFile.getAbsolutePath(), files);
-      } catch (IOException e) {
-         logger.error("Compress zip file occur IOException", e);
-         throw new FileOperationException("Compress zip file occur IOException", e);
-      } finally {
-         FileUtils.deleteQuietly(iphoneXMLFile);
-         FileUtils.deleteQuietly(controllerXMLFile);
-         FileUtils.deleteQuietly(panelDescFile);
-         FileUtils.deleteQuietly(lircdFile);
-      }
+      ZipUtils.compress(zipFile.getAbsolutePath(), files);
       return zipFile;
    }
 
