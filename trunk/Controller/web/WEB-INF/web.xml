@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
 	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-    <display-name>beehive</display-name>
+    <display-name>controller</display-name>
 
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
@@ -16,6 +16,11 @@
             /WEB-INF/classes/spring-context.xml
         </param-value>
     </context-param>
+    
+    <context-param>
+        <param-name>webAppRootKey</param-name>
+        <param-value>controller.root</param-value>
+    </context-param> 
 
     <context-param>
         <param-name>log4jConfigLocation</param-name>
