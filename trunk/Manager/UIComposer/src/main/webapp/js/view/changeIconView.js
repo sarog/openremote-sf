@@ -23,7 +23,7 @@ ChangeIconView = function() {
 		},
 		getFileName: function(){
 			return $("#icon_file_name_input").val();
-		},
+		}
 		
     };
 } ();
