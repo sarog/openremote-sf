@@ -39,7 +39,7 @@ ScreenViewController = function() {
         var valid = true;
         if ($.empty(name.val())) {
             valid = false;
-            $("#create_screen_dialog").updateTips(label, "Name is required");
+            $("#create_screen_dialog").updateTips(name, "Name is required");
             return;
         }
         // if ($.empty(row.val())) {
