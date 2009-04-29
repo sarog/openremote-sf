@@ -61,7 +61,7 @@ public class MainController {
          HttpServletRequest req, HttpServletResponse resp) throws IOException {
       String sessionId = req.getSession().getId();
       String fileName = resourceService.downloadZipResource(controller, iphone, panel, restUrl, ids,req.getSession().getId()).getName();
-      resp.getOutputStream().print("tmp/" + sessionId + File.separator + fileName);
+      resp.getOutputStream().print("tmp/" + sessionId + "/" + fileName);
    }
 
    /**
