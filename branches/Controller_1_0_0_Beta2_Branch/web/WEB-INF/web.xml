@@ -6,10 +6,6 @@
 
     <display-name>beehive</display-name>
 
-    <welcome-file-list>
-        <welcome-file>index.htm</welcome-file>
-    </welcome-file-list>
-
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
