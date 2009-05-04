@@ -14,67 +14,84 @@
  * http://www.fsf.org.
  */
 
-// TODO Need refactor, every screen have it's own controller and view.
 ScreenView = function() {
-	function ScreenView (screen) {
-	}
-	
-	ScreenView.screenPanelTemplate = "template/_screenPanel.ejs";	
-	
-	ScreenView.updateView = function (screen) {
-		$("#iphoneBtn_container .iphone_btn").remove();
-		new EJS({url:ScreenView.screenPanelTemplate}).update('dropable_table_container',{screen:screen});
-		// init btnInArea [x][y]
-		btnInArea = new Array();
-		for (var i = screen.col - 1; i >= 0; i--){
-			btnInArea[i] = new Array();
-			for (var j = screen.row - 1; j >= 0; j--){
-				btnInArea[i][j] = false;
-			};
-		};
-		
-		IPhoneController.init();
-		for (var index  in screen.buttons) {
-			var button = screen.buttons[index];
-			IPhoneController.createIphoneBtn(button);
-			button.fillArea();
-		}
-	};
-	
-	ScreenView.updateInspeactView = function() {
-		
-	};
-	
-	ScreenView.getSelectedScreenId = function() {
-		return parseInt($("#screen_select").find("option:selected").val());
-	};
-	ScreenView.getSelectedScreenText = function() {
-		return $("#screen_select").find("option:selected").text();		
-	};
-	ScreenView.addScreenSelect = function (screen) {
-		if (ScreenView.getSelectedScreenId() == 0) {
-			$("#screen_select").find("option:selected").remove();
-		}
-		var opt = new Option(screen.name, screen.id);
-        $("#screen_select")[0].options.add(opt);	
-	};
-	
-	ScreenView.setLastOptionSelected = function() {
-		$("#screen_select").find("option:last")[0].selected = true;
-	};
-		
-	
-	/**
+    function ScreenView(screen) {
+        }
+
+    ScreenView.cellHeight = -1;
+    ScreenView.cellWidth = -1;
+    // "Notice":should clean up when delete infrared button from iphone panel.
+    // "Notice":should clean up when delete iphone button.
+    ScreenView.btnInArea = [];
+
+
+    ScreenView.screenPanelTemplate = "template/_screenPanel.ejs";
+
+    ScreenView.updateView = function(screen) {
+
+        ScreenView.cellHeight = Math.round(($("#dropable_table_container").height() + 2) / screen.row);
+        ScreenView.cellWidth = Math.round(($("#dropable_table_container").width() + 2) / screen.col);
+
+        $("#iphoneBtn_container .iphone_btn").remove();
+        new EJS({
+            url: ScreenView.screenPanelTemplate
+        }).update('dropable_table_container', {
+            screen: screen
+        });
+
+
+
+        // init ScreenView.btnInArea [x][y]
+        ScreenView.btnInArea = [];
+        for (var i = screen.col - 1; i >= 0; i--) {
+            ScreenView.btnInArea[i] = new Array();
+            for (var j = screen.row - 1; j >= 0; j--) {
+                ScreenView.btnInArea[i][j] = false;
+            };
+        };
+
+        IPhoneController.init();
+        for (var index in screen.buttons) {
+            var button = screen.buttons[index];
+            IPhoneController.createIphoneBtn(button);
+            button.fillArea();
+        }
+    };
+
+    ScreenView.updateInspeactView = function() {
+
+        };
+
+    ScreenView.getSelectedScreenId = function() {
+        return parseInt($("#screen_select").find("option:selected").val());
+    };
+    ScreenView.getSelectedScreenText = function() {
+        return $("#screen_select").find("option:selected").text();
+    };
+    ScreenView.addScreenSelect = function(screen) {
+        if (ScreenView.getSelectedScreenId() == 0) {
+            $("#screen_select").find("option:selected").remove();
+        }
+        var opt = new Option(screen.name, screen.id);
+        $("#screen_select")[0].options.add(opt);
+    };
+
+    ScreenView.setLastOptionSelected = function() {
+        $("#screen_select").find("option:last")[0].selected = true;
+    };
+
+
+    /**
      * Find the table cell according to x and y.
      * @param x
      * @param y
      */
-    ScreenView.findCell =function (x, y) {
+    ScreenView.findCell = function(x, y) {
         var tr = $("#dropable_table").find("tr")[y];
         var td = $(tr).find("td")[x];
         return td;
     };
-	
-	
-	return ScreenView;
-}();
+
+
+    return ScreenView;
+} ();

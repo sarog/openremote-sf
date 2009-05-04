@@ -61,7 +61,7 @@ var IPhoneController = function() {
             iphoneBtn = draggable.data("model");
         }
 		//To avoid the case that this area have already had a button.
-        if (btnInArea[x][y]) {
+        if (ScreenView.btnInArea[x][y]) {
             draggable.draggable('option', 'revert', true);
 			// if this is a iphone button, we need to reFill the area.
             if (draggable.hasClass(".iphone_btn")) {
@@ -217,11 +217,8 @@ var IPhoneController = function() {
             btns = $(items);
         }
         btns.resizable({
-            grid: [49, 49],
+            grid: [ScreenView.cellWidth, ScreenView.cellHeight],
             start: function(event, ui) {
-                //TODO refactor it, pull out the cell width and height to class variable or instance variable.
-                var cellHeight = $("#dropable_table td:first").height();
-                var cellWeight = $("#dropable_table td:first").width();
 
                 var iphoneBtn = $(this).data("model");
 
@@ -232,22 +229,21 @@ var IPhoneController = function() {
                 var maxX = findMaxXWhenResize(iphoneBtn, screen);
                 var maxY = findMaxYWhenResize(iphoneBtn, screen);
 
-                btns.resizable('option', 'maxHeight', (maxY - iphoneBtn.y + 1) * cellHeight);
-                btns.resizable('option', 'maxWidth', (maxX - iphoneBtn.x + 1) * cellWeight);
+                btns.resizable('option', 'maxHeight', (maxY - iphoneBtn.y + 1) * ScreenView.cellHeight);
+                btns.resizable('option', 'maxWidth', (maxX - iphoneBtn.x + 1) * ScreenView.cellWidth);
 
             },
             stop: function(event, ui) {
                 var iphoneBtn = $(this).data("model");
                 iphoneBtn.clearArea();
-                var cellHeight = $("#dropable_table td:first").height();
-                var cellWeight = $("#dropable_table td:first").width();
+
 
                 if ($(this).width() != ui.originalSize.width) {
-                    var width = Math.round(($(this).width() - ui.originalSize.width) / cellWeight);
+                    var width = Math.round(($(this).width() - ui.originalSize.width) / ScreenView.cellWidth);
                     iphoneBtn.width = iphoneBtn.width + width;
                 }
                 if ($(this).height() != ui.originalSize.height) {
-                    var height = Math.round(($(this).height() - ui.originalSize.height) / cellHeight);
+                    var height = Math.round(($(this).height() - ui.originalSize.height) / ScreenView.cellHeight);
                     iphoneBtn.height = iphoneBtn.height + height;
                 }
 				
@@ -264,7 +260,7 @@ var IPhoneController = function() {
 				if (tmpX > screen.col - 1 || tmpY > screen.row - 1) {
 					return false;
 				}
-                if (btnInArea[tmpX][tmpY]) {
+                if (ScreenView.btnInArea[tmpX][tmpY]) {
                     return false;
                 }
             }
@@ -278,7 +274,7 @@ var IPhoneController = function() {
     function findMaxXWhenResize(iphoneBtn, screen) {
         for (var maxX = iphoneBtn.x; maxX < screen.col - 1; maxX++) {
             for (var tmpY = iphoneBtn.y; ((tmpY < screen.row) && (tmpY < iphoneBtn.y + iphoneBtn.height)); tmpY++) {
-                if ((btnInArea[maxX + 1][tmpY]) && ((maxX + 1) > (iphoneBtn.x + iphoneBtn.width - 1))) {
+                if ((ScreenView.btnInArea[maxX + 1][tmpY]) && ((maxX + 1) > (iphoneBtn.x + iphoneBtn.width - 1))) {
                     //second condition is exclude button itself
                     return maxX;
                 }
@@ -291,7 +287,7 @@ var IPhoneController = function() {
     function findMaxYWhenResize(iphoneBtn, screen) {
         for (var maxY = iphoneBtn.y; maxY < screen.row - 1; maxY++) {
             for (var tmpX = iphoneBtn.x; ((tmpX < screen.col) && (tmpX < iphoneBtn.x + iphoneBtn.width)); tmpX++) {
-                if ((btnInArea[tmpX][maxY + 1] == true) && ((maxY + 1) > (iphoneBtn.y + iphoneBtn.height - 1))) {
+                if ((ScreenView.btnInArea[tmpX][maxY + 1] == true) && ((maxY + 1) > (iphoneBtn.y + iphoneBtn.height - 1))) {
                     //second condition is exclude button itself
                     return maxY;
                 }
@@ -309,7 +305,7 @@ var IPhoneController = function() {
             btns = $(items);
         }
         btns.resizable({
-            grid: [49, 49],
+            grid:[ScreenView.cellHeight, ScreenView.cellWidth],
             maxHeight: height,
             maxWidth: width
         });
@@ -384,7 +380,6 @@ var IPhoneController = function() {
             label = label.substr(0, 5) + "<br/>...";
         }
 
-		//TODO update icon
 		if (icon != DEFAULT_IPHONE_BTN_ICON) {
 			iphoneBtn.icon = icon;
 			btn.find("table").removeClass("iPhone_btn_cont");

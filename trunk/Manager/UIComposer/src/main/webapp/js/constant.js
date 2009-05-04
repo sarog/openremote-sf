@@ -33,10 +33,7 @@ InfraredCollection = {};
 // "Notice":should clean up when delete screen.
 g_screens = {};
 
-// TODO Need  refactor, every screen have it's own controller and view.
-// "Notice":should clean up when delete infrared button from iphone panel.
-// "Notice":should clean up when delete iphone button.
-btnInArea = new Array();
+
 
 userDirPath = "";
 

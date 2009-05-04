@@ -20,9 +20,8 @@ Screen = function() {
 		self.id = -1;
 		self.name = "";
 		self.label = self.name;
-		//TODO add col and row
-		self.row = 6;
-		self.col = 4;
+		self.row = -1;
+		self.col = -1;
 		
 		self.buttons = new Array();
 		
@@ -38,7 +37,9 @@ Screen = function() {
 		var screen = new Screen();
 		screen.id = model.id;
 		screen.name = model.name;
-		//TODO add col and row
+		screen.row = model.row;
+		screen.col = model.col;
+
 		return screen;
 	};
 	

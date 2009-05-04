@@ -37,7 +37,7 @@ var IphoneBtn = function() {
 				var x = self.x + i;
 				for (var j=0; j < self.height; j++) {
 					var y = self.y + j;
-					btnInArea[x][y] = true;
+					ScreenView.btnInArea[x][y] = true;
 				};
 			};
 		};
@@ -47,7 +47,7 @@ var IphoneBtn = function() {
 				var x = self.x + i;
 				for (var j=0; j < self.height; j++) {
 					var y = self.y + j;
-					btnInArea[x][y] = false;
+					ScreenView.btnInArea[x][y] = false;
 				};
 			};
 		};
