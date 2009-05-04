@@ -46,7 +46,11 @@ function makeBtnDraggable(items) {
 			if (label.length > 5) {
 				label = label.substr(0, 5) + "<br/>...";
         	}
-			return $(ejs.render({label:label}));
+			var helper = $(ejs.render({label:label}));
+			helper.height(ScreenView.cellHeight);
+			helper.width(ScreenView.cellWidth);
+			
+			return helper;
 		},
 		cursorAt: { left: 25,top : 25 } 
     });
