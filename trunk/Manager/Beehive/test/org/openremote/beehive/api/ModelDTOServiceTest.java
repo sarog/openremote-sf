@@ -1,4 +1,4 @@
-package api;
+package org.openremote.beehive.api;
 
 import junit.framework.TestCase;
 
