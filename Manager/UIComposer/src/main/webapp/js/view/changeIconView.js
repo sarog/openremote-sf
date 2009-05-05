@@ -4,7 +4,7 @@ ChangeIconView = function() {
             $(".change_icon_from_container").hide();
             $("#change_icon_from_beehive").show();
 			if ($("#change_icon_from_beehive :radio").length == 0 ) {
-				new EJS({url:"template/_beehiveIconList.ejs"}).update('change_icon_from_beehive',{icons:icons});
+				EJSHelper.updateView("template/_beehiveIconList.ejs",'change_icon_from_beehive',{icons:icons});
 			}
         },
         showFromUrlView: function() {

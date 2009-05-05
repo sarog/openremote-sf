@@ -10,6 +10,16 @@ border: 0;
 margin-top: 25px;
 }
 
+#error {
+	display:none;
+}
+
+#error p {
+	margin:auto;
+	width:300px;
+	padding:5px 3px;
+}
+
 #wrap {
 	margin-left:0;
 }

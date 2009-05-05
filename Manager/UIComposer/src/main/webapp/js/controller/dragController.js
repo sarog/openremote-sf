@@ -24,9 +24,7 @@ function makeBtnDraggable(items) {
     } else {
         btns = items;
     }
-    var ejs = new EJS({
-        url: "template/_iphoneBtn.ejs"
-    });
+    var helper = HTMLBuilder.iphoneBtnHelperBuilder("");
     btns.draggable({
         zIndex: 2700,
         cursor: 'move',
@@ -46,13 +44,10 @@ function makeBtnDraggable(items) {
 			if (label.length > 5) {
 				label = label.substr(0, 5) + "<br/>...";
         	}
-			var helper = $(ejs.render({label:label}));
-			helper.height(ScreenView.cellHeight);
-			helper.width(ScreenView.cellWidth);
-			
+			helper.find(".middle span").html(label);
 			return helper;
 		},
-		cursorAt: { left: 25,top : 25 } 
+		cursorAt: { left: 15,top : 15 } 
     });
 }
 

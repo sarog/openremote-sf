@@ -18,9 +18,17 @@ $(document).ready(function() {
     TabController.init();
     DownloadController.init();
     ImportController.init();
-	IPhoneController.init();
-	ScreenViewController.init();
-	InspectViewController.init();
+    IPhoneController.init();
+    ScreenViewController.init();
+    InspectViewController.init();
+
+    $("body").ajaxError(function(event, request, settings) {
+        if (request.status == 0) {
+            $.showErrorMsg("Can't connect to server.");
+        } else {
+            $.showErrorMsg(request.responseText);
+        }
+    });
 });
 
 
