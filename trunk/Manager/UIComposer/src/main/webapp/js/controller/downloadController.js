@@ -58,12 +58,11 @@ var DownloadController = function() {
         activity.id = 1;
 
         activity.screen = getStoredScreens();
-
-        var iphoneXml = new EJS({
-            url: "template/_iphoneXML.ejs"
-        }).render({
+		
+		var iphoneXml = EJSHelper.render("template/_iphoneXML.ejs",{
             activity: activity
         });
+       
         return iphoneXml;
 
     }
@@ -111,9 +110,8 @@ var DownloadController = function() {
         openremote.events.irEvents = {
             irEvent: irEvents
         };
-        var result = new EJS({
-            url: "template/_controllerXML.ejs"
-        }).render({
+		
+        var result = EJSHelper.render("template/_controllerXML.ejs",{
             openremote: openremote
         });
         return result;

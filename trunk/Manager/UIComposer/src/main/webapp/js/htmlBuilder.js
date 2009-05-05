@@ -51,24 +51,32 @@ HTMLBuilder = function() {
         },
 
         iphoneBtnBuilder: function(iphoneBtn) {
-        	var text = iphoneBtn.label;
-        	if (text.length > 5) {
-        		text = text.substr(0, 5) + "<br/>...";
-        	}
-            var btn = $(new EJS({
-                url: "template/_iphoneBtn.ejs"
-            }).render({
-            	label:text
+            var text = iphoneBtn.label;
+            if (text.length > 5) {
+                text = text.substr(0, 5) + "<br/>...";
+            }
+            var btn = $(EJSHelper.render("template/_iphoneBtn.ejs", {
+                label: text
             }));
-			if (iphoneBtn.icon != "") {
-				btn.find("table").removeClass("iPhone_btn_cont");
-				btn.find("table .middle").html("<img src="+iphoneBtn.icon+">");
-			}
+
+            if (iphoneBtn.icon != "") {
+                btn.find("table").removeClass("iPhone_btn_cont");
+                btn.find("table .middle").html("<img src=" + iphoneBtn.icon + ">");
+            }
             btn.data("model", iphoneBtn);
-           	btn.attr("title", iphoneBtn.label);
+            btn.attr("title", iphoneBtn.label);
             btn.css("position", "absolute");
-			btn.attr("id",iphoneBtn.elementId());
+            btn.attr("id", iphoneBtn.elementId());
             return btn;
+        },
+
+        iphoneBtnHelperBuilder: function(label) {
+            var helper = $(EJSHelper.render("template/_iphoneBtn.ejs", {
+                label: label
+            }));
+            helper.height(ScreenView.cellHeight);
+            helper.width(ScreenView.cellWidth);
+            return helper;
         },
 
 

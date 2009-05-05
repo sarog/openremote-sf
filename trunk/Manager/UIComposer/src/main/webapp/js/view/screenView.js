@@ -33,13 +33,8 @@ ScreenView = function() {
         ScreenView.cellWidth = Math.round(($("#dropable_table_container").width() + 2) / screen.col);
 
         $("#iphoneBtn_container .iphone_btn").remove();
-        new EJS({
-            url: ScreenView.screenPanelTemplate
-        }).update('dropable_table_container', {
-            screen: screen
-        });
 
-
+		EJSHelper.updateView(ScreenView.screenPanelTemplate,'dropable_table_container',{screen: screen});
 
         // init ScreenView.btnInArea [x][y]
         ScreenView.btnInArea = [];

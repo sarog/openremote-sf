@@ -75,12 +75,19 @@ jQuery.empty = function(value) {
     return $.trim(value + "") == "";
 };
 
+jQuery.showErrorMsg = function(msg) {
+	$("#error #errorMsg").html(msg);
+	$("#error").show();
+
+};
+
 /**
  * Add a style to element, notice user there is a error occured on this element.
  * Use JQuery Theme 'ui-state-error' style.
  */
 jQuery.fn.inputError = function() {
     this.addClass('ui-state-error');
+
 };
 
 /**
