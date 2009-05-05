@@ -18,4 +18,14 @@
           p:suffix=".jsp"/>
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" p:defaultEncoding="utf-8" p:maxUploadSize="1000000" />
+    
+    <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+               <prop key="org.openremote.irbuilder.exception.FileOperationException">exception/fileOperationException</prop>
+               <prop key="org.openremote.irbuilder.exception.XmlParserException">exception/xmlParserException</prop>
+            </props>                      
+        </property>
+        <property name="defaultErrorView" value="exception/defaultError"/>
+    </bean>
  </beans>
