@@ -74,12 +74,12 @@ HTMLBuilder = function() {
         },
 
         iphoneBtnHelperBuilder: function(label) {
-            var helper = $(EJSHelper.render("template/_iphoneBtn.ejs", {
-                label: label
-            }));
-            helper.height(ScreenView.cellHeight);
-            helper.width(ScreenView.cellWidth);
-            return helper;
+            // var helper = $(EJSHelper.render("template/_iphoneBtn.ejs", {
+            //                label: label
+            //            }));
+            //            helper.height(ScreenView.cellHeight);
+            //            helper.width(ScreenView.cellWidth);
+            return HTMLBuilder.blueBtnBuilder(label);;
         },
 
 

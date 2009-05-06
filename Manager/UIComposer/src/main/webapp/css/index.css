@@ -12,6 +12,7 @@ margin-top: 25px;
 
 #error {
 	display:none;
+	position:absolute;
 }
 
 #error p {

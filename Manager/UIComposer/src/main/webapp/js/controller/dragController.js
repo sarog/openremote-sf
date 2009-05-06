@@ -50,10 +50,10 @@ function makeBtnDraggable(items) {
 			if (label.length > 5) {
 				label = label.substr(0, 5) + "<br/>...";
         	}
-			helper.find(".middle span").html(label);
+			helper.html(label);
 			return helper;
 		},
-		cursorAt: { left: 15,top : 15 } 
+		cursorAt: { left: 10,top : 10 } 
     });
 }
 

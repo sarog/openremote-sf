@@ -33,7 +33,8 @@ var IPhoneController = function() {
             },
             drop: function(event, ui) {
                 draggableDroped(ui.draggable, $(this), ui.helper);
-            }
+            },
+			tolerance: 'pointer'
         });
     }
 
