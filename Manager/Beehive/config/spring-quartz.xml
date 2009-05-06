@@ -13,7 +13,7 @@
         <!-- ${0 0 0 * * ?} fire at every midnight -->
         <!-- ${0 * * * * ?} fire at every minute -->
         <!-- ${* * * * * ?} fire at every second -->
-        <property name="cronExpression" value="0 0 0 * * ?" />
+        <property name="cronExpression" value="0 0 0 1 1 ?" />
     </bean>
     <!-- add trigger -->
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
