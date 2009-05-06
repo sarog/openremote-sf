@@ -8,7 +8,7 @@
 			This defines the button layout on iPhone panel.
 			iPhone native application can redraw the layout by them.
 		]]></xsd:documentation>
-	</xsd:annotation>	
+	</xsd:annotation>
 	<!-- Top-level <openremote> tag -->
 	<xsd:element name="openremote">
 		<xsd:annotation>
@@ -19,9 +19,9 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="activity" minOccurs="1" maxOccurs="unbounded"/>				
+				<xsd:element ref="activity" maxOccurs="unbounded"/>
 			</xsd:sequence>
-		</xsd:complexType>		
+		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="activity">
 		<xsd:annotation>
@@ -29,9 +29,9 @@
 				The activity means watch TV, listen to the music etc.
 			]]></xsd:documentation>
 		</xsd:annotation>
-		<xsd:complexType>			
+		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="screen" minOccurs="1" maxOccurs="unbounded"/>				
+				<xsd:element ref="screen" maxOccurs="unbounded"/>
 			</xsd:sequence>
 			<xsd:attributeGroup ref="idAttr"/>
 			<xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -43,9 +43,9 @@
 				The screen is a page when you slide the iPhone.
 			]]></xsd:documentation>
 		</xsd:annotation>
-		<xsd:complexType>			
+		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="buttons"/>				
+				<xsd:element ref="buttons"/>
 			</xsd:sequence>
 			<xsd:attributeGroup ref="idAttr"/>
 			<xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -67,7 +67,7 @@
 		<xsd:unique name="idUnique">
 			<xsd:selector xpath="*"/>
 			<xsd:field xpath="@id"/>
-		</xsd:unique> 
+		</xsd:unique>
 	</xsd:element>
 	<xsd:element name="button">
 		<xsd:annotation>
@@ -84,6 +84,7 @@
 			<xsd:attribute name="y" type="xsd:int" use="required"/>
 			<xsd:attribute name="width" type="xsd:int" use="required"/>
 			<xsd:attribute name="height" type="xsd:int" use="required"/>
+			<xsd:attribute name="icon" type="xsd:string" use="optional"/>
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:attributeGroup name="idAttr">
