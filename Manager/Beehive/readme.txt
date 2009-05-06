@@ -48,8 +48,9 @@ We have set several goals for this work in an attempt to make LIRC data more con
 
 V. "Beehive" logging
 ====================================
-you can modify the log4j configuration in "%PROJECT_ROOT%/config/log4j.properties"
+You can modify the log4j configuration in "%PROJECT_ROOT%/config/log4j.properties".
+All the logs will be written in "/webapps/beehive/logs" 
 
 VI. "Beehive" javadoc
 ====================================
-you can generate javadoc using "ant javadoc"
+You can generate javadoc by using "ant javadoc"
