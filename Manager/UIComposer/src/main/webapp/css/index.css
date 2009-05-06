@@ -253,6 +253,7 @@ margin-bottom: 1em;
 
 
 ul.macro_detail {
+border:1px solid #CCCCCC;
 list-style-type: none;
 margin: 0;
 padding: 0;
@@ -262,7 +263,7 @@ height: 50px;
 }
 
 .macro_btn_defination {
-width: 160px;
+width: 158px;
 }
 
 
@@ -277,7 +278,8 @@ position: absolute;
 }
 
 #macro ul.ui-state-highlight {
-border: 1px solid #AAAAAA;
+border: 1px solid grey;
+
 }
 
 
