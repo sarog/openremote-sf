@@ -142,27 +142,6 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
    public void copyFromScrapToWC(String srcPath, String destPath) {
       File tempDir = new File(srcPath);
       File workDir = new File(destPath);
-      copyDirectory(tempDir, workDir);
-      // for (File vendorDir : tempDir.listFiles()) {
-      // if(vendorDir.isDirectory()){
-      // for (File modelFile : vendorDir.listFiles()) {
-      // if (modelFile.isFile()) {
-      // String tempName = modelFile.getName();
-      // String workName = tempName.substring(0, tempName.lastIndexOf("."));
-      // File workFile = new File(workDir,vendorDir.getName()+File.separator+workName);
-      // copyFile(tempName,modelFile,workFile);
-      // } else {
-      // for (File subModelFile : modelFile.listFiles()) {
-      // String tempName = subModelFile.getName();
-      // String workName = tempName.substring(0, tempName.lastIndexOf("."));
-      // File workFile = new
-      // File(workDir,vendorDir.getName()+File.separator+modelFile.getName()+File.separator+workName);
-      // copyFile(tempName,subModelFile,workFile);
-      // }
-      // }
-      // }
-      // }
-      // }
       try {
          if (SVNStatusKind.UNVERSIONED.equals(svnClient.getSingleStatus(workDir).getTextStatus().toString())) {
             // File repo = new File("d:/svn-repos");
@@ -180,6 +159,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       } catch (MalformedURLException e) {
          logger.error("initiliaze svnUrl of trunk failed!", e);
       }
+      copyDirectory(tempDir, workDir);
       logger.info("Success copy scrap files to workCopy " + destPath);
    }
 
@@ -503,10 +483,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             FileUtil.copyFile(modelFile, workFile);
          }
       } catch (SVNClientException e) {
-         logger
-               .error(
-                     "SvnClient.getInfo touch off the SVNClientException, This may occur by the fileName not case sensitive!",
-                     e);
+         logger.error("SvnClient.getInfo touch off the SVNClientException," +
+         		" This may occur by the fileName not case sensitive!",e);
       }
    }
 
