@@ -61,9 +61,6 @@ var Macro = function() {
 			MacroController.updateMacro(self);
 		};
 		
-		self.deleteModel = function() {
-			$("#"+self.elementId()).parent(".macro_btn_defination").remove();
-		};
 
         //private methods
         /**
@@ -71,7 +68,7 @@ var Macro = function() {
          * @param macro
          */
 		function findSubLi (macro) {
-			return $("#" + macro.elementId()).next("ul").find("li");
+			return $("#" + macro.elementId()).find("ul").find("li");
 		}
 
        

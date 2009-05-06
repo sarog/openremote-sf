@@ -40,7 +40,13 @@ function makeBtnDraggable(items) {
             $("#dropable_table td.hiLight").removeClass("hiLight");
         },
 		helper: function(event){
-			var label = event.currentTarget.firstChild.data;
+			var label = "";
+			if ($(this).data("model") === undefined) {
+				label = event.currentTarget.firstChild.data;
+			} else {
+				label = $(this).data("model").label;
+			}
+			
 			if (label.length > 5) {
 				label = label.substr(0, 5) + "<br/>...";
         	}

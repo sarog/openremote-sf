@@ -22,6 +22,7 @@ HTMLBuilder = function() {
         KNXBtnBuilder: function(knx) {
             var button = HTMLBuilder.blueBtnBuilder(knx.label);
             button.addClass("knx_btn");
+			button.addClass("iphone_element");
             button.attr("id", knx.elementId());
             button.data("model", knx);
             return button;
@@ -31,6 +32,7 @@ HTMLBuilder = function() {
         X10BtnBuilder: function(x10) {
             var button = HTMLBuilder.blueBtnBuilder(x10.label);
             button.addClass("x10_btn");
+			button.addClass("iphone_element");
             button.attr("id", x10.elementId());
             button.data("model", x10);
             button.attr("title", x10.label);
@@ -43,6 +45,7 @@ HTMLBuilder = function() {
             var button = $("<div></div>");
             button.attr("title", text);
             button.addClass("blue_btn");
+            
             if (text.length > 14) {
                 text = text.substr(0, 14) + "...";
             }
@@ -90,8 +93,8 @@ HTMLBuilder = function() {
                 name = name.substr(0, 14) + "...";
             }
             btn.html(name);
-            btn.attr("id", macro.elementId());
-            btn.data("model", macro);
+            template.attr("id", macro.elementId());
+            template.data("model", macro);
             return $(template);
         },
 
@@ -119,6 +122,8 @@ HTMLBuilder = function() {
             btn.data("sectionId", section_id);
             btn.addClass("command_btn");
             btn.addClass("blue_btn");
+            btn.addClass("iphone_element");
+
             var name = code.name;
             btn.attr("title", name);
             if (name.length > 14) {

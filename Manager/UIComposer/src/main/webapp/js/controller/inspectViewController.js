@@ -22,11 +22,8 @@ InspectViewController = function() {
 		$("#inspect_delete_btn").unbind().click(function() {
 			var model = InspectView.getModel();
 			
-			if (model.deleteModel !== undefined) {
-				model.deleteModel();
-			} else {
-				$("#"+model.elementId()).remove();
-			}
+
+			$("#"+model.elementId()).remove();
 			
 			// If there are some clean stuff should do, add a method afterDelete in model.
 			if (model.afterDelete !== undefined) {
