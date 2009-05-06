@@ -12,7 +12,7 @@ public class IconServiceTest extends TestBase {
    private IconService service = (IconService) SpringContext.getInstance().getBean("iconService");
 
    public void testFindByName(){
-      List<IconDTO> iconDTOs = service.findIconsByName("test");
+      List<IconDTO> iconDTOs = service.findIconsByName("Menu");
       if(!iconDTOs.isEmpty()){
          for (IconDTO iconDTO : iconDTOs) {
             System.out.println("fileName="+iconDTO.getFileName()+" name="+iconDTO.getName());
