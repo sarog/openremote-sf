@@ -334,8 +334,13 @@ position: relative;
 cursor: move;
 }
 
+.macro_detail .highlightInspected {
+border:1px solid orange;
+opacity:0.9;
+}
+
 .highlightInspected {
-border:1px solid #669900;
+border:1px solid orange;
 opacity:0.9;
 }
 

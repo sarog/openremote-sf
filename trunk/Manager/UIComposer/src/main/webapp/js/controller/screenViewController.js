@@ -45,24 +45,24 @@ ScreenViewController = function() {
         }
         if ($.empty(row.val())) {
             valid = false;
-            $("#create_screen_dialog").updateTips(address, "Row is required");
+            $("#create_screen_dialog").updateTips(row, "Row is required");
             return;
         }
         if (!row.val().toString().isNumber()) {
             valid = false;
 
-            $("#create_screen_dialog").updateTips(address, "Row must be a number");
+            $("#create_screen_dialog").updateTips(row, "Row must be a number");
             return;
         }
 
         if ($.empty(col.val())) {
             valid = false;
-            $("#create_screen_dialog").updateTips(command, "Column is required");
+            $("#create_screen_dialog").updateTips(col, "Column is required");
             return;
         }
         if (!col.val().toString().isNumber()) {
             valid = false;
-            $("#create_screen_dialog").updateTips(address, "Column must be a number");
+            $("#create_screen_dialog").updateTips(col, "Column must be a number");
             return;
         }
         if (valid) {

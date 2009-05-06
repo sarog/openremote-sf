@@ -77,9 +77,10 @@ var MacroController = function() {
 		btn.unbind().click(function() {
 			$(".highlightInspected").removeClass("highlightInspected");
 			$(this).addClass("highlightInspected");
-			InspectViewController.updateView($(this).data("model"));
+			var model = $(this).parent(".macro_btn_defination").data("model");
+			InspectViewController.updateView(model);
 		});
-        makeBtnDraggable(btn);
+        makeBtnDraggable(macroBtn);
     };
 
     /**
@@ -95,7 +96,7 @@ var MacroController = function() {
         }
 
         MacroController.makeMacroSublistSortable(buttons.find(".macro_detail"));
-        MacroController.makeMacroSubListDroppable(buttons);
+        MacroController.makeMacroSubListDroppable(buttons.find(".macro_detail"));
     };
 
     /**
@@ -116,12 +117,12 @@ var MacroController = function() {
      * @param items macro button whose sub list you want to make it droppable.
      */
     MacroController.makeMacroSubListDroppable = function(items) {
-        items.find(".macro_detail").droppable({
+        items.droppable({
             hoverClass: 'ui-state-highlight',
             accept: function(draggable) {
-                if (draggable.hasClass("blue_btn")) {
+                if (draggable.hasClass("iphone_element")) {
                     // Can't drag macro button to its sublist, this may occur recursion error.
-                    if (draggable.attr("id") == $(this).prev(".macro_btn").attr("id")) {
+                    if (draggable.attr("id") == $(this).parent().attr("id")) {
                         return false;
                     }
 					
@@ -129,7 +130,7 @@ var MacroController = function() {
 					//TODO 
                     if (draggable.data("model") !== undefined && draggable.data("model").className == "Macro") {
                         var draggableModel = draggable.data("model");
-                        var macroBtnModel = $(this).prev(".macro_btn").data("model");
+                        var macroBtnModel = $(this).parent().data("model");
 
                         if (draggableModel.getSubModels().length == 0) {
                             return true;
@@ -158,7 +159,16 @@ var MacroController = function() {
      * @param container which you want to add li into
      */
     MacroController.createMacroSubli = function(model, container) {
-       	HTMLBuilder.macroLiBtnBuilder(model).appendTo(container);
+       	var subli = HTMLBuilder.macroLiBtnBuilder(model);
+		subli.appendTo(container);
+		
+		subli.unbind().click(function() {
+			$(".highlightInspected").removeClass("highlightInspected");
+			$(this).addClass("highlightInspected");
+			var model = $(this).data("model");
+			InspectViewController.updateView(model);
+		});
+
     };
 
 	MacroController.updateMacro = function (macro) {

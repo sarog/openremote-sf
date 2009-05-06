@@ -26,7 +26,7 @@ var IPhoneController = function() {
     function makeTableCellDroppable() {
         $("#dropable_table").droppable({
             accept: function(draggable) {
-                if (draggable.hasClass("blue_btn") || draggable.hasClass("iphone_btn")) {
+                if (draggable.hasClass("iphone_element") || draggable.hasClass("iphone_btn")) {
                     return true;
                 }
                 return false;
