@@ -21,8 +21,10 @@ The "Beehive" requires this 3rd party software:
 
 III. "Modeler" site deployment
 ==============================================
-1) modify Beehvie RESTAPIUrl in "%PROJECT_ROOT%/src/main/webapp/js/constant.js",
-"beehive/rest" should be the default value at the end of RESTAPIUrl.
+1) run "ant war" to get the war file in "%PROJECT_ROOT%/output" directory;
+2) deploy the war into your web server;
+3) modify Beehvie RESTAPIUrl in "%WEBAPP_ROOT%/js/constant.js",
+   "beehive/rest" should be the default value at the end of RESTAPIUrl.
 
 IV. Supported functions
 =======================
