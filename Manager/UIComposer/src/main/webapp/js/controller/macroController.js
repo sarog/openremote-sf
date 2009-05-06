@@ -162,12 +162,12 @@ var MacroController = function() {
        	var subli = HTMLBuilder.macroLiBtnBuilder(model);
 		subli.appendTo(container);
 		
-		subli.unbind().click(function() {
-			$(".highlightInspected").removeClass("highlightInspected");
-			$(this).addClass("highlightInspected");
-			var model = $(this).data("model");
-			InspectViewController.updateView(model);
-		});
+		// subli.unbind().click(function() {
+		// 		$(".highlightInspected").removeClass("highlightInspected");
+		// 		$(this).addClass("highlightInspected");
+		// 		var model = $(this).data("model");
+		// 		InspectViewController.updateView(model);
+		// 	});
 
     };
 
