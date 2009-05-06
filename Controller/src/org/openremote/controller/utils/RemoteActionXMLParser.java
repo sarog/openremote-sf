@@ -21,6 +21,7 @@
 
 package org.openremote.controller.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,13 +38,14 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.log4j.Logger;
 import org.openremote.controller.event.Event;
 import org.openremote.controller.event.EventFactory;
-import org.springframework.context.support.ApplicationObjectSupport;
+import org.openremote.controller.exception.NoSuchButtonException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 
+// TODO: Auto-generated Javadoc
 /**
  * The Remote Action XML Parser.
  * 
@@ -53,9 +55,6 @@ public class RemoteActionXMLParser {
    
    /** The logger. */
    private static Logger logger = Logger.getLogger(RemoteActionXMLParser.class.getName());
-   
-   /** The config xml path. */
-   private String configXMLPath;
    
    /** The event factory. */
    private EventFactory eventFactory;
@@ -72,11 +71,14 @@ public class RemoteActionXMLParser {
    public List<Event> findEventsByButtonID(String buttonID) {
       List<Event> events = new ArrayList<Event>();
       Element button = queryElementFromXMLById(buttonID);
+      if (button == null) {
+         throw new NoSuchButtonException("Cannot find that button with id = " + buttonID);
+      }
       NodeList nodes = button.getChildNodes();
       for (int i = 0; i < nodes.getLength(); i++) {
          String eventID = nodes.item(i).getTextContent().trim();
          Element element = queryElementFromXMLById(eventID);
-         if(element != null){
+         if (element != null) {
             events.add(eventFactory.getEvent(element));
          }
       }
@@ -109,7 +111,8 @@ public class RemoteActionXMLParser {
       Object result = null;
       try {
          DocumentBuilder builder = domFactory.newDocumentBuilder();
-         Document doc = builder.parse(configXMLPath);
+         String xmlPath = System.getProperty("controller.root") + "controller.xml";
+         Document doc = builder.parse(xmlPath);
          XPathFactory factory = XPathFactory.newInstance();
          XPath xpath = factory.newXPath();
          XPathExpression expr = xpath.compile(xPath);
@@ -121,7 +124,7 @@ public class RemoteActionXMLParser {
       } catch (SAXException e) {
          logger.error("Can't parse the controller.xml", e);
       } catch (IOException e) {
-         logger.error("Can't find the controller.xml", e);
+         logger.error("Can't find the controller.xml,please put it in" + System.getProperty("controller.root"), e);
       }
       NodeList nodes = (NodeList) result;
       if (nodes.getLength() > 0) {
@@ -130,14 +133,6 @@ public class RemoteActionXMLParser {
       return null;
    }
 
-   /**
-    * Sets the config xml path.
-    * 
-    * @param configXMLPath the new config xml path
-    */
-   public void setConfigXMLPath(String configXMLPath) {
-      this.configXMLPath = configXMLPath;
-   }
 
    /**
     * Sets the event factory.
@@ -147,7 +142,6 @@ public class RemoteActionXMLParser {
    public void setEventFactory(EventFactory eventFactory) {
       this.eventFactory = eventFactory;
    }
-
-
+   
    
 }

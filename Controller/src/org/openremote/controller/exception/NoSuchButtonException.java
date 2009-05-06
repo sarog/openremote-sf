@@ -18,35 +18,48 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.protocol.infrared;
-
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
-import org.openremote.controller.exception.EventBuildException;
-import org.w3c.dom.Element;
-
+package org.openremote.controller.exception;
 
 /**
- * The IREvent Builder which can build a IREvent from a Element.
+ * The Class NoSuchButtonException.
  * 
- * @author Dan 2009-4-3
+ * @author Dan 2009-4-30
  */
-public class IREventBuilder implements EventBuilder {
+@SuppressWarnings("serial")
+public class NoSuchButtonException extends RuntimeException {
 
    /**
-    * {@inheritDoc}
+    * Instantiates a new no such button exception.
     */
-   public Event build(Element element) {
-      IREvent irEvent = new IREvent();
-      String command = element.getAttribute("command");
-      String name = element.getAttribute("name");
-      if ("".equals(command) || "".equals(name)) {
-         throw new EventBuildException("Cannot build a IREvent with empty property : command=" + command + ",name=" + name);
-      } else {
-         irEvent.setCommand(command);
-         irEvent.setName(name);
-      }
-      return irEvent;
+   public NoSuchButtonException() {
+   }
+
+   /**
+    * Instantiates a new no such button exception.
+    * 
+    * @param message the message
+    */
+   public NoSuchButtonException(String message) {
+      super(message);
+   }
+
+   /**
+    * Instantiates a new no such button exception.
+    * 
+    * @param cause the cause
+    */
+   public NoSuchButtonException(Throwable cause) {
+      super(cause);
+   }
+
+   /**
+    * Instantiates a new no such button exception.
+    * 
+    * @param message the message
+    * @param cause the cause
+    */
+   public NoSuchButtonException(String message, Throwable cause) {
+      super(message, cause);
    }
 
 }
