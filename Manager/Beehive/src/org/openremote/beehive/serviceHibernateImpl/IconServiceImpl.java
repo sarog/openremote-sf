@@ -38,8 +38,9 @@ public class IconServiceImpl extends BaseAbstractService<Icon> implements IconSe
 //      if(genericDAO.getByNonIdField(Icon.class, "name", name) == null){
 //         return loadAllIcons();
 //      }
+      
       DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Icon.class);
-      detachedCriteria.add(Restrictions.eq("name", name));
+      detachedCriteria.add(Restrictions.eq("name", name.toLowerCase()));
       List<Icon> icons = genericDAO.findByDetachedCriteria(detachedCriteria);
       List<IconDTO> iconDTOList = new ArrayList<IconDTO>();
       String iconDir = configuration.getIconsDir();
@@ -49,7 +50,7 @@ public class IconServiceImpl extends BaseAbstractService<Icon> implements IconSe
          iconDTO.setFileName(iconDir+icon.getFileName());
          iconDTOList.add(iconDTO);
       }
-      logger.info("Get list of icons by label of "+name);
+      logger.info("Get list of icons by label of "+name.toLowerCase());
       return iconDTOList;
    }
 
