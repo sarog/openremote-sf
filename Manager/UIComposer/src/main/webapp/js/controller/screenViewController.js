@@ -16,8 +16,8 @@
 
 ScreenViewController = function() {
     function ScreenViewController() {
-
-        }
+		
+    }
 
     /**
      * Show create Screen dialog.
@@ -26,6 +26,7 @@ ScreenViewController = function() {
         $("#create_screen_dialog").showModalForm("Create Screen", {
             'Create': confirmCreateScreen
         });
+
         $("#create_screen_dialog").enterKeyPressed(confirmCreateScreen);
     }
 
@@ -98,7 +99,9 @@ ScreenViewController = function() {
         if (ScreenView.getSelectedScreenId() != 0) {
             ScreenViewController.storeCurrentScreen();
         }
-        $("#iphoneBtn_container .iphone_btn").remove();
+
+        $("#iphoneBtn_container").empty();
+
         ScreenViewController.createScreen(screen);
         ScreenView.setLastOptionSelected();
         screenSelectChanged();
