@@ -16,26 +16,28 @@
 /*-----------  some constant   --------------------------*/
 
 // Define rest api url
-RESTAPIUrl = "http://openremote.finalist.hk/beehive/rest";
-
-DEFAULT_IPHONE_BTN_ICON = "image/iphone_btn.jpg";
+var constant = {
+	RESTAPIUrl:"http://openremote.finalist.hk/beehive/rest",
+	DEFAULT_IPHONE_BTN_ICON : "image/iphone_btn.jpg"
+};
 
 /*-----------  store global data  --------------------------*/
 
-//in order to let button id keep increasing
-BUTTONID = 1;
-// a hash contain all of infrared object, key is code id value is infrared model.
-// this variable is used for record the infrared button you already dragged.
-// "Notice":should clean up when delete infrared button from iphone panel.
-InfraredCollection = {};
-//Store Screen here 
-// key is screen id and value is screen model
-// "Notice":should clean up when delete screen.
-g_screens = {};
+var global = {
+	//in order to let button id keep increasing
+	BUTTONID:1,
+	// a hash contain all of infrared object, key is code id value is infrared model.
+	// this variable is used for record the infrared button you already dragged.
+	// "Notice":should clean up when delete infrared button from iphone panel.
+	InfraredCollection:{},
+	//Store Screen here 
+	// key is screen id and value is screen model
+	// "Notice":should clean up when delete screen.
+	screens:{},
+	// record user directory
+	userDirPath:""
+};
 
-
-
-userDirPath = "";
 
 
 

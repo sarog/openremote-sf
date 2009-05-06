@@ -50,7 +50,7 @@ var MacroController = function() {
         } else {
             var buttonName = $("#macro_name_input").val();
             var macro = new Macro();
-            macro.id = BUTTONID++;
+            macro.id = global.BUTTONID++;
             macro.label = $.trim(buttonName);
 
             MacroController.createMacroBtn(macro);

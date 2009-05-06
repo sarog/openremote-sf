@@ -67,7 +67,7 @@ ScreenViewController = function() {
         }
         if (valid) {
             var screen = new Screen();
-            screen.id = BUTTONID++;
+            screen.id = global.BUTTONID++;
             screen.name = name.val();
 			screen.row = row.val();
 			screen.col = col.val();
@@ -77,7 +77,7 @@ ScreenViewController = function() {
     }
 
     function screenSelectChanged() {
-        ScreenView.updateView(g_screens[ScreenView.getSelectedScreenId()]);
+        ScreenView.updateView(global.screens[ScreenView.getSelectedScreenId()]);
     }
 
     function screenSelectClicked() {
@@ -109,12 +109,12 @@ ScreenViewController = function() {
 
     ScreenViewController.createScreen = function(screen) {
         ScreenView.addScreenSelect(screen);
-        g_screens[screen.id] = screen;
+        global.screens[screen.id] = screen;
 
     };
 
     ScreenViewController.getCurrentScreen = function() {
-        return g_screens[ScreenView.getSelectedScreenId()];
+        return global.screens[ScreenView.getSelectedScreenId()];
     };
 
 
@@ -122,8 +122,8 @@ ScreenViewController = function() {
     ScreenViewController.storeCurrentScreen = function() {
         //save previous screen
         if (ScreenView.getSelectedScreenId() != 0) {
-            var preScreen = DownloadController.parseCurrentScreen(g_screens[ScreenView.getSelectedScreenId()]);
-            g_screens[preScreen.id] = preScreen;
+            var preScreen = DownloadController.parseCurrentScreen(global.screens[ScreenView.getSelectedScreenId()]);
+            global.screens[preScreen.id] = preScreen;
         }
     };
 

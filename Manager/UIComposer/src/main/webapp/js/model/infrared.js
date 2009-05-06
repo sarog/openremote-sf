@@ -35,13 +35,13 @@ var Infrared = function() {
      */
 	function createInfraredWithButton (btn) {
 		var infrared = new Infrared();
-		infrared.id = BUTTONID++;
+		infrared.id = global.BUTTONID++;
 		infrared.name = btn.data("remoteName");
 		infrared.command = btn.data("command");
 		infrared.label = btn.data("command");
 		infrared.sectionId = btn.data("sectionId");
 		infrared.codeId = btn.data("codeId");
-		InfraredCollection[btn.data("codeId")] = infrared;
+		global.InfraredCollection[btn.data("codeId")] = infrared;
 		return infrared;
 	};
 	
@@ -52,10 +52,10 @@ var Infrared = function() {
      * @param btn Draggable Infrared button
      */
 	Infrared.getInfraredModelWithDraggable = function(btn)  {
-		if (InfraredCollection[btn.data("codeId")] === undefined) {
+		if (global.InfraredCollection[btn.data("codeId")] === undefined) {
             model = createInfraredWithButton(btn);
         } else {
-			model = InfraredCollection[btn.data("codeId")];
+			model = global.InfraredCollection[btn.data("codeId")];
 		}
 		return model;
 	};

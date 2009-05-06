@@ -39,7 +39,7 @@ var DownloadController = function() {
             iphone: iphoneXml,
             controller: controllerXml,
             panel: panelDesc,
-            restUrl: RESTAPIUrl + "/lirc.conf",
+            restUrl: constant.RESTAPIUrl + "/lirc.conf",
             ids: assembledSectionIds
             //get it in parseInfared() function
         },
@@ -70,8 +70,8 @@ var DownloadController = function() {
     function getStoredScreens() {
         var screenAttr = new Array();
 
-        for (var id in g_screens) {
-            screenAttr.push(g_screens[id]);
+        for (var id in global.screens) {
+            screenAttr.push(global.screens[id]);
         }
         return screenAttr;
     }
@@ -152,8 +152,8 @@ var DownloadController = function() {
     function parseInfared() {
         var sectionIds = new Array();
         var irEvents = new Array();
-        for (var codeId in InfraredCollection) {
-            var model = InfraredCollection[codeId];
+        for (var codeId in global.InfraredCollection) {
+            var model = global.InfraredCollection[codeId];
             var irEvent = new Object();
             irEvent.id = model.id;
             irEvent.name = model.name;
@@ -236,7 +236,7 @@ var DownloadController = function() {
             knxBtns: knxBtns,
             x10Btns: x10Btns,
             macroBtns: macroBtns,
-            maxId: BUTTONID
+            maxId: global.BUTTONID
         };
 
         var data = JSON.stringify({
