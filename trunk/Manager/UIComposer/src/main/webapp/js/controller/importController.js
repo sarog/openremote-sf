@@ -63,7 +63,7 @@ var ImportController = function() {
         revertX10Btns(data.panel.x10Btns);
         revertMacroBtns(data.panel.macroBtns);
 		
-        BUTTONID = data.panel.maxId;
+        global.BUTTONID = data.panel.maxId;
         $("#upload_form_container").closeModalForm();
     }
 
@@ -78,7 +78,7 @@ var ImportController = function() {
 			for (var index in o_screen.buttons) {
 				var btn = revertIphoneBtn(o_screen.buttons[index]);
 				if (btn.icon != "") {
-					btn.icon = userDirPath+ "/" + getFileNameFromPath(btn.icon);
+					btn.icon = global.userDirPath+ "/" + getFileNameFromPath(btn.icon);
 				}
 				screen.buttons.push(btn);
 			}
@@ -86,7 +86,7 @@ var ImportController = function() {
 			ScreenViewController.createScreen(screen);
 			
 			ScreenView.setLastOptionSelected();
-			ScreenView.updateView(g_screens[ScreenView.getSelectedScreenId()]);
+			ScreenView.updateView(global.screens[ScreenView.getSelectedScreenId()]);
 		}
 	}
 
@@ -100,7 +100,7 @@ var ImportController = function() {
 		model.oModel = oModel; 
 		
 		if (btn.oModel.className == "Infrared") {
-			InfraredCollection[btn.oModel.codeId] = oModel;
+			global.InfraredCollection[btn.oModel.codeId] = oModel;
 		}
 		return model;
 		
@@ -155,7 +155,7 @@ var ImportController = function() {
                 MacroController.createMacroSubli(subModel, $("#" + model.elementId()).next("ul"));
                                                
 				if (subModel.className == "Infrared") {
-					InfraredCollection[subModel.codeId] = subModel;
+					global.InfraredCollection[subModel.codeId] = subModel;
 				}
             }
         }
@@ -184,15 +184,15 @@ var ImportController = function() {
         $("#command_container .command_btn").remove();
         $("#iphoneBtn_container .iphone_btn").remove();
 		$("#screen_select option").remove();
-        BUTTONID = 1;
-        InfraredCollection = {};
-		g_screens = {};
+        global.BUTTONID = 1;
+        global.InfraredCollection = {};
+		global.screens = {};
 		
     };
 
 	ImportController.getCurrentUserPath = function(callback) {
 		$.get("currenUserPath.htm",function(data) {
-			userDirPath = data;
+			global.userDirPath = data;
 			callback();
 		});
 	};

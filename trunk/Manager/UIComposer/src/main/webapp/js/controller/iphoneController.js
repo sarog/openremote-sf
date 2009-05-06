@@ -91,7 +91,7 @@ var IPhoneController = function() {
         if (draggable.data("model").className != "IphoneBtn") {
             iphoneBtn = new IphoneBtn();
 
-            iphoneBtn.id = BUTTONID++;
+            iphoneBtn.id = global.BUTTONID++;
             iphoneBtn.oModel = draggable.data("model");
 			iphoneBtn.label = draggable.data("model").label;
         }
@@ -380,7 +380,7 @@ var IPhoneController = function() {
             label = label.substr(0, 5) + "<br/>...";
         }
 
-		if (icon != DEFAULT_IPHONE_BTN_ICON) {
+		if (icon != constant.DEFAULT_IPHONE_BTN_ICON) {
 			iphoneBtn.icon = icon;
 			btn.find("table").removeClass("iPhone_btn_cont");
 			btn.find("table .middle").html("<img src="+icon+">");

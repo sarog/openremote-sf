@@ -50,7 +50,7 @@ var TabController = function() {
         }
         if (valid) {
             var knx = new KNX();
-            knx.id = BUTTONID++;
+            knx.id = global.BUTTONID++;
             knx.label = label.val();
             knx.groupAddress = groupAddress.val();
 
@@ -94,7 +94,7 @@ var TabController = function() {
         }
         if (valid) {
             var x10 = new X10();
-            x10.id = BUTTONID++;
+            x10.id = global.BUTTONID++;
             x10.label = label.val();
             x10.address = address.val();
             x10.command = command.val();
