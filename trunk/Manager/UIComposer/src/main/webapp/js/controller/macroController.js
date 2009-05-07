@@ -70,6 +70,10 @@ var MacroController = function() {
      */
     MacroController.createMacroBtn = function(macro) {
         var macroBtn = HTMLBuilder.macroBtnBuilder(macro);
+        var info = $("#macro .item_container p");
+        if(info.size()!=0){
+        	info.remove();
+        }
         $(macroBtn).prependTo($("#macro .item_container"));
         MacroController.prepareMacroSublist(macroBtn);
 		
