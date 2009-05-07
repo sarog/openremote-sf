@@ -193,7 +193,7 @@ cursor: pointer;
 #inspect_detail fieldset {
 	border:1px solid grey;
 	margin:auto;
-	width:200px;
+	width:160px;
 }
 
 #inspect_detail fieldset legend {
@@ -227,7 +227,11 @@ cursor: pointer;
 #change_icon_from_beehive {
 	overflow:auto;
 }
-.change_icon_from_container {
+#change_icon_from_beehive img{
+    margin:2px;
+    border:1px solid white;
+}
+.change_icon_from_container ,.hidden{
 	display:none;
 }
 

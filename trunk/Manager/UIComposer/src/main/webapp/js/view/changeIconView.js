@@ -5,6 +5,16 @@ ChangeIconView = function() {
             $("#change_icon_from_beehive").show();
 			if ($("#change_icon_from_beehive :radio").length == 0 ) {
 				EJSHelper.updateView("template/_beehiveIconList.ejs",'change_icon_from_beehive',{icons:icons});
+                var lastIcon=null;
+                var change_icon_from_beehive = $("#change_icon_from_beehive");
+                change_icon_from_beehive.find('img').unbind().click(function(){
+                    if (lastIcon) {
+                        lastIcon.css("border","1px solid white");
+                    }
+                    lastIcon = $(this);
+                    $(this).css("border","1px solid orange");
+                });
+                change_icon_from_beehive.find('img:first').click();                
 			}
         },
         showFromUrlView: function() {

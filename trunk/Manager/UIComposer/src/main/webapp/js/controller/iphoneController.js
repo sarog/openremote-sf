@@ -350,7 +350,7 @@ var IPhoneController = function() {
 
 		btn.inspectable({
 			after:function() {
-				$("#inspect_change_icon").unbind().click(function() {
+				$("#inspect_iphoneBtn_icon").unbind().click(function() {
 					ChangeIconViewController.showChangeIconForm();
 				});
 			}
