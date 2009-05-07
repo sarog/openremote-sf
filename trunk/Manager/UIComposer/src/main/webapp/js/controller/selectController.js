@@ -91,6 +91,7 @@ function showCommandBtns(vendor_name, model_name, section_id) {
     getJSONData("/lirc/" + vendor_name + "/" + model_name + "/" + section_id + "/codes",
     function(data) {
         $("#command_container").html("");
+        $("<span>"+vendor_name+" &gt; "+model_name+"</span>").appendTo($("#command_container"));
         var codes = $.makeArray(data.codes.code);
         $(codes).each(function() {
             var infrared = new Infrared();
