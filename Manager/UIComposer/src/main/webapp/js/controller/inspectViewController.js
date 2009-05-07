@@ -8,11 +8,18 @@ InspectViewController = function() {
 		$("#inspect_detail").html(InspectViewController.defaultText);
 	};
 	
-	InspectViewController.updateView = function(model) {
-		InspectView.updateView(model);
+	/**
+	 * Update Inspect view 
+	 * @static
+	 * @param {Object} options.model model need to inspect.
+	 * @param {String} options.template ejs template to render inspect window
+	 * @param {Function} options.after  (optional) call after render inspect window
+	 */
+	InspectViewController.updateView = function(options) {
+		InspectView.updateView(options.model,options.template);
 		$("#inspect_button").show();
-        if (model.afterShowInspect !== undefined) {
-             model.afterShowInspect();
+        if (options.after !== undefined) {
+             options.after();
         }
 		
 		$("#inspect_ok_btn").unbind().click(function() {
@@ -21,9 +28,7 @@ InspectViewController = function() {
 		});
 		$("#inspect_delete_btn").unbind().click(function() {
 			var model = InspectView.getModel();
-			
-
-			$("#"+model.elementId()).remove();
+			$("#"+model.getElementId()).remove();
 			
 			// If there are some clean stuff should do, add a method afterDelete in model.
 			if (model.afterDelete !== undefined) {

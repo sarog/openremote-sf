@@ -22,43 +22,18 @@ var Infrared = function() {
 		self.command = "";
         //text ui interface display
 		self.label = "";
+		self.vendorName = "";
+		self.modelName = "";
 		self.sectionId = -1;
 		//for indetificate each infrared item
 		self.codeId = -1;
 		// convenient way to get the Class name.
 		self.className = getClassName(self);
+		
+		self.getElementId = function () {
+			return "infrared"+self.id;
+		};
 	}
-	//private method
-    /**
-     * Create Infrared instance from Draggable Infrared button.
-     * @param btn Draggable Infrared button
-     */
-	function createInfraredWithButton (btn) {
-		var infrared = new Infrared();
-		infrared.id = global.BUTTONID++;
-		infrared.name = btn.data("remoteName");
-		infrared.command = btn.data("command");
-		infrared.label = btn.data("command");
-		infrared.sectionId = btn.data("sectionId");
-		infrared.codeId = btn.data("codeId");
-		global.InfraredCollection[btn.data("codeId")] = infrared;
-		return infrared;
-	};
-	
-	//static method
-    /**
-     * Create Infrared instance from Draggable Infrared button.
-     * If this infrared is exist return it else create it.
-     * @param btn Draggable Infrared button
-     */
-	Infrared.getInfraredModelWithDraggable = function(btn)  {
-		if (global.InfraredCollection[btn.data("codeId")] === undefined) {
-            model = createInfraredWithButton(btn);
-        } else {
-			model = global.InfraredCollection[btn.data("codeId")];
-		}
-		return model;
-	};
 
     /**
      * Create new instance from flat model (which have no private method).
@@ -71,6 +46,8 @@ var Infrared = function() {
 		infrared.name      = model.name     ;
 		infrared.command   = model.command  ;
 		infrared.label     = model.label    ;
+		infrared.vendorName = model.vendorName;
+		infrared.modelName = model.modelName;
 		infrared.sectionId = model.sectionId;
 		infrared.codeId    = model.codeId   ;
 		return infrared;

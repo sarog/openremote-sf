@@ -84,10 +84,6 @@ var IPhoneController = function() {
         }
 		
 		
-        if (draggable.hasClass("command_btn")) {
-            draggable.data("model", Infrared.getInfraredModelWithDraggable(draggable));
-        }
-		
 		// If we drag a button which is not iphone button, we need to create iphoneBtn model.
         if (draggable.data("model").className != "IphoneBtn") {
             iphoneBtn = new IphoneBtn();
@@ -118,7 +114,7 @@ var IPhoneController = function() {
 
 		var btn = IPhoneController.createIphoneBtn(iphoneBtn);       
 		
-		if (InspectView.getModel()!= null && iphoneBtn.elementId() == InspectView.getModel().elementId()) {
+		if (InspectView.getModel()!= null && iphoneBtn.getElementId() == InspectView.getModel().getElementId()) {
 			btn.addClass("highlightInspected");
 		} 
     }
@@ -195,7 +191,7 @@ var IPhoneController = function() {
 		var iphoneBtn = $(iphoneBtnElement).data("model");
 		var btn = IPhoneController.createIphoneBtn(iphoneBtn);
 		
-		if (InspectView.getModel() != null && iphoneBtn.elementId() == InspectView.getModel().elementId()) {
+		if (InspectView.getModel() != null && iphoneBtn.getElementId() == InspectView.getModel().getElementId()) {
 			btn.addClass("highlightInspected");
 		}
         $(iphoneBtnElement).remove();
@@ -327,12 +323,6 @@ var IPhoneController = function() {
         makeTableCellDroppable();
     };
 
-     IPhoneController.afterShowInspect = function() {
-        $("#inspect_change_icon").unbind().click(function(){
-                    
-        });
-         
-     };
 
     IPhoneController.afterConfirmChangeIcon = function(icon) {
         $("#inspect_iphoneBtn_icon").attr("src",icon);    
@@ -358,10 +348,12 @@ var IPhoneController = function() {
         makeIphoneBtnDraggable(btn);
         makeIphoneBtnResizable(btn);
 
-		btn.unbind().click(function() {
-			$(".highlightInspected").removeClass("highlightInspected");
-			$(this).addClass("highlightInspected");
-			InspectViewController.updateView($(this).data("model"));
+		btn.inspectable({
+			after:function() {
+				$("#inspect_change_icon").unbind().click(function() {
+					ChangeIconViewController.showChangeIconForm();
+				});
+			}
 		});
 		
 		btn.tooltip({
@@ -385,7 +377,7 @@ var IPhoneController = function() {
 		iphoneBtn.label = label;		
 
         //update view
-        var btn = $("#"+iphoneBtn.elementId());
+        var btn = $("#"+iphoneBtn.getElementId());
 		if (label.length > 5) {
             label = label.substr(0, 5) + "<br/>...";
         }
@@ -403,11 +395,6 @@ var IPhoneController = function() {
 		btn.data("model",iphoneBtn);
 	};	
 	
-	IPhoneController.afterShowInspect = function() {
-		$("#inspect_change_icon").unbind().click(function() {
-			ChangeIconViewController.showChangeIconForm();
-		});
-	};
 	
 
     return IPhoneController;

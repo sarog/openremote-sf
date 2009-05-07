@@ -145,11 +145,7 @@ var TabController = function() {
         }
         btn.prependTo($("#knx_tab .item_container"));
         makeBtnDraggable(btn);
-        btn.unbind().click(function() {
-			$(".highlightInspected").removeClass("highlightInspected");
-			$(this).addClass("highlightInspected");
-            InspectViewController.updateView($(this).data("model"));
-        });
+        btn.inspectable();
     };
 
     TabController.updateKnx = function (knx) {
@@ -158,7 +154,7 @@ var TabController = function() {
         knx.label = label;
         knx.groupAddress = groupAddress;
 
-        var btn = $("#"+knx.elementId());
+        var btn = $("#"+knx.getElementId());
 		if (label.length > 5) {
             label = label.substr(0, 5) + "...";
         }
@@ -180,11 +176,7 @@ var TabController = function() {
         }
         btn.prependTo($("#x10_tab .item_container"));
         makeBtnDraggable(btn);
-        btn.unbind().click(function() {
-			$(".highlightInspected").removeClass("highlightInspected");
-			$(this).addClass("highlightInspected");
-            InspectViewController.updateView($(this).data("model"));
-        });
+       	btn.inspectable();
     };
 
 	TabController.updateX10 = function (x10) {
@@ -195,7 +187,7 @@ var TabController = function() {
         x10.address = address;
         x10.command = command;
 
-        var btn = $("#"+x10.elementId());
+        var btn = $("#"+x10.getElementId());
 		if (label.length > 5) {
             label = label.substr(0, 5) + "...";
         }

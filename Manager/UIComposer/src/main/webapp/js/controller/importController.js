@@ -152,7 +152,7 @@ var ImportController = function() {
                     subModel = macroArray[sub.id];
                 }
 				
-                MacroController.createMacroSubli(subModel, $("#" + model.elementId()).next("ul"));
+                MacroController.createMacroSubli(subModel, $("#" + model.getElementId()).next("ul"));
                                                
 				if (subModel.className == "Infrared") {
 					global.InfraredCollection[subModel.codeId] = subModel;

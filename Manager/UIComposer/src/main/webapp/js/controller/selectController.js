@@ -93,10 +93,21 @@ function showCommandBtns(vendor_name, model_name, section_id) {
         $("#command_container").html("");
         var codes = $.makeArray(data.codes.code);
         $(codes).each(function() {
-            HTMLBuilder.commandBtnBuilder(this, section_id).appendTo($("#command_container"));
+            var infrared = new Infrared();
+            infrared.id = global.BUTTONID++;
+            infrared.name = this.remoteName;
+            infrared.command = this.name;
+            infrared.label = this.name;
+            infrared.vendorName = vendor_name;
+            infrared.modelName = model_name;
+            infrared.sectionId = section_id;
+            infrared.codeId = this.id;
+            
+            var view = new InfraredView(infrared);
+            makeBtnDraggable(view.getElement());
         });
         $("<div class='clear'></div>").appendTo($("#command_container"));
-        makeBtnDraggable();
+
         $("#command_navigition").dialog("close");
         $("#lircUrl").val(constant.RESTAPIUrl + "/lirc/" + vendor_name + "/" + model_name + "/" + "lirc.conf");
     });

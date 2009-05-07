@@ -28,7 +28,7 @@ var IphoneBtn = function() {
 		// convenient way to get the Class name.
 		self.className = getClassName(self);
 		
-		self.elementId = function() {
+		self.getElementId = function() {
 			return "iphoneBtn"+self.id;
 		};
 		
@@ -54,10 +54,7 @@ var IphoneBtn = function() {
 		
 		self.inspectViewTemplate = "template/_iphoneBtnInspect.ejs";
 
-        self.afterShowInspect = function() {
-            IPhoneController.afterShowInspect();
-        };
-
+     
 		self.updateModel = function() {
 			IPhoneController.updateIphoneBtn(self);
 		};
