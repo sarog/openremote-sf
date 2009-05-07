@@ -7,9 +7,9 @@ var EJSHelper = function() {
                 }).update(containerId, model);
             } catch(e) {
                 if (e instanceof Error) {
-                    $.showErrorMsg("Render Template Error.");
+                    $.showErrorMsg("render page error.");
                 } else {
-                    $.showErrorMsg("Can't Connect to Template.");
+                    $.showErrorMsg("Can't Connect to server.");
                 }
             }
         },
@@ -27,9 +27,9 @@ var EJSHelper = function() {
                 }
             } catch(e) {
                 if (e instanceof Error) {
-                    $.showErrorMsg("Render Template Error.");
+                    $.showErrorMsg("render page error.");
                 } else {
-                    $.showErrorMsg("Can't Connect to Template.");
+                    $.showErrorMsg("Can't Connect to server.");
                 }
             }
 

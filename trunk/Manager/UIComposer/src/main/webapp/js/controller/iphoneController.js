@@ -363,6 +363,15 @@ var IPhoneController = function() {
 			$(this).addClass("highlightInspected");
 			InspectViewController.updateView($(this).data("model"));
 		});
+		
+		btn.tooltip({
+			bodyHandler: function() {
+		     return $(EJSHelper.render("template/_inspectTooltip.ejs",$(this).data("model")));
+		   },
+		   showURL: false,
+		   track: true,
+		   delay: 1 
+		});
 
 		//Hack the JQuery Draggable,use can't draggable the button sidelong   
 		btn.find("div.ui-resizable-handle.ui-resizable-se").remove();
