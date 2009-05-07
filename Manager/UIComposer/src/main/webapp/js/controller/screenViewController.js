@@ -24,10 +24,11 @@ ScreenViewController = function() {
      */
     function showCreateScreenDialog() {
         $("#create_screen_dialog").showModalForm("Create Screen", {
-            'Create': confirmCreateScreen
+			buttons:{
+				 'Create': confirmCreateScreen
+			},
+			confirmButtonName:'Create'
         });
-
-        $("#create_screen_dialog").enterKeyPressed(confirmCreateScreen);
     }
 
     /**

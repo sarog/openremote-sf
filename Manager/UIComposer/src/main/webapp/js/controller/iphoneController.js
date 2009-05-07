@@ -198,14 +198,6 @@ var IPhoneController = function() {
         $("#dropable_table td.hiLight").removeClass("hiLight");
 	}
 	
-	/**
-	 * Describe what this method does
-	 * @private
-	 * @param {String|Object|Array|Boolean|Number} paramName Describe this parameter
-	 * @returns Describe what it returns
-	 * @type String|Object|Array|Boolean|Number
-	 */
-	
     function makeIphoneBtnResizable(items) {
         var btns;
         if (items === undefined) {
@@ -329,22 +321,15 @@ var IPhoneController = function() {
     };
 
     /**
-     * Create iphone button and add it into page.
-     * @param iphoneBtn iphoneBtn model
-     * @param tableCell table cell which you want to add into
+     * Create a iphone button on screen panel
+     * @satic
+     * @param {Object} iphoneBtn iphoneBtn model
+     * @returns Created iphone button element
+     * @type JQuery DOM
      */
     IPhoneController.createIphoneBtn = function(iphoneBtn) {
-		iphoneBtn.fillArea();
-        var tableCell = ScreenView.findCell(iphoneBtn.x, iphoneBtn.y);
-		
-		var btn = HTMLBuilder.iphoneBtnBuilder(iphoneBtn);
-		
-        btn.css("top", $(tableCell).offset().top);
-        btn.css("left", $(tableCell).offset().left);
-        btn.css("height", $(tableCell).height() * iphoneBtn.height + iphoneBtn.height - 1);
-        btn.css("width", $(tableCell).width() * iphoneBtn.width + iphoneBtn.width - 1);
-        btn.appendTo($("#iphoneBtn_container"));
-
+		var iphoneBtnView = new IphoneBtnView(iphoneBtn);
+		var btn = iphoneBtnView.getElement();
         makeIphoneBtnDraggable(btn);
         makeIphoneBtnResizable(btn);
 
@@ -364,9 +349,6 @@ var IPhoneController = function() {
 		   track: true,
 		   delay: 1 
 		});
-
-		//Hack the JQuery Draggable,use can't draggable the button sidelong   
-		btn.find("div.ui-resizable-handle.ui-resizable-se").remove();
 		return btn;
     };
 	

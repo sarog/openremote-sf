@@ -1,20 +1,21 @@
 var InfraredView = function() {
     function InfraredView (infrerad) {
 		self = this;
-		self.model = infrerad;
-		
+		var _model = infrerad;
+
 		self.getModel = function() {
-			return self.model;
+			return _model;
 		};
-		
+
 		self.getElement = function() {
-			return $("#"+self.model.getElementId());
+			return $("#"+self.getModel().getElementId());
 		};
-		
+
 		var init = function () {
-			HTMLBuilder.infraredBtnBuilder(self.model).appendTo($("#command_container"));
-		}();
+			HTMLBuilder.infraredBtnBuilder(self.getModel()).appendTo($("#command_container"));
+		};
+		init();
 	}
-	
+
 	return InfraredView;
 }();

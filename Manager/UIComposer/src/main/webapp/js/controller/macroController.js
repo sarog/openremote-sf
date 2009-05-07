@@ -35,9 +35,11 @@ var MacroController = function() {
      */
      function showCreateDialog () {
         $("#macro_name_form").showModalForm("Create Macro", {
-            'Create': confirmCreateMacro
+            buttons:{
+				'Create': confirmCreateMacro
+			},
+			confirmButtonName:'Create'
         });
-        $("#macro_name_form").enterKeyPressed(confirmCreateMacro);
     }
 
     /**
@@ -69,36 +71,24 @@ var MacroController = function() {
      * @param macro macro model
      */
     MacroController.createMacroBtn = function(macro) {
-        var macroBtn = HTMLBuilder.macroBtnBuilder(macro);
-        var info = $("#macro .item_container p");
-        if(info.size()!=0){
-        	info.remove();
-        }
-        $(macroBtn).prependTo($("#macro .item_container"));
-        MacroController.prepareMacroSublist(macroBtn);
+        var macroView = new MacroView(macro);
+
+        MacroController.prepareMacroSublist(macroView.getSubList());
+		makeBtnDraggable(macroView.getElement());
 		
-		var btn = macroBtn.find(".macro_btn");
-		var model = macroBtn.data("model");
-		btn.inspectable({
-			model:model
+		macroView.getMacroBtn().inspectable({
+			model:macroView.getModel()
 		});
-        makeBtnDraggable(macroBtn);
+        
     };
 
     /**
      * Prepare the macro button.Make Macro sub list sortable and droppable.
      * @param btn macro button whose sub list you want to prepare
      */
-    MacroController.prepareMacroSublist = function(btn) {
-        var buttons;
-        if (btn === undefined) {
-            buttons = $(".macro_btn_defination");
-        } else {
-            buttons = $(btn);
-        }
-
-        MacroController.makeMacroSublistSortable(buttons.find(".macro_detail"));
-        MacroController.makeMacroSubListDroppable(buttons.find(".macro_detail"));
+    MacroController.prepareMacroSublist = function(ul) {
+        MacroController.makeMacroSublistSortable(ul);
+        MacroController.makeMacroSubListDroppable(ul);
     };
 
     /**
@@ -110,7 +100,7 @@ var MacroController = function() {
             placeholder: 'ui-state-highlight',
             cursor: "move"
         });
-        items.find(".macro_detail").disableSelection();
+        items.disableSelection();
 
     };
 

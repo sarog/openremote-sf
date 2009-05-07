@@ -105,7 +105,7 @@ HTMLBuilder = function() {
             macroCommandLi.data("model", model);
             macroCommandLi.find("span").addClass("ui-icon");
             macroCommandLi.find("span").addClass("ui-icon-arrowthick-2-n-s");
-            var name = model.label;
+            var name = model.label;	
             macroCommandLi.attr("title", name);
             if (name.length > 14) {
                 name = name.substr(0, 8) + "...";

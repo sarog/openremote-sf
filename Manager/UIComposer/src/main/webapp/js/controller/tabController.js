@@ -23,40 +23,12 @@ var TabController = function() {
      * Show create knx button dialog.
      */
     function showCreateKNXDialog() {
-
         $("#create_KNX_dialog").showModalForm("Create KNX", {
-            'Create': confirmCreateKNX
+            buttons:{
+				'Create': KNXController.confirmCreate
+			},
+			confirmButtonName:'Create'
         });
-        $("#create_KNX_dialog").enterKeyPressed(confirmCreateKNX);
-    }
-
-    /**
-     * Invoked when user confirm create knx button.
-     */
-    function confirmCreateKNX() {
-        var label = $("#knx_label_input");
-        var groupAddress = $("#knx_group_address_input");
-
-        var valid = true;
-        if ($.empty(label.val())) {
-            valid = false;
-            $("#create_KNX_dialog").updateTips(label, "Label is required");
-            return;
-        }
-        if ($.empty(groupAddress.val())) {
-            valid = false;
-            $("#create_KNX_dialog").updateTips(groupAddress, "Group Address is required");
-            return;
-        }
-        if (valid) {
-            var knx = new KNX();
-            knx.id = global.BUTTONID++;
-            knx.label = label.val();
-            knx.groupAddress = groupAddress.val();
-
-            TabController.createKNX(knx);
-            $("#create_KNX_dialog").closeModalForm();
-        }
     }
 
     /**
@@ -64,44 +36,11 @@ var TabController = function() {
      */
     function showCreateX10Dialog() {
         $("#create_x10_dialog").showModalForm("Create X10", {
-            'Create': confirmCreateX10
+			buttons:{
+				'Create': X10Controller.confirmCreate
+			},
+			confirmButtonName:'Create'
         });
-        $("#create_x10_dialog").enterKeyPressed(confirmCreateX10);
-    }
-
-    /**
-     * Invoked when user confirm create x10 button.
-     */
-    function confirmCreateX10() {
-        var label = $("#x10_label_input");
-        var address = $("#x10_address_input");
-        var command = $("#x10_command_input");
-        var valid = true;
-        if ($.empty(label.val())) {
-            valid = false;
-            $("#create_x10_dialog").updateTips(label, "Label is required");
-            return;
-        }
-        if ($.empty(address.val())) {
-            valid = false;
-            $("#create_x10_dialog").updateTips(address, "Address is required");
-            return;
-        }
-        if ($.empty(command.val())) {
-            valid = false;
-            $("#create_x10_dialog").updateTips(command, "Command is required");
-            return;
-        }
-        if (valid) {
-            var x10 = new X10();
-            x10.id = global.BUTTONID++;
-            x10.label = label.val();
-            x10.address = address.val();
-            x10.command = command.val();
-
-            TabController.createX10(x10);
-            $("#create_x10_dialog").closeModalForm();
-        }
     }
 
     /**
@@ -133,21 +72,6 @@ var TabController = function() {
 
     };
 
-    /**
-     * Create kxn button and add it into page.
-     * @param knx knx model
-     */
-    TabController.createKNX = function(knx) {
-        var btn = HTMLBuilder.KNXBtnBuilder(knx);
-        var info = $("#knx_tab p");
-        if(info.size()!=0){
-        	info.remove();
-        }
-        btn.prependTo($("#knx_tab .item_container"));
-        makeBtnDraggable(btn);
-        btn.inspectable();
-    };
-
     TabController.updateKnx = function (knx) {
         var label = $.trim($("#inspect_knx_label").val());
         var groupAddress = $.trim($("#inspect_knx_groupAddress").val());
@@ -161,22 +85,6 @@ var TabController = function() {
 		btn.attr("title",knx.label);
         btn.text(label);
         btn.data("model",knx);
-    };
-
-
-    /**
-     * Create x10 button and add it into page.
-     * @param x10 x10 model
-     */
-    TabController.createX10 = function(x10) {
-        var btn = HTMLBuilder.X10BtnBuilder(x10);
-        var info = $("#x10_tab p");
-        if(info.size()!=0){
-        	info.remove();
-        }
-        btn.prependTo($("#x10_tab .item_container"));
-        makeBtnDraggable(btn);
-       	btn.inspectable();
     };
 
 	TabController.updateX10 = function (x10) {
