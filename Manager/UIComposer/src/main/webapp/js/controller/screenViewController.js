@@ -53,6 +53,11 @@ ScreenViewController = function() {
 
             $("#create_screen_dialog").updateTips(row, "Row must be a number");
             return;
+        }else if(row.val()>6){
+            valid = false;
+
+            $("#create_screen_dialog").updateTips(row, "Row must be less than or equal 6");
+            return;
         }
 
         if ($.empty(col.val())) {
@@ -63,6 +68,11 @@ ScreenViewController = function() {
         if (!col.val().toString().isNumber()) {
             valid = false;
             $("#create_screen_dialog").updateTips(col, "Column must be a number");
+            return;
+        }else if(col.val()>4){
+            valid = false;
+
+            $("#create_screen_dialog").updateTips(col, "Column must be less than or equal 4");
             return;
         }
         if (valid) {
