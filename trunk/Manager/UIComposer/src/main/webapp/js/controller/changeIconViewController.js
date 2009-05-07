@@ -3,9 +3,12 @@ ChangeIconViewController = function() {
 		
 		showChangeIconForm: function(){
 			$("#change_icon_form").showModalForm("Change Button Icon", {
-	            'OK': comfirmChangeIcon
-	        },function() {},"500px");
-	        $("#change_icon_form").enterKeyPressed(comfirmChangeIcon);
+				buttons:{
+					'OK': comfirmChangeIcon
+				},
+	            width:"500px",
+				confirmButtonName:'OK'
+	        });
 			
 			ChangeIconViewController.showFromBeehive();
 			

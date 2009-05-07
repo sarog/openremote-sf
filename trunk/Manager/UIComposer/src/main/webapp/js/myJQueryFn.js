@@ -13,27 +13,33 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
  * http://www.fsf.org.
  */
+
 /**
- * Show block window, this window have a default "close" button.
- * @param title Dialog title.
- * @param buttons a hash contain button name and button function. eg:{'create':someFunction}.
- * @param openCallback what's going on when the diglog opened.
+ * Shows block window, this window have a default "close" button.
+ * @public
+ * @param {String} title Window title.
+ * @param {int|String} options.height (optional) Window height, default value is 'auto'.
+ * @param {int|String} options.width (optional) Window width, default value is 'auto'.
+ * @param {int|String} options.buttons (optional) an object contain button name and function.
+ * @param {Boolean} options.modal (optional) Is this window is modal window, default value is true.
+ * @param {Boolean} options.resizable (optional) Is this window can resize, default value is false.
+ * @param {Function} options.open (optional) Function will be called, after window have opened.
+ * @param {String} options.confirmButtonName (optional) Will call the function which on this button after enter key pressed.
  */
 
-jQuery.fn.showModalForm = function(title, buttons, openCallback, width) {
+jQuery.fn.showModalForm = function(title, options) {
     var newButtons = {};
     newButtons.Cancel = function() {
         $(this).dialog("close");
     };
 
     //in order to put default 'close' button at last.
-    for (var p in buttons) {
-        newButtons[p] = buttons[p];
-    }
-    var _width = "auto";
-    if (width !== undefined) {
-        _width = width;
-    }
+	if (options.buttons !== undefined) {
+		for (var p in options.buttons) {
+	        newButtons[p] = options.buttons[p];
+	    }
+	}
+    
     this.find("input[type='text']").addClass("text");
     this.find("input[type='text']").addClass("ui-widget-content");
     this.find("input[type='text']").addClass("ui-corner-all");
@@ -42,20 +48,24 @@ jQuery.fn.showModalForm = function(title, buttons, openCallback, width) {
     this.dialog({
         bgiframe: true,
         autoOpen: false,
-        height: "auto",
-        modal: true,
+        height: options.height||'auto',
+        modal: options.modal||true,
         title: title,
-        width: _width,
-        resizable: false,
+        width: options.width||'auto',
+        resizable: options.resizable||false,
         buttons: newButtons,
         close: function() {
             dialogElement.find("input").val('').removeClass('ui-state-error');
             dialogElement.find("#validateTips").remove();
         },
-        open: openCallback
+        open: options.open || function() {}
     });
     // If autoOpen=true, we needn't to call open(), but the dialog can only open once.
     this.dialog("open");
+	if (options.confirmButtonName !== undefined) {
+		this.enterKeyPressed(newButtons[options.confirmButtonName]);
+	}
+	
 };
 
 /**

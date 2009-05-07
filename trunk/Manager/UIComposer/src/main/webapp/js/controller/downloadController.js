@@ -213,7 +213,7 @@ var DownloadController = function() {
 
         var macroBtns = new Array();
         $("#macro .macro_btn_defination").each(function() {
-            var model = $(this).find(".macro_btn").data("model");
+            var model = $(this).data("model");
             var btnModels = model.getSubModels();
             model.buttons = new Array();
             for (var index in btnModels) {
@@ -268,7 +268,7 @@ var DownloadController = function() {
             var iphoneBtn = $(this).data("model");
             buttonArray.push(iphoneBtn);
             btnModelHash[iphoneBtn.id] = iphoneBtn;
-			if (iphoneBtn.oModel.className = "Infrared") {
+			if (iphoneBtn.oModel.className == "Infrared") {
 				global.InfraredCollection[iphoneBtn.oModel.codeId] = iphoneBtn.oModel;
 			}
         });

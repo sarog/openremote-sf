@@ -47,8 +47,8 @@ function makeBtnDraggable(items) {
 				label = $(this).data("model").label;
 			}
 			
-			if (label.length > 5) {
-				label = label.substr(0, 5) + "<br/>...";
+			if (label.length > 14) {
+				label = label.substr(0, 14) + "...";
         	}
 			helper.html(label);
 			return helper;

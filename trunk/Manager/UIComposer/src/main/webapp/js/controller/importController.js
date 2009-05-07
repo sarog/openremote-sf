@@ -16,7 +16,7 @@
 var ImportController = function() {
     function ImportController() {
         // constructor
-     }
+        }
 
     //private methods
     /**
@@ -25,27 +25,31 @@ var ImportController = function() {
     function showUploadForm() {
         var zipFile = $("#zip_file_input");
         $("#upload_form_container").showModalForm("Import", {
-            'Import': function() {
-                if ($.empty(zipFile.val())) {
-                    $("#upload_form_container").updateTips(zipFile, "zip file is required");
-                    return;
-                }
-                if (confirm("All your current work will clear, are you sure?")) {
-                    
-					ImportController.getCurrentUserPath(function() {
-						$("#upload_form").submit();
-					});
-                }
+            buttons: {
+                'Import': function() {
+                    if ($.empty(zipFile.val())) {
+                        $("#upload_form_container").updateTips(zipFile, "zip file is required");
+                        return;
+                    }
+                    if (confirm("All your current work will clear, are you sure?")) {
 
-            }
-        },
-        function() {
-            $("#upload_form").ajaxForm({
-                success: uploadSuccess,
-                dataType: 'text',
-                type: 'post'
-            });
-        });
+                        ImportController.getCurrentUserPath(function() {
+                            $("#upload_form").submit();
+                        });
+                    }
+
+                }
+            },
+            confirmButtonName: 'Import',
+            open: function() {
+                $("#upload_form").ajaxForm({
+                    success: uploadSuccess,
+                    dataType: 'text',
+                    type: 'post'
+                });
+            }
+        });
+
     }
 
 
@@ -55,40 +59,40 @@ var ImportController = function() {
      * @param statusText statusText
      */
     function uploadSuccess(responseText, statusText) {
-		
+
         ImportController.cleanUp();
         var data = eval('(' + responseText + ')');
         revertScreens(data.panel.screens);
         revertKnxBtns(data.panel.knxBtns);
         revertX10Btns(data.panel.x10Btns);
         revertMacroBtns(data.panel.macroBtns);
-		
+
         global.BUTTONID = data.panel.maxId;
         $("#upload_form_container").closeModalForm();
     }
 
-	
-	function revertScreens (screens) {
-		
-		
-		for (var index in screens) {
-			var o_screen = screens[index];
-			var screen = ImportController.buildModel(o_screen);
-			screen.buttons = new Array();
-			for (var index in o_screen.buttons) {
-				var btn = revertIphoneBtn(o_screen.buttons[index]);
-				if (btn.icon != "") {
-					btn.icon = global.userDirPath+ "/" + getFileNameFromPath(btn.icon);
-				}
-				screen.buttons.push(btn);
-			}
-			
-			ScreenViewController.createScreen(screen);
-			
-			ScreenView.setLastOptionSelected();
-			ScreenView.updateView(global.screens[ScreenView.getSelectedScreenId()]);
-		}
-	}
+
+    function revertScreens(screens) {
+
+
+        for (var index in screens) {
+            var o_screen = screens[index];
+            var screen = ImportController.buildModel(o_screen);
+            screen.buttons = new Array();
+            for (var index in o_screen.buttons) {
+                var btn = revertIphoneBtn(o_screen.buttons[index]);
+                if (btn.icon != "") {
+                    btn.icon = global.userDirPath + "/" + getFileNameFromPath(btn.icon);
+                }
+                screen.buttons.push(btn);
+            }
+
+            ScreenViewController.createScreen(screen);
+
+            ScreenView.setLastOptionSelected();
+            ScreenView.updateView(global.screens[ScreenView.getSelectedScreenId()]);
+        }
+    }
 
     /**
      * Revert the Iphone buttons
@@ -97,16 +101,16 @@ var ImportController = function() {
     function revertIphoneBtn(btn) {
         var oModel = ImportController.buildModel(btn.oModel);
         var model = ImportController.buildModel(btn);
-		model.oModel = oModel; 
-		
-		if (btn.oModel.className == "Infrared") {
-			global.InfraredCollection[btn.oModel.codeId] = oModel;
-		}
-		return model;
-		
+        model.oModel = oModel;
+
+        if (btn.oModel.className == "Infrared") {
+            global.InfraredCollection[btn.oModel.codeId] = oModel;
+        }
+        return model;
+
     }
 
-  
+
 
     /**
      * Revert KNX buttons
@@ -135,7 +139,7 @@ var ImportController = function() {
     /**
      * Revert Macro buttons
      * @param macroBtns macroBtns object from description file
-     */ 
+     */
     function revertMacroBtns(macroBtns) {
         var macroArray = {};
         for (var index in macroBtns) {
@@ -151,12 +155,12 @@ var ImportController = function() {
                 } else {
                     subModel = macroArray[sub.id];
                 }
-				
+
                 MacroController.createMacroSubli(subModel, $("#" + model.getElementId()).next("ul"));
-                                               
-				if (subModel.className == "Infrared") {
-					global.InfraredCollection[subModel.codeId] = subModel;
-				}
+
+                if (subModel.className == "Infrared") {
+                    global.InfraredCollection[subModel.codeId] = subModel;
+                }
             }
         }
     }
@@ -165,13 +169,13 @@ var ImportController = function() {
     ImportController.init = function() {
         $("#uploadBtn").unbind().bind("click", showUploadForm);
     };
-    
+
     /**
      * Build Model according to className.
      * @param model
      */
     ImportController.buildModel = function(model) {
-		return eval(model.className+'.init(model);');
+        return eval(model.className + '.init(model);');
     };
 
     /**
@@ -183,18 +187,19 @@ var ImportController = function() {
         $("#x10_container .x10_btn").remove();
         $("#command_container .command_btn").remove();
         $("#iphoneBtn_container .iphone_btn").remove();
-		$("#screen_select option").remove();
+        $("#screen_select option").remove();
         global.BUTTONID = 1;
         global.InfraredCollection = {};
-		global.screens = {};
-		
+        global.screens = {};
+
     };
 
-	ImportController.getCurrentUserPath = function(callback) {
-		$.get("currenUserPath.htm",function(data) {
-			global.userDirPath = data;
-			callback();
-		});
-	};
+    ImportController.getCurrentUserPath = function(callback) {
+        $.get("currenUserPath.htm",
+        function(data) {
+            global.userDirPath = data;
+            callback();
+        });
+    };
     return ImportController;
 } ();
