@@ -26,9 +26,9 @@ var X10 = function() {
 		self.className = getClassName(self);
 
         /**
-         * Get HTML elementId
+         * Get HTML getElementId
          */
-		self.elementId = function() {
+		self.getElementId = function() {
 			return "x10"+self.id;
 		};
 		

@@ -20,7 +20,7 @@
  * @param openCallback what's going on when the diglog opened.
  */
 
-jQuery.fn.showModalForm = function(title, buttons, openCallback,width) {
+jQuery.fn.showModalForm = function(title, buttons, openCallback, width) {
     var newButtons = {};
     newButtons.Cancel = function() {
         $(this).dialog("close");
@@ -30,10 +30,10 @@ jQuery.fn.showModalForm = function(title, buttons, openCallback,width) {
     for (var p in buttons) {
         newButtons[p] = buttons[p];
     }
-	var _width = "auto";
-	if (width !== undefined) {
-		_width = width;
-	}
+    var _width = "auto";
+    if (width !== undefined) {
+        _width = width;
+    }
     this.find("input[type='text']").addClass("text");
     this.find("input[type='text']").addClass("ui-widget-content");
     this.find("input[type='text']").addClass("ui-corner-all");
@@ -76,8 +76,8 @@ jQuery.empty = function(value) {
 };
 
 jQuery.showErrorMsg = function(msg) {
-	$("#error #errorMsg").html(msg);
-	$("#error").show();
+    $("#error #errorMsg").html(msg);
+    $("#error").show();
 
 };
 
@@ -147,28 +147,58 @@ jQuery.fn.enterKeyPressed = function(func) {
     });
 };
 jQuery.fn.isInArea = function(container) {
-	var top = $(this).offset().top;
-	var left = $(this).offset().left;
-    var minTop  = $(container).offset().top;
-    var maxTop  = $(container).offset().top  + $(container).outerHeight();
-    var minLeft = $(container).offset().left;    
+    var top = $(this).offset().top;
+    var left = $(this).offset().left;
+    var minTop = $(container).offset().top;
+    var maxTop = $(container).offset().top + $(container).outerHeight();
+    var minLeft = $(container).offset().left;
     var maxLeft = $(container).offset().left + $(container).outerWidth();
 
     if (top > maxTop || top < minTop || left > maxLeft || left < minLeft) {
         return false;
     }
-	return true;
+    return true;
 };
 
-jQuery.isCoordinateInArea = function(top,left,container) {
-	
-    var minTop  = $(container).offset().top;
-    var maxTop  = $(container).offset().top  + $(container).outerHeight();
-    var minLeft = $(container).offset().left;    
+jQuery.isCoordinateInArea = function(top, left, container) {
+
+    var minTop = $(container).offset().top;
+    var maxTop = $(container).offset().top + $(container).outerHeight();
+    var minLeft = $(container).offset().left;
     var maxLeft = $(container).offset().left + $(container).outerWidth();
 
     if (top > maxTop || top < minTop || left > maxLeft || left < minLeft) {
         return false;
     }
-	return true;
+    return true;
+};
+
+/**
+ * make button inspectable
+ * @static
+ * @param {Object} options.model (optional) model need to inpect, default is $(this).data("model").
+ * @param {String} options.template  (optional) inspect window template,default is $(this).data("model").inspectViewTemplate.
+ * @param {Function} options,before (optional) do some thing before inspect window has showed, like some css stuff.
+ */
+jQuery.fn.inspectable = function(options) {
+	if (options === undefined) {
+		options = {};
+	}
+    if (options.model === undefined) {
+        options.model = $(this).data("model");
+    }
+    if (options.template === undefined) {
+        options.template = options.model.inspectViewTemplate;
+    }
+
+    $(this).unbind().click(function() {
+        if (options.before !== undefined) {
+            options.before();
+        } else {
+            $(".highlightInspected").removeClass("highlightInspected");
+            $(this).addClass("highlightInspected");
+        }
+        InspectViewController.updateView(options);
+    });
+
 };

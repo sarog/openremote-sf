@@ -78,11 +78,9 @@ var MacroController = function() {
         MacroController.prepareMacroSublist(macroBtn);
 		
 		var btn = macroBtn.find(".macro_btn");
-		btn.unbind().click(function() {
-			$(".highlightInspected").removeClass("highlightInspected");
-			$(this).addClass("highlightInspected");
-			var model = $(this).parent(".macro_btn_defination").data("model");
-			InspectViewController.updateView(model);
+		var model = macroBtn.data("model");
+		btn.inspectable({
+			model:model
 		});
         makeBtnDraggable(macroBtn);
     };
@@ -149,9 +147,6 @@ var MacroController = function() {
                 return false;
             },
             drop: function(event, ui) {
-                if (ui.draggable.hasClass("command_btn")) {
-                    ui.draggable.data("model", Infrared.getInfraredModelWithDraggable(ui.draggable));
-                }
                 MacroController.createMacroSubli(ui.draggable.data("model"), $(this));
             }
         });
@@ -181,7 +176,7 @@ var MacroController = function() {
 		macro.label = label;
 
         //update view
-        var btn = $("#"+macro.elementId());
+        var btn = $("#"+macro.getElementId());
 		btn.attr("title", macro.label);
         if (label.length > 14) {
             label = label.substr(0, 14) + "...";

@@ -23,7 +23,7 @@ HTMLBuilder = function() {
             var button = HTMLBuilder.blueBtnBuilder(knx.label);
             button.addClass("knx_btn");
 			button.addClass("iphone_element");
-            button.attr("id", knx.elementId());
+            button.attr("id", knx.getElementId());
             button.data("model", knx);
             return button;
 
@@ -33,7 +33,7 @@ HTMLBuilder = function() {
             var button = HTMLBuilder.blueBtnBuilder(x10.label);
             button.addClass("x10_btn");
 			button.addClass("iphone_element");
-            button.attr("id", x10.elementId());
+            button.attr("id", x10.getElementId());
             button.data("model", x10);
             button.attr("title", x10.label);
             return button;
@@ -69,7 +69,7 @@ HTMLBuilder = function() {
             btn.data("model", iphoneBtn);
             btn.attr("title", iphoneBtn.label);
             btn.css("position", "absolute");
-            btn.attr("id", iphoneBtn.elementId());
+            btn.attr("id", iphoneBtn.getElementId());
             return btn;
         },
 
@@ -93,7 +93,7 @@ HTMLBuilder = function() {
                 name = name.substr(0, 14) + "...";
             }
             btn.html(name);
-            template.attr("id", macro.elementId());
+            template.attr("id", macro.getElementId());
             template.data("model", macro);
             return $(template);
         },
@@ -114,17 +114,16 @@ HTMLBuilder = function() {
             return macroCommandLi;
         },
 
-        commandBtnBuilder: function(code, section_id) {
+        infraredBtnBuilder: function(infrared) {
             var btn = $("<div></div>");
-            btn.data("codeId", code.id);
-            btn.data("remoteName", code.remoteName);
-            btn.data("command", code.name);
-            btn.data("sectionId", section_id);
+			btn.attr("id",infrared.getElementId());
+            btn.data("model", infrared);
+           	
             btn.addClass("command_btn");
             btn.addClass("blue_btn");
             btn.addClass("iphone_element");
 
-            var name = code.name;
+            var name = infrared.label;
             btn.attr("title", name);
             if (name.length > 14) {
                 name = name.substr(0, 14) + "...";

@@ -24,9 +24,9 @@ var Macro = function() {
 
          //public methods
 		/**
-         * Get HTML elementId
+         * Get HTML getElementId
          */
-		self.elementId = function() {
+		self.getElementId = function() {
 			return "macro"+self.id;
 		};
        
@@ -68,7 +68,7 @@ var Macro = function() {
          * @param macro
          */
 		function findSubLi (macro) {
-			return $("#" + macro.elementId()).find("ul").find("li");
+			return $("#" + macro.getElementId()).find("ul").find("li");
 		}
 
        

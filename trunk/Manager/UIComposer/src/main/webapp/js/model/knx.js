@@ -24,9 +24,9 @@ var KNX = function() {
 		self.className = getClassName(self);
 
         /**
-         * Get HTML elementId
+         * Get HTML getElementId
          */
-		self.elementId = function() {
+		self.getElementId = function() {
 			return "knx"+self.id;
 		};	
 		
