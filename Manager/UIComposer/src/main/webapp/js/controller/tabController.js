@@ -139,6 +139,10 @@ var TabController = function() {
      */
     TabController.createKNX = function(knx) {
         var btn = HTMLBuilder.KNXBtnBuilder(knx);
+        var info = $("#knx_tab p");
+        if(info.size()!=0){
+        	info.remove();
+        }
         btn.prependTo($("#knx_tab .item_container"));
         makeBtnDraggable(btn);
         btn.unbind().click(function() {
@@ -170,6 +174,10 @@ var TabController = function() {
      */
     TabController.createX10 = function(x10) {
         var btn = HTMLBuilder.X10BtnBuilder(x10);
+        var info = $("#x10_tab p");
+        if(info.size()!=0){
+        	info.remove();
+        }
         btn.prependTo($("#x10_tab .item_container"));
         makeBtnDraggable(btn);
         btn.unbind().click(function() {
