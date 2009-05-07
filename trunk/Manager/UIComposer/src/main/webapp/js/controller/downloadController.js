@@ -268,6 +268,9 @@ var DownloadController = function() {
             var iphoneBtn = $(this).data("model");
             buttonArray.push(iphoneBtn);
             btnModelHash[iphoneBtn.id] = iphoneBtn;
+			if (iphoneBtn.oModel.className = "Infrared") {
+				global.InfraredCollection[iphoneBtn.oModel.codeId] = iphoneBtn.oModel;
+			}
         });
 
         screen.buttons = buttonArray;
