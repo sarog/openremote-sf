@@ -2,7 +2,8 @@ fieldset input.text {
 margin: 12px 0;
 width: 95%;
 padding: .4em;
-text-align:center;
+text-align: left;
+size: 2;
 }
 fieldset {
 padding: 0;
