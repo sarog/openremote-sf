@@ -3,6 +3,5 @@
 <fieldset>
 <legend>Icon</legend>
 <% var _icon = (icon==""?constant.DEFAULT_IPHONE_BTN_ICON:icon) %>
-<img id="inspect_iphoneBtn_icon" src="<%=_icon %>">&nbsp;&nbsp;&nbsp;
-	<a id="inspect_change_icon" class="ui-state-default ui-corner-all button_without_icon" href="#" onclick="javascript:void(0);return false;">Change</a>
+<a><img id="inspect_iphoneBtn_icon" src="<%=_icon %>" title="Change icon" onclick="javascript:void(0);return false;"></a>
 </fieldset>
