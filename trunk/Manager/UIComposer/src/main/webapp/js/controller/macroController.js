@@ -40,10 +40,25 @@ var MacroController = function() {
 	     * Invoke after confirm create macro.
 	     */
     function confirmCreateMacro() {
-        if ($.empty($("#macro_name_input").val())) {
-            $("#macro_name_form").updateTips($("#macro_name_input"), "Macro Name is required");
-            return;
-        } else {
+        $("#macro_form").validate({
+                invalidHandler:function(form, validator) {
+                    $("#macro_name_form").errorTips(validator);
+                },
+                showErrors:function(){},
+                rules: {
+                    macro_name_input: {
+                        required: true,
+                        maxlength: 5
+                    }
+                },
+                messages:{
+                    knx_label_input: {
+                        required: "Please input a macro name",
+                        maxlength: "Please input a macro name no more than 50 charactors"
+                    }
+                }
+        });
+        if($("#macro_form").valid()){
             var buttonName = $("#macro_name_input").val();
             var macro = new Macro();
             macro.id = global.BUTTONID++;

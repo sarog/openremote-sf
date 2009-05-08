@@ -37,46 +37,46 @@ ScreenViewController = function() {
     function confirmCreateScreen() {
         var name = $("#screen_name_input");
         var row = $("#screen_row_input");
-        var col = $("#screen_col_input");
-        var valid = true;
-        if ($.empty(name.val())) {
-            valid = false;
-            $("#create_screen_dialog").updateTips(name, "Name is required");
-            return;
-        }
-        if ($.empty(row.val())) {
-            valid = false;
-            $("#create_screen_dialog").updateTips(row, "Row is required");
-            return;
-        }
-        if (!row.val().toString().isNumber()) {
-            valid = false;
-
-            $("#create_screen_dialog").updateTips(row, "Row must be a number");
-            return;
-        }else if(row.val()>6){
-            valid = false;
-
-            $("#create_screen_dialog").updateTips(row, "Row must be less than or equal 6");
-            return;
-        }
-
-        if ($.empty(col.val())) {
-            valid = false;
-            $("#create_screen_dialog").updateTips(col, "Column is required");
-            return;
-        }
-        if (!col.val().toString().isNumber()) {
-            valid = false;
-            $("#create_screen_dialog").updateTips(col, "Column must be a number");
-            return;
-        }else if(col.val()>4){
-            valid = false;
-
-            $("#create_screen_dialog").updateTips(col, "Column must be less than or equal 4");
-            return;
-        }
-        if (valid) {
+        var col = $("#screen_col_input");        
+        $("#screen_form").validate({
+                invalidHandler:function(form, validator) {
+                    $("#create_screen_dialog").errorTips(validator);
+                },
+                showErrors:function(){},
+                rules: {
+                    screen_name_input: {
+                        required: true,
+                        maxlength: 50
+                    },
+                    screen_row_input: {
+                        required:true,
+                        digits:true,
+                        range: [1,6]
+                    },
+                    screen_col_input: {
+                        required:true,
+                        digits:true,
+                        range: [1,4]
+                    }
+                },
+                messages:{
+                    screen_name_input: {
+                        required: "Please input a name",
+                        maxlength: "Please input a name no more than 50 charactors"
+                    },
+                    screen_row_input: {
+                        required: "Please input a row",
+                        digits: "Please input a digits",
+                        range: "Please input a digits between 1 and 6"
+                    },
+                    screen_col_input: {
+                        required: "Please input a group address",
+                        digits: "Please input a digits",
+                        range: "Please input a digits between 1 and 4"
+                    }
+                }
+            });
+        if ($("#screen_form").valid()) {
             var screen = new Screen();
             screen.id = global.BUTTONID++;
             screen.name = name.val();

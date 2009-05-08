@@ -108,6 +108,13 @@ jQuery.fn.clearError = function() {
     this.removeClass('ui-state-error');
 };
 
+/**
+ * Add jquery validate result to this element.
+ * @param validator jquery-validate object.
+ */
+jQuery.fn.errorTips = function(validator) {
+    this.updateTips(validator.errorList[0].element,validator.errorList[0].message);
+};
 
 /**
  * Add some text inside this element. tell user what's wrong with it.
