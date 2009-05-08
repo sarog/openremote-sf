@@ -210,5 +210,43 @@ jQuery.fn.inspectable = function(options) {
         }
         InspectViewController.updateView(options);
     });
+};
 
+/**
+ * display label in this element,if lenght more than maxlength,replace it, and edit title as it's full lenght
+ * @static
+ * @param int options.text full string
+ * @param int options.max maxlength of String
+ * @param String options.replacement (optional) replace other String as replacement, default value is "...".
+ * @param Boolean options.newLine (optional) If add replacement to a new line, default value is false. 
+ * @param Function options.setText (optional) custom function set element text, it will receive a parameter which is replaced text.
+ * @param Function|Boolean options.setTitle (optional) custom function set element title, it will receive a param which is full text.
+										 
+ */
+
+jQuery.fn.interceptStr = function(options) {
+	var str = options.text;
+	if (str.length > options.max) {
+		str = str.substr(0,options.max);
+		if (options.newLine !== undefined) {
+			str += options.newLine;
+		}
+		if (str.replacement !== undefined) {
+			str+=str.replacement;
+		} else {
+			str += "...";
+		}
+	}
+	if (options.setText !== undefined) {
+		options.setText.call(this,str);
+	} else {
+		$(this).html(str);
+	}
+	if (options.setTitle !== undefined ) {
+		if (options.setTitle != false &&  typeof options == "function") {
+			options.setTitle.call(this,options.text);
+		}
+	} else {
+		$(this).attr("title",options.text);
+	}
 };

@@ -72,37 +72,9 @@ var TabController = function() {
 
     };
 
-    TabController.updateKnx = function (knx) {
-        var label = $.trim($("#inspect_knx_label").val());
-        var groupAddress = $.trim($("#inspect_knx_groupAddress").val());
-        knx.label = label;
-        knx.groupAddress = groupAddress;
+    
 
-        var btn = $("#"+knx.getElementId());
-		if (label.length > 5) {
-            label = label.substr(0, 5) + "...";
-        }
-		btn.attr("title",knx.label);
-        btn.text(label);
-        btn.data("model",knx);
-    };
-
-	TabController.updateX10 = function (x10) {
-        var label = $.trim($("#inspect_x10_label").val());
-        var address = $.trim($("#inspect_x10_address").val());
-		var command = $.trim($("#inspect_x10_command").val());
-        x10.label = label;
-        x10.address = address;
-        x10.command = command;
-
-        var btn = $("#"+x10.getElementId());
-		if (label.length > 5) {
-            label = label.substr(0, 5) + "...";
-        }
-		btn.attr("title",x10.label);
-        btn.text(label);
-        btn.data("model",x10);
-    };
+	
 
     return TabController;
 }();

@@ -338,8 +338,9 @@ font-size: 11px;
 color: white;
 font-weight: bolder;
 text-align: center;
-position: relative;
+position: absolute;
 cursor: move;
+
 }
 
 .macro_detail .highlightInspected {

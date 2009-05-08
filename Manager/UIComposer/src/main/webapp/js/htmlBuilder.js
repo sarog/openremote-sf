@@ -22,7 +22,7 @@ HTMLBuilder = function() {
         KNXBtnBuilder: function(knx) {
             var button = HTMLBuilder.blueBtnBuilder(knx.label);
             button.addClass("knx_btn");
-			button.addClass("iphone_element");
+            button.addClass("iphone_element");
             button.attr("id", knx.getElementId());
             button.data("model", knx);
             return button;
@@ -32,7 +32,7 @@ HTMLBuilder = function() {
         X10BtnBuilder: function(x10) {
             var button = HTMLBuilder.blueBtnBuilder(x10.label);
             button.addClass("x10_btn");
-			button.addClass("iphone_element");
+            button.addClass("iphone_element");
             button.attr("id", x10.getElementId());
             button.data("model", x10);
             button.attr("title", x10.label);
@@ -45,11 +45,12 @@ HTMLBuilder = function() {
             var button = $("<div></div>");
             button.attr("title", text);
             button.addClass("blue_btn");
-            
-            if (text.length > 14) {
-                text = text.substr(0, 14) + "...";
-            }
-            button.text(text);
+
+            button.interceptStr({
+                text: text,
+                max: 14,
+                title: false
+            });
             return button;
         },
 
@@ -68,7 +69,6 @@ HTMLBuilder = function() {
             }
             btn.data("model", iphoneBtn);
             btn.attr("title", iphoneBtn.label);
-            btn.css("position", "absolute");
             btn.attr("id", iphoneBtn.getElementId());
             return btn;
         },
@@ -105,7 +105,7 @@ HTMLBuilder = function() {
             macroCommandLi.data("model", model);
             macroCommandLi.find("span").addClass("ui-icon");
             macroCommandLi.find("span").addClass("ui-icon-arrowthick-2-n-s");
-            var name = model.label;	
+            var name = model.label;
             macroCommandLi.attr("title", name);
             if (name.length > 14) {
                 name = name.substr(0, 8) + "...";
@@ -116,9 +116,9 @@ HTMLBuilder = function() {
 
         infraredBtnBuilder: function(infrared) {
             var btn = $("<div></div>");
-			btn.attr("id",infrared.getElementId());
+            btn.attr("id", infrared.getElementId());
             btn.data("model", infrared);
-           	
+
             btn.addClass("command_btn");
             btn.addClass("blue_btn");
             btn.addClass("iphone_element");

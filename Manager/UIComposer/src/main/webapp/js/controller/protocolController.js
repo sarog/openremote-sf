@@ -25,8 +25,14 @@ var KNXController = function() {
 	            knx.groupAddress = groupAddress.val();
 
 	           	var knxView = new KNXView(knx);
+	
+				knx.addDeleteListener(knxView);
+				knx.addUpdateListener(knxView);
+				
 				var btn = knxView.getElement();
+				
 				makeBtnDraggable(btn);
+				
 		        btn.inspectable();
 		
 	            $("#create_KNX_dialog").closeModalForm();
@@ -69,6 +75,10 @@ var X10Controller = function() {
 	            x10.command = command.val();
 
 	            var x10View = new X10View(x10);
+	
+				x10.addDeleteListener(x10View);
+				x10.addUpdateListener(x10View);
+				
 				var btn = x10View.getElement();
 				makeBtnDraggable(btn);
 		        btn.inspectable();

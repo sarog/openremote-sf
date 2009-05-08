@@ -18,7 +18,6 @@ function getFileNameFromPath (path) {
 	return path;
 }
 
-
 String.prototype.replaceAll = stringReplaceAll;
 
 function stringReplaceAll(aFindText, aRepText) {

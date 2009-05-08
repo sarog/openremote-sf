@@ -17,15 +17,13 @@
 Screen = function() {
 	function Screen () {
 		var self = this;
-		self.id = -1;
+		Model.call(self);
 		self.name = "";
 		self.label = self.name;
 		self.row = -1;
 		self.col = -1;
 		
 		self.buttons = new Array();
-		
-		self.className = getClassName(self);
 	}
 	
 	/**
