@@ -1,4 +1,4 @@
-ChangeIconViewController = function() {
+var ChangeIconViewController = function() {
 	return {
 		
 		showChangeIconForm: function(){
@@ -13,6 +13,7 @@ ChangeIconViewController = function() {
 			ChangeIconViewController.showFromBeehive();
 			
 			$("#fromBeehive").attr("checked","true");
+			
 			$("#fromBeehive").unbind().change(function() {
 				$("#change_icon_form").clearError();
 				$("#validateTips").remove();

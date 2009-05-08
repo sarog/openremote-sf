@@ -53,7 +53,8 @@ var IphoneBtnView = function() {
                 max: 5,
                 setText: function(str) {
                     $(this).find(".middle span").html(str);
-                }
+                },
+				setTitle:false
             });
 
             if (iphoneBtn.icon != constant.DEFAULT_IPHONE_BTN_ICON && iphoneBtn.icon != "") {

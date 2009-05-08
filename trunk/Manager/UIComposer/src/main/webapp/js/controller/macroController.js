@@ -162,9 +162,10 @@ var MacroController = function() {
      * @param container which you want to add li into
      */
         createMacroSubli: function(model, container) {
-            var subli = HTMLBuilder.macroLiBtnBuilder(model);
-            subli.appendTo(container);
-
+        	var macroSubView = new MacroSubView(model, container);
+			model.addDeleteListener(macroSubView);
+			model.addUpdateListener(macroSubView);
+			
         }
 
     };

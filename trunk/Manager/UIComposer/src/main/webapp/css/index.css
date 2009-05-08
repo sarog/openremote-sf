@@ -106,6 +106,7 @@ top:50%;
 #dropable_table td {
 border: 1px dashed yellow;
 }
+
 #dropable_table_container {
 	position:absolute;
 	top:105px;
@@ -163,21 +164,35 @@ display: inline;
 cursor: pointer;
 }
 #right {
-	margin-top:10px;
 }
 
 .item_title p {
 	margin:6px 0;
 	text-align:center;
 }
+#inspect_tool_bar {
+	position:absolute;
+	display:none;
+	background:white;
+}
 
 #inspect_tool_bar p {
 	text-align:center;
-	margin:4px 0;
+	margin:4px 18px;
 }
 
 #inspect_header {
-	
+	position:relative;
+	cursor:move;
+}
+#close_inspect_btn {
+	height:18px;
+	margin:-10px 0 0;
+	padding:1px;
+	position:absolute;
+	right:0.3em;
+	top:50%;
+	width:19px;
 }
 
 #inspect_header p {
@@ -204,7 +219,7 @@ cursor: pointer;
 #inspect_detail label {
     display:block;
     margin:5px 0;
-    margin-left:28px;
+    margin-left:2px;
     text-align:left;
     font-weight:bold;
 }

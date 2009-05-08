@@ -8,14 +8,10 @@ ChangeIconView = function() {
                 var lastIcon=null;
                 var change_icon_from_beehive = $("#change_icon_from_beehive");
                 change_icon_from_beehive.find('img').unbind().click(function(){
-                    if (lastIcon) {
-                        lastIcon.css("border","1px solid white");
-                    }
-                    lastIcon = $(this);
-                    $(this).css("border","1px solid orange");
+					$(this).attr("src");
+                   $("#inspect_iphoneBtn_icon").attr("src",$(this).attr("src"));
+					$("#change_icon_form").closeModalForm();
                 });
-                change_icon_from_beehive.find('img:first').click();
-                change_icon_from_beehive.find('input:first').attr("checked",true);
 			}
         },
         showFromUrlView: function() {

@@ -49,7 +49,7 @@ HTMLBuilder = function() {
             button.interceptStr({
                 text: text,
                 max: 14,
-                title: false
+				setTitle:false
             });
             return button;
         },
@@ -105,12 +105,14 @@ HTMLBuilder = function() {
             macroCommandLi.data("model", model);
             macroCommandLi.find("span").addClass("ui-icon");
             macroCommandLi.find("span").addClass("ui-icon-arrowthick-2-n-s");
-            var name = model.label;
-            macroCommandLi.attr("title", name);
-            if (name.length > 14) {
-                name = name.substr(0, 8) + "...";
-            }
-            macroCommandLi.find("span").after(name);
+
+            macroCommandLi.interceptStr({
+				max:8,
+				text:model.label,
+				setText: function(str){
+					$(this).text(str);
+				}
+			});
             return macroCommandLi;
         },
 

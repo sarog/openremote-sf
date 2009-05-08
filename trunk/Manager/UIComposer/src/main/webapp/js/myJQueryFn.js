@@ -208,13 +208,16 @@ jQuery.fn.inspectable = function(options) {
         options.template = options.model.inspectViewTemplate;
     }
 
-    $(this).unbind().click(function() {
+    $(this).unbind().click(function(e) {
         if (options.before !== undefined) {
             options.before();
         } else {
             $(".highlightInspected").removeClass("highlightInspected");
             $(this).addClass("highlightInspected");
-        }
+        }	
+		options.x = e.clientX+document.body.scrollLeft;
+		options.y = e.clientY+document.body.scrollTop;
+		
         InspectViewController.updateView(options);
     });
 };

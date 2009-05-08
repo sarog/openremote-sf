@@ -1,8 +1,7 @@
 InspectViewController = function() {
 	return {
-		defaultText : "Click an element to inspect it.",
 		init : function() {
-			$("#inspect_detail").html(InspectViewController.defaultText);
+			
 		},
 
 		/**
@@ -13,27 +12,35 @@ InspectViewController = function() {
 		 * @param {Function} options.after  (optional) call after render inspect window
 		 */
 		updateView : function(options) {
-			InspectView.updateView(options.model,options.template);
-			$("#inspect_button").show();
+			InspectView.updateView(options);
+			
+			
 	        if (options.after !== undefined) {
-	             options.after();
+	             options.after.call(this);
 	        }
-
+			
+			
+			$("#close_inspect_btn").unbind().hover(function() {
+				$(this).addClass("ui-state-hover");
+			},function() {
+				$(this).removeClass("ui-state-hover");
+			}).click(function() {
+				InspectView.hideView();
+			});
 			$("#inspect_ok_btn").unbind().click(function() {
 				InspectView.getModel().updateModel();
-				InspectViewController.showDefaultView();
+				InspectView.hideView();
 			});
 			$("#inspect_delete_btn").unbind().click(function() {
 				var model = InspectView.getModel();
 				model.deleteModel();
+				InspectView.hideView();
 			});
-		},
-
-		showDefaultView : function(){
-			$("#inspect_detail").html(InspectViewController.defaultText);
-	        $("#inspect_button").hide();
-			$(".highlightInspected").removeClass("highlightInspected");
-			$("#inspect_tool_bar").removeData("model");
+			
+			InspectView.getElement().draggable({
+				handle:$("#inspect_header"),
+				cursor:"move"
+			});
 		}
 	};
 }();

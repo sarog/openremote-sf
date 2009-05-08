@@ -63,6 +63,8 @@
 </script>
         <script type="text/javascript" src="js/view/macroView.js">
 </script>
+        <script type="text/javascript" src="js/view/macroSubView.js">
+</script>
 		<script type="text/javascript" src="js/controller/dragController.js">
 </script>
 		<script type="text/javascript" src="js/controller/selectController.js">
@@ -175,23 +177,7 @@
 					</div>
 				</div>
 				<div id='right' class="grid_3">
-					<div id="inspect_tool_bar" class="tool_bar">
-						<div id="inspect_header" class="ui-widget-header ui-corner-top item_title">
-							<p>Inspect</p>
-						</div>
-						<div id="inspect_body" class="ui-widget-content">
-								<p id="inspect_detail">
-									
-								</p>
-						</div>
-						<div id="inspect_button" class="ui-widget-content" >
-							<p>
-									<a id="inspect_ok_btn" class="ui-state-default ui-corner-all button" href="#" onClick="javascript:void(0);return false;"><span class="ui-icon ui-icon-check"></span>OK</a>
-									<a id="inspect_delete_btn" class="ui-state-default ui-corner-all button" href="#" onClick="javascript:void(0);return false;"><span class="ui-icon ui-icon-trash"></span>Delete</a>
-							</p>
-						</div>
-						<div class="clear"></div>
-					</div>
+				
 				<div id="macro">
 					<div class="item_title ui-widget-header ui-corner-top">
 						<p><b>Macro</b> <a id="create_macro_btn" href="#" name="create_macro_btn" title="Create Macro"><span class="ui-icon ui-icon-plusthick">create</span></a></p>
@@ -313,6 +299,23 @@
 		<div id="iphoneBtn_container">
 			
 		</div>
-			
+			<div id="inspect_tool_bar" class="tool_bar">
+				<div id="inspect_header" class="ui-widget-header ui-corner-top item_title">
+					<p>Inspect</p>
+					<a id="close_inspect_btn" href="#" title="close"><span class="ui-icon ui-icon-closethick"></span></a>
+				</div>
+				<div id="inspect_body" class="ui-widget-content">
+						<p id="inspect_detail">
+							
+						</p>
+				</div>
+				<div id="inspect_button" class="ui-widget-content" >
+					<p>
+							<a id="inspect_ok_btn" class="ui-state-default ui-corner-all button" href="#" onClick="javascript:void(0);return false;"><span class="ui-icon ui-icon-check"></span>OK</a>
+							<a id="inspect_delete_btn" class="ui-state-default ui-corner-all button" href="#" onClick="javascript:void(0);return false;"><span class="ui-icon ui-icon-trash"></span>Delete</a>
+					</p>
+				</div>
+				<div class="clear"></div>
+			</div>	
 	</body>
 </html>
