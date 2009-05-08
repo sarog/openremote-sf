@@ -17,7 +17,9 @@ var Infrared = function() {
 
 	function Infrared(){
 		var self = this;
-		self.id = -1;
+		
+		Model.call(self);
+		
 		self.name = "";
 		self.command = "";
         //text ui interface display
@@ -27,8 +29,6 @@ var Infrared = function() {
 		self.sectionId = -1;
 		//for indetificate each infrared item
 		self.codeId = -1;
-		// convenient way to get the Class name.
-		self.className = getClassName(self);
 		
 		self.getElementId = function () {
 			return "infrared"+self.id;

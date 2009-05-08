@@ -47,10 +47,11 @@ function makeBtnDraggable(items) {
 				label = $(this).data("model").label;
 			}
 			
-			if (label.length > 14) {
-				label = label.substr(0, 14) + "...";
-        	}
-			helper.html(label);
+			helper.interceptStr({
+                text: label,
+                max: 14,
+                title: false
+            });
 			return helper;
 		},
 		cursorAt: { left: 10,top : 10 } 

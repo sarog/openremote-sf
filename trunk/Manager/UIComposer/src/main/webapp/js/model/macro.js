@@ -16,7 +16,8 @@
 var Macro = function() {
 	function Macro () {
 		var self = this;
-		self.id = -1;
+		Model.call(self);
+		
         //text ui interface display
 		self.label = "";
 		// convenient way to get the Class name.
@@ -57,9 +58,6 @@ var Macro = function() {
 		
 		self.inspectViewTemplate = "template/_macroInspect.ejs";
 
-		self.updateModel = function() {
-			MacroController.updateMacro(self);
-		};
 		
 
         //private methods

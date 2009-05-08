@@ -1,6 +1,6 @@
 var MacroView = function() {
     function MacroView(macro) {
-        self = this;
+        var self = this;
         var _model = macro;
         self.getModel = function() {
             return _model;
@@ -45,6 +45,17 @@ var MacroView = function() {
         self.getSubList = function() {
             return self.getElement().find(".macro_detail");
         };
+
+		self.updateView = function() {
+			self.getMacroBtn().interceptStr({
+				text:self.getModel().label,
+				maxLength:14
+			});
+		};
+		
+		self.deleteView = function() {
+			self.getElement().remove();
+		};
     }
     return MacroView;
 } ();

@@ -1,6 +1,6 @@
 var KNXView = function() {
     function KNXView(knx) {
-        self = this;
+        var self = this;
         var _model = knx;
 
         self.getModel = function() {
@@ -20,6 +20,20 @@ var KNXView = function() {
             btn.prependTo($("#knx_tab .item_container"));
         };
         init();
+
+        self.deleteView = function() {
+            self.getElement().remove();
+        };
+
+        self.updateView = function() {
+			var knx = self.getModel();
+
+            var btn = $("#" + knx.getElementId());
+			btn.interceptStr({
+				text:knx.label,
+				max:14
+			});
+        };
     }
 
     return KNXView;
@@ -27,7 +41,7 @@ var KNXView = function() {
 
 var X10View = function() {
     function X10View(x10) {
-        self = this;
+        var self = this;
         var _model = x10;
 
         self.getModel = function() {
@@ -40,13 +54,26 @@ var X10View = function() {
 
         var init = function() {
             var btn = HTMLBuilder.X10BtnBuilder(self.getModel());
-	        var info = $("#x10_tab p");
-	        if(info.size()!=0){
-	        	info.remove();
-	        }
-	        btn.prependTo($("#x10_tab .item_container"));
+            var info = $("#x10_tab p");
+            if (info.size() != 0) {
+                info.remove();
+            }
+            btn.prependTo($("#x10_tab .item_container"));
         };
         init();
+
+        self.deleteView = function() {
+            self.getElement().remove();
+        };
+
+		self.updateView = function () {
+			var x10 = self.getModel();
+	        var btn = $("#"+x10.getElementId());
+			btn.interceptStr({
+				text:knx.label,
+				max:14
+			});
+	    };
     }
 
     return X10View;
