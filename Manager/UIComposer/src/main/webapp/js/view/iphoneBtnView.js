@@ -58,7 +58,7 @@ var IphoneBtnView = function() {
 
             if (iphoneBtn.icon != constant.DEFAULT_IPHONE_BTN_ICON && iphoneBtn.icon != "") {
                 btn.find("table").removeClass("iPhone_btn_cont");
-                btn.find("table .middle").html("<img src=" + icon + ">");
+                btn.find("table .middle").html("<img src=" + iphoneBtn.icon + ">");
             }
 
         };
