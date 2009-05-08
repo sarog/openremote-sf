@@ -94,11 +94,18 @@ ChangeIconViewController = function() {
 			}
 			
 			function checkSelectFile () {
-				if (ChangeIconView.getFileName().match("\.(png|gif|jpg)") == null) {
-					$("#change_icon_form").updateTips($("#icon_file_name_input"),"Please select an gif, jpg, png type image.");
-					return false;
-				}
-				return true;
+                $("#upload_image_form").validate({
+                    invalidHandler:function(form, validator) {
+                        $("#change_icon_form").errorTips(validator);
+                    },
+                    showErrors:function(){},
+                    rules: {
+                        image_file: {
+                            isImage: true
+                        }
+                    }
+                });
+                return $("#upload_image_form").valid();
 			}
 			
 			function changeInspectImage (src) {

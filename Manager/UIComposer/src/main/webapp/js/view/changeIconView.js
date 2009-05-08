@@ -14,7 +14,8 @@ ChangeIconView = function() {
                     lastIcon = $(this);
                     $(this).css("border","1px solid orange");
                 });
-                change_icon_from_beehive.find('img:first').click();                
+                change_icon_from_beehive.find('img:first').click();
+                change_icon_from_beehive.find('input:first').attr("checked",true);
 			}
         },
         showFromUrlView: function() {
