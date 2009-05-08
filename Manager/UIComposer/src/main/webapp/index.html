@@ -21,6 +21,8 @@
 </script>
 		<script type="text/javascript" src="jslib/jquery.blockUI.js">
 </script>
+        <script type="text/javascript" src="jslib/jquery.validate.min.js">
+</script>
 	<script type="text/javascript" src="jslib/ejs_0.9_alpha_1_production.js">
 </script>
 		<script type="text/javascript" src="js/constant.js">
@@ -208,26 +210,34 @@
 					</div>
 				</div>
 				<div id="macro_name_form" style="display:none">
-					<fieldset>
-						<label for="macro_name_input">Macro Name :</label> <input maxlength="50"  type="text" class="text ui-widget-content ui-corner-all" id="macro_name_input" />
-					</fieldset>
+                    <form id="macro_form">
+                        <fieldset>
+                            <label for="macro_name_input">Macro Name :</label> <input type="text" class="text ui-widget-content ui-corner-all" id="macro_name_input" name="macro_name_input"/>
+                        </fieldset>
+                    </form>
 				</div>
 				<div id="create_KNX_dialog">
-					<fieldset>
-						<label for="knx_label_input">Label</label><input maxlength="50"  type="text" id="knx_label_input" /> <label for="knx_group_address_input">Group Address</label><input maxlength="50"  type="text" id="knx_group_address_input" />
-					</fieldset>
+                    <form id="knx_form">
+                        <fieldset>
+                            <label for="knx_label_input">Label</label><input type="text" id="knx_label_input" name="knx_label_input"/> <label for="knx_group_address_input">Group Address</label><input type="text" id="knx_group_address_input" name="knx_group_address_input"/>
+                        </fieldset>
+                    </form>
 				</div>
 				<div id="create_screen_dialog">
-					<fieldset align="center">
-						<label for="screen_name_input">Name</label><input maxlength="50"  type="text" id="screen_name_input" tabindex="1" />
-						<label for="screen_row_input" style="margin-right:10px">Row</label><input maxlength="2"  type="text" id="screen_row_input" tabindex="2"   style="width:30px; margin-right:10px"/>
-						<label for="screen_col_input" style="margin-left:10px; margin-right:10px">Column</label><input maxlength="2"  type="text" id="screen_col_input" tabindex="3"  style="width:30px"/>
-					</fieldset>
+                    <form id="screen_form">
+                        <fieldset align="center">
+                            <label for="screen_name_input">Name</label><input type="text" id="screen_name_input" tabindex="1" name="screen_name_input"/>
+                            <label for="screen_row_input" style="margin-right:10px">Row</label><input type="text" id="screen_row_input" tabindex="2" name="screen_row_input"  style="width:30px; margin-right:10px"/>
+                            <label for="screen_col_input" style="margin-left:10px; margin-right:10px">Column</label><input type="text" id="screen_col_input" tabindex="3" name="screen_col_input" style="width:30px"/>
+                        </fieldset>
+                    </form>
 				</div>
 				<div id="create_x10_dialog">
-					<fieldset>
-						<label for="x10_label_input">Label</label><input maxlength="50"  type="text" id="x10_label_input" /> <label for="x10_address_input">Address</label><input maxlength="50"  type="text" id="x10_address_input" /> <label for="x10_command_input">Command</label><input maxlength="50"  type="text" id="x10_command_input" />
-					</fieldset>
+                    <form id="x10_form">
+                        <fieldset>
+                            <label for="x10_label_input">Label</label><input type="text" id="x10_label_input" name="x10_label_input"/> <label for="x10_address_input">Address</label><input type="text" id="x10_address_input" name="x10_address_input"/> <label for="x10_command_input">Command</label><input type="text" id="x10_command_input" name="x10_command_input"/>
+                        </fieldset>
+                    </form>
 				</div>
 				<div id="command_navigition">
 					<div id="vender_select_container" class="select_container">
@@ -274,8 +284,10 @@
 
 					</div>
 					<div id="change_icon_from_url" class="change_icon_from_container">
-						<label for="icon_url_input">URL : <input maxlength="50"  type="text" id="icon_url_input" /></label>
-					</div>
+                        <form id="icon_url_form">
+						<label for="icon_url_input">URL : <input type="text" id="icon_url_input" name="icon_url_input"/></label>
+                        </form>
+                    </div>
 					<div id="change_icon_from_upload" class="change_icon_from_container">
 						<form id="upload_image_form" action="uploadImage.htm" method="post" enctype="multipart/form-data">
 						<label for="icon_file_name_input">File name : <input type="file" id="icon_file_name_input" name="image_file" /></label>

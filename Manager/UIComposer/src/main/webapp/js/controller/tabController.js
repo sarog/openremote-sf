@@ -18,31 +18,6 @@ var TabController = function() {
         //constractor 	
     }
 
-    // private method
-    /**
-     * Show create knx button dialog.
-     */
-    function showCreateKNXDialog() {
-        $("#create_KNX_dialog").showModalForm("Create KNX", {
-            buttons:{
-				'Create': KNXController.confirmCreate
-			},
-			confirmButtonName:'Create'
-        });
-    }
-
-    /**
-     * Show create x10 button dialog.
-     */
-    function showCreateX10Dialog() {
-        $("#create_x10_dialog").showModalForm("Create X10", {
-			buttons:{
-				'Create': X10Controller.confirmCreate
-			},
-			confirmButtonName:'Create'
-        });
-    }
-
     /**
      * Show select vendor model dialog.
      */
@@ -65,8 +40,8 @@ var TabController = function() {
     //static method
     TabController.init = function() {
         $("#tabs").tabs();
-        $("#create_knx_icon").unbind().bind("click", showCreateKNXDialog);
-        $("#create_x10_icon").unbind().bind("click", showCreateX10Dialog);
+        $("#create_knx_icon").unbind().bind("click", KNXController.showCreateKNXDialog);
+        $("#create_x10_icon").unbind().bind("click", X10Controller.showCreateX10Dialog);
         $("#select_command_icon").unbind().bind("click", selectCommand);
 
 

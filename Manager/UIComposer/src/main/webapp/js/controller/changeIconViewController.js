@@ -71,11 +71,26 @@ ChangeIconViewController = function() {
 				return true;
 			}
 			function checkInputUrl () {
-				if (ChangeIconView.getInputUrl().match("http(s?)://") == null) {
-					$("#change_icon_form").updateTips($("#icon_url_input"),"Please input correct url.");
-					return false;
-				}
-				return true;
+                $("#icon_url_form").validate({
+                    invalidHandler:function(form, validator) {
+                        $("#change_icon_form").errorTips(validator);
+                    },
+                    showErrors:function(){},
+                    rules: {
+                        icon_url_input: {
+                            required: true,
+                            url: true
+                        }
+                    },
+                    messages:{
+                        icon_url_input: {
+                            required: "Please input a url",
+                            url: "Please input a correct url"
+                        }
+                    }
+                });
+                return $("#icon_url_form").valid();
+            
 			}
 			
 			function checkSelectFile () {
