@@ -9,7 +9,7 @@
      */
     String getVersion() {
       String revision = "$Revision: 9 $";
-      String headUrl = "$HeadURL: https://openremote.svn.sourceforge.net/svnroot/openremote/trunk/Manager/UIComposer/webapp/WEB-INF/jsp/version.jsp $";
+      String headUrl = "$HeadURL: https://openremote.svn.sourceforge.net/svnroot/openremote/trunk/Manager/UIComposer/src/main//webapp/WEB-INF/jsp/version.jsp $";
       String version = org.openremote.irbuilder.utils.SvnUtil.getVersionLabel(headUrl,revision);
       return version;
     }
