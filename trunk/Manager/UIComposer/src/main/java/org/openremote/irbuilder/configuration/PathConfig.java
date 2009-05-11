@@ -50,20 +50,12 @@ public class PathConfig {
     * @return folder absolute path
     */
    public String tempFolder() {
-      Properties properties = new Properties();
-      try {
-         File pFile = new File(getClass().getResource("/directoryConfig.properties").getFile());
-         properties.load(new FileInputStream(pFile));
-      } catch (IOException e) {
-         logger.error("Can't read directoryConfig.properties file.", e);
-         throw new IllegalStateException("Can't read directoryConfig.properties file.", e);
+      String root = System.getProperty("modeler.root");
+      if (root == null) {
+         logger.fatal("Can't find modeler.root in system property, please check web.xml.");
+         throw new IllegalStateException("Can't find modeler.root in system property, please check web.xml.");
       }
-      if (properties.get("tmp.dir") != null) {
-         return properties.get("tmp.dir").toString();
-      } else {
-         logger.error("Can't find tmp.dir in properties, system initialize error.");
-         throw new IllegalStateException("Can't find tmp.dir in properties, system initialize error.");
-      }
+      return  root+"tmp";
    }
    /**
     * Gets iphone xml path
