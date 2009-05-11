@@ -10,7 +10,7 @@
 </head>
 <body>
 	<c:set value="${exception}" var="ee" />
-	<jsp:useBean id="ee" type="java.lang.Exception" />
+	<jsp:useBean id="ee" type="org.openremote.beehive.exception.SVNException" />
 	SVNException:
 	<%=ee.getMessage()%>
 </body>
