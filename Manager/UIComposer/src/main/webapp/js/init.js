@@ -21,7 +21,8 @@ $(document).ready(function() {
     IPhoneController.init();
     ScreenViewController.init();
     InspectViewController.init();
-
+    fillVersion();
+    
     $("body").ajaxError(function(event, request, settings) {
         if (request.status == 0) {
             $.showErrorMsg("Can't connect to server.");
@@ -29,6 +30,12 @@ $(document).ready(function() {
             $.showErrorMsg(request.responseText);
         }
     });
+    
+    function fillVersion() {
+    	$.get("getVersion.htm",function(data){
+    		$("#version").text(data);
+    	});
+    }
 });
 
 
