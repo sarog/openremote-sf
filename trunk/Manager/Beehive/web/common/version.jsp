@@ -8,8 +8,8 @@
      * @return either the tagged version.
      */
     String getVersion() {
-      String revision = "$Revision: 9 $";
-      String headUrl = "$HeadURL: https://openremote.svn.sourceforge.net/svnroot/openremote/trunk/Manager/Beehive/web/common/version.jsp $";
+      String revision = "$Revision$";
+      String headUrl = "$HeadURL$";
       String version = org.openremote.beehive.utils.SvnUtil.getVersionLabel(headUrl,revision);
       return version;
     }
