@@ -27,7 +27,8 @@ ScreenViewController = function() {
 			buttons:{
 				 'Create': confirmCreateScreen
 			},
-			confirmButtonName:'Create'
+			confirmButtonName:'Create',
+			width:400
         });
     }
 

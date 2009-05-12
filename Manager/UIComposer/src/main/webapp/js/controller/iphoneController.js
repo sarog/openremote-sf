@@ -326,7 +326,7 @@ var IPhoneController = function() {
 
 
         var btn = iphoneBtnView.getElement();
-
+		
         makeIphoneBtnDraggable(btn);
         makeIphoneBtnResizable(btn);
 

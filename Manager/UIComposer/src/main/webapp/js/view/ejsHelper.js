@@ -7,7 +7,7 @@ var EJSHelper = function() {
                 }).update(containerId, model);
             } catch(e) {
                 if (e instanceof Error) {
-                    $.showErrorMsg("render page error.");
+                    $.showErrorMsg(e.description);
                 } else {
                     $.showErrorMsg("Can't Connect to server.");
                 }
@@ -24,10 +24,11 @@ var EJSHelper = function() {
                     html = new EJS({
                         url: url
                     }).render(model);
+					
                 }
             } catch(e) {
                 if (e instanceof Error) {
-                    $.showErrorMsg("render page error.");
+                    $.showErrorMsg(e.description);
                 } else {
                     $.showErrorMsg("Can't Connect to server.");
                 }
