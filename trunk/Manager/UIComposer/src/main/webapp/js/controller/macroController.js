@@ -33,7 +33,8 @@ var MacroController = function() {
             buttons: {
                 'Create': confirmCreateMacro
             },
-            confirmButtonName: 'Create'
+            confirmButtonName: 'Create',
+			width:380
         });
     }
     /**
@@ -48,11 +49,11 @@ var MacroController = function() {
                 rules: {
                     macro_name_input: {
                         required: true,
-                        maxlength: 5
+                        maxlength: 50
                     }
                 },
                 messages:{
-                    knx_label_input: {
+                    macro_name_input: {
                         required: "Please input a macro name",
                         maxlength: "Please input a macro name no more than 50 charactors"
                     }

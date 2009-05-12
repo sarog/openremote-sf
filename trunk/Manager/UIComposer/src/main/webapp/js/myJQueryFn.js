@@ -127,7 +127,7 @@ jQuery.fn.updateTips = function(element, message) {
     if (this.find("#validateTips").size() < 1) {
         $("<p id='validateTips'></p>").addClass("ui-state-error-text").prependTo(this);
         var h = parseInt(this.height());
-        h = h + 32;
+        h = h + 38;
         this.height(h);
     }
     this.find("#validateTips").text("").text(message).effect("highlight", 3000);
@@ -208,6 +208,7 @@ jQuery.fn.inspectable = function(options) {
         options.template = options.model.inspectViewTemplate;
     }
 
+
     $(this).unbind().click(function(e) {
         if (options.before !== undefined) {
             options.before();
@@ -217,7 +218,6 @@ jQuery.fn.inspectable = function(options) {
         }	
 		options.x = e.clientX+document.body.scrollLeft;
 		options.y = e.clientY+document.body.scrollTop;
-		
         InspectViewController.updateView(options);
     });
 };

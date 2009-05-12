@@ -8,7 +8,8 @@ var KNXController = function() {
                 buttons:{
                     'Create': KNXController.confirmCreate
                 },
-                confirmButtonName:'Create'
+                confirmButtonName:'Create',
+				width:350
             });
         },
 	    /**
@@ -78,7 +79,8 @@ var X10Controller = function() {
                 buttons:{
                     'Create': X10Controller.confirmCreate
                 },
-                confirmButtonName:'Create'
+                confirmButtonName:'Create',
+				width:350
             });
         },
 		/**

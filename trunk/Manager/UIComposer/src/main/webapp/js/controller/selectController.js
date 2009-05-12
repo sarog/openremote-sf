@@ -91,7 +91,7 @@ function showCommandBtns(vendor_name, model_name, section_id) {
     getJSONData("/lirc/" + vendor_name + "/" + model_name + "/" + section_id + "/codes",
     function(data) {
         $("#command_container").html("");
-        $("<span>"+vendor_name+" &gt; "+model_name+"</span>").appendTo($("#command_container"));
+        $("<div>"+vendor_name+" &gt; "+model_name+"</div>").appendTo($("#command_container"));
         var codes = $.makeArray(data.codes.code);
         $(codes).each(function() {
             var infrared = new Infrared();
@@ -103,7 +103,6 @@ function showCommandBtns(vendor_name, model_name, section_id) {
             infrared.modelName = model_name;
             infrared.sectionId = section_id;
             infrared.codeId = this.id;
-            
             var view = new InfraredView(infrared);
             makeBtnDraggable(view.getElement());
         });

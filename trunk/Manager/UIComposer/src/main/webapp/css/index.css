@@ -4,6 +4,16 @@ width: 95%;
 padding: .4em;
 text-align: left;
 size: 2;
+display:block;
+}
+
+fieldset input.number {
+margin: 10px 5px;
+width: 30px;
+padding: .4em;
+text-align: left;
+size: 2;
+display:inline;
 }
 fieldset {
 padding: 0;
@@ -46,6 +56,11 @@ text-align:left;
 #left {
 text-align: center;
 }
+
+#screen_tool_bar p {
+	padding:3px;
+	margin:3px;
+}
 #command_navigition {
 margin: 0 auto;
 }
@@ -71,6 +86,7 @@ width: 200px;
 #upload_form fieldset {
 	width:280px;
 }
+
 
 
 #iphone_backgroud {
@@ -268,7 +284,6 @@ top: 5px;
 
 
 #macro  .item_title {
-cursor: move;
 position: relative;
 }
 
@@ -418,6 +433,7 @@ table.iPhone_btn_cont td.tr_c{
 table.iPhone_btn_cont td.middle{
     text-align: center;
     font-size: 11px;
+	height:100%;
 }
 table.iPhone_btn_cont td.ml{
     width:3px;
