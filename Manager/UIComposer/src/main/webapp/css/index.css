@@ -35,6 +35,10 @@ text-align:left;
 	color:#FCD647;
 	margin:5px 10px;
 }
+#top .version {
+   color:#FCD647;
+   float:right;
+}
 #logo {
 	padding:3px 2px;
 }

@@ -33,7 +33,7 @@ $(document).ready(function() {
     
     function fillVersion() {
     	$.get("getVersion.htm",function(data){
-    		$("#version").text(data);
+    		$("#version").append(data);
     	});
     }
 });
