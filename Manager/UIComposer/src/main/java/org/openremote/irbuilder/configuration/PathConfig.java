@@ -27,9 +27,6 @@ import org.openremote.irbuilder.Constants;
 
 /**
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
- * eg:
- * web.dir=/Users/finalist/dev/workspace/openremote/UIComposer/src/main/webapp/
- * tmp.dir=/Users/finalist/dev/workspace/openremote/UIComposer/src/main/webapp/tmp/
  *
  */
 public class PathConfig {
@@ -55,7 +52,7 @@ public class PathConfig {
          logger.fatal("Can't find modeler.root in system property, please check web.xml.");
          throw new IllegalStateException("Can't find modeler.root in system property, please check web.xml.");
       }
-      return  root+"tmp";
+      return  root+"tmp"+File.separator;
    }
    /**
     * Gets iphone xml path
