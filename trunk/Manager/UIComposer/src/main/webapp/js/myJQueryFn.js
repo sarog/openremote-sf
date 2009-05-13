@@ -195,7 +195,9 @@ jQuery.isCoordinateInArea = function(top, left, container) {
  * @static
  * @param {Object} options.model (optional) model need to inpect, default is $(this).data("model").
  * @param {String} options.template  (optional) inspect window template,default is $(this).data("model").inspectViewTemplate.
- * @param {Function} options,before (optional) do some thing before inspect window has showed, like some css stuff.
+ * @param {Function} options.before (optional) do some thing before inspect window has showed, like some css stuff.
+ * @param {Function} options.left (optional) fix left. 
+ * @param {Function} options.top (optional) fix top. 
  */
 jQuery.fn.inspectable = function(options) {
 	if (options === undefined) {
@@ -216,8 +218,8 @@ jQuery.fn.inspectable = function(options) {
             $(".highlightInspected").removeClass("highlightInspected");
             $(this).addClass("highlightInspected");
         }	
-		options.x = e.clientX+document.body.scrollLeft;
-		options.y = e.clientY+document.body.scrollTop;
+		options.x = options.left || e.clientX+document.body.scrollLeft;
+		options.y = options.top || e.clientY+document.body.scrollTop;
         InspectViewController.updateView(options);
     });
 };

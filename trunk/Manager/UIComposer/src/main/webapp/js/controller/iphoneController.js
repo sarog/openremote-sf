@@ -335,7 +335,8 @@ var IPhoneController = function() {
                 $("#inspect_iphoneBtn_icon").unbind().click(function() {
                     ChangeIconViewController.showChangeIconForm();
                 });
-            }
+            },
+			left:$("#iphone_backgroud").offset().left + $("#iphone_backgroud").width()
         });
 
         btn.tooltip({
