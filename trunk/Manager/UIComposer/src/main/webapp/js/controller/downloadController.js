@@ -135,6 +135,9 @@ var DownloadController = function() {
                 var models = iphoneBtn.oModel.getSubModelsRecursively();
                 for (var index in models) {
                     event.push(models[index].id);
+					if (models[index].className == "Infrared") {
+						global.InfraredCollection[models[index].codeId] = models[index];
+					}
                 }
             } else {
                 event.push(iphoneBtn.oModel.id);
