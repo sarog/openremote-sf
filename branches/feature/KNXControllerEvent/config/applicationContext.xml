@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
@@ -29,8 +31,22 @@
 		    </props>
 		</property>
 	</bean>
-    
-    <bean id="irEventBuilder" class="org.openremote.controller.protocol.infrared.IREventBuilder" scope="prototype" ></bean>
-  <bean id="knxEventBuilder" class="org.openremote.controller.protocol.knx.KNXEventBuilder" scope="prototype" ></bean>
+
+  <!--  EVENT BUILDERS ============================================================================
+   |
+   | Implementation specific builders for the Event Factory bean. In short, each distinct event
+   | type, as they appear in controller.xml, will need a corresponding builder implementation.
+   |
+   | See the org.openremote.controller.event.EventBuilder interface for details if you seek to
+   | extend the implementation with additional event types.
+   +-->
+
+  <!-- Infrared Events -->
+  <bean id = "irEventBuilder" class = "org.openremote.controller.protocol.infrared.IREventBuilder"
+        scope = "prototype"/>
+
+  <!-- KNX Events -->
+  <bean id = "knxEventBuilder" class = "org.openremote.controller.protocol.knx.KNXEventBuilder"
+        scope = "singleton"/>
 
 </beans>
