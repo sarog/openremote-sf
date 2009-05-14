@@ -20,5 +20,8 @@ public class WebscraperTest extends TestBase{
 	public void testScrapFiles() {
 //		service.scraperFiles();
 	}
-
+	
+	public void testGetProgress(){
+//	   System.out.println(service.getProgress());
+	}
 }

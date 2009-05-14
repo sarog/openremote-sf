@@ -197,4 +197,14 @@ public class StringUtil {
       }
       return result;
    }
+   
+   /**
+    * Get system time
+    * 
+    * @return time string "yyyy-MM-dd HH:mm:ss"
+    */
+   public static String systemTime(){
+      SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");      
+      return df.format(new Date());
+   }
 }

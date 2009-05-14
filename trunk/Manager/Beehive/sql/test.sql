@@ -108,3 +108,17 @@ insert  into `vendor`(`oid`,`name`) values (1,'3m');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+
+/*Table structure for table `vendor` */
+
+DROP TABLE IF EXISTS `icon`;
+
+create table `icon` (
+    `oid` double ,
+    `file_name` varchar (510),
+    `name` varchar (510)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+/*Data for the table `icon` */
+
+insert into `icon` (`oid`, `file_name`, `name`) values('1','menu.png','menu');

@@ -431,4 +431,13 @@ td.diffLine_D{
 .image_of_change_M {
 	background: url("../image/changed_ico.gif") no-repeat left top;
 }
-
+div.infoContainer{
+   border-bottom:1px solid #9FCD75;
+   border-left:1px solid #9FCD75;
+   border-right:1px solid #9FCD75;
+   border-width:0 1px 1px;
+   padding:5px;
+}
+#spinner{
+   display:none;
+}

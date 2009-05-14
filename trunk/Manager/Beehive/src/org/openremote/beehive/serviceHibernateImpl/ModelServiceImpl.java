@@ -31,6 +31,7 @@ import org.openremote.beehive.Configuration;
 import org.openremote.beehive.api.dto.ModelDTO;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
+import org.openremote.beehive.domain.Icon;
 import org.openremote.beehive.domain.Model;
 import org.openremote.beehive.domain.RemoteSection;
 import org.openremote.beehive.domain.Vendor;
@@ -142,8 +143,7 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
       try {
          BeanUtils.copyProperties(modelDTO, loadById(modelId));
       } catch (IllegalAccessException e) {
-         // TODO handle exception
-         e.printStackTrace();
+         logger.error("", e);
       } catch (InvocationTargetException e) {
          // TODO handle exception
          e.printStackTrace();
@@ -299,5 +299,12 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
       }
       this.update(paths, "rollback to revision " + revision, username);
    }
-
+   
+   /**
+    * {@inheritDoc}
+    * 
+    */
+   public int count() {
+      return genericDAO.loadAll(Model.class).size();
+   }
 }

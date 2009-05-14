@@ -27,9 +27,11 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
+import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.api.service.WebscraperService;
 import org.openremote.beehive.domain.Vendor;
+import org.openremote.beehive.file.ScraperProgress;
 import org.webharvest.definition.ScraperConfiguration;
 import org.webharvest.runtime.Scraper;
 
@@ -42,6 +44,7 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
    private static Logger logger = Logger.getLogger(WebscraperServiceImpl.class.getName());
    private Configuration configuration;
    private SVNDelegateService svnDelegateService;
+   private ModelService modelService;
 
    public SVNDelegateService getSvnDelegateService() {
       return svnDelegateService;
@@ -59,8 +62,20 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
       this.configuration = configuration;
    }
 
+   public void setModelService(ModelService modelService) {
+      this.modelService = modelService;
+   }
+
    public void scraperFiles() {
       try {
+         File progressFile = new File(configuration.getScrapDir()+File.separator+"progress.txt");
+         if(progressFile.exists()){
+            progressFile.delete();
+         }
+         File copyProgressFile = new File(configuration.getScrapDir()+File.separator+"copyProgress.txt");
+         if(copyProgressFile.exists()){
+            copyProgressFile.delete();
+         }
          File scrapDir = new File(configuration.getScrapDir());
          if(scrapDir.exists()){
             FileUtils.deleteDirectory(scrapDir);            
@@ -83,5 +98,30 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
       }catch (IOException e) {
          logger.error("Cae't delete the directory of "+configuration.getScrapDir(),e);
        }
+   }
+   
+  /**
+   * {@inheritDoc}
+   */
+   public ScraperProgress getScraperProgress(String progressFileName, String endTag){
+      ScraperProgress scraperProgress = new ScraperProgress();
+      double count = modelService.count();
+      File progressFile = new File(configuration.getScrapDir()+File.separator+progressFileName);
+      String progress = "";
+      if(progressFile.exists()){
+         try {
+            progress = FileUtils.readFileToString(progressFile, "UTF8");
+            double percent = FileUtils.readLines(progressFile, "UTF8").size()/count;
+            scraperProgress.setPercent(percent);
+            scraperProgress.setProgress(progress);
+            if(progress.endsWith(endTag)){
+               scraperProgress.setStatus("isEnd");
+            }
+         } catch (IOException e) {
+            logger.error("Read "+progressFileName+" to string occur error!",e);
+         }
+      }
+      return scraperProgress;
+
    }
 }

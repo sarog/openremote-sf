@@ -39,7 +39,7 @@
                     <td><table border="0" cellpadding="0" cellspacing="0">
                         <tr>
                           <td id="tab_1" colspan="2" class="inactivetab" onClick="window.location='changes.html'"><img style="vertical-align: middle; margin-right: 3px;" title="Changes" alt="Changes" src="image/changes.gif"/>Changes </td>
-                          <td id="tab_2" colspan="2" class="inactivetab" onClick="window.location='sync.html'"><img style="vertical-align: middle; margin-right: 3px;" title="Update" alt="Update" src="image/update.gif"/>Sync </td>
+                          <td id="tab_2" colspan="2" class="inactivetab" onClick="window.location='sync.html'"><img style="vertical-align: middle; margin-right: 3px;" title="Update" alt="Update" src="image/update_icon.gif"/>Sync </td>
                           <td id="tab_3" colspan="2" class="inactivetab" onClick="window.location='vendor_list.html'"><img style="vertical-align: middle; margin-right: 3px;" title="History" alt="History" src="image/history.gif"/>History </td>
                         </tr>
                     </table></td>
@@ -56,7 +56,7 @@
                   <tr>
                     <td style="padding-left: 10px; padding-right: 5px;" align="left" nowrap="true"><a class="footer" href="http://www.openremote.org/" target="_blank">© OpenRemote Software 2008</a> </td>
                     <td style="padding-left: 5px; padding-right: 5px;" width="100%" align="center" nowrap="true"><a class="footer" href="http://www.openremote.org/" target="_blank">Powered by OpenRemote Beehive</a> </td>
-                    <td style="padding-left: 5px; padding-right: 10px;" align="right" nowrap="true"><%@ include file="../common/version.jsp" %> </td>
+                    <td style="padding-left: 5px; padding-right: 10px;" align="right" nowrap="true">Version: <%@ include file="../common/version.jsp" %> </td>
                   </tr>
               </table></td>
           </tr>
