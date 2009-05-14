@@ -35,6 +35,7 @@ import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
+import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.domain.Vendor;
 import org.openremote.beehive.exception.SVNException;
@@ -72,8 +73,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
    private static Logger logger = Logger.getLogger(SVNDelegateServiceImpl.class.getName());
    private Configuration configuration;
    private ISVNClientAdapter svnClient = SVNClientFactory.getSVNClient();
-   private static Map<String, Object> fileLocks = new HashMap<String, Object>();
-
+   private static Map<String, Object> fileLocks = new HashMap<String, Object>();   
    public Configuration getConfiguration() {
       return configuration;
    }
@@ -160,6 +160,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          logger.error("initiliaze svnUrl of trunk failed!", e);
       }
       copyDirectory(tempDir, workDir);
+      FileUtil.writeStringToFile(configuration.getScrapDir()+File.separator+"copyProgress.txt", "Copy success!");
       logger.info("Success copy scrap files to workCopy " + destPath);
    }
 
@@ -171,12 +172,14 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                copyDirectory(subFile, workFile);
             } else if (subFile.isFile()) {
                String tempName = subFile.getName();
-               String workName = tempName.substring(0, tempName.lastIndexOf("."));
-               File workFile = new File(workDir, File.separator + workName);
-               copyFile(tempName, subFile, workFile);
+               if(!(tempName.equals("progress.txt") || tempName.equals("copyProgress.txt"))){
+                  String workName = tempName.substring(0, tempName.lastIndexOf("."));
+                  File workFile = new File(workDir, File.separator + workName);
+                  copyFile(tempName, subFile, workFile);                  
+               }
             }
          }
-      } else if (tempDir.isFile()) {
+      } else if (tempDir.isFile()) {         
          String tempName = tempDir.getName();
          String workName = tempName.substring(0, tempName.lastIndexOf("."));
          File workFile = new File(workDir, File.separator + workName);
@@ -458,16 +461,20 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       }
       return ds;
    }
-
+   
+   
    /**
     * This method is used for copy a scrapFile to workCopy after compare the date
     * 
     */
    private void copyFile(String tempName, File modelFile, File workFile) {
       try {
+         String progressFile = configuration.getScrapDir()+File.separator+"copyProgress.txt";
+         String modelPath = modelFile.getPath().substring(configuration.getScrapDir().length(),modelFile.getPath().lastIndexOf("."));
          if (!workFile.getParentFile().exists()) {
             workFile.getParentFile().mkdirs();
          }
+         String actionType = " N ";
          if (workFile.exists()) {
             String strDate = tempName.substring(tempName.lastIndexOf(".") + 1);
             Date tempDate = StringUtil.String2Date(strDate, "dd-MMM-yyyy kk-mm", Locale.ENGLISH);
@@ -475,13 +482,17 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             if (svnInfo.getLastChangedDate() != null) {
                if (tempDate.compareTo(svnInfo.getLastChangedDate()) > 0) {
                   FileUtil.copyFile(modelFile, workFile);
+                  actionType = " M ";
                }
             } else if (tempDate.compareTo(new Date(workFile.lastModified())) > 0) {
                FileUtil.copyFile(modelFile, workFile);
-            }
+               actionType = " M ";
+            }            
          } else {
             FileUtil.copyFile(modelFile, workFile);
+            actionType = " A ";
          }
+         FileUtil.writeStringToFile(progressFile, " ["+StringUtil.systemTime()+"] "+actionType + modelPath);
       } catch (SVNClientException e) {
          logger.error("SvnClient.getInfo touch off the SVNClientException," +
          		" This may occur by the fileName not case sensitive!",e);

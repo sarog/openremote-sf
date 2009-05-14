@@ -119,8 +119,29 @@ public interface ModelService {
     */
    InputStream exportStream(long id);
 
+   /**
+    * Update database and svn repo sync
+    * 
+    * @param paths the file path of the workCopy
+    * @param message the comments
+    * @param username
+    * @throws SVNException
+    */
    void update(String[] paths, String message, String username) throws SVNException;
 
+   /**
+    * Rollback svn repo to a specify revision
+    * 
+    * @param path
+    * @param revision
+    * @param username
+    * @throws SVNException
+    */
    void rollback(String path, int revision, String username) throws SVNException;
+   
+   /**
+    * @return the models amount
+    */
+   int count();
 
 }

@@ -20,6 +20,9 @@
  */
 package org.openremote.beehive.api.service;
 
+import org.openremote.beehive.file.ScraperProgress;
+
+
 /**
  * @author Tomsky
  * 
@@ -31,4 +34,13 @@ public interface WebscraperService {
     * Scrap configuration files from web to local,and copy sync them with svn's workCopy
     */
    void scraperFiles();
+   
+   /**
+    * Get scraper progress from progress file
+    * 
+    * @param progressFileName string
+    * @param endTag string
+    * @return
+    */
+   ScraperProgress getScraperProgress(String progressFileName, String endTag);
 }

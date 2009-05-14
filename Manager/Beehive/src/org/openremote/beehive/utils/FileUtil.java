@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -381,5 +382,21 @@ public class FileUtil {
          }
       }
       return strBuffer;
+   }
+   
+   public static void writeStringToFile(String fileName, String content) {
+      File f = new File(fileName);
+      try {
+         if (!f.exists()) {
+            f.createNewFile();
+         }
+         FileWriter writer = new FileWriter(fileName, true);
+         writer.write(content);
+         writer.write(13);
+         writer.write(10);
+         writer.close();
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
    }
 }

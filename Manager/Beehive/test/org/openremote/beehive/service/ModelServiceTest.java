@@ -45,4 +45,8 @@ public class ModelServiceTest extends TestBase {
 //    	String path = "/";
 //    	service.rollback(path, 101, "tomsky");
     }
+    
+    public void testCount(){
+       System.out.println(service.count());
+    }
 }
