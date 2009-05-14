@@ -21,7 +21,7 @@ $(document).ready(function() {
     IPhoneController.init();
     ScreenViewController.init();
     InspectViewController.init();
-    fillVersion();
+    $("#version").append(getVersionLabel());
     
     $("body").ajaxError(function(event, request, settings) {
         if (request.status == 0) {
@@ -30,12 +30,6 @@ $(document).ready(function() {
             $.showErrorMsg(request.responseText);
         }
     });
-    
-    function fillVersion() {
-    	$.get("getVersion.htm",function(data){
-    		$("#version").append(data);
-    	});
-    }
 });
 
 
