@@ -89,11 +89,5 @@ public class MainController {
    public void currenUserPath(HttpServletRequest request, HttpServletResponse resp) throws IOException {
       resp.getWriter().print("tmp/"+request.getSession().getId());
    }
-   
-   @RequestMapping(value = "/getVersion.htm", method = RequestMethod.GET)
-   public String getVersion() throws IOException {
-      return "version";
-   }
-
 
 }
