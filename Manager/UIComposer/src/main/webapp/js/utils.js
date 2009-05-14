@@ -35,8 +35,8 @@ function trim(){
 	return this.replace(/(^\s*)|(\s*$)/g, "");
 } 
 function getVersionLabel(){
-	var headUrl = "$HeadURL: https://openremote.svn.sourceforge.net/svnroot/openremote/trunk/Manager/UIComposer/src/main/webapp/js/utils.js $";
-	var revision = "$Revision: 439 $";
+	var headUrl = "$HeadURL$";
+	var revision = "$Revision$";
 	var result = "Untagged";
     var verStr = "";
     var tagStart = -1;
