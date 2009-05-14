@@ -163,7 +163,12 @@
     <listener>
         <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
     </listener>
-
+    
+    <listener>
+        <listener-class>
+            org.openremote.beehive.listener.SVNListener
+        </listener-class>
+    </listener>
    <!--
      - Publishes events for session creation and destruction through the application
      - context. Optional unless concurrent session control is being used.

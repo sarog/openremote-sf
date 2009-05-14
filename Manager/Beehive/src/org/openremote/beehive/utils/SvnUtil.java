@@ -43,7 +43,7 @@ public class SvnUtil {
          tagStart = revision.indexOf("$Revision:");
          int tagsEnd = revision.indexOf("$", tagStart + 10);
          if (tagsEnd >= 0) {
-            verStr = "Untagged: " + revision.substring(tagStart + 10, tagsEnd).trim();
+            verStr = " r" + revision.substring(tagStart + 10, tagsEnd).trim();
          }
       }
       if (verStr.length() != 0) {

@@ -81,7 +81,11 @@ public class LIRCRevisionChangesController extends MultiActionController {
       String path = "/";
       List<LogMessage> lms = svnDelegateService.getLogs(path);
       mav.addObject("headMessage", lms.get(lms.size() - 1));
-
+      if(svnDelegateService.isBlankSVN()){
+         request.setAttribute("isBlankSVN", true);
+      }else{
+         request.setAttribute("isBlankSVN", false);
+      }
       DiffStatus ds = svnDelegateService.getDiffStatus(path);
       mav.addObject("diffStatus", ds.getDiffStatus());
       return mav;

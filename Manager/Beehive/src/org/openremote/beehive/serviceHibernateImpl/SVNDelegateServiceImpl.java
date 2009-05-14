@@ -142,14 +142,13 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
    public void copyFromScrapToWC(String srcPath, String destPath) {
       File tempDir = new File(srcPath);
       File workDir = new File(destPath);
+      copyDirectory(tempDir, workDir);
+      FileUtil.writeStringToFile(configuration.getScrapDir()+File.separator+"copyProgress.txt", "Copy success!");
+      logger.info("Success copy scrap files to workCopy " + destPath);
       try {
-         if (SVNStatusKind.UNVERSIONED.equals(svnClient.getSingleStatus(workDir).getTextStatus().toString())) {
-            // File repo = new File("d:/svn-repos");
-            // repo.mkdirs();
-            // svnClient.createRepository(repo, ISVNClientAdapter.REPOSITORY_BDB);
-            SVNUrl svnUrl = new SVNUrl(configuration.getSvnDir());
-            svnClient.mkdir(svnUrl, true, "create beehive/trunk");
-            svnClient.doImport(workDir, svnUrl, "import beehive to trunk", true);
+         SVNUrl svnUrl = new SVNUrl(configuration.getSvnDir());
+         if (isBlankSVN()) {
+            svnClient.doImport(workDir, svnUrl, "import lirc files to trunk", true);
             FileUtil.deleteDirectory(workDir);
             workDir.mkdirs();
             svnClient.checkout(svnUrl, workDir, SVNRevision.HEAD, true);
@@ -159,9 +158,6 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       } catch (MalformedURLException e) {
          logger.error("initiliaze svnUrl of trunk failed!", e);
       }
-      copyDirectory(tempDir, workDir);
-      FileUtil.writeStringToFile(configuration.getScrapDir()+File.separator+"copyProgress.txt", "Copy success!");
-      logger.info("Success copy scrap files to workCopy " + destPath);
    }
 
    private void copyDirectory(File tempDir, File workDir) {
@@ -530,5 +526,19 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          ds.addElement(e1);
       }
    }
-
+   
+   public boolean isBlankSVN(){
+      boolean isBlank = false;
+      try {
+         SVNUrl svnUrl = new SVNUrl(configuration.getSvnDir());
+         if (svnClient.getList(svnUrl, SVNRevision.HEAD, true).length == 0){
+            isBlank = true;
+         }
+      } catch (MalformedURLException e) {
+         logger.error("Judge svn repo whether blank, create svnUrl error!", e);
+      } catch (SVNClientException e) {
+         logger.error("Judge svn repo whether blank, get list error!", e);
+      }
+      return isBlank;
+   }
 }

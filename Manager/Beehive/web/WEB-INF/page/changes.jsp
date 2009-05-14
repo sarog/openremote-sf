@@ -5,13 +5,19 @@
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
    <title>OpenRemote Beehive - Changes From Update</title>
+   <% Boolean isBlankSVN = (Boolean)request.getAttribute("isBlankSVN"); %>
    <script type="text/javascript">
+   $(document).ready(function() {
+	   if(<%=isBlankSVN%>){
+		   $("#commitSubmit").attr("disabled","true").addClass("disabled_button");
+		}
+   });
 	   $(function(){ 
 	       $("#checkall").click( function() {
 	               $("input[name='items']").attr("checked",this.checked);
 	       });
 	   });
-
+	   
 	   $(function(){
 	        $("input[action='A']").click(function(){
 	            var addText = $(this).val();
@@ -102,7 +108,7 @@
 	         <table class="tabcontent" border="0" cellpadding="0" cellspacing="0">
 	            <tr>
 	               <td width="23" align="left" style="padding-right: 7px;">
-	                  <input type="submit" class="button" value="Submit"/></td>
+	                  <input id="commitSubmit" type="submit" class="button" value="Submit"/></td>
 	            </tr>
 	         </table>
 	         </td>
@@ -115,7 +121,16 @@
 	      </tr>
 		   <c:if test="${fn:length(diffStatus) eq 0}">
 		     <tr>
-		          <td>there is not change</td>
+		          <td>
+			          <c:choose>
+				          <c:when test="${isBlankSVN eq true}">
+				             The repo is blank, please sync to import remote files.
+				          </c:when>
+				          <c:otherwise>
+		                  There is no change.		          
+				          </c:otherwise>
+			          </c:choose>
+		          </td>
 		          <td></td>
 		     </tr>
 		   </c:if>
