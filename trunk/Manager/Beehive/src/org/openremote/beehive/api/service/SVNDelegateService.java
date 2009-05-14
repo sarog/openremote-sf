@@ -167,4 +167,9 @@ public interface SVNDelegateService {
     */
    DiffStatus getDiffStatus(String path);
    
+   /**
+    * Judge the SVN repo whether blank
+    */
+   boolean isBlankSVN();
+   
 }

@@ -20,6 +20,14 @@
  */
 package org.openremote.beehive.controller;
 
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.openremote.beehive.api.service.SVNDelegateService;
+import org.openremote.beehive.repo.LIRCEntry;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 /**
@@ -27,5 +35,26 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
  *
  */
 public class LIRCHistoryController extends MultiActionController {
-
+   private String indexView;
+   private SVNDelegateService svnDelegateService;
+   
+   public void setIndexView(String indexView) {
+      this.indexView = indexView;
+   }
+   public void setSvnDelegateService(SVNDelegateService svnDelegateService) {
+      this.svnDelegateService = svnDelegateService;
+   }
+   /**
+    * Default method in controller
+    * 
+    * @param request
+    *           HttpServletRequest
+    * @param response
+    *           HttpServletResponse
+    * @return ModelAndView
+    */
+   public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
+      ModelAndView mav = new ModelAndView(indexView);
+      return mav;
+   }
 }
