@@ -21,11 +21,13 @@
 package org.openremote.beehive.listener;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
 import org.openremote.beehive.serviceHibernateImpl.SVNDelegateServiceImpl;
@@ -55,10 +57,10 @@ public class SVNListener implements ServletContextListener {
    public void contextInitialized(ServletContextEvent arg0) {
       String svnDir = configuration.getSvnDir();
       String fileSvnPath = "file:///";
-      String svnRepoPath = svnDir.substring(svnDir.indexOf(fileSvnPath) + fileSvnPath.length(),svnDir.indexOf("/lirc/trunk"));
+      String svnRepoPath = svnDir.substring(svnDir.indexOf(fileSvnPath) + fileSvnPath.length(),svnDir.indexOf("/trunk"));
       File svnRepo = new File(svnRepoPath);
       SVNUrl svnUrl = null;
-      File workDir = new File(configuration.getWorkCopyDir());
+      File workCopyDir = new File(configuration.getWorkCopyDir());
       try {
        svnUrl = new SVNUrl(svnDir);
        ISVNInfo svnInfo = svnClient.getInfo(svnUrl);           
@@ -66,14 +68,24 @@ public class SVNListener implements ServletContextListener {
         logger.error("Create SVNUrl "+svnDir+" error", e);
      } catch (SVNClientException e) {
         try {
-           svnRepo.mkdirs();
+           if(svnRepo.exists()){
+              FileUtils.cleanDirectory(svnRepo);
+           }else{
+              svnRepo.mkdirs();
+           }
            svnClient.createRepository(svnRepo, ISVNClientAdapter.REPOSITORY_BDB);
-           svnClient.mkdir(svnUrl, true, "create lirc/trunk");
-           workDir.mkdirs();
-           svnClient.checkout(svnUrl, workDir, SVNRevision.HEAD, true);
+           svnClient.mkdir(svnUrl, true, "create /trunk");
+           if(svnRepo.exists()){
+              FileUtils.cleanDirectory(workCopyDir);
+           }else{
+              workCopyDir.mkdirs();
+           }
+           svnClient.checkout(svnUrl, workCopyDir, SVNRevision.HEAD, true);
            logger.info("Create svn repos "+svnDir+" success!");
         } catch (SVNClientException e1) {
            logger.error("Create svn repos "+svnDir+" failure!", e);
+        } catch (IOException e2) {
+           e.printStackTrace();
         }
      }
    }
