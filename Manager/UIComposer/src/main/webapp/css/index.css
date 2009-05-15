@@ -48,6 +48,8 @@ text-align:left;
 #top .version {
    color:#FCD647;
    float:right;
+   font-size:10px;
+   margin-right:10px;
 }
 #logo {
 	padding:3px 2px;
@@ -325,10 +327,10 @@ border: 1px solid grey;
 
 #macro .item_container {
 border: 1px solid #AAAAAA;
-min-height:403px;
+min-height:494px;
 height: auto!important;
-height: 403px;
-_height: 403px;
+height: 494px;
+_height: 494px;
 border-top: none;
 padding: 1em 1em 0 1em;
 }
