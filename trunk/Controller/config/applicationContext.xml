@@ -20,6 +20,9 @@
     <bean id="remoteActionXMLParser" class="org.openremote.controller.utils.RemoteActionXMLParser">
     </bean>
     
+    <bean id="fileService" class="org.openremote.controller.service.impl.FileServiceImpl">
+    </bean>
+    
 	<bean id="eventFactory" class="org.openremote.controller.event.EventFactory">
 		<property name="eventBuilders">
 		    <props>

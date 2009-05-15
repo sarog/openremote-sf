@@ -21,7 +21,6 @@
 
 package org.openremote.controller.utils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +44,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 
-// TODO: Auto-generated Javadoc
 /**
  * The Remote Action XML Parser.
  * 
@@ -111,7 +109,7 @@ public class RemoteActionXMLParser {
       Object result = null;
       try {
          DocumentBuilder builder = domFactory.newDocumentBuilder();
-         String xmlPath = System.getProperty("controller.root") + "controller.xml";
+         String xmlPath = PathUtil.webappsLocation() + "controller.xml";
          Document doc = builder.parse(xmlPath);
          XPathFactory factory = XPathFactory.newInstance();
          XPath xpath = factory.newXPath();
@@ -124,7 +122,7 @@ public class RemoteActionXMLParser {
       } catch (SAXException e) {
          logger.error("Can't parse the controller.xml", e);
       } catch (IOException e) {
-         logger.error("Can't find the controller.xml,please put it in" + System.getProperty("controller.root"), e);
+         logger.error("Can't find the controller.xml,please put it in" + PathUtil.webappsLocation(), e);
       }
       NodeList nodes = (NodeList) result;
       if (nodes.getLength() > 0) {
