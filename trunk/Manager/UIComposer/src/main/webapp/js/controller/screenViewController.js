@@ -67,13 +67,13 @@ ScreenViewController = function() {
                     },
                     screen_row_input: {
                         required: "Please input a row",
-                        digits: "Please input a digits",
-                        range: "Please input a digits between 1 and 6"
+                        digits: "Please input a digit",
+                        range: "Please input a digit between 1 and 6"
                     },
                     screen_col_input: {
-                        required: "Please input a group address",
-                        digits: "Please input a digits",
-                        range: "Please input a digits between 1 and 4"
+                        required: "Please input a column",
+                        digits: "Please input a digit",
+                        range: "Please input a digit between 1 and 4"
                     }
                 }
             });
