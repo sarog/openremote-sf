@@ -20,17 +20,12 @@
  */
 package org.openremote.beehive.rest;
 
-import org.apache.commons.lang.enums.EnumUtils;
-
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.FilterConfig;
 import java.util.Enumeration;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
+
+import javax.servlet.FilterConfig;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 /**
  * Created by IntelliJ IDEA. User: finalist Date: Mar 5, 2009 Time: 2:17:53 PM To change this template use File |
@@ -58,6 +53,7 @@ public class JSONContentTypeRequestWrapper extends HttpServletRequestWrapper {
       }
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    public Enumeration getHeaders(String s) {
       if ("accept".equals(s.toLowerCase())) {

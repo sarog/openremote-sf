@@ -126,7 +126,7 @@
 	</loop>
 	<file action="append" path="progress.txt">
 		<template>
-         <![CDATA[Scraper success!]]>
+         <![CDATA[Download completed!]]>
 		</template>
 	</file>
 </config>

@@ -37,4 +37,11 @@ public interface VendorService {
     * @return a list of VendorDTOs
     */
    List<VendorDTO> loadAllVendors();
+   
+   /**
+    * Delete by name.
+    * 
+    * @param vendorName the vendor name
+    */
+   void deleteByName(String vendorName);
 }

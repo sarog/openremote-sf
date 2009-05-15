@@ -20,15 +20,17 @@
  */
 package org.openremote.beehive.rest;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+
 import org.openremote.beehive.api.dto.ModelDTO;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.RemoteSectionService;
 import org.openremote.beehive.spring.SpringContext;
-import org.openremote.beehive.domain.RemoteSection;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-import java.util.List;
 
 /**
  * Exports restful service of <code>RemoteSection</code> User: allenwei Date: 2009-2-10

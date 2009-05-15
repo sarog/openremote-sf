@@ -5,13 +5,26 @@
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
    <title>OpenRemote Beehive - Changes From Update</title>
-   <% Boolean isBlankSVN = (Boolean)request.getAttribute("isBlankSVN"); %>
+   <% Boolean isUpdating = (Boolean)request.getAttribute("isUpdating"); %>
    <script type="text/javascript">
-   $(document).ready(function() {
-	   if(<%=isBlankSVN%>){
-		   $("#commitSubmit").attr("disabled","true").addClass("disabled_button");
-		}
-   });
+	   $(document).ready(function() {
+		   if(<%=isUpdating%>){
+			   $('#updateInfoTd').text(" The updating is running, please commit changes later.");
+			   $("#commitSubmit").attr("disabled","true").addClass("disabled_button");
+			}
+		   $('#submitForm').ajaxForm(function() {
+			   $('#updateInfoTd').text(" Commit succeeds!");
+			   window.location='';
+	       }); 
+	   });
+	   
+	   $(function(){ 
+	          $("#commitSubmit").click( function() {
+	        	  $('#submitForm').submit();
+	        	   $("#commitSubmit").attr("disabled","true").addClass("disabled_button");
+	          });
+	    });
+	      
 	   $(function(){ 
 	       $("#checkall").click( function() {
 	               $("input[name='items']").attr("checked",this.checked);
@@ -80,8 +93,7 @@
 	    });
    </script>
 </head>
-<body tabId="1">
-   <form action="changes.html?method=commit" method="post">
+<body tabId="1">   
 	   <table class="infopanel" width="100%" border="0" cellpadding="0"
 	      cellspacing="0">
 	      <tr>
@@ -96,7 +108,7 @@
 	                     ${headMessage.author}</td>
 	                  <td class="value" style="padding-left: 20px;" nowrap="true"><b>Total
 	                     items:</b>&nbsp; ${fn:length(diffStatus)}</td>
-	                  <td width="100%"></td>
+	                  <td id="updateInfoTd" style="text-align:center" width="100%"></td>
 	               </tr>
 	               <tr>
 	                  <td class="value" style="padding-left: 20px;" colspan="5"
@@ -116,11 +128,14 @@
 	   </table>
 	   <table id="table_list_of_revisions"  class="list" rules="all" width="100%" cellpadding="0" cellspacing="0">
 	      <tr class="second">
-	         <th align="left" nowrap="true"><input id="checkall" name="checkall" type="checkbox" >Changed resources</th>
+	         <th align="left" nowrap="true"><input id="checkall" name="checkall" type="checkbox" ><label for="checkall">Changed resources</label></th>
 	         <th width="5%" nowrap="true"><a href="#">Revision </a></th>
 	      </tr>
+	      <c:set var="hasContent" value="false" />
 		   <c:if test="${fn:length(diffStatus) eq 0}">
-		     <tr>
+		       <c:set var="hasContent" value="true" />
+		   </c:if>
+		     <tr id="msg_tr" style="${hasContent? '' : 'display:none'}">
 		          <td>
 			          <c:choose>
 				          <c:when test="${isBlankSVN eq true}">
@@ -133,7 +148,7 @@
 		          </td>
 		          <td></td>
 		     </tr>
-		   </c:if>
+      <form id="submitForm" action="changes.html?method=commit" method="post">
 	      <c:forEach items="${diffStatus}" var="diffElement">
 	            <tr class="first" >
 	              <td width="50%"><table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -147,7 +162,7 @@
 	              <td align="center"><a href="revisionList.jsp.htm"> <img src="image/revision.gif" alt="Revision list" title="Revision list" border="0"> </a> </td>
 	            </tr>
 	        </c:forEach>
+		   </form>
 	   </table>
-   </form>
 </body>
 </html>

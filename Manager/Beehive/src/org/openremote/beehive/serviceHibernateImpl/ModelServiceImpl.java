@@ -1,17 +1,22 @@
-/*
- * OpenRemote, the Home of the Digital Home. Copyright 2008, OpenRemote Inc.
+/* OpenRemote, the Home of the Digital Home.
+ * Copyright 2008, OpenRemote Inc.
  * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
  * 
- * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
  * 
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * 
- * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
- * http://www.fsf.org.
+ * You should have received a copy of the GNU General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package org.openremote.beehive.serviceHibernateImpl;
 
@@ -31,7 +36,7 @@ import org.openremote.beehive.Configuration;
 import org.openremote.beehive.api.dto.ModelDTO;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
-import org.openremote.beehive.domain.Icon;
+import org.openremote.beehive.api.service.VendorService;
 import org.openremote.beehive.domain.Model;
 import org.openremote.beehive.domain.RemoteSection;
 import org.openremote.beehive.domain.Vendor;
@@ -44,21 +49,40 @@ import org.openremote.beehive.utils.FileUtil;
 import org.openremote.beehive.utils.StringUtil;
 
 /**
- * {@inheritDoc}
+ * {@inheritDoc}.
  * 
  * @author allen.wei
  */
 public class ModelServiceImpl extends BaseAbstractService<Model> implements ModelService {
+   
+   /** The logger. */
    private static Logger logger = Logger.getLogger(ModelServiceImpl.class.getName());
+   
+   /** The configuration. */
    private Configuration configuration;
+   
+   /** The svn delegate service. */
    private SVNDelegateService svnDelegateService;
+   
+   /** The vendor service. */
+   private VendorService vendorService;
 
-   public SVNDelegateService getSvnDelegateService() {
-      return svnDelegateService;
-   }
-
+   /**
+    * Sets the svn delegate service.
+    * 
+    * @param svnDelegateService the new svn delegate service
+    */
    public void setSvnDelegateService(SVNDelegateService svnDelegateService) {
       this.svnDelegateService = svnDelegateService;
+   }
+
+   /**
+    * Sets the vendor service.
+    * 
+    * @param vendorService the new vendor service
+    */
+   public void setVendorService(VendorService vendorService) {
+      this.vendorService = vendorService;
    }
 
    /**
@@ -138,6 +162,9 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
       return modelDTO;
    }
 
+   /* (non-Javadoc)
+    * @see org.openremote.beehive.api.service.ModelService#loadModelById(long)
+    */
    public ModelDTO loadModelById(long modelId) {
       ModelDTO modelDTO = new ModelDTO();
       try {
@@ -171,7 +198,36 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
          genericDAO.save(remoteSection);
       }
    }
+   
+   /**
+    * Merge.
+    * 
+    * @param fis the fis
+    * @param model the model
+    */
+   public void merge(FileInputStream fis, Model model){
+      List<RemoteSection> remoteSectionList = LircConfFile.getRemoteSectionList(fis);
+      for (RemoteSection remoteSection : model.getRemoteSections()) {
+         genericDAO.delete(remoteSection);
+      }
+      if (remoteSectionList.size() > 0) {
+         String comment = remoteSectionList.get(0).getModel().getComment();
+         model.setComment(comment);
+         genericDAO.merge(model);
+      }
+      for (RemoteSection remoteSection : remoteSectionList) {
+         remoteSection.setModel(model);
+         genericDAO.save(remoteSection);
+      }
+   }
 
+   /**
+    * Find vendor.
+    * 
+    * @param vendorName the vendor name
+    * 
+    * @return the vendor
+    */
    private Vendor findVendor(String vendorName) {
       Vendor vendor = genericDAO.getByNonIdField(Vendor.class, "name", vendorName);
       if (vendor == null) {
@@ -183,6 +239,14 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
       return vendor;
    }
 
+   /**
+    * Creates the model.
+    * 
+    * @param vendor the vendor
+    * @param modelName the model name
+    * 
+    * @return the model
+    */
    private Model createModel(Vendor vendor, String modelName) {
       Model targetModel = null;
       targetModel = new Model();
@@ -230,6 +294,11 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
       return new ByteArrayInputStream(exportText(id).getBytes());
    }
 
+   /**
+    * Sets the configuration.
+    * 
+    * @param configuration the new configuration
+    */
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
@@ -245,39 +314,43 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
          if (updatedFile.getStatus() == Actions.MODIFY) {
             String modelName = arr[arr.length - 1];
             Model model = genericDAO.getByNonIdField(Model.class, "fileName", modelName);
-            String vendorName = model.getVendor().getName();
-            deleteModel(modelName);
-            add(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()), vendorName, modelName);
+            merge(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()),model);
          } else if (updatedFile.getStatus() == Actions.ADD) {
             if (updatedFile.getFile().isFile()) {
                String vendorName = arr[arr.length - 2];
                String modelName = arr[arr.length - 1];
-               add(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()), vendorName, modelName);
+               Model model = genericDAO.getByNonIdField(Model.class, "fileName", modelName);
+               if(model != null){
+                  merge(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()),model);
+               }else{
+                  add(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()), vendorName, modelName);                                 
+               }
             } else {
                String vendorName = arr[arr.length - 1];
-               Vendor vendor = new Vendor();
-               vendor.setName(vendorName);
-               genericDAO.save(vendor);
+               Vendor tempVendor = genericDAO.getByNonIdField(Vendor.class, "name", vendorName);
+               if(tempVendor == null){
+                  Vendor vendor = new Vendor();
+                  vendor.setName(vendorName);
+                  genericDAO.save(vendor);                  
+               }
             }
          } else if (updatedFile.getStatus() == Actions.DELETE) {
             String name = arr[arr.length - 1];
             if (updatedFile.isDir()) {
-               deleteVendor(name);
+               vendorService.deleteByName(name);
             } else {
-               deleteModel(name);
+               deleteByName(name);
             }
          }
       }
    }
 
-   private void deleteVendor(String vendorName) {
-      Vendor vendor = genericDAO.getByNonIdField(Vendor.class, "name", vendorName);
-      if (vendor != null) {
-         genericDAO.delete(vendor);
-      }
-   }
+   
 
-   private void deleteModel(String modelName) {
+   /**
+    * {@inheritDoc}
+    */
+   public void deleteByName(String modelName) {
       Model model = genericDAO.getByNonIdField(Model.class, "fileName", modelName);
       if (model != null) {
          genericDAO.delete(model);

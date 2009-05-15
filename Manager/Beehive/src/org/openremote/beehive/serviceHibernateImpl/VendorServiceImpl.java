@@ -57,5 +57,14 @@ public class VendorServiceImpl extends BaseAbstractService<Vendor> implements Ve
       }
       return vendorDTOs;
    }
-
+   
+   /**
+    * {@inheritDoc }
+    */
+   public void deleteByName(String vendorName) {
+      Vendor vendor = genericDAO.getByNonIdField(Vendor.class, "name", vendorName);
+      if (vendor != null) {
+         genericDAO.delete(vendor);
+      }
+   }
 }

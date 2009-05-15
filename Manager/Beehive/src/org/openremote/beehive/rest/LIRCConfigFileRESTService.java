@@ -20,15 +20,16 @@
  */
 package org.openremote.beehive.rest;
 
-import org.openremote.beehive.api.dto.ModelDTO;
-import org.openremote.beehive.api.service.ModelService;
+import java.util.ArrayList;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+
 import org.openremote.beehive.api.service.RemoteSectionService;
 import org.openremote.beehive.spring.SpringContext;
 import org.openremote.beehive.utils.StringUtil;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 
 /**
  * Exports restful service of LIRC config file export

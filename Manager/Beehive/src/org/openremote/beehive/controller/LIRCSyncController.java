@@ -84,7 +84,7 @@ public class LIRCSyncController extends MultiActionController {
     * @throws IOException
     */
    public void getScraperProgress(HttpServletRequest request, HttpServletResponse response) throws IOException{
-      ScraperProgress scraperProgress = scraperService.getScraperProgress("progress.txt","Scraper success!");
+      ScraperProgress scraperProgress = scraperService.getScraperProgress("progress.txt","Download completed!");
       JSONObject json = transProgressToJson(scraperProgress);
       response.getWriter().print(json);
    }
@@ -96,7 +96,7 @@ public class LIRCSyncController extends MultiActionController {
     * @throws IOException
     */
    public void getCopyProgress(HttpServletRequest request, HttpServletResponse response) throws IOException{
-      ScraperProgress copyProgress = scraperService.getScraperProgress("copyProgress.txt","Copy success!\r\n");      
+      ScraperProgress copyProgress = scraperService.getScraperProgress("copyProgress.txt","Check completed!\r\n");      
       JSONObject json = transProgressToJson(copyProgress);
       response.getWriter().print(json);
    }

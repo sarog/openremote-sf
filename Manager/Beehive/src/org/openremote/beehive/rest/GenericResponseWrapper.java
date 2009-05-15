@@ -20,11 +20,12 @@
  */
 package org.openremote.beehive.rest;
 
-import javax.servlet.http.HttpServletResponseWrapper;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 
 /**
  * Created by IntelliJ IDEA. User: finalist Date: Mar 5, 2009 Time: 2:10:10 PM To change this template use File |

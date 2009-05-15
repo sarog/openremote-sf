@@ -35,7 +35,6 @@ import org.openremote.beehive.utils.SVNClientFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
-import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
@@ -51,7 +50,7 @@ public class SVNListener implements ServletContextListener {
    private static Logger logger = Logger.getLogger(SVNDelegateServiceImpl.class.getName());
    
    /**
-    * Create svn repo if not exist
+    * Create svn repo and work copy if not exist
     */
    @Override
    public void contextInitialized(ServletContextEvent arg0) {
@@ -61,12 +60,17 @@ public class SVNListener implements ServletContextListener {
       File svnRepo = new File(svnRepoPath);
       SVNUrl svnUrl = null;
       File workCopyDir = new File(configuration.getWorkCopyDir());
+      svnUrl = checkRepoExists(svnDir, svnRepo, svnUrl, workCopyDir);
+      checkWorkCopyExists(svnUrl, workCopyDir);
+   }
+
+   private SVNUrl checkRepoExists(String svnDir, File svnRepo, SVNUrl svnUrl, File workCopyDir) {
       try {
-       svnUrl = new SVNUrl(svnDir);
-       ISVNInfo svnInfo = svnClient.getInfo(svnUrl);           
-     } catch (MalformedURLException e) {
-        logger.error("Create SVNUrl "+svnDir+" error", e);
-     } catch (SVNClientException e) {
+         svnUrl = new SVNUrl(svnDir);
+         svnClient.getInfo(svnUrl);
+      } catch (MalformedURLException e) {
+         logger.error("Create SVNUrl "+svnDir+" error", e);
+      } catch (SVNClientException e) {
         try {
            if(svnRepo.exists()){
               FileUtils.cleanDirectory(svnRepo);
@@ -75,7 +79,7 @@ public class SVNListener implements ServletContextListener {
            }
            svnClient.createRepository(svnRepo, ISVNClientAdapter.REPOSITORY_BDB);
            svnClient.mkdir(svnUrl, true, "create /trunk");
-           if(svnRepo.exists()){
+           if(workCopyDir.exists()){
               FileUtils.cleanDirectory(workCopyDir);
            }else{
               workCopyDir.mkdirs();
@@ -85,11 +89,34 @@ public class SVNListener implements ServletContextListener {
         } catch (SVNClientException e1) {
            logger.error("Create svn repos "+svnDir+" failure!", e);
         } catch (IOException e2) {
-           e.printStackTrace();
+           logger.error("Can't clean dir " + svnRepo + " or " + workCopyDir, e2);
         }
      }
+      return svnUrl;
    }
 
+   private void checkWorkCopyExists(SVNUrl svnUrl, File workCopyDir) {
+      try {
+         svnClient.getInfo(workCopyDir);
+      } catch (SVNClientException e) {
+         try {
+            if(workCopyDir.exists()){
+               FileUtils.cleanDirectory(workCopyDir);
+            }else{
+               workCopyDir.mkdirs();
+            }
+            svnClient.checkout(svnUrl, workCopyDir, SVNRevision.HEAD, true);
+         } catch (SVNClientException e1) {
+            logger.error("Can't checkout "+svnUrl+" to "+workCopyDir, e1);
+         } catch (IOException e1) {
+            logger.error("Can't clean dir " + workCopyDir, e1);
+         }
+      }
+   }
+
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public void contextDestroyed(ServletContextEvent arg0) {
       // do nothing

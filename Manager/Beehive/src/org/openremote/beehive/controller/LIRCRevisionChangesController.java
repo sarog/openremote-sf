@@ -78,7 +78,7 @@ public class LIRCRevisionChangesController extends MultiActionController {
     */
    public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
       ModelAndView mav = new ModelAndView(indexView);
-      String path = "/";
+      String path = "";
       List<LogMessage> lms = svnDelegateService.getLogs(path);
       mav.addObject("headMessage", lms.get(lms.size() - 1));
       if(svnDelegateService.isBlankSVN()){

@@ -20,6 +20,8 @@
  */
 package org.openremote.beehive.api.dto;
 
+import org.openremote.beehive.domain.Model;
+
 /**
  * A configuration section in a LIRC configuration file linked with a {@link Model}. It is possible to have more than
  * one remote configuration in a configuration file. Each remote configuration in a file should go to the database as a

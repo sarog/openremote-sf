@@ -35,7 +35,6 @@ import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
-import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.domain.Vendor;
 import org.openremote.beehive.exception.SVNException;
@@ -143,21 +142,21 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       File tempDir = new File(srcPath);
       File workDir = new File(destPath);
       copyDirectory(tempDir, workDir);
-      FileUtil.writeStringToFile(configuration.getScrapDir()+File.separator+"copyProgress.txt", "Copy success!");
+      FileUtil.writeStringToFile(configuration.getScrapDir()+File.separator+"copyProgress.txt", "Check completed!");
       logger.info("Success copy scrap files to workCopy " + destPath);
-      try {
-         SVNUrl svnUrl = new SVNUrl(configuration.getSvnDir());
-         if (isBlankSVN()) {
-            svnClient.doImport(workDir, svnUrl, "import lirc files to trunk", true);
-            FileUtil.deleteDirectory(workDir);
-            workDir.mkdirs();
-            svnClient.checkout(svnUrl, workDir, SVNRevision.HEAD, true);
-         }
-      } catch (SVNClientException e) {
-         logger.error("svnClient getSingleStatus failed!", e);
-      } catch (MalformedURLException e) {
-         logger.error("initiliaze svnUrl of trunk failed!", e);
-      }
+//      try {
+//         SVNUrl svnUrl = new SVNUrl(configuration.getSvnDir());
+//         if (isBlankSVN()) {
+//            svnClient.doImport(workDir, svnUrl, "import lirc files to trunk", true);
+//            FileUtil.deleteDirectory(workDir);
+//            workDir.mkdirs();
+//            svnClient.checkout(svnUrl, workDir, SVNRevision.HEAD, true);
+//         }
+//      } catch (SVNClientException e) {
+//         logger.error("svnClient getSingleStatus failed!", e);
+//      } catch (MalformedURLException e) {
+//         logger.error("initiliaze svnUrl of trunk failed!", e);
+//      }
    }
 
    private void copyDirectory(File tempDir, File workDir) {
