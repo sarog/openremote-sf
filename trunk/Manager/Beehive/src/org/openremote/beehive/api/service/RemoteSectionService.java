@@ -20,12 +20,12 @@
  */
 package org.openremote.beehive.api.service;
 
-import org.openremote.beehive.api.dto.ModelDTO;
-import org.openremote.beehive.api.dto.RemoteSectionDTO;
-
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
+
+import org.openremote.beehive.api.dto.ModelDTO;
+import org.openremote.beehive.api.dto.RemoteSectionDTO;
 
 /**
  * Business service for <code>RemoteSectionDTO</code>

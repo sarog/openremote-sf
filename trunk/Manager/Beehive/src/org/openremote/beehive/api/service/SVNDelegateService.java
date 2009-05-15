@@ -23,7 +23,6 @@ package org.openremote.beehive.api.service;
 import java.util.List;
 
 import org.openremote.beehive.exception.SVNException;
-import org.openremote.beehive.file.ScraperProgress;
 import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.LIRCEntry;

@@ -17,6 +17,7 @@
 		      setAnimation();
 			   $.post("sync.html?method=update");
 			   timer=setInterval("refresh()",5000);
+			   $('#progressInfoSpan').text("Downloading from http://lirc.sourceforge.net/remotes ......");
 	      });
 	 });
 
@@ -28,6 +29,7 @@
 				timer = 0;
 				getCopyProgress();
 				timer = setInterval("getCopyProgress()",5000);
+				$('#progressInfoSpan').text("Checking modified files ......");
 			}
 		});
 	}
@@ -40,6 +42,7 @@
 				   $('#tab_2 img').attr("src","image/update_icon.gif");
 				   $('#updateBtn').removeAttr("disabled").removeClass("disabled_button");
 	            $('#spinner').hide();
+	            $('#progressInfoSpan').text("Update completed");
 				}
 		});
 	}
@@ -68,12 +71,12 @@
 							<td class="value" style="padding-left: 20px;" colspan="5"
 								width="10%"><b>Progress</b>&nbsp;:</td>
 							<td class="value" colspan="5" width="80%">
-								<div id="progressbar" style="">
+								<div id="progressbar" style="float:left">
 									<div class="text">0%</div>
 									<div class="progress" >
 									<span class="text" >0%</span>
 									</div>
-								</div>
+								</div><span id="progressInfoSpan" style="margin-left:10px"></span>
 							</td>
 							<td class="value" colspan="5" width="10%"><input id="updateBtn" value="Update" class="button" type="button">
 							</td>

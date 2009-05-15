@@ -20,13 +20,18 @@
  */
 package org.openremote.beehive.rest;
 
+import java.util.List;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+
 import org.openremote.beehive.api.dto.CodeDTO;
 import org.openremote.beehive.api.service.CodeService;
 import org.openremote.beehive.spring.SpringContext;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-import java.util.List;
 
 /**
  * Exports restful service of <code>Code</code> User: allenwei Date: 2009-2-10

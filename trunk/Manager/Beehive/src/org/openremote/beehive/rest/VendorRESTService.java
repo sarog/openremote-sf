@@ -20,17 +20,17 @@
  */
 package org.openremote.beehive.rest;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.openremote.beehive.api.service.VendorService;
 import org.openremote.beehive.api.dto.VendorDTO;
+import org.openremote.beehive.api.service.VendorService;
 import org.openremote.beehive.spring.SpringContext;
-
-import java.util.List;
 
 /**
  * Exports restful service of <code>Vendor</code> User: allenwei Date: 2009-2-9

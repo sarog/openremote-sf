@@ -20,13 +20,10 @@
  */
 package org.openremote.beehive.controller;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openremote.beehive.api.service.SVNDelegateService;
-import org.openremote.beehive.repo.LIRCEntry;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 

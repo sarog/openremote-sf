@@ -28,66 +28,65 @@ import java.util.List;
 import org.openremote.beehive.api.dto.ModelDTO;
 import org.openremote.beehive.exception.SVNException;
 
+// TODO: Auto-generated Javadoc
 /**
- * Business service for <code>ModelDTO</code>
+ * Business service for <code>ModelDTO</code>.
  * 
  * @author allen.wei 2009-2-17
  */
 public interface ModelService {
+   
    /**
-    * Gets all <code>ModelDTOs</code> belongs to certain <code>VendorDTO</code> according to it's id
+    * Gets all <code>ModelDTOs</code> belongs to certain <code>VendorDTO</code> according to it's id.
     * 
-    * @param vendorName
-    *           vendor name
+    * @param vendorName vendor name
+    * 
     * @return list of ModelDTOs
     */
    List<ModelDTO> findModelsByVendorName(String vendorName);
 
    /**
-    * Gets all <code>ModelDTOs</code> belongs to certain <code>VendorDTO</code> according to it's name
+    * Gets all <code>ModelDTOs</code> belongs to certain <code>VendorDTO</code> according to it's name.
     * 
-    * @param vendorId
-    *           vendor id
+    * @param vendorId vendor id
+    * 
     * @return list of ModelDTOs
     */
    List<ModelDTO> findModelsByVendorId(long vendorId);
 
    /**
-    * loads <code>ModelDTO</code> by <code>VendorDTO</code> name and <code>ModelDTO</code> name
+    * loads <code>ModelDTO</code> by <code>VendorDTO</code> name and <code>ModelDTO</code> name.
     * 
-    * @param vendorName
-    *           name of VendorDTO
-    * @param modelName
-    *           name of ModelDTO
+    * @param vendorName name of VendorDTO
+    * @param modelName name of ModelDTO
+    * 
     * @return ModelDTO
     */
    ModelDTO loadByVendorNameAndModelName(String vendorName, String modelName);
 
    /**
-    * loads <code>ModelDTO</code> by id
+    * loads <code>ModelDTO</code> by id.
     * 
-    * @param modelId
-    * @return
+    * @param modelId the model id
+    * 
+    * @return the model dto
     */
    ModelDTO loadModelById(long modelId);
 
    /**
-    * Allows to import a LIRC Configuration file
+    * Allows to import a LIRC Configuration file.
     * 
-    * @param fis
-    *           FileInputStream of the LIRC Configuration file
-    * @param vendorName
-    *           its vendor name
-    * @param modelName
-    *           its model name
+    * @param fis FileInputStream of the LIRC Configuration file
+    * @param vendorName its vendor name
+    * @param modelName its model name
     */
    void add(FileInputStream fis, String vendorName, String modelName);
 
    /**
     * Allows to export the content text of a LIRC Configuration. This will NOT lead to disk writes.
     * 
-    * @param id
-    *           the target LIRC Configuration id
+    * @param id the target LIRC Configuration id
+    * 
     * @return the content text
     */
    String exportText(long id);
@@ -95,8 +94,8 @@ public interface ModelService {
    /**
     * Allows to export the <code>File</code> of a LIRC Configuration. This will lead to disk writes.
     * 
-    * @param id
-    *           the target LIRC Configuration id
+    * @param id the target LIRC Configuration id
+    * 
     * @return the file
     */
    File exportFile(long id);
@@ -104,8 +103,8 @@ public interface ModelService {
    /**
     * Allows to export the file of a LIRC Configuration. This will lead to disk writes.
     * 
-    * @param id
-    *           the target LIRC Configuration id
+    * @param id the target LIRC Configuration id
+    * 
     * @return the file URL to be downloaded
     */
    String downloadFile(long id);
@@ -113,35 +112,46 @@ public interface ModelService {
    /**
     * Allows to export the file of a LIRC Configuration. This will NOT lead to disk writes.
     * 
-    * @param id
-    *           the target LIRC Configuration id
+    * @param id the target LIRC Configuration id
+    * 
     * @return the file OutputStream to be downloaded
     */
    InputStream exportStream(long id);
 
    /**
-    * Update database and svn repo sync
+    * Update database and svn repo sync.
     * 
     * @param paths the file path of the workCopy
     * @param message the comments
-    * @param username
-    * @throws SVNException
+    * @param username the username
+    * 
+    * @throws SVNException the SVN exception
     */
    void update(String[] paths, String message, String username) throws SVNException;
 
    /**
-    * Rollback svn repo to a specify revision
+    * Rollback svn repo to a specify revision.
     * 
-    * @param path
-    * @param revision
-    * @param username
-    * @throws SVNException
+    * @param path the path
+    * @param revision the revision
+    * @param username the username
+    * 
+    * @throws SVNException the SVN exception
     */
    void rollback(String path, int revision, String username) throws SVNException;
    
    /**
+    * Count.
+    * 
     * @return the models amount
     */
    int count();
+   
 
+   /**
+    * Delete by name.
+    * 
+    * @param modelName the model name
+    */
+   void deleteByName(String modelName);
 }

@@ -26,7 +26,6 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.openremote.beehive.api.dto.RemoteSectionDTO;
 import org.openremote.beehive.api.dto.RemoteOptionDTO;
 
 /**
