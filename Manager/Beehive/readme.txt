@@ -27,6 +27,10 @@ III. "Beehive" site deployment
 	file (see comments inside this file for details):
     a) set "jdbc.username" parameter value to username to MySQL (for example: scott)
     b) set "jdbc.password" parameter value to password to MySQL (for example: tiger)
+    c) set "scrap.dir" parameter value to the folder where the scrapped files from lirc.org are saved
+    d) set "workCopy.dir" parameter value to the folder which is the workcopy of the svn repository of lirc files
+    d) set "svn.dir" parameter value to the folder where stores the svn repository of lirc files
+    e) set "icons.dir" parameter value to where the icons folder is
 
 2) run "ant war" to get the war file in "%PROJECT_ROOT%/output" directory. 
 
@@ -36,6 +40,8 @@ III. "Beehive" site deployment
 
 5) if you choose JBoss as a web server, you MUST ensure that "jaxb-api.jar"(jaxb 2.1 API) 
 	exists in the "%JBOSS_ENDORSED_DIRS%"(e.g. %JBOSS_HOME%/lib/endorsed).
+6) find the svn configuration in C:\Documents and Settings\%your user name%\Application Data\Subversion\config,
+   remove '*.a' from the 'global-ignores' values and add 'Thumbs.db' as its value.
 
 IV. Supported functions
 =======================
