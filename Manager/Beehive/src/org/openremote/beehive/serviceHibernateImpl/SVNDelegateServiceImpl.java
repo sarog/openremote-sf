@@ -305,13 +305,16 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
    public List<LIRCEntry> getList(String url, int revision) {
       List<LIRCEntry> entryList = new ArrayList<LIRCEntry>();
       try {
-         ISVNDirEntry[] list = svnClient.getList(new SVNUrl(configuration.getSvnDir() + url), SVNRevision.HEAD, false);
+         ISVNDirEntry[] list = svnClient.getList(new SVNUrl(configuration.getSvnDir() + url), new SVNRevision.Number(revision), false);
          for (ISVNDirEntry dirEntry : list) {
             LIRCEntry entry = new LIRCEntry();
             entry.setPath(dirEntry.getPath());
             entry.setVersion(new Integer(dirEntry.getLastChangedRevision().toString()));
             entry.setAuthor(dirEntry.getLastCommitAuthor());
             entry.setDate(dirEntry.getLastChangedDate());
+            if(dirEntry.getLastChangedRevision().getNumber() == revision){
+               entry.setHeadversion(true);
+            }
             entry.setSize(dirEntry.getSize());
             if (dirEntry.getNodeKind().equals(SVNNodeKind.FILE)) {
                entry.setFile(true);

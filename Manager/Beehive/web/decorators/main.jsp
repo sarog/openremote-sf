@@ -44,9 +44,9 @@
                   <tr>
                     <td><table border="0" cellpadding="0" cellspacing="0">
                         <tr>
-                          <td id="tab_1" colspan="2" class="inactivetab" onClick="window.location='changes.html'"><img style="vertical-align: middle; margin-right: 3px;" title="Changes" alt="Changes" src="image/changes.gif"/>Changes </td>
-                          <td id="tab_2" colspan="2" class="inactivetab" onClick="window.location='sync.html'"><img style="vertical-align: middle; margin-right: 3px;" title="Update" alt="Update" src="image/update_icon.gif"/>Sync </td>
-                          <td id="tab_3" colspan="2" class="inactivetab" onClick="window.location='history.html'"><img style="vertical-align: middle; margin-right: 3px;" title="History" alt="History" src="image/history.gif"/>History </td>
+                          <td id="tab_1" colspan="2" class="inactivetab" onClick="window.location='changes.htm'"><img style="vertical-align: middle; margin-right: 3px;" title="Changes" alt="Changes" src="image/changes.gif"/>Changes </td>
+                          <td id="tab_2" colspan="2" class="inactivetab" onClick="window.location='sync.htm'"><img style="vertical-align: middle; margin-right: 3px;" title="Update" alt="Update" src="image/update_icon.gif"/>Sync </td>
+                          <td id="tab_3" colspan="2" class="inactivetab" onClick="window.location='history.htm'"><img style="vertical-align: middle; margin-right: 3px;" title="History" alt="History" src="image/history.gif"/>History </td>
                         </tr>
                     </table></td>
                   </tr>

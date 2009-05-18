@@ -15,14 +15,14 @@
 	   }
 	   $('#updateBtn').click(function(){
 		      setAnimation();
-			   $.post("sync.html?method=update");
+			   $.post("sync.htm?method=update");
 			   timer=setInterval("refresh()",5000);
 			   $('#progressInfoSpan').text("Downloading from http://lirc.sourceforge.net/remotes ......");
 	      });
 	 });
 
 	function refresh() {
-		$.getJSON("sync.html?method=getScraperProgress", function(json) {
+		$.getJSON("sync.htm?method=getScraperProgress", function(json) {
 			setProgress(json);
 			if (json.status == "isEnd") {
 				clearInterval(timer);
@@ -34,7 +34,7 @@
 		});
 	}
 	function getCopyProgress() {
-		$.getJSON("sync.html?method=getCopyProgress", function(json) {
+		$.getJSON("sync.htm?method=getCopyProgress", function(json) {
 			setProgress(json);
 			   if(json.status == "isEnd"){
 				   clearInterval(timer);

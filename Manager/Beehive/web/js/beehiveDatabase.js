@@ -85,7 +85,7 @@ function showSelect(select_id, selected_value) {
  */
 function afterSelectVendor(vendor_id) {
     if (vendor_id != 0) {
-        myAjaxCall("index.htm", {method:"showModelSelect",generateSelectTcagId:MODEL_SELECT,vendorId:vendor_id}, function (html) {
+        myAjaxCall("index.html", {method:"showModelSelect",generateSelectTcagId:MODEL_SELECT,vendorId:vendor_id}, function (html) {
             $(".lirc_select_container").not($("#vendor_select_container")).hide();
             addSelectToPage(html, "#model_select_container");
         });
@@ -101,9 +101,9 @@ function afterSelectVendor(vendor_id) {
  */
 function afterSelectModel(model_id) {
     if (model_id != 0) {
-        myAjaxCall("index.htm", {method:"isMutiSection",modelId:model_id}, function (result) {
+        myAjaxCall("index.html", {method:"isMutiSection",modelId:model_id}, function (result) {
             if (result == "true") {
-                $.get("index.htm", {method:"showRemoteSelect",generateSelectTcagId:REMOTE_SELECT,modelId:model_id}, function (html) {
+                $.get("index.html", {method:"showRemoteSelect",generateSelectTcagId:REMOTE_SELECT,modelId:model_id}, function (html) {
                     $("#model_select_container").nextAll(".lirc_select_container").hide();
                     clearLircDetail();
                     addSelectToPage(html, "#section_select_container");
@@ -126,7 +126,7 @@ function afterSelectModel(model_id) {
  * @param vendor_id
  */
 function showLircDetailByModel(model_id) {
-    myAjaxCall("index.htm", {method:"showLircDetailByModel",modelId:model_id}, function (html) {
+    myAjaxCall("index.html", {method:"showLircDetailByModel",modelId:model_id}, function (html) {
         fillLircDetail(html);
     });
 }
@@ -137,7 +137,7 @@ function showLircDetailByModel(model_id) {
  */
 function showLircDetailsByRemote(remote_id) {
     if (remote_id != 0) {
-        myAjaxCall("index.htm", {method:"showLircDetailByRemoteSection",sectionId:remote_id}, function (html) {
+        myAjaxCall("index.html", {method:"showLircDetailByRemoteSection",sectionId:remote_id}, function (html) {
             fillLircDetail(html);
 
         });

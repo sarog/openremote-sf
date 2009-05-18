@@ -148,15 +148,15 @@
 		          </td>
 		          <td></td>
 		     </tr>
-      <form id="submitForm" action="changes.html?method=commit" method="post">
+      <form id="submitForm" action="changes.htm?method=commit" method="post">
 	      <c:forEach items="${diffStatus}" var="diffElement">
 	            <tr class="first" >
 	              <td width="50%"><table width="100%" border="0" cellpadding="0" cellspacing="0">
 	                    <tr>
 	                      <td class="internal" style="padding-right: 5px;"><input name="items" type="checkbox" value="${diffElement.path}" action="${diffElement.status }">
 	                      </td>
-	                      <td class="internal" style="padding-right: 5px;"><a href="changes.html?method=change&path=${diffElement.path}&action=${diffElement.status }"><span class="image_link ${diffElement.status }"></span></a></td>
-	                      <td class="internal" width="100%" nowrap="true"><a href="changes.html?method=change&path=${diffElement.path}&action=${diffElement.status }">${diffElement.path}</a> </td>
+	                      <td class="internal" style="padding-right: 5px;"><a href="changes.htm?method=change&path=${diffElement.path}&action=${diffElement.status }"><span class="image_link ${diffElement.status }"></span></a></td>
+	                      <td class="internal" width="100%" nowrap="true"><a href="changes.htm?method=change&path=${diffElement.path}&action=${diffElement.status }">${diffElement.path}</a> </td>
 	                    </tr>
 	                </table></td>
 	              <td align="center"><a href="revisionList.jsp.htm"> <img src="image/revision.gif" alt="Revision list" title="Revision list" border="0"> </a> </td>

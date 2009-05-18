@@ -17,15 +17,13 @@
 <body>
 <div id="main">
     <div id="title">
-        <a href="#" title="Beehive Database"><h1>Beehive Database</h1></a>
+        <h1>Beehive Database</h1>
     </div>
     <div id="undecoratedLink">
         [
-        <a class="regularLink" target="" href="#" title="Browse and Upload LIRC configuration files">Browse and Upload
-            LIRC configuration files</a>
-        ] [
-        <a class="regularLink" target="" href="#" title="Beehive Event History">Beehive Event History</a>
-        ] [<a href="./j_security_logout">Logout</a>
+        <a class="regularLink" target="" href="changes.htm" title="Administration">
+            Administration
+        </a>
         ]
     </div>
     <div id="content">

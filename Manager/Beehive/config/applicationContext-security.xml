@@ -41,7 +41,7 @@
 	    <property name="httpAuthenticator" ref="httpAuthenticator"/>
 	    <property name="authenticationManager" ref="authenticationManager"/>
 	    <property name="authenticationFailureUrl" value="/login.jsp?login_error=true"/>
-	    <property name="defaultTargetUrl" value="/index.htm"/>
+	    <property name="defaultTargetUrl" value="/index.html"/>
 	    <property name="filterProcessesUrl" value="/j_security_check"/>
 	</bean>
 

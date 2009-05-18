@@ -34,7 +34,6 @@ import com.sun.org.apache.regexp.internal.recompile;
  * @author Tomsky
  */
 public class LIRCEntry {
-
    /** The path. */
    private String path;
    
@@ -56,6 +55,14 @@ public class LIRCEntry {
    /** The size. */
    private long size;
    
+   private boolean isHeadversion;
+   
+   /**
+    * Instantiates a new lIRC entry.
+    */
+   public LIRCEntry() {
+      isHeadversion = false;
+   }
    /**
     * Gets the content.
     * 
@@ -64,7 +71,7 @@ public class LIRCEntry {
    public String getContent() {
       return content;
    }
-
+   
    /**
     * Sets the content.
     * 
@@ -199,6 +206,24 @@ public class LIRCEntry {
     */
    public void setSize(long size) {
       this.size = size;
+   }
+   
+   /**
+    * Checks if is headversion.
+    * 
+    * @return true, if is headversion
+    */
+   public boolean isHeadversion() {
+      return isHeadversion;
+   }
+   
+   /**
+    * Sets the headversion.
+    * 
+    * @param isHeadversion the new headversion
+    */
+   public void setHeadversion(boolean isHeadversion) {
+      this.isHeadversion = isHeadversion;
    }
 
 }

@@ -5,12 +5,12 @@
           class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <props>
-                <prop key="lirc.htm">modelController</prop>
-                <prop key="remoteSection.htm">remoteSectionController</prop>
-                <prop key="index.htm">beehiveDatabaseController</prop>
-                <prop key="changes.html">lircRevisionChangesController</prop>
-                <prop key="sync.html">lircSyncController</prop>
-                <prop key="history.html">lircHistoryController</prop>
+                <prop key="lirc.html">modelController</prop>
+                <prop key="remoteSection.html">remoteSectionController</prop>
+                <prop key="index.html">beehiveDatabaseController</prop>
+                <prop key="changes.htm">lircRevisionChangesController</prop>
+                <prop key="sync.htm">lircSyncController</prop>
+                <prop key="history.htm">lircHistoryController</prop>
             </props>
         </property>
     </bean>
@@ -75,5 +75,6 @@
    
    <bean id="lircHistoryController" class="org.openremote.beehive.controller.LIRCHistoryController">
       <property name="indexView" value="vendor_list"/>
+      <property name="modelView" value="model_list"/>
    </bean>
 </beans>
