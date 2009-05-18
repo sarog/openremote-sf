@@ -311,6 +311,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             entry.setPath(dirEntry.getPath());
             entry.setVersion(new Integer(dirEntry.getLastChangedRevision().toString()));
             entry.setAuthor(dirEntry.getLastCommitAuthor());
+            entry.setDate(dirEntry.getLastChangedDate());
+            entry.setSize(dirEntry.getSize());
             if (dirEntry.getNodeKind().equals(SVNNodeKind.FILE)) {
                entry.setFile(true);
                InputStream is = svnClient.getContent(new SVNUrl(configuration.getSvnDir() + url + File.separator

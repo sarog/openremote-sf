@@ -441,3 +441,15 @@ div.infoContainer{
 #spinner{
    display:none;
 }
+
+.list_of_history_image_link {
+   height:16px;
+   width:16px;
+   display: block;
+}
+.list_of_history_image_link.true {
+   background: url("../image/lirc_file2.gif") no-repeat left top;
+}
+.list_of_history_image_link.false {
+   background: url("../image/fldr_obj.gif") no-repeat left top;
+}
