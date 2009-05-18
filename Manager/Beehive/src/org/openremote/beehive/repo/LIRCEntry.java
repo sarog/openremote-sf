@@ -20,57 +20,185 @@
  */
 package org.openremote.beehive.repo;
 
+import java.text.DecimalFormat;
+import java.util.Date;
+
+import org.openremote.beehive.utils.DateFormatter;
+
+import com.sun.org.apache.regexp.internal.recompile;
+
+// TODO: Auto-generated Javadoc
 /**
- * LIRCEntry the entry of specify version file
- * @author Tomsky
+ * LIRCEntry the entry of specify version file.
  * 
+ * @author Tomsky
  */
 public class LIRCEntry {
 
+   /** The path. */
    private String path;
+   
+   /** The version. */
    private int version;
+   
+   /** The file. */
    private boolean file;
+   
+   /** The content. */
    private String content;
+   
+   /** The author. */
    private String author;
-
+   
+   /** The date. */
+   private Date date;
+   
+   /** The size. */
+   private long size;
+   
+   /**
+    * Gets the content.
+    * 
+    * @return the content
+    */
    public String getContent() {
       return content;
    }
 
+   /**
+    * Sets the content.
+    * 
+    * @param content the new content
+    */
    public void setContent(String content) {
       this.content = content;
    }
 
+   /**
+    * Checks if is file.
+    * 
+    * @return true, if is file
+    */
    public boolean isFile() {
       return file;
    }
 
+   /**
+    * Sets the file.
+    * 
+    * @param file the new file
+    */
    public void setFile(boolean file) {
       this.file = file;
    }
 
+   /**
+    * Gets the path.
+    * 
+    * @return the path
+    */
    public String getPath() {
       return path;
    }
 
+   /**
+    * Gets the version.
+    * 
+    * @return the version
+    */
    public int getVersion() {
       return version;
    }
 
+   /**
+    * Sets the path.
+    * 
+    * @param path the new path
+    */
    public void setPath(String path) {
       this.path = path;
    }
 
+   /**
+    * Sets the version.
+    * 
+    * @param version the new version
+    */
    public void setVersion(int version) {
       this.version = version;
    }
 
+   /**
+    * Gets the author.
+    * 
+    * @return the author
+    */
    public String getAuthor() {
       return author;
    }
 
+   /**
+    * Sets the author.
+    * 
+    * @param author the new author
+    */
    public void setAuthor(String author) {
       this.author = author;
+   }
+
+   /**
+    * Gets the age.
+    * 
+    * @return the age
+    */
+   public String getAge() {
+      return DateFormatter.format(date);
+   }
+
+   /**
+    * Gets the size.
+    * 
+    * @return the size
+    */
+   public String getSizeString() {
+      return new Double( new DecimalFormat( ".0" ).format( size/1024.0 ) ).toString()+"K";
+   }
+   
+   /**
+    * Gets the size of long.
+    * 
+    * @return the size of long
+    */
+   public long getSize(){
+      return size;
+   }
+   
+
+   /**
+    * Gets the date.
+    * 
+    * @return the date
+    */
+   public Date getDate() {
+      return date;
+   }
+
+   /**
+    * Sets the date.
+    * 
+    * @param date the new date
+    */
+   public void setDate(Date date) {      
+      this.date = date;
+   }
+
+   /**
+    * Sets the content size.
+    * 
+    * @param size the new content size
+    */
+   public void setSize(long size) {
+      this.size = size;
    }
 
 }

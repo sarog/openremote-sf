@@ -10,8 +10,8 @@
                 <prop key="index.htm">beehiveDatabaseController</prop>
                 <prop key="changes.html">lircRevisionChangesController</prop>
                 <prop key="sync.html">lircSyncController</prop>
-                <!--<prop key="history.html">beehiveDatabaseController</prop>
-            --></props>
+                <prop key="history.html">lircHistoryController</prop>
+            </props>
         </property>
     </bean>
 
@@ -68,7 +68,12 @@
       <property name="changeView" value="fileChange"/>
       <property name="commitView" value="commitResult"/>
    </bean>
+   
    <bean id="lircSyncController" class="org.openremote.beehive.controller.LIRCSyncController">
       <property name="indexView" value="sync"/>
+   </bean>
+   
+   <bean id="lircHistoryController" class="org.openremote.beehive.controller.LIRCHistoryController">
+      <property name="indexView" value="vendor_list"/>
    </bean>
 </beans>
