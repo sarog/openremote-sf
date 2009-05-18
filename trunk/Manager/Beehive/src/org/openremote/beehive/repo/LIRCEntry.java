@@ -25,11 +25,8 @@ import java.util.Date;
 
 import org.openremote.beehive.utils.DateFormatter;
 
-import com.sun.org.apache.regexp.internal.recompile;
-
-// TODO: Auto-generated Javadoc
 /**
- * LIRCEntry the entry of specify version file.
+ * LIRCEntry the entry of specified version file.
  * 
  * @author Tomsky
  */
