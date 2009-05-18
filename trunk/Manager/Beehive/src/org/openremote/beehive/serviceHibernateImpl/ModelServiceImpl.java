@@ -316,7 +316,7 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
             Model model = genericDAO.getByNonIdField(Model.class, "fileName", modelName);
             merge(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()),model);
          } else if (updatedFile.getStatus() == Actions.ADD) {
-            if (updatedFile.getFile().isFile()) {
+            if (updatedFile.getFile().isFile() && !FileUtil.isIgnored(updatedFile.getFile())) {
                String vendorName = arr[arr.length - 2];
                String modelName = arr[arr.length - 1];
                Model model = genericDAO.getByNonIdField(Model.class, "fileName", modelName);

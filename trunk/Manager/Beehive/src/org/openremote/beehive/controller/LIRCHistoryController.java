@@ -28,6 +28,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.repo.LIRCEntry;
 import org.openremote.beehive.repo.LogMessage;
+import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -37,13 +39,16 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
  */
 public class LIRCHistoryController extends MultiActionController {
    private String indexView;
+   private String modelView;
    
    private SVNDelegateService svnDelegateService;
    
    public void setIndexView(String indexView) {
       this.indexView = indexView;
    }
-
+   public void setModelView(String modelView) {
+      this.modelView = modelView;
+   }
    public void setSvnDelegateService(SVNDelegateService svnDelegateService) {
       this.svnDelegateService = svnDelegateService;
    }
@@ -67,4 +72,25 @@ public class LIRCHistoryController extends MultiActionController {
       return mav;
    }
    
+   /**
+    * Gets the models.
+    * 
+    * @param request the request
+    * @param response the response
+    * 
+    * @return the models
+    * 
+    * @throws ServletRequestBindingException the servlet request binding exception
+    */
+   public ModelAndView getModels(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException{
+      ModelAndView mav = new ModelAndView(modelView);
+      String path = "/"+ServletRequestUtils.getRequiredStringParameter(request, "path");
+      request.setAttribute("path",path);
+      List<LogMessage> lms = svnDelegateService.getLogs(path);
+      mav.addObject("vendorMessage", lms.get(lms.size() - 1));
+      
+      List<LIRCEntry> modelEntries = svnDelegateService.getList(path, new Integer(lms.get(lms.size() - 1).getRevision()));
+      mav.addObject("modelEntries", modelEntries);
+      return mav;
+   }
 }

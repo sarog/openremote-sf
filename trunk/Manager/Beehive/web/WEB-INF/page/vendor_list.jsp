@@ -10,26 +10,21 @@
 <body tabId="3">
 	<table class="infopanel" width="100%" border="0" cellpadding="0"
 		cellspacing="0">
-		<tbody>
 			<tr>
 				<td>
 				<table width="100%" border="0" cellpadding="0" cellspacing="0">
-					<tbody>
 						<tr class="path_node">
 							<td nowrap="true"><span class="pathFormat">
 							Path&nbsp;:&nbsp; </span></td>
 							<td width="100%" nowrap="true">
 							<table border="0" cellpadding="0" cellspacing="0">
-								<tbody>
 									<tr>
-										<td nowrap="true"><a class="path_t" href="history.html"><span
+										<td nowrap="true"><a class="path_t" href="history.htm"><span
 											class="path_text">Beehive</span></a></td>
 									</tr>
-								</tbody>
 							</table>
 							</td>
 						</tr>
-					</tbody>
 				</table>
 				</td>
 			</tr>
@@ -37,7 +32,6 @@
 				<td width="100%">
 				<table class="tabcontent" width="100%" border="0" cellpadding="0"
 					cellspacing="0">
-					<tbody>
 						<tr class="value" nowrap="true">
 							<td class="value" style="padding-left: 20px;" nowrap="true"><b>Revision:</b>&nbsp;
 								<a	href="#">
@@ -52,19 +46,16 @@
 							<td class="value" style="padding-left: 20px;" colspan="5"
 								width="100%"><b>Comment:</b>&nbsp; ${headMessage.comment}</td>
 						</tr>
-					</tbody>
 				</table>
 				</td>
 				<td>
 				<table class="tabcontent" border="0" cellpadding="0" cellspacing="0">
-					<tbody>
 						<tr>
 							<td width="23" align="left" style="padding-right: 7px;"><a
 								href="#"><img src="image/revision.gif"
 								alt="All Revision list" title="All Revision list" border="0"></a>
 							</td>							
 						</tr>
-					</tbody>
 				</table>
 				</td>
 			</tr>
@@ -87,12 +78,12 @@
 							<td class="internal" style="padding-right: 5px;"><input
 								name="items" type="checkbox" value="${vendorEntry.path}"></td>
 							<td class="internal" style="padding-right: 5px;">
-							  <a href="">
+							  <a href="history.htm?method=getModels&path=${vendorEntry.path}">
 							     <span	class="list_of_history_image_link ${vendorEntry.file}"></span>
 							  </a>
 							</td>
-							<td class="internal" width="100%" nowrap="true"><a
-								href="">${vendorEntry.path}</a>
+							<td class="internal" width="100%" nowrap="true">
+							  <a href="history.htm?method=getModels&path=${vendorEntry.path}">${vendorEntry.path}</a>
 							</td>
 						</tr>
 					</table>
