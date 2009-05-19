@@ -13,13 +13,16 @@
         </property>
     </bean>
     
+    <!-- service for button command from iPhone -->
     <bean id="buttonCommandService" class="org.openremote.controller.service.impl.ButtonCommandServiceImpl">
         <property name="macroCmdExecutionDelay" value="${Macro.Execution.Delay}" />
     </bean>
     
+    <!-- controller.xml parser -->
     <bean id="remoteActionXMLParser" class="org.openremote.controller.utils.RemoteActionXMLParser">
     </bean>
     
+    <!-- service for file system operation : upload, unzip etc. -->
     <bean id="fileService" class="org.openremote.controller.service.impl.FileServiceImpl">
     </bean>
     
@@ -32,10 +35,24 @@
 		    </props>
 		</property>
 	</bean>
+	
+	<!-- EVENT BUILDERS ============================================================================
+	 |
+	 | Implementation specific builders for the Event Factory bean. In short, each distinct event
+	 | type, as they appear in controller.xml, will need a corresponding builder implementation.
+	 |
+	 | See the org.openremote.controller.event.EventBuilder interface for details if you seek to
+	 | extend the implementation with additional event types.
+	 +-->
+	
+    <!-- Infrared Event Builder -->
+    <bean id="irEventBuilder" class="org.openremote.controller.protocol.infrared.IREventBuilder" ></bean>
     
-    <bean id="irEventBuilder" class="org.openremote.controller.protocol.infrared.IREventBuilder" scope="prototype" ></bean>
-    <bean id="knxEventBuilder" class="org.openremote.controller.protocol.knx.KNXEventBuilder" scope="prototype" ></bean>
-    <bean id="x10EventBuilder" class="org.openremote.controller.protocol.x10.X10EventBuilder" scope="prototype" ></bean>
+    <!-- KNX Event Builder -->
+    <bean id="knxEventBuilder" class="org.openremote.controller.protocol.knx.KNXEventBuilder" ></bean>
+    
+    <!-- X10 Event Builder -->
+    <bean id="x10EventBuilder" class="org.openremote.controller.protocol.x10.X10EventBuilder" ></bean>
     
     
 </beans>

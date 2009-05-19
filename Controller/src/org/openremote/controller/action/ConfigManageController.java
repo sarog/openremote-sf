@@ -32,7 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 /**
- * The Class ConfigZipUploadController.
+ * The controller for Configuration management.
  * 
  * @author Dan 2009-5-14
  */

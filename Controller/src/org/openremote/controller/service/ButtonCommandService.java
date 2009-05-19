@@ -23,7 +23,7 @@ package org.openremote.controller.service;
 
 
 /**
- * The service for ButtonCommand.
+ * The service for Button Command from remote.
  * 
  * @author Dan 2009-4-3
  */

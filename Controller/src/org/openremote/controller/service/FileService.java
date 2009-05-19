@@ -23,7 +23,7 @@ package org.openremote.controller.service;
 import java.io.InputStream;
 
 /**
- * The service for File.
+ * The service for file system operation.
  * 
  * @author Dan 2009-5-14
  */

@@ -31,7 +31,7 @@ import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.utils.ZipUtil;
 
 /**
- * A implementation for FileService class.
+ * The implementation for FileService interface.
  * 
  * @author Dan 2009-5-14
  */
@@ -51,8 +51,8 @@ public class FileServiceImpl implements FileService {
     * {@inheritDoc}
     */
    public void uploadConfigZip(InputStream inputStream) {
-      unzip(inputStream, PathUtil.webappsLocation());
-      File lircdConfFile = new File(PathUtil.webappsLocation() + "lircd.conf");
+      unzip(inputStream, PathUtil.webappRootPath());
+      File lircdConfFile = new File(PathUtil.webappRootPath() + "lircd.conf");
       File etcDir = new File("/etc");
       try {
          if(etcDir.exists() && lircdConfFile.exists()){
