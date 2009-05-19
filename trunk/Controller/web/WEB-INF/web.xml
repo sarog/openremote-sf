@@ -85,5 +85,11 @@
         	org.springframework.web.util.Log4jConfigListener
         </listener-class>
     </listener>
+    
+    <listener>
+        <listener-class>
+            org.openremote.controller.listener.ApplicationListener
+        </listener-class>
+    </listener>
 
 </web-app>
