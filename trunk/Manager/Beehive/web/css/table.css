@@ -23,7 +23,17 @@ table.list {
 	border-right-color: #BBBBBB;
 	border-bottom-color: #BBBBBB;
 }
-
+.sorterTable th{
+	background-image: url("../image/bg.gif");
+   background-repeat: no-repeat;
+   background-position: center right;
+}
+.sorterTable th.headerSortDown{
+   background-image: url("../image/desc.gif");
+}
+.sorterTable th.headerSortUp{
+   background-image: url("../image/asc.gif");
+}
 .list th a, .list th a:active, .list th a:link, .list th a:visited, .list th a:hover {
 	font-weight: bold;
 	color: #FFFFFF;

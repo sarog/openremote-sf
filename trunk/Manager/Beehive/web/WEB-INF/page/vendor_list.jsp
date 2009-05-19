@@ -6,6 +6,44 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF8">
 <title>OpenRemote Beehive - Vendor List</title>
+<script type="text/javascript">
+    $(document).ready(function(){        
+        $.tablesorter.addParser({ 
+            // set a unique id 
+            id: 'age', 
+            is: function(s) { 
+                return false; 
+            }, 
+            format: function(s) { 
+                var time = $("<td>"+s+"</td>").find("input").val();
+                return $.tablesorter.formatFloat(new Date(time).getTime()); 
+            }, 
+            type: 'numeric'
+        });        
+        $.tablesorter.addParser({ 
+            // set a unique id 
+            id: 'size', 
+            is: function(s) { 
+                return false; 
+            }, 
+            format: function(s) { 
+                return $.tablesorter.formatFloat(s.replace(new RegExp(/k/),"")); 
+            }, 
+            type: 'numeric'
+        });        
+        $("#table_list_of_vendor").tablesorter({ 
+            headers: { 
+                2:{
+                    sorter:'size'
+                },
+                3: { 
+                    sorter:'age' 
+                }                 
+            } 
+        });
+        $("#table_list_of_vendor").addClass("sorterTable");
+    });
+</script>
 </head>
 <body tabId="3">
 	<table class="infopanel" width="100%" border="0" cellpadding="0"
@@ -63,13 +101,16 @@
 	</table>
 	<table id="table_list_of_vendor" class="list" rules="all"
 		width="100%" cellpadding="0" cellspacing="0">
+		<thead>
 		<tr class="second">
-			<th width="30%" nowrap="true">Name</th>
+			<th width="30%" nowrap="true"><a href="#">Name</th>
 			<th width="10%" nowrap="true"><a href="#">Revision</a></th>
 			<th width="10%" nowrap="true"><a href="#">Size</a></th>
 			<th width="30%" nowrap="true"><a href="#">Age</a></th>
 			<th width="20%" nowrap="true"><a href="#">Author</a></th>
 		</tr>
+		</thead>
+		<tbody>
 		<c:forEach items="${vendorEntries}" var="vendorEntry">
 			<tr class="first">
 				<td>
@@ -105,10 +146,11 @@
                       <c:otherwise>-</c:otherwise>
                    </c:choose>
             </td>
-				<td align="center">${vendorEntry.age}</td>
+				<td align="center">${vendorEntry.age}<input type="hidden" value="${vendorEntry.date }"/></td>
 				<td align="center">${vendorEntry.author}</td>
 			</tr>
 		</c:forEach>
+		</tbody>
 	</table>
 </body>
 </html>

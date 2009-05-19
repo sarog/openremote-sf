@@ -11,6 +11,7 @@
       <link href="css/table.css" type="text/css" rel="stylesheet" media="screen">
       <script type="text/javascript" src="jslib/jquery-1.3.1.min.js"></script>
       <script type="text/javascript" src="jslib/jquery.form-2.24.js"></script>
+      <script type="text/javascript" src="jslib/jquery.tablesorter.min.js"></script>
       <script type="text/javascript">
             $(document).ready(function(){
                 $('#tab_<decorator:getProperty property="body.tabId"/>').addClass('activetab').removeClass("inactivetab");
