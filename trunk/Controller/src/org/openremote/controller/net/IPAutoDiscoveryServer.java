@@ -35,9 +35,9 @@ import org.apache.log4j.Logger;
 
 /**
  * The Class IP Auto Discovery Server. 
- * This server will listen to client on a multicast address.
- * When a client send a UDP packet to this server, the client will tell this server its IP and create a TCP server.
- * Then the server will respond its HTTP URL to the client via TCP connection.
+ * This server will listen to all the clients on a multicast address.
+ * After a client sends a UDP packet to this server with its IP,it will create a TCP server to receive the response.
+ * Then this server will respond its HTTP URL to the client via TCP connection.
  * 
  * 
  * @author Dan 2009-5-18
@@ -48,13 +48,13 @@ public class IPAutoDiscoveryServer implements Runnable {
    private static Logger logger = Logger.getLogger(IPAutoDiscoveryServer.class.getName());
    
    /** The multicast address. */
-   public static String MULTICAST_ADDRESS= "224.0.1.100";
+   public final static String MULTICAST_ADDRESS= "224.0.1.100";
    
    /** The multicast port. */
-   public static int MULTICAST_PORT = 3333;
+   public final static int MULTICAST_PORT = 3333;
    
    /** The TCP port. */
-   public static int TCP_PORT = 2346;
+   public final static int TCP_PORT = 2346;
    
 
    /**

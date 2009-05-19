@@ -45,7 +45,7 @@ import org.xml.sax.SAXException;
 
 
 /**
- * The Remote Action XML Parser.
+ * The controller.xml Parser.
  * 
  * @author Dan 2009-4-3
  */
@@ -109,7 +109,7 @@ public class RemoteActionXMLParser {
       Object result = null;
       try {
          DocumentBuilder builder = domFactory.newDocumentBuilder();
-         String xmlPath = PathUtil.webappsLocation() + "controller.xml";
+         String xmlPath = PathUtil.webappRootPath() + "controller.xml";
          Document doc = builder.parse(xmlPath);
          XPathFactory factory = XPathFactory.newInstance();
          XPath xpath = factory.newXPath();
@@ -122,7 +122,7 @@ public class RemoteActionXMLParser {
       } catch (SAXException e) {
          logger.error("Can't parse the controller.xml", e);
       } catch (IOException e) {
-         logger.error("Can't find the controller.xml,please put it in" + PathUtil.webappsLocation(), e);
+         logger.error("Can't find the controller.xml,please put it in" + PathUtil.webappRootPath(), e);
       }
       NodeList nodes = (NodeList) result;
       if (nodes.getLength() > 0) {
