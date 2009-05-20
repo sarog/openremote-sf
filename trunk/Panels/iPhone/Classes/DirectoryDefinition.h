@@ -16,5 +16,6 @@
 + (NSString *)cacheFolder;
 + (NSString *)imageCacheFolder;
 + (NSString *)xmlCacheFolder;
++ (NSString *)appSettingsFilePath;
 
 @end

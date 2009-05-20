@@ -7,21 +7,14 @@
 //
 
 #import "ServerDefinition.h"
+#import "AppSettingsDefinition.h"
 
 @implementation ServerDefinition
 
 + (NSString *)serverUrl {
 	static NSString *serverUrl;
 	
-	if (serverUrl == nil) {
-		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-		serverUrl = [[defaults objectForKey:@"serverUrl"] stringByAppendingPathComponent:@""];
-		if (!serverUrl) {
-			[self registerDefaultsFromSettingsBundle];
-		}
-		serverUrl = [[defaults objectForKey:@"serverUrl"] stringByAppendingPathComponent:@""];
-		[serverUrl retain];
-	}
+	serverUrl = [AppSettingsDefinition getCurrentServerUrl];
 	return  serverUrl;
 }
 

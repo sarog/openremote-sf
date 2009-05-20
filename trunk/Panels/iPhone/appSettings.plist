@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>header</key>
+		<string></string>
+		<key>item</key>
+		<dict>
+			<key>name</key>
+			<string>Auto Discovery</string>
+			<key>value</key>
+			<true/>
+		</dict>
+		<key>footer</key>
+		<string>If you don&apos;t want to automaticly discover server, you can specify the server url</string>
+	</dict>
+	<dict>
+		<key>header</key>
+		<string>Choose a Server</string>
+		<key>servers</key>
+		<array/>
+		<key>footer</key>
+		<string></string>
+	</dict>
+	<dict>
+		<key>header</key>
+		<string>Choose a Server</string>
+		<key>servers</key>
+		<array>
+			<dict>
+				<key>url</key>
+				<string>http://10.10.10.101:8080/controller</string>
+				<key>choose</key>
+				<true/>
+			</dict>
+			<dict>
+				<key>url</key>
+				<string>http://10.10.10.102:8080/controller</string>
+				<key>choose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>url</key>
+				<string>http://10.10.10.103:8080/controller</string>
+				<key>choose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>footer</key>
+		<string></string>
+	</dict>
+</array>
+</plist>
