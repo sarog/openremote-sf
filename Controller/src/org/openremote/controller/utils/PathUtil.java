@@ -20,7 +20,6 @@
  */
 package org.openremote.controller.utils;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Utility for file system Path.
  * 
@@ -37,5 +36,14 @@ public class PathUtil {
     */
    public static String webappRootPath(){
       return System.getProperty("controller.root");
+   }
+   
+   /**
+    * Resources path.
+    * 
+    * @return the string
+    */
+   public static String resourcesPath(){
+      return PathUtil.webappRootPath() + "resources/";
    }
 }
