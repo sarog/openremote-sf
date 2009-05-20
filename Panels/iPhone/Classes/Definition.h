@@ -8,24 +8,21 @@
 
 #import <UIKit/UIKit.h>
 
-extern NSString *const DefinationUpdateDidFinishedNotification;
-extern NSString *const DefinationNeedNotUpdate;
 
-@interface Definition : NSObject {	
-	
-	
+
+@interface Definition : NSObject {		
 	BOOL isUpdating;
 	NSDate *lastUpdateTime;
 	NSMutableArray *activities;
 	
 	NSInvocationOperation *updateOperation;
 	NSOperationQueue *updateOperationQueue; 
-	
 }
 
 + (Definition *)sharedDefinition;
 - (void)update;
 - (BOOL) isDataReady;
+- (void)useLocalCacheDirectly;
 
 @property (nonatomic,readonly) BOOL isUpdating;
 @property (nonatomic,readonly) NSDate *lastUpdateTime;

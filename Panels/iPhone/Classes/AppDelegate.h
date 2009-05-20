@@ -7,9 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "InitViewController.h"
 
 @interface AppDelegate : NSObject <UIApplicationDelegate> {
 	UIWindow *window;
+	
+	UIView *defaultView;
+	
+	InitViewController *initViewController;
 	
 	UIActivityIndicatorView *loadingView;
 	

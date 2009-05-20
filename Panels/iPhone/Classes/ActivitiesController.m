@@ -15,7 +15,14 @@
 #import "PaginationController.h"
 #import "LightsController.h"
 #import "AccelerometerController.h"
+#import "NotificationConstant.h"
+#import "AppSettingController.h"
 
+@interface ActivitiesController (Private)
+- (void)showSettingsView;
+- (void)hideSettingsView;
+- (void)refreshView;
+@end
 
 @implementation ActivitiesController
 
@@ -32,21 +39,31 @@
 - (id)init {
 	if (self == [super initWithStyle:UITableViewStyleGrouped]) {
 		activities = [[Definition sharedDefinition] activities];
+		UIBarButtonItem *settingButton = [[UIBarButtonItem alloc] initWithTitle:@"Settings" style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsView)];
+		self.navigationItem.leftBarButtonItem = settingButton;
+		[settingButton release];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSettingsView) name:NotificationShowSettingsView object:nil];	
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:DefinationUpdateDidFinishedNotification object:nil];	
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:DefinationNeedNotUpdate object:nil];
 	}
 	return self;
 }
-
+																			
 /*
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView {
 }
 */
-
+- (void)refreshView {
+	NSLog(@"reload activity controller.");
+	activities = [[Definition sharedDefinition] activities];
+	[self.tableView  reloadData];
+}
 #pragma mark UITableViewDataSource implementation
 - (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section
 {
 //    return activities.count;
-	return activities.count;
+	return activities.count+2;
 }
 
 
@@ -58,15 +75,14 @@
 		cell.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	}
 	
-	Activity *currentActivity = [activities objectAtIndex:indexPath.row ];
-	//for mock light
-	if (currentActivity.activityId == 3) {
-		cell.text = currentActivity.name;
+	if (indexPath.row == activities.count) {
+		cell.text = @"Control The Light(Mockup)";
 		cell.image = [UIImage imageNamed:@"lightIcon.png"];
-	} else if (currentActivity.activityId == 4) {
-		cell.text = currentActivity.name;
+	} else if (indexPath.row == activities.count + 1) {
+		cell.text = @"Control the AirConditioner(Mockup)";
 		cell.image = [UIImage imageNamed:@"AirConditionerIcon.png"];
 	} else {
+		Activity *currentActivity = [activities objectAtIndex:indexPath.row ];
 		cell.text = currentActivity.name;
 		cell.image = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:[[activities objectAtIndex:indexPath.row] icon]]] autorelease];
 	}
@@ -74,18 +90,16 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Create a view controller with the title as its navigation title and push it.
-	Activity *currentActivity = [activities objectAtIndex:indexPath.row ];
-	
-	if (currentActivity.activityId == 3) {
+{	
+	NSLog(@"(indexPath.row is %d,activities.count is %d" ,indexPath.row ,activities.count);
+	if (indexPath.row == activities.count) {
 		LightsController *lightsController = [[LightsController alloc] init];
-		[lightsController setTitle:currentActivity.name];
+		[lightsController setTitle:@"Control The Light(Mockup)"];
 		[[self navigationController] pushViewController:lightsController animated:YES];
 		[lightsController release];
-	} else if (currentActivity.activityId == 4) {
+	} else if (indexPath.row == activities.count + 1) {
 		AccelerometerController *accelerometerController =[[AccelerometerController alloc] init];
-		[accelerometerController setTitle:currentActivity.name];
+		[accelerometerController setTitle:@"Control the AirConditioner(Mockup)"];
 		[[self navigationController] pushViewController:accelerometerController animated:YES];
 		[accelerometerController release];
 	} else {
@@ -128,8 +142,13 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
 }
-
-
+																			
+- (void)showSettingsView {
+	AppSettingController *settingController = [[AppSettingController alloc]init];
+	[self.navigationController pushViewController:settingController animated:YES];
+	[settingController release];
+}																											
+																			
 
 - (void)dealloc {
 	[activities release];

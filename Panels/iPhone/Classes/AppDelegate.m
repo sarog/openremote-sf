@@ -14,87 +14,69 @@
 #import "ServerDefinition.h"
 #import "Definition.h"
 #import "ActivitiesController.h"
+#import "AppSettingsDefinition.h"
+#import "InitViewController.h"
+#import "NotificationConstant.h"
 
 @interface AppDelegate (Private)
 
 - (void)updateDidFinished;
-- (void)stopLoadingAndShowViews;
+- (void)checkConfigAndUpdate;
+- (void)addNotificationObserver;
+- (void)showSettingsView;
 
 @end
 
 @implementation AppDelegate
 
 
+
+
 - (void)applicationDidFinishLaunching:(UIApplication *)application {    
     // Override point for customization after application launch
 	window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	[window makeKeyAndVisible];
-			
-	//Shows loading view
-	loadingView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-	[loadingView sizeToFit];
-	[loadingView setFrame:CGRectMake(window.bounds.size.width / 2 - loadingView.frame.size.width / 2, window.bounds.size.height / 2 - loadingView.frame.size.height / 2, loadingView.frame.size.height, loadingView.frame.size.width)];
-	[window addSubview:loadingView];
 	
-	[loadingView startAnimating];
+	defaultView = [[UIView alloc] initWithFrame:CGRectMake(window.bounds.origin.x, window.bounds.origin.y+20, window.bounds.size.height, window.bounds.size.width) ];
+	[window addSubview:defaultView];
 	
-	[[Definition sharedDefinition] update];
+	initViewController = [[InitViewController alloc] init];
+	
+	[defaultView addSubview:initViewController.view];
+	
+	[self addNotificationObserver];
+	
+	[AppSettingsDefinition checkConfigAndUpdate];
 	
 	
+	
+}
+
+- (void)addNotificationObserver {
 	//add a observer to defination upload task 
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateDidFinished) name:DefinationUpdateDidFinishedNotification object:[Definition sharedDefinition]];	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateDidFinished) name:DefinationNeedNotUpdate object:[Definition sharedDefinition]];	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateDidFinished) name:DefinationUpdateDidFinishedNotification object:nil];	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateDidFinished) name:DefinationNeedNotUpdate object:nil];	
+	
 
 }
 
-//- (void)updateDidFinished {
-//	tabbarController = [[UITabBarController alloc] init];
-//	
-//	// Get array of screens
-//	// Build array of UIViewControllers for each screen
-//	NSMutableArray  *viewControllers = [[NSMutableArray alloc] init];
-//	NSArray *screens = [[Definition sharedDefinition] screens];
-//	for (Screen *screen in screens) {
-//		ScreenViewController *viewController = [[ScreenViewController alloc]init];
-//		[viewController setScreen:screen];
-//		[viewControllers addObject:viewController];
-//		[viewController release];
-//	}
-//	[tabbarController setViewControllers:viewControllers];
-//	[viewControllers release];
-//	if  (loadingView) {
-//		[self	 stopLoadingAndShowViews];
-//	}
-//	
-//	[window addSubview:tabbarController.view];
-//	
-//	
-//}
 
 - (void)updateDidFinished {
 	NSLog(@"----------updateDidFinished------");
+	[initViewController.view removeFromSuperview];
+	
 	ActivitiesController *activityController = [[ActivitiesController alloc] init];
 	[activityController setTitle:@"Activities"];
-
 	navigationController = [[UINavigationController alloc] initWithRootViewController:activityController];
-	[activityController release];
 	[window addSubview:navigationController.view];
-
-	if  (loadingView) {
-		[self	 stopLoadingAndShowViews];
-	}
-}
-
-- (void)stopLoadingAndShowViews {
-	[loadingView stopAnimating];
-	[loadingView release];
-	loadingView = nil;
+	[activityController release];
 }
 
 
 - (void)dealloc {
-	[window release];
+	[defaultView release];
 	[navigationController release];
+	[window release];
     [super dealloc];
 	
 }
