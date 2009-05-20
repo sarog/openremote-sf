@@ -51,8 +51,13 @@ public class FileServiceImpl implements FileService {
     * {@inheritDoc}
     */
    public void uploadConfigZip(InputStream inputStream) {
-      unzip(inputStream, PathUtil.webappRootPath());
-      File lircdConfFile = new File(PathUtil.webappRootPath() + "lircd.conf");
+      try {
+         FileUtils.forceDeleteOnExit(new File(PathUtil.resourcesPath()));
+      } catch (IOException e1) {
+         logger.error("Can't delete" + PathUtil.resourcesPath(), e1);
+      }
+      unzip(inputStream, PathUtil.resourcesPath());
+      File lircdConfFile = new File(PathUtil.resourcesPath() + "lircd.conf");
       File etcDir = new File("/etc");
       try {
          if(etcDir.exists() && lircdConfFile.exists()){
