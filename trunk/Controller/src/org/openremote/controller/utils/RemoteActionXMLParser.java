@@ -23,8 +23,10 @@ package org.openremote.controller.utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -92,7 +94,7 @@ public class RemoteActionXMLParser {
     * @return the element
     */
    private Element queryElementFromXMLById(String id){
-      return queryElementFromXML("//*[@id='" + id + "']");
+      return queryElementFromXML("//or:*[@id='" + id + "']");
    }
    
 
@@ -113,6 +115,23 @@ public class RemoteActionXMLParser {
          Document doc = builder.parse(xmlPath);
          XPathFactory factory = XPathFactory.newInstance();
          XPath xpath = factory.newXPath();
+         xpath.setNamespaceContext(new NamespaceContext(){
+
+            public String getNamespaceURI(String prefix) {
+               String uri = null;  
+               if (prefix.equals("or")){
+                  uri = "http://www.openremote.org";
+               }
+               return uri;
+            }
+
+            public String getPrefix(String namespaceURI) {
+               return null;
+            }
+
+            public Iterator<?> getPrefixes(String namespaceURI) {
+               return null;
+            }});
          XPathExpression expr = xpath.compile(xPath);
          result = expr.evaluate(doc, XPathConstants.NODESET);
       } catch (XPathExpressionException e) {
