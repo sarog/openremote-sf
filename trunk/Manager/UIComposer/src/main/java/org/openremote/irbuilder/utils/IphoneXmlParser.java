@@ -41,13 +41,15 @@ public class IphoneXmlParser {
     * @param folder
     * @return modified iphoneXML
     */
+   @SuppressWarnings("unchecked")
    public static String parserXML(String xmlString, File folder){
       SAXBuilder sb = new SAXBuilder(false);
       sb.setValidation(false);
       String iphoneXml = "";
       try {         
           Document doc = sb.build(new InputSource(new StringReader(xmlString)));
-          XPath xpath = XPath.newInstance("//button[@icon]");
+          XPath xpath = XPath.newInstance("//or:button[@icon]");
+          xpath.addNamespace("or","http://www.openremote.org");
           List<Element> elements = xpath.selectNodes(doc);
           for (Element element : elements) {
              String iconVal = element.getAttributeValue("icon");
