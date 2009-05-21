@@ -32,7 +32,14 @@
 	[s retain];
 	[screen release];
 	screen = s;
-	
+	screenNameLabel = [[UILabel alloc] init];
+	screenNameLabel.text = s.name;
+	[screenNameLabel setTextColor:[UIColor whiteColor]];
+	[screenNameLabel setFont:[UIFont boldSystemFontOfSize:14]];
+	[screenNameLabel setTextAlignment:UITextAlignmentCenter];
+	[screenNameLabel setShadowColor:[UIColor grayColor]];
+	[screenNameLabel setBackgroundColor:[UIColor clearColor]];
+	[self addSubview:screenNameLabel];
 	[self createButtons];
 }
 	
@@ -59,12 +66,16 @@
 //override layoutSubviews method of UIView, In order to resize the ControlView when add subview
 // Only in this time we can know this view's size
 - (void)layoutSubviews {
-	int h = self.bounds.size.height/screen.rows;
+	[screenNameLabel setFrame:CGRectMake(self.bounds.origin.x, self.bounds.origin.y, self.bounds.size.width, 20)];
+
+	
+	int h = (self.bounds.size.height-20)/screen.rows;
 	int w = self.bounds.size.width/screen.cols;
+	
 	
 	for (ControlView *controlView in controlViews) {
 		Control *control = [controlView control];
-		[controlView setFrame:CGRectInset(CGRectMake(control.x*w, control.y*h, w*control.width, h*control.height),roundf(w*0.1), roundf(h*0.1))];
+		[controlView setFrame:CGRectInset(CGRectMake(control.x*w, (control.y*h +20), w*control.width, h*control.height),roundf(w*0.1), roundf(h*0.1))];
 	}
 }
 

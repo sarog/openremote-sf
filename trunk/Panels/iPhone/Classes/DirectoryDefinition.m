@@ -44,4 +44,9 @@
 	return pathToUserCopyOfPlist;
 }
 
++ (NSString *)infoFilePath {
+	NSString *pathToDefaultPlist = [[NSBundle mainBundle] pathForResource:@"Info" ofType:@"plist"];
+	return pathToDefaultPlist;
+}
+
 @end

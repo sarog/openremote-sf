@@ -12,6 +12,8 @@
 @interface InitViewController : UIViewController {
 	UIActivityIndicatorView *loadding;
 	UILabel *label;
+	UILabel *version;
+
 }
 
 @end

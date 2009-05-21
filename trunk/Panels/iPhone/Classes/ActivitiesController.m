@@ -44,7 +44,7 @@
 		[settingButton release];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSettingsView) name:NotificationShowSettingsView object:nil];	
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:DefinationUpdateDidFinishedNotification object:nil];	
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:DefinationNeedNotUpdate object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearView) name:DefinationNeedNotUpdate object:nil];
 	}
 	return self;
 }
@@ -56,6 +56,12 @@
 */
 - (void)refreshView {
 	NSLog(@"reload activity controller.");
+	activities = [[Definition sharedDefinition] activities];
+	[self.tableView  reloadData];
+}
+- (void)clearView {
+	NSLog(@"clear view activity controller.");
+	[[[Definition sharedDefinition] activities] removeAllObjects];
 	activities = [[Definition sharedDefinition] activities];
 	[self.tableView  reloadData];
 }
@@ -145,8 +151,10 @@
 																			
 - (void)showSettingsView {
 	AppSettingController *settingController = [[AppSettingController alloc]init];
-	[self.navigationController pushViewController:settingController animated:YES];
+	UINavigationController *settingNavController = [[UINavigationController alloc] initWithRootViewController:settingController];
+	[self presentModalViewController:settingNavController animated:YES];
 	[settingController release];
+	[settingNavController release];
 }																											
 																			
 

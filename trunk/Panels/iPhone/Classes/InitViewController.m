@@ -9,7 +9,7 @@
 #import "InitViewController.h"
 #import "NotificationConstant.h"
 #import "AppSettingController.h"
-
+#import "DirectoryDefinition.h"
 
 @interface InitViewController (Private)
 - (void)showSettingsView;
@@ -33,8 +33,20 @@
 		loadding = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
 		[loadding sizeToFit];
 		[loadding setFrame:CGRectMake(140,390,30,30)];
+		
+		version = [[UILabel alloc] initWithFrame:CGRectMake(140, 300, 30, 20)];
+		NSLog(@"version is %@",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]);
+		version.text = [NSString stringWithFormat:@"v%@",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+		[version setBackgroundColor:[UIColor clearColor]];
+		[version setTextColor:[UIColor blackColor]];
+		[version setFont:[UIFont boldSystemFontOfSize:14]];
+		[version setTextAlignment:UITextAlignmentCenter];
+		[version setShadowColor:[UIColor grayColor]];
+		
+		
 		[self.view addSubview:loadding];
 		[self.view  addSubview:label];
+		[self.view  addSubview:version];
 		[loadding startAnimating];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSettingsView) name:NotificationShowSettingsView object:nil];	
@@ -59,6 +71,7 @@
 - (void)dealloc {
 	[loadding release];
 	[label release];
+	[version release];
     [super dealloc];
 }
 

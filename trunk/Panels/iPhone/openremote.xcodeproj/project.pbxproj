@@ -17,6 +17,8 @@
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
 		79BF34C80F4E5FE600989DCC /* ScreenView.m in Sources */ = {isa = PBXBuildFile; fileRef = 79BF34C70F4E5FE600989DCC /* ScreenView.m */; };
 		79BF34CB0F4E60E200989DCC /* ScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 79BF34CA0F4E60E200989DCC /* ScreenViewController.m */; };
+		8C298D010FC3A155004D9F3C /* TextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C298D000FC3A155004D9F3C /* TextFieldCell.m */; };
+		8C298D070FC3AA94004D9F3C /* AddServerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C298D060FC3AA94004D9F3C /* AddServerViewController.m */; };
 		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		8C6528460FC0F52D002632BF /* InitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6528450FC0F52D002632BF /* InitViewController.m */; };
 		8C6528480FC0F64F002632BF /* InitViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C6528470FC0F64F002632BF /* InitViewController.xib */; };
@@ -80,6 +82,10 @@
 		79BF34C90F4E60E200989DCC /* ScreenViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenViewController.h; sourceTree = "<group>"; };
 		79BF34CA0F4E60E200989DCC /* ScreenViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenViewController.m; sourceTree = "<group>"; };
 		79FEE18F0F4E864C0017B50D /* Definition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Definition.h; sourceTree = "<group>"; };
+		8C298CFF0FC3A155004D9F3C /* TextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextFieldCell.h; sourceTree = "<group>"; };
+		8C298D000FC3A155004D9F3C /* TextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextFieldCell.m; sourceTree = "<group>"; };
+		8C298D050FC3AA94004D9F3C /* AddServerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddServerViewController.h; sourceTree = "<group>"; };
+		8C298D060FC3AA94004D9F3C /* AddServerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddServerViewController.m; sourceTree = "<group>"; };
 		8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		8C6528440FC0F52D002632BF /* InitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InitViewController.h; sourceTree = "<group>"; };
 		8C6528450FC0F52D002632BF /* InitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InitViewController.m; sourceTree = "<group>"; };
@@ -320,6 +326,10 @@
 				8CFDB27A0FBBC0B000D204CB /* AppSettingController.m */,
 				8C6528440FC0F52D002632BF /* InitViewController.h */,
 				8C6528450FC0F52D002632BF /* InitViewController.m */,
+				8C298CFF0FC3A155004D9F3C /* TextFieldCell.h */,
+				8C298D000FC3A155004D9F3C /* TextFieldCell.m */,
+				8C298D050FC3AA94004D9F3C /* AddServerViewController.h */,
+				8C298D060FC3AA94004D9F3C /* AddServerViewController.m */,
 			);
 			name = controller;
 			sourceTree = "<group>";
@@ -434,6 +444,8 @@
 				8C652C1F0FC13EC3002632BF /* ServerAutoDiscoveryController.m in Sources */,
 				8C652C600FC14697002632BF /* NotificationConstant.m in Sources */,
 				8CC0B5C50FC298F20084D246 /* CheckNetworkStaff.m in Sources */,
+				8C298D010FC3A155004D9F3C /* TextFieldCell.m in Sources */,
+				8C298D070FC3AA94004D9F3C /* AddServerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
