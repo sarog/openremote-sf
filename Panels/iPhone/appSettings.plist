@@ -27,26 +27,7 @@
 		<key>header</key>
 		<string>Choose a Server</string>
 		<key>servers</key>
-		<array>
-			<dict>
-				<key>url</key>
-				<string>http://10.10.10.101:8080/controller</string>
-				<key>choose</key>
-				<true/>
-			</dict>
-			<dict>
-				<key>url</key>
-				<string>http://10.10.10.102:8080/controller</string>
-				<key>choose</key>
-				<false/>
-			</dict>
-			<dict>
-				<key>url</key>
-				<string>http://10.10.10.103:8080/controller</string>
-				<key>choose</key>
-				<false/>
-			</dict>
-		</array>
+		<array/>
 		<key>footer</key>
 		<string></string>
 	</dict>

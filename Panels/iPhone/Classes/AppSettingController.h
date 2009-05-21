@@ -10,11 +10,13 @@
 #import "ServerAutoDiscoveryController.h"
 
 @interface AppSettingController : UITableViewController {
-	NSMutableArray *settingData;
 	NSString *pathToUserCopyOfPlist;
 	BOOL autoDiscovery;
 	NSMutableArray *serverArray;
 	NSIndexPath *currentSelectedServerIndex;
 	ServerAutoDiscoveryController *autoDiscoverController;
+	UIBarButtonItem *done;
+	UIBarButtonItem *edit;
+	BOOL isEditing;
 }
 @end

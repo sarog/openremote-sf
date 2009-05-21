@@ -11,21 +11,17 @@
 #import "AppSettingsDefinition.h"
 #import "ServerAutoDiscoveryController.h"
 #import "NotificationConstant.h"
+#import "AddServerViewController.h"
 
 @interface AppSettingController (Private)
-- (void)initData;
-- (NSDictionary *)getSectionWithIndex:(int)index;
-- (NSString *)getSectionHeaderWithIndex:(int)index;
-- (NSString *)getSectionFooterWithIndex:(int)index;
-- (NSMutableDictionary *)getAutoDiscoveryDic;
--(BOOL)isAutoDiscoveryEnable;
-- (NSMutableArray *)getAutoServers;
-- (NSMutableArray *)getCustomServers;
 -(NSMutableArray *)getCurrentServersWithAutoDiscoveryEnable:(BOOL)b;
 - (void)autoDiscoverChanged:(id)sender;
 - (void)updateTableView;
 - (void)saveSettings;
-
+- (BOOL)isAutoDiscoverySection:(NSIndexPath *)indexPath;
+- (BOOL)isAutoServerSection:(NSIndexPath *)indexPath;
+- (BOOL)isCustomServerSection:(NSIndexPath *)indexPath;
+- (BOOL)isAddCustomServerRow:(NSIndexPath *)indexPath;
 @end
 
 
@@ -44,69 +40,59 @@
 - (id)init {
 	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
 		[self setTitle:@"Settings"];
-		UIBarButtonItem *done = [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(saveSettings)];
-		self.navigationItem.rightBarButtonItem = done;
-		[done release];
-		[self initData];
-		serverArray = [[NSMutableArray alloc]init];
-		if ([self isAutoDiscoveryEnable]) {
-			[serverArray addObjectsFromArray:[self getAutoServers]];
-			
-		} else {
-			[serverArray addObjectsFromArray:[self getCustomServers]];
-		}
+		isEditing = NO;
+		autoDiscovery = [AppSettingsDefinition isAutoDiscoveryEnable];
 		
-		autoDiscovery = [self isAutoDiscoveryEnable];
+		if (!done) {
+			done = [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(saveSettings)];		
+		}
+		if (!edit) {
+			edit = [[UIBarButtonItem alloc]initWithTitle:@"Edit" style:UIBarButtonItemStyleDone target:self action:@selector(editSettings)];
+			[edit setStyle:UIButtonTypeRoundedRect];
+		}		
 	}
 	return self;
 }
 
-- (void)initData{
-		// Unarchive the data, store it in the local property, and pass it to the main view controller
-	settingData = [[NSMutableArray alloc] initWithContentsOfFile:[DirectoryDefinition appSettingsFilePath]];
-}		
-
-- (NSDictionary *)getSectionWithIndex:(int)index {
-	return [settingData objectAtIndex:index];
-}
-- (NSString *)getSectionHeaderWithIndex:(int)index {
-	return [[settingData objectAtIndex:index] valueForKey:@"header"];
-}
-- (NSString *)getSectionFooterWithIndex:(int)index {
-	return [[settingData objectAtIndex:index] valueForKey:@"footer"];
-}
-- (NSMutableDictionary *)getAutoDiscoveryDic {
-	return (NSMutableDictionary *)[[self getSectionWithIndex:0] objectForKey:@"item"];
-}
-
--(BOOL)isAutoDiscoveryEnable {
-	return [[[self getAutoDiscoveryDic] objectForKey:@"value"] boolValue];
-}
-
-- (NSMutableArray *)getAutoServers{
-	return (NSMutableArray *)[[self getSectionWithIndex:1] objectForKey:@"servers"];
-}
-
-- (NSMutableArray *)getCustomServers {
-	return (NSMutableArray *)[[self getSectionWithIndex:2] objectForKey:@"servers"];
-}
-
 -(NSMutableArray *)getCurrentServersWithAutoDiscoveryEnable:(BOOL)b {
 	if (b) {
-		return [self getAutoServers];
+		return [AppSettingsDefinition getAutoServers];
 	} else {
-		return [self getCustomServers];
+		return [AppSettingsDefinition getCustomServers];
 	}
 }
 
+- (BOOL)isAutoDiscoverySection:(NSIndexPath *)indexPath {
+	return indexPath.section == 0;
+}
+- (BOOL)isAutoServerSection:(NSIndexPath *)indexPath {
+	if (autoDiscovery && indexPath.section == 1) {
+		return YES;
+	}
+	return NO;
+}
+- (BOOL)isCustomServerSection:(NSIndexPath *)indexPath {
+	if (!autoDiscovery && indexPath.row < [serverArray count] && indexPath.section == 1) {
+		return YES;
+	}
+	return NO;
+}
+- (BOOL)isAddCustomServerRow:(NSIndexPath *)indexPath {
+	if (!autoDiscovery && indexPath.row >= [serverArray count] && indexPath.section == 1) {
+		return YES;
+	}
+	return NO;
+}
 - (void)autoDiscoverChanged:(id)sender {
 	UISwitch *s = (UISwitch *)sender;
 	autoDiscovery = s.on;
 	if (autoDiscovery) {
+		self.navigationItem.leftBarButtonItem = nil;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTableView) name:NotificationAfterFindServer object:nil];
 		autoDiscoverController = [[ServerAutoDiscoveryController alloc]init];
 		[autoDiscoverController findServer];
 	} else {
+		self.navigationItem.leftBarButtonItem = edit;
 		[self updateTableView];
 	}
 		
@@ -217,72 +203,135 @@
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
-	return [self getSectionFooterWithIndex:section];
+	if (section == 1) {
+		return [NSString stringWithFormat:@"version:v%@",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+	}
+	return [AppSettingsDefinition getSectionFooterWithIndex:section];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-	return [self getSectionHeaderWithIndex:section];
+	return [AppSettingsDefinition getSectionHeaderWithIndex:section];
 }
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    static NSString *CellIdentifier = @"Cell";
+    static NSString *autoCellIdentifier = @"autoCell";
+	static NSString *serverCellIdentifier = @"serverCell";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:CellIdentifier] autorelease];
+    UITableViewCell *autoCell = [tableView dequeueReusableCellWithIdentifier:autoCellIdentifier];
+	UITableViewCell *serverCell = [tableView dequeueReusableCellWithIdentifier:serverCellIdentifier];
+	
+    if (autoCell == nil) {
+        autoCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:autoCellIdentifier] autorelease];
     }
-	if (indexPath.section == 0) {
-		cell.text = [[self getAutoDiscoveryDic] objectForKey:@"name"];
+	if (serverCell == nil) {
+		serverCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:serverCellIdentifier] autorelease];
+	}
+	
+	if ([self isAutoDiscoverySection:indexPath]) {
+		autoCell.text = [[AppSettingsDefinition getAutoDiscoveryDic] objectForKey:@"name"];
+		autoCell.selectionStyle = UITableViewCellSelectionStyleNone;
 		UISwitch *switchView = [[UISwitch alloc]init];
-		
+		[switchView setOn:autoDiscovery];
 		[switchView addTarget:self action:@selector(autoDiscoverChanged:) forControlEvents:UIControlEventValueChanged];
-		switchView.on = [[[[[settingData objectAtIndex:indexPath.section] valueForKey:@"items"] objectAtIndex:indexPath.row] valueForKey:@"value"] boolValue];
-		cell.accessoryView = switchView;
-		
-		[switchView setOn:[self isAutoDiscoveryEnable] animated:YES];
-		autoDiscovery = switchView.on;
-
+		autoCell.accessoryView = switchView;
 		[switchView release];
+		return autoCell;
 	} else {
-		if (indexPath.row >= [serverArray count]) {
-			cell.text = @"add another server";
-			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-		}else {
-			cell.text = [[serverArray objectAtIndex:indexPath.row] objectForKey:@"url"];
+		if ([self isAddCustomServerRow:indexPath]) {
+			serverCell.text = @"add another server";
+			serverCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+			serverCell.selectionStyle = UITableViewCellSelectionStyleBlue;
+		}
+		else {
+			serverCell.text = [[serverArray objectAtIndex:indexPath.row] objectForKey:@"url"];
+			serverCell.selectionStyle = UITableViewCellSelectionStyleNone;
 			if ( [[[serverArray objectAtIndex:indexPath.row] objectForKey:@"choose"] boolValue]) {
 				currentSelectedServerIndex = indexPath;
-				cell.accessoryType = UITableViewCellAccessoryCheckmark;
+				serverCell.accessoryType = UITableViewCellAccessoryCheckmark;
+			} else {
+				serverCell.accessoryType = UITableViewCellAccessoryNone;
 			}
 		}
+		return serverCell;
 	}
-    return cell;
+}
+
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
+	if ([self isCustomServerSection:indexPath]) {
+		return UITableViewCellEditingStyleDelete;
+	} 
+	return UITableViewCellEditingStyleNone;
+}
+
+- (void)tableView:(UITableView *)tv commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+	// If row is deleted, remove it from the list.
+	if (editingStyle == UITableViewCellEditingStyleDelete) {
+		if ([tv cellForRowAtIndexPath:indexPath].accessoryType == UITableViewCellAccessoryCheckmark) {
+			currentSelectedServerIndex  = nil;
+		}
+		[[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] removeObjectAtIndex:indexPath.row];
+		[serverArray removeObjectAtIndex:indexPath.row];
+		[self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+	}
 }
 
 
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+	if (autoDiscovery) {
+		return NO;
+	}
+	if ([self isCustomServerSection:indexPath]) {
+		return YES;
+	} 
+	return NO;
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	//if (isEditing) {
+//		if ([self isCustomServerSection:indexPath]) {
+//			AddServerViewController *addServerViewController = [[AddServerViewController alloc]init];
+//			addServerViewController.editingItem = [[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:indexPath.row];
+//			[self.navigationController pushViewController:addServerViewController animated:YES];
+//			[addServerViewController release];
+//			return;
+//		}
+//		return;
+//	} 
+	
+
+	
 	if (indexPath.section == 0) {
 		return;
 	}
 	
-	if (indexPath.row == ([serverArray count] -1)) {
-		
-	}
-	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-	UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:currentSelectedServerIndex];
-	if (cell.accessoryType  == oldCell.accessoryType) {
+	if([self isAddCustomServerRow:indexPath]) {
+		AddServerViewController *addServerViewController = [[AddServerViewController alloc]init];
+		addServerViewController.editingItem = nil;
+		addServerViewController.servers = [self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery];
+		[[self navigationController] pushViewController:addServerViewController animated:YES];
+		[addServerViewController release];
 		return;
 	}
-	if (cell.accessoryType == UITableViewCellAccessoryNone) {
+	
+	
+	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+	if (currentSelectedServerIndex) {
+		UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:currentSelectedServerIndex];
+		if (cell.accessoryType  == oldCell.accessoryType) {
+			return;
+		}
+		if (oldCell.accessoryType == UITableViewCellAccessoryCheckmark) {
+			[[[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:currentSelectedServerIndex.row] setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];		
+			oldCell.accessoryType = UITableViewCellAccessoryNone;
+		} 
+	} 
+		if (cell.accessoryType == UITableViewCellAccessoryNone) {
 			[[[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:indexPath.row] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
 			cell.accessoryType = UITableViewCellAccessoryCheckmark;
-	} 
-	
-	if (oldCell.accessoryType == UITableViewCellAccessoryCheckmark) {
-		[[[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:currentSelectedServerIndex.row] setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];		
-		oldCell.accessoryType = UITableViewCellAccessoryNone;
-	} 
+		} 
+
 	currentSelectedServerIndex = indexPath;
 }
 
@@ -327,28 +376,60 @@
 */
 		
 - (void)saveSettings {
-	[[self getAutoDiscoveryDic] setValue:[NSNumber numberWithBool:autoDiscovery] forKey:@"value"];
-	
-	if ([settingData writeToFile:[DirectoryDefinition appSettingsFilePath] atomically:NO]) {
-		[AppSettingsDefinition checkConfigAndUpdate];
+	[[AppSettingsDefinition getAutoDiscoveryDic] setValue:[NSNumber numberWithBool:autoDiscovery] forKey:@"value"];
+	[AppSettingsDefinition writeToFile];
+	[AppSettingsDefinition checkConfigAndUpdate];
+
+}
+
+- (void)editSettings {
+	isEditing = !isEditing;
+	if (isEditing) {
+		self.navigationItem.leftBarButtonItem.title = @"Done";
+		self.navigationItem.rightBarButtonItem = nil;
+		[[self tableView] setEditing:YES animated:YES];
+	} else {
+		[AppSettingsDefinition writeToFile];
+		self.navigationItem.leftBarButtonItem = edit;
+		self.navigationItem.leftBarButtonItem.title = @"Edit";
+		self.navigationItem.rightBarButtonItem = done;
+		[[self tableView] setEditing:NO animated:YES];
 	}
-	
-	if ([self navigationController]) {
-		[[self navigationController] popViewControllerAnimated:YES];
-	}
-	
+
 	
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated {
+	
+	self.navigationItem.rightBarButtonItem = done;
+	if (!autoDiscovery) {
+		self.navigationItem.leftBarButtonItem = edit;
+	}
+	
+	if (serverArray) {
+		[serverArray release];
+	}
+	serverArray = [[NSMutableArray alloc]init];
+	if (autoDiscovery) {
+		[serverArray addObjectsFromArray:[AppSettingsDefinition getAutoServers]];
+	} else {
+		[serverArray addObjectsFromArray:[AppSettingsDefinition getCustomServers]];
+	}
+	
+	[self.tableView reloadData];
 	
 }
+
+//- (void)viewWillDisappear:(BOOL)animated {
+//	
+//}
 
 
 - (void)dealloc {
-    [super dealloc];
-	[settingData release];
+	[edit release];
+	[done release];
 	[serverArray release];
+	[super dealloc];
 }
 
 

@@ -78,7 +78,10 @@ static NSMutableArray *errors;
 	NSLog(@"remove all auto server ,now auto server count is %d",[self getAutoServers].count);
 }
 + (void)writeToFile {
-	[settingsData writeToFile:[DirectoryDefinition appSettingsFilePath] atomically:NO];
+	if ([settingsData writeToFile:[DirectoryDefinition appSettingsFilePath] atomically:NO]) {	
+		[self reloadData];
+		[self readServerUrlFromFile];
+	}
 }
 
 //Read server url from file, if find it will set currentServerUrl value and return NO else return NO.
@@ -96,7 +99,7 @@ static NSMutableArray *errors;
 			return YES;
 		} else {
 			for (int i=0; i < [self getAutoServers].count; i++) {
-				if ([[[self getAutoServers] objectAtIndex:i] valueForKey:@"choose"]) {
+				if ([[[[self getAutoServers] objectAtIndex:i] valueForKey:@"choose"] boolValue]) {
 					NSString *url =  [[[self getAutoServers] objectAtIndex:i] valueForKey:@"url"];
 					[self setCurrentServerUrl:url];
 					return YES;
@@ -111,7 +114,7 @@ static NSMutableArray *errors;
 			return NO;
 		} else {
 			for (int i=0; i < [self getCustomServers].count; i++) {
-				if ([[[self getCustomServers] objectAtIndex:i] valueForKey:@"choose"]) {
+				if ([[[[self getCustomServers] objectAtIndex:i] valueForKey:@"choose"] boolValue]) {
 					NSString *url =  [[[self getCustomServers] objectAtIndex:i] valueForKey:@"url"];
 					[self setCurrentServerUrl:url];
 					return YES;

@@ -13,6 +13,7 @@
 @interface ScreenView : UIView {
 	Screen *screen;
 	NSMutableArray *controlViews;
+	UILabel *screenNameLabel;
 }
 
 @property(nonatomic,retain) Screen *screen;
