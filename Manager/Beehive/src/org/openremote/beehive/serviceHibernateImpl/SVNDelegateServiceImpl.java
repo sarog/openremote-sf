@@ -290,6 +290,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             DifferenceModel diff = new DifferenceModel(strDiff);
             dr.setLeft(diff.getLeftLines(left));
             dr.setRight(diff.getRightLines(right));
+            ChangeCount changeCount= new ChangeCount(diff.getAddedItemsCount(),diff.getModifiedItemsCount(),diff.getDeletedItemsCount());
+            dr.setChangeCount(changeCount);
 //         }
       } catch (IOException e) {
          logger.error("The IOException!", e);
@@ -613,7 +615,10 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       }
       return headLog;
    }
-
+   
+   /**
+    * {@inheritDoc}
+    */
    public List<String> getFileContent(String path) {
       List<String> lines = new ArrayList<String>();
       try {
@@ -625,6 +630,25 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          e.printStackTrace();
       }
       return lines;
+   }
+   
+   /**
+    * {@inheritDoc}
+    */
+   public LogMessage getLogByRevision(String path, long revision) {
+      LogMessage logMessage = new LogMessage();
+      try {
+         ISVNLogMessage[] logs = svnClient.getLogMessages(new SVNUrl(configuration.getSvnDir()+path), new SVNRevision.Number(revision),new SVNRevision.Number(revision), new SVNRevision.Number(1) , true, false, 1);
+         logMessage.setRevision(logs[0].getRevision().toString());
+         logMessage.setAuthor(logs[0].getAuthor());
+         logMessage.setDate(logs[0].getDate());
+         logMessage.setComment(logs[0].getMessage());
+      } catch (MalformedURLException e) {
+         e.printStackTrace();
+      } catch (SVNClientException e) {
+         e.printStackTrace();
+      }
+      return logMessage;
    }
    
 }
