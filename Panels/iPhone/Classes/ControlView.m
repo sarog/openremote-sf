@@ -13,7 +13,11 @@
 
 @interface ControlView (Private) 
 - (void)createButton;
-- (void)controlButtonDidTaped:(id)sender;
+- (void)controlButtonDown:(id)sender;
+- (void)controlButtonUp:(id)sender;
+- (void)sendRequet;
+- (void)sendBegin;
+- (void)sendEnd;
 @end
 
 @implementation ControlView
@@ -57,7 +61,7 @@
 	[button setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
 	button.titleLabel.shadowOffset = CGSizeMake(0, -2);
 	
-	[button addTarget:self action:@selector(controlButtonDidTaped:) forControlEvents:UIControlEventTouchUpInside];
+	
 	if (control.icon) {
 		UIImage *icon = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:control.icon]];
 		[button setImage:icon forState:UIControlStateNormal];
@@ -65,16 +69,42 @@
 	} else {
 		[button setTitle:control.label forState:UIControlStateNormal];
 	}
+
+	[button addTarget:self action:@selector(controlButtonDown:) forControlEvents:UIControlEventTouchDown];
+	[button addTarget:self action:@selector(controlButtonUp:) forControlEvents:UIControlEventTouchUpInside];
+	[button addTarget:self action:@selector(controlButtonUp:) forControlEvents:UIControlEventTouchUpOutside];	
 	[self addSubview:button];
 	
 }
 
 //Invoked when the button touch up inside
-- (void) controlButtonDidTaped:(id)sender {
-	// DENNIS: You probably want to move this code to a 'Server' model class or something like that! Does not belong in a view class.
+- (void)controlButtonDown:(id)sender {
+	isTouchUp =NO;
+	shouldSendEnd = NO;
+	buttonTimer = [NSTimer scheduledTimerWithTimeInterval:0.4 target:self selector:@selector(checkClick) userInfo:nil repeats:NO];
+}
 
+- (void)checkClick{
+	[buttonTimer invalidate];
+	if (isTouchUp) {
+		[self	sendRequet];
+	} else {
+		[self sendBegin];
+		shouldSendEnd = YES;
+	}
+}
+
+- (void) controlButtonUp:(id)sender {
+	isTouchUp = YES;
+	if (shouldSendEnd) {
+		[self sendEnd];
+	}
+}
+
+- (void)sendRequet {
+	NSLog(@"Send request");
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition eventHandleRESTUrl]];
-	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"?id=%d",control.eventID]];
+	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/click",control.eventID]];
 	//assemble put request 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
 	[request setURL:url];
@@ -85,9 +115,44 @@
 	[location release];
 	[url	 release];
 	[request release];
-	[connection release];
+	[connection release];	
+}
+
+- (void)sendBegin {
+	NSLog(@"Send Begin.");
+	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition eventHandleRESTUrl]];
+	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/press",control.eventID]];
+	//assemble put request 
+	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+	[request setURL:url];
+	[request setHTTPMethod:@"POST"];
+	
+	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
+	
+	[location release];
+	[url	 release];
+	[request release];
+	[connection release];	
 	
 }
+- (void)sendEnd {
+	NSLog(@"Send End.");
+	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition eventHandleRESTUrl]];
+	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/release",control.eventID]];
+	//assemble put request 
+	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+	[request setURL:url];
+	[request setHTTPMethod:@"POST"];
+	
+	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
+	
+	[location release];
+	[url	 release];
+	[request release];
+	[connection release];	
+	
+}
+
 
 #pragma mark delegate method of NSURLConnection
 //Shows alertView when url connection failtrue

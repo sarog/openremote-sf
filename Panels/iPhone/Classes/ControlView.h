@@ -14,6 +14,9 @@
 
 	Control *control;
 	UIButton *button;
+	NSTimer *buttonTimer;
+	BOOL isTouchUp;
+	BOOL shouldSendEnd;
 }
 
 @property (nonatomic,retain) Control *control;
