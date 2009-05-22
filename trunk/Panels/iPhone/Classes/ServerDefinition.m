@@ -26,7 +26,7 @@
 }
 
 + (NSString *)eventHandleRESTUrl {
-	return [[self serverUrl] stringByAppendingPathComponent:@"cmd.htm"];
+	return [[self serverUrl] stringByAppendingPathComponent:@"rest/button"];
 }
 
 
