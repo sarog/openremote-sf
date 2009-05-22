@@ -53,9 +53,9 @@
 	buttonImage = [[UIImage imageNamed:@"buttonHighlighted.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
 	[button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
 	
-	[button setFont:[UIFont boldSystemFontOfSize:18]];
+	[button.titleLabel setFont:[UIFont boldSystemFontOfSize:18]];
 	[button setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
-	[button setTitleShadowOffset:CGSizeMake(0, -2)];
+	button.titleLabel.shadowOffset = CGSizeMake(0, -2);
 	
 	[button addTarget:self action:@selector(controlButtonDidTaped:) forControlEvents:UIControlEventTouchUpInside];
 	if (control.icon) {

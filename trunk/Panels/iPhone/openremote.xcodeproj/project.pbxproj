@@ -200,9 +200,6 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				8CA75EC40F579B4C00ADF0C0 /* QuartzCore.framework */,
-				8C7BE4F50FA0471F00F18AA1 /* SystemConfiguration.framework */,
-				8CF6A2B00FBD784C006ED733 /* CFNetwork.framework */,
 				8C6528470FC0F64F002632BF /* InitViewController.xib */,
 			);
 			name = CustomTemplate;
@@ -244,6 +241,9 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8CA75EC40F579B4C00ADF0C0 /* QuartzCore.framework */,
+				8C7BE4F50FA0471F00F18AA1 /* SystemConfiguration.framework */,
+				8CF6A2B00FBD784C006ED733 /* CFNetwork.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				288765FC0DF74451002DB57D /* CoreGraphics.framework */,
