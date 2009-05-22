@@ -207,9 +207,8 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
     */
    public void merge(FileInputStream fis, Model model){
       List<RemoteSection> remoteSectionList = LircConfFile.getRemoteSectionList(fis);
-      for (RemoteSection remoteSection : model.getRemoteSections()) {
-         genericDAO.delete(remoteSection);
-      }
+      genericDAO.deleteAll(model.getRemoteSections());
+      model.setRemoteSections(null);
       if (remoteSectionList.size() > 0) {
          String comment = remoteSectionList.get(0).getModel().getComment();
          model.setComment(comment);
@@ -217,8 +216,8 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
       }
       for (RemoteSection remoteSection : remoteSectionList) {
          remoteSection.setModel(model);
-         genericDAO.save(remoteSection);
       }
+      genericDAO.batchInsert(remoteSectionList);
    }
 
    /**
@@ -309,7 +308,8 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
     */
    public void update(String[] paths, String message, String username) throws SVNException {
       List<UpdatedFile> updatedFiles = svnDelegateService.commit(paths, message, username);
-      for (UpdatedFile updatedFile : updatedFiles) {
+      for (int i = 0; i < updatedFiles.size(); i++) {
+         UpdatedFile updatedFile = updatedFiles.get(i);
          String[] arr = FileUtil.splitPath(updatedFile.getFile());
          if (updatedFile.getStatus() == Actions.MODIFY) {
             String modelName = arr[arr.length - 1];
@@ -319,12 +319,14 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
             if (updatedFile.getFile().isFile() && !FileUtil.isIgnored(updatedFile.getFile())) {
                String vendorName = arr[arr.length - 2];
                String modelName = arr[arr.length - 1];
+               System.out.println(updatedFile.getFile().getAbsolutePath());
                Model model = genericDAO.getByNonIdField(Model.class, "fileName", modelName);
                if(model != null){
-                  merge(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()),model);
-               }else{
-                  add(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()), vendorName, modelName);                                 
+//                  merge(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()),model);
+                  genericDAO.delete(model);
                }
+                  add(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()), vendorName, modelName);                                 
+               
             } else {
                String vendorName = arr[arr.length - 1];
                Vendor tempVendor = genericDAO.getByNonIdField(Vendor.class, "name", vendorName);
@@ -341,6 +343,10 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
             } else {
                deleteByName(name);
             }
+         }
+         if(i%200 == 0){
+            genericDAO.flush();
+            System.out.println("when i="+i+", the genericDAO flush");
          }
       }
    }

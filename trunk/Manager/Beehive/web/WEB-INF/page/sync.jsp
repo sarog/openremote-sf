@@ -7,10 +7,15 @@
    <title>OpenRemote Beehive - Changes From Update</title>
    <script type="text/javascript">
    var timer = 0;
-   $(document).ready(function() {
+   $(document).ready(function() {	   
+	   if($('#commitStatus').val() == "true"){
+           $('#progressInfoSpan').text(" The committing is running, please update later.");
+           $("#updateBtn").attr("disabled","true").addClass("disabled_button");
+     }
 	   if($('#updateStatus').val() == "true"){
 		   setAnimation();
 		   refresh();
+		   $('#progressInfoSpan').text("Downloading from http://lirc.sourceforge.net/remotes ......");
 		   timer=setInterval("refresh()",5000);
 	   }
 	   $('#updateBtn').click(function(){
@@ -60,7 +65,8 @@
 </script>
 </head>
 	<body tabId="2">
-	<input type="hidden" name="updateStatus" id="updateStatus" value="${isUpdating}"/>
+	<input type="hidden" name="updateStatus" id="updateStatus" value="${sessionScope.isUpdating}"/>
+   <input type="hidden" name="commitStatus" id="commitStatus" value="${sessionScope.isCommitting}"/>
 	<table class="infopanel" width="100%" border="0" cellpadding="0"
 		cellspacing="0">	
 			<tr>

@@ -29,146 +29,146 @@ import org.openremote.beehive.repo.LIRCEntry;
 import org.openremote.beehive.repo.LogMessage;
 import org.openremote.beehive.repo.UpdatedFile;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author Tomsky
+ * The Interface SVNDelegateService.
  * 
+ * @author Tomsky
  */
 public interface SVNDelegateService {
 
    /**
-    * @param paths
-    *           the array is a set of relative path with workCopy,and begin with a fileSeparator
-    * @param message
-    * @param username
+    * Commit.
+    * 
+    * @param paths the array is a set of relative path with workCopy,and begin with a fileSeparator
+    * @param message the message
+    * @param username the username
+    * 
     * @return List<UpdatedFile>
-    * @throws SVNException 
+    * 
+    * @throws SVNException the SVN exception
     */
    List<UpdatedFile> commit(String[] paths, String message, String username) throws SVNException;
 
    /**
-    * This method is show a file's difference between head revision with workCopy
+    * This method is show a file's difference between head revision with workCopy.
     * 
-    * @param path
-    *           which is a relative path with workCopy, and begin with a fileSeparator
+    * @param pth the pth
+    * 
     * @return DiffResult
-    * 
     */
    DiffResult diff(String pth);
 
    /**
-    * This method is show a file's difference between previous revision with specify revision
+    * This method is show a file's difference between previous revision with specify revision.
     * 
-    * @param url
-    * @param revision
-    * @param action
+    * @param url the url
+    * @param revision the revision
+    * @param action the action
+    * 
     * @return DiffResult
-    * 
     */
-   DiffResult diff(String url, int revision, Character action);
+   DiffResult diff(String url, long oldRevision, long newRevision);
 
    /**
-    * Get the specify url's logs, which contain all history
+    * Get the specify url's logs, which contain all history.
     * 
-    * @param url
-    *           which is a relative url with svnDirectory, and begin with a fileSeparator
+    * @param url which is a relative url with svnDirectory, and begin with a fileSeparator
+    * 
     * @return List<LogMessage>
-    * 
     */
    List<LogMessage> getLogs(String url);
 
    /**
-    * Exports a clean directory tree from the repository specified by srcUrl, at revision revision
+    * Exports a clean directory tree from the repository specified by srcUrl, at revision revision.
     * 
-    * @param srcUrl
-    *           which is a relative url with svnDirectory, and begin with a fileSeparator
-    * @param destPath
-    *           which is a absolute path
-    * @param revision
-    * @param force
-    * 
+    * @param srcUrl which is a relative url with svnDirectory, and begin with a fileSeparator
+    * @param destPath which is a absolute path
+    * @param revision the revision
+    * @param force the force
     */
    void doExport(String srcUrl, String destPath, int revision, boolean force);
 
    /**
-    * This method is getting a layer of dirEntry with the head revision
+    * This method is getting a layer of dirEntry with the head revision.
     * 
-    * @param url
-    *           which is a relative url with svnDirectory, and begin with a fileSeparator
-    * @param revision
+    * @param url which is a relative url with svnDirectory, and begin with a fileSeparator
+    * @param revision the revision
+    * 
     * @return List<LIRCEntry>
-    * 
     */
-   List<LIRCEntry> getList(String url, int revision);
+   List<LIRCEntry> getList(String url, long revision);
 
    /**
-    * revert a file or a directory to head revision
+    * revert a file or a directory to head revision.
     * 
-    * @param path
-    *           which is an relative path of workCopy,and is head with a fileSeparator
-    * @param recurse
-    * 
+    * @param path which is an relative path of workCopy,and is head with a fileSeparator
+    * @param recurse the recurse
     */
    void revert(String path, boolean recurse);
 
    /**
     * this method is for rollback a file or a directory from the head revision to a previous revision, but not
-    * immediately commit
+    * immediately commit.
     * 
-    * @param path
-    *           which is an relative path of workCopy,and is head with a fileSeparator
-    * @param revision
-    * 
+    * @param path which is an relative path of workCopy,and is head with a fileSeparator
+    * @param revision the revision
     */
    void rollback(String path, int revision);
 
    /**
-    * sync the workCopy configuration files with scrapDirectory
+    * sync the workCopy configuration files with scrapDirectory.
     * 
-    * @param srcPath
-    *           scrapDirectory, is an absolute path
-    * @param destPath
-    *           workCopyDirectory, is an absolute path
-    * 
+    * @param srcPath scrapDirectory, is an absolute path
+    * @param destPath workCopyDirectory, is an absolute path
     */
    void copyFromScrapToWC(String srcPath, String destPath);
 
    /**
-    * @param srcPath
-    * @param destPath
+    * Copy from upload to wc.
     * 
-    * 
+    * @param srcPath the src path
+    * @param destPath the dest path
     */
    void copyFromUploadToWC(String srcPath, String destPath);
 
    /**
-    * delete a file from repository
+    * delete a file from repository.
     * 
-    * @param filePath
-    *           which is an relative path of workCopy,which is head with a fileSeparator
-    * @param username
-    * 
+    * @param filePath which is an relative path of workCopy,which is head with a fileSeparator
+    * @param username the username
     */
    void deleteFileFromRepo(String filePath, String username);
 
    /**
-    * 
-    * cancel the currency operation
+    * cancel the currency operation.
     */
    void cancelOperation();
 
    /**
-    * Gets the differences of specify path's status which workCopy compare with the head revision
+    * Gets the differences of specify path's status which workCopy compare with the head revision.
     * 
-    * @param path
-    *           which is an relative path of workCopy,and is head with a fileSeparator
+    * @param path which is an relative path of workCopy,and is head with a fileSeparator
+    * 
     * @return DiffStatus
-    * 
     */
    DiffStatus getDiffStatus(String path);
    
    /**
-    * Judge the SVN repo whether blank
+    * Judge the SVN repo whether blank.
+    * 
+    * @return true, if checks if is blank svn
     */
    boolean isBlankSVN();
    
+   /**
+    * Gets the head revision.
+    * 
+    * @return the head revision
+    */
+   long getHeadRevision();
+   
+   LogMessage getHeadLog(String path);
+   
+   List<String> getFileContent(String path);
 }

@@ -9,6 +9,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Beehive Database</title>
+    <link href="image/OpenRemote_Logo16x16.png" rel="shortcut icon"/>
+    <link href="image/OpenRemote_Logo16x16.png" type="image/png" rel="icon"/>
     <link type="text/css" href="css/openremote_base.css" rel="stylesheet"/>
     <link type="text/css" href="css/beehiveDatabase.css" rel="stylesheet"/>
     <script type="text/javascript" src="jslib/jquery-1.3.1.min.js"></script>

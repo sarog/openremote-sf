@@ -32,6 +32,7 @@
 
 
     <bean id="genericDAO" class="org.openremote.beehive.serviceHibernateImpl.GenericDAO"></bean>
+    <bean id="lircSynchronizer" class="org.openremote.beehive.file.LircSynchronizer"></bean>
     
 	<bean id="configuration" class="org.openremote.beehive.Configuration">
 		<property name="downloadDir" value="${download.fileLocation}" />

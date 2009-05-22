@@ -76,5 +76,8 @@
    <bean id="lircHistoryController" class="org.openremote.beehive.controller.LIRCHistoryController">
       <property name="indexView" value="vendor_list"/>
       <property name="modelView" value="model_list"/>
+      <property name="revisionView" value="revision_list"/>
+      <property name="contentView" value="fileContent"/>
+      <property name="fileCompareView" value="oldFileChange"/>
    </bean>
 </beans>

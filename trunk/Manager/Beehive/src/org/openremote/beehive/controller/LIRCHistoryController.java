@@ -20,14 +20,19 @@
  */
 package org.openremote.beehive.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.openremote.beehive.api.service.SVNDelegateService;
+import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.LIRCEntry;
 import org.openremote.beehive.repo.LogMessage;
+import org.openremote.beehive.repo.DiffResult.Line;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -40,6 +45,9 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 public class LIRCHistoryController extends MultiActionController {
    private String indexView;
    private String modelView;
+   private String revisionView;
+   private String contentView;
+   private String fileCompareView;
    
    private SVNDelegateService svnDelegateService;
    
@@ -48,6 +56,15 @@ public class LIRCHistoryController extends MultiActionController {
    }
    public void setModelView(String modelView) {
       this.modelView = modelView;
+   }
+   public void setRevisionView(String revisionView) {
+      this.revisionView = revisionView;
+   }
+   public void setContentView(String contentView) {
+      this.contentView = contentView;
+   }   
+   public void setFileCompareView(String fileCompareView) {
+      this.fileCompareView = fileCompareView;
    }
    public void setSvnDelegateService(SVNDelegateService svnDelegateService) {
       this.svnDelegateService = svnDelegateService;
@@ -64,10 +81,10 @@ public class LIRCHistoryController extends MultiActionController {
    public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
       ModelAndView mav = new ModelAndView(indexView);
       String path = "";
-      List<LogMessage> lms = svnDelegateService.getLogs(path);
-      mav.addObject("headMessage", lms.get(lms.size() - 1));
+      LogMessage headMessage = svnDelegateService.getHeadLog(path);
+      mav.addObject("headMessage", headMessage);
       
-      List<LIRCEntry> vendorEntries = svnDelegateService.getList(path, new Integer(lms.get(lms.size() - 1).getRevision()));
+      List<LIRCEntry> vendorEntries = svnDelegateService.getList(path, Long.valueOf(headMessage.getRevision()));
       mav.addObject("vendorEntries", vendorEntries);
       return mav;
    }
@@ -85,12 +102,68 @@ public class LIRCHistoryController extends MultiActionController {
    public ModelAndView getModels(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException{
       ModelAndView mav = new ModelAndView(modelView);
       String path = "/"+ServletRequestUtils.getRequiredStringParameter(request, "path");
-      request.setAttribute("path",path);
-      List<LogMessage> lms = svnDelegateService.getLogs(path);
-      mav.addObject("vendorMessage", lms.get(lms.size() - 1));
+      mav.addObject("breadcrumbPath", path);
+      LogMessage vendorMessage = svnDelegateService.getHeadLog(path);
+      mav.addObject("vendorMessage", vendorMessage);
       
-      List<LIRCEntry> modelEntries = svnDelegateService.getList(path, new Integer(lms.get(lms.size() - 1).getRevision()));
+      List<LIRCEntry> modelEntries = svnDelegateService.getList(path, Long.valueOf(vendorMessage.getRevision()));
       mav.addObject("modelEntries", modelEntries);
+      return mav;
+   }
+   
+   /**
+    * Gets the revisions.
+    * 
+    * @param request the request
+    * @param response the response
+    * 
+    * @return the revisions
+    * 
+    * @throws ServletRequestBindingException the servlet request binding exception
+    */
+   public ModelAndView getRevisions(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException{
+      ModelAndView mav = new ModelAndView(revisionView);
+      mav.addObject("headRevision", svnDelegateService.getHeadRevision());
+      String path = "/" + ServletRequestUtils.getRequiredStringParameter(request, "path");
+      List<LogMessage> lms = svnDelegateService.getLogs(path);
+      mav.addObject("logMessages", lms);
+      mav.addObject("breadcrumbPath", path);
+      return mav;
+   }
+   
+   /**
+    * Gets the content.
+    * 
+    * @param request the request
+    * @param response the response
+    * 
+    * @return the content
+    * 
+    * @throws ServletRequestBindingException the servlet request binding exception
+    * @throws IOException Signals that an I/O exception has occurred.
+    */
+   public ModelAndView getContent(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, IOException{
+      ModelAndView mav = new ModelAndView(contentView);
+      String path = ServletRequestUtils.getRequiredStringParameter(request, "path");
+      LogMessage modelMessage = svnDelegateService.getHeadLog(path);
+      mav.addObject("modelMessage", modelMessage);
+      mav.addObject("breadcrumbPath", path);
+      mav.addObject("lines", svnDelegateService.getFileContent(path));
+
+      return mav;
+   }
+   
+   public ModelAndView compare(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException{
+      ModelAndView mav = new ModelAndView(fileCompareView);
+      String path = ServletRequestUtils.getRequiredStringParameter(request, "path");
+      long oldRevision = ServletRequestUtils.getRequiredLongParameter(request, "rev1");
+      long newRevision = ServletRequestUtils.getRequiredLongParameter(request, "rev2");
+      DiffResult dr = svnDelegateService.diff(path,oldRevision,newRevision);
+      List<Line> leftLines = dr.getLeft();
+      List<Line> rightLines = dr.getRight();     
+      mav.addObject("leftLines", leftLines);
+      mav.addObject("rightLines", rightLines);
+      mav.addObject("changeCount", dr.getChangeCount());
       return mav;
    }
 }

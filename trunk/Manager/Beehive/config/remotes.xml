@@ -56,6 +56,8 @@
 
 					<script><![CDATA[
                               tcurrentUrl = sys.fullUrl(currentUrl, tcurname);
+                              String tcurnameStr = tcurname.toString();
+                              isImage = tcurnameStr.substring(tcurnameStr.lastIndexOf(".") + 1).toLowerCase().matches("gif|png|jpg|bmp");
                           ]]></script>
 
 					<case>
@@ -66,18 +68,22 @@
 								</xpath>
 							</var-def>
 							<script><![CDATA[                                           
-                        String tnewname = tcurname.toString() + "." + curtime.toString().replace(":","-");
+                        String tnewname = tcurnameStr + "." + curtime.toString().replace(":","-");
                         String path = tcurrentUrl+sys.cr+sys.lf+"["+sys.datetime("yyyy-MM-dd HH:mm:ss")+"]";
                           ]]></script>
-							<file action="write" path="${curname}${tnewname}" type="binary"
-								charset="UTF-8">
-								<http url="${tcurrentUrl}" />
-							</file>
-							<file action="append" path="progress.txt">
-								<template>
-                           <![CDATA[${path}]]>
-								</template>
-							</file>
+                     <case>
+                     <if condition="${!isImage}">     
+								<file action="write" path="${curname}${tnewname}" type="binary"
+									charset="UTF-8">
+									<http url="${tcurrentUrl}" />
+								</file>
+								<file action="append" path="progress.txt">
+									<template>
+	                           <![CDATA[${path}]]>
+									</template>
+								</file>
+							</if>
+							</case>
 						</if>
 						<else>
 							<var-def name="ssubnodes">
@@ -104,18 +110,24 @@
 									</var-def>
 									<script><![CDATA[
                               scurrentUrl = sys.fullUrl(tcurrentUrl,scurname);
-                              String snewname = scurname.toString() + "." + scurtime.toString().replace(":","-");
+                              String scurnameStr = scurname.toString();
+                              isSubImage = scurnameStr.substring(scurnameStr.lastIndexOf(".") + 1).toLowerCase().matches("gif|png|jpg|bmp");
+                              String snewname = scurnameStr + "." + scurtime.toString().replace(":","-");
                               String path = scurrentUrl+sys.cr+sys.lf+"["+sys.datetime("yyyy-MM-dd HH:mm:ss")+"]";
                                 ]]></script>
-									<file action="write" path="${curname}${tcurname}${snewname}"
-										type="binary" charset="UTF-8">
-										<http url="${scurrentUrl}" />
-									</file>
-									<file action="append" path="progress.txt">
-										<template>
-                                  <![CDATA[${path}]]>
-										</template>
-									</file>
+                           <case>
+                              <if condition="${!isSubImage}">
+											<file action="write" path="${curname}${tcurname}${snewname}"
+												type="binary" charset="UTF-8">
+												<http url="${scurrentUrl}" />
+											</file>
+											<file action="append" path="progress.txt">
+												<template>
+		                                  <![CDATA[${path}]]>
+												</template>
+											</file>
+										</if>
+									</case>
 								</body>
 							</loop>
 						</else>
