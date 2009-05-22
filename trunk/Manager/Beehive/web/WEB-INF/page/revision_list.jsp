@@ -6,8 +6,41 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF8">
 <title>OpenRemote Beehive - Revision List</title>
+<script type="text/javascript">
+	$(document).ready(function() {
+		  	var paths = $("#filePath").val().split("/");
+		  	if(paths.length < 3){
+		  		$("#compareLink").css("display","none");
+		  	}
+	});
+   function compareFiles(){
+	   var rev1 = 0;
+	   var rev2 = 0;
+	   $('input[name="items"][checked="true"]').each(function(i){
+		   if(i==0){
+	        rev1 = $(this).val();
+		   }
+		   if(i==1){
+			   rev2 = $(this).val();
+		   }
+		   if(i==2){
+			   alert("Please compare two versions!");
+			   return;
+		   }
+	    });
+	    if(rev1 == 0){
+		    alert("Please select two versions to compare!");
+		    return;
+	    }
+	    if(rev1!=0 && rev2!=0){
+		   var filePath = $("#filePath").val();
+		   location.href="history.htm?method=compare&path="+filePath+"&rev1="+rev1+"&rev2="+rev2;
+	    }
+   }
+</script>
 </head>
 <body tabId="3">
+   <input id="filePath" type="hidden" value="${breadcrumbPath}"/>
 	<table class="infopanel" width="100%" border="0" cellpadding="0"
 		cellspacing="0">
 			<tr>
@@ -39,8 +72,8 @@
 				 <td>
 				 <table class="tabcontent" border="0" cellpadding="0" cellspacing="0">
 						<tr>
-							<td style="padding-right: 7px;" align="center"><a
-								href="history.htm?method=compare&path=${breadcrumbPath}&rev1=152&rev2=160"> <img src="image/diff.gif"
+							<td style="padding-right: 7px;" align="center"><a id="compareLink"
+								href="javascript:compareFiles()"> <img src="image/diff.gif"
 								alt="Diff" title="Diff"
 								style="margin: 0pt; padding: 0pt; cursor: pointer;" border="0">
 							</a></td>

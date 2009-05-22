@@ -63,8 +63,8 @@ public interface SVNDelegateService {
     * This method is show a file's difference between previous revision with specify revision.
     * 
     * @param url the url
-    * @param revision the revision
-    * @param action the action
+    * @param oldRevision the old revision
+    * @param newRevision the new revision
     * 
     * @return DiffResult
     */
@@ -168,7 +168,31 @@ public interface SVNDelegateService {
     */
    long getHeadRevision();
    
+   /**
+    * Gets the head log.
+    * 
+    * @param path the path
+    * 
+    * @return the head log
+    */
    LogMessage getHeadLog(String path);
    
+   /**
+    * Gets the file content.
+    * 
+    * @param path the path
+    * 
+    * @return the file content
+    */
    List<String> getFileContent(String path);
+   
+   /**
+    * Gets the log by revision.
+    * 
+    * @param path the path
+    * @param revision the revision
+    * 
+    * @return the log by revision
+    */
+   LogMessage getLogByRevision(String path, long revision);
 }

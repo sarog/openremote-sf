@@ -6,7 +6,7 @@
    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
    <link href="css/default.css" type="text/css" rel="stylesheet" media="screen">
    <script type="text/javascript" src="jslib/jquery-1.3.1.min.js"></script>
-   <title>OpenRemote Beehive - File Comparison With Latest Revision</title>
+   <title>OpenRemote Beehive - File Revision Comparison</title>
    <script>
       var left_div = null;
       var right_div = null;
@@ -142,10 +142,15 @@
                   cellspacing="0">
                   <tr class="value" nowrap="true">
                      <td class="value" nowrap="true"><b>Revision:</b>&nbsp; <a
-                        href="#"> ${repoMessage.revision}[HEAD] </a></td>                     
+                        href="#"> ${oldLogeMessage.revision} </a></td>
                      <td class="value" style="padding-left: 20px; padding-right: 20px;"
-                        nowrap="true"><b>Author:</b>&nbsp; ${repoMessage.author }</td>
+                        nowrap="true"><b>Age:</b>&nbsp; ${oldLogeMessage.age }</td>                   
+                     <td class="value" style="padding-left: 20px; padding-right: 20px;"
+                        nowrap="true"><b>Author:</b>&nbsp; ${oldLogeMessage.author }</td>
                      <td width="100%"></td>
+                  </tr>
+                  <tr class="value" nowrap="true">
+                     <td class="value" nowrap="true"><b>Comment:</b>&nbsp; ${oldLogeMessage.comment}</td>
                   </tr>
                </table>
                </td>
@@ -154,16 +159,19 @@
                <table class="tabcontent" width="100%" border="0" cellpadding="0"
                   cellspacing="0">
                   <tr class="value" nowrap="true">
-                     <td class="value" nowrap="true"><b>LIRC WebSite:</b>&nbsp;</td>
-   
+                     <td class="value" nowrap="true"><b>Revision:</b>&nbsp; <a
+                        href="#"> ${newLogeMessage.revision} </a></td>
+                     <td class="value" style="padding-left: 20px; padding-right: 20px;"
+                        nowrap="true"><b>Age:</b>&nbsp; ${newLogeMessage.age }</td>                   
+                     <td class="value" style="padding-left: 20px; padding-right: 20px;"
+                        nowrap="true"><b>Author:</b>&nbsp; ${newLogeMessage.author }</td>
+                     <td width="100%"></td>
+                  </tr>
+                  <tr class="value" nowrap="true">
+                     <td class="value" nowrap="true"><b>Comment:</b>&nbsp; ${newLogeMessage.comment}</td>
                   </tr>
                </table>
                </td>
-            </tr>
-            <tr>
-               <td class="message" style="padding-left: 25px;" width="50%"><b>Comment:</b>&nbsp;
-               ${repoMessage.comment }</td>
-               <td class="message" style="padding-left: 25px;" width="50%">&nbsp;</td>
             </tr>
          </table>
          </td>

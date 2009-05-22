@@ -124,7 +124,10 @@ public class LIRCHistoryController extends MultiActionController {
    public ModelAndView getRevisions(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException{
       ModelAndView mav = new ModelAndView(revisionView);
       mav.addObject("headRevision", svnDelegateService.getHeadRevision());
-      String path = "/" + ServletRequestUtils.getRequiredStringParameter(request, "path");
+      String path = ServletRequestUtils.getRequiredStringParameter(request, "path");
+      if(!path.startsWith("/")){
+         path = "/" + path;
+      }
       List<LogMessage> lms = svnDelegateService.getLogs(path);
       mav.addObject("logMessages", lms);
       mav.addObject("breadcrumbPath", path);
@@ -156,8 +159,13 @@ public class LIRCHistoryController extends MultiActionController {
    public ModelAndView compare(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException{
       ModelAndView mav = new ModelAndView(fileCompareView);
       String path = ServletRequestUtils.getRequiredStringParameter(request, "path");
+      mav.addObject("breadcrumbPath", path);
       long oldRevision = ServletRequestUtils.getRequiredLongParameter(request, "rev1");
       long newRevision = ServletRequestUtils.getRequiredLongParameter(request, "rev2");
+      LogMessage oldLogMessage = svnDelegateService.getLogByRevision(path, oldRevision);
+      LogMessage newLogMessage = svnDelegateService.getLogByRevision(path, newRevision);
+      mav.addObject("oldLogeMessage", oldLogMessage);
+      mav.addObject("newLogeMessage", newLogMessage);
       DiffResult dr = svnDelegateService.diff(path,oldRevision,newRevision);
       List<Line> leftLines = dr.getLeft();
       List<Line> rightLines = dr.getRight();     
