@@ -5,7 +5,11 @@
 <% var btn = openremote.buttons.button[index];%>
     <button id="<%= btn.id%>">
 	<% for (var index in btn.event) { %>
-		<event><%= btn.event[index] %></event>
+		<% if (btn.event[index].delay !== undefined) {%>
+			<event delay="<%= btn.event[index].delay %>"><%= btn.event[index].id %></event>
+		<% } else { %>
+		<event><%= btn.event[index].id %></event>
+		<% } %>
 	<% } %>
     </button>
 <% } %>

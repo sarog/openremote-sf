@@ -133,6 +133,14 @@ jQuery.fn.updateTips = function(element, message) {
     this.find("#validateTips").text("").text(message).effect("highlight", 3000);
 };
 
+jQuery.fn.clearTips = function() {
+	if (this.find("#validateTips").length != 0) {
+		this.find("#validateTips").remove();
+		var h = parseInt(this.height());
+	    h = h - 38;
+	    this.height(h);	
+	}
+};
 
 /**
  * Add hover style
@@ -196,12 +204,19 @@ jQuery.isCoordinateInArea = function(top, left, container) {
  * @param {Object} options.model (optional) model need to inpect, default is $(this).data("model").
  * @param {String} options.template  (optional) inspect window template,default is $(this).data("model").inspectViewTemplate.
  * @param {Function} options.before (optional) do some thing before inspect window has showed, like some css stuff.
+ * @param {Function} options.after (optional) do some thing after inspect window has showed, like some css stuff.
+ * @param {Function} options.check (optional) before commit, we will call this method to check data validation. Must return true|false.
+ * @param {Function} options.canShow (optional) whether to show inspect window. Must return true|false.
  * @param {Function} options.left (optional) fix left. 
  * @param {Function} options.top (optional) fix top. 
  */
 jQuery.fn.inspectable = function(options) {
+	
 	if (options === undefined) {
 		options = {};
+	}
+	if (options.canShow !== undefined && !options.canShow()) {
+		return;
 	}
     if (options.model === undefined) {
         options.model = $(this).data("model");
@@ -210,10 +225,13 @@ jQuery.fn.inspectable = function(options) {
         options.template = options.model.inspectViewTemplate;
     }
 
+	var element = this;
+
 
     $(this).unbind().click(function(e) {
+		
         if (options.before !== undefined) {
-            options.before();
+            options.before.call(element);
         } else {
             $(".highlightInspected").removeClass("highlightInspected");
             $(this).addClass("highlightInspected");
@@ -221,6 +239,9 @@ jQuery.fn.inspectable = function(options) {
 		options.x = options.left || e.clientX+document.body.scrollLeft;
 		options.y = options.top || e.clientY+document.body.scrollTop;
         InspectViewController.updateView(options);
+		if (options.after !== undefined) {
+			options.after.call(element);
+		}
     });
 };
 

@@ -57,5 +57,10 @@ var MacroView = function() {
 			self.getElement().remove();
 		};
     }
+	
+	MacroView.getContainer = function(macro) {
+		return $("#" + macro.getElementId()).find(".macro_detail");
+	};
+	
     return MacroView;
 } ();

@@ -149,18 +149,9 @@ var ImportController = function() {
             macroArray[model.id] = model;
             for (var index in btn.buttons) {
                 var sub = btn.buttons[index];
-                var subModel;
-                if (macroArray[sub.id] === undefined) {
-                    subModel = ImportController.buildModel(sub);
-                } else {
-                    subModel = macroArray[sub.id];
-                }
-
-                MacroController.createMacroSubli(subModel, $("#" + model.getElementId()).find("ul"));
-
-                if (subModel.className == "Infrared") {
-                    global.InfraredCollection[subModel.codeId] = subModel;
-                }
+				var macroSub = ImportController.buildModel(sub);
+				macroSub.oModel = ImportController.buildModel(macroSub.oModel);
+                MacroController.createMacroSubli(macroSub);
             }
         }
     }

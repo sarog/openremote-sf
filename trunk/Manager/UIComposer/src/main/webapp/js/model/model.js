@@ -19,7 +19,7 @@ var Model = function() {
         self.updateModel = function() {
             for (var index in _updateListeners) {
 				if (_updateListeners[index].updateView !== undefined) {
-					_updateListeners[index].updateView();
+					_updateListeners[index].updateView(self);
 				}
             }
         };
@@ -27,7 +27,7 @@ var Model = function() {
         self.deleteModel = function() {
             for (var index in _deleteListeners) {
                 if (_deleteListeners[index].deleteView !== undefined) {
-					_deleteListeners[index].deleteView();
+					_deleteListeners[index].deleteView(self);
 				}
             }
         };

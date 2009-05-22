@@ -134,13 +134,18 @@ var DownloadController = function() {
             if (iphoneBtn.oModel.className == "Macro") {
                 var models = iphoneBtn.oModel.getSubModelsRecursively();
                 for (var index in models) {
-                    event.push(models[index].id);
+					var e = {};
+					e.id = models[index].id;
+					if (models[index].delay != 0) {
+						e.delay = models[index].delay;
+					}
+                    event.push(e);
 					if (models[index].className == "Infrared") {
 						global.InfraredCollection[models[index].codeId] = models[index];
 					}
                 }
             } else {
-                event.push(iphoneBtn.oModel.id);
+                event.push({id:iphoneBtn.oModel.id});
             }
             b.event = event;
             buttons.push(b);

@@ -12,11 +12,12 @@ InspectViewController = function() {
 		 * @param {Function} options.after  (optional) call after render inspect window
 		 */
 		updateView : function(options) {
+
 			InspectView.updateView(options);
-			
+			$("#inspect_body").clearTips();
 			
 	        if (options.after !== undefined) {
-	             options.after.call(this);
+	             options.after.call(InspectView.getElement());
 	        }
 			
 			
@@ -28,8 +29,13 @@ InspectViewController = function() {
 				InspectView.hideView();
 			});
 			$("#inspect_ok_btn").unbind().click(function() {
-				InspectView.getModel().updateModel();
-				InspectView.hideView();
+				if (options.check!== undefined && !options.check()) {
+					return;
+				} else {
+					InspectView.getModel().updateModel();
+					InspectView.hideView();
+				}
+				
 			});
 			$("#inspect_delete_btn").unbind().click(function() {
 				var model = InspectView.getModel();
