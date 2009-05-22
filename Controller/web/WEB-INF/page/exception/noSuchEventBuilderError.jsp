@@ -1,1 +1,1 @@
-<%response.setStatus(420); %>
+<%response.sendError(420,"No Such Event Builder"); %>

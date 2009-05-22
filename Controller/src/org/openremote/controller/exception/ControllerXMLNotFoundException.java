@@ -18,33 +18,41 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.service;
-
-import org.openremote.controller.event.CommandType;
-
-
+package org.openremote.controller.exception;
 
 /**
- * The service for Button Command from remote.
+ * The exception class when controller.xml Not Found.
  * 
- * @author Dan 2009-4-3
+ * @author Dan 2009-5-22
  */
-public interface ButtonCommandService {
-   
-   
+@SuppressWarnings("serial")
+public class ControllerXMLNotFoundException extends RuntimeException {
+
    /**
-    * Trigger a button command.
-    * 
-    * @param buttonID the button id
-    * @param commandType the command type
+    * Instantiates a new controller xml not found exception.
     */
-   void trigger(String buttonID, CommandType commandType);
-   
+   public ControllerXMLNotFoundException() {
+      super("*controller.xml* not found.");
+   }
+
    /**
-    * Trigger a send_once command.
+    * Instantiates a new controller xml not found exception.
     * 
-    * @param buttonID the button id
+    * @param message the message
+    * @param cause the cause
     */
-   void trigger(String buttonID);
+   public ControllerXMLNotFoundException(String message, Throwable cause) {
+      super("*controller.xml* not found." + message, cause);
+   }
+
+   /**
+    * Instantiates a new controller xml not found exception.
+    * 
+    * @param message the message
+    */
+   public ControllerXMLNotFoundException(String message) {
+      super("*controller.xml* not found." + message);
+   }
+   
 
 }

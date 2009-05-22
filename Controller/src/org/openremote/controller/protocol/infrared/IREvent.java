@@ -83,7 +83,23 @@ public class IREvent extends Event {
     */
    @Override
    public void exec() {
-      String cmd = "irsend send_once " + getName() + " " + getCommand();
+      irsend("SEND_ONCE");   
+   }
+
+
+   @Override
+   public void start() {
+      irsend("SEND_START");
+   }
+
+   @Override
+   public void stop() {
+      irsend("SEND_STOP");
+   }
+   
+
+   private void irsend(String sendType) {
+      String cmd = "irsend " + sendType + " " + getName() + " " + getCommand();
       try {
          Process pro = Runtime.getRuntime().exec(cmd);
          logger.info(cmd);
@@ -92,8 +108,6 @@ public class IREvent extends Event {
          logger.error(cmd + " was interrupted.", e);
       } catch (IOException e) {
          logger.error(cmd + " failed.", e);
-      }   
+      }
    }
-   
-
 }

@@ -18,33 +18,42 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.service;
-
-import org.openremote.controller.event.CommandType;
-
-
+package org.openremote.controller.event;
 
 /**
- * The service for Button Command from remote.
+ * The Enum CommandType.
  * 
- * @author Dan 2009-4-3
+ * @author Dan 2009-5-21
  */
-public interface ButtonCommandService {
+public enum CommandType {
    
+   /** send command once. */
+   SEND_ONCE("SEND_ONCE"), 
    
+   /** send command start. */
+   SEND_START("SEND_START"), 
+   
+   /** send command stop. */
+   SEND_STOP("SEND_STOP"); 
+
+   /** The type. */
+   private String type;
+
    /**
-    * Trigger a button command.
+    * Instantiates a new command type.
     * 
-    * @param buttonID the button id
-    * @param commandType the command type
+    * @param type the type
     */
-   void trigger(String buttonID, CommandType commandType);
-   
-   /**
-    * Trigger a send_once command.
-    * 
-    * @param buttonID the button id
+   private CommandType(String type) {
+      this.type = type;
+   }
+
+   /* (non-Javadoc)
+    * @see java.lang.Enum#toString()
     */
-   void trigger(String buttonID);
+   @Override
+   public String toString() {
+      return type;
+   }
 
 }
