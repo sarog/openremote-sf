@@ -36,7 +36,7 @@ public class X10Controller
 
   public static void main(String... args)
   {
-    ControllerServer controllerServer = new ControllerServer(new MockController(), 9999);
+    ControllerServer controllerServer = new ControllerServer(new MockController(), 10000);
     controllerServer.run();
   }
 
