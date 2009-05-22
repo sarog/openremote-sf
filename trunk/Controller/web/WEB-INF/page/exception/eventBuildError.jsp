@@ -1,1 +1,1 @@
-<%response.setStatus(418); %>
+<%response.sendError(418,"Can't build event"); %>

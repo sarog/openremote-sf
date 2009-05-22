@@ -6,7 +6,7 @@
         <property name="mappings">
             <props>
                 <prop key="cmd.htm">buttonCommandController</prop>
-                <prop key="config.htm">configManageController</prop>          
+                <prop key="config.htm">configManageController</prop>
             </props>
         </property>
     </bean>
@@ -24,6 +24,8 @@
                 <prop key="org.openremote.controller.exception.EventBuildException">exception/eventBuildError</prop>
                 <prop key="org.openremote.controller.exception.NoSuchButtonException">exception/noSuchButtonError</prop>
                 <prop key="org.openremote.controller.exception.NoSuchEventBuilderException">exception/noSuchEventBuilderError</prop>
+                <prop key="org.openremote.controller.exception.InvalidCommandTypeException">exception/invalidCommandTypeError</prop>
+                <prop key="org.openremote.controller.exception.ControllerXMLNotFoundException">exception/controllerXMLNotFoundError</prop>
             </props>
         </property>
         <property name="defaultErrorView" value="exception/defaultError"/>

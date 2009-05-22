@@ -32,6 +32,8 @@ public class Event implements Executable{
    /** The label. */
    private String label;
    
+   private long delay;
+   
    /**
     * Gets the label.
     * 
@@ -49,11 +51,44 @@ public class Event implements Executable{
    public void setLabel(String label) {
       this.label = label;
    }
+   
+
+   /**
+    * Gets the delay.
+    * 
+    * @return the delay
+    */
+   public long getDelay() {
+      return delay;
+   }
+
+   /**
+    * Sets the delay.
+    * 
+    * @param delay the new delay
+    */
+   public void setDelay(long delay) {
+      this.delay = delay;
+   }
 
    /**
     * {@inheritDoc}
     */
    public void exec() {
+      ;//nothing
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void start() {
+      ;//nothing
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void stop() {
       ;//nothing
    }
    

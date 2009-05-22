@@ -21,6 +21,7 @@
 
 package org.openremote.controller.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,6 +40,7 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.log4j.Logger;
 import org.openremote.controller.event.Event;
 import org.openremote.controller.event.EventFactory;
+import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.NoSuchButtonException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -77,9 +79,14 @@ public class RemoteActionXMLParser {
       NodeList nodes = button.getChildNodes();
       for (int i = 0; i < nodes.getLength(); i++) {
          String eventID = nodes.item(i).getTextContent().trim();
+         String delay = ((Element)nodes.item(i)).getAttribute("delay");
          Element element = queryElementFromXMLById(eventID);
          if (element != null) {
-            events.add(eventFactory.getEvent(element));
+            Event event = eventFactory.getEvent(element);
+            if (delay != null && delay.matches("\\d+")) {
+               event.setDelay(Long.valueOf(delay));
+            }
+            events.add(event);
          }
       }
       return events;
@@ -112,6 +119,9 @@ public class RemoteActionXMLParser {
       try {
          DocumentBuilder builder = domFactory.newDocumentBuilder();
          String xmlPath = PathUtil.resourcesPath() + "controller.xml";
+         if (!new File(xmlPath).exists()) {
+            throw new ControllerXMLNotFoundException(" Make sure it's in controller/resources");
+         }
          Document doc = builder.parse(xmlPath);
          XPathFactory factory = XPathFactory.newInstance();
          XPath xpath = factory.newXPath();
@@ -144,7 +154,7 @@ public class RemoteActionXMLParser {
          logger.error("Can't find the controller.xml,please put it in " + PathUtil.resourcesPath(), e);
       }
       NodeList nodes = (NodeList) result;
-      if (nodes.getLength() > 0) {
+      if (nodes != null && nodes.getLength() > 0) {
          return (Element)nodes.item(0);
       }
       return null;
