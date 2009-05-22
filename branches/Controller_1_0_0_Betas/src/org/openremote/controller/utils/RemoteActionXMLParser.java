@@ -143,5 +143,4 @@ public class RemoteActionXMLParser {
       this.eventFactory = eventFactory;
    }
    
-   
 }
