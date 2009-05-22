@@ -114,7 +114,7 @@ public interface SVNDelegateService {
     * @param path which is an relative path of workCopy,and is head with a fileSeparator
     * @param revision the revision
     */
-   void rollback(String path, int revision);
+   void rollback(String path, long revision);
 
    /**
     * sync the workCopy configuration files with scrapDirectory.
@@ -181,10 +181,11 @@ public interface SVNDelegateService {
     * Gets the file content.
     * 
     * @param path the path
+    * @param revision the revision
     * 
     * @return the file content
     */
-   List<String> getFileContent(String path);
+   List<String> getFileContent(String path, long revision);
    
    /**
     * Gets the log by revision.

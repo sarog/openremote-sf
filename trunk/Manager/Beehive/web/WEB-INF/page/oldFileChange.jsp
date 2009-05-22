@@ -129,6 +129,7 @@
                      <td width="100%" nowrap="true">
                         <jsp:include page="breadcrumb.jsp" flush="true">
                            <jsp:param name="breadcrumbPath" value="${breadcrumbPath}" />
+                           <jsp:param name="isFile" value="true" />
                         </jsp:include>
                      </td>
                   </tr>

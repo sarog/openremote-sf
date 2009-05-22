@@ -367,15 +367,20 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
     * {@inheritDoc}
     * @throws SVNException 
     */
-   public void rollback(String path, int revision, String username) throws SVNException {
+   public void rollback(String path, long revision, String username) throws SVNException {
       svnDelegateService.rollback(path, revision);
+      File file = new File(configuration.getWorkCopyDir()+path);
+      if(file.isFile()){
+         String[] paths = {path};
+         this.update(paths, "rollback to revision " + revision, username);
+         return;
+      }
       DiffStatus diffStatus = svnDelegateService.getDiffStatus(path);
       String[] paths = new String[diffStatus.getDiffStatus().size()];
       String workDir = new File(configuration.getWorkCopyDir()).getPath();
       for (int i = 0; i < diffStatus.getDiffStatus().size(); i++) {
          paths[i] = diffStatus.getDiffStatus().get(i).getPath().replace(workDir, "");
-
-      }
+      }      
       this.update(paths, "rollback to revision " + revision, username);
    }
    
@@ -385,5 +390,10 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
     */
    public int count() {
       return genericDAO.loadAll(Model.class).size();
+   }
+   
+   public boolean isFile(String path){
+      File file = new File(configuration.getWorkCopyDir()+path);
+      return file.isFile();
    }
 }

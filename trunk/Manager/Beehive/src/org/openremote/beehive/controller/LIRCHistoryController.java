@@ -20,15 +20,15 @@
  */
 package org.openremote.beehive.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
+import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
+import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.LIRCEntry;
 import org.openremote.beehive.repo.LogMessage;
@@ -50,6 +50,7 @@ public class LIRCHistoryController extends MultiActionController {
    private String fileCompareView;
    
    private SVNDelegateService svnDelegateService;
+   private ModelService modelService;
    
    public void setIndexView(String indexView) {
       this.indexView = indexView;
@@ -68,6 +69,9 @@ public class LIRCHistoryController extends MultiActionController {
    }
    public void setSvnDelegateService(SVNDelegateService svnDelegateService) {
       this.svnDelegateService = svnDelegateService;
+   }
+   public void setModelService(ModelService modelService) {
+      this.modelService = modelService;
    }
    /**
     * Default method in controller
@@ -101,8 +105,12 @@ public class LIRCHistoryController extends MultiActionController {
     */
    public ModelAndView getModels(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException{
       ModelAndView mav = new ModelAndView(modelView);
-      String path = "/"+ServletRequestUtils.getRequiredStringParameter(request, "path");
+      String path = ServletRequestUtils.getRequiredStringParameter(request, "path");
+      if(!path.startsWith("/")){
+         path = "/" + path;
+      }
       mav.addObject("breadcrumbPath", path);
+      mav.addObject("isFile", modelService.isFile(path));
       LogMessage vendorMessage = svnDelegateService.getHeadLog(path);
       mav.addObject("vendorMessage", vendorMessage);
       
@@ -128,6 +136,7 @@ public class LIRCHistoryController extends MultiActionController {
       if(!path.startsWith("/")){
          path = "/" + path;
       }
+      mav.addObject("isFile", modelService.isFile(path));
       List<LogMessage> lms = svnDelegateService.getLogs(path);
       mav.addObject("logMessages", lms);
       mav.addObject("breadcrumbPath", path);
@@ -148,14 +157,29 @@ public class LIRCHistoryController extends MultiActionController {
    public ModelAndView getContent(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, IOException{
       ModelAndView mav = new ModelAndView(contentView);
       String path = ServletRequestUtils.getRequiredStringParameter(request, "path");
+      Long revision = ServletRequestUtils.getLongParameter(request, "revision");      
       LogMessage modelMessage = svnDelegateService.getHeadLog(path);
       mav.addObject("modelMessage", modelMessage);
       mav.addObject("breadcrumbPath", path);
-      mav.addObject("lines", svnDelegateService.getFileContent(path));
+      if(revision == null){
+         mav.addObject("lines", svnDelegateService.getFileContent(path,0));
+      }else{
+         mav.addObject("lines", svnDelegateService.getFileContent(path,revision));
+      }
 
       return mav;
    }
    
+   /**
+    * Compare.
+    * 
+    * @param request the request
+    * @param response the response
+    * 
+    * @return the model and view
+    * 
+    * @throws ServletRequestBindingException the servlet request binding exception
+    */
    public ModelAndView compare(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException{
       ModelAndView mav = new ModelAndView(fileCompareView);
       String path = ServletRequestUtils.getRequiredStringParameter(request, "path");
@@ -173,5 +197,12 @@ public class LIRCHistoryController extends MultiActionController {
       mav.addObject("rightLines", rightLines);
       mav.addObject("changeCount", dr.getChangeCount());
       return mav;
+   }
+   
+   public ModelAndView rollBack(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, SVNException{
+      String path = ServletRequestUtils.getRequiredStringParameter(request, "path");
+      long revision = ServletRequestUtils.getRequiredLongParameter(request, "revision");
+      modelService.rollback(path, revision, "admin");
+      return null;
    }
 }

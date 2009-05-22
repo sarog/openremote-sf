@@ -359,8 +359,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
 
       try {
          ISVNLogMessage[] logs;
-         logs = svnClient.getLogMessages(new SVNUrl(configuration.getSvnDir() + url), new SVNRevision.Number(1),
-               SVNRevision.HEAD);
+         logs = svnClient.getLogMessages(new SVNUrl(configuration.getSvnDir() + url), SVNRevision.HEAD,
+               new SVNRevision.Number(1));
          for (ISVNLogMessage logMessage : logs) {
             LogMessage lm = new LogMessage();
             lm.setRevision(logMessage.getRevision().toString());
@@ -396,7 +396,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
    /**
     * {@inheritDoc}
     */
-   public void rollback(String path, int revision) {
+   public void rollback(String path, long revision) {
       // svnClient.setUsername(username);
       File file = new File(configuration.getWorkCopyDir() + path);
       try {
@@ -619,10 +619,14 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
    /**
     * {@inheritDoc}
     */
-   public List<String> getFileContent(String path) {
+   public List<String> getFileContent(String path, long revision) {
       List<String> lines = new ArrayList<String>();
       try {
-         InputStream is = svnClient.getContent(new File(configuration.getWorkCopyDir() + path), SVNRevision.HEAD);
+         SVNRevision svnrevision = SVNRevision.HEAD;
+         if(revision != 0){
+            svnrevision = new SVNRevision.Number(revision);
+         }
+         InputStream is = svnClient.getContent(new File(configuration.getWorkCopyDir() + path), svnrevision);
          lines = IOUtils.readLines(is);         
       } catch (SVNClientException e) {
          e.printStackTrace();
