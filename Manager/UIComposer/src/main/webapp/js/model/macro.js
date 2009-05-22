@@ -39,7 +39,6 @@ var Macro = function() {
 			findSubLi(self).each(function() {
 				var m = $(this).data("model");	
 				models.push(m);
-
 			});
 			return models;
 		};
@@ -52,6 +51,7 @@ var Macro = function() {
 			findSubLi(self).each(function() {
 				var m = $(this).data("model");
 				foreach(m,models);
+				
 			});
 			return models;
 		};
@@ -71,15 +71,16 @@ var Macro = function() {
 
        
 		function foreach (model,models) {
-			if(model.className == "Macro") {
-				if (model == self) {
+			if(model.oModel.className == "Macro") {
+				if (model.oModel == self) {
 					return;
 				}
-				findSubLi(model).each(function() {
+				findSubLi(model.oModel).each(function() {
 					foreach($(this).data("model"),models);
 				});
 			} else {
-				models.push(model);
+				model.oModel.delay = model.delay;
+				models.push(model.oModel);
 			}
 		}
 	}

@@ -1,8 +1,8 @@
 var MacroSubView = function() {
-    function MacroSubView(model,container) {
+    function MacroSubView(macroSub) {
         var self = this;
-        var _model = model;
-		var _container = container;
+        var _model = macroSub;
+		var _container = $("#macro"+macroSub.macroId).find("ul");
 		var _element;
         self.getModel = function() {
             return _model;
@@ -13,7 +13,7 @@ var MacroSubView = function() {
 		};
 		
         var init = function() {
-           	var subli = HTMLBuilder.macroLiBtnBuilder(model);
+           	var subli = HTMLBuilder.macroLiBtnBuilder(macroSub);
             subli.appendTo(_container);
 			_element = subli;
         };
@@ -23,10 +23,10 @@ var MacroSubView = function() {
             self.getElement().remove();
         };
 
-        self.updateView = function() {
+        self.updateView = function(model) {
 			self.getElement().interceptStr({
 				max:8,
-				text:self.getModel().label,
+				text:model.label,
 				setText: function(str){
 					$(this).text(str);
 				}

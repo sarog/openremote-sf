@@ -105,7 +105,7 @@ var IPhoneController = function() {
             iphoneBtn.height = 1;
             iphoneBtn.width = 1;
             var btn = IPhoneController.createIphoneBtn(iphoneBtn);
-            if (InspectView.getModel() != null && iphoneBtn.getElementId() == InspectView.getModel().getElementId()) {
+            if (InspectView.getModel() != null && InspectView.getModel().getElementId!== undefined && iphoneBtn.getElementId() == InspectView.getModel().getElementId()) {
                 btn.addClass("highlightInspected");
             }
         }

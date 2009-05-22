@@ -152,7 +152,8 @@ var MacroController = function() {
                     return false;
                 },
                 drop: function(event, ui) {
-                    MacroController.createMacroSubli(ui.draggable.data("model"), $(this));
+					var macroSub = new MacroSub($(this).parent().data("model").id,ui.draggable.data("model"));
+                    MacroController.createMacroSubli(macroSub);
                 }
             });
         },
@@ -162,10 +163,32 @@ var MacroController = function() {
      * @param model data model
      * @param container which you want to add li into
      */
-        createMacroSubli: function(model, container) {
-        	var macroSubView = new MacroSubView(model, container);
-			model.addDeleteListener(macroSubView);
-			model.addUpdateListener(macroSubView);
+        createMacroSubli: function(macroSub) {
+			
+        	var macroSubView = new MacroSubView(macroSub);
+
+			macroSub.addUpdateListener(macroSubView);
+			
+			macroSubView.getElement().inspectable({
+				check:function() {
+					if (!$("#inspect_macroSub_delay").val().toString().isNumber()) {
+						if ($(this).data("model").oModel.className == "Macro") {
+							return true;
+						}
+						$("#inspect_body").updateTips($("#inspect_macroSub_delay"),"Please input a number");
+						return false;
+					}
+					return true;
+				},
+				after: function(){
+					if ($(this).data("model").oModel.className == "Macro") {
+						$("#inspect_macroSub_delay").attr("disabled","true");
+						$("#inspect_macroSub_delay").addClass("ui-state-disabled");
+					}
+				}
+			});
+			macroSub.oModel.addDeleteListener(macroSubView);
+			macroSub.oModel.addUpdateListener(macroSubView);
 			
         }
 
