@@ -4,9 +4,10 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html> 
    <head>
-      <meta http-equiv="Content-Type" 
-              content="text/html; charset=UTF-8">
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
       <title><decorator:title default="OpenRemote Beehive" /></title>
+      <link href="image/OpenRemote_Logo16x16.png" rel="shortcut icon"/>
+      <link href="image/OpenRemote_Logo16x16.png" type="image/png" rel="icon"/>
       <link href="css/default.css" type="text/css" rel="stylesheet" media="screen">
       <link href="css/table.css" type="text/css" rel="stylesheet" media="screen">
       <script type="text/javascript" src="jslib/jquery-1.3.1.min.js"></script>
@@ -15,7 +16,7 @@
       <script type="text/javascript">
             $(document).ready(function(){
                 $('#tab_<decorator:getProperty property="body.tabId"/>').addClass('activetab').removeClass("inactivetab");
-                if(<%=request.getAttribute("isUpdating")%>){
+                if($('#updateStatus').val() == "true"){
                 	$('#tab_2 img').attr("src","image/update.gif");
                 }else{
                 	$('#tab_2 img').attr("src","image/update_icon.gif");
@@ -25,6 +26,7 @@
       <decorator:head />
    </head>
    <body>
+      <input type="hidden" name="updateStatus" id="updateStatus" value="${sessionScope.isUpdating}"/>
       <table width="100%" cellpadding="0" cellspacing="0" height="100%">
           <tr>
             <td><table width="100%" cellpadding="0" cellspacing="0" height="100%">

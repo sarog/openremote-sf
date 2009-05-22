@@ -25,8 +25,9 @@ import java.util.Date;
 
 import org.openremote.beehive.utils.DateFormatter;
 
+// TODO: Auto-generated Javadoc
 /**
- * LIRCEntry the entry of specified version file.
+ * LIRCEntry the entry of specify version file.
  * 
  * @author Tomsky
  */
@@ -35,7 +36,7 @@ public class LIRCEntry {
    private String path;
    
    /** The version. */
-   private int version;
+   private long version;
    
    /** The file. */
    private boolean file;
@@ -110,7 +111,7 @@ public class LIRCEntry {
     * 
     * @return the version
     */
-   public int getVersion() {
+   public long getVersion() {
       return version;
    }
 
@@ -128,7 +129,7 @@ public class LIRCEntry {
     * 
     * @param version the new version
     */
-   public void setVersion(int version) {
+   public void setVersion(long version) {
       this.version = version;
    }
 

@@ -90,14 +90,13 @@
 				<table class="tabcontent" border="0" cellpadding="0" cellspacing="0">
 						<tr>
 							<td width="23" align="left" style="padding-right: 7px;"><a
-								href="#"><img src="image/revision.gif"
+								href="history.htm?method=getRevisions&path="><img src="image/revision.gif"
 								alt="All Revision list" title="All Revision list" border="0"></a>
 							</td>							
 						</tr>
 				</table>
 				</td>
 			</tr>
-		</tbody>
 	</table>
 	<table id="table_list_of_vendor" class="list" rules="all"
 		width="100%" cellpadding="0" cellspacing="0">
@@ -134,7 +133,7 @@
 				     <img src="image/head_revision.gif" alt="Head revision" title="Head revision" />
 				  </c:if>
 				  ${vendorEntry.version}
-				  <a href="#"> 
+				  <a href="history.htm?method=getRevisions&path=${vendorEntry.path}"> 
 				     <img src="image/revision.gif" alt="Revision list" title="Revision list" /> 
 				  </a>
 				</td>

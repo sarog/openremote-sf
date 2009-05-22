@@ -306,4 +306,11 @@ public class GenericDAO extends HibernateDaoSupport {
          }
       }, true).toString());
    }
+   
+   /**
+    * Flush.
+    */
+   public void flush(){
+      getHibernateTemplate().flush();
+   }
 }

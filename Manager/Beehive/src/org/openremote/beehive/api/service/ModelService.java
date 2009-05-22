@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.openremote.beehive.api.dto.ModelDTO;
+import org.openremote.beehive.domain.Model;
 import org.openremote.beehive.exception.SVNException;
 
 // TODO: Auto-generated Javadoc
@@ -154,4 +155,8 @@ public interface ModelService {
     * @param modelName the model name
     */
    void deleteByName(String modelName);
+   
+   void merge(FileInputStream fis, Model model);
+   
+   
 }

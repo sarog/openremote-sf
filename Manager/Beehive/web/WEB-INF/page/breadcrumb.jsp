@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="../../common/taglibs.jsp" %>
 <div id="breadcrumbs">
-<c:set var="breadcrumb" value='${fn:split(path,"/")}'></c:set>
+<c:set var="breadcrumb" value='${fn:split(breadcrumbPath,"/")}'></c:set>
 
 <a class="path_t" href="history.htm"><span class="path_text">Beehvie</span></a>
 <span class="path_t">/</span>

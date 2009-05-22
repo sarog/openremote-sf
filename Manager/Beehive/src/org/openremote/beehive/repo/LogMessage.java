@@ -21,7 +21,10 @@
 package org.openremote.beehive.repo;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import org.openremote.beehive.utils.DateFormatter;
 
 /**
  * LogMessage include the specify revision's changes
@@ -32,6 +35,7 @@ public class LogMessage {
    private String revision;
    private String author;
    private String comment;
+   private Date date;
    private List<Character> actions;
    private List<ChangePath> changePaths;
 
@@ -105,4 +109,15 @@ public class LogMessage {
       this.changePaths.add(changePath);
    }
 
+   public Date getDate() {
+      return date;
+   }
+
+   public void setDate(Date date) {
+      this.date = date;
+   }
+   
+   public String getAge() {
+      return DateFormatter.format(date);
+   }
 }

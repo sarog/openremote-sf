@@ -114,7 +114,7 @@
       }
 </script>
 </head>
-<body tabId="1">
+<body tabId="3">
    <table class="infopanel" width="100%" border="0" cellpadding="0"
       cellspacing="0">
       <tr>

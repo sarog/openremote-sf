@@ -25,9 +25,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.exception.SVNException;
+import org.openremote.beehive.file.LircSynchronizer;
 import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.LogMessage;
@@ -43,10 +43,12 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
  */
 public class LIRCRevisionChangesController extends MultiActionController {
    private SVNDelegateService svnDelegateService;
-   private ModelService modelService;
+//   private ModelService modelService;
    private String indexView;
    private String changeView;
    private String commitView;
+   private LircSynchronizer lircSynchronizer;
+   
    public void setIndexView(String indexView) {
       this.indexView = indexView;
    }
@@ -63,9 +65,14 @@ public class LIRCRevisionChangesController extends MultiActionController {
       this.changeView = changeView;
    }
 
-   public void setModelService(ModelService modelService) {
-      this.modelService = modelService;
+//   public void setModelService(ModelService modelService) {
+//      this.modelService = modelService;
+//   }
+
+   public void setLircSynchronizer(LircSynchronizer lircSynchronizer) {
+      this.lircSynchronizer = lircSynchronizer;
    }
+   
 
    /**
     * Default method in controller
@@ -79,8 +86,9 @@ public class LIRCRevisionChangesController extends MultiActionController {
    public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
       ModelAndView mav = new ModelAndView(indexView);
       String path = "";
-      List<LogMessage> lms = svnDelegateService.getLogs(path);
-      mav.addObject("headMessage", lms.get(lms.size() - 1));
+      LogMessage headMessage = svnDelegateService.getHeadLog(path);
+      mav.addObject("headMessage", headMessage);
+      request.getSession().setAttribute("headRevision", headMessage.getRevision().toString());
       if(svnDelegateService.isBlankSVN()){
          request.setAttribute("isBlankSVN", true);
       }else{
@@ -107,10 +115,10 @@ public class LIRCRevisionChangesController extends MultiActionController {
       String path = ServletRequestUtils.getRequiredStringParameter(request, "path");
       String action = ServletRequestUtils.getRequiredStringParameter(request, "action");
       if(!"A".equals(action)){
-         List<LogMessage> lms = svnDelegateService.getLogs(path);
-         mav.addObject("repoMessage", lms.get(lms.size() - 1));         
+         LogMessage repoMessage = svnDelegateService.getHeadLog(path);
+         mav.addObject("repoMessage", repoMessage);     
       }
-      request.setAttribute("path",path);
+      mav.addObject("breadcrumbPath",path);
       DiffResult dr = svnDelegateService.diff(path);
       List<Line> leftLines = dr.getLeft();
       List<Line> rightLines = dr.getRight();      
@@ -133,7 +141,9 @@ public class LIRCRevisionChangesController extends MultiActionController {
       String[] items = request.getParameterValues("items");
       ModelAndView mav = new ModelAndView(commitView);
       if(items != null){
-         modelService.update(items, "commit", "admin");
+         request.getSession().setAttribute("isCommitting", "true");
+         lircSynchronizer.update(items, "commit", "admin");
+         request.getSession().removeAttribute("isCommitting");
          mav.addObject("commitStatus", "commit success,you have commit "+items.length+" items!");
       }else{
          mav.addObject("commitStatus", "commit falure,maybe you have not select any items!");

@@ -56,7 +56,7 @@
 							Path&nbsp;:&nbsp; </span></td>
 							<td width="100%" nowrap="true">
 								<jsp:include page="breadcrumb.jsp" flush="true">
-									<jsp:param name="path" value="${path}" />
+									<jsp:param name="breadcrumbPath" value="${breadcrumbPath}" />
 								</jsp:include>
 							</td>
 						</tr>
@@ -118,7 +118,7 @@
 								href="#"><span
 								class="list_of_history_image_link ${modelEntry.file}"></span></a></td>
 							<td class="internal" width="100%" nowrap="true"><a
-								href="#">${modelEntry.path}</a>
+								href="history.htm?method=getContent&path=${breadcrumbPath}/${modelEntry.path}">${modelEntry.path}</a>
 							</td>
 						</tr>
 					</table>
@@ -128,7 +128,7 @@
                  <img src="image/head_revision.gif" alt="Head revision" title="Head revision" />
               </c:if>
               ${modelEntry.version}
-				  <a href="#"> 
+				  <a href="history.htm?method=getRevisions&path=${breadcrumbPath}/${modelEntry.path}"> 
 				     <img src="image/revision.gif" alt="Revision list" title="Revision list">
 				  </a>
 				</td>
