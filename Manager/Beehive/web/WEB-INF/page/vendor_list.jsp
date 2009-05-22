@@ -115,9 +115,7 @@
 				<td>
 					<table width="100%" border="0" cellpadding="0" cellspacing="0">
 						<tr>
-							<td class="internal" style="padding-right: 5px;"><input
-								name="items" type="checkbox" value="${vendorEntry.path}"></td>
-							<td class="internal" style="padding-right: 5px;">
+							<td class="internal" style="padding-left: 15px; padding-right: 5px;">
 							  <a href="history.htm?method=getModels&path=${vendorEntry.path}">
 							     <span	class="list_of_history_image_link ${vendorEntry.file}"></span>
 							  </a>
@@ -138,12 +136,12 @@
 				  </a>
 				</td>
 				<td align="center">
-				  <c:choose>
-                      <c:when test="${vendorEntry.file eq true}">
-                         ${vendorEntry.sizeString}
-                      </c:when>
-                      <c:otherwise>-</c:otherwise>
-                   </c:choose>
+					  <c:choose>
+						<c:when test="${vendorEntry.file eq true}">
+	                         ${vendorEntry.sizeString}
+	                      </c:when>
+						<c:otherwise>-</c:otherwise>
+					 </c:choose>
             </td>
 				<td align="center">${vendorEntry.age}<input type="hidden" value="${vendorEntry.date }"/></td>
 				<td align="center">${vendorEntry.author}</td>

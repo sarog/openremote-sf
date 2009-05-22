@@ -57,6 +57,7 @@
 							<td width="100%" nowrap="true">
 								<jsp:include page="breadcrumb.jsp" flush="true">
 									<jsp:param name="breadcrumbPath" value="${breadcrumbPath}" />
+									<jsp:param name="isFile" value="${isFile}" />
 								</jsp:include>
 							</td>
 						</tr>
@@ -87,7 +88,7 @@
 				<table class="tabcontent" border="0" cellpadding="0" cellspacing="0">
 						<tr>
 							<td width="23" align="left" style="padding-right: 7px;"><a
-								href="#"><img src="image/revision.gif"
+								href="history.htm?method=getRevisions&path=${breadcrumbPath}"><img src="image/revision.gif"
 								alt="All Revision list" title="All Revision list" border="0"></a>
 							</td>
 						</tr>
@@ -112,13 +113,18 @@
 				<td>
 					<table width="100%" border="0" cellpadding="0" cellspacing="0">
 						<tr>
-							<td class="internal" style="padding-right: 5px;"><input
-								name="items" type="checkbox" value="${modelEntry.path}"></td>
-							<td class="internal" style="padding-right: 5px;"><a
+							<td class="internal" style="padding-left: 15px; padding-right: 5px;"><a
 								href="#"><span
 								class="list_of_history_image_link ${modelEntry.file}"></span></a></td>
-							<td class="internal" width="100%" nowrap="true"><a
-								href="history.htm?method=getContent&path=${breadcrumbPath}/${modelEntry.path}">${modelEntry.path}</a>
+							<td class="internal" width="100%" nowrap="true">
+							  <c:choose>
+									<c:when test="${modelEntry.file eq true}">
+									  <a href="history.htm?method=getContent&path=${breadcrumbPath}/${modelEntry.path}">${modelEntry.path}</a>
+		                      </c:when>
+									<c:otherwise>
+									  <a href="history.htm?method=getModels&path=${breadcrumbPath}/${modelEntry.path}">${modelEntry.path}</a>
+									</c:otherwise>
+								</c:choose>
 							</td>
 						</tr>
 					</table>

@@ -165,7 +165,7 @@
 	                      <td class="internal" width="100%" nowrap="true"><a href="changes.htm?method=change&path=${diffElement.path}&action=${diffElement.status }">${diffElement.path}</a> </td>
 	                    </tr>
 	                </table></td>
-	              <td align="center"><a href="#"> <img src="image/revision.gif" alt="Revision list" title="Revision list" border="0"> </a> </td>
+	              <td align="center"><a href="history.htm?method=getRevisions&path=${diffElement.path}"> <img src="image/revision.gif" alt="Revision list" title="Revision list" border="0"> </a> </td>
 	            </tr>
 	        </c:forEach>
 		   </form>

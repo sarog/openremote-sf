@@ -20,6 +20,7 @@
                      <td width="100%" nowrap="true">
                         <jsp:include page="breadcrumb.jsp" flush="true">
                            <jsp:param name="breadcrumbPath" value="${breadcrumbPath}" />
+                           <jsp:param name="isFile" value="true" />
                         </jsp:include>
                      </td>
                   </tr>
@@ -48,7 +49,7 @@
             <table class="tabcontent" border="0" cellpadding="0" cellspacing="0">
                   <tr>
                      <td width="23" align="left" style="padding-right: 7px;"><a
-                        href="#"><img src="image/revision.gif"
+                        href="history.htm?method=getRevisions&path=${breadcrumbPath}"><img src="image/revision.gif"
                         alt="File Revision list" title="File Revision list" border="0"></a>
                      </td>
                   </tr>

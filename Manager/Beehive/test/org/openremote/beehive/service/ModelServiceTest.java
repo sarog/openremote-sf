@@ -42,11 +42,15 @@ public class ModelServiceTest extends TestBase {
     }
     
     public void testRollback(){
-//    	String path = "/";
-//    	service.rollback(path, 101, "tomsky");
+//    	String path = "/3m/MP8640";
+//    	try {
+//         service.rollback(path, 163, "tomsky");
+//      } catch (SVNException e) {
+//         e.printStackTrace();
+//      }
     }
     
     public void testCount(){
-       System.out.println(service.count());
+//       System.out.println(service.count());
     }
 }

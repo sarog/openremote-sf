@@ -139,7 +139,7 @@ public interface ModelService {
     * 
     * @throws SVNException the SVN exception
     */
-   void rollback(String path, int revision, String username) throws SVNException;
+   void rollback(String path, long revision, String username) throws SVNException;
    
    /**
     * Count.
@@ -156,7 +156,15 @@ public interface ModelService {
     */
    void deleteByName(String modelName);
    
+   /**
+    * Merge.
+    * 
+    * @param fis the fis
+    * @param model the model
+    */
    void merge(FileInputStream fis, Model model);
+   
+   boolean isFile(String path);
    
    
 }
