@@ -20,11 +20,8 @@
  */
 package org.openremote.controller.utils;
 
-import java.util.List;
-
 import junit.framework.TestCase;
 
-import org.openremote.controller.event.Event;
 import org.openremote.controller.spring.SpringContext;
 
 
