@@ -20,7 +20,6 @@
     </bean>
     
     <bean id="remoteActionXMLParser" class="org.openremote.controller.utils.RemoteActionXMLParser">
-        <property name="configXMLPath" value="${action.xml.path}" />
     </bean>
     
 	<bean id="eventFactory" class="org.openremote.controller.event.EventFactory">
@@ -49,4 +48,5 @@
   <bean id = "knxEventBuilder" class = "org.openremote.controller.protocol.knx.KNXEventBuilder"
         scope = "singleton"/>
 
+    
 </beans>

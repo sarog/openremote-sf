@@ -18,35 +18,49 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.protocol.infrared;
-
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
-import org.openremote.controller.exception.EventBuildException;
-import org.w3c.dom.Element;
-
+package org.openremote.controller.exception;
 
 /**
- * The IREvent Builder which can build a IREvent from a Element.
+ * The Invalid Event Exception.
  * 
- * @author Dan 2009-4-3
+ * @author Dan 2009-4-30
  */
-public class IREventBuilder implements EventBuilder {
+@SuppressWarnings("serial")
+public class EventBuildException extends RuntimeException {
 
    /**
-    * {@inheritDoc}
+    * Instantiates a new invalid event exception.
+    * 
+    * @param message the message
+    * @param cause the cause
     */
-   public Event build(Element element) {
-      IREvent irEvent = new IREvent();
-      String command = element.getAttribute("command");
-      String name = element.getAttribute("name");
-      if ("".equals(command) || "".equals(name)) {
-         throw new EventBuildException("Cannot build a IREvent with empty property : command=" + command + ",name=" + name);
-      } else {
-         irEvent.setCommand(command);
-         irEvent.setName(name);
-      }
-      return irEvent;
+   public EventBuildException(String message, Throwable cause) {
+      super(message, cause);
+   }
+
+   /**
+    * Instantiates a new invalid event exception.
+    * 
+    * @param message the message
+    */
+   public EventBuildException(String message) {
+      super(message);
+   }
+
+   /**
+    * Instantiates a new event build exception.
+    */
+   public EventBuildException() {
+      super();
+   }
+
+   /**
+    * Instantiates a new event build exception.
+    * 
+    * @param cause the cause
+    */
+   public EventBuildException(Throwable cause) {
+      super(cause);
    }
 
 }
