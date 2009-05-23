@@ -619,6 +619,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
    /**
     * {@inheritDoc}
     */
+   @SuppressWarnings("unchecked")
    public List<String> getFileContent(String path, long revision) {
       List<String> lines = new ArrayList<String>();
       try {
