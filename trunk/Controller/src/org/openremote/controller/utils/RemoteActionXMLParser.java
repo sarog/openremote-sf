@@ -108,9 +108,16 @@ public class RemoteActionXMLParser {
     */
    @SuppressWarnings("unchecked")
    private Element queryElementFromXML(String xPath) {
-      SAXBuilder sb = new SAXBuilder(false);
-      sb.setValidation(false);
+      SAXBuilder sb = new SAXBuilder(true);
+      sb.setValidation(true);
+      File xsdfile = new File(getClass().getResource("/controller.xsd").getPath());
+      final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+      final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+      final String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
+      sb.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
+      sb.setProperty(SCHEMA_SOURCE, xsdfile);
       String xmlPath = PathUtil.resourcesPath() + "controller.xml";
+      
       if (!new File(xmlPath).exists()) {
          throw new ControllerXMLNotFoundException(" Make sure it's in controller/resources");
       }
@@ -139,6 +146,5 @@ public class RemoteActionXMLParser {
    public void setEventFactory(EventFactory eventFactory) {
       this.eventFactory = eventFactory;
    }
-   
    
 }
