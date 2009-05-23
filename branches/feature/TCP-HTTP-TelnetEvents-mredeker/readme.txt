@@ -24,17 +24,12 @@ The "Controller" requires this 3rd party software:
 
 III. "Controller" deployment
 ==============================================
-1) put "controller.xml" in any folder, for instance, user home folder,DON'T rename the file.
-2) modify following configuration variables in "%PROJECT_ROOT%/config/config.properties"
-	file (see comments inside this file for details):
-    a) set "action.xml.path" parameter value to the path where "controller.xml" is;
-    
 
-3) run "ant war" to get the war file in "%PROJECT_ROOT%/output" directory;
+1) run "ant war" to get the war file in "%PROJECT_ROOT%/output" directory;
 
-4) deploy the war into your web server;
+2) deploy the war into your web server;
 
-4) put "iphone.xml" in "/webapps/controller" directory, DON'T rename the file.
+3) put "iphone.xml" and "controller.xml" in "/webapps/controller" directory, DON'T rename the files.
 
 IV. Supported functions
 =======================
@@ -44,8 +39,9 @@ IV. Supported functions
 
 V. "Controller" logging
 ====================================
-you can modify the log4j configuration in "%PROJECT_ROOT%/config/log4j.properties"
+You can modify the log4j configuration in "%PROJECT_ROOT%/config/log4j.properties".
+All the logs will be written in "/webapps/controller/logs" 
 
 VI. "Controller" javadoc
 ====================================
-you can generate javadoc using "ant javadoc"
+You can generate javadoc by using "ant javadoc"
