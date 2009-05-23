@@ -20,10 +20,10 @@
  */
 package org.openremote.controller.protocol.infrared;
 
+import org.jdom.Element;
 import org.openremote.controller.event.Event;
 import org.openremote.controller.event.EventBuilder;
 import org.openremote.controller.exception.EventBuildException;
-import org.w3c.dom.Element;
 
 
 /**
@@ -38,8 +38,8 @@ public class IREventBuilder implements EventBuilder {
     */
    public Event build(Element element) {
       IREvent irEvent = new IREvent();
-      String command = element.getAttribute("command");
-      String name = element.getAttribute("name");
+      String command = element.getAttributeValue("command");
+      String name = element.getAttributeValue("name");
       if ("".equals(command) || "".equals(name)) {
          throw new EventBuildException("Cannot build a IREvent with empty property : command=" + command + ",name=" + name);
       } else {
