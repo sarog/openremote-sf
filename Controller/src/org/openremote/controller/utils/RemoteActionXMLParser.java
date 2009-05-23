@@ -24,28 +24,19 @@ package org.openremote.controller.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.log4j.Logger;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.jdom.xpath.XPath;
 import org.openremote.controller.event.Event;
 import org.openremote.controller.event.EventFactory;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.NoSuchButtonException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import org.openremote.controller.exception.NoSuchEventException;
 
 
 /**
@@ -70,16 +61,17 @@ public class RemoteActionXMLParser {
     * 
     * @return the list< event commander>
     */
+   @SuppressWarnings("unchecked")
    public List<Event> findEventsByButtonID(String buttonID) {
       List<Event> events = new ArrayList<Event>();
       Element button = queryElementFromXMLById(buttonID);
       if (button == null) {
          throw new NoSuchButtonException("Cannot find that button with id = " + buttonID);
       }
-      NodeList nodes = button.getChildNodes();
-      for (int i = 0; i < nodes.getLength(); i++) {
-         String eventID = nodes.item(i).getTextContent().trim();
-         String delay = ((Element)nodes.item(i)).getAttribute("delay");
+      List<Element> children = button.getChildren();
+      for (Element elementRef : children) {
+         String eventID = elementRef.getTextTrim();
+         String delay = elementRef.getAttributeValue("delay");
          Element element = queryElementFromXMLById(eventID);
          if (element != null) {
             Event event = eventFactory.getEvent(element);
@@ -87,6 +79,8 @@ public class RemoteActionXMLParser {
                event.setDelay(Long.valueOf(delay));
             }
             events.add(event);
+         }else{
+            throw new NoSuchEventException("Cannot find that event with id = " + eventID);
          }
       }
       return events;
@@ -112,50 +106,26 @@ public class RemoteActionXMLParser {
     * 
     * @return the element
     */
+   @SuppressWarnings("unchecked")
    private Element queryElementFromXML(String xPath) {
-      DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-      domFactory.setNamespaceAware(true); // never forget this!
-      Object result = null;
-      try {
-         DocumentBuilder builder = domFactory.newDocumentBuilder();
-         String xmlPath = PathUtil.resourcesPath() + "controller.xml";
-         if (!new File(xmlPath).exists()) {
-            throw new ControllerXMLNotFoundException(" Make sure it's in controller/resources");
-         }
-         Document doc = builder.parse(xmlPath);
-         XPathFactory factory = XPathFactory.newInstance();
-         XPath xpath = factory.newXPath();
-         xpath.setNamespaceContext(new NamespaceContext(){
-
-            public String getNamespaceURI(String prefix) {
-               String uri = null;  
-               if (prefix.equals("or")){
-                  uri = "http://www.openremote.org";
-               }
-               return uri;
-            }
-
-            public String getPrefix(String namespaceURI) {
-               return null;
-            }
-
-            public Iterator<?> getPrefixes(String namespaceURI) {
-               return null;
-            }});
-         XPathExpression expr = xpath.compile(xPath);
-         result = expr.evaluate(doc, XPathConstants.NODESET);
-      } catch (XPathExpressionException e) {
-         logger.error("XPathExpression error while parsing the controller.xml", e);
-      } catch (ParserConfigurationException e) {
-         logger.error("Can't parse the controller.xml", e);
-      } catch (SAXException e) {
-         logger.error("Can't parse the controller.xml", e);
-      } catch (IOException e) {
-         logger.error("Can't find the controller.xml,please put it in " + PathUtil.resourcesPath(), e);
+      SAXBuilder sb = new SAXBuilder(false);
+      sb.setValidation(false);
+      String xmlPath = PathUtil.resourcesPath() + "controller.xml";
+      if (!new File(xmlPath).exists()) {
+         throw new ControllerXMLNotFoundException(" Make sure it's in controller/resources");
       }
-      NodeList nodes = (NodeList) result;
-      if (nodes != null && nodes.getLength() > 0) {
-         return (Element)nodes.item(0);
+      try {
+         Document doc = sb.build(new File(xmlPath));
+         XPath xpath = XPath.newInstance(xPath);
+         xpath.addNamespace("or", "http://www.openremote.org");
+         List<Element> elements = xpath.selectNodes(doc);
+         if(!elements.isEmpty()){
+           return elements.get(0);
+         }
+      } catch (JDOMException e) {
+         logger.error("Parser controller.xml occur JDOMException", e);
+      } catch (IOException e) {
+         logger.error("Parser controller.xml occur IOException", e);
       }
       return null;
    }

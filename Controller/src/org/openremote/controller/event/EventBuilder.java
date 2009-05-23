@@ -20,7 +20,8 @@
  */
 package org.openremote.controller.event;
 
-import org.w3c.dom.Element;
+import org.jdom.Element;
+
 
 
 /**
