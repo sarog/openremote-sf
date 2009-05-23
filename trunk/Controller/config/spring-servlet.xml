@@ -18,7 +18,7 @@
         </property>
     </bean>
 
-    <!--<bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+    <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
         <property name="exceptionMappings">
             <props>
                 <prop key="org.openremote.controller.exception.EventBuildException">exception/eventBuildError</prop>
@@ -26,12 +26,13 @@
                 <prop key="org.openremote.controller.exception.NoSuchEventBuilderException">exception/noSuchEventBuilderError</prop>
                 <prop key="org.openremote.controller.exception.InvalidCommandTypeException">exception/invalidCommandTypeError</prop>
                 <prop key="org.openremote.controller.exception.ControllerXMLNotFoundException">exception/controllerXMLNotFoundError</prop>
+                <prop key="org.openremote.controller.exception.NoSuchEventException">exception/noSuchEventError</prop>
             </props>
         </property>
         <property name="defaultErrorView" value="exception/defaultError"/>
     </bean>
 
-    --><bean id="viewResolver"
+    <bean id="viewResolver"
           class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass">
             <value>
