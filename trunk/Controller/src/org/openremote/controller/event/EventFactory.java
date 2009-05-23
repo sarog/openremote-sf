@@ -22,9 +22,9 @@ package org.openremote.controller.event;
 
 import java.util.Properties;
 
+import org.jdom.Element;
 import org.openremote.controller.exception.NoSuchEventBuilderException;
 import org.springframework.context.support.ApplicationObjectSupport;
-import org.w3c.dom.Element;
 
 
 /**
@@ -45,7 +45,7 @@ public class EventFactory extends ApplicationObjectSupport{
     * @return the event
     */
    public Event getEvent(Element element) {
-      String name = element.getNodeName();
+      String name = element.getName();
       String builder = eventBuilders.getProperty(name);
       if (builder == null){
          throw new NoSuchEventBuilderException("Cannot find " + builder + " by " + name);
