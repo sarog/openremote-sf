@@ -35,6 +35,7 @@ import org.jdom.xpath.XPath;
 import org.openremote.controller.event.Event;
 import org.openremote.controller.event.EventFactory;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
+import org.openremote.controller.exception.InvalidControllerXMLException;
 import org.openremote.controller.exception.NoSuchButtonException;
 import org.openremote.controller.exception.NoSuchEventException;
 
@@ -131,6 +132,7 @@ public class RemoteActionXMLParser {
          }
       } catch (JDOMException e) {
          logger.error("Parser controller.xml occur JDOMException", e);
+         throw new InvalidControllerXMLException();
       } catch (IOException e) {
          logger.error("Parser controller.xml occur IOException", e);
       }

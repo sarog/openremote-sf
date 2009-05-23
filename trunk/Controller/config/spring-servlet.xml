@@ -27,7 +27,7 @@
                 <prop key="org.openremote.controller.exception.InvalidCommandTypeException">exception/invalidCommandTypeError</prop>
                 <prop key="org.openremote.controller.exception.ControllerXMLNotFoundException">exception/controllerXMLNotFoundError</prop>
                 <prop key="org.openremote.controller.exception.NoSuchEventException">exception/noSuchEventError</prop>
-                <prop key="org.jdom.JDOMException">exception/invalidControllerXMLError</prop>
+                <prop key="org.openremote.controller.exception.InvalidControllerXMLException">exception/invalidControllerXMLError</prop>
             </props>
         </property>
         <property name="defaultErrorView" value="exception/defaultError"/>

@@ -18,35 +18,41 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.utils;
-
-import java.util.List;
-
-import junit.framework.TestCase;
-
-import org.openremote.controller.event.Event;
-import org.openremote.controller.protocol.infrared.IREvent;
-import org.openremote.controller.spring.SpringContext;
-
+package org.openremote.controller.exception;
 
 /**
- * The Class RemoteActionXMLParserTest.
+ * The exception class when InvalidControllerXML.
  * 
- * @author Dan 2009-4-3
+ * @author Dan 2009-5-23
  */
-public class RemoteActionXMLParserTest extends TestCase {
-   
-   /** The remote action xml parser. */
-   private RemoteActionXMLParser remoteActionXMLParser = (RemoteActionXMLParser) SpringContext.getInstance().getBean(
-         "remoteActionXMLParser");
+@SuppressWarnings("serial")
+public class InvalidControllerXMLException extends RuntimeException {
 
    /**
-    * Test find ir event by button id.
+    * Instantiates a new invalid controller xml exception.
     */
-   public void testFindIREventByButtonID(){
-//      List<Event> list= remoteActionXMLParser.findEventsByButtonID("8");
-//      System.out.println(((IREvent)list.get(0)).getName());
-//      assertEquals(1, list.size());
+   public InvalidControllerXMLException() {
+      super();
+   }
+
+   /**
+    * Instantiates a new invalid controller xml exception.
+    * 
+    * @param message the message
+    * @param cause the cause
+    */
+   public InvalidControllerXMLException(String message, Throwable cause) {
+      super(message, cause);
+   }
+
+   /**
+    * Instantiates a new invalid controller xml exception.
+    * 
+    * @param message the message
+    */
+   public InvalidControllerXMLException(String message) {
+      super(message);
    }
    
+
 }
