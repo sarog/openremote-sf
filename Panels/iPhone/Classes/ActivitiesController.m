@@ -82,15 +82,15 @@
 	}
 	
 	if (indexPath.row == activities.count) {
-		cell.textLabel.text = @"Control The Light(Mockup)";
-		cell.imageView.image = [UIImage imageNamed:@"lightIcon.png"];
+		cell.text = @"Control The Light(Mockup)";
+		cell.image = [UIImage imageNamed:@"lightIcon.png"];
 	} else if (indexPath.row == activities.count + 1) {
-		cell.textLabel.text = @"Control the AirConditioner(Mockup)";
-		cell.imageView.image = [UIImage imageNamed:@"AirConditionerIcon.png"];
+		cell.text = @"Control the AirConditioner(Mockup)";
+		cell.image = [UIImage imageNamed:@"AirConditionerIcon.png"];
 	} else {
 		Activity *currentActivity = [activities objectAtIndex:indexPath.row ];
-		cell.textLabel.text = currentActivity.name;
-		cell.imageView.image = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:[[activities objectAtIndex:indexPath.row] icon]]] autorelease];
+		cell.text = currentActivity.name;
+		cell.image = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:[[activities objectAtIndex:indexPath.row] icon]]] autorelease];
 	}
 	return cell;
 }

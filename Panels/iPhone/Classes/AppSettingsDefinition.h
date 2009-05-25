@@ -12,7 +12,7 @@
 
 
 @interface AppSettingsDefinition : NSObject {
-	
+
 }
 + (void)reloadData;
 + (NSMutableArray *)getAppSettings;
