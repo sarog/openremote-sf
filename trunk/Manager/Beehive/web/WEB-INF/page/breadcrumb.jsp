@@ -1,7 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="../../common/taglibs.jsp" %>
 <div id="breadcrumbs">
-${param.isFile}
 <c:set var="breadcrumb" value='${fn:split(breadcrumbPath,"/")}'></c:set>
 <a class="path_t" href="history.htm"><span class="path_text">Beehvie</span></a>
 <span class="path_t">/</span>
@@ -25,7 +24,7 @@ ${param.isFile}
 	<c:otherwise><!-- is dir -->
 	   <c:forEach items='${breadcrumb}' var="name" varStatus="status">
          <c:if test='${status.count le fn:length(breadcrumb)}'>
-            <a class="" href="${getModelsUrl}${fn:substring(breadcrumbPath, 0,fn:indexOf(breadcrumbPath,name)+fn:length(name))} ">${name}</a>
+            <a class="noClass" href="${getModelsUrl}${fn:substring(breadcrumbPath, 0,fn:indexOf(breadcrumbPath,name)+fn:length(name))} ">${name}</a>
          </c:if>
          <c:if test='${status.count lt fn:length(breadcrumb)}'>
             <span class="path_t">/</span>

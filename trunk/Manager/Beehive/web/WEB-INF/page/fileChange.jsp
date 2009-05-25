@@ -16,7 +16,7 @@
       var tr_height = null;
       var currentRightLine = null;
       
-      $().ready(function(){
+      $().ready(function(){         
          left_div = $("#left_div");
          left_div_scroll = $("#left_div")[0];
          right_div = $("#right_div");
@@ -34,6 +34,9 @@
          currentLeftLine = left_div.find("tr:first");
          currentRightLine = right_div.find("tr:first");
          tr_height = currentLeftLine.height();
+         if($("#action").val()=="A"){
+        	       $("#breadcrumbs").find("a:first").nextAll("a").attr("href","#");
+             }
       });
       
       function previous(){
@@ -115,6 +118,7 @@
 </script>
 </head>
 <body tabId="1">
+   <input type="hidden" id="action" value="${action}">
    <table class="infopanel" width="100%" border="0" cellpadding="0"
       cellspacing="0">
       <tr>
@@ -129,6 +133,7 @@
                      <td width="100%" nowrap="true">
                         <jsp:include page="breadcrumb.jsp" flush="true">
                            <jsp:param name="breadcrumbPath" value="${breadcrumbPath}" />
+                           <jsp:param name="isFile" value="${isFile}" />
                         </jsp:include>
                      </td>
                   </tr>
