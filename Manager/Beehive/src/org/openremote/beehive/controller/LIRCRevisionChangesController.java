@@ -145,7 +145,7 @@ public class LIRCRevisionChangesController extends MultiActionController {
       ModelAndView mav = new ModelAndView(commitView);
       if(items != null){
          request.getSession().setAttribute("isCommitting", "true");
-         lircSynchronizer.update(items, "commit", "admin");
+         svnDelegateService.commit(items,"commit all the changes from lirc", "admin");
          request.getSession().removeAttribute("isCommitting");
          mav.addObject("commitStatus", "commit success,you have commit "+items.length+" items!");
       }else{

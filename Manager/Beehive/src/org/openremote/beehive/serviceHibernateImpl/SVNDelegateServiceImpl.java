@@ -86,6 +86,21 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
     * {@inheritDoc}
     * @throws SVNException 
     */
+   public boolean commitAll(String message, String username) throws SVNException {
+      File root = new File(configuration.getWorkCopyDir());
+      try {
+         svnClient.commit(new File[]{new File(configuration.getWorkCopyDir())}, message, true);
+      } catch (SVNClientException e) {
+         logger.error("Can't create svnclient, commit failed!",e);
+         return false;
+      }
+      
+      return true;
+   }
+   /**
+    * {@inheritDoc}
+    * @throws SVNException 
+    */
    public List<UpdatedFile> commit(String[] paths, String message, String username) throws SVNException {
       svnClient.setUsername(username);
       List<UpdatedFile> updatedFiles = new ArrayList<UpdatedFile>();
@@ -94,53 +109,58 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       if (totalPath > 0) {
          try {
             for (int i = 0; i < totalPath; i++) {
-               files[i] = new File(configuration.getWorkCopyDir() + paths[i]);
+               String[] arr = paths[i].split("@");
+               String path = arr[0];
+               String status = arr[1];
+               files[i] = new File(configuration.getWorkCopyDir() + path);
 
-               ISVNStatus[] fileStatus = svnClient.getStatus(files[i], false, false);
-               if (fileStatus.length > 0) {
-                  if (SVNStatusKind.UNVERSIONED == fileStatus[0].getTextStatus() || SVNStatusKind.ADDED == fileStatus[0].getTextStatus()) {
-                     UpdatedFile addedFile = new UpdatedFile(fileStatus[0].getFile(), Actions.ADD);
-                     if (fileStatus[0].getFile().isFile()) {
-                        svnClient.addDirectory(fileStatus[0].getFile(), false);
+//               ISVNStatus[] fileStatus = svnClient.getStatus(files[i], false, false);
+               if (status != null) {
+                  if ("A".equals(status)) {
+//                     UpdatedFile addedFile = new UpdatedFile(fileStatus[0].getFile(), Actions.ADD);
+                     if (files[i].isDirectory()) {
+                        svnClient.addDirectory(files[i], false);
                      } else {
-                        svnClient.addFile(fileStatus[0].getFile());
+                        svnClient.addFile(files[i]);
                      }
-                     updatedFiles.add(addedFile);
-                  } else if (SVNStatusKind.DELETED == fileStatus[0].getTextStatus()
-                        || SVNStatusKind.MISSING == fileStatus[0].getTextStatus()) {
-                     UpdatedFile deletedFile = new UpdatedFile(fileStatus[0].getFile(), Actions.DELETE);
-                     if(fileStatus[0].getFile().isDirectory()){
-                        deletedFile.setDir(true);
-                     }
-                     if (SVNStatusKind.MISSING == fileStatus[0].getTextStatus()) {
-                        svnClient.update(files[i], SVNRevision.HEAD, true);
-                        if(files[i].isDirectory()){                           
-                           deletedFile.setDir(true);
-                        }
-                        svnClient.remove(new File[] { fileStatus[0].getFile() }, true);
-                     }
-                     updatedFiles.add(deletedFile);
-                  } else if (SVNStatusKind.MODIFIED == fileStatus[0].getTextStatus()) {
-                     UpdatedFile modifiedFile = new UpdatedFile(fileStatus[0].getFile(), Actions.MODIFY);
-                     updatedFiles.add(modifiedFile);
-                  }
+//                     updatedFiles.add(addedFile);
+                  } 
+//                  else if (SVNStatusKind.DELETED == fileStatus[0].getTextStatus()
+//                        || SVNStatusKind.MISSING == fileStatus[0].getTextStatus()) {
+////                     UpdatedFile deletedFile = new UpdatedFile(fileStatus[0].getFile(), Actions.DELETE);
+//                     if(fileStatus[0].getFile().isDirectory()){
+//                        deletedFile.setDir(true);
+//                     }
+//                     if (SVNStatusKind.MISSING == fileStatus[0].getTextStatus()) {
+//                        svnClient.update(files[i], SVNRevision.HEAD, true);
+//                        if(files[i].isDirectory()){                           
+//                           deletedFile.setDir(true);
+//                        }
+//                        svnClient.remove(new File[] { fileStatus[0].getFile() }, true);
+//                     }
+////                     updatedFiles.add(deletedFile);
+//                  } else if (SVNStatusKind.MODIFIED == fileStatus[0].getTextStatus()) {
+////                     UpdatedFile modifiedFile = new UpdatedFile(fileStatus[0].getFile(), Actions.MODIFY);
+////                     updatedFiles.add(modifiedFile);
+//                  }
                } else {
                   logger.info("The file of " + files[i] + " is not exist!");
                }
             }
-            int commitTimes = totalPath/500 + 1;
-            int lastCommitCount = totalPath%500;
-            for(int i = 0; i < commitTimes; i++){
-               if(i==commitTimes-1){
-                  File[] subFiles = new File[lastCommitCount];
-                  System.arraycopy(files, i*500, subFiles, 0, lastCommitCount);
-                  svnClient.commit(subFiles, message, true);
-               }else{
-                  File[] subFiles = new File[500];
-                  System.arraycopy(files, i*500, subFiles, 0, 500);
-                  svnClient.commit(subFiles, message, true);
-               }
-            }            
+//            int commitTimes = totalPath/500 + 1;
+//            int lastCommitCount = totalPath%500;
+//            for(int i = 0; i < commitTimes; i++){
+//               if(i==commitTimes-1){
+//                  File[] subFiles = new File[lastCommitCount];
+//                  System.arraycopy(files, i*500, subFiles, 0, lastCommitCount);
+//                  svnClient.commit(subFiles, message, true);
+//               }else{
+//                  File[] subFiles = new File[500];
+//                  System.arraycopy(files, i*500, subFiles, 0, 500);
+//                  svnClient.commit(subFiles, message, true);
+//               }
+//            }            
+            svnClient.commit(files, message, true);
          } catch (SVNClientException e) {
             logger.error("The svnClientException!", e);
             throw new SVNException("The svnClient cause Exception",e);
@@ -321,6 +341,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
    public List<LIRCEntry> getList(String url, long revision) {
       List<LIRCEntry> entryList = new ArrayList<LIRCEntry>();
       try {
+         long headRevision = getHeadRevision();
          ISVNDirEntry[] list = svnClient.getList(new SVNUrl(configuration.getSvnDir() + url), new SVNRevision.Number(revision), false);
          for (ISVNDirEntry dirEntry : list) {
             LIRCEntry entry = new LIRCEntry();
@@ -328,19 +349,13 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             entry.setVersion(dirEntry.getLastChangedRevision().getNumber());
             entry.setAuthor(dirEntry.getLastCommitAuthor());
             entry.setDate(dirEntry.getLastChangedDate());
-            if(dirEntry.getLastChangedRevision().getNumber() == getHeadRevision()){
+            if(dirEntry.getLastChangedRevision().getNumber() == headRevision){
                entry.setHeadversion(true);
             }
             entry.setSize(dirEntry.getSize());
             if (dirEntry.getNodeKind().equals(SVNNodeKind.FILE)) {
                entry.setFile(true);
-               InputStream is = svnClient.getContent(new SVNUrl(configuration.getSvnDir() + url + File.separator
-                     + dirEntry.getPath()), dirEntry.getLastChangedRevision());
-               StringBuffer strBuffer = StringUtil.readStringInInputStream(is);
-               entry.setContent(strBuffer.toString());
-            } else {
-               entry.setFile(false);
-            }
+            } 
             entryList.add(entry);
          }
       } catch (MalformedURLException e) {
@@ -457,37 +472,31 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
     * {@inheritDoc}
     */
    public DiffStatus getDiffStatus(String path) {
-	  String workDir = new File(configuration.getWorkCopyDir()).getPath();
+      String workDir = new File(configuration.getWorkCopyDir()).getPath();
       File filePath = new File(configuration.getWorkCopyDir() + path);
       DiffStatus ds = new DiffStatus();
-      if(filePath.isDirectory()){
-         for(File file: filePath.listFiles()){
-            
-            if(!file.getName().equals(".svn")){               
-               try {
-                  ISVNStatus[] status = svnClient.getStatus(file, true, false);
-                  for (ISVNStatus state : status) {
-                     if (SVNStatusKind.UNVERSIONED == state.getTextStatus()) {
-                        addFile(ds, state.getFile(), workDir);
-                     } else {
-                        String unixPath = state.getFile().getPath().replace(workDir, "").replaceAll("\\\\", "/");
-                        if (SVNStatusKind.DELETED == state.getTextStatus() || SVNStatusKind.MISSING == state.getTextStatus()) {
-                           Element e = ds.new Element(unixPath, Actions.DELETE);
-                           ds.addElement(e);
-                        } else if (SVNStatusKind.MODIFIED == state.getTextStatus()) {
-                           Element e = ds.new Element(unixPath, Actions.MODIFY);
-                           ds.addElement(e);
-                        }else if(SVNStatusKind.ADDED == state.getTextStatus()){
-                           Element e1 = ds.new Element(unixPath, Actions.ADD);
-                           ds.addElement(e1);
-                        }
-                     }
-                  }
-               } catch (SVNClientException e) {
-                  logger.error("The SVNClientException!", e);
+      try {
+         ISVNStatus[] status = svnClient.getStatus(filePath, true, false);
+         for (ISVNStatus state : status) {
+            if (SVNStatusKind.UNVERSIONED == state.getTextStatus()) {
+               addFileRecursively(ds, state.getFile(), workDir);
+            } else {
+               String relativePath = state.getFile().getPath().replace(workDir, "").replaceAll("\\\\", "/");
+               if (SVNStatusKind.DELETED == state.getTextStatus() 
+                     || SVNStatusKind.MISSING == state.getTextStatus()) {
+                  Element e = ds.new Element(relativePath, Actions.DELETE);
+                  ds.addElement(e);
+               } else if (SVNStatusKind.MODIFIED == state.getTextStatus()) {
+                  Element e = ds.new Element(relativePath, Actions.MODIFY);
+                  ds.addElement(e);
+               }else if(SVNStatusKind.ADDED == state.getTextStatus()){
+                  Element e1 = ds.new Element(relativePath, Actions.ADD);
+                  ds.addElement(e1);
                }
             }
          }
+      } catch (SVNClientException e) {
+         logger.error("The SVNClientException!", e);
       }
       return ds;
    }
@@ -548,12 +557,12 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
     * This method is add unVersion or or directory to the diffStatus
     * 
     */
-   private void addFile(DiffStatus ds, File file, String workDir) {
+   private void addFileRecursively(DiffStatus ds, File file, String workDir) {
       if (file.isDirectory()) {
          Element e1 = ds.new Element(file.getPath().replace(workDir, "").replaceAll("\\\\", "/"), Actions.ADD);
          ds.addElement(e1);
          for (File subFile : file.listFiles()) {
-            addFile(ds, subFile, workDir);
+            addFileRecursively(ds, subFile, workDir);
          }
       } else {
          Element e1 = ds.new Element(file.getPath().replace(workDir, "").replaceAll("\\\\", "/"), Actions.ADD);

@@ -20,9 +20,11 @@
  */
 package org.openremote.beehive.api.service;
 
+import java.io.File;
 import java.util.List;
 
 import org.openremote.beehive.api.dto.VendorDTO;
+import org.openremote.beehive.domain.Vendor;
 
 /**
  * Business service for <code>VendorDTO</code>
@@ -44,4 +46,23 @@ public interface VendorService {
     * @param vendorName the vendor name
     */
    void deleteByName(String vendorName);
+   
+   /**
+    * Load by name.
+    * 
+    * @param vendorName
+    *           the vendor name
+    * 
+    * @return the vendor
+    */
+   Vendor loadByName(String vendorName);
+   
+   
+   /**
+    * Sync with wc.
+    * 
+    * @param file
+    *           the file
+    */
+   void syncWith(File file);
 }

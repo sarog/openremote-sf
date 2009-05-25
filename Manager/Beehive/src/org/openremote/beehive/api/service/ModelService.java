@@ -162,9 +162,12 @@ public interface ModelService {
     * @param fis the fis
     * @param model the model
     */
-   void merge(FileInputStream fis, Model model);
+   void merge(FileInputStream fis, long id);
    
    boolean isFile(String path);
    
+   Model findByFileName(String fileName);
+   
+   void syncWith(File file);
    
 }

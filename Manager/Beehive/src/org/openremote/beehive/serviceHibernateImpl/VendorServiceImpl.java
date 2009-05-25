@@ -20,6 +20,7 @@
  */
 package org.openremote.beehive.serviceHibernateImpl;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,18 +30,23 @@ import org.apache.log4j.Logger;
 import org.openremote.beehive.api.dto.VendorDTO;
 import org.openremote.beehive.api.service.VendorService;
 import org.openremote.beehive.domain.Vendor;
+import org.openremote.beehive.utils.FileUtil;
 
+// TODO: Auto-generated Javadoc
 /**
- * {@inheritDoc}
+ * {@inheritDoc}.
  * 
  * @author allen 2009-2-17
  */
 public class VendorServiceImpl extends BaseAbstractService<Vendor> implements VendorService {
 
+   /** The logger. */
    private static Logger logger = Logger.getLogger(VendorServiceImpl.class.getName());
 
    /**
-    * {@inheritDoc }
+    * {@inheritDoc }.
+    * 
+    * @return the list<VendorDTO>
     */
    public List<VendorDTO> loadAllVendors() {
       List<VendorDTO> vendorDTOs = new ArrayList<VendorDTO>();
@@ -59,12 +65,54 @@ public class VendorServiceImpl extends BaseAbstractService<Vendor> implements Ve
    }
    
    /**
-    * {@inheritDoc }
+    * {@inheritDoc }.
+    * 
+    * @param vendorName
+    *           the vendor name
     */
    public void deleteByName(String vendorName) {
-      Vendor vendor = genericDAO.getByNonIdField(Vendor.class, "name", vendorName);
+      Vendor vendor = loadByName(vendorName);
       if (vendor != null) {
          genericDAO.delete(vendor);
       }
+   }
+
+   /**
+    * {@inheritDoc }.
+    * 
+    * @param vendorName
+    *           the vendor name
+    */
+   public void syncWith(File file) {
+      if(file.isFile()){
+         return;
+      }
+      boolean isDeleted = !file.exists();
+      String[] arr = FileUtil.splitPath(file);
+      String vendorName = arr[arr.length-1];
+      if(isDeleted){
+         return;
+      }else{
+         Vendor vendor = loadByName(vendorName);
+         if(vendor == null){
+            Vendor newVendor = new Vendor();
+            newVendor.setName(vendorName);
+            genericDAO.save(newVendor);
+         }else if (!vendorName.equals(vendor.getName())) {
+            vendor.setName(vendorName);
+            genericDAO.merge(vendor);
+         }
+      }
+      
+   }
+
+   /**
+    * {@inheritDoc }.
+    * 
+    * @param vendorName
+    *           the vendor name
+    */
+   public Vendor loadByName(String vendorName) {
+      return genericDAO.getByNonIdField(Vendor.class, "name", vendorName);
    }
 }

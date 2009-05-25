@@ -166,7 +166,7 @@
     
     <listener>
         <listener-class>
-            org.openremote.beehive.listener.SVNListener
+            org.openremote.beehive.listener.ApplicationListener
         </listener-class>
     </listener>
    <!--

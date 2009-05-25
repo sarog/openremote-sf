@@ -29,14 +29,15 @@ import org.openremote.beehive.repo.LIRCEntry;
 import org.openremote.beehive.repo.LogMessage;
 import org.openremote.beehive.repo.UpdatedFile;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface SVNDelegateService.
  * 
  * @author Tomsky
  */
 public interface SVNDelegateService {
-
+   
+   boolean commitAll(String message, String username)throws SVNException;
+   
    /**
     * Commit.
     * 
