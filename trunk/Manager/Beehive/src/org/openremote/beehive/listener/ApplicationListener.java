@@ -43,7 +43,7 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
  * @author Tomsky
  *
  */
-public class SVNListener implements ServletContextListener {
+public class ApplicationListener implements ServletContextListener {
    private ISVNClientAdapter svnClient = SVNClientFactory.getSVNClient();
    private ApplicationContext ctx = new ClassPathXmlApplicationContext(new String[] { "spring-context.xml" });
    private Configuration configuration = (Configuration)ctx.getBean("configuration");

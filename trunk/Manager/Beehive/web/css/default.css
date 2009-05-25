@@ -262,7 +262,6 @@ vertical-align:middle;
 
 /* footer styles */
 table.footer {
-   background-image:url("../images/bg_f.gif");
 }
 
 .footer td, a.footer, a.footer:active, a.footer:link, a.footer:visited, a.footer:hover {
@@ -308,7 +307,6 @@ a.number:active, a.number:hover {
 	color: #00425e;
 }
 .path_node {
-	background: url("../image/repo_background.jpg" ) top repeat-x;
 	padding: 1 3 2 0;
 	font-size:11px;
 	font-family:arial;

@@ -40,7 +40,7 @@ public class LircSynchronizer extends ApplicationObjectSupport{
          if (updatedFile.getStatus() == Actions.MODIFY) {
             String modelName = arr[arr.length - 1];
             Model model = genericDAO.getByNonIdField(Model.class, "fileName", modelName);
-            modelService.merge(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()),model);
+//            modelService.merge(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()),model);
          } else if (updatedFile.getStatus() == Actions.ADD) {
             if (updatedFile.getFile().isFile() && !FileUtil.isIgnored(updatedFile.getFile())) {
                String vendorName = arr[arr.length - 2];
@@ -48,7 +48,7 @@ public class LircSynchronizer extends ApplicationObjectSupport{
                System.out.println(updatedFile.getFile().getAbsolutePath());
                Model model = genericDAO.getByNonIdField(Model.class, "fileName", modelName);
                if(model != null){
-                  modelService.merge(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()),model);
+//                  modelService.merge(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()),model);
 //                  genericDAO.delete(model);
                }else{
                   modelService.add(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()), vendorName, modelName);                                 

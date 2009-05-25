@@ -98,6 +98,7 @@
 				</td>
 			</tr>
 	</table>
+
 	<table id="table_list_of_vendor" class="list" rules="all"
 		width="100%" cellpadding="0" cellspacing="0">
 		<thead>
@@ -149,5 +150,6 @@
 		</c:forEach>
 		</tbody>
 	</table>
+
 </body>
 </html>
