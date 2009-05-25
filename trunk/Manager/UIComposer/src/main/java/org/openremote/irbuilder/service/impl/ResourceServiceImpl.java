@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.openremote.irbuilder.Constants;
 import org.openremote.irbuilder.configuration.PathConfig;
 import org.openremote.irbuilder.exception.FileOperationException;
+import org.openremote.irbuilder.exception.XmlParserException;
 import org.openremote.irbuilder.service.ResourceService;
 import org.openremote.irbuilder.utils.IphoneXmlParser;
 import org.openremote.irbuilder.utils.StringUtils;
@@ -57,7 +58,7 @@ public class ResourceServiceImpl implements ResourceService {
       File lircdFile = new File(PathConfig.getInstance().lircFilePath(sessionId));
       File zipFile = new File(PathConfig.getInstance().openremoteZipFilePath(sessionId));
 
-      String newIphoneXML = IphoneXmlParser.parserXML(iphoneXML, sessionFolder);
+      String newIphoneXML = IphoneXmlParser.parserXML(new File(getClass().getResource("/iphone.xsd").getPath()), iphoneXML, sessionFolder);
       
        try {
           
@@ -124,6 +125,8 @@ public class ResourceServiceImpl implements ResourceService {
                if (Constants.PANEL_DESC_FILE_EXT.equalsIgnoreCase(StringUtils.getFileExt(zipEntry.getName()))) {
                   irbFileContent = IOUtils.toString(zipInputStream);
                }
+               checkXML(zipInputStream, zipEntry, "iphone");
+               checkXML(zipInputStream, zipEntry, "controller");
                //TODO extract constant
                if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|irb)")) {
                   File file = new File(PathConfig.getInstance().sessionFolder(sessionId) + zipEntry.getName());
@@ -154,6 +157,14 @@ public class ResourceServiceImpl implements ResourceService {
 
       }
       return irbFileContent;
+   }
+
+   private void checkXML(ZipInputStream zipInputStream, ZipEntry zipEntry,String xmlName) throws IOException {
+      if(zipEntry.getName().equals(xmlName+".xml")){
+         if(!IphoneXmlParser.checkXmlSchema(getClass().getResource("/"+xmlName+".xsd").getPath(), IOUtils.toString(zipInputStream))){
+            throw new XmlParserException("The "+xmlName+".xml is wrong, please check it");
+         }
+      }
    }
 
    public File uploadImage(InputStream inputStream, String fileName, String sessionId) {
