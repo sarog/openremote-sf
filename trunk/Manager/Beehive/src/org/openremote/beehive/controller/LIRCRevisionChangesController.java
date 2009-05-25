@@ -25,6 +25,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.file.LircSynchronizer;
@@ -43,7 +44,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
  */
 public class LIRCRevisionChangesController extends MultiActionController {
    private SVNDelegateService svnDelegateService;
-//   private ModelService modelService;
+   private ModelService modelService;
    private String indexView;
    private String changeView;
    private String commitView;
@@ -65,9 +66,9 @@ public class LIRCRevisionChangesController extends MultiActionController {
       this.changeView = changeView;
    }
 
-//   public void setModelService(ModelService modelService) {
-//      this.modelService = modelService;
-//   }
+   public void setModelService(ModelService modelService) {
+      this.modelService = modelService;
+   }
 
    public void setLircSynchronizer(LircSynchronizer lircSynchronizer) {
       this.lircSynchronizer = lircSynchronizer;
@@ -119,6 +120,8 @@ public class LIRCRevisionChangesController extends MultiActionController {
          mav.addObject("repoMessage", repoMessage);     
       }
       mav.addObject("breadcrumbPath",path);
+      mav.addObject("isFile", modelService.isFile(path));
+      mav.addObject("action", action);
       DiffResult dr = svnDelegateService.diff(path);
       List<Line> leftLines = dr.getLeft();
       List<Line> rightLines = dr.getRight();      
