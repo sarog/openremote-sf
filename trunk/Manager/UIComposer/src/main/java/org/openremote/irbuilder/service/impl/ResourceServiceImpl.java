@@ -125,8 +125,14 @@ public class ResourceServiceImpl implements ResourceService {
                if (Constants.PANEL_DESC_FILE_EXT.equalsIgnoreCase(StringUtils.getFileExt(zipEntry.getName()))) {
                   irbFileContent = IOUtils.toString(zipInputStream);
                }
-               checkXML(zipInputStream, zipEntry, "iphone");
-               checkXML(zipInputStream, zipEntry, "controller");
+
+               if (checkXML(zipInputStream, zipEntry, "iphone")) {
+                  throw new XmlParserException("The iphone.xml schema validation fail, please check it");
+               }
+               if (checkXML(zipInputStream, zipEntry, "controller")) {
+                  throw new XmlParserException("The controller.xml schema validation fail, please check it");
+               }
+
                //TODO extract constant
                if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|irb)")) {
                   File file = new File(PathConfig.getInstance().sessionFolder(sessionId) + zipEntry.getName());
@@ -159,12 +165,13 @@ public class ResourceServiceImpl implements ResourceService {
       return irbFileContent;
    }
 
-   private void checkXML(ZipInputStream zipInputStream, ZipEntry zipEntry,String xmlName) throws IOException {
+   private boolean checkXML(ZipInputStream zipInputStream, ZipEntry zipEntry,String xmlName) throws IOException {
       if(zipEntry.getName().equals(xmlName+".xml")){
          if(!IphoneXmlParser.checkXmlSchema(getClass().getResource("/"+xmlName+".xsd").getPath(), IOUtils.toString(zipInputStream))){
-            throw new XmlParserException("The "+xmlName+".xml is wrong, please check it");
+            return false;
          }
       }
+      return true;
    }
 
    public File uploadImage(InputStream inputStream, String fileName, String sessionId) {

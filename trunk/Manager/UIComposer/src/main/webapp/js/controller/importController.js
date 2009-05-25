@@ -45,8 +45,13 @@ var ImportController = function() {
             open: function() {
                 $("#upload_form").ajaxForm({
                     success: uploadSuccess,
-                    dataType: 'text',
-                    type: 'post'
+                    dataType: 'json',
+                    type: 'post',
+					error: function(XMLHttpRequest, textStatus, errorThrown){
+						$.hideLoading();
+						$("#upload_form_container").updateTips($("#zip_file_input"),XMLHttpRequest.responseText);
+					},
+					global:false
                 });
             }
         });
@@ -60,7 +65,6 @@ var ImportController = function() {
      * @param statusText statusText
      */
     function uploadSuccess(responseText, statusText) {
-
         ImportController.cleanUp();
         var data = eval('(' + responseText + ')');
         revertScreens(data.panel.screens);
