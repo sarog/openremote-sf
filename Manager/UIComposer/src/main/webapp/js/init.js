@@ -24,6 +24,7 @@ $(document).ready(function() {
     $("#version").append(getVersionLabel());
     
     $("body").ajaxError(function(event, request, settings) {
+		$.hideLoading();
         if (request.status == 0) {
             $.showErrorMsg("Can't connect to server.");
         } else {
