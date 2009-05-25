@@ -283,3 +283,17 @@ jQuery.fn.interceptStr = function(options) {
 		$(this).attr("title",options.text);
 	}
 };
+
+jQuery.showLoading = function() {
+	$.blockUI({ 
+		message: $('#loading'),
+		css:{
+			border:'1px solid #ccc'
+		},
+		baseZ:2710
+	}); 
+};
+
+jQuery.hideLoading = function() {
+	$.unblockUI();
+};
