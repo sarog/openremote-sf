@@ -230,7 +230,7 @@
 	}
 	
 	if ([self isAutoDiscoverySection:indexPath]) {
-		autoCell.textLabel.text = [[AppSettingsDefinition getAutoDiscoveryDic] objectForKey:@"name"];
+		autoCell.text = [[AppSettingsDefinition getAutoDiscoveryDic] objectForKey:@"name"];
 		autoCell.selectionStyle = UITableViewCellSelectionStyleNone;
 		UISwitch *switchView = [[UISwitch alloc]init];
 		[switchView setOn:autoDiscovery];
@@ -240,12 +240,12 @@
 		return autoCell;
 	} else {
 		if ([self isAddCustomServerRow:indexPath]) {
-			serverCell.textLabel.text = @"add another server";
+			serverCell.text = @"add another server";
 			serverCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 			serverCell.selectionStyle = UITableViewCellSelectionStyleBlue;
 		}
 		else {
-			serverCell.textLabel.text = [[serverArray objectAtIndex:indexPath.row] objectForKey:@"url"];
+			serverCell.text = [[serverArray objectAtIndex:indexPath.row] objectForKey:@"url"];
 			serverCell.selectionStyle = UITableViewCellSelectionStyleNone;
 			if ( [[[serverArray objectAtIndex:indexPath.row] objectForKey:@"choose"] boolValue]) {
 				currentSelectedServerIndex = indexPath;

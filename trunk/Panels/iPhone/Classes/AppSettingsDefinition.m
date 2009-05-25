@@ -26,7 +26,7 @@ static NSMutableArray *settingsData;
 static ServerAutoDiscoveryController *autoDiscovery;
 static NSMutableArray *errors;
 
-
+static int retryTimes = 0;
 + (NSMutableArray *)getAppSettings {
 	if (!settingsData) {
 			settingsData = [[NSMutableArray alloc] initWithContentsOfFile:[DirectoryDefinition appSettingsFilePath]];
@@ -149,7 +149,13 @@ static NSMutableArray *errors;
 				} else
 					if (checkControllerStatus == kControllerNotStarted) {
 						if ([self isAutoDiscoveryEnable]) {
-							[errors addObject:@"Make sure your server have been started."];
+							
+							if (retryTimes != 0) {
+								[errors addObject:@"Make sure your server have been started."];
+							} else {
+								[autoDiscovery findServer];
+								retryTimes = retryTimes + 1;
+							}
 						} else {
 							[errors addObject:@"Your server is not start or the server url which you configed is wrong."];
 						}

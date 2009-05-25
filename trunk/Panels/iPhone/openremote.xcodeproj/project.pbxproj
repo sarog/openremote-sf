@@ -11,7 +11,6 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		799CC0D10F4CF435006195BD /* Screen.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC0D00F4CF435006195BD /* Screen.m */; };
 		799CC0DE0F4CF912006195BD /* Control.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC0DD0F4CF912006195BD /* Control.m */; };
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
@@ -44,11 +43,11 @@
 		8CA75DD30F57820E00ADF0C0 /* AccelerometerController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8CA75DD20F57820E00ADF0C0 /* AccelerometerController.xib */; };
 		8CA75E5C0F57920900ADF0C0 /* lights.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA75E5A0F57920900ADF0C0 /* lights.png */; };
 		8CA75E800F57944100ADF0C0 /* livingroom.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA75E7F0F57944100ADF0C0 /* livingroom.png */; };
-		8CA75EC50F579B4C00ADF0C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CA75EC40F579B4C00ADF0C0 /* QuartzCore.framework */; };
 		8CA75F0E0F57BED100ADF0C0 /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA75F0D0F57BED100ADF0C0 /* button.png */; };
 		8CA7603F0F57E57300ADF0C0 /* AirConditionerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA7603E0F57E57300ADF0C0 /* AirConditionerIcon.png */; };
 		8CA7605C0F57E64E00ADF0C0 /* lightIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA7605B0F57E64E00ADF0C0 /* lightIcon.png */; };
 		8CA7607B0F57EA7100ADF0C0 /* buttonHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA7607A0F57EA7100ADF0C0 /* buttonHighlighted.png */; };
+		8CB33E4E0FCA4AE400B010DF /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */; };
 		8CC0B5C50FC298F20084D246 /* CheckNetworkStaff.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC0B5C40FC298F20084D246 /* CheckNetworkStaff.m */; };
 		8CD9745C0F52F32C00689B08 /* ServerDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CD9745B0F52F32C00689B08 /* ServerDefinition.m */; };
 		8CF6A2800FBD3782006ED733 /* AsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27D0FBD3782006ED733 /* AsyncSocket.m */; };
@@ -128,6 +127,7 @@
 		8CA7603E0F57E57300ADF0C0 /* AirConditionerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AirConditionerIcon.png; sourceTree = "<group>"; };
 		8CA7605B0F57E64E00ADF0C0 /* lightIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lightIcon.png; sourceTree = "<group>"; };
 		8CA7607A0F57EA7100ADF0C0 /* buttonHighlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = buttonHighlighted.png; sourceTree = "<group>"; };
+		8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		8CC0B5C30FC298F20084D246 /* CheckNetworkStaff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CheckNetworkStaff.h; sourceTree = "<group>"; };
 		8CC0B5C40FC298F20084D246 /* CheckNetworkStaff.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CheckNetworkStaff.m; sourceTree = "<group>"; };
 		8CD9745A0F52F32C00689B08 /* ServerDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerDefinition.h; sourceTree = "<group>"; };
@@ -157,10 +157,9 @@
 			files = (
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
-				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
-				8CA75EC50F579B4C00ADF0C0 /* QuartzCore.framework in Frameworks */,
 				8C7BE4F60FA0471F00F18AA1 /* SystemConfiguration.framework in Frameworks */,
 				8CF6A2B10FBD784C006ED733 /* CFNetwork.framework in Frameworks */,
+				8CB33E4E0FCA4AE400B010DF /* CoreGraphics.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,7 +199,6 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				8C6528470FC0F64F002632BF /* InitViewController.xib */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -217,6 +215,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				8C6528470FC0F64F002632BF /* InitViewController.xib */,
 				8C652AE70FC12C41002632BF /* Icon.png */,
 				8C652A4C0FC125FE002632BF /* global.logo.png */,
 				8C652A480FC125AD002632BF /* loading.png */,
@@ -241,6 +240,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */,
 				8CA75EC40F579B4C00ADF0C0 /* QuartzCore.framework */,
 				8C7BE4F50FA0471F00F18AA1 /* SystemConfiguration.framework */,
 				8CF6A2B00FBD784C006ED733 /* CFNetwork.framework */,
@@ -457,15 +457,16 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Cai";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = openremote;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "50FC0691-69DB-4BE8-A1F8-70D2D85DB68F";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos2.2.1;
 			};
 			name = Debug;
 		};
@@ -476,11 +477,13 @@
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Finalist IT Group";
 				COPY_PHASE_STRIP = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
-				PRODUCT_NAME = iphonedemo;
+				PRODUCT_NAME = openremote;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "8C9903CC-67F7-4E41-9B76-FA4AF2204F7F";
+				SDKROOT = iphoneos2.2.1;
 			};
 			name = Release;
 		};
@@ -508,13 +511,14 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Finalist IT Group";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = openremote;
 				PROVISIONING_PROFILE = "D7265412-380A-4ECE-AC79-651A57197CCF";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D7265412-380A-4ECE-AC79-651A57197CCF";
+				SDKROOT = iphoneos2.2.1;
 			};
 			name = distribute;
 		};

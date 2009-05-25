@@ -39,7 +39,7 @@
 	if (error ) {
 		return kControllerNotStarted;
 	} else if ([resp statusCode] != 200){
-		NSLog(@"checkControllerAvailable statusCode %@",[resp statusCode] );
+		NSLog(@"checkControllerAvailable statusCode %d",[resp statusCode] );
 		return kControllerNotFindApp;
 	}
 	return kCheckNetworkStepOK;

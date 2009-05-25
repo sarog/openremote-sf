@@ -57,9 +57,9 @@
 	buttonImage = [[UIImage imageNamed:@"buttonHighlighted.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
 	[button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
 	
-	[button.titleLabel setFont:[UIFont boldSystemFontOfSize:18]];
+	[button setFont:[UIFont boldSystemFontOfSize:18]];
 	[button setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
-	button.titleLabel.shadowOffset = CGSizeMake(0, -2);
+	[button setTitleShadowOffset:CGSizeMake(0, -2)];
 	
 	
 	if (control.icon) {
