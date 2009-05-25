@@ -21,6 +21,7 @@
 package org.openremote.beehive.utils;
 
 import org.apache.log4j.Logger;
+import org.openremote.beehive.listener.SVNCommitNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
@@ -34,7 +35,7 @@ public class SVNClientFactory {
    private static Logger logger = Logger.getLogger(SVNClientFactory.class.getName());
 
    private static ISVNClientAdapter svnClient;
-
+   
    public synchronized static ISVNClientAdapter getSVNClient() {
       if (svnClient == null) {
          try {
@@ -45,10 +46,13 @@ public class SVNClientFactory {
          try {
             String bestClientType = SVNClientAdapterFactory.getPreferredSVNClientType();
             svnClient = SVNClientAdapterFactory.createSVNClient(bestClientType);
+            svnClient.addNotifyListener(new SVNCommitNotifyListener());
          } catch (SVNClientException e) {
             logger.error("Can't create svnclient!");
          }
       }
       return svnClient;
    }
+   
 }
+

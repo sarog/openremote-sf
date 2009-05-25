@@ -23,6 +23,7 @@ package org.openremote.beehive.serviceHibernateImpl;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ import org.openremote.beehive.repo.UpdatedFile;
 import org.openremote.beehive.utils.FileUtil;
 import org.openremote.beehive.utils.StringUtil;
 
+// TODO: Auto-generated Javadoc
 /**
  * {@inheritDoc}.
  * 
@@ -70,7 +72,8 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
    /**
     * Sets the svn delegate service.
     * 
-    * @param svnDelegateService the new svn delegate service
+    * @param svnDelegateService
+    *           the new svn delegate service
     */
    public void setSvnDelegateService(SVNDelegateService svnDelegateService) {
       this.svnDelegateService = svnDelegateService;
@@ -79,7 +82,8 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
    /**
     * Sets the vendor service.
     * 
-    * @param vendorService the new vendor service
+    * @param vendorService
+    *           the new vendor service
     */
    public void setVendorService(VendorService vendorService) {
       this.vendorService = vendorService;
@@ -202,11 +206,14 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
    /**
     * Merge.
     * 
-    * @param fis the fis
-    * @param model the model
+    * @param fis
+    *           the fis
+    * @param model
+    *           the model
     */
-   public void merge(FileInputStream fis, Model model){
+   public void merge(FileInputStream fis, long id){
       List<RemoteSection> remoteSectionList = LircConfFile.getRemoteSectionList(fis);
+      Model model = loadById(id);
       genericDAO.deleteAll(model.getRemoteSections());
       model.setRemoteSections(null);
       if (remoteSectionList.size() > 0) {
@@ -223,7 +230,8 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
    /**
     * Find vendor.
     * 
-    * @param vendorName the vendor name
+    * @param vendorName
+    *           the vendor name
     * 
     * @return the vendor
     */
@@ -241,8 +249,10 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
    /**
     * Creates the model.
     * 
-    * @param vendor the vendor
-    * @param modelName the model name
+    * @param vendor
+    *           the vendor
+    * @param modelName
+    *           the model name
     * 
     * @return the model
     */
@@ -296,7 +306,8 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
    /**
     * Sets the configuration.
     * 
-    * @param configuration the new configuration
+    * @param configuration
+    *           the new configuration
     */
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
@@ -314,7 +325,7 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
          if (updatedFile.getStatus() == Actions.MODIFY) {
             String modelName = arr[arr.length - 1];
             Model model = genericDAO.getByNonIdField(Model.class, "fileName", modelName);
-            merge(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()),model);
+            merge(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()),model.getOid());
          } else if (updatedFile.getStatus() == Actions.ADD) {
             if (updatedFile.getFile().isFile() && !FileUtil.isIgnored(updatedFile.getFile())) {
                String vendorName = arr[arr.length - 2];
@@ -392,8 +403,46 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
       return genericDAO.loadAll(Model.class).size();
    }
    
+   /* (non-Javadoc)
+    * @see org.openremote.beehive.api.service.ModelService#isFile(java.lang.String)
+    */
    public boolean isFile(String path){
       File file = new File(configuration.getWorkCopyDir()+path);
       return file.isFile();
+   }
+   
+   /* (non-Javadoc)
+    * @see org.openremote.beehive.api.service.ModelService#findByFileName(java.lang.String)
+    */
+   public Model findByFileName(String fileName){
+      return genericDAO.getByNonIdField(Model.class, "fileName", fileName);
+   }
+
+   /* (non-Javadoc)
+    * @see org.openremote.beehive.api.service.ModelService#syncWith(java.io.File)
+    */
+   public void syncWith(File file) {
+      if(file.isDirectory() || FileUtil.isIgnored(file)){
+         return;
+      }
+      boolean isDeleted = !file.exists();
+      String[] arr = FileUtil.splitPath(file);
+      String vendorName = arr[arr.length - 2];
+      String modelName = arr[arr.length - 1];
+      Model model = findByFileName(modelName);
+      if(isDeleted){
+         return;
+      }
+      if (model != null){
+         merge(FileUtil.readStream(file.getAbsolutePath()),model.getOid());
+      }else{
+         FileInputStream fis = null;
+         try {
+            fis = new FileInputStream(file);
+         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+         }
+         add(fis, vendorName, modelName);
+      }
    }
 }

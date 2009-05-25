@@ -23,6 +23,7 @@
             <tx:method name="find*" propagation="REQUIRED"/>
             <tx:method name="update*" propagation="REQUIRED"/>
             <tx:method name="merge*" propagation="REQUIRED"/>
+            <tx:method name="sync*" propagation="REQUIRED"/>
         </tx:attributes>
     </tx:advice>
 

@@ -314,7 +314,6 @@ table.overview {
 	background-color: #FFFFFF;
 	height:40;
 	border-bottom: 1px solid black;
-	background-image:url("../images/bg_c.gif");
 }
 
 .actionButton, .actionbar .actionButton {
