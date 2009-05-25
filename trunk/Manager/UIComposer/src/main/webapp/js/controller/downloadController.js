@@ -28,6 +28,7 @@ var DownloadController = function() {
      * Parse Page and Send the request for download the current work.
      */
     function download() {
+		$.showLoading();
         // first store current screen
         ScreenViewController.storeCurrentScreen();
 
@@ -44,6 +45,7 @@ var DownloadController = function() {
             //get it in parseInfared() function
         },
         function(result) {
+			$.hideLoading();
             window.location = result;
         });
 

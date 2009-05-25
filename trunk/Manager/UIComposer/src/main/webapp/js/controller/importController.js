@@ -34,6 +34,7 @@ var ImportController = function() {
                     if (confirm("All your current work will clear, are you sure?")) {
 
                         ImportController.getCurrentUserPath(function() {
+							$.showLoading();
                             $("#upload_form").submit();
                         });
                     }
@@ -69,6 +70,7 @@ var ImportController = function() {
 
         global.BUTTONID = data.panel.maxId;
         $("#upload_form_container").closeModalForm();
+		$.hideLoading();
     }
 
 
