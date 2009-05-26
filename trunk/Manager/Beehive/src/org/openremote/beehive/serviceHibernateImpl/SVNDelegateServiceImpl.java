@@ -114,20 +114,24 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                   logger.info("The file of " + files[i] + " is not exist!");
                }
             }
-            int mod = 500;
-            int commitTimes = totalPath/mod + 1;
-            int lastCommitCount = totalPath%mod;
-            for(int i = 0; i < commitTimes; i++){
-               if(i==commitTimes-1){
-                  File[] subFiles = new File[lastCommitCount];
-                  System.arraycopy(files, i*mod, subFiles, 0, lastCommitCount);
-                  svnClient.commit(subFiles, message, true);
-               }else{
-                  File[] subFiles = new File[500];
-                  System.arraycopy(files, i*mod, subFiles, 0, mod);
-                  svnClient.commit(subFiles, message, true);
+            if (configuration.getWorkCopyDir().startsWith("/")) {    //linux
+               svnClient.commit(files, message, true);
+            } else {       //windows
+               int mod = 500;
+               int commitTimes = totalPath / mod + 1;
+               int lastCommitCount = totalPath % mod;
+               for (int i = 0; i < commitTimes; i++) {
+                  if (i == commitTimes - 1) {
+                     File[] subFiles = new File[lastCommitCount];
+                     System.arraycopy(files, i * mod, subFiles, 0, lastCommitCount);
+                     svnClient.commit(subFiles, message, true);
+                  } else {
+                     File[] subFiles = new File[500];
+                     System.arraycopy(files, i * mod, subFiles, 0, mod);
+                     svnClient.commit(subFiles, message, true);
+                  }
                }
-            }            
+            }
          } catch (SVNClientException e) {
             logger.error("The svnClientException!", e);
             throw new SVNException("The svnClient cause Exception",e);

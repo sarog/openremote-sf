@@ -27,6 +27,66 @@
            $("#checkall").click( function() {
                $("input[name='items']").attr("checked",this.checked);
            });
+           $(function(){
+               $("input[action='A']").click(function(){
+                   var addText = $(this).val();
+                   var parentTR = $(this).parent().parent().parent().parent().parent().parent();
+                   if(this.checked){
+                      parentTR.prevAll().each(function(){
+                           var checkbox = $(this).find("input[action='A']");
+                           if(addText.indexOf(checkbox.val())==0){
+                              checkbox.attr("checked",true);
+                           }
+                       });
+                   }else{
+                      parentTR.nextAll().each(function(){
+                         var checkbox = $(this).find("input[action='A']");
+                           if(checkbox.val() && checkbox.val().indexOf(addText)==0){
+                              checkbox.attr("checked",false);
+                           }
+                       });
+                   }
+               });
+           });
+          $(function(){
+               $("input[action='D']").click(function(){
+                   var delTexts = $(this).attr("value").substring(1).split("/");
+                   var delText = null;
+                   if(delTexts.length==1){
+                       delText = $(this).attr("value");
+                   }else{
+                       delText = "/"+delTexts[0];
+                   }
+                   var parentTR = $(this).parent().parent().parent().parent().parent().parent();
+                   if(this.checked){            
+                      parentTR.prevAll().each(function(){
+                           var checkbox = $(this).find("input[action='D']");
+                           if(checkbox.val() && checkbox.val().indexOf(delText)==0){
+                            checkbox.attr("checked",true);
+                           }
+                       });
+                      parentTR.nextAll().each(function(){
+                          var checkbox = $(this).find("input[action='D']");
+                           if(checkbox.val() && checkbox.val().indexOf(delText)==0){
+                            checkbox.attr("checked",true); 
+                           }
+                       });
+                   }else{
+                      parentTR.prevAll().each(function(){
+                              var checkbox = $(this).find("input[action='D']");
+                              if(checkbox.val() && checkbox.val().indexOf(delText)==0){
+                               checkbox.attr("checked",false);
+                              }
+                          });
+                         parentTR.nextAll().each(function(){
+                             var checkbox = $(this).find("input[action='D']");
+                              if(checkbox.val() && checkbox.val().indexOf(delText)==0){
+                               checkbox.attr("checked",false); 
+                              }
+                          });
+                   }
+               });
+           });
        });
        
        </script>
@@ -90,12 +150,10 @@
             <form id="submitForm" action="changes.htm?method=commit" method="post">
 	           <c:forEach items="${diffStatus}" var="diffElement">
 	            <tr class="first" >
-	              <td width="50%"><table width="100%" border="0" cellpadding="0" cellspacing="0">
-	                    <tr>
-	                      <td class="internal" style="padding-right: 5px;"><input name="items" type="checkbox" value="${diffElement.path}|${diffElement.status}" action="${diffElement.status }">
-	                      </td>
+	              <td width="50%"><table width="100%" border="0" cellpadding="0" cellspacing="0"><tr>
+	                      <td class="internal" style="padding-right: 5px;"><input name="items" type="checkbox" value="${diffElement.path}|${diffElement.status}" action="${diffElement.status }"/>
 	                      <td class="internal" style="padding-right: 5px;"><a href="changes.htm?method=change&path=${diffElement.path}&action=${diffElement.status }"><span class="image_link ${diffElement.status }"></span></a></td>
-	                      <td class="internal" width="100%" nowrap="true"><a href="changes.htm?method=change&path=${diffElement.path}&action=${diffElement.status }">${diffElement.path}</a> </td>
+	                      <td class="internal" width="100%" nowrap="true"><a href="changes.htm?method=change&path=${diffElement.path}&action=${diffElement.status }">${diffElement.path}</a></td>
 	                    </tr>
 	                </table></td>
 	              <td align="center"><a href="history.htm?method=getRevisions&path=${diffElement.path}"> <img src="image/revision.gif" alt="Revision list" title="Revision list" border="0"> </a> </td>
