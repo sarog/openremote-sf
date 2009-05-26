@@ -99,7 +99,7 @@ public class IREvent extends Event {
    
 
    private void irsend(String sendType) {
-      String cmd = "irsend " + sendType + " " + getName() + " " + getCommand();
+      String cmd = "/usr/local/bin/irsend " + sendType + " " + getName() + " " + getCommand();
       try {
          Process pro = Runtime.getRuntime().exec(cmd);
          logger.info(cmd);

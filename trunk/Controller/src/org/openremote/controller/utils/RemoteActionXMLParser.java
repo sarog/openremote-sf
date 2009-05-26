@@ -76,7 +76,7 @@ public class RemoteActionXMLParser {
          Element element = queryElementFromXMLById(eventID);
          if (element != null) {
             Event event = eventFactory.getEvent(element);
-            if (delay != null && delay.matches("\\d+")) {
+            if (delay != null) {
                event.setDelay(Long.valueOf(delay));
             }
             events.add(event);
