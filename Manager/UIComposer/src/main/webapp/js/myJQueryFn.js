@@ -276,7 +276,9 @@ jQuery.fn.interceptStr = function(options) {
 		$(this).html(str);
 	}
 	if (options.setTitle !== undefined ) {
-		if (options.setTitle != false &&  typeof options == "function") {
+		if (options.setTitle == false) {
+			$(this).removeAttr("title");
+		} else if (typeof options == "function") {
 			options.setTitle.call(this,options.text);
 		}
 	} else {

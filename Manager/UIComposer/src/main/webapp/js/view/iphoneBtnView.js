@@ -47,10 +47,10 @@ var IphoneBtnView = function() {
             btn.css("height", $(tableCell).height() * iphoneBtn.height + iphoneBtn.height - 1);
             btn.css("width", $(tableCell).width() * iphoneBtn.width + iphoneBtn.width - 1);
 
-			
+			var maxLenght = IphoneBtnView.getMaxLabelLength(iphoneBtn);
             btn.interceptStr({
                 text: self.getModel().label,
-                max: 5,
+                max: maxLenght,
                 setText: function(str) {
                     $(this).find(".middle span").html(str);
                 },
@@ -64,5 +64,13 @@ var IphoneBtnView = function() {
 
         };
     }
+
+	IphoneBtnView.getMaxLabelLength = function(iphoneBtn) {
+		// if we haven't set Screen cell width ,set 5 as it's default value.
+		if (ScreenView.cellWidth == -1) {
+			return 5;
+		}
+		return Math.round(ScreenView.cellWidth * iphoneBtn.width/10);
+	};
     return IphoneBtnView;
 } ();
