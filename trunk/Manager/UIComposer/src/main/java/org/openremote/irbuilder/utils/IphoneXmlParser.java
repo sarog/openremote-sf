@@ -129,10 +129,10 @@ public class IphoneXmlParser {
       try {
          sb.build(new InputSource(new StringReader(xmlString)));
       } catch (JDOMException e) {
-         logger.error("Check the schema "+xsdPath+" occur JDOMException", e);
+         logger.error("Check the schema "+xsdfile.getName()+" occur JDOMException", e);
          return false;
       } catch (IOException e) {
-         logger.error("Check the schema "+xsdPath+" occur IOException", e);
+         logger.error("Check the schema "+xsdfile.getName()+" occur IOException", e);
          return false;
       }
       return true;
