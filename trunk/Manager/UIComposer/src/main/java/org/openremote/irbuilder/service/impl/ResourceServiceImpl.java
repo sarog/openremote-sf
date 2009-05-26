@@ -126,10 +126,9 @@ public class ResourceServiceImpl implements ResourceService {
                   irbFileContent = IOUtils.toString(zipInputStream);
                }
 
-               if (checkXML(zipInputStream, zipEntry, "iphone")) {
+               if (!checkXML(zipInputStream, zipEntry, "iphone")) {
                   throw new XmlParserException("The iphone.xml schema validation fail, please check it");
-               }
-               if (checkXML(zipInputStream, zipEntry, "controller")) {
+               }else if (!checkXML(zipInputStream, zipEntry, "controller")) {
                   throw new XmlParserException("The controller.xml schema validation fail, please check it");
                }
 
