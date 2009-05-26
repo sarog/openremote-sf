@@ -66,7 +66,7 @@ var ImportController = function() {
      */
     function uploadSuccess(responseText, statusText) {
         ImportController.cleanUp();
-        var data = eval('(' + responseText + ')');
+        var data = responseText;
         revertScreens(data.panel.screens);
         revertKnxBtns(data.panel.knxBtns);
         revertX10Btns(data.panel.x10Btns);
