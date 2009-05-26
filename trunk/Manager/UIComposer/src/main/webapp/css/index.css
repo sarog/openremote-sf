@@ -23,13 +23,13 @@ margin-top: 25px;
 
 #error {
 	display:none;
-	position:absolute;
 }
 
 #error p {
 	margin:auto;
 	width:300px;
 	padding:5px 3px;
+	overflow:auto;
 }
 
 #wrap {
