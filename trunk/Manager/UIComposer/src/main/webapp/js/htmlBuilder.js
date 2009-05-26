@@ -56,8 +56,9 @@ HTMLBuilder = function() {
 
         iphoneBtnBuilder: function(iphoneBtn) {
             var text = iphoneBtn.label;
-            if (text.length > 5) {
-                text = text.substr(0, 5) + "<br/>...";
+			var maxLenght = IphoneBtnView.getMaxLabelLength(iphoneBtn);
+            if (text.length > maxLenght) {
+                text = text.substr(0, maxLenght) + "<br/>...";
             }
             var btn = $(EJSHelper.render("template/_iphoneBtn.ejs", {
                 label: text
@@ -68,7 +69,6 @@ HTMLBuilder = function() {
                 btn.find("table .middle").html("<img src=" + iphoneBtn.icon + ">");
             }
             btn.data("model", iphoneBtn);
-            btn.attr("title", iphoneBtn.label);
             btn.attr("id", iphoneBtn.getElementId());
             return btn;
         },
