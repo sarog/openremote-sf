@@ -20,7 +20,7 @@
 	   }
 	   $('#updateBtn').click(function(){
 		      setAnimation();
-			   $.post("sync.htm?method=update");
+			   $.post("sync.htm?method=update",{});
 			   timer=setInterval("refresh()",5000);
 			   $('#progressInfoSpan').text("Downloading from http://lirc.sourceforge.net/remotes ......");
 	      });
