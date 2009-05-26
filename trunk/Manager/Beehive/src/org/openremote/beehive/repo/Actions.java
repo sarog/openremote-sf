@@ -25,8 +25,20 @@ package org.openremote.beehive.repo;
  * @author Tomsky
  * 
  */
-public interface Actions {
-   Character ADD = 'A';
-   Character DELETE = 'D';
-   Character MODIFY = 'M';
+public enum Actions {
+   ADDED("ADDED"),
+   UNVERSIONED("UNVERSIONED"),
+   DELETEED("DELETEED"),
+   MISSING("MISSING"),
+   MODIFY("MODIFY");
+   
+   private String action;
+   
+   Actions(String value){
+      this.action = value;
+   }
+   
+   public String toString() {
+      return action;
+   }
 }

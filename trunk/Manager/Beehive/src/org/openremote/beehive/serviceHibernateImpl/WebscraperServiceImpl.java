@@ -68,24 +68,24 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
 
    public void scraperFiles() {
       try {
-//         File progressFile = new File(configuration.getScrapDir()+File.separator+"progress.txt");
-//         if(progressFile.exists()){
-//            progressFile.delete();
-//         }
+         File progressFile = new File(configuration.getScrapDir()+File.separator+"progress.txt");
+         if(progressFile.exists()){
+            progressFile.delete();
+         }
          File copyProgressFile = new File(configuration.getScrapDir()+File.separator+"copyProgress.txt");
          if(copyProgressFile.exists()){
             copyProgressFile.delete();
          }
-//         File scrapDir = new File(configuration.getScrapDir());
-//         if(scrapDir.exists()){
-//            FileUtils.deleteDirectory(scrapDir);            
-//         }
+         File scrapDir = new File(configuration.getScrapDir());
+         if(scrapDir.exists()){
+            FileUtils.deleteDirectory(scrapDir);            
+         }
          ScraperConfiguration config = new ScraperConfiguration(getClass().getResource("/remotes.xml").getPath());         
          Scraper scraper = new Scraper(config, configuration.getScrapDir());
          scraper.setDebug(true);
          // long startTime = System.currentTimeMillis();
          logger.info("Scraper LIRC files from http://lirc.sourceforge.net/remotes!");
-//         scraper.execute();
+         scraper.execute();
          logger.info("Success scrap LIRC files from web!");
          // System.out.println("time elapsed:"+ (System.currentTimeMillis() - startTime));
          logger.info("Copy LIRC files from " + configuration.getScrapDir() + " to workCopy "
