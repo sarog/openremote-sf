@@ -27,7 +27,9 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
@@ -43,9 +45,7 @@ import org.openremote.beehive.domain.RemoteSection;
 import org.openremote.beehive.domain.Vendor;
 import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.file.LircConfFile;
-import org.openremote.beehive.repo.Actions;
 import org.openremote.beehive.repo.DiffStatus;
-import org.openremote.beehive.repo.UpdatedFile;
 import org.openremote.beehive.utils.FileUtil;
 import org.openremote.beehive.utils.StringUtil;
 
@@ -223,8 +223,8 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
       }
       for (RemoteSection remoteSection : remoteSectionList) {
          remoteSection.setModel(model);
+         genericDAO.save(remoteSection);
       }
-      genericDAO.batchInsert(remoteSectionList);
    }
 
    /**
@@ -315,57 +315,6 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
 
    /**
     * {@inheritDoc}
-    * @throws SVNException 
-    */
-   public void update(String[] paths, String message, String username) throws SVNException {
-      List<UpdatedFile> updatedFiles = svnDelegateService.commit(paths, message, username);
-      for (int i = 0; i < updatedFiles.size(); i++) {
-         UpdatedFile updatedFile = updatedFiles.get(i);
-         String[] arr = FileUtil.splitPath(updatedFile.getFile());
-         if (updatedFile.getStatus() == Actions.MODIFY) {
-            String modelName = arr[arr.length - 1];
-            Model model = genericDAO.getByNonIdField(Model.class, "fileName", modelName);
-            merge(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()),model.getOid());
-         } else if (updatedFile.getStatus() == Actions.ADD) {
-            if (updatedFile.getFile().isFile() && !FileUtil.isIgnored(updatedFile.getFile())) {
-               String vendorName = arr[arr.length - 2];
-               String modelName = arr[arr.length - 1];
-               System.out.println(updatedFile.getFile().getAbsolutePath());
-               Model model = genericDAO.getByNonIdField(Model.class, "fileName", modelName);
-               if(model != null){
-//                  merge(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()),model);
-                  genericDAO.delete(model);
-               }
-                  add(FileUtil.readStream(updatedFile.getFile().getAbsolutePath()), vendorName, modelName);                                 
-               
-            } else {
-               String vendorName = arr[arr.length - 1];
-               Vendor tempVendor = genericDAO.getByNonIdField(Vendor.class, "name", vendorName);
-               if(tempVendor == null){
-                  Vendor vendor = new Vendor();
-                  vendor.setName(vendorName);
-                  genericDAO.save(vendor);                  
-               }
-            }
-         } else if (updatedFile.getStatus() == Actions.DELETE) {
-            String name = arr[arr.length - 1];
-            if (updatedFile.isDir()) {
-               vendorService.deleteByName(name);
-            } else {
-               deleteByName(name);
-            }
-         }
-         if(i%200 == 0){
-            genericDAO.flush();
-            System.out.println("when i="+i+", the genericDAO flush");
-         }
-      }
-   }
-
-   
-
-   /**
-    * {@inheritDoc}
     */
    public void deleteByName(String modelName) {
       Model model = genericDAO.getByNonIdField(Model.class, "fileName", modelName);
@@ -380,19 +329,19 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
     */
    public void rollback(String path, long revision, String username) throws SVNException {
       svnDelegateService.rollback(path, revision);
-      File file = new File(configuration.getWorkCopyDir()+path);
-      if(file.isFile()){
-         String[] paths = {path};
-         this.update(paths, "rollback to revision " + revision, username);
-         return;
-      }
+//      File file = new File(configuration.getWorkCopyDir()+path);
+//      if(file.isFile()){
+//         String[] paths = {path};
+//         this.update(paths, "rollback to revision " + revision, username);
+//         return;
+//      }
       DiffStatus diffStatus = svnDelegateService.getDiffStatus(path);
       String[] paths = new String[diffStatus.getDiffStatus().size()];
       String workDir = new File(configuration.getWorkCopyDir()).getPath();
       for (int i = 0; i < diffStatus.getDiffStatus().size(); i++) {
-         paths[i] = diffStatus.getDiffStatus().get(i).getPath().replace(workDir, "");
-      }      
-      this.update(paths, "rollback to revision " + revision, username);
+         paths[i] = diffStatus.getDiffStatus().get(i).getPath().replace(workDir, "")+"|"+diffStatus.getDiffStatus().get(i).getStatus();
+      }     
+      svnDelegateService.commit(paths, "rollback to revision " + revision, username);
    }
    
    /**
@@ -403,23 +352,26 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
       return genericDAO.loadAll(Model.class).size();
    }
    
-   /* (non-Javadoc)
-    * @see org.openremote.beehive.api.service.ModelService#isFile(java.lang.String)
+   /**
+    * {@inheritDoc}
+    * 
     */
    public boolean isFile(String path){
       File file = new File(configuration.getWorkCopyDir()+path);
       return file.isFile();
    }
    
-   /* (non-Javadoc)
-    * @see org.openremote.beehive.api.service.ModelService#findByFileName(java.lang.String)
+   /**
+    * {@inheritDoc}
+    * 
     */
    public Model findByFileName(String fileName){
       return genericDAO.getByNonIdField(Model.class, "fileName", fileName);
    }
 
-   /* (non-Javadoc)
-    * @see org.openremote.beehive.api.service.ModelService#syncWith(java.io.File)
+   /**
+    * {@inheritDoc}
+    * 
     */
    public void syncWith(File file) {
       if(file.isDirectory() || FileUtil.isIgnored(file)){

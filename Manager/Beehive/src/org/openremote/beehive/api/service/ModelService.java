@@ -122,13 +122,13 @@ public interface ModelService {
    /**
     * Update database and svn repo sync.
     * 
-    * @param paths the file path of the workCopy
-    * @param message the comments
     * @param username the username
+    * @param path the path
+    * @param revision the revision
     * 
     * @throws SVNException the SVN exception
     */
-   void update(String[] paths, String message, String username) throws SVNException;
+//   void update(String[] paths, String message, String username) throws SVNException;
 
    /**
     * Rollback svn repo to a specify revision.
@@ -160,14 +160,33 @@ public interface ModelService {
     * Merge.
     * 
     * @param fis the fis
-    * @param model the model
+    * @param id the id
     */
    void merge(FileInputStream fis, long id);
    
+   /**
+    * Checks if is file.
+    * 
+    * @param path the path
+    * 
+    * @return true, if is file
+    */
    boolean isFile(String path);
    
+   /**
+    * Find by file name.
+    * 
+    * @param fileName the file name
+    * 
+    * @return the model
+    */
    Model findByFileName(String fileName);
    
+   /**
+    * Sync with.
+    * 
+    * @param file the file
+    */
    void syncWith(File file);
    
 }

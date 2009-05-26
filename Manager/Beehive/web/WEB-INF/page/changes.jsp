@@ -92,7 +92,7 @@
 	            <tr class="first" >
 	              <td width="50%"><table width="100%" border="0" cellpadding="0" cellspacing="0">
 	                    <tr>
-	                      <td class="internal" style="padding-right: 5px;"><input name="items" type="checkbox" value="${diffElement.path}@${diffElement.status}" action="${diffElement.status }">
+	                      <td class="internal" style="padding-right: 5px;"><input name="items" type="checkbox" value="${diffElement.path}|${diffElement.status}" action="${diffElement.status }">
 	                      </td>
 	                      <td class="internal" style="padding-right: 5px;"><a href="changes.htm?method=change&path=${diffElement.path}&action=${diffElement.status }"><span class="image_link ${diffElement.status }"></span></a></td>
 	                      <td class="internal" width="100%" nowrap="true"><a href="changes.htm?method=change&path=${diffElement.path}&action=${diffElement.status }">${diffElement.path}</a> </td>

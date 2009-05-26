@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.exception.SVNException;
-import org.openremote.beehive.file.LircSynchronizer;
 import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.LogMessage;
@@ -48,7 +47,6 @@ public class LIRCRevisionChangesController extends MultiActionController {
    private String indexView;
    private String changeView;
    private String commitView;
-   private LircSynchronizer lircSynchronizer;
    
    public void setIndexView(String indexView) {
       this.indexView = indexView;
@@ -69,11 +67,6 @@ public class LIRCRevisionChangesController extends MultiActionController {
    public void setModelService(ModelService modelService) {
       this.modelService = modelService;
    }
-
-   public void setLircSynchronizer(LircSynchronizer lircSynchronizer) {
-      this.lircSynchronizer = lircSynchronizer;
-   }
-   
 
    /**
     * Default method in controller
@@ -115,7 +108,7 @@ public class LIRCRevisionChangesController extends MultiActionController {
       ModelAndView mav = new ModelAndView(changeView);
       String path = ServletRequestUtils.getRequiredStringParameter(request, "path");
       String action = ServletRequestUtils.getRequiredStringParameter(request, "action");
-      if(!"A".equals(action)){
+      if(!"UNVERSIONED".equals(action) || !"ADDED".equals(action)){
          LogMessage repoMessage = svnDelegateService.getHeadLog(path);
          mav.addObject("repoMessage", repoMessage);     
       }

@@ -40,9 +40,9 @@ public class DiffStatus {
 
    public class Element {
       private String path;
-      private Character status;
+      private Actions status;
 
-      public Element(String path, Character status) {
+      public Element(String path, Actions status) {
          this.path = path;
          this.status = status;
       }
@@ -51,7 +51,7 @@ public class DiffStatus {
          return path;
       }
 
-      public Character getStatus() {
+      public Actions getStatus() {
          return status;
       }
 
