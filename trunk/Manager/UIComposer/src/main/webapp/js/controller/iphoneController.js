@@ -231,6 +231,7 @@ var IPhoneController = function() {
 
                 iphoneBtn.fillArea();
                 makeIphoneBtnDraggable($(this));
+				iphoneBtn.updateModel();
             },
             helper: false
         });
