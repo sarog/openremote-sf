@@ -27,7 +27,6 @@ import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.LIRCEntry;
 import org.openremote.beehive.repo.LogMessage;
-import org.openremote.beehive.repo.UpdatedFile;
 
 /**
  * The Interface SVNDelegateService.
@@ -35,8 +34,6 @@ import org.openremote.beehive.repo.UpdatedFile;
  * @author Tomsky
  */
 public interface SVNDelegateService {
-   
-   boolean commitAll(String message, String username)throws SVNException;
    
    /**
     * Commit.
@@ -49,7 +46,7 @@ public interface SVNDelegateService {
     * 
     * @throws SVNException the SVN exception
     */
-   List<UpdatedFile> commit(String[] paths, String message, String username) throws SVNException;
+   void commit(String[] paths, String message, String username) throws SVNException;
 
    /**
     * This method is show a file's difference between head revision with workCopy.

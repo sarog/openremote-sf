@@ -46,7 +46,6 @@ import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.DifferenceModel;
 import org.openremote.beehive.repo.LIRCEntry;
 import org.openremote.beehive.repo.LogMessage;
-import org.openremote.beehive.repo.UpdatedFile;
 import org.openremote.beehive.repo.DiffStatus.Element;
 import org.openremote.beehive.repo.LogMessage.ChangePath;
 import org.openremote.beehive.utils.FileUtil;
@@ -86,87 +85,54 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
     * {@inheritDoc}
     * @throws SVNException 
     */
-   public boolean commitAll(String message, String username) throws SVNException {
-      File root = new File(configuration.getWorkCopyDir());
-      try {
-         svnClient.commit(new File[]{new File(configuration.getWorkCopyDir())}, message, true);
-      } catch (SVNClientException e) {
-         logger.error("Can't create svnclient, commit failed!",e);
-         return false;
-      }
-      
-      return true;
-   }
-   /**
-    * {@inheritDoc}
-    * @throws SVNException 
-    */
-   public List<UpdatedFile> commit(String[] paths, String message, String username) throws SVNException {
+   public void commit(String[] paths, String message, String username) throws SVNException {
       svnClient.setUsername(username);
-      List<UpdatedFile> updatedFiles = new ArrayList<UpdatedFile>();
       int totalPath = paths.length;
       File[] files = new File[totalPath];
       if (totalPath > 0) {
          try {
             for (int i = 0; i < totalPath; i++) {
-               String[] arr = paths[i].split("@");
+               String[] arr = paths[i].split("\\|");
                String path = arr[0];
                String status = arr[1];
                files[i] = new File(configuration.getWorkCopyDir() + path);
 
-//               ISVNStatus[] fileStatus = svnClient.getStatus(files[i], false, false);
                if (status != null) {
-                  if ("A".equals(status)) {
-//                     UpdatedFile addedFile = new UpdatedFile(fileStatus[0].getFile(), Actions.ADD);
+                  if (status.equals(Actions.UNVERSIONED.toString())) {
                      if (files[i].isDirectory()) {
                         svnClient.addDirectory(files[i], false);
                      } else {
                         svnClient.addFile(files[i]);
                      }
-//                     updatedFiles.add(addedFile);
-                  } 
-//                  else if (SVNStatusKind.DELETED == fileStatus[0].getTextStatus()
-//                        || SVNStatusKind.MISSING == fileStatus[0].getTextStatus()) {
-////                     UpdatedFile deletedFile = new UpdatedFile(fileStatus[0].getFile(), Actions.DELETE);
-//                     if(fileStatus[0].getFile().isDirectory()){
-//                        deletedFile.setDir(true);
-//                     }
-//                     if (SVNStatusKind.MISSING == fileStatus[0].getTextStatus()) {
-//                        svnClient.update(files[i], SVNRevision.HEAD, true);
-//                        if(files[i].isDirectory()){                           
-//                           deletedFile.setDir(true);
-//                        }
-//                        svnClient.remove(new File[] { fileStatus[0].getFile() }, true);
-//                     }
-////                     updatedFiles.add(deletedFile);
-//                  } else if (SVNStatusKind.MODIFIED == fileStatus[0].getTextStatus()) {
-////                     UpdatedFile modifiedFile = new UpdatedFile(fileStatus[0].getFile(), Actions.MODIFY);
-////                     updatedFiles.add(modifiedFile);
-//                  }
+                  }
+                  if(status.equals(Actions.MISSING.toString())){
+                     svnClient.update(files[i], SVNRevision.HEAD, true);
+                     svnClient.remove(new File[] { files[i] }, true);
+                  }
+
                } else {
                   logger.info("The file of " + files[i] + " is not exist!");
                }
             }
-//            int commitTimes = totalPath/500 + 1;
-//            int lastCommitCount = totalPath%500;
-//            for(int i = 0; i < commitTimes; i++){
-//               if(i==commitTimes-1){
-//                  File[] subFiles = new File[lastCommitCount];
-//                  System.arraycopy(files, i*500, subFiles, 0, lastCommitCount);
-//                  svnClient.commit(subFiles, message, true);
-//               }else{
-//                  File[] subFiles = new File[500];
-//                  System.arraycopy(files, i*500, subFiles, 0, 500);
-//                  svnClient.commit(subFiles, message, true);
-//               }
-//            }            
-            svnClient.commit(files, message, true);
+            int mod = 500;
+            int commitTimes = totalPath/mod + 1;
+            int lastCommitCount = totalPath%mod;
+            for(int i = 0; i < commitTimes; i++){
+               if(i==commitTimes-1){
+                  File[] subFiles = new File[lastCommitCount];
+                  System.arraycopy(files, i*mod, subFiles, 0, lastCommitCount);
+                  svnClient.commit(subFiles, message, true);
+               }else{
+                  File[] subFiles = new File[500];
+                  System.arraycopy(files, i*mod, subFiles, 0, mod);
+                  svnClient.commit(subFiles, message, true);
+               }
+            }            
          } catch (SVNClientException e) {
             logger.error("The svnClientException!", e);
             throw new SVNException("The svnClient cause Exception",e);
          }
       }
-      return updatedFiles;
    }
 
    /**
@@ -178,19 +144,6 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       copyDirectory(tempDir, workDir);
       FileUtil.writeStringToFile(configuration.getScrapDir()+File.separator+"copyProgress.txt", "Check completed!");
       logger.info("Success copy scrap files to workCopy " + destPath);
-//      try {
-//         SVNUrl svnUrl = new SVNUrl(configuration.getSvnDir());
-//         if (isBlankSVN()) {
-//            svnClient.doImport(workDir, svnUrl, "import lirc files to trunk", true);
-//            FileUtil.deleteDirectory(workDir);
-//            workDir.mkdirs();
-//            svnClient.checkout(svnUrl, workDir, SVNRevision.HEAD, true);
-//         }
-//      } catch (SVNClientException e) {
-//         logger.error("svnClient getSingleStatus failed!", e);
-//      } catch (MalformedURLException e) {
-//         logger.error("initiliaze svnUrl of trunk failed!", e);
-//      }
    }
 
    private void copyDirectory(File tempDir, File workDir) {
@@ -300,19 +253,11 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          InputStream rightIS = svnClient.getContent(svnUrl, new SVNRevision.Number(newRevision));
          String right = StringUtil.readStringInInputStream(rightIS).toString();
 
-//         if (Actions.ADD.equals(action)) {
-//            dr.setLeft(null);
-//            dr.setRight(DifferenceModel.getUntouchedLines(right));
-//         } else if (Actions.DELETE.equals(action)) {
-//            dr.setLeft(DifferenceModel.getUntouchedLines(left));
-//            dr.setRight(null);
-//         } else {
-            DifferenceModel diff = new DifferenceModel(strDiff);
-            dr.setLeft(diff.getLeftLines(left));
-            dr.setRight(diff.getRightLines(right));
-            ChangeCount changeCount= new ChangeCount(diff.getAddedItemsCount(),diff.getModifiedItemsCount(),diff.getDeletedItemsCount());
-            dr.setChangeCount(changeCount);
-//         }
+         DifferenceModel diff = new DifferenceModel(strDiff);
+         dr.setLeft(diff.getLeftLines(left));
+         dr.setRight(diff.getRightLines(right));
+         ChangeCount changeCount = new ChangeCount(diff.getAddedItemsCount(), diff.getModifiedItemsCount(), diff.getDeletedItemsCount());
+         dr.setChangeCount(changeCount);
       } catch (IOException e) {
          logger.error("The IOException!", e);
       } catch (SVNClientException e) {
@@ -451,8 +396,6 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          svnClient.revert(path, true);
          if (path.exists()) {
             svnClient.remove(new File[] { path }, true);
-            // svnClient.commit(new File[] { path }, "remove the file "
-            // + path.getPath(), true);
          }
       } catch (SVNClientException e) {
          e.printStackTrace();
@@ -482,16 +425,18 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                addFileRecursively(ds, state.getFile(), workDir);
             } else {
                String relativePath = state.getFile().getPath().replace(workDir, "").replaceAll("\\\\", "/");
-               if (SVNStatusKind.DELETED == state.getTextStatus() 
-                     || SVNStatusKind.MISSING == state.getTextStatus()) {
-                  Element e = ds.new Element(relativePath, Actions.DELETE);
+               if (SVNStatusKind.DELETED == state.getTextStatus()) {
+                  Element e = ds.new Element(relativePath, Actions.DELETEED);
                   ds.addElement(e);
-               } else if (SVNStatusKind.MODIFIED == state.getTextStatus()) {
+               }else if (SVNStatusKind.MODIFIED == state.getTextStatus()) {
                   Element e = ds.new Element(relativePath, Actions.MODIFY);
                   ds.addElement(e);
                }else if(SVNStatusKind.ADDED == state.getTextStatus()){
-                  Element e1 = ds.new Element(relativePath, Actions.ADD);
+                  Element e1 = ds.new Element(relativePath, Actions.ADDED);
                   ds.addElement(e1);
+               }else if(SVNStatusKind.MISSING == state.getTextStatus()){
+                  Element e = ds.new Element(relativePath, Actions.MISSING);
+                  ds.addElement(e);
                }
             }
          }
@@ -559,13 +504,13 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
     */
    private void addFileRecursively(DiffStatus ds, File file, String workDir) {
       if (file.isDirectory()) {
-         Element e1 = ds.new Element(file.getPath().replace(workDir, "").replaceAll("\\\\", "/"), Actions.ADD);
+         Element e1 = ds.new Element(file.getPath().replace(workDir, "").replaceAll("\\\\", "/"), Actions.UNVERSIONED);
          ds.addElement(e1);
          for (File subFile : file.listFiles()) {
             addFileRecursively(ds, subFile, workDir);
          }
       } else {
-         Element e1 = ds.new Element(file.getPath().replace(workDir, "").replaceAll("\\\\", "/"), Actions.ADD);
+         Element e1 = ds.new Element(file.getPath().replace(workDir, "").replaceAll("\\\\", "/"), Actions.UNVERSIONED);
          ds.addElement(e1);
       }
    }

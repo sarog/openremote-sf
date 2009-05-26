@@ -34,7 +34,8 @@
          currentLeftLine = left_div.find("tr:first");
          currentRightLine = right_div.find("tr:first");
          tr_height = currentLeftLine.height();
-         if($("#action").val()=="A"){
+         var fileAction = $("#action").val();
+         if(fileAction=="UNVERSIONED" || fileAction=="ADDED"){
         	       $("#breadcrumbs").find("a:first").nextAll("a").attr("href","#");
              }
       });
