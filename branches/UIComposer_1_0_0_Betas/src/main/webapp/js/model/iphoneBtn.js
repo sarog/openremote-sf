@@ -19,13 +19,42 @@ var IphoneBtn = function() {
 		self.id = -1;
 		//Original model 
 		self.oModel = null;
+		self.label = "";
 		self.x = -1;
 		self.y = -1;
 		self.height = -1;
 		self.width = -1;
 		// convenient way to get the Class name.
 		self.className = getClassName(self);
+		
+		self.elementId = function() {
+			return "iphoneBtn"+self.id;
+		};
+		
+		self.fillArea = function() {
+			for (var i=0; i < self.width; i++) {
+				var x = self.x + i;
+				for (var j=0; j < self.height; j++) {
+					var y = self.y + j;
+					btnInArea[x][y] = true;
+				};
+			};
+		};
+		
+		self.clearArea = function() {
+			for (var i=0; i < self.width; i++) {
+				var x = self.x + i;
+				for (var j=0; j < self.height; j++) {
+					var y = self.y + j;
+					btnInArea[x][y] = false;
+				};
+			};
+		};
+		
+		self.inspectViewTemplate = "template/_iphoneBtnInspect.ejs";
 	}
+	
+	
 
     /**
      * Create new instance from flat model (which have no private method).
@@ -40,6 +69,7 @@ var IphoneBtn = function() {
 		iphoneBtn.y      = model.y         ;
 		iphoneBtn.height = model.height    ;
 		iphoneBtn.width  = model.width     ;
+		iphoneBtn.label  = model.label     ;
 		return iphoneBtn;
 	};
 	

@@ -27,11 +27,34 @@ function makeBtnDraggable(items) {
     btns.draggable({
         zIndex: 2700,
         cursor: 'move',
-        helper: 'clone',
         start: function(event, ui) {
             $(this).draggable('option', 'revert', false);
+        },
+        drag: function(event, ui) {
+            $("#dropable_table td.hiLight").removeClass("hiLight");
+            var cell = findTableCellByCoordinate(ui.offset.top, ui.offset.left);
+            $(cell).addClass("hiLight");
+        },
+        stop: function(event, ui) {
+            $("#dropable_table td.hiLight").removeClass("hiLight");
+        },
+		helper: function(event){
+			var label = event.currentTarget.firstChild.data;
+			return $("<div class='iphone_btn'>"+label+"</div>");
+		},
+		cursorAt: { left: 25,top : 25 } 
+    });
+}
+
+function findTableCellByCoordinate(top, left) {
+    var cell;
+    $("#dropable_table td").each(function() {
+        if ($.isCoordinateInArea(top+1, left+1, $(this))) {
+            cell = $(this);
+            return false;
         }
     });
+    return cell;
 }
 
 

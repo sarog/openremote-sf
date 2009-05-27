@@ -20,6 +20,7 @@ $(document).ready(function() {
     ImportController.init();
 	IPhoneController.init();
 	ScreenViewController.init();
+	InspectViewController.init();
 });
 
 
