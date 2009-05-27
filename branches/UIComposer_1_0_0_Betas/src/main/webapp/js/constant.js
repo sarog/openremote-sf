@@ -24,5 +24,9 @@ RESTAPIUrl = "http://openremote.finalist.hk/beehive/rest/lirc";
 // key is screen id and value is screen model
 g_screens = {};
 
+// TODO Need  refactor, every screen have it's own controller and view.
+btnInArea = new Array();
+
+
 
 

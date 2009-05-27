@@ -174,9 +174,12 @@ var ImportController = function() {
         $("#knx_container .knx_btn").remove();
         $("#x10_container .x10_btn").remove();
         $("#command_container .command_btn").remove();
-        $("#dropable_table .iphone_btn").remove();
+        $("#iphoneBtn_container .iphone_btn").remove();
+		$("#screen_select option").remove();
         BUTTONID = 1;
         InfraredCollection = {};
+		g_screens = {};
+		
     };
     return ImportController;
 } ();

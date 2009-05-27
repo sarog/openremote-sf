@@ -1,7 +1,19 @@
 InspectView = function() {
 	return {
-		updateView:function (model) {
-			
+		updateView: function(model){
+			new EJS({url:model.inspectViewTemplate}).update('inspect_detail',model);
+			$("#inspect_tool_bar").data("model",model);
+		},
+		getModel:function (model) {
+			return $("#inspect_tool_bar").data("model");
+		},
+		getLabelValue:function () {
+			return $("#button_label_input").val();
 		}
 	};
 }();
+
+
+
+
+

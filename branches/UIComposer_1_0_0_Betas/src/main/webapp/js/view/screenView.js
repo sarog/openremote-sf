@@ -13,22 +13,37 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
  * http://www.fsf.org.
  */
+
+// TODO Need refactor, every screen have it's own controller and view.
 ScreenView = function() {
-	function ScreenView (argument) {
-		
+	function ScreenView (screen) {
 	}
 	
 	ScreenView.screenPanelTemplate = "template/_screenPanel.ejs";	
 	
 	ScreenView.updateView = function (screen) {
-		new EJS({url:ScreenView.screenPanelTemplate}).update('iphone_backgroud',{screen:screen});
-
+		$("#iphoneBtn_container .iphone_btn").remove();
+		new EJS({url:ScreenView.screenPanelTemplate}).update('dropable_table_container',{screen:screen});
+		// init btnInArea [x][y]
+		btnInArea = new Array();
+		for (var i = screen.col - 1; i >= 0; i--){
+			btnInArea[i] = new Array();
+			for (var j = screen.row - 1; j >= 0; j--){
+				btnInArea[i][j] = false;
+			};
+		};
+		
 		IPhoneController.init();
 		for (var index  in screen.buttons) {
 			var button = screen.buttons[index];
-			IPhoneController.createIphoneBtnWithModel(button);
+			IPhoneController.createIphoneBtn(button);
+			button.fillArea();
 		}
 	};
+	
+	ScreenView.updateInspeactView = function() {
+		
+	}
 	
 	ScreenView.getSelectedScreenId = function() {
 		return parseInt($("#screen_select").find("option:selected").val());

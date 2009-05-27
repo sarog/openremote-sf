@@ -15,32 +15,33 @@
  */
 var DownloadController = function() {
     function DownloadController() {
-   		// constructor
-    }
+        // constructor
+        }
 
     //private variable
     //To store selected section ids.
     var assembledSectionIds;
-	// Store buttons already added. to keep button id is correct in controller part and iphone part.
+    // Store buttons already added. to keep button id is correct in controller part and iphone part.
     var btnModelHash = {};
     //private method
     /**
      * Parse Page and Send the request for download the current work.
      */
     function download() {
-		// first store current screen
-		ScreenViewController.storeCurrentScreen();
-		
-		var iphoneXml = generateIphoneXml();
-		var controllerXml = generateControllerXml(btnModelHash);
-		var panelDesc = generatePanelDesc();
+        // first store current screen
+        ScreenViewController.storeCurrentScreen();
+
+        var iphoneXml = generateIphoneXml();
+        var controllerXml = generateControllerXml(btnModelHash);
+        var panelDesc = generatePanelDesc();
 
         $.post("download.htm", {
             iphone: iphoneXml,
             controller: controllerXml,
             panel: panelDesc,
             restUrl: RESTAPIUrl + ".conf",
-            ids: assembledSectionIds //get it in parseInfared() function
+            ids: assembledSectionIds
+            //get it in parseInfared() function
         },
         function(result) {
             window.location = result;
@@ -48,11 +49,11 @@ var DownloadController = function() {
 
     }
 
-/*-----------  generate Iphone xml ------------------------------*/
+    /*-----------  generate Iphone xml ------------------------------*/
 
-	function generateIphoneXml () {
-		//TODO It will have multi-activity, so we will refactor it latter.
-	   	var activity = new Object();
+    function generateIphoneXml() {
+        //TODO It will have multi-activity, so we will refactor it latter.
+        var activity = new Object();
         activity.name = "activity1";
         activity.id = 1;
 
@@ -63,24 +64,24 @@ var DownloadController = function() {
         }).render({
             activity: activity
         });
-		return iphoneXml;
-		
-	}
+        return iphoneXml;
 
-	function getStoredScreens () {
-		var screenAttr = new Array();
+    }
 
-       	for (var id in g_screens) {
-        	screenAttr.push(g_screens[id]);
-       	}
-		return screenAttr;
-	}
+    function getStoredScreens() {
+        var screenAttr = new Array();
+
+        for (var id in g_screens) {
+            screenAttr.push(g_screens[id]);
+        }
+        return screenAttr;
+    }
 
 
 
-   
 
-/*------------------ generate controller xml ------------------------ */
+
+    /*------------------ generate controller xml ------------------------ */
 
     /**
      * Compose Controller part JSON.
@@ -205,14 +206,12 @@ var DownloadController = function() {
         return x10Events;
     }
 
-/*--------------------     generate irb file     --------------------------------------*/
+    /*--------------------     generate irb file     --------------------------------------*/
     /**
      * Generate UI Interface description file.
      */
     function generatePanelDesc() {
-		
-	
-		var screens = getStoredScreens();
+        var screens = getStoredScreens();
 
         var macroBtns = new Array();
         $("#macro .macro_btn_defination").each(function() {
@@ -250,7 +249,7 @@ var DownloadController = function() {
     }
 
 
-	function iteratorTableCell(table, block) {
+    function iteratorTableCell(table, block) {
         $(table).find("tr").each(function(i) {
             $(this).find("td").each(function(j) {
                 block($(this), i, j);
@@ -266,24 +265,11 @@ var DownloadController = function() {
     };
 
     DownloadController.parseCurrentScreen = function(screen) {
-        screen.row = $("#dropable_table tr").length;
-        screen.col = $("#dropable_table tr:first td").length;
-
         var buttonArray = new Array();
-
-        iteratorTableCell($("#dropable_table"),
-        function(td, i, j) {
-            if (td.find(".iphone_btn").length == 1) {
-                var btnElement = td.find(".iphone_btn");
-                var iphoneBtn = btnElement.data("model");
-				iphoneBtn.x = i;
-				iphoneBtn.y = j;
-				iphoneBtn.width = 1;
-				iphoneBtn.height = 1;
-				iphoneBtn.label = iphoneBtn.oModel.label;
-                buttonArray.push(iphoneBtn);
-                btnModelHash[iphoneBtn.id] = iphoneBtn;
-            }
+        $("#iphoneBtn_container .iphone_btn").each(function() {
+            var iphoneBtn = $(this).data("model");
+            buttonArray.push(iphoneBtn);
+            btnModelHash[iphoneBtn.id] = iphoneBtn;
         });
 
         screen.buttons = buttonArray;
