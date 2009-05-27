@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -39,7 +40,7 @@ public class ZipUtils {
    private ZipUtils() {
    }
 
-   public static File compress(String outputFilePath, File... files) {
+   public static File compress(String outputFilePath, List<File> files) {
       final int BUFFER = 2048;
       BufferedInputStream bufferedInputStream;
       File outputFile = new File(outputFilePath);
@@ -62,7 +63,7 @@ public class ZipUtils {
             }
             fileInputStream = new FileInputStream(file);
             bufferedInputStream = new BufferedInputStream(fileInputStream, BUFFER);
-            ZipEntry entry = new ZipEntry(StringUtils.fileNameRemoveUUID(file.getName()));
+            ZipEntry entry = new ZipEntry(file.getName());
             entry.setSize(file.length());
             entry.setTime(file.lastModified());
             zipOutputStream.putNextEntry(entry);
