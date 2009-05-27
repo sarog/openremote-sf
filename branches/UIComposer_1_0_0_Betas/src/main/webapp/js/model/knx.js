@@ -26,9 +26,16 @@ var KNX = function() {
         /**
          * Get HTML elementId
          */
-		this.elementId = function() {
+		self.elementId = function() {
 			return "knx"+self.id;
 		};	
+		
+		self.inspectViewTemplate = "template/_knxInspect.ejs";
+
+		self.updateModel = function() {
+			TabController.updateKnx(self);
+		};
+
 		
 	}
 

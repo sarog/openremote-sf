@@ -52,6 +52,14 @@ var IphoneBtn = function() {
 		};
 		
 		self.inspectViewTemplate = "template/_iphoneBtnInspect.ejs";
+		
+		self.updateModel = function() {
+			IPhoneController.updateIphoneBtn(self);
+		};
+		
+		self.afterDelete = function() {
+			self.clearArea();
+		};
 	}
 	
 	

@@ -335,7 +335,7 @@ var IPhoneController = function() {
         makeIphoneBtnResizable(btn);
 
 		btn.unbind().click(function() {
-			InspectView.updateView($(this).data("model"));
+			InspectViewController.updateView($(this).data("model"));
 		});
 
 		//Hack the JQuery Draggable,use can't draggable the button sidelong   
@@ -343,19 +343,23 @@ var IPhoneController = function() {
     };
 	
 	IPhoneController.updateIphoneBtn = function (iphoneBtn) {
-		var label = iphoneBtn.label;
+        // get Label value from inspect window
+        var label  = $.trim($("#inspect_iphoneBtn_label").val());
+		iphoneBtn.label = label;
+
+        //update view
+        var btn = $("#"+iphoneBtn.elementId());
 		if (label.length > 5) {
             label = label.substr(0, 5) + "<br/>...";
         }
-		$("#"+iphoneBtn.elementId()).find("span").html(label);
-		$("#"+iphoneBtn.elementId()).attr("title",iphoneBtn.label);
+
+		btn.find("span").html(label);
+		btn.attr("title",iphoneBtn.label);
+
+        //re-set model.
+		btn.data("model",iphoneBtn);
 	};
 	
-	
-	IPhoneController.deleteIphoneBtn = function (iphoneBtn) {
-		iphoneBtn.clearArea();
-		$("#"+iphoneBtn.elementId()).remove();
-	};
 
 
     return IPhoneController;

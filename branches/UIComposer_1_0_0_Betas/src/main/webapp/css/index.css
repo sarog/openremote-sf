@@ -26,41 +26,7 @@ text-align:left;
 #logo {
 	padding:3px 2px;
 }
-.tool_bar {
-	height:43px;
-}
-#inspect_header {
-	width:60px;
-	color:black;
-	float:left;
-}
-#inspect_header p {
-	text-align:center;
-}
 
-#inspect_body {
-		float:left;
-		border-left:none;
-		border-right:none;
-		width:421px;
-}
-#inspect_body label {
-	display:inline;
-	margin:0 1em;
-	
-}
-#inspect_button {
-	float:left;
-	border-left:none;
-}
-#inspect_button p {
-	padding-left:3px;
-	padding-right:3px;
-}
-
-#inspect_body input.text {
-	padding:0.3em;
-}
 #left {
 text-align: center;
 }
@@ -163,7 +129,7 @@ overflow: visible;
 }
 
 #tabs .item_container {
-height: 400px;
+height: 456px;
 }
 
 #tabs ul li.ui-tabs-selected .has_icon {
@@ -184,11 +150,52 @@ top: 50%;
 display: inline;
 cursor: pointer;
 }
+#right {
+	margin-top:10px;
+}
 
+.item_title p {
+	margin:6px 0;
+	text-align:center;
+}
+
+#inspect_tool_bar p {
+	text-align:center;
+	margin:4px 0;
+}
+
+#inspect_header {
+	
+}
+
+#inspect_header p {
+	margin:6px 0;
+}
+
+#inspect_body {
+	padding:5px;
+}
+
+
+#inspect_body label {
+	margin:3px 0;
+}
+#inspect_button {
+	padding:5px;
+	border-top:none;
+	display:none;
+}
+
+
+#inspect_body input.text {
+	padding:5px 6px;
+}
 #macro {
 background-color: #fff;
 margin-top:10px;
 }
+
+
 #macro #create_macro_btn {
 position: absolute;
 right: 10px;
@@ -200,10 +207,7 @@ top: 5px;
 cursor: move;
 position: relative;
 }
-#macro  .item_title b {
-line-height: 30px;
-padding: 4px;
-}
+
 #macro.macro_btn_defination {
 margin-bottom: 1em;
 }
@@ -240,10 +244,10 @@ border: 1px solid #AAAAAA;
 
 #macro .item_container {
 border: 1px solid #AAAAAA;
-min-height:430px;
+min-height:403px;
 height: auto!important;
-height: 430px;
-_height: 440px;
+height: 403px;
+_height: 403px;
 border-top: none;
 padding: 1em 1em 0 1em;
 }
