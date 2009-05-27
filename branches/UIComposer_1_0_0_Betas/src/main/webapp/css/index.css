@@ -1,3 +1,4 @@
+
 label {
 display: block;
 }
@@ -5,6 +6,7 @@ input.text {
 margin: 12px 0;
 width: 95%;
 padding: .4em;
+text-align:center;
 }
 fieldset {
 padding: 0;
@@ -13,7 +15,16 @@ margin-top: 25px;
 }
 #top {
 text-align: center;
-height: 80px;
+padding:5px 0;
+background-color:#245E36;
+text-align:left;
+}
+#top a {
+	color:#FCD647;
+	margin:5px 10px;
+}
+#logo {
+	padding:3px 2px;
 }
 #left {
 text-align: center;
@@ -43,24 +54,22 @@ width: 200px;
 #upload_form fieldset {
 	width:280px;
 }
-#result div {
-display: none;
-}
-#result pre {
-background: lightgray;
-width: 700px;
-margin: 1em;
-border: 1px solid gray;
-}
-#result h3 {
-margin: 1em;
-}
+
 
 #iphone_backgroud {
 background: #fff url("../image/iphone_background.jpg") no-repeat top left;
 width: 269px;
 height: 500px;
 margin: 0 auto;
+}
+
+#screen_select {
+	width:150px;
+	margin-left:10px;
+}
+
+#creatScreenBtnOnPanel:hover {
+	background-color:white;
 }
 a.button {
 padding:0.4em 1em 0.4em 20px;
@@ -94,6 +103,10 @@ background-color: yellow;
 overflow: visible;
 }
 
+#tabs {
+	margin-top:60px;
+}
+
 #tabs .item_container {
 height: 400px;
 }
@@ -119,6 +132,7 @@ cursor: pointer;
 
 #macro {
 background-color: #fff;
+margin-top:60px;
 }
 #macro #create_macro_btn {
 position: absolute;

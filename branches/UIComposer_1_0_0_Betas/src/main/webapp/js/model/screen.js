@@ -13,16 +13,35 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
  * http://www.fsf.org.
  */
-//in order to let button id keep increasing
-BUTTONID = 1;
-// a hash contain all of infrared object, key is code id value is infrared model.
-// this variable is used for record the infrared button you already dragged.
-InfraredCollection = {};
-// Define rest api url
-RESTAPIUrl = "http://openremote.finalist.hk/beehive/rest/lirc";
-//Store Screen here 
-// key is screen id and value is screen model
-g_screens = {};
 
-
-
+Screen = function() {
+	function Screen () {
+		self = this;
+		self.id = -1;
+		self.name = "";
+		self.label = self.name;
+		//TODO add col and row
+		self.row = 6;
+		self.col = 4;
+		
+		self.buttons = new Array();
+		
+		self.className = getClassName(self);
+	}
+	
+	/**
+     * Create new instance from flat model (which have no private method).
+     * @param model flat model (which have no private method).
+     * @returns created new instance.
+     */
+	Screen.init = function (model) {
+		var screen = new Screen();
+		screen.id = model.id;
+		screen.name = model.name;
+		//TODO add col and row
+		return screen;
+	};
+	
+	
+	return Screen;
+}();

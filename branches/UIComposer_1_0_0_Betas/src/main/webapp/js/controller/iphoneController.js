@@ -123,5 +123,12 @@ var IPhoneController = function() {
         makeIphoneBtnDraggable(btn);
 	};
 	
+	IPhoneController.createIphoneBtnWithModel = function (iphoneBtn) {
+		IPhoneController.createIphoneBtn(iphoneBtn,ScreenView.findCell(iphoneBtn.x,iphoneBtn.y));
+	};
+	
+	
+
+	
 	return IPhoneController;
 }();
