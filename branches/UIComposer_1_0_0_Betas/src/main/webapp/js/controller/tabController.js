@@ -142,6 +142,8 @@ var TabController = function() {
         btn.prependTo($("#knx_tab .item_container"));
         makeBtnDraggable(btn);
         btn.unbind().click(function() {
+			$(".highlightInspected").removeClass("highlightInspected");
+			$(this).addClass("highlightInspected");
             InspectViewController.updateView($(this).data("model"));
         });
     };
@@ -171,6 +173,8 @@ var TabController = function() {
         btn.prependTo($("#x10_tab .item_container"));
         makeBtnDraggable(btn);
         btn.unbind().click(function() {
+			$(".highlightInspected").removeClass("highlightInspected");
+			$(this).addClass("highlightInspected");
             InspectViewController.updateView($(this).data("model"));
         });
     };

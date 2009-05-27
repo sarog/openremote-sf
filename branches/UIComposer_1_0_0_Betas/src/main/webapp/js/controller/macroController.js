@@ -60,7 +60,7 @@ var MacroController = function() {
     
     //static method
     MacroController.init = function() {
-        makeMacroPanelDraggabe();
+        // makeMacroPanelDraggabe();
         $("#create_macro_btn").unbind().click(showCreateDialog);
     };
 
@@ -75,6 +75,8 @@ var MacroController = function() {
 		
 		var btn = macroBtn.find(".macro_btn");
 		btn.unbind().click(function() {
+			$(".highlightInspected").removeClass("highlightInspected");
+			$(this).addClass("highlightInspected");
 			InspectViewController.updateView($(this).data("model"));
 		});
         makeBtnDraggable(btn);

@@ -15,112 +15,120 @@
  */
 
 ScreenViewController = function() {
-	function ScreenViewController () {
+    function ScreenViewController() {
 		
-	}
-	
-	/**
+    }
+
+    /**
      * Show create Screen dialog.
      */
-	function showCreateScreenDialog () {
-		$("#create_screen_dialog").showModalForm("Create Screen", {
+    function showCreateScreenDialog() {
+        $("#create_screen_dialog").showModalForm("Create Screen", {
             'Create': confirmCreateScreen
         });
-		$("#create_screen_dialog").enterKeyPressed(confirmCreateScreen);
-	}
+
+        $("#create_screen_dialog").enterKeyPressed(confirmCreateScreen);
+    }
 
     /**
      * Invoked when user confirm create Screen.
      */
-	function confirmCreateScreen () {
-	    var name = $("#screen_name_input");
+    function confirmCreateScreen() {
+        var name = $("#screen_name_input");
         var row = $("#screen_row_input");
         var col = $("#screen_col_input");
         var valid = true;
         if ($.empty(name.val())) {
             valid = false;
-            $("#create_screen_dialog").updateTips(label, "Name is required");
+            $("#create_screen_dialog").updateTips(name, "Name is required");
             return;
         }
-        // if ($.empty(row.val())) {
-        //           valid = false;
-        //           $("#create_screen_dialog").updateTips(address, "Row is required");
-        //           return;
-        //       }
-        // 		if (!row.val().toString().isNumber()) {
-        //           valid = false;
-        //           $("#create_screen_dialog").updateTips(address, "Row must be a number");
-        //           return;
-        //       }
-        // 
-        //       if ($.empty(col.val())) {
-        //           valid = false;
-        //           $("#create_screen_dialog").updateTips(command, "Column is required");
-        //           return;
-        //       }
-        // 		if (!col.val().toString().isNumber()) {
-        //           valid = false;
-        //           $("#create_screen_dialog").updateTips(address, "Column must be a number");
-        //           return;
-        //       }
+        if ($.empty(row.val())) {
+            valid = false;
+            $("#create_screen_dialog").updateTips(address, "Row is required");
+            return;
+        }
+        if (!row.val().toString().isNumber()) {
+            valid = false;
+
+            $("#create_screen_dialog").updateTips(address, "Row must be a number");
+            return;
+        }
+
+        if ($.empty(col.val())) {
+            valid = false;
+            $("#create_screen_dialog").updateTips(command, "Column is required");
+            return;
+        }
+        if (!col.val().toString().isNumber()) {
+            valid = false;
+            $("#create_screen_dialog").updateTips(address, "Column must be a number");
+            return;
+        }
         if (valid) {
-			var screen = new Screen();
-	        screen.id = BUTTONID++;
-	        screen.name = name.val();
+            var screen = new Screen();
+            screen.id = BUTTONID++;
+            screen.name = name.val();
+			screen.row = row.val();
+			screen.col = col.val();
             ScreenViewController.createScreenAndUpdateView(screen);
             $("#create_screen_dialog").closeModalForm();
         }
     }
 
-	function screenSelectChanged () {
-		ScreenView.updateView(g_screens[ScreenView.getSelectedScreenId()]);
-	}
-	
-	function screenSelectClicked () {
-		ScreenViewController.storeCurrentScreen();
-	}
-	
-	ScreenViewController.init = function() {
-		$("#creatScreenBtn").unbind().click(showCreateScreenDialog);
-		if ($("#creatScreenBtnOnPanel").length >0 ) {
-			$("#creatScreenBtnOnPanel").unbind().click(showCreateScreenDialog);
-		}
-		$("#screen_select").unbind().change(screenSelectChanged);
-		
-		$("#screen_select").click(screenSelectClicked);
-		
-	};
-	
-	ScreenViewController.createScreenAndUpdateView = function(screen) {
-		if (ScreenView.getSelectedScreenId() != 0) {
-			ScreenViewController.storeCurrentScreen();
-		}
-		$("#iphoneBtn_container .iphone_btn").remove();
-		ScreenViewController.createScreen(screen);
-		ScreenView.setLastOptionSelected();
-		screenSelectChanged();	
-	};
-	
-	ScreenViewController.createScreen = function(screen) {
-		ScreenView.addScreenSelect(screen);
-		g_screens[screen.id] = screen;
-		
-	};
-	
-	ScreenViewController.getCurrentScreen = function() {
-		return g_screens[ScreenView.getSelectedScreenId()];
-	};
-	
-	
-	
-	ScreenViewController.storeCurrentScreen = function() {
-		//save previous screen
-		var preScreen = DownloadController.parseCurrentScreen(g_screens[ScreenView.getSelectedScreenId()]);
-		g_screens[preScreen.id] = preScreen;
-	};
-	
+    function screenSelectChanged() {
+        ScreenView.updateView(g_screens[ScreenView.getSelectedScreenId()]);
+    }
 
-	
-	
-	return ScreenViewController;
-}();
+    function screenSelectClicked() {
+        ScreenViewController.storeCurrentScreen();
+    }
+
+    ScreenViewController.init = function() {
+        $("#creatScreenBtn").unbind().click(showCreateScreenDialog);
+        if ($("#creatScreenBtnOnPanel").length > 0) {
+            $("#creatScreenBtnOnPanel").unbind().click(showCreateScreenDialog);
+        }
+        $("#screen_select").unbind().change(screenSelectChanged);
+
+        $("#screen_select").click(screenSelectClicked);
+
+    };
+
+    ScreenViewController.createScreenAndUpdateView = function(screen) {
+        if (ScreenView.getSelectedScreenId() != 0) {
+            ScreenViewController.storeCurrentScreen();
+        }
+
+        $("#iphoneBtn_container").empty();
+
+        ScreenViewController.createScreen(screen);
+        ScreenView.setLastOptionSelected();
+        screenSelectChanged();
+    };
+
+    ScreenViewController.createScreen = function(screen) {
+        ScreenView.addScreenSelect(screen);
+        g_screens[screen.id] = screen;
+
+    };
+
+    ScreenViewController.getCurrentScreen = function() {
+        return g_screens[ScreenView.getSelectedScreenId()];
+    };
+
+
+
+    ScreenViewController.storeCurrentScreen = function() {
+        //save previous screen
+        if (ScreenView.getSelectedScreenId() != 0) {
+            var preScreen = DownloadController.parseCurrentScreen(g_screens[ScreenView.getSelectedScreenId()]);
+            g_screens[preScreen.id] = preScreen;
+        }
+    };
+
+
+
+
+    return ScreenViewController;
+} ();

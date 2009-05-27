@@ -17,7 +17,7 @@
 function fillVendorSelect() {
     var select = $("#vendor_select");
     loadingSelect(select);
-    getJSONData("",
+    getJSONData("/lirc",
     function(data) {
         loadingSelectDone(select);
         var vendors = $.makeArray(data.vendors.vendor);
@@ -43,7 +43,7 @@ function fillModelSelect(vendor_name) {
     $("#model_select_container").show();
     var select = $("#model_select");
     loadingSelect(select);
-    getJSONData("/" + vendor_name,
+    getJSONData("/lirc/" + vendor_name,
     function(data) {
         loadingSelectDone(select);
         var models = $.makeArray(data.models.model);
@@ -63,7 +63,7 @@ function fillModelSelect(vendor_name) {
 
 function afterSelectModel(vendor_name, model_name) {
     $("#section_select option").remove();
-    getJSONData("/" + vendor_name + "/" + model_name,
+    getJSONData("/lirc/" + vendor_name + "/" + model_name,
     function(data) {
         var sections = $.makeArray(data.sections.section);
         if (sections.length == 1) {
@@ -88,7 +88,7 @@ function fillSectionSelect(vendor_name, model_name, sections) {
 
 function showCommandBtns(vendor_name, model_name, section_id) {
 
-    getJSONData("/" + vendor_name + "/" + model_name + "/" + section_id + "/codes",
+    getJSONData("/lirc/" + vendor_name + "/" + model_name + "/" + section_id + "/codes",
     function(data) {
         $("#command_container").html("");
         var codes = $.makeArray(data.codes.code);
@@ -98,7 +98,7 @@ function showCommandBtns(vendor_name, model_name, section_id) {
         $("<div class='clear'></div>").appendTo($("#command_container"));
         makeBtnDraggable();
         $("#command_navigition").dialog("close");
-        $("#lircUrl").val(RESTAPIUrl + "/" + vendor_name + "/" + model_name + "/" + "lirc.conf");
+        $("#lircUrl").val(RESTAPIUrl + "/lirc/" + vendor_name + "/" + model_name + "/" + "lirc.conf");
     });
 
     $("#command_navigition option").remove();

@@ -20,7 +20,7 @@
  * @param openCallback what's going on when the diglog opened.
  */
 
-jQuery.fn.showModalForm = function(title, buttons, openCallback) {
+jQuery.fn.showModalForm = function(title, buttons, openCallback,width) {
     var newButtons = {};
     newButtons.Cancel = function() {
         $(this).dialog("close");
@@ -30,7 +30,10 @@ jQuery.fn.showModalForm = function(title, buttons, openCallback) {
     for (var p in buttons) {
         newButtons[p] = buttons[p];
     }
-
+	var _width = "auto";
+	if (width !== undefined) {
+		_width = width;
+	}
     this.find("input[type='text']").addClass("text");
     this.find("input[type='text']").addClass("ui-widget-content");
     this.find("input[type='text']").addClass("ui-corner-all");
@@ -42,7 +45,7 @@ jQuery.fn.showModalForm = function(title, buttons, openCallback) {
         height: "auto",
         modal: true,
         title: title,
-        width: "auto",
+        width: _width,
         resizable: false,
         buttons: newButtons,
         close: function() {
@@ -72,12 +75,19 @@ jQuery.empty = function(value) {
     return $.trim(value + "") == "";
 };
 
+jQuery.showErrorMsg = function(msg) {
+	$("#error #errorMsg").html(msg);
+	$("#error").show();
+
+};
+
 /**
  * Add a style to element, notice user there is a error occured on this element.
  * Use JQuery Theme 'ui-state-error' style.
  */
 jQuery.fn.inputError = function() {
     this.addClass('ui-state-error');
+
 };
 
 /**
