@@ -28,8 +28,14 @@ var X10 = function() {
         /**
          * Get HTML elementId
          */
-		this.elementId = function() {
+		self.elementId = function() {
 			return "x10"+self.id;
+		};
+		
+		self.inspectViewTemplate = "template/_x10Inspect.ejs";
+
+		self.updateModel = function() {
+			TabController.updateX10(self);
 		};
 	}
 

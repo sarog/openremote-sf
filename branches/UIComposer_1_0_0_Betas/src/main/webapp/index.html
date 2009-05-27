@@ -78,31 +78,17 @@
 			</div>
 			<div class="clear"></div>
 			<div id="main">
-					<div id="screen_tool_bar" class="grid_4 tool_bar">
+					<div id="screen_tool_bar" class="grid_12">
+						<div class="grid_4">
 						<p align="center">
 							<select  id="screen_select">
 								<option value="0">Please Create a Screen</option>
 							</select>
 							<a id="creatScreenBtn" class="ui-state-default ui-corner-all button" href="#"><span class="ui-icon ui-icon-plusthick"></span>Create</a>
 						</p>
+						</div>
 					</div>
-					<div id="inspect_tool_bar" class="grid_8 tool_bar">
-						<div id="inspect_header" class="ui-widget-header ui-corner-left tool_bar">
-							<p>Inspect</p>
-						</div>
-						<div id="inspect_body" class="ui-widget-content tool_bar">
-								<p id="inspect_detail">
-								
-								</p>
-						</div>
-						<div id="inspect_button" class="ui-corner-right ui-widget-content tool_bar">
-							<p>
-									<a id="inspect_ok_btn" class="ui-state-default ui-corner-all button" href="#"><span class="ui-icon ui-icon-check"></span>OK</a>
-									<a id="inspect_delete_btn" class="ui-state-default ui-corner-all button" href="#"><span class="ui-icon ui-icon-trash"></span>Delete</a>
-							</p>
-						</div>
-						<div class="clear"></div>
-					</div>
+				
 				<div id="left" class="grid_4">
 				
 					<div id="iphone_backgroud">
@@ -120,7 +106,7 @@
 						<a id="saveBtn" class="ui-state-default ui-corner-all button" href="#"><span class="ui-icon ui-icon-arrowthickstop-1-s"></span>Download</a>
 					</p>
 				</div>
-				<div id="right" class="grid_5">
+				<div id="middle" class="grid_5">
 					<div id="tabs">
 						<ul>
 							<li>
@@ -151,12 +137,31 @@
 						</div>
 					</div>
 				</div>
-				<div id="macro" class="grid_3">
-					<div class="item_title ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-top">
-						<b>Macro</b> <a id="create_macro_btn" href="#" name="create_macro_btn" title="Create Macro"><span class="ui-icon ui-icon-plusthick">create</span></a>
+				<div id='right' class="grid_3">
+					<div id="inspect_tool_bar" class="tool_bar">
+						<div id="inspect_header" class="ui-widget-header ui-corner-top item_title">
+							<p>Inspect</p>
+						</div>
+						<div id="inspect_body" class="ui-widget-content">
+								<p id="inspect_detail">
+									
+								</p>
+						</div>
+						<div id="inspect_button" class="ui-widget-content" >
+							<p>
+									<a id="inspect_ok_btn" class="ui-state-default ui-corner-all button" href="#" onClick="javascript:void(0);return false;"><span class="ui-icon ui-icon-check"></span>OK</a>
+									<a id="inspect_delete_btn" class="ui-state-default ui-corner-all button" href="#" onClick="javascript:void(0);return false;"><span class="ui-icon ui-icon-trash"></span>Delete</a>
+							</p>
+						</div>
+						<div class="clear"></div>
+					</div>
+				<div id="macro">
+					<div class="item_title ui-widget-header ui-corner-top">
+						<p><b>Macro</b> <a id="create_macro_btn" href="#" name="create_macro_btn" title="Create Macro"><span class="ui-icon ui-icon-plusthick">create</span></a></p>
 					</div>
 					<div class="item_container ui-corner-bottom ui-widget-content"></div>
 				</div>
+			</div>
 			</div>
 			<div class="clear"></div>
 			<div id="bottom"></div>

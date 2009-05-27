@@ -26,14 +26,14 @@ var Macro = function() {
 		/**
          * Get HTML elementId
          */
-		this.elementId = function() {
+		self.elementId = function() {
 			return "macro"+self.id;
 		};
        
         /**
          * Gets direct models of current Macro
          */
-		this.getSubModels = function() {
+		self.getSubModels = function() {
 			var models = new Array();
 			findSubLi(self).each(function() {
 				var m = $(this).data("model");	
@@ -46,13 +46,23 @@ var Macro = function() {
         /**
          * Get all models recursively of current Macro, look up deeply into sub macro 
          */
-		this.getSubModelsRecursively = function() {
+		self.getSubModelsRecursively = function() {
 			var models = new Array();
 			findSubLi(self).each(function() {
 				var m = $(this).data("model");
 				foreach(m,models);
 			});
 			return models;
+		};
+		
+		self.inspectViewTemplate = "template/_macroInspect.ejs";
+
+		self.updateModel = function() {
+			MacroController.updateMacro(self);
+		};
+		
+		self.deleteModel = function() {
+			$("#"+self.elementId()).parent(".macro_btn_defination").remove();
 		};
 
         //private methods

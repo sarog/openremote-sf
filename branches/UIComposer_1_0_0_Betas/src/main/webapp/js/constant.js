@@ -13,18 +13,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
  * http://www.fsf.org.
  */
+/*-----------  some constant   --------------------------*/
+
+// Define rest api url
+RESTAPIUrl = "http://openremote.finalist.hk/beehive/rest/lirc";
+
+/*-----------  store global data  --------------------------*/
+
 //in order to let button id keep increasing
 BUTTONID = 1;
 // a hash contain all of infrared object, key is code id value is infrared model.
 // this variable is used for record the infrared button you already dragged.
+// "Notice":should clean up when delete infrared button from iphone panel.
 InfraredCollection = {};
-// Define rest api url
-RESTAPIUrl = "http://openremote.finalist.hk/beehive/rest/lirc";
 //Store Screen here 
 // key is screen id and value is screen model
+// "Notice":should clean up when delete screen.
 g_screens = {};
 
 // TODO Need  refactor, every screen have it's own controller and view.
+// "Notice":should clean up when delete infrared button from iphone panel.
+// "Notice":should clean up when delete iphone button.
 btnInArea = new Array();
 
 

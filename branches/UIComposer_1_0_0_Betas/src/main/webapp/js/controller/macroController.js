@@ -72,7 +72,12 @@ var MacroController = function() {
         var macroBtn = HTMLBuilder.macroBtnBuilder(macro);
         $(macroBtn).prependTo($("#macro .item_container"));
         MacroController.prepareMacroSublist(macroBtn);
-        makeBtnDraggable(macroBtn.find(".blue_btn.macro_btn"));
+		
+		var btn = macroBtn.find(".macro_btn");
+		btn.unbind().click(function() {
+			InspectViewController.updateView($(this).data("model"));
+		});
+        makeBtnDraggable(btn);
     };
 
     /**
@@ -151,8 +156,25 @@ var MacroController = function() {
      * @param container which you want to add li into
      */
     MacroController.createMacroSubli = function(model, container) {
-        HTMLBuilder.macroLiBtnBuilder(model).appendTo(container);
+       	HTMLBuilder.macroLiBtnBuilder(model).appendTo(container);
     };
+
+	MacroController.updateMacro = function (macro) {
+        // get Label value from inspect window
+        var label  = $.trim($("#inspect_macro_label").val());
+		macro.label = label;
+
+        //update view
+        var btn = $("#"+macro.elementId());
+		btn.attr("title", macro.label);
+        if (label.length > 14) {
+            label = label.substr(0, 14) + "...";
+        }
+        btn.html(label);
+	
+        //re-set model.
+		btn.data("model",macro);
+	};
 
 
     return MacroController;
