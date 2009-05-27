@@ -24,6 +24,9 @@ function makeBtnDraggable(items) {
     } else {
         btns = items;
     }
+    var ejs = new EJS({
+        url: "template/_iphoneBtn.ejs"
+    });
     btns.draggable({
         zIndex: 2700,
         cursor: 'move',
@@ -40,7 +43,10 @@ function makeBtnDraggable(items) {
         },
 		helper: function(event){
 			var label = event.currentTarget.firstChild.data;
-			return $("<div class='iphone_btn'>"+label+"</div>");
+			if (label.length > 5) {
+				label = label.substr(0, 5) + "<br/>...";
+        	}
+			return $(ejs.render({label:label}));
 		},
 		cursorAt: { left: 25,top : 25 } 
     });

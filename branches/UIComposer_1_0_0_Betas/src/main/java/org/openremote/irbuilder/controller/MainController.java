@@ -15,6 +15,7 @@
  */
 package org.openremote.irbuilder.controller;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,8 +59,9 @@ public class MainController {
    @RequestMapping(value = "/download.htm", method = RequestMethod.POST)
    public void download(String iphone, String controller, String panel, String restUrl, String ids,
          HttpServletRequest req, HttpServletResponse resp) throws IOException {
-      String fileName = resourceService.downloadZipResource(controller, iphone, panel, restUrl, ids).getName();
-      resp.getOutputStream().print("tmp/" + fileName);
+      String sessionId = req.getSession().getId();
+      String fileName = resourceService.downloadZipResource(controller, iphone, panel, restUrl, ids,req.getSession().getId()).getName();
+      resp.getOutputStream().print("tmp/" + sessionId + File.separator + fileName);
    }
 
    /**
