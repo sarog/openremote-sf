@@ -11,9 +11,13 @@ InspectViewController = function() {
 	InspectViewController.updateView = function(model) {
 		InspectView.updateView(model);
 		$("#inspect_button").show();
+        if (model.afterShowInspect !== undefined) {
+             model.afterShowInspect();
+        }
 		
 		$("#inspect_ok_btn").unbind().click(function() {
 			InspectView.getModel().updateModel();
+			InspectViewController.defaultView();
 		});
 		$("#inspect_delete_btn").unbind().click(function() {
 			var model = InspectView.getModel();
@@ -28,9 +32,15 @@ InspectViewController = function() {
 			if (model.afterDelete !== undefined) {
 				model.afterDelete();
 			}
-            $("#inspect_detail").html(InspectViewController.defaultText);
-            $("#inspect_button").hide();
+            InspectViewController.defaultView();
 		});
+	};
+	
+	InspectViewController.defaultView = function(){
+		$("#inspect_detail").html(InspectViewController.defaultText);
+        $("#inspect_button").hide();
+		$(".highlightInspected").removeClass("highlightInspected");
+		$("#inspect_tool_bar").data("model",null);
 	};
 	return InspectViewController;
 }();

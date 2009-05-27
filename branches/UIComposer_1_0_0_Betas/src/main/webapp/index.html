@@ -40,9 +40,13 @@
 </script>
 		<script type="text/javascript" src="js/htmlBuilder.js">
 </script>
+		<script type="text/javascript" src="js/view/ejsHelper.js">
+</script>
 		<script type="text/javascript" src="js/view/screenView.js">
 </script>
 		<script type="text/javascript" src="js/view/inspectView.js">
+</script>
+		<script type="text/javascript" src="js/view/changeIconView.js">
 </script>
 		<script type="text/javascript" src="js/controller/dragController.js">
 </script>
@@ -62,6 +66,8 @@
 </script>
 		<script type="text/javascript" src="js/controller/inspectViewController.js">
 </script>
+		<script type="text/javascript" src="js/controller/changeIconViewController.js">
+</script>
 		<script type="text/javascript" src="js/init.js">
 </script>
 		<title>
@@ -75,6 +81,14 @@
 			</div>
 			<div id="logo" class="grid_12">
 				<img alt="OpenRemote" src="image/global.logo.png"> 
+			</div>
+			<div class="clear"></div>
+			<div id="error" class=" grid_12">
+				<p class="ui-state-error ui-corner-all">
+					<span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
+					<strong>ERROR:</strong>
+					<b id="errorMsg"></b>
+				</p>
 			</div>
 			<div class="clear"></div>
 			<div id="main">
@@ -184,11 +198,9 @@
 				</div>
 				<div id="create_screen_dialog">
 					<fieldset align="center">
-						<label for="screen_name_input">Name</label><input type="text" id="screen_name_input" />
-						<!-- 
-						<label for="screen_row_input">Row</label><input type="text" id="screen_row_input" value="6"  style="width:30px"/>
-						<label for="screen_col_input">Column</label><input type="text" id="screen_col_input" value="4" style="width:30px"/>
-						--> 
+						<label for="screen_name_input">Name</label><input type="text" id="screen_name_input" tabindex="1" />
+						<label for="screen_row_input">Row</label><input type="text" id="screen_row_input" tabindex="2"   style="width:30px"/>
+						<label for="screen_col_input">Column</label><input type="text" id="screen_col_input" tabindex="3"  style="width:30px"/>
 					</fieldset>
 				</div>
 				<div id="create_x10_dialog">
@@ -230,6 +242,25 @@
 								</select>
 						</div>
 					</div>
+					
+				</div>
+				<div id="change_icon_form">
+					<label for="fromBeehive"><input type="radio" name="iconType" class="change_icon_type" checked="true" id="fromBeehive">Select From Beehive</label>
+					<label for="fromUrl"><input type="radio" name="iconType" class="change_icon_type" id="fromUrl">From a URL</label>
+					<label for="fromUpload"><input type="radio" name="iconType" class="change_icon_type" id="fromUpload">Upload a Image</label>	
+					<fieldset>
+					<div id="change_icon_from_beehive" class="change_icon_from_container">
+
+					</div>
+					<div id="change_icon_from_url" class="change_icon_from_container">
+						<label for="icon_url_input">URL : <input type="text" id="icon_url_input" /></label>
+					</div>
+					<div id="change_icon_from_upload" class="change_icon_from_container">
+						<form id="upload_image_form" action="uploadImage.htm" method="post" enctype="multipart/form-data">
+						<label for="icon_file_name_input">File name : <input type="file" id="icon_file_name_input" name="image_file" /></label>
+						</form>
+					</div>
+					</fieldset>
 				</div>
 				<div id="upload_form_container" style="display:none">
 					<form id="upload_form" action="import.htm" method="post" enctype="multipart/form-data">
@@ -238,6 +269,7 @@
 							</fieldset>
 					</form>
 				</div>
+			
 				<div id="loading">
 					<img src="image/loading.gif" alt="loading" />
 				</div>
@@ -246,5 +278,6 @@
 		<div id="iphoneBtn_container">
 			
 		</div>
+			
 	</body>
 </html>

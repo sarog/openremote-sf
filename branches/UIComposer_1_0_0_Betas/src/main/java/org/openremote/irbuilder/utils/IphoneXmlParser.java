@@ -45,6 +45,7 @@ public class IphoneXmlParser {
     */
    public static String parserXML(String xmlString, File folder){
       SAXBuilder sb = new SAXBuilder(false);
+      sb.setValidation(false);
       String iphoneXml = "";
       try {         
           Document doc = sb.build(new InputSource(new StringReader(xmlString)));
