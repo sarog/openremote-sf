@@ -39,7 +39,7 @@ var DownloadController = function() {
             iphone: iphoneXml,
             controller: controllerXml,
             panel: panelDesc,
-            restUrl: RESTAPIUrl + "/lirc.conf",
+            restUrl: constant.RESTAPIUrl + "/lirc.conf",
             ids: assembledSectionIds
             //get it in parseInfared() function
         },
@@ -70,8 +70,8 @@ var DownloadController = function() {
     function getStoredScreens() {
         var screenAttr = new Array();
 
-        for (var id in g_screens) {
-            screenAttr.push(g_screens[id]);
+        for (var id in global.screens) {
+            screenAttr.push(global.screens[id]);
         }
         return screenAttr;
     }
@@ -135,6 +135,9 @@ var DownloadController = function() {
                 var models = iphoneBtn.oModel.getSubModelsRecursively();
                 for (var index in models) {
                     event.push(models[index].id);
+					if (models[index].className == "Infrared") {
+						global.InfraredCollection[models[index].codeId] = models[index];
+					}
                 }
             } else {
                 event.push(iphoneBtn.oModel.id);
@@ -152,8 +155,8 @@ var DownloadController = function() {
     function parseInfared() {
         var sectionIds = new Array();
         var irEvents = new Array();
-        for (var codeId in InfraredCollection) {
-            var model = InfraredCollection[codeId];
+        for (var codeId in global.InfraredCollection) {
+            var model = global.InfraredCollection[codeId];
             var irEvent = new Object();
             irEvent.id = model.id;
             irEvent.name = model.name;
@@ -213,7 +216,7 @@ var DownloadController = function() {
 
         var macroBtns = new Array();
         $("#macro .macro_btn_defination").each(function() {
-            var model = $(this).find(".macro_btn").data("model");
+            var model = $(this).data("model");
             var btnModels = model.getSubModels();
             model.buttons = new Array();
             for (var index in btnModels) {
@@ -236,7 +239,7 @@ var DownloadController = function() {
             knxBtns: knxBtns,
             x10Btns: x10Btns,
             macroBtns: macroBtns,
-            maxId: BUTTONID
+            maxId: global.BUTTONID
         };
 
         var data = JSON.stringify({
@@ -268,6 +271,9 @@ var DownloadController = function() {
             var iphoneBtn = $(this).data("model");
             buttonArray.push(iphoneBtn);
             btnModelHash[iphoneBtn.id] = iphoneBtn;
+			if (iphoneBtn.oModel.className == "Infrared") {
+				global.InfraredCollection[iphoneBtn.oModel.codeId] = iphoneBtn.oModel;
+			}
         });
 
         screen.buttons = buttonArray;

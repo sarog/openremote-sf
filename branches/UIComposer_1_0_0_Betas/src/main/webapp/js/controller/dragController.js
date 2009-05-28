@@ -40,14 +40,21 @@ function makeBtnDraggable(items) {
             $("#dropable_table td.hiLight").removeClass("hiLight");
         },
 		helper: function(event){
-			var label = event.currentTarget.firstChild.data;
-			if (label.length > 5) {
-				label = label.substr(0, 5) + "<br/>...";
-        	}
-			helper.find(".middle span").html(label);
+			var label = "";
+			if ($(this).data("model") === undefined) {
+				label = event.currentTarget.firstChild.data;
+			} else {
+				label = $(this).data("model").label;
+			}
+			
+			helper.interceptStr({
+                text: label,
+                max: 14,
+                title: false
+            });
 			return helper;
 		},
-		cursorAt: { left: 15,top : 15 } 
+		cursorAt: { left: 10,top : 10 } 
     });
 }
 

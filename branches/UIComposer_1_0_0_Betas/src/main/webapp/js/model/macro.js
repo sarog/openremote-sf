@@ -16,7 +16,8 @@
 var Macro = function() {
 	function Macro () {
 		var self = this;
-		self.id = -1;
+		Model.call(self);
+		
         //text ui interface display
 		self.label = "";
 		// convenient way to get the Class name.
@@ -24,9 +25,9 @@ var Macro = function() {
 
          //public methods
 		/**
-         * Get HTML elementId
+         * Get HTML getElementId
          */
-		self.elementId = function() {
+		self.getElementId = function() {
 			return "macro"+self.id;
 		};
        
@@ -57,13 +58,7 @@ var Macro = function() {
 		
 		self.inspectViewTemplate = "template/_macroInspect.ejs";
 
-		self.updateModel = function() {
-			MacroController.updateMacro(self);
-		};
 		
-		self.deleteModel = function() {
-			$("#"+self.elementId()).parent(".macro_btn_defination").remove();
-		};
 
         //private methods
         /**
@@ -71,7 +66,7 @@ var Macro = function() {
          * @param macro
          */
 		function findSubLi (macro) {
-			return $("#" + macro.elementId()).next("ul").find("li");
+			return $("#" + macro.getElementId()).find("ul").find("li");
 		}
 
        

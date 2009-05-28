@@ -14,13 +14,10 @@
  * http://www.fsf.org.
  */
 var InfraredController = function() {
-	function InfraredController () {
-		//constractor
-	}
-	
-	//static method
-	InfraredController.init = function() {
-		
+	return {
+		init: function(){
+			
+		}
 	};
 	
 };

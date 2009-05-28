@@ -16,7 +16,9 @@
 var IphoneBtn = function() {
 	function IphoneBtn() {
 		var self = this;
-		self.id = -1;
+		
+		Model.call(self);
+		
 		//Original model 
 		self.oModel = null;
 		self.label = "";
@@ -25,10 +27,9 @@ var IphoneBtn = function() {
 		self.height = -1;
 		self.width = -1;
 		self.icon = "";
-		// convenient way to get the Class name.
-		self.className = getClassName(self);
+
 		
-		self.elementId = function() {
+		self.getElementId = function() {
 			return "iphoneBtn"+self.id;
 		};
 		
@@ -53,18 +54,6 @@ var IphoneBtn = function() {
 		};
 		
 		self.inspectViewTemplate = "template/_iphoneBtnInspect.ejs";
-
-        self.afterShowInspect = function() {
-            IPhoneController.afterShowInspect();
-        };
-
-		self.updateModel = function() {
-			IPhoneController.updateIphoneBtn(self);
-		};
-		
-		self.afterDelete = function() {
-			self.clearArea();
-		};
 	}
 	
 	

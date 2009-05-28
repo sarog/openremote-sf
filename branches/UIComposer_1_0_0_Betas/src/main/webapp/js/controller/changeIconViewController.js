@@ -1,15 +1,19 @@
-ChangeIconViewController = function() {
+var ChangeIconViewController = function() {
 	return {
 		
 		showChangeIconForm: function(){
 			$("#change_icon_form").showModalForm("Change Button Icon", {
-	            'OK': comfirmChangeIcon
-	        },function() {},"500px");
-	        $("#change_icon_form").enterKeyPressed(comfirmChangeIcon);
+				buttons:{
+					'OK': comfirmChangeIcon
+				},
+	            width:"500px",
+				confirmButtonName:'OK'
+	        });
 			
 			ChangeIconViewController.showFromBeehive();
 			
 			$("#fromBeehive").attr("checked","true");
+			
 			$("#fromBeehive").unbind().change(function() {
 				$("#change_icon_form").clearError();
 				$("#validateTips").remove();
@@ -68,19 +72,41 @@ ChangeIconViewController = function() {
 				return true;
 			}
 			function checkInputUrl () {
-				if (ChangeIconView.getInputUrl().match("http(s?)://") == null) {
-					$("#change_icon_form").updateTips($("#icon_url_input"),"Please input correct url.");
-					return false;
-				}
-				return true;
+                $("#icon_url_form").validate({
+                    invalidHandler:function(form, validator) {
+                        $("#change_icon_form").errorTips(validator);
+                    },
+                    showErrors:function(){},
+                    rules: {
+                        icon_url_input: {
+                            required: true,
+                            url: true
+                        }
+                    },
+                    messages:{
+                        icon_url_input: {
+                            required: "Please input a url",
+                            url: "Please input a correct url"
+                        }
+                    }
+                });
+                return $("#icon_url_form").valid();
+            
 			}
 			
 			function checkSelectFile () {
-				if (ChangeIconView.getFileName().match("\.(png|gif|jpg)") == null) {
-					$("#change_icon_form").updateTips($("#icon_file_name_input"),"Please select an gif, jpg, png type image.");
-					return false;
-				}
-				return true;
+                $("#upload_image_form").validate({
+                    invalidHandler:function(form, validator) {
+                        $("#change_icon_form").errorTips(validator);
+                    },
+                    showErrors:function(){},
+                    rules: {
+                        image_file: {
+                            isImage: true
+                        }
+                    }
+                });
+                return $("#upload_image_form").valid();
 			}
 			
 			function changeInspectImage (src) {

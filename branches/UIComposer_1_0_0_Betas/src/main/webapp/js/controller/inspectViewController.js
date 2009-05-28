@@ -1,46 +1,46 @@
 InspectViewController = function() {
-	function InspectViewController () {
-		
-	}
-	
-	InspectViewController.defaultText = "Click an element to inspect it.";
-	InspectViewController.init = function() {
-		$("#inspect_detail").html(InspectViewController.defaultText);
-	};
-	
-	InspectViewController.updateView = function(model) {
-		InspectView.updateView(model);
-		$("#inspect_button").show();
-        if (model.afterShowInspect !== undefined) {
-             model.afterShowInspect();
-        }
-		
-		$("#inspect_ok_btn").unbind().click(function() {
-			InspectView.getModel().updateModel();
-			InspectViewController.defaultView();
-		});
-		$("#inspect_delete_btn").unbind().click(function() {
-			var model = InspectView.getModel();
+	return {
+		init : function() {
 			
-			if (model.deleteModel !== undefined) {
+		},
+
+		/**
+		 * Update Inspect view 
+		 * @static
+		 * @param {Object} options.model model need to inspect.
+		 * @param {String} options.template ejs template to render inspect window
+		 * @param {Function} options.after  (optional) call after render inspect window
+		 */
+		updateView : function(options) {
+			InspectView.updateView(options);
+			
+			
+	        if (options.after !== undefined) {
+	             options.after.call(this);
+	        }
+			
+			
+			$("#close_inspect_btn").unbind().hover(function() {
+				$(this).addClass("ui-state-hover");
+			},function() {
+				$(this).removeClass("ui-state-hover");
+			}).click(function() {
+				InspectView.hideView();
+			});
+			$("#inspect_ok_btn").unbind().click(function() {
+				InspectView.getModel().updateModel();
+				InspectView.hideView();
+			});
+			$("#inspect_delete_btn").unbind().click(function() {
+				var model = InspectView.getModel();
 				model.deleteModel();
-			} else {
-				$("#"+model.elementId()).remove();
-			}
+				InspectView.hideView();
+			});
 			
-			// If there are some clean stuff should do, add a method afterDelete in model.
-			if (model.afterDelete !== undefined) {
-				model.afterDelete();
-			}
-            InspectViewController.defaultView();
-		});
+			InspectView.getElement().draggable({
+				handle:$("#inspect_header"),
+				cursor:"move"
+			});
+		}
 	};
-	
-	InspectViewController.defaultView = function(){
-		$("#inspect_detail").html(InspectViewController.defaultText);
-        $("#inspect_button").hide();
-		$(".highlightInspected").removeClass("highlightInspected");
-		$("#inspect_tool_bar").data("model",null);
-	};
-	return InspectViewController;
 }();

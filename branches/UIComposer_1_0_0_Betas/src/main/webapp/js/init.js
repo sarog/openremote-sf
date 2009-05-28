@@ -21,7 +21,8 @@ $(document).ready(function() {
     IPhoneController.init();
     ScreenViewController.init();
     InspectViewController.init();
-
+    $("#version").append(getVersionLabel());
+    
     $("body").ajaxError(function(event, request, settings) {
         if (request.status == 0) {
             $.showErrorMsg("Can't connect to server.");
