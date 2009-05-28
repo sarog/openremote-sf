@@ -17,18 +17,16 @@
 var X10 = function() {
 	function X10() {
 		var self = this;
-		self.id = -1;
+		Model.call(self);
         //text ui interface display
 		self.label = "";
 		self.address = "";
 		self.command = "";
-		// convenient way to get the Class name.
-		self.className = getClassName(self);
 
         /**
-         * Get HTML elementId
+         * Get HTML getElementId
          */
-		self.elementId = function() {
+		self.getElementId = function() {
 			return "x10"+self.id;
 		};
 		

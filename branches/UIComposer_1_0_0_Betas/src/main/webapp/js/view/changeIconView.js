@@ -5,6 +5,13 @@ ChangeIconView = function() {
             $("#change_icon_from_beehive").show();
 			if ($("#change_icon_from_beehive :radio").length == 0 ) {
 				EJSHelper.updateView("template/_beehiveIconList.ejs",'change_icon_from_beehive',{icons:icons});
+                var lastIcon=null;
+                var change_icon_from_beehive = $("#change_icon_from_beehive");
+                change_icon_from_beehive.find('img').unbind().click(function(){
+					$(this).attr("src");
+                   $("#inspect_iphoneBtn_icon").attr("src",$(this).attr("src"));
+					$("#change_icon_form").closeModalForm();
+                });
 			}
         },
         showFromUrlView: function() {

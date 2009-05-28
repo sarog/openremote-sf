@@ -2,7 +2,18 @@ fieldset input.text {
 margin: 12px 0;
 width: 95%;
 padding: .4em;
-text-align:center;
+text-align: left;
+size: 2;
+display:block;
+}
+
+fieldset input.number {
+margin: 10px 5px;
+width: 30px;
+padding: .4em;
+text-align: left;
+size: 2;
+display:inline;
 }
 fieldset {
 padding: 0;
@@ -12,6 +23,7 @@ margin-top: 25px;
 
 #error {
 	display:none;
+	position:absolute;
 }
 
 #error p {
@@ -33,12 +45,23 @@ text-align:left;
 	color:#FCD647;
 	margin:5px 10px;
 }
+#top .version {
+   color:#FCD647;
+   float:right;
+   font-size:10px;
+   margin-right:10px;
+}
 #logo {
 	padding:3px 2px;
 }
 
 #left {
 text-align: center;
+}
+
+#screen_tool_bar p {
+	padding:3px;
+	margin:3px;
 }
 #command_navigition {
 margin: 0 auto;
@@ -65,6 +88,7 @@ width: 200px;
 #upload_form fieldset {
 	width:280px;
 }
+
 
 
 #iphone_backgroud {
@@ -104,6 +128,7 @@ top:50%;
 #dropable_table td {
 border: 1px dashed yellow;
 }
+
 #dropable_table_container {
 	position:absolute;
 	top:105px;
@@ -161,21 +186,35 @@ display: inline;
 cursor: pointer;
 }
 #right {
-	margin-top:10px;
 }
 
 .item_title p {
 	margin:6px 0;
 	text-align:center;
 }
+#inspect_tool_bar {
+	position:absolute;
+	display:none;
+	background:white;
+}
 
 #inspect_tool_bar p {
 	text-align:center;
-	margin:4px 0;
+	margin:4px 18px;
 }
 
 #inspect_header {
-	
+	position:relative;
+	cursor:move;
+}
+#close_inspect_btn {
+	height:18px;
+	margin:-10px 0 0;
+	padding:1px;
+	position:absolute;
+	right:0.3em;
+	top:50%;
+	width:19px;
 }
 
 #inspect_header p {
@@ -191,7 +230,7 @@ cursor: pointer;
 #inspect_detail fieldset {
 	border:1px solid grey;
 	margin:auto;
-	width:200px;
+	width:160px;
 }
 
 #inspect_detail fieldset legend {
@@ -202,7 +241,7 @@ cursor: pointer;
 #inspect_detail label {
     display:block;
     margin:5px 0;
-    margin-left:28px;
+    margin-left:2px;
     text-align:left;
     font-weight:bold;
 }
@@ -225,7 +264,11 @@ cursor: pointer;
 #change_icon_from_beehive {
 	overflow:auto;
 }
-.change_icon_from_container {
+#change_icon_from_beehive img{
+    margin:2px;
+    border:1px solid white;
+}
+.change_icon_from_container ,.hidden{
 	display:none;
 }
 
@@ -243,7 +286,6 @@ top: 5px;
 
 
 #macro  .item_title {
-cursor: move;
 position: relative;
 }
 
@@ -253,6 +295,7 @@ margin-bottom: 1em;
 
 
 ul.macro_detail {
+border:1px solid #CCCCCC;
 list-style-type: none;
 margin: 0;
 padding: 0;
@@ -262,7 +305,7 @@ height: 50px;
 }
 
 .macro_btn_defination {
-width: 160px;
+width: 158px;
 }
 
 
@@ -277,16 +320,17 @@ position: absolute;
 }
 
 #macro ul.ui-state-highlight {
-border: 1px solid #AAAAAA;
+border: 1px solid grey;
+
 }
 
 
 #macro .item_container {
 border: 1px solid #AAAAAA;
-min-height:403px;
+min-height:494px;
 height: auto!important;
-height: 403px;
-_height: 403px;
+height: 494px;
+_height: 494px;
 border-top: none;
 padding: 1em 1em 0 1em;
 }
@@ -330,12 +374,18 @@ font-size: 11px;
 color: white;
 font-weight: bolder;
 text-align: center;
-position: relative;
+position: absolute;
 cursor: move;
+
+}
+
+.macro_detail .highlightInspected {
+border:1px solid orange;
+opacity:0.9;
 }
 
 .highlightInspected {
-border:1px solid #669900;
+border:1px solid orange;
 opacity:0.9;
 }
 
@@ -385,6 +435,7 @@ table.iPhone_btn_cont td.tr_c{
 table.iPhone_btn_cont td.middle{
     text-align: center;
     font-size: 11px;
+	height:100%;
 }
 table.iPhone_btn_cont td.ml{
     width:3px;

@@ -24,10 +24,12 @@ ScreenViewController = function() {
      */
     function showCreateScreenDialog() {
         $("#create_screen_dialog").showModalForm("Create Screen", {
-            'Create': confirmCreateScreen
+			buttons:{
+				 'Create': confirmCreateScreen
+			},
+			confirmButtonName:'Create',
+			width:400
         });
-
-        $("#create_screen_dialog").enterKeyPressed(confirmCreateScreen);
     }
 
     /**
@@ -36,38 +38,48 @@ ScreenViewController = function() {
     function confirmCreateScreen() {
         var name = $("#screen_name_input");
         var row = $("#screen_row_input");
-        var col = $("#screen_col_input");
-        var valid = true;
-        if ($.empty(name.val())) {
-            valid = false;
-            $("#create_screen_dialog").updateTips(name, "Name is required");
-            return;
-        }
-        if ($.empty(row.val())) {
-            valid = false;
-            $("#create_screen_dialog").updateTips(address, "Row is required");
-            return;
-        }
-        if (!row.val().toString().isNumber()) {
-            valid = false;
-
-            $("#create_screen_dialog").updateTips(address, "Row must be a number");
-            return;
-        }
-
-        if ($.empty(col.val())) {
-            valid = false;
-            $("#create_screen_dialog").updateTips(command, "Column is required");
-            return;
-        }
-        if (!col.val().toString().isNumber()) {
-            valid = false;
-            $("#create_screen_dialog").updateTips(address, "Column must be a number");
-            return;
-        }
-        if (valid) {
+        var col = $("#screen_col_input");        
+        $("#screen_form").validate({
+                invalidHandler:function(form, validator) {
+                    $("#create_screen_dialog").errorTips(validator);
+                },
+                showErrors:function(){},
+                rules: {
+                    screen_name_input: {
+                        required: true,
+                        maxlength: 50
+                    },
+                    screen_row_input: {
+                        required:true,
+                        digits:true,
+                        range: [1,6]
+                    },
+                    screen_col_input: {
+                        required:true,
+                        digits:true,
+                        range: [1,4]
+                    }
+                },
+                messages:{
+                    screen_name_input: {
+                        required: "Please input a name",
+                        maxlength: "Please input a name no more than 50 charactors"
+                    },
+                    screen_row_input: {
+                        required: "Please input a row",
+                        digits: "Please input a digit",
+                        range: "Please input a digit between 1 and 6"
+                    },
+                    screen_col_input: {
+                        required: "Please input a column",
+                        digits: "Please input a digit",
+                        range: "Please input a digit between 1 and 4"
+                    }
+                }
+            });
+        if ($("#screen_form").valid()) {
             var screen = new Screen();
-            screen.id = BUTTONID++;
+            screen.id = global.BUTTONID++;
             screen.name = name.val();
 			screen.row = row.val();
 			screen.col = col.val();
@@ -77,7 +89,7 @@ ScreenViewController = function() {
     }
 
     function screenSelectChanged() {
-        ScreenView.updateView(g_screens[ScreenView.getSelectedScreenId()]);
+        ScreenView.updateView(global.screens[ScreenView.getSelectedScreenId()]);
     }
 
     function screenSelectClicked() {
@@ -109,12 +121,12 @@ ScreenViewController = function() {
 
     ScreenViewController.createScreen = function(screen) {
         ScreenView.addScreenSelect(screen);
-        g_screens[screen.id] = screen;
+        global.screens[screen.id] = screen;
 
     };
 
     ScreenViewController.getCurrentScreen = function() {
-        return g_screens[ScreenView.getSelectedScreenId()];
+        return global.screens[ScreenView.getSelectedScreenId()];
     };
 
 
@@ -122,8 +134,8 @@ ScreenViewController = function() {
     ScreenViewController.storeCurrentScreen = function() {
         //save previous screen
         if (ScreenView.getSelectedScreenId() != 0) {
-            var preScreen = DownloadController.parseCurrentScreen(g_screens[ScreenView.getSelectedScreenId()]);
-            g_screens[preScreen.id] = preScreen;
+            var preScreen = DownloadController.parseCurrentScreen(global.screens[ScreenView.getSelectedScreenId()]);
+            global.screens[preScreen.id] = preScreen;
         }
     };
 

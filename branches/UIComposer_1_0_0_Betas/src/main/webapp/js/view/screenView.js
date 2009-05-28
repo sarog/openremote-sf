@@ -35,6 +35,9 @@ ScreenView = function() {
         $("#iphoneBtn_container .iphone_btn").remove();
 
 		EJSHelper.updateView(ScreenView.screenPanelTemplate,'dropable_table_container',{screen: screen});
+		
+		// reset draggable style
+		makeBtnDraggable($(".iphone_element"));
 
         // init ScreenView.btnInArea [x][y]
         ScreenView.btnInArea = [];

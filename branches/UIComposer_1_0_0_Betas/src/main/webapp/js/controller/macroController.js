@@ -14,11 +14,6 @@
  * http://www.fsf.org.
  */
 var MacroController = function() {
-
-    function MacroController() {
-
-    };
-
     //private method
     /**
      * Make macro window draggable
@@ -33,151 +28,147 @@ var MacroController = function() {
     /**
      * Show create macro dialog.
      */
-     function showCreateDialog () {
+    function showCreateDialog() {
         $("#macro_name_form").showModalForm("Create Macro", {
-            'Create': confirmCreateMacro
+            buttons: {
+                'Create': confirmCreateMacro
+            },
+            confirmButtonName: 'Create',
+			width:380
         });
-        $("#macro_name_form").enterKeyPressed(confirmCreateMacro);
     }
-
     /**
-     * Invoke after confirm create macro.
-     */
+	     * Invoke after confirm create macro.
+	     */
     function confirmCreateMacro() {
-        if ($.empty($("#macro_name_input").val())) {
-            $("#macro_name_form").updateTips($("#macro_name_input"), "Macro Name is required");
-            return;
-        } else {
+        $("#macro_form").validate({
+                invalidHandler:function(form, validator) {
+                    $("#macro_name_form").errorTips(validator);
+                },
+                showErrors:function(){},
+                rules: {
+                    macro_name_input: {
+                        required: true,
+                        maxlength: 50
+                    }
+                },
+                messages:{
+                    macro_name_input: {
+                        required: "Please input a macro name",
+                        maxlength: "Please input a macro name no more than 50 charactors"
+                    }
+                }
+        });
+        if($("#macro_form").valid()){
             var buttonName = $("#macro_name_input").val();
             var macro = new Macro();
-            macro.id = BUTTONID++;
+            macro.id = global.BUTTONID++;
             macro.label = $.trim(buttonName);
+
 
             MacroController.createMacroBtn(macro);
             $("#macro_name_form").closeModalForm();
         }
     }
-    
-    //static method
-    MacroController.init = function() {
-        // makeMacroPanelDraggabe();
-        $("#create_macro_btn").unbind().click(showCreateDialog);
-    };
 
-    /**
+    return {
+
+        //static method
+        init: function() {
+            // makeMacroPanelDraggabe();
+            $("#create_macro_btn").unbind().click(showCreateDialog);
+        },
+
+        /**
      * Create macro button and add it to page.
      * @param macro macro model
      */
-    MacroController.createMacroBtn = function(macro) {
-        var macroBtn = HTMLBuilder.macroBtnBuilder(macro);
-        $(macroBtn).prependTo($("#macro .item_container"));
-        MacroController.prepareMacroSublist(macroBtn);
-		
-		var btn = macroBtn.find(".macro_btn");
-		btn.unbind().click(function() {
-			$(".highlightInspected").removeClass("highlightInspected");
-			$(this).addClass("highlightInspected");
-			InspectViewController.updateView($(this).data("model"));
-		});
-        makeBtnDraggable(btn);
-    };
+        createMacroBtn: function(macro) {
+            var macroView = new MacroView(macro);
 
-    /**
+            macro.addUpdateListener(macroView);
+            macro.addDeleteListener(macroView);
+            MacroController.prepareMacroSublist(macroView.getSubList());
+            makeBtnDraggable(macroView.getElement());
+
+            macroView.getMacroBtn().inspectable({
+                model: macroView.getModel()
+            });
+
+        },
+
+        /**
      * Prepare the macro button.Make Macro sub list sortable and droppable.
      * @param btn macro button whose sub list you want to prepare
      */
-    MacroController.prepareMacroSublist = function(btn) {
-        var buttons;
-        if (btn === undefined) {
-            buttons = $(".macro_btn_defination");
-        } else {
-            buttons = $(btn);
-        }
+        prepareMacroSublist: function(ul) {
+            MacroController.makeMacroSublistSortable(ul);
+            MacroController.makeMacroSubListDroppable(ul);
+        },
 
-        MacroController.makeMacroSublistSortable(buttons.find(".macro_detail"));
-        MacroController.makeMacroSubListDroppable(buttons);
-    };
-
-    /**
+        /**
      * Make macro sub list sortable.
      * @param items macro button whose sub list you want to make it sortable.
      */
-    MacroController.makeMacroSublistSortable = function(items) {
-        items.sortable({
-            placeholder: 'ui-state-highlight',
-            cursor: "move"
-        });
-        items.find(".macro_detail").disableSelection();
+        makeMacroSublistSortable: function(items) {
+            items.sortable({
+                placeholder: 'ui-state-highlight',
+                cursor: "move"
+            });
+            items.disableSelection();
 
-    };
+        },
 
-    /**
+        /**
      * Make macro sub list droppable.
      * @param items macro button whose sub list you want to make it droppable.
      */
-    MacroController.makeMacroSubListDroppable = function(items) {
-        items.find(".macro_detail").droppable({
-            hoverClass: 'ui-state-highlight',
-            accept: function(draggable) {
-                if (draggable.hasClass("blue_btn")) {
-                    // Can't drag macro button to its sublist, this may occur recursion error.
-                    if (draggable.attr("id") == $(this).prev(".macro_btn").attr("id")) {
-                        return false;
-                    }
-					
-                    //Prevent circulative macro
-					//TODO 
-                    if (draggable.data("model") !== undefined && draggable.data("model").className == "Macro") {
-                        var draggableModel = draggable.data("model");
-                        var macroBtnModel = $(this).prev(".macro_btn").data("model");
-
-                        if (draggableModel.getSubModels().length == 0) {
-                            return true;
-                        }
-
-                        if ($.inArray(macroBtnModel, draggableModel.getSubModels()) != -1) {
+        makeMacroSubListDroppable: function(items) {
+            items.droppable({
+                hoverClass: 'ui-state-highlight',
+                accept: function(draggable) {
+                    if (draggable.hasClass("iphone_element")) {
+                        // Can't drag macro button to its sublist, this may occur recursion error.
+                        if (draggable.attr("id") == $(this).parent().attr("id")) {
                             return false;
                         }
-                    }
-                    return true;
-                }
-                return false;
-            },
-            drop: function(event, ui) {
-                if (ui.draggable.hasClass("command_btn")) {
-                    ui.draggable.data("model", Infrared.getInfraredModelWithDraggable(ui.draggable));
-                }
-                MacroController.createMacroSubli(ui.draggable.data("model"), $(this));
-            }
-        });
-    };
 
-    /**
+                        //Prevent circulative macro
+                        //TODO
+                        if (draggable.data("model") !== undefined && draggable.data("model").className == "Macro") {
+                            var draggableModel = draggable.data("model");
+                            var macroBtnModel = $(this).parent().data("model");
+
+                            if (draggableModel.getSubModels().length == 0) {
+                                return true;
+                            }
+
+                            if ($.inArray(macroBtnModel, draggableModel.getSubModels()) != -1) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                    return false;
+                },
+                drop: function(event, ui) {
+                    MacroController.createMacroSubli(ui.draggable.data("model"), $(this));
+                }
+            });
+        },
+
+        /**
      * Create sub li.
      * @param model data model
      * @param container which you want to add li into
      */
-    MacroController.createMacroSubli = function(model, container) {
-       	HTMLBuilder.macroLiBtnBuilder(model).appendTo(container);
+        createMacroSubli: function(model, container) {
+        	var macroSubView = new MacroSubView(model, container);
+			model.addDeleteListener(macroSubView);
+			model.addUpdateListener(macroSubView);
+			
+        }
+
     };
 
-	MacroController.updateMacro = function (macro) {
-        // get Label value from inspect window
-        var label  = $.trim($("#inspect_macro_label").val());
-		macro.label = label;
-
-        //update view
-        var btn = $("#"+macro.elementId());
-		btn.attr("title", macro.label);
-        if (label.length > 14) {
-            label = label.substr(0, 14) + "...";
-        }
-        btn.html(label);
-	
-        //re-set model.
-		btn.data("model",macro);
-	};
-
-
-    return MacroController;
 } ();

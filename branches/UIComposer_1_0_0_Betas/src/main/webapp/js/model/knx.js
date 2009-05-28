@@ -16,26 +16,23 @@
 var KNX = function() {
 	function KNX () {
 		var self = this;
-		self.id = -1;
+		//inherit from Model
+		Model.call(self);
+		
+		
         //text ui interface display
 		self.label = "";
 		self.groupAddress = "";
 		// convenient way to get the Class name.
-		self.className = getClassName(self);
 
         /**
-         * Get HTML elementId
+         * Get HTML getElementId
          */
-		self.elementId = function() {
+		self.getElementId = function() {
 			return "knx"+self.id;
 		};	
 		
 		self.inspectViewTemplate = "template/_knxInspect.ejs";
-
-		self.updateModel = function() {
-			TabController.updateKnx(self);
-		};
-
 		
 	}
 

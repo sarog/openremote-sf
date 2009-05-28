@@ -7,9 +7,9 @@ var EJSHelper = function() {
                 }).update(containerId, model);
             } catch(e) {
                 if (e instanceof Error) {
-                    $.showErrorMsg("Render Template Error.");
+                    $.showErrorMsg(e.description);
                 } else {
-                    $.showErrorMsg("Can't Connect to Template.");
+                    $.showErrorMsg("Can't Connect to server.");
                 }
             }
         },
@@ -24,12 +24,13 @@ var EJSHelper = function() {
                     html = new EJS({
                         url: url
                     }).render(model);
+					
                 }
             } catch(e) {
                 if (e instanceof Error) {
-                    $.showErrorMsg("Render Template Error.");
+                    $.showErrorMsg(e.description);
                 } else {
-                    $.showErrorMsg("Can't Connect to Template.");
+                    $.showErrorMsg("Can't Connect to server.");
                 }
             }
 
