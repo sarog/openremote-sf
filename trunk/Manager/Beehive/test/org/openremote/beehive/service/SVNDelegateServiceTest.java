@@ -3,13 +3,10 @@
  */
 package org.openremote.beehive.service;
 
-import java.util.List;
-
 import org.openremote.beehive.TestBase;
 import org.openremote.beehive.api.service.SVNDelegateService;
-import org.openremote.beehive.repo.DiffResult;
-import org.openremote.beehive.repo.UpdatedFile;
-import org.openremote.beehive.repo.DiffResult.Line;
+import org.openremote.beehive.repo.DiffStatus;
+import org.openremote.beehive.repo.DiffStatus.Element;
 import org.openremote.beehive.spring.SpringContext;
 
 /**
@@ -21,7 +18,7 @@ public class SVNDelegateServiceTest extends TestBase {
 			.getInstance().getBean("svnDelegateService");
 
 	public void testCopyFromScrapToWC() {
-//		svnDelegateService.copyFromScrapToWC("D:/tremote", "D:/tst2");
+//		svnDelegateService.copyFromScrapToWC("c:/remotes", "c:/workCopy");
 	}
 	
 	public void testCommit(){
@@ -71,13 +68,13 @@ public class SVNDelegateServiceTest extends TestBase {
 	}
 	
 	public void testGetLogs(){
-//		String path = "/abit/CD";
+//		String path = "/3m";
 //		svnDelegateService.getDiffStatus(path);
 //		List<LogMessage> lms = svnDelegateService.getLogs(path);
 //		System.out.println(lms.get(lms.size()-1).getRevision());
 	   
 //		for (LogMessage log : lms) {
-//			System.out.println(log.getRevision()+" , "+log.getAuthor()+" , "+log.getComment()+" actions= ");
+//			System.out.print(log.getRevision()+" , "+log.getAuthor()+" , "+log.getComment()+" actions= ");
 //			for (Character action : log.getActions()) {
 //				System.out.print(action+" ");
 //			}
@@ -128,10 +125,10 @@ public class SVNDelegateServiceTest extends TestBase {
 	}
 	
 	public void testGetdiffStatus(){
-//		String path = "/";
+//		String path = "/3m";
 //		DiffStatus ds = svnDelegateService.getDiffStatus(path);
 //		for (Element e : ds.getDiffStatus()) {
-//			System.out.println(e.getPath()+": " + e.getImage());
+//			System.out.println(e.getPath()+": ");
 //		}
 	}
 }

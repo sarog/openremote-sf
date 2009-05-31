@@ -85,8 +85,7 @@ public class LIRCSyncController extends MultiActionController {
     */
    public void getScraperProgress(HttpServletRequest request, HttpServletResponse response) throws IOException{
       ScraperProgress scraperProgress = scraperService.getScraperProgress("progress.txt","Download completed!");
-      JSONObject json = transProgressToJson(scraperProgress);
-      response.getWriter().print(json);
+      response.getWriter().print(scraperProgress.getJson());
    }
    
    /**
@@ -97,22 +96,6 @@ public class LIRCSyncController extends MultiActionController {
     */
    public void getCopyProgress(HttpServletRequest request, HttpServletResponse response) throws IOException{
       ScraperProgress copyProgress = scraperService.getScraperProgress("copyProgress.txt","Check completed!\r\n");      
-      JSONObject json = transProgressToJson(copyProgress);
-      response.getWriter().print(json);
-   }
-   
-   /**
-    * Transform progress to JSONObject 
-    * 
-    * @param progress
-    * @return
-    */
-   private JSONObject transProgressToJson(ScraperProgress progress){
-      HashMap<String, String> map = new HashMap<String, String>();
-      map.put("status", progress.getStatus());
-      map.put("data", progress.getProgress());
-      map.put("percent", progress.getPercentString());
-      JSONObject json = new JSONObject(map);
-      return json;
+      response.getWriter().print(copyProgress.getJson());
    }
 }

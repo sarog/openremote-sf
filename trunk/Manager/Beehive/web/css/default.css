@@ -9,7 +9,8 @@ html{
     scrollbar-track-color:#F1FDE9;
     scrollbar-face-color:#9FCD75;
     scrollbar-highlight-color:#79A41C;
-	scrollbar-shadow-color: #79A41C;			
+	scrollbar-shadow-color: #79A41C;	
+	font-family:Tahoma,Arial,Helvetica,sans-serif;		
 }
 
 body { 	
@@ -25,6 +26,7 @@ body {
     scrollbar-face-color:#9FCD75;
     scrollbar-highlight-color:#79A41C;
 	scrollbar-shadow-color: #79A41C;	
+	font-family:Tahoma,Arial,Helvetica,sans-serif;
 }
 
 

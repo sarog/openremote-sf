@@ -20,6 +20,10 @@
  */
 package org.openremote.beehive.file;
 
+import java.util.HashMap;
+
+import org.json.JSONObject;
+
 /**
  * The Class ScraperProgress.
  * 
@@ -92,5 +96,14 @@ public class ScraperProgress {
     */
    public void setPercent(double percent) {
       this.percent = percent;
+   }
+   
+   public JSONObject getJson(){
+      HashMap<String, String> map = new HashMap<String, String>();
+      map.put("status", status);
+      map.put("data", progress);
+      map.put("percent", this.getPercentString());
+      JSONObject json = new JSONObject(map);
+      return json;
    }
 }

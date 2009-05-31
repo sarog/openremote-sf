@@ -126,7 +126,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                      System.arraycopy(files, i * mod, subFiles, 0, lastCommitCount);
                      svnClient.commit(subFiles, message, true);
                   } else {
-                     File[] subFiles = new File[500];
+                     File[] subFiles = new File[mod];
                      System.arraycopy(files, i * mod, subFiles, 0, mod);
                      svnClient.commit(subFiles, message, true);
                   }
