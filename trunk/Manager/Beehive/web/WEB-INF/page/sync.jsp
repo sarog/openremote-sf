@@ -25,7 +25,7 @@
 			   $('#progressInfoSpan').text("Downloading from http://lirc.sourceforge.net/remotes ......");
 	      });
 	 });
-
+   
 	function refresh() {
 		$.getJSON("sync.htm?method=getScraperProgress", function(json) {
 			setProgress(json);
@@ -47,12 +47,14 @@
 				   $('#tab_2 img').attr("src","image/update_icon.gif");
 				   $('#updateBtn').removeAttr("disabled").removeClass("disabled_button");
 	            $('#spinner').hide();
-	            $('#progressInfoSpan').text("Update completed");
+	            $('#progressInfoSpan').html("Update completed, you can view and commit the <a href='changes.htm'>changes</a>");
 				}
 		});
 	}
 	function setProgress(progress){
 		$('#updateInfo').html(progress.data);
+		var infoContainer = $("#infoContainer");
+		infoContainer[0].scrollTop = infoContainer[0].scrollHeight;
 		var bar = $('#progressbar');
       bar.find('.progress').css("width",progress.percent);
       bar.find('.text').text(progress.percent);
@@ -91,7 +93,7 @@
 				</td>	
 			</tr>			
 	</table>
-	<div class="infoContainer">
+	<div id="infoContainer" class="infoContainer">
 	   <pre id="updateInfo"></pre>
 	   <div id="spinner"><img alt="" src="image/spinner.gif" /></div>
 	</div>

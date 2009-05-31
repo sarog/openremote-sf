@@ -233,10 +233,10 @@
    <table id="table_list_of_compare" rules="all" width="100%" border="0" cellpadding="0" cellspacing="0">
       <tr>
          <td width="50%">
-            <div id="left_div" style="width:100%; height:480px; overflow:auto">
+            <div id="left_div">
                <table valign="top" width="100%" cellpadding="0" cellspacing="0">
                   <c:if test="${fn:length(leftLines)==0 && fn:length(rightLines)==0}">
-                     <span>This is a Vendor</span>
+                     <div class="tip">This is a Vendor</div>
                   </c:if>                                    
                   <c:forEach items="${leftLines}" var="leftLine" varStatus="status">                  
                   <tr valign="middle" index="${status.index}" changeType="${leftLine.changeType }">
@@ -245,11 +245,14 @@
                      <td class="diffLine_${leftLine.changeType }" width="100%" align="left" nowrap="true"><pre class="">${leftLine.line }</pre></td>
                   </tr>
                   </c:forEach>
+                  <c:if test="${fn:length(leftLines)==0}">
+                     <div class="tip">The file doesn't exist in history</div>
+                  </c:if> 
                </table>
             </div>
           </td>
          <td width="50%">
-            <div id="right_div" style="width:100%; height:480px; overflow:auto">
+            <div id="right_div">
                <table valign="top" width="100%" cellpadding="0" cellspacing="0">
                   <c:forEach items="${rightLines}" var="rightLine" varStatus="status">
                   <tr valign="middle" index="${status.index}" changeType="${rightLine.changeType }">
