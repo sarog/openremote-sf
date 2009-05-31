@@ -188,7 +188,6 @@ var MacroController = function() {
 				}
 			});
 			macroSub.oModel.addDeleteListener(macroSubView);
-			macroSub.oModel.addUpdateListener(macroSubView);
 			
         }
 
