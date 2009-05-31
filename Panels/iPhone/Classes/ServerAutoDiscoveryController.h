@@ -14,6 +14,8 @@
 	AsyncUdpSocket *udpSocket;
 	AsyncSocket *tcpSever; 
 	NSMutableArray *clients;
+	BOOL isReceiveServerUrl;
+	NSTimer	 *tcpTImer;
 }
 
 - (void)findServer;

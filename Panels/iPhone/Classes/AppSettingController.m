@@ -12,6 +12,7 @@
 #import "ServerAutoDiscoveryController.h"
 #import "NotificationConstant.h"
 #import "AddServerViewController.h"
+#import "ViewHelper.h"
 
 @interface AppSettingController (Private)
 -(NSMutableArray *)getCurrentServersWithAutoDiscoveryEnable:(BOOL)b;
@@ -89,6 +90,7 @@
 	if (autoDiscovery) {
 		self.navigationItem.leftBarButtonItem = nil;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTableView) name:NotificationAfterFindServer object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(findServerFail) name:NotificationFindServerFail object:nil];
 		autoDiscoverController = [[ServerAutoDiscoveryController alloc]init];
 		[autoDiscoverController findServer];
 	} else {
@@ -97,6 +99,7 @@
 	}
 		
 }
+
 
 - (void)updateTableView{
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:NotificationAfterFindServer object:nil];
@@ -136,7 +139,32 @@
 	
 	[deleteIndexPaths release];
 	[insertIndexPaths release];
+}
+
+- (void)findServerFail {
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:NotificationFindServerFail object:nil];
+	if (autoDiscoverController != nil) {
+		[autoDiscoverController release];
+		autoDiscoverController = nil;
+	}
+	UITableView *tv = (UITableView *)self.view;
 	
+	
+	[tv beginUpdates];
+	NSMutableArray *deleteIndexPaths = [[NSMutableArray alloc] init];
+	for (int i=0;i <serverArray.count;i++){
+		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:i inSection:1]];
+	}
+	if (autoDiscovery) {
+		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:[serverArray count] inSection:1]];
+	}
+	[serverArray removeAllObjects];
+	autoDiscovery = !autoDiscovery;
+	[tv deleteRowsAtIndexPaths:deleteIndexPaths withRowAnimation:UITableViewRowAnimationTop];
+	autoDiscovery = !autoDiscovery;
+	[tv endUpdates];
+	
+	[deleteIndexPaths release];
 	
 }
 
@@ -376,6 +404,10 @@
 */
 		
 - (void)saveSettings {
+	if (serverArray.count == 0) {
+		[ViewHelper showAlertViewWithTitle:@"Warning" Message:@"Can't find Server automatically, You need to set a custom Server."];
+		return;
+	}
 	[[AppSettingsDefinition getAutoDiscoveryDic] setValue:[NSNumber numberWithBool:autoDiscovery] forKey:@"value"];
 	[AppSettingsDefinition writeToFile];
 	[AppSettingsDefinition checkConfigAndUpdate];

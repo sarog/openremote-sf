@@ -18,5 +18,6 @@
 	UIBarButtonItem *done;
 	UIBarButtonItem *edit;
 	BOOL isEditing;
+	UIActivityIndicatorView *loadingView;
 }
 @end
