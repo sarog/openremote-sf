@@ -15,7 +15,7 @@
 - (void)createButton;
 - (void)controlButtonDown:(id)sender;
 - (void)controlButtonUp:(id)sender;
-- (void)sendRequet;
+- (void)sendRequest;
 - (void)sendBegin;
 - (void)sendEnd;
 @end
@@ -50,7 +50,7 @@
 		button = nil;
 	}
 	button = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
-	
+
 	UIImage *buttonImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
 	[button setBackgroundImage:buttonImage forState:UIControlStateNormal];
 	
@@ -81,27 +81,29 @@
 - (void)controlButtonDown:(id)sender {
 	isTouchUp =NO;
 	shouldSendEnd = NO;
+
 	buttonTimer = [NSTimer scheduledTimerWithTimeInterval:0.4 target:self selector:@selector(checkClick) userInfo:nil repeats:NO];
 }
 
 - (void)checkClick{
 	[buttonTimer invalidate];
-	if (isTouchUp) {
-		[self	sendRequet];
-	} else {
+	if (!isTouchUp) {
 		[self sendBegin];
 		shouldSendEnd = YES;
 	}
 }
 
 - (void) controlButtonUp:(id)sender {
+	[buttonTimer invalidate];
 	isTouchUp = YES;
 	if (shouldSendEnd) {
 		[self sendEnd];
+	} else {
+		[self	sendRequest];
 	}
 }
 
-- (void)sendRequet {
+- (void)sendRequest {
 	NSLog(@"Send request");
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition eventHandleRESTUrl]];
 	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/click",control.eventID]];
@@ -186,8 +188,10 @@
 
 
 - (void)dealloc {
+	[buttonTimer release];
     [control release];
 	[button release];
+	
     [super dealloc];
 }
 

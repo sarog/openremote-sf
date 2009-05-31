@@ -108,7 +108,13 @@ static Definition *myInstance = nil;
 }
 
 - (void)useLocalCacheDirectly {
-	[self parseXMLData];
+	if ([[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition sampleXmlUrl]]]]) {
+		[self parseXMLData];
+	} else {
+//		[ViewHelper showAlertViewWithTitle:@"Error" Message:@"Can't find local cache, you need to connect network and retry."];
+		[[NSNotificationCenter defaultCenter] postNotificationName:DefinationNeedNotUpdate object:nil];
+	}
+	
 }
 
 #pragma mark Operation Tasks
@@ -126,6 +132,7 @@ static Definition *myInstance = nil;
 //Parses xml
 - (void)parseXMLData {	
 	NSLog(@"start parse xml");
+
 	NSData *data = [[NSData alloc] initWithContentsOfFile:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition sampleXmlUrl]]]];
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
 	NSLog(@"%@",data);
@@ -162,7 +169,8 @@ static Definition *myInstance = nil;
 }
 
 - (void)downloadImages {
-	if  ([CheckNetworkStaff checkWhetherNetworkAvailable]) {
+	@try {
+		[CheckNetworkStaff checkWhetherNetworkAvailable];
 		for (Activity *myActivity in activities) {
 			if (myActivity.icon) {
 				[self addDownloadImageOperationWithImageName:myActivity.icon];
@@ -180,6 +188,25 @@ static Definition *myInstance = nil;
 			}
 		}
 	}
+	@catch (NSException * e) {
+		[ViewHelper showAlertViewWithTitle:@"Error" Message:@"Can't download image from Server, there is not network."];
+	}		for (Activity *myActivity in activities) {
+		if (myActivity.icon) {
+			[self addDownloadImageOperationWithImageName:myActivity.icon];
+		}
+		for (Screen *myScreen in myActivity.screens) {
+			if (myScreen.icon) {
+				[self addDownloadImageOperationWithImageName:myScreen.icon];
+			}				
+			for (Control *myControl in myScreen.controls) {
+				if (myControl.icon) {
+					[self addDownloadImageOperationWithImageName:myControl.icon];
+				}
+			}
+			
+		}
+	}
+
 }
 
 - (void)addDownloadImageOperationWithImageName:(NSString *)imageName {

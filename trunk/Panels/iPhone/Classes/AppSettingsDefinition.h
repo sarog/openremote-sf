@@ -25,7 +25,7 @@
 + (NSMutableArray *)getAutoServers;
 + (NSMutableArray *)getCustomServers;
 + (NSString *)getCurrentServerUrl;
-+ (BOOL)readServerUrlFromFile;
++ (BOOL)readServerUrlFromFile:(NSError **)error;
 + (void)setCurrentServerUrl:(NSString *)url;
 + (void)addAutoServer:(NSDictionary *)server;
 + (void)writeToFile;
@@ -35,5 +35,6 @@
 + (void)checkConfigAndUpdate;
 
 + (void)afterFindServer;
++ (void)findServerFail;
 
 @end

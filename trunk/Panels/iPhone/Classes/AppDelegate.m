@@ -21,6 +21,7 @@
 @interface AppDelegate (Private)
 
 - (void)updateDidFinished;
+- (void)NeedNotUpdate;
 - (void)checkConfigAndUpdate;
 - (void)addNotificationObserver;
 - (void)showSettingsView;

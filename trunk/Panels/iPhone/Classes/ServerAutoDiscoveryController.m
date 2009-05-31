@@ -14,18 +14,18 @@
 #import "NotificationConstant.h"
 
 #import "CheckNetworkStaff.h"
+@interface ServerAutoDiscoveryController (private)
+
+- (void)findServerFail;
+@end
+
 
 @implementation ServerAutoDiscoveryController
 
 - (void)findServer {
+	isReceiveServerUrl = NO;
 	clients = [[NSMutableArray alloc] initWithCapacity:1];
 	[AppSettingsDefinition removeAllAutoServer];
-	
-	if (![CheckNetworkStaff checkWhetherNetworkAvailable]) {
-		NSLog(@"No network.");
-	}
-	
-	
 	
 	if (!udpSocket) {
 		udpSocket = [[AsyncUdpSocket alloc] initWithDelegate:self]; 
@@ -43,27 +43,33 @@
 		tcpSever = [[AsyncSocket alloc] initWithDelegate:self];
 	}
 	
-	
+	tcpTImer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(findServerFail) userInfo:nil repeats:NO];
 	[tcpSever acceptOnPort:serverPort error:NULL];
+}
 	
-	
-	
+- (void)findServerFail {
+	if (!isReceiveServerUrl) {
+		[tcpTImer invalidate];
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationFindServerFail object:self];
+	}
+	isReceiveServerUrl = NO;
 }
 
 
 - (void)onUdpSocket:(AsyncUdpSocket *)sock didSendDataWithTag:(long)tag {
 	NSString *myString = [NSString stringWithFormat:@"Count +1"];
 	NSLog(myString); 
-	[sock close];
-	
+	[sock close];	
 }
 
 - (void)onUdpSocket:(AsyncUdpSocket *)sock
 didNotSendDataWithTag:(long)tag dueToError:(NSError *)error{
 	NSLog(@"DidNotSend: %@", error);
+	[self findServerFail];
 } 
 
 - (void)onSocket:(AsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag {
+	isReceiveServerUrl = YES;
 	NSLog(@"receive data from server");
 	NSString *serverUrl = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 	NSLog(@"read server url from controller %@",serverUrl);
@@ -73,7 +79,6 @@ didNotSendDataWithTag:(long)tag dueToError:(NSError *)error{
 	[AppSettingsDefinition removeAllAutoServer];
 	[AppSettingsDefinition addAutoServer:server];
 	[AppSettingsDefinition writeToFile];
-	[AppSettingsDefinition reloadData];
 	[AppSettingsDefinition setCurrentServerUrl:serverUrl];
 	
 	NSLog(@"current url at receive socket %@",[AppSettingsDefinition getCurrentServerUrl]);

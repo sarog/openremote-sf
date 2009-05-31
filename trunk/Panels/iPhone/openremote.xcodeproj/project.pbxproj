@@ -49,6 +49,7 @@
 		8CA7607B0F57EA7100ADF0C0 /* buttonHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA7607A0F57EA7100ADF0C0 /* buttonHighlighted.png */; };
 		8CB33E4E0FCA4AE400B010DF /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */; };
 		8CC0B5C50FC298F20084D246 /* CheckNetworkStaff.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC0B5C40FC298F20084D246 /* CheckNetworkStaff.m */; };
+		8CD122330FD295FE00D59D72 /* CheckNetworkStaffException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CD122320FD295FE00D59D72 /* CheckNetworkStaffException.m */; };
 		8CD9745C0F52F32C00689B08 /* ServerDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CD9745B0F52F32C00689B08 /* ServerDefinition.m */; };
 		8CF6A2800FBD3782006ED733 /* AsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27D0FBD3782006ED733 /* AsyncSocket.m */; };
 		8CF6A2810FBD3782006ED733 /* AsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27F0FBD3782006ED733 /* AsyncUdpSocket.m */; };
@@ -130,6 +131,8 @@
 		8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		8CC0B5C30FC298F20084D246 /* CheckNetworkStaff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CheckNetworkStaff.h; sourceTree = "<group>"; };
 		8CC0B5C40FC298F20084D246 /* CheckNetworkStaff.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CheckNetworkStaff.m; sourceTree = "<group>"; };
+		8CD122310FD295FE00D59D72 /* CheckNetworkStaffException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CheckNetworkStaffException.h; sourceTree = "<group>"; };
+		8CD122320FD295FE00D59D72 /* CheckNetworkStaffException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CheckNetworkStaffException.m; sourceTree = "<group>"; };
 		8CD9745A0F52F32C00689B08 /* ServerDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerDefinition.h; sourceTree = "<group>"; };
 		8CD9745B0F52F32C00689B08 /* ServerDefinition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServerDefinition.m; sourceTree = "<group>"; };
 		8CF6A27C0FBD3782006ED733 /* AsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsyncSocket.h; sourceTree = "<group>"; };
@@ -169,6 +172,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				8C267AB10FD27DE20054743E /* exception */,
 				8CF6A27B0FBD3751006ED733 /* lib */,
 				8CFEE2880F558C6700DF8759 /* config */,
 				8CFEE2870F558C5700DF8759 /* controller */,
@@ -249,6 +253,15 @@
 				288765FC0DF74451002DB57D /* CoreGraphics.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8C267AB10FD27DE20054743E /* exception */ = {
+			isa = PBXGroup;
+			children = (
+				8CD122310FD295FE00D59D72 /* CheckNetworkStaffException.h */,
+				8CD122320FD295FE00D59D72 /* CheckNetworkStaffException.m */,
+			);
+			name = exception;
 			sourceTree = "<group>";
 		};
 		8C72E7130F541F8C006CC0DF /* utils */ = {
@@ -446,6 +459,7 @@
 				8CC0B5C50FC298F20084D246 /* CheckNetworkStaff.m in Sources */,
 				8C298D010FC3A155004D9F3C /* TextFieldCell.m in Sources */,
 				8C298D070FC3AA94004D9F3C /* AddServerViewController.m in Sources */,
+				8CD122330FD295FE00D59D72 /* CheckNetworkStaffException.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -457,7 +471,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Ryan Cai (695MJVJYMM)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Cai (695MJVJYMM)";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
@@ -465,7 +480,8 @@
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = openremote;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "D5080B41-CEBB-46E1-A746-C6A5170ACDA5";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D5080B41-CEBB-46E1-A746-C6A5170ACDA5";
 				SDKROOT = iphoneos2.2.1;
 			};
 			name = Debug;
@@ -474,15 +490,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Finalist IT Group";
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				COPY_PHASE_STRIP = YES;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = openremote;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "8C9903CC-67F7-4E41-9B76-FA4AF2204F7F";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos2.2.1;
 			};
 			name = Release;
@@ -506,9 +524,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Finalist IT Group";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Finalist IT Group";
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
@@ -516,8 +534,8 @@
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "D7265412-380A-4ECE-AC79-651A57197CCF";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D7265412-380A-4ECE-AC79-651A57197CCF";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos2.2.1;
 			};
 			name = distribute;
