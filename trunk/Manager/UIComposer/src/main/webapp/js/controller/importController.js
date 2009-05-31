@@ -34,7 +34,7 @@ var ImportController = function() {
                     if (confirm("All your current work will clear, are you sure?")) {
 
                         ImportController.getCurrentUserPath(function() {
-							$.showLoading();
+                            $.showLoading();
                             $("#upload_form").submit();
                         });
                     }
@@ -47,11 +47,11 @@ var ImportController = function() {
                     success: uploadSuccess,
                     dataType: 'json',
                     type: 'post',
-					error: function(XMLHttpRequest, textStatus, errorThrown){
-						$.hideLoading();
-						$("#upload_form_container").updateTips($("#zip_file_input"),XMLHttpRequest.responseText);
-					},
-					global:false
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        $.hideLoading();
+                        $("#upload_form_container").updateTips($("#zip_file_input"), XMLHttpRequest.responseText);
+                    },
+                    global: false
                 });
             }
         });
@@ -67,52 +67,18 @@ var ImportController = function() {
     function uploadSuccess(responseText, statusText) {
         ImportController.cleanUp();
         var data = responseText;
-        revertScreens(data.panel.screens);
+        // notice: revert order is very important, don't change it if you are clear with it.
         revertKnxBtns(data.panel.knxBtns);
         revertX10Btns(data.panel.x10Btns);
         revertMacroBtns(data.panel.macroBtns);
+        revertMacroSubBtns(data.panel.macroBtns);
+        revertScreens(data.panel.screens);
 
         global.BUTTONID = data.panel.maxId;
         $("#upload_form_container").closeModalForm();
-		$.hideLoading();
+        $.hideLoading();
     }
 
-
-    function revertScreens(screens) {
-        for (var index in screens) {
-            var o_screen = screens[index];
-            var screen = ImportController.buildModel(o_screen);
-            screen.buttons = new Array();
-            for (var index in o_screen.buttons) {
-                var btn = revertIphoneBtn(o_screen.buttons[index]);
-                if (btn.icon != "") {
-                    btn.icon = global.userDirPath + "/" + getFileNameFromPath(btn.icon);
-                }
-                screen.buttons.push(btn);
-            }
-
-            ScreenViewController.createScreen(screen);
-
-            ScreenView.setLastOptionSelected();
-            ScreenView.updateView(global.screens[ScreenView.getSelectedScreenId()]);
-        }
-    }
-
-    /**
-     * Revert the Iphone buttons
-     * @param iphoneBtns iphoneBtns object from descriptionFile
-     */
-    function revertIphoneBtn(btn) {
-        var oModel = ImportController.buildModel(btn.oModel);
-        var model = ImportController.buildModel(btn);
-        model.oModel = oModel;
-
-        if (btn.oModel.className == "Infrared") {
-            global.InfraredCollection[btn.oModel.codeId] = oModel;
-        }
-        return model;
-
-    }
 
 
 
@@ -145,20 +111,73 @@ var ImportController = function() {
      * @param macroBtns macroBtns object from description file
      */
     function revertMacroBtns(macroBtns) {
-        var macroArray = {};
         for (var index in macroBtns) {
             var btn = macroBtns[index];
             var model = ImportController.buildModel(btn);
             MacroController.createMacroBtn(model);
-            macroArray[model.id] = model;
+        }
+    }
+
+    function revertScreens(screens) {
+        for (var index in screens) {
+            var o_screen = screens[index];
+            var screen = ImportController.buildModel(o_screen);
+            screen.buttons = new Array();
+            for (var index in o_screen.buttons) {
+                var btn = revertIphoneBtn(o_screen.buttons[index]);
+                if (btn.icon != "") {
+                    btn.icon = global.userDirPath + "/" + getFileNameFromPath(btn.icon);
+                }
+                screen.buttons.push(btn);
+            }
+
+            ScreenViewController.createScreen(screen);
+
+            ScreenView.setLastOptionSelected();
+            ScreenView.updateView(global.screens[ScreenView.getSelectedScreenId()]);
+        }
+    }
+
+    /**
+     * Revert the Iphone buttons
+     * @param iphoneBtns iphoneBtns object from descriptionFile
+     */
+    function revertIphoneBtn(btn) {
+        var model = ImportController.buildModel(btn);
+        model.oModel = findOrBuildModel(btn.oModel);
+
+        if (btn.oModel.className == "Infrared") {
+            global.InfraredCollection[btn.oModel.codeId] = oModel;
+        }
+        return model;
+
+    }
+
+
+
+    function revertMacroSubBtns(macroBtns) {
+        for (var index in macroBtns) {
+            var btn = macroBtns[index];
             for (var index in btn.buttons) {
                 var sub = btn.buttons[index];
-				var macroSub = ImportController.buildModel(sub);
-				macroSub.oModel = ImportController.buildModel(macroSub.oModel);
+                var macroSub = ImportController.buildModel(sub);
+                macroSub.oModel = findOrBuildModel(sub.oModel);
                 MacroController.createMacroSubli(macroSub);
             }
         }
     }
+
+    function findOrBuildModel(model) {
+		var temp_model = ImportController.buildModel(model);
+        var oModel = null;
+        if (temp_model.getElementId !== undefined && $("#" + temp_model.getElementId()).length > 0) {
+            oModel = $("#" + temp_model.getElementId()).data("model");
+        } else {
+            oModel = temp_model;
+        }
+		return oModel;
+    }
+
 
     //static method
     ImportController.init = function() {
