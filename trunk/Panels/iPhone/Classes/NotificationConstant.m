@@ -16,6 +16,7 @@ NSString *const DefinationUpdateDidFinishedNotification = @"updateDidFinishedNot
 NSString *const DefinationNeedNotUpdate = @"needNotUpdateNotification";
 NSString *const NotificationShowSettingsView = @"showSettingsViewNotification";
 NSString *const NotificationAfterFindServer = @"afterFindServerNotification";
+NSString *const NotificationFindServerFail = @"FindServerFailNotification";
 NSString *const NotificationStartUpdate = @"startUpdateNotification";
 NSString *const NotificationAfterRefreshAutoServer = @"afterRefreshAutoServerNotification";
 
