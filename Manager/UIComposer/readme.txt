@@ -25,7 +25,11 @@ III. "Modeler" site deployment
 2) deploy the war into your web server;
 3) modify Beehvie RESTAPIUrl in "%WEBAPP_ROOT%/js/constant.js",
    "beehive/rest" should be the default value at the end of RESTAPIUrl.
-
+4) To speed up the site, we use Jawr as a tunable packaging solution for Javascript and CSS.
+    modify jawr configure in %WEBAPP_ROOT%/WEB-INF/classes/jawr.properties :
+   a)jawr.debug.on = false
+   b)jawr.gzip.on  = true
+   
 IV. Supported functions
 =======================
 In the current iteration we are focusing on infrared (LIRC), KNX, X10 device.
