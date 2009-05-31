@@ -56,7 +56,7 @@ var DownloadController = function() {
     function generateIphoneXml() {
         //TODO It will have multi-activity, so we will refactor it latter.
         var activity = new Object();
-        activity.name = "activity1";
+        activity.name = "User Customized";
         activity.id = 1;
 
         activity.screen = getStoredScreens();

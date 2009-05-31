@@ -51,20 +51,23 @@ var KNXController = function() {
 	            knx.label = label.val();
 	            knx.groupAddress = groupAddress.val();
 
-	           	var knxView = new KNXView(knx);
-	
-				knx.addDeleteListener(knxView);
-				knx.addUpdateListener(knxView);
-				
-				var btn = knxView.getElement();
-				
-				makeBtnDraggable(btn);
-				
-		        btn.inspectable();
+	           KNXController.createKNX(knx);
 		
 	            $("#create_KNX_dialog").closeModalForm();
 	        }
-	    }
+	    },
+		createKNX: function(knx){
+			var knxView = new KNXView(knx);
+
+			knx.addDeleteListener(knxView);
+			knx.addUpdateListener(knxView);
+			
+			var btn = knxView.getElement();
+			
+			makeBtnDraggable(btn);
+			
+	        btn.inspectable();
+		}
 		
 	};
 }();
@@ -132,17 +135,20 @@ var X10Controller = function() {
 	            x10.address = address.val();
 	            x10.command = command.val();
 
-	            var x10View = new X10View(x10);
-	
-				x10.addDeleteListener(x10View);
-				x10.addUpdateListener(x10View);
-				
-				var btn = x10View.getElement();
-				makeBtnDraggable(btn);
-		        btn.inspectable();
+	           X10Controller.createX10(x10);
 		
 	            $("#create_x10_dialog").closeModalForm();
 	        }
-	    }
+	    },
+		createX10: function(x10){
+			var x10View = new X10View(x10);
+	
+			x10.addDeleteListener(x10View);
+			x10.addUpdateListener(x10View);
+			
+			var btn = x10View.getElement();
+			makeBtnDraggable(btn);
+	        btn.inspectable();
+		}
 	};
 }();
