@@ -79,8 +79,6 @@ var ImportController = function() {
 
 
     function revertScreens(screens) {
-
-
         for (var index in screens) {
             var o_screen = screens[index];
             var screen = ImportController.buildModel(o_screen);
@@ -126,7 +124,7 @@ var ImportController = function() {
         for (var index in knxBtns) {
             var btn = knxBtns[index];
             var model = ImportController.buildModel(btn);
-            TabController.createKNX(model);
+            KNXController.createKNX(model);
         }
     }
 
@@ -138,7 +136,7 @@ var ImportController = function() {
         for (var index in x10Btns) {
             var btn = x10Btns[index];
             var model = ImportController.buildModel(btn);
-            TabController.createX10(model);
+            X10Controller.createX10(model);
         }
     }
 

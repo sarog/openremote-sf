@@ -17,7 +17,7 @@ var MacroSub = function() {
      * @returns created new instance.
      */
 	MacroSub.init = function(model) {
-		var macroSub = new Macro();
+		var macroSub = new MacroSub(model.macroId,model.oModel);
 		macroSub.id    = model.id;
 		macroSub.label = model.label;
 		macroSub.oModel = model.oModel;
