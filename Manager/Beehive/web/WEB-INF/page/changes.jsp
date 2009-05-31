@@ -21,75 +21,85 @@
            });
            $("#commitSubmit").click( function() {
                $('#updateInfoTd').text(" The committing is running...");
-               $("#commitSubmit").attr("disabled","true").addClass("disabled_button");
+               $(this).attr("disabled","true").addClass("disabled_button");
                $('#submitForm').submit();
            });
            $("#checkall").click( function() {
                $("input[name='items']").attr("checked",this.checked);
            });
-           $(function(){
-               $("input[action='A']").click(function(){
-                   var addText = $(this).val();
-                   var parentTR = $(this).parent().parent().parent().parent().parent().parent();
-                   if(this.checked){
-                      parentTR.prevAll().each(function(){
-                           var checkbox = $(this).find("input[action='A']");
-                           if(addText.indexOf(checkbox.val())==0){
-                              checkbox.attr("checked",true);
-                           }
-                       });
-                   }else{
-                      parentTR.nextAll().each(function(){
-                         var checkbox = $(this).find("input[action='A']");
-                           if(checkbox.val() && checkbox.val().indexOf(addText)==0){
-                              checkbox.attr("checked",false);
-                           }
-                       });
-                   }
-               });
-           });
-          $(function(){
-               $("input[action='D']").click(function(){
-                   var delTexts = $(this).attr("value").substring(1).split("/");
-                   var delText = null;
-                   if(delTexts.length==1){
-                       delText = $(this).attr("value");
-                   }else{
-                       delText = "/"+delTexts[0];
-                   }
-                   var parentTR = $(this).parent().parent().parent().parent().parent().parent();
-                   if(this.checked){            
-                      parentTR.prevAll().each(function(){
-                           var checkbox = $(this).find("input[action='D']");
-                           if(checkbox.val() && checkbox.val().indexOf(delText)==0){
-                            checkbox.attr("checked",true);
-                           }
-                       });
-                      parentTR.nextAll().each(function(){
-                          var checkbox = $(this).find("input[action='D']");
-                           if(checkbox.val() && checkbox.val().indexOf(delText)==0){
-                            checkbox.attr("checked",true); 
-                           }
-                       });
-                   }else{
-                      parentTR.prevAll().each(function(){
-                              var checkbox = $(this).find("input[action='D']");
-                              if(checkbox.val() && checkbox.val().indexOf(delText)==0){
-                               checkbox.attr("checked",false);
-                              }
-                          });
-                         parentTR.nextAll().each(function(){
-                             var checkbox = $(this).find("input[action='D']");
-                              if(checkbox.val() && checkbox.val().indexOf(delText)==0){
-                               checkbox.attr("checked",false); 
-                              }
-                          });
-                   }
-               });
+           $('input .changedNode').each(function(){
+        	      var action = $(this).attr('action');
+        	      if(action=='UNVERSIONED'||action=='ADDED'){
+        	    	  $(this).click(checkAdd);
+        	    	}else if(action=='DELETEED'){
+        	    		$(this).click(checkDelete);
+            	}
            });
        });
-       
-       </script>
+
+	function checkDelete() {
+		var delTexts = $(this).attr("value").substring(1).split("/");
+		var delText = null;
+		if (delTexts.length == 1) {
+			delText = $(this).attr("value");
+		} else {
+			delText = "/" + delTexts[0];
+		}
+		var parentTR = $(this).parents("tr.first");
+		parentTR.prevAll().each( function() {
+			var checkbox = $(this).find("input[action='DELETEED']");
+			if (checkbox.val() && checkbox.val().indexOf(delText) == 0) {
+				checkbox.attr("checked", this.checked);
+			}
+		});
+		parentTR.nextAll().each( function() {
+			var checkbox = $(this).find("input[action='DELETEED']");
+			if (checkbox.val() && checkbox.val().indexOf(delText) == 0) {
+				checkbox.attr("checked", this.checked);
+			}
+		});
+	}
+	function checkAdd() {
+		var action = $(this).attr('action');
+		var addText = $(this).val();
+		var addPath = addText.substring(0, addText.indexOf("|"));
+		var parentTR = $(this).parents("tr.first");
+		if (this.checked) {
+			parentTR.prevAll().each(
+					function() {
+						var checkbox = $(this).find(
+								"input[action='" + action + "']");
+						var checkboxText = checkbox.val();
+						if (checkboxText) {
+							var checkboxPath = checkboxText.substring(0,
+									checkboxText.indexOf("|"));
+							if (addPath.indexOf(checkboxPath+"/") == 0) {
+								checkbox.attr("checked", true);
+								if(checkboxPath.substring(1).split("/").length == 1){
+									return false;
+								}
+							}
+						}
+					});
+		} else {
+			parentTR.nextAll().each(
+					function() {
+						var checkbox = $(this).find(
+								"input[action='" + action + "']");
+						var checkboxText = checkbox.val();
+						if (checkboxText) {
+							var checkboxPath = checkboxText.substring(0,
+									checkboxText.indexOf("|"));
+							if (checkboxPath.indexOf(addPath+"/") == 0) {
+								checkbox.attr("checked", false);
+							} else {
+								return false;
+							}
+						}
+					});
+		}
+	}
+</script>
 </head>
 <body tabId="1">
       <input type="hidden" name="updateStatus" id="updateStatus" value="${sessionScope.isUpdating}"/>
@@ -151,7 +161,7 @@
 	           <c:forEach items="${diffStatus}" var="diffElement">
 	            <tr class="first" >
 	              <td width="50%"><table width="100%" border="0" cellpadding="0" cellspacing="0"><tr>
-	                      <td class="internal" style="padding-right: 5px;"><input name="items" type="checkbox" value="${diffElement.path}|${diffElement.status}" action="${diffElement.status }"/>
+	                      <td class="internal" style="padding-right: 5px;"><input name="items" type="checkbox" value="${diffElement.path}|${diffElement.status}" action="${diffElement.status }" class="changedNode"/>
 	                      <td class="internal" style="padding-right: 5px;"><a href="changes.htm?method=change&path=${diffElement.path}&action=${diffElement.status }"><span class="image_link ${diffElement.status }"></span></a></td>
 	                      <td class="internal" width="100%" nowrap="true"><a href="changes.htm?method=change&path=${diffElement.path}&action=${diffElement.status }">${diffElement.path}</a></td>
 	                    </tr>

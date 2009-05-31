@@ -104,7 +104,7 @@
 			<th width="10%" nowrap="true"><a href="#">Age</a></th>
 			<th width="10%" nowrap="true"><a href="#">Author</a></th>
 			<th width="65%" nowrap="true"><a href="#">Comment</a></th>
-			<th><a href="#">Actions</a></th>
+			<th><a href="#">Rollback</a></th>
 		</tr>
 		</thead>
 		<tbody>

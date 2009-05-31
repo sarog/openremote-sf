@@ -27,9 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
@@ -357,8 +355,7 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
     * 
     */
    public boolean isFile(String path){
-      File file = new File(configuration.getWorkCopyDir()+path);
-      return file.isFile();
+      return new File(configuration.getWorkCopyDir()+path).isFile();
    }
    
    /**

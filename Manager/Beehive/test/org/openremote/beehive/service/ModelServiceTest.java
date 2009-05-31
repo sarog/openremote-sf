@@ -1,8 +1,9 @@
 package org.openremote.beehive.service;
 
+import java.io.File;
+
 import org.openremote.beehive.TestBase;
 import org.openremote.beehive.api.service.ModelService;
-import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.spring.SpringContext;
 
 public class ModelServiceTest extends TestBase {
@@ -52,5 +53,10 @@ public class ModelServiceTest extends TestBase {
     
     public void testCount(){
 //       System.out.println(service.count());
+    }
+    
+    public void testSync(){
+//       File file = new File("c:/sony/RM-862");
+//       service.syncWith(file);
     }
 }
