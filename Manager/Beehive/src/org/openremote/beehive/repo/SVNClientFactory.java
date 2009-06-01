@@ -18,7 +18,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.beehive.utils;
+package org.openremote.beehive.repo;
 
 import org.apache.log4j.Logger;
 import org.openremote.beehive.listener.SVNCommitNotifyListener;

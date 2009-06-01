@@ -48,10 +48,10 @@ import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.DifferenceModel;
 import org.openremote.beehive.repo.LIRCEntry;
 import org.openremote.beehive.repo.LogMessage;
+import org.openremote.beehive.repo.SVNClientFactory;
 import org.openremote.beehive.repo.DiffStatus.Element;
 import org.openremote.beehive.repo.LogMessage.ChangePath;
 import org.openremote.beehive.utils.FileUtil;
-import org.openremote.beehive.utils.SVNClientFactory;
 import org.openremote.beehive.utils.StringUtil;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
@@ -472,16 +472,17 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          if (workFile.exists()) {
             String strDate = tempName.substring(tempName.lastIndexOf(".") + 1);
             Date tempDate = StringUtil.String2Date(strDate, "dd-MMM-yyyy kk-mm", Locale.ENGLISH);
-            ISVNInfo svnInfo = svnClient.getInfo(workFile);
-            if (svnInfo.getLastChangedDate() != null) {
-               if (tempDate.compareTo(svnInfo.getLastChangedDate()) > 0) {
+            ISVNInfo parentFileInfo = svnClient.getInfoFromWorkingCopy(workFile.getParentFile());
+            if(parentFileInfo.getLastChangedDate()!=null){
+               ISVNInfo svnInfo = svnClient.getInfoFromWorkingCopy(workFile);
+               if (svnInfo.getLastChangedDate() != null && tempDate.compareTo(svnInfo.getLastChangedDate()) > 0) {
                   FileUtil.copyFile(modelFile, workFile);
                   actionType = " M ";
-               }
-            } else if (tempDate.compareTo(new Date(workFile.lastModified())) > 0) {
+               }            
+            }else if (tempDate.compareTo(new Date(workFile.lastModified())) > 0) {
                FileUtil.copyFile(modelFile, workFile);
                actionType = " M ";
-            }            
+            } 
          } else {
             FileUtil.copyFile(modelFile, workFile);
             actionType = " A ";
