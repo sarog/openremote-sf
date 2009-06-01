@@ -31,17 +31,19 @@ III. "Beehive" site deployment
     d) set "workCopy.dir" parameter value to the folder which is the workcopy of the svn repository of lirc files
     d) set "svn.dir" parameter value to the folder where stores the svn repository of lirc files
     e) set "icons.dir" parameter value to where the icons folder is
+    
+2) modify the quartz time in "%PROJECT_ROOT%/config/spring-quartz.xml"
 
-2) run "ant war" to get the war file in "%PROJECT_ROOT%/output" directory. 
+3) run "ant war" to get the war file in "%PROJECT_ROOT%/output" directory. 
 
-3) create a database in MySQL named "beehive" using default charset 'utf8'.
+4) create a database in MySQL named "beehive" using default charset 'utf8'.
 
-4) run the sql in "%PROJECT_ROOT%/sql/import.sql" to seed the whole database.
+5) run the sql in "%PROJECT_ROOT%/sql/import.sql" to seed the whole database.
 
-5) if you choose JBoss as a web server, you MUST ensure that "jaxb-api.jar"(jaxb 2.1 API) 
+6) if you choose JBoss as a web server, you MUST ensure that "jaxb-api.jar"(jaxb 2.1 API) 
 	exists in the "%JBOSS_ENDORSED_DIRS%"(e.g. %JBOSS_HOME%/lib/endorsed).
-6) find the svn configuration in C:\Documents and Settings\%your user name%\Application Data\Subversion\config,
-   remove '*.a' from the 'global-ignores' values and add 'Thumbs.db' as its value.
+7) find the svn configuration in /etc/subversion/config (windows,C:\Documents and Settings\%your user name%\Application Data\Subversion\config),
+   remove '*.a' from the 'global-ignores' property and append 'Thumbs.db' to its value.
 
 IV. Supported functions
 =======================
