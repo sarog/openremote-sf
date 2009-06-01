@@ -14,16 +14,8 @@ var IphoneBtnView = function() {
             var iphoneBtn = self.getModel();
             iphoneBtn.fillArea();
             var btn = HTMLBuilder.iphoneBtnBuilder(iphoneBtn);
-
-            var tableCell = ScreenView.findCell(iphoneBtn.x, iphoneBtn.y);
-
-            btn.css("top", $(tableCell).offset().top);
-            btn.css("left", $(tableCell).offset().left);
-            btn.css("height", $(tableCell).height() * iphoneBtn.height + iphoneBtn.height - 1);
-            btn.css("width", $(tableCell).width() * iphoneBtn.width + iphoneBtn.width - 1);
             btn.appendTo($("#iphoneBtn_container"));
-
-           
+			IphoneBtnView.layout(iphoneBtn);
             return btn;
         };
         init();
@@ -31,7 +23,6 @@ var IphoneBtnView = function() {
         self.deleteView = function() {
 			self.getModel().clearArea();
             self.getElement().remove();
-			
         };
 
         self.updateView = function() {
@@ -40,12 +31,8 @@ var IphoneBtnView = function() {
             var btn = self.getElement();
 			btn.removeAttr("style");
 
-            var tableCell = ScreenView.findCell(iphoneBtn.x, iphoneBtn.y);
+            IphoneBtnView.layout(iphoneBtn);
 
-            btn.css("top", $(tableCell).offset().top);
-            btn.css("left", $(tableCell).offset().left);
-            btn.css("height", $(tableCell).height() * iphoneBtn.height + iphoneBtn.height - 1);
-            btn.css("width", $(tableCell).width() * iphoneBtn.width + iphoneBtn.width - 1);
 			var maxLenght = IphoneBtnView.getMaxLabelLength(iphoneBtn);
             btn.interceptStr({
                 text: self.getModel().label,
@@ -70,6 +57,17 @@ var IphoneBtnView = function() {
 			return 5;
 		}
 		return Math.round(ScreenView.cellWidth * iphoneBtn.width/10);
+	};
+	
+	IphoneBtnView.layout = function(iphoneBtn) {
+		var btn = $("#"+iphoneBtn.getElementId());
+		var tableCell = ScreenView.findCell(iphoneBtn.x, iphoneBtn.y);
+
+        btn.css("top", $(tableCell).offset().top);
+        btn.css("left", $(tableCell).offset().left);
+        btn.css("height", $(tableCell).innerHeight() * iphoneBtn.height + iphoneBtn.height - 1);
+        btn.css("width", $(tableCell).innerWidth() * iphoneBtn.width + iphoneBtn.width - 1);
+		btn.find("td.middle").height($(tableCell).innerHeight() * iphoneBtn.height + iphoneBtn.height - 7);
 	};
     return IphoneBtnView;
 } ();

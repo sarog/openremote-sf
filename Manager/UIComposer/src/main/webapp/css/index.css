@@ -411,6 +411,9 @@ table.iPhone_btn_cont{
     height:100%;
 }
 
+table.iPhone_btn_cont tr.iphone_top {
+	height:3px;
+}
 .iphone_btn table .middle img {
 	height:43px;
 	width:43px;
@@ -418,24 +421,23 @@ table.iPhone_btn_cont{
 
 table.iPhone_btn_cont td.tl_c{
     width:3px;
-    height:3px;
     background: url(../image/iphone_btn_sprite.png) no-repeat 0 0;
 }
 
 table.iPhone_btn_cont td.top{
-    height:3px;
     background: url(../image/iphone_btn_sprite.png) repeat-x 0 -6px;
 }
 table.iPhone_btn_cont td.tr_c{
     width:3px;
-    height:3px;
     background: url(../image/iphone_btn_sprite.png) no-repeat  0 -11px;
 }
 table.iPhone_btn_cont td.middle{
     text-align: center;
     font-size: 11px;
-	height:100%;
+	height:98%;
 }
+
+
 table.iPhone_btn_cont td.ml{
     width:3px;
     background: url(../image/iphone_btn_vertical.png) repeat-y 0 0;
@@ -444,17 +446,19 @@ table.iPhone_btn_cont td.mr{
     width:3px;
     background: url(../image/iphone_btn_vertical.png) repeat-y -4px 0;
 }
+table.iPhone_btn_cont tr.iphone_bottom {
+	height:3px;
+}
+
+
 table.iPhone_btn_cont td.bottom{
-    height:3px;
     background: url(../image/iphone_btn_sprite.png) repeat-x 0 -21px;
 }
 table.iPhone_btn_cont td.bl_c{
     width:3px;
-    height:3px;
     background: url(../image/iphone_btn_sprite.png) no-repeat  0 -16px;
 }
 table.iPhone_btn_cont td.br_c{
     width:3px;
-    height:3px;
     background: url(../image/iphone_btn_sprite.png) no-repeat 0 -26px;
 }
