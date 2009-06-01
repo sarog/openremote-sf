@@ -32,8 +32,7 @@ import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
 import org.openremote.beehive.repo.SVNClientFactory;
 import org.openremote.beehive.serviceHibernateImpl.SVNDelegateServiceImpl;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.openremote.beehive.spring.SpringContext;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
@@ -45,8 +44,7 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
  */
 public class ApplicationListener implements ServletContextListener {
    private ISVNClientAdapter svnClient = SVNClientFactory.getSVNClient();
-   private ApplicationContext ctx = new ClassPathXmlApplicationContext(new String[] { "spring-context.xml" });
-   private Configuration configuration = (Configuration)ctx.getBean("configuration");
+   private static Configuration configuration = (Configuration) SpringContext.getInstance().getBean("configuration");
    private static Logger logger = Logger.getLogger(SVNDelegateServiceImpl.class.getName());
    
    /**
