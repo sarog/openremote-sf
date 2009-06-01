@@ -37,7 +37,9 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.openremote.beehive.Configuration;
 import org.openremote.beehive.file.EnumCharset;
+import org.openremote.beehive.spring.SpringContext;
 import org.openremote.beehive.file.Progress;
 
 /**
@@ -49,6 +51,8 @@ import org.openremote.beehive.file.Progress;
 public class FileUtil {
 
    private static final Logger LOGGER = Logger.getLogger(FileUtil.class.getName());
+   
+   private static Configuration configuration = (Configuration) SpringContext.getInstance().getBean("configuration");
 
    private FileUtil() {
    }
@@ -399,6 +403,10 @@ public class FileUtil {
       } catch (IOException e) {
          e.printStackTrace();
       }
+   }
+   public static String relativeWorkcopyPath(File file){
+      String wc = new File(configuration.getWorkCopyDir()).getPath();
+      return file.getAbsolutePath().replace(wc, "").replaceAll("\\\\", "/");
    }
    
    public static Progress getProgressFromFile(File progressFile, String endTag, double count){
