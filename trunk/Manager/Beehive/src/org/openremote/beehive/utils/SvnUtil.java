@@ -53,9 +53,4 @@ public class SvnUtil {
 
    }
 
-   public static void main(String[] args) {
-      String revision = "$Revision: $";
-      String headUrl = "$HeadURL: $";
-      System.out.println("Current Version:" + getVersionLabel(headUrl, revision));
-   }
 }

@@ -35,6 +35,8 @@ pre {
 	font-size:11px;
 	padding: 0px;
 	margin: 0px;
+   word-wrap: break-word;       /* Internet Explorer 5.5+ */
+   *white-space:normal;          /* Internet Explorer 5.5+ */
 }
 
 /** LOGIN **/

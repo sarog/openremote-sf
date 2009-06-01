@@ -23,7 +23,6 @@ package org.openremote.beehive.repo;
 import java.text.DecimalFormat;
 import java.util.Date;
 
-import org.openremote.beehive.utils.DateFormatter;
 
 // TODO: Auto-generated Javadoc
 /**

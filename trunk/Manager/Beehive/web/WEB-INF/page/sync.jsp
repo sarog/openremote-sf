@@ -47,12 +47,12 @@
 				   $('#tab_2 img').attr("src","image/update_icon.gif");
 				   $('#updateBtn').removeAttr("disabled").removeClass("disabled_button");
 	            $('#spinner').hide();
-	            $('#progressInfoSpan').html("Update completed, you can view and commit the <a href='changes.htm'>changes</a>");
+	            $('#progressInfoSpan').html("Update completed, you can view and commit the <b><a href='changes.htm'>changes</a></b>");
 				}
 		});
 	}
 	function setProgress(progress){
-		$('#updateInfo').html(progress.data);
+		$('#updateInfo').html("<pre>"+progress.data+"</pre>");
 		var infoContainer = $("#infoContainer");
 		infoContainer[0].scrollTop = infoContainer[0].scrollHeight;
 		var bar = $('#progressbar');
@@ -94,7 +94,7 @@
 			</tr>			
 	</table>
 	<div id="infoContainer" class="infoContainer">
-	   <pre id="updateInfo"></pre>
+	   <div id="updateInfo"></div>
 	   <div id="spinner"><img alt="" src="image/spinner.gif" /></div>
 	</div>
 
