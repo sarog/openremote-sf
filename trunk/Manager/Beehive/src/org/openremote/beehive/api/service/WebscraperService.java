@@ -20,7 +20,7 @@
  */
 package org.openremote.beehive.api.service;
 
-import org.openremote.beehive.file.ScraperProgress;
+import org.openremote.beehive.file.Progress;
 
 
 /**
@@ -42,5 +42,5 @@ public interface WebscraperService {
     * @param endTag string
     * @return
     */
-   ScraperProgress getScraperProgress(String progressFileName, String endTag);
+   Progress getScraperProgress();
 }

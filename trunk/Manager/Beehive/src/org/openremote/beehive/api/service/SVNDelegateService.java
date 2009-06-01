@@ -23,6 +23,7 @@ package org.openremote.beehive.api.service;
 import java.util.List;
 
 import org.openremote.beehive.exception.SVNException;
+import org.openremote.beehive.file.Progress;
 import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.LIRCEntry;
@@ -194,4 +195,11 @@ public interface SVNDelegateService {
     * @return the log by revision
     */
    LogMessage getLogByRevision(String path, long revision);
+   
+   /**
+    * Gets the progress of copy from scrap to workCopy
+    * 
+    * @return progress
+    */
+   Progress getCopyProgress();
 }

@@ -27,9 +27,7 @@ import java.util.List;
 
 import org.openremote.beehive.api.dto.ModelDTO;
 import org.openremote.beehive.domain.Model;
-import org.openremote.beehive.exception.SVNException;
 
-// TODO: Auto-generated Javadoc
 /**
  * Business service for <code>ModelDTO</code>.
  * 
@@ -118,28 +116,6 @@ public interface ModelService {
     * @return the file OutputStream to be downloaded
     */
    InputStream exportStream(long id);
-
-   /**
-    * Update database and svn repo sync.
-    * 
-    * @param username the username
-    * @param path the path
-    * @param revision the revision
-    * 
-    * @throws SVNException the SVN exception
-    */
-//   void update(String[] paths, String message, String username) throws SVNException;
-
-   /**
-    * Rollback svn repo to a specify revision.
-    * 
-    * @param path the path
-    * @param revision the revision
-    * @param username the username
-    * 
-    * @throws SVNException the SVN exception
-    */
-   void rollback(String path, long revision, String username) throws SVNException;
    
    /**
     * Count.
