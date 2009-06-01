@@ -11,7 +11,7 @@
 			</html-to-xml>
 		</xpath>
 	</var-def>
-	<file action="append" path="progress.txt">
+	<file action="append" path="scrapeProgress.txt">
 		<template>
            <![CDATA[[${sys.datetime("yyyy-MM-dd HH:mm:ss")}]]]>
 		</template>
@@ -77,7 +77,7 @@
 									charset="UTF-8">
 									<http url="${tcurrentUrl}" />
 								</file>
-								<file action="append" path="progress.txt">
+								<file action="append" path="scrapeProgress.txt">
 									<template>
 	                           <![CDATA[${path}]]>
 									</template>
@@ -121,7 +121,7 @@
 												type="binary" charset="UTF-8">
 												<http url="${scurrentUrl}" />
 											</file>
-											<file action="append" path="progress.txt">
+											<file action="append" path="scrapeProgress.txt">
 												<template>
 		                                  <![CDATA[${path}]]>
 												</template>
@@ -136,7 +136,7 @@
 			</loop>
 		</body>
 	</loop>
-	<file action="append" path="progress.txt">
+	<file action="append" path="scrapeProgress.txt">
 		<template>
          <![CDATA[Download completed!]]>
 		</template>

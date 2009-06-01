@@ -84,7 +84,7 @@
 									<div class="progress" >
 									<span class="text" >0%</span>
 									</div>
-								</div><span id="progressInfoSpan" style="margin-left:10px"></span>
+								</div><span id="progressInfoSpan" style="margin-left:10px">Please click the update button to sync lirc files with lirc website.</span>
 							</td>
 							<td class="value" colspan="5" width="10%"><input id="updateBtn" value="Update" class="button" type="button">
 							</td>

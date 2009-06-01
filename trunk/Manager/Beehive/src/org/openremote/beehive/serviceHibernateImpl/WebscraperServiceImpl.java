@@ -27,6 +27,7 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
+import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.api.service.WebscraperService;
@@ -69,11 +70,11 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
 
    public void scraperFiles() {
       try {
-         File progressFile = new File(configuration.getScrapDir()+File.separator+"progress.txt");
+         File progressFile = new File(configuration.getScrapDir()+File.separator+Constant.SCRAPE_PROGRESS_FILE);
          if(progressFile.exists()){
             progressFile.delete();
          }
-         File copyProgressFile = new File(configuration.getScrapDir()+File.separator+"copyProgress.txt");
+         File copyProgressFile = new File(configuration.getScrapDir()+File.separator+Constant.COPY_PROGRESS_FILE);
          if(copyProgressFile.exists()){
             copyProgressFile.delete();
          }
@@ -105,7 +106,7 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
    * {@inheritDoc}
    */
    public Progress getScraperProgress(){
-      File progressFile = new File(configuration.getScrapDir()+File.separator+"progress.txt");
+      File progressFile = new File(configuration.getScrapDir()+File.separator+Constant.SCRAPE_PROGRESS_FILE);
       return FileUtil.getProgressFromFile(progressFile, "Download completed!", modelService.count());
    }
 }
