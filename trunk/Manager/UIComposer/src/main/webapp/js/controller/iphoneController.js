@@ -232,6 +232,7 @@ var IPhoneController = function() {
                 btns.resizable('option', 'maxHeight', (maxY - iphoneBtn.y + 1) * ScreenView.cellHeight);
                 btns.resizable('option', 'maxWidth', (maxX - iphoneBtn.x + 1) * ScreenView.cellWidth);
 
+				btns.find("td.middle").height("100%");
             },
             stop: function(event, ui) {
                 var iphoneBtn = $(this).data("model");
