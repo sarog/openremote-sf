@@ -38,6 +38,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.openremote.beehive.file.EnumCharset;
+import org.openremote.beehive.file.Progress;
 
 /**
  * Utility class for File
@@ -398,5 +399,24 @@ public class FileUtil {
       } catch (IOException e) {
          e.printStackTrace();
       }
+   }
+   
+   public static Progress getProgressFromFile(File progressFile, String endTag, double count){
+      Progress progress = new Progress();
+      String message = "";
+      if(progressFile.exists()){
+         try {
+            message = FileUtils.readFileToString(progressFile, "UTF8");
+            double percent = FileUtils.readLines(progressFile, "UTF8").size()/count;
+            progress.setPercent(percent);
+            progress.setMessage(message);
+            if(message.trim().endsWith(endTag)){
+               progress.setStatus("isEnd");
+            }
+         } catch (IOException e) {
+            LOGGER.error("Read "+progressFile.getName()+" to string occur error!",e);
+         }
+      }
+      return progress;
    }
 }

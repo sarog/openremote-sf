@@ -17,7 +17,6 @@
 		  			   {path:filePath, revision:revision},
 		  			   function(){
 			  			   $("#actionInfo").text("Rollback "+filePath+" to revision "+revision+" success!");
-			  			   window.location="";
 		  			   }
 				  	   );
 		  	});
@@ -108,7 +107,7 @@
 		</tr>
 		</thead>
 		<tbody>
-		<c:forEach items="${logMessages}" var="logMessage">
+		<c:forEach items="${logMessages}" var="logMessage" varStatus="status">
 			<tr class="first">
 				<td>
 					<table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -134,8 +133,10 @@
 				<td align="center">${logMessage.author}</td>
 				<td align="center">${logMessage.comment}</td>
 				<td align="center">
+				  <c:if test="${status.count gt 1}">
 				     <a revision="${logMessage.revision}" name="rollBack" href="javascript:void(0);"><img border="0" title="rollback to this version" alt="rollback to this version" src="image/rollback.gif"/>
                   </a>
+              </c:if>
             </td>
 			</tr>
 		</c:forEach>

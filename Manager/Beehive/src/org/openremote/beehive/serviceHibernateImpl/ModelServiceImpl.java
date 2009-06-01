@@ -36,14 +36,10 @@ import org.hibernate.criterion.Restrictions;
 import org.openremote.beehive.Configuration;
 import org.openremote.beehive.api.dto.ModelDTO;
 import org.openremote.beehive.api.service.ModelService;
-import org.openremote.beehive.api.service.SVNDelegateService;
-import org.openremote.beehive.api.service.VendorService;
 import org.openremote.beehive.domain.Model;
 import org.openremote.beehive.domain.RemoteSection;
 import org.openremote.beehive.domain.Vendor;
-import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.file.LircConfFile;
-import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.utils.FileUtil;
 import org.openremote.beehive.utils.StringUtil;
 
@@ -60,32 +56,6 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
    
    /** The configuration. */
    private Configuration configuration;
-   
-   /** The svn delegate service. */
-   private SVNDelegateService svnDelegateService;
-   
-   /** The vendor service. */
-   private VendorService vendorService;
-
-   /**
-    * Sets the svn delegate service.
-    * 
-    * @param svnDelegateService
-    *           the new svn delegate service
-    */
-   public void setSvnDelegateService(SVNDelegateService svnDelegateService) {
-      this.svnDelegateService = svnDelegateService;
-   }
-
-   /**
-    * Sets the vendor service.
-    * 
-    * @param vendorService
-    *           the new vendor service
-    */
-   public void setVendorService(VendorService vendorService) {
-      this.vendorService = vendorService;
-   }
 
    /**
     * {@inheritDoc}
@@ -323,27 +293,6 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
 
    /**
     * {@inheritDoc}
-    * @throws SVNException 
-    */
-   public void rollback(String path, long revision, String username) throws SVNException {
-      svnDelegateService.rollback(path, revision);
-//      File file = new File(configuration.getWorkCopyDir()+path);
-//      if(file.isFile()){
-//         String[] paths = {path};
-//         this.update(paths, "rollback to revision " + revision, username);
-//         return;
-//      }
-      DiffStatus diffStatus = svnDelegateService.getDiffStatus(path);
-      String[] paths = new String[diffStatus.getDiffStatus().size()];
-      String workDir = new File(configuration.getWorkCopyDir()).getPath();
-      for (int i = 0; i < diffStatus.getDiffStatus().size(); i++) {
-         paths[i] = diffStatus.getDiffStatus().get(i).getPath().replace(workDir, "")+"|"+diffStatus.getDiffStatus().get(i).getStatus();
-      }     
-      svnDelegateService.commit(paths, "rollback to revision " + revision, username);
-   }
-   
-   /**
-    * {@inheritDoc}
     * 
     */
    public int count() {
@@ -377,6 +326,9 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
       boolean isDeleted = !file.exists();
       String[] arr = FileUtil.splitPath(file);
       String vendorName = arr[arr.length - 2];
+      if(vendorName.equals("ovara")){
+         vendorName = arr[arr.length - 3];
+      }
       String modelName = arr[arr.length - 1];
       Model model = findByFileName(modelName);
       if(isDeleted){
