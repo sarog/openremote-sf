@@ -1,1 +1,0 @@
-<%response.sendError(421,"Invalid Button Command Type, must be one of click, press and release"); %>

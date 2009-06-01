@@ -1,1 +1,0 @@
-<%response.sendError(424,"Invalid controller.xml Error"); %>
