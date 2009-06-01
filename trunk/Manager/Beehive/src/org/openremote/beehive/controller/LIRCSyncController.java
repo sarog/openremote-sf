@@ -21,14 +21,13 @@
 package org.openremote.beehive.controller;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONObject;
+import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.api.service.WebscraperService;
-import org.openremote.beehive.file.ScraperProgress;
+import org.openremote.beehive.file.Progress;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -39,6 +38,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 public class LIRCSyncController extends MultiActionController {
    private String indexView;
    private WebscraperService scraperService;
+   private SVNDelegateService svnDelegateService;
    
    public void setIndexView(String indexView) {
       this.indexView = indexView;
@@ -46,6 +46,11 @@ public class LIRCSyncController extends MultiActionController {
    
    public void setScraperService(WebscraperService scraperService) {
       this.scraperService = scraperService;
+   }
+   
+   
+   public void setSvnDelegateService(SVNDelegateService svnDelegateService) {
+      this.svnDelegateService = svnDelegateService;
    }
 
    /**
@@ -84,7 +89,7 @@ public class LIRCSyncController extends MultiActionController {
     * @throws IOException
     */
    public void getScraperProgress(HttpServletRequest request, HttpServletResponse response) throws IOException{
-      ScraperProgress scraperProgress = scraperService.getScraperProgress("progress.txt","Download completed!");
+      Progress scraperProgress = scraperService.getScraperProgress();
       response.getWriter().print(scraperProgress.getJson());
    }
    
@@ -95,7 +100,7 @@ public class LIRCSyncController extends MultiActionController {
     * @throws IOException
     */
    public void getCopyProgress(HttpServletRequest request, HttpServletResponse response) throws IOException{
-      ScraperProgress copyProgress = scraperService.getScraperProgress("copyProgress.txt","Check completed!\r\n");      
+      Progress copyProgress = svnDelegateService.getCopyProgress();      
       response.getWriter().print(copyProgress.getJson());
    }
 }

@@ -31,7 +31,8 @@ import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.api.service.WebscraperService;
 import org.openremote.beehive.domain.Vendor;
-import org.openremote.beehive.file.ScraperProgress;
+import org.openremote.beehive.file.Progress;
+import org.openremote.beehive.utils.FileUtil;
 import org.webharvest.definition.ScraperConfiguration;
 import org.webharvest.runtime.Scraper;
 
@@ -68,24 +69,24 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
 
    public void scraperFiles() {
       try {
-//         File progressFile = new File(configuration.getScrapDir()+File.separator+"progress.txt");
-//         if(progressFile.exists()){
-//            progressFile.delete();
-//         }
+         File progressFile = new File(configuration.getScrapDir()+File.separator+"progress.txt");
+         if(progressFile.exists()){
+            progressFile.delete();
+         }
          File copyProgressFile = new File(configuration.getScrapDir()+File.separator+"copyProgress.txt");
          if(copyProgressFile.exists()){
             copyProgressFile.delete();
          }
-//         File scrapDir = new File(configuration.getScrapDir());
-//         if(scrapDir.exists()){
-//            FileUtils.deleteDirectory(scrapDir);            
-//         }
+         File scrapDir = new File(configuration.getScrapDir());
+         if(scrapDir.exists()){
+            FileUtils.deleteDirectory(scrapDir);            
+         }
          ScraperConfiguration config = new ScraperConfiguration(getClass().getResource("/remotes.xml").getPath());         
          Scraper scraper = new Scraper(config, configuration.getScrapDir());
          scraper.setDebug(true);
          // long startTime = System.currentTimeMillis();
          logger.info("Scraper LIRC files from http://lirc.sourceforge.net/remotes!");
-//         scraper.execute();
+         scraper.execute();
          logger.info("Success scrap LIRC files from web!");
          // System.out.println("time elapsed:"+ (System.currentTimeMillis() - startTime));
          logger.info("Copy LIRC files from " + configuration.getScrapDir() + " to workCopy "
@@ -103,25 +104,8 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
   /**
    * {@inheritDoc}
    */
-   public ScraperProgress getScraperProgress(String progressFileName, String endTag){
-      ScraperProgress scraperProgress = new ScraperProgress();
-      double count = modelService.count();
-      File progressFile = new File(configuration.getScrapDir()+File.separator+progressFileName);
-      String progress = "";
-      if(progressFile.exists()){
-         try {
-            progress = FileUtils.readFileToString(progressFile, "UTF8");
-            double percent = FileUtils.readLines(progressFile, "UTF8").size()/count;
-            scraperProgress.setPercent(percent);
-            scraperProgress.setProgress(progress);
-            if(progress.endsWith(endTag)){
-               scraperProgress.setStatus("isEnd");
-            }
-         } catch (IOException e) {
-            logger.error("Read "+progressFileName+" to string occur error!",e);
-         }
-      }
-      return scraperProgress;
-
+   public Progress getScraperProgress(){
+      File progressFile = new File(configuration.getScrapDir()+File.separator+"progress.txt");
+      return FileUtil.getProgressFromFile(progressFile, "Download completed!", modelService.count());
    }
 }

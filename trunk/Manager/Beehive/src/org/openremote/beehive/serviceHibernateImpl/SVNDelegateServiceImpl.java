@@ -36,9 +36,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
+import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.domain.Vendor;
 import org.openremote.beehive.exception.SVNException;
+import org.openremote.beehive.file.Progress;
 import org.openremote.beehive.repo.Actions;
 import org.openremote.beehive.repo.ChangeCount;
 import org.openremote.beehive.repo.DiffResult;
@@ -71,6 +73,7 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
 public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implements SVNDelegateService {
    private static Logger logger = Logger.getLogger(SVNDelegateServiceImpl.class.getName());
    private Configuration configuration;
+   private ModelService modelService;
    private ISVNClientAdapter svnClient = SVNClientFactory.getSVNClient();
    private static Map<String, Object> fileLocks = new HashMap<String, Object>();   
    public Configuration getConfiguration() {
@@ -79,6 +82,11 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
 
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
+   }
+   
+   
+   public void setModelService(ModelService modelService) {
+      this.modelService = modelService;
    }
 
    /**
@@ -368,7 +376,6 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             InputStream is = svnClient.getContent(new SVNUrl(configuration.getSvnDir() + path), new SVNRevision.Number(
                   revision));
             FileUtil.createFile(is, file);
-            // svnClient.commit(new File[]{file}, "rollback "+ file.getPath() + " to version " + revision, recurse);
          } else {
             revert(path, true);
             deleteFile(file);
@@ -379,7 +386,6 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                   new SVNRevision.Number(revision), true);
             FileUtils.copyDirectory(tempFile, file);
             FileUtils.deleteDirectory(tempFile);
-            // this.commit(new String[]{path}, "rollback to version of " + revision, username);
          }
       } catch (MalformedURLException e) {
          logger.error("The MalformedURLException!", e);
@@ -613,5 +619,14 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       }
       return logMessage;
    }
+   
+   /**
+    * {@inheritDoc}
+    */
+   public Progress getCopyProgress() {
+      File progressFile = new File(configuration.getScrapDir()+File.separator+"copyProgress.txt");
+      return FileUtil.getProgressFromFile(progressFile, "Check completed!", modelService.count());
+   }
+   
    
 }

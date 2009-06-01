@@ -90,6 +90,9 @@ public class VendorServiceImpl extends BaseAbstractService<Vendor> implements Ve
       boolean isDeleted = !file.exists();
       String[] arr = FileUtil.splitPath(file);
       String vendorName = arr[arr.length-1];
+      if(vendorName.equals("ovara")){
+         return;
+      }
       if(isDeleted){
          return;
       }else{

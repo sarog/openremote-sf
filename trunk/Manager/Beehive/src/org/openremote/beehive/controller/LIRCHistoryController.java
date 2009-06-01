@@ -202,7 +202,7 @@ public class LIRCHistoryController extends MultiActionController {
    public ModelAndView rollBack(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, SVNException{
       String path = ServletRequestUtils.getRequiredStringParameter(request, "path");
       long revision = ServletRequestUtils.getRequiredLongParameter(request, "revision");
-      modelService.rollback(path, revision, "admin");
+      svnDelegateService.rollback(path, revision);
       return null;
    }
 }

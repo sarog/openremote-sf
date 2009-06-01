@@ -27,7 +27,7 @@
            $("#checkall").click( function() {
                $("input[name='items']").attr("checked",this.checked);
            });
-           $('input .changedNode').each(function(){
+           $('input.changedNode').each(function(){
         	      var action = $(this).attr('action');
         	      if(action=='UNVERSIONED'||action=='ADDED'){
         	    	  $(this).click(checkAdd);

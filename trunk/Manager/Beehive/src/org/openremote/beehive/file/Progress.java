@@ -25,14 +25,14 @@ import java.util.HashMap;
 import org.json.JSONObject;
 
 /**
- * The Class ScraperProgress.
+ * The Class Progress.
  * 
  * @author Tomsky
  */
-public class ScraperProgress {
+public class Progress {
    
    /** The progress. */
-   private String progress;
+   private String message;
    
    /** The status. */
    private String status;
@@ -40,7 +40,7 @@ public class ScraperProgress {
    /** The percent. */
    private double percent;
    
-   public ScraperProgress() {
+   public Progress() {
       status = "";
    }
    /**
@@ -48,8 +48,8 @@ public class ScraperProgress {
     * 
     * @return the progress
     */
-   public String getProgress() {
-      return progress;
+   public String getMessage() {
+      return message;
    }
    
    /**
@@ -76,8 +76,8 @@ public class ScraperProgress {
     * 
     * @param progress the new progress
     */
-   public void setProgress(String progress) {
-      this.progress = progress;
+   public void setMessage(String message) {
+      this.message = message;
    }
    
    /**
@@ -101,7 +101,7 @@ public class ScraperProgress {
    public JSONObject getJson(){
       HashMap<String, String> map = new HashMap<String, String>();
       map.put("status", status);
-      map.put("data", progress);
+      map.put("data", message);
       map.put("percent", this.getPercentString());
       JSONObject json = new JSONObject(map);
       return json;
