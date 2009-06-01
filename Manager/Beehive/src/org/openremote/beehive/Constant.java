@@ -18,36 +18,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.beehive.exception;
+package org.openremote.beehive;
 
 /**
  * @author Tomsky
  *
  */
-public class SVNException extends RuntimeException {
-
-
+public final class Constant {
+   private Constant(){
+   }
+   
    /**
-    * 
+    * The value for the progress file
     */
-   private static final long serialVersionUID = 123118923087651262L;
-
-   public SVNException() {
-      super();
-   }
-
-   public SVNException(Throwable cause) {
-      super(cause);
-   }
-
-   public SVNException(String message, Throwable cause) {
-      super(message, cause);
-   }
-
-   public SVNException(String message) {
-      super(message);
-   }
-
+   public static final String SCRAPE_PROGRESS_FILE = "scrapeProgress.txt";
+   public static final String COPY_PROGRESS_FILE = "copyProgress.txt";
    
-   
+   /**
+    * The value for svn repo and workCopy root directory
+    */
+   public static final String ROOT_PATH = "";
 }
