@@ -34,6 +34,7 @@ String.prototype.trim = trim;
 function trim(){
 	return this.replace(/(^\s*)|(\s*$)/g, "");
 } 
+
 function getVersionLabel(){
 	var headUrl = "$HeadURL$";
 	var revision = "$Revision$";
