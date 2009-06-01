@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.openremote.beehive.utils.DateFormatter;
 
 /**
  * LogMessage include the specify revision's changes
