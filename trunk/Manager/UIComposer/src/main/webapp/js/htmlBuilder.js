@@ -64,7 +64,8 @@ HTMLBuilder = function() {
                 label: text
             }));
 
-            if (iphoneBtn.icon != "") {
+            if (iphoneBtn.icon != null && iphoneBtn.icon.length > 0) {
+				alert(iphoneBtn.icon);
                 btn.find("table").removeClass("iPhone_btn_cont");
                 btn.find("table .middle").html("<img src=" + iphoneBtn.icon + ">");
             }
