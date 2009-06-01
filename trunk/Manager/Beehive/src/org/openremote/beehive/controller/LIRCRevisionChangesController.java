@@ -25,6 +25,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.exception.SVNException;
@@ -79,8 +80,7 @@ public class LIRCRevisionChangesController extends MultiActionController {
     */
    public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
       ModelAndView mav = new ModelAndView(indexView);
-      String path = "";
-      LogMessage headMessage = svnDelegateService.getHeadLog(path);
+      LogMessage headMessage = svnDelegateService.getHeadLog(Constant.ROOT_PATH);
       mav.addObject("headMessage", headMessage);
       request.getSession().setAttribute("headRevision", headMessage.getRevision().toString());
       if(svnDelegateService.isBlankSVN()){
@@ -88,7 +88,7 @@ public class LIRCRevisionChangesController extends MultiActionController {
       }else{
          request.setAttribute("isBlankSVN", false);
       }
-      DiffStatus ds = svnDelegateService.getDiffStatus(path);
+      DiffStatus ds = svnDelegateService.getDiffStatus(Constant.ROOT_PATH);
       mav.addObject("diffStatus", ds.getDiffStatus());
       return mav;
    }

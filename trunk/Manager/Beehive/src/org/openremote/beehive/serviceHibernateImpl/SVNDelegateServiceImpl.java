@@ -36,6 +36,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
+import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.domain.Vendor;
@@ -93,7 +94,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
     * {@inheritDoc}
     * @throws SVNException 
     */
-   public void commit(String[] paths, String message, String username) throws SVNException {
+   public void commit(String[] paths, String message, String username){
       svnClient.setUsername(username);
       int totalPath = paths.length;
       File[] files = new File[totalPath];
@@ -154,7 +155,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       File tempDir = new File(srcPath);
       File workDir = new File(destPath);
       copyDirectory(tempDir, workDir);
-      FileUtil.writeStringToFile(configuration.getScrapDir()+File.separator+"copyProgress.txt", "Check completed!");
+      FileUtil.writeStringToFile(configuration.getScrapDir()+File.separator+Constant.COPY_PROGRESS_FILE, "Check completed!");
       logger.info("Success copy scrap files to workCopy " + destPath);
    }
 
@@ -166,7 +167,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                copyDirectory(subFile, workFile);
             } else if (subFile.isFile()) {
                String tempName = subFile.getName();
-               if(!(tempName.equals("progress.txt") || tempName.equals("copyProgress.txt"))){
+               if(!(tempName.equals(Constant.SCRAPE_PROGRESS_FILE) || tempName.equals(Constant.COPY_PROGRESS_FILE))){
                   String workName = tempName.substring(0, tempName.lastIndexOf("."));
                   File workFile = new File(workDir, File.separator + workName);
                   copyFile(tempName, subFile, workFile);                  
@@ -239,7 +240,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          } catch (IOException e) {
             logger.error("The IOException!", e);
          } catch (SVNClientException e) {
-            logger.error("The SVNClientException!", e);
+            logger.error("Get difference of "+path, e);
+            throw new SVNException("Get difference of "+path,e);
          }         
       }
       return dr;
@@ -273,7 +275,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       } catch (IOException e) {
          logger.error("The IOException!", e);
       } catch (SVNClientException e) {
-         logger.error("The SVNClientException!", e);
+         logger.error("Get difference of "+url+" between version "+oldRevision+" and version "+newRevision, e);
+         throw new SVNException("Get difference of "+url+" between version "+oldRevision+" and version "+newRevision,e);
       }
       return dr;
    }
@@ -287,6 +290,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                revision), force);
       } catch (SVNClientException e) {
          logger.error("Error when export form " + srcUrl + " to " + destPath, e);
+         throw new SVNException("Export "+ srcUrl+" occur exception!",e);
       } catch (MalformedURLException e) {
          logger.error("Failed to create svnUrl!", e);
       }
@@ -319,6 +323,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          logger.error("The MalformedURLException!", e);
       } catch (SVNClientException e) {
          logger.error("The SVNClientException!", e);
+         throw new SVNException("Get the list files of directory "+url+" occur exception",e);
       }
       return entryList;
    }
@@ -349,6 +354,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          logger.error("The MalformedURLException!", e);
       } catch (SVNClientException e) {
          logger.error("The SVNClientException!", e);
+         throw new SVNException("Get logs of "+url+" occur exception",e);
       }
       return lms;
    }
@@ -362,6 +368,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          svnClient.revert(file, recurse);
       } catch (SVNClientException e) {
          logger.error("The file " + path + " can't revert!", e);
+         throw new SVNException("Revert "+path+" occur exception",e);
       }
    }
 
@@ -390,7 +397,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       } catch (MalformedURLException e) {
          logger.error("The MalformedURLException!", e);
       } catch (SVNClientException e) {
-         logger.error("The SVNClientException!", e);
+         logger.error("Rollback "+path+" to revision "+revision+" occur svnException", e);
+         throw new SVNException("Rollback "+path+" to revision "+revision+" occur svnException",e);
       } catch (IOException e) {
          logger.error("The IOException!", e);
       }
@@ -408,7 +416,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             svnClient.remove(new File[] { path }, true);
          }
       } catch (SVNClientException e) {
-         e.printStackTrace();
+         logger.error("Delete file "+filePath+" from svn repository occur exception", e);
+         throw new SVNException("Delete file "+filePath+" from svn repository occur exception",e);
       }
 
    }
@@ -417,7 +426,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       try {
          svnClient.cancelOperation();
       } catch (SVNClientException e) {
-         e.printStackTrace();
+         logger.error("Cancel svn operation fail", e);
+         throw new SVNException("Cancel svn operation fail",e);
       }
    }
 
@@ -434,7 +444,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             if (SVNStatusKind.UNVERSIONED == state.getTextStatus()) {
                addFileRecursively(ds, state.getFile(), workDir);
             } else {
-               String relativePath = state.getFile().getPath().replace(workDir, "").replaceAll("\\\\", "/");
+               String relativePath = FileUtil.relativeWorkcopyPath(state.getFile());
                if (SVNStatusKind.DELETED == state.getTextStatus()) {
                   Element e = ds.new Element(relativePath, Actions.DELETEED);
                   ds.addElement(e);
@@ -451,7 +461,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             }
          }
       } catch (SVNClientException e) {
-         logger.error("The SVNClientException!", e);
+         logger.error("Get difference status of "+path+" fail", e);
+         throw new SVNException("Get difference status of "+path+" fail",e);
       }
       return ds;
    }
@@ -463,7 +474,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
     */
    private void copyFile(String tempName, File modelFile, File workFile) {
       try {
-         String progressFile = configuration.getScrapDir()+File.separator+"copyProgress.txt";
+         String progressFile = configuration.getScrapDir()+File.separator+Constant.COPY_PROGRESS_FILE;
          String modelPath = modelFile.getPath().substring(configuration.getScrapDir().length(),modelFile.getPath().lastIndexOf("."));
          if (!workFile.getParentFile().exists()) {
             workFile.getParentFile().mkdirs();
@@ -489,8 +500,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          }
          FileUtil.writeStringToFile(progressFile, " ["+StringUtil.systemTime()+"] "+actionType + modelPath);
       } catch (SVNClientException e) {
-         logger.error("SvnClient.getInfo touch off the SVNClientException," +
-         		" This may occur by the fileName not case sensitive!",e);
+         logger.error("SvnClient.getInfo touch off the SVNClientException, this may occur by the fileName not case sensitive!",e);
+         throw new SVNException("SvnClient.getInfo touch off the SVNClientException, this may occur by the fileName not case sensitive!",e);
       }
    }
 
@@ -515,13 +526,13 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
     */
    private void addFileRecursively(DiffStatus ds, File file, String workDir) {
       if (file.isDirectory()) {
-         Element e1 = ds.new Element(file.getPath().replace(workDir, "").replaceAll("\\\\", "/"), Actions.UNVERSIONED);
+         Element e1 = ds.new Element(FileUtil.relativeWorkcopyPath(file), Actions.UNVERSIONED);
          ds.addElement(e1);
          for (File subFile : file.listFiles()) {
             addFileRecursively(ds, subFile, workDir);
          }
       } else {
-         Element e1 = ds.new Element(file.getPath().replace(workDir, "").replaceAll("\\\\", "/"), Actions.UNVERSIONED);
+         Element e1 = ds.new Element(FileUtil.relativeWorkcopyPath(file), Actions.UNVERSIONED);
          ds.addElement(e1);
       }
    }
@@ -540,6 +551,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          logger.error("Judge svn repo whether blank, create svnUrl error!", e);
       } catch (SVNClientException e) {
          logger.error("Judge svn repo whether blank, get list error!", e);
+         throw new SVNException("Judge svn repo whether blank, get list error!",e);
+         
       }
       return isBlank;
    }
@@ -554,7 +567,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       } catch (MalformedURLException e) {
          e.printStackTrace();
       } catch (SVNClientException e) {
-         e.printStackTrace();
+         logger.error("Get head revision failed", e);
+         throw new SVNException("Get head revision failed",e);
       }
       if (svnInfo != null) {
          return svnInfo.getLastChangedRevision().getNumber();
@@ -576,7 +590,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       } catch (MalformedURLException e) {
          e.printStackTrace();
       } catch (SVNClientException e) {
-         e.printStackTrace();
+         logger.error("Get head revision message of "+path, e);
+         throw new SVNException("Get head revision message of "+path,e);
       }
       return headLog;
    }
@@ -595,7 +610,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          InputStream is = svnClient.getContent(new File(configuration.getWorkCopyDir() + path), svnrevision);
          lines = IOUtils.readLines(is);         
       } catch (SVNClientException e) {
-         e.printStackTrace();
+         logger.error("Get file content of "+path+" from workCopy failed", e);
+         throw new SVNException("Get file content of "+path+" from workCopy failed",e);
       } catch (IOException e) {
          e.printStackTrace();
       }
@@ -616,7 +632,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       } catch (MalformedURLException e) {
          e.printStackTrace();
       } catch (SVNClientException e) {
-         e.printStackTrace();
+         logger.error("Get log message of "+path+" failed", e);
+         throw new SVNException("Get log message of "+path+" failed",e);
       }
       return logMessage;
    }
@@ -625,7 +642,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
     * {@inheritDoc}
     */
    public Progress getCopyProgress() {
-      File progressFile = new File(configuration.getScrapDir()+File.separator+"copyProgress.txt");
+      File progressFile = new File(configuration.getScrapDir()+File.separator+Constant.COPY_PROGRESS_FILE);
       return FileUtil.getProgressFromFile(progressFile, "Check completed!", modelService.count());
    }
    

@@ -26,6 +26,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.exception.SVNException;
@@ -84,11 +85,10 @@ public class LIRCHistoryController extends MultiActionController {
     */
    public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
       ModelAndView mav = new ModelAndView(indexView);
-      String path = "";
-      LogMessage headMessage = svnDelegateService.getHeadLog(path);
+      LogMessage headMessage = svnDelegateService.getHeadLog(Constant.ROOT_PATH);
       mav.addObject("headMessage", headMessage);
       
-      List<LIRCEntry> vendorEntries = svnDelegateService.getList(path, Long.valueOf(headMessage.getRevision()));
+      List<LIRCEntry> vendorEntries = svnDelegateService.getList(Constant.ROOT_PATH, Long.valueOf(headMessage.getRevision()));
       mav.addObject("vendorEntries", vendorEntries);
       return mav;
    }
