@@ -46,7 +46,6 @@ var IphoneBtnView = function() {
             btn.css("left", $(tableCell).offset().left);
             btn.css("height", $(tableCell).height() * iphoneBtn.height + iphoneBtn.height - 1);
             btn.css("width", $(tableCell).width() * iphoneBtn.width + iphoneBtn.width - 1);
-
 			var maxLenght = IphoneBtnView.getMaxLabelLength(iphoneBtn);
             btn.interceptStr({
                 text: self.getModel().label,
@@ -57,7 +56,7 @@ var IphoneBtnView = function() {
 				setTitle:false
             });
 
-            if (iphoneBtn.icon != constant.DEFAULT_IPHONE_BTN_ICON && iphoneBtn.icon != "") {
+            if (iphoneBtn.icon != null && iphoneBtn.icon.length > 0) {
                 btn.find("table").removeClass("iPhone_btn_cont");
                 btn.find("table .middle").html("<img src=" + iphoneBtn.icon + ">");
             }
