@@ -26,6 +26,8 @@ import java.io.InputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.openremote.controller.Configuration;
+import org.openremote.controller.Constants;
 import org.openremote.controller.service.FileService;
 import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.utils.ZipUtil;
@@ -39,6 +41,9 @@ public class FileServiceImpl implements FileService {
    
    /** The Constant logger. */
    private static final Logger logger = Logger.getLogger(FileServiceImpl.class);
+   
+   /** The configuration. */
+   private Configuration configuration;
    
    /**
     * {@inheritDoc}
@@ -57,17 +62,29 @@ public class FileServiceImpl implements FileService {
          logger.error("Can't delete" + PathUtil.resourcesPath(), e1);
       }
       unzip(inputStream, PathUtil.resourcesPath());
-      File lircdConfFile = new File(PathUtil.resourcesPath() + "lircd.conf");
-      File etcDir = new File("/etc");
+      File lircdConfFile = new File(PathUtil.resourcesPath() + Constants.LIRCD_CONF);
+      File lircdconfDir = new File(configuration.getLircdconfPath().replaceAll(Constants.LIRCD_CONF, ""));
       try {
-         if(etcDir.exists() && lircdConfFile.exists()){
+         if(lircdconfDir.exists() && lircdConfFile.exists()){
             //this needs root user to put lircd.conf into /etc.
             //because it's readonly, or it won't be modified.
-            FileUtils.copyFileToDirectory(lircdConfFile, etcDir);
+            if ("true".equalsIgnoreCase(configuration.getCopyLircdconf())) {
+               FileUtils.copyFileToDirectory(lircdConfFile, lircdconfDir);
+            }
          }
       } catch (IOException e) {
-         logger.error("Can't copy lircd.conf to /etc.", e);
+         logger.error("Can't copy lircd.conf to " + configuration.getLircdconfPath(), e);
       }
    }
+
+   /**
+    * Sets the configuration.
+    * 
+    * @param configuration the new configuration
+    */
+   public void setConfiguration(Configuration configuration) {
+      this.configuration = configuration;
+   }
+   
 
 }
