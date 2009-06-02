@@ -21,24 +21,19 @@
 package org.openremote.controller.net;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.DatagramPacket;
-import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.net.NetworkInterface;
-import java.net.Socket;
-import java.net.SocketException;
-import java.util.Enumeration;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.Configuration;
+import org.openremote.controller.spring.SpringContext;
 
 /**
- * The Class IP Auto Discovery Server. 
+ * The Class IP Auto Discovery Server.
  * This server will listen to all the clients on a multicast address.
  * After a client sends a UDP packet to this server with its IP,it will create a TCP server to receive the response.
  * Then this server will respond its HTTP URL to the client via TCP connection.
- * 
  * 
  * @author Dan 2009-5-18
  */
@@ -47,14 +42,8 @@ public class IPAutoDiscoveryServer implements Runnable {
    /** The logger. */
    private static Logger logger = Logger.getLogger(IPAutoDiscoveryServer.class.getName());
    
-   /** The multicast address. */
-   public final static String MULTICAST_ADDRESS= "224.0.1.100";
-   
-   /** The multicast port. */
-   public final static int MULTICAST_PORT = 3333;
-   
-   /** The TCP port. */
-   public final static int TCP_PORT = 2346;
+   /** The configuration. */
+   private Configuration configuration = (Configuration) SpringContext.getInstance().getBean("configuration");;
    
 
    /**
@@ -62,6 +51,8 @@ public class IPAutoDiscoveryServer implements Runnable {
     */
    public void run() {
 
+      final int MULTICAST_PORT = configuration.getMulticastPort();
+      final String MULTICAST_ADDRESS = configuration.getMulticastAddress();
       MulticastSocket socket = null;
       InetAddress address = null;
       try {
@@ -83,64 +74,31 @@ public class IPAutoDiscoveryServer implements Runnable {
          } catch (IOException e) {
             logger.error("Can't receive packet on " + MULTICAST_ADDRESS + ":" + MULTICAST_PORT, e);
          }
-         sendTcp(packet.getAddress());
+         sendLocalIPBack(packet); 
       }
    }
-   
-   /**
-    * Send tcp.
-    * 
-    * @param targetIP the ip
-    */
-   public static void sendTcp(InetAddress targetIP) {
-      String data = "http://" + getLocalhostIP() + ":8080/controller";
-      Socket skt = null;
-      PrintWriter out = null;
-      try {
-         skt = new Socket(targetIP, TCP_PORT);
-         out = new PrintWriter(skt.getOutputStream(), true);
-      } catch (IOException e) {
-         logger.error("Can't create TCP socket on " + MULTICAST_ADDRESS + ":" + MULTICAST_PORT, e);
-      } finally {
-         out.print(data);
-         out.close();
-         try {
-            skt.close();
-         } catch (IOException e) {
-            logger.error("Can't close socket", e);
-         }
-      }
 
-   }
-   
+
 
    /**
-    * Gets the localhost ip.
+    * Send local ip back.
     * 
-    * @return the localhost ip
+    * @param packet the packet
     */
-   public static String getLocalhostIP() {
-      String ip = "";
-      try {
-         Enumeration<?> e1 = (Enumeration<?>) NetworkInterface.getNetworkInterfaces();
-         while (e1.hasMoreElements()) {
-            NetworkInterface ni = (NetworkInterface) e1.nextElement();
-            if (!ni.getName().equals("eth0")) {
-               continue;
-            } else {
-               Enumeration<?> e2 = ni.getInetAddresses();
-               while (e2.hasMoreElements()) {
-                  InetAddress ia = (InetAddress) e2.nextElement();
-                  if (ia instanceof Inet6Address) continue;
-                  ip = ia.getHostAddress();
-               }
-               break;
-            }
-         }
-      } catch (SocketException e) {
-         logger.error("Can't get Network Interfaces", e);
-      }
-      return ip;
+   private void sendLocalIPBack(DatagramPacket packet) {
+      new Thread(new IPResponseTCPClient(packet.getAddress())).start();
    }
+
+
+
+   /**
+    * Sets the configuration.
+    * 
+    * @param configuration the new configuration
+    */
+   public void setConfiguration(Configuration configuration) {
+      this.configuration = configuration;
+   }
+   
 
 }

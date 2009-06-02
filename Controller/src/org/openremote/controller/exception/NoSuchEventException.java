@@ -26,13 +26,14 @@ package org.openremote.controller.exception;
  * @author Dan 2009-5-23
  */
 @SuppressWarnings("serial")
-public class NoSuchEventException extends RuntimeException {
+public class NoSuchEventException extends ButtonCommandException {
 
    /**
     * Instantiates a new no such event exception.
     */
    public NoSuchEventException() {
       super();
+      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
    }
 
    /**
@@ -43,6 +44,7 @@ public class NoSuchEventException extends RuntimeException {
     */
    public NoSuchEventException(String message, Throwable cause) {
       super(message, cause);
+      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
    }
 
    /**
@@ -52,6 +54,7 @@ public class NoSuchEventException extends RuntimeException {
     */
    public NoSuchEventException(String message) {
       super(message);
+      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
    }
 
 }
