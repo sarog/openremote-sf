@@ -23,7 +23,9 @@ package org.openremote.controller.protocol.infrared;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.Configuration;
 import org.openremote.controller.event.Event;
+import org.openremote.controller.spring.SpringContext;
 
 /**
  * The Infrared Event.
@@ -41,7 +43,63 @@ public class IREvent extends Event {
    /** The button command. Such as menu, play etc. */
    private String command;
    
+   /** The configuration. */
+   private Configuration configuration = (Configuration) SpringContext.getInstance().getBean("configuration");;;
+   
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public void exec() {
+      irsend("SEND_ONCE");   
+   }
 
+
+   /* (non-Javadoc)
+    * @see org.openremote.controller.event.Event#start()
+    */
+   @Override
+   public void start() {
+      irsend("SEND_START");
+   }
+
+   /* (non-Javadoc)
+    * @see org.openremote.controller.event.Event#stop()
+    */
+   @Override
+   public void stop() {
+      irsend("SEND_STOP");
+   }
+   
+
+   /**
+    * Irsend.
+    * 
+    * @param sendType the send type
+    */
+   private void irsend(String sendType) {
+      String cmd = configuration.getIrsendPath() + " " 
+          + sendType + " " + getName() + " " + getCommand();
+      try {
+         Process pro = Runtime.getRuntime().exec(cmd);
+         logger.info(cmd);
+         pro.waitFor();
+      } catch (InterruptedException e) {
+         logger.error(cmd + " was interrupted.", e);
+      } catch (IOException e) {
+         logger.error(cmd + " failed.", e);
+      }
+   }
+
+   /**
+    * Sets the configuration.
+    * 
+    * @param configuration the new configuration
+    */
+   public void setConfiguration(Configuration configuration) {
+      this.configuration = configuration;
+   }
+   
    /**
     * Gets the command.
     * 
@@ -78,36 +136,5 @@ public class IREvent extends Event {
       this.name = name;
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public void exec() {
-      irsend("SEND_ONCE");   
-   }
-
-
-   @Override
-   public void start() {
-      irsend("SEND_START");
-   }
-
-   @Override
-   public void stop() {
-      irsend("SEND_STOP");
-   }
    
-
-   private void irsend(String sendType) {
-      String cmd = "/usr/local/bin/irsend " + sendType + " " + getName() + " " + getCommand();
-      try {
-         Process pro = Runtime.getRuntime().exec(cmd);
-         logger.info(cmd);
-         pro.waitFor();
-      } catch (InterruptedException e) {
-         logger.error(cmd + " was interrupted.", e);
-      } catch (IOException e) {
-         logger.error(cmd + " failed.", e);
-      }
-   }
 }
