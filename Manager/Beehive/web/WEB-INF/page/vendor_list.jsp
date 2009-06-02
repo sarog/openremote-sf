@@ -111,6 +111,15 @@
 		</tr>
 		</thead>
 		<tbody>
+		<c:if test="${fn:length(vendorEntries) eq 0}">
+		    <tr class="first">
+		       <td>There is no vendor.</td>
+		       <td></td>
+		       <td></td>
+		       <td></td>
+		       <td></td>
+		    </tr>
+		</c:if>
 		<c:forEach items="${vendorEntries}" var="vendorEntry">
 			<tr class="first">
 				<td>

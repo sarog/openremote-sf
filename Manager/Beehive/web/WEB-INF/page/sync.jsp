@@ -47,7 +47,7 @@
 				   $('#tab_2 img').attr("src","image/update_icon.gif");
 				   $('#updateBtn').removeAttr("disabled").removeClass("disabled_button");
 	            $('#spinner').hide();
-	            $('#progressInfoSpan').html("Update completed, you can view and commit the <b><a href='changes.htm'>changes</a></b>");
+	            $('#progressInfoSpan').html("Update completed, you can view and commit the <b><a href='changes.htm' style='text-decoration: underline;'>changes</a></b>");
 				}
 		});
 	}

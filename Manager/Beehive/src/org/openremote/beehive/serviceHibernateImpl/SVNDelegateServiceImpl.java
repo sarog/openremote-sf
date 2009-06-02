@@ -480,7 +480,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             workFile.getParentFile().mkdirs();
          }
          String actionType = " N ";
-         if (workFile.exists()) {
+         if (workFile.exists() && !workFile.getName().equals("TV@nywhere")) {
             String strDate = tempName.substring(tempName.lastIndexOf(".") + 1);
             Date tempDate = StringUtil.String2Date(strDate, "dd-MMM-yyyy kk-mm", Locale.ENGLISH);
             ISVNInfo parentFileInfo = svnClient.getInfoFromWorkingCopy(workFile.getParentFile());
