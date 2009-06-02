@@ -27,7 +27,7 @@
 	 });
    
 	function refresh() {
-		$.getJSON("sync.htm?method=getScraperProgress", function(json) {
+		$.getJSON("sync.htm?method=getScraperProgress",{r:Math.random()}, function(json) {
 			setProgress(json);
 			if (json.status == "isEnd") {
 				clearInterval(timer);
@@ -39,7 +39,7 @@
 		});
 	}
 	function getCopyProgress() {
-		$.getJSON("sync.htm?method=getCopyProgress", function(json) {
+		$.getJSON("sync.htm?method=getCopyProgress",{r:Math.random()}, function(json) {
 			setProgress(json);
 			   if(json.status == "isEnd"){
 				   clearInterval(timer);
