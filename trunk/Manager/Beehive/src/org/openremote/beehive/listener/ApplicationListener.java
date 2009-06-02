@@ -54,6 +54,9 @@ public class ApplicationListener implements ServletContextListener {
    public void contextInitialized(ServletContextEvent arg0) {
       String svnDir = configuration.getSvnDir();
       String fileSvnPath = "file:///";
+      if (configuration.getWorkCopyDir().startsWith("/")) {
+         fileSvnPath = "file://";
+      }
       String svnRepoPath = svnDir.substring(svnDir.indexOf(fileSvnPath) + fileSvnPath.length(),svnDir.indexOf("/trunk"));
       File svnRepo = new File(svnRepoPath);
       SVNUrl svnUrl = null;
