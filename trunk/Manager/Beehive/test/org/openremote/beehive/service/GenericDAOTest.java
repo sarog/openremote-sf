@@ -10,7 +10,7 @@ public class GenericDAOTest extends TestBase {
    .getInstance().getBean("genericDAO");
    
    public void testGetByNonIdField(){      
-      Model model = genericDAO.getByNonIdField(Model.class, "fileName", "TXCD-1240");
+      Model model = genericDAO.getByNonIdField(Model.class, "fileName", "MP8640");
       assertNotNull(model);
       
    }
