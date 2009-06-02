@@ -117,7 +117,7 @@
 	                     ${headMessage.author}</td>
 	                  <td class="value" style="padding-left: 20px;" nowrap="true"><b>Total
 	                     items:</b>&nbsp; ${fn:length(diffStatus)}</td>
-	                  <td id="updateInfoTd" style="text-align:center;font-size:14px" width="100%"></td>
+	                  <td id="updateInfoTd" style="text-align:center;" width="100%"></td>
 	               </tr>
 	               <tr>
 	                  <td class="value" style="padding-left: 20px;" colspan="5"
@@ -144,7 +144,7 @@
 		   <c:if test="${fn:length(diffStatus) eq 0}">
 		       <c:set var="hasContent" value="true" />
 		   </c:if>
-		     <tr id="msg_tr" style="${hasContent? '' : 'display:none'}">
+		     <tr id="msg_tr" class="first" style="${hasContent? '' : 'display:none'}">
 		          <td>
 			          <c:choose>
 				          <c:when test="${isBlankSVN eq true}">
