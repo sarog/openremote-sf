@@ -42,6 +42,7 @@ public class Progress {
    
    public Progress() {
       status = "";
+      message = "";
    }
    /**
     * Gets the progress.
