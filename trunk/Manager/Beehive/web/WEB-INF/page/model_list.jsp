@@ -108,6 +108,15 @@
 		</tr>
 		</thead>
 		<tbody>
+		<c:if test="${fn:length(modelEntries) eq 0}">
+          <tr class="first">
+             <td>There is no model.</td>
+             <td></td>
+             <td></td>
+             <td></td>
+             <td></td>
+          </tr>
+      </c:if>
 		<c:forEach items="${modelEntries}" var="modelEntry">
 			<tr class="first">
 				<td>
