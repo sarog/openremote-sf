@@ -42,14 +42,15 @@
 	if (!tcpSever) {
 		tcpSever = [[AsyncSocket alloc] initWithDelegate:self];
 	}
-	
-	tcpTImer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(findServerFail) userInfo:nil repeats:NO];
 	[tcpSever acceptOnPort:serverPort error:NULL];
+	tcpTImer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(findServerFail) userInfo:nil repeats:NO];
+	
 }
 	
 - (void)findServerFail {
 	if (!isReceiveServerUrl) {
 		[tcpTImer invalidate];
+		[tcpSever disconnect];
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationFindServerFail object:self];
 	}
 	isReceiveServerUrl = NO;
@@ -117,6 +118,8 @@ didNotSendDataWithTag:(long)tag dueToError:(NSError *)error{
 }
 
 - (void)dealloc {
+	[tcpTImer invalidate];
+	[tcpTImer release];
 	[clients release];
 	[tcpSever disconnect];
 	[tcpSever release];

@@ -12,6 +12,7 @@
 @protocol URLConnectionHelperDelegate <NSObject>
 
 - (void)definitionURLConnectionDidFinishLoading:(NSData *)data;
+- (void)definitionURLConnectionDidFailWithError:(NSError *)error;
 
 @end
 

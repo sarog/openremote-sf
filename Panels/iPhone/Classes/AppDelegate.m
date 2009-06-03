@@ -19,7 +19,7 @@
 #import "NotificationConstant.h"
 
 @interface AppDelegate (Private)
-
+- (void)useLocalCache;
 - (void)updateDidFinished;
 - (void)NeedNotUpdate;
 - (void)checkConfigAndUpdate;
@@ -56,11 +56,16 @@
 - (void)addNotificationObserver {
 	//add a observer to defination upload task 
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateDidFinished) name:DefinationUpdateDidFinishedNotification object:nil];	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateDidFinished) name:DefinationNeedNotUpdate object:nil];	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(useLocalCache) name:DefinationNeedNotUpdate object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(useLocalCache) name:NotificationHideInitView object:nil];
 	
 
 }
 
+- (void)useLocalCache {
+	[[Definition sharedDefinition] useLocalCacheDirectly];
+	[self updateDidFinished];
+}
 
 - (void)updateDidFinished {
 	NSLog(@"----------updateDidFinished------");

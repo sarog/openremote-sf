@@ -47,6 +47,7 @@
  */
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
 	if ([elementName isEqualToString:@"screen"]) {
+		NSLog(@"start parse Screen");
 		Screen *screen = [[Screen alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 		[screens addObject:screen];
 		[screen release];
@@ -58,7 +59,8 @@
  */
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
 	if ([elementName isEqualToString:@"activity"]) {
- 		[parser setDelegate:xmlParserParentDelegate];
+		[parser setDelegate:nil];
+ 		//[parser setDelegate:xmlParserParentDelegate];
 		[xmlParserParentDelegate release];
 		xmlParserParentDelegate = nil;
 	}

@@ -19,6 +19,7 @@ NSString *const NotificationAfterFindServer = @"afterFindServerNotification";
 NSString *const NotificationFindServerFail = @"FindServerFailNotification";
 NSString *const NotificationStartUpdate = @"startUpdateNotification";
 NSString *const NotificationAfterRefreshAutoServer = @"afterRefreshAutoServerNotification";
+NSString *const NotificationHideInitView = @"HideInitViewNotification";
 
 
 @end
