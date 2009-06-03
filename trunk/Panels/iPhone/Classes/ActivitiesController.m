@@ -61,9 +61,9 @@
 }
 - (void)clearView {
 	NSLog(@"clear view activity controller.");
-	[[[Definition sharedDefinition] activities] removeAllObjects];
-	activities = [[Definition sharedDefinition] activities];
-	[self.tableView  reloadData];
+//	[[[Definition sharedDefinition] activities] removeAllObjects];
+//	activities = [[Definition sharedDefinition] activities];
+//	[self.tableView  reloadData];
 }
 #pragma mark UITableViewDataSource implementation
 - (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section
@@ -146,7 +146,7 @@
 
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
+	return NO;
 }
 																			
 - (void)showSettingsView {

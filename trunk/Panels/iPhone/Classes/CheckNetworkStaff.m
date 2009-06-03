@@ -31,7 +31,7 @@
 	[[Reachability sharedReachability] setHostName:[ServerDefinition serverUrl]];
 	if ([[Reachability sharedReachability] internetConnectionStatus] == NotReachable) {
 		NSLog(@"checkIPAddress status is ",[[Reachability sharedReachability] internetConnectionStatus]);
-		@throw [CheckNetworkStaffException exceptionWithTitle:@"Check controller ip address Fail" message:@"Your server address is wrong please check your settings"];
+		@throw [CheckNetworkStaffException exceptionWithTitle:@"Check controller ip address Fail" message:@"Your server address is wrong, please check your settings"];
 	}
 }
 
@@ -47,10 +47,11 @@
 	NSHTTPURLResponse *resp = nil;
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:[ServerDefinition serverUrl]] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:5];
 	[NSURLConnection sendSynchronousRequest:request returningResponse:&resp error:&error];
+	NSLog([ServerDefinition serverUrl]);
 	[request release];
 	if (error ) {
 		NSLog(@"checkControllerAvailable occur error %@",[error localizedDescription]);
-		@throw [CheckNetworkStaffException exceptionWithTitle:@"Server not Start" message:@"Your server is not start or the server url which you configed is wrong."];
+		@throw [CheckNetworkStaffException exceptionWithTitle:@"Server not Started" message:@"Your server is not started or the server url which you configed is wrong."];
 	} else if ([resp statusCode] != 200){	
 		NSLog(@"checkControllerAvailable statusCode %d",[resp statusCode] );
 		@throw [CheckNetworkStaffException exceptionWithTitle:@"Can't find controller Application" message:@"Can't find controller appliaction on your server."];
