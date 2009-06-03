@@ -147,7 +147,7 @@ var ImportController = function() {
         model.oModel = findOrBuildModel(btn.oModel);
 
         if (btn.oModel.className == "Infrared") {
-            global.InfraredCollection[btn.oModel.codeId] = oModel;
+            global.InfraredCollection[btn.oModel.codeId] = model.oModel;
         }
         return model;
 
