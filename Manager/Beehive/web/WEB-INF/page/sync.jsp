@@ -9,20 +9,20 @@
    var timer = 0;
    $(document).ready(function() {	   
 	   if($('#commitStatus').val() == "true"){
-           $('#progressInfoSpan').text(" The committing is running, please update later.");
+           $('#message').text(" The committing is running, please update later.");
            $("#updateBtn").attr("disabled","true").addClass("disabled_button");
      }
 	   if($('#updateStatus').val() == "true"){
 		   setAnimation();
 		   refresh();
-		   $('#progressInfoSpan').text("Downloading from http://lirc.sourceforge.net/remotes ......");
+		   $('#message').text("Downloading from http://lirc.sourceforge.net/remotes ......");
 		   timer=setInterval("refresh()",5000);
 	   }
 	   $('#updateBtn').click(function(){
 		      setAnimation();
 			   $.post("sync.htm?method=update",{});
 			   timer=setInterval("refresh()",5000);
-			   $('#progressInfoSpan').text("Downloading from http://lirc.sourceforge.net/remotes ......");
+			   $('#message').text("Downloading from http://lirc.sourceforge.net/remotes ......");
 	      });
 	 });
    
@@ -34,7 +34,7 @@
 				timer = 0;
 				getCopyProgress();
 				timer = setInterval("getCopyProgress()",5000);
-				$('#progressInfoSpan').text("Checking modified files ......");
+				$('#message').text("Checking modified files ......");
 			}
 		});
 	}
@@ -47,7 +47,7 @@
 				   $('#tab_2 img').attr("src","image/update_icon.gif");
 				   $('#updateBtn').removeAttr("disabled").removeClass("disabled_button");
 	            $('#spinner').hide();
-	            $('#progressInfoSpan').html("Update completed, you can view and commit the <b><a href='changes.htm' style='text-decoration: underline;'>changes</a></b>");
+	            $('#message').html("Update completed, you can view and commit the <b><a href='changes.htm' style='text-decoration: underline;'>changes</a></b>");
 				}
 		});
 	}
@@ -84,7 +84,7 @@
 									<div class="progress" >
 									<span class="text" >0%</span>
 									</div>
-								</div><span id="progressInfoSpan" style="margin-left:10px">Please click the update button to sync lirc files with lirc website.</span>
+								</div><span id="message" style="margin-left:10px">Please click the update button to sync lirc files with lirc website.</span>
 							</td>
 							<td class="value" colspan="5" width="10%"><input id="updateBtn" value="Update" class="button" type="button">
 							</td>

@@ -16,7 +16,7 @@
 		  	   $.post("history.htm?method=rollBack",
 		  			   {path:filePath, revision:revision},
 		  			   function(){
-			  			   $("#actionInfo").text("Rollback "+filePath+" to revision "+revision+" success!");
+			  			   $("#message").text("Rollback "+filePath+" to revision "+revision+" success!");
 		  			   }
 				  	   );
 		  	});
@@ -76,7 +76,7 @@
 							<tr nowrap="true">
 								<td class="value" style="padding-left: 20px;" nowrap="true"><b>Head revision:</b>&nbsp; ${headRevision}</td>
 								<td class="value" style="padding-left: 20px;" nowrap="true"><b>Displayed revisions:</b>&nbsp; ${fn:length(logMessages)}</td>
-								<td id="actionInfo" style="text-align:center;font-size:14px" width="100%"></td>
+								<td id="message" style="text-align:center;font-size:11px" width="100%"></td>
 							</tr>
 					</table>
 		       </td>

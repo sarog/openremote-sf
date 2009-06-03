@@ -142,8 +142,10 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                }
             }
          } catch (SVNClientException e) {
-            logger.error("The svnClientException!", e);
-            throw new SVNException("The svnClient cause Exception",e);
+            logger.error("Commit changes occur exception! maybe you have commit too many changes.", e);
+            SVNException ee = new SVNException("Commit changes occur exception! maybe you have commit too many changes.",e);
+            ee.setErrorCode(SVNException.SVN_COMMIT_ERROR);
+            throw ee;
          }
       }
    }
@@ -238,10 +240,15 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                dr.setChangeCount(changeCount);
             }
          } catch (IOException e) {
-            logger.error("The IOException!", e);
+            logger.error("Read "+tempFile.getName()+" to string occur error!", e);
+            SVNException ee = new SVNException("Read "+tempFile.getName()+" to string occur error!",e);
+            ee.setErrorCode(SVNException.SVN_IO_ERROR);
+            throw ee;
          } catch (SVNClientException e) {
-            logger.error("Get difference of "+path, e);
-            throw new SVNException("Get difference of "+path,e);
+            logger.error("Get difference of "+path+" error!", e);
+            SVNException ee =  new SVNException("Get difference of "+path+" error!",e);
+            ee.setErrorCode(SVNException.SVN_DIFF_ERROR);
+            throw ee;
          }         
       }
       return dr;
@@ -272,11 +279,16 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          dr.setRight(diff.getRightLines(right));
          ChangeCount changeCount = new ChangeCount(diff.getAddedItemsCount(), diff.getModifiedItemsCount(), diff.getDeletedItemsCount());
          dr.setChangeCount(changeCount);
-      } catch (IOException e) {
-         logger.error("The IOException!", e);
+      } catch (MalformedURLException e) {
+         logger.error("Create svnUrl "+url+" failed!", e);
+         SVNException ee = new SVNException("Create svnUrl "+url+" failed!",e);
+         ee.setErrorCode(SVNException.SVN_URL_ERROR);
+         throw ee;
       } catch (SVNClientException e) {
          logger.error("Get difference of "+url+" between version "+oldRevision+" and version "+newRevision, e);
-         throw new SVNException("Get difference of "+url+" between version "+oldRevision+" and version "+newRevision,e);
+         SVNException ee =  new SVNException("Get difference of "+url+" between version "+oldRevision+" and version "+newRevision,e);
+         ee.setErrorCode(SVNException.SVN_DIFF_ERROR);
+         throw ee;
       }
       return dr;
    }
@@ -290,9 +302,14 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                revision), force);
       } catch (SVNClientException e) {
          logger.error("Error when export form " + srcUrl + " to " + destPath, e);
-         throw new SVNException("Export "+ srcUrl+" occur exception!",e);
+         SVNException ee = new SVNException("Export "+ srcUrl+" occur exception!",e);
+         ee.setErrorCode(SVNException.SVN_EXPORT_ERROR);
+         throw ee;
       } catch (MalformedURLException e) {
-         logger.error("Failed to create svnUrl!", e);
+         logger.error("Create svnUrl "+srcUrl+" failed!", e);
+         SVNException ee = new SVNException("Create svnUrl "+srcUrl+" failed!",e);
+         ee.setErrorCode(SVNException.SVN_URL_ERROR);
+         throw ee;
       }
    }
 
@@ -301,6 +318,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
     */
    public List<LIRCEntry> getList(String url, long revision) {
       List<LIRCEntry> entryList = new ArrayList<LIRCEntry>();
+      
       try {
          long headRevision = getHeadRevision();
          ISVNDirEntry[] list = svnClient.getList(new SVNUrl(configuration.getSvnDir() + url), new SVNRevision.Number(revision), false);
@@ -320,10 +338,15 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             entryList.add(entry);
          }
       } catch (MalformedURLException e) {
-         logger.error("The MalformedURLException!", e);
+         logger.error("Create svnUrl "+url+" failed!", e);
+         SVNException ee = new SVNException("Create svnUrl "+url+" failed!",e);
+         ee.setErrorCode(SVNException.SVN_URL_ERROR);
+         throw ee;
       } catch (SVNClientException e) {
-         logger.error("The SVNClientException!", e);
-         throw new SVNException("Get the list files of directory "+url+" occur exception",e);
+         logger.error("Get the list files of directory "+url+" occur exception", e);
+         SVNException ee = new SVNException("Get the list files of directory "+url+" occur exception",e);
+         ee.setErrorCode(SVNException.SVN_GETLIST_ERROR);
+         throw ee;
       }
       return entryList;
    }
@@ -351,10 +374,15 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             lms.add(lm);
          }
       } catch (MalformedURLException e) {
-         logger.error("The MalformedURLException!", e);
+         logger.error("Create svnUrl "+url+" failed!", e);
+         SVNException ee = new SVNException("Create svnUrl "+url+" failed!",e);
+         ee.setErrorCode(SVNException.SVN_URL_ERROR);
+         throw ee;
       } catch (SVNClientException e) {
-         logger.error("The SVNClientException!", e);
-         throw new SVNException("Get logs of "+url+" occur exception",e);
+         logger.error("Get logs of "+url+" occur exception", e);
+         SVNException ee = new SVNException("Get logs of "+url+" occur exception",e);
+         ee.setErrorCode(SVNException.SVN_GETLOG_ERROR);
+         throw ee;
       }
       return lms;
    }
@@ -368,7 +396,9 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          svnClient.revert(file, recurse);
       } catch (SVNClientException e) {
          logger.error("The file " + path + " can't revert!", e);
-         throw new SVNException("Revert "+path+" occur exception",e);
+         SVNException ee = new SVNException("Revert "+path+" occur exception",e);
+         ee.setErrorCode(SVNException.SVN_REVERT_ERROR);
+         throw ee;
       }
    }
 
@@ -376,7 +406,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
     * {@inheritDoc}
     */
    public void rollback(String path, long revision) {
-      // svnClient.setUsername(username);
+//       svnClient.setUsername(username);
       File file = new File(configuration.getWorkCopyDir() + path);
       try {
          if (file.isFile()) {
@@ -395,13 +425,24 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             FileUtils.deleteDirectory(tempFile);
          }
       } catch (MalformedURLException e) {
-         logger.error("The MalformedURLException!", e);
+         logger.error("Create svnUrl "+path+" failed!", e);
+         SVNException ee = new SVNException("Create svnUrl "+path+" failed!",e);
+         ee.setErrorCode(SVNException.SVN_URL_ERROR);
+         throw ee;
       } catch (SVNClientException e) {
          logger.error("Rollback "+path+" to revision "+revision+" occur svnException", e);
-         throw new SVNException("Rollback "+path+" to revision "+revision+" occur svnException",e);
+         SVNException ee = new SVNException("Rollback "+path+" to revision "+revision+" occur svnException",e);
+         ee.setErrorCode(SVNException.SVN_ROLLBACK_ERROR);
+         throw ee;
       } catch (IOException e) {
-         logger.error("The IOException!", e);
+         logger.error("copy or delete file occur error!", e);
+         SVNException ee = new SVNException("copy or delete file occur error!",e);
+         ee.setErrorCode(SVNException.SVN_IO_ERROR);
+         throw ee;
       }
+      SVNException ee = new SVNException("Rollback "+path+" to revision "+revision+" occur svnException");
+      ee.setErrorCode(SVNException.SVN_ROLLBACK_ERROR);
+      throw ee;
    }
 
    /**
@@ -462,7 +503,9 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          }
       } catch (SVNClientException e) {
          logger.error("Get difference status of "+path+" fail", e);
-         throw new SVNException("Get difference status of "+path+" fail",e);
+         SVNException ee = new SVNException("Get difference status of "+path+" fail",e);
+         ee.setErrorCode(SVNException.SVN_GETSTATUS_ERROR);
+         throw ee;
       }
       return ds;
    }
@@ -500,8 +543,10 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          }
          FileUtil.writeStringToFile(progressFile, " ["+StringUtil.systemTime()+"] "+actionType + modelPath);
       } catch (SVNClientException e) {
-         logger.error("SvnClient.getInfo touch off the SVNClientException, this may occur by the fileName not case sensitive!",e);
-         throw new SVNException("SvnClient.getInfo touch off the SVNClientException, this may occur by the fileName not case sensitive!",e);
+         logger.error("Get file "+workFile.getName()+" info error, this may occur by the fileName not case sensitive!",e);
+         SVNException ee = new SVNException("Get file "+workFile.getName()+" info error, this may occur by the fileName not case sensitive!",e);
+         ee.setErrorCode(SVNException.SVN_GETINFO_ERROR);
+         throw ee;
       }
    }
 
@@ -548,10 +593,15 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             isBlank = true;
          }
       } catch (MalformedURLException e) {
-         logger.error("Judge svn repo whether blank, create svnUrl error!", e);
+         logger.error("Create root svnUrl failed!", e);
+         SVNException ee = new SVNException("Create root svnUrl failed!",e);
+         ee.setErrorCode(SVNException.SVN_URL_ERROR);
+         throw ee;
       } catch (SVNClientException e) {
          logger.error("Judge svn repo whether blank, get list error!", e);
-         throw new SVNException("Judge svn repo whether blank, get list error!",e);
+         SVNException ee = new SVNException("Judge svn repo whether blank, get list error!",e);
+         ee.setErrorCode(SVNException.SVN_GETLIST_ERROR);
+         throw ee;
          
       }
       return isBlank;
@@ -565,10 +615,15 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       try {
          svnInfo = svnClient.getInfo(new SVNUrl(configuration.getSvnDir()));
       } catch (MalformedURLException e) {
-         e.printStackTrace();
+         logger.error("Create root svnUrl failed!", e);
+         SVNException ee = new SVNException("Create root svnUrl failed!",e);
+         ee.setErrorCode(SVNException.SVN_URL_ERROR);
+         throw ee;
       } catch (SVNClientException e) {
          logger.error("Get head revision failed", e);
-         throw new SVNException("Get head revision failed",e);
+         SVNException ee = new SVNException("Get head revision failed",e);
+         ee.setErrorCode(SVNException.SVN_GETINFO_ERROR);
+         throw ee;
       }
       if (svnInfo != null) {
          return svnInfo.getLastChangedRevision().getNumber();
@@ -588,10 +643,15 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          headLog.setDate(logs[0].getDate());
          headLog.setComment(logs[0].getMessage());
       } catch (MalformedURLException e) {
-         e.printStackTrace();
+         logger.error("Create svnUrl "+path+" failed!", e);
+         SVNException ee = new SVNException("Create svnUrl "+path+" failed! Maybe you have not install the svn server.",e);
+         ee.setErrorCode(SVNException.SVN_URL_ERROR);
+         throw ee;
       } catch (SVNClientException e) {
          logger.error("Get head revision message of "+path, e);
-         throw new SVNException("Get head revision message of "+path,e);
+         SVNException ee = new SVNException("Get head revision message of "+path,e);
+         ee.setErrorCode(SVNException.SVN_GETLOG_ERROR);
+         throw ee;
       }
       return headLog;
    }
@@ -611,9 +671,14 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          lines = IOUtils.readLines(is);         
       } catch (SVNClientException e) {
          logger.error("Get file content of "+path+" from workCopy failed", e);
-         throw new SVNException("Get file content of "+path+" from workCopy failed",e);
+         SVNException ee = new SVNException("Get file content of "+path+" from workCopy failed",e);
+         ee.setErrorCode(SVNException.SVN_GETCONTENT_ERROR);
+         throw ee;
       } catch (IOException e) {
-         e.printStackTrace();
+         logger.error("Get content of "+path+" occur error!", e);
+         SVNException ee = new SVNException("Get content of "+path+" occur error!",e);
+         ee.setErrorCode(SVNException.SVN_IO_ERROR);
+         throw ee;
       }
       return lines;
    }
@@ -630,10 +695,15 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          logMessage.setDate(logs[0].getDate());
          logMessage.setComment(logs[0].getMessage());
       } catch (MalformedURLException e) {
-         e.printStackTrace();
+         logger.error("Create svnUrl "+path+" failed!", e);
+         SVNException ee = new SVNException("Create svnUrl "+path+" failed!",e);
+         ee.setErrorCode(SVNException.SVN_URL_ERROR);
+         throw ee;
       } catch (SVNClientException e) {
          logger.error("Get log message of "+path+" failed", e);
-         throw new SVNException("Get log message of "+path+" failed",e);
+         SVNException ee = new SVNException("Get log message of "+path+" failed",e);
+         ee.setErrorCode(SVNException.SVN_GETLOG_ERROR);
+         throw ee;
       }
       return logMessage;
    }

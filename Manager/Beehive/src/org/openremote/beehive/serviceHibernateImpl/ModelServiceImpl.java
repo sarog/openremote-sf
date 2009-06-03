@@ -41,7 +41,6 @@ import org.openremote.beehive.domain.RemoteSection;
 import org.openremote.beehive.domain.Vendor;
 import org.openremote.beehive.file.LircConfFile;
 import org.openremote.beehive.utils.FileUtil;
-import org.openremote.beehive.utils.StringUtil;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -245,28 +244,6 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
    /**
     * {@inheritDoc}
     */
-   public File exportFile(long id) {
-      Model model = genericDAO.loadById(Model.class, id);
-      String path = model.filePath();
-      String filePath = StringUtil.appendFileSeparator(new Configuration().getDownloadDir()) + path;
-      FileUtil.writeFile(filePath, model.allSectionText());
-      return new File(path);
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public String downloadFile(long id) {
-      Model model = genericDAO.loadById(Model.class, id);
-      String path = model.filePath();
-      String filePath = StringUtil.appendFileSeparator(configuration.getDownloadDir()) + path;
-      FileUtil.writeFile(filePath, model.allSectionText());
-      return path;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
    public InputStream exportStream(long id) {
       return new ByteArrayInputStream(exportText(id).getBytes());
    }
@@ -345,5 +322,17 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
          }
          add(fis, vendorName, modelName);
       }
+   }
+
+   @Override
+   public String downloadFile(long id) {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   @Override
+   public File exportFile(long id) {
+      // TODO Auto-generated method stub
+      return null;
    }
 }
