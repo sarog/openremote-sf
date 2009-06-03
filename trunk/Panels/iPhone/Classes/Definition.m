@@ -25,6 +25,8 @@
 - (void)downloadImages;
 - (void)downloadImageWithName:(NSString *)imageName;
 - (void)addDownloadImageOperationWithImageName:(NSString *)imageName;
+- (BOOL)canUseLocalCache;
+- (void)parseXml;
 @end
 
 static Definition *myInstance = nil;
@@ -63,6 +65,10 @@ static Definition *myInstance = nil;
 	return YES;
 }
 
+- (BOOL)canUseLocalCache {
+	return [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition sampleXmlUrl]]]];
+}
+
 
 
 - (void)update {
@@ -75,10 +81,6 @@ static Definition *myInstance = nil;
 	}
 	updateOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(postNotificationToMainThread:) object:DefinationUpdateDidFinishedNotification];
 	isUpdating = NO;
-	if (activities) {
-		[activities release];
-	}
-	activities = [[NSMutableArray alloc] init];
 
 	
 	if (isUpdating) {
@@ -108,8 +110,8 @@ static Definition *myInstance = nil;
 }
 
 - (void)useLocalCacheDirectly {
-	if ([[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition sampleXmlUrl]]]]) {
-		[self parseXMLData];
+	if ([self canUseLocalCache]) {
+		[self parseXml];
 	} else {
 //		[ViewHelper showAlertViewWithTitle:@"Error" Message:@"Can't find local cache, you need to connect network and retry."];
 		[[NSNotificationCenter defaultCenter] postNotificationName:DefinationNeedNotUpdate object:nil];
@@ -129,26 +131,36 @@ static Definition *myInstance = nil;
 	[FileUtils downloadFromURL:[[ServerDefinition imageUrl] stringByAppendingPathComponent:imageName]  path:[DirectoryDefinition imageCacheFolder]];
 }
 
-//Parses xml
-- (void)parseXMLData {	
+- (void)parseXml {
 	NSLog(@"start parse xml");
-
+	if (activities) {
+		[activities release];
+	}
+	activities = [[NSMutableArray alloc] init];
+	
 	NSData *data = [[NSData alloc] initWithContentsOfFile:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition sampleXmlUrl]]]];
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
-	NSLog(@"%@",data);
+	NSString *dataStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+	NSLog(@"%@",dataStr);
+	[dataStr release];
 	
 	//Set delegate to self in order to parse next elements by itself
 	[xmlParser setDelegate:self];
-
+	
 	//Calls parse method to start parse xml
 	[xmlParser parse];
 	NSLog(@"xml parse done");
+	[data release];
+	[xmlParser release];
+}
+//Parses xml
+- (void)parseXMLData {	
 	
+	[self parseXml];
 	[self downloadImages];
 	NSLog(@"images download done");
 	
-	[data release];
-	[xmlParser release];
+	
 	
 	//after parse the xml all the Operation have already added to OperationQuere and addDependency to updateOperation
 	[updateOperationQueue addOperation:updateOperation];
@@ -190,23 +202,7 @@ static Definition *myInstance = nil;
 	}
 	@catch (NSException * e) {
 		[ViewHelper showAlertViewWithTitle:@"Error" Message:@"Can't download image from Server, there is not network."];
-	}		for (Activity *myActivity in activities) {
-		if (myActivity.icon) {
-			[self addDownloadImageOperationWithImageName:myActivity.icon];
-		}
-		for (Screen *myScreen in myActivity.screens) {
-			if (myScreen.icon) {
-				[self addDownloadImageOperationWithImageName:myScreen.icon];
-			}				
-			for (Control *myControl in myScreen.controls) {
-				if (myControl.icon) {
-					[self addDownloadImageOperationWithImageName:myControl.icon];
-				}
-			}
-			
-		}
-	}
-
+	}		
 }
 
 - (void)addDownloadImageOperationWithImageName:(NSString *)imageName {

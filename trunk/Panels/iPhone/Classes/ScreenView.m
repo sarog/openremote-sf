@@ -76,6 +76,7 @@
 	for (ControlView *controlView in controlViews) {
 		Control *control = [controlView control];
 		[controlView setFrame:CGRectInset(CGRectMake(control.x*w, (control.y*h +20), w*control.width, h*control.height),roundf(w*0.1), roundf(h*0.1))];
+		[controlView layoutSubviews];
 	}
 }
 

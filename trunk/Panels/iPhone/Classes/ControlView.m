@@ -50,25 +50,8 @@
 		button = nil;
 	}
 	button = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
-
-	UIImage *buttonImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
-	[button setBackgroundImage:buttonImage forState:UIControlStateNormal];
-	
-	buttonImage = [[UIImage imageNamed:@"buttonHighlighted.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
-	[button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
-	
-	[button setFont:[UIFont boldSystemFontOfSize:18]];
-	[button setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
-	[button setTitleShadowOffset:CGSizeMake(0, -2)];
-	
-	
-	if (control.icon) {
-		UIImage *icon = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:control.icon]];
-		[button setImage:icon forState:UIControlStateNormal];
-		[icon	 release];
-	} else {
-		[button setTitle:control.label forState:UIControlStateNormal];
-	}
+	icon = nil;	
+		
 
 	[button addTarget:self action:@selector(controlButtonDown:) forControlEvents:UIControlEventTouchDown];
 	[button addTarget:self action:@selector(controlButtonUp:) forControlEvents:UIControlEventTouchUpInside];
@@ -81,6 +64,7 @@
 - (void)controlButtonDown:(id)sender {
 	isTouchUp =NO;
 	shouldSendEnd = NO;
+	isError = NO;
 
 	buttonTimer = [NSTimer scheduledTimerWithTimeInterval:0.4 target:self selector:@selector(checkClick) userInfo:nil repeats:NO];
 }
@@ -94,11 +78,12 @@
 }
 
 - (void) controlButtonUp:(id)sender {
-	[buttonTimer invalidate];
+	
 	isTouchUp = YES;
 	if (shouldSendEnd) {
 		[self sendEnd];
 	} else {
+		[buttonTimer invalidate];
 		[self	sendRequest];
 	}
 }
@@ -157,13 +142,14 @@
 
 
 #pragma mark delegate method of NSURLConnection
-//Shows alertView when url connection failtrue
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ERROR OCCUR" message:error.localizedDescription  delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-	[alert show];
-	[alert release];
+- (void) definitionURLConnectionDidFailWithError:(NSError *)error {
+	if (!isError) {
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+		[alert show];
+		[alert release];
+		isError = YES;
+	} 
 }
-
 //Shows alertView when the request successful
 - (void)definitionURLConnectionDidFinishLoading:(NSData *)data {
 //	NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
@@ -179,6 +165,48 @@
 //override layoutSubviews method of UIView 
 - (void)layoutSubviews {	
 	[button setFrame:[self bounds]];
+	if (control.icon && [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:control.icon]]) {
+		icon = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:control.icon]];
+		if (icon.size.width > self.bounds.size.width || icon.size.height > self.bounds.size.height) {
+			CGSize size = CGSizeMake(0,0);
+			if ((icon.size.width -  self.bounds.size.width) > (icon.size.height - self.bounds.size.height)) {
+				size = CGSizeMake(self.bounds.size.width, icon.size.height * ((icon.size.width -  self.bounds.size.width) /icon.size.width ));
+			} else {
+				size = CGSizeMake(icon.size.width * ((icon.size.height -  self.bounds.size.height) /icon.size.height ), self.bounds.size.height);
+			}
+			NSLog(@"CGSize width = %d,height = %d",size.width,size.height);
+			UIGraphicsBeginImageContext(size);
+			
+			CGContextRef context = UIGraphicsGetCurrentContext();
+			CGContextTranslateCTM(context, 0.0, size.height);
+			CGContextScaleCTM(context, 1.0, -1.0);
+			
+			CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), icon.CGImage);
+			
+			UIImage* scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+			
+			UIGraphicsEndImageContext();
+			
+			
+			[button setImage:scaledImage forState:UIControlStateNormal];
+		} else {
+			[button setImage:icon forState:UIControlStateNormal];
+		}
+
+		
+	} else {
+		UIImage *buttonImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
+		[button setBackgroundImage:buttonImage forState:UIControlStateNormal];
+		
+		buttonImage = [[UIImage imageNamed:@"buttonHighlighted.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
+		[button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
+		
+		[button setFont:[UIFont boldSystemFontOfSize:18]];
+		[button setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
+		[button setTitleShadowOffset:CGSizeMake(0, -2)];
+		[button setTitle:control.label forState:UIControlStateNormal];
+	}
+	
 }
 
 
@@ -188,6 +216,7 @@
 
 
 - (void)dealloc {
+	[icon release];
 	[buttonTimer release];
     [control release];
 	[button release];

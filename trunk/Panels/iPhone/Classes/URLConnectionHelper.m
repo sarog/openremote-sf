@@ -48,14 +48,19 @@
 // When finished the connection invoke the deleget method
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
 	// Send data to delegate
-	NSLog(@"Finished loading");
 	//[delegate performSelector:@selector(definitionURLConnectionDidFinishLoading:) withObject:receivedData afterDelay:5];
 	[delegate definitionURLConnectionDidFinishLoading:receivedData];
 }
+
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-	[alert show];
-	[alert release];
+	if ([delegate respondsToSelector:@selector(definitionURLConnectionDidFailWithError:)]) {
+		[delegate definitionURLConnectionDidFailWithError:error];
+	} else {
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+		[alert show];
+		[alert release];
+	}
+
 }
 
 - (void)dealloc {

@@ -17,6 +17,8 @@
 	NSTimer *buttonTimer;
 	BOOL isTouchUp;
 	BOOL shouldSendEnd;
+	BOOL isError;
+	UIImage *icon;
 }
 
 @property (nonatomic,retain) Control *control;
