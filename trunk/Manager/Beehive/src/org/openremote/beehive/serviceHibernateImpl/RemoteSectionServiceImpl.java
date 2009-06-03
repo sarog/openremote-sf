@@ -28,14 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.openremote.beehive.Configuration;
 import org.openremote.beehive.api.dto.ModelDTO;
 import org.openremote.beehive.api.dto.RemoteSectionDTO;
 import org.openremote.beehive.api.service.RemoteSectionService;
 import org.openremote.beehive.domain.Model;
 import org.openremote.beehive.domain.RemoteSection;
-import org.openremote.beehive.utils.FileUtil;
-import org.openremote.beehive.utils.StringUtil;
 
 /**
  * {@inheritDoc}
@@ -50,11 +47,7 @@ public class RemoteSectionServiceImpl extends BaseAbstractService<RemoteSection>
     * {@inheritDoc}
     */
    public File exportFile(long id) {
-      RemoteSection remoteSection = genericDAO.loadById(RemoteSection.class, id);
-      String content = remoteSection.allText();
-      String filePath = StringUtil.appendFileSeparator(new Configuration().getDownloadDir()) + remoteSection.filePath();
-      FileUtil.writeFile(filePath, content);
-      return new File(filePath);
+      return null;
    }
 
    /**
