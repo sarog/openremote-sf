@@ -38,6 +38,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
+import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.file.EnumCharset;
 import org.openremote.beehive.spring.SpringContext;
 import org.openremote.beehive.file.Progress;
@@ -423,6 +424,9 @@ public class FileUtil {
             }
          } catch (IOException e) {
             LOGGER.error("Read "+progressFile.getName()+" to string occur error!",e);
+            SVNException ee = new SVNException("Read "+progressFile.getName()+" to string occur error!",e);
+            ee.setErrorCode(SVNException.SVN_IO_ERROR);
+            throw ee;
          }
       }
       return progress;

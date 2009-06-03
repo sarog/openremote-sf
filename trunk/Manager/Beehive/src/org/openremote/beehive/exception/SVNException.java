@@ -20,34 +20,108 @@
  */
 package org.openremote.beehive.exception;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The exception class when svn operation.
+ * 
  * @author Tomsky
- *
  */
 public class SVNException extends RuntimeException {
 
+   /** The Constant serialVersionUID. */
+   private static final long serialVersionUID = 6673589293618355474L;
+
+   /** The Constant SVN_COMMIT_ERROR. */
+   public static final int SVN_COMMIT_ERROR = 430;
+   
+   /** The Constant SVN_GETINFO_ERROR. */
+   public static final int SVN_GETINFO_ERROR = 431;
+   
+   /** The Constant SVN_DIFF_ERROR. */
+   public static final int SVN_DIFF_ERROR = 432;
+   
+   /** The Constant SVN_GETLIST_ERROR. */
+   public static final int SVN_GETLIST_ERROR = 433;
+   
+   /** The Constant SVN_GETLOG_ERROR. */
+   public static final int SVN_GETLOG_ERROR = 434;
+   
+   /** The Constant SVN_REVERT_ERROR. */
+   public static final int SVN_REVERT_ERROR = 435;
+   
+   /** The Constant SVN_ROLLBACK_ERROR. */
+   public static final int SVN_ROLLBACK_ERROR = 436;
+   
+   /** The Constant SVN_GETSTATUS_ERROR. */
+   public static final int SVN_GETSTATUS_ERROR = 437;
+   
+   /** The Constant SVN_GETCONTENT_ERROR. */
+   public static final int SVN_GETCONTENT_ERROR = 438;
+   
+   /** The Constant SVN_EXPORT_ERROR. */
+   public static final int SVN_EXPORT_ERROR = 439;
+   
+   /** The Constant SVN_URL_ERROR. */
+   public static final int SVN_URL_ERROR = 440;
+   
+   /** The Constant SVN_IO_ERROR. */
+   public static final int SVN_IO_ERROR = 441;
+   
+   /** The error code. */
+   private int errorCode;
+   
+   
+   /**
+    * Gets the error code.
+    * 
+    * @return the error code
+    */
+   public int getErrorCode() {
+      return errorCode;
+   }
 
    /**
+    * Sets the error code.
     * 
+    * @param errorCode the new error code
     */
-   private static final long serialVersionUID = 123118923087651262L;
+   public void setErrorCode(int errorCode) {
+      this.errorCode = errorCode;
+   }
 
+   /**
+    * Instantiates a new sVN exception.
+    */
    public SVNException() {
       super();
    }
 
-   public SVNException(Throwable cause) {
-      super(cause);
-   }
-
-   public SVNException(String message, Throwable cause) {
-      super(message, cause);
-   }
-
+   /**
+    * The Constructor.
+    * 
+    * @param message the message
+    */
    public SVNException(String message) {
       super(message);
    }
 
-   
-   
+   /**
+    * The Constructor.
+    * 
+    * @param cause the cause
+    */
+   public SVNException(Throwable cause) {
+      super(cause);
+   }
+
+   /**
+    * The Constructor.
+    * 
+    * @param message the message
+    * @param cause the cause
+    */
+   public SVNException(String message, Throwable cause) {
+      super(message, cause);
+   }
+
 }

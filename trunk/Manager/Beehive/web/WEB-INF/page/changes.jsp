@@ -8,19 +8,19 @@
      <script type="text/javascript">
        $(document).ready(function() {
            if($('#updateStatus').val() == "true"){
-               $('#updateInfoTd').text(" The updating is running, please commit changes later.");
+               $('#message').text(" The updating is running, please commit changes later.");
                $("#commitSubmit").attr("disabled","true").addClass("disabled_button");
            }
            if($('#commitStatus').val() == "true"){
-                $('#updateInfoTd').text(" The committing is running...");
+                $('#message').text(" The committing is running...");
                 $("#commitSubmit").attr("disabled","true").addClass("disabled_button");
            }
            $('#submitForm').ajaxForm(function() {
-               $('#updateInfoTd').text(" Commit succeeds!");
+               $('#message').text(" Commit succeeds!");
                window.location='';
            });
            $("#commitSubmit").click( function() {
-               $('#updateInfoTd').text(" The committing is running...");
+               $('#message').text(" The committing is running...");
                $(this).attr("disabled","true").addClass("disabled_button");
                $('#submitForm').submit();
            });
@@ -117,7 +117,7 @@
 	                     ${headMessage.author}</td>
 	                  <td class="value" style="padding-left: 20px;" nowrap="true"><b>Total
 	                     items:</b>&nbsp; ${fn:length(diffStatus)}</td>
-	                  <td id="updateInfoTd" style="text-align:center;" width="100%"></td>
+	                  <td style="text-align:center;" width="100%"><span id="message" style="margin-left:10px; font-size:11px;"></span></td>
 	               </tr>
 	               <tr>
 	                  <td class="value" style="padding-left: 20px;" colspan="5"

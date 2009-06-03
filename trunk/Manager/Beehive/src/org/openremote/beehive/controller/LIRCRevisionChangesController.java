@@ -133,12 +133,17 @@ public class LIRCRevisionChangesController extends MultiActionController {
     * @throws SVNException
     *          Exception occured when modelService.update() failed
     */
-   public ModelAndView commit(HttpServletRequest request, HttpServletResponse response ) throws SVNException{
+   public ModelAndView commit(HttpServletRequest request, HttpServletResponse response ){
       String[] items = request.getParameterValues("items");
       ModelAndView mav = new ModelAndView(commitView);
       if(items != null){
          request.getSession().setAttribute("isCommitting", "true");
-         svnDelegateService.commit(items,"commit all the changes from lirc", "admin");
+         try{
+            svnDelegateService.commit(items,"commit all the changes from lirc", "admin");
+         }catch(SVNException e){
+            request.getSession().removeAttribute("isCommitting");
+            throw e;
+         }
          request.getSession().removeAttribute("isCommitting");
          mav.addObject("commitStatus", "commit success,you have commit "+items.length+" items!");
       }else{

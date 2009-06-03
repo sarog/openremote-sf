@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.openremote.beehive.Configuration;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.file.LircConfFileScraper;
-import org.openremote.beehive.utils.StringUtil;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -79,25 +78,6 @@ public class ModelController extends MultiActionController {
       long id = ServletRequestUtils.getLongParameter(request, "id");
       PrintWriter out = response.getWriter();
       out.print(modelService.exportText(id));
-      return null;
-   }
-
-   /**
-    * Downloads a LIRC configuration file
-    * 
-    * @param request
-    *           HttpServletRequest
-    * @param response
-    *           HttpServletResponse
-    * @return null
-    * @throws IOException
-    * @throws ServletRequestBindingException
-    */
-   public ModelAndView download(HttpServletRequest request, HttpServletResponse response) throws IOException,
-         ServletRequestBindingException {
-      long id = ServletRequestUtils.getLongParameter(request, "id");
-      PrintWriter out = response.getWriter();
-      out.print(configuration.getDownloadDir() + StringUtil.toUrl(modelService.downloadFile(id)));
       return null;
    }
 

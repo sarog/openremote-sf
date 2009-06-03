@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.api.service.WebscraperService;
+import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.file.Progress;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -76,7 +77,12 @@ public class LIRCSyncController extends MultiActionController {
     */
    public ModelAndView update(HttpServletRequest request, HttpServletResponse response) {
       request.getSession().setAttribute("isUpdating", "true");
-      scraperService.scraperFiles();
+      try{
+         scraperService.scraperFiles();
+      }catch(SVNException e){
+         request.getSession().removeAttribute("isUpdating");
+         throw e;
+      }
       request.getSession().removeAttribute("isUpdating");
       return null;
    }
