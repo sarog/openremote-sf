@@ -1,10 +1,33 @@
+/* OpenRemote, the Home of the Digital Home.
+ * Copyright 2008, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ * 
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ * 
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.openremote.beehive.listener;
 
 import java.io.File;
 
+import org.openremote.beehive.Configuration;
+import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.VendorService;
 import org.openremote.beehive.spring.SpringContext;
+import org.openremote.beehive.utils.FileUtil;
 import org.openremote.beehive.utils.StringUtil;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
@@ -29,7 +52,9 @@ public class SVNCommitNotifyListener implements ISVNNotifyListener {
    /** The model service. */
    private static ModelService modelService = (ModelService) SpringContext.getInstance().getBean("modelService");
    
-
+   /** The configuration. */
+   private static Configuration configuration = (Configuration) SpringContext.getInstance().getBean("configuration");
+   
    /* (non-Javadoc)
     * @see org.tigris.subversion.svnclientadapter.ISVNNotifyListener#logCommandLine(java.lang.String)
     */
@@ -42,8 +67,6 @@ public class SVNCommitNotifyListener implements ISVNNotifyListener {
     * @see org.tigris.subversion.svnclientadapter.ISVNNotifyListener#logCompleted(java.lang.String)
     */
    public void logCompleted(String msg) {
-      // TODO Auto-generated method stub
-
    }
 
    /* (non-Javadoc)
@@ -58,9 +81,6 @@ public class SVNCommitNotifyListener implements ISVNNotifyListener {
     * @see org.tigris.subversion.svnclientadapter.ISVNNotifyListener#logMessage(java.lang.String)
     */
    public void logMessage(String msg) {
-      if (command == Command.ADD || command == Command.COMMIT) {
-         System.out.println(msg);
-      }
    }
 
    /* (non-Javadoc)
@@ -75,8 +95,10 @@ public class SVNCommitNotifyListener implements ISVNNotifyListener {
     * @see org.tigris.subversion.svnclientadapter.ISVNNotifyListener#onNotify(java.io.File, org.tigris.subversion.svnclientadapter.SVNNodeKind)
     */
    public void onNotify(File file, SVNNodeKind kind) {
-      if(command == Command.COMMIT){
-         System.out.println(StringUtil.systemTime());
+      if(command == Command.ADD){
+         FileUtil.writeStringToFile(StringUtil.appendFileSeparator(configuration.getScrapDir())+Constant.COMMIT_PROGRESS_FILE, "Adding        "+FileUtil.relativeWorkcopyPath(file));
+      }else if(command == Command.COMMIT){
+         FileUtil.writeStringToFile(StringUtil.appendFileSeparator(configuration.getScrapDir())+Constant.COMMIT_PROGRESS_FILE, "Committing    "+FileUtil.relativeWorkcopyPath(file));
          if(kind == SVNNodeKind.DIR){
             vendorService.syncWith(file);
          }else if(kind == SVNNodeKind.FILE){
