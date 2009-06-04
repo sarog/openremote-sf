@@ -25,6 +25,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.openremote.controller.event.Event;
+import org.openremote.controller.event.RemoteActionXMLParser;
 import org.openremote.controller.protocol.infrared.IREvent;
 import org.openremote.controller.spring.SpringContext;
 
