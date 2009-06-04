@@ -19,7 +19,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.openremote.controller.utils;
+package org.openremote.controller.event;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,12 +32,11 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventFactory;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.InvalidControllerXMLException;
 import org.openremote.controller.exception.NoSuchButtonException;
 import org.openremote.controller.exception.NoSuchEventException;
+import org.openremote.controller.utils.PathUtil;
 
 
 /**
