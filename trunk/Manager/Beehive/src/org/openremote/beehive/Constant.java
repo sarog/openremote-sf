@@ -33,6 +33,7 @@ public final class Constant {
     */
    public static final String SCRAPE_PROGRESS_FILE = "scrapeProgress.txt";
    public static final String COPY_PROGRESS_FILE = "copyProgress.txt";
+   public static final String COMMIT_PROGRESS_FILE = "commitProgress.txt";
    
    /**
     * The value for svn repo and workCopy root directory

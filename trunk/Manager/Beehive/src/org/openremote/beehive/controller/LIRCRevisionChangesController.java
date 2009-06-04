@@ -20,6 +20,7 @@
  */
 package org.openremote.beehive.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +30,7 @@ import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.exception.SVNException;
+import org.openremote.beehive.file.Progress;
 import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.LogMessage;
@@ -47,14 +49,9 @@ public class LIRCRevisionChangesController extends MultiActionController {
    private ModelService modelService;
    private String indexView;
    private String changeView;
-   private String commitView;
    
    public void setIndexView(String indexView) {
       this.indexView = indexView;
-   }
-
-   public void setCommitView(String commitView) {
-      this.commitView = commitView;
    }
 
    public void setSvnDelegateService(SVNDelegateService svnDelegateService) {
@@ -135,7 +132,6 @@ public class LIRCRevisionChangesController extends MultiActionController {
     */
    public ModelAndView commit(HttpServletRequest request, HttpServletResponse response ){
       String[] items = request.getParameterValues("items");
-      ModelAndView mav = new ModelAndView(commitView);
       if(items != null){
          request.getSession().setAttribute("isCommitting", "true");
          try{
@@ -145,10 +141,22 @@ public class LIRCRevisionChangesController extends MultiActionController {
             throw e;
          }
          request.getSession().removeAttribute("isCommitting");
-         mav.addObject("commitStatus", "commit success,you have commit "+items.length+" items!");
-      }else{
-         mav.addObject("commitStatus", "commit falure,maybe you have not select any items!");
       }
-      return mav;
+      return null;
+   }
+   
+   /**
+    * Gets the copy progress.
+    * 
+    * @param request the request
+    * @param response the response
+    * 
+    * @return the copy progress
+    * 
+    * @throws IOException Signals that an I/O exception has occurred.
+    */
+   public void getCommitProgress(HttpServletRequest request, HttpServletResponse response) throws IOException{
+      Progress commitProgress = svnDelegateService.getCommitProgress();      
+      response.getWriter().print(commitProgress.getJson());
    }
 }

@@ -97,6 +97,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
    public void commit(String[] paths, String message, String username){
       svnClient.setUsername(username);
       int totalPath = paths.length;
+      FileUtil.deleteFileOnExist(new File(StringUtil.appendFileSeparator(configuration.getScrapDir())+Constant.COMMIT_PROGRESS_FILE));
       File[] files = new File[totalPath];
       if (totalPath > 0) {
          try {
@@ -141,6 +142,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                   }
                }
             }
+            FileUtil.writeStringToFile(StringUtil.appendFileSeparator(configuration.getScrapDir())+Constant.COMMIT_PROGRESS_FILE, "commit completed!");
          } catch (SVNClientException e) {
             logger.error("Commit changes occur exception! maybe you have commit too many changes.", e);
             SVNException ee = new SVNException("Commit changes occur exception! maybe you have commit too many changes.",e);
@@ -169,7 +171,9 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                copyDirectory(subFile, workFile);
             } else if (subFile.isFile()) {
                String tempName = subFile.getName();
-               if(!(tempName.equals(Constant.SCRAPE_PROGRESS_FILE) || tempName.equals(Constant.COPY_PROGRESS_FILE))){
+               if(!(tempName.equals(Constant.SCRAPE_PROGRESS_FILE) 
+                     || tempName.equals(Constant.COPY_PROGRESS_FILE)
+                     || tempName.equals(Constant.COMMIT_PROGRESS_FILE))){
                   String workName = tempName.substring(0, tempName.lastIndexOf("."));
                   File workFile = new File(workDir, File.separator + workName);
                   copyFile(tempName, subFile, workFile);                  
@@ -716,5 +720,11 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       return FileUtil.getProgressFromFile(progressFile, "Check completed!", modelService.count());
    }
    
-   
+   /**
+    * {@inheritDoc}
+    */
+   public Progress getCommitProgress() {
+      File progressFile = new File(StringUtil.appendFileSeparator(configuration.getScrapDir())+Constant.COMMIT_PROGRESS_FILE);
+      return FileUtil.getProgressFromFile(progressFile, "commit completed!", modelService.count());
+   }
 }

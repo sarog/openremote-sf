@@ -431,4 +431,11 @@ public class FileUtil {
       }
       return progress;
    }
+   
+   public static void deleteFileOnExist(File file){
+      if(file.exists()){
+         file.delete();
+      }
+   }
+
 }
