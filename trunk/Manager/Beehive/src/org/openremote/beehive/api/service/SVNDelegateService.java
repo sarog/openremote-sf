@@ -29,6 +29,7 @@ import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.LIRCEntry;
 import org.openremote.beehive.repo.LogMessage;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface SVNDelegateService.
  * 
@@ -197,9 +198,17 @@ public interface SVNDelegateService {
    LogMessage getLogByRevision(String path, long revision);
    
    /**
-    * Gets the progress of copy from scrap to workCopy
+    * Gets the progress of copy from scrap to workCopy.
     * 
     * @return progress
     */
    Progress getCopyProgress();
+   
+   /**
+    * Gets the commit progress.
+    * 
+    * @return the commit progress
+    */
+   Progress getCommitProgress();
+   
 }

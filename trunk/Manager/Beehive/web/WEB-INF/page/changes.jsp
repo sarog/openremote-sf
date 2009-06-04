@@ -6,6 +6,7 @@
    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
    <title>OpenRemote Beehive - Changes From Update</title>
      <script type="text/javascript">
+       var timer = 0;
        $(document).ready(function() {
            if($('#updateStatus').val() == "true"){
                $('#message').text(" The updating is running, please commit changes later.");
@@ -14,15 +15,20 @@
            if($('#commitStatus').val() == "true"){
                 $('#message').text(" The committing is running...");
                 $("#commitSubmit").attr("disabled","true").addClass("disabled_button");
+                refresh();
+                showBlock();
+                timer=setInterval("refresh()",2000);
            }
            $('#submitForm').ajaxForm(function() {
                $('#message').text(" Commit succeeds!");
-               window.location='';
+               $("#commitSubmit").removeAttr("disabled").removeClass("disabled_button");
            });
            $("#commitSubmit").click( function() {
                $('#message').text(" The committing is running...");
                $(this).attr("disabled","true").addClass("disabled_button");
                $('#submitForm').submit();
+               showBlock();
+               timer=setInterval("refresh()",2000);
            });
            $("#checkall").click( function() {
                $("input[name='items']").attr("checked",this.checked);
@@ -35,8 +41,39 @@
         	    		$(this).click(checkDelete);
             	}
            });
+           $('#commitSuccessBtn').click(function(){
+        	     $.unblockUI();
+        	     window.location='';
+           });
        });
-
+       function showBlock(){
+			$.blockUI({
+				message: $('#commitView'),
+				css: {
+	               width: '30%',
+	               top: '20%',
+	               left: '30%',
+	               height: '50%',
+	               textAlign: 'left',
+	               cursor: 'default'
+	            }
+			});
+         $('#commitSuccessBtn').attr("disabled","true").addClass("disabled_button");
+         $('#spinner').show();
+       }
+	function refresh() {
+		$.getJSON("changes.htm?method=getCommitProgress",{r:Math.random()}, function(json) {
+			$("#commitInfo").html("<pre>"+json.data+"</pre>");
+			var infoContainer = $("#infoContainer");
+			infoContainer[0].scrollTop = infoContainer[0].scrollHeight;
+	         if (json.status == "isEnd") {
+	            clearInterval(timer);
+	            timer = 0;
+	            $('#spinner').hide();
+	            $("#commitSuccessBtn").removeAttr("disabled").removeClass("disabled_button");
+	         }
+	      });
+	}
 	function checkDelete() {
 		var delTexts = $(this).attr("value").substring(1).split("/");
 		var delText = null;
@@ -65,22 +102,25 @@
 		var addPath = addText.substring(0, addText.indexOf("|"));
 		var parentTR = $(this).parents("tr.first");
 		if (this.checked) {
-			parentTR.prevAll().each(
-					function() {
-						var checkbox = $(this).find(
-								"input[action='" + action + "']");
-						var checkboxText = checkbox.val();
-						if (checkboxText) {
-							var checkboxPath = checkboxText.substring(0,
-									checkboxText.indexOf("|"));
-							if (addPath.indexOf(checkboxPath+"/") == 0) {
-								checkbox.attr("checked", true);
-								if(checkboxPath.substring(1).split("/").length == 1){
-									return false;
+			parentTR
+					.prevAll()
+					.each(
+							function() {
+								var checkbox = $(this).find(
+										"input[action='" + action + "']");
+								var checkboxText = checkbox.val();
+								if (checkboxText) {
+									var checkboxPath = checkboxText.substring(
+											0, checkboxText.indexOf("|"));
+									if (addPath.indexOf(checkboxPath + "/") == 0) {
+										checkbox.attr("checked", true);
+										if (checkboxPath.substring(1)
+												.split("/").length == 1) {
+											return false;
+										}
+									}
 								}
-							}
-						}
-					});
+							});
 		} else {
 			parentTR.nextAll().each(
 					function() {
@@ -90,7 +130,7 @@
 						if (checkboxText) {
 							var checkboxPath = checkboxText.substring(0,
 									checkboxText.indexOf("|"));
-							if (checkboxPath.indexOf(addPath+"/") == 0) {
+							if (checkboxPath.indexOf(addPath + "/") == 0) {
 								checkbox.attr("checked", false);
 							} else {
 								return false;
@@ -171,5 +211,14 @@
 	           </c:forEach>
 		      </form>
 	   </table>
+	   <div id="commitView" style="display:none;">
+	      <div id="infoContainer" style="height:90%; overflow:auto;">
+	         <div id="commitInfo"></div>
+	         <div id="spinner"><img alt="" src="image/spinner.gif" /></div>	      
+	      </div>
+         <div style="text-align:right; background-color:#F1FDE9;"><input id="commitSuccessBtn" type="button" value="OK" class="button"/></div>
+      </div>
+   </div>
+<script type="text/javascript" src="jslib/jquery.blockUI.js"></script>
 </body>
 </html>
