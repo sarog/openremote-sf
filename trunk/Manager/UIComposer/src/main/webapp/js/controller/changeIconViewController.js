@@ -80,13 +80,15 @@ var ChangeIconViewController = function() {
                     rules: {
                         icon_url_input: {
                             required: true,
-                            url: true
+                            url: true,
+                            isImage: true
                         }
                     },
                     messages:{
                         icon_url_input: {
                             required: "Please input a url",
-                            url: "Please input a correct url"
+                            url: "Please input a correct url",
+                            isImage: "Please input a image url which end with png|gif|jpg"
                         }
                     }
                 });
