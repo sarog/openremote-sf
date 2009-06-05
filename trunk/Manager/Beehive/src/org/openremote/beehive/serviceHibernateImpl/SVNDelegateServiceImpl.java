@@ -50,10 +50,12 @@ import org.openremote.beehive.repo.DifferenceModel;
 import org.openremote.beehive.repo.LIRCEntry;
 import org.openremote.beehive.repo.LogMessage;
 import org.openremote.beehive.repo.SVNClientFactory;
+import org.openremote.beehive.repo.SvnCommand;
 import org.openremote.beehive.repo.DiffStatus.Element;
 import org.openremote.beehive.repo.LogMessage.ChangePath;
 import org.openremote.beehive.utils.FileUtil;
 import org.openremote.beehive.utils.StringUtil;
+import org.openremote.beehive.utils.SvnUtil;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
@@ -110,8 +112,10 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                if (status != null) {
                   if (status.equals(Actions.UNVERSIONED.toString())) {
                      if (files[i].isDirectory()) {
+                        System.out.println(files[i].getPath());
                         svnClient.addDirectory(files[i], false);
                      } else {
+                        System.out.println(files[i].getPath());
                         svnClient.addFile(files[i]);
                      }
                   }
@@ -220,7 +224,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             svnClient.diff(file, tempFile, true);
             String strDiff = FileUtils.readFileToString(tempFile, "UTF8");
             tempFile.delete();
-            InputStream is = svnClient.getContent(file, SVNRevision.HEAD);
+            InputStream is = svnClient.getContent(new File(SvnUtil.escapeFileName(file.getAbsolutePath())), SVNRevision.HEAD);
             String left = StringUtil.readStringInInputStream(is).toString();
             ISVNStatus[] status = svnClient.getStatus(file, false, true);
             String right = null;
@@ -267,9 +271,9 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       String uuid = UUID.randomUUID().toString();
       File tempFile = new File(configuration.getWorkCopyDir() + File.separator + uuid);
       try {
-         SVNUrl svnUrl = new SVNUrl(configuration.getSvnDir() + url);
+         SVNUrl svnUrl = new SVNUrl(configuration.getSvnDir() + SvnUtil.escapeFileName(url));
          svnClient
-               .diff(svnUrl, new SVNRevision.Number(oldRevision), new SVNRevision.Number(newRevision), tempFile, false);
+               .diff(new SVNUrl(configuration.getSvnDir() + url), new SVNRevision.Number(oldRevision), new SVNRevision.Number(newRevision), tempFile, false);
          String strDiff = FileUtil.readFileToString(tempFile).toString();
          tempFile.delete();
          InputStream leftIS = svnClient.getContent(svnUrl, new SVNRevision.Number(oldRevision));
@@ -302,7 +306,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
     */
    public void doExport(String srcUrl, String destPath, int revision, boolean force) {
       try {
-         svnClient.doExport(new SVNUrl(configuration.getSvnDir() + srcUrl), new File(destPath), new SVNRevision.Number(
+         svnClient.doExport(new SVNUrl(configuration.getSvnDir() + SvnUtil.escapeFileName(srcUrl)), new File(destPath), new SVNRevision.Number(
                revision), force);
       } catch (SVNClientException e) {
          logger.error("Error when export form " + srcUrl + " to " + destPath, e);
@@ -325,7 +329,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       
       try {
          long headRevision = getHeadRevision();
-         ISVNDirEntry[] list = svnClient.getList(new SVNUrl(configuration.getSvnDir() + url), new SVNRevision.Number(revision), false);
+         ISVNDirEntry[] list = svnClient.getList(new SVNUrl(configuration.getSvnDir() + SvnUtil.escapeFileName(url)), new SVNRevision.Number(revision), false);
          for (ISVNDirEntry dirEntry : list) {
             LIRCEntry entry = new LIRCEntry();
             entry.setPath(dirEntry.getPath());
@@ -363,7 +367,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
 
       try {
          ISVNLogMessage[] logs;
-         logs = svnClient.getLogMessages(new SVNUrl(configuration.getSvnDir() + url), SVNRevision.HEAD,
+         logs = svnClient.getLogMessages(new SVNUrl(configuration.getSvnDir() + SvnUtil.escapeFileName(url)), SVNRevision.HEAD,
                new SVNRevision.Number(1));
          for (ISVNLogMessage logMessage : logs) {
             LogMessage lm = new LogMessage();
@@ -414,7 +418,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       File file = new File(configuration.getWorkCopyDir() + path);
       try {
          if (file.isFile()) {
-            InputStream is = svnClient.getContent(new SVNUrl(configuration.getSvnDir() + path), new SVNRevision.Number(
+            InputStream is = svnClient.getContent(new SVNUrl(configuration.getSvnDir() + SvnUtil.escapeFileName(path)), new SVNRevision.Number(
                   revision));
             FileUtil.createFile(is, file);
          } else {
@@ -423,7 +427,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             String uuid = UUID.randomUUID().toString();
             File tempFile = new File(configuration.getWorkCopyDir() + File.separator + uuid);
 
-            svnClient.doExport(new SVNUrl(configuration.getSvnDir() + path), tempFile,
+            svnClient.doExport(new SVNUrl(configuration.getSvnDir() + SvnUtil.escapeFileName(path)), tempFile,
                   new SVNRevision.Number(revision), true);
             FileUtils.copyDirectory(tempFile, file);
             FileUtils.deleteDirectory(tempFile);
@@ -444,9 +448,6 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          ee.setErrorCode(SVNException.SVN_IO_ERROR);
          throw ee;
       }
-      SVNException ee = new SVNException("Rollback "+path+" to revision "+revision+" occur svnException");
-      ee.setErrorCode(SVNException.SVN_ROLLBACK_ERROR);
-      throw ee;
    }
 
    /**
@@ -480,38 +481,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
     * {@inheritDoc}
     */
    public DiffStatus getDiffStatus(String path) {
-      String workDir = new File(configuration.getWorkCopyDir()).getPath();
-      File filePath = new File(configuration.getWorkCopyDir() + path);
-      DiffStatus ds = new DiffStatus();
-      try {
-         ISVNStatus[] status = svnClient.getStatus(filePath, true, false);
-         for (ISVNStatus state : status) {
-            if (SVNStatusKind.UNVERSIONED == state.getTextStatus()) {
-               addFileRecursively(ds, state.getFile(), workDir);
-            } else {
-               String relativePath = FileUtil.relativeWorkcopyPath(state.getFile());
-               if (SVNStatusKind.DELETED == state.getTextStatus()) {
-                  Element e = ds.new Element(relativePath, Actions.DELETEED);
-                  ds.addElement(e);
-               }else if (SVNStatusKind.MODIFIED == state.getTextStatus()) {
-                  Element e = ds.new Element(relativePath, Actions.MODIFY);
-                  ds.addElement(e);
-               }else if(SVNStatusKind.ADDED == state.getTextStatus()){
-                  Element e1 = ds.new Element(relativePath, Actions.ADDED);
-                  ds.addElement(e1);
-               }else if(SVNStatusKind.MISSING == state.getTextStatus()){
-                  Element e = ds.new Element(relativePath, Actions.MISSING);
-                  ds.addElement(e);
-               }
-            }
-         }
-      } catch (SVNClientException e) {
-         logger.error("Get difference status of "+path+" fail", e);
-         SVNException ee = new SVNException("Get difference status of "+path+" fail",e);
-         ee.setErrorCode(SVNException.SVN_GETSTATUS_ERROR);
-         throw ee;
-      }
-      return ds;
+      return SvnCommand.getStatus(configuration.getWorkCopyDir() + path);
    }
    
    
@@ -526,26 +496,26 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          if (!workFile.getParentFile().exists()) {
             workFile.getParentFile().mkdirs();
          }
-         String actionType = " N ";
-         if (workFile.exists() && !workFile.getName().equals("TV@nywhere")) {
+         String actionType = Actions.NORMAL.getValue();
+         if (workFile.exists()) {
             String strDate = tempName.substring(tempName.lastIndexOf(".") + 1);
             Date tempDate = StringUtil.String2Date(strDate, "dd-MMM-yyyy kk-mm", Locale.ENGLISH);
-            ISVNInfo parentFileInfo = svnClient.getInfoFromWorkingCopy(workFile.getParentFile());
+            ISVNInfo parentFileInfo = svnClient.getInfoFromWorkingCopy(new File(SvnUtil.escapeFileName(workFile.getParentFile().getAbsolutePath())));
             if(parentFileInfo.getLastChangedDate()!=null){
-               ISVNInfo svnInfo = svnClient.getInfoFromWorkingCopy(workFile);
+               ISVNInfo svnInfo = svnClient.getInfoFromWorkingCopy(new File(SvnUtil.escapeFileName(workFile.getAbsolutePath())));
                if (svnInfo.getLastChangedDate() != null && tempDate.compareTo(svnInfo.getLastChangedDate()) > 0) {
                   FileUtil.copyFile(modelFile, workFile);
-                  actionType = " M ";
+                  actionType = Actions.MODIFIED.getValue();
                }            
             }else if (tempDate.compareTo(new Date(workFile.lastModified())) > 0) {
                FileUtil.copyFile(modelFile, workFile);
-               actionType = " M ";
+               actionType = Actions.MODIFIED.getValue();
             } 
          } else {
             FileUtil.copyFile(modelFile, workFile);
-            actionType = " A ";
+            actionType = Actions.ADDED.getValue();
          }
-         FileUtil.writeStringToFile(progressFile, " ["+StringUtil.systemTime()+"] "+actionType + modelPath);
+         FileUtil.writeStringToFile(progressFile, " ["+StringUtil.systemTime()+"]  "+actionType + "  "+modelPath);
       } catch (SVNClientException e) {
          logger.error("Get file "+workFile.getName()+" info error, this may occur by the fileName not case sensitive!",e);
          SVNException ee = new SVNException("Get file "+workFile.getName()+" info error, this may occur by the fileName not case sensitive!",e);
@@ -566,23 +536,6 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          if (file.isDirectory() && !file.getName().equals(".svn")) {
             deleteFile(file);
          }
-      }
-   }
-
-   /**
-    * This method is add unVersion or or directory to the diffStatus
-    * 
-    */
-   private void addFileRecursively(DiffStatus ds, File file, String workDir) {
-      if (file.isDirectory()) {
-         Element e1 = ds.new Element(FileUtil.relativeWorkcopyPath(file), Actions.UNVERSIONED);
-         ds.addElement(e1);
-         for (File subFile : file.listFiles()) {
-            addFileRecursively(ds, subFile, workDir);
-         }
-      } else {
-         Element e1 = ds.new Element(FileUtil.relativeWorkcopyPath(file), Actions.UNVERSIONED);
-         ds.addElement(e1);
       }
    }
    
@@ -641,7 +594,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
    public LogMessage getHeadLog(String path) {
       LogMessage headLog = new LogMessage();
       try {
-         ISVNLogMessage[] logs = svnClient.getLogMessages(new SVNUrl(configuration.getSvnDir()+path), SVNRevision.HEAD,SVNRevision.HEAD, new SVNRevision.Number(1) , true, false, 1);
+         ISVNLogMessage[] logs = svnClient.getLogMessages(new SVNUrl(configuration.getSvnDir()+SvnUtil.escapeFileName(path)), SVNRevision.HEAD,SVNRevision.HEAD, new SVNRevision.Number(1) , true, false, 1);
          headLog.setRevision(logs[0].getRevision().toString());
          headLog.setAuthor(logs[0].getAuthor());
          headLog.setDate(logs[0].getDate());
@@ -671,7 +624,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          if(revision != 0){
             svnrevision = new SVNRevision.Number(revision);
          }
-         InputStream is = svnClient.getContent(new File(configuration.getWorkCopyDir() + path), svnrevision);
+         InputStream is = svnClient.getContent(new File(configuration.getWorkCopyDir() + SvnUtil.escapeFileName(path)), svnrevision);
          lines = IOUtils.readLines(is);         
       } catch (SVNClientException e) {
          logger.error("Get file content of "+path+" from workCopy failed", e);
@@ -693,7 +646,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
    public LogMessage getLogByRevision(String path, long revision) {
       LogMessage logMessage = new LogMessage();
       try {
-         ISVNLogMessage[] logs = svnClient.getLogMessages(new SVNUrl(configuration.getSvnDir()+path), new SVNRevision.Number(revision),new SVNRevision.Number(revision), new SVNRevision.Number(1) , true, false, 1);
+         ISVNLogMessage[] logs = svnClient.getLogMessages(new SVNUrl(configuration.getSvnDir()+SvnUtil.escapeFileName(path)), new SVNRevision.Number(revision),new SVNRevision.Number(revision), new SVNRevision.Number(1) , true, false, 1);
          logMessage.setRevision(logs[0].getRevision().toString());
          logMessage.setAuthor(logs[0].getAuthor());
          logMessage.setDate(logs[0].getDate());

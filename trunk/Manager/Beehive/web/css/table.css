@@ -409,7 +409,7 @@ td.diffLine_D{
 	width:16px;
 	display: block;
 }
-.image_link.MODIFY {
+.image_link.MODIFIED {
 	background: url("../image/lirc_file_changed.gif") no-repeat left top;
 }
 .image_link.ADDED{
@@ -418,7 +418,7 @@ td.diffLine_D{
 .image_link.UNVERSIONED {
    background: url("../image/lirc_file_added.gif") no-repeat left top;
 }
-.image_link.DELETEED{
+.image_link.DELETED{
 	background: url("../image/lirc_file_deleted.gif") no-repeat left top;
 }
 .image_link.MISSING {

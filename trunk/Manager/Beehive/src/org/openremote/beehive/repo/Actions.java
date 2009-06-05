@@ -28,9 +28,10 @@ package org.openremote.beehive.repo;
 public enum Actions {
    ADDED("ADDED"),
    UNVERSIONED("UNVERSIONED"),
-   DELETEED("DELETEED"),
+   DELETED("DELETED"),
    MISSING("MISSING"),
-   MODIFY("MODIFY");
+   MODIFIED("MODIFIED"),
+   NORMAL("NORMAL");
    
    private String action;
    
@@ -39,6 +40,10 @@ public enum Actions {
    }
    
    public String toString() {
+      return action;
+   }
+   
+   public String getValue(){
       return action;
    }
 }
