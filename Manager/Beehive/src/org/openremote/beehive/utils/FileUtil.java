@@ -409,6 +409,10 @@ public class FileUtil {
       String wc = new File(configuration.getWorkCopyDir()).getPath();
       return file.getAbsolutePath().replace(wc, "").replaceAll("\\\\", "/");
    }
+   public static String relativeWorkcopyPath(String path){
+      String wc = new File(configuration.getWorkCopyDir()).getPath();
+      return path.replace(wc, "").replaceAll("\\\\", "/");
+   }
    
    public static Progress getProgressFromFile(File progressFile, String endTag, double count){
       Progress progress = new Progress();

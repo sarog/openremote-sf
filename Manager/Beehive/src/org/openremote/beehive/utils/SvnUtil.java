@@ -1,5 +1,14 @@
 package org.openremote.beehive.utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+
+import org.apache.commons.lang.StringUtils;
+import org.tigris.subversion.svnclientadapter.SVNStatusKind;
+
+
 public class SvnUtil {
 
    /**
@@ -51,6 +60,10 @@ public class SvnUtil {
       }
       return result;
 
+   }
+   
+   public static String escapeFileName(String filePath){
+      return filePath.contains("@") ? filePath.concat("@") : filePath ;
    }
 
 }

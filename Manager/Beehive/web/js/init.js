@@ -22,6 +22,10 @@ $(document).ready(function() {
 	
 	$("body").ajaxError(function(event, request, settings) {
         if (request.status == SVN_COMMIT_ERROR) {
+        	$.unblockUI();
+        	clearInterval(timer);
+            timer = 0;
+            $("#commitSubmit").removeAttr("disabled").removeClass("disabled_button");
         	$.showErrorMsg("Commit changes occur exception! Please refresh the page and try it again.");
         } else if (request.status == SVN_GETINFO_ERROR){
             $.showErrorMsg("Copy file occur exception! Please refresh the page and try it again.");
