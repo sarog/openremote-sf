@@ -132,10 +132,11 @@ public class LIRCRevisionChangesController extends MultiActionController {
     */
    public ModelAndView commit(HttpServletRequest request, HttpServletResponse response ){
       String[] items = request.getParameterValues("items");
+      String comment = request.getParameter("comment");
       if(items != null){
          request.getSession().setAttribute("isCommitting", "true");
          try{
-            svnDelegateService.commit(items,"commit all the changes from lirc", "admin");
+            svnDelegateService.commit(items,comment, "admin");
          }catch(SVNException e){
             request.getSession().removeAttribute("isCommitting");
             throw e;

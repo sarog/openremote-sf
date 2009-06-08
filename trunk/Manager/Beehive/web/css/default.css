@@ -438,3 +438,7 @@ table.dialogcontent {
 	text-align:center;
 	width: 300px;
 }
+
+.hidden {
+   display: none;
+}
