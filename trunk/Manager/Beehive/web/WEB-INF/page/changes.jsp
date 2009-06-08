@@ -60,7 +60,6 @@
        });
        function validateCheck(){
     	   return $("#submitForm").validate({
-    		      meta: "validate",
                rules:{
                    items:"required"
                },
@@ -68,7 +67,7 @@
                   items:"Please select at least one change!"
                },
                errorPlacement:function(error, element){
-                   error.appendTo("#message").css("color","red");
+                   $('#message').html(error).css("color","red");
                }
              });
            }
