@@ -112,10 +112,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                if (status != null) {
                   if (status.equals(Actions.UNVERSIONED.toString())) {
                      if (files[i].isDirectory()) {
-                        System.out.println(files[i].getPath());
                         svnClient.addDirectory(files[i], false);
                      } else {
-                        System.out.println(files[i].getPath());
                         svnClient.addFile(files[i]);
                      }
                   }

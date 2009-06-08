@@ -24,12 +24,23 @@
                $("#commitSubmit").removeAttr("disabled").removeClass("disabled_button");
            });
            $("#commitSubmit").click( function() {
-               $('#message').text(" The committing is running...");
+        	      var validator = validateCheck();
+        	      if(validator.form()){
+        	    	   inputComment();
+        	      }
+           });
+           $('#commit').click(function(){
+               $('#comment').val($('#inputComment').val());
+               $.unblockUI();
+        	      $('#message').text(" The committing is running...");
                $(this).attr("disabled","true").addClass("disabled_button");
                $('#submitForm').submit();
                showBlock();
                timer=setInterval("refresh()",2000);
-           });
+               });
+           $('#cancel').click(function(){
+        	      $.unblockUI();
+               });
            $("#checkall").click( function() {
                $("input[name='items']").attr("checked",this.checked);
            });
@@ -45,7 +56,22 @@
         	     $.unblockUI();
         	     window.location='';
            });
+           
        });
+       function validateCheck(){
+    	   return $("#submitForm").validate({
+    		      meta: "validate",
+               rules:{
+                   items:"required"
+               },
+               messages:{
+                  items:"Please select at least one change!"
+               },
+               errorPlacement:function(error, element){
+                   error.appendTo("#message").css("color","red");
+               }
+             });
+           }
        function showBlock(){
 			$.blockUI({
 				message: $('#commitView'),
@@ -61,6 +87,20 @@
          $('#commitSuccessBtn').attr("disabled","true").addClass("disabled_button");
          $('#spinner').show();
        }
+       function inputComment(){
+           $.blockUI({
+              message: $('#commentView'),
+              css: {
+                    width: '30%',
+                    top: '30%',
+                    left: '30%',
+                    height: '30%',
+                    textAlign: 'center',
+                    cursor: 'default'
+                 }
+           });
+         }
+       
 	function refresh() {
 		$.getJSON("changes.htm?method=getCommitProgress",{r:Math.random()}, function(json) {
 			$("#commitInfo").html("<pre>"+json.data+"</pre>");
@@ -198,6 +238,15 @@
 		          <td></td>
 		     </tr>
             <form id="submitForm" action="changes.htm?method=commit" method="post">
+	           <div id="commentView" class="hidden">
+	              <h2>Comment</h2>
+	              <textarea id="inputComment" rows="4" cols="40"></textarea>
+	              <div>
+		              <input id="commit" type="button" value="OK"/>
+		              <input id="cancel" type="button" value="Cancel"/>
+	              </div>
+	           </div>
+	           <input type="hidden" id="comment" name="comment"/>
 	           <c:forEach items="${diffStatus}" var="diffElement">
 	            <tr class="first" >
 	              <td width="50%"><table width="100%" border="0" cellpadding="0" cellspacing="0"><tr>
@@ -211,7 +260,7 @@
 	           </c:forEach>
 		      </form>
 	   </table>
-	   <div id="commitView" style="display:none;">
+	   <div id="commitView" class="hidden">
 	      <div id="infoContainer" style="height:90%; overflow:auto;">
 	         <div id="commitInfo"></div>
 	         <div id="spinner"><img alt="" src="image/spinner.gif" /></div>	      
@@ -220,5 +269,6 @@
       </div>
    </div>
 <script type="text/javascript" src="jslib/jquery.blockUI.js"></script>
+<script type="text/javascript" src="jslib/jquery.validate.min.js"></script>
 </body>
 </html>
