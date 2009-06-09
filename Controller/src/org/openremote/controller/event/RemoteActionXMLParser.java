@@ -32,6 +32,8 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
+import org.openremote.controller.Configuration;
+import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.InvalidControllerXMLException;
 import org.openremote.controller.exception.NoSuchButtonException;
@@ -51,6 +53,9 @@ public class RemoteActionXMLParser {
    
    /** The event factory. */
    private EventFactory eventFactory;
+   
+   /** The configuration. */
+   private Configuration configuration;
    
 
 
@@ -95,7 +100,7 @@ public class RemoteActionXMLParser {
     * @return the element
     */
    private Element queryElementFromXMLById(String id){
-      return queryElementFromXML("//or:*[@id='" + id + "']");
+      return queryElementFromXML("//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']");
    }
    
 
@@ -110,21 +115,18 @@ public class RemoteActionXMLParser {
    private Element queryElementFromXML(String xPath) {
       SAXBuilder sb = new SAXBuilder(true);
       sb.setValidation(true);
-      File xsdfile = new File(getClass().getResource("/controller.xsd").getPath());
-      final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
-      final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
-      final String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
-      sb.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
-      sb.setProperty(SCHEMA_SOURCE, xsdfile);
-      String xmlPath = PathUtil.resourcesPath() + "controller.xml";
+      File xsdfile = new File(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath());
       
+      sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
+      sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+      String xmlPath = PathUtil.appendFileSeparator(configuration.getResourcePath()) + Constants.CONTROLLER_XML;
       if (!new File(xmlPath).exists()) {
-         throw new ControllerXMLNotFoundException(" Make sure it's in controller/resources");
+         throw new ControllerXMLNotFoundException(" Make sure it's in /resources");
       }
       try {
          Document doc = sb.build(new File(xmlPath));
          XPath xpath = XPath.newInstance(xPath);
-         xpath.addNamespace("or", "http://www.openremote.org");
+         xpath.addNamespace(Constants.OPENREMOTE_NAMESPACE, Constants.OPENREMOTE_WEBSITE);
          List<Element> elements = xpath.selectNodes(doc);
          if(!elements.isEmpty()){
            return elements.get(0);
@@ -147,5 +149,16 @@ public class RemoteActionXMLParser {
    public void setEventFactory(EventFactory eventFactory) {
       this.eventFactory = eventFactory;
    }
+
+
+   /**
+    * Sets the configuration.
+    * 
+    * @param configuration the new configuration
+    */
+   public void setConfiguration(Configuration configuration) {
+      this.configuration = configuration;
+   }
+   
    
 }

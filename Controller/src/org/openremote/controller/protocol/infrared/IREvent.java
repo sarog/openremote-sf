@@ -25,7 +25,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 import org.openremote.controller.Configuration;
 import org.openremote.controller.event.Event;
-import org.openremote.controller.spring.SpringContext;
+import org.openremote.controller.utils.ConfigFactory;
 
 /**
  * The Infrared Event.
@@ -44,7 +44,7 @@ public class IREvent extends Event {
    private String command;
    
    /** The configuration. */
-   private Configuration configuration = (Configuration) SpringContext.getInstance().getBean("configuration");;;
+   private Configuration configuration = ConfigFactory.getConfig();
    
    /**
     * {@inheritDoc}

@@ -21,6 +21,7 @@
         <property name="webappPort" value="${webapp.port}" />
         <property name="multicastAddress" value="${multicast.address}" />
         <property name="multicastPort" value="${multicast.port}" />
+        <property name="resourcePath" value="${resource.path}" />
     </bean>
     
     <!-- service for button command from iPhone -->

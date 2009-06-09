@@ -20,33 +20,23 @@
  */
 package org.openremote.controller.utils;
 
+import org.openremote.controller.Configuration;
+import org.openremote.controller.spring.SpringContext;
+
 /**
- * The Utility for file system Path.
+ * A factory for creating Configuration objects.
  * 
- * @author Dan 2009-5-14
+ * @author Dan 2009-6-9
  */
-public class PathUtil {
-
-   
+public class ConfigFactory {
 
    /**
-    * Webapp root path.
+    * Gets the config.
     * 
-    * @return the root path of webapp
+    * @return the config
     */
-   public static String webappRootPath(){
-      return System.getProperty("controller.root");
-   }
-   
-   /**
-    * Append file separator.
-    * 
-    * @param src the src
-    * 
-    * @return the string
-    */
-   public static String appendFileSeparator(String src) {
-      return src.endsWith("/") ? src : src + "/";
+   public static Configuration getConfig(){
+      return (Configuration) SpringContext.getInstance().getBean("configuration");
    }
    
 }

@@ -29,7 +29,6 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.Configuration;
 import org.openremote.controller.Constants;
 import org.openremote.controller.service.FileService;
-import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.utils.ZipUtil;
 
 /**
@@ -56,13 +55,14 @@ public class FileServiceImpl implements FileService {
     * {@inheritDoc}
     */
    public void uploadConfigZip(InputStream inputStream) {
+      String resourcePath = configuration.getResourcePath();
       try {
-         FileUtils.forceDeleteOnExit(new File(PathUtil.resourcesPath()));
+         FileUtils.forceDeleteOnExit(new File(resourcePath));
       } catch (IOException e1) {
-         logger.error("Can't delete" + PathUtil.resourcesPath(), e1);
+         logger.error("Can't delete" + resourcePath, e1);
       }
-      unzip(inputStream, PathUtil.resourcesPath());
-      File lircdConfFile = new File(PathUtil.resourcesPath() + Constants.LIRCD_CONF);
+      unzip(inputStream, resourcePath);
+      File lircdConfFile = new File(resourcePath + Constants.LIRCD_CONF);
       File lircdconfDir = new File(configuration.getLircdconfPath().replaceAll(Constants.LIRCD_CONF, ""));
       try {
          if(lircdconfDir.exists() && lircdConfFile.exists()){

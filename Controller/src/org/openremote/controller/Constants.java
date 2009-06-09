@@ -29,5 +29,27 @@ public class Constants {
 
    /** The Constant LIRCD_CONF. */
    public final static String LIRCD_CONF = "lircd.conf";
+   
+   /** The Constant CONTROLLER_XSD_PATH. */
+   public final static String CONTROLLER_XSD_PATH = "/controller.xsd";
+   
+   /** The Constant CONTROLLER_XML. */
+   public final static String CONTROLLER_XML = "controller.xml";
+   
+   /** The Constant OPENREMOTE_WEBSITE. */
+   public final static String OPENREMOTE_WEBSITE= "http://www.openremote.org";
+   
+   /** The Constant OPENREMOTE_NAMESPACE. */
+   public final static String OPENREMOTE_NAMESPACE= "or";
+   
+   /** The SCHEM a_ language. */
+   public final static String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+   
+   /** The XM l_ schema. */
+   public final static String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+   
+   /** The SCHEM a_ source. */
+   public final static String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
+   
 
 }
