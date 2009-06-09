@@ -44,6 +44,9 @@ public class Configuration {
    
    /** The multicast port. */
    private int multicastPort;
+   
+   /** The resource path. */
+   private String resourcePath;
 
    /**
     * Gets the irsend path.
@@ -151,6 +154,14 @@ public class Configuration {
     */
    public void setMulticastPort(int multicastPort) {
       this.multicastPort = multicastPort;
+   }
+
+   public String getResourcePath() {
+      return resourcePath;
+   }
+
+   public void setResourcePath(String resourcePath) {
+      this.resourcePath = resourcePath;
    }
    
 }
