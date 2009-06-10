@@ -22,18 +22,10 @@ package org.openremote.beehive;
 
 public class Configuration {
 
-   private String scrapDir;
    private String workCopyDir;
    private String svnDir;
    private String iconsDir;
    
-   public String getScrapDir() {
-      return scrapDir;
-   }
-
-   public void setScrapDir(String scrapDir) {
-      this.scrapDir = scrapDir;
-   }
 
    public String getWorkCopyDir() {
       return workCopyDir;

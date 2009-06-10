@@ -22,13 +22,11 @@ package org.openremote.beehive.listener;
 
 import java.io.File;
 
-import org.openremote.beehive.Configuration;
-import org.openremote.beehive.Constant;
+import org.openremote.beehive.PathConfig;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.VendorService;
 import org.openremote.beehive.spring.SpringContext;
 import org.openremote.beehive.utils.FileUtil;
-import org.openremote.beehive.utils.StringUtil;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 
@@ -51,9 +49,6 @@ public class SVNCommitNotifyListener implements ISVNNotifyListener {
 
    /** The model service. */
    private static ModelService modelService = (ModelService) SpringContext.getInstance().getBean("modelService");
-   
-   /** The configuration. */
-   private static Configuration configuration = (Configuration) SpringContext.getInstance().getBean("configuration");
    
    /* (non-Javadoc)
     * @see org.tigris.subversion.svnclientadapter.ISVNNotifyListener#logCommandLine(java.lang.String)
@@ -96,9 +91,9 @@ public class SVNCommitNotifyListener implements ISVNNotifyListener {
     */
    public void onNotify(File file, SVNNodeKind kind) {
       if(command == Command.ADD){
-         FileUtil.writeStringToFile(StringUtil.appendFileSeparator(configuration.getScrapDir())+Constant.COMMIT_PROGRESS_FILE, "Adding        "+FileUtil.relativeWorkcopyPath(file));
+         FileUtil.writeLineToFile(PathConfig.getInstance().commitProgressFilePath(), "Adding        "+FileUtil.relativeWorkcopyPath(file));
       }else if(command == Command.COMMIT){
-         FileUtil.writeStringToFile(StringUtil.appendFileSeparator(configuration.getScrapDir())+Constant.COMMIT_PROGRESS_FILE, "Committing    "+FileUtil.relativeWorkcopyPath(file));
+         FileUtil.writeLineToFile(PathConfig.getInstance().commitProgressFilePath(), "Committing    "+FileUtil.relativeWorkcopyPath(file));
          if(kind == SVNNodeKind.DIR){
             vendorService.syncWith(file);
          }else if(kind == SVNNodeKind.FILE){
