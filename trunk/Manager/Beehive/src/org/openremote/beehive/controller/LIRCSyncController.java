@@ -81,7 +81,7 @@ public class LIRCSyncController extends MultiActionController {
    }
    
    /**
-    * Get the scraper messages when scrap LIRC configuration files from http://lirc.sourceforge.net/remotes/ to local temp directory
+    * Get the sync messages when update LIRC configuration files from http://lirc.sourceforge.net/remotes/ to workCopy
     * 
     * @param request
     * @param response
