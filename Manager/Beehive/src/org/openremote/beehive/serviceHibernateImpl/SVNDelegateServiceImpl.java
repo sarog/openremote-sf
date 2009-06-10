@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -36,11 +35,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
-import org.openremote.beehive.Constant;
+import org.openremote.beehive.PathConfig;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.domain.Vendor;
 import org.openremote.beehive.exception.SVNException;
+import org.openremote.beehive.file.LIRCElement;
 import org.openremote.beehive.file.Progress;
 import org.openremote.beehive.repo.Actions;
 import org.openremote.beehive.repo.ChangeCount;
@@ -51,7 +51,6 @@ import org.openremote.beehive.repo.LIRCEntry;
 import org.openremote.beehive.repo.LogMessage;
 import org.openremote.beehive.repo.SVNClientFactory;
 import org.openremote.beehive.repo.SvnCommand;
-import org.openremote.beehive.repo.DiffStatus.Element;
 import org.openremote.beehive.repo.LogMessage.ChangePath;
 import org.openremote.beehive.utils.FileUtil;
 import org.openremote.beehive.utils.StringUtil;
@@ -99,7 +98,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
    public void commit(String[] paths, String message, String username){
       svnClient.setUsername(username);
       int totalPath = paths.length;
-      FileUtil.deleteFileOnExist(new File(StringUtil.appendFileSeparator(configuration.getScrapDir())+Constant.COMMIT_PROGRESS_FILE));
+      FileUtil.deleteFileOnExist(new File(PathConfig.getInstance().commitProgressFilePath()));
       File[] files = new File[totalPath];
       if (totalPath > 0) {
          try {
@@ -144,7 +143,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                   }
                }
             }
-            FileUtil.writeStringToFile(StringUtil.appendFileSeparator(configuration.getScrapDir())+Constant.COMMIT_PROGRESS_FILE, "commit completed!");
+            FileUtil.writeLineToFile(PathConfig.getInstance().commitProgressFilePath(), "commit completed!");
          } catch (SVNClientException e) {
             logger.error("Commit changes occur exception! maybe you have commit too many changes.", e);
             SVNException ee = new SVNException("Commit changes occur exception! maybe you have commit too many changes.",e);
@@ -154,42 +153,6 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public void copyFromScrapToWC(String srcPath, String destPath) {
-      File tempDir = new File(srcPath);
-      File workDir = new File(destPath);
-      copyDirectory(tempDir, workDir);
-      FileUtil.writeStringToFile(configuration.getScrapDir()+File.separator+Constant.COPY_PROGRESS_FILE, "Check completed!");
-      logger.info("Success copy scrap files to workCopy " + destPath);
-   }
-
-   private void copyDirectory(File tempDir, File workDir) {
-      if (tempDir.isDirectory()) {
-         for (File subFile : tempDir.listFiles()) {
-            if (subFile.isDirectory()) {
-               File workFile = new File(workDir, File.separator + subFile.getName());
-               copyDirectory(subFile, workFile);
-            } else if (subFile.isFile()) {
-               String tempName = subFile.getName();
-               if(!(tempName.equals(Constant.SCRAPE_PROGRESS_FILE) 
-                     || tempName.equals(Constant.COPY_PROGRESS_FILE)
-                     || tempName.equals(Constant.COMMIT_PROGRESS_FILE))){
-                  String workName = tempName.substring(0, tempName.lastIndexOf("."));
-                  File workFile = new File(workDir, File.separator + workName);
-                  copyFile(tempName, subFile, workFile);                  
-               }
-            }
-         }
-      } else if (tempDir.isFile()) {         
-         String tempName = tempDir.getName();
-         String workName = tempName.substring(0, tempName.lastIndexOf("."));
-         File workFile = new File(workDir, File.separator + workName);
-         copyFile(tempName, tempDir, workFile);
-
-      }
-   }
 
    /**
     * {@inheritDoc}
@@ -465,7 +428,10 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       }
 
    }
-
+   
+   /**
+    * {@inheritDoc}
+    */
    public void cancelOperation() {
       try {
          svnClient.cancelOperation();
@@ -483,44 +449,6 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
    }
    
    
-   /**
-    * This method is used for copy a scrapFile to workCopy after compare the date
-    * 
-    */
-   private void copyFile(String tempName, File modelFile, File workFile) {
-      try {
-         String progressFile = configuration.getScrapDir()+File.separator+Constant.COPY_PROGRESS_FILE;
-         String modelPath = modelFile.getPath().substring(configuration.getScrapDir().length(),modelFile.getPath().lastIndexOf("."));
-         if (!workFile.getParentFile().exists()) {
-            workFile.getParentFile().mkdirs();
-         }
-         String actionType = Actions.NORMAL.getValue();
-         if (workFile.exists()) {
-            String strDate = tempName.substring(tempName.lastIndexOf(".") + 1);
-            Date tempDate = StringUtil.String2Date(strDate, "dd-MMM-yyyy kk-mm", Locale.ENGLISH);
-            ISVNInfo parentFileInfo = svnClient.getInfoFromWorkingCopy(new File(SvnUtil.escapeFileName(workFile.getParentFile().getAbsolutePath())));
-            if(parentFileInfo.getLastChangedDate()!=null){
-               ISVNInfo svnInfo = svnClient.getInfoFromWorkingCopy(new File(SvnUtil.escapeFileName(workFile.getAbsolutePath())));
-               if (svnInfo.getLastChangedDate() != null && tempDate.compareTo(svnInfo.getLastChangedDate()) > 0) {
-                  FileUtil.copyFile(modelFile, workFile);
-                  actionType = Actions.MODIFIED.getValue();
-               }            
-            }else if (tempDate.compareTo(new Date(workFile.lastModified())) > 0) {
-               FileUtil.copyFile(modelFile, workFile);
-               actionType = Actions.MODIFIED.getValue();
-            } 
-         } else {
-            FileUtil.copyFile(modelFile, workFile);
-            actionType = Actions.ADDED.getValue();
-         }
-         FileUtil.writeStringToFile(progressFile, " ["+StringUtil.systemTime()+"]  "+actionType + "  "+modelPath);
-      } catch (SVNClientException e) {
-         logger.error("Get file "+workFile.getName()+" info error, this may occur by the fileName not case sensitive!",e);
-         SVNException ee = new SVNException("Get file "+workFile.getName()+" info error, this may occur by the fileName not case sensitive!",e);
-         ee.setErrorCode(SVNException.SVN_GETINFO_ERROR);
-         throw ee;
-      }
-   }
 
    /**
     * This method is used for delete the file or directory in workCopy except the ".svn"
@@ -666,16 +594,40 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
    /**
     * {@inheritDoc}
     */
-   public Progress getCopyProgress() {
-      File progressFile = new File(configuration.getScrapDir()+File.separator+Constant.COPY_PROGRESS_FILE);
-      return FileUtil.getProgressFromFile(progressFile, "Check completed!", modelService.count());
+   public Progress getCommitProgress() {
+      File progressFile = new File(PathConfig.getInstance().commitProgressFilePath());
+      return FileUtil.getProgressFromFile(progressFile, "commit completed!", modelService.count());
    }
    
    /**
     * {@inheritDoc}
     */
-   public Progress getCommitProgress() {
-      File progressFile = new File(StringUtil.appendFileSeparator(configuration.getScrapDir())+Constant.COMMIT_PROGRESS_FILE);
-      return FileUtil.getProgressFromFile(progressFile, "commit completed!", modelService.count());
+   public String compareFileByLastModifiedDate(LIRCElement lirc) {
+      String actionType = Actions.NORMAL.getValue();
+      File workFile = new File(StringUtil.appendFileSeparator(configuration.getWorkCopyDir()) + lirc.getRelativePath());
+      if (workFile.exists()) {
+         try {
+            ISVNInfo parentFileInfo = svnClient.getInfoFromWorkingCopy(new File(SvnUtil.escapeFileName(workFile
+                  .getParentFile().getAbsolutePath())));
+            Date uploadDate = lirc.getUploadDate();
+            if (parentFileInfo.getLastChangedDate() != null) {
+               ISVNInfo svnInfo = svnClient.getInfoFromWorkingCopy(new File(SvnUtil.escapeFileName(workFile
+                     .getAbsolutePath())));
+               if (svnInfo.getLastChangedDate() != null && uploadDate.compareTo(svnInfo.getLastChangedDate()) > 0) {
+                  actionType = Actions.MODIFIED.getValue();
+               }
+            } else if (uploadDate.compareTo(new Date(workFile.lastModified())) > 0) {
+               actionType = Actions.MODIFIED.getValue();
+            }
+         } catch (SVNClientException e) {
+            logger.error("Get file "+workFile.getName()+" info error, this may occur by the fileName not case sensitive!",e);
+            SVNException ee = new SVNException("Get file "+workFile.getName()+" info error, this may occur by the fileName not case sensitive!",e);
+            ee.setErrorCode(SVNException.SVN_GETINFO_ERROR);
+            throw ee;
+         }
+      } else {
+         actionType = Actions.ADDED.getValue();
+      }
+      return actionType;
    }
 }

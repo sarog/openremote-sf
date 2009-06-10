@@ -23,6 +23,7 @@ package org.openremote.beehive.api.service;
 import java.util.List;
 
 import org.openremote.beehive.exception.SVNException;
+import org.openremote.beehive.file.LIRCElement;
 import org.openremote.beehive.file.Progress;
 import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.DiffStatus;
@@ -117,14 +118,6 @@ public interface SVNDelegateService {
    void rollback(String path, long revision);
 
    /**
-    * sync the workCopy configuration files with scrapDirectory.
-    * 
-    * @param srcPath scrapDirectory, is an absolute path
-    * @param destPath workCopyDirectory, is an absolute path
-    */
-   void copyFromScrapToWC(String srcPath, String destPath);
-
-   /**
     * Copy from upload to wc.
     * 
     * @param srcPath the src path
@@ -196,14 +189,7 @@ public interface SVNDelegateService {
     * @return the log by revision
     */
    LogMessage getLogByRevision(String path, long revision);
-   
-   /**
-    * Gets the progress of copy from scrap to workCopy.
-    * 
-    * @return progress
-    */
-   Progress getCopyProgress();
-   
+
    /**
     * Gets the commit progress.
     * 
@@ -211,4 +197,12 @@ public interface SVNDelegateService {
     */
    Progress getCommitProgress();
    
+   /**
+    * Compare workCopy file to lirc site by last modified date.
+    * 
+    * @param lirc the lirc
+    * 
+    * @return the string
+    */
+   String compareFileByLastModifiedDate(LIRCElement lirc);
 }

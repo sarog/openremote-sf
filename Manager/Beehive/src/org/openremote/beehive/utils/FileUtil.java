@@ -29,6 +29,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -43,26 +44,31 @@ import org.openremote.beehive.file.EnumCharset;
 import org.openremote.beehive.spring.SpringContext;
 import org.openremote.beehive.file.Progress;
 
+// TODO: Auto-generated Javadoc
 /**
- * Utility class for File
+ * Utility class for File.
  * 
  * @author Dan 2009-2-16
- * 
  */
 public class FileUtil {
 
+   /** The Constant LOGGER. */
    private static final Logger LOGGER = Logger.getLogger(FileUtil.class.getName());
    
-   private static Configuration configuration = (Configuration) SpringContext.getInstance().getBean("configuration");
+   /** The configuration. */
+   public static Configuration configuration = (Configuration) SpringContext.getInstance().getBean("configuration");
 
+   /**
+    * Instantiates a new file util.
+    */
    private FileUtil() {
    }
 
    /**
-    * Reads a <code>FileInputStream</code> from a file with a specified file system path
+    * Reads a <code>FileInputStream</code> from a file with a specified file system path.
     * 
-    * @param path
-    *           a specified file system path,e.g C:\remotes\3m\MP8640
+    * @param path a specified file system path,e.g C:\remotes\3m\MP8640
+    * 
     * @return <code>FileInputStream</code>
     */
    public static FileInputStream readStream(String path) {
@@ -80,10 +86,10 @@ public class FileUtil {
    }
 
    /**
-    * Gets a list of content text from a file with a specified file system path
+    * Gets a list of content text from a file with a specified file system path.
     * 
-    * @param path
-    *           a specified file system path,e.g C:\remotes\3m\MP8640
+    * @param path a specified file system path,e.g C:\remotes\3m\MP8640
+    * 
     * @return list of String
     */
    public static List<String> getContentList(String path) {
@@ -117,10 +123,10 @@ public class FileUtil {
    }
 
    /**
-    * Gets a list of content text from a file with a specified file system path <code>FileInputStream</code>
+    * Gets a list of content text from a file with a specified file system path <code>FileInputStream</code>.
     * 
-    * @param fis
-    *           a specified <code>FileInputStream</code>
+    * @param fis a specified <code>FileInputStream</code>
+    * 
     * @return list of String
     */
    public static List<String> getContentList(FileInputStream fis) {
@@ -157,10 +163,9 @@ public class FileUtil {
     * Gets a <code>PrintWriter</code> from a file with a specified file system path and charset, the defaut charet is
     * UTF-8.
     * 
-    * @param filePath
-    *           a specified file system path,e.g C:\remotes\3m\MP8640
-    * @param charset
-    *           a charset enumeration:<code>EnumCharset</code>
+    * @param filePath a specified file system path,e.g C:\remotes\3m\MP8640
+    * @param charset a charset enumeration:<code>EnumCharset</code>
+    * 
     * @return a <code>PrintWriter</code>
     */
    public static PrintWriter getPrintWriterFromFile(String filePath, EnumCharset... charset) {
@@ -197,12 +202,9 @@ public class FileUtil {
    /**
     * Writes a file on a file system with a specified file system path and charset, the defaut charet is UTF-8.
     * 
-    * @param filePath
-    *           a specified file system path,e.g C:\remotes\3m\MP8640
-    * @param content
-    *           a content text to write
-    * @param charset
-    *           a charset enumeration:<code>EnumCharset</code>
+    * @param filePath a specified file system path,e.g C:\remotes\3m\MP8640
+    * @param content a content text to write
+    * @param charset a charset enumeration:<code>EnumCharset</code>
     */
    public static void writeFile(String filePath, String content, EnumCharset... charset) {
       File dir = new File(filePath).getParentFile();
@@ -222,12 +224,9 @@ public class FileUtil {
    /**
     * Writes a String list to a file with a specified file system path and charset, the defaut charet is UTF-8.
     * 
-    * @param filePath
-    *           a specified file system path,e.g C:\remotes\3m\MP8640
-    * @param contentList
-    *           content list
-    * @param charset
-    *           a charset enumeration:<code>EnumCharset</code>
+    * @param filePath a specified file system path,e.g C:\remotes\3m\MP8640
+    * @param contentList content list
+    * @param charset a charset enumeration:<code>EnumCharset</code>
     */
    public void writeListToFile(String filePath, List<String> contentList, EnumCharset... charset) {
       File dir = new File(filePath).getParentFile();
@@ -255,8 +254,8 @@ public class FileUtil {
    /**
     * Checks if the file is a image.
     * 
-    * @param file
-    *           a file to check
+    * @param file a file to check
+    * 
     * @return true if it is a image,false otherwise.
     */
    public static boolean isImage(File file) {
@@ -266,10 +265,10 @@ public class FileUtil {
    }
 
    /**
-    * Checks if a file is a HTML
+    * Checks if a file is a HTML.
     * 
-    * @param file
-    *           a file to check
+    * @param file a file to check
+    * 
     * @return true if it is a HTML,false otherwise.
     */
    public static boolean isHTML(File file) {
@@ -281,8 +280,8 @@ public class FileUtil {
    /**
     * Checks if it is ignored. lircrc,HTML,image,lircmd.conf,Thumbs.db will be ignored.
     * 
-    * @param file
-    *           a file to check
+    * @param file a file to check
+    * 
     * @return true if it is a ignored,false otherwise.
     */
    public static boolean isIgnored(File file) {
@@ -296,10 +295,10 @@ public class FileUtil {
    }
 
    /**
-    * Splits a file path by path separator
+    * Splits a file path by path separator.
     * 
-    * @param file
-    *           a file to split
+    * @param file a file to split
+    * 
     * @return array of String including directory name and file name split by path separator
     */
    public static String[] splitPath(File file) {
@@ -311,6 +310,12 @@ public class FileUtil {
       }
    }
 
+   /**
+    * Copy file.
+    * 
+    * @param srcFile the src file
+    * @param destFile the dest file
+    */
    public static void copyFile(File srcFile, File destFile) {
       try {
          FileUtils.copyFile(srcFile, destFile);
@@ -320,10 +325,10 @@ public class FileUtil {
    }
 
    /**
-    * Create a file from a InputStream
+    * Create a file from a InputStream.
     * 
-    * @param in
-    * @param destFile
+    * @param in the in
+    * @param destFile the dest file
     */
    public static void createFile(InputStream in, File destFile) {
       if (destFile.exists()) {
@@ -356,6 +361,11 @@ public class FileUtil {
       }
    }
 
+   /**
+    * Delete directory.
+    * 
+    * @param directory the directory
+    */
    public static void deleteDirectory(File directory) {
       try {
          FileUtils.deleteDirectory(directory);
@@ -366,6 +376,13 @@ public class FileUtil {
       }
    }
    
+   /**
+    * Read file to string.
+    * 
+    * @param file the file
+    * 
+    * @return the string buffer
+    */
    public static StringBuffer readFileToString(File file) {
       StringBuffer strBuffer = new StringBuffer();
       InputStream is = null;
@@ -390,14 +407,20 @@ public class FileUtil {
       return strBuffer;
    }
    
-   public static void writeStringToFile(String fileName, String content) {
+   /**
+    * Write line to file.
+    * 
+    * @param fileName the file name
+    * @param line the string line
+    */
+   public static void writeLineToFile(String fileName, String line) {
       File f = new File(fileName);
       try {
          if (!f.exists()) {
             f.createNewFile();
          }
          FileWriter writer = new FileWriter(fileName, true);
-         writer.write(content);
+         writer.write(line);
          writer.write(13);
          writer.write(10);
          writer.close();
@@ -405,15 +428,40 @@ public class FileUtil {
          e.printStackTrace();
       }
    }
+   
+   /**
+    * Relative workcopy path.
+    * 
+    * @param file the file
+    * 
+    * @return the string
+    */
    public static String relativeWorkcopyPath(File file){
       String wc = new File(configuration.getWorkCopyDir()).getPath();
       return file.getAbsolutePath().replace(wc, "").replaceAll("\\\\", "/");
    }
+   
+   /**
+    * Relative workcopy path.
+    * 
+    * @param path the path
+    * 
+    * @return the string
+    */
    public static String relativeWorkcopyPath(String path){
       String wc = new File(configuration.getWorkCopyDir()).getPath();
       return path.replace(wc, "").replaceAll("\\\\", "/");
    }
    
+   /**
+    * Gets the progress from file.
+    * 
+    * @param progressFile the progress file
+    * @param endTag the end tag
+    * @param count the count
+    * 
+    * @return the progress from file
+    */
    public static Progress getProgressFromFile(File progressFile, String endTag, double count){
       Progress progress = new Progress();
       String message = "";
@@ -436,10 +484,75 @@ public class FileUtil {
       return progress;
    }
    
+   /**
+    * Delete file on exist.
+    * 
+    * @param file the file
+    */
    public static void deleteFileOnExist(File file){
       if(file.exists()){
          file.delete();
       }
    }
 
+   /**
+    * Write inputStream to file.
+    * 
+    * @param is the is
+    * @param dstPath the dest path
+    */
+   public static void writeInputStreamToFile(InputStream is, String dstPath){
+      OutputStream out = null;
+      try {
+         File parent = new File(dstPath).getParentFile();
+         if (!parent.exists()) {
+            parent.mkdirs();
+         }
+         out = new FileOutputStream(dstPath);
+         byte[] buf = new byte[1024 * 1024];
+         int len;
+         while ((len = is.read(buf)) > 0) {
+            out.write(buf, 0, len);
+         }
+      } catch (IOException e) {
+         LOGGER.error("Write file " + dstPath + " failed!", e);
+      } finally {
+         try {
+            is.close();
+            out.close();
+         } catch (IOException e) {
+            e.printStackTrace();
+         }
+      }
+   }
+   
+   /**
+    * Checks if is image.
+    * 
+    * @param path the path
+    * 
+    * @return true, if is image
+    */
+   public static boolean isImage(String path){
+      String extension = path.substring(path.lastIndexOf('.') + 1);
+      return extension.toLowerCase().matches("gif|png|jpg|bmp");
+   }
+   
+   /**
+    * Write string to file.
+    * 
+    * @param content the content
+    * @param filePath the file path
+    */
+   public static void writeStringToFile(String content, String filePath) {
+         File file = new File(filePath);
+         if(!file.getParentFile().exists()){
+            file.getParentFile().mkdirs();
+         }
+         try {
+            FileUtils.writeStringToFile(file, content, "UTF-8");
+         } catch (IOException e) {
+            LOGGER.error("Can't write content to file "+filePath, e);
+         }
+   }
 }
