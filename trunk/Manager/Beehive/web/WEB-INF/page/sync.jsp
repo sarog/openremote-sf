@@ -15,40 +15,28 @@
 	   if($('#updateStatus').val() == "true"){
 		   setAnimation();
 		   refresh();
-		   $('#message').text("Downloading from http://lirc.sourceforge.net/remotes ......");
+		   $('#message').text("Updating form http://lirc.sourceforge.net/remotes ......");
 		   timer=setInterval("refresh()",5000);
 	   }
 	   $('#updateBtn').click(function(){
 		      setAnimation();
 			   $.post("sync.htm?method=update",{});
 			   timer=setInterval("refresh()",5000);
-			   $('#message').text("Downloading from http://lirc.sourceforge.net/remotes ......");
+			   $('#message').text("Updating from http://lirc.sourceforge.net/remotes ......");
 	      });
 	 });
    
 	function refresh() {
-		$.getJSON("sync.htm?method=getScraperProgress",{r:Math.random()}, function(json) {
+		$.getJSON("sync.htm?method=getSyncProgress",{r:Math.random()}, function(json) {
 			setProgress(json);
 			if (json.status == "isEnd") {
 				clearInterval(timer);
 				timer = 0;
-				getCopyProgress();
-				timer = setInterval("getCopyProgress()",5000);
-				$('#message').text("Checking modified files ......");
+				$('#tab_2 img').attr("src","image/update_icon.gif");
+	         $('#updateBtn').removeAttr("disabled").removeClass("disabled_button");
+	         $('#spinner').hide();
+	         $('#message').html("Update completed, you can view and commit the <b><a href='changes.htm' style='text-decoration: underline;'>changes</a></b>");
 			}
-		});
-	}
-	function getCopyProgress() {
-		$.getJSON("sync.htm?method=getCopyProgress",{r:Math.random()}, function(json) {
-			setProgress(json);
-			   if(json.status == "isEnd"){
-				   clearInterval(timer);
-				   timer = 0;
-				   $('#tab_2 img').attr("src","image/update_icon.gif");
-				   $('#updateBtn').removeAttr("disabled").removeClass("disabled_button");
-	            $('#spinner').hide();
-	            $('#message').html("Update completed, you can view and commit the <b><a href='changes.htm' style='text-decoration: underline;'>changes</a></b>");
-				}
 		});
 	}
 	function setProgress(progress){

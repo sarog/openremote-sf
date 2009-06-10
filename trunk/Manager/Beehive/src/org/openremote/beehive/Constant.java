@@ -31,9 +31,9 @@ public final class Constant {
    /**
     * The value for the progress file
     */
-   public static final String SCRAPE_PROGRESS_FILE = "scrapeProgress.txt";
-   public static final String COPY_PROGRESS_FILE = "copyProgress.txt";
+   public static final String SYNC_PROGRESS_FILE = "syncProgress.txt";
    public static final String COMMIT_PROGRESS_FILE = "commitProgress.txt";
+   public static final String LIRC_ROOT_URL = "http://lirc.sourceforge.net/remotes/";
    
    /**
     * The value for svn repo and workCopy root directory

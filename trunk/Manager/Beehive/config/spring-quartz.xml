@@ -4,7 +4,7 @@
     <!-- class, method -->
     <bean id="methodInvokingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
         <property name="targetObject" ref="scraperService" />
-        <property name="targetMethod" value="scraperFiles" />
+        <property name="targetMethod" value="syncFiles" />
         <property name="concurrent" value="false" />
     </bean>
     <!-- trigger -->

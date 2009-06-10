@@ -31,16 +31,16 @@ public interface WebscraperService {
 
    /**
     * 
-    * Scrap configuration files from web to local,and copy sync them with svn's workCopy
+    * Sync lirc configuration files from web to svn's workCopy
     */
-   void scraperFiles();
+   void syncFiles();
    
    /**
-    * Get scraper progress from progress file
+    * Get sync progress from progress file
     * 
     * @param progressFileName string
     * @param endTag string
     * @return
     */
-   Progress getScraperProgress();
+   Progress getSyncProgress();
 }

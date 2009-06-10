@@ -21,21 +21,21 @@
 package org.openremote.beehive.serviceHibernateImpl;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.util.Date;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
-import org.openremote.beehive.Configuration;
 import org.openremote.beehive.Constant;
+import org.openremote.beehive.PathConfig;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.api.service.WebscraperService;
 import org.openremote.beehive.domain.Vendor;
+import org.openremote.beehive.file.LIRCElement;
 import org.openremote.beehive.file.Progress;
+import org.openremote.beehive.repo.Actions;
+import org.openremote.beehive.repo.DateFormatter;
 import org.openremote.beehive.utils.FileUtil;
-import org.webharvest.definition.ScraperConfiguration;
-import org.webharvest.runtime.Scraper;
+import org.openremote.beehive.utils.LIRCrawler;
+import org.openremote.beehive.utils.StringUtil;
 
 /**
  * @author Tomsky
@@ -43,8 +43,6 @@ import org.webharvest.runtime.Scraper;
  */
 public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implements WebscraperService {
 
-   private static Logger logger = Logger.getLogger(WebscraperServiceImpl.class.getName());
-   private Configuration configuration;
    private SVNDelegateService svnDelegateService;
    private ModelService modelService;
 
@@ -56,57 +54,40 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
       this.svnDelegateService = svnDelegateService;
    }
 
-   public Configuration getConfiguration() {
-      return configuration;
-   }
-
-   public void setConfiguration(Configuration configuration) {
-      this.configuration = configuration;
-   }
-
    public void setModelService(ModelService modelService) {
       this.modelService = modelService;
    }
 
-   public void scraperFiles() {
-      try {
-         File progressFile = new File(configuration.getScrapDir()+File.separator+Constant.SCRAPE_PROGRESS_FILE);
-         if(progressFile.exists()){
-            progressFile.delete();
-         }
-         File copyProgressFile = new File(configuration.getScrapDir()+File.separator+Constant.COPY_PROGRESS_FILE);
-         if(copyProgressFile.exists()){
-            copyProgressFile.delete();
-         }
-         File scrapDir = new File(configuration.getScrapDir());
-         if(scrapDir.exists()){
-            FileUtils.deleteDirectory(scrapDir);            
-         }
-         ScraperConfiguration config = new ScraperConfiguration(getClass().getResource("/remotes.xml").getPath());         
-         Scraper scraper = new Scraper(config, configuration.getScrapDir());
-         scraper.setDebug(true);
-         // long startTime = System.currentTimeMillis();
-         logger.info("Scraper LIRC files from http://lirc.sourceforge.net/remotes!");
-         scraper.execute();
-         logger.info("Success scrap LIRC files from web!");
-         // System.out.println("time elapsed:"+ (System.currentTimeMillis() - startTime));
-         logger.info("Copy LIRC files from " + configuration.getScrapDir() + " to workCopy "
-               + configuration.getWorkCopyDir());
-         svnDelegateService.copyFromScrapToWC(configuration.getScrapDir(), configuration.getWorkCopyDir());
-         logger.info("Success copy LIRC files to workCopy!");
-         logger.info("Success delete files of " + configuration.getScrapDir());
-      } catch (FileNotFoundException e) {
-         logger.error("The file of remotes.xml not found!",e);
-      }catch (IOException e) {
-         logger.error("Cae't delete the directory of "+configuration.getScrapDir(),e);
-       }
+   public void syncFiles() {
+      Date date = new Date();
+      String syncFilePath = PathConfig.getInstance().syncProgressFilePath();
+      FileUtil.deleteFileOnExist(new File(syncFilePath));
+      crawl(Constant.LIRC_ROOT_URL);
+      FileUtil.writeLineToFile(syncFilePath, DateFormatter.format(date)+" Sync completed!");
    }
-   
   /**
    * {@inheritDoc}
    */
-   public Progress getScraperProgress(){
-      File progressFile = new File(configuration.getScrapDir()+File.separator+Constant.SCRAPE_PROGRESS_FILE);
-      return FileUtil.getProgressFromFile(progressFile, "Download completed!", modelService.count());
+   public Progress getSyncProgress(){
+      File progressFile = new File(PathConfig.getInstance().syncProgressFilePath());
+      return FileUtil.getProgressFromFile(progressFile, "Sync completed!", modelService.count());
+   }
+   
+   private void crawl(String lircUrl) {
+      for (LIRCElement lirc : LIRCrawler.list(lircUrl)) {
+         if (lirc.isModel()) {
+            String actionType = svnDelegateService.compareFileByLastModifiedDate(lirc);
+            String progressFilePath = PathConfig.getInstance().syncProgressFilePath();
+            FileUtil.writeLineToFile(progressFilePath, " ["+StringUtil.systemTime()+"]  "+actionType + "  "+lirc.getRelativePath());
+            if(!actionType.equals(Actions.NORMAL.getValue())){
+               LIRCrawler.writeModel(lirc);
+               System.out.println(lirc.getPath());
+            }
+
+         } else {
+            crawl(lirc.getPath());
+            System.out.println(lirc.getRelativePath());
+         }
+      }
    }
 }

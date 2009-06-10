@@ -25,7 +25,6 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.api.service.WebscraperService;
 import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.file.Progress;
@@ -39,7 +38,6 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 public class LIRCSyncController extends MultiActionController {
    private String indexView;
    private WebscraperService scraperService;
-   private SVNDelegateService svnDelegateService;
    
    public void setIndexView(String indexView) {
       this.indexView = indexView;
@@ -49,11 +47,6 @@ public class LIRCSyncController extends MultiActionController {
       this.scraperService = scraperService;
    }
    
-   
-   public void setSvnDelegateService(SVNDelegateService svnDelegateService) {
-      this.svnDelegateService = svnDelegateService;
-   }
-
    /**
     * Default method in controller
     * 
@@ -78,7 +71,7 @@ public class LIRCSyncController extends MultiActionController {
    public ModelAndView update(HttpServletRequest request, HttpServletResponse response) {
       request.getSession().setAttribute("isUpdating", "true");
       try{
-         scraperService.scraperFiles();
+         scraperService.syncFiles();
       }catch(SVNException e){
          request.getSession().removeAttribute("isUpdating");
          throw e;
@@ -94,19 +87,8 @@ public class LIRCSyncController extends MultiActionController {
     * @param response
     * @throws IOException
     */
-   public void getScraperProgress(HttpServletRequest request, HttpServletResponse response) throws IOException{
-      Progress scraperProgress = scraperService.getScraperProgress();
-      response.getWriter().print(scraperProgress.getJson());
-   }
-   
-   /**
-    * Get copy messages when copy LIRC configuration files from local temp directory to svn workCopy
-    * @param request
-    * @param response
-    * @throws IOException
-    */
-   public void getCopyProgress(HttpServletRequest request, HttpServletResponse response) throws IOException{
-      Progress copyProgress = svnDelegateService.getCopyProgress();      
-      response.getWriter().print(copyProgress.getJson());
+   public void getSyncProgress(HttpServletRequest request, HttpServletResponse response) throws IOException{
+      Progress syncProgress = scraperService.getSyncProgress();
+      response.getWriter().print(syncProgress.getJson());
    }
 }

@@ -32,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * Utility class for String
@@ -207,4 +208,5 @@ public class StringUtil {
       SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");      
       return df.format(new Date());
    }
+   
 }
