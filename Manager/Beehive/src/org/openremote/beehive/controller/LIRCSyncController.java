@@ -21,11 +21,14 @@
 package org.openremote.beehive.controller;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openremote.beehive.api.service.SyncHistoryService;
 import org.openremote.beehive.api.service.WebscraperService;
+import org.openremote.beehive.domain.SyncHistory;
 import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.file.Progress;
 import org.springframework.web.servlet.ModelAndView;
@@ -38,6 +41,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 public class LIRCSyncController extends MultiActionController {
    private String indexView;
    private WebscraperService scraperService;
+   private SyncHistoryService syncHistoryService;
    
    public void setIndexView(String indexView) {
       this.indexView = indexView;
@@ -47,6 +51,10 @@ public class LIRCSyncController extends MultiActionController {
       this.scraperService = scraperService;
    }
    
+   public void setSyncHistoryService(SyncHistoryService syncHistoryService) {
+      this.syncHistoryService = syncHistoryService;
+   }
+
    /**
     * Default method in controller
     * 
@@ -57,7 +65,11 @@ public class LIRCSyncController extends MultiActionController {
     * @return ModelAndView
     */
    public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
-      ModelAndView mav = new ModelAndView(indexView);      
+      SyncHistory syncHistory = syncHistoryService.getLatest();
+      ModelAndView mav = new ModelAndView(indexView);
+      if(syncHistory != null){
+         mav.addObject(syncHistory.getType(), syncHistory.getStatus());
+      }
       return mav;
    }
    
@@ -69,14 +81,18 @@ public class LIRCSyncController extends MultiActionController {
     * @return
     */
    public ModelAndView update(HttpServletRequest request, HttpServletResponse response) {
-      request.getSession().setAttribute("isUpdating", "true");
+      SyncHistory syncHistory = new SyncHistory();
+      syncHistory.setStartTime(new Date());
+      syncHistory.setType("update");
+      syncHistory.setStatus("running");
+      syncHistoryService.save(syncHistory);
       try{
          scraperService.syncFiles();
       }catch(SVNException e){
-         request.getSession().removeAttribute("isUpdating");
+         syncHistoryService.update("faild", new Date());
          throw e;
       }
-      request.getSession().removeAttribute("isUpdating");
+      syncHistoryService.update("success", new Date());
       return null;
    }
    
