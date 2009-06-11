@@ -45,8 +45,12 @@ public class PathUtil {
     * 
     * @return the string
     */
-   public static String appendFileSeparator(String src) {
+   public static String addSlashSuffix(String src) {
       return src.endsWith("/") ? src : src + "/";
+   }
+   
+   public static String removeSlashSuffix(String src) {
+      return src.endsWith("/") ? src.substring(0, src.lastIndexOf("/")) : src ;
    }
    
 }
