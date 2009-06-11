@@ -20,7 +20,6 @@
  */
 package org.openremote.beehive.controller;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -33,7 +32,6 @@ import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.api.service.SyncHistoryService;
 import org.openremote.beehive.domain.SyncHistory;
 import org.openremote.beehive.exception.SVNException;
-import org.openremote.beehive.file.Progress;
 import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.LogMessage;
@@ -148,11 +146,6 @@ public class LIRCRevisionChangesController extends MultiActionController {
       String comment = request.getParameter("comment");
       
       if(items != null){
-         SyncHistory syncHistory = new SyncHistory();
-         syncHistory.setStartTime(new Date());
-         syncHistory.setType("commit");
-         syncHistory.setStatus("running");
-         syncHistoryService.save(syncHistory);
          try{
             svnDelegateService.commit(items,comment, "admin");
          }catch(SVNException e){
@@ -162,20 +155,5 @@ public class LIRCRevisionChangesController extends MultiActionController {
          syncHistoryService.update("success", new Date());
       }
       return null;
-   }
-   
-   /**
-    * Gets the copy progress.
-    * 
-    * @param request the request
-    * @param response the response
-    * 
-    * @return the copy progress
-    * 
-    * @throws IOException Signals that an I/O exception has occurred.
-    */
-   public void getCommitProgress(HttpServletRequest request, HttpServletResponse response) throws IOException{
-      Progress commitProgress = svnDelegateService.getCommitProgress();      
-      response.getWriter().print(commitProgress.getJson());
    }
 }
