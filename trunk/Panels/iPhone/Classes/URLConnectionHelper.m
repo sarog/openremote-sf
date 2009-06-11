@@ -21,7 +21,7 @@
 		NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:15];
 		
 		//the initWithRequest constractor will invoke the request
-		[[[NSURLConnection alloc] initWithRequest:request delegate:self] release];
+		[[[NSURLConnection alloc] initWithRequest:request delegate:self] autorelease];
 		[request release];
 	}
 	return self;
@@ -32,7 +32,7 @@
 		[self setDelegate:d];
 		receivedData = [[NSMutableData alloc] init];
 		
-		[[[NSURLConnection alloc] initWithRequest:request delegate:self] release];
+		[[[NSURLConnection alloc] initWithRequest:request delegate:self] autorelease];
 	}
 	return self;
 }
@@ -60,8 +60,16 @@
 		[alert show];
 		[alert release];
 	}
-
 }
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+	if (delegate && [delegate respondsToSelector:@selector(definitionURLConnectionDidReceiveResponse:)]) {
+		[delegate definitionURLConnectionDidReceiveResponse:response];
+	}
+}
+			
+
+
 
 - (void)dealloc {
 	[receivedData release];
