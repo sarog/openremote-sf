@@ -22,14 +22,16 @@ package org.openremote.beehive.listener;
 
 import java.io.File;
 
-import org.openremote.beehive.PathConfig;
+import org.openremote.beehive.Configuration;
 import org.openremote.beehive.api.service.ModelService;
+import org.openremote.beehive.api.service.SyncHistoryService;
 import org.openremote.beehive.api.service.VendorService;
 import org.openremote.beehive.spring.SpringContext;
 import org.openremote.beehive.utils.FileUtil;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 
+// TODO: Auto-generated Javadoc
 /**
  * The listener interface for receiving SVNCommitNotify events. The class that is interested in processing a
  * SVNCommitNotify event implements this interface, and the object created with that class is registered with a
@@ -42,6 +44,7 @@ import org.tigris.subversion.svnclientadapter.SVNNodeKind;
  */
 public class SVNCommitNotifyListener implements ISVNNotifyListener {
    
+   /** The command. */
    private int command;
    
    /** The vendor service. */
@@ -49,6 +52,12 @@ public class SVNCommitNotifyListener implements ISVNNotifyListener {
 
    /** The model service. */
    private static ModelService modelService = (ModelService) SpringContext.getInstance().getBean("modelService");
+   
+   /** The sync history service. */
+   private static SyncHistoryService syncHistoryService= (SyncHistoryService) SpringContext.getInstance().getBean("syncHistoryService");
+   
+   /** The configuration. */
+   private static Configuration configuration = (Configuration) SpringContext.getInstance().getBean("configuration");
    
    /* (non-Javadoc)
     * @see org.tigris.subversion.svnclientadapter.ISVNNotifyListener#logCommandLine(java.lang.String)
@@ -90,13 +99,15 @@ public class SVNCommitNotifyListener implements ISVNNotifyListener {
     * @see org.tigris.subversion.svnclientadapter.ISVNNotifyListener#onNotify(java.io.File, org.tigris.subversion.svnclientadapter.SVNNodeKind)
     */
    public void onNotify(File file, SVNNodeKind kind) {
-      if(command == Command.ADD){
-         FileUtil.writeLineToFile(PathConfig.getInstance().commitProgressFilePath(), "Adding        "+FileUtil.relativeWorkcopyPath(file));
-      }else if(command == Command.COMMIT){
-         FileUtil.writeLineToFile(PathConfig.getInstance().commitProgressFilePath(), "Committing    "+FileUtil.relativeWorkcopyPath(file));
-         if(kind == SVNNodeKind.DIR){
+      String commitFilePath = configuration.getSyncHistoryDir() + File.separator
+            + syncHistoryService.getLatestByType("commit").getLogPath();
+      if (command == Command.ADD) {
+         FileUtil.writeLineToFile(commitFilePath, "Adding        " + FileUtil.relativeWorkcopyPath(file));
+      } else if (command == Command.COMMIT) {
+         FileUtil.writeLineToFile(commitFilePath, "Committing    " + FileUtil.relativeWorkcopyPath(file));
+         if (kind == SVNNodeKind.DIR) {
             vendorService.syncWith(file);
-         }else if(kind == SVNNodeKind.FILE){
+         } else if (kind == SVNNodeKind.FILE) {
             modelService.syncWith(file);
          }
       }

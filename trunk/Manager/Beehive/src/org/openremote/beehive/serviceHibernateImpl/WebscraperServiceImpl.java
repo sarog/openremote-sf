@@ -23,19 +23,17 @@ package org.openremote.beehive.serviceHibernateImpl;
 import java.io.File;
 import java.util.Date;
 
+import org.openremote.beehive.Configuration;
 import org.openremote.beehive.Constant;
 import org.openremote.beehive.PathConfig;
-import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.api.service.SyncHistoryService;
 import org.openremote.beehive.api.service.WebscraperService;
 import org.openremote.beehive.domain.SyncHistory;
 import org.openremote.beehive.domain.Vendor;
 import org.openremote.beehive.file.LIRCElement;
-import org.openremote.beehive.file.Progress;
 import org.openremote.beehive.repo.Actions;
 import org.openremote.beehive.repo.DateFormatter;
-import org.openremote.beehive.utils.DateUtil;
 import org.openremote.beehive.utils.FileUtil;
 import org.openremote.beehive.utils.LIRCrawler;
 import org.openremote.beehive.utils.StringUtil;
@@ -47,9 +45,13 @@ import org.openremote.beehive.utils.StringUtil;
 public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implements WebscraperService {
 
    private SVNDelegateService svnDelegateService;
-   private ModelService modelService;
    private SyncHistoryService syncHistoryService;
+   private Configuration configuration;
    
+   public void setConfiguration(Configuration configuration) {
+      this.configuration = configuration;
+   }
+
    public SVNDelegateService getSvnDelegateService() {
       return svnDelegateService;
    }
@@ -58,52 +60,35 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
       this.svnDelegateService = svnDelegateService;
    }
 
-   public void setModelService(ModelService modelService) {
-      this.modelService = modelService;
-   }
-   
-   
    public void setSyncHistoryService(SyncHistoryService syncHistoryService) {
       this.syncHistoryService = syncHistoryService;
    }
 
-   public void syncFiles() {
+   public void scrapeFiles() {
       Date date = new Date();
-//      SyncHistory syncHistory = new SyncHistory();
-//      syncHistory.setStartTime(date);
+      SyncHistory syncHistory = new SyncHistory();
+      syncHistory.setStartTime(date);
+      String logPath = PathConfig.getInstance().getFilePathByDate(date, Constant.SYNC_PROGRESS_FILE);
+      syncHistory.setLogPath(logPath);
+      syncHistory.setType("update");
+      syncHistory.setStatus("running");
+      syncHistoryService.save(syncHistory);
       
-//      String[] time = DateUtil.getTimeFormat(date, "yyyy-MM-dd.HH-mm").split("\\.");
-//      String logPath = time[0]+"/syncProgress."+time[1]+".txt";
-//      syncHistory.setLogPath(logPath);
-      
-//      syncHistory.setType("update");
-//      syncHistory.setStatus("running");
-//      syncHistoryService.save(syncHistory);
-      
-      String syncFilePath = PathConfig.getInstance().syncProgressFilePath();
+      String syncFilePath = configuration.getSyncHistoryDir()+File.separator+logPath;
       FileUtil.deleteFileOnExist(new File(syncFilePath));
-      crawl(Constant.LIRC_ROOT_URL);
-      FileUtil.writeLineToFile(syncFilePath, DateFormatter.format(date)+" Sync completed!");
+      crawl(Constant.LIRC_ROOT_URL, syncFilePath);
+      FileUtil.writeLineToFile(syncFilePath, DateFormatter.format(date)+" Completed!");
    }
-  /**
-   * {@inheritDoc}
-   */
-   public Progress getSyncProgress(){
-      File progressFile = new File(PathConfig.getInstance().syncProgressFilePath());
-      return FileUtil.getProgressFromFile(progressFile, "Sync completed!", modelService.count());
-   }
-   
-   private void crawl(String lircUrl) {
+   private void crawl(String lircUrl, String syncFilePath) {
       for (LIRCElement lirc : LIRCrawler.list(lircUrl)) {
          if (lirc.isModel()) {
             String actionType = svnDelegateService.compareFileByLastModifiedDate(lirc);
-            String progressFilePath = PathConfig.getInstance().syncProgressFilePath();
-            FileUtil.writeLineToFile(progressFilePath, " ["+StringUtil.systemTime()+"]  "+actionType + "  "+lirc.getRelativePath());
+            FileUtil.writeLineToFile(syncFilePath, " ["+StringUtil.systemTime()+"]  "+actionType + "  "+lirc.getRelativePath());
             if(!actionType.equals(Actions.NORMAL.getValue())){
                LIRCrawler.writeModel(lirc);
             }
          } else {
-            crawl(lirc.getPath());
+            crawl(lirc.getPath(), syncFilePath);
          }
       }
    }

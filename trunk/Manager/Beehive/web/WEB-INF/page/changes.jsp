@@ -101,7 +101,7 @@
          }
        
 	function refresh() {
-		$.getJSON("changes.htm?method=getCommitProgress",{r:Math.random()}, function(json) {
+		$.getJSON("progress.htm?method=getProgress",{type:'commit', r:Math.random()}, function(json) {
 			$("#commitInfo").html("<pre>"+json.data+"</pre>");
 			var infoContainer = $("#infoContainer");
 			infoContainer[0].scrollTop = infoContainer[0].scrollHeight;

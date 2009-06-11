@@ -56,4 +56,8 @@ public class SyncHistoryServiceImpl extends BaseAbstractService<SyncHistory> imp
       genericDAO.merge(dbSyncHistory);
    }
 
+   public SyncHistory getLatestByType(String type) {
+      return genericDAO.getByMaxNonIdField(SyncHistory.class, "type", type);
+   }
+   
 }

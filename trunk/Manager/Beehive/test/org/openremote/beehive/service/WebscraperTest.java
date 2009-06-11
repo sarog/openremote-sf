@@ -18,7 +18,7 @@ public class WebscraperTest extends TestBase{
 	 * @param args
 	 */
 	public void testScrapFiles() {
-		service.syncFiles();
+//		service.scrapeFiles();
 	}
 	
 	public void testGetProgress(){

@@ -27,7 +27,7 @@
 	 });
    
 	function refresh() {
-		$.getJSON("sync.htm?method=getSyncProgress",{r:Math.random()}, function(json) {
+		$.getJSON("progress.htm?method=getProgress",{type:'update', r:Math.random()}, function(json) {
 			setProgress(json);
 			if (json.status == "isEnd") {
 				clearInterval(timer);

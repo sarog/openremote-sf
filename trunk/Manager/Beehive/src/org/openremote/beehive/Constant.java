@@ -39,4 +39,8 @@ public final class Constant {
     * The value for svn repo and workCopy root directory
     */
    public static final String ROOT_PATH = "";
+   public static final String WORK_COPY = "workCopy";
+   public static final String SYNC_HISTORY = "syncHistory";
+   
+   
 }

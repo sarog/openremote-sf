@@ -139,6 +139,19 @@ public class GenericDAO extends HibernateDaoSupport {
       }
    }
    @SuppressWarnings("unchecked")
+   public <T> T getByMaxNonIdField(Class<T> clazz, String fieldName, Object fieldValue) {
+      List retList = new ArrayList();
+      DetachedCriteria criteria = DetachedCriteria.forClass(clazz);
+      criteria.addOrder(Order.desc("oid"));
+      criteria.add(Restrictions.eq(fieldName, fieldValue));
+      retList = getHibernateTemplate().findByCriteria(criteria, 0, 1);
+      if (retList != null && retList.size() > 0) {
+         return (T) retList.get(0);
+      } else {
+         return null;
+      }
+   }
+   @SuppressWarnings("unchecked")
    public <T> T getByMaxId(Class<T> clazz) {
       List retList = new ArrayList();
       DetachedCriteria criteria = DetachedCriteria.forClass(clazz);
