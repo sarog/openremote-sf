@@ -11,13 +11,19 @@
 #import "AsyncUdpSocket.h"
 
 @interface ServerAutoDiscoveryController : NSObject {
+	id theDelegate;
 	AsyncUdpSocket *udpSocket;
 	AsyncSocket *tcpSever; 
 	NSMutableArray *clients;
 	BOOL isReceiveServerUrl;
 	NSTimer	 *tcpTImer;
 }
+- (void)setDelegate:(id)delegate;
+- (void)findServerWithDelegate:(id)delegate;
 
-- (void)findServer;
+
+#pragma mark delegate method
+- (void)onFindServer:(NSString *)serverUrl;
+- (void)onFindServerFail:(NSString *)errorMessage;
 
 @end

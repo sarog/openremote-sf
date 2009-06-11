@@ -8,30 +8,17 @@
 
 #import "AppDelegate.h"
 #import "Activity.h"
-#import "Screen.h"
-#import "Control.h"
 #import "ScreenViewController.h"
-#import "ServerDefinition.h"
-#import "Definition.h"
 #import "ActivitiesController.h"
-#import "AppSettingsDefinition.h"
 #import "InitViewController.h"
-#import "NotificationConstant.h"
+#import "UpdateController.h"
+#import "ViewHelper.h"
 
 @interface AppDelegate (Private)
-- (void)useLocalCache;
 - (void)updateDidFinished;
-- (void)NeedNotUpdate;
-- (void)checkConfigAndUpdate;
-- (void)addNotificationObserver;
-- (void)showSettingsView;
-
 @end
 
 @implementation AppDelegate
-
-
-
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {    
     // Override point for customization after application launch
@@ -45,32 +32,23 @@
 	
 	[defaultView addSubview:initViewController.view];
 	
-	[self addNotificationObserver];
-	
-	[AppSettingsDefinition checkConfigAndUpdate];
-	
-	
-	
+	updateController = [[UpdateController alloc] initWithDelegate:self];
+	[updateController checkConfigAndUpdate];
 }
 
-- (void)addNotificationObserver {
-	//add a observer to defination upload task 
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateDidFinished) name:DefinationUpdateDidFinishedNotification object:nil];	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(useLocalCache) name:DefinationNeedNotUpdate object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(useLocalCache) name:NotificationHideInitView object:nil];
-	
-
-}
-
-- (void)useLocalCache {
-	[[Definition sharedDefinition] useLocalCacheDirectly];
+- (void)didUpadted {
 	[self updateDidFinished];
 }
+
+- (void)didUseLocalCache:(NSString *)errorMessage {
+	[ViewHelper showAlertViewWithTitle:@"Warning" Message:[errorMessage stringByAppendingString:@"Use local cache directly."]];
+	[self updateDidFinished];
+}
+
 
 - (void)updateDidFinished {
 	NSLog(@"----------updateDidFinished------");
 	[initViewController.view removeFromSuperview];
-	
 	ActivitiesController *activityController = [[ActivitiesController alloc] init];
 	[activityController setTitle:@"Activities"];
 	navigationController = [[UINavigationController alloc] initWithRootViewController:activityController];
@@ -80,6 +58,7 @@
 
 
 - (void)dealloc {
+	[updateController release];
 	[defaultView release];
 	[navigationController release];
 	[window release];

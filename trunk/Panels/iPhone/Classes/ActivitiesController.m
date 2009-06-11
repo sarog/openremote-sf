@@ -19,9 +19,9 @@
 #import "AppSettingController.h"
 
 @interface ActivitiesController (Private)
-- (void)showSettingsView;
 - (void)hideSettingsView;
 - (void)refreshView;
+- (void)clearView;
 @end
 
 @implementation ActivitiesController
@@ -42,9 +42,7 @@
 		UIBarButtonItem *settingButton = [[UIBarButtonItem alloc] initWithTitle:@"Settings" style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsView)];
 		self.navigationItem.leftBarButtonItem = settingButton;
 		[settingButton release];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSettingsView) name:NotificationShowSettingsView object:nil];	
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:DefinationUpdateDidFinishedNotification object:nil];	
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearView) name:DefinationNeedNotUpdate object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:NotificationRefreshAcitivitiesView object:nil];	
 	}
 	return self;
 }
@@ -65,6 +63,21 @@
 //	activities = [[Definition sharedDefinition] activities];
 //	[self.tableView  reloadData];
 }
+
+- (void)showSettingsView {
+	AppSettingController *settingController = [[AppSettingController alloc]init];
+	UINavigationController *settingNavController = [[UINavigationController alloc] initWithRootViewController:settingController];
+	[self presentModalViewController:settingNavController animated:YES];
+	[settingController release];
+	[settingNavController release];
+}																											
+
+- (void)dealloc {
+	[activities release];
+	[super dealloc];
+}
+
+
 #pragma mark UITableViewDataSource implementation
 - (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section
 {
@@ -149,19 +162,8 @@
 	return NO;
 }
 																			
-- (void)showSettingsView {
-	AppSettingController *settingController = [[AppSettingController alloc]init];
-	UINavigationController *settingNavController = [[UINavigationController alloc] initWithRootViewController:settingController];
-	[self presentModalViewController:settingNavController animated:YES];
-	[settingController release];
-	[settingNavController release];
-}																											
-																			
+																		
 
-- (void)dealloc {
-	[activities release];
-	[super dealloc];
-}
 
 
 @end

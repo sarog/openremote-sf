@@ -8,11 +8,14 @@
 
 #import "AppSettingController.h"
 #import "DirectoryDefinition.h"
-#import "AppSettingsDefinition.h"
 #import "ServerAutoDiscoveryController.h"
-#import "NotificationConstant.h"
 #import "AddServerViewController.h"
+#import "AppSettingsDefinition.h"
 #import "ViewHelper.h"
+#import "UpdateController.h"
+#import "ActivitiesController.h"
+#import "NotificationConstant.h"
+
 
 @interface AppSettingController (Private)
 -(NSMutableArray *)getCurrentServersWithAutoDiscoveryEnable:(BOOL)b;
@@ -84,15 +87,14 @@
 	}
 	return NO;
 }
+
 - (void)autoDiscoverChanged:(id)sender {
 	UISwitch *s = (UISwitch *)sender;
 	autoDiscovery = s.on;
 	if (autoDiscovery) {
 		self.navigationItem.leftBarButtonItem = nil;
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTableView) name:NotificationAfterFindServer object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(findServerFail) name:NotificationFindServerFail object:nil];
 		autoDiscoverController = [[ServerAutoDiscoveryController alloc]init];
-		[autoDiscoverController findServer];
+		[autoDiscoverController findServerWithDelegate:self];
 	} else {
 		self.navigationItem.leftBarButtonItem = edit;
 		[self updateTableView];
@@ -100,13 +102,7 @@
 		
 }
 
-
-- (void)updateTableView{
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:NotificationAfterFindServer object:nil];
-	if (autoDiscoverController != nil) {
-		[autoDiscoverController release];
-		autoDiscoverController = nil;
-	}
+- (void)updateTableView {
 	UITableView *tv = (UITableView *)self.view;
 	
 	
@@ -141,32 +137,6 @@
 	[insertIndexPaths release];
 }
 
-- (void)findServerFail {
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:NotificationFindServerFail object:nil];
-	if (autoDiscoverController != nil) {
-		[autoDiscoverController release];
-		autoDiscoverController = nil;
-	}
-	UITableView *tv = (UITableView *)self.view;
-	
-	
-	[tv beginUpdates];
-	NSMutableArray *deleteIndexPaths = [[NSMutableArray alloc] init];
-	for (int i=0;i <serverArray.count;i++){
-		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:i inSection:1]];
-	}
-	if (autoDiscovery) {
-		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:[serverArray count] inSection:1]];
-	}
-	[serverArray removeAllObjects];
-	autoDiscovery = !autoDiscovery;
-	[tv deleteRowsAtIndexPaths:deleteIndexPaths withRowAnimation:UITableViewRowAnimationTop];
-	autoDiscovery = !autoDiscovery;
-	[tv endUpdates];
-	
-	[deleteIndexPaths release];
-	
-}
 
 /*
 - (void)viewDidLoad {
@@ -206,15 +176,114 @@
 }
 */
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
-    // Release anything that's not essential, such as cached data
+
+		
+- (void)saveSettings {
+	if (serverArray.count == 0) {
+		[ViewHelper showAlertViewWithTitle:@"Warning" Message:@"Can't find Server automatically, You need to set a custom Server."];
+	} else {
+		[[AppSettingsDefinition getAutoDiscoveryDic] setValue:[NSNumber numberWithBool:autoDiscovery] forKey:@"value"];
+		[AppSettingsDefinition writeToFile];
+		if (updateController) {
+			[updateController release];
+			updateController = nil;
+		}
+		updateController = [[UpdateController alloc] initWithDelegate:self];
+		[updateController checkConfigAndUpdate];
+	}	
 }
 
+- (void)editSettings {
+	isEditing = !isEditing;
+	if (isEditing) {
+		self.navigationItem.leftBarButtonItem.title = @"Done";
+		self.navigationItem.rightBarButtonItem = nil;
+		[[self tableView] setEditing:YES animated:YES];
+	} else {
+		[AppSettingsDefinition writeToFile];
+		self.navigationItem.leftBarButtonItem = edit;
+		self.navigationItem.leftBarButtonItem.title = @"Edit";
+		self.navigationItem.rightBarButtonItem = done;
+		[[self tableView] setEditing:NO animated:YES];
+	}
+	
+	
+}
+
+#pragma mark Delegate method of ServerAutoDiscoveryController
+- (void)onFindServer:(NSString *)serverUrl {
+	[self updateTableView];
+}
+
+- (void)onFindServerFail:(NSString *)errorMessage {
+	
+	[ViewHelper showAlertViewWithTitle:@"Find Server Error" Message:errorMessage];
+	UITableView *tv = (UITableView *)self.view;
+	
+	[tv beginUpdates];
+	NSMutableArray *deleteIndexPaths = [[NSMutableArray alloc] init];
+	for (int i=0;i <serverArray.count;i++){
+		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:i inSection:1]];
+	}
+	if (autoDiscovery) {
+		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:[serverArray count] inSection:1]];
+	}
+	[serverArray removeAllObjects];
+	autoDiscovery = !autoDiscovery;
+	[tv deleteRowsAtIndexPaths:deleteIndexPaths withRowAnimation:UITableViewRowAnimationTop];
+	autoDiscovery = !autoDiscovery;
+	[tv endUpdates];
+	
+	[deleteIndexPaths release];
+	
+}
+
+
+#pragma mark Delegate method of UpdateController
+- (void)didUpadted {
+	[self dismissModalViewControllerAnimated:YES];
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshAcitivitiesView object:nil];
+}
+
+- (void)didUseLocalCache:(NSString *)errorMessage {
+	[ViewHelper showAlertViewWithTitle:@"Warning" Message:errorMessage];
+	[self dismissModalViewControllerAnimated:YES];
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshAcitivitiesView object:nil];
+}
+
+
+- (void)viewWillAppear:(BOOL)animated {
+	
+	self.navigationItem.rightBarButtonItem = done;
+	if (!autoDiscovery) {
+		self.navigationItem.leftBarButtonItem = edit;
+	}
+	
+	if (serverArray) {
+		[serverArray release];
+	}
+	serverArray = [[NSMutableArray alloc]init];
+	if (autoDiscovery) {
+		[serverArray addObjectsFromArray:[AppSettingsDefinition getAutoServers]];
+	} else {
+		[serverArray addObjectsFromArray:[AppSettingsDefinition getCustomServers]];
+	}
+	
+	[self.tableView reloadData];
+	
+}
+
+//- (void)viewWillDisappear:(BOOL)animated {
+//	
+//}
+//- (void)didReceiveMemoryWarning {
+//	[super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
+//	// Release anything that's not essential, such as cached data
+//}
 #pragma mark Table view methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-		return 2;
+	return 2;
 }
 
 
@@ -243,16 +312,16 @@
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    static NSString *autoCellIdentifier = @"autoCell";
+	
+	static NSString *autoCellIdentifier = @"autoCell";
 	static NSString *serverCellIdentifier = @"serverCell";
-    
-    UITableViewCell *autoCell = [tableView dequeueReusableCellWithIdentifier:autoCellIdentifier];
+	
+	UITableViewCell *autoCell = [tableView dequeueReusableCellWithIdentifier:autoCellIdentifier];
 	UITableViewCell *serverCell = [tableView dequeueReusableCellWithIdentifier:serverCellIdentifier];
 	
-    if (autoCell == nil) {
-        autoCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:autoCellIdentifier] autorelease];
-    }
+	if (autoCell == nil) {
+		autoCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:autoCellIdentifier] autorelease];
+	}
 	if (serverCell == nil) {
 		serverCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:serverCellIdentifier] autorelease];
 	}
@@ -318,17 +387,17 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	//if (isEditing) {
-//		if ([self isCustomServerSection:indexPath]) {
-//			AddServerViewController *addServerViewController = [[AddServerViewController alloc]init];
-//			addServerViewController.editingItem = [[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:indexPath.row];
-//			[self.navigationController pushViewController:addServerViewController animated:YES];
-//			[addServerViewController release];
-//			return;
-//		}
-//		return;
-//	} 
+	//		if ([self isCustomServerSection:indexPath]) {
+	//			AddServerViewController *addServerViewController = [[AddServerViewController alloc]init];
+	//			addServerViewController.editingItem = [[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:indexPath.row];
+	//			[self.navigationController pushViewController:addServerViewController animated:YES];
+	//			[addServerViewController release];
+	//			return;
+	//		}
+	//		return;
+	//	} 
 	
-
+	
 	
 	if (indexPath.section == 0) {
 		return;
@@ -355,109 +424,58 @@
 			oldCell.accessoryType = UITableViewCellAccessoryNone;
 		} 
 	} 
-		if (cell.accessoryType == UITableViewCellAccessoryNone) {
-			[[[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:indexPath.row] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
-			cell.accessoryType = UITableViewCellAccessoryCheckmark;
-		} 
-
+	if (cell.accessoryType == UITableViewCellAccessoryNone) {
+		[[[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:indexPath.row] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
+		cell.accessoryType = UITableViewCellAccessoryCheckmark;
+	} 
+	
 	currentSelectedServerIndex = indexPath;
 }
 
 
 /*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
+ // Override to support conditional editing of the table view.
+ - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+ // Return NO if you do not want the specified item to be editable.
+ return YES;
+ }
+ */
 
 
 /*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:YES];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
+ // Override to support editing the table view.
+ - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+ 
+ if (editingStyle == UITableViewCellEditingStyleDelete) {
+ // Delete the row from the data source
+ [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:YES];
+ }   
+ else if (editingStyle == UITableViewCellEditingStyleInsert) {
+ // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+ }   
+ }
+ */
 
 
 /*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
+ // Override to support rearranging the table view.
+ - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
+ }
+ */
 
 
 /*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-		
-- (void)saveSettings {
-	if (serverArray.count == 0) {
-		[ViewHelper showAlertViewWithTitle:@"Warning" Message:@"Can't find Server automatically, You need to set a custom Server."];
-		return;
-	}
-	[[AppSettingsDefinition getAutoDiscoveryDic] setValue:[NSNumber numberWithBool:autoDiscovery] forKey:@"value"];
-	[AppSettingsDefinition writeToFile];
-	[AppSettingsDefinition checkConfigAndUpdate];
+ // Override to support conditional rearranging of the table view.
+ - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+ // Return NO if you do not want the item to be re-orderable.
+ return YES;
+ }
+ */
 
-}
-
-- (void)editSettings {
-	isEditing = !isEditing;
-	if (isEditing) {
-		self.navigationItem.leftBarButtonItem.title = @"Done";
-		self.navigationItem.rightBarButtonItem = nil;
-		[[self tableView] setEditing:YES animated:YES];
-	} else {
-		[AppSettingsDefinition writeToFile];
-		self.navigationItem.leftBarButtonItem = edit;
-		self.navigationItem.leftBarButtonItem.title = @"Edit";
-		self.navigationItem.rightBarButtonItem = done;
-		[[self tableView] setEditing:NO animated:YES];
-	}
-
-	
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-	
-	self.navigationItem.rightBarButtonItem = done;
-	if (!autoDiscovery) {
-		self.navigationItem.leftBarButtonItem = edit;
-	}
-	
-	if (serverArray) {
-		[serverArray release];
-	}
-	serverArray = [[NSMutableArray alloc]init];
-	if (autoDiscovery) {
-		[serverArray addObjectsFromArray:[AppSettingsDefinition getAutoServers]];
-	} else {
-		[serverArray addObjectsFromArray:[AppSettingsDefinition getCustomServers]];
-	}
-	
-	[self.tableView reloadData];
-	
-}
-
-//- (void)viewWillDisappear:(BOOL)animated {
-//	
-//}
 
 
 - (void)dealloc {
+	[updateController release];
 	[edit release];
 	[done release];
 	[serverArray release];
