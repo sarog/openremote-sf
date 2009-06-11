@@ -43,5 +43,14 @@ public interface FileService {
     * @param inputStream the input stream
     */
    void uploadConfigZip(InputStream inputStream);
+   
+   /**
+    * Find resource.
+    * 
+    * @param relativePath the relative path
+    * 
+    * @return the input stream
+    */
+   InputStream findResource(String relativePath);
 
 }
