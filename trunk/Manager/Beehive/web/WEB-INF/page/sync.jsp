@@ -8,11 +8,11 @@
    <script type="text/javascript">
    var timer = 0;
    $(document).ready(function() {	   
-	   if($('#commitStatus').val() == "true"){
+	   if($('#commitStatus').val() == "running"){
            $('#message').text(" The committing is running, please update later.");
            $("#updateBtn").attr("disabled","true").addClass("disabled_button");
      }
-	   if($('#updateStatus').val() == "true"){
+	   if($('#updateStatus').val() == "running"){
 		   setAnimation();
 		   refresh();
 		   $('#message').text("Updating form http://lirc.sourceforge.net/remotes ......");
@@ -55,8 +55,6 @@
 </script>
 </head>
 	<body tabId="2">
-	<input type="hidden" name="updateStatus" id="updateStatus" value="${sessionScope.isUpdating}"/>
-   <input type="hidden" name="commitStatus" id="commitStatus" value="${sessionScope.isCommitting}"/>
 	<table class="infopanel" width="100%" border="0" cellpadding="0"
 		cellspacing="0">	
 			<tr>

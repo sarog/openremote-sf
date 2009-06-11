@@ -21,6 +21,7 @@
 package org.openremote.beehive.controller;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +30,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
+import org.openremote.beehive.api.service.SyncHistoryService;
+import org.openremote.beehive.domain.SyncHistory;
 import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.file.Progress;
 import org.openremote.beehive.repo.DiffResult;
@@ -47,8 +50,13 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 public class LIRCRevisionChangesController extends MultiActionController {
    private SVNDelegateService svnDelegateService;
    private ModelService modelService;
+   private SyncHistoryService syncHistoryService;
    private String indexView;
    private String changeView;
+   
+   public void setSyncHistoryService(SyncHistoryService syncHistoryService) {
+      this.syncHistoryService = syncHistoryService;
+   }
    
    public void setIndexView(String indexView) {
       this.indexView = indexView;
@@ -76,7 +84,12 @@ public class LIRCRevisionChangesController extends MultiActionController {
     * @return ModelAndView
     */
    public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
+      SyncHistory syncHistory = syncHistoryService.getLatest();
       ModelAndView mav = new ModelAndView(indexView);
+      if(syncHistory != null){
+         mav.addObject(syncHistory.getType(), syncHistory.getStatus());
+      }
+      
       LogMessage headMessage = svnDelegateService.getHeadLog(Constant.ROOT_PATH);
       mav.addObject("headMessage", headMessage);
       request.getSession().setAttribute("headRevision", headMessage.getRevision().toString());
@@ -133,15 +146,20 @@ public class LIRCRevisionChangesController extends MultiActionController {
    public ModelAndView commit(HttpServletRequest request, HttpServletResponse response ){
       String[] items = request.getParameterValues("items");
       String comment = request.getParameter("comment");
+      
       if(items != null){
-         request.getSession().setAttribute("isCommitting", "true");
+         SyncHistory syncHistory = new SyncHistory();
+         syncHistory.setStartTime(new Date());
+         syncHistory.setType("commit");
+         syncHistory.setStatus("running");
+         syncHistoryService.save(syncHistory);
          try{
             svnDelegateService.commit(items,comment, "admin");
          }catch(SVNException e){
-            request.getSession().removeAttribute("isCommitting");
+            syncHistoryService.update("faild", new Date());
             throw e;
          }
-         request.getSession().removeAttribute("isCommitting");
+         syncHistoryService.update("success", new Date());
       }
       return null;
    }

@@ -30,6 +30,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.StatelessSession;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -130,6 +131,18 @@ public class GenericDAO extends HibernateDaoSupport {
       List retList = new ArrayList();
       DetachedCriteria criteria = DetachedCriteria.forClass(clazz);
       criteria.add(Restrictions.eq(fieldName, fieldValue));
+      retList = getHibernateTemplate().findByCriteria(criteria, 0, 1);
+      if (retList != null && retList.size() > 0) {
+         return (T) retList.get(0);
+      } else {
+         return null;
+      }
+   }
+   @SuppressWarnings("unchecked")
+   public <T> T getByMaxId(Class<T> clazz) {
+      List retList = new ArrayList();
+      DetachedCriteria criteria = DetachedCriteria.forClass(clazz);
+      criteria.addOrder(Order.desc("oid"));
       retList = getHibernateTemplate().findByCriteria(criteria, 0, 1);
       if (retList != null && retList.size() > 0) {
          return (T) retList.get(0);
@@ -313,4 +326,5 @@ public class GenericDAO extends HibernateDaoSupport {
    public void flush(){
       getHibernateTemplate().flush();
    }
+   
 }

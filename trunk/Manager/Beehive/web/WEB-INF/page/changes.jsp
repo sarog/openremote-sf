@@ -8,11 +8,11 @@
      <script type="text/javascript">
        var timer = 0;
        $(document).ready(function() {
-           if($('#updateStatus').val() == "true"){
+           if($('#updateStatus').val() == "running"){
                $('#message').text(" The updating is running, please commit changes later.");
                $("#commitSubmit").attr("disabled","true").addClass("disabled_button");
            }
-           if($('#commitStatus').val() == "true"){
+           if($('#commitStatus').val() == "running"){
                 $('#message').text(" The committing is running...");
                 $("#commitSubmit").attr("disabled","true").addClass("disabled_button");
                 refresh();
@@ -181,8 +181,6 @@
 </script>
 </head>
 <body tabId="1">
-      <input type="hidden" name="updateStatus" id="updateStatus" value="${sessionScope.isUpdating}"/>
-      <input type="hidden" name="commitStatus" id="commitStatus" value="${sessionScope.isCommitting}"/>
 	   <table class="infopanel" width="100%" border="0" cellpadding="0" cellspacing="0">
 	      <tr>
 	         <td width="100%">

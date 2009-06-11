@@ -16,7 +16,7 @@
       <script type="text/javascript">
             $(document).ready(function(){
                 $('#tab_<decorator:getProperty property="body.tabId"/>').addClass('activetab').removeClass("inactivetab");
-                if($('#updateStatus').val() == "true"){
+                if($('#updateStatus').val() == "running"){
                 	$('#tab_2 img').attr("src","image/update.gif");
                 }else{
                 	$('#tab_2 img').attr("src","image/update_icon.gif");
@@ -26,7 +26,8 @@
       <decorator:head />
    </head>
    <body>
-      <input type="hidden" name="updateStatus" id="updateStatus" value="${sessionScope.isUpdating}"/>
+      <input type="hidden" name="updateStatus" id="updateStatus" value="${update}"/>
+      <input type="hidden" name="commitStatus" id="commitStatus" value="${commit}"/>
       <table width="100%" cellpadding="0" cellspacing="0" height="100%">
           <tr>
             <td><table width="100%" cellpadding="0" cellspacing="0" height="100%">

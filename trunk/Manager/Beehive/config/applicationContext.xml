@@ -23,6 +23,7 @@
                 <value>org.openremote.beehive.domain.RemoteOption</value>
                 <value>org.openremote.beehive.domain.Code</value>
                 <value>org.openremote.beehive.domain.Icon</value>
+                <value>org.openremote.beehive.domain.SyncHistory</value>
             </list>
         </property>
         <property name="mappingResources">
