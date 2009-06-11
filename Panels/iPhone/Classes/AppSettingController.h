@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "ServerAutoDiscoveryController.h"
+#import "UpdateController.h"
 
 @interface AppSettingController : UITableViewController {
 	NSString *pathToUserCopyOfPlist;
@@ -19,5 +20,6 @@
 	UIBarButtonItem *edit;
 	BOOL isEditing;
 	UIActivityIndicatorView *loadingView;
+	UpdateController *updateController;
 }
 @end

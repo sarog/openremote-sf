@@ -16,6 +16,7 @@
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
 		79BF34C80F4E5FE600989DCC /* ScreenView.m in Sources */ = {isa = PBXBuildFile; fileRef = 79BF34C70F4E5FE600989DCC /* ScreenView.m */; };
 		79BF34CB0F4E60E200989DCC /* ScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 79BF34CA0F4E60E200989DCC /* ScreenViewController.m */; };
+		8C283CAE0FDB687D00CC54C6 /* UpdateController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C283CAD0FDB687D00CC54C6 /* UpdateController.m */; };
 		8C298D010FC3A155004D9F3C /* TextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C298D000FC3A155004D9F3C /* TextFieldCell.m */; };
 		8C298D070FC3AA94004D9F3C /* AddServerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C298D060FC3AA94004D9F3C /* AddServerViewController.m */; };
 		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
@@ -82,6 +83,8 @@
 		79BF34C90F4E60E200989DCC /* ScreenViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenViewController.h; sourceTree = "<group>"; };
 		79BF34CA0F4E60E200989DCC /* ScreenViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenViewController.m; sourceTree = "<group>"; };
 		79FEE18F0F4E864C0017B50D /* Definition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Definition.h; sourceTree = "<group>"; };
+		8C283CAC0FDB687D00CC54C6 /* UpdateController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdateController.h; sourceTree = "<group>"; };
+		8C283CAD0FDB687D00CC54C6 /* UpdateController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdateController.m; sourceTree = "<group>"; };
 		8C298CFF0FC3A155004D9F3C /* TextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextFieldCell.h; sourceTree = "<group>"; };
 		8C298D000FC3A155004D9F3C /* TextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextFieldCell.m; sourceTree = "<group>"; };
 		8C298D050FC3AA94004D9F3C /* AddServerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddServerViewController.h; sourceTree = "<group>"; };
@@ -343,6 +346,8 @@
 				8C298D000FC3A155004D9F3C /* TextFieldCell.m */,
 				8C298D050FC3AA94004D9F3C /* AddServerViewController.h */,
 				8C298D060FC3AA94004D9F3C /* AddServerViewController.m */,
+				8C283CAC0FDB687D00CC54C6 /* UpdateController.h */,
+				8C283CAD0FDB687D00CC54C6 /* UpdateController.m */,
 			);
 			name = controller;
 			sourceTree = "<group>";
@@ -460,6 +465,7 @@
 				8C298D010FC3A155004D9F3C /* TextFieldCell.m in Sources */,
 				8C298D070FC3AA94004D9F3C /* AddServerViewController.m in Sources */,
 				8CD122330FD295FE00D59D72 /* CheckNetworkStaffException.m in Sources */,
+				8C283CAE0FDB687D00CC54C6 /* UpdateController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

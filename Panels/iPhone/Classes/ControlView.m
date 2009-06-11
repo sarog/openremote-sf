@@ -10,6 +10,7 @@
 #import "Control.h"
 #import "DirectoryDefinition.h"
 #import "ServerDefinition.h"
+#import "ViewHelper.h"
 
 @interface ControlView (Private) 
 - (void)createButton;
@@ -18,6 +19,7 @@
 - (void)sendRequest;
 - (void)sendBegin;
 - (void)sendEnd;
+- (void)handleServerErrorWithStatusCode:(int) statusCode;
 @end
 
 @implementation ControlView
@@ -102,7 +104,7 @@
 	[location release];
 	[url	 release];
 	[request release];
-	[connection release];	
+	[connection autorelease];	
 }
 
 - (void)sendBegin {
@@ -119,7 +121,7 @@
 	[location release];
 	[url	 release];
 	[request release];
-	[connection release];	
+	[connection autorelease];	
 	
 }
 - (void)sendEnd {
@@ -136,7 +138,7 @@
 	[location release];
 	[url	 release];
 	[request release];
-	[connection release];	
+	[connection autorelease];	
 	
 }
 
@@ -160,6 +162,51 @@
 ////		[alert release];
 //	}
 //	[result release];
+	NSLog(@"definitionURLConnectionDidFinishLoading");
+}
+
+- (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
+	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
+	NSLog(@"statusCode is %d", [httpResp statusCode]);
+	
+	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
+}
+
+- (void)handleServerErrorWithStatusCode:(int) statusCode {
+	if (statusCode != 200) {
+		NSString *errorMessage = nil;
+		switch (statusCode) {
+			case 404:
+				errorMessage = [NSString stringWithString:@"Request URL is invalid"];
+				break;
+			case 418:
+				errorMessage = [NSString stringWithString:@"Event Build Error. Happens when an event can't be built from a DOM Element."];
+				break;
+			case 419:
+				errorMessage = [NSString stringWithString:@"No Such Button Error."];
+				break;
+			case 420:
+				errorMessage = [NSString stringWithString:@"No Such Event Builder Error."];
+				break;
+			case 422:
+				errorMessage = [NSString stringWithString:@"controller.xml Not Found Error."];
+				break;
+			case 423:
+				errorMessage = [NSString stringWithString:@"No Such Event Error."];
+				break;
+			case 424:
+				errorMessage = [NSString stringWithString:@"Invalid controller.xml Error."];
+				break;
+			case 500:
+				errorMessage = [NSString stringWithString:@"Server error"];
+				break;
+		}
+		if (!errorMessage) {
+			errorMessage = [NSString stringWithFormat:@"Occured unknown error, satus code is @d",statusCode];
+		}
+		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:errorMessage];
+	}
+		
 }
 
 //override layoutSubviews method of UIView 

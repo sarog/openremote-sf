@@ -22,11 +22,8 @@
 
 @implementation AppSettingsDefinition
 
-static NSString *currentServerUrl;
-static NSMutableArray *settingsData;
-static ServerAutoDiscoveryController *autoDiscovery;
-
-static int retryTimes = 0;
+static NSString *currentServerUrl = nil;
+static NSMutableArray *settingsData = nil;
 
 + (NSMutableArray *)getAppSettings {
 	if (!settingsData) {
@@ -42,6 +39,8 @@ static int retryTimes = 0;
 	}
 	settingsData = [[NSMutableArray alloc] initWithContentsOfFile:[DirectoryDefinition appSettingsFilePath]];
 }
+
+
 +(NSMutableDictionary *)getSectionWithIndex:(int)index {
 	return [[self getAppSettings] objectAtIndex:index];
 }
@@ -76,16 +75,18 @@ static int retryTimes = 0;
 
 + (void)removeAllAutoServer {
 	[[self getAutoServers] removeAllObjects];
+	[self writeToFile];
 	NSLog(@"remove all auto server ,now auto server count is %d",[self getAutoServers].count);
 }
 + (void)writeToFile {
 	if ([settingsData writeToFile:[DirectoryDefinition appSettingsFilePath] atomically:NO]) {	
-		[self readServerUrlFromFile:NULL];
+		[self readServerUrlFromFile];
 	}
 }
 
 //Read server url from file, if find it will set currentServerUrl value and return NO else return NO.
-+ (BOOL)readServerUrlFromFile:(NSError **)error {
+// after read you can get all the details through AppSettingsDefinition api.
++ (BOOL)readServerUrlFromFile{
 	[self reloadData];
 	
 	NSString *serverUrl = nil;
@@ -93,7 +94,6 @@ static int retryTimes = 0;
 		NSLog(@"auto enable");
 		if ([self getAutoServers].count == 0) {
 			NSLog(@"auto 0");
-			*error =  [[[NSError alloc] initWithDomain:@"readServerUrlFromFileError" code:0 userInfo:nil] autorelease];
 			return NO;
 		} 
 		
@@ -107,7 +107,6 @@ static int retryTimes = 0;
 		serverUrl = (serverUrl?serverUrl: [[[self getAutoServers] objectAtIndex:0] valueForKey:@"url"]);
 	} else {
 		if ([self getCustomServers].count == 0) {
-			*error =  [[[NSError alloc] initWithDomain:@"readServerUrlFromFileError" code:0 userInfo:nil] autorelease];
 			return NO;
 		}
 		
@@ -122,94 +121,21 @@ static int retryTimes = 0;
 		[self setCurrentServerUrl:serverUrl];
 		return YES;
 	} else {
-		*error =  [[[NSError alloc] initWithDomain:@"readServerUrlFromFileError" code:0 userInfo:nil] autorelease];
 		return NO;
 	}
 }
 
 
-+ (void)checkConfigAndUpdate {
-	NSLog(@"check config");
-	NSError *readServerUrlError = nil;
-	@try {	
-		[AppSettingsDefinition readServerUrlFromFile:&readServerUrlError];
-		if (readServerUrlError) {
-			if ([self isAutoDiscoveryEnable]) {
-				[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterFindServer) name:NotificationAfterFindServer object:nil];
-				[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(findServerFail) name:NotificationFindServerFail object:nil];
-				if (autoDiscovery) {
-					[autoDiscovery release];
-					autoDiscovery = nil;
-				}
-				autoDiscovery = [[ServerAutoDiscoveryController alloc] init];
-				[autoDiscovery findServer];
-				retryTimes = retryTimes + 1;
-			} else {
-				[ViewHelper showAlertViewWithTitle:@"Error" Message:@"Can't find server url configuration. You can turn on auto-discovery or specify a server url in settings."];
-				[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowSettingsView object:nil];
-			}			
-		} else {
-			[CheckNetworkStaff checkAll];
-			[[Definition sharedDefinition] update];
-		}
-	}
-	@catch (CheckNetworkStaffException *e) {
-		NSLog(@"CheckNetworkStaffException %@",e.message);
-		NSLog(@"retry %d time.",retryTimes);
-		if (retryTimes == 0 && [self isAutoDiscoveryEnable]) {
-					NSLog(@"retry @d time.",retryTimes);
-					[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterFindServer) name:NotificationAfterFindServer object:nil];
-					[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(findServerFail) name:NotificationFindServerFail object:nil];
-					if (autoDiscovery) {
-						[autoDiscovery release];
-						autoDiscovery = nil;
-					}
-					autoDiscovery = [[ServerAutoDiscoveryController alloc] init];
-					[autoDiscovery findServer];
-					retryTimes = retryTimes + 1;
-		} else {
-			[ViewHelper showAlertViewWithTitle:e.title Message:e.message];
-			[[NSNotificationCenter defaultCenter] postNotificationName:DefinationNeedNotUpdate object:nil];
-		}
-		
-	}	
-}
-
-+ (void)afterFindServer {
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:NotificationAfterFindServer object:nil];
-	[self reloadData];
-	if (autoDiscovery) {
-		[autoDiscovery release];
-		autoDiscovery = nil;
-	}
-	
-	NSLog([AppSettingsDefinition getCurrentServerUrl]);
-	NSLog(@"after find server, find auto server %d",[AppSettingsDefinition getAutoServers].count);
-	if ([AppSettingsDefinition getAutoServers].count > 0) {
-		[self checkConfigAndUpdate];
-	} else {
-		[ViewHelper showAlertViewWithTitle:@"Error" Message:@"Can't find Server, please make sure you are under the same LAN as Server Or make sure you have been started your server."];
-		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowSettingsView object:nil];
-	}
-
-}
-
-+ (void)findServerFail {
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:NotificationFindServerFail object:nil];
-	if (autoDiscovery) {
-		[autoDiscovery release];
-		autoDiscovery = nil;
-	}
-	if (retryTimes != 0) {
-		[ViewHelper showAlertViewWithTitle:@"Error" Message:@"Can't discover the server, maybe your server hasn't been started or your iPhone is not under the same LAN as Server."];
-		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowSettingsView object:nil];
-		
-	}
-	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideInitView object:nil];
-}
 
 + (NSString *)getCurrentServerUrl {
-	return currentServerUrl;
+	if (!currentServerUrl) {
+		return currentServerUrl;
+	} else {
+		if ( [AppSettingsDefinition readServerUrlFromFile]) {
+			return currentServerUrl;
+		} 
+	}
+	return nil;
 }
 
 + (void)setCurrentServerUrl:(NSString *)url {

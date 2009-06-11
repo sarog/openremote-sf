@@ -159,9 +159,7 @@ static Definition *myInstance = nil;
 	[self parseXml];
 	[self downloadImages];
 	NSLog(@"images download done");
-	
-	
-	
+		
 	//after parse the xml all the Operation have already added to OperationQuere and addDependency to updateOperation
 	[updateOperationQueue addOperation:updateOperation];
 	NSLog(@"parse xml end element screens and add updateOperation to queue");

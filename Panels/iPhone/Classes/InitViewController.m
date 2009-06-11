@@ -12,7 +12,6 @@
 #import "DirectoryDefinition.h"
 
 @interface InitViewController (Private)
-- (void)showSettingsView;
 
 @end
 
@@ -48,17 +47,8 @@
 		[self.view  addSubview:label];
 		[self.view  addSubview:version];
 		[loadding startAnimating];
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSettingsView) name:NotificationShowSettingsView object:nil];	
 	}
 	return self;
-}
-
-- (void)showSettingsView {
-	AppSettingController *settingController = [[AppSettingController alloc]init];
-	UINavigationController *secondNavigationController = [[UINavigationController alloc] initWithRootViewController:settingController];
-	[self presentModalViewController:secondNavigationController animated:YES];
-	[settingController release];
 }
 
 
