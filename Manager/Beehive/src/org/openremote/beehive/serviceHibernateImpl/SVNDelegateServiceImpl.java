@@ -35,15 +35,17 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
+import org.openremote.beehive.Constant;
 import org.openremote.beehive.PathConfig;
-import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
+import org.openremote.beehive.api.service.SyncHistoryService;
+import org.openremote.beehive.domain.SyncHistory;
 import org.openremote.beehive.domain.Vendor;
 import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.file.LIRCElement;
-import org.openremote.beehive.file.Progress;
 import org.openremote.beehive.repo.Actions;
 import org.openremote.beehive.repo.ChangeCount;
+import org.openremote.beehive.repo.DateFormatter;
 import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.DifferenceModel;
@@ -75,7 +77,7 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
 public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implements SVNDelegateService {
    private static Logger logger = Logger.getLogger(SVNDelegateServiceImpl.class.getName());
    private Configuration configuration;
-   private ModelService modelService;
+   private SyncHistoryService syncHistoryService;
    private ISVNClientAdapter svnClient = SVNClientFactory.getSVNClient();
    private static Map<String, Object> fileLocks = new HashMap<String, Object>();   
    public Configuration getConfiguration() {
@@ -86,9 +88,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       this.configuration = configuration;
    }
    
-   
-   public void setModelService(ModelService modelService) {
-      this.modelService = modelService;
+   public void setSyncHistoryService(SyncHistoryService syncHistoryService) {
+      this.syncHistoryService = syncHistoryService;
    }
 
    /**
@@ -96,9 +97,19 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
     * @throws SVNException 
     */
    public void commit(String[] paths, String message, String username){
+      Date date = new Date();
+      SyncHistory syncHistory = new SyncHistory();
+      syncHistory.setStartTime(new Date());
+      String logPath = PathConfig.getInstance().getFilePathByDate(date, Constant.COMMIT_PROGRESS_FILE);
+      syncHistory.setLogPath(logPath);
+      syncHistory.setType("commit");
+      syncHistory.setStatus("running");
+      syncHistoryService.save(syncHistory);
+      String commitFilePath = configuration.getSyncHistoryDir()+File.separator+logPath;
+      
       svnClient.setUsername(username);
       int totalPath = paths.length;
-      FileUtil.deleteFileOnExist(new File(PathConfig.getInstance().commitProgressFilePath()));
+      FileUtil.deleteFileOnExist(new File(commitFilePath));
       File[] files = new File[totalPath];
       if (totalPath > 0) {
          try {
@@ -143,7 +154,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                   }
                }
             }
-            FileUtil.writeLineToFile(PathConfig.getInstance().commitProgressFilePath(), "commit completed!");
+            FileUtil.writeLineToFile(commitFilePath, DateFormatter.format(date)+" Completed!");
          } catch (SVNClientException e) {
             logger.error("Commit changes occur exception! maybe you have commit too many changes.", e);
             SVNException ee = new SVNException("Commit changes occur exception! maybe you have commit too many changes.",e);
@@ -589,14 +600,6 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          throw ee;
       }
       return logMessage;
-   }
-   
-   /**
-    * {@inheritDoc}
-    */
-   public Progress getCommitProgress() {
-      File progressFile = new File(PathConfig.getInstance().commitProgressFilePath());
-      return FileUtil.getProgressFromFile(progressFile, "commit completed!", modelService.count());
    }
    
    /**

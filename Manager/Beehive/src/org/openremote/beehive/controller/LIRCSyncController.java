@@ -20,7 +20,6 @@
  */
 package org.openremote.beehive.controller;
 
-import java.io.IOException;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +29,6 @@ import org.openremote.beehive.api.service.SyncHistoryService;
 import org.openremote.beehive.api.service.WebscraperService;
 import org.openremote.beehive.domain.SyncHistory;
 import org.openremote.beehive.exception.SVNException;
-import org.openremote.beehive.file.Progress;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -81,30 +79,13 @@ public class LIRCSyncController extends MultiActionController {
     * @return
     */
    public ModelAndView update(HttpServletRequest request, HttpServletResponse response) {
-      SyncHistory syncHistory = new SyncHistory();
-      syncHistory.setStartTime(new Date());
-      syncHistory.setType("update");
-      syncHistory.setStatus("running");
-      syncHistoryService.save(syncHistory);
       try{
-         scraperService.syncFiles();
+         scraperService.scrapeFiles();
       }catch(SVNException e){
          syncHistoryService.update("faild", new Date());
          throw e;
       }
       syncHistoryService.update("success", new Date());
       return null;
-   }
-   
-   /**
-    * Get the sync messages when update LIRC configuration files from http://lirc.sourceforge.net/remotes/ to workCopy
-    * 
-    * @param request
-    * @param response
-    * @throws IOException
-    */
-   public void getSyncProgress(HttpServletRequest request, HttpServletResponse response) throws IOException{
-      Progress syncProgress = scraperService.getSyncProgress();
-      response.getWriter().print(syncProgress.getJson());
    }
 }

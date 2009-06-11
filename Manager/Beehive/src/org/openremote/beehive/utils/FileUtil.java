@@ -39,10 +39,8 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
-import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.file.EnumCharset;
 import org.openremote.beehive.spring.SpringContext;
-import org.openremote.beehive.file.Progress;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -415,6 +413,9 @@ public class FileUtil {
     */
    public static void writeLineToFile(String fileName, String line) {
       File f = new File(fileName);
+      if (!f.getParentFile().exists()) {
+         f.getParentFile().mkdirs();
+      }
       try {
          if (!f.exists()) {
             f.createNewFile();
@@ -451,37 +452,6 @@ public class FileUtil {
    public static String relativeWorkcopyPath(String path){
       String wc = new File(configuration.getWorkCopyDir()).getPath();
       return path.replace(wc, "").replaceAll("\\\\", "/");
-   }
-   
-   /**
-    * Gets the progress from file.
-    * 
-    * @param progressFile the progress file
-    * @param endTag the end tag
-    * @param count the count
-    * 
-    * @return the progress from file
-    */
-   public static Progress getProgressFromFile(File progressFile, String endTag, double count){
-      Progress progress = new Progress();
-      String message = "";
-      if(progressFile.exists()){
-         try {
-            message = FileUtils.readFileToString(progressFile, "UTF8");
-            double percent = FileUtils.readLines(progressFile, "UTF8").size()/count;
-            progress.setPercent(percent);
-            progress.setMessage(message);
-            if(message.trim().endsWith(endTag)){
-               progress.setStatus("isEnd");
-            }
-         } catch (IOException e) {
-            LOGGER.error("Read "+progressFile.getName()+" to string occur error!",e);
-            SVNException ee = new SVNException("Read "+progressFile.getName()+" to string occur error!",e);
-            ee.setErrorCode(SVNException.SVN_IO_ERROR);
-            throw ee;
-         }
-      }
-      return progress;
    }
    
    /**

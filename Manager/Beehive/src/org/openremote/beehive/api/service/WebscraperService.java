@@ -20,7 +20,6 @@
  */
 package org.openremote.beehive.api.service;
 
-import org.openremote.beehive.file.Progress;
 
 
 /**
@@ -33,14 +32,5 @@ public interface WebscraperService {
     * 
     * Sync lirc configuration files from web to svn's workCopy
     */
-   void syncFiles();
-   
-   /**
-    * Get sync progress from progress file
-    * 
-    * @param progressFileName string
-    * @param endTag string
-    * @return
-    */
-   Progress getSyncProgress();
+   void scrapeFiles();
 }

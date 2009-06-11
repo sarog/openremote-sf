@@ -20,19 +20,27 @@
  */
 package org.openremote.beehive;
 
-public class Configuration {
+import java.io.File;
 
-   private String workCopyDir;
+public class Configuration {
+   private String workDir;
    private String svnDir;
    private String iconsDir;
    
-
-   public String getWorkCopyDir() {
-      return workCopyDir;
+   public String getWorkDir() {
+      return workDir;
    }
 
-   public void setWorkCopyDir(String workCopyDir) {
-      this.workCopyDir = workCopyDir;
+   public String getSyncHistoryDir() {
+      return workDir+File.separator+Constant.SYNC_HISTORY;
+   }
+
+   public void setWorkDir(String workDir) {
+      this.workDir = workDir;
+   }
+
+   public String getWorkCopyDir() {
+      return workDir+File.separator+Constant.WORK_COPY;
    }
 
    public String getSvnDir() {

@@ -20,45 +20,22 @@
  */
 package org.openremote.beehive.api.service;
 
-import java.util.Date;
+import org.openremote.beehive.file.Progress;
 
-import org.openremote.beehive.domain.SyncHistory;
-
+// TODO: Auto-generated Javadoc
 /**
- * The Interface SyncHistoryService.
+ * The Interface ProgressService.
  * 
  * @author Tomsky
  */
-public interface SyncHistoryService {
+public interface ProgressService {
    
    /**
-    * Gets the latest.
-    * 
-    * @return the latest
-    */
-   SyncHistory getLatest();
-   
-   /**
-    * Save.
-    * 
-    * @param syncHistory the sync history
-    */
-   void save(SyncHistory syncHistory);
-   
-   /**
-    * Update.
-    * 
-    * @param status the status
-    * @param endTime the end time
-    */
-   void update(String status, Date endTime);
-   
-   /**
-    * Gets the latest by type.
+    * Gets the progress.
     * 
     * @param type the type
     * 
-    * @return the latest by type
+    * @return the progress
     */
-   SyncHistory getLatestByType(String type);
+   Progress getProgress(String type);
 }

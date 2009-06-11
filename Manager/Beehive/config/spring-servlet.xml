@@ -11,6 +11,7 @@
                 <prop key="changes.htm">lircRevisionChangesController</prop>
                 <prop key="sync.htm">lircSyncController</prop>
                 <prop key="history.htm">lircHistoryController</prop>
+                <prop key="progress.htm">progressController</prop>
             </props>
         </property>
     </bean>
@@ -55,6 +56,8 @@
    </bean>
    
    <bean id="remoteSectionController" class="org.openremote.beehive.controller.RemoteSectionController">
+   </bean>
+   <bean id="progressController" class="org.openremote.beehive.controller.ProgressController">
    </bean>
     
     <bean id="beehiveDatabaseController" class="org.openremote.beehive.controller.BeehiveDatabaseController">

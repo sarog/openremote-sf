@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.file.LIRCElement;
-import org.openremote.beehive.file.Progress;
 import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.LIRCEntry;
@@ -190,13 +189,6 @@ public interface SVNDelegateService {
     */
    LogMessage getLogByRevision(String path, long revision);
 
-   /**
-    * Gets the commit progress.
-    * 
-    * @return the commit progress
-    */
-   Progress getCommitProgress();
-   
    /**
     * Compare workCopy file to lirc site by last modified date.
     * 
