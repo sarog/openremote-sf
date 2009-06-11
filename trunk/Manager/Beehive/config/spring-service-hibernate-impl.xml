@@ -65,4 +65,8 @@
       class="org.openremote.beehive.serviceHibernateImpl.IconServiceImpl"
       parent="abstractService" >
    </bean>
+   <bean id="syncHistoryService"
+      class="org.openremote.beehive.serviceHibernateImpl.SyncHistoryServiceImpl"
+      parent="abstractService" >
+   </bean>
 </beans>
