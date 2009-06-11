@@ -21,6 +21,8 @@
 package org.openremote.controller.service.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -29,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.Configuration;
 import org.openremote.controller.Constants;
 import org.openremote.controller.service.FileService;
+import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.utils.ZipUtil;
 
 /**
@@ -77,6 +80,22 @@ public class FileServiceImpl implements FileService {
       }
    }
 
+
+   /* (non-Javadoc)
+    * @see org.openremote.controller.service.FileService#findResource(java.lang.String)
+    */
+   public InputStream findResource(String relativePath) {
+      File file = new File(PathUtil.removeSlashSuffix(configuration.getResourcePath()) + relativePath);
+      if (file.exists() && file.isFile()) {
+         try {
+            return new FileInputStream(file);
+         } catch (FileNotFoundException e) {
+            return null;
+         }
+      }
+      return null;
+   }
+   
    /**
     * Sets the configuration.
     * 
@@ -85,6 +104,5 @@ public class FileServiceImpl implements FileService {
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
-   
 
 }

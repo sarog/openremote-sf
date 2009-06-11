@@ -119,7 +119,7 @@ public class RemoteActionXMLParser {
       
       sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
       sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
-      String xmlPath = PathUtil.appendFileSeparator(configuration.getResourcePath()) + Constants.CONTROLLER_XML;
+      String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.CONTROLLER_XML;
       if (!new File(xmlPath).exists()) {
          throw new ControllerXMLNotFoundException(" Make sure it's in /resources");
       }

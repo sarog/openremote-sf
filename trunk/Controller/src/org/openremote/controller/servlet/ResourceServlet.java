@@ -20,18 +20,16 @@
  */
 package org.openremote.controller.servlet;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openremote.controller.Configuration;
-import org.openremote.controller.utils.ConfigFactory;
-import org.openremote.controller.utils.PathUtil;
+import org.openremote.controller.service.FileService;
+import org.openremote.controller.spring.SpringContext;
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -41,26 +39,23 @@ import org.springframework.util.FileCopyUtils;
  */
 @SuppressWarnings("serial")
 public class ResourceServlet extends HttpServlet {
-
-   /** The configuration. */
-   private Configuration configuration = ConfigFactory.getConfig();
    
+   /** The file service. */
+   private static FileService fileService = 
+      (FileService) SpringContext.getInstance().getBean("fileService");;
+
    /* (non-Javadoc)
     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
     */
    @Override
    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-      String resourcePath = configuration.getResourcePath();
-      String url = request.getRequestURL().toString();
-      String fileName = url.substring(url.lastIndexOf("/") + 1);
-      String filePath = PathUtil.appendFileSeparator(resourcePath) + fileName;
-      File file = new File(filePath);
-      if (file.exists()) {
-         FileCopyUtils.copy(new FileInputStream(file), response.getOutputStream());
+      String relativePath = request.getPathInfo();
+      InputStream is = fileService.findResource(relativePath);
+      if (is != null) {
+         FileCopyUtils.copy(is, response.getOutputStream());
       } else {
-         response.sendError(HttpServletResponse.SC_NOT_FOUND, fileName);
+         response.sendError(HttpServletResponse.SC_NOT_FOUND, relativePath);
       }
    }
-   
 
 }

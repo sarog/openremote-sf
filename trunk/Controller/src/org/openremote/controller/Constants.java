@@ -42,14 +42,14 @@ public class Constants {
    /** The Constant OPENREMOTE_NAMESPACE. */
    public final static String OPENREMOTE_NAMESPACE= "or";
    
-   /** The SCHEM a_ language. */
+   /** The Constant SCHEMA_LANGUAGE. */
    public final static String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
    
-   /** The XM l_ schema. */
+   /** The Constant XML_SCHEMA. */
    public final static String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
    
-   /** The SCHEM a_ source. */
+   /** The Constant SCHEMA_SOURCE. */
    public final static String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
-   
+
 
 }
