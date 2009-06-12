@@ -61,6 +61,11 @@
 				<td width="100%">
 				<table class="tabcontent" width="100%" border="0" cellpadding="0"
 					cellspacing="0">
+					   <tr>
+					      <td colspan="5" style="padding-left: 20px;" class="value"><b>Last update:</b></td>
+                     <td colspan="5" class="value">${lastUpdate.startDate }&nbsp;(${lastUpdate.status })</td>
+                     <td></td>
+                  </tr>
 						<tr>
 							<td class="value" style="padding-left: 20px;" colspan="5"
 								width="10%"><b>Progress</b>&nbsp;:</td>

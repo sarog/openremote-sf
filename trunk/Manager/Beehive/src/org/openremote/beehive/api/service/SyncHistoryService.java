@@ -61,4 +61,13 @@ public interface SyncHistoryService {
     * @return the latest by type
     */
    SyncHistory getLatestByType(String type);
+   
+   /**
+    * Gets the last sync by type.
+    * 
+    * @param type the type
+    * 
+    * @return the last sync by type
+    */
+   SyncHistory getLastSyncByType(String type);
 }

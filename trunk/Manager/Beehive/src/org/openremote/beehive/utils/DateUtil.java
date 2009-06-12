@@ -50,4 +50,8 @@ public class DateUtil {
        String sDate = sdf.format(date);
        return sDate;
    }
+   
+   public static String getDefaultFormat(Date date){
+      return getTimeFormat(date, "yyyy-MM-dd HH:mm:ss");
+   }
 }

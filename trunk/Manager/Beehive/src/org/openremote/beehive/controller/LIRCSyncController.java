@@ -29,6 +29,7 @@ import org.openremote.beehive.api.service.SyncHistoryService;
 import org.openremote.beehive.api.service.WebscraperService;
 import org.openremote.beehive.domain.SyncHistory;
 import org.openremote.beehive.exception.SVNException;
+import org.openremote.beehive.utils.DateUtil;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -67,6 +68,10 @@ public class LIRCSyncController extends MultiActionController {
       ModelAndView mav = new ModelAndView(indexView);
       if(syncHistory != null){
          mav.addObject(syncHistory.getType(), syncHistory.getStatus());
+      }
+      SyncHistory lastUpdate = syncHistoryService.getLastSyncByType("update");
+      if(lastUpdate != null){
+         mav.addObject("lastUpdate", lastUpdate);
       }
       return mav;
    }
