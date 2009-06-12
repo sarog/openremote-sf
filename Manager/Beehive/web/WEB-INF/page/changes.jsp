@@ -54,7 +54,7 @@
            });
            $('#commitSuccessBtn').click(function(){
         	     $.unblockUI();
-        	     window.location='';
+        	     window.location='changes.htm';
            });
            
        });
