@@ -138,19 +138,14 @@ public class GenericDAO extends HibernateDaoSupport {
          return null;
       }
    }
-   @SuppressWarnings("unchecked")
-   public <T> T getByMaxNonIdField(Class<T> clazz, String fieldName, Object fieldValue) {
-      List retList = new ArrayList();
-      DetachedCriteria criteria = DetachedCriteria.forClass(clazz);
-      criteria.addOrder(Order.desc("oid"));
-      criteria.add(Restrictions.eq(fieldName, fieldValue));
-      retList = getHibernateTemplate().findByCriteria(criteria, 0, 1);
-      if (retList != null && retList.size() > 0) {
-         return (T) retList.get(0);
-      } else {
-         return null;
-      }
-   }
+   
+   /**
+    * Gets the by max id.
+    * 
+    * @param clazz the clazz
+    * 
+    * @return the by max id
+    */
    @SuppressWarnings("unchecked")
    public <T> T getByMaxId(Class<T> clazz) {
       List retList = new ArrayList();
@@ -237,6 +232,16 @@ public class GenericDAO extends HibernateDaoSupport {
    @SuppressWarnings("unchecked")
    public <T> List<T> findByDetachedCriteria(final DetachedCriteria detachedCriteria) {
       return (List<T>) getHibernateTemplate().findByCriteria(detachedCriteria);
+   }
+   
+   @SuppressWarnings("unchecked")
+   public <T> T findOneByDetachedCriteria(final DetachedCriteria detachedCriteria) {
+      List retList = getHibernateTemplate().findByCriteria(detachedCriteria, 0, 1);
+      if (retList != null && retList.size() > 0) {
+         return (T) retList.get(0);
+      } else {
+         return null;
+      }
    }
 
    /**

@@ -9,6 +9,9 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.openremote.beehive.utils.DateUtil;
 
 /**
  * @author Tomsky
@@ -48,7 +51,13 @@ public class SyncHistory extends BusinessEntity {
    public void setStartTime(Date startTime) {
       this.startTime = startTime;
    }
-
+   
+   @Transient
+   public String getStartDate() {
+      return DateUtil.getDefaultFormat(startTime);
+   }
+   
+   
    public void setEndTime(Date endTime) {
       this.endTime = endTime;
    }

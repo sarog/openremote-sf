@@ -190,6 +190,8 @@
 	               <tr class="value" nowrap="true">
 	                  <td class="value" style="padding-left: 20px;" nowrap="true"><b>Revision:</b>&nbsp;
 	                     ${headMessage.revision}[HEAD]</td>
+	                  <td class="value" style="padding-left: 20px;" nowrap="true"><b>Age:</b>&nbsp;
+	                     ${headMessage.age}</td>
 	                  <td class="value" style="padding-left: 20px;" nowrap="true"><b>Author:</b>&nbsp;
 	                     ${headMessage.author}</td>
 	                  <td class="value" style="padding-left: 20px;" nowrap="true"><b>Total
@@ -257,7 +259,7 @@
 	           </c:forEach>
 		      </form>
 	   </table>
-	   <div id="commitView" class="hidden">
+	   <div id="commitView" class="hidden" style="height:100%;">
 	      <div id="infoContainer" style="height:90%; overflow:auto;">
 	         <div id="commitInfo"></div>
 	         <div id="spinner"><img alt="" src="image/spinner.gif" /></div>	      

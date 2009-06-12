@@ -22,6 +22,9 @@ package org.openremote.beehive.serviceHibernateImpl;
 
 import java.util.Date;
 
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.openremote.beehive.api.service.SyncHistoryService;
 import org.openremote.beehive.domain.SyncHistory;
 
@@ -55,9 +58,27 @@ public class SyncHistoryServiceImpl extends BaseAbstractService<SyncHistory> imp
       dbSyncHistory.setEndTime(endTime);
       genericDAO.merge(dbSyncHistory);
    }
-
+   
+   /**
+    * {@inheritDoc}
+    */
    public SyncHistory getLatestByType(String type) {
-      return genericDAO.getByMaxNonIdField(SyncHistory.class, "type", type);
+      DetachedCriteria criteria = DetachedCriteria.forClass(SyncHistory.class);
+      criteria.addOrder(Order.desc("oid"));
+      criteria.add(Restrictions.eq("type", type));
+      return genericDAO.findOneByDetachedCriteria(criteria);
    }
+
+   /**
+    * {@inheritDoc}
+    */
+   public SyncHistory getLastSyncByType(String type) {
+      DetachedCriteria criteria = DetachedCriteria.forClass(SyncHistory.class);
+      criteria.addOrder(Order.desc("oid"));
+      criteria.add(Restrictions.eq("type", type));
+      criteria.add(Restrictions.ne("status", "running"));
+      return genericDAO.findOneByDetachedCriteria(criteria);
+   }
+   
    
 }
