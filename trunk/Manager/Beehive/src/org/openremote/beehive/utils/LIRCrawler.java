@@ -20,7 +20,9 @@
  */
 package org.openremote.beehive.utils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -121,7 +123,7 @@ public class LIRCrawler {
             try {
                Thread.sleep(1000 * 5);
             } catch (InterruptedException e) {
-               e.printStackTrace();
+               LOGGER.error("Thread sleep 5s occur error!",e);
             }
          }
       }
@@ -145,7 +147,14 @@ public class LIRCrawler {
          if (statusCode != HttpStatus.SC_OK) {
             LOGGER.error("Method failed: " + getMethod.getStatusLine());
          }
-         responseBody = getMethod.getResponseBodyAsString();
+         BufferedReader bufferIn = new BufferedReader(new InputStreamReader(getMethod.getResponseBodyAsStream()));
+         StringBuffer sb = new StringBuffer();
+         char[] buf = new char[1024*1024];
+         int len;
+         while ((len=bufferIn.read(buf))>0) {
+            sb.append(buf, 0, len);
+         }
+         responseBody = sb.toString();
       } catch (HttpException e) {
          LOGGER.error("Please check your provided http address " + url, e);
          return null;

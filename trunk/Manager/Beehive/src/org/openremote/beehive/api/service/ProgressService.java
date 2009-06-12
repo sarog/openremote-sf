@@ -22,7 +22,6 @@ package org.openremote.beehive.api.service;
 
 import org.openremote.beehive.file.Progress;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface ProgressService.
  * 
@@ -34,8 +33,9 @@ public interface ProgressService {
     * Gets the progress.
     * 
     * @param type the type
+    * @param count the count
     * 
     * @return the progress
     */
-   Progress getProgress(String type);
+   Progress getProgress(String type, double count);
 }

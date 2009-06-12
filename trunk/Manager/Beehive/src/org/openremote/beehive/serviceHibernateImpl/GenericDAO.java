@@ -55,6 +55,10 @@ public class GenericDAO extends HibernateDaoSupport {
       return getHibernateTemplate().save(o);
    }
 
+   public void saveOrUpdate(Object o) {
+      getHibernateTemplate().saveOrUpdate(o);
+   }
+
    /**
     * Copy the state of the given object onto the persistent object with the same identifier. Follows JSR-220 semantics.
     * Similar to saveOrUpdate, but never associates the given object with the current Hibernate Session. In case of a

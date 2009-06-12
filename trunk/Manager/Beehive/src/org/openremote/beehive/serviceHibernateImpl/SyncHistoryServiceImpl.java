@@ -46,7 +46,7 @@ public class SyncHistoryServiceImpl extends BaseAbstractService<SyncHistory> imp
     * {@inheritDoc}
     */
    public void save(SyncHistory syncHistory) {
-      genericDAO.save(syncHistory);
+      genericDAO.saveOrUpdate(syncHistory);
    }
 
    /**

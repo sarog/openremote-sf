@@ -25,6 +25,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.ProgressService;
 import org.openremote.beehive.file.Progress;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -39,7 +40,7 @@ public class ProgressController extends MultiActionController {
    
    /** The progress service. */
    private ProgressService progressService;
-   
+   private ModelService modelService;
    /**
     * Sets the progress service.
     * 
@@ -48,6 +49,11 @@ public class ProgressController extends MultiActionController {
    public void setProgressService(ProgressService progressService) {
       this.progressService = progressService;
    }
+   
+   public void setModelService(ModelService modelService) {
+      this.modelService = modelService;
+   }
+
 
    /**
     * Scraps and imports all the LIRC configuration files.
@@ -60,8 +66,16 @@ public class ProgressController extends MultiActionController {
     * @throws IOException Signals that an I/O exception has occurred.
     */
    public void getProgress(HttpServletRequest request, HttpServletResponse response) throws IOException {
+      Double count = 1D;
       String type = request.getParameter("type");
-      Progress progress = progressService.getProgress(type);
+      if("update".equals(type)){
+         count =  (Double) request.getSession().getAttribute("modelCount");
+         if(count == null){
+            count = Double.valueOf(modelService.count());
+            request.getSession().setAttribute("modelCount", count);
+         }
+      }
+      Progress progress = progressService.getProgress(type,count);
       response.getWriter().print(progress.getJson());
    }
 

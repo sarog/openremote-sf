@@ -30,6 +30,8 @@ import javax.servlet.ServletContextListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
+import org.openremote.beehive.api.service.SyncHistoryService;
+import org.openremote.beehive.domain.SyncHistory;
 import org.openremote.beehive.repo.SVNClientFactory;
 import org.openremote.beehive.serviceHibernateImpl.SVNDelegateServiceImpl;
 import org.openremote.beehive.spring.SpringContext;
@@ -45,6 +47,7 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
 public class ApplicationListener implements ServletContextListener {
    private ISVNClientAdapter svnClient = SVNClientFactory.getSVNClient();
    private static Configuration configuration = (Configuration) SpringContext.getInstance().getBean("configuration");
+   private static SyncHistoryService syncHistoryService = (SyncHistoryService) SpringContext.getInstance().getBean("syncHistoryService");
    private static Logger logger = Logger.getLogger(SVNDelegateServiceImpl.class.getName());
    
    /**
@@ -52,6 +55,11 @@ public class ApplicationListener implements ServletContextListener {
     */
    @Override
    public void contextInitialized(ServletContextEvent arg0) {
+      SyncHistory syncHistory = syncHistoryService.getLatest();
+      if(syncHistory!=null && "running".equals(syncHistory.getStatus())){
+         syncHistory.setStatus("failed");
+         syncHistoryService.save(syncHistory);
+      }
       String svnDir = configuration.getSvnDir();
       String fileSvnPath = "file:///";
       if (configuration.getWorkCopyDir().startsWith("/")) {
