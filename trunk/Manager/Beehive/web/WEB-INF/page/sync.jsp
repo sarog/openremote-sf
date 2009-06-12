@@ -63,7 +63,16 @@
 					cellspacing="0">
 					   <tr>
 					      <td colspan="5" style="padding-left: 20px;" class="value"><b>Last update:</b></td>
-                     <td colspan="5" class="value">${lastUpdate.startDate }&nbsp;(${lastUpdate.status })</td>
+                     <td colspan="5" class="value">
+                        <c:choose>
+                           <c:when test="${lastUpdate ne null}">
+			                     ${lastUpdate.startDate}&nbsp;(${lastUpdate.status })
+                           </c:when>
+                           <c:otherwise>
+                              There is no sync yet.
+                           </c:otherwise>
+                        </c:choose>
+                     </td>
                      <td></td>
                   </tr>
 						<tr>
