@@ -36,6 +36,7 @@ import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.LogMessage;
 import org.openremote.beehive.repo.DiffResult.Line;
+import org.openremote.beehive.repo.DiffStatus.Element;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -116,7 +117,9 @@ public class LIRCRevisionChangesController extends MultiActionController {
       ModelAndView mav = new ModelAndView(changeView);
       String path = ServletRequestUtils.getRequiredStringParameter(request, "path");
       String action = ServletRequestUtils.getRequiredStringParameter(request, "action");
-      if(!"UNVERSIONED".equals(action) || !"ADDED".equals(action)){
+      System.out.println(action);
+      if(!"UNVERSIONED".equals(action) && !"ADDED".equals(action)){
+         System.out.println(action);
          LogMessage repoMessage = svnDelegateService.getHeadLog(path);
          mav.addObject("repoMessage", repoMessage);     
       }

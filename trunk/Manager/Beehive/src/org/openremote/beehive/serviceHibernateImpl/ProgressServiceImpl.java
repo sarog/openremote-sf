@@ -30,6 +30,7 @@ import org.openremote.beehive.api.service.ProgressService;
 import org.openremote.beehive.api.service.SyncHistoryService;
 import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.file.Progress;
+import org.openremote.beehive.utils.StringUtil;
 
 /**
  * The Class ProgressServiceImpl.
@@ -77,10 +78,9 @@ public class ProgressServiceImpl implements ProgressService {
    /**
     * {@inheritDoc}
     */
-   public Progress getProgress(String type) {
-      double count = modelService.count();
+   public Progress getProgress(String type, double count) {
       String logPath = syncHistoryService.getLatestByType(type).getLogPath();
-      File progressFile = new File(configuration.getSyncHistoryDir()+File.separator+logPath);
+      File progressFile = new File(StringUtil.appendFileSeparator(configuration.getSyncHistoryDir())+logPath);
       return getProgressFromFile(progressFile, "Completed!", count);
    }
    

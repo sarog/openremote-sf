@@ -82,11 +82,12 @@ public class LIRCSyncController extends MultiActionController {
     * @param request
     * @param response
     * @return
+    * @throws Exception 
     */
-   public ModelAndView update(HttpServletRequest request, HttpServletResponse response) {
+   public ModelAndView update(HttpServletRequest request, HttpServletResponse response) throws Exception {
       try{
          scraperService.scrapeFiles();
-      }catch(SVNException e){
+      }catch(Exception e){
          syncHistoryService.update("faild", new Date());
          throw e;
       }
