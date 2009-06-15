@@ -25,9 +25,9 @@ import java.util.List;
 import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.file.LIRCElement;
 import org.openremote.beehive.repo.DiffResult;
-import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.LIRCEntry;
 import org.openremote.beehive.repo.LogMessage;
+import org.openremote.beehive.repo.DiffStatus.Element;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -142,9 +142,9 @@ public interface SVNDelegateService {
     * 
     * @param path which is an relative path of workCopy,and is head with a fileSeparator
     * 
-    * @return DiffStatus
+    * @return List
     */
-   DiffStatus getDiffStatus(String path);
+   List<Element> getDiffStatus(String path);
    
    /**
     * Judge the SVN repo whether blank.

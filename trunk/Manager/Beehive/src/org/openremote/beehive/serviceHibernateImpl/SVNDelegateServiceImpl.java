@@ -47,12 +47,12 @@ import org.openremote.beehive.repo.Actions;
 import org.openremote.beehive.repo.ChangeCount;
 import org.openremote.beehive.repo.DateFormatter;
 import org.openremote.beehive.repo.DiffResult;
-import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.DifferenceModel;
 import org.openremote.beehive.repo.LIRCEntry;
 import org.openremote.beehive.repo.LogMessage;
 import org.openremote.beehive.repo.SVNClientFactory;
 import org.openremote.beehive.repo.SvnCommand;
+import org.openremote.beehive.repo.DiffStatus.Element;
 import org.openremote.beehive.repo.LogMessage.ChangePath;
 import org.openremote.beehive.utils.FileUtil;
 import org.openremote.beehive.utils.StringUtil;
@@ -455,8 +455,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
    /**
     * {@inheritDoc}
     */
-   public DiffStatus getDiffStatus(String path) {
-      return SvnCommand.getStatus(configuration.getWorkCopyDir() + path);
+   public List<Element> getDiffStatus(String path) {
+      return SvnCommand.getStatus(configuration.getWorkCopyDir() + path).getDiffStatus();
    }
    
    
@@ -610,10 +610,15 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       File workFile = new File(StringUtil.appendFileSeparator(configuration.getWorkCopyDir()) + lirc.getRelativePath());
       if (workFile.exists()) {
          try {
-            ISVNInfo parentFileInfo = svnClient.getInfoFromWorkingCopy(new File(SvnUtil.escapeFileName(workFile
-                  .getParentFile().getAbsolutePath())));
             Date uploadDate = lirc.getUploadDate();
-            if (parentFileInfo.getLastChangedDate() != null) {
+            boolean underSVN = false;
+            for(String fileName: workFile.getParentFile().list()){
+               if(".svn".equals(fileName)){
+                  underSVN = true;
+                  break;
+               }
+            }
+            if (underSVN) {
                ISVNInfo svnInfo = svnClient.getInfoFromWorkingCopy(new File(SvnUtil.escapeFileName(workFile
                      .getAbsolutePath())));
                if (svnInfo.getLastChangedDate() != null && uploadDate.compareTo(svnInfo.getLastChangedDate()) > 0) {
