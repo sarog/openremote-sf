@@ -33,7 +33,6 @@ import org.openremote.beehive.api.service.SyncHistoryService;
 import org.openremote.beehive.domain.SyncHistory;
 import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.repo.DiffResult;
-import org.openremote.beehive.repo.DiffStatus;
 import org.openremote.beehive.repo.LogMessage;
 import org.openremote.beehive.repo.DiffResult.Line;
 import org.openremote.beehive.repo.DiffStatus.Element;
@@ -97,8 +96,8 @@ public class LIRCRevisionChangesController extends MultiActionController {
       }else{
          request.setAttribute("isBlankSVN", false);
       }
-      DiffStatus ds = svnDelegateService.getDiffStatus(Constant.ROOT_PATH);
-      mav.addObject("diffStatus", ds.getDiffStatus());
+      List<Element> ds = svnDelegateService.getDiffStatus(Constant.ROOT_PATH);
+      mav.addObject("diffStatus", ds);
       return mav;
    }
    
