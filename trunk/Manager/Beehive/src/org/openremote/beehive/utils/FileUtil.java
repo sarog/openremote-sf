@@ -39,6 +39,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
+import org.openremote.beehive.exception.LIRCrawlerException;
 import org.openremote.beehive.file.EnumCharset;
 import org.openremote.beehive.spring.SpringContext;
 
@@ -523,6 +524,9 @@ public class FileUtil {
             FileUtils.writeStringToFile(file, content, "UTF-8");
          } catch (IOException e) {
             LOGGER.error("Can't write content to file "+filePath, e);
+            LIRCrawlerException ee = new LIRCrawlerException("Can't write content to file "+filePath,e);
+            ee.setErrorCode(LIRCrawlerException.CRAWLER_WRITEFILE_ERROR);
+            throw ee;
          }
    }
 }

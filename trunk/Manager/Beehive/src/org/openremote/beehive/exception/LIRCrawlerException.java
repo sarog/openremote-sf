@@ -21,50 +21,20 @@
 package org.openremote.beehive.exception;
 
 /**
- * The exception class when svn operation.
+ * The Class LIRCrawlerException.
  * 
  * @author Tomsky
  */
-public class SVNException extends RuntimeException {
+public class LIRCrawlerException extends RuntimeException {
 
    /** The Constant serialVersionUID. */
-   private static final long serialVersionUID = 6673589293618355474L;
-
-   /** The Constant SVN_COMMIT_ERROR. */
-   public static final int SVN_COMMIT_ERROR = 430;
+   private static final long serialVersionUID = 8645844364538885913L;
    
-   /** The Constant SVN_GETINFO_ERROR. */
-   public static final int SVN_GETINFO_ERROR = 431;
+   /** The Constant CRAWLER_WRITEFILE_ERROR. */
+   public static final int CRAWLER_WRITEFILE_ERROR = 445;
    
-   /** The Constant SVN_DIFF_ERROR. */
-   public static final int SVN_DIFF_ERROR = 432;
-   
-   /** The Constant SVN_GETLIST_ERROR. */
-   public static final int SVN_GETLIST_ERROR = 433;
-   
-   /** The Constant SVN_GETLOG_ERROR. */
-   public static final int SVN_GETLOG_ERROR = 434;
-   
-   /** The Constant SVN_REVERT_ERROR. */
-   public static final int SVN_REVERT_ERROR = 435;
-   
-   /** The Constant SVN_ROLLBACK_ERROR. */
-   public static final int SVN_ROLLBACK_ERROR = 436;
-   
-   /** The Constant SVN_GETSTATUS_ERROR. */
-   public static final int SVN_GETSTATUS_ERROR = 437;
-   
-   /** The Constant SVN_GETCONTENT_ERROR. */
-   public static final int SVN_GETCONTENT_ERROR = 438;
-   
-   /** The Constant SVN_EXPORT_ERROR. */
-   public static final int SVN_EXPORT_ERROR = 439;
-   
-   /** The Constant SVN_URL_ERROR. */
-   public static final int SVN_URL_ERROR = 440;
-   
-   /** The Constant SVN_IO_ERROR. */
-   public static final int SVN_IO_ERROR = 441;
+   /** The Constant CRAWLER_NETWORK_ERROR. */
+   public static final int CRAWLER_NETWORK_ERROR = 446;
    
    /** The error code. */
    private int errorCode;
@@ -87,11 +57,11 @@ public class SVNException extends RuntimeException {
    public void setErrorCode(int errorCode) {
       this.errorCode = errorCode;
    }
-
+   
    /**
-    * Instantiates a new sVN exception.
+    * Instantiates a new lIR crawler exception.
     */
-   public SVNException() {
+   public LIRCrawlerException() {
       super();
    }
 
@@ -100,7 +70,7 @@ public class SVNException extends RuntimeException {
     * 
     * @param message the message
     */
-   public SVNException(String message) {
+   public LIRCrawlerException(String message) {
       super(message);
    }
 
@@ -109,7 +79,7 @@ public class SVNException extends RuntimeException {
     * 
     * @param cause the cause
     */
-   public SVNException(Throwable cause) {
+   public LIRCrawlerException(Throwable cause) {
       super(cause);
    }
 
@@ -119,7 +89,7 @@ public class SVNException extends RuntimeException {
     * @param message the message
     * @param cause the cause
     */
-   public SVNException(String message, Throwable cause) {
+   public LIRCrawlerException(String message, Throwable cause) {
       super(message, cause);
    }
 
