@@ -20,19 +20,22 @@
  */
 package org.openremote.controller.utils;
 
+// TODO: Auto-generated Javadoc
 /**
- * The Class PathUtil.
+ * The Utility for file system Path.
  * 
  * @author Dan 2009-5-14
  */
 public class PathUtil {
 
+   
+
    /**
-    * Webapps location.
+    * Webapp root path.
     * 
-    * @return the string
+    * @return the root path of webapp
     */
-   public static String webappsLocation(){
+   public static String webappRootPath(){
       return System.getProperty("controller.root");
    }
 }

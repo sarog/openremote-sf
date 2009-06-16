@@ -29,7 +29,7 @@ import org.openremote.controller.utils.RemoteActionXMLParser;
 
 
 /**
- * A implementation for ButtonCommandService class.
+ * The implementation for ButtonCommandService class.
  * 
  * @author Dan 2009-4-3
  */
