@@ -32,5 +32,5 @@ public interface WebscraperService {
     * 
     * Sync lirc configuration files from web to svn's workCopy
     */
-   void scrapeFiles();
+   void scrapeFiles()throws Exception;
 }

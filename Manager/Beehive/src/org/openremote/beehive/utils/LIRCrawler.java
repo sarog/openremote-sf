@@ -36,6 +36,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
+import org.openremote.beehive.exception.LIRCrawlerException;
 import org.openremote.beehive.file.LIRCElement;
 
 /**
@@ -116,8 +117,11 @@ public class LIRCrawler {
       while(content == null){
          content = getHtmlBody(url);
          retryCount++;
-         if(retryCount > 100){
+         if(retryCount > 10){
             content = "";
+            LIRCrawlerException ee = new LIRCrawlerException("Occur the network exception, maybe the url [" + url + "] is unreachable.");
+            ee.setErrorCode(LIRCrawlerException.CRAWLER_NETWORK_ERROR);
+            throw ee;
          }else if(retryCount != 0){
             LOGGER.error("try " + url + " " + retryCount +" times.");
             try {
