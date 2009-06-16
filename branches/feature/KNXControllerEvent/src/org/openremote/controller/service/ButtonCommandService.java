@@ -20,6 +20,8 @@
  */
 package org.openremote.controller.service;
 
+import org.openremote.controller.event.CommandType;
+
 
 
 /**
@@ -29,8 +31,17 @@ package org.openremote.controller.service;
  */
 public interface ButtonCommandService {
    
+   
    /**
-    * Trigger the command of button.
+    * Trigger a button command.
+    * 
+    * @param buttonID the button id
+    * @param commandType the command type
+    */
+   void trigger(String buttonID, CommandType commandType);
+   
+   /**
+    * Trigger a send_once command.
     * 
     * @param buttonID the button id
     */

@@ -18,39 +18,44 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.utils;
+package org.openremote.controller.exception;
 
 /**
- * The Utility for file system Path.
+ * The exception class when InvalidControllerXML.
  * 
- * @author Dan 2009-5-14
+ * @author Dan 2009-5-23
  */
-public class PathUtil {
-
-   
+@SuppressWarnings("serial")
+public class InvalidControllerXMLException extends ButtonCommandException {
 
    /**
-    * Webapp root path.
-    * 
-    * @return the root path of webapp
+    * Instantiates a new invalid controller xml exception.
     */
-   public static String webappRootPath(){
-      return System.getProperty("controller.root");
+   public InvalidControllerXMLException() {
+      super();
+      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
    }
-   
+
    /**
-    * Append file separator.
+    * Instantiates a new invalid controller xml exception.
     * 
-    * @param src the src
-    * 
-    * @return the string
+    * @param message the message
+    * @param cause the cause
     */
-   public static String addSlashSuffix(String src) {
-      return src.endsWith("/") ? src : src + "/";
+   public InvalidControllerXMLException(String message, Throwable cause) {
+      super(message, cause);
+      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
+   }
+
+   /**
+    * Instantiates a new invalid controller xml exception.
+    * 
+    * @param message the message
+    */
+   public InvalidControllerXMLException(String message) {
+      super(message);
+      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
    }
    
-   public static String removeSlashSuffix(String src) {
-      return src.endsWith("/") ? src.substring(0, src.lastIndexOf("/")) : src ;
-   }
-   
+
 }

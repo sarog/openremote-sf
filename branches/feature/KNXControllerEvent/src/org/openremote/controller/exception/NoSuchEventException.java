@@ -18,36 +18,43 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.utils;
-
-import java.util.List;
-
-import junit.framework.TestCase;
-
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.RemoteActionXMLParser;
-import org.openremote.controller.protocol.infrared.IREvent;
-import org.openremote.controller.spring.SpringContext;
-
+package org.openremote.controller.exception;
 
 /**
- * The Class RemoteActionXMLParserTest.
+ * The exception class when NoSuchEvent.
  * 
- * @author Dan 2009-4-3
+ * @author Dan 2009-5-23
  */
-public class RemoteActionXMLParserTest extends TestCase {
-   
-   /** The remote action xml parser. */
-   private RemoteActionXMLParser remoteActionXMLParser = (RemoteActionXMLParser) SpringContext.getInstance().getBean(
-         "remoteActionXMLParser");
+@SuppressWarnings("serial")
+public class NoSuchEventException extends ButtonCommandException {
 
    /**
-    * Test find ir event by button id.
+    * Instantiates a new no such event exception.
     */
-   public void testFindIREventByButtonID(){
-//      List<Event> list= remoteActionXMLParser.findEventsByButtonID("8");
-//      System.out.println(((IREvent)list.get(0)).getName());
-//      assertEquals(1, list.size());
+   public NoSuchEventException() {
+      super();
+      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
    }
-   
+
+   /**
+    * Instantiates a new no such event exception.
+    * 
+    * @param message the message
+    * @param cause the cause
+    */
+   public NoSuchEventException(String message, Throwable cause) {
+      super(message, cause);
+      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
+   }
+
+   /**
+    * Instantiates a new no such event exception.
+    * 
+    * @param message the message
+    */
+   public NoSuchEventException(String message) {
+      super(message);
+      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
+   }
+
 }

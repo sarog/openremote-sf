@@ -19,29 +19,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.openremote.controller.utils;
+package org.openremote.controller.event;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.log4j.Logger;
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventFactory;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.jdom.xpath.XPath;
+import org.openremote.controller.Configuration;
+import org.openremote.controller.Constants;
+import org.openremote.controller.exception.ControllerXMLNotFoundException;
+import org.openremote.controller.exception.InvalidControllerXMLException;
 import org.openremote.controller.exception.NoSuchButtonException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import org.openremote.controller.exception.NoSuchEventException;
+import org.openremote.controller.utils.PathUtil;
 
 
 /**
@@ -57,6 +54,9 @@ public class RemoteActionXMLParser {
    /** The event factory. */
    private EventFactory eventFactory;
    
+   /** The configuration. */
+   private Configuration configuration;
+   
 
 
    /**
@@ -66,18 +66,26 @@ public class RemoteActionXMLParser {
     * 
     * @return the list< event commander>
     */
+   @SuppressWarnings("unchecked")
    public List<Event> findEventsByButtonID(String buttonID) {
       List<Event> events = new ArrayList<Event>();
       Element button = queryElementFromXMLById(buttonID);
       if (button == null) {
          throw new NoSuchButtonException("Cannot find that button with id = " + buttonID);
       }
-      NodeList nodes = button.getChildNodes();
-      for (int i = 0; i < nodes.getLength(); i++) {
-         String eventID = nodes.item(i).getTextContent().trim();
+      List<Element> children = button.getChildren();
+      for (Element elementRef : children) {
+         String eventID = elementRef.getTextTrim();
+         String delay = elementRef.getAttributeValue("delay");
          Element element = queryElementFromXMLById(eventID);
          if (element != null) {
-            events.add(eventFactory.getEvent(element));
+            Event event = eventFactory.getEvent(element);
+            if (delay != null) {
+               event.setDelay(Long.valueOf(delay));
+            }
+            events.add(event);
+         }else{
+            throw new NoSuchEventException("Cannot find that event with id = " + eventID);
          }
       }
       return events;
@@ -92,7 +100,7 @@ public class RemoteActionXMLParser {
     * @return the element
     */
    private Element queryElementFromXMLById(String id){
-      return queryElementFromXML("//*[@id='" + id + "']");
+      return queryElementFromXML("//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']");
    }
    
 
@@ -103,30 +111,31 @@ public class RemoteActionXMLParser {
     * 
     * @return the element
     */
+   @SuppressWarnings("unchecked")
    private Element queryElementFromXML(String xPath) {
-      DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-      domFactory.setNamespaceAware(true); // never forget this!
-      Object result = null;
-      try {
-         DocumentBuilder builder = domFactory.newDocumentBuilder();
-         String xmlPath = PathUtil.webappRootPath() + "controller.xml";
-         Document doc = builder.parse(xmlPath);
-         XPathFactory factory = XPathFactory.newInstance();
-         XPath xpath = factory.newXPath();
-         XPathExpression expr = xpath.compile(xPath);
-         result = expr.evaluate(doc, XPathConstants.NODESET);
-      } catch (XPathExpressionException e) {
-         logger.error("XPathExpression error while parsing the controller.xml", e);
-      } catch (ParserConfigurationException e) {
-         logger.error("Can't parse the controller.xml", e);
-      } catch (SAXException e) {
-         logger.error("Can't parse the controller.xml", e);
-      } catch (IOException e) {
-         logger.error("Can't find the controller.xml,please put it in" + PathUtil.webappRootPath(), e);
+      SAXBuilder sb = new SAXBuilder(true);
+      sb.setValidation(true);
+      File xsdfile = new File(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath());
+      
+      sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
+      sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+      String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.CONTROLLER_XML;
+      if (!new File(xmlPath).exists()) {
+         throw new ControllerXMLNotFoundException(" Make sure it's in /resources");
       }
-      NodeList nodes = (NodeList) result;
-      if (nodes.getLength() > 0) {
-         return (Element)nodes.item(0);
+      try {
+         Document doc = sb.build(new File(xmlPath));
+         XPath xpath = XPath.newInstance(xPath);
+         xpath.addNamespace(Constants.OPENREMOTE_NAMESPACE, Constants.OPENREMOTE_WEBSITE);
+         List<Element> elements = xpath.selectNodes(doc);
+         if(!elements.isEmpty()){
+           return elements.get(0);
+         }
+      } catch (JDOMException e) {
+         logger.error("Parser controller.xml occur JDOMException", e);
+         throw new InvalidControllerXMLException();
+      } catch (IOException e) {
+         logger.error("Parser controller.xml occur IOException", e);
       }
       return null;
    }
@@ -140,5 +149,16 @@ public class RemoteActionXMLParser {
    public void setEventFactory(EventFactory eventFactory) {
       this.eventFactory = eventFactory;
    }
+
+
+   /**
+    * Sets the configuration.
+    * 
+    * @param configuration the new configuration
+    */
+   public void setConfiguration(Configuration configuration) {
+      this.configuration = configuration;
+   }
+   
    
 }

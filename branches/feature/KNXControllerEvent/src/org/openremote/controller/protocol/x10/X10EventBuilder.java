@@ -20,9 +20,9 @@
  */
 package org.openremote.controller.protocol.x10;
 
+import org.jdom.Element;
 import org.openremote.controller.event.Event;
 import org.openremote.controller.event.EventBuilder;
-import org.w3c.dom.Element;
 
 /**
  * The Class X10EventBuilder.
