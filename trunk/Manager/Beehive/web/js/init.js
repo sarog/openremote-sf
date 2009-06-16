@@ -25,7 +25,9 @@ $(document).ready(function() {
         	$.unblockUI();
         	clearInterval(timer);
             timer = 0;
+            $('#spinner').hide();
             $("#commitSubmit").removeAttr("disabled").removeClass("disabled_button");
+            $("#commitSuccessBtn").removeAttr("disabled").removeClass("disabled_button");
         	$.showErrorMsg("Commit changes occur exception! Please refresh the page and try it again.");
         } else if (request.status == SVN_GETINFO_ERROR){
             $.showErrorMsg("Copy file occur exception! Please refresh the page and try it again.");
