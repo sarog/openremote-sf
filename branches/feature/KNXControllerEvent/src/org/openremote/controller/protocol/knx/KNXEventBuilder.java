@@ -130,8 +130,8 @@ public class KNXEventBuilder implements EventBuilder
    */
   public Event build(Element element)
   {
-    String groupAddress = element.getAttribute(GROUP_ADDRESS_XML_ATTRIBUTE);
-    String command = element.getAttribute(COMMAND_XML_ATTRIBUTE);
+    String groupAddress = element.getAttributeValue(GROUP_ADDRESS_XML_ATTRIBUTE);
+    String command = element.getAttributeValue(COMMAND_XML_ATTRIBUTE);
 
     KNXCommand knxCommand = null;
 
