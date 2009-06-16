@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
 
 
 /**
- * The IREvent Builder which can build a IREvent from a Element.
+ * The IREvent Builder which can build a IREvent from a DOM Element in controller.xml.
  * 
  * @author Dan 2009-4-3
  */

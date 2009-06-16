@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 
 
 /**
- * The Class ZipUtil.
+ * The Utility for Zip.
  * 
  * @author Dan 2009-5-14
  */

@@ -20,8 +20,9 @@
  */
 package org.openremote.controller.exception;
 
+
 /**
- * The Class NoSuchButtonException.
+ * The exception for NoSuchButton.
  * 
  * @author Dan 2009-4-30
  */

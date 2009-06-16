@@ -24,14 +24,15 @@ import org.w3c.dom.Element;
 
 
 /**
- * The Interface EventBuilder.
+ * The Interface EventBuilder. 
+ * Allows to build an Event from a DOM Element in controller.xml
  * 
  * @author Dan 2009-4-3
  */
 public interface EventBuilder {
    
    /**
-    * Builds a  event from a DOM element.
+    * Builds an event from a DOM element.
     * 
     * @param element the element
     * 

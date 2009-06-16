@@ -20,8 +20,9 @@
  */
 package org.openremote.controller.exception;
 
+
 /**
- * The Invalid Event Exception.
+ * The exception for EventBuild.
  * 
  * @author Dan 2009-4-30
  */
