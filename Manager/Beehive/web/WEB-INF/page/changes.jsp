@@ -9,7 +9,7 @@
        var timer = 0;
        $(document).ready(function() {
            if($('#updateStatus').val() == "running"){
-               $('#message').text(" The updating is running, please commit changes later.");
+               $('#below_message').text(" The updating is running, please commit changes later.");
                $("#commitSubmit").attr("disabled","true").addClass("disabled_button");
            }
            if($('#commitStatus').val() == "running"){
@@ -20,12 +20,11 @@
                 timer=setInterval("refresh()",2000);
            }
            $('#submitForm').ajaxForm(function() {
-               $('#message').text(" Commit succeeds!");
                $("#commitSubmit").removeAttr("disabled").removeClass("disabled_button");
            });
            $("#commitSubmit").click( function() {
                if($('#diffSize').val()==0){
-            	   $('#message').html("There is no changes to commit.").css("color","red");
+            	   $('#below_message').html("There is no changes to commit.").css("color","red");
                }else{
 	        	      var validator = validateCheck();
 	        	      if(validator.form()){
@@ -34,6 +33,7 @@
                }
            });
            $('#commit').click(function(){
+        	      $("#commitSubmit").attr("disabled","true").addClass("disabled_button");
                $('#comment').val($('#inputComment').val());
                $.unblockUI();
         	      $('#message').text(" The committing is running...");
@@ -43,7 +43,10 @@
             	   $('#submitForm').submit();
                }else{
                   var comment = $('#comment').val();
-            	   $.post("changes.htm",{method: 'commit', commitAll: 'true', comment: comment});
+            	   $.post("changes.htm", {method: 'commit', commitAll: 'true', comment: comment},
+                    	   function (data){
+		                     $("#commitSubmit").removeAttr("disabled").removeClass("disabled_button");
+            	   });
                }
                showBlock();
                timer=setInterval("refresh()",2000);
@@ -59,7 +62,7 @@
         	    	  var checkAllInfo = $('#checkAllInfo');
         	    	  $('#allChangesChecked').val('true');
         	    	  $(this).html('Clear selection');
-        	    	  checkAllInfo.find('span:first').html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All changes has selected.&nbsp;');
+        	    	  checkAllInfo.find('span:first').html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All '+$('#diffSize').val()+' changes are selected.&nbsp;');
         	      }else{
             	  $("#checkall").removeAttr('checked');
         	    	  $("#checkall").click();
@@ -84,7 +87,7 @@
     	   $("input[name='items']").attr("checked",checked);
            var checkAllInfo = $('#checkAllInfo');
            if(checked){
-               $('#alterCheckAll').html("Select all changes in workCopy");
+               $('#alterCheckAll').html("Select all "+$('#diffSize').val()+" changes in workCopy");
                checkAllInfo.find('span:first').html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All 50 changes on this page are selected.&nbsp;');
                checkAllInfo.removeClass('hidden');
            }else{
@@ -101,7 +104,7 @@
                   items:"Please select at least one change!"
                },
                errorPlacement:function(error, element){
-                   $('#message').html(error).css("color","red");
+                   $('#below_message').html(error).css("color","red");
                }
              });
            }
@@ -143,6 +146,7 @@
 	            clearInterval(timer);
 	            timer = 0;
 	            $('#spinner').hide();
+	            $('#message').text(" Commit succeeds!");
 	            $("#commitSuccessBtn").removeAttr("disabled").removeClass("disabled_button");
 	         }
 	      });
@@ -232,7 +236,7 @@
 	                     ${headMessage.author}</td>
 	                  <td class="value" style="padding-left: 20px;" nowrap="true"><b>Total
 	                     items:</b>&nbsp; ${diffSize}</td>
-	                  <td style="text-align:center;" width="100%"><span id="message" style="margin-left:10px; font-size:11px;"></span></td>
+	                  <td style="text-align:center;" width="100%"><span id="below_message" style="margin-left:10px; font-size:11px;"></span></td>
 	               </tr>
 	               <tr>
 	                  <td class="value" style="padding-left: 20px;" colspan="5"
@@ -252,6 +256,7 @@
 	      <tr>
 	        <td style="padding:3px 0 3px 20px; font-size:12px;">
 	           <c:if test="${diffSize gt 50}">
+		           <c:set var="showAll" value="${showAll}"></c:set>
 		           <c:if test="${showAll eq null}">
 		              Only <b>50</b> changes shown, <a href="changes.htm?showAll=true" style="font-size:12px;text-decoration:underline">display <b>${diffSize-50}</b> more changes...</a>
 		           </c:if>
@@ -266,7 +271,7 @@
 	   <table id="table_list_of_revisions"  class="list" rules="all" width="100%" cellpadding="0" cellspacing="0">
 	      <tr class="second">
 	         <th align="left" nowrap="true"><input id="checkall" name="checkall" type="checkbox" ><label id = "checkAll_label" for="checkall">Changed resources</label>
-	              <c:if test="${diffSize gt 50}">
+	              <c:if test="${diffSize gt 50 && showAll eq null}">
 	                 <span id="checkAllInfo" class="hidden"><span></span><span id="alterCheckAll" class="cursor_span"></span></span>
 	              </c:if>
 	         </th>
@@ -317,7 +322,7 @@
 	         <div id="commitInfo"></div>
 	         <div id="spinner"><img alt="" src="image/spinner.gif" /></div>	      
 	      </div>
-         <div style="text-align:right; background-color:#F1FDE9;"><input id="commitSuccessBtn" type="button" value="OK" class="button"/></div>
+         <div style="text-align:right; background-color:#F1FDE9;"><span id="message" style="margin-left:10px; font-size:11px;"></span><input id="commitSuccessBtn" type="button" value="OK" class="button"/></div>
       </div>
    </div>
 <script type="text/javascript" src="jslib/jquery.blockUI.js"></script>
