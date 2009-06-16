@@ -24,9 +24,8 @@ import java.io.File;
 
 public class Configuration {
    private String workDir;
-   private String svnDir;
    private String iconsDir;
-   
+   private String svnDir;
    public String getWorkDir() {
       return workDir;
    }
@@ -44,11 +43,12 @@ public class Configuration {
    }
 
    public String getSvnDir() {
+      if(workDir.startsWith("/")){
+         svnDir = "file://"+workDir+File.separator+"svn-repos/lirc/trunk";
+      }else{
+         svnDir = "file:///"+workDir+File.separator+"svn-repos/lirc/trunk";
+      }
       return svnDir;
-   }
-
-   public void setSvnDir(String svnDir) {
-      this.svnDir = svnDir;
    }
 
    public String getIconsDir() {

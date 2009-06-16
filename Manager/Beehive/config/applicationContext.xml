@@ -36,7 +36,6 @@
     
 	<bean id="configuration" class="org.openremote.beehive.Configuration">
 		<property name="workDir" value="${work.dir}" />
-		<property name="svnDir" value="${svn.dir}" />
 		<property name="iconsDir" value="${icons.dir}" />
 	</bean>
 	
