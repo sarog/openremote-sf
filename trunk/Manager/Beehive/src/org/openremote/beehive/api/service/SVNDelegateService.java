@@ -197,4 +197,14 @@ public interface SVNDelegateService {
     * @return the string
     */
    String compareFileByLastModifiedDate(LIRCElement lirc);
+   
+   /**
+    * Gets the diff paths. the every path contain diff path and status partion with '|'. 
+    * example:"/3m/MP8640|ADDED".
+    * 
+    * @param path the path
+    * 
+    * @return the diff paths
+    */
+   String[] getDiffPaths(String path);
 }

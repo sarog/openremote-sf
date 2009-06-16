@@ -87,7 +87,7 @@ public class LIRCRevisionChangesController extends MultiActionController {
       if(syncHistory != null){
          mav.addObject(syncHistory.getType(), syncHistory.getStatus());
       }
-      
+      String showAll = request.getParameter("showAll");
       LogMessage headMessage = svnDelegateService.getHeadLog(Constant.ROOT_PATH);
       mav.addObject("headMessage", headMessage);
       request.getSession().setAttribute("headRevision", headMessage.getRevision().toString());
@@ -97,7 +97,18 @@ public class LIRCRevisionChangesController extends MultiActionController {
          request.setAttribute("isBlankSVN", false);
       }
       List<Element> ds = svnDelegateService.getDiffStatus(Constant.ROOT_PATH);
-      mav.addObject("diffStatus", ds);
+      int diffSize = ds.size();
+      mav.addObject("diffSize", diffSize);
+      
+      if ("true".equals(showAll)) {
+         mav.addObject("showAll", true);
+         mav.addObject("diffStatus", ds);
+      } else if(diffSize>50){
+         mav.addObject("diffStatus", ds.subList(0, 50));
+      }else{
+         mav.addObject("diffStatus", ds);
+      }
+         
       return mav;
    }
    
@@ -146,7 +157,13 @@ public class LIRCRevisionChangesController extends MultiActionController {
    public ModelAndView commit(HttpServletRequest request, HttpServletResponse response ){
       String[] items = request.getParameterValues("items");
       String comment = request.getParameter("comment");
-      
+      String commitAll = request.getParameter("commitAll");
+      if("true".equals(commitAll)){
+         items = svnDelegateService.getDiffPaths(Constant.ROOT_PATH);
+         if(items.length == 0){
+            items = null;
+         }
+      }
       if(items != null){
          try{
             svnDelegateService.commit(items,comment, "admin");

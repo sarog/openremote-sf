@@ -142,8 +142,9 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                int mod = 500;
                int commitTimes = totalPath / mod + 1;
                int lastCommitCount = totalPath % mod;
+               commitTimes = lastCommitCount > 0 ? commitTimes: commitTimes-1;
                for (int i = 0; i < commitTimes; i++) {
-                  if (i == commitTimes - 1) {
+                  if (i == commitTimes - 1 && lastCommitCount > 0) {
                      File[] subFiles = new File[lastCommitCount];
                      System.arraycopy(files, i * mod, subFiles, 0, lastCommitCount);
                      svnClient.commit(subFiles, message, true);
@@ -637,5 +638,19 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          actionType = Actions.ADDED.getValue();
       }
       return actionType;
+   }
+   
+   /**
+    * {@inheritDoc}
+    */
+   public String[] getDiffPaths(String path) {
+      List<Element> ds = getDiffStatus(path);
+      String[] paths = new String[ds.size()];
+      Element element;
+      for(int i=0; i<paths.length; i++){
+         element = ds.get(i);
+         paths[i] = element.getPath()+ "|"+element.getStatus().getValue();
+      }
+      return paths;
    }
 }
