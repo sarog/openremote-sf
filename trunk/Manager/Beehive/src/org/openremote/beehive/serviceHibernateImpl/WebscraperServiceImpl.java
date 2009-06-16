@@ -31,6 +31,8 @@ import org.openremote.beehive.api.service.SyncHistoryService;
 import org.openremote.beehive.api.service.WebscraperService;
 import org.openremote.beehive.domain.SyncHistory;
 import org.openremote.beehive.domain.Vendor;
+import org.openremote.beehive.exception.LIRCrawlerException;
+import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.file.LIRCElement;
 import org.openremote.beehive.repo.Actions;
 import org.openremote.beehive.repo.DateFormatter;
@@ -76,7 +78,15 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
       
       String syncFilePath = configuration.getSyncHistoryDir()+File.separator+logPath;
       FileUtil.deleteFileOnExist(new File(syncFilePath));
-      crawl(Constant.LIRC_ROOT_URL, syncFilePath);
+      try{
+         crawl(Constant.LIRC_ROOT_URL, syncFilePath);
+      }catch(SVNException e){
+         syncHistoryService.update("faild", new Date());
+         throw e;
+      }catch(LIRCrawlerException e){
+         syncHistoryService.update("faild", new Date());
+         throw e;
+      }
       FileUtil.writeLineToFile(syncFilePath, DateFormatter.format(date)+" Completed!");
    }
    private void crawl(String lircUrl, String syncFilePath) {

@@ -27,6 +27,7 @@
         <property name="exceptionMappings">
             <props>
                <prop key="org.openremote.beehive.exception.SVNException">exception/svnError</prop>
+               <prop key="org.openremote.beehive.exception.LIRCrawlerException">exception/lirCrawlerError</prop>
             </props>
         </property>
         <property name="defaultErrorView" value="exception/defaultError"/>

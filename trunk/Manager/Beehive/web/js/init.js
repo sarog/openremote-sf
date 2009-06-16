@@ -19,7 +19,8 @@ $(document).ready(function() {
 	var SVN_GETINFO_ERROR = 431;
 	var SVN_ROLLBACK_ERROR = 436;
 	var SVN_IO_ERROR = 441;
-	
+	var CRAWLER_WRITEFILE_ERROR = 445;
+	var CRAWLER_NETWORK_ERROR = 446;
 	$("body").ajaxError(function(event, request, settings) {
         if (request.status == SVN_COMMIT_ERROR) {
         	$.unblockUI();
@@ -35,6 +36,10 @@ $(document).ready(function() {
             $.showErrorMsg("Rollback to this version occur exception! Please refresh the page and try it again.");
         } else if (request.status == SVN_IO_ERROR){
             $.showErrorMsg("SVN IO exception! Please refresh the page and try it again.");
+        } else if  (request.status == CRAWLER_WRITEFILE_ERROR){
+        	$.showErrorMsg("Write file occur exception! Please refresh the page and try it again.");
+        } else if  (request.status == CRAWLER_NETWORK_ERROR){
+        	$.showErrorMsg("The network occur exception! Please refresh the page and try it again.");
         } else{
         	$.showErrorMsg("Server error!");
         }
