@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
- * Copyright 2008, OpenRemote Inc.
+ * Copyright 2008-2009, OpenRemote Inc.
  * 
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -21,35 +21,64 @@
 package org.openremote.controller.protocol.knx;
 
 import org.openremote.controller.event.Event;
+import org.apache.log4j.Logger;
 
 /**
- * The KNX Event.
- * 
+ * TODO: The KNX Event.
+ *
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Dan 2009-4-20
  */
-public class KNXEvent extends Event {
-   
-   /** The group address. */
-   private String groupAddress;
+public class KNXEvent extends Event
+{
 
-   /**
-    * Gets the group address.
-    * 
-    * @return the group address
-    */
-   public String getGroupAddress() {
-      return groupAddress;
-   }
+  // Class Members --------------------------------------------------------------------------------
 
-   /**
-    * Sets the group address.
-    * 
-    * @param groupAddress the new group address
-    */
-   public void setGroupAddress(String groupAddress) {
-      this.groupAddress = groupAddress;
-   }
-   
-   
+  private final static Logger log = Logger.getLogger(KNXEventBuilder.KNX_LOG_CATEGORY);
+
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+  private String groupAddress = null;
+  private KNXConnectionManager connectionManager = null;
+  private KNXCommand command = null;
+
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  /**
+   * TODO : javadoc
+   *
+   */
+  public KNXEvent(KNXConnectionManager connectionManager, String groupAddress, KNXCommand command)
+  {
+    this.connectionManager = connectionManager;
+
+    // TODO : specify group address string form semantics
+    
+    this.groupAddress = groupAddress;
+    this.command = command;
+  }
+
+
+  // Event Overrides ------------------------------------------------------------------------------
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public void exec()
+  {
+    try
+    {
+      KNXConnection connection = connectionManager.getConnection();
+    
+      connection.send(groupAddress, command);
+    }
+    catch (ConnectionException e)
+    {
+      log.error(e);   // TODO
+    }
+  }
+
 
 }
