@@ -24,17 +24,26 @@
                $("#commitSubmit").removeAttr("disabled").removeClass("disabled_button");
            });
            $("#commitSubmit").click( function() {
-        	      var validator = validateCheck();
-        	      if(validator.form()){
-        	    	   inputComment();
-        	      }
+               if($('#diffSize').val()==0){
+            	   $('#message').html("There is no changes to commit.").css("color","red");
+               }else{
+	        	      var validator = validateCheck();
+	        	      if(validator.form()){
+	        	    	   inputComment();
+	        	      }
+               }
            });
            $('#commit').click(function(){
                $('#comment').val($('#inputComment').val());
                $.unblockUI();
         	      $('#message').text(" The committing is running...");
                $(this).attr("disabled","true").addClass("disabled_button");
-               $('#submitForm').submit();
+               var commitAll = $('#allChangesChecked').val();
+               if(commitAll == 'false'){
+            	   $('#submitForm').submit();
+               }else{
+            	   $.post("changes.htm?method=commit&commitAll=true",{});
+               }
                showBlock();
                timer=setInterval("refresh()",2000);
                });
@@ -42,7 +51,19 @@
         	      $.unblockUI();
                });
            $("#checkall").click( function() {
-               $("input[name='items']").attr("checked",this.checked);
+               checkAll(this.checked);
+           });
+           $('#alterCheckAll').click(function() {
+        	      if($('#allChangesChecked').val() == 'false'){
+        	    	  var checkAllInfo = $('#checkAllInfo');
+        	    	  $('#allChangesChecked').val('true');
+        	    	  $(this).html('Clear selection');
+        	    	  checkAllInfo.find('span:first').html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All changes has selected.&nbsp;');
+        	      }else{
+            	  $("#checkall").removeAttr('checked');
+        	    	  $("#checkall").click();
+        	    	  $("#checkall").removeAttr('checked');
+            	}
            });
            $('input.changedNode').each(function(){
         	      var action = $(this).attr('action');
@@ -58,6 +79,18 @@
            });
            
        });
+       function checkAll(checked){
+    	   $("input[name='items']").attr("checked",checked);
+           var checkAllInfo = $('#checkAllInfo');
+           if(checked){
+               $('#alterCheckAll').html("Select all changes in workCopy");
+               checkAllInfo.find('span:first').html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All 50 changes on this page are selected.&nbsp;');
+               checkAllInfo.removeClass('hidden');
+           }else{
+               checkAllInfo.addClass('hidden');
+               $('#allChangesChecked').val('false');
+           }
+       }
        function validateCheck(){
     	   return $("#submitForm").validate({
                rules:{
@@ -181,6 +214,8 @@
 </script>
 </head>
 <body tabId="1">
+      <input id="diffSize" type="hidden" value="${diffSize }"/>
+      <input id="allChangesChecked" type="hidden" value="false"/>
 	   <table class="infopanel" width="100%" border="0" cellpadding="0" cellspacing="0">
 	      <tr>
 	         <td width="100%">
@@ -195,7 +230,7 @@
 	                  <td class="value" style="padding-left: 20px;" nowrap="true"><b>Author:</b>&nbsp;
 	                     ${headMessage.author}</td>
 	                  <td class="value" style="padding-left: 20px;" nowrap="true"><b>Total
-	                     items:</b>&nbsp; ${fn:length(diffStatus)}</td>
+	                     items:</b>&nbsp; ${diffSize}</td>
 	                  <td style="text-align:center;" width="100%"><span id="message" style="margin-left:10px; font-size:11px;"></span></td>
 	               </tr>
 	               <tr>
@@ -213,17 +248,34 @@
 	         </table>
 	         </td>
 	      </tr>
+	      <tr>
+	        <td style="padding:3px 0 3px 20px; font-size:12px;">
+	           <c:if test="${diffSize gt 50}">
+		           <c:if test="${showAll eq null}">
+		              Only <b>50</b> changes shown, <a href="changes.htm?showAll=true" style="font-size:12px;text-decoration:underline">display <b>${diffSize-50}</b> more changes...</a>
+		           </c:if>
+		           <c:if test="${showAll eq true}">
+		              <a href="changes.htm" style="font-size:12px;text-decoration:underline">Only <b>50</b> changes shown...</a>
+		           </c:if>
+	           </c:if>
+	        </td>
+	        <td></td>
+	      </tr>
 	   </table>
 	   <table id="table_list_of_revisions"  class="list" rules="all" width="100%" cellpadding="0" cellspacing="0">
 	      <tr class="second">
-	         <th align="left" nowrap="true"><input id="checkall" name="checkall" type="checkbox" ><label for="checkall">Changed resources</label></th>
+	         <th align="left" nowrap="true"><input id="checkall" name="checkall" type="checkbox" ><label id = "checkAll_label" for="checkall">Changed resources</label>
+	              <c:if test="${diffSize gt 50}">
+	                 <span id="checkAllInfo" class="hidden"><span></span><span id="alterCheckAll" class="cursor_span"></span></span>
+	              </c:if>
+	         </th>
 	         <th width="5%" nowrap="true"><a href="#">Revision </a></th>
 	      </tr>
-	      <c:set var="hasContent" value="false" />
-		   <c:if test="${fn:length(diffStatus) eq 0}">
-		       <c:set var="hasContent" value="true" />
+	      <c:set var="noDiff" value="false" />
+		   <c:if test="${diffSize eq 0}">
+		       <c:set var="noDiff" value="true" />
 		   </c:if>
-		     <tr id="msg_tr" class="first" style="${hasContent? '' : 'display:none'}">
+		     <tr id="noDiff_msg_tr" class="first" style="${noDiff? '' : 'display:none'}">
 		          <td>
 			          <c:choose>
 				          <c:when test="${isBlankSVN eq true}">
