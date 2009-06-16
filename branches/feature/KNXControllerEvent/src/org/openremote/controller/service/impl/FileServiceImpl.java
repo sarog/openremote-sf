@@ -21,11 +21,15 @@
 package org.openremote.controller.service.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.openremote.controller.Configuration;
+import org.openremote.controller.Constants;
 import org.openremote.controller.service.FileService;
 import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.utils.ZipUtil;
@@ -40,6 +44,9 @@ public class FileServiceImpl implements FileService {
    /** The Constant logger. */
    private static final Logger logger = Logger.getLogger(FileServiceImpl.class);
    
+   /** The configuration. */
+   private Configuration configuration;
+   
    /**
     * {@inheritDoc}
     */
@@ -51,18 +58,51 @@ public class FileServiceImpl implements FileService {
     * {@inheritDoc}
     */
    public void uploadConfigZip(InputStream inputStream) {
-      unzip(inputStream, PathUtil.webappRootPath());
-      File lircdConfFile = new File(PathUtil.webappRootPath() + "lircd.conf");
-      File etcDir = new File("/etc");
+      String resourcePath = configuration.getResourcePath();
       try {
-         if(etcDir.exists() && lircdConfFile.exists()){
+         FileUtils.forceDeleteOnExit(new File(resourcePath));
+      } catch (IOException e1) {
+         logger.error("Can't delete" + resourcePath, e1);
+      }
+      unzip(inputStream, resourcePath);
+      File lircdConfFile = new File(resourcePath + Constants.LIRCD_CONF);
+      File lircdconfDir = new File(configuration.getLircdconfPath().replaceAll(Constants.LIRCD_CONF, ""));
+      try {
+         if(lircdconfDir.exists() && lircdConfFile.exists()){
             //this needs root user to put lircd.conf into /etc.
             //because it's readonly, or it won't be modified.
-            FileUtils.copyFileToDirectory(lircdConfFile, etcDir);
+            if ("true".equalsIgnoreCase(configuration.getCopyLircdconf())) {
+               FileUtils.copyFileToDirectory(lircdConfFile, lircdconfDir);
+            }
          }
       } catch (IOException e) {
-         logger.error("Can't copy lircd.conf to /etc.", e);
+         logger.error("Can't copy lircd.conf to " + configuration.getLircdconfPath(), e);
       }
+   }
+
+
+   /* (non-Javadoc)
+    * @see org.openremote.controller.service.FileService#findResource(java.lang.String)
+    */
+   public InputStream findResource(String relativePath) {
+      File file = new File(PathUtil.removeSlashSuffix(configuration.getResourcePath()) + relativePath);
+      if (file.exists() && file.isFile()) {
+         try {
+            return new FileInputStream(file);
+         } catch (FileNotFoundException e) {
+            return null;
+         }
+      }
+      return null;
+   }
+   
+   /**
+    * Sets the configuration.
+    * 
+    * @param configuration the new configuration
+    */
+   public void setConfiguration(Configuration configuration) {
+      this.configuration = configuration;
    }
 
 }

@@ -18,36 +18,42 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.utils;
-
-import java.util.List;
-
-import junit.framework.TestCase;
-
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.RemoteActionXMLParser;
-import org.openremote.controller.protocol.infrared.IREvent;
-import org.openremote.controller.spring.SpringContext;
-
+package org.openremote.controller.event;
 
 /**
- * The Class RemoteActionXMLParserTest.
+ * The Enum CommandType.
  * 
- * @author Dan 2009-4-3
+ * @author Dan 2009-5-21
  */
-public class RemoteActionXMLParserTest extends TestCase {
+public enum CommandType {
    
-   /** The remote action xml parser. */
-   private RemoteActionXMLParser remoteActionXMLParser = (RemoteActionXMLParser) SpringContext.getInstance().getBean(
-         "remoteActionXMLParser");
+   /** send command once. */
+   SEND_ONCE("SEND_ONCE"), 
+   
+   /** send command start. */
+   SEND_START("SEND_START"), 
+   
+   /** send command stop. */
+   SEND_STOP("SEND_STOP"); 
+
+   /** The type. */
+   private String type;
 
    /**
-    * Test find ir event by button id.
+    * Instantiates a new command type.
+    * 
+    * @param type the type
     */
-   public void testFindIREventByButtonID(){
-//      List<Event> list= remoteActionXMLParser.findEventsByButtonID("8");
-//      System.out.println(((IREvent)list.get(0)).getName());
-//      assertEquals(1, list.size());
+   private CommandType(String type) {
+      this.type = type;
    }
-   
+
+   /* (non-Javadoc)
+    * @see java.lang.Enum#toString()
+    */
+   @Override
+   public String toString() {
+      return type;
+   }
+
 }

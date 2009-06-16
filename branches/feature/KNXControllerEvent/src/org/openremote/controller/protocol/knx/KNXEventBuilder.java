@@ -20,9 +20,9 @@
  */
 package org.openremote.controller.protocol.knx;
 
+import org.jdom.Element;
 import org.openremote.controller.event.Event;
 import org.openremote.controller.event.EventBuilder;
-import org.w3c.dom.Element;
 import org.apache.log4j.Logger;
 
 

@@ -20,34 +20,23 @@
  */
 package org.openremote.controller.utils;
 
-import java.util.List;
-
-import junit.framework.TestCase;
-
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.RemoteActionXMLParser;
-import org.openremote.controller.protocol.infrared.IREvent;
+import org.openremote.controller.Configuration;
 import org.openremote.controller.spring.SpringContext;
 
-
 /**
- * The Class RemoteActionXMLParserTest.
+ * A factory for creating Configuration objects.
  * 
- * @author Dan 2009-4-3
+ * @author Dan 2009-6-9
  */
-public class RemoteActionXMLParserTest extends TestCase {
-   
-   /** The remote action xml parser. */
-   private RemoteActionXMLParser remoteActionXMLParser = (RemoteActionXMLParser) SpringContext.getInstance().getBean(
-         "remoteActionXMLParser");
+public class ConfigFactory {
 
    /**
-    * Test find ir event by button id.
+    * Gets the config.
+    * 
+    * @return the config
     */
-   public void testFindIREventByButtonID(){
-//      List<Event> list= remoteActionXMLParser.findEventsByButtonID("8");
-//      System.out.println(((IREvent)list.get(0)).getName());
-//      assertEquals(1, list.size());
+   public static Configuration getConfig(){
+      return (Configuration) SpringContext.getInstance().getBean("configuration");
    }
    
 }
