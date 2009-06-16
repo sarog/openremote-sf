@@ -42,7 +42,8 @@
                if(commitAll == 'false'){
             	   $('#submitForm').submit();
                }else{
-            	   $.post("changes.htm?method=commit&commitAll=true",{});
+                  var comment = $('#comment').val();
+            	   $.post("changes.htm",{method: 'commit', commitAll: 'true', comment: comment});
                }
                showBlock();
                timer=setInterval("refresh()",2000);
