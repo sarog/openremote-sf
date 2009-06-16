@@ -442,3 +442,7 @@ table.dialogcontent {
 .hidden {
    display: none;
 }
+span.cursor_span{
+   cursor:pointer;
+   text-decoration:underline;
+}
