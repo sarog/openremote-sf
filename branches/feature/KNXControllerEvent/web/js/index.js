@@ -30,7 +30,7 @@ $(document).ready(function() {
 			return false;
 		}
 	});
-	$("#version").text(getVersionLabel());
+	$("#version").append(getVersionLabel());
 });
 
 function getVersionLabel(){
@@ -54,7 +54,7 @@ function getVersionLabel(){
        tagStart = revision.indexOf("$Revision:");
        var tagsEnd = revision.indexOf("$", tagStart + 10);
        if (tagsEnd >= 0) {
-          verStr = " r" + revision.substring(tagStart + 10, tagsEnd).trim();
+          verStr = " r" + $.trim(revision.substring(tagStart + 10, tagsEnd));
        }
     }
     if (verStr.length != 0) {
