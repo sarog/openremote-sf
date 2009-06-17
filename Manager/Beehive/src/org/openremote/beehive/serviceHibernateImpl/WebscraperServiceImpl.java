@@ -23,6 +23,7 @@ package org.openremote.beehive.serviceHibernateImpl;
 import java.io.File;
 import java.util.Date;
 
+import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
 import org.openremote.beehive.Constant;
 import org.openremote.beehive.PathConfig;
@@ -45,7 +46,7 @@ import org.openremote.beehive.utils.StringUtil;
  * 
  */
 public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implements WebscraperService {
-
+   private static Logger logger = Logger.getLogger(WebscraperServiceImpl.class.getName());
    private SVNDelegateService svnDelegateService;
    private SyncHistoryService syncHistoryService;
    private Configuration configuration;
@@ -79,15 +80,20 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
       String syncFilePath = configuration.getSyncHistoryDir()+File.separator+logPath;
       FileUtil.deleteFileOnExist(new File(syncFilePath));
       try{
+         logger.info("Update lirc files from lirc website...");
          crawl(Constant.LIRC_ROOT_URL, syncFilePath);
+         logger.info("Update lirc files from lirc website success.");
       }catch(SVNException e){
+         logger.error("update occur SVNException!");
          syncHistoryService.update("faild", new Date());
          throw e;
       }catch(LIRCrawlerException e){
+         logger.error("update occur LIRCrawlerException!");
          syncHistoryService.update("faild", new Date());
          throw e;
       }
       FileUtil.writeLineToFile(syncFilePath, DateFormatter.format(date)+" Completed!");
+      syncHistoryService.update("success", new Date());
    }
    private void crawl(String lircUrl, String syncFilePath) {
       for (LIRCElement lirc : LIRCrawler.list(lircUrl)) {

@@ -91,7 +91,6 @@ public class LIRCSyncController extends MultiActionController {
          syncHistoryService.update("faild", new Date());
          throw e;
       }
-      syncHistoryService.update("success", new Date());
       return null;
    }
 }
