@@ -18,25 +18,25 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.protocol.x10;
+package org.openremote.controller.utils;
 
-import org.jdom.Element;
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
+import org.openremote.controller.Configuration;
+import org.openremote.controller.spring.SpringContext;
 
 /**
- * The Class X10EventBuilder.
+ * A factory for creating Configuration objects.
  * 
- * @author Dan 2009-4-30
+ * @author Dan 2009-6-9
  */
-public class X10EventBuilder implements EventBuilder {
+public class ConfigFactory {
 
    /**
-    * {@inheritDoc}
+    * Gets the config.
+    * 
+    * @return the config
     */
-   public Event build(Element element) {
-      // TODO Auto-generated method stub
-      return new X10Event();
+   public static Configuration getConfig(){
+      return (Configuration) SpringContext.getInstance().getBean("configuration");
    }
-
+   
 }

@@ -20,52 +20,42 @@
  */
 package org.openremote.controller.exception;
 
-
 /**
- * The exception for EventBuild.
+ * The exception class when controller.xml Not Found.
  * 
- * @author Dan 2009-4-30
+ * @author Dan 2009-5-22
  */
 @SuppressWarnings("serial")
-public class EventBuildException extends ButtonCommandException {
+public class ControllerXMLNotFoundException extends ButtonCommandException {
 
    /**
-    * Instantiates a new invalid event exception.
+    * Instantiates a new controller xml not found exception.
+    */
+   public ControllerXMLNotFoundException() {
+      super("*controller.xml* not found.");
+      setErrorCode(ButtonCommandException.CONTROLLER_XML_NOT_FOUND);
+   }
+
+   /**
+    * Instantiates a new controller xml not found exception.
     * 
     * @param message the message
     * @param cause the cause
     */
-   public EventBuildException(String message, Throwable cause) {
-      super(message, cause);
-      setErrorCode(ButtonCommandException.EVENT_BUILDER_ERROR);
+   public ControllerXMLNotFoundException(String message, Throwable cause) {
+      super("*controller.xml* not found." + message, cause);
+      setErrorCode(ButtonCommandException.CONTROLLER_XML_NOT_FOUND);
    }
 
    /**
-    * Instantiates a new invalid event exception.
+    * Instantiates a new controller xml not found exception.
     * 
     * @param message the message
     */
-   public EventBuildException(String message) {
-      super(message);
-      setErrorCode(ButtonCommandException.EVENT_BUILDER_ERROR);
+   public ControllerXMLNotFoundException(String message) {
+      super("*controller.xml* not found." + message);
+      setErrorCode(ButtonCommandException.CONTROLLER_XML_NOT_FOUND);
    }
-
-   /**
-    * Instantiates a new event build exception.
-    */
-   public EventBuildException() {
-      super();
-      setErrorCode(ButtonCommandException.EVENT_BUILDER_ERROR);
-   }
-
-   /**
-    * Instantiates a new event build exception.
-    * 
-    * @param cause the cause
-    */
-   public EventBuildException(Throwable cause) {
-      super(cause);
-      setErrorCode(ButtonCommandException.EVENT_BUILDER_ERROR);
-   }
+   
 
 }

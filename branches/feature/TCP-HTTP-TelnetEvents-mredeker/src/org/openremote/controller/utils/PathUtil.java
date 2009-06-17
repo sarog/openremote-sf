@@ -18,25 +18,39 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.protocol.x10;
-
-import org.jdom.Element;
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
+package org.openremote.controller.utils;
 
 /**
- * The Class X10EventBuilder.
+ * The Utility for file system Path.
  * 
- * @author Dan 2009-4-30
+ * @author Dan 2009-5-14
  */
-public class X10EventBuilder implements EventBuilder {
+public class PathUtil {
+
+   
 
    /**
-    * {@inheritDoc}
+    * Webapp root path.
+    * 
+    * @return the root path of webapp
     */
-   public Event build(Element element) {
-      // TODO Auto-generated method stub
-      return new X10Event();
+   public static String webappRootPath(){
+      return System.getProperty("controller.root");
    }
-
+   
+   /**
+    * Append file separator.
+    * 
+    * @param src the src
+    * 
+    * @return the string
+    */
+   public static String addSlashSuffix(String src) {
+      return src.endsWith("/") ? src : src + "/";
+   }
+   
+   public static String removeSlashSuffix(String src) {
+      return src.endsWith("/") ? src.substring(0, src.lastIndexOf("/")) : src ;
+   }
+   
 }

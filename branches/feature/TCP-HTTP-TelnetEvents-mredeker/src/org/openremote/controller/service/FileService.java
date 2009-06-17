@@ -18,25 +18,39 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.protocol.x10;
+package org.openremote.controller.service;
 
-import org.jdom.Element;
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
+import java.io.InputStream;
 
 /**
- * The Class X10EventBuilder.
+ * The service for file system operation.
  * 
- * @author Dan 2009-4-30
+ * @author Dan 2009-5-14
  */
-public class X10EventBuilder implements EventBuilder {
-
+public interface FileService {
+   
    /**
-    * {@inheritDoc}
+    * Unzip.
+    * 
+    * @param inputStream the input stream
+    * @param targetDir the target dir
     */
-   public Event build(Element element) {
-      // TODO Auto-generated method stub
-      return new X10Event();
-   }
+   void unzip(InputStream inputStream, String targetDir);
+   
+   /**
+    * Upload config zip.
+    * 
+    * @param inputStream the input stream
+    */
+   void uploadConfigZip(InputStream inputStream);
+   
+   /**
+    * Find resource.
+    * 
+    * @param relativePath the relative path
+    * 
+    * @return the input stream
+    */
+   InputStream findResource(String relativePath);
 
 }

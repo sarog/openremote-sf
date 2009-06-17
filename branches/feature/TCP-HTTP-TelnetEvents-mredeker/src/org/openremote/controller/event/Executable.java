@@ -28,8 +28,21 @@ package org.openremote.controller.event;
 public interface Executable {
    
    /**
-    * Execute method, tells how to execute a event.
+    * Execute method, tells how to execute an event. 
+    * This will ask a send_once command.
     */
    void exec();
+   
+   /**
+    * Start an event.
+    * This will ask a send_start command.
+    */
+   void start();
+   
+   /**
+    * Stop an event.
+    * This will ask a send_stop command.
+    */
+   void stop();
 
 }

@@ -20,52 +20,42 @@
  */
 package org.openremote.controller.exception;
 
-
 /**
- * The exception for EventBuild.
+ * The exception class when InvalidControllerXML.
  * 
- * @author Dan 2009-4-30
+ * @author Dan 2009-5-23
  */
 @SuppressWarnings("serial")
-public class EventBuildException extends ButtonCommandException {
+public class InvalidControllerXMLException extends ButtonCommandException {
 
    /**
-    * Instantiates a new invalid event exception.
-    * 
-    * @param message the message
-    * @param cause the cause
+    * Instantiates a new invalid controller xml exception.
     */
-   public EventBuildException(String message, Throwable cause) {
-      super(message, cause);
-      setErrorCode(ButtonCommandException.EVENT_BUILDER_ERROR);
-   }
-
-   /**
-    * Instantiates a new invalid event exception.
-    * 
-    * @param message the message
-    */
-   public EventBuildException(String message) {
-      super(message);
-      setErrorCode(ButtonCommandException.EVENT_BUILDER_ERROR);
-   }
-
-   /**
-    * Instantiates a new event build exception.
-    */
-   public EventBuildException() {
+   public InvalidControllerXMLException() {
       super();
-      setErrorCode(ButtonCommandException.EVENT_BUILDER_ERROR);
+      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
    }
 
    /**
-    * Instantiates a new event build exception.
+    * Instantiates a new invalid controller xml exception.
     * 
+    * @param message the message
     * @param cause the cause
     */
-   public EventBuildException(Throwable cause) {
-      super(cause);
-      setErrorCode(ButtonCommandException.EVENT_BUILDER_ERROR);
+   public InvalidControllerXMLException(String message, Throwable cause) {
+      super(message, cause);
+      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
    }
+
+   /**
+    * Instantiates a new invalid controller xml exception.
+    * 
+    * @param message the message
+    */
+   public InvalidControllerXMLException(String message) {
+      super(message);
+      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
+   }
+   
 
 }
