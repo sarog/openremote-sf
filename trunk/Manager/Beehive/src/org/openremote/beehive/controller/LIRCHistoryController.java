@@ -37,13 +37,12 @@ import org.openremote.beehive.repo.DiffResult.Line;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 /**
  * @author Tomsky
  *
  */
-public class LIRCHistoryController extends MultiActionController {
+public class LIRCHistoryController extends LIRController {
    private String indexView;
    private String modelView;
    private String revisionView;
@@ -85,6 +84,7 @@ public class LIRCHistoryController extends MultiActionController {
     */
    public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
       ModelAndView mav = new ModelAndView(indexView);
+      super.addStatus(mav);
       LogMessage headMessage = svnDelegateService.getHeadLog(Constant.ROOT_PATH);
       mav.addObject("headMessage", headMessage);
       
