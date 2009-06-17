@@ -20,13 +20,11 @@
  */
 package org.openremote.beehive.controller;
 
-import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openremote.beehive.api.service.WebscraperService;
 import org.openremote.beehive.domain.SyncHistory;
+import org.openremote.beehive.serviceHibernateImpl.WebscraperThread;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -35,14 +33,9 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class LIRCSyncController extends LIRController {
    private String indexView;
-   private WebscraperService scraperService;
    
    public void setIndexView(String indexView) {
       this.indexView = indexView;
-   }
-   
-   public void setScraperService(WebscraperService scraperService) {
-      this.scraperService = scraperService;
    }
 
    /**
@@ -73,12 +66,7 @@ public class LIRCSyncController extends LIRController {
     * @throws Exception 
     */
    public ModelAndView update(HttpServletRequest request, HttpServletResponse response) throws Exception {
-      try{
-         scraperService.scrapeFiles();
-      }catch(Exception e){
-         syncHistoryService.update("faild", new Date());
-         throw e;
-      }
+      new Thread(new WebscraperThread()).start();
       return null;
    }
 }
