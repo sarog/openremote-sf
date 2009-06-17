@@ -22,7 +22,7 @@ package org.openremote.controller.protocol.http;
 
 import org.openremote.controller.event.Event;
 import org.openremote.controller.event.EventBuilder;
-import org.w3c.dom.Element;
+import org.jdom.Element;
 
 
 /**
@@ -37,8 +37,8 @@ public class HttpGetEventBuilder implements EventBuilder {
     */
    public Event build(Element element) {
       HttpGetEvent getEvent = new HttpGetEvent();
-      getEvent.setUrl(element.getAttribute("url"));
-      getEvent.setName(element.getAttribute("name"));
+      getEvent.setUrl(element.getAttributeValue("url"));
+      getEvent.setName(element.getAttributeValue("name"));
       return getEvent;
    }
 

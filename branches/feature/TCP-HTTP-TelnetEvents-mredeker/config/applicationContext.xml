@@ -43,9 +43,9 @@
 		        <prop key = "irEvent">irEventBuilder</prop>
 		        <prop key = "knxEvent">knxEventBuilder</prop>
 		        <prop key = "x10Event">x10EventBuilder</prop>
-          <prop key = "tcpSocketEvent">tcpSocketEventBuilder</prop>
-          <prop key = "telnetEvent">telnetEventBuilder</prop>
-          <prop key = "httpGetEvent">httpGetEventBuilder</prop>
+            <prop key = "tcpSocketEvent">tcpSocketEventBuilder</prop>
+            <prop key = "telnetEvent">telnetEventBuilder</prop>
+            <prop key = "httpGetEvent">httpGetEventBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -64,7 +64,7 @@
 
     <!-- TCP Socket Event Builder for IP enabled devices -->
     <bean id = "tcpSocketEventBuilder" class = "org.openremote.controller.protocol.socket.TCPSocketEventBuilder"
-          scope="prototype"/>
+          scope = "prototype"/>
 
     <!-- Telnet Events for telnet controllable devices -->
     <bean id = "telnetEventBuilder" class = "org.openremote.controller.protocol.telnet.TelnetEventBuilder"

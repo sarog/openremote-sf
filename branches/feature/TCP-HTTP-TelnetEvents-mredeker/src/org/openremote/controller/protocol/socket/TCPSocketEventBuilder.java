@@ -22,7 +22,7 @@ package org.openremote.controller.protocol.socket;
 
 import org.openremote.controller.event.Event;
 import org.openremote.controller.event.EventBuilder;
-import org.w3c.dom.Element;
+import org.jdom.Element;
 
 
 /**
@@ -37,10 +37,10 @@ public class TCPSocketEventBuilder implements EventBuilder {
     */
    public Event build(Element element) {
       TCPSocketEvent irEvent = new TCPSocketEvent();
-      irEvent.setCommand(element.getAttribute("command"));
-      irEvent.setName(element.getAttribute("name"));
-      irEvent.setIp(element.getAttribute("ip"));
-      irEvent.setPort(element.getAttribute("port"));
+      irEvent.setCommand(element.getAttributeValue("command"));
+      irEvent.setName(element.getAttributeValue("name"));
+      irEvent.setIp(element.getAttributeValue("ip"));
+      irEvent.setPort(element.getAttributeValue("port"));
       return irEvent;
    }
 
