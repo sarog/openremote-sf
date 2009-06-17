@@ -22,7 +22,7 @@ package org.openremote.controller.protocol.telnet;
 
 import org.openremote.controller.event.Event;
 import org.openremote.controller.event.EventBuilder;
-import org.w3c.dom.Element;
+import org.jdom.Element;
 
 
 /**
@@ -37,10 +37,10 @@ public class TelnetEventBuilder implements EventBuilder {
     */
    public Event build(Element element) {
       TelnetEvent telnetEvent = new TelnetEvent();
-      telnetEvent.setCommand(element.getAttribute("command"));
-      telnetEvent.setName(element.getAttribute("name"));
-      telnetEvent.setIp(element.getAttribute("ip"));
-      telnetEvent.setPort(element.getAttribute("port"));
+      telnetEvent.setCommand(element.getAttributeValue("command"));
+      telnetEvent.setName(element.getAttributeValue("name"));
+      telnetEvent.setIp(element.getAttributeValue("ip"));
+      telnetEvent.setPort(element.getAttributeValue("port"));
       return telnetEvent;
    }
 
