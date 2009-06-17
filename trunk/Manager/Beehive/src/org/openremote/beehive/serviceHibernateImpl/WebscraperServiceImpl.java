@@ -83,6 +83,8 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
          logger.info("Update lirc files from lirc website...");
          crawl(Constant.LIRC_ROOT_URL, syncFilePath);
          logger.info("Update lirc files from lirc website success.");
+         FileUtil.writeLineToFile(syncFilePath, DateFormatter.format(date)+" Completed!");
+         syncHistoryService.update("success", new Date());
       }catch(SVNException e){
          logger.error("update occur SVNException!");
          syncHistoryService.update("faild", new Date());
@@ -92,8 +94,6 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
          syncHistoryService.update("faild", new Date());
          throw e;
       }
-      FileUtil.writeLineToFile(syncFilePath, DateFormatter.format(date)+" Completed!");
-      syncHistoryService.update("success", new Date());
    }
    private void crawl(String lircUrl, String syncFilePath) {
       for (LIRCElement lirc : LIRCrawler.list(lircUrl)) {
