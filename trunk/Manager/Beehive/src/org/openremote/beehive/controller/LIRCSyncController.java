@@ -25,22 +25,17 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openremote.beehive.api.service.SyncHistoryService;
 import org.openremote.beehive.api.service.WebscraperService;
 import org.openremote.beehive.domain.SyncHistory;
-import org.openremote.beehive.exception.SVNException;
-import org.openremote.beehive.utils.DateUtil;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 /**
  * @author Tomsky
  *
  */
-public class LIRCSyncController extends MultiActionController {
+public class LIRCSyncController extends LIRController {
    private String indexView;
    private WebscraperService scraperService;
-   private SyncHistoryService syncHistoryService;
    
    public void setIndexView(String indexView) {
       this.indexView = indexView;
@@ -48,10 +43,6 @@ public class LIRCSyncController extends MultiActionController {
    
    public void setScraperService(WebscraperService scraperService) {
       this.scraperService = scraperService;
-   }
-   
-   public void setSyncHistoryService(SyncHistoryService syncHistoryService) {
-      this.syncHistoryService = syncHistoryService;
    }
 
    /**
@@ -64,11 +55,8 @@ public class LIRCSyncController extends MultiActionController {
     * @return ModelAndView
     */
    public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
-      SyncHistory syncHistory = syncHistoryService.getLatest();
       ModelAndView mav = new ModelAndView(indexView);
-      if(syncHistory != null){
-         mav.addObject(syncHistory.getType(), syncHistory.getStatus());
-      }
+      super.addStatus(mav);
       SyncHistory lastUpdate = syncHistoryService.getLastSyncByType("update");
       if(lastUpdate != null){
          mav.addObject("lastUpdate", lastUpdate);

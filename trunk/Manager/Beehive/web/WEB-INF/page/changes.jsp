@@ -5,8 +5,8 @@
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
    <title>OpenRemote Beehive - Changes From Update</title>
+   <script type="text/javascript" src="js/progress.js"></script>
      <script type="text/javascript">
-       var timer = 0;
        $(document).ready(function() {
            if($('#updateStatus').val() == "running"){
                $('#below_message').text(" The updating is running, please commit changes later.");
@@ -15,9 +15,10 @@
            if($('#commitStatus').val() == "running"){
                 $('#message').text(" The committing is running...");
                 $("#commitSubmit").attr("disabled","true").addClass("disabled_button");
-                refresh();
                 showBlock();
-                timer=setInterval("refresh()",2000);
+                var progress = new Progress({'type':'commit', 'interval':2000, 'showMethod':showProgress, 'endMethod': endAnimation});
+                progress.show();
+                progress.refresh();
            }
            $('#submitForm').ajaxForm(function() {
                $("#commitSubmit").removeAttr("disabled").removeClass("disabled_button");
@@ -49,7 +50,7 @@
             	   });
                }
                showBlock();
-               timer=setInterval("refresh()",2000);
+               new Progress({'type':'commit', 'interval':2000, 'showMethod':showProgress, 'endMethod': endAnimation}).refresh();
                });
            $('#cancel').click(function(){
         	      $.unblockUI();
@@ -83,6 +84,16 @@
            });
            
        });
+       function showProgress(progress){
+    	     $("#commitInfo").html("<pre>"+progress.data+"</pre>");
+           var infoContainer = $("#infoContainer");
+           infoContainer[0].scrollTop = infoContainer[0].scrollHeight;
+       }
+       function endAnimation(){
+    	     $('#spinner').hide();
+           $('#message').text(" Commit succeeds!");
+           $("#commitSuccessBtn").removeAttr("disabled").removeClass("disabled_button");
+       }
        function checkAll(checked){
     	   $("input[name='items']").attr("checked",checked);
            var checkAllInfo = $('#checkAllInfo');
@@ -136,21 +147,6 @@
                  }
            });
          }
-       
-	function refresh() {
-		$.getJSON("progress.htm?method=getProgress",{type:'commit', r:Math.random()}, function(json) {
-			$("#commitInfo").html("<pre>"+json.data+"</pre>");
-			var infoContainer = $("#infoContainer");
-			infoContainer[0].scrollTop = infoContainer[0].scrollHeight;
-	         if (json.status == "isEnd") {
-	            clearInterval(timer);
-	            timer = 0;
-	            $('#spinner').hide();
-	            $('#message').text(" Commit succeeds!");
-	            $("#commitSuccessBtn").removeAttr("disabled").removeClass("disabled_button");
-	         }
-	      });
-	}
 	function checkDelete() {
 		var delTexts = $(this).attr("value").substring(1).split("/");
 		var delText = null;
