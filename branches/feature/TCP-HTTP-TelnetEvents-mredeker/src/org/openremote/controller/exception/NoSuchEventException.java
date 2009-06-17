@@ -18,25 +18,43 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.protocol.x10;
-
-import org.jdom.Element;
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
+package org.openremote.controller.exception;
 
 /**
- * The Class X10EventBuilder.
+ * The exception class when NoSuchEvent.
  * 
- * @author Dan 2009-4-30
+ * @author Dan 2009-5-23
  */
-public class X10EventBuilder implements EventBuilder {
+@SuppressWarnings("serial")
+public class NoSuchEventException extends ButtonCommandException {
 
    /**
-    * {@inheritDoc}
+    * Instantiates a new no such event exception.
     */
-   public Event build(Element element) {
-      // TODO Auto-generated method stub
-      return new X10Event();
+   public NoSuchEventException() {
+      super();
+      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
+   }
+
+   /**
+    * Instantiates a new no such event exception.
+    * 
+    * @param message the message
+    * @param cause the cause
+    */
+   public NoSuchEventException(String message, Throwable cause) {
+      super(message, cause);
+      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
+   }
+
+   /**
+    * Instantiates a new no such event exception.
+    * 
+    * @param message the message
+    */
+   public NoSuchEventException(String message) {
+      super(message);
+      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
    }
 
 }

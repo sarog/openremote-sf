@@ -18,25 +18,42 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.protocol.x10;
-
-import org.jdom.Element;
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
+package org.openremote.controller.event;
 
 /**
- * The Class X10EventBuilder.
+ * The Enum CommandType.
  * 
- * @author Dan 2009-4-30
+ * @author Dan 2009-5-21
  */
-public class X10EventBuilder implements EventBuilder {
+public enum CommandType {
+   
+   /** send command once. */
+   SEND_ONCE("SEND_ONCE"), 
+   
+   /** send command start. */
+   SEND_START("SEND_START"), 
+   
+   /** send command stop. */
+   SEND_STOP("SEND_STOP"); 
+
+   /** The type. */
+   private String type;
 
    /**
-    * {@inheritDoc}
+    * Instantiates a new command type.
+    * 
+    * @param type the type
     */
-   public Event build(Element element) {
-      // TODO Auto-generated method stub
-      return new X10Event();
+   private CommandType(String type) {
+      this.type = type;
+   }
+
+   /* (non-Javadoc)
+    * @see java.lang.Enum#toString()
+    */
+   @Override
+   public String toString() {
+      return type;
    }
 
 }
