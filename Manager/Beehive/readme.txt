@@ -27,10 +27,8 @@ III. "Beehive" site deployment
 	file (see comments inside this file for details):
     a) set "jdbc.username" parameter value to username to MySQL (for example: scott)
     b) set "jdbc.password" parameter value to password to MySQL (for example: tiger)
-    c) set "scrap.dir" parameter value to the folder where the scrapped files from lirc.org are saved
-    d) set "workCopy.dir" parameter value to the folder which is the workcopy of the svn repository of lirc files
-    d) set "svn.dir" parameter value to the folder where stores the svn repository of lirc files
-    e) set "icons.dir" parameter value to where the icons folder is
+    c) set "work.dir" parameter value to the folder which is the workspace of the beehive, including svn-repos, workCopy and syncHistory directory.
+    d) set "icons.dir" parameter value to where the icons folder is
     
 2) modify the quartz time in "%PROJECT_ROOT%/config/spring-quartz.xml"
 

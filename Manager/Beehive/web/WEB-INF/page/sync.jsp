@@ -5,8 +5,8 @@
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">   
    <title>OpenRemote Beehive - Changes From Update</title>
+   <script type="text/javascript" src="js/progress.js"></script>
    <script type="text/javascript">
-   var timer = 0;
    $(document).ready(function() {	   
 	   if($('#commitStatus').val() == "running"){
            $('#message').text(" The committing is running, please update later.");
@@ -14,38 +14,32 @@
      }
 	   if($('#updateStatus').val() == "running"){
 		   setAnimation();
-		   refresh();
+		   var progress = new Progress({'type':'update', 'interval':5000, 'showMethod':showProgress, 'endMethod': endAnimation});
+		   progress.show();
+         progress.refresh();
 		   $('#message').text("Updating form http://lirc.sourceforge.net/remotes ......");
-		   timer=setInterval("refresh()",5000);
 	   }
 	   $('#updateBtn').click(function(){
 		      setAnimation();
 			   $.post("sync.htm?method=update",{});
-			   timer=setInterval("refresh()",5000);
+			   new Progress({'type':'update', 'interval':5000, 'showMethod':showProgress, 'endMethod': endAnimation}).refresh();
 			   $('#message').text("Updating from http://lirc.sourceforge.net/remotes ......");
 	      });
 	 });
    
-	function refresh() {
-		$.getJSON("progress.htm?method=getProgress",{type:'update', r:Math.random()}, function(json) {
-			setProgress(json);
-			if (json.status == "isEnd") {
-				clearInterval(timer);
-				timer = 0;
-				$('#tab_2 img').attr("src","image/update_icon.gif");
-	         $('#updateBtn').removeAttr("disabled").removeClass("disabled_button");
-	         $('#spinner').hide();
-	         $('#message').html("Update completed, you can view and commit the <b><a href='changes.htm' style='text-decoration: underline;'>changes</a></b>");
-			}
-		});
-	}
-	function setProgress(progress){
+	function showProgress(progress){
 		$('#updateInfo').html("<pre>"+progress.data+"</pre>");
 		var infoContainer = $("#infoContainer");
 		infoContainer[0].scrollTop = infoContainer[0].scrollHeight;
 		var bar = $('#progressbar');
       bar.find('.progress').css("width",progress.percent);
       bar.find('.text').text(progress.percent);
+	}
+	function endAnimation(){
+		$('#tab_2 img').attr("src","image/update_icon.gif");
+      $('#updateBtn').removeAttr("disabled").removeClass("disabled_button");
+      $('#spinner').hide();
+      $('#message').html("Update completed, you can view and commit the <b><a href='changes.htm' style='text-decoration: underline;'>changes</a></b>");
 	}	
 	function setAnimation(){
 		$('#tab_2 img').attr("src","image/update.gif");

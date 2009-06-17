@@ -29,8 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.SVNDelegateService;
-import org.openremote.beehive.api.service.SyncHistoryService;
-import org.openremote.beehive.domain.SyncHistory;
 import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.LogMessage;
@@ -39,22 +37,17 @@ import org.openremote.beehive.repo.DiffStatus.Element;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 /**
  * @author Tomsky
  * 
  */
-public class LIRCRevisionChangesController extends MultiActionController {
+public class LIRCRevisionChangesController extends LIRController {
    private SVNDelegateService svnDelegateService;
    private ModelService modelService;
-   private SyncHistoryService syncHistoryService;
    private String indexView;
    private String changeView;
    
-   public void setSyncHistoryService(SyncHistoryService syncHistoryService) {
-      this.syncHistoryService = syncHistoryService;
-   }
    
    public void setIndexView(String indexView) {
       this.indexView = indexView;
@@ -82,11 +75,8 @@ public class LIRCRevisionChangesController extends MultiActionController {
     * @return ModelAndView
     */
    public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
-      SyncHistory syncHistory = syncHistoryService.getLatest();
       ModelAndView mav = new ModelAndView(indexView);
-      if(syncHistory != null){
-         mav.addObject(syncHistory.getType(), syncHistory.getStatus());
-      }
+      super.addStatus(mav);
       String showAll = request.getParameter("showAll");
       LogMessage headMessage = svnDelegateService.getHeadLog(Constant.ROOT_PATH);
       mav.addObject("headMessage", headMessage);
