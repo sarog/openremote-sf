@@ -76,15 +76,16 @@ public class IPResponseTCPClient implements Runnable {
     * Send tcp.
     */
    public void sendTcp() {
+      String targetIPStr = new String(targetIP.getAddress());
       String data = "http://" + getLocalhostIP() + ":" + configuration.getWebappPort() + "/controller";
-      logger.info("Sending server IP [" + data + "]to " + targetIP.getAddress());
+      logger.info("Sending server IP [" + data + "]to " + targetIPStr);
       Socket skt = null;
       PrintWriter out = null;
       try {
          skt = new Socket(targetIP, TCP_PORT);
          out = new PrintWriter(skt.getOutputStream(), true);
       } catch (IOException e) {
-         logger.error("Can't create TCP socket on " + targetIP.getAddress(), e);
+         logger.error("Can't create TCP socket on " + targetIPStr, e);
       } finally {
          out.print(data);
          out.close();
