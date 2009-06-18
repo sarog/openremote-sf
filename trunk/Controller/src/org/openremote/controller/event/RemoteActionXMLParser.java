@@ -132,10 +132,13 @@ public class RemoteActionXMLParser {
            return elements.get(0);
          }
       } catch (JDOMException e) {
-         logger.error("Parser controller.xml occur JDOMException", e);
-         throw new InvalidControllerXMLException();
+         logger.error("JDOMException occurs when parsing controller.xml.", e);
+         throw new InvalidControllerXMLException("check the version of schema or structure of controller.xml with "
+               + Constants.CONTROLLER_XSD_PATH);
       } catch (IOException e) {
-         logger.error("Parser controller.xml occur IOException", e);
+         String msg = " An I/O error prevents a controller.xml from being fully parsed";
+         logger.error(msg, e);
+         throw new ControllerXMLNotFoundException(msg);
       }
       return null;
    }

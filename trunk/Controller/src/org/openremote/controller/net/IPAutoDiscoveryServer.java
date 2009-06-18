@@ -50,27 +50,31 @@ public class IPAutoDiscoveryServer implements Runnable {
     * {@inheritDoc}
     */
    public void run() {
-
       final int MULTICAST_PORT = configuration.getMulticastPort();
       final String MULTICAST_ADDRESS = configuration.getMulticastAddress();
+      String multicastLocation = MULTICAST_ADDRESS + ":" + MULTICAST_PORT;
       MulticastSocket socket = null;
       InetAddress address = null;
       try {
          socket = new MulticastSocket(MULTICAST_PORT);
          address = InetAddress.getByName(MULTICAST_ADDRESS);
+         logger.info("Created IP discover multicast server !");
       } catch (IOException e) {
-         logger.error("Can't create multicast socket on " + MULTICAST_ADDRESS + ":" + MULTICAST_PORT, e);
+         logger.error("Can't create multicast socket on " + multicastLocation, e);
       }
       try {
          socket.joinGroup(address);
+         logger.info("Joined a group : "+multicastLocation);
       } catch (IOException e) {
-         logger.error("Can't join group of " + MULTICAST_ADDRESS + ":" + MULTICAST_PORT, e);
+         logger.error("Can't join group of " + multicastLocation, e);
       }
       byte[] buf = new byte[512];
       DatagramPacket packet = new DatagramPacket(buf, buf.length);
       while (true) {
          try {
+            logger.info("Listening on  " + multicastLocation);
             socket.receive(packet);
+            logger.info("Receive a IP discovery request from " + packet.getAddress().getAddress());
          } catch (IOException e) {
             logger.error("Can't receive packet on " + MULTICAST_ADDRESS + ":" + MULTICAST_PORT, e);
          }
