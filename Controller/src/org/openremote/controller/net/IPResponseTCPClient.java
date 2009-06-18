@@ -30,6 +30,8 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.Configuration;
+import org.openremote.controller.utils.ConfigFactory;
 
 /**
  * The Class TCPClient.
@@ -46,6 +48,9 @@ public class IPResponseTCPClient implements Runnable {
    
    /** The TCP port. */
    public final static int TCP_PORT = 2346;
+   
+   /** The configuration. */
+   private Configuration configuration = ConfigFactory.getConfig();
    
    
 
@@ -71,7 +76,8 @@ public class IPResponseTCPClient implements Runnable {
     * Send tcp.
     */
    public void sendTcp() {
-      String data = "http://" + getLocalhostIP() + ":8080/controller";
+      String data = "http://" + getLocalhostIP() + ":" + configuration.getWebappPort() + "/controller";
+      logger.info("Sending server IP [" + data + "]to " + targetIP.getAddress());
       Socket skt = null;
       PrintWriter out = null;
       try {
@@ -93,7 +99,7 @@ public class IPResponseTCPClient implements Runnable {
    
 
    /**
-    * Gets the localhost ip.
+    * Gets the localhost ip in Linux.
     * 
     * @return the localhost ip
     */

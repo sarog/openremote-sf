@@ -67,7 +67,7 @@ public class ZipUtil {
             }
          }
       } catch (IOException e) {
-         logger.error("Can't unzip to" + targetDir, e);
+         logger.error("Can't unzip to " + targetDir, e);
       } finally {
          try {
             zipInputStream.closeEntry();
