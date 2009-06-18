@@ -58,7 +58,7 @@ public class ResourceServiceImpl implements ResourceService {
       File lircdFile = new File(PathConfig.getInstance().lircFilePath(sessionId));
       File zipFile = new File(PathConfig.getInstance().openremoteZipFilePath(sessionId));
 
-      String newIphoneXML = IphoneXmlParser.parserXML(new File(getClass().getResource("/iphone.xsd").getPath()), iphoneXML, sessionFolder);
+      String newIphoneXML = IphoneXmlParser.parserXML(new File(getClass().getResource(Constants.IPHONE_XSD_PATH).getPath()), iphoneXML, sessionFolder);
       
        try {
           
@@ -166,7 +166,9 @@ public class ResourceServiceImpl implements ResourceService {
 
    private boolean checkXML(ZipInputStream zipInputStream, ZipEntry zipEntry,String xmlName) throws IOException {
       if(zipEntry.getName().equals(xmlName+".xml")){
-         if(!IphoneXmlParser.checkXmlSchema(getClass().getResource("/"+xmlName+".xsd").getPath(), IOUtils.toString(zipInputStream))){
+         String xsdRelativePath = "iphone".equals(xmlName)? Constants.IPHONE_XSD_PATH : Constants.CONTROLLER_XSD_PATH;
+         String xsdPath = getClass().getResource(xsdRelativePath).getPath();
+         if(!IphoneXmlParser.checkXmlSchema(xsdPath, IOUtils.toString(zipInputStream))){
             return false;
          }
       }
