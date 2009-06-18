@@ -74,7 +74,7 @@ public class IPAutoDiscoveryServer implements Runnable {
          try {
             logger.info("Listening on  " + multicastLocation);
             socket.receive(packet);
-            logger.info("Receive a IP discovery request from " + packet.getAddress().getAddress());
+            logger.info("Receive a IP discovery request from " + new String(packet.getAddress().getAddress()));
          } catch (IOException e) {
             logger.error("Can't receive packet on " + MULTICAST_ADDRESS + ":" + MULTICAST_PORT, e);
          }
