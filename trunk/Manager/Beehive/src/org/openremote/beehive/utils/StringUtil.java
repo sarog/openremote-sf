@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
+
 /**
  * Utility class for String
  * 
@@ -208,6 +209,13 @@ public class StringUtil {
       return df.format(new Date());
    }
    
+   /**
+    * Escape regexp.
+    * 
+    * @param string the string
+    * 
+    * @return the string
+    */
    public static String escapeRegexp(String string){
       return string.replace("\\", "\\u005C").replace("+", "\\u002B").replace(".", "\\u002E").replace("|", "\\u007C")
             .replace("$", "\\u0024").replace("^", "\\u005E").replace("*", "\\u002A").replace("?", "\\u003F").replace(

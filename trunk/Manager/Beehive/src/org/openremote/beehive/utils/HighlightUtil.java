@@ -23,6 +23,7 @@ package org.openremote.beehive.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.openremote.beehive.repo.DiffResult.Line;
 
 /**
@@ -48,22 +49,22 @@ public class HighlightUtil {
    public static List<String> getLIRCHighlight(List<String> lines){
       List<String> highLightLines = new ArrayList<String>();
       for (int i = 0; i < lines.size(); i++) {
-         String line = lines.get(i);
+         String line = StringEscapeUtils.escapeJava(StringEscapeUtils.escapeHtml(lines.get(i)));
          String trimLine = line.trim();
          
          if("".equals(trimLine)){ //""
             line = "<pre>&nbsp;</pre>";
          } else if(trimLine.startsWith("#")){  // comment
-            line = "<pre class='comment'>"+line+"</pre>";
+            line = "<pre class=\"comment\">"+line+"</pre>";
          } else if(trimLine.matches("begin\\s*remote|end\\s*remote|begin\\s*codes|end\\s*codes|begin\\s*raw_codes|end\\s*raw_codes")){ //keyword
-            line = "<pre class='keyword'>"+line+"</pre>";
+            line = "<pre class=\"keyword\">"+line+"</pre>";
          } else if(trimLine.matches(getOptionKeyRegExp())){// options key
             String[] arr = trimLine.split("\\s+");
-            line = "<pre>"+line.replaceFirst(arr[0], "<span class='keyname'>"+arr[0]+"</span>")+"</pre>";
+            line = "<pre>"+line.replaceFirst(arr[0], "<span class=\"keyname\">"+arr[0]+"</span>")+"</pre>";
          }else{
             String[] subStr = trimLine.split("\\s+");
             if(subStr[1]!=null && subStr[1].startsWith("0x")){ //codes key
-               line = line.replaceFirst(StringUtil.escapeRegexp(subStr[0]), "<span class='keyname'>"+subStr[0]+"</span>");
+               line = line.replaceFirst(StringUtil.escapeRegexp(subStr[0]), "<span class=\"keyname\">"+subStr[0]+"</span>");
             }
             line = "<pre>"+line+"</pre>";
             
