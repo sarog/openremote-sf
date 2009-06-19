@@ -21,6 +21,7 @@
 package org.openremote.beehive.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +35,7 @@ import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.LIRCEntry;
 import org.openremote.beehive.repo.LogMessage;
 import org.openremote.beehive.repo.DiffResult.Line;
+import org.openremote.beehive.utils.HighlightUtil;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -161,12 +163,13 @@ public class LIRCHistoryController extends LIRController {
       LogMessage modelMessage = svnDelegateService.getHeadLog(path);
       mav.addObject("modelMessage", modelMessage);
       mav.addObject("breadcrumbPath", path);
+      List<String> lines = new ArrayList<String>();
       if(revision == null){
-         mav.addObject("lines", svnDelegateService.getFileContent(path,0));
+         lines = HighlightUtil.getLIRCHighlight(svnDelegateService.getFileContent(path,0));
       }else{
-         mav.addObject("lines", svnDelegateService.getFileContent(path,revision));
+         lines = HighlightUtil.getLIRCHighlight(svnDelegateService.getFileContent(path,revision));
       }
-
+      mav.addObject("lines", lines);
       return mav;
    }
    
@@ -192,7 +195,9 @@ public class LIRCHistoryController extends LIRController {
       mav.addObject("newLogeMessage", newLogMessage);
       DiffResult dr = svnDelegateService.diff(path,oldRevision,newRevision);
       List<Line> leftLines = dr.getLeft();
-      List<Line> rightLines = dr.getRight();     
+      List<Line> rightLines = dr.getRight();
+      HighlightUtil.highlightDiffLines(leftLines);
+      HighlightUtil.highlightDiffLines(rightLines);
       mav.addObject("leftLines", leftLines);
       mav.addObject("rightLines", rightLines);
       mav.addObject("changeCount", dr.getChangeCount());

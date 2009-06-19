@@ -34,6 +34,7 @@ import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.LogMessage;
 import org.openremote.beehive.repo.DiffResult.Line;
 import org.openremote.beehive.repo.DiffStatus.Element;
+import org.openremote.beehive.utils.HighlightUtil;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -117,7 +118,6 @@ public class LIRCRevisionChangesController extends LIRController {
       ModelAndView mav = new ModelAndView(changeView);
       String path = ServletRequestUtils.getRequiredStringParameter(request, "path");
       String action = ServletRequestUtils.getRequiredStringParameter(request, "action");
-      System.out.println(action);
       if(!"UNVERSIONED".equals(action) && !"ADDED".equals(action)){
          System.out.println(action);
          LogMessage repoMessage = svnDelegateService.getHeadLog(path);
@@ -128,7 +128,9 @@ public class LIRCRevisionChangesController extends LIRController {
       mav.addObject("action", action);
       DiffResult dr = svnDelegateService.diff(path);
       List<Line> leftLines = dr.getLeft();
-      List<Line> rightLines = dr.getRight();      
+      List<Line> rightLines = dr.getRight();
+      HighlightUtil.highlightDiffLines(leftLines);
+      HighlightUtil.highlightDiffLines(rightLines);
       mav.addObject("leftLines", leftLines);
       mav.addObject("rightLines", rightLines);
       mav.addObject("changeCount", dr.getChangeCount());
