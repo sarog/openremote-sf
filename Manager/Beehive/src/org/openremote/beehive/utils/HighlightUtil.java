@@ -50,7 +50,7 @@ public class HighlightUtil {
       List<String> highLightLines = new ArrayList<String>();
       for (int i = 0; i < lines.size(); i++) {
          String line = StringEscapeUtils.escapeJava(StringEscapeUtils.escapeHtml(lines.get(i)));
-         String trimLine = line.trim();
+         String trimLine = line.replace("\\t","    ").trim();
          
          if(trimLine.matches("\\s*")){ //""
             line = "<pre>&nbsp;</pre>";
@@ -69,7 +69,7 @@ public class HighlightUtil {
             line = "<pre>"+line+"</pre>";
             
          }
-         highLightLines.add(line);
+         highLightLines.add(StringEscapeUtils.unescapeJava(line));
       }
       return highLightLines;
    }
@@ -86,7 +86,7 @@ public class HighlightUtil {
             "toggle_bit_mask", "repeat_bit", "toggle_mask", "rc6_mask", "serial_mode", "baud", "min_code_repeat" };
       StringBuffer optionKeyRegExp = new StringBuffer();
       for (int i = 0; i < optionsKeys.length; i++) {
-         optionKeyRegExp.append(optionsKeys[i] + "\\s+[\\w\\s\\|-]+");
+         optionKeyRegExp.append(optionsKeys[i] + "\\s+.+");
          if (i < optionsKeys.length - 1) {
             optionKeyRegExp.append("|");
          }
