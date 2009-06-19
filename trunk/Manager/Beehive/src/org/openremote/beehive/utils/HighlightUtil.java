@@ -52,7 +52,7 @@ public class HighlightUtil {
          String line = StringEscapeUtils.escapeJava(StringEscapeUtils.escapeHtml(lines.get(i)));
          String trimLine = line.trim();
          
-         if("".equals(trimLine)){ //""
+         if(trimLine.matches("\\s*")){ //""
             line = "<pre>&nbsp;</pre>";
          } else if(trimLine.startsWith("#")){  // comment
             line = "<pre class=\"comment\">"+line+"</pre>";
@@ -63,7 +63,7 @@ public class HighlightUtil {
             line = "<pre>"+line.replaceFirst(arr[0], "<span class=\"keyname\">"+arr[0]+"</span>")+"</pre>";
          }else{
             String[] subStr = trimLine.split("\\s+");
-            if(subStr[1]!=null && subStr[1].startsWith("0x")){ //codes key
+            if(subStr[1].startsWith("0x")){ //codes key
                line = line.replaceFirst(StringUtil.escapeRegexp(subStr[0]), "<span class=\"keyname\">"+subStr[0]+"</span>");
             }
             line = "<pre>"+line+"</pre>";
