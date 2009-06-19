@@ -187,8 +187,8 @@ var HTTPController = function() {
 
 	    confirmCreate:function () {
         
-	        var label = $("#x10_label_input");
-	        var url = $("#x10_url_input");
+	        var label = $("#http_label_input");
+	        var url = $("#http_url_input");
 	        
             $("#http_form").validate({
                 invalidHandler:function(form, validator) {
@@ -221,7 +221,7 @@ var HTTPController = function() {
 	            var http = new HTTP();
 	            http.id = global.BUTTONID++;
 	            http.label = label.val();
-	            http.address = address.val();
+	            http.url = url.val();
 
 	           HTTPController.createHTTP(http);
 		
