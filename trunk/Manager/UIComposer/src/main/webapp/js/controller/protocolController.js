@@ -152,3 +152,73 @@ var X10Controller = function() {
 		}
 	};
 }();
+
+
+
+var HTTPController = function() {
+	return {
+        showCreateHTTPDialog:function () {
+            $("#create_http_dialog").showModalForm("Create HTTP", {
+                buttons:{
+                    'Create': HTTPController.confirmCreate
+                },
+                confirmButtonName:'Create',
+				width:350
+            });
+        },
+
+	    confirmCreate:function () {
+        
+	        var label = $("#x10_label_input");
+	        var url = $("#x10_url_input");
+	        
+            $("#http_form").validate({
+                invalidHandler:function(form, validator) {
+                    $("#create_http_dialog").errorTips(validator);
+                },
+                showErrors:function(){},
+                rules: {
+                    http_label_input: {
+                        required: true,
+                        maxlength: 50
+                    },
+                    http_url_input: {
+                        required:true,
+                        maxlength: 1024
+                    }
+                },
+                messages:{
+                    http_label_input: {
+                        required: "Please input a label",
+                        maxlength: "Please input a label no more than 50 characters"
+                    },
+                    http_url_input: {
+                        required: "Please input a URL",
+                        maxlength: "Please input a URL no more than 1024 characters"
+                    }
+                }
+            });
+            
+	        if ($("#http_form").valid()) {
+	            var http = new HTTP();
+	            http.id = global.BUTTONID++;
+	            http.label = label.val();
+	            http.address = address.val();
+
+	           HTTPController.createHTTP(http);
+		
+	            $("#create_http_dialog").closeModalForm();
+	        }
+	    },
+		createHTTP: function(http){
+			var httpView = new HTTPView(http);
+	
+			http.addDeleteListener(httpView);
+			http.addUpdateListener(httpView);
+			
+			var btn = httpView.getElement();
+			makeBtnDraggable(btn);
+	        btn.inspectable();
+		}
+	};
+}();
