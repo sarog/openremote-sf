@@ -108,11 +108,11 @@ function showCommandBtns(vendor_name, model_name, section_id) {
         });
         $("<div class='clear'></div>").appendTo($("#command_container"));
 
-        $("#command_navigition").dialog("close");
+        $("#command_navigation").dialog("close");
         $("#lircUrl").val(constant.RESTAPIUrl + "/lirc/" + vendor_name + "/" + model_name + "/" + "lirc.conf");
     });
 
-    $("#command_navigition option").remove();
+    $("#command_navigation option").remove();
 
 }
 

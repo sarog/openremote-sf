@@ -22,7 +22,7 @@ var TabController = function() {
      * Show select vendor model dialog.
      */
     function selectCommand() {
-        $("#command_navigition").dialog({
+        $("#command_navigation").dialog({
             bgiframe: true,
             autoOpen: false,
             height: "auto",
@@ -33,7 +33,7 @@ var TabController = function() {
                 fillVendorSelect();
             }
         });
-        $("#command_navigition").dialog("open");
+        $("#command_navigation").dialog("open");
     }
 
 
