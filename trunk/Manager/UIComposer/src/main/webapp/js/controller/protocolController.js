@@ -181,7 +181,7 @@ var HTTPController = function() {
                     'Create': HTTPController.confirmCreate
                 },
                 confirmButtonName:'Create',
-				width:350
+			        	width:350
             });
         },
 
