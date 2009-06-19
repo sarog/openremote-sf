@@ -87,7 +87,7 @@
 								<a href="#x10_tab" class="has_icon">X10</a><span id="create_x10_icon" title="Create X10" class="ui-icon ui-icon-plusthick"></span>
 							</li>
 							<li>
-								<a href="#x10_tab" class="has_icon">HTTP</a><span id="create_http_icon" title="Create HTTP" class="ui-icon ui-icon-plusthick"></span>
+								<a href="#http_tab" class="has_icon">HTTP</a><span id="create_http_icon" title="Create HTTP" class="ui-icon ui-icon-plusthick"></span>
 							</li>
 							<li>
 								<a href="#x10_tab" class="has_icon">Socket</a><span id="create_socket_icon" title="Create Socket" class="ui-icon ui-icon-plusthick"></span>
@@ -114,6 +114,13 @@
 						<div id="x10_tab">
 						   <p> Click the plus image to create x10 button.</p>
 							<div id="x10_container" class="item_container">
+								<div class="clear"></div>
+							</div>
+							<div class="clear"></div>
+						</div>
+						<div id="http_tab">
+						   <p> Click the plus image to create HTTP button.</p>
+							<div id="http_container" class="item_container">
 								<div class="clear"></div>
 							</div>
 							<div class="clear"></div>
@@ -169,6 +176,7 @@
                         </fieldset>
                     </form>
 				</div>
+                
 				<div id="create_x10_dialog">
                     <form id="x10_form">
                         <fieldset>
@@ -176,6 +184,18 @@
                         </fieldset>
                     </form>
 				</div>
+                
+				<div id="create_http_dialog">
+                    <form id="http_form">
+                        <fieldset>
+                            <label for="http_label_input">Label</label>
+                            <input type="text" id="http_label_input" name="http_label_input"/> 
+                            <label for="http_url_input">URL</label>
+                            <input type="text" id="http_url_input" name="http_url_input"/> 
+                        </fieldset>
+                    </form>
+				</div>
+                
 				<div id="command_navigition">
 					<div id="vender_select_container" class="select_container">
 						<div class="select_title">

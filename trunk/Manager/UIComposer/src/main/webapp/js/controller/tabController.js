@@ -42,6 +42,7 @@ var TabController = function() {
         $("#tabs").tabs();
         $("#create_knx_icon").unbind().bind("click", KNXController.showCreateKNXDialog);
         $("#create_x10_icon").unbind().bind("click", X10Controller.showCreateX10Dialog);
+        $("#create_http_icon").unbind().bind("click", HTTPController.showCreateHTTPDialog);
         $("#select_command_icon").unbind().bind("click", selectCommand);
 
 
