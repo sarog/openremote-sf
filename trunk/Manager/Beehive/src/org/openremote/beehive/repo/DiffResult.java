@@ -80,6 +80,9 @@ public class DiffResult {
       public String getLine() {
          return this.data.getLine();
       }
+      public void setLine(String line) {
+         this.data.setLine(line);
+      }
    }
 
    private List<Line> getLines(List<DifferenceLine> diffLines) {

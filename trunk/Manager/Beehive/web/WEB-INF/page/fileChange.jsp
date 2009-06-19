@@ -242,7 +242,7 @@
                   <tr valign="middle" index="${status.index}" changeType="${leftLine.changeType }">
                      <td class="actionType"><span class="image_of_change_${leftLine.changeType }"></span></td>
                      <td class="diffLineNumber"><a class="number" name="1" href="#1">${leftLine.number } </a></td>
-                     <td class="diffLine_${leftLine.changeType }" width="100%" align="left" nowrap="true"><pre class="">${leftLine.line }</pre></td>
+                     <td class="diffLine_${leftLine.changeType }" width="100%" align="left">${leftLine.line }</td>
                   </tr>
                   </c:forEach>
                   <c:if test="${fn:length(leftLines)==0}">
@@ -258,7 +258,7 @@
                   <tr valign="middle" index="${status.index}" changeType="${rightLine.changeType }">
                      <td class="actionType"><span class="image_of_change_${rightLine.changeType }"></span></td>
                      <td class="diffLineNumber"><a class="number" name="1" href="#1">${rightLine.number } </a></td>
-                     <td class="diffLine_${rightLine.changeType }" width="100%" align="left" nowrap="true" "><pre class="">${rightLine.line }</pre></td>
+                     <td class="diffLine_${rightLine.changeType }" width="100%" align="left">${rightLine.line }</td>
                   </tr>
                   </c:forEach>
                </table>

@@ -208,4 +208,9 @@ public class StringUtil {
       return df.format(new Date());
    }
    
+   public static String escapeRegexp(String string){
+      return string.replace("\\", "\\u005C").replace("+", "\\u002B").replace(".", "\\u002E").replace("|", "\\u007C")
+            .replace("$", "\\u0024").replace("^", "\\u005E").replace("*", "\\u002A").replace("?", "\\u003F").replace(
+                  "{", "\\u007B").replace("[", "\\u005B").replace("(", "\\u0028").replace(")", " \\u0029");
+   }
 }

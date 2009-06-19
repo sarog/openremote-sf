@@ -31,11 +31,11 @@ body {
 
 
 pre {
-	font-family: Arial;
-	font-size:11px;
+	font-family: monospace,Arial;
+	font-size:12px;
 	padding: 0px;
 	margin: 0px;
-   word-wrap: break-word;       /* Internet Explorer 5.5+ */
+   *word-wrap: break-word;       /* Internet Explorer 5.5+ */
    *white-space:normal;          /* Internet Explorer 5.5+ */
 }
 
