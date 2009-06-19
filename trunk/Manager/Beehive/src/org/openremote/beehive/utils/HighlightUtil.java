@@ -93,6 +93,11 @@ public class HighlightUtil {
       return optionKeyRegExp.toString();
    }
    
+   /**
+    * Highlight diff lines.
+    * 
+    * @param lines the lines
+    */
    public static void highlightDiffLines(List<Line> lines){
       List<String> newLines = new ArrayList<String>();
       for (Line line : lines) {
