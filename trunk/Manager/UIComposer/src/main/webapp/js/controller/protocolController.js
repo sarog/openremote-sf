@@ -12,9 +12,13 @@
  * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
  * http://www.fsf.org.
+ */
+
+/*
+ * TODO
  *
- * Author: <a href="mailto:">Allen Wei</a>
- * Author: <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author <a href="mailto:">Allen Wei</a>
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
  var KNXController = function() {
 	return {
@@ -36,7 +40,8 @@
 		confirmCreate:function() {
 	        var label = $("#knx_label_input");
 	        var groupAddress = $("#knx_group_address_input");
-            
+          var command = $("#knx_command_input");
+
             $("#knx_form").validate({
                 invalidHandler:function(form, validator) {
                     $("#create_KNX_dialog").errorTips(validator);
@@ -48,18 +53,26 @@
                         maxlength: 50
                     },
                     knx_group_address_input: {
-                        required:true,
-                        maxlength: 50
+                        required: true,
+                        maxlength: 11
+                    },
+                    knx_command_input: {
+                        required: true,
+                        maxlength: 5
                     }
                 },
                 messages:{
                     knx_label_input: {
                         required: "Please input a label",
-                        maxlength: "Please input a label no more than 50 charactors"
+                        maxlength: "Please input a label no more than 11 characters"
                     },
                     knx_group_address_input: {
                         required: "Please input a group address",
-                        maxlength: "Please input a group address no more than 50 charactors"
+                        maxlength: "Please input a group address no more than 50 characters"
+                    },
+                    knx_command_input: {
+                        required: "Please enter a KNX command (ON/OFF).",
+                        maxlength: "KNX command can be at most 5 characters long."
                     }
                 }
             });
@@ -68,8 +81,9 @@
 	            knx.id = global.BUTTONID++;
 	            knx.label = label.val();
 	            knx.groupAddress = groupAddress.val();
+              knx.command = command.val();
 
-	           KNXController.createKNX(knx);
+             KNXController.createKNX(knx);
 		
 	            $("#create_KNX_dialog").closeModalForm();
 	        }
