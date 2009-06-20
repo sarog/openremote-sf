@@ -29,7 +29,7 @@ var constant = {
 
   // Define REST API URL
 
-	RESTAPIUrl:"http://composer.openremote.org/internal/beehive/M3/rest",
+	REST_API_URL : "http://composer.openremote.org/internal/beehive/M3/rest",
 
 	DEFAULT_IPHONE_BTN_ICON : "image/iphone_btn.jpg"
 };

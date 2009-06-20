@@ -109,7 +109,7 @@ function showCommandBtns(vendor_name, model_name, section_id) {
         $("<div class='clear'></div>").appendTo($("#command_container"));
 
         $("#command_navigation").dialog("close");
-        $("#lircUrl").val(constant.RESTAPIUrl + "/lirc/" + vendor_name + "/" + model_name + "/" + "lirc.conf");
+        $("#lircUrl").val(constant.REST_API_URL + "/lirc/" + vendor_name + "/" + model_name + "/" + "lirc.conf");
     });
 
     $("#command_navigation option").remove();
@@ -142,7 +142,7 @@ function loadingSelectDone(select) {
 function getJSONData(path, callback) {
     $.ajax({
         type: "GET",
-        url: constant.RESTAPIUrl + path,
+        url: constant.REST_API_URL + path,
         dataType: "jsonp",
         cache: false,
         success: function(data) {
