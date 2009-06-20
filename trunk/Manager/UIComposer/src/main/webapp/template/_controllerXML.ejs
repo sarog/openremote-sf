@@ -25,7 +25,7 @@
     <knxEvents>
 		  <% for (var index in events.knxEvents.knxEvent) {%>
 			<% var knxEvent = events.knxEvents.knxEvent[index]; %>
-				<knxEvent id="<%=knxEvent.id  %>" label="<%=knxEvent.label  %>" groupAddress="<%=knxEvent.groupAddress  %>"/>
+				<knxEvent id="<%=knxEvent.id  %>" label="<%=knxEvent.label %>" groupAddress="<%=knxEvent.groupAddress%>" command="<%=knxEvent.command %>"/>
 			<% } %>
     </knxEvents>
     <x10Events>
