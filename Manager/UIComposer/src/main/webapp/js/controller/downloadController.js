@@ -1,5 +1,5 @@
 /*
- * OpenRemote, the Home of the Digital Home. Copyright 2008, OpenRemote Inc.
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a full listing of individual contributors.
  *
@@ -12,6 +12,13 @@
  * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
  * http://www.fsf.org.
+ */
+
+/*
+ * TODO
+ *
+ * @author allen.wei@finalist.cn
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 var DownloadController = function() {
     function DownloadController() {
@@ -107,6 +114,11 @@ var DownloadController = function() {
         openremote.events.x10Events = {
             x10Event: x10Events
         };
+
+      var httpEvents = parseHTTP();
+      openremote.events.httpEvents = {
+          httpEvent: httpEvents
+      };
 
         var irEvents = parseInfared();
         openremote.events.irEvents = {
@@ -214,6 +226,20 @@ var DownloadController = function() {
         return x10Events;
     }
 
+  function parseHTTP() {
+      var httpEvents = new Array();
+      $("#http_container").find(".http_btn").each(function() {
+          var httpEvent = new Object();
+          var model = $(this).data("model");
+          httpEvent.id = model.id;
+          httpEvent.url = model.url;
+          httpEvent.label = model.label;
+          httpEvents.push(httpEvent);
+      });
+      return httpEvents;
+  }
+
+
     /*--------------------     generate irb file     --------------------------------------*/
     /**
      * Generate UI Interface description file.
@@ -240,11 +266,16 @@ var DownloadController = function() {
         $("#x10_container").find(".x10_btn").each(function() {
             x10Btns.push($(this).data("model"));
         });
+      var httpBtns = new Array();
+      $("#http_container").find(".http_btn").each(function() {
+          httpBtns.push($(this).data("model"));
+      });
 
         var panel = {
             screens: screens,
             knxBtns: knxBtns,
             x10Btns: x10Btns,
+            httpBtns: httpBtns,
             macroBtns: macroBtns,
             maxId: global.BUTTONID
         };

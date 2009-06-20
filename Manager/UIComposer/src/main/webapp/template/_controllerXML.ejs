@@ -34,5 +34,13 @@
 	      	<x10Event id="<%=x10Event.id %>" label="<%=x10Event.label %>" address="<%=x10Event.address %>" command="<%=x10Event.command %>"/>
 		<% } %>
     </x10Events>
+
+    <httpEvents>
+		 <% for (var index in events.httpEvents.httpEvent) {%>
+			<% var httpEvent = events.httpEvents.httpEvent[index]; %>
+	      	<httpEvent id="<%=httpEvent.id %>" label="<%=httpEvent.label %>" url="<%=httpEvent.url %>"/>
+		 <% } %>
+    </httpEvents>
+
   </events>
 </openremote>
