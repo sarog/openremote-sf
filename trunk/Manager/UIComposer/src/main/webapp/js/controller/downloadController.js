@@ -48,7 +48,7 @@ var DownloadController = function() {
             iphone: iphoneXml,
             controller: controllerXml,
             panel: panelDesc,
-            restUrl: constant.RESTAPIUrl + "/lirc.conf",
+            restUrl: constant.REST_API_URL + "/lirc.conf",
             ids: assembledSectionIds
             //get it in parseInfared() function
         },
