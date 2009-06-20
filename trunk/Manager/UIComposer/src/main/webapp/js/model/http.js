@@ -14,40 +14,44 @@
  * http://www.fsf.org.
  */
 
+/**
+ * TODO
+ *
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ */
 var HTTP = function() {
 	function HTTP() {
 		var self = this;
 		Model.call(self);
-        //text ui interface display
+
+    //text ui interface display
 		self.label = "";
 		self.url = "";
-		//self.command = "";
 
-        /**
-         * Get HTML getElementId
-         */
+    /**
+     * Get HTML getElementId
+     */
 		self.getElementId = function() {
 			return "http"+self.id;
 		};
 		
-		self.inspectViewTemplate = "template/_x10Inspect.ejs";
+		self.inspectViewTemplate = "template/_httpInspect.ejs";
 
 		self.updateModel = function() {
 			TabController.updateHTTP(self);
 		};
 	}
 
-    /**
-     * Create new instance from flat model (which have no private method).
-     * @param model flat model (which have no private method).
-     * @returns created new instance.
-     */
+  /**
+   * Create new instance from flat model (which have no private method).
+   * @param model flat model (which have no private method).
+   * @returns created new instance.
+   */
 	HTTP.init = function(model) {
 		var http = new HTTP();
 		http.id      = model.id     ;
 		http.label   = model.label  ;
-		http.url = model.url;
-		//http.command = model.command;
+		http.url     = model.url;
 		return http;
 	};
     
