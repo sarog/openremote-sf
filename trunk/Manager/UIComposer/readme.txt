@@ -23,8 +23,8 @@ III. "Modeler" site deployment
 ==============================================
 1) run "ant war" to get the war file in "%PROJECT_ROOT%/output" directory;
 2) deploy the war into your web server;
-3) modify Beehvie RESTAPIUrl in "%WEBAPP_ROOT%/js/constant.js",
-   "beehive/rest" should be the default value at the end of RESTAPIUrl.
+3) modify Beehive REST_API_URL in "%WEBAPP_ROOT%/js/constant.js",
+   "beehive/rest" should be the default value at the end of REST_API_URL.
 4) To speed up the site, we use Jawr as a tunable packaging solution for Javascript and CSS.
     modify jawr configure in %WEBAPP_ROOT%/WEB-INF/classes/jawr.properties :
    a)jawr.debug.on = false
