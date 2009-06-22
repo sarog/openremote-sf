@@ -49,8 +49,8 @@ public class HighlightUtil {
    public static List<String> getLIRCHighlight(List<String> lines){
       List<String> highLightLines = new ArrayList<String>();
       for (int i = 0; i < lines.size(); i++) {
-         String line = StringEscapeUtils.escapeJava(StringEscapeUtils.escapeHtml(lines.get(i)));
-         String trimLine = line.replace("\\t","    ").trim();
+         String line = StringEscapeUtils.escapeJava(StringEscapeUtils.escapeHtml(lines.get(i))).replace("\\t","    ");
+         String trimLine = line.trim();
          
          if(trimLine.matches("\\s*")){ //""
             line = "<pre>&nbsp;</pre>";
@@ -69,7 +69,7 @@ public class HighlightUtil {
             line = "<pre>"+line+"</pre>";
             
          }
-         highLightLines.add(StringEscapeUtils.unescapeJava(line));
+         highLightLines.add(line);
       }
       return highLightLines;
    }
