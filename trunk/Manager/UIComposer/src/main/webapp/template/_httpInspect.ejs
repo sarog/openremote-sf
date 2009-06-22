@@ -1,7 +1,7 @@
 <label for="inspect_http_label">Label</label>
 <input type="text" class="text ui-widget-content ui-corner-all"  value="<%=label %>" id="inspect_http_label">
 <label for="inspect_http_url">URL</label>
-<input type="text" class="text ui-widget-content ui-corner-all"  value="<%=command %>" id="inspect_http_url">
+<input type="text" class="text ui-widget-content ui-corner-all"  value="<%=url %>" id="inspect_http_url">
 <%InspectView.getModel= function() { %>
 <% var model = $("#inspect_tool_bar").data("model"); %>
 <% var label = $.trim($("#inspect_http_label").val()); %>
