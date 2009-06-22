@@ -26,7 +26,6 @@ InspectView = function() {
 			EJSHelper.updateView(options.template,'inspect_detail',options.model);
 			var inspectWindow = $("#inspect_tool_bar");
 			$("#inspect_button").show();
-			var inspectWindow = $("#inspect_tool_bar");
 			inspectWindow.data("model",options.model);
 			var left = 0;
 			var top = 0;
