@@ -7,7 +7,7 @@ var EJSHelper = function() {
                 }).update(containerId, model);
             } catch(e) {
                 if (e instanceof Error) {
-                    $.showErrorMsg(e.description);
+                    $.showErrorMsg(e.message);
                 } else {
                     $.showErrorMsg("Can't Connect to server.");
                 }
@@ -28,7 +28,7 @@ var EJSHelper = function() {
                 }
             } catch(e) {
                 if (e instanceof Error) {
-                    $.showErrorMsg(e.description);
+                    $.showErrorMsg(e.message);
                 } else {
                     $.showErrorMsg("Can't Connect to server.");
                 }
