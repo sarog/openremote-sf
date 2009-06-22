@@ -6,8 +6,8 @@
 <input type="text" class="text ui-widget-content ui-corner-all"  value="<%=command %>" id="inspect_x10_command">
 <%InspectView.getModel= function() { %>
 <% var model = $("#inspect_tool_bar").data("model"); %>
-<% var label = $.trim($("#inspect_knx_label").val()); %>
-<% var groupAddress = $.trim($("#inspect_knx_groupAddress").val()); %>
+<% var label = $.trim($("#inspect_x10_label").val()); %>
+<% var groupAddress = $.trim($("#inspect_x10_command").val()); %>
 <% model.label = label;%>
 <% model.groupAddress = groupAddress;%>
 <% return model;%>

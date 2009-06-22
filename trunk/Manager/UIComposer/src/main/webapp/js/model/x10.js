@@ -32,9 +32,7 @@ var X10 = function() {
 		
 		self.inspectViewTemplate = "template/_x10Inspect.ejs";
 
-		self.updateModel = function() {
-			TabController.updateX10(self);
-		};
+		
 	}
 
     /**
