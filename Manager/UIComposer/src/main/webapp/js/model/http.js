@@ -37,9 +37,7 @@ var HTTP = function() {
 		
 		self.inspectViewTemplate = "template/_httpInspect.ejs";
 
-		self.updateModel = function() {
-			TabController.updateHTTP(self);
-		};
+
 	}
 
   /**
