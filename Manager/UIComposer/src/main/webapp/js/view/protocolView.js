@@ -70,7 +70,7 @@ var X10View = function() {
 			var x10 = self.getModel();
 	        var btn = $("#"+x10.getElementId());
 			btn.interceptStr({
-				text:knx.label,
+				text:x10.label,
 				max:14
 			});
 	    };
