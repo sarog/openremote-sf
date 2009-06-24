@@ -87,12 +87,12 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
          syncHistoryService.update("success", new Date());
       }catch(SVNException e){
          logger.error("update occur SVNException!");
+         FileUtil.writeLineToFile(syncFilePath, e.getMessage());
          syncHistoryService.update("faild", new Date());
-         throw e;
       }catch(LIRCrawlerException e){
          logger.error("update occur LIRCrawlerException!");
+         FileUtil.writeLineToFile(syncFilePath, e.getMessage());
          syncHistoryService.update("faild", new Date());
-         throw e;
       }
    }
    private void crawl(String lircUrl, String syncFilePath) {
