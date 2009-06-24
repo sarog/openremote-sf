@@ -25,7 +25,6 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.openremote.beehive.Configuration;
-import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.ProgressService;
 import org.openremote.beehive.api.service.SyncHistoryService;
 import org.openremote.beehive.exception.SVNException;
@@ -38,24 +37,12 @@ import org.openremote.beehive.utils.StringUtil;
  * @author Tomsky
  */
 public class ProgressServiceImpl implements ProgressService {
-   
-   /** The model service. */
-   private ModelService modelService;
-   
+
    /** The sync history service. */
    private SyncHistoryService syncHistoryService;
    
    /** The configuration. */
    private Configuration configuration;
-   
-   /**
-    * Sets the model service.
-    * 
-    * @param modelService the new model service
-    */
-   public void setModelService(ModelService modelService) {
-      this.modelService = modelService;
-   }
    
    /**
     * Sets the sync history service.
