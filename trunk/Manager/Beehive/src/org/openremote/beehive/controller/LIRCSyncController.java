@@ -58,7 +58,9 @@ public class LIRCSyncController extends LIRController {
    }
    
    /**
-    * Update all the LIRC configuration files which in workCopy with http://lirc.sourceforge.net/remotes/
+    * Update all the LIRC configuration files which in workCopy with http://lirc.sourceforge.net/remotes/.
+    * 
+    * Start the new Thread to release the long connection from ajax call. 
     * 
     * @param request
     * @param response

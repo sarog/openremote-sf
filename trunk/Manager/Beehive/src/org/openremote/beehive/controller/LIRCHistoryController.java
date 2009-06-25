@@ -165,9 +165,9 @@ public class LIRCHistoryController extends LIRController {
       mav.addObject("breadcrumbPath", path);
       List<String> lines = new ArrayList<String>();
       if(revision == null){
-         lines = HighlightUtil.getLIRCHighlight(svnDelegateService.getFileContent(path,0));
+         lines = HighlightUtil.getLIRCHtmlHighlight(svnDelegateService.getFileContent(path,0));
       }else{
-         lines = HighlightUtil.getLIRCHighlight(svnDelegateService.getFileContent(path,revision));
+         lines = HighlightUtil.getLIRCHtmlHighlight(svnDelegateService.getFileContent(path,revision));
       }
       mav.addObject("lines", lines);
       return mav;

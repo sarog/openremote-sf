@@ -26,6 +26,8 @@ public class Configuration {
    private String workDir;
    private String iconsDir;
    private String svnDir;
+   private String lircCrawRegex;
+   
    public String getWorkDir() {
       return workDir;
    }
@@ -59,4 +61,13 @@ public class Configuration {
       this.iconsDir = iconsDir;
    }
 
+   public String getLircCrawRegex() {
+      return lircCrawRegex;
+   }
+
+   public void setLircCrawRegex(String lircCrawRegex) {
+      this.lircCrawRegex = lircCrawRegex;
+   }
+   
+   
 }

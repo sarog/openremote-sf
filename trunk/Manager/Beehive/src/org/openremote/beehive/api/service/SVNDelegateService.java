@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.file.LIRCElement;
+import org.openremote.beehive.repo.Actions;
 import org.openremote.beehive.repo.DiffResult;
 import org.openremote.beehive.repo.LIRCEntry;
 import org.openremote.beehive.repo.LogMessage;
@@ -196,7 +197,7 @@ public interface SVNDelegateService {
     * 
     * @return the string
     */
-   String compareFileByLastModifiedDate(LIRCElement lirc);
+   Actions compareFileByLastModifiedDate(LIRCElement lirc);
    
    /**
     * Gets the diff paths. the every path contain diff path and status partion with '|'. 

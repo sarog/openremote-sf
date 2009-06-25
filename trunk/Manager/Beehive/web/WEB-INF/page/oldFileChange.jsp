@@ -236,7 +236,7 @@
    <table id="table_list_of_compare" rules="all" width="100%" border="0" cellpadding="0" cellspacing="0">
       <tr>
          <td width="50%">
-            <div id="left_div" style="width:100%; height:480px; overflow:auto">
+            <div id="left_div">
                <table valign="top" width="100%" cellpadding="0" cellspacing="0">
                   <c:if test="${fn:length(leftLines)==0 && fn:length(rightLines)==0}">
                      <span>This is a Vendor</span>
@@ -245,20 +245,20 @@
                   <tr valign="middle" index="${status.index}" changeType="${leftLine.changeType }">
                      <td class="actionType"><span class="image_of_change_${leftLine.changeType }"></span></td>
                      <td class="diffLineNumber"><a class="number" name="1" href="#1">${leftLine.number } </a></td>
-                     <td class="diffLine_${leftLine.changeType }" width="100%" align="left" nowrap="true"><pre class="">${leftLine.line }</pre></td>
+                     <td class="diffLine_${leftLine.changeType }" width="100%" align="left" nowrap="true"><pre>${leftLine.line }</pre></td>
                   </tr>
                   </c:forEach>
                </table>
             </div>
           </td>
          <td width="50%">
-            <div id="right_div" style="width:100%; height:480px; overflow:auto">
+            <div id="right_div">
                <table valign="top" width="100%" cellpadding="0" cellspacing="0">
                   <c:forEach items="${rightLines}" var="rightLine" varStatus="status">
                   <tr valign="middle" index="${status.index}" changeType="${rightLine.changeType }">
                      <td class="actionType"><span class="image_of_change_${rightLine.changeType }"></span></td>
                      <td class="diffLineNumber"><a class="number" name="1" href="#1">${rightLine.number } </a></td>
-                     <td class="diffLine_${rightLine.changeType }" width="100%" align="left" nowrap="true" "><pre class="">${rightLine.line }</pre></td>
+                     <td class="diffLine_${rightLine.changeType }" width="100%" align="left" nowrap="true" "><pre>${rightLine.line }</pre></td>
                   </tr>
                   </c:forEach>
                </table>

@@ -36,7 +36,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
 import org.openremote.beehive.Constant;
-import org.openremote.beehive.PathConfig;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.api.service.SyncHistoryService;
 import org.openremote.beehive.domain.SyncHistory;
@@ -54,6 +53,7 @@ import org.openremote.beehive.repo.SVNClientFactory;
 import org.openremote.beehive.repo.SvnCommand;
 import org.openremote.beehive.repo.DiffStatus.Element;
 import org.openremote.beehive.repo.LogMessage.ChangePath;
+import org.openremote.beehive.utils.DateUtil;
 import org.openremote.beehive.utils.FileUtil;
 import org.openremote.beehive.utils.StringUtil;
 import org.openremote.beehive.utils.SvnUtil;
@@ -100,7 +100,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
       Date date = new Date();
       SyncHistory syncHistory = new SyncHistory();
       syncHistory.setStartTime(new Date());
-      String logPath = PathConfig.getInstance().getFilePathByDate(date, Constant.COMMIT_PROGRESS_FILE);
+      String logPath = DateUtil.addTimestampToFilename(date, Constant.COMMIT_PROGRESS_FILE);
       syncHistory.setLogPath(logPath);
       syncHistory.setType("commit");
       syncHistory.setStatus("running");
@@ -198,7 +198,7 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             String strDiff = FileUtils.readFileToString(tempFile, "UTF8");
             tempFile.delete();
             InputStream is = svnClient.getContent(new File(SvnUtil.escapeFileName(file.getAbsolutePath())), SVNRevision.HEAD);
-            String left = StringUtil.readStringInInputStream(is).toString();
+            String left = StringUtil.readInputStreamToStringBuffer(is).toString();
             ISVNStatus[] status = svnClient.getStatus(file, false, true);
             String right = null;
             if (SVNStatusKind.NORMAL.equals(status[0].getTextStatus())) {
@@ -250,10 +250,10 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
          String strDiff = FileUtil.readFileToString(tempFile).toString();
          tempFile.delete();
          InputStream leftIS = svnClient.getContent(svnUrl, new SVNRevision.Number(oldRevision));
-         String left = StringUtil.readStringInInputStream(leftIS).toString();
+         String left = StringUtil.readInputStreamToStringBuffer(leftIS).toString();
 
          InputStream rightIS = svnClient.getContent(svnUrl, new SVNRevision.Number(newRevision));
-         String right = StringUtil.readStringInInputStream(rightIS).toString();
+         String right = StringUtil.readInputStreamToStringBuffer(rightIS).toString();
 
          DifferenceModel diff = new DifferenceModel(strDiff);
          dr.setLeft(diff.getLeftLines(left));
@@ -606,8 +606,8 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
    /**
     * {@inheritDoc}
     */
-   public String compareFileByLastModifiedDate(LIRCElement lirc) {
-      String actionType = Actions.NORMAL.getValue();
+   public Actions compareFileByLastModifiedDate(LIRCElement lirc) {
+      Actions action = Actions.NORMAL;
       File workFile = new File(StringUtil.appendFileSeparator(configuration.getWorkCopyDir()) + lirc.getRelativePath());
       if (workFile.exists()) {
          try {
@@ -623,10 +623,10 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
                ISVNInfo svnInfo = svnClient.getInfoFromWorkingCopy(new File(SvnUtil.escapeFileName(workFile
                      .getAbsolutePath())));
                if (svnInfo.getLastChangedDate() != null && uploadDate.compareTo(svnInfo.getLastChangedDate()) > 0) {
-                  actionType = Actions.MODIFIED.getValue();
+                  action = Actions.MODIFIED;
                }
             } else if (uploadDate.compareTo(new Date(workFile.lastModified())) > 0) {
-               actionType = Actions.MODIFIED.getValue();
+               action = Actions.MODIFIED;
             }
          } catch (SVNClientException e) {
             logger.error("Get file "+workFile.getName()+" info error, this may occur by the fileName not case sensitive!",e);
@@ -635,9 +635,9 @@ public class SVNDelegateServiceImpl extends BaseAbstractService<Vendor> implemen
             throw ee;
          }
       } else {
-         actionType = Actions.ADDED.getValue();
+         action = Actions.ADDED;
       }
-      return actionType;
+      return action;
    }
    
    /**
