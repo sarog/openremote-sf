@@ -37,5 +37,5 @@ public interface ProgressService {
     * 
     * @return the progress
     */
-   Progress getProgress(String type, double count);
+   Progress getProgress(String type, long count);
 }

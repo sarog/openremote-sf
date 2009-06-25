@@ -99,7 +99,7 @@ public class Progress {
       this.percent = percent;
    }
    
-   public JSONObject getJson(){
+   public JSONObject toJSON(){
       HashMap<String, String> map = new HashMap<String, String>();
       map.put("status", status);
       map.put("data", message);

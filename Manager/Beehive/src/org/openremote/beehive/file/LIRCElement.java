@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.openremote.beehive.Constant;
-import org.openremote.beehive.utils.StringUtil;
+import org.openremote.beehive.utils.DateUtil;
 
 /**
  * The Class LIRCElement.
@@ -55,7 +55,7 @@ public class LIRCElement {
       this.uploadDate = uploadDate;
    }
    public Date getUploadDate(){
-      return StringUtil.String2Date(uploadDate, "dd-MMM-yyyy kk:mm", Locale.ENGLISH);
+      return DateUtil.String2Date(uploadDate, "dd-MMM-yyyy kk:mm", Locale.ENGLISH);
    }
    public String getRelativePath(){
       return path.replaceAll(Constant.LIRC_ROOT_URL, "");

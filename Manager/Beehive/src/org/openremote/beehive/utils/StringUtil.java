@@ -22,16 +22,14 @@ package org.openremote.beehive.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -41,7 +39,9 @@ import org.apache.commons.lang.StringEscapeUtils;
  * 
  */
 public class StringUtil {
-
+   
+   private static final Logger LOGGER = Logger.getLogger(StringUtil.class.getName());
+   
    private StringUtil() {
    }
 
@@ -143,18 +143,7 @@ public class StringUtil {
       return src.endsWith("/") ? src : src + "/";
    }
 
-   public static Date String2Date(String strDate, String format, Locale locale) {
-      DateFormat fmt = new SimpleDateFormat(format, Locale.ENGLISH);
-      Date date = new Date();
-      try {
-         date = fmt.parse(strDate);
-      } catch (ParseException e) {
-         e.printStackTrace();
-      }
-      return date;
-   }
-
-   public static StringBuffer readStringInInputStream(InputStream is) {
+   public static StringBuffer readInputStreamToStringBuffer(InputStream is) {
       StringBuffer strBuffer = new StringBuffer();
       byte[] buffer = null;
       int count = 0;
@@ -165,12 +154,12 @@ public class StringUtil {
             strBuffer.append(new String(buffer));
          } while (count != -1);
       } catch (IOException e) {
-         e.printStackTrace();
+         LOGGER.error("Read inputStream to stringBuffer occur error.", e);
       } finally {
          try {
             is.close();
          } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Close the inputStream occur error.", e);
          }
       }
       return strBuffer;
@@ -192,6 +181,7 @@ public class StringUtil {
          try {
             l = Long.parseLong(id);
          } catch (NumberFormatException e) {
+            LOGGER.error("Parse String "+id+" to long type occur error.");
             continue;
          }
          result.add(l);

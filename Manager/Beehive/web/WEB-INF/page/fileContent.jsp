@@ -60,12 +60,12 @@
    <table id="table_list_of_compare" rules="all" width="100%" border="0" cellpadding="0" cellspacing="0">
       <tr>         
          <td width="50%">
-            <div id="right_div" style="width:100%; height:540px; overflow:auto">
+            <div id="right_div" style="height:500px">
                <table valign="top" width="100%" cellpadding="0" cellspacing="0">
                   <c:forEach items="${lines}" var="line" varStatus="status">
                   <tr valign="middle">
                      <td class="diffLineNumber"><a class="number" name="1" href="#1">${status.count } </a></td>
-                     <td class="diffLine_N" width="100%" align="left" nowrap="true" "><pre class="">${line}</pre></td>
+                     <td class="diffLine_N" width="100%" align="left" nowrap="true" "><pre>${line}</pre></td>
                   </tr>
                   </c:forEach>
                </table>

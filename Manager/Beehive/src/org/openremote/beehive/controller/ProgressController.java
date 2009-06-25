@@ -66,17 +66,17 @@ public class ProgressController extends MultiActionController {
     * @throws IOException Signals that an I/O exception has occurred.
     */
    public void getProgress(HttpServletRequest request, HttpServletResponse response) throws IOException {
-      Double count = 1D;
+      Long modelCount = 1L;
       String type = request.getParameter("type");
       if("update".equals(type)){
-         count =  (Double) request.getSession().getAttribute("modelCount");
-         if(count == null){
-            count = Double.valueOf(modelService.count());
-            request.getSession().setAttribute("modelCount", count);
+         modelCount =  (Long) request.getSession().getAttribute("modelCount");
+         if(modelCount == null){
+            modelCount = Long.valueOf(modelService.count());
+            request.getSession().setAttribute("modelCount", modelCount);
          }
       }
-      Progress progress = progressService.getProgress(type,count);
-      response.getWriter().print(progress.getJson());
+      Progress progress = progressService.getProgress(type,modelCount);
+      response.getWriter().print(progress.toJSON());
    }
 
 }
