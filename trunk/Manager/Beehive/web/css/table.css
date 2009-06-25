@@ -446,7 +446,7 @@ td.diffLine_D{
 	background: url("../image/changed_ico.gif") no-repeat left top;
 }
 div.infoContainer{
-   height:540px;
+   height:510px;
    overflow:auto;
    border-bottom:1px solid #9FCD75;
    border-left:1px solid #9FCD75;
@@ -470,7 +470,7 @@ div.infoContainer{
 }
 #left_div,#right_div{
 	width:100%;
-	height:480px;
+	height:455px;
 	overflow:auto;
 	border-bottom:1px solid #9FCD75;
 	border-left:1px solid #9FCD75;

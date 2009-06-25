@@ -43,7 +43,6 @@ import org.openremote.beehive.exception.LIRCrawlerException;
 import org.openremote.beehive.file.EnumCharset;
 import org.openremote.beehive.spring.SpringContext;
 
-// TODO: Auto-generated Javadoc
 /**
  * Utility class for File.
  * 
@@ -79,7 +78,7 @@ public class FileUtil {
       try {
          fis = new FileInputStream(path);
       } catch (FileNotFoundException e) {
-         e.printStackTrace();
+         LOGGER.error("The file "+path+" is not found.", e);
       }
       return fis;
    }
@@ -105,17 +104,16 @@ public class FileUtil {
             list.add(line);
          }
       } catch (FileNotFoundException e) {
-         e.printStackTrace();
+         LOGGER.error("The file "+path+" is not found.", e);
       } catch (IOException e) {
-         e.printStackTrace();
+         LOGGER.error("Read file "+path+" error.", e);
       } finally {
          try {
             if (br != null) {
                br.close();
             }
          } catch (IOException e) {
-            e.printStackTrace();
-            LOGGER.error("Close BufferedReader error");
+            LOGGER.error("Close BufferedReader error.",e);
          }
       }
       return list;
@@ -138,10 +136,8 @@ public class FileUtil {
          while ((line = br.readLine()) != null) {
             list.add(line);
          }
-      } catch (FileNotFoundException e) {
-         e.printStackTrace();
       } catch (IOException e) {
-         e.printStackTrace();
+         LOGGER.error("Read fileInputStream error.", e);
       } finally {
          try {
             if (br != null) {
@@ -151,8 +147,7 @@ public class FileUtil {
                fis.close();
             }
          } catch (IOException e) {
-            e.printStackTrace();
-            LOGGER.error("Close BufferedReader error");
+            LOGGER.error("Close BufferedReader error.",e);
          }
       }
       return list;
@@ -174,7 +169,7 @@ public class FileUtil {
             file.getParentFile().mkdir();
             file.createNewFile();
          } catch (IOException e1) {
-            e1.printStackTrace();
+            LOGGER.error("Can not create file "+filePath, e1);
          }
       }
       PrintWriter pw = null;
@@ -189,11 +184,9 @@ public class FileUtil {
             pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream(filePath)));
          }
       } catch (UnsupportedEncodingException e) {
-         e.printStackTrace();
-         LOGGER.error("Get PrintWriter from " + filePath + " occurs UnsupportedEncodingException");
+         LOGGER.error("Get PrintWriter from " + filePath + " occurs UnsupportedEncodingException",e);
       } catch (FileNotFoundException e) {
-         e.printStackTrace();
-         LOGGER.error("Get PrintWriter from " + filePath + " occurs FileNotFoundException");
+         LOGGER.error("Get PrintWriter from " + filePath + " occurs FileNotFoundException",e);
       }
       return pw;
    }
@@ -344,7 +337,7 @@ public class FileUtil {
             count = in.read(buffer, 0, buffer.length);
          } while (count != -1);
       } catch (IOException e) {
-         e.printStackTrace();
+         LOGGER.error("Create file "+destFile.getName()+" from inputStream occur error.", e);
       } finally {
          try {
             if (out != null) {
@@ -355,7 +348,7 @@ public class FileUtil {
 
             }
          } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Can not close inputStream or fileOutputStream.", e);
          }
       }
    }
@@ -369,9 +362,7 @@ public class FileUtil {
       try {
          FileUtils.deleteDirectory(directory);
       } catch (IOException e) {
-         LOGGER.error("Delete directory " + directory.getPath() + " failed!");
-         e.printStackTrace();
-
+         LOGGER.error("Delete directory " + directory.getPath() + " failed!",e);
       }
    }
    
@@ -395,12 +386,12 @@ public class FileUtil {
             strBuffer.append(new String(buffer));
          } while (count != -1);
       } catch (IOException e) {
-         e.printStackTrace();
+         LOGGER.error("Read file "+file.getName()+" to StringBuffer occur error.", e);
       } finally {
          try {
             is.close();
          } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Can not close inputStream.", e);
          }
       }
       return strBuffer;
@@ -427,7 +418,7 @@ public class FileUtil {
          writer.write(10);
          writer.close();
       } catch (IOException e) {
-         e.printStackTrace();
+         LOGGER.error("Write line "+line+" to file "+fileName+" occur error.", e);
       }
    }
    
@@ -492,7 +483,7 @@ public class FileUtil {
             is.close();
             out.close();
          } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Can not close inputStream or fileOutputStream when write inputStream to file "+dstPath, e);
          }
       }
    }

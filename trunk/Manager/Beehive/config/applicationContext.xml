@@ -37,6 +37,7 @@
 	<bean id="configuration" class="org.openremote.beehive.Configuration">
 		<property name="workDir" value="${work.dir}" />
 		<property name="iconsDir" value="${icons.dir}" />
+		<property name="lircCrawRegex" value="${lirc.craw.regex}" />
 	</bean>
 	
 

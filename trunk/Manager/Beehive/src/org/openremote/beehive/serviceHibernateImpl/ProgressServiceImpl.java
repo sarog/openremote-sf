@@ -65,7 +65,7 @@ public class ProgressServiceImpl implements ProgressService {
    /**
     * {@inheritDoc}
     */
-   public Progress getProgress(String type, double count) {
+   public Progress getProgress(String type, long count) {
       String logPath = syncHistoryService.getLatestByType(type).getLogPath();
       File progressFile = new File(StringUtil.appendFileSeparator(configuration.getSyncHistoryDir())+logPath);
       return getProgressFromFile(progressFile, "Completed!", count);
@@ -80,13 +80,13 @@ public class ProgressServiceImpl implements ProgressService {
     * 
     * @return the progress from file
     */
-   private Progress getProgressFromFile(File progressFile, String endTag, double count){
+   private Progress getProgressFromFile(File progressFile, String endTag, long count){
       Progress progress = new Progress();
       String message = "";
       if(progressFile.exists()){
          try {
             message = FileUtils.readFileToString(progressFile, "UTF8");
-            double percent = FileUtils.readLines(progressFile, "UTF8").size()/count;
+            double percent = FileUtils.readLines(progressFile, "UTF8").size()/(double)count;
             progress.setPercent(percent);
             progress.setMessage(message);
             if(message.trim().endsWith(endTag)){

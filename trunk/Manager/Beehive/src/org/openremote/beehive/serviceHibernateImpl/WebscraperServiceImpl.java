@@ -26,7 +26,6 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
 import org.openremote.beehive.Constant;
-import org.openremote.beehive.PathConfig;
 import org.openremote.beehive.api.service.SVNDelegateService;
 import org.openremote.beehive.api.service.SyncHistoryService;
 import org.openremote.beehive.api.service.WebscraperService;
@@ -37,6 +36,7 @@ import org.openremote.beehive.exception.SVNException;
 import org.openremote.beehive.file.LIRCElement;
 import org.openremote.beehive.repo.Actions;
 import org.openremote.beehive.repo.DateFormatter;
+import org.openremote.beehive.utils.DateUtil;
 import org.openremote.beehive.utils.FileUtil;
 import org.openremote.beehive.utils.LIRCrawler;
 import org.openremote.beehive.utils.StringUtil;
@@ -71,7 +71,7 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
       Date date = new Date();
       SyncHistory syncHistory = new SyncHistory();
       syncHistory.setStartTime(date);
-      String logPath = PathConfig.getInstance().getFilePathByDate(date, Constant.SYNC_PROGRESS_FILE);
+      String logPath = DateUtil.addTimestampToFilename(date, Constant.SYNC_PROGRESS_FILE);
       syncHistory.setLogPath(logPath);
       syncHistory.setType("update");
       syncHistory.setStatus("running");
@@ -98,9 +98,9 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
    private void crawl(String lircUrl, String syncFilePath) {
       for (LIRCElement lirc : LIRCrawler.list(lircUrl)) {
          if (lirc.isModel()) {
-            String actionType = svnDelegateService.compareFileByLastModifiedDate(lirc);
-            FileUtil.writeLineToFile(syncFilePath, " ["+StringUtil.systemTime()+"]  "+actionType + "  "+lirc.getRelativePath());
-            if(!actionType.equals(Actions.NORMAL.getValue())){
+            Actions action = svnDelegateService.compareFileByLastModifiedDate(lirc);
+            FileUtil.writeLineToFile(syncFilePath, " ["+StringUtil.systemTime()+"]  "+action.getValue() + "  "+lirc.getRelativePath());
+            if(!action.equals(Actions.NORMAL)){
                LIRCrawler.writeModel(lirc);
             }
          } else {

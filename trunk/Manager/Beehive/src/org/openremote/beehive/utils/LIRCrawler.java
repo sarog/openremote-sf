@@ -36,8 +36,10 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
+import org.openremote.beehive.Configuration;
 import org.openremote.beehive.exception.LIRCrawlerException;
 import org.openremote.beehive.file.LIRCElement;
+import org.openremote.beehive.spring.SpringContext;
 
 /**
  * The Class LIRCrawler.
@@ -46,19 +48,20 @@ import org.openremote.beehive.file.LIRCElement;
  */
 public class LIRCrawler {
    
+   /** The configuration. */
+   public static Configuration configuration = (Configuration) SpringContext.getInstance().getBean("configuration");
+   
+   /** The http client. */
    private static HttpClient httpClient = createHttpClient();
    
    /** The Constant LOGGER. */
    private static final Logger LOGGER = Logger.getLogger(LIRCrawler.class.getName());
    
-   /** The Constant TR_REGEX. */
-   private final static String TR_REGEX = "<tr><td valign=\"top\">" +
-   		"<img src=\"/icons/(folder|text|script)\\.gif\" alt=\"\\[[\\s\\w]+\\]\">" +
-   		"</td><td><a href=\"(.*?)/?\">.*?/?</a></td><td align=\"right\">" +
-   		"(\\d\\d-\\w\\w\\w-\\d\\d\\d\\d\\s\\d\\d:\\d\\d)  </td>" +
-   		"<td align=\"right\">\\s*[-\\w\\.]+\\s*</td></tr>";
-   
-   
+   /**
+    * Creates the http client.
+    * 
+    * @return the http client
+    */
    private static HttpClient createHttpClient(){
       HttpClient httpClient = new HttpClient();
       httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(30000);
@@ -74,7 +77,7 @@ public class LIRCrawler {
     */
    public static List<LIRCElement> list(String lircUrl){
       List<LIRCElement> lircs = new ArrayList<LIRCElement>();
-      Pattern pattern = Pattern.compile(TR_REGEX);
+      Pattern pattern = Pattern.compile(configuration.getLircCrawRegex());
       Matcher matcher = pattern.matcher(getPageContent(lircUrl));
       while (matcher.find()) {
          LIRCElement lirc = new LIRCElement();
