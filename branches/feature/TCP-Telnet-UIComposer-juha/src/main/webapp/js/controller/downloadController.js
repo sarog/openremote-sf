@@ -22,13 +22,15 @@
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 var DownloadController = function() {
+
     function DownloadController() {
         // constructor
-        }
+    }
+
 
     // Private variables --------------------------------------------------------------------------
 
-    //To store selected section ids.
+    // To store selected section ids.
     var assembledSectionIds;
 
     // Store buttons already added. to keep button id is correct in controller part and iphone part.
@@ -38,10 +40,11 @@ var DownloadController = function() {
     // Private methods ----------------------------------------------------------------------------
 
     /**
-     * Parse Page and send the request for download the current work.
+     * Parse page and send the request for download the current work.
      */
     function download() {
-		$.showLoading();
+		    $.showLoading();
+
         // first store current screen
         ScreenViewController.storeCurrentScreen();
 
@@ -58,11 +61,11 @@ var DownloadController = function() {
             //get it in parseInfared() function
         },
         function(result) {
-			$.hideLoading();
+			      $.hideLoading();
             window.location = result;
         });
-
     }
+
 
     /*-----------  generate Iphone xml ------------------------------*/
 
@@ -347,6 +350,10 @@ var DownloadController = function() {
         $("#tcp_container").find(".tcp_btn").each(function() {
             tcpBtns.push($(this).data("model"));
         });
+        var telnetBtns = new Array();
+        $("#telnet_container").find(".telnet_btn").each(function() {
+            telnetBtns.push($(this).data("model"));
+        });
 
 
         var panel = {
@@ -355,6 +362,7 @@ var DownloadController = function() {
             x10Btns: x10Btns,
             httpBtns: httpBtns,
             tcpBtns: tcpBtns,
+            telnetBtns: telnetBtns,
             macroBtns: macroBtns,
             maxId: global.BUTTONID
         };
@@ -376,7 +384,8 @@ var DownloadController = function() {
     }
 
 
-    //static method
+    // Static method ------------------------------------------------------------------------------
+
     DownloadController.init = function() {
         $("#saveBtn").unbind().bind("click", download);
         $("a.button").UIHover();
