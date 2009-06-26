@@ -26,7 +26,8 @@ var ImportController = function() {
         // constructor
         }
 
-    //private methods
+    // Private methods ----------------------------------------------------------------------------
+
     /**
      * Show upload from
      */
@@ -79,6 +80,8 @@ var ImportController = function() {
         revertKnxBtns(data.panel.knxBtns);
         revertX10Btns(data.panel.x10Btns);
         //revertHTTPBtns(data.panel.httpBtns);          // TODO !!
+        //revertTCPBtns(data.panel.tcpBtns);            // TODO !!
+        //revertTelnetBtns(data.panel.telnetBtns);      // TODO !!
         revertMacroBtns(data.panel.macroBtns);
         revertMacroSubBtns(data.panel.macroBtns);
         revertScreens(data.panel.screens);
@@ -87,8 +90,6 @@ var ImportController = function() {
         $("#upload_form_container").closeModalForm();
         $.hideLoading();
     }
-
-
 
 
     /**
@@ -115,7 +116,6 @@ var ImportController = function() {
         }
     }
 
-
     /**
      * Recreate HTTP buttons
      *
@@ -129,6 +129,31 @@ var ImportController = function() {
         }
     }
 
+    /**
+     * Recreate TCP buttons
+     *
+     * @param tcpBtns  TODO
+     */
+    function revertTCPBtns(tcpBtns) {
+        for (var index in tcpBtns) {
+            var btn = tcpBtns[index];
+            var model = ImportController.buildModel(btn);
+            TCPController.createTCP(model);
+        }
+    }
+
+    /**
+     * Recreate Telnet buttons
+     *
+     * @param telnetBtns  TODO
+     */
+    function revertTelnetBtns(telnetBtns) {
+        for (var index in telnetBtns) {
+            var btn = telnetBtns[index];
+            var model = ImportController.buildModel(btn);
+            TelnetController.createTelnet(model);
+        }
+    }
 
     /**
      * Revert Macro buttons
@@ -203,7 +228,8 @@ var ImportController = function() {
     }
 
 
-    //static method
+    // Static methods -----------------------------------------------------------------------------
+
     ImportController.init = function() {
         $("#uploadBtn").unbind().bind("click", showUploadForm);
     };
@@ -224,13 +250,14 @@ var ImportController = function() {
         $("#knx_container .knx_btn").remove();
         $("#x10_container .x10_btn").remove();
         $("#http_container .http_btn").remove();      
+        $("#tcp_container .tcp_btn").remove();
+        $("#telnet_container .telnet_btn").remove();      
         $("#command_container .command_btn").remove();
         $("#iphoneBtn_container .iphone_btn").remove();
         $("#screen_select option").remove();
         global.BUTTONID = 1;
         global.InfraredCollection = {};
         global.screens = {};
-
     };
 
     ImportController.getCurrentUserPath = function(callback) {
