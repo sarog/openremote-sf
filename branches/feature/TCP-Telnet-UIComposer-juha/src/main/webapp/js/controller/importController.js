@@ -3,15 +3,23 @@
  *
  * See the contributors.txt file in the distribution for a full listing of individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the terms of the GNU
+ * General Public License as published by the Free Software Foundation; either version 3.0 of the
+ *  License, or (at your option) any later version.
  *
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
- * http://www.fsf.org.
+ * You should have received a copy of the GNU General Public License along with this software;
+ * if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ * MA 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
+/**
+ * TODO
+ *
+ * @author allen.wei@finalist.cn
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 var ImportController = function() {
     function ImportController() {
@@ -70,6 +78,7 @@ var ImportController = function() {
         // notice: revert order is very important, don't change it if you are clear with it.
         revertKnxBtns(data.panel.knxBtns);
         revertX10Btns(data.panel.x10Btns);
+        //revertHTTPBtns(data.panel.httpBtns);          // TODO !!
         revertMacroBtns(data.panel.macroBtns);
         revertMacroSubBtns(data.panel.macroBtns);
         revertScreens(data.panel.screens);
@@ -105,6 +114,21 @@ var ImportController = function() {
             X10Controller.createX10(model);
         }
     }
+
+
+    /**
+     * Recreate HTTP buttons
+     *
+     * @param httpBtns  TODO
+     */
+    function revertHTTPBtns(httpBtns) {
+        for (var index in httpBtns) {
+            var btn = httpBtns[index];
+            var model = ImportController.buildModel(btn);
+            HTTPController.createHTTP(model);
+        }
+    }
+
 
     /**
      * Revert Macro buttons
@@ -199,6 +223,7 @@ var ImportController = function() {
         $("#macro .macro_btn_defination").remove();
         $("#knx_container .knx_btn").remove();
         $("#x10_container .x10_btn").remove();
+        $("#http_container .http_btn").remove();      
         $("#command_container .command_btn").remove();
         $("#iphoneBtn_container .iphone_btn").remove();
         $("#screen_select option").remove();
