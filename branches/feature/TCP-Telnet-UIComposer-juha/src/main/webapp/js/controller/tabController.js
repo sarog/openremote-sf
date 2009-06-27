@@ -45,20 +45,17 @@ var TabController = function() {
     }
 
 
-    //static method
+    // Static methods -----------------------------------------------------------------------------
+
     TabController.init = function() {
         $("#tabs").tabs();
         $("#create_knx_icon").unbind().bind("click", KNXController.showCreateKNXDialog);
         $("#create_x10_icon").unbind().bind("click", X10Controller.showCreateX10Dialog);
         $("#create_http_icon").unbind().bind("click", HTTPController.showCreateHTTPDialog);
+        $("#create_tcp_icon").unbind().bind("click", HTTPController.showCreateTCPDialog);
+        $("#create_telnet_icon").unbind().bind("click", HTTPController.showCreateTelnetDialog);
         $("#select_command_icon").unbind().bind("click", selectCommand);
-
-
     };
-
-    
-
-	
 
     return TabController;
 }();
