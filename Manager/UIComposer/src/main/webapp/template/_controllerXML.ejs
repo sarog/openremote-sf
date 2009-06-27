@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/controller-1.0-M3.xsd">
-
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/controller-1.0-M3.xsd"> 
   <buttons>
 <% for (var index in openremote.buttons.button) {%>
 <% var btn = openremote.buttons.button[index];%>
@@ -15,7 +14,6 @@
     </button>
 <% } %>
   </buttons>
-
   <events>
 	<% var events = openremote.events; %>
     <irEvents>
@@ -24,14 +22,12 @@
       <irEvent id="<%=irEvent.id  %>" name="<%=irEvent.name %>" command="<%=irEvent.command %>"/>
 		<% } %>
     </irEvents>
-
     <knxEvents>
 		  <% for (var index in events.knxEvents.knxEvent) {%>
 			<% var knxEvent = events.knxEvents.knxEvent[index]; %>
 				<knxEvent id="<%=knxEvent.id  %>" label="<%=knxEvent.label %>" groupAddress="<%=knxEvent.groupAddress%>" command="<%=knxEvent.command %>"/>
 			<% } %>
     </knxEvents>
-
     <x10Events>
 		 <% for (var index in events.x10Events.x10Event) {%>
 			<% var x10Event = events.x10Events.x10Event[index]; %>
@@ -45,20 +41,6 @@
 	      	<httpEvent id="<%=httpEvent.id %>" label="<%=httpEvent.label %>" url="<%=httpEvent.url %>"/>
 		 <% } %>
     </httpEvents>
-
-    <socketEvents>
-		 <% for (var index in events.tcpEvents.tcpEvent) {%>
-			<% var tcpEvent = events.tcpEvents.tcpEvent[index]; %>
-	      	<socketEvent id="<%=tcpEvent.id %>" label="<%=tcpEvent.label %>" ip="<%=tcpEvent.ip %>" port="<%=tcpEvent.port %>" command="<%=tcpEvent.command %>"/>
-		 <% } %>
-    </socketEvents>
-
-    <telnetEvents>
-		 <% for (var index in events.telnetEvents.telnetEvent) {%>
-			<% var telnetEvent = events.telnetEvents.telnetEvent[index]; %>
-	      	<telnetEvent id="<%=telnetEvent.id %>" label="<%=telnetEvent.label %>" ip="<%=telnetEvent.ip %>" port="<%=telnetEvent.port %>" command="<%=telnetEvent.command %>"/>
-		 <% } %>
-    </telnetEvents>
 
   </events>
 </openremote>
