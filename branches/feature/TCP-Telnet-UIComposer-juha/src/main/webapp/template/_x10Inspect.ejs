@@ -7,8 +7,10 @@
 <%InspectView.getModel= function() { %>
 <% var model = $("#inspect_tool_bar").data("model"); %>
 <% var label = $.trim($("#inspect_x10_label").val()); %>
-<% var groupAddress = $.trim($("#inspect_x10_command").val()); %>
+<% var address = $.trim($("#inspect_x10_address").val()); %>
+<% var command = $.trim($("#inspect_x10_command").val()); %>
 <% model.label = label;%>
-<% model.groupAddress = groupAddress;%>
+<% model.address = address;%>
+<% model.command = command;%>
 <% return model;%>
 <% }; %>
