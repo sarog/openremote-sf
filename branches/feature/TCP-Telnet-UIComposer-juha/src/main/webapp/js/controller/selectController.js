@@ -15,7 +15,6 @@
  * MA 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
 /*
  * TODO
  *
@@ -25,7 +24,7 @@
 function fillVendorSelect() {
     var select = $("#vendor_select");
     loadingSelect(select);
-    getJSONData("/lirc",
+    getJSONData("/lirc",                // TODO : use constants!
     function(data) {
         loadingSelectDone(select);
         var vendors = $.makeArray(data.vendors.vendor);

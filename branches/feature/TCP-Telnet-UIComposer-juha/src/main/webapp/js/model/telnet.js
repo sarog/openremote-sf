@@ -16,43 +16,48 @@
  */
 
 /**
- * TODO
+ * Client state model for telnet buttons. Includes mandatory attribute 'label' and telnet
+ * specific attributes 'ip', 'port' and 'command'.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-var HTTP = function() {
-	function HTTP() {
+var Telnet = function() {
+	function Telnet() {
 		var self = this;
 		Model.call(self);
 
-    //text ui interface display
-		self.label = "";
-		self.url = "";
+		self.label  = "";
+		self.ip     = "";
+    self.port   = "";
+    self.command = "";
 
     /**
      * Get HTML getElementId
      */
 		self.getElementId = function() {
-			return "http"+self.id;
+			return "telnet"+self.id;
 		};
-		
-		self.inspectViewTemplate = "template/_httpInspect.ejs";
+
+		self.inspectViewTemplate = "template/_telnetInspect.ejs";
 	}
 
   /**
    * Create new instance from flat model (which have no private method).
    *
    * @param model flat model (which have no private method).
-   * 
+   *
    * @returns created new instance.
    */
-	HTTP.init = function(model) {
-		var http = new HTTP();
-		http.id      = model.id     ;
-		http.label   = model.label  ;
-		http.url     = model.url;
-		return http;
+	Telnet.init = function(model) {
+		var telnet = new Telnet();
+		telnet.id      = model.id;
+		telnet.label   = model.label;
+		telnet.ip      = model.ip;
+    telnet.port    = model.port;
+    telnet.command = model.command;
+
+    return telnet;
 	};
-    
-	return HTTP;
+
+	return Telnet;
 }();
