@@ -74,14 +74,14 @@
 							<li>
 								<a href="#http_tab" class="has_icon">HTTP</a><span id="create_http_icon" title="Create HTTP" class="ui-icon ui-icon-plusthick"></span>
 							</li>
-							   <li>
-									<a href="#upnp_tab" class="has_icon">UPnP</a><span id="create_upnp_icon" title="Create UPnP" class="ui-icon ui-icon-plusthick"></span>
-								</li>
+              <li>
+                <a href="#upnp_tab" class="has_icon">UPnP</a><span id="create_upnp_icon" title="Create UPnP" class="ui-icon ui-icon-plusthick"></span>
+              </li>
 							<li>
-								<a href="#x10_tab" class="has_icon">Socket</a><span id="create_socket_icon" title="Create Socket" class="ui-icon ui-icon-plusthick"></span>
+								<a href="#tcp_tab" class="has_icon">TCP/IP</a><span id="create_tcp_icon" title="Create TCP/IP" class="ui-icon ui-icon-plusthick"></span>
 							</li>
 							<li>
-								<a href="#x10_tab" class="has_icon">Telnet</a><span id="create_telnet_icon" title="Create Telnet" class="ui-icon ui-icon-plusthick"></span>
+								<a href="#telnet_tab" class="has_icon">Telnet</a><span id="create_telnet_icon" title="Create Telnet" class="ui-icon ui-icon-plusthick"></span>
 							</li>
 						</ul>
 						<div id="command_tab">
@@ -111,14 +111,30 @@
 							</div>
 							<div class="clear"></div>
 						</div>
-							<div id="upnp_tab">
-							   <p> Click the plus image to create UPnP button.</p>
-								<div id="upnp_container" class="item_container">
-									<div class="clear"></div>
-								</div>
-								<div class="clear"></div>
-							</div>
-					</div>
+            <div id="upnp_tab">
+               <p> Click the plus image to create UPnP button.</p>
+              <div id="upnp_container" class="item_container">
+                <div class="clear"></div>
+              </div>
+              <div class="clear"></div>
+            </div>
+            <div id="tcp_tab">
+               <p> Click the plus image to create TCP/IP button.</p>
+              <div id="tcp_container" class="item_container">
+                <div class="clear"></div>
+              </div>
+              <div class="clear"></div>
+            </div>
+            <div id="telnet_tab">
+               <p> Click the plus image to create Telnet button.</p>
+              <div id="telnet_container" class="item_container">
+                <div class="clear"></div>
+              </div>
+              <div class="clear"></div>
+            </div>
+
+
+          </div>
 				</div>
 				<div id='right' class="grid_4">
 				
@@ -188,8 +204,38 @@
                         </fieldset>
                     </form>
 				</div>
-                
-				<div id="command_navigation">
+
+        <div id="create_tcp_dialog">
+                    <form id="tcp_form">
+                        <fieldset>
+                            <label for="tcp_label_input">Label</label>
+                            <input type="text" id="tcp_label_input" name="tcp_label_input"/>
+                            <label for="tcp_ip_input">IP Address</label>
+                            <input type="text" id="tcp_ip_input" name="tcp_ip_input"/>
+                            <label for="tcp_port_input">Port</label>
+                            <input type="text" id="tcp_port_input" name="tcp_port_input"/>
+                            <label for="tcp_command_input">Command</label>
+                            <input type="text" id="tcp_command_input" name="tcp_command_input"/>
+                        </fieldset>
+                    </form>
+        </div>
+
+        <div id="create_telnet_dialog">
+                    <form id="telnet_form">
+                        <fieldset>
+                            <label for="telnet_label_input">Label</label>
+                            <input type="text" id="telnet_label_input" name="telnet_label_input"/>
+                            <label for="telnet_ip_input">IP Address</label>
+                            <input type="text" id="telnet_ip_input" name="telnet_ip_input"/>
+                            <label for="telnet_port_input">Port</label>
+                            <input type="text" id="telnet_port_input" name="telnet_port_input"/>
+                            <label for="telnet_command_input">Command</label>
+                            <input type="text" id="telnet_command_input" name="telnet_command_input"/>
+                        </fieldset>
+                    </form>
+        </div>
+
+        <div id="command_navigation">
 					<div id="vender_select_container" class="select_container">
 						<div class="select_title">
 							<h3>
