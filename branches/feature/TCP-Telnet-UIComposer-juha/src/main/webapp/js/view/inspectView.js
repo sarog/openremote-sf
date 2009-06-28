@@ -60,7 +60,3 @@ InspectView = function() {
 	};
 }();
 
-
-
-
-
