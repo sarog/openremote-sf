@@ -59,6 +59,30 @@ HTMLBuilder = function() {
             return button;
         },
 
+        TelnetBtnBuilder: function(telnet) {
+            var button = HTMLBuilder.blueBtnBuilder(telnet.label);
+
+            button.addClass("telnet_btn");
+            button.addClass("iphone_element");
+            button.attr("id", telnet.getElementId());
+            button.data("model", telnet);
+            button.attr("title", telnet.label);
+
+            return button;
+        },
+
+        TCPBtnBuilder: function(tcp) {
+            var button = HTMLBuilder.blueBtnBuilder(tcp.label);
+
+            button.addClass("tcp_btn");
+            button.addClass("iphone_element");
+            button.attr("id", tcp.getElementId());
+            button.data("model", tcp);
+            button.attr("title", tcp.label);
+
+            return button;
+        },
+
         blueBtnBuilder: function(text) {
             var button = $("<div></div>");
 
