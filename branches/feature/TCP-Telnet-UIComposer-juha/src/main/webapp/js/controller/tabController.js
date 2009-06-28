@@ -52,8 +52,8 @@ var TabController = function() {
         $("#create_knx_icon").unbind().bind("click", KNXController.showCreateKNXDialog);
         $("#create_x10_icon").unbind().bind("click", X10Controller.showCreateX10Dialog);
         $("#create_http_icon").unbind().bind("click", HTTPController.showCreateHTTPDialog);
-        $("#create_tcp_icon").unbind().bind("click", HTTPController.showCreateTCPDialog);
-        $("#create_telnet_icon").unbind().bind("click", HTTPController.showCreateTelnetDialog);
+        $("#create_tcp_icon").unbind().bind("click", TCPController.showCreateTCPDialog);
+        $("#create_telnet_icon").unbind().bind("click", TelnetController.showCreateTelnetDialog);
         $("#select_command_icon").unbind().bind("click", selectCommand);
     };
 
