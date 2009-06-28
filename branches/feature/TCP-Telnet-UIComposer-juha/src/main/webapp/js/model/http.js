@@ -16,7 +16,8 @@
  */
 
 /**
- * TODO
+ * Client state model for HTTP buttons. Includes mandatory attribute 'label' and HTTP
+ * specific attribute 'url'.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
