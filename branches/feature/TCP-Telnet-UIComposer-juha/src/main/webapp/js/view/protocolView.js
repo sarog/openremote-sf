@@ -14,6 +14,13 @@
  * not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
  * MA 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
+/*
+ * TODO
+ *
+ * @author <a href="mailto:">Allen Wei</a>
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ */
 var KNXView = function() {
     function KNXView(knx) {
         var self = this;
@@ -35,6 +42,7 @@ var KNXView = function() {
             }
             btn.prependTo($("#knx_tab .item_container"));
         };
+
         init();
 
         self.deleteView = function() {
@@ -42,13 +50,13 @@ var KNXView = function() {
         };
 
         self.updateView = function() {
-			var knx = self.getModel();
+          var knx = self.getModel();
+          var btn = $("#" + knx.getElementId());
 
-            var btn = $("#" + knx.getElementId());
-			btn.interceptStr({
-				text:knx.label,
-				max:14
-			});
+          btn.interceptStr({
+            text:knx.label,
+            max:14
+          });
         };
     }
 
@@ -76,20 +84,22 @@ var X10View = function() {
             }
             btn.prependTo($("#x10_tab .item_container"));
         };
+
         init();
 
         self.deleteView = function() {
             self.getElement().remove();
         };
 
-		self.updateView = function () {
-			var x10 = self.getModel();
-	        var btn = $("#"+x10.getElementId());
-			btn.interceptStr({
-				text:x10.label,
-				max:14
-			});
-	    };
+        self.updateView = function () {
+          var x10 = self.getModel();
+          var btn = $("#"+x10.getElementId());
+
+          btn.interceptStr({
+            text:x10.label,
+            max:14
+          });
+        };
     }
 
     return X10View;
@@ -117,22 +127,113 @@ var HTTPView = function() {
             }
             btn.prependTo($("#http_tab .item_container"));
         };
+
         init();
 
         self.deleteView = function() {
             self.getElement().remove();
         };
 
-		self.updateView = function () {
-			var http = self.getModel();
-	        var btn = $("#"+http.getElementId());
-			btn.interceptStr({
-				text:http.label,
-				max:14
-			});
-	    };
+        self.updateView = function () {
+          var http = self.getModel();
+          var btn = $("#"+http.getElementId());
+
+          btn.interceptStr({
+            text:http.label,
+            max:14
+          });
+        };
     }
 
     return HTTPView;
 } ();
+
+
+
+var TCPView = function() {
+    function TCPView(tcp) {
+        var self = this;
+        var _model = tcp;
+
+        self.getModel = function() {
+            return _model;
+        };
+
+        self.getElement = function() {
+            return $("#" + self.getModel().getElementId());
+        };
+
+        var init = function() {
+            var btn = HTMLBuilder.HTTPBtnBuilder(self.getModel());
+            var info = $("#tcp_tab p");
+            if (info.size() != 0) {
+                info.remove();
+            }
+            btn.prependTo($("#tcp_tab .item_container"));
+        };
+
+        init();
+
+        self.deleteView = function() {
+            self.getElement().remove();
+        };
+
+        self.updateView = function () {
+          var tcp = self.getModel();
+          var btn = $("#"+tcp.getElementId());
+
+          btn.interceptStr({
+            text:tcp.label,
+            max:14
+          });
+        };
+    }
+
+    return TCPView;
+} ();
+
+
+
+var TelnetView = function() {
+    function TelnetView(telnet) {
+        var self = this;
+        var _model = telnet;
+
+        self.getModel = function() {
+            return _model;
+        };
+
+        self.getElement = function() {
+            return $("#" + self.getModel().getElementId());
+        };
+
+        var init = function() {
+            var btn = HTMLBuilder.HTTPBtnBuilder(self.getModel());
+            var info = $("#telnet_tab p");
+            if (info.size() != 0) {
+                info.remove();
+            }
+            btn.prependTo($("#telnet_tab .item_container"));
+        };
+
+        init();
+
+        self.deleteView = function() {
+            self.getElement().remove();
+        };
+
+        self.updateView = function () {
+          var telnet = self.getModel();
+          var btn = $("#"+telnet.getElementId());
+
+          btn.interceptStr({
+            text:telnet.label,
+            max:14
+          });
+        };
+    }
+
+    return TelnetView;
+} ();
+
 
