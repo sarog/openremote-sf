@@ -16,7 +16,7 @@
             <value>${jdbc.username}</value>
         </property>
         <property name="password">
-            <value>${jdbc.password }</value>
+            <value>${jdbc.password}</value>
         </property>
     </bean>
 
