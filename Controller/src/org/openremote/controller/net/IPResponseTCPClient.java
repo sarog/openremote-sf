@@ -76,16 +76,16 @@ public class IPResponseTCPClient implements Runnable {
     * Send tcp.
     */
    public void sendTcp() {
-      String targetIPStr = new String(targetIP.getAddress());
+      String targetIPStr = targetIP.getHostAddress();
       String data = "http://" + getLocalhostIP() + ":" + configuration.getWebappPort() + "/controller";
-      logger.info("Sending server IP [" + data + "]to " + targetIPStr);
+      logger.info("Sending server IP '" + data + "' to " + targetIPStr);
       Socket skt = null;
       PrintWriter out = null;
       try {
          skt = new Socket(targetIP, TCP_PORT);
          out = new PrintWriter(skt.getOutputStream(), true);
       } catch (IOException e) {
-         logger.error("Can't create TCP socket on " + targetIPStr, e);
+         logger.error("Response failed! Can't create TCP socket on " + targetIPStr, e);
       } finally {
          out.print(data);
          out.close();
@@ -107,21 +107,21 @@ public class IPResponseTCPClient implements Runnable {
    public static String getLocalhostIP() {
       String ip = "";
       try {
-         Enumeration<?> e1 = (Enumeration<?>) NetworkInterface.getNetworkInterfaces();
-         while (e1.hasMoreElements()) {
-            NetworkInterface ni = (NetworkInterface) e1.nextElement();
-            if (!ni.getName().equals("eth0")) {
-               continue;
-            } else {
-               Enumeration<?> e2 = ni.getInetAddresses();
-               while (e2.hasMoreElements()) {
-                  InetAddress ia = (InetAddress) e2.nextElement();
+         Enumeration<?> interfaces = (Enumeration<?>) NetworkInterface.getNetworkInterfaces();
+         while (interfaces.hasMoreElements()) {
+            NetworkInterface ni = (NetworkInterface) interfaces.nextElement();
+            if (ni.isUp() && ni.supportsMulticast() && !ni.isLoopback()) {
+               Enumeration<?> addresses = ni.getInetAddresses();
+               while (addresses.hasMoreElements()) {
+                  InetAddress ia = (InetAddress) addresses.nextElement();
                   if (ia instanceof Inet6Address) {
                      continue;
                   }
                   ip = ia.getHostAddress();
                }
-               break;
+               if(!ip.isEmpty()){
+                  break;
+               }
             }
          }
       } catch (SocketException e) {
