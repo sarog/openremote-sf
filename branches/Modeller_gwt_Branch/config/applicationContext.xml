@@ -17,10 +17,23 @@
 		parent="baseSessionFactory">
 		<property name="annotatedClasses">
 			<list>
-				<value>org.openremote.modeller.domain.Activity
-				</value>
-				<value>org.openremote.modeller.domain.Screen
-				</value>
+				<value>org.openremote.modeler.domain.Protocol</value> 
+                <value>org.openremote.modeler.domain.Attribute</value>
+                <value>org.openremote.modeler.domain.Device</value>
+                <value>org.openremote.modeler.domain.DeviceEvent</value>
+                <value>org.openremote.modeler.domain.DeviceEventRef</value> 
+                <value>org.openremote.modeler.domain.DeviceMacroEvent</value>
+                <value>org.openremote.modeler.domain.DeviceMacroEventRef</value> 
+                <value>org.openremote.modeler.domain.DelayEvent</value>
+                <value>org.openremote.modeler.domain.DelayEventRef</value> 
+                <value>org.openremote.modeler.domain.BuildingModelerEventRef</value> 
+                <value>org.openremote.modeler.domain.UIMacroEvent</value> 
+                <value>org.openremote.modeler.domain.UIMacroEventRef</value> 
+                <value>org.openremote.modeler.domain.ScreenJumpEvent</value> 
+                <value>org.openremote.modeler.domain.ScreenJumpEventRef</value> 
+                <value>org.openremote.modeler.domain.Activity</value> 
+                <value>org.openremote.modeler.domain.Screen</value> 
+                <value>org.openremote.modeler.domain.Button</value> 
 			</list>
 		</property>
 		<property name="mappingResources">
@@ -28,12 +41,12 @@
 		</property>
 	</bean>
 
-	<bean id="myService" class="org.openremote.modeller.server.MyServiceImpl" />
+	<bean id="myService" class="org.openremote.modeler.server.MyServiceImpl" />
 	
-	<bean id="myServiceManager" class="org.openremote.modeller.service.MyServiceManager" />
+	<bean id="myServiceManager" class="org.openremote.modeler.service.MyServiceManager" />
 	
 
-	<bean id="genericDAO" class="org.openremote.modeller.dao.GenericDAO"></bean>
+	<bean id="genericDAO" class="org.openremote.modeler.dao.GenericDAO"></bean>
 
 
 

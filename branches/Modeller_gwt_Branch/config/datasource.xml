@@ -20,7 +20,7 @@
         </property>
     </bean>
 
-    <bean id="hibernateProperties" class="org.openremote.modeller.utils.HibernateProperties">
+    <bean id="hibernateProperties" class="org.openremote.modeler.utils.HibernateProperties">
         <property name="originalProperties">
             <props>
                 <prop key="hibernate.dialect">

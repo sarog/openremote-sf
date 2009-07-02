@@ -4,10 +4,10 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
 	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-	<display-name>Modeller</display-name>
+	<display-name>Modeler</display-name>
     	<!-- Default page to serve -->
 	<welcome-file-list>
-		<welcome-file>Modeller.html</welcome-file>
+		<welcome-file>Modeler.html</welcome-file>
 	</welcome-file-list>
     
 	<context-param>
