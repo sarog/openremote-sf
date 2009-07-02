@@ -8,7 +8,7 @@
 
     <aop:config proxy-target-class="true">
         <aop:pointcut id="serviceMethods"
-                      expression="execution(* org.openremote.modeller.service.*.*(..))"/>
+                      expression="execution(* org.openremote.modeler.service.*.*(..))"/>
         <aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethods"/>
     </aop:config>
 
@@ -36,11 +36,11 @@
     </bean>
 
     <bean id="abstractService" abstract="true"
-	class="org.openremote.modeller.service.BaseAbstractService" />
+	class="org.openremote.modeler.service.BaseAbstractService" />
 
     
 	<bean id="myServiceManager"
-		class="org.openremote.modeller.service.MyServiceManager"
+		class="org.openremote.modeler.service.MyServiceManager"
 		parent="abstractService" />
 	
 </beans>

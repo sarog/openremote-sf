@@ -21,7 +21,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<project name="modeller" default="compile" basedir=".">
+<project name="modeler" default="compile" basedir=".">
 
 	<property file="build.properties"/>
 	
@@ -29,7 +29,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<property name="gwt.sdk" value="${gwt.sdk}" />
    
 	<!-- Some variables used -->
-	<property name="project.name" value="modeller" />
+	<property name="project.name" value="modeler" />
 	<property name="lib.dir" value="lib" />
 	<property name="web-inf.dir" value="war/WEB-INF" />
 
@@ -73,7 +73,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 			<!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
 			<jvmarg value="-Xmx256M"/>
 			<!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
-			<arg value="org.openremote.modeller.Modeller"/>
+			<arg value="org.openremote.modeler.Modeler"/>
 		</java>
 	</target>
 
@@ -85,9 +85,9 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 			</classpath>
 			<jvmarg value="-Xmx256M"/>
 			<arg value="-startupUrl"/>
-			<arg value="Modeller.html"/>
+			<arg value="modeler.html"/>
 			<!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
-			<arg value="org.openremote.modeller.Modeller"/>
+			<arg value="org.openremote.modeler.Modeler"/>
 		</java>
 	</target>
 
@@ -97,7 +97,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
 	<target name="clean" description="Cleans this project">
 		<delete dir="${web-inf.dir}/classes" failonerror="false" />
-		<delete dir="war/modeller" failonerror="false" />
+		<delete dir="war/modeler" failonerror="false" />
 		<delete dir="${web-inf.dir}/lib" failonerror="false" />
 		<delete dir="${project.name}.war"/>
 	</target>

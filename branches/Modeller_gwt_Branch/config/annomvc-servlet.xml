@@ -37,7 +37,7 @@
                 <!-- IMPORTANT: DO THIS: /com.ibt.intelligrade.CourseServiceClient/
                gwt.smvc -->
                 <!--  -->
-                <prop key="/modeller/gwt.smvc">myService
+                <prop key="/modeler/gwt.smvc">myService
                 </prop>
             </props>
         </property>
