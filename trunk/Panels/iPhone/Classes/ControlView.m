@@ -54,7 +54,6 @@
 	button = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
 	icon = nil;	
 		
-
 	[button addTarget:self action:@selector(controlButtonDown:) forControlEvents:UIControlEventTouchDown];
 	[button addTarget:self action:@selector(controlButtonUp:) forControlEvents:UIControlEventTouchUpInside];
 	[button addTarget:self action:@selector(controlButtonUp:) forControlEvents:UIControlEventTouchUpOutside];	
@@ -152,6 +151,7 @@
 		isError = YES;
 	} 
 }
+
 //Shows alertView when the request successful
 - (void)definitionURLConnectionDidFinishLoading:(NSData *)data {
 //	NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];

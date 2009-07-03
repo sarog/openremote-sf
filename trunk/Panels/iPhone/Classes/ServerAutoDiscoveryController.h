@@ -19,7 +19,7 @@
 	NSTimer	 *tcpTImer;
 }
 - (void)setDelegate:(id)delegate;
-- (void)findServerWithDelegate:(id)delegate;
+- (void)reTry;
 
 
 #pragma mark delegate method
