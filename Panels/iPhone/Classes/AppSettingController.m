@@ -93,9 +93,18 @@
 	autoDiscovery = s.on;
 	if (autoDiscovery) {
 		self.navigationItem.leftBarButtonItem = nil;
-		autoDiscoverController = [[ServerAutoDiscoveryController alloc]init];
-		[autoDiscoverController findServerWithDelegate:self];
+		if (autoDiscoverController) {
+			[autoDiscoverController setDelegate:nil];
+			[autoDiscoverController release];
+			autoDiscoverController = nil;
+		}
+		autoDiscoverController = [[ServerAutoDiscoveryController alloc]initWithDelegate:self];
 	} else {
+		if (autoDiscoverController) {
+			[autoDiscoverController setDelegate:nil];
+			[autoDiscoverController release];
+			autoDiscoverController = nil;
+		}
 		self.navigationItem.leftBarButtonItem = edit;
 		[self updateTableView];
 	}
@@ -104,8 +113,6 @@
 
 - (void)updateTableView {
 	UITableView *tv = (UITableView *)self.view;
-	
-	
 	[tv beginUpdates];
 	NSMutableArray *deleteIndexPaths = [[NSMutableArray alloc] init];
 	for (int i=0;i <serverArray.count;i++){
@@ -114,6 +121,7 @@
 	if (autoDiscovery) {
 		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:[serverArray count] inSection:1]];
 	}
+	NSLog(@"Delete paths %d",[deleteIndexPaths count]);
 	[serverArray removeAllObjects];
 	autoDiscovery = !autoDiscovery;
 	[tv deleteRowsAtIndexPaths:deleteIndexPaths withRowAnimation:UITableViewRowAnimationTop];
@@ -129,6 +137,7 @@
 		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:[newArray count] inSection:1]];
 	}
 	[serverArray addObjectsFromArray:newArray];
+		NSLog(@"Delete paths %d",[insertIndexPaths count]);
 	[tv insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationBottom];
 	[tv endUpdates];
 	
@@ -475,6 +484,9 @@
 
 
 - (void)dealloc {
+	if (autoDiscoverController) {
+		[autoDiscoverController release];
+	}
 	[updateController release];
 	[edit release];
 	[done release];

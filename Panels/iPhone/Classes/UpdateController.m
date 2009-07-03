@@ -46,16 +46,18 @@
 
 - (void)checkConfigAndUpdate {
 	NSLog(@"check config");
-		
-	if (!serverAutoDiscoveryController) {
-		serverAutoDiscoveryController = [[ServerAutoDiscoveryController alloc] init];
-	}
+
 	
 	if ([AppSettingsDefinition readServerUrlFromFile]) {
 		[self checkNetworkAndUpdate];
 	} else {
 		if ([AppSettingsDefinition isAutoDiscoveryEnable]) {
-			[serverAutoDiscoveryController findServerWithDelegate:self];
+			if (serverAutoDiscoveryController) {
+				[serverAutoDiscoveryController release];
+				serverAutoDiscoveryController = nil;
+			}	
+			
+			serverAutoDiscoveryController = [[ServerAutoDiscoveryController alloc] initWithDelegate:self];
 		} else {
 			[self didUseLocalCache:@"Can't find server url configuration. You can turn on auto-discovery or specify a server url in settings."];
 		}
@@ -72,8 +74,14 @@
 		NSLog(@"CheckNetworkStaffException %@",e.message);
 		NSLog(@"retry %d time.",retryTimes);
 		if (retryTimes == 0 && [AppSettingsDefinition isAutoDiscoveryEnable]) {
-			NSLog(@"retry @d time.",retryTimes);
-			[serverAutoDiscoveryController findServerWithDelegate:self];
+			NSLog(@"retry %d time.",retryTimes);
+			retryTimes = retryTimes + 1;
+			if (serverAutoDiscoveryController) {
+				[serverAutoDiscoveryController release];
+				serverAutoDiscoveryController = nil;
+			}	
+			
+			serverAutoDiscoveryController = [[ServerAutoDiscoveryController alloc] initWithDelegate:self];
 		} else {
 			[self didUseLocalCache:e.message];
 		}
@@ -104,10 +112,9 @@
 }
 
 - (void)onFindServerFail:(NSString *)errorMessage {
-	if (retryTimes == MAX_RETRY_TIMES) {
+	if (retryTimes >= MAX_RETRY_TIMES) {
 		[self didUseLocalCache:@"Can't discover the server, maybe your server hasn't been started or your iPhone is not under the same LAN as Server."];
 	} else {
-		retryTimes = retryTimes + 1;
 		[self checkConfigAndUpdate];
 	}
 }
