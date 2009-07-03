@@ -22,35 +22,79 @@
 
 @implementation ServerAutoDiscoveryController
 
-- (void)findServerWithDelegate:(id)delegate {
-	[self setDelegate:delegate];
-	isReceiveServerUrl = NO;
-	if (!clients) {
+//Setup autodiscovery and start. 
+// Needn't call annother method to send upd and start tcp server.
+- (id)init {			
+	if (self ==[super init]) {
+		
+		isReceiveServerUrl = NO;
 		clients = [[NSMutableArray alloc] initWithCapacity:1];
-	}
-	[AppSettingsDefinition removeAllAutoServer];
-	
-	if (!udpSocket) {
 		udpSocket = [[AsyncUdpSocket alloc] initWithDelegate:self]; 
-	}
-	NSData *d = [@"openremote" dataUsingEncoding:NSUTF8StringEncoding]; 
-	NSString *host = @"224.0.1.100"; 
-	UInt16 port = 3333;		
-	UInt16 serverPort = 2346;
-	[udpSocket sendData:d toHost:host port:port withTimeout:1 tag:0];
-	
-	
-	if (!tcpSever) {
+		
+		NSData *d = [@"openremote" dataUsingEncoding:NSUTF8StringEncoding]; 
+		NSString *host = @"224.0.1.100"; 
+		UInt16 port = 3333;		
+		UInt16 serverPort = 2346;
+		
+		[udpSocket sendData:d toHost:host port:port withTimeout:3 tag:0];
+		[udpSocket closeAfterSending];
+		
 		tcpSever = [[AsyncSocket alloc] initWithDelegate:self];
+		[tcpSever acceptOnPort:serverPort error:NULL];
+		
+		tcpTImer = [[NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(checkFindServerFail) userInfo:nil repeats:NO] retain];
+		
 	}
-	[tcpSever acceptOnPort:serverPort error:NULL];
-	tcpTImer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(checkFindServerFail) userInfo:nil repeats:NO];
+	return self;
 }
 
+
+- (void)dealloc {
+	if (tcpTImer && [tcpTImer isValid])  {
+		[tcpTImer invalidate];
+		[tcpTImer release];
+	}
+	NSLog(@"clients count is %d",[clients count]);
+	for(int i = 0; i < [clients count]; i++)
+	{
+
+		[[clients objectAtIndex:i] disconnect];
+	}
+	[clients release];
+
+	[tcpSever release];
+	[udpSocket release];
+	
+	if (theDelegate) {
+		[theDelegate release];
+		theDelegate = nil;
+	}
+	
+	[super dealloc];
+	
+}
+
+- (void)reTry {
+	
+}
+
+- (id)initWithDelegate:(id)d {
+	[d retain];
+	theDelegate = d;
+	return [self init];
+	
+}
+
+
 - (void)setDelegate:(id)delegate {
-	[delegate retain];
-	[theDelegate release];
-	theDelegate = delegate;
+	if (delegate != nil) {
+		[delegate retain];
+		[theDelegate release];
+		theDelegate = delegate;
+	} else {
+		[theDelegate release];
+		theDelegate = nil;
+	}
 }
 
 - (void)checkFindServerFail {
@@ -61,7 +105,7 @@
 }
 
 - (void)onUdpSocket:(AsyncUdpSocket *)sock didSendDataWithTag:(long)tag {
-	NSString *myString = [NSString stringWithFormat:@"Count +1"];
+	NSString *myString = [NSString stringWithFormat:@"onUdpSocket didSendData."];
 	NSLog(myString); 
 	[sock close];	
 }
@@ -73,10 +117,11 @@ didNotSendDataWithTag:(long)tag dueToError:(NSError *)error{
 } 
 
 - (void)onSocket:(AsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag {
-	isReceiveServerUrl = YES;
+	
 	NSLog(@"receive data from server");
 	NSString *serverUrl = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 	NSLog(@"read server url from controller %@",serverUrl);
+	[serverUrl autorelease];
 	[self onFindServer:serverUrl];
 	
 }
@@ -94,6 +139,8 @@ didNotSendDataWithTag:(long)tag dueToError:(NSError *)error{
 
 
 - (void)onFindServer:(NSString *)serverUrl {
+	isReceiveServerUrl = YES;
+	
 	NSMutableDictionary *server = [NSMutableDictionary dictionaryWithObject:serverUrl forKey:@"url"];
 	[server setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
 	[AppSettingsDefinition removeAllAutoServer];
@@ -102,39 +149,35 @@ didNotSendDataWithTag:(long)tag dueToError:(NSError *)error{
 	[AppSettingsDefinition setCurrentServerUrl:serverUrl];
 	
 	NSLog(@"current url at receive socket %@",[AppSettingsDefinition getCurrentServerUrl]);
-	[serverUrl release];
+
 	for(int i = 0; i < [clients count]; i++)
 	{
 		// Call disconnect on the socket,
 		// which will invoke the onSocketDidDisconnect: method,
 		// which will remove the socket from the list.
 		[[clients objectAtIndex:i] disconnect];
+		[clients removeObjectAtIndex:i];
 	}
+	[clients release];
+	clients = nil;
+	
+	
+	[tcpSever disconnectAfterReading];
+	[tcpTImer invalidate];
 	
 	if (theDelegate && [theDelegate  respondsToSelector:@selector(onFindServer:)]) {
+		NSLog(@"performSelector onFindServer");
 		[theDelegate performSelector:@selector(onFindServer:) withObject:serverUrl];
 	}
 }
 - (void)onFindServerFail:(NSString *)errorMessage{
 	[tcpTImer invalidate];
-	[tcpSever disconnect];
 	if (theDelegate && [theDelegate  respondsToSelector:@selector(onFindServerFail:)]) {
+		NSLog(@"performSelector onFindServerFail");
 		[theDelegate performSelector:@selector(onFindServerFail:) withObject:errorMessage];
 	}
 }
 
-- (void)dealloc {
-	[tcpTImer invalidate];
-	[tcpTImer release];
-	[clients release];
-	[tcpSever disconnect];
-	[tcpSever release];
-	[udpSocket close];
-	[udpSocket release];
-	[theDelegate release];
-	[super dealloc];
 
-
-}
 
 @end

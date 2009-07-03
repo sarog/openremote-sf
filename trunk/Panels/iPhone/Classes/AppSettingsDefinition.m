@@ -121,6 +121,7 @@ static NSMutableArray *settingsData = nil;
 		[self setCurrentServerUrl:serverUrl];
 		return YES;
 	} else {
+		currentServerUrl = nil;
 		return NO;
 	}
 }
@@ -128,7 +129,7 @@ static NSMutableArray *settingsData = nil;
 
 
 + (NSString *)getCurrentServerUrl {
-	if (!currentServerUrl) {
+	if (currentServerUrl) {
 		return currentServerUrl;
 	} else {
 		if ( [AppSettingsDefinition readServerUrlFromFile]) {

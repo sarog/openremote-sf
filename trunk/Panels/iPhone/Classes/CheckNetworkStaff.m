@@ -14,8 +14,7 @@
 
 @implementation CheckNetworkStaff
 +(void)checkWhetherNetworkAvailable {
-	[[Reachability sharedReachability] setHostName:@"www.google.com"];
-	if ([[Reachability sharedReachability] remoteHostStatus] == NotReachable) {
+	if ([[Reachability sharedReachability] localWiFiConnectionStatus] == NotReachable) {
 		@throw [CheckNetworkStaffException exceptionWithTitle:@"Check Network Fail" message:@"Please connect your device to network"];
 	}
 }
