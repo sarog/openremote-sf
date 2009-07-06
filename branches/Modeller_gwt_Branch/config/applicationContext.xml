@@ -28,20 +28,11 @@
 				<value>org.openremote.modeler.domain.Protocol</value> 
                 <value>org.openremote.modeler.domain.Attribute</value>
                 <value>org.openremote.modeler.domain.Device</value>
-                <value>org.openremote.modeler.domain.DeviceEvent</value>
-                <value>org.openremote.modeler.domain.DeviceEventRef</value> 
-                <value>org.openremote.modeler.domain.DeviceMacroEvent</value>
-                <value>org.openremote.modeler.domain.DeviceMacroEventRef</value> 
-                <value>org.openremote.modeler.domain.DelayEvent</value>
-                <value>org.openremote.modeler.domain.DelayEventRef</value> 
-                <value>org.openremote.modeler.domain.BuildingModelerEventRef</value> 
-                <value>org.openremote.modeler.domain.UIMacroEvent</value> 
-                <value>org.openremote.modeler.domain.UIMacroEventRef</value> 
-                <value>org.openremote.modeler.domain.ScreenJumpEvent</value> 
-                <value>org.openremote.modeler.domain.ScreenJumpEventRef</value> 
-                <value>org.openremote.modeler.domain.Activity</value> 
-                <value>org.openremote.modeler.domain.Screen</value> 
-                <value>org.openremote.modeler.domain.Button</value> 
+                <value>org.openremote.modeler.domain.DeviceCommand</value>
+                <value>org.openremote.modeler.domain.DeviceCommandRef</value> 
+                <value>org.openremote.modeler.domain.DeviceMacro</value>
+                <value>org.openremote.modeler.domain.DeviceMacroRef</value> 
+                <value>org.openremote.modeler.domain.DeviceMacroItem</value> 
 			</list>
 		</property>
 		<property name="mappingResources">
