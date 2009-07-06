@@ -15,56 +15,17 @@
         <property name="viewClass"
                   value="org.springframework.web.servlet.view.JstlView"/>
         <property name="prefix" value="/"/>
-        <!--  -->
-        <!-- NOTE: can be *.jsp if you can copy CourseServiceClient.html
-      to CourseServiceClient.jsp -->
-        <!-- <property name="suffix" value=".jsp"/> -->
-        <!-- NOTE: mapping *.html to avoid an extra step -->
-        <!--  -->
         <property name="suffix" value=".html"/>
     </bean>
     <bean id="urlMapping"
           class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <props>
-                <!-- CourseServiceClientController to display
-               CourseServiceClient.html -->
-                <!--<prop key="/course.smvc">myServiceController</prop>
-                --><!-- CourseServiceClientServiceController for Servlet RPC
-               invocation -->
-                <!--  -->
-                <!-- IMPORTANT: DO NOT DO THIS: /gwt.smvc -->
-                <!-- IMPORTANT: DO THIS: /com.ibt.intelligrade.CourseServiceClient/
-               gwt.smvc -->
-                <!--  -->
-                <prop key="/modeler/gwt.smvc">myService</prop>
                 <prop key="/modeler/protocol.smvc">protocolService</prop>
             </props>
         </property>
     </bean>
     
     <bean id="protocolService" class="org.openremote.modeler.server.ProtocolServiceImpl"></bean>
-    
-    <!--<bean id="myServiceController"
-          class="org.openremote.modeller.mvc.MyServiceController">
-          
-         IMPORTANT: DO NOT DO THIS: /CourseServiceClient 
-         IMPORTANT: DO THIS: /com.ibt.intelligrade.CourseServiceClient/
-       CourseServiceClient 
-          
-        <property name="viewName" value="/irbuilder"/>
-    </bean>
-    
-    -->
-
-
-    
-    <!--<context:component-scan base-package="org.openremote.modeller.controller"/>-->
-
-
-    <!--<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>-->
-
-    <!--<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:prefix="/WEB-INF/jsp/"-->
-          <!--p:suffix=".jsp"/>-->
 
 </beans>

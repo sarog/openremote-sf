@@ -49,15 +49,7 @@
 		</property>
 	</bean>
 
-	<bean id="myService" class="org.openremote.modeler.server.MyServiceImpl" />
-	
-	<bean id="myServiceManager" class="org.openremote.modeler.service.MyServiceManager" />
-	
-
 	<bean id="genericDAO" class="org.openremote.modeler.dao.GenericDAO"></bean>
-
-
-
 
 	<bean id="proxyStore" class="net.sf.gilead.core.store.stateless.StatelessProxyStore" />
 
