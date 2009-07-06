@@ -37,10 +37,5 @@
 
     <bean id="abstractService" abstract="true"
 	class="org.openremote.modeler.service.BaseAbstractService" />
-
-    
-	<bean id="myServiceManager"
-		class="org.openremote.modeler.service.MyServiceManager"
-		parent="abstractService" />
 	
 </beans>
