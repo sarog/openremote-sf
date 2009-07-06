@@ -22,10 +22,12 @@
         <property name="mappings">
             <props>
                 <prop key="/modeler/protocol.smvc">protocolService</prop>
+                <prop key="/modeler/auth.smvc">authorityService
+                </prop>
             </props>
         </property>
     </bean>
     
     <bean id="protocolService" class="org.openremote.modeler.server.ProtocolServiceImpl"></bean>
-
+    <bean id="authorityService" class="org.openremote.modeler.server.AuthorityServiceImpl"></bean>
 </beans>

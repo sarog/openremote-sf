@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.openremote.modeler.client.rpc.ProtocolService;
 import org.openremote.modeler.client.rpc.ProtocolServiceAsync;
+import org.openremote.modeler.client.view.ApplicationView;
 import org.openremote.modeler.client.widget.ProtocolForm;
 import org.openremote.modeler.protocol.ProtocolDefinition;
 
@@ -28,8 +29,14 @@ public class Modeler implements EntryPoint {
     */
    public void onModuleLoad() {
       createCenter();
+//      init();
    }
-
+   
+   private void init() {
+      ApplicationView appView = new ApplicationView();
+      appView.initialize();
+      appView.show();
+  }
    private void createCenter() {
 
       final ProtocolServiceAsync protocolService = (ProtocolServiceAsync) GWT.create(ProtocolService.class);

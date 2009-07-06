@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"  
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+     xmlns:security="http://www.springframework.org/schema/security"  
+     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd  
+             http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.1.xsd"> 
+
+   <security:http lowercase-comparisons="false" access-denied-page="/accessDenied.jsp"> <!-- note: no auto-config attribute! -->
+	    <security:intercept-url pattern="/login.html" filters="none"/>
+       <security:intercept-url pattern="/Modeler.html" access="ROLE_MODELER,ROLE_DESIGNER,ROLE_ADMIN"/>
+       <security:form-login login-page="/login.html" default-target-url="/Modeler.html" always-use-default-target="true" login-processing-url="/j_security_check"/>
+       <security:logout logout-success-url="/login.html" logout-url="/j_security_logout"/>
+	 </security:http>
+	 
+   <security:authentication-manager alias="authenticationManager"/>
+   
+   <!--
+    Usernames/Passwords are
+        rod/koala
+        dianne/emu
+        scott/wombat
+        peter/opal
+    -->
+    <security:authentication-provider>
+        <!--<security:password-encoder hash="md5"/>
+        <security:user-service>
+            <security:user name="rod" password="a564de63c2d0da68cf47586ee05984d7" authorities="ROLE_SUPERVISOR, ROLE_USER, ROLE_TELLER" />
+           <security:user name="dianne" password="65d15fe9156f9c4bbffd98085992a44e" authorities="ROLE_USER,ROLE_TELLER" />
+            <security:user name="scott" password="2b58af6dddbd072ed27ffc86725d7d3a" authorities="ROLE_USER" />
+            <security:user name="peter" password="22b5c9accc6e1ba628cedc63a72d57f8" authorities="ROLE_USER" />
+       </security:user-service>
+   -->
+      <security:user-service>
+         <security:user name="super" password="123" authorities="ROLE_MODELER,ROLE_DESIGNER" />
+         <security:user name="modeler" password="123" authorities="ROLE_MODELER" />
+         <security:user name="designer" password="123" authorities="ROLE_DESIGNER" />
+         <security:user name="admin" password="123" authorities="ROLE_ADMIN" />
+      </security:user-service>
+   </security:authentication-provider>
+   
+    <bean id="accessDecisionManager" class="org.springframework.security.vote.AffirmativeBased">
+        <property name="allowIfAllAbstainDecisions" value="false"/>
+        <property name="decisionVoters">
+            <list>
+                <bean class="org.springframework.security.vote.RoleVoter"/>
+                <bean class="org.springframework.security.vote.AuthenticatedVoter"/>
+            </list>
+        </property>
+    </bean>
+	   
+</beans>
