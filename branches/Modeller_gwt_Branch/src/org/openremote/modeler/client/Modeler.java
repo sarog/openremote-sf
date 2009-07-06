@@ -1,23 +1,19 @@
 package org.openremote.modeler.client;
 
-import java.util.List;
+import java.util.Map;
 
-import org.openremote.modeler.client.rpc.MyService;
-import org.openremote.modeler.client.rpc.MyServiceAsync;
-import org.openremote.modeler.domain.Activity;
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.client.rpc.ProtocolService;
+import org.openremote.modeler.client.rpc.ProtocolServiceAsync;
+import org.openremote.modeler.client.widget.ProtocolForm;
+import org.openremote.modeler.protocol.ProtocolDefinition;
 
-import com.extjs.gxt.ui.client.Style.LayoutRegion;
-import com.extjs.gxt.ui.client.Style.Scroll;
-import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.widget.MessageBox;
-import com.extjs.gxt.ui.client.widget.Viewport;
-import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
-import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
+import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /*
@@ -25,73 +21,51 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class Modeler implements EntryPoint {
 
-   private Viewport viewport;
-   private ContentPanel center;
-   
+   private final VerticalPanel vp = new VerticalPanel();
+
    /**
     * This is the entry point method.
     */
    public void onModuleLoad() {
-
-      viewport = new Viewport();
-      viewport.setLayout(new BorderLayout());
       createCenter();
-
-      RootPanel.get("main").add(viewport);
    }
 
    private void createCenter() {
-      center = new ContentPanel();
-      center.setHeading("Test");
-      center.setScrollMode(Scroll.AUTOX);
-      
-      final ContentPanel imagePanel = new ContentPanel();
-      final MyServiceAsync myServiceAysn = (MyServiceAsync)GWT.create(MyService.class);
-      
-//      myServiceAysn.addScreen(new AsyncCallback<Void>(){
-//
-//         public void onFailure(Throwable caught) {
-//            MessageBox.info("Info", caught.getMessage(), null);
-//            
-//         }
-//
-//         public void onSuccess(Void result) {
-//            MessageBox.info("Info", "add success", null);
-//           
-//         }
-//         
-//         
-//      });
-//      
-      myServiceAysn.getString(new AsyncCallback<List<Activity>>(){
+
+      final ProtocolServiceAsync protocolService = (ProtocolServiceAsync) GWT.create(ProtocolService.class);
+
+      protocolService.getProtocolContainer(new AsyncCallback<Map<String, ProtocolDefinition>>() {
          public void onFailure(Throwable caught) {
-            MessageBox.info("Info", caught.getMessage(), null);
             caught.printStackTrace();
+            MessageBox.info("Info", caught.getMessage(), null);
          }
 
-         public void onSuccess(List<Activity> activities) {
-            for (Activity activity : activities) {
-               HTML html = new HTML();
-               html.setText("activity id : "+activity.getOid()+" screens count : "+activity.getScreens().size());
-               System.out.println("activity id : "+activity.getOid()+" screens count : "+activity.getScreens().size());
-               for (Screen screen : activity.getScreens()) {
-                  System.out.println("screen " + screen.getLabel() + " in "+activity.getOid());
-               }
-               imagePanel.add(html);
+         public void onSuccess(Map<String, ProtocolDefinition> protocols) {
+            for (int i = 0; i < protocols.keySet().size(); i++) {
+
+               final ProtocolDefinition definition = protocols.get(protocols.keySet().toArray()[i]);
+               ProtocolForm protocolForm = new ProtocolForm(definition);
+               protocolForm.addSubmitListener(new Listener<AppEvent<Map<String, String>>>() {
+
+                  public void handleEvent(AppEvent<Map<String, String>> be) {
+                     StringBuffer buffer = new StringBuffer();
+                     for (String key : be.data.keySet()) {
+                        buffer.append(key + ";");
+                        buffer.append(be.data.get(key));
+                        buffer.append("<br />");
+                     }
+                     MessageBox.info(definition.getName(), buffer.toString(), null);
+                  }
+               });
+
+               vp.add(protocolForm);
+
             }
-            
-//            MessageBox.info("Info", "Load success", null);
-            MessageBox.alert("Info", "Load success", null);
+            RootPanel.get("main").add(vp);
          }
-         
-      });
-      center.add(imagePanel);
-      
-      
-      
 
-      BorderLayoutData centerBorderLayoutData = new BorderLayoutData(LayoutRegion.CENTER);
-      viewport.add(center, centerBorderLayoutData);
+      });
 
    }
+
 }

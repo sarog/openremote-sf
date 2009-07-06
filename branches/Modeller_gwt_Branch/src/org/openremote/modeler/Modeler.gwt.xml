@@ -11,6 +11,7 @@
  <inherits name='com.extjs.gxt.themes.Themes' />            
 <source path='domain'/>
 	<source path='client'/>
+	<source path='protocol'/>
   <!-- Other module inherits                                      -->
 
   <!-- Specify the app entry point class.                         -->

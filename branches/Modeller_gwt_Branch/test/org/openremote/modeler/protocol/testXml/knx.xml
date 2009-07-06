@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="KNX">
+       <attr name="groupAddress" label="Group Address">
+        <validations>
+           <isBlank>false</isBlank>
+            <!-- message is option -->
+           <regexp message="group address should be 1.4.1.4">(\d\.){3}\d</regexp>
+        </validations>
+    </attr>
+     <attr name="command" label="KNX Command">
+        <validations>
+           <isBlank>false</isBlank>
+           <maxLength>10</maxLength>
+           <regexp>\w*</regexp>
+        </validations>
+    </attr>
+</protocol>

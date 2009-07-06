@@ -37,11 +37,14 @@
                 <!-- IMPORTANT: DO THIS: /com.ibt.intelligrade.CourseServiceClient/
                gwt.smvc -->
                 <!--  -->
-                <prop key="/modeler/gwt.smvc">myService
-                </prop>
+                <prop key="/modeler/gwt.smvc">myService</prop>
+                <prop key="/modeler/protocol.smvc">protocolService</prop>
             </props>
         </property>
     </bean>
+    
+    <bean id="protocolService" class="org.openremote.modeler.server.ProtocolServiceImpl"></bean>
+    
     <!--<bean id="myServiceController"
           class="org.openremote.modeller.mvc.MyServiceController">
           
