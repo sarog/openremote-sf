@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="protocols"/>
 	<classpathentry kind="src" path="config"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="lib" path="lib/compile/gxt.jar"/>
@@ -23,7 +24,7 @@
 	<classpathentry kind="lib" path="lib/core/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/ejb3-persistence.jar"/>
 	<classpathentry kind="lib" path="lib/core/flexjson.jar"/>
-	<classpathentry kind="lib" path="lib/core/gwt-servlet.jar"/>
+	<classpathentry kind="lib" path="lib/core/gwt-servlet.jar" sourcepath="/Applications/eclipse/plugins/com.google.gwt.eclipse.sdkbundle.macosx_1.6.4.v200904062334"/>
 	<classpathentry kind="lib" path="lib/core/gxt-servlet.jar"/>
 	<classpathentry kind="lib" path="lib/core/hibernate-annotations.jar"/>
 	<classpathentry kind="lib" path="lib/core/hibernate-commons-annotations.jar"/>

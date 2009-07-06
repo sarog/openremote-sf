@@ -4,13 +4,13 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.gilead.gwt.PersistentRemoteService;
+
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-
-public class BaseGWTSpringController extends RemoteServiceServlet implements Controller, ServletContextAware {
+public class BaseGWTSpringControllerWithHibernateSupport extends PersistentRemoteService implements Controller, ServletContextAware {
 
    /**
     * 

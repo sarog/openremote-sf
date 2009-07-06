@@ -19,34 +19,37 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.openremote.modeler.service;
+package org.openremote.modeler.protocol;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-
-import org.openremote.modeler.client.rpc.MyService;
-import org.openremote.modeler.domain.Activity;
-import org.openremote.modeler.domain.Screen;
 
 /**
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
-public class MyServiceManager  extends BaseAbstractService<Activity> implements MyService{
-
-   public List<Activity> getString() {
-      List<Activity> activities = loadAll();
-      for (Activity activity : activities) {
-         System.out.println("------activity id : "+activity.getOid()+" screen count : "+activity.getScreens().size());
-         genericDAO.initialize(activity);
-      }
-      System.out.println("activities size : "+activities.size());
-      return activities;
-   }
+public class ProtocolDefinition implements Serializable{
+   /**
+    * 
+    */
+   private static final long serialVersionUID = -726881807822688804L;
+   private String name;
+   private List<ProtocolAttrDefinition> attrs = new ArrayList<ProtocolAttrDefinition>();;
    
-   public void addScreen() {
-      Screen screen = new Screen();
-      screen.setLabel("screen");
-      genericDAO.save(screen);
-      screen.setActivity(loadAll().get(0));
-      loadAll().get(0).getScreens().add(screen);
+   public String getName() {
+      return name;
    }
+   public void setName(String name) {
+      this.name = name;
+   }
+   public List<ProtocolAttrDefinition> getAttrs() {
+      return attrs;
+   }
+   public void setAttrs(List<ProtocolAttrDefinition> attrs) {
+      this.attrs = attrs;
+   }
+
+   
+   
+   
 }
