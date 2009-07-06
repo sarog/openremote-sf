@@ -285,7 +285,7 @@ var TCPController = function() {
          * Show create TCP/IP button dialog.
          */
          showCreateTCPDialog:function() {
-            $("#create_TCP_dialog").showModalForm("Create TCP", {
+            $("#create_tcp_dialog").showModalForm("Create TCP", {
                 buttons:{
                     'Create': TCPController.confirmCreate
                 },
@@ -359,7 +359,7 @@ var TCPController = function() {
 
               TCPController.createTCP(tcp);
 
-	            $("#create_TCP_dialog").closeModalForm();
+	            $("#create_tcp_dialog").closeModalForm();
 	          }
 	        },
 
@@ -386,7 +386,7 @@ var TelnetController = function() {
          * Show create telnet button dialog.
          */
          showCreateTelnetDialog:function() {
-            $("#create_Telnet_dialog").showModalForm("Create Telnet", {
+            $("#create_telnet_dialog").showModalForm("Create Telnet", {
                 buttons:{
                     'Create': TelnetController.confirmCreate
                 },
