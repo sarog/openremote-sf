@@ -76,12 +76,15 @@ var ImportController = function() {
     function uploadSuccess(responseText, statusText) {
         ImportController.cleanUp();
         var data = responseText;
-        // notice: revert order is very important, don't change it if you are clear with it.
+
+        // Notice: revert order has functional dependencies. Reverting needs to be order
+        // so that protocols are first, macros come after protocol buttons and screens are last
+
         revertKnxBtns(data.panel.knxBtns);
         revertX10Btns(data.panel.x10Btns);
-        //revertHTTPBtns(data.panel.httpBtns);          // TODO !!
-        //revertTCPBtns(data.panel.tcpBtns);            // TODO !!
-        //revertTelnetBtns(data.panel.telnetBtns);      // TODO !!
+        revertHTTPBtns(data.panel.httpBtns);          
+        revertTCPBtns(data.panel.tcpBtns);
+        revertTelnetBtns(data.panel.telnetBtns);
         revertMacroBtns(data.panel.macroBtns);
         revertMacroSubBtns(data.panel.macroBtns);
         revertScreens(data.panel.screens);
