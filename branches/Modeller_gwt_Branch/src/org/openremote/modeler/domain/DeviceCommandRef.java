@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
- * Copyright 2008, OpenRemote Inc.
+ * Copyright 2008-2009, OpenRemote Inc.
  * 
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -20,27 +20,43 @@
  */
 package org.openremote.modeler.domain;
 
-import javax.persistence.MappedSuperclass;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 /**
- * Business entity class for all JPA entities with the common property oid.
+ * The Class Device Command Reference.
  * 
- * @author Dan 2009-2-6
- * 
+ * @author Dan 2009-7-6
  */
-@MappedSuperclass
-public abstract class UIBusinessEntity extends BusinessEntity {
-
-   private static final long serialVersionUID = -3871334485197341321L;
+@SuppressWarnings("serial")
+@Entity
+@DiscriminatorValue("DEVICE_CMD_REF")
+public class DeviceCommandRef extends DeviceMacroItem {
    
-   private String label;
+   /** The device command. */
+   private DeviceCommand deviceCommand;
 
-   public String getLabel() {
-      return label;
+   /**
+    * Gets the device command.
+    * 
+    * @return the device command
+    */
+   @OneToOne
+   @JoinColumn(name="target_device_cmd_oid")
+   public DeviceCommand getDeviceCommand() {
+      return deviceCommand;
    }
 
-   public void setLabel(String label) {
-      this.label = label;
+   /**
+    * Sets the device command.
+    * 
+    * @param deviceCommand
+    *           the new device command
+    */
+   public void setDeviceCommand(DeviceCommand deviceCommand) {
+      this.deviceCommand = deviceCommand;
    }
    
 }

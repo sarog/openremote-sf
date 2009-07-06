@@ -22,32 +22,26 @@ package org.openremote.modeler.domain;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
- * The Class Device.
+ * The Class DeviceMacro.
  * 
  * @author Dan 2009-7-6
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "device")
-public class Device extends BusinessEntity {
+@Table(name = "device_macro")
+public class DeviceMacro extends BusinessEntity {
+   
+   /** The device macro items. */
+   private List<DeviceMacroItem> deviceMacroItems;
    
    /** The name. */
    private String name;
    
-   /** The vendor. */
-   private String vendor;
-   
-   /** The model. */
-   private String model;
-   
-   /** The device events. */
-   private List<DeviceCommand> deviceEvents;
 
    /**
     * Gets the name.
@@ -69,61 +63,23 @@ public class Device extends BusinessEntity {
    }
 
    /**
-    * Gets the vendor.
+    * Gets the device macro items.
     * 
-    * @return the vendor
+    * @return the device macro items
     */
-   public String getVendor() {
-      return vendor;
+   @OneToMany(mappedBy = "parentDeviceMacro")
+   public List<DeviceMacroItem> getDeviceMacroItems() {
+      return deviceMacroItems;
    }
 
    /**
-    * Sets the vendor.
+    * Sets the device macro items.
     * 
-    * @param vendor
-    *           the new vendor
+    * @param deviceMacroItems
+    *           the new device macro items
     */
-   public void setVendor(String vendor) {
-      this.vendor = vendor;
-   }
-
-   /**
-    * Gets the model.
-    * 
-    * @return the model
-    */
-   public String getModel() {
-      return model;
-   }
-
-   /**
-    * Sets the model.
-    * 
-    * @param model
-    *           the new model
-    */
-   public void setModel(String model) {
-      this.model = model;
-   }
-   
-   /**
-    * Gets the device events.
-    * 
-    * @return the device events
-    */
-   @OneToMany(mappedBy = "device", cascade = CascadeType.REMOVE)
-   public List<DeviceCommand> getDeviceEvents() {
-      return deviceEvents;
-   }
-
-   /**
-    * Sets the device events.
-    * 
-    * @param deviceEvents
-    *           the new device events
-    */
-   public void setDeviceEvents(List<DeviceCommand> deviceEvents) {
-      this.deviceEvents = deviceEvents;
+   public void setDeviceMacroItems(List<DeviceMacroItem> deviceMacroItems) {
+      this.deviceMacroItems = deviceMacroItems;
    }
    
 }

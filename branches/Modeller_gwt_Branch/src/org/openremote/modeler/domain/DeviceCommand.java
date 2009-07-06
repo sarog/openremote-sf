@@ -20,35 +20,31 @@
  */
 package org.openremote.modeler.domain;
 
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
- * The Class Device.
+ * The Class DeviceCommand.
  * 
  * @author Dan 2009-7-6
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "device")
-public class Device extends BusinessEntity {
+@Table(name = "device_command")
+public class DeviceCommand extends BusinessEntity {
+   
+   /** The device. */
+   private Device device;
+   
+   /** The protocol. */
+   private Protocol protocol;
    
    /** The name. */
    private String name;
    
-   /** The vendor. */
-   private String vendor;
-   
-   /** The model. */
-   private String model;
-   
-   /** The device events. */
-   private List<DeviceCommand> deviceEvents;
-
    /**
     * Gets the name.
     * 
@@ -69,61 +65,45 @@ public class Device extends BusinessEntity {
    }
 
    /**
-    * Gets the vendor.
+    * Gets the device.
     * 
-    * @return the vendor
+    * @return the device
     */
-   public String getVendor() {
-      return vendor;
+   @ManyToOne
+   @JoinColumn(nullable = false, name = "device_oid")
+   public Device getDevice() {
+      return device;
    }
 
    /**
-    * Sets the vendor.
+    * Sets the device.
     * 
-    * @param vendor
-    *           the new vendor
+    * @param device
+    *           the new device
     */
-   public void setVendor(String vendor) {
-      this.vendor = vendor;
-   }
-
-   /**
-    * Gets the model.
-    * 
-    * @return the model
-    */
-   public String getModel() {
-      return model;
-   }
-
-   /**
-    * Sets the model.
-    * 
-    * @param model
-    *           the new model
-    */
-   public void setModel(String model) {
-      this.model = model;
+   public void setDevice(Device device) {
+      this.device = device;
    }
    
    /**
-    * Gets the device events.
+    * Gets the protocol.
     * 
-    * @return the device events
+    * @return the protocol
     */
-   @OneToMany(mappedBy = "device", cascade = CascadeType.REMOVE)
-   public List<DeviceCommand> getDeviceEvents() {
-      return deviceEvents;
+   @OneToOne
+   public Protocol getProtocol() {
+      return protocol;
    }
 
    /**
-    * Sets the device events.
+    * Sets the protocol.
     * 
-    * @param deviceEvents
-    *           the new device events
+    * @param protocol
+    *           the new protocol
     */
-   public void setDeviceEvents(List<DeviceCommand> deviceEvents) {
-      this.deviceEvents = deviceEvents;
+   public void setProtocol(Protocol protocol) {
+      this.protocol = protocol;
    }
+
    
 }
