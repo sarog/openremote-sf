@@ -20,87 +20,50 @@
  */
 package org.openremote.modeler.domain;
 
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
+import javax.persistence.Table;
 
 /**
- * The Class Attribute.
+ * The Class Device Macro Item.
  * 
  * @author Dan 2009-7-6
  */
 @SuppressWarnings("serial")
 @Entity
-public class Attribute extends BusinessEntity {
+@Table(name="device_macro_item")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="type")
+@DiscriminatorValue("DEVICE_MACRO_ITEM")
+public class DeviceMacroItem extends BusinessEntity{
 
-   /** The name. */
-   private String name;
-   
-   /** The value. */
-   private String value;
-   
-   /** The protocol. */
-   private Protocol protocol;
-   
-   /**
-    * Gets the name.
-    * 
-    * @return the name
-    */
-   public String getName() {
-      return name;
-   }
+   /** The parent device macro. */
+   private DeviceMacro parentDeviceMacro;
 
    /**
-    * Sets the name.
+    * Gets the parent device macro.
     * 
-    * @param name
-    *           the new name
-    */
-   public void setName(String name) {
-      this.name = name;
-   }
-
-   /**
-    * Gets the value.
-    * 
-    * @return the value
-    */
-   public String getValue() {
-      return value;
-   }
-
-   /**
-    * Sets the value.
-    * 
-    * @param value
-    *           the new value
-    */
-   public void setValue(String value) {
-      this.value = value;
-   }
-   
-   /**
-    * Gets the protocol.
-    * 
-    * @return the protocol
+    * @return the parent device macro
     */
    @ManyToOne
-   @JoinColumn(nullable = false)
-   public Protocol getProtocol() {
-      return protocol;
+   @JoinColumn(name = "parent_device_macro_oid")
+   public DeviceMacro getParentDeviceMacro() {
+      return parentDeviceMacro;
    }
 
    /**
-    * Sets the protocol.
+    * Sets the parent device macro.
     * 
-    * @param protocol
-    *           the new protocol
+    * @param parentDeviceMacro
+    *           the new parent device macro
     */
-   public void setProtocol(Protocol protocol) {
-      this.protocol = protocol;
+   public void setParentDeviceMacro(DeviceMacro parentDeviceMacro) {
+      this.parentDeviceMacro = parentDeviceMacro;
    }
-   
 
 }
