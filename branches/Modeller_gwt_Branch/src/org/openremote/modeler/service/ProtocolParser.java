@@ -1,54 +1,102 @@
-/*
- * OpenRemote, the Home of the Digital Home. Copyright 2008, OpenRemote Inc.
+/* OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2009, OpenRemote Inc.
  * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
  * 
- * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
  * 
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * 
- * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
- * http://www.fsf.org.
+ * You should have received a copy of the GNU General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
 package org.openremote.modeler.service;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
+import org.dom4j.io.SAXValidator;
+import org.dom4j.io.XMLWriter;
+import org.dom4j.util.XMLErrorHandler;
 import org.openremote.modeler.exception.ParseProtocolException;
 import org.openremote.modeler.protocol.ProtocolAttrDefinition;
 import org.openremote.modeler.protocol.ProtocolDefinition;
 import org.openremote.modeler.protocol.ProtocolValidator;
 import org.springframework.util.Assert;
+import org.xml.sax.SAXException;
 
 /**
+ * Parse all the protocol describe xml file in classpath/protocols.
+ * 
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
 @SuppressWarnings("unchecked")
 public class ProtocolParser {
+
+   /** The Constant PROTOCOL_ELEMENT_NAME. */
+   private static final String PROTOCOL_ELEMENT_NAME = "protocol";
+
+   /** The logger. */
    private static Logger logger = Logger.getLogger(ProtocolParser.class);
 
+   /** The Constant PROTOCOLS_DIR. */
    private static final String PROTOCOLS_DIR = "/protocols";
-   private static final String MESSAGE = "message";
-   private static final String VALIDATOR_CLASS_NAME_SUFFIX = "Validator";
-   private static final String VALIDATIONS = "validations";
-   private static final String LABEL = "label";
-   private static final String ATTR = "attr";
-   private static final String NAME = "name";
+   
+   /** The Constant PROTOCOL_XSD_FILE_NAME. */
+   private static final String PROTOCOL_XSD_FILE_NAME = "protocol.xsd";
 
+   /** The Constant OPENREMOTE_ElEMENT_NAME. */
+   private static final String OPENREMOTE_ElEMENT_NAME = "openremote";
+   
+   /** The Constant VALIDATIONS_ElEMENT_NAME. */
+   private static final String VALIDATIONS_ElEMENT_NAME = "validations";
+   
+   /** The Constant ATTR_ELEMENT_NAME. */
+   private static final String ATTR_ELEMENT_NAME = "attr";
+
+   /** The Constant LABEL_ATTR_NAME. */
+   private static final String LABEL_ATTR_NAME = "label";
+   
+   /** The Constant NAME_ATTR_NAME. */
+   private static final String NAME_ATTR_NAME = "name";
+   
+   /** The Constant MESSAGE_ATTR_NAME. */
+   private static final String MESSAGE_ATTR_NAME = "message";
+
+   /** The xml path. */
+   private String xmlPath = "";
+
+   /**
+    * Parses the xmls.
+    * 
+    * @return the hash map< string, protocol definition>
+    */
    public HashMap<String, ProtocolDefinition> parseXmls() {
       HashMap<String, ProtocolDefinition> definitionHashMap = new HashMap<String, ProtocolDefinition>();
       System.out.println(getPath());
@@ -62,37 +110,56 @@ public class ProtocolParser {
             return false;
          }
       })) {
-         ProtocolDefinition definition = parse(file);
-         definitionHashMap.put(definition.getName(), definition);
+         definitionHashMap.putAll(parse(file));
       }
       return definitionHashMap;
    }
 
-   private ProtocolDefinition parse(File file) {
-      ProtocolDefinition protocolDefinition = new ProtocolDefinition();
+   /**
+    * Parses the.
+    * 
+    * @param file the file
+    * 
+    * @return the map< string, protocol definition>
+    */
+   private Map<String, ProtocolDefinition> parse(File file) {
+      Map<String, ProtocolDefinition> map = new HashMap<String, ProtocolDefinition>();
+
       Document protocolDoc = readXmlFromFile(file);
 
       Assert.notNull(protocolDoc);
 
-      Element protocol = protocolDoc.getRootElement();
+      Element openremoteElement = protocolDoc.getRootElement();
+      Iterator<Element> protocolItr = openremoteElement.elementIterator(PROTOCOL_ELEMENT_NAME);
+      while (protocolItr.hasNext()) {
+         Element protocolElement = protocolItr.next();
+         ProtocolDefinition protocolDefinition = new ProtocolDefinition();
+         // set protocol name
+         protocolDefinition.setName(protocolElement.attributeValue(NAME_ATTR_NAME));
 
-      // set protocol name
-      protocolDefinition.setName(protocol.attributeValue(NAME));
-
-      // parse attr element start
-      protocolDefinition.getAttrs().addAll(parseAttributs(protocol));
-      return protocolDefinition;
+         // parse attr element start
+         protocolDefinition.getAttrs().addAll(parseAttributs(protocolElement));
+         map.put(protocolDefinition.getName(), protocolDefinition);
+      }
+      return map;
    }
 
+   /**
+    * Parses the attributs.
+    * 
+    * @param protocol the protocol
+    * 
+    * @return the list< protocol attr definition>
+    */
    private List<ProtocolAttrDefinition> parseAttributs(Element protocol) {
       List<ProtocolAttrDefinition> attrs = new ArrayList<ProtocolAttrDefinition>();
-      Iterator<Element> attrItr = protocol.elementIterator(ATTR);
+      Iterator<Element> attrItr = protocol.elementIterator(ATTR_ELEMENT_NAME);
       while (attrItr.hasNext()) {
          Element attr = attrItr.next();
          ProtocolAttrDefinition attrDefinition = new ProtocolAttrDefinition();
-         attrDefinition.setLabel(attr.attributeValue(LABEL));
-         attrDefinition.setName(attr.attributeValue(NAME));
-         Element validationsElement = attr.element(VALIDATIONS);
+         attrDefinition.setLabel(attr.attributeValue(LABEL_ATTR_NAME));
+         attrDefinition.setName(attr.attributeValue(NAME_ATTR_NAME));
+         Element validationsElement = attr.element(VALIDATIONS_ElEMENT_NAME);
 
          // parse validators start
          attrDefinition.getValidators().addAll(parseValidators(validationsElement));
@@ -104,21 +171,36 @@ public class ProtocolParser {
       return attrs;
    }
 
+   /**
+    * Parses the validators.
+    * 
+    * @param validationsElement the validations element
+    * 
+    * @return the list< protocol validator>
+    */
    private List<ProtocolValidator> parseValidators(Element validationsElement) {
       List<ProtocolValidator> validators = new ArrayList<ProtocolValidator>();
-      
+
       for (Iterator<Element> validationsItr = validationsElement.elementIterator(); validationsItr.hasNext();) {
          Element validatorElement = validationsItr.next();
          if (getValidatorType(validatorElement.getName()) == -1) {
-            logger.error("Can't find validator "+validatorElement.getName());
-            throw new ParseProtocolException("Can't find validator "+validatorElement.getName());
+            logger.error("Can't find validator " + validatorElement.getName());
+            throw new ParseProtocolException("Can't find validator " + validatorElement.getName());
          }
-         ProtocolValidator protocolValidator = new ProtocolValidator(getValidatorType(validatorElement.getName()),validatorElement.getTextTrim(),validatorElement.attributeValue("message"));
+         ProtocolValidator protocolValidator = new ProtocolValidator(getValidatorType(validatorElement.getName()),
+               validatorElement.getTextTrim(), validatorElement.attributeValue(MESSAGE_ATTR_NAME));
          validators.add(protocolValidator);
       }
       return validators;
    }
-   
+
+   /**
+    * Gets the validator type.
+    * 
+    * @param elementName the element name
+    * 
+    * @return the validator type
+    */
    private int getValidatorType(String elementName) {
       if (ProtocolValidator.ALLOW_BLANK.equals(elementName)) {
          return ProtocolValidator.ALLOW_BLANK_TYPE;
@@ -133,11 +215,55 @@ public class ProtocolParser {
       }
    }
 
+   /**
+    * Read xml from file.
+    * 
+    * @param file the file
+    * 
+    * @return the document
+    */
    private Document readXmlFromFile(File file) {
       Document protocolDoc = null;
       SAXReader reader = new SAXReader();
+      XMLErrorHandler errorHandler = new XMLErrorHandler();
+      SAXParserFactory factory = SAXParserFactory.newInstance();
+      System.out.println(file.getAbsolutePath());
+      factory.setValidating(true);
+      factory.setNamespaceAware(true);
       try {
          protocolDoc = reader.read(file);
+         SAXParser parser = factory.newSAXParser();
+         parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage",
+               "http://www.w3.org/2001/XMLSchema");
+         parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaSource", "file:"
+               + this.getClass().getResource("/").getPath().toString() + PROTOCOL_XSD_FILE_NAME);
+         SAXValidator validator = new SAXValidator(parser.getXMLReader());
+         validator.setErrorHandler(errorHandler);
+
+         validator.validate(protocolDoc);
+
+         XMLWriter writer = new XMLWriter(OutputFormat.createPrettyPrint());
+
+         if (errorHandler.getErrors().hasContent()) {
+            System.out.println("faild");
+            writer.write(errorHandler.getErrors());
+            logger.error("validate xml schema on File " + file.getAbsolutePath() + " fail.");
+            throw new ParseProtocolException("validate xml schema on File " + file.getAbsolutePath() + " fail.");
+         }
+      } catch (ParserConfigurationException e) {
+         logger.error("Read xml From File " + file.getAbsolutePath() + " occur ParserConfigurationException.", e);
+         throw new ParseProtocolException("Read xml From File " + file.getAbsolutePath()
+               + " occur ParserConfigurationException.", e);
+      } catch (SAXException e) {
+         logger.error("Read xml From File " + file.getAbsolutePath() + " occur SAXException.", e);
+         throw new ParseProtocolException("Read xml From File " + file.getAbsolutePath() + " occur SAXException.", e);
+      } catch (UnsupportedEncodingException e) {
+         logger.error("Read xml From File " + file.getAbsolutePath() + " occur UnsupportedEncodingException.", e);
+         throw new ParseProtocolException("Read xml From File " + file.getAbsolutePath()
+               + " occur UnsupportedEncodingException.", e);
+      } catch (IOException e) {
+         logger.error("Read xml From File " + file.getAbsolutePath() + " occur IOException.", e);
+         throw new ParseProtocolException("Read xml From File " + file.getAbsolutePath() + " occur IOException.", e);
       } catch (DocumentException e) {
          logger.error("Read xml From File " + file.getAbsolutePath() + " occur DocumentException.", e);
          throw new ParseProtocolException("Read xml From File " + file.getAbsolutePath() + " occur DocumentException.",
@@ -146,8 +272,27 @@ public class ProtocolParser {
       return protocolDoc;
    }
 
+   /**
+    * Gets the path.
+    * 
+    * @return the path
+    */
    private String getPath() {
-      return this.getClass().getResource(PROTOCOLS_DIR).getPath();
+      if (xmlPath != null && xmlPath.length() > 0) {
+         return xmlPath;
+      } else {
+         return this.getClass().getResource(PROTOCOLS_DIR).getPath();
 
+      }
+
+   }
+
+   /**
+    * Sets the path.
+    * 
+    * @param path the new path
+    */
+   public void setPath(String path) {
+      xmlPath = path;
    }
 }

@@ -28,28 +28,56 @@ import java.util.List;
 /**
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
-public class ProtocolDefinition implements Serializable{
+public class ProtocolDefinition implements Serializable {
    /**
-    * 
+    *
     */
    private static final long serialVersionUID = -726881807822688804L;
    private String name;
-   private List<ProtocolAttrDefinition> attrs = new ArrayList<ProtocolAttrDefinition>();;
-   
+   private List<ProtocolAttrDefinition> attrs = new ArrayList<ProtocolAttrDefinition>();
+
    public String getName() {
       return name;
    }
+
    public void setName(String name) {
       this.name = name;
    }
+
    public List<ProtocolAttrDefinition> getAttrs() {
       return attrs;
    }
+
    public void setAttrs(List<ProtocolAttrDefinition> attrs) {
       this.attrs = attrs;
    }
 
-   
-   
-   
+   @Override
+   public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      ProtocolDefinition that = (ProtocolDefinition) o;
+
+      if (name != null ? !name.equals(that.name) : that.name != null) return false;
+      if (attrs == null && that.attrs == null) return true;
+      if (attrs == null || that.attrs == null) return false;
+      if (attrs.size() == that.attrs.size()) {
+         for (int i = 0; i < attrs.size(); i++) {
+            if (!attrs.get(i).equals(that.attrs.get(i))) {
+               return false;
+            }
+         }
+      } else {
+         return false;
+      }
+      return true;
+   }
+
+   @Override
+   public int hashCode() {
+      int result = name != null ? name.hashCode() : 0;
+      result = 31 * result + (attrs != null ? attrs.hashCode() : 0);
+      return result;
+   }
 }
