@@ -26,8 +26,9 @@
 		<property name="annotatedClasses">
 			<list>
 				<value>org.openremote.modeler.domain.Protocol</value> 
-                <value>org.openremote.modeler.domain.Attribute</value>
+                <value>org.openremote.modeler.domain.ProtocolAttr</value>
                 <value>org.openremote.modeler.domain.Device</value>
+                <value>org.openremote.modeler.domain.DeviceAttr</value>
                 <value>org.openremote.modeler.domain.DeviceCommand</value>
                 <value>org.openremote.modeler.domain.DeviceCommandRef</value> 
                 <value>org.openremote.modeler.domain.DeviceMacro</value>

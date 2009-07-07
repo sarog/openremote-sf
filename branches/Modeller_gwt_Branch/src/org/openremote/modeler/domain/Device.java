@@ -23,9 +23,9 @@ package org.openremote.modeler.domain;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 /**
  * The Class Device.
@@ -34,7 +34,6 @@ import javax.persistence.Table;
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "device")
 public class Device extends BusinessEntity {
    
    /** The name. */
@@ -46,14 +45,20 @@ public class Device extends BusinessEntity {
    /** The model. */
    private String model;
    
-   /** The device events. */
-   private List<DeviceCommand> deviceEvents;
+   /** The device commands. */
+   private List<DeviceCommand> deviceCommands;
+   
+   /** The device attrs. */
+   private List<DeviceAttr> deviceAttrs;
+   
+   
 
    /**
     * Gets the name.
     * 
     * @return the name
     */
+   @Column(nullable = false)
    public String getName() {
       return name;
    }
@@ -107,23 +112,32 @@ public class Device extends BusinessEntity {
    }
    
    /**
-    * Gets the device events.
+    * Gets the device commands.
     * 
-    * @return the device events
+    * @return the device commands
     */
    @OneToMany(mappedBy = "device", cascade = CascadeType.REMOVE)
-   public List<DeviceCommand> getDeviceEvents() {
-      return deviceEvents;
+   public List<DeviceCommand> getDeviceCommands() {
+      return deviceCommands;
    }
 
    /**
-    * Sets the device events.
+    * Sets the device commands.
     * 
-    * @param deviceEvents
-    *           the new device events
+    * @param deviceCommands
+    *           the new device commands
     */
-   public void setDeviceEvents(List<DeviceCommand> deviceEvents) {
-      this.deviceEvents = deviceEvents;
+   public void setDeviceCommands(List<DeviceCommand> deviceCommands) {
+      this.deviceCommands = deviceCommands;
+   }
+
+   @OneToMany(mappedBy = "device", cascade = CascadeType.REMOVE)
+   public List<DeviceAttr> getDeviceAttrs() {
+      return deviceAttrs;
+   }
+
+   public void setDeviceAttrs(List<DeviceAttr> deviceAttrs) {
+      this.deviceAttrs = deviceAttrs;
    }
    
 }
