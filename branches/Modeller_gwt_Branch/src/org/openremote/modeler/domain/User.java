@@ -22,82 +22,82 @@ package org.openremote.modeler.domain;
 
 import java.util.List;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
+
 
 /**
- * The Class DeviceMacro.
+ * The Class User.
  * 
- * @author Dan 2009-7-6
+ * @author Dan 2009-7-7
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "device_macro")
-public class DeviceMacro extends BusinessEntity {
+public class User extends BusinessEntity {
+
+   /** The username. */
+   private String username;
    
-   /** The device macro items. */
-   private List<DeviceMacroItem> deviceMacroItems;
-   
-   /** The name. */
-   private String name;
+   /** The password. */
+   private String password;
    
    /** The account. */
    private Account account;
    
-
+   /** The roles. */
+   private List<Role> roles;
+   
    /**
-    * Gets the name.
+    * Gets the username.
     * 
-    * @return the name
+    * @return the username
     */
-   @Column(nullable = false)
-   public String getName() {
-      return name;
+   public String getUsername() {
+      return username;
    }
-
+   
    /**
-    * Sets the name.
+    * Sets the username.
     * 
-    * @param name
-    *           the new name
+    * @param username
+    *           the new username
     */
-   public void setName(String name) {
-      this.name = name;
+   public void setUsername(String username) {
+      this.username = username;
    }
-
+   
    /**
-    * Gets the device macro items.
+    * Gets the password.
     * 
-    * @return the device macro items
+    * @return the password
     */
-   @OneToMany(mappedBy = "parentDeviceMacro")
-   public List<DeviceMacroItem> getDeviceMacroItems() {
-      return deviceMacroItems;
+   public String getPassword() {
+      return password;
    }
-
+   
    /**
-    * Sets the device macro items.
+    * Sets the password.
     * 
-    * @param deviceMacroItems
-    *           the new device macro items
+    * @param password
+    *           the new password
     */
-   public void setDeviceMacroItems(List<DeviceMacroItem> deviceMacroItems) {
-      this.deviceMacroItems = deviceMacroItems;
+   public void setPassword(String password) {
+      this.password = password;
    }
-
+   
    /**
     * Gets the account.
     * 
     * @return the account
     */
-   @ManyToOne
+   @OneToOne(mappedBy="user")
    public Account getAccount() {
       return account;
    }
-
+   
    /**
     * Sets the account.
     * 
@@ -106,6 +106,27 @@ public class DeviceMacro extends BusinessEntity {
     */
    public void setAccount(Account account) {
       this.account = account;
+   }
+   
+   /**
+    * Gets the roles.
+    * 
+    * @return the roles
+    */
+   @ManyToMany
+   @JoinTable(name = "user_role", joinColumns = { @JoinColumn(name ="user_oid" )}, inverseJoinColumns = { @JoinColumn(name = "role_oid") })
+   public List<Role> getRoles() {
+      return roles;
+   }
+   
+   /**
+    * Sets the roles.
+    * 
+    * @param roles
+    *           the new roles
+    */
+   public void setRoles(List<Role> roles) {
+      this.roles = roles;
    }
    
 }

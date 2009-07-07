@@ -22,38 +22,29 @@ package org.openremote.modeler.domain;
 
 import java.util.List;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.ManyToMany;
 
 /**
- * The Class DeviceMacro.
+ * The Class Role.
  * 
- * @author Dan 2009-7-6
+ * @author Dan 2009-7-7
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "device_macro")
-public class DeviceMacro extends BusinessEntity {
-   
-   /** The device macro items. */
-   private List<DeviceMacroItem> deviceMacroItems;
-   
+public class Role extends BusinessEntity {
+
    /** The name. */
    private String name;
    
-   /** The account. */
-   private Account account;
-   
+   /** The users. */
+   private List<User> users;
 
    /**
     * Gets the name.
     * 
     * @return the name
     */
-   @Column(nullable = false)
    public String getName() {
       return name;
    }
@@ -69,43 +60,24 @@ public class DeviceMacro extends BusinessEntity {
    }
 
    /**
-    * Gets the device macro items.
+    * Gets the users.
     * 
-    * @return the device macro items
+    * @return the users
     */
-   @OneToMany(mappedBy = "parentDeviceMacro")
-   public List<DeviceMacroItem> getDeviceMacroItems() {
-      return deviceMacroItems;
+   @ManyToMany(mappedBy = "roles")
+   public List<User> getUsers() {
+      return users;
    }
 
    /**
-    * Sets the device macro items.
+    * Sets the users.
     * 
-    * @param deviceMacroItems
-    *           the new device macro items
+    * @param users
+    *           the new users
     */
-   public void setDeviceMacroItems(List<DeviceMacroItem> deviceMacroItems) {
-      this.deviceMacroItems = deviceMacroItems;
+   public void setUsers(List<User> users) {
+      this.users = users;
    }
-
-   /**
-    * Gets the account.
-    * 
-    * @return the account
-    */
-   @ManyToOne
-   public Account getAccount() {
-      return account;
-   }
-
-   /**
-    * Sets the account.
-    * 
-    * @param account
-    *           the new account
-    */
-   public void setAccount(Account account) {
-      this.account = account;
-   }
+   
    
 }
