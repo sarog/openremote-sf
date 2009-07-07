@@ -6,9 +6,9 @@
      xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd  
              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.1.xsd"> 
 
-   <security:http lowercase-comparisons="false" access-denied-page="/accessDenied.jsp"> <!-- note: no auto-config attribute! -->
+   <security:http lowercase-comparisons="false"> <!-- note: no auto-config attribute! -->
 	    <security:intercept-url pattern="/login.html" filters="none"/>
-       <security:intercept-url pattern="/Modeler.html" access="ROLE_MODELER,ROLE_DESIGNER,ROLE_ADMIN"/>
+       <security:intercept-url pattern="/Modeler.html" access="ROLE_MODELER,ROLE_DESIGNER"/>
        <security:form-login login-page="/login.html" default-target-url="/Modeler.html" always-use-default-target="true" login-processing-url="/j_security_check"/>
        <security:logout logout-success-url="/login.html" logout-url="/j_security_logout"/>
 	 </security:http>
@@ -35,7 +35,7 @@
          <security:user name="super" password="123" authorities="ROLE_MODELER,ROLE_DESIGNER" />
          <security:user name="modeler" password="123" authorities="ROLE_MODELER" />
          <security:user name="designer" password="123" authorities="ROLE_DESIGNER" />
-         <security:user name="admin" password="123" authorities="ROLE_ADMIN" />
+         <security:user name="admin" password="123" authorities="ROLE_ADMIN,ROLE_MODELER,ROLE_DESIGNER" />
       </security:user-service>
    </security:authentication-provider>
    

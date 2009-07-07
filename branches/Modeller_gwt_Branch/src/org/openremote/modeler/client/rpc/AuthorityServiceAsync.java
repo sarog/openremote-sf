@@ -1,7 +1,7 @@
 package org.openremote.modeler.client.rpc;
 
 
-import org.openremote.modeler.domain.Authority;
+import org.openremote.modeler.auth.Authority;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

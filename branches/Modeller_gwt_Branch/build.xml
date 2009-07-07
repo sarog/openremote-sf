@@ -41,7 +41,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		<fileset dir="${lib.dir}" includes="**/*.jar"/>
 	</path>
 
-	<target name="libs" description="Copy libs to WEB-INF/lib">
+	<target name="libs" depends="clean" description="Copy libs to WEB-INF/lib">
 		<mkdir dir="${web-inf.dir}/lib" />
 		<copy todir="${web-inf.dir}/lib">
 			<fileset dir="${lib.dir}/core" includes="*.jar"/>

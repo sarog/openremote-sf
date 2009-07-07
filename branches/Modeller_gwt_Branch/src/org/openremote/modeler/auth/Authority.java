@@ -1,4 +1,4 @@
-package org.openremote.modeler.domain;
+package org.openremote.modeler.auth;
 
 import java.io.Serializable;
 import java.util.ArrayList;
