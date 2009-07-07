@@ -34,6 +34,9 @@
                 <value>org.openremote.modeler.domain.DeviceMacro</value>
                 <value>org.openremote.modeler.domain.DeviceMacroRef</value> 
                 <value>org.openremote.modeler.domain.DeviceMacroItem</value> 
+                <value>org.openremote.modeler.domain.User</value> 
+                <value>org.openremote.modeler.domain.Role</value> 
+                <value>org.openremote.modeler.domain.Account</value> 
 			</list>
 		</property>
 		<property name="mappingResources">

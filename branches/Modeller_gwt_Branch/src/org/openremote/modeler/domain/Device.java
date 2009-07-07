@@ -25,6 +25,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 /**
@@ -50,6 +51,9 @@ public class Device extends BusinessEntity {
    
    /** The device attrs. */
    private List<DeviceAttr> deviceAttrs;
+   
+   /** The account. */
+   private Account account;
    
    
 
@@ -131,13 +135,44 @@ public class Device extends BusinessEntity {
       this.deviceCommands = deviceCommands;
    }
 
+   /**
+    * Gets the device attrs.
+    * 
+    * @return the device attrs
+    */
    @OneToMany(mappedBy = "device", cascade = CascadeType.REMOVE)
    public List<DeviceAttr> getDeviceAttrs() {
       return deviceAttrs;
    }
 
+   /**
+    * Sets the device attrs.
+    * 
+    * @param deviceAttrs
+    *           the new device attrs
+    */
    public void setDeviceAttrs(List<DeviceAttr> deviceAttrs) {
       this.deviceAttrs = deviceAttrs;
+   }
+
+   /**
+    * Gets the account.
+    * 
+    * @return the account
+    */
+   @ManyToOne
+   public Account getAccount() {
+      return account;
+   }
+
+   /**
+    * Sets the account.
+    * 
+    * @param account
+    *           the new account
+    */
+   public void setAccount(Account account) {
+      this.account = account;
    }
    
 }
