@@ -24,27 +24,27 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+
 /**
- * The Class DeviceCommand.
+ * The Attribute of Device.
  * 
  * @author Dan 2009-7-6
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "device_command")
-public class DeviceCommand extends BusinessEntity {
-   
-   /** The device. */
-   private Device device;
-   
-   /** The protocol. */
-   private Protocol protocol;
-   
+@Table(name="device_attr")
+public class DeviceAttr extends BusinessEntity {
+
    /** The name. */
    private String name;
+   
+   /** The value. */
+   private String value;
+   
+   /** The protocol. */
+   private Device device;
    
    /**
     * Gets the name.
@@ -67,11 +67,32 @@ public class DeviceCommand extends BusinessEntity {
    }
 
    /**
+    * Gets the value.
+    * 
+    * @return the value
+    */
+   @Column(nullable = false)
+   public String getValue() {
+      return value;
+   }
+
+   /**
+    * Sets the value.
+    * 
+    * @param value
+    *           the new value
+    */
+   public void setValue(String value) {
+      this.value = value;
+   }
+
+   /**
     * Gets the device.
     * 
     * @return the device
     */
    @ManyToOne
+   @JoinColumn(nullable = false)
    public Device getDevice() {
       return device;
    }
@@ -85,27 +106,5 @@ public class DeviceCommand extends BusinessEntity {
    public void setDevice(Device device) {
       this.device = device;
    }
-   
-   /**
-    * Gets the protocol.
-    * 
-    * @return the protocol
-    */
-   @OneToOne
-   @JoinColumn(nullable = false)
-   public Protocol getProtocol() {
-      return protocol;
-   }
 
-   /**
-    * Sets the protocol.
-    * 
-    * @param protocol
-    *           the new protocol
-    */
-   public void setProtocol(Protocol protocol) {
-      this.protocol = protocol;
-   }
-
-   
 }

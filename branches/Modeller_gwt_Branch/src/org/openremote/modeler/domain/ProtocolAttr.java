@@ -20,19 +20,22 @@
  */
 package org.openremote.modeler.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 
 /**
- * The Class Attribute.
+ * The Attribute of Protocol.
  * 
  * @author Dan 2009-7-6
  */
 @SuppressWarnings("serial")
 @Entity
-public class Attribute extends BusinessEntity {
+@Table(name="protocol_attr")
+public class ProtocolAttr extends BusinessEntity {
 
    /** The name. */
    private String name;
@@ -48,6 +51,7 @@ public class Attribute extends BusinessEntity {
     * 
     * @return the name
     */
+   @Column(nullable = false)
    public String getName() {
       return name;
    }
@@ -67,6 +71,7 @@ public class Attribute extends BusinessEntity {
     * 
     * @return the value
     */
+   @Column(nullable = false)
    public String getValue() {
       return value;
    }

@@ -22,6 +22,7 @@ package org.openremote.modeler.domain;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -48,6 +49,7 @@ public class DeviceMacro extends BusinessEntity {
     * 
     * @return the name
     */
+   @Column(nullable = false)
    public String getName() {
       return name;
    }

@@ -23,10 +23,10 @@ package org.openremote.modeler.domain;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
 /**
  * The Class Protocol.
@@ -35,14 +35,13 @@ import javax.persistence.Table;
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "protocol")
 public class Protocol extends BusinessEntity {
    
    /** The type. */
    private String type;
    
    /** The attributes. */
-   private List<Attribute> attributes;
+   private List<ProtocolAttr> attributes;
    
    /** The device event. */
    private DeviceCommand deviceCommand;
@@ -53,7 +52,7 @@ public class Protocol extends BusinessEntity {
     * @return the attributes
     */
    @OneToMany(mappedBy = "protocol", cascade = CascadeType.REMOVE)
-   public List<Attribute> getAttributes() {
+   public List<ProtocolAttr> getAttributes() {
       return attributes;
    }
 
@@ -63,7 +62,7 @@ public class Protocol extends BusinessEntity {
     * @param attributes
     *           the new attributes
     */
-   public void setAttributes(List<Attribute> attributes) {
+   public void setAttributes(List<ProtocolAttr> attributes) {
       this.attributes = attributes;
    }
 
@@ -72,6 +71,7 @@ public class Protocol extends BusinessEntity {
     * 
     * @return the type
     */
+   @Column(nullable = false)
    public String getType() {
       return type;
    }
