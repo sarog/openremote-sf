@@ -12,6 +12,7 @@
 <source path='domain'/>
 	<source path='client'/>
 	<source path='protocol'/>
+	<source path='auth'/>
   <!-- Other module inherits                                      -->
 
   <!-- Specify the app entry point class.                         -->

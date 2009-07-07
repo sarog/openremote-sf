@@ -2,14 +2,21 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>Login - Modeler</title>
 </head>
 <body>
-    <h2>Please log in</h2><br>
-    <form method="POST" action="j_security_check">
-      Username: <input type="text" name="j_username"><br>
-      Password: <input type="password" name="j_password"><br>
-      <input type="submit" value="Log in >>">
-    </form>
+
+<form method="POST" action="j_security_check"/>
+   <div align="center">
+      <div style="width: 500px; text-align: center; background-color: #D2E9FF">
+            <h2>login to Modeler</h2><br>
+            Username: <input type="text" name="j_username"><br><br>
+            Password: <input type="password" name="j_password"><br>
+            <input type="submit" value="Log In">                       
+            <p>Powered by <a href="http://openremote.org">Openremote</a>
+            </p>            
+      </div>
+   </div>
+</form>
 </body>
 </html>

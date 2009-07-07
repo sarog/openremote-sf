@@ -28,8 +28,8 @@ public class Modeler implements EntryPoint {
     * This is the entry point method.
     */
    public void onModuleLoad() {
-      createCenter();
-//      init();
+//      createCenter();
+      init();
    }
    
    private void init() {
