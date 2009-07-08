@@ -299,13 +299,14 @@ var TCPController = function() {
          */
     		confirmCreate:function() {
 	          var label = $("#tcp_label_input");
-	          var groupAddress = $("#tcp_group_address_input");
+	          var ip = $("#tcp_ip_input");
+            var port = $("#tcp_port_input");
             var command = $("#tcp_command_input");
 
             $("#tcp_form").validate({
 
                 invalidHandler:function(form, validator) {
-                    $("#create_TCP_dialog").errorTips(validator);
+                    $("#create_tcp_dialog").errorTips(validator);
                 },
 
                 showErrors:function(){},
@@ -364,7 +365,7 @@ var TCPController = function() {
 	        },
 
           createTCP: function(tcp){
-			      var tcpView = new TCPView(knx);
+			      var tcpView = new TCPView(tcp);
 
 			      tcp.addDeleteListener(tcpView);
 			      tcp.addUpdateListener(tcpView);
