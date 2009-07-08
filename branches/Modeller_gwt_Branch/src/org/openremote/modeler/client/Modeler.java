@@ -41,7 +41,7 @@ public class Modeler implements EntryPoint {
 
       final ProtocolServiceAsync protocolService = (ProtocolServiceAsync) GWT.create(ProtocolService.class);
 
-      protocolService.getProtocolContainer(new AsyncCallback<Map<String, ProtocolDefinition>>() {
+      protocolService.getProtocols(new AsyncCallback<Map<String, ProtocolDefinition>>() {
          public void onFailure(Throwable caught) {
             caught.printStackTrace();
             MessageBox.info("Info", caught.getMessage(), null);

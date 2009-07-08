@@ -48,7 +48,6 @@ import org.openremote.modeler.exception.ParseProtocolException;
 import org.openremote.modeler.protocol.ProtocolAttrDefinition;
 import org.openremote.modeler.protocol.ProtocolDefinition;
 import org.openremote.modeler.protocol.ProtocolValidator;
-import org.springframework.util.Assert;
 import org.xml.sax.SAXException;
 
 /**
@@ -126,8 +125,6 @@ public class ProtocolParser {
       Map<String, ProtocolDefinition> map = new HashMap<String, ProtocolDefinition>();
 
       Document protocolDoc = readXmlFromFile(file);
-
-      Assert.notNull(protocolDoc);
 
       Element openremoteElement = protocolDoc.getRootElement();
       Iterator<Element> protocolItr = openremoteElement.elementIterator(PROTOCOL_ELEMENT_NAME);
