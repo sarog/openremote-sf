@@ -24,10 +24,10 @@ package org.openremote.modeler.client.view;
  * @author Tomsky
  *
  */
-public abstract class View {
+public interface View {
    
    /**
     * Initialize the view but not show it.
     */
-   public abstract void initialize();
+   public void initialize();
 }
