@@ -22,7 +22,6 @@ package org.openremote.modeler.protocol;
 
 import java.io.Serializable;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ProtocolValidator.
  */

@@ -36,11 +36,13 @@
 	<classpathentry kind="lib" path="lib/core/jta.jar"/>
 	<classpathentry kind="lib" path="lib/core/log4j-1.2.11.jar"/>
 	<classpathentry kind="lib" path="lib/core/mysql-connector-java-5.0.3-bin.jar"/>
-	<classpathentry kind="lib" path="lib/core/spring.jar"/>
 	<classpathentry kind="lib" path="lib/core/standard.jar"/>
 	<classpathentry kind="lib" path="lib/core/trove.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/test/junit-4.5.jar"/>
+	<classpathentry kind="lib" path="lib/core/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/core/spring-2.0.8.jar"/>
+	<classpathentry kind="lib" path="lib/core/spring-security-core-2.0.4.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
