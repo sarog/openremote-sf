@@ -164,7 +164,7 @@ var TCPView = function() {
         };
 
         var init = function() {
-            var btn = HTMLBuilder.HTTPBtnBuilder(self.getModel());
+            var btn = HTMLBuilder.TCPBtnBuilder(self.getModel());
             var info = $("#tcp_tab p");
             if (info.size() != 0) {
                 info.remove();
@@ -208,7 +208,7 @@ var TelnetView = function() {
         };
 
         var init = function() {
-            var btn = HTMLBuilder.HTTPBtnBuilder(self.getModel());
+            var btn = HTMLBuilder.TelnetBtnBuilder(self.getModel());
             var info = $("#telnet_tab p");
             if (info.size() != 0) {
                 info.remove();
