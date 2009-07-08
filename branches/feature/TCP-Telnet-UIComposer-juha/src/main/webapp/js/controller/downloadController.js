@@ -256,7 +256,7 @@ var DownloadController = function() {
     /**
      * Gets all HTTP events user has added.
      *
-     * @returns x10Event array
+     * @returns telnetEvent array
      */
     function parseHTTP() {
         var httpEvents = new Array();
