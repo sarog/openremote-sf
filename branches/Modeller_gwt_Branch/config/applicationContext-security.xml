@@ -6,11 +6,11 @@
      xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd  
              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.1.xsd"> 
 
-   <security:http lowercase-comparisons="false"> <!-- note: no auto-config attribute! -->
-	    <security:intercept-url pattern="/login.html" filters="none"/>
-       <security:intercept-url pattern="/Modeler.html" access="ROLE_MODELER,ROLE_DESIGNER"/>
-       <security:form-login login-page="/login.html" default-target-url="/Modeler.html" always-use-default-target="true" login-processing-url="/j_security_check"/>
-       <security:logout logout-success-url="/login.html" logout-url="/j_security_logout"/>
+   <security:http lowercase-comparisons="false"> <!-- note: no auto-config attribute!-->
+	    <security:intercept-url pattern="/login.jsp" filters="none"/>
+       <security:intercept-url pattern="/Modeler.jsp" access="ROLE_MODELER,ROLE_DESIGNER"/>
+       <security:form-login login-page="/login.jsp" default-target-url="/Modeler.jsp" login-processing-url="/j_security_check"/>
+       <security:logout logout-success-url="/login.jsp" logout-url="/j_security_logout" invalidate-session="true"/>
 	 </security:http>
 	 
    <security:authentication-manager alias="authenticationManager"/>

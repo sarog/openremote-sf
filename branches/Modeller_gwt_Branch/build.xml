@@ -85,7 +85,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 			</classpath>
 			<jvmarg value="-Xmx256M"/>
 			<arg value="-startupUrl"/>
-			<arg value="modeler.html"/>
+			<arg value="Modeler.jsp"/>
 			<!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
 			<arg value="org.openremote.modeler.Modeler"/>
 		</java>

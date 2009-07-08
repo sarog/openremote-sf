@@ -7,7 +7,7 @@
 	<display-name>Modeler</display-name>
     	<!-- Default page to serve -->
 	<welcome-file-list>
-		<welcome-file>Modeler.html</welcome-file>
+		<welcome-file>Modeler.jsp</welcome-file>
 	</welcome-file-list>
     
 	<context-param>

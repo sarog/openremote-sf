@@ -40,4 +40,9 @@
 
   	<div id="main"></div>
   </body>
+<head>
+	<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+	<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+    <META HTTP-EQUIV="EXPIRES" CONTENT="0">
+</head>
 </html>
