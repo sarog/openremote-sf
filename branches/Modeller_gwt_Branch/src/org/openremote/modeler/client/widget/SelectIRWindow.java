@@ -16,34 +16,23 @@
 
 package org.openremote.modeler.client.widget;
 
-import com.extjs.gxt.ui.client.data.BaseListLoadConfig;
-import com.extjs.gxt.ui.client.data.BaseListLoader;
-import com.extjs.gxt.ui.client.data.HttpProxy;
-import com.extjs.gxt.ui.client.data.JsonLoadResultReader;
-import com.extjs.gxt.ui.client.data.JsonReader;
-import com.extjs.gxt.ui.client.data.ListLoadConfig;
-import com.extjs.gxt.ui.client.data.ListLoadResult;
-import com.extjs.gxt.ui.client.data.LoadConfig;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelType;
-import com.extjs.gxt.ui.client.data.ScriptTagProxy;
-import com.extjs.gxt.ui.client.data.XmlLoadResultReader;
+import com.extjs.gxt.ui.client.event.BaseEvent;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
+import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.widget.ListView;
 import com.extjs.gxt.ui.client.widget.Window;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
-import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
 public class SelectIRWindow extends Window {
+
+   RemoteJsonComboBox<ModelData> vendorList = null;
+   RemoteJsonComboBox<ModelData> modelList = null;
+   RemoteJsonComboBox<ModelData> sectionList = null;
 
    public SelectIRWindow() {
       setupWindow();
@@ -51,7 +40,7 @@ public class SelectIRWindow extends Window {
    }
 
    private void setupWindow() {
-      setSize(800, 300);
+      setSize(500, 300);
       setPlain(true);
       setModal(true);
       setBlinkModal(true);
@@ -59,48 +48,110 @@ public class SelectIRWindow extends Window {
    }
 
    private void addVendersList() {
-      // ModelType venderType = new ModelType();
-      // venderType.setRoot("vendor");
-      // venderType.addField("id");
-      // venderType.addField("name");
       ModelType venderType = new ModelType();
-      venderType.setRoot("records");
-      venderType.addField("Sender", "name");
-      venderType.addField("Email", "email");
-      venderType.addField("Phone", "phone");
-      venderType.addField("State", "state");
-      venderType.addField("Zip", "zip");
+      venderType.setRoot("vendors.vendor");
+      venderType.addField("id");
+      venderType.addField("name");
 
-      ScriptTagProxy<ListLoadResult<ModelData>> scriptTagProxy = new ScriptTagProxy<ListLoadResult<ModelData>>(
-            "http://extjs.com/examples/data/data.json");
-      // ScriptTagProxy<ListLoadResult<ModelData>> scriptTagProxy = new ScriptTagProxy<ListLoadResult<ModelData>>(
-      // "http://openremote.finalist.hk/beehive/rest/lirc");
-      JsonLoadResultReader<ListLoadResult<ModelData>> reader = new JsonLoadResultReader<ListLoadResult<ModelData>>(
-            venderType);
-      final BaseListLoader<ListLoadResult<ModelData>> loader = new BaseListLoader<ListLoadResult<ModelData>>(
-            scriptTagProxy, reader);
-      scriptTagProxy.load(reader, new BaseListLoadConfig(), new AsyncCallback<ListLoadResult<ModelData>>() {
+      vendorList = new RemoteJsonComboBox<ModelData>(
+            "http://openremote.finalist.hk/beehive/rest/lirc", venderType);
 
-         public void onFailure(Throwable arg0) {
-            System.out.println(arg0.getLocalizedMessage());
+      vendorList.setEmptyText("Select a vendor...");
+      vendorList.setDisplayField("name");
+      vendorList.setValueField("name");
+      vendorList.setWidth(150);
+      vendorList.setMaxHeight(200);
 
-         }
+      vendorList.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
 
-         public void onSuccess(ListLoadResult<ModelData> result) {
-            for (ModelData data : result.getData()) {
-               System.out.println(data.get("Sender"));
-            }
-
+         @Override
+         public void selectionChanged(SelectionChangedEvent<ModelData> se) {
+            addModelList(se.getSelectedItem().get("name").toString());
          }
 
       });
-      ListStore<ModelData> store = new ListStore<ModelData>(loader);
-      ListView<ModelData> listView = new ListView<ModelData>(store);
-      listView.setDisplayProperty("Sender");
-//      listView.setDisplayProperty("name");
-      add(listView);
+      add(vendorList);
+   }
 
-      // loader.load();
+   private void addModelList(final String vendor) {
+      ModelType modelType = new ModelType();
+      modelType.setRoot("models.model");
+      modelType.addField("id");
+      modelType.addField("name");
+      modelType.addField("fileName");
+      String url = "http://openremote.finalist.hk/beehive/rest/lirc/" + vendor;
+      if (modelList != null) {
+         modelList.clearSelections();
+         modelList.getStore().removeAll();
+         
+         sectionList.clearSelections();
+         sectionList.getStore().removeAll();
+         
+         modelList.reloadListStoreWithUrl(url);
+         modelList.setEmptyText("Loading... ");
+         modelList.disable();
+      } else {
+         modelList = new RemoteJsonComboBox<ModelData>(url, modelType);
+
+         modelList.setEmptyText("Select a model...");
+         modelList.setDisplayField("name");
+         modelList.setValueField("name");
+         modelList.setWidth(150);
+         modelList.setMaxHeight(200);
+         modelList.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
+
+            @Override
+            public void selectionChanged(SelectionChangedEvent<ModelData> se) {
+               System.out.println("select vender count is " + vendorList.getSelection().get(0).get("name"));
+               
+               addSectionList(vendorList.getRawValue(), se.getSelectedItem().get("name").toString());
+            }
+
+         });
+         modelList.addListener(ListStore.DataChanged, new Listener<BaseEvent>() {
+            public void handleEvent(BaseEvent be) {
+               modelList.enable();
+               modelList.setEmptyText("Select a model...");
+            }
+            
+         });
+         add(modelList);
+         layout();
+      }
+   }
+
+   private void addSectionList(String venderName, String modelName) {
+
+      ModelType modelType = new ModelType();
+      modelType.setRoot("sections.section");
+      modelType.addField("id");
+      modelType.addField("name");
+      String url = "http://openremote.finalist.hk/beehive/rest/lirc/" + venderName + "/" + modelName;
+      if (sectionList != null) {
+         sectionList.clearSelections();
+         sectionList.getStore().removeAll();
+         sectionList.reloadListStoreWithUrl(url);
+         sectionList.setEmptyText("Loading... ");
+         sectionList.disable();
+      } else {
+         sectionList = new RemoteJsonComboBox<ModelData>(url, modelType);
+
+         sectionList.setEmptyText("Select a section...");
+         sectionList.setDisplayField("name");
+         sectionList.setValueField("name");
+         sectionList.setWidth(150);
+         sectionList.setMaxHeight(200);
+         sectionList.addListener(ListStore.DataChanged, new Listener<BaseEvent>() {
+            public void handleEvent(BaseEvent be) {
+               sectionList.enable();
+               sectionList.setEmptyText("Select a section...");
+            }
+            
+         });
+         add(sectionList);
+         layout();
+      }
 
    }
+
 }
