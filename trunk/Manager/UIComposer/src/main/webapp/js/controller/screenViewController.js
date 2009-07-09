@@ -1,19 +1,26 @@
 /*
- * OpenRemote, the Home of the Digital Home. Copyright 2008, OpenRemote Inc.
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a full listing of individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the terms of the GNU
+ * General Public License as published by the Free Software Foundation; either version 3.0 of the
+ * License, or (at your option) any later version.
  *
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
- * http://www.fsf.org.
+ * You should have received a copy of the GNU General Public License along with this software; if
+ * not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ * MA 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+/*
+ * TODO
+ *
+ * @author <a href="mailto:">Allen Wei</a>
+ * @author <a href="mailto:">Tomsky Wang</a>
+ */
 ScreenViewController = function() {
     function ScreenViewController() {
 		
@@ -38,51 +45,56 @@ ScreenViewController = function() {
     function confirmCreateScreen() {
         var name = $("#screen_name_input");
         var row = $("#screen_row_input");
-        var col = $("#screen_col_input");        
+        var col = $("#screen_col_input");
+
         $("#screen_form").validate({
-                invalidHandler:function(form, validator) {
-                    $("#create_screen_dialog").errorTips(validator);
+            invalidHandler:function(form, validator) {
+                $("#create_screen_dialog").errorTips(validator);
+            },
+
+            showErrors:function(){},
+
+            rules: {
+                screen_name_input: {
+                    required: true,
+                    maxlength: 50
                 },
-                showErrors:function(){},
-                rules: {
-                    screen_name_input: {
-                        required: true,
-                        maxlength: 50
-                    },
-                    screen_row_input: {
-                        required:true,
-                        digits:true,
-                        range: [1,6]
-                    },
-                    screen_col_input: {
-                        required:true,
-                        digits:true,
-                        range: [1,4]
-                    }
+                screen_row_input: {
+                    required:true,
+                    digits:true,
+                    range: [1,6]
                 },
-                messages:{
-                    screen_name_input: {
-                        required: "Please input a name",
-                        maxlength: "Please input a name no more than 50 charactors"
-                    },
-                    screen_row_input: {
-                        required: "Please input a row",
-                        digits: "Please input a digit",
-                        range: "Please input a digit between 1 and 6"
-                    },
-                    screen_col_input: {
-                        required: "Please input a column",
-                        digits: "Please input a digit",
-                        range: "Please input a digit between 1 and 4"
-                    }
+                screen_col_input: {
+                    required:true,
+                    digits:true,
+                    range: [1,4]
                 }
-            });
+            },
+
+            messages:{
+                screen_name_input: {
+                    required: "Please input a name",
+                    maxlength: "Please input a name no more than 50 characters"
+                },
+                screen_row_input: {
+                    required: "Please input a row",
+                    digits: "Please input a digit",
+                    range: "Please input a digit between 1 and 6"
+                },
+                screen_col_input: {
+                    required: "Please input a column",
+                    digits: "Please input a digit",
+                    range: "Please input a digit between 1 and 4"
+                }
+            }
+        });
+
         if ($("#screen_form").valid()) {
             var screen = new Screen();
             screen.id = global.BUTTONID++;
             screen.name = name.val();
-			screen.row = row.val();
-			screen.col = col.val();
+            screen.row = row.val();
+            screen.col = col.val();
             ScreenViewController.createScreenAndUpdateView(screen);
             $("#create_screen_dialog").closeModalForm();
         }
@@ -138,9 +150,6 @@ ScreenViewController = function() {
             global.screens[preScreen.id] = preScreen;
         }
     };
-
-
-
 
     return ScreenViewController;
 } ();
