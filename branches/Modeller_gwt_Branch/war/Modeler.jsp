@@ -13,7 +13,7 @@
     <!--                                                               -->
     <!-- Consider inlining CSS to reduce the number of requested files -->
     <!--                                                               -->
-	<link rel="stylesheet" type="text/css" href="modeler/css/ext-all.css" />
+	<link rel="stylesheet" type="text/css" href="resources/css/gxt-all.css" />
 	
     <!--                                           -->
     <!-- Any title is fine                         -->

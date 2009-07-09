@@ -3,6 +3,7 @@ package org.openremote.modeler.client.view;
 import java.util.List;
 
 import org.openremote.modeler.auth.Authority;
+import org.openremote.modeler.client.widget.SelectIRWindow;
 
 import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.util.Margins;
