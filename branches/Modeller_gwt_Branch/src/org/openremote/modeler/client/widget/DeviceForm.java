@@ -15,6 +15,7 @@ public class DeviceForm extends Window {
    
    private FormPanel formPanel;
    
+
    public DeviceForm() {
       initial();
       createFields();
@@ -50,8 +51,8 @@ public class DeviceForm extends Window {
       resetButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            List<Field> list = formPanel.getFields();
-            for (Field f : list) {
+            List<Field<?>> list = formPanel.getFields();
+            for (Field<?> f : list) {
                f.reset();
             }
          }
@@ -59,6 +60,7 @@ public class DeviceForm extends Window {
       });
       formPanel.addButton(submitBtn);
       formPanel.addButton(resetButton);
+      
    }
    
    private void createFields(){

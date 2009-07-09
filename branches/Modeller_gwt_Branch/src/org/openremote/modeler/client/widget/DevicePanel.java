@@ -1,15 +1,15 @@
 package org.openremote.modeler.client.widget;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
-import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ComponentEvent;
+import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
-import com.extjs.gxt.ui.client.widget.toolbar.TextToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 
 public class DevicePanel extends ContentPanel {
@@ -24,14 +24,14 @@ public class DevicePanel extends ContentPanel {
    
    private void createMenu(){
       ToolBar toolBar = new ToolBar();
-      TextToolItem newToolItem = new TextToolItem("New");
+      Button newButton = new Button("New");
       Menu newMenu = new Menu();
       MenuItem newDeviceItem = new MenuItem("New device");
       MenuItem newCommandItem = new MenuItem("New command");
       MenuItem importCommandItem = new MenuItem("Import command");
       
-      newDeviceItem.addSelectionListener(new SelectionListener<ComponentEvent>(){
-         public void componentSelected(ComponentEvent ce) {
+      newDeviceItem.addSelectionListener(new SelectionListener<MenuEvent>(){
+         public void componentSelected(MenuEvent ce) {
             DeviceForm deviceForm = new DeviceForm();
             deviceForm.show();
          }
@@ -40,14 +40,14 @@ public class DevicePanel extends ContentPanel {
       newMenu.add(newCommandItem);
       newMenu.add(importCommandItem);
       
-      newToolItem.setMenu(newMenu);
-      toolBar.add(newToolItem);
+      newButton.setMenu(newMenu);
+      toolBar.add(newButton);
       
-      TextToolItem editItem = new TextToolItem("Edit");
-      toolBar.add(editItem);
+      Button edit = new Button("Edit");
+      toolBar.add(edit);
       
-      TextToolItem deleteItem = new TextToolItem("Delete");
-      toolBar.add(deleteItem);
+      Button delete = new Button("Delete");
+      toolBar.add(delete);
       
       setTopComponent(toolBar);
       
