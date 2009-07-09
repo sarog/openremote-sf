@@ -19,7 +19,7 @@
  * Constants and global data goes here.
  *
  * @author allen.wei@finalist.cn
- * @authhor <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 
 

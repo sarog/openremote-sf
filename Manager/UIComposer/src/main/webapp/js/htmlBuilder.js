@@ -26,66 +26,98 @@ HTMLBuilder = function() {
     return {
         KNXBtnBuilder: function(knx) {
             var button = HTMLBuilder.blueBtnBuilder(knx.label);
+
             button.addClass("knx_btn");
             button.addClass("iphone_element");
             button.attr("id", knx.getElementId());
             button.data("model", knx);
+          
             return button;
-
         },
 
         X10BtnBuilder: function(x10) {
             var button = HTMLBuilder.blueBtnBuilder(x10.label);
+
             button.addClass("x10_btn");
             button.addClass("iphone_element");
             button.attr("id", x10.getElementId());
             button.data("model", x10);
             button.attr("title", x10.label);
-            return button;
 
+            return button;
         },
 
         HTTPBtnBuilder: function(http) {
             var button = HTMLBuilder.blueBtnBuilder(http.label);
+
             button.addClass("http_btn");
             button.addClass("iphone_element");
             button.attr("id", http.getElementId());
             button.data("model", http);
             button.attr("title", http.label);
-            return button;
 
+            return button;
+        },
+
+        TelnetBtnBuilder: function(telnet) {
+            var button = HTMLBuilder.blueBtnBuilder(telnet.label);
+
+            button.addClass("telnet_btn");
+            button.addClass("iphone_element");
+            button.attr("id", telnet.getElementId());
+            button.data("model", telnet);
+            button.attr("title", telnet.label);
+
+            return button;
+        },
+
+        TCPBtnBuilder: function(tcp) {
+            var button = HTMLBuilder.blueBtnBuilder(tcp.label);
+
+            button.addClass("tcp_btn");
+            button.addClass("iphone_element");
+            button.attr("id", tcp.getElementId());
+            button.data("model", tcp);
+            button.attr("title", tcp.label);
+
+            return button;
         },
 
         blueBtnBuilder: function(text) {
             var button = $("<div></div>");
+
             button.attr("title", text);
             button.addClass("blue_btn");
 
             button.interceptStr({
                 text: text,
                 max: 14,
-				setTitle:false
+                setTitle:false
             });
+
             return button;
         },
 
         iphoneBtnBuilder: function(iphoneBtn) {
-            var text = iphoneBtn.label;
-			var maxLenght = IphoneBtnView.getMaxLabelLength(iphoneBtn);
-            if (text.length > maxLenght) {
-                text = text.substr(0, maxLenght) + "<br/>...";
-            }
-            var btn = $(EJSHelper.render("template/_iphoneBtn.ejs", {
-                label: text
-            }));
+          var text = iphoneBtn.label;
+          var maxLenght = IphoneBtnView.getMaxLabelLength(iphoneBtn);
 
-            if (iphoneBtn.icon != null && iphoneBtn.icon.length > 0) {
-                btn.find("table").removeClass("iPhone_btn_cont");
-                btn.find("table .middle").html("<img src=" + iphoneBtn.icon + ">");
-            }
-            btn.data("model", iphoneBtn);
-            btn.attr("id", iphoneBtn.getElementId());
-            return btn;
+          if (text.length > maxLenght) {
+            text = text.substr(0, maxLenght) + "<br/>...";
+          }
+
+          var btn = $(EJSHelper.render("template/_iphoneBtn.ejs", {
+            label: text
+          }));
+
+          if (iphoneBtn.icon != null && iphoneBtn.icon.length > 0) {
+              btn.find("table").removeClass("iPhone_btn_cont");
+              btn.find("table .middle").html("<img src=" + iphoneBtn.icon + ">");
+          }
+
+          btn.data("model", iphoneBtn);
+          btn.attr("id", iphoneBtn.getElementId());
+          return btn;
         },
 
         iphoneBtnHelperBuilder: function(label) {
@@ -97,24 +129,28 @@ HTMLBuilder = function() {
             return HTMLBuilder.blueBtnBuilder(label);;
         },
 
-
         macroBtnBuilder: function(macro) {
             var template = $("#macro_template .macro_btn_defination").clone();
             var btn = $(template).find(".macro_btn");
-
             var name = macro.label;
+
             btn.attr("title", macro.label);
+
             if (name.length > 14) {
                 name = name.substr(0, 14) + "...";
             }
+
             btn.html(name);
+
             template.attr("id", macro.getElementId());
             template.data("model", macro);
+
             return $(template);
         },
 
         macroLiBtnBuilder: function(model) {
             var macroCommandLi = $("<li><span></span></li>");
+
             macroCommandLi.addClass("macro_command");
             macroCommandLi.addClass("ui-state-default");
             macroCommandLi.data("model", model);
@@ -122,17 +158,19 @@ HTMLBuilder = function() {
             macroCommandLi.find("span").addClass("ui-icon-arrowthick-2-n-s");
 
             macroCommandLi.interceptStr({
-				max:8,
-				text:model.label,
-				setText: function(str){
-					$(this).text(str);
-				}
-			});
+              max:8,
+              text:model.label,
+              setText: function(str){
+                $(this).text(str);
+              }
+            });
+
             return macroCommandLi;
         },
 
         infraredBtnBuilder: function(infrared) {
             var btn = $("<div></div>");
+
             btn.attr("id", infrared.getElementId());
             btn.data("model", infrared);
 
@@ -142,10 +180,13 @@ HTMLBuilder = function() {
 
             var name = infrared.label;
             btn.attr("title", name);
+
             if (name.length > 14) {
                 name = name.substr(0, 14) + "...";
             }
+
             btn.text(name);
+
             return btn;
         }
     };

@@ -16,44 +16,51 @@
  */
 
 /**
- * Client state model for HTTP buttons. Includes mandatory attribute 'label' and HTTP
- * specific attribute 'url'.
+ * Client state model for TCP/IP buttons. Includes mandatory attribute 'label' and TCP/IP
+ * specific attributes 'ip' and 'port'.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-var HTTP = function() {
-	function HTTP() {
-		var self = this;
+var TCP = function() {
+
+  function TCP() {
+
+    var self = this;
 		Model.call(self);
 
-    //text ui interface display
-		self.label = "";
-		self.url = "";
+		self.label    = "";
+		self.ip       = "";
+    self.port     = "";
+    self.command  = "";
 
     /**
      * Get HTML getElementId
      */
 		self.getElementId = function() {
-			return "http"+self.id;
+			return "tcp"+self.id;
 		};
-		
-		self.inspectViewTemplate = "template/_httpInspect.ejs";
+
+		self.inspectViewTemplate = "template/_tcpInspect.ejs";
 	}
 
   /**
    * Create new instance from flat model (which have no private method).
    *
    * @param model flat model (which have no private method).
-   * 
+   *
    * @returns created new instance.
    */
-	HTTP.init = function(model) {
-		var http = new HTTP();
-		http.id      = model.id     ;
-		http.label   = model.label  ;
-		http.url     = model.url;
-		return http;
+	TCP.init = function(model) {
+
+    var tcp     = new TCP();
+		tcp.id      = model.id;
+		tcp.label   = model.label;
+		tcp.ip      = model.ip;
+    tcp.port    = model.port;
+    tcp.command = model.command;
+
+    return tcp;
 	};
-    
-	return HTTP;
+
+	return TCP;
 }();
