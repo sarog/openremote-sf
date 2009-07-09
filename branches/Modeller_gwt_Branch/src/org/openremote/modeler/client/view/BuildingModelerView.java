@@ -1,6 +1,7 @@
 package org.openremote.modeler.client.view;
 
 import org.openremote.modeler.client.widget.DevicePanel;
+import org.openremote.modeler.client.widget.SelectIRWindow;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.util.Margins;
@@ -37,8 +38,9 @@ public class BuildingModelerView extends TabItem implements View {
       westData.setCollapsible(true);
       west.setLayout(new AccordionLayout());
       west.setHeading("Explorer");
-      west.add(new DevicePanel());
-      west.add(new DevicePanel());
+//      west.add(new DevicePanel());
+//      west.add(new DevicePanel());
+  
       westData.setMargins(new Margins(2));
       add(west,westData);
    }
@@ -47,6 +49,9 @@ public class BuildingModelerView extends TabItem implements View {
       ContentPanel center = new ContentPanel();
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setMargins(new Margins(0,2,0,2));
+      SelectIRWindow selectIRWindow = new SelectIRWindow();
+      center.add(selectIRWindow);
+      selectIRWindow.show();
       add(center,centerData);
    }
 }

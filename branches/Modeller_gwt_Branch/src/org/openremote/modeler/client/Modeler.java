@@ -28,15 +28,16 @@ public class Modeler implements EntryPoint {
     * This is the entry point method.
     */
    public void onModuleLoad() {
-//      createCenter();
+      // createCenter();
       init();
    }
-   
+
    private void init() {
       ApplicationView appView = new ApplicationView();
       appView.initialize();
       appView.show();
-  }
+   }
+
    private void createCenter() {
 
       final ProtocolServiceAsync protocolService = (ProtocolServiceAsync) GWT.create(ProtocolService.class);
@@ -52,13 +53,14 @@ public class Modeler implements EntryPoint {
 
                final ProtocolDefinition definition = protocols.get(protocols.keySet().toArray()[i]);
                ProtocolForm protocolForm = new ProtocolForm(definition);
-               protocolForm.addSubmitListener(new Listener<AppEvent<Map<String, String>>>() {
+               protocolForm.addSubmitListener(new Listener<AppEvent>() {
 
-                  public void handleEvent(AppEvent<Map<String, String>> be) {
+                  public void handleEvent(AppEvent be) {
+                     Map<String, String> map = be.getData();
                      StringBuffer buffer = new StringBuffer();
-                     for (String key : be.data.keySet()) {
+                     for (String key : map.keySet()) {
                         buffer.append(key + ";");
-                        buffer.append(be.data.get(key));
+                        buffer.append(map.get(key));
                         buffer.append("<br />");
                      }
                      MessageBox.info(definition.getName(), buffer.toString(), null);

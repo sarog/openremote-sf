@@ -30,9 +30,9 @@ import org.openremote.modeler.protocol.ProtocolAttrDefinition;
 import org.openremote.modeler.protocol.ProtocolDefinition;
 import org.openremote.modeler.protocol.ProtocolValidator;
 
-import com.extjs.gxt.ui.client.Events;
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
@@ -51,14 +51,14 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 public class ProtocolForm extends FormPanel {
 
    /** The submit listeners. */
-   private List<Listener<AppEvent<Map<String, String>>>> submitListeners = new ArrayList<Listener<AppEvent<Map<String, String>>>>();
+   private List<Listener<AppEvent>> submitListeners = new ArrayList<Listener<AppEvent>>();
 
    /**
     * Listener will be called after form submit and all the validator on fields pass.
     * 
     * @param listener the listener
     */
-   public void addSubmitListener(Listener<AppEvent<Map<String, String>>> listener) {
+   public void addSubmitListener(Listener<AppEvent> listener) {
       submitListeners.add(listener);
    }
 
@@ -67,7 +67,7 @@ public class ProtocolForm extends FormPanel {
     * 
     * @param listener the listener
     */
-   public void remoteSubmitListener(Listener<AppEvent<Map<String, String>>> listener) {
+   public void remoteSubmitListener(Listener<AppEvent> listener) {
       submitListeners.remove(listener);
    }
 
@@ -76,8 +76,8 @@ public class ProtocolForm extends FormPanel {
     * 
     * @param event the event
     */
-   protected void fireSubmitListener(AppEvent<Map<String, String>> event) {
-      for (Listener<AppEvent<Map<String, String>>> listener : submitListeners) {
+   protected void fireSubmitListener(AppEvent event) {
+      for (Listener<AppEvent> listener : submitListeners) {
          listener.handleEvent(event);
       }
    }
@@ -138,8 +138,8 @@ public class ProtocolForm extends FormPanel {
       resetButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            List<Field> list = f.getFields();
-            for (Field f : list) {
+            List<Field<?>> list = f.getFields();
+            for (Field<?> f : list) {
                f.reset();
             }
          }
@@ -150,12 +150,12 @@ public class ProtocolForm extends FormPanel {
 
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
-            List<Field> list = f.getFields();
+            List<Field<?>> list = f.getFields();
             Map<String, String> attrMap = new HashMap<String, String>();
-            for (Field f : list) {
+            for (Field<?> f : list) {
                attrMap.put(f.getName(), f.getValue().toString());
             }
-            AppEvent<Map<String, String>> appEvent = new AppEvent<Map<String, String>>(Events.Submit, attrMap);
+            AppEvent appEvent = new AppEvent(Events.Submit, attrMap);
 
             fireSubmitListener(appEvent);
          }

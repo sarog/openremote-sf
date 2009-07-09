@@ -3,8 +3,11 @@
 <module rename-to='modeler'>
   <!-- Inherit the core Web Toolkit stuff.                        -->
   <inherits name='com.google.gwt.user.User'/>
+  <inherits name="com.google.gwt.http.HTTP" />
+  
   <inherits name='com.extjs.gxt.ui.GXT'/>
   <inherits name='net.sf.gilead.Adapter4Gwt15'/>
+  
   <!-- Inherit the default GWT style sheet.  You can change       -->
   <!-- the theme of your GWT application by uncommenting          -->
   <!-- any one of the following lines.                            -->
