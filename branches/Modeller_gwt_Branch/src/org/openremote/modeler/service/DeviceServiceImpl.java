@@ -54,4 +54,9 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       return device;
    }
 
+   @Override
+   public void removeDevice(Device device) {
+      genericDAO.delete(device);
+   }
+
 }

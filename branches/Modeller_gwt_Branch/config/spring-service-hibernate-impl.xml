@@ -23,6 +23,7 @@
             <tx:method name="load*" propagation="REQUIRED"/>
             <tx:method name="find*" propagation="REQUIRED"/>
             <tx:method name="update*" propagation="REQUIRED"/>
+            <tx:method name="remove*" propagation="REQUIRED"/>
         </tx:attributes>
     </tx:advice>
 

@@ -85,12 +85,10 @@ public class DevicePanel extends ContentPanel {
                public void handleEvent(AppEvent be) {
                   Map<String, String> map = be.getData();
                   deviceService.saveDevice(map, new AsyncCallback<Device>(){
-
                      public void onFailure(Throwable caught) {
                         caught.printStackTrace();
                         MessageBox.info("Error", caught.getMessage(), null);
                      }
-
                      public void onSuccess(Device device) {
                         deviceForm.close();
                         DeviceTreeModel model = new DeviceTreeModel(device);
@@ -121,6 +119,20 @@ public class DevicePanel extends ContentPanel {
             ModelData selected = tree.getSelectionModel().getSelectedItem();
 //            DeviceTreeModel device = new DeviceTreeModel("sub");
 //            store.add(selected, device, false);
+            String type = selected.get("type");
+            if("device".equals(type)){
+               Device device = (Device)selected.get("data");
+               deviceService.removeDevice(device, new AsyncCallback<Void>(){
+                  public void onFailure(Throwable caught) {
+                     caught.printStackTrace();
+                     MessageBox.info("Error", caught.getMessage(), null);
+                  }
+                  public void onSuccess(Void arg0) {
+                     MessageBox.info("Info", "Remove success.", null);
+                  }
+                  
+               });
+            }
             store.remove(selected);
          }
          
