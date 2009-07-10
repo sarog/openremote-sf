@@ -54,4 +54,9 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
       return deviceService.saveDevice(map);
    }
 
+   @Override
+   public void removeDevice(Device device) {
+      deviceService.removeDevice(device);
+   }
+
 }

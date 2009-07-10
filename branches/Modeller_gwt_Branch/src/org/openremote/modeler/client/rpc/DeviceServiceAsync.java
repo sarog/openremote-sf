@@ -38,4 +38,12 @@ public interface DeviceServiceAsync {
     * @param callback the callback
     */
    public void saveDevice(Map<String,String> map, AsyncCallback<Device> callback);
+   
+   /**
+    * Removes the device.
+    * 
+    * @param device the device
+    * @param callback the callback
+    */
+   public void removeDevice(Device device, AsyncCallback<Void> callback);
 }

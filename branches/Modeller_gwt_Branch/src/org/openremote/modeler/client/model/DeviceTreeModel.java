@@ -33,6 +33,7 @@ public class DeviceTreeModel extends BaseTreeModel implements Serializable {
    
    public DeviceTreeModel(Device device) {
       set("name",device.getName());
+      set("type","device");
       set("data",device);
    }
    public String getName() {
