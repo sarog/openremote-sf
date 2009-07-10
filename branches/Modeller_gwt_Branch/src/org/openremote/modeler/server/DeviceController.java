@@ -50,8 +50,8 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
    /* (non-Javadoc)
     * @see org.openremote.modeler.client.rpc.DeviceService#saveDevice(java.util.Map)
     */
-   public Device saveDevice(Map<String, String> map) {
-      return deviceService.saveDevice(map);
+   public Device saveDevice(Device device) {
+      return deviceService.saveDevice(device);
    }
 
    public void removeDevice(Device device) {

@@ -20,8 +20,6 @@
  */
 package org.openremote.modeler.client.rpc;
 
-import java.util.Map;
-
 import org.openremote.modeler.domain.Device;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -41,7 +39,7 @@ public interface DeviceService extends RemoteService {
     * 
     * @return the device
     */
-   public Device saveDevice(Map<String, String> map);
+   public Device saveDevice(Device device);
    
    /**
     * Delete device.

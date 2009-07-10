@@ -77,23 +77,25 @@ public class DevicePanel extends ContentPanel {
 
       newDeviceItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
-            final DeviceForm deviceForm = new DeviceForm();
-            deviceForm.addSubmitListener(new Listener<AppEvent>() {
+            final DeviceWindow deviceWindow = new DeviceWindow();
+            deviceWindow.addSubmitListener(new Listener<AppEvent>() {
                public void handleEvent(AppEvent be) {
                   Map<String, String> map = be.getData();
-                  deviceService.saveDevice(map, new AsyncCallback<Device>() {
+                  Device device = new Device();
+                  device.setName(map.get("name"));
+                  device.setVendor(map.get("vendor"));
+                  device.setModel(map.get("model"));
+                  deviceService.saveDevice(device, new AsyncCallback<Device>() {
                      public void onFailure(Throwable caught) {
                         caught.printStackTrace();
                         MessageBox.info("Error", caught.getMessage(), null);
                      }
-
                      public void onSuccess(Device device) {
-                        deviceForm.close();
+                        deviceWindow.hide();
                         TreeDataModel<Device> model = new TreeDataModel<Device>(device,device.getName());
                         store.add(model, true);
                         MessageBox.info("Info", "Add device " + device.getName() + " success.", null);
                      }
-
                   });
                }
             });
@@ -108,6 +110,39 @@ public class DevicePanel extends ContentPanel {
       toolBar.add(newButton);
 
       Button edit = new Button("Edit");
+      edit.addSelectionListener(new SelectionListener<ButtonEvent>(){
+         public void componentSelected(ButtonEvent ce) {
+            final ModelData selected = tree.getSelectionModel().getSelectedItem();
+            if (selected.get(TreeDataModel.getDataProperty()) instanceof Device) {
+               TreeDataModel<Device> deviceNode = (TreeDataModel<Device>) selected;
+               final Device device = deviceNode.getData();
+               final DeviceWindow editDeviceWindow = new DeviceWindow(device);
+               editDeviceWindow.addSubmitListener(new Listener<AppEvent>(){
+                  public void handleEvent(AppEvent be) {
+                     Map<String, String> map = be.getData();
+                     device.setName(map.get("name"));
+                     device.setVendor(map.get("vendor"));
+                     device.setModel(map.get("model"));
+                     deviceService.saveDevice(device, new AsyncCallback<Device>() {
+                        public void onFailure(Throwable caught) {
+                           caught.printStackTrace();
+                           MessageBox.info("Error", caught.getMessage(), null);
+                        }
+                        public void onSuccess(Device device) {
+                           editDeviceWindow.hide();
+                           TreeDataModel<Device> model = new TreeDataModel<Device>(device,device.getName());
+                           store.remove(selected);
+                           store.add(model, true);
+                           MessageBox.info("Info", "Edit device " + device.getName() + " success.", null);
+                        }
+                     });
+                  }
+                  
+               });
+            }
+         }
+         
+      });
       toolBar.add(edit);
 
       Button delete = new Button("Delete");
@@ -121,8 +156,7 @@ public class DevicePanel extends ContentPanel {
 
             if (selected.get(TreeDataModel.getDataProperty()) instanceof Device) {
                TreeDataModel<Device> deviceNode = (TreeDataModel<Device>) selected;
-               Device device = null;
-               device = deviceNode.getData();
+               Device device = deviceNode.getData();
 
                deviceService.removeDevice(device, new AsyncCallback<Void>() {
                   public void onFailure(Throwable caught) {
@@ -130,7 +164,7 @@ public class DevicePanel extends ContentPanel {
                      MessageBox.info("Error", caught.getMessage(), null);
                   }
 
-                  public void onSuccess(Void arg0) {
+                  public void onSuccess(Void result) {
                      MessageBox.info("Info", "Remove success.", null);
                   }
 

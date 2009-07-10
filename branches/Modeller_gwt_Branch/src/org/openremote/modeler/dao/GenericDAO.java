@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
- * Copyright 2008, OpenRemote Inc.
+ * Copyright 2008-2009, OpenRemote Inc.
  * 
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -72,6 +72,14 @@ public class GenericDAO extends HibernateDaoSupport {
       return getHibernateTemplate().merge(o);
    }
 
+   /**
+    * Save or update.
+    * 
+    * @param o the o
+    */
+   public void saveOrUpdate(Object o){
+      getHibernateTemplate().saveOrUpdate(o);
+   }
    /**
     * Return the persistent instance of the given entity class with the given identifier, throwing an exception if not
     * found. This method is a thin wrapper around HibernateTemplate.load(Class, java.io.Serializable) for convenience.

@@ -36,6 +36,7 @@ public class TreeDataModel<T extends BusinessEntity> extends BaseTreeModel imple
       return getLabel();
    }
 
+   @SuppressWarnings("unchecked")
    public T getData() {
       return (T) get(DATA);
    }

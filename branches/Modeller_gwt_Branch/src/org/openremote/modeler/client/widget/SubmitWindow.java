@@ -25,12 +25,12 @@ import java.util.List;
 
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
+import com.extjs.gxt.ui.client.widget.Window;
 
 /**
  * The Class SubmitForm.
  */
-public class SubmitForm extends FormPanel {
+public class SubmitWindow extends Window {
    
    /** The submit listeners. */
    private List<Listener<AppEvent>> submitListeners = new ArrayList<Listener<AppEvent>>();
