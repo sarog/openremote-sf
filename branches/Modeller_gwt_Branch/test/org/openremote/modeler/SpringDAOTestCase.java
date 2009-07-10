@@ -5,7 +5,7 @@ import org.springframework.test.AbstractTransactionalDataSourceSpringContextTest
 public abstract class SpringDAOTestCase extends AbstractTransactionalDataSourceSpringContextTests {
    
    protected String[] getConfigLocations() {
-      return new String[] {"spring-context.xml","annomvc-servlet.xml"};
+      return new String[] {"applicationContext.xml","spring-service-hibernate-impl.xml","datasource-test.xml"};
    }
    
 }

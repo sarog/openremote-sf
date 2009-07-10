@@ -6,6 +6,7 @@ import org.testng.annotations.Test;
 
 public class SampleTest {
    
+   @SuppressWarnings("unused")
    @BeforeClass
    private void before(){
       System.out.println("Test begins:");
@@ -26,6 +27,7 @@ public class SampleTest {
    public void helloNatureTest() {
       System.out.println("Hello Nature");
    }
+   @SuppressWarnings("unused")
    @AfterClass
    private void after(){
       System.out.println("Test ends");

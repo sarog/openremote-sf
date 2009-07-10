@@ -20,17 +20,14 @@
  */
 package org.openremote.modeler.service;
 
-import java.util.Map;
-
 import org.openremote.modeler.client.rpc.DeviceService;
-import org.openremote.modeler.dao.GenericDAO;
 import org.openremote.modeler.domain.Device;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class DeviceServiceImpl.
  */
 public class DeviceServiceImpl extends BaseAbstractService<Device> implements DeviceService {
+   
 
    /* (non-Javadoc)
     * @see org.openremote.modeler.client.rpc.DeviceService#saveDevice(java.util.Map)
@@ -40,6 +37,9 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       return device;
    }
 
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.client.rpc.DeviceService#removeDevice(org.openremote.modeler.domain.Device)
+    */
    public void removeDevice(Device device) {
       genericDAO.delete(device);
    }

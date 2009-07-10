@@ -25,7 +25,6 @@ import org.openremote.modeler.domain.Device;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface DeviceService.
  */
@@ -35,7 +34,8 @@ public interface DeviceService extends RemoteService {
    /**
     * Save device.
     * 
-    * @param map the map
+    * @param device
+    *           the device
     * 
     * @return the device
     */
@@ -44,7 +44,20 @@ public interface DeviceService extends RemoteService {
    /**
     * Delete device.
     * 
-    * @param device the device
+    * @param device
+    *           the device
     */
    public void removeDevice(Device device);
+   
+   /**
+    * Load by id.
+    * 
+    * @param id
+    *           the id
+    * 
+    * @return the device
+    */
+   public Device loadById(long id);
+   
+   
 }

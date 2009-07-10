@@ -38,18 +38,18 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<property name="web-inf.dir" value="war/WEB-INF" />
 	<property name="test.dir" value="test"/>
 
-	<!-- Some variables for HSQLDB -->
-	<property name="hjar" value="${lib.dir}/test/hsqldb.jar" />
-	<property name="hclass" value="org.hsqldb.Server" />
-    <property name="hfile" value="-database.0 dbdata/modeler_test" />
-    <property name="halias" value="modeler" />
-    <property name="hport" value="9001" />
-
 	<!-- dirs for test build and output -->
 	<property name="test.build.dir" value="test_build"/>
 	<property name="test.build.classes.dir" value="${test.build.dir}/classes"/>
 	<property name="test.output" value="${test.build.dir}/test-output"/>
 	<property name="test.report" value="${test.build.dir}/test-report"/>
+
+	<!-- Some variables for HSQLDB Engine Server Mode, NOT In-Memory Mode -->
+	<property name="hjar" value="${lib.dir}/test/hsqldb.jar" />
+	<property name="hclass" value="org.hsqldb.Server" />
+	<property name="hfile" value="-database.0 hsqldb/modeler" />
+	<property name="halias" value="modeler" />
+	<property name="hport" value="9001" />
 
 	<!-- ==================================================================== -->
 	<!-- project class path                                                   -->
@@ -192,12 +192,12 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 			<xmlfileset dir="${test.dir}" includes="testng.xml"/>
 		</testng>
 	</target>
-	
+
 	<!-- ==================================================================== -->
 	<!-- HSQLDB script                                                        -->
 	<!-- ==================================================================== -->
 
-	<!-- Start up HSQLDB instance -->
+	<!-- Start up HSQLDB instance in Engine Server Mode -->
 	<target name="dbup" description="Start the Hsqldb database server">
 		<java fork="true" classname="${hclass}" classpath="${hjar}" 
 		        args="${hfile} -dbname.0 ${halias} -port ${hport}" />
