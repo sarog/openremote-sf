@@ -20,13 +20,9 @@
  */
 package org.openremote.modeler.server;
 
-import java.util.Map;
-
 import org.openremote.modeler.client.rpc.DeviceService;
 import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.service.DeviceServiceImpl;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class DeviceController.
  */
@@ -41,7 +37,8 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
    /**
     * Sets the device service .
     * 
-    * @param deviceService the new device service 
+    * @param deviceService
+    *           the new device service
     */
    public void setDeviceService(DeviceService deviceService) {
       this.deviceService = deviceService;
@@ -54,8 +51,18 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
       return deviceService.saveDevice(device);
    }
 
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.client.rpc.DeviceService#removeDevice(org.openremote.modeler.domain.Device)
+    */
    public void removeDevice(Device device) {
       deviceService.removeDevice(device);
+   }
+
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.client.rpc.DeviceService#loadById(long)
+    */
+   public Device loadById(long id) {
+      return deviceService.loadById(id);
    }
 
 }

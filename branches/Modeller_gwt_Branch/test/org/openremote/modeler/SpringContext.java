@@ -33,7 +33,7 @@ public class SpringContext {
 
    private static SpringContext m_instance;
 
-   private static String[] contextFiles = new String[] { "spring-context.xml","annomvc-servlet.xml" };
+   private static String[] contextFiles = new String[] { "applicationContext.xml","spring-service-hibernate-impl.xml","datasource-test.xml","annomvc-servlet.xml" };
 
    private ApplicationContext ctx;
 
