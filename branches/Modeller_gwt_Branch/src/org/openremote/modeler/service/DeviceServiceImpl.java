@@ -31,26 +31,12 @@ import org.openremote.modeler.domain.Device;
  * The Class DeviceServiceImpl.
  */
 public class DeviceServiceImpl extends BaseAbstractService<Device> implements DeviceService {
-   
-   /** The generic dao. */
-   private GenericDAO genericDAO;
-   
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.service.BaseAbstractService#setGenericDAO(org.openremote.modeler.dao.GenericDAO)
-    */
-   public void setGenericDAO(GenericDAO genericDAO) {
-      this.genericDAO = genericDAO;
-   }
-   
+
    /* (non-Javadoc)
     * @see org.openremote.modeler.client.rpc.DeviceService#saveDevice(java.util.Map)
     */
-   public Device saveDevice(Map<String, String> map) {
-      Device device = new Device();
-      device.setName(map.get("name"));
-      device.setVendor(map.get("vendor"));
-      device.setModel(map.get("model"));
-      genericDAO.save(device);
+   public Device saveDevice(Device device) {
+      genericDAO.saveOrUpdate(device);
       return device;
    }
 
