@@ -32,14 +32,12 @@ public class BuildingModelerView extends TabItem implements View {
    
    private void createWest(){
       ContentPanel west = new ContentPanel();
-//      west.add(new DeviceWindow());
       BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST,200);
       westData.setSplit(true);
       westData.setCollapsible(true);
       west.setLayout(new AccordionLayout());
       west.setHeading("Explorer");
-//      west.add(new DevicePanel());
-//      west.add(new DevicePanel());
+      west.add(new DevicePanel());
   
       westData.setMargins(new Margins(2));
       add(west,westData);
