@@ -45,7 +45,7 @@
 	</bean>
 
 	<bean id="genericDAO" class="org.openremote.modeler.dao.GenericDAO"></bean>
-
+   
 	<bean id="proxyStore" class="net.sf.gilead.core.store.stateless.StatelessProxyStore" />
 
 	<bean id="hibernateUtil" class="net.sf.gilead.core.hibernate.HibernateUtil">
