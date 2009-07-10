@@ -78,7 +78,7 @@ public class NestedJsonLoadResultReader<D> extends JsonLoadResultReader<D> {
                      model.set(name, d);
                   }
                } else {
-                  model.set(name, value.isNumber().doubleValue());
+                  model.set(name, value.isNumber().toString());
                }
             } else if (value.isObject() != null) {
                // nothing

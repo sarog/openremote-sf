@@ -15,13 +15,21 @@
  */
 package org.openremote.modeler.client.widget;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.model.TreeDataModel;
+import org.openremote.modeler.client.rpc.DeviceCommandService;
+import org.openremote.modeler.client.rpc.DeviceCommandServiceAsync;
 import org.openremote.modeler.client.rpc.DeviceService;
 import org.openremote.modeler.client.rpc.DeviceServiceAsync;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Protocol;
+import org.openremote.modeler.domain.ProtocolAttr;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -73,7 +81,6 @@ public class DevicePanel extends ContentPanel {
       Menu newMenu = new Menu();
       MenuItem newDeviceItem = new MenuItem("New device");
       MenuItem newCommandItem = new MenuItem("New command");
-      MenuItem importCommandItem = new MenuItem("Import commands");
 
       newDeviceItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
@@ -92,7 +99,7 @@ public class DevicePanel extends ContentPanel {
                      }
                      public void onSuccess(Device device) {
                         deviceWindow.hide();
-                        TreeDataModel<Device> model = new TreeDataModel<Device>(device,device.getName());
+                        TreeDataModel<Device> model = new TreeDataModel<Device>(device, device.getName());
                         store.add(model, true);
                         MessageBox.info("Info", "Add device " + device.getName() + " success.", null);
                      }
@@ -104,7 +111,7 @@ public class DevicePanel extends ContentPanel {
 
       newMenu.add(newDeviceItem);
       newMenu.add(newCommandItem);
-      newMenu.add(importCommandItem);
+      newMenu.add(createImportMenu());
 
       newButton.setMenu(newMenu);
       toolBar.add(newButton);
@@ -195,5 +202,92 @@ public class DevicePanel extends ContentPanel {
       treeContainer.add(tree);
 
       add(treeContainer);
+   }
+
+   private MenuItem createImportMenu() {
+      MenuItem importCommandItem = new MenuItem("Import commands");
+      importCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+
+         @Override
+         public void componentSelected(MenuEvent ce) {
+            if (tree.getSelectionModel().getSelectedItem() != null) {
+               final SelectIRWindow selectIRWindow = new SelectIRWindow();
+               add(selectIRWindow);
+               selectIRWindow.show();
+               selectIRWindow.addSubmitListener(new Listener<AppEvent>() {
+                  public void handleEvent(AppEvent be) {
+                     List<ModelData> datas = be.getData();
+                     importIRCommand(datas,selectIRWindow);
+                  }
+
+               });
+            } else {
+               MessageBox.alert("Notice", "You must select a device first.", null);
+            }
+
+         }
+
+      });
+      return importCommandItem;
+   }
+
+   private void importIRCommand(List<ModelData> datas,final SelectIRWindow selectIRWindow) {
+      if (tree.getSelectionModel().getSelectedItem() != null) {
+         if (tree.getSelectionModel().getSelectedItem().get(TreeDataModel.getDataProperty()) instanceof Device) {
+            final TreeDataModel<Device> deviceNode = (TreeDataModel<Device>) tree.getSelectionModel().getSelectedItem();
+            Device device = deviceNode.getData();
+            List<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
+            for (ModelData m : datas) {
+               Protocol protocol = new Protocol();
+               protocol.setType(Constants.INFRARED_TYPE);
+
+               ProtocolAttr nameAttr = new ProtocolAttr();
+               nameAttr.setName("name");
+               nameAttr.setValue(m.get("remoteName").toString());
+               nameAttr.setProtocol(protocol);
+               protocol.getAttributes().add(nameAttr);
+
+               ProtocolAttr commandAttr = new ProtocolAttr();
+               commandAttr.setName("command");
+               commandAttr.setValue(m.get("name").toString());
+               commandAttr.setProtocol(protocol);
+               protocol.getAttributes().add(commandAttr);
+
+               DeviceCommand deviceCommand = new DeviceCommand();
+               deviceCommand.setDevice(device);
+               deviceCommand.setProtocol(protocol);
+               deviceCommand.setName(m.get("name").toString());
+
+               protocol.setDeviceCommand(deviceCommand);
+
+               device.getDeviceCommands().add(deviceCommand);
+
+               deviceCommands.add(deviceCommand);
+            }
+
+            DeviceCommandServiceAsync deviceCommandServiceAsync = (DeviceCommandServiceAsync) GWT
+                  .create(DeviceCommandService.class);
+            deviceCommandServiceAsync.saveAll(deviceCommands, new AsyncCallback<List<DeviceCommand>>() {
+
+               public void onFailure(Throwable e) {
+                  MessageBox.alert("Error", "Import IR Command occur " + e.getMessage(), null);
+               }
+
+               public void onSuccess(List<DeviceCommand> deviceCommands) {
+                  for (DeviceCommand command : deviceCommands) {
+                     TreeDataModel<DeviceCommand> deviceCommandNode = new TreeDataModel<DeviceCommand>(command, command
+                           .getName());
+                     tree.getStore().add(deviceNode, deviceCommandNode, false);
+                     
+                  }
+                  tree.setExpanded(deviceNode, true);
+                  selectIRWindow.hide();
+
+               }
+
+            });
+
+         }
+      }
    }
 }

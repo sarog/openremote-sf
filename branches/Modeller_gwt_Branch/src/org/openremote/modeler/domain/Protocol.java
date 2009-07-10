@@ -20,6 +20,7 @@
  */
 package org.openremote.modeler.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -41,7 +42,7 @@ public class Protocol extends BusinessEntity {
    private String type;
    
    /** The attributes. */
-   private List<ProtocolAttr> attributes;
+   private List<ProtocolAttr> attributes = new ArrayList<ProtocolAttr>();
    
    /** The device event. */
    private DeviceCommand deviceCommand;
@@ -51,7 +52,7 @@ public class Protocol extends BusinessEntity {
     * 
     * @return the attributes
     */
-   @OneToMany(mappedBy = "protocol", cascade = CascadeType.REMOVE)
+   @OneToMany(mappedBy = "protocol", cascade = CascadeType.ALL)
    public List<ProtocolAttr> getAttributes() {
       return attributes;
    }

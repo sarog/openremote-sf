@@ -20,6 +20,7 @@
  */
 package org.openremote.modeler.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -71,7 +72,7 @@ public class DeviceCommand extends BusinessEntity {
     * 
     * @return the device
     */
-   @ManyToOne
+   @ManyToOne(cascade = {CascadeType.REFRESH,CascadeType.MERGE})
    public Device getDevice() {
       return device;
    }
@@ -91,7 +92,7 @@ public class DeviceCommand extends BusinessEntity {
     * 
     * @return the protocol
     */
-   @OneToOne
+   @OneToOne(cascade = CascadeType.ALL)
    @JoinColumn(nullable = false)
    public Protocol getProtocol() {
       return protocol;
