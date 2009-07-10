@@ -7,13 +7,13 @@ import com.extjs.gxt.ui.client.data.ListLoadResult;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelType;
 import com.extjs.gxt.ui.client.data.ScriptTagProxy;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.store.StoreEvent;
 import com.extjs.gxt.ui.client.store.StoreListener;
-import com.extjs.gxt.ui.client.widget.Layout;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 
 public class RemoteJsonComboBox<D extends ModelData> extends ComboBox<D> {
@@ -26,18 +26,6 @@ public class RemoteJsonComboBox<D extends ModelData> extends ComboBox<D> {
       this.remoteJsonURL = remoteJsonURL;
       this.modelType = modelType;
       setup();
-   }
-
-   private ListStore<D> getListStoreWithUrl(String url) {
-      ScriptTagProxy<ListLoadResult<D>> scriptTagProxy = new ScriptTagProxy<ListLoadResult<D>>(url);
-      NestedJsonLoadResultReader<ListLoadResult<D>> reader = new NestedJsonLoadResultReader<ListLoadResult<D>>(
-            modelType);
-      final BaseListLoader<ListLoadResult<D>> loader = new BaseListLoader<ListLoadResult<D>>(scriptTagProxy, reader);
-
-      ListStore<D> store = new ListStore<D>(loader);
-      
-      loader.load();
-      return store;
    }
 
    public void reloadListStoreWithUrl(String url) {
@@ -61,15 +49,48 @@ public class RemoteJsonComboBox<D extends ModelData> extends ComboBox<D> {
    }
 
    private void setup() {
+      ScriptTagProxy<ListLoadResult<D>> scriptTagProxy = new ScriptTagProxy<ListLoadResult<D>>(remoteJsonURL);
+      NestedJsonLoadResultReader<ListLoadResult<D>> reader = new NestedJsonLoadResultReader<ListLoadResult<D>>(
+            modelType);
+      final BaseListLoader<ListLoadResult<D>> loader = new BaseListLoader<ListLoadResult<D>>(scriptTagProxy, reader);
+
+      ListStore<D> store = new ListStore<D>(loader);
+      loader.load();
+      setStore(store);
+
       setTypeAhead(true);
       setTriggerAction(TriggerAction.ALL);
       setMinChars(1);
-      setStore(getListStoreWithUrl(remoteJsonURL));
+
+      this.onLoad();
       setLoadingText("loading...");
+
+      addListener(Events.BeforeQuery, new Listener<FieldEvent>() {
+
+         public void handleEvent(FieldEvent be) {
+            be.setCancelled(true);  
+            RemoteJsonComboBox<D> box = be.getComponent();
+            System.out.println(box.getRawValue());
+
+            if (box.getRawValue() != null && box.getRawValue().length() > 0) {
+               box.getStore().filter(getDisplayField(), box.getRawValue());
+            } else {
+               box.getStore().clearFilters();
+            }
+            box.expand();
+
+         }
+
+      });
    }
 
-   public void reloadDataWithUrl(String url) {
-      setStore(getListStoreWithUrl(url));
-      this.onLoad();
+   @Override
+   protected void onTriggerClick(ComponentEvent ce) {
+      final RemoteJsonComboBox<D> box = this;
+      box.setRawValue("");
+      super.onTriggerClick(ce);
+      
    }
+   
+
 }

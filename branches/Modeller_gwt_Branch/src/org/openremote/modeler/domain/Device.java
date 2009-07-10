@@ -20,6 +20,7 @@
  */
 package org.openremote.modeler.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -47,7 +48,7 @@ public class Device extends BusinessEntity {
    private String model;
    
    /** The device commands. */
-   private List<DeviceCommand> deviceCommands;
+   private List<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
    
    /** The device attrs. */
    private List<DeviceAttr> deviceAttrs;

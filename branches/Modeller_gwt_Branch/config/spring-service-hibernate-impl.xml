@@ -40,4 +40,5 @@
 	class="org.openremote.modeler.service.BaseAbstractService" />
 	
 	<bean id="deviceService" class="org.openremote.modeler.service.DeviceServiceImpl" parent="abstractService"></bean>
+	<bean id="deviceCommandService" class="org.openremote.modeler.service.DeviceCommandServiceImpl" parent="abstractService"></bean>
 </beans>

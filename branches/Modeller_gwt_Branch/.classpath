@@ -43,5 +43,8 @@
 	<classpathentry kind="lib" path="lib/core/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/core/spring-2.0.8.jar"/>
 	<classpathentry kind="lib" path="lib/core/spring-security-core-2.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/test/spring-test-2.5.5.jar"/>
+	<classpathentry kind="lib" path="lib/test/hsqldb.jar"/>
+	<classpathentry kind="lib" path="lib/test/testng-5.9-jdk15.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

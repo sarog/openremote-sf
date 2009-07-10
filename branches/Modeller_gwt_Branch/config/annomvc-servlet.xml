@@ -24,6 +24,7 @@
                 <prop key="/modeler/protocol.smvc">protocolService</prop>
                 <prop key="/modeler/auth.smvc">authorityService</prop>
                 <prop key="/modeler/device.smvc">deviceController</prop>
+                <prop key="/modeler/deviceCommand.smvc">deviceCommandController</prop>
             </props>
         </property>
     </bean>
@@ -31,4 +32,6 @@
     <bean id="protocolService" class="org.openremote.modeler.server.ProtocolServiceImpl"></bean>
     <bean id="authorityService" class="org.openremote.modeler.server.AuthorityServiceImpl"></bean>
     <bean id="deviceController" class="org.openremote.modeler.server.DeviceController"></bean>
+    <bean id="deviceCommandController" class="org.openremote.modeler.server.DeviceCommandController"></bean>
+    
 </beans>

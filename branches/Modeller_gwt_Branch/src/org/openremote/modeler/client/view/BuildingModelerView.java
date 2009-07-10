@@ -47,9 +47,7 @@ public class BuildingModelerView extends TabItem implements View {
       ContentPanel center = new ContentPanel();
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setMargins(new Margins(0,2,0,2));
-      SelectIRWindow selectIRWindow = new SelectIRWindow();
-      center.add(selectIRWindow);
-      selectIRWindow.show();
+
       add(center,centerData);
    }
 }
