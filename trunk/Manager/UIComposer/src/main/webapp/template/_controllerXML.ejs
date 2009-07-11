@@ -42,7 +42,7 @@
     <httpEvents>
 		 <% for (var index in events.httpEvents.httpEvent) {%>
 			<% var httpEvent = events.httpEvents.httpEvent[index]; %>
-	      	<httpEvent id="<%=httpEvent.id %>" label="<%=httpEvent.label %>" url="<%=httpEvent.url %>"/>
+	      	<httpGetEvent id="<%=httpEvent.id %>" label="<%=httpEvent.label %>" url="<%=httpEvent.url %>"/>
 		 <% } %>
     </httpEvents>
 
