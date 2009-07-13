@@ -27,6 +27,7 @@ import org.openremote.modeler.domain.Device;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface DeviceServiceAsync.
  */
@@ -35,6 +36,7 @@ public interface DeviceServiceAsync {
    /**
     * Save device.
     * 
+    * @param device the device
     * @param callback the callback
     */
    public void saveDevice(Device device, AsyncCallback<Device> callback);
@@ -46,4 +48,12 @@ public interface DeviceServiceAsync {
     * @param callback the callback
     */
    public void removeDevice(Device device, AsyncCallback<Void> callback);
+   
+   /**
+    * Load by id.
+    * 
+    * @param id the id
+    * @param callback the callback
+    */
+   public void loadById(long id, AsyncCallback<Device> callback);
 }
