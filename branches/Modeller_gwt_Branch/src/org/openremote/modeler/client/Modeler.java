@@ -35,7 +35,6 @@ public class Modeler implements EntryPoint {
    private void init() {
       ApplicationView appView = new ApplicationView();
       appView.initialize();
-      appView.show();
    }
 
    private void createCenter() {

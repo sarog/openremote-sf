@@ -20,6 +20,8 @@
  */
 package org.openremote.modeler.client.rpc;
 
+import java.util.List;
+
 import org.openremote.modeler.domain.Device;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -59,5 +61,5 @@ public interface DeviceService extends RemoteService {
     */
    public Device loadById(long id);
    
-   
+   public List<Device> loadAll();
 }
