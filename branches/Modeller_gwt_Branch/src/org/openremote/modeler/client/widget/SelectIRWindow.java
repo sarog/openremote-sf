@@ -42,6 +42,7 @@ import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.util.Padding;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
@@ -57,7 +58,7 @@ import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
 /**
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
-public class SelectIRWindow extends Window{
+public class SelectIRWindow extends Window {
 
    /** The submit listeners. */
    private List<Listener<AppEvent>> submitListeners = new ArrayList<Listener<AppEvent>>();
@@ -65,6 +66,8 @@ public class SelectIRWindow extends Window{
    private static final String LOADING = "Loading... ";
    LayoutContainer selectContainer = new LayoutContainer();
    LayoutContainer commandContainer = new LayoutContainer();
+   
+   Button importButton = null;
 
    RemoteJsonComboBox<ModelData> vendorList = null;
    RemoteJsonComboBox<ModelData> modelList = null;
@@ -91,7 +94,6 @@ public class SelectIRWindow extends Window{
       HBoxLayout selectContainerLayout = new HBoxLayout();
       selectContainerLayout.setPadding(new Padding(5));
       selectContainerLayout.setHBoxLayoutAlign(HBoxLayoutAlign.TOP);
-      selectContainerLayout.setPack(BoxLayoutPack.START);
       selectContainer.setLayout(selectContainerLayout);
 
       add(selectContainer, new RowData(1, -1));
@@ -102,20 +104,25 @@ public class SelectIRWindow extends Window{
       LayoutContainer buttonLayout = new LayoutContainer();
       buttonLayout.setLayout(new CenterLayout());
 
-      Button button = new Button("import");
-      button.setScale(ButtonScale.MEDIUM);
-      button.setWidth(80);
-      button.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      importButton = new Button("import");
+      importButton.setScale(ButtonScale.MEDIUM);
+      importButton.setWidth(80);
+      importButton.setEnabled(false);
+      importButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
          @Override
          public void componentSelected(ButtonEvent ce) {
-           
-            AppEvent event = new AppEvent(Events.Submit);
-            event.setData(codeGrid.getStore().getModels());
-            fireSubmitListener(event);
+            if (codeGrid != null) {
+               AppEvent event = new AppEvent(Events.Submit);
+               event.setData(codeGrid.getStore().getModels());
+               fireSubmitListener(event);
+            } else {
+               MessageBox.alert("Warn", "Please select vendor, model first.", null);
+            }
+
          }
       });
-      buttonLayout.add(button);
+      buttonLayout.add(importButton);
       add(buttonLayout, new RowData(-1, -1, new Margins(10)));
    }
 
@@ -258,6 +265,7 @@ public class SelectIRWindow extends Window{
    }
 
    private void showCodesGrid(String vendor, String model, long sectionId) {
+      importButton.setEnabled(true);
       if (codeType == null) {
          codeType = new ModelType();
          codeType.setRoot("codes.code");
@@ -331,7 +339,7 @@ public class SelectIRWindow extends Window{
       codeGrid.reconfigure(listStore, cm);
       loader.load();
    }
-     
+
    public void addSubmitListener(Listener<AppEvent> listener) {
       submitListeners.add(listener);
 

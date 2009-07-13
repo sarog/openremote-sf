@@ -1,3 +1,18 @@
+/*
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
+ * http://www.fsf.org.
+ */
 package org.openremote.modeler.client.utils;
 
 import java.util.ArrayList;
@@ -14,14 +29,31 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 
+/**
+ * This class is used for fix gxt read xml bug (auto convert number to double) and limitation (json root not support
+ * nested structure).
+ */
 public class NestedJsonLoadResultReader<D> extends JsonLoadResultReader<D> {
+
+   /** The my model type. */
    private ModelType myModelType;
 
+   /**
+    * Instantiates a new nested json load result reader.
+    * 
+    * @param modelType
+    *           the model type
+    */
    public NestedJsonLoadResultReader(ModelType modelType) {
       super(modelType);
       myModelType = modelType;
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see com.extjs.gxt.ui.client.data.JsonReader#read(java.lang.Object, java.lang.Object)
+    */
    @SuppressWarnings("unchecked")
    @Override
    public D read(Object loadConfig, Object data) {
@@ -31,6 +63,8 @@ public class NestedJsonLoadResultReader<D> extends JsonLoadResultReader<D> {
       } else {
          jsonRoot = (JSONObject) JSONParser.parse((String) data);
       }
+      
+      // You can specify root using dot separate. eg, vendors.vendor 
       String[] roots = myModelType.getRoot().split("\\.");
       JSONValue rootValue = null;
       JSONArray root = null;
@@ -44,10 +78,10 @@ public class NestedJsonLoadResultReader<D> extends JsonLoadResultReader<D> {
                root = (JSONArray) rootValue;
             }
          } else {
-            jsonRoot = (JSONObject)jsonRoot.get(roots[i]);
+            jsonRoot = (JSONObject) jsonRoot.get(roots[i]);
          }
       }
-      
+
       int size = root.size();
       ArrayList<ModelData> models = new ArrayList<ModelData>();
       for (int i = 0; i < size; i++) {
@@ -78,6 +112,7 @@ public class NestedJsonLoadResultReader<D> extends JsonLoadResultReader<D> {
                      model.set(name, d);
                   }
                } else {
+                  // convert no type number to string.
                   model.set(name, value.isNumber().toString());
                }
             } else if (value.isObject() != null) {
