@@ -33,6 +33,7 @@ import org.openremote.modeler.domain.ProtocolAttr;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
@@ -50,6 +51,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
 /**
  * The Class DevicePanel.
@@ -60,12 +62,14 @@ public class DevicePanel extends ContentPanel {
    private final DeviceServiceAsync deviceService = (DeviceServiceAsync) GWT.create(DeviceService.class);
    private TreeStore<ModelData> store;
    private TreePanel<ModelData> tree;
+   private Icons icon = GWT.create(Icons.class);
 
    /**
     * Instantiates a new device panel.
     */
    public DevicePanel() {
       setHeading("Device");
+      setIcon(icon.device());
       setLayout(new FitLayout());
       createMenu();
       createTreeContainer();
@@ -78,10 +82,12 @@ public class DevicePanel extends ContentPanel {
    private void createMenu() {
       ToolBar toolBar = new ToolBar();
       Button newButton = new Button("New");
+      newButton.setIcon(icon.add());
       Menu newMenu = new Menu();
-      MenuItem newDeviceItem = new MenuItem("New device");
-      MenuItem newCommandItem = new MenuItem("New command");
-
+      MenuItem newDeviceItem = new MenuItem("New Device");
+      newDeviceItem.setIcon(icon.addDevice());
+      MenuItem newCommandItem = new MenuItem("New Command");
+      newCommandItem.setIcon(icon.addCmd());
       newDeviceItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             final DeviceWindow deviceWindow = new DeviceWindow();
@@ -101,7 +107,7 @@ public class DevicePanel extends ContentPanel {
                         deviceWindow.hide();
                         TreeDataModel<Device> model = new TreeDataModel<Device>(device, device.getName());
                         store.add(model, true);
-                        MessageBox.info("Info", "Add device " + device.getName() + " success.", null);
+//                        MessageBox.info("Info", "Add device " + device.getName() + " success.", null);
                      }
                   });
                }
@@ -117,10 +123,11 @@ public class DevicePanel extends ContentPanel {
       toolBar.add(newButton);
 
       Button edit = new Button("Edit");
+      edit.setIcon(icon.edit());
       edit.addSelectionListener(new SelectionListener<ButtonEvent>(){
          public void componentSelected(ButtonEvent ce) {
             final ModelData selected = tree.getSelectionModel().getSelectedItem();
-            if (selected.get(TreeDataModel.getDataProperty()) instanceof Device) {
+            if (selected != null && selected.get(TreeDataModel.getDataProperty()) instanceof Device) {
                TreeDataModel<Device> deviceNode = (TreeDataModel<Device>) selected;
                final Device device = deviceNode.getData();
                final DeviceWindow editDeviceWindow = new DeviceWindow(device);
@@ -161,12 +168,13 @@ public class DevicePanel extends ContentPanel {
       toolBar.add(edit);
 
       Button delete = new Button("Delete");
+      delete.setIcon(icon.delete());
       toolBar.add(delete);
       delete.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
          public void componentSelected(ButtonEvent ce) {
             ModelData selected = tree.getSelectionModel().getSelectedItem();
-            if (selected.get(TreeDataModel.getDataProperty()) instanceof Device) {
+            if (selected != null && selected.get(TreeDataModel.getDataProperty()) instanceof Device) {
                TreeDataModel<Device> deviceNode = (TreeDataModel<Device>) selected;
                Device device = deviceNode.getData();
 
@@ -222,8 +230,21 @@ public class DevicePanel extends ContentPanel {
          }
       });
       tree.setDisplayProperty(TreeDataModel.getDisplayProperty());
-      Icons icon = GWT.create(Icons.class);
-      tree.getStyle().setLeafIcon(icon.folder());
+      tree.setIconProvider(new ModelIconProvider<ModelData>(){
+
+         public AbstractImagePrototype getIcon(ModelData model) {
+            TreeDataModel thisModel = (TreeDataModel)model;
+            
+            if(thisModel.getData() instanceof DeviceCommand){
+               return icon.deviceCmd();
+            }else if (thisModel.getData() instanceof Device){
+               return icon.device();
+            }else {
+               return icon.folder();
+            }
+         }
+         
+      });
       treeContainer.add(tree);
 
       add(treeContainer);
@@ -231,6 +252,7 @@ public class DevicePanel extends ContentPanel {
 
    private MenuItem createImportMenu() {
       MenuItem importCommandItem = new MenuItem("Import commands");
+      importCommandItem.setIcon(icon.importFromDB());
       importCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
 
          @Override

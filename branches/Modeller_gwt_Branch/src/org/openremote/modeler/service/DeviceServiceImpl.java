@@ -22,6 +22,7 @@ package org.openremote.modeler.service;
 
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.openremote.modeler.client.rpc.DeviceService;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
@@ -39,7 +40,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    public Device saveDevice(Device device) {
       device.setAccount(getAccount());
       genericDAO.saveOrUpdate(device);
-      device.getDeviceCommands();
+      Hibernate.initialize(device.getDeviceCommands());
       return device;
    }
 
@@ -55,7 +56,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       List<Device> devices = getAccount().getDevices();
       if(devices!=null){
          for (Device device : devices) {
-            device.getDeviceCommands();
+            Hibernate.initialize(device.getDeviceCommands());
          }
       }
       return devices;
