@@ -94,7 +94,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		<echo message="--------------------------------------------------------------------" />
 		<echo message="" />
 		<mkdir dir="${web-inf.dir}/classes" />
-		<javac srcdir="src" includes="**" encoding="utf-8" destdir="${web-inf.dir}/classes" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source">
+		<javac srcdir="src" excludes="org/openremote/modeler/client/**" includes="**" encoding="utf-8" destdir="${web-inf.dir}/classes" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source">
 			<classpath refid="project.class.path"/>
 		</javac>
 		<copy todir="${web-inf.dir}/classes">
