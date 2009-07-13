@@ -3,15 +3,19 @@ package org.openremote.modeler.client.view;
 import java.util.List;
 
 import org.openremote.modeler.auth.Authority;
-import org.openremote.modeler.client.widget.SelectIRWindow;
+import org.openremote.modeler.client.rpc.AuthorityService;
+import org.openremote.modeler.client.rpc.AuthorityServiceAsync;
 
 import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.Viewport;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -23,29 +27,30 @@ public class ApplicationView implements View {
    public void initialize() {
       viewport = new Viewport();
       viewport.setLayout(new BorderLayout());
-//      final AuthorityServiceAsync auth = (AuthorityServiceAsync)GWT.create(AuthorityService.class);
-//      auth.getAuthoritication(new AsyncCallback<Authority>(){
-//         public void onFailure(Throwable caught) {
-//            MessageBox.info("Info", caught.getMessage(), null);
-//            caught.printStackTrace();
-//         }
-//         public void onSuccess(Authority authority) {
-//            if(authority!=null){
-//               createNorth();
-//               createCenter(authority);
-//               createSouth();
-//            }else{
-//               MessageBox.info("Info", "you haven't login", null);
-//            }
-//         }
-//         
-//      });
-      createNorth();
-      createCenter();
-      createSouth();
+      final AuthorityServiceAsync auth = (AuthorityServiceAsync)GWT.create(AuthorityService.class);
+      auth.getAuthoritication(new AsyncCallback<Authority>(){
+         public void onFailure(Throwable caught) {
+            MessageBox.info("Info", caught.getMessage(), null);
+            caught.printStackTrace();
+         }
+         public void onSuccess(Authority authority) {
+            if(authority!=null){
+               createNorth();
+               createCenter(authority);
+               createSouth();
+               show();
+            }else{
+               MessageBox.info("Info", "you haven't login", null);
+            }
+         }
+         
+      });
+//      createNorth();
+//      createCenter();
+//      createSouth();
    }
    
-   public void show(){
+   private void show(){
       RootPanel.get().add(viewport);
    }
    

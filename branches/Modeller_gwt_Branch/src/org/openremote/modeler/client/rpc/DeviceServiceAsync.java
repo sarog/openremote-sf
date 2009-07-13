@@ -20,7 +20,7 @@
  */
 package org.openremote.modeler.client.rpc;
 
-import java.util.Map;
+import java.util.List;
 
 import org.openremote.modeler.domain.Device;
 
@@ -56,4 +56,12 @@ public interface DeviceServiceAsync {
     * @param callback the callback
     */
    public void loadById(long id, AsyncCallback<Device> callback);
+   
+   /**
+    * Load all.
+    * 
+    * @param callback the callback
+    */
+   public void loadAll(AsyncCallback<List<Device>> callback);
+   
 }

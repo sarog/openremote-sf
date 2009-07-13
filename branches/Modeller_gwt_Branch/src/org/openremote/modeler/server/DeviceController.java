@@ -20,6 +20,8 @@
  */
 package org.openremote.modeler.server;
 
+import java.util.List;
+
 import org.openremote.modeler.client.rpc.DeviceService;
 import org.openremote.modeler.domain.Device;
 
@@ -63,6 +65,10 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
     */
    public Device loadById(long id) {
       return deviceService.loadById(id);
+   }
+
+   public List<Device> loadAll() {
+      return deviceService.loadAll();
    }
 
 }
