@@ -5,7 +5,8 @@
           class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <props>
-                <prop key="cmd.htm">buttonCommandController</prop>                
+                <prop key="cmd.htm">buttonCommandController</prop>
+                <prop key="config.htm">configManageController</prop>
             </props>
         </property>
     </bean>
@@ -16,19 +17,15 @@
             <value>classpath:config.properties</value>
         </property>
     </bean>
-    
-    <!--
 
     <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
         <property name="exceptionMappings">
             <props>
-
+                <prop key="org.openremote.controller.exception.ButtonCommandException">exception/errorCode</prop>
             </props>
         </property>
-        <property name="defaultErrorView" value="exception/defaultErrorPage"/>
+        <property name="defaultErrorView" value="exception/defaultError"/>
     </bean>
-
-    -->
 
     <bean id="viewResolver"
           class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -49,10 +46,21 @@
         <property name="paramName" value="method"/>
         <property name="defaultMethodName" value="index"/>
     </bean>
+    
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize">
+	        <value>10000000</value>
+	    </property>
+	    <property name="maxInMemorySize">
+	        <value>10000000</value>
+	    </property>
+    </bean>
 
     <bean id="buttonCommandController" class="org.openremote.controller.action.ButtonCommandController">
 	</bean>
 	
+	<bean id="configManageController" class="org.openremote.controller.action.ConfigManageController">
+    </bean>
 	
 
 </beans>

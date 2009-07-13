@@ -51,6 +51,25 @@
         <url-pattern>*.htm</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>buttonRESTServlet</servlet-name>
+        <servlet-class>org.openremote.controller.rest.ButtonCommandRESTServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>buttonRESTServlet</servlet-name>
+        <url-pattern>/rest/button/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>resourceServlet</servlet-name>
+        <servlet-class>org.openremote.controller.servlet.ResourceServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>resourceServlet</servlet-name>
+        <url-pattern>/resources/*</url-pattern>
+    </servlet-mapping>
 
 
     <filter>
@@ -83,6 +102,12 @@
 	<listener>
         <listener-class>
         	org.springframework.web.util.Log4jConfigListener
+        </listener-class>
+    </listener>
+    
+    <listener>
+        <listener-class>
+            org.openremote.controller.listener.ApplicationListener
         </listener-class>
     </listener>
 

@@ -20,13 +20,14 @@
  */
 package org.openremote.controller.exception;
 
+
 /**
- * The Invalid Event Exception.
+ * The exception for EventBuild.
  * 
  * @author Dan 2009-4-30
  */
 @SuppressWarnings("serial")
-public class EventBuildException extends RuntimeException {
+public class EventBuildException extends ButtonCommandException {
 
    /**
     * Instantiates a new invalid event exception.
@@ -36,6 +37,7 @@ public class EventBuildException extends RuntimeException {
     */
    public EventBuildException(String message, Throwable cause) {
       super(message, cause);
+      setErrorCode(ButtonCommandException.EVENT_BUILDER_ERROR);
    }
 
    /**
@@ -45,6 +47,7 @@ public class EventBuildException extends RuntimeException {
     */
    public EventBuildException(String message) {
       super(message);
+      setErrorCode(ButtonCommandException.EVENT_BUILDER_ERROR);
    }
 
    /**
@@ -52,6 +55,7 @@ public class EventBuildException extends RuntimeException {
     */
    public EventBuildException() {
       super();
+      setErrorCode(ButtonCommandException.EVENT_BUILDER_ERROR);
    }
 
    /**
@@ -61,6 +65,7 @@ public class EventBuildException extends RuntimeException {
     */
    public EventBuildException(Throwable cause) {
       super(cause);
+      setErrorCode(ButtonCommandException.EVENT_BUILDER_ERROR);
    }
 
 }
