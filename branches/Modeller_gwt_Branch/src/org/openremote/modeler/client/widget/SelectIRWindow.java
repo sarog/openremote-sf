@@ -96,7 +96,7 @@ public class SelectIRWindow extends Window {
       selectContainerLayout.setHBoxLayoutAlign(HBoxLayoutAlign.TOP);
       selectContainer.setLayout(selectContainerLayout);
 
-      add(selectContainer, new RowData(1, -1));
+      add(selectContainer, new RowData(1, 35));
 
       commandContainer.setLayout(new CenterLayout());
       add(commandContainer, new RowData(1, 1));
@@ -311,7 +311,7 @@ public class SelectIRWindow extends Window {
          List<ColumnConfig> codeGridColumns = new ArrayList<ColumnConfig>();
          codeGridColumns.add(new ColumnConfig("name", "Name", 120));
          codeGridColumns.add(new ColumnConfig("remoteName", "Remote Name", 150));
-         codeGridColumns.add(new ColumnConfig("value", "Value", 200));
+         codeGridColumns.add(new ColumnConfig("value", "Value", 250));
 
          cm = new ColumnModel(codeGridColumns);
       }
