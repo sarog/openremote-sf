@@ -1,23 +1,30 @@
 /*
- * OpenRemote, the Home of the Digital Home. Copyright 2008, OpenRemote Inc.
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a full listing of individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the terms of the GNU
+ * General Public License as published by the Free Software Foundation; either version 3.0 of the
+ * License, or (at your option) any later version.
  *
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
- * http://www.fsf.org.
+ * You should have received a copy of the GNU General Public License along with this software;
+ * if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ * MA 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+/*
+ * TODO
+ *
+ * @author <a href="mailto:">Allen Wei</a>
+ * @author <a href="mailto:">Tomsky Wang</a>
+ */
 function fillVendorSelect() {
     var select = $("#vendor_select");
     loadingSelect(select);
-    getJSONData("/lirc",
+    getJSONData("/lirc",                // TODO : use constants!
     function(data) {
         loadingSelectDone(select);
         var vendors = $.makeArray(data.vendors.vendor);
@@ -108,11 +115,11 @@ function showCommandBtns(vendor_name, model_name, section_id) {
         });
         $("<div class='clear'></div>").appendTo($("#command_container"));
 
-        $("#command_navigition").dialog("close");
-        $("#lircUrl").val(constant.RESTAPIUrl + "/lirc/" + vendor_name + "/" + model_name + "/" + "lirc.conf");
+        $("#command_navigation").dialog("close");
+        $("#lircUrl").val(constant.REST_API_URL + "/lirc/" + vendor_name + "/" + model_name + "/" + "lirc.conf");
     });
 
-    $("#command_navigition option").remove();
+    $("#command_navigation option").remove();
 
 }
 
@@ -142,7 +149,7 @@ function loadingSelectDone(select) {
 function getJSONData(path, callback) {
     $.ajax({
         type: "GET",
-        url: constant.RESTAPIUrl + path,
+        url: constant.REST_API_URL + path,
         dataType: "jsonp",
         cache: false,
         success: function(data) {

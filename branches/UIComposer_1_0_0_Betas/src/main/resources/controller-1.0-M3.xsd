@@ -3,8 +3,9 @@
 	<xsd:annotation>
 		<xsd:documentation><![CDATA[
 			OpenRemote Controller XML Schema, version 1.0.
-			Authors:Dan Cong.
-			
+
+			Authors: Dan Cong, Juha Lindfors
+
 			This defines the events of each button on iPhone panel.
 			When a button is pressed, iPhone panel will send a HTTP request to ORB controller with button id,
 			then ORB controller looks up the events by button id and triggers the events.
@@ -66,7 +67,9 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:simpleContent>
-				<xsd:extension base="xsd:int"/>
+				<xsd:extension base="xsd:int">
+                    <xsd:attribute name="delay" type="xsd:int" use="optional"/> 
+                </xsd:extension>
 			</xsd:simpleContent>
 		</xsd:complexType>
 	</xsd:element>
@@ -82,6 +85,9 @@
 					<xsd:element ref="irEvents"/>
 					<xsd:element ref="knxEvents"/>
 					<xsd:element ref="x10Events"/>
+          <xsd:element ref="httpEvents"/>
+          <xsd:element ref="socketEvents"/>
+          <xsd:element ref="telnetEvents"/>
 				</xsd:choice>
 			</xsd:sequence>
 		</xsd:complexType>		
@@ -110,56 +116,167 @@
 			<xsd:attribute name="command" type="xsd:string" use="required"/>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="knxEvents">
+
+  <!--================= KNX EVENTS ==============-->
+
+  <xsd:element name = "knxEvents">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
 				The parent element of <knxEvent> tags.
 			]]></xsd:documentation>
 		</xsd:annotation>
-		<xsd:complexType>
+
+    <xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="knxEvent" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element ref = "knxEvent" minOccurs = "0" maxOccurs = "unbounded"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="knxEvent">
+
+  <xsd:element name = "knxEvent">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
 				The event to control a device with KNX protocol.
 			]]></xsd:documentation>
 		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:attributeGroup ref="idAttr"/>
-			<xsd:attribute name="label" type="xsd:string" use="optional"/>
-			<xsd:attribute name="groupAddress" type="xsd:string" use="required"/>
+
+    <xsd:complexType>
+			<xsd:attributeGroup ref = "idAttr"/>
+			<xsd:attribute name = "label" type = "xsd:string" use = "required"/>
+			<xsd:attribute name = "groupAddress" type = "xsd:string" use = "required"/>
+      <xsd:attribute name = "command" type = "xsd:string" use = "required"/>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="x10Events">
+
+  <!--================= X10 EVENTS ==============-->
+
+  <xsd:element name="x10Events">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
 				The parent element of <x10Event> tags.
 			]]></xsd:documentation>
 		</xsd:annotation>
-		<xsd:complexType>
+
+    <xsd:complexType>
 			<xsd:sequence>
 				<xsd:element ref="x10Event" minOccurs="0" maxOccurs="unbounded"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="x10Event">
+
+  <xsd:element name="x10Event">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
 				The event to control a device with X10 protocol.
 			]]></xsd:documentation>
 		</xsd:annotation>
-		<xsd:complexType>
+
+    <xsd:complexType>
 			<xsd:attributeGroup ref="idAttr"/>
 			<xsd:attribute name="label" type="xsd:string" use="optional"/>
 			<xsd:attribute name="address" type="xsd:string" use="required"/>
 			<xsd:attribute name="command" type="xsd:string" use="required"/>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:attributeGroup name="idAttr">
+
+  <!--================= HTTP EVENTS ==============-->
+
+  <xsd:element name = "httpEvents">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The parent element of <httpEvent> tags.
+			]]></xsd:documentation>
+		</xsd:annotation>
+
+    <xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref = "httpGetEvent" minOccurs = "0" maxOccurs = "unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+  <xsd:element name = "httpGetEvent">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The event to control a device with HTTP protocol.
+			]]></xsd:documentation>
+		</xsd:annotation>
+
+    <xsd:complexType>
+			<xsd:attributeGroup ref = "idAttr"/>
+			<xsd:attribute name = "label" type = "xsd:string" use = "required"/>
+			<xsd:attribute name = "url"   type = "xsd:string" use = "required"/>
+		</xsd:complexType>
+	</xsd:element>
+
+
+  <!--================= SOCKET EVENTS ==============-->
+
+  <xsd:element name = "socketEvents">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The parent element of <socketEvent> tags.
+			]]></xsd:documentation>
+		</xsd:annotation>
+
+    <xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref = "socketEvent" minOccurs = "0" maxOccurs = "unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+  <xsd:element name = "socketEvent">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The event to control a device with TCP/IP protocol.
+			]]></xsd:documentation>
+		</xsd:annotation>
+
+    <xsd:complexType>
+			<xsd:attributeGroup ref = "idAttr"/>
+			<xsd:attribute name = "label"    type = "xsd:string" use = "required"/>
+			<xsd:attribute name = "ip"       type = "xsd:string" use = "required"/>
+      <xsd:attribute name = "port"     type = "xsd:string" use = "required"/>
+      <xsd:attribute name = "command"  type = "xsd:string" use = "required"/>
+		</xsd:complexType>
+	</xsd:element>
+
+
+  <!--================= TELNET EVENTS ==============-->
+
+  <xsd:element name = "telnetEvents">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The parent element of <telnetEvent> tags.
+			]]></xsd:documentation>
+		</xsd:annotation>
+
+    <xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref = "telnetEvent" minOccurs = "0" maxOccurs = "unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+  <xsd:element name = "telnetEvent">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The event to control a device with Telnet protocol.
+			]]></xsd:documentation>
+		</xsd:annotation>
+
+    <xsd:complexType>
+			<xsd:attributeGroup ref = "idAttr"/>
+			<xsd:attribute name = "label"    type = "xsd:string" use = "required"/>
+			<xsd:attribute name = "ip"       type = "xsd:string" use = "required"/>
+      <xsd:attribute name = "port"     type = "xsd:string" use = "required"/>
+      <xsd:attribute name = "command"  type = "xsd:string" use = "required"/>
+		</xsd:complexType>
+	</xsd:element>
+
+
+  <xsd:attributeGroup name="idAttr">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
 				The unique identifier attribute for a event or button. 				

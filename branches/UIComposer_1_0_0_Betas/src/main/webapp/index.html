@@ -1,112 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
-		<link rel="stylesheet" href="css/openremote_base.css" type="text/css" />
-		<link rel="stylesheet" href="css/960.css" type="text/css" />
-		<link rel="stylesheet" href="css/jquery-ui-1.7.custom.css" type="text/css" />
-		<link rel="stylesheet" href="css/jquery.tooltip.css" type="text/css" />
-		<link rel="stylesheet" href="css/index.css" type="text/css" />
+		<title>OpenRemote User Interface Composer</title>
+		<link href="image/OpenRemote_Logo16x16.png" rel="shortcut icon"/>
+        <link href="image/OpenRemote_Logo16x16.png" type="image/png" rel="icon"/>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<script type="text/javascript" src="jslib/jquery-1.3.2.js">
-</script>
-		<script type="text/javascript" src="jslib/jquery-ui-1.7.custom.min.js">
-</script>
-		<script type="text/javascript" src="jslib/jquery.form-2.24.js">
-</script>
-		<script type="text/javascript" src="jslib/json2.js">
-</script>
-		<script type="text/javascript" src="jslib/jquery.tooltip.min.js">
-</script>
-		<script type="text/javascript" src="jslib/jquery.blockUI.js">
-</script>
-        <script type="text/javascript" src="jslib/jquery.validate.min.js">
-</script>
-	<script type="text/javascript" src="jslib/ejs_0.9_alpha_1_production.js">
-</script>
-		<script type="text/javascript" src="js/constant.js">
-</script>
-		<script type="text/javascript" src="js/utils.js">
-</script>
-		<script src="js/model/model.js" type="text/javascript">
-</script>
-		<script src="js/model/infrared.js" type="text/javascript">
-</script>
-		<script src="js/model/macro.js" type="text/javascript">
-</script>		
-		<script src="js/model/knx.js" type="text/javascript">
-</script>
-		<script src="js/model/x10.js" type="text/javascript">
-</script>
-		<script src="js/model/iphoneBtn.js" type="text/javascript">
-</script>
-		<script src="js/model/screen.js" type="text/javascript">
-</script>
-		<script type="text/javascript" src="js/myJQueryFn.js">
-</script>
-		<script type="text/javascript" src="js/htmlBuilder.js">
-</script>
-		<script type="text/javascript" src="js/view/ejsHelper.js">
-</script>
-		<script type="text/javascript" src="js/view/screenView.js">
-</script>
-		<script type="text/javascript" src="js/view/inspectView.js">
-</script>
-		<script type="text/javascript" src="js/view/changeIconView.js">
-</script>
-        <script type="text/javascript" src="js/view/infraredView.js">
-</script>
-        <script type="text/javascript" src="js/view/protocolView.js">
-</script>
-        <script type="text/javascript" src="js/view/iphoneBtnView.js">
-</script>
-        <script type="text/javascript" src="js/view/macroView.js">
-</script>
-        <script type="text/javascript" src="js/view/macroSubView.js">
-</script>
-		<script type="text/javascript" src="js/controller/dragController.js">
-</script>
-		<script type="text/javascript" src="js/controller/selectController.js">
-</script>
-		<script type="text/javascript" src="js/controller/macroController.js">
-</script>
-		<script type="text/javascript" src="js/controller/iphoneController.js">
-</script>
-		<script type="text/javascript" src="js/controller/tabController.js">
-</script>
-		<script type="text/javascript" src="js/controller/downloadController.js">
-</script>
-		<script type="text/javascript" src="js/controller/importController.js">
-</script>
-		<script type="text/javascript" src="js/controller/screenViewController.js">
-</script>
-		<script type="text/javascript" src="js/controller/inspectViewController.js">
-</script>
-		<script type="text/javascript" src="js/controller/changeIconViewController.js">
-</script>
-		<script type="text/javascript" src="js/controller/protocolController.js">
-</script>
-		<script type="text/javascript" src="js/init.js">
-</script>
-        <script type="text/javascript" src="js/jquery.validte.additional-methods.js">
-</script>
-		<title>
-			OpenRemote User Interface Composer
-		</title>
+        <script type="text/javascript" src="./jawr_loader.js" ></script>
+                <script>
+                        JAWR.loader.style('/index.css');
+                        JAWR.loader.script('/mvc.js');
+                </script>
+
 	</head>
 	<body>    
-		<div id="wrap" class="container_12">
-    <!--
-      <div id="top" class="grid_12">
+		<div id="wrap" class="container_18">
+			<div id="top" class="grid_18">
 				<span id="version" class="version">Version:</span><a>Login</a><a>Register</a>
 			</div>
-		-->
-			<div id="logo" class="grid_12">
-				<img alt="OpenRemote" src="image/global.logo.png" style="padding: 20px 0px 0px 35px;"> 
+			<div id="logo" class="grid_18">
+				<img alt="OpenRemote" src="image/global.logo.png"> 
 			</div>
 			<div class="clear"></div>
-			<div id="error" class=" grid_12">
+			<div id="error" class=" grid_18">
 				<p class="ui-state-error ui-corner-all">
 					<span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
 					<strong>ERROR:</strong>
@@ -115,21 +31,11 @@
 			</div>
 			<div class="clear"></div>
 			<div id="main">
-					<div id="screen_tool_bar" class="grid_12">
-                    <!--
-						<div class="grid_4">
-						<p align="center">
-							<select  id="screen_select">
-								<option value="0">Please Create a Screen</option>
-							</select>
-							<a id="creatScreenBtn" class="ui-state-default ui-corner-all button" href="#"><span class="ui-icon ui-icon-plusthick"></span>Create</a>
-						</p>
-						</div>
-                    -->
+					<div id="screen_tool_bar" class="grid_18">
 						<div class="clear"></div>
 					</div>
 					<div class="clear"></div>
-				<div id="left" class="grid_4">
+				<div id="left" class="grid_5">
 				
 					<div id="iphone_backgroud">
 						
@@ -153,7 +59,7 @@
 						<a id="saveBtn" class="ui-state-default ui-corner-all button" href="#"><span class="ui-icon ui-icon-arrowthickstop-1-s"></span>Download</a>
 					</p>
 				</div>
-				<div id="middle" class="grid_5">
+				<div id="middle" class="grid_9">
 					<div id="tabs">
 						<ul>
 							<li>
@@ -166,16 +72,25 @@
 								<a href="#x10_tab" class="has_icon">X10</a><span id="create_x10_icon" title="Create X10" class="ui-icon ui-icon-plusthick"></span>
 							</li>
 							<li>
-								<a href="#x10_tab" class="has_icon">HTTP</a><span id="create_http_icon" title="Create HTTP" class="ui-icon ui-icon-plusthick"></span>
+								<a href="#http_tab" class="has_icon">HTTP</a><span id="create_http_icon" title="Create HTTP" class="ui-icon ui-icon-plusthick"></span>
+							</li>
+
+              <!--
+
+                JPL: This will come in OpenRemote Boss 1.1
+
+              <li>
+                <a href="#upnp_tab" class="has_icon">UPnP</a><span id="create_upnp_icon" title="Create UPnP" class="ui-icon ui-icon-plusthick"></span>
+              </li>
+              -->
+
+
+              <li>
+								<a href="#tcp_tab" class="has_icon">TCP/IP</a><span id="create_tcp_icon" title="Create TCP/IP" class="ui-icon ui-icon-plusthick"></span>
 							</li>
 							<li>
-								<a href="#x10_tab" class="has_icon">Socket</a><span id="create_socket_icon" title="Create Socket" class="ui-icon ui-icon-plusthick"></span>
+								<a href="#telnet_tab" class="has_icon">Telnet</a><span id="create_telnet_icon" title="Create Telnet" class="ui-icon ui-icon-plusthick"></span>
 							</li>
-							<li>
-								<a href="#x10_tab" class="has_icon">Telnet</a><span id="create_telnet_icon" title="Create Telnet" class="ui-icon ui-icon-plusthick"></span>
-							</li>
-                            
-                            
 						</ul>
 						<div id="command_tab">
 							<div id="command_container" class="item_container">
@@ -197,9 +112,47 @@
 							</div>
 							<div class="clear"></div>
 						</div>
-					</div>
+						<div id="http_tab">
+						   <p> Click the plus image to create HTTP button.</p>
+							<div id="http_container" class="item_container">
+								<div class="clear"></div>
+							</div>
+							<div class="clear"></div>
+						</div>
+
+            <!--
+
+              JPL: This will be introduced in OpenRemote Boss 1.1
+
+            <div id="upnp_tab">
+               <p> Click the plus image to create UPnP button.</p>
+              <div id="upnp_container" class="item_container">
+                <div class="clear"></div>
+              </div>
+              <div class="clear"></div>
+            </div>
+
+            -->
+            
+            <div id="tcp_tab">
+               <p> Click the plus image to create TCP/IP button.</p>
+              <div id="tcp_container" class="item_container">
+                <div class="clear"></div>
+              </div>
+              <div class="clear"></div>
+            </div>
+            <div id="telnet_tab">
+               <p> Click the plus image to create Telnet button.</p>
+              <div id="telnet_container" class="item_container">
+                <div class="clear"></div>
+              </div>
+              <div class="clear"></div>
+            </div>
+
+
+          </div>
 				</div>
-				<div id='right' class="grid_3">
+				<div id='right' class="grid_4">
 				
 				<div id="macro">
 					<div class="item_title ui-widget-header ui-corner-top">
@@ -248,6 +201,7 @@
                         </fieldset>
                     </form>
 				</div>
+                
 				<div id="create_x10_dialog">
                     <form id="x10_form">
                         <fieldset>
@@ -255,7 +209,49 @@
                         </fieldset>
                     </form>
 				</div>
-				<div id="command_navigition">
+                
+				<div id="create_http_dialog">
+                    <form id="http_form">
+                        <fieldset>
+                            <label for="http_label_input">Label</label>
+                            <input type="text" id="http_label_input" name="http_label_input"/> 
+                            <label for="http_url_input">URL</label>
+                            <input type="text" id="http_url_input" name="http_url_input"/> 
+                        </fieldset>
+                    </form>
+				</div>
+
+        <div id="create_tcp_dialog">
+                    <form id="tcp_form">
+                        <fieldset>
+                            <label for="tcp_label_input">Label</label>
+                            <input type="text" id="tcp_label_input" name="tcp_label_input"/>
+                            <label for="tcp_ip_input">IP Address</label>
+                            <input type="text" id="tcp_ip_input" name="tcp_ip_input"/>
+                            <label for="tcp_port_input">Port</label>
+                            <input type="text" id="tcp_port_input" name="tcp_port_input"/>
+                            <label for="tcp_command_input">Command</label>
+                            <input type="text" id="tcp_command_input" name="tcp_command_input"/>
+                        </fieldset>
+                    </form>
+        </div>
+
+        <div id="create_telnet_dialog">
+                    <form id="telnet_form">
+                        <fieldset>
+                            <label for="telnet_label_input">Label</label>
+                            <input type="text" id="telnet_label_input" name="telnet_label_input"/>
+                            <label for="telnet_ip_input">IP Address</label>
+                            <input type="text" id="telnet_ip_input" name="telnet_ip_input"/>
+                            <label for="telnet_port_input">Port</label>
+                            <input type="text" id="telnet_port_input" name="telnet_port_input"/>
+                            <label for="telnet_command_input">Command</label>
+                            <input type="text" id="telnet_command_input" name="telnet_command_input"/>
+                        </fieldset>
+                    </form>
+        </div>
+
+        <div id="command_navigation">
 					<div id="vender_select_container" class="select_container">
 						<div class="select_title">
 							<h3>
@@ -294,7 +290,7 @@
 				<div id="change_icon_form">
 					<label for="fromBeehive"><input type="radio" name="iconType" class="change_icon_type" checked="true" id="fromBeehive">Select From Beehive</label>
 					<label for="fromUrl"><input type="radio" name="iconType" class="change_icon_type" id="fromUrl">From a URL</label>
-					<label for="fromUpload"><input type="radio" name="iconType" class="change_icon_type" id="fromUpload">Upload a Image</label>	
+					<label for="fromUpload"><input type="radio" name="iconType" class="change_icon_type" id="fromUpload">Upload an Image</label>	
 					<fieldset>
 					<div id="change_icon_from_beehive" class="change_icon_from_container">
 

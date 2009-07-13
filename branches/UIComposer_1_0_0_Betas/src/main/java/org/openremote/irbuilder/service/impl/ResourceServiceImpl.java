@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.openremote.irbuilder.Constants;
 import org.openremote.irbuilder.configuration.PathConfig;
 import org.openremote.irbuilder.exception.FileOperationException;
+import org.openremote.irbuilder.exception.XmlParserException;
 import org.openremote.irbuilder.service.ResourceService;
 import org.openremote.irbuilder.utils.IphoneXmlParser;
 import org.openremote.irbuilder.utils.StringUtils;
@@ -57,7 +58,7 @@ public class ResourceServiceImpl implements ResourceService {
       File lircdFile = new File(PathConfig.getInstance().lircFilePath(sessionId));
       File zipFile = new File(PathConfig.getInstance().openremoteZipFilePath(sessionId));
 
-      String newIphoneXML = IphoneXmlParser.parserXML(iphoneXML, sessionFolder);
+      String newIphoneXML = IphoneXmlParser.parserXML(new File(getClass().getResource(Constants.IPHONE_XSD_PATH).getPath()), iphoneXML, sessionFolder);
       
        try {
           
@@ -124,6 +125,13 @@ public class ResourceServiceImpl implements ResourceService {
                if (Constants.PANEL_DESC_FILE_EXT.equalsIgnoreCase(StringUtils.getFileExt(zipEntry.getName()))) {
                   irbFileContent = IOUtils.toString(zipInputStream);
                }
+
+               if (!checkXML(zipInputStream, zipEntry, "iphone")) {
+                  throw new XmlParserException("The iphone.xml schema validation fail, please check it");
+               }else if (!checkXML(zipInputStream, zipEntry, "controller")) {
+                  throw new XmlParserException("The controller.xml schema validation fail, please check it");
+               }
+
                //TODO extract constant
                if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|irb)")) {
                   File file = new File(PathConfig.getInstance().sessionFolder(sessionId) + zipEntry.getName());
@@ -154,6 +162,17 @@ public class ResourceServiceImpl implements ResourceService {
 
       }
       return irbFileContent;
+   }
+
+   private boolean checkXML(ZipInputStream zipInputStream, ZipEntry zipEntry,String xmlName) throws IOException {
+      if(zipEntry.getName().equals(xmlName+".xml")){
+         String xsdRelativePath = "iphone".equals(xmlName)? Constants.IPHONE_XSD_PATH : Constants.CONTROLLER_XSD_PATH;
+         String xsdPath = getClass().getResource(xsdRelativePath).getPath();
+         if(!IphoneXmlParser.checkXmlSchema(xsdPath, IOUtils.toString(zipInputStream))){
+            return false;
+         }
+      }
+      return true;
    }
 
    public File uploadImage(InputStream inputStream, String fileName, String sessionId) {

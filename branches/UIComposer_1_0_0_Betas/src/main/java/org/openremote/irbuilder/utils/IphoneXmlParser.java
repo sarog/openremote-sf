@@ -1,5 +1,22 @@
-/**
+/* OpenRemote, the Home of the Digital Home.
+ * Copyright 2008, OpenRemote Inc.
  * 
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ * 
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ * 
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package org.openremote.irbuilder.utils;
 
@@ -7,6 +24,7 @@ package org.openremote.irbuilder.utils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.List;
 
@@ -41,13 +59,20 @@ public class IphoneXmlParser {
     * @param folder
     * @return modified iphoneXML
     */
-   public static String parserXML(String xmlString, File folder){
-      SAXBuilder sb = new SAXBuilder(false);
-      sb.setValidation(false);
+   @SuppressWarnings("unchecked")
+   public static String parserXML(File xsdfile, String xmlString, File folder){
+      SAXBuilder sb = new SAXBuilder(true);
+      sb.setValidation(true);
+      final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+      final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+      final String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
+      sb.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
+      sb.setProperty(SCHEMA_SOURCE, xsdfile);
       String iphoneXml = "";
       try {         
           Document doc = sb.build(new InputSource(new StringReader(xmlString)));
-          XPath xpath = XPath.newInstance("//button[@icon]");
+          XPath xpath = XPath.newInstance("//or:button[@icon]");
+          xpath.addNamespace("or","http://www.openremote.org");
           List<Element> elements = xpath.selectNodes(doc);
           for (Element element : elements) {
              String iconVal = element.getAttributeValue("icon");
@@ -81,5 +106,35 @@ public class IphoneXmlParser {
 
        output.write(get.getResponseBody());  
        output.close();  
+   }
+   
+   /**
+    * Check xml schema.
+    * 
+    * @param xsdPath the xsd path
+    * @param xmlString the xml string
+    * 
+    * @return true, if successful
+    */
+   public static boolean checkXmlSchema(String xsdPath,String xmlString){
+      SAXBuilder sb = new SAXBuilder(true);
+      sb.setValidation(true);
+      
+      File xsdfile = new File(xsdPath);
+      final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+      final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+      final String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
+      sb.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
+      sb.setProperty(SCHEMA_SOURCE, xsdfile);
+      try {
+         sb.build(new InputSource(new StringReader(xmlString)));
+      } catch (JDOMException e) {
+         logger.error("Check the schema "+xsdfile.getName()+" occur JDOMException", e);
+         return false;
+      } catch (IOException e) {
+         logger.error("Check the schema "+xsdfile.getName()+" occur IOException", e);
+         return false;
+      }
+      return true;
    }
 }

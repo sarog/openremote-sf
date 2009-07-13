@@ -105,7 +105,7 @@ var IPhoneController = function() {
             iphoneBtn.height = 1;
             iphoneBtn.width = 1;
             var btn = IPhoneController.createIphoneBtn(iphoneBtn);
-            if (InspectView.getModel() != null && iphoneBtn.getElementId() == InspectView.getModel().getElementId()) {
+            if (InspectView.getModel() != null && InspectView.getModel().getElementId !== undefined && iphoneBtn.getElementId() == InspectView.getModel().getElementId()) {
                 btn.addClass("highlightInspected");
             }
         }
@@ -133,11 +133,14 @@ var IPhoneController = function() {
                 $(this).addClass("highlightInspected");
             },
             stop: function(event, ui) {
-                $(this).removeClass("highlightInspected");
-
+				if ($(this).hasClass("highlightInspected")) {
+					InspectView.hideView();
+				}
+				$("#tooltip").hide();
+				
+				
                 var top = ui.offset.top;
                 var left = ui.offset.left;
-
                 // if dragggable draged out of the rang, the only thing we can do is remove it and create a new one at that position
                 // this is all because we not use helper in iphone button draggable, so JQuery will not help us move the button back when drag fail.
                 if (!$.isCoordinateInArea(top, left, $("#dropable_table"))) {
@@ -163,9 +166,9 @@ var IPhoneController = function() {
                     resetIphoneBtnBack(this);
                     return;
                 }
-                $("#dropable_table td.hiLight").removeClass("hiLight");
+               
 
-
+				 $("#dropable_table td.hiLight").removeClass("hiLight");
             },
             drag: function(event, ui) {
                 $("#dropable_table td.hiLight").removeClass("hiLight");
@@ -182,13 +185,28 @@ var IPhoneController = function() {
 
     function resetIphoneBtnBack(iphoneBtnElement) {
         var iphoneBtn = $(iphoneBtnElement).data("model");
-        var btn = IPhoneController.createIphoneBtn(iphoneBtn);
+		if ($(iphoneBtnElement).hasClass("highlightInspected")) {
+			InspectView.hideView();
+		}
+		iphoneBtn.updateModel();
+		
+        // var view = $(iphoneBtnElement).data("view");
+        // 
+        //         iphoneBtn.removeUpdateListener(view);
+        //         iphoneBtn.removeDeleteListener(view);
+        // 		
+        //         view.deleteView();
+        //         view = null;
+        //         
+        // 
+        //         $("#dropable_table td.hiLight").removeClass("hiLight");
+        //         var btn = IPhoneController.createIphoneBtn(iphoneBtn);
 
-        if (InspectView.getModel() != null && iphoneBtn.getElementId() == InspectView.getModel().getElementId()) {
-            btn.addClass("highlightInspected");
-        }
-        $(iphoneBtnElement).remove();
-        $("#dropable_table td.hiLight").removeClass("hiLight");
+        // if (InspectView.getModel() != null && iphoneBtn.getElementId() == InspectView.getModel().getElementId()) {
+        //             btn.addClass("highlightInspected");
+        //         }
+
+		$("#dropable_table td.hiLight").removeClass("hiLight");
     }
 
     function makeIphoneBtnResizable(items) {
@@ -214,6 +232,7 @@ var IPhoneController = function() {
                 btns.resizable('option', 'maxHeight', (maxY - iphoneBtn.y + 1) * ScreenView.cellHeight);
                 btns.resizable('option', 'maxWidth', (maxX - iphoneBtn.x + 1) * ScreenView.cellWidth);
 
+				btns.find("td.middle").height("100%");
             },
             stop: function(event, ui) {
                 var iphoneBtn = $(this).data("model");
@@ -231,6 +250,7 @@ var IPhoneController = function() {
 
                 iphoneBtn.fillArea();
                 makeIphoneBtnDraggable($(this));
+                iphoneBtn.updateModel();
             },
             helper: false
         });
@@ -326,17 +346,20 @@ var IPhoneController = function() {
 
 
         var btn = iphoneBtnView.getElement();
-		
+
+        btn.data("view", iphoneBtnView);
+
         makeIphoneBtnDraggable(btn);
         makeIphoneBtnResizable(btn);
 
+        var left = Math.round($("#iphone_backgroud").offset().left + $("#iphone_backgroud").width());
         btn.inspectable({
             after: function() {
                 $("#inspect_iphoneBtn_icon").unbind().click(function() {
                     ChangeIconViewController.showChangeIconForm();
                 });
             },
-			left:$("#iphone_backgroud").offset().left + $("#iphone_backgroud").width()
+            left: left
         });
 
         btn.tooltip({
@@ -344,7 +367,7 @@ var IPhoneController = function() {
                 return $(EJSHelper.render("template/_inspectTooltip.ejs", $(this).data("model")));
             },
             showURL: false,
-            track: true,
+			trace:true,
             delay: 1
         });
         return btn;
