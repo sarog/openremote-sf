@@ -23,6 +23,8 @@ package org.openremote.controller.action;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openremote.controller.event.CommandType;
+import org.openremote.controller.exception.InvalidCommandTypeException;
 import org.openremote.controller.service.ButtonCommandService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -38,9 +40,27 @@ public class ButtonCommandController extends AbstractController {
    @Override
    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
       String buttonID = request.getParameter("id");
-      buttonCommandService.trigger(buttonID);
+      String commandTypeStr = request.getParameter("commandType");
+      if (commandTypeStr != null) {
+         CommandType commandType = null;
+         if ("press".equalsIgnoreCase(commandTypeStr)) {
+            commandType = CommandType.SEND_START;
+         } else if ("release".equalsIgnoreCase(commandTypeStr)) {
+            commandType = CommandType.SEND_STOP;
+         } else if ("click".equalsIgnoreCase(commandTypeStr)) {
+            commandType = CommandType.SEND_ONCE;
+         }
+         if (commandType != null) {
+            buttonCommandService.trigger(buttonID, commandType);
+         } else {
+            throw new InvalidCommandTypeException(commandTypeStr);
+         }
+      } else {
+         buttonCommandService.trigger(buttonID);
+      }
       return null;
    }
+   
 
    /**
     * Sets the button command service.
