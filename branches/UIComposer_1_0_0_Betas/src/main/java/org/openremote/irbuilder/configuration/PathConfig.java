@@ -17,9 +17,7 @@
 package org.openremote.irbuilder.configuration;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -47,13 +45,17 @@ public class PathConfig {
     * @return folder absolute path
     */
    public String tempFolder() {
-      String root = System.getProperty("modeler.root");
+
+
+      String root = System.getProperty("servlet.context") + File.separator;
       if (root == null) {
          logger.fatal("Can't find modeler.root in system property, please check web.xml.");
          throw new IllegalStateException("Can't find modeler.root in system property, please check web.xml.");
       }
-      return  root+"tmp"+File.separator;
+      return  root + "tmp" + File.separator;
    }
+
+  
    /**
     * Gets iphone xml path
     * 
@@ -105,7 +107,8 @@ public class PathConfig {
     * @param sessionId
     * @return file absolute path
     */
-   public String sessionFolder(String sessionId) {
+   public String sessionFolder(String sessionId)
+   {
       return tempFolder() + sessionId + File.separator;
    }
 }

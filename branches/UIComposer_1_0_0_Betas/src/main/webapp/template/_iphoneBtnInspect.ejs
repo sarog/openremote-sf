@@ -7,7 +7,7 @@
 <% var model = $("#inspect_tool_bar").data("model"); %>
 <% var _label = $.trim($("#inspect_iphoneBtn_label").val()); %>
 <% _icon = $("#inspect_iphoneBtn_icon").attr("src"); %>
-<% _icon = (_icon==constant.DEFAULT_IPHONE_BTN_ICON?"":_icon); %>
+<% _icon = (new RegExp(constant.DEFAULT_IPHONE_BTN_ICON).test(_icon)?"":_icon); %>
 <% model.label = _label;%>
 <% model.icon = _icon;%>
 <% return model;%>

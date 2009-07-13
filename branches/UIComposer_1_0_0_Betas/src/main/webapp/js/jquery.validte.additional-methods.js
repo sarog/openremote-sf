@@ -3,4 +3,4 @@ jQuery.validator.addMethod("isImage", function(value, element) {
         return false;
     }
     return this.optional(element) || /.+?\.(png|gif|jpg)/.test(value); 
-}, "Please select an gif, jpg, png type image."); 
+}, "Please select a gif, jpg or png type image."); 

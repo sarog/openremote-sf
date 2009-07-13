@@ -26,4 +26,9 @@ public class Constants {
    }
 
    public static final String PANEL_DESC_FILE_EXT = "irb";
+   
+   public static final String IPHONE_XSD_PATH = "/iphone-1.0-M3.xsd";
+   
+   public static final String CONTROLLER_XSD_PATH = "/controller-1.0-M3.xsd";
+   
 }

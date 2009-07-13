@@ -1,33 +1,50 @@
 /*
- * OpenRemote, the Home of the Digital Home. Copyright 2008, OpenRemote Inc.
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a full listing of individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the terms of the GNU
+ * General Public License as published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
  *
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
- * http://www.fsf.org.
+ * You should have received a copy of the GNU General Public License along with this software;
+ * if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ * MA 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
+/*
+ * TODO
+ *
+ * @author allen.wei@finalist.cn
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 var DownloadController = function() {
+
     function DownloadController() {
         // constructor
-        }
+    }
 
-    //private variable
-    //To store selected section ids.
+
+    // Private variables --------------------------------------------------------------------------
+
+    // To store selected section ids.
     var assembledSectionIds;
+
     // Store buttons already added. to keep button id is correct in controller part and iphone part.
     var btnModelHash = {};
-    //private method
+
+
+    // Private methods ----------------------------------------------------------------------------
+
     /**
-     * Parse Page and Send the request for download the current work.
+     * Parse page and send the request for download the current work.
      */
     function download() {
+		    $.showLoading();
+
         // first store current screen
         ScreenViewController.storeCurrentScreen();
 
@@ -39,27 +56,30 @@ var DownloadController = function() {
             iphone: iphoneXml,
             controller: controllerXml,
             panel: panelDesc,
-            restUrl: constant.RESTAPIUrl + "/lirc.conf",
+            restUrl: constant.REST_API_URL + "/lirc.conf",
             ids: assembledSectionIds
             //get it in parseInfared() function
         },
         function(result) {
+			      $.hideLoading();
             window.location = result;
         });
-
     }
+
 
     /*-----------  generate Iphone xml ------------------------------*/
 
     function generateIphoneXml() {
+
         //TODO It will have multi-activity, so we will refactor it latter.
+
         var activity = new Object();
-        activity.name = "activity1";
+        activity.name = "User Customized";
         activity.id = 1;
 
         activity.screen = getStoredScreens();
 		
-		var iphoneXml = EJSHelper.render("template/_iphoneXML.ejs",{
+		    var iphoneXml = EJSHelper.render("template/_iphoneXML.ejs",{
             activity: activity
         });
        
@@ -77,14 +97,13 @@ var DownloadController = function() {
     }
 
 
-
-
-
     /*------------------ generate controller xml ------------------------ */
 
     /**
      * Compose Controller part JSON.
-     * @param btnModelHash parsed iphone buttons
+     *
+     * @param   btnModelHash  Parsed iPhone buttons
+     *
      * @returns Composed JSON string
      */
     function generateControllerXml(btnModelHash) {
@@ -106,6 +125,21 @@ var DownloadController = function() {
             x10Event: x10Events
         };
 
+        var httpEvents = parseHTTP();
+        openremote.events.httpEvents = {
+            httpEvent: httpEvents
+        };
+
+        var tcpEvents = parseTCP();
+        openremote.events.tcpEvents = {
+            tcpEvent: tcpEvents
+        };
+
+        var telnetEvents = parseTelnet();
+        openremote.events.telnetEvents = {
+            telnetEvent: telnetEvents
+        };
+
         var irEvents = parseInfared();
         openremote.events.irEvents = {
             irEvent: irEvents
@@ -114,13 +148,16 @@ var DownloadController = function() {
         var result = EJSHelper.render("template/_controllerXML.ejs",{
             openremote: openremote
         });
+
         return result;
     }
 
 
     /**
-     * Parse Controller part iphone buttons.
-     * @param btnModelHash parsed iphone buttons
+     * Parse Controller part iPhone buttons.
+     *
+     * @param   btnModelHash  parsed iPhone buttons
+     *
      * @returns button array
      */
     function parseButtons(btnModelHash) {
@@ -134,13 +171,18 @@ var DownloadController = function() {
             if (iphoneBtn.oModel.className == "Macro") {
                 var models = iphoneBtn.oModel.getSubModelsRecursively();
                 for (var index in models) {
-                    event.push(models[index].id);
+					var e = {};
+					e.id = models[index].id;
+					if (models[index].delay != 0) {
+						e.delay = models[index].delay;
+					}
+                    event.push(e);
 					if (models[index].className == "Infrared") {
 						global.InfraredCollection[models[index].codeId] = models[index];
 					}
                 }
             } else {
-                event.push(iphoneBtn.oModel.id);
+                event.push({id:iphoneBtn.oModel.id});
             }
             b.event = event;
             buttons.push(b);
@@ -149,7 +191,8 @@ var DownloadController = function() {
     }
 
     /**
-     * Get selected Infrared event and Gets section ids user selected.
+     * Get selected infrared event and gets section ids user selected.
+     *
      * @returns irEvent array.
      */
     function parseInfared() {
@@ -173,7 +216,8 @@ var DownloadController = function() {
     }
 
     /**
-     * Get all KNX event user added.
+     * Gets all KNX events user has added.
+     *
      * @returns knxEvent array
      */
     function parseKNX() {
@@ -184,13 +228,15 @@ var DownloadController = function() {
             knxEvent.id = model.id;
             knxEvent.label = model.label;
             knxEvent.groupAddress = model.groupAddress;
+            knxEvent.command = model.command;
             knxEvents.push(knxEvent);
         });
         return knxEvents;
     }
 
     /**
-     * Get all X10 event user added.
+     * Gets all X10 events user has added.
+     *
      * @returns x10Event array
      */
     function parseX10() {
@@ -207,7 +253,70 @@ var DownloadController = function() {
         return x10Events;
     }
 
+    /**
+     * Gets all HTTP events user has added.
+     *
+     * @returns telnetEvent array
+     */
+    function parseHTTP() {
+        var httpEvents = new Array();
+        $("#http_container").find(".http_btn").each(function() {
+            var httpEvent = new Object();
+            var model = $(this).data("model");
+            httpEvent.id = model.id;
+            httpEvent.url = model.url;
+            httpEvent.label = model.label;
+            httpEvents.push(httpEvent);
+        });
+        return httpEvents;
+    }
+
+
+    /**
+     * Gets all TCP/IP events user has added.
+     *
+     * @returns tcpEvent array
+     */
+    function parseTCP() {
+        var tcpEvents = new Array();
+        $("#tcp_container").find(".tcp_btn").each(function() {
+            var tcpEvent = new Object();
+            var model = $(this).data("model");
+            tcpEvent.id = model.id;
+            tcpEvent.label = model.label;
+            tcpEvent.ip = model.ip;
+            tcpEvent.port = model.port;
+            tcpEvent.command = model.command;
+            tcpEvents.push(tcpEvent);
+        });
+
+        return tcpEvents;
+    }
+
+  
+    /**
+     * Gets all telnet events user has added.
+     *
+     * @returns telnetEvent array
+     */
+    function parseTelnet() {
+        var telnetEvents = new Array();
+        $("#telnet_container").find(".telnet_btn").each(function() {
+            var telnetEvent = new Object();
+            var model = $(this).data("model");
+            telnetEvent.id = model.id;
+            telnetEvent.label = model.label;
+            telnetEvent.ip = model.ip;
+            telnetEvent.port = model.port;
+            telnetEvent.command = model.command;
+            telnetEvents.push(telnetEvent);
+        });
+
+        return telnetEvents;
+    }
+
     /*--------------------     generate irb file     --------------------------------------*/
+
     /**
      * Generate UI Interface description file.
      */
@@ -233,11 +342,27 @@ var DownloadController = function() {
         $("#x10_container").find(".x10_btn").each(function() {
             x10Btns.push($(this).data("model"));
         });
+        var httpBtns = new Array();
+        $("#http_container").find(".http_btn").each(function() {
+            httpBtns.push($(this).data("model"));
+        });
+        var tcpBtns = new Array();
+        $("#tcp_container").find(".tcp_btn").each(function() {
+            tcpBtns.push($(this).data("model"));
+        });
+        var telnetBtns = new Array();
+        $("#telnet_container").find(".telnet_btn").each(function() {
+            telnetBtns.push($(this).data("model"));
+        });
+
 
         var panel = {
             screens: screens,
             knxBtns: knxBtns,
             x10Btns: x10Btns,
+            httpBtns: httpBtns,
+            tcpBtns: tcpBtns,
+            telnetBtns: telnetBtns,
             macroBtns: macroBtns,
             maxId: global.BUTTONID
         };
@@ -259,7 +384,8 @@ var DownloadController = function() {
     }
 
 
-    //static method
+    // Static method ------------------------------------------------------------------------------
+
     DownloadController.init = function() {
         $("#saveBtn").unbind().bind("click", download);
         $("a.button").UIHover();

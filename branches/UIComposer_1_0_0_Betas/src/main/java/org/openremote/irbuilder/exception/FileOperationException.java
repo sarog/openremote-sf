@@ -21,6 +21,7 @@ package org.openremote.irbuilder.exception;
  * 
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
+@SuppressWarnings("serial")
 public class FileOperationException extends RuntimeException {
    public FileOperationException(String s) {
       super(s);

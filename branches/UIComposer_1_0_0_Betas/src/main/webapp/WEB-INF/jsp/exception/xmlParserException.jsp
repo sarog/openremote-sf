@@ -4,5 +4,4 @@
     pageEncoding="UTF8"%>
    <c:set value="${exception}" var="ee" />
    <jsp:useBean id="ee" type="org.openremote.irbuilder.exception.XmlParserException" />
-   XmlParserException:
    <%=ee.getMessage()%>

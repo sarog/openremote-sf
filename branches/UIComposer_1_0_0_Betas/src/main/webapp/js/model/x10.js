@@ -1,5 +1,5 @@
 /*
- * OpenRemote, the Home of the Digital Home. Copyright 2008, OpenRemote Inc.
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a full listing of individual contributors.
  *
@@ -32,9 +32,7 @@ var X10 = function() {
 		
 		self.inspectViewTemplate = "template/_x10Inspect.ejs";
 
-		self.updateModel = function() {
-			TabController.updateX10(self);
-		};
+		
 	}
 
     /**

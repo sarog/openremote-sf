@@ -9,6 +9,7 @@ package org.openremote.irbuilder.exception;
  * @author Tomsky
  *
  */
+@SuppressWarnings("serial")
 public class XmlParserException extends RuntimeException {
    public XmlParserException(String s) {
       super(s);
