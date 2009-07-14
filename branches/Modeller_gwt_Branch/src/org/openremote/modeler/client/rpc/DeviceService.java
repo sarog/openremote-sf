@@ -22,6 +22,7 @@ package org.openremote.modeler.client.rpc;
 
 import java.util.List;
 
+import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -61,5 +62,21 @@ public interface DeviceService extends RemoteService {
     */
    public Device loadById(long id);
    
+
+   /**
+    * Load all.
+    * 
+    * @return the list< device>
+    */
    public List<Device> loadAll();
+   
+   /**
+    * Load all.
+    * 
+    * @param account
+    *           the account
+    * 
+    * @return the list< device>
+    */
+   public List<Device> loadAll(Account account);
 }

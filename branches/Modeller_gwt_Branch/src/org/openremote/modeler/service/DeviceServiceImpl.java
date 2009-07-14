@@ -26,8 +26,6 @@ import org.hibernate.Hibernate;
 import org.openremote.modeler.client.rpc.DeviceService;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.User;
-import org.springframework.security.context.SecurityContextHolder;
 
 /**
  * The Class DeviceServiceImpl.
@@ -38,7 +36,6 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
     * @see org.openremote.modeler.client.rpc.DeviceService#saveDevice(java.util.Map)
     */
    public Device saveDevice(Device device) {
-      device.setAccount(getAccount());
       genericDAO.saveOrUpdate(device);
       Hibernate.initialize(device.getDeviceCommands());
       return device;
@@ -48,13 +45,15 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
     * @see org.openremote.modeler.client.rpc.DeviceService#removeDevice(org.openremote.modeler.domain.Device)
     */
    public void removeDevice(Device device) {
-      device.setAccount(getAccount());
       genericDAO.delete(device);
    }
    
-   public List<Device> loadAll() {
-      List<Device> devices = getAccount().getDevices();
-      if(devices!=null){
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.client.rpc.DeviceService#loadAll(org.openremote.modeler.domain.Account)
+    */
+   public List<Device> loadAll(Account account) {
+      List<Device> devices = account.getDevices();
+      if (devices != null) {
          for (Device device : devices) {
             Hibernate.initialize(device.getDeviceCommands());
          }
@@ -62,9 +61,5 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       return devices;
    }
    
-   private Account getAccount(){
-      String username = SecurityContextHolder.getContext().getAuthentication().getName();
-      System.out.println("username: "+username);
-      return genericDAO.getByNonIdField(User.class, "username", username).getAccount();
-   }
+  
 }

@@ -16,23 +16,20 @@
 
 package org.openremote.modeler.protocol;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
 import org.openremote.modeler.exception.ParseProtocolException;
 import org.openremote.modeler.service.ProtocolParser;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
 public class ProtocolParserTest {
 
-   @Test(expected = ParseProtocolException.class)
+   @Test(expectedExceptions= {ParseProtocolException.class})
    public void testSchemaValidateFail() {
       ProtocolParser protocolParser = new ProtocolParser();
       protocolParser.setPath(getClass().getResource("testXml").getPath() + "/schemaValidateFail");
