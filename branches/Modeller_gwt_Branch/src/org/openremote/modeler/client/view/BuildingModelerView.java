@@ -2,7 +2,6 @@ package org.openremote.modeler.client.view;
 
 import org.openremote.modeler.client.widget.DevicePanel;
 import org.openremote.modeler.client.widget.MacroPanel;
-import org.openremote.modeler.client.widget.SelectIRWindow;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.util.Margins;

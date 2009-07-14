@@ -23,7 +23,6 @@ package org.openremote.modeler.server;
 import java.util.Map;
 
 import org.openremote.modeler.client.rpc.ProtocolService;
-import org.openremote.modeler.protocol.ProtocolAttrDefinition;
 import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.protocol.ProtocolDefinition;
 import org.openremote.modeler.service.ProtocolParser;
