@@ -41,6 +41,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -107,7 +108,7 @@ public class DevicePanel extends ContentPanel {
                         deviceWindow.hide();
                         TreeDataModel<Device> model = new TreeDataModel<Device>(device, device.getName());
                         store.add(model, true);
-//                        MessageBox.info("Info", "Add device " + device.getName() + " success.", null);
+                        Info.display("Info", "Add device " + device.getName() + " success.");
                      }
                   });
                }
@@ -155,7 +156,7 @@ public class DevicePanel extends ContentPanel {
                               }
                            }
                            store.insert(deviceModel, index, true);
-                           MessageBox.info("Info", "Edit device " + device.getName() + " success.", null);
+                           Info.display("Info", "Edit device " + device.getName() + " success.");
                         }
                      });
                   }
@@ -185,7 +186,7 @@ public class DevicePanel extends ContentPanel {
                   }
 
                   public void onSuccess(Void result) {
-                     MessageBox.info("Info", "Remove success.", null);
+                     Info.display("Info", "Remove success.");
                   }
 
                });
@@ -205,10 +206,11 @@ public class DevicePanel extends ContentPanel {
       LayoutContainer treeContainer = new LayoutContainer();
       treeContainer.setScrollMode(Scroll.AUTO);
       treeContainer.setStyleAttribute("backgroundColor", "white");
-      treeContainer.setBorders(true);
+      treeContainer.setBorders(false);
 
       store = new TreeStore<ModelData>();
       tree = new TreePanel<ModelData>(store);
+      tree.setBorders(false);
       deviceService.loadAll(new AsyncCallback<List<Device>>(){
          public void onFailure(Throwable caught) {
             caught.printStackTrace();
