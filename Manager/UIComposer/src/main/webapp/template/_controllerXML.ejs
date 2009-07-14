@@ -49,7 +49,7 @@
     <socketEvents>
 		 <% for (var index in events.tcpEvents.tcpEvent) {%>
 			<% var tcpEvent = events.tcpEvents.tcpEvent[index]; %>
-	      	<socketEvent id="<%=tcpEvent.id %>" label="<%=tcpEvent.label %>" ip="<%=tcpEvent.ip %>" port="<%=tcpEvent.port %>" command="<%=tcpEvent.command %>"/>
+	      	<tcpSocketEvent id="<%=tcpEvent.id %>" label="<%=tcpEvent.label %>" ip="<%=tcpEvent.ip %>" port="<%=tcpEvent.port %>" command="<%=tcpEvent.command %>"/>
 		 <% } %>
     </socketEvents>
 
