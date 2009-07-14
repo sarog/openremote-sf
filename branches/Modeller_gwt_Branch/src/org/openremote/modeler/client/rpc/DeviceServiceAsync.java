@@ -22,12 +22,12 @@ package org.openremote.modeler.client.rpc;
 
 import java.util.List;
 
+import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface DeviceServiceAsync.
  */
@@ -58,10 +58,20 @@ public interface DeviceServiceAsync {
    public void loadById(long id, AsyncCallback<Device> callback);
    
    /**
-    * Load all.
+    * Load all devices according to current account.
     * 
     * @param callback the callback
     */
    public void loadAll(AsyncCallback<List<Device>> callback);
+   
+   /**
+    * Load all.
+    * 
+    * @param account
+    *           the account
+    * @param callback
+    *           the callback
+    */
+   public void loadAll(Account account, AsyncCallback<List<Device>> callback);
    
 }

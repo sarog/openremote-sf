@@ -20,6 +20,7 @@
  */
 package org.openremote.modeler.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -43,6 +44,13 @@ public class Account extends BusinessEntity {
    
    /** The device macros. */
    private List<DeviceMacro> deviceMacros;
+   
+   
+
+   public Account() {
+      devices = new ArrayList<Device>();
+      deviceMacros = new ArrayList<DeviceMacro>();
+   }
 
    /**
     * Gets the user.
@@ -104,6 +112,16 @@ public class Account extends BusinessEntity {
       this.deviceMacros = deviceMacros;
    }
    
+   
+   /**
+    * Adds the device.
+    * 
+    * @param device
+    *           the device
+    */
+   public void addDevice(Device device){
+      devices.add(device);
+   }
    
    
 }

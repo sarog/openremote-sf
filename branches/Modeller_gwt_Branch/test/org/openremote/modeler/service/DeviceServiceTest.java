@@ -22,10 +22,14 @@ package org.openremote.modeler.service;
 
 import junit.framework.Assert;
 
+import org.hibernate.ObjectNotFoundException;
 import org.openremote.modeler.SpringContext;
 import org.openremote.modeler.TestNGBase;
 import org.openremote.modeler.client.rpc.DeviceService;
+import org.openremote.modeler.client.rpc.UserService;
+import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.User;
 import org.testng.annotations.Test;
 
 /**
@@ -38,12 +42,14 @@ public class DeviceServiceTest extends TestNGBase{
    /** The device service. */
    private DeviceService deviceService = 
       (DeviceService) SpringContext.getInstance().getBean("deviceService");
+   private UserService userService = 
+      (UserService) SpringContext.getInstance().getBean("userService");
    
    /**
     * Test save device.
     */
    @Test
-   public void testSaveDevice(){
+   public void save(){
       Device device = new Device();
       device.setName("tv");
       device.setModel("tv");
@@ -59,4 +65,38 @@ public class DeviceServiceTest extends TestNGBase{
       deviceInDB = deviceService.loadById(device.getOid());
       Assert.assertEquals(deviceInDB.getName(), device.getName());
    }
+   
+   @Test(dependsOnMethods="save",expectedExceptions={ObjectNotFoundException.class})
+   public void remove(){
+      Device device = new Device();
+      device.setName("xxx");
+      device.setModel("MP8640");
+      device.setVendor("3m");
+      deviceService.saveDevice(device);
+      deviceService.removeDevice(device);
+      Device deviceInDB = deviceService.loadById(device.getOid());
+      deviceInDB.getName();//throws ObjectNotFoundException
+   }
+   
+   @Test(dependsOnMethods="save")
+   public void loadAll(){
+      
+      User user = new User();
+      Account account = new Account();
+      user.setAccount(account);
+      Device device = new Device();
+      device.setName("tv");
+      device.setModel("tv");
+      device.setVendor("sony");
+      account.addDevice(device);
+      account.addDevice(device);
+      account.addDevice(device);
+      account.addDevice(device);
+      account.addDevice(device);
+      account.addDevice(device);
+      userService.saveUser(user);
+      Assert.assertEquals(6, deviceService.loadAll(account).size());
+      
+   }
+   
 }

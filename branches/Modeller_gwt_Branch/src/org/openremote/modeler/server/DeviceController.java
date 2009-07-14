@@ -23,7 +23,9 @@ package org.openremote.modeler.server;
 import java.util.List;
 
 import org.openremote.modeler.client.rpc.DeviceService;
+import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.service.UserServiceImpl;
 
 /**
  * The Class DeviceController.
@@ -35,6 +37,9 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
    
    /** The device service. */
    private DeviceService deviceService;
+   
+   /** The user service. */
+   private UserServiceImpl userService;
    
    /**
     * Sets the device service .
@@ -50,6 +55,7 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
     * @see org.openremote.modeler.client.rpc.DeviceService#saveDevice(java.util.Map)
     */
    public Device saveDevice(Device device) {
+      device.setAccount(userService.getAccount());
       return deviceService.saveDevice(device);
    }
 
@@ -67,8 +73,28 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
       return deviceService.loadById(id);
    }
 
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.client.rpc.DeviceService#loadAll()
+    */
    public List<Device> loadAll() {
-      return deviceService.loadAll();
+      return deviceService.loadAll(userService.getAccount());
    }
 
+   /**
+    * Sets the user service.
+    * 
+    * @param userService
+    *           the new user service
+    */
+   public void setUserService(UserServiceImpl userService) {
+      this.userService = userService;
+   }
+
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.client.rpc.DeviceService#loadAll(org.openremote.modeler.domain.Account)
+    */
+   public List<Device> loadAll(Account account) {
+      return null;
+   }
+   
 }
