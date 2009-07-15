@@ -20,7 +20,7 @@
  */
 package org.openremote.modeler.client.widget;
 
-import org.openremote.modeler.client.utils.NestedJsonLoadResultReader;
+import org.openremote.modeler.client.gxtExtends.NestedJsonLoadResultReader;
 
 import com.extjs.gxt.ui.client.data.BaseListLoader;
 import com.extjs.gxt.ui.client.data.ListLoadResult;

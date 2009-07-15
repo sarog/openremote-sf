@@ -1,38 +1,49 @@
-/* OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2009, OpenRemote Inc.
+/*
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
  * 
- * See the contributors.txt file in the distribution for a
- * full listing of individual contributors.
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
  * 
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
  * 
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * 
- * You should have received a copy of the GNU General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
+ * http://www.fsf.org.
  */
 package org.openremote.modeler.client.widget;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openremote.modeler.client.gxtExtends.ListViewDropTargetMacroDragExt;
+import org.openremote.modeler.client.gxtExtends.TreePanelDragSourceMacroDragExt;
 import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.model.DeviceMacroItemModel;
 import org.openremote.modeler.client.model.TreeDataModel;
+import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
+import org.openremote.modeler.domain.DeviceMacroItem;
+import org.openremote.modeler.domain.DeviceMacroRef;
 
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.Style.Scroll;
-import com.extjs.gxt.ui.client.data.BaseModelData;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.dnd.ListViewDragSource;
-import com.extjs.gxt.ui.client.dnd.ListViewDropTarget;
+import com.extjs.gxt.ui.client.dnd.TreePanelDragSource;
 import com.extjs.gxt.ui.client.dnd.DND.Feedback;
+import com.extjs.gxt.ui.client.dnd.DND.Operation;
+import com.extjs.gxt.ui.client.dnd.DND.TreeSource;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.DNDEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.FormEvent;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -59,20 +70,32 @@ import com.google.gwt.core.client.GWT;
  * The Class MacroWindow.
  */
 public class MacroWindow extends Window {
+
+   private DeviceMacro _deviceMacro = null;
+
+   /** The Constant MACRO_DND_GROUP. */
+   private static final String MACRO_DND_GROUP = "macro";
+
    /** The icons. */
    private Icons icons = GWT.create(Icons.class);
 
    /** The macro form. */
    private FormPanel macroForm = new FormPanel();
-      
+
+   /** The macro name field. */
+   private TextField<String> macroNameField = null;
+
    /** The add macro item container. */
    private LayoutContainer addMacroItemContainer;
-   
+
    /** The device command tree. */
-   private TreePanel<ModelData> deviceCommandTree = null;
-   
+   private TreePanel<TreeDataModel> deviceCommandTree = null;
+
    /** The left macro list. */
-   private TreePanel<ModelData> leftMacroList = null;
+   private TreePanel<TreeDataModel> leftMacroList = null;
+
+   /** The right macro item list view. */
+   private ListView<DeviceMacroItemModel> rightMacroItemListView = null;
 
    /**
     * Instantiates a new macro window.
@@ -86,11 +109,37 @@ public class MacroWindow extends Window {
    /**
     * Instantiates a new macro window.
     * 
-    * @param deviceMacro the device macro
+    * @param deviceMacro
+    *           the device macro
     */
    public MacroWindow(DeviceMacro deviceMacro) {
+      this._deviceMacro = deviceMacro;
       setHeading("Edit Macro");
       setup();
+      
+   }
+
+   /** The submit listeners. */
+   private List<Listener<AppEvent>> submitListeners = new ArrayList<Listener<AppEvent>>();
+
+   /**
+    * Listener will be called after form submit and all the validator on fields pass.
+    * 
+    * @param listener
+    *           the listener
+    */
+   public void addSubmitListener(Listener<AppEvent> listener) {
+      submitListeners.add(listener);
+   }
+
+   /**
+    * Remote submit listener.
+    * 
+    * @param listener
+    *           the listener
+    */
+   public void remoteSubmitListener(Listener<AppEvent> listener) {
+      submitListeners.remove(listener);
    }
 
    /**
@@ -109,6 +158,28 @@ public class MacroWindow extends Window {
       macroForm.setFrame(true);
       macroForm.setLabelAlign(LabelAlign.TOP);
       macroForm.setHeight(380);
+      macroForm.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
+         public void handleEvent(FormEvent be) {
+            DeviceMacro newDeviceMacro = new DeviceMacro();
+            if (_deviceMacro != null) {
+               newDeviceMacro.setOid(_deviceMacro.getOid());
+            }
+            newDeviceMacro.setName(macroNameField.getValue());
+
+            for (ModelData modelData : rightMacroItemListView.getStore().getModels()) {
+               if (modelData instanceof DeviceMacroItemModel) {
+                  DeviceMacroItemModel macroItemModel = (DeviceMacroItemModel) modelData;
+                  DeviceMacroItem deviceMacroItem = (DeviceMacroItem)macroItemModel.getData();
+                  newDeviceMacro.getDeviceMacroItems().add(deviceMacroItem);
+                  deviceMacroItem.setParentDeviceMacro(newDeviceMacro);
+               }
+            }
+            AppEvent appEvent = new AppEvent(Events.Submit, newDeviceMacro);
+
+            fireSubmitListener(appEvent);
+         }
+
+      });
       add(macroForm);
       show();
    }
@@ -118,7 +189,10 @@ public class MacroWindow extends Window {
     */
    private void createFormElement() {
 
-      TextField<String> macroNameField = new TextField<String>();
+      macroNameField = new TextField<String>();
+      if (_deviceMacro != null) {
+         macroNameField.setValue(_deviceMacro.getName());
+      }
       macroNameField.setAllowBlank(false);
       macroNameField.setFieldLabel("Macro Name");
       macroNameField.setName("macroName");
@@ -129,9 +203,17 @@ public class MacroWindow extends Window {
       createSelectCommandContainer();
 
       Button submitBtn = new Button("OK");
-      macroForm.addButton(submitBtn);
-      Button cancelBtn = new Button("Cancel");
-      macroForm.addButton(cancelBtn);
+      submitBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            if (macroForm.isValid()) {
+               macroForm.submit();
+            }
+         }
+
+      });
+
       macroForm.setButtonAlign(HorizontalAlignment.CENTER);
 
    }
@@ -187,10 +269,13 @@ public class MacroWindow extends Window {
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(true);
 
-      deviceCommandTree = new TreePanel<ModelData>(new TreeStore<ModelData>());
-      deviceCommandTree.setDisplayProperty(TreeDataModel.getDisplayProperty());
+      deviceCommandTree = TreePanelBuilder.buildDeviceCommandTree();
+      deviceCommandTree.setHeight("100%");
 
-      deviceCommandTree.getStyle().setLeafIcon(icons.macroIcon());
+      TreePanelDragSourceMacroDragExt dragSource = new TreePanelDragSourceMacroDragExt(deviceCommandTree);
+      dragSource.setGroup(MACRO_DND_GROUP);
+      dragSource.setTreeSource(TreeSource.LEAF);
+
       treeContainer.add(deviceCommandTree);
 
       return treeContainer;
@@ -206,6 +291,17 @@ public class MacroWindow extends Window {
       leftMacroListContainer.setScrollMode(Scroll.AUTO);
       leftMacroListContainer.setStyleAttribute("backgroundColor", "white");
       leftMacroListContainer.setBorders(true);
+
+      leftMacroList = TreePanelBuilder.buildMacroTree();
+      leftMacroListContainer.setHeight("100%");
+      leftMacroListContainer.add(leftMacroList);
+      
+  
+
+      TreePanelDragSourceMacroDragExt dragSource = new TreePanelDragSourceMacroDragExt(leftMacroList);
+      dragSource.setGroup(MACRO_DND_GROUP);
+      dragSource.setTreeSource(TreeSource.NODE);
+
       return leftMacroListContainer;
    }
 
@@ -227,38 +323,79 @@ public class MacroWindow extends Window {
       Button deleteBtn = new Button();
       deleteBtn.setToolTip("Delete Macro Item");
       deleteBtn.setIcon(icons.macroDeleteIcon());
+      deleteBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            if (rightMacroItemListView.getSelectionModel().getSelectedItems().size() > 0) {
+               for (DeviceMacroItemModel data : rightMacroItemListView.getSelectionModel().getSelectedItems()) {
+                  int index = rightMacroItemListView.getStore().indexOf(data);
+                  rightMacroItemListView.getStore().remove(data);
+                  if (rightMacroItemListView.getStore().getCount() > 0) {
+                     rightMacroItemListView.getSelectionModel().select(index, false);
+                  }
+               }
+            }
+         }
+
+      });
       toolBar.add(deleteBtn);
 
       rightListContainer.setTopComponent(toolBar);
 
-      ListView<ModelData> listView = new ListView<ModelData>();
-      listView.setDisplayProperty("label");
+      rightMacroItemListView = new ListView<DeviceMacroItemModel>(){
+          @Override  
+          protected DeviceMacroItemModel prepareData(DeviceMacroItemModel model) {  
+            String s = model.getLabel();
+            if (model.getData() instanceof DeviceMacroRef) {
+               s+="  (DeviceMacro)";
+            } else if (model.getData() instanceof DeviceCommandRef) {
+               s+="  (DeviceCommand)";
+            }
+            model.set("display", s);
+            return model;  
+          }  
+      };
+      rightMacroItemListView.setDisplayProperty("display");
 
-      ListStore<ModelData> store = new ListStore<ModelData>();
+      ListStore<DeviceMacroItemModel> store = new ListStore<DeviceMacroItemModel>();
 
-      listView.setStore(store);
-      BaseModelData model = new BaseModelData();
-      model.set("label", "model1");
-      BaseModelData model2 = new BaseModelData();
-      model2.set("label", "model2");
-      store.add(model);
-      store.add(model2);
-      listView.setHeight(203);
-
-      ListViewDropTarget dropTarget = new ListViewDropTarget(listView);
+      rightMacroItemListView.setStore(store);
+      rightMacroItemListView.setHeight(203);
+      
+      if (_deviceMacro !=null && _deviceMacro.getDeviceMacroItems().size() > 0) {
+         for (DeviceMacroItem deviceMacroItem : _deviceMacro.getDeviceMacroItems()) {
+           DeviceMacroItemModel deviceMacroItemModel = new DeviceMacroItemModel(deviceMacroItem.getLabel(),deviceMacroItem);
+           rightMacroItemListView.getStore().add(deviceMacroItemModel);
+         }
+       
+      }
+      ListViewDropTargetMacroDragExt dropTarget = new ListViewDropTargetMacroDragExt(rightMacroItemListView);
       dropTarget.setAllowSelfAsSource(true);
-      dropTarget.setGroup("macro");
+      dropTarget.setGroup(MACRO_DND_GROUP);
       dropTarget.setFeedback(Feedback.INSERT);
+      dropTarget.setOperation(Operation.MOVE);
 
-      ListViewDragSource dragSource = new ListViewDragSource(listView);
-      dragSource.setGroup("macro");
+      ListViewDragSource dragSource = new ListViewDragSource(rightMacroItemListView);
+      dragSource.setGroup(MACRO_DND_GROUP);
 
-      rightListContainer.add(listView);
+      rightListContainer.add(rightMacroItemListView);
       HBoxLayoutData flex = new HBoxLayoutData(new Margins(0, 5, 0, 0));
       flex.setFlex(1);
       addMacroItemContainer.add(new Text(), flex);
       addMacroItemContainer.add(rightListContainer);
+   }
 
+   /**
+    * Fire submit listener.
+    * 
+    * @param event
+    *           the event
+    */
+   protected void fireSubmitListener(AppEvent event) {
+      for (Listener<AppEvent> listener : submitListeners) {
+         listener.handleEvent(event);
+      }
    }
 
 }

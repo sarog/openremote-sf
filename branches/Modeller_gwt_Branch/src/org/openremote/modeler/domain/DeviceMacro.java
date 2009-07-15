@@ -20,8 +20,10 @@
  */
 package org.openremote.modeler.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -39,7 +41,7 @@ import javax.persistence.Table;
 public class DeviceMacro extends BusinessEntity {
    
    /** The device macro items. */
-   private List<DeviceMacroItem> deviceMacroItems;
+   private List<DeviceMacroItem> deviceMacroItems = new ArrayList<DeviceMacroItem>();
    
    /** The name. */
    private String name;
@@ -73,7 +75,7 @@ public class DeviceMacro extends BusinessEntity {
     * 
     * @return the device macro items
     */
-   @OneToMany(mappedBy = "parentDeviceMacro")
+   @OneToMany(mappedBy = "parentDeviceMacro",cascade = CascadeType.ALL)
    public List<DeviceMacroItem> getDeviceMacroItems() {
       return deviceMacroItems;
    }
