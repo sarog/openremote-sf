@@ -10,4 +10,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("deviceCommand.smvc")
 public interface DeviceCommandService extends RemoteService{
    List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands);
+   
+   DeviceCommand save(DeviceCommand deviceCommand);
+   
+   void removeCommand(DeviceCommand deviceCommand);
 }

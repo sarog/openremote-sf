@@ -26,6 +26,7 @@ import org.hibernate.Hibernate;
 import org.openremote.modeler.client.rpc.DeviceService;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceCommand;
 
 /**
  * The Class DeviceServiceImpl.
@@ -56,6 +57,9 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       if (devices != null) {
          for (Device device : devices) {
             Hibernate.initialize(device.getDeviceCommands());
+            for (DeviceCommand deviceCommand : device.getDeviceCommands()) {
+               Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
+            }
          }
       }
       return devices;

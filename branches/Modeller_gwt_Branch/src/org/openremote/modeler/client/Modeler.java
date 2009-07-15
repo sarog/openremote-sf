@@ -28,7 +28,7 @@ public class Modeler implements EntryPoint {
     * This is the entry point method.
     */
    public void onModuleLoad() {
-      // createCenter();
+//       createCenter();
       init();
    }
 

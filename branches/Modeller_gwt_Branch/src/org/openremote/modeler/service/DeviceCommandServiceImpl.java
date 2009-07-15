@@ -22,6 +22,7 @@ package org.openremote.modeler.service;
 
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.openremote.modeler.client.rpc.DeviceCommandService;
 import org.openremote.modeler.domain.DeviceCommand;
 
@@ -40,6 +41,16 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
          genericDAO.save(command);
       }
       return deviceCommands;
+   }
+
+   public DeviceCommand save(DeviceCommand deviceCommand) {
+      genericDAO.saveOrUpdate(deviceCommand);
+      Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
+      return deviceCommand;
+   }
+
+   public void removeCommand(DeviceCommand deviceCommand) {
+      genericDAO.delete(deviceCommand);
    }
 
 }
