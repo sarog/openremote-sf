@@ -131,14 +131,17 @@ public class DeviceWindow extends SubmitWindow {
       TextField<String> nameField = new TextField<String>();
       nameField.setName("name");
       nameField.setFieldLabel("Name");
+      nameField.setAllowBlank(false);
       
       TextField<String> vendorField = new TextField<String>();
       vendorField.setName("vendor");
       vendorField.setFieldLabel("Vendor");
+      vendorField.setAllowBlank(false);
       
       TextField<String> modelField = new TextField<String>();
       modelField.setName("model");
       modelField.setFieldLabel("Model");
+      modelField.setAllowBlank(false);
       
       form.add(nameField);
       form.add(vendorField);
@@ -150,16 +153,19 @@ public class DeviceWindow extends SubmitWindow {
       nameField.setName("name");
       nameField.setFieldLabel("Name");
       nameField.setValue(device.getName());
+      nameField.setAllowBlank(false);
       
       TextField<String> vendorField = new TextField<String>();
       vendorField.setName("vendor");
       vendorField.setFieldLabel("Vendor");
       vendorField.setValue(device.getVendor());
+      vendorField.setAllowBlank(false);
       
       TextField<String> modelField = new TextField<String>();
       modelField.setName("model");
       modelField.setFieldLabel("Model");
       modelField.setValue(device.getModel());
+      modelField.setAllowBlank(false);
       
       form.add(nameField);
       form.add(vendorField);

@@ -25,6 +25,7 @@ import java.util.List;
 import org.openremote.modeler.auth.Authority;
 import org.openremote.modeler.client.rpc.AuthorityService;
 import org.openremote.modeler.client.rpc.AuthorityServiceAsync;
+import org.openremote.modeler.client.utils.Protocols;
 
 import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.util.Margins;
@@ -49,6 +50,7 @@ public class ApplicationView implements View {
    private Viewport viewport;
    
    public void initialize() {
+      Protocols.getInstance(); // get protocol definition from xml files 
       viewport = new Viewport();
       viewport.setLayout(new BorderLayout());
       final AuthorityServiceAsync auth = (AuthorityServiceAsync)GWT.create(AuthorityService.class);
