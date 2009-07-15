@@ -26,13 +26,10 @@ import org.openremote.modeler.client.rpc.DeviceCommandService;
 import org.openremote.modeler.client.rpc.DeviceCommandServiceAsync;
 import org.openremote.modeler.client.rpc.DeviceService;
 import org.openremote.modeler.client.rpc.DeviceServiceAsync;
-import org.openremote.modeler.client.rpc.ProtocolService;
-import org.openremote.modeler.client.rpc.ProtocolServiceAsync;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.ProtocolAttr;
-import org.openremote.modeler.protocol.ProtocolDefinition;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -120,64 +117,52 @@ public class DevicePanel extends ContentPanel {
          }
       });
       
-      final ProtocolServiceAsync protocolService = (ProtocolServiceAsync) GWT.create(ProtocolService.class);
       newCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             final ModelData selected = tree.getSelectionModel().getSelectedItem();
             if (selected != null && selected.get(TreeDataModel.getDataProperty()) instanceof Device) {
-               protocolService.getProtocols(new AsyncCallback<Map<String, ProtocolDefinition>>() {
-                  public void onFailure(Throwable caught) {
-                     caught.printStackTrace();
-                     MessageBox.info("Error", caught.getMessage(), null);
-                  }
+               final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow();
+               deviceCommandWindow.show();
+               deviceCommandWindow.addSubmitListener(new Listener<AppEvent>() {
+                  public void handleEvent(AppEvent be) {
+                     final TreeDataModel<Device> deviceNode = (TreeDataModel<Device>) selected;
+                     Device device = deviceNode.getData();
+                     Map<String, String> map = be.getData();
 
-                  public void onSuccess(Map<String, ProtocolDefinition> protocols) {
-                     final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(protocols);
-                     deviceCommandWindow.show();
-                     deviceCommandWindow.addSubmitListener(new Listener<AppEvent>() {
-                        public void handleEvent(AppEvent be) {
-                           final TreeDataModel<Device> deviceNode = (TreeDataModel<Device>) selected;
-                           Device device = deviceNode.getData();
-                           Map<String, String> map = be.getData();
+                     DeviceCommand deviceCommand = new DeviceCommand();
+                     deviceCommand.setName(map.get("name"));
+                     deviceCommand.setDevice(device);
 
-                           DeviceCommand deviceCommand = new DeviceCommand();
-                           deviceCommand.setName(map.get("name"));
-                           deviceCommand.setDevice(device);
+                     Protocol protocol = new Protocol();
+                     protocol.setType(map.get("protocol"));
+                     protocol.setDeviceCommand(deviceCommand);
 
-                           Protocol protocol = new Protocol();
-                           protocol.setType(map.get("protocol"));
-                           protocol.setDeviceCommand(deviceCommand);
+                     for (String key : map.keySet()) {
+                        System.out.println(key + ": " + map.get(key));
+                        if ("name".equals(key) || "protocol".equals(key)) {
+                           continue;
+                        }
+                        ProtocolAttr protocolAttr = new ProtocolAttr();
+                        protocolAttr.setName(key);
+                        protocolAttr.setValue((map.get(key)));
+                        protocolAttr.setProtocol(protocol);
+                        protocol.getAttributes().add(protocolAttr);
+                     }
 
-                           for (String key : map.keySet()) {
-                              System.out.println(key + ": " + map.get(key));
-                              if ("name".equals(key) || "protocol".equals(key)) {
-                                 continue;
-                              }
-                              ProtocolAttr protocolAttr = new ProtocolAttr();
-                              protocolAttr.setName(key);
-                              protocolAttr.setValue((map.get(key)));
-                              protocolAttr.setProtocol(protocol);
-                              protocol.getAttributes().add(protocolAttr);
-                           }
+                     deviceCommand.setProtocol(protocol);
+                     device.getDeviceCommands().add(deviceCommand);
 
-                           deviceCommand.setProtocol(protocol);
-                           device.getDeviceCommands().add(deviceCommand);
-
-                           deviceCommandServiceAsync.save(deviceCommand, new AsyncCallback<DeviceCommand>() {
-                              public void onFailure(Throwable caught) {
-                                 caught.printStackTrace();
-                                 MessageBox.info("Error", caught.getMessage(), null);
-                              }
-
-                              public void onSuccess(DeviceCommand deviceCommand) {
-                                 TreeDataModel<DeviceCommand> deviceCommandNode = new TreeDataModel<DeviceCommand>(
-                                       deviceCommand, deviceCommand.getName());
-                                 tree.getStore().add(deviceNode, deviceCommandNode, false);
-                                 tree.setExpanded(deviceNode, true);
-                                 deviceCommandWindow.hide();
-                              }
-
-                           });
+                     deviceCommandServiceAsync.save(deviceCommand, new AsyncCallback<DeviceCommand>() {
+                        public void onFailure(Throwable caught) {
+                           caught.printStackTrace();
+                           MessageBox.info("Error", caught.getMessage(), null);
+                        }
+                        public void onSuccess(DeviceCommand deviceCommand) {
+                           TreeDataModel<DeviceCommand> deviceCommandNode = new TreeDataModel<DeviceCommand>(
+                                 deviceCommand, deviceCommand.getName());
+                           tree.getStore().add(deviceNode, deviceCommandNode, false);
+                           tree.setExpanded(deviceNode, true);
+                           deviceCommandWindow.hide();
                         }
                      });
                   }

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openremote.modeler.client.model.ComboBoxDataModel;
+import org.openremote.modeler.client.utils.Protocols;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.protocol.ProtocolAttrDefinition;
@@ -42,16 +43,16 @@ public class DeviceCommandWindow extends SubmitWindow {
    private FormPanel commandForm = new FormPanel();
    private ComboBox<ModelData> protocol = new ComboBox<ModelData>();
    
-   public DeviceCommandWindow(Map<String, ProtocolDefinition> protocols) {
+   public DeviceCommandWindow() {
       setHeading("New command");
       initial();
-      createFields(protocols);
+      createFields(Protocols.getInstance());
       add(commandForm);
    }
    public DeviceCommandWindow(DeviceCommand deviceCommand) {
       setHeading("Edit command");
       initial();
-      createFields(deviceCommand);
+      createFields(Protocols.getInstance(), deviceCommand);
       add(commandForm);
    }
    private void initial(){
@@ -114,11 +115,13 @@ public class DeviceCommandWindow extends SubmitWindow {
       TextField<String> nameField = new TextField<String>();
       nameField.setName("name");
       nameField.setFieldLabel("Name");
+      nameField.setAllowBlank(false);
       
       ListStore<ModelData> store = new ListStore<ModelData>();
       protocol.setStore(store);
       protocol.setFieldLabel("Protocol");
       protocol.setName("protocol");
+      protocol.setAllowBlank(false);
       
       for (String key : protocols.keySet()) {
          ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(key,protocols.get(key));
@@ -145,16 +148,20 @@ public class DeviceCommandWindow extends SubmitWindow {
       commandForm.layout();
    }
    
-   private void createFields(DeviceCommand deviceCommand){
+   private void createFields(Map<String, ProtocolDefinition> protocols, DeviceCommand deviceCommand){
+      String protocolName = deviceCommand.getProtocol().getType();
+      ProtocolDefinition protocolDefinition = protocols.get(protocolName);
+      
       TextField<String> nameField = new TextField<String>();
       nameField.setName("name");
       nameField.setFieldLabel("Name");
       nameField.setValue(deviceCommand.getName());
+      nameField.setAllowBlank(false);
       
       TextField<String> protocolField = new TextField<String>();
       protocolField.setName("proto");
       protocolField.setFieldLabel("Protocol");
-      protocolField.setValue(deviceCommand.getProtocol().getType());
+      protocolField.setValue(protocolName);
       protocolField.disable();
       
       FieldSet attrSet = new FieldSet();
@@ -163,11 +170,17 @@ public class DeviceCommandWindow extends SubmitWindow {
       attrSet.setLayout(layout);
       attrSet.setHeading(protocolField.getValue()+" attributes");
       
-      for (ProtocolAttr attr : deviceCommand.getProtocol().getAttributes()) {
+      for (ProtocolAttrDefinition attrDefinition : protocolDefinition.getAttrs()) {
          TextField<String> attrField = new TextField<String>();
-         attrField.setName(attr.getName());
-         attrField.setFieldLabel(attr.getName());
-         attrField.setValue(attr.getValue());
+         attrField.setName(attrDefinition.getName());
+         TextField<String>.TextFieldMessages messages = attrField.getMessages();
+         attrField.setFieldLabel(attrDefinition.getLabel());
+         for (ProtocolAttr attr : deviceCommand.getProtocol().getAttributes()) {
+            if(attrDefinition.getName().equals(attr.getName())){
+               attrField.setValue(attr.getValue());
+            }
+         }
+         setValidators(attrField, messages, attrDefinition.getValidators());
          
          attrSet.add(attrField);
       }
