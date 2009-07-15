@@ -26,10 +26,13 @@ import org.openremote.modeler.client.rpc.DeviceCommandService;
 import org.openremote.modeler.client.rpc.DeviceCommandServiceAsync;
 import org.openremote.modeler.client.rpc.DeviceService;
 import org.openremote.modeler.client.rpc.DeviceServiceAsync;
+import org.openremote.modeler.client.rpc.ProtocolService;
+import org.openremote.modeler.client.rpc.ProtocolServiceAsync;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.ProtocolAttr;
+import org.openremote.modeler.protocol.ProtocolDefinition;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -61,6 +64,7 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
 public class DevicePanel extends ContentPanel {
 
    private final DeviceServiceAsync deviceService = (DeviceServiceAsync) GWT.create(DeviceService.class);
+   private final DeviceCommandServiceAsync deviceCommandServiceAsync = (DeviceCommandServiceAsync) GWT.create(DeviceCommandService.class);
    private TreeStore<ModelData> store;
    private TreePanel<ModelData> tree;
    private Icons icon = GWT.create(Icons.class);
@@ -115,6 +119,74 @@ public class DevicePanel extends ContentPanel {
             });
          }
       });
+      
+      final ProtocolServiceAsync protocolService = (ProtocolServiceAsync) GWT.create(ProtocolService.class);
+      newCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+         public void componentSelected(MenuEvent ce) {
+            final ModelData selected = tree.getSelectionModel().getSelectedItem();
+            if (selected != null && selected.get(TreeDataModel.getDataProperty()) instanceof Device) {
+               protocolService.getProtocols(new AsyncCallback<Map<String, ProtocolDefinition>>() {
+                  public void onFailure(Throwable caught) {
+                     caught.printStackTrace();
+                     MessageBox.info("Error", caught.getMessage(), null);
+                  }
+
+                  public void onSuccess(Map<String, ProtocolDefinition> protocols) {
+                     final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(protocols);
+                     deviceCommandWindow.show();
+                     deviceCommandWindow.addSubmitListener(new Listener<AppEvent>() {
+                        public void handleEvent(AppEvent be) {
+                           final TreeDataModel<Device> deviceNode = (TreeDataModel<Device>) selected;
+                           Device device = deviceNode.getData();
+                           Map<String, String> map = be.getData();
+
+                           DeviceCommand deviceCommand = new DeviceCommand();
+                           deviceCommand.setName(map.get("name"));
+                           deviceCommand.setDevice(device);
+
+                           Protocol protocol = new Protocol();
+                           protocol.setType(map.get("protocol"));
+                           protocol.setDeviceCommand(deviceCommand);
+
+                           for (String key : map.keySet()) {
+                              System.out.println(key + ": " + map.get(key));
+                              if ("name".equals(key) || "protocol".equals(key)) {
+                                 continue;
+                              }
+                              ProtocolAttr protocolAttr = new ProtocolAttr();
+                              protocolAttr.setName(key);
+                              protocolAttr.setValue((map.get(key)));
+                              protocolAttr.setProtocol(protocol);
+                              protocol.getAttributes().add(protocolAttr);
+                           }
+
+                           deviceCommand.setProtocol(protocol);
+                           device.getDeviceCommands().add(deviceCommand);
+
+                           deviceCommandServiceAsync.save(deviceCommand, new AsyncCallback<DeviceCommand>() {
+                              public void onFailure(Throwable caught) {
+                                 caught.printStackTrace();
+                                 MessageBox.info("Error", caught.getMessage(), null);
+                              }
+
+                              public void onSuccess(DeviceCommand deviceCommand) {
+                                 TreeDataModel<DeviceCommand> deviceCommandNode = new TreeDataModel<DeviceCommand>(
+                                       deviceCommand, deviceCommand.getName());
+                                 tree.getStore().add(deviceNode, deviceCommandNode, false);
+                                 tree.setExpanded(deviceNode, true);
+                                 deviceCommandWindow.hide();
+                              }
+
+                           });
+                        }
+                     });
+                  }
+               });
+            } else {
+               MessageBox.info("Error", "Please select a device", null);
+            }
+         }
+      });
 
       newMenu.add(newDeviceItem);
       newMenu.add(newCommandItem);
@@ -162,9 +234,47 @@ public class DevicePanel extends ContentPanel {
                   }
                   
                });
+            }else if(selected != null && selected.get(TreeDataModel.getDataProperty()) instanceof DeviceCommand){
+               TreeDataModel<DeviceCommand> deviceCommandNode = (TreeDataModel<DeviceCommand>) selected;
+               DeviceCommand deviceCommand = deviceCommandNode.getData();
+               final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(deviceCommand);
+               deviceCommandWindow.show();
+               deviceCommandWindow.addSubmitListener(new Listener<AppEvent>(){
+                  public void handleEvent(AppEvent be) {
+                     if (tree.getSelectionModel().getSelectedItem() != null) {
+                        if (tree.getSelectionModel().getSelectedItem().get(TreeDataModel.getDataProperty()) instanceof DeviceCommand) {
+                           final TreeDataModel<DeviceCommand> deviceCommandNode = (TreeDataModel<DeviceCommand>) tree.getSelectionModel().getSelectedItem();
+                           DeviceCommand deviceCommand = deviceCommandNode.getData();
+                           Map<String, String> map = be.getData();
+                           
+                           deviceCommand.setName(map.get("name"));
+                           List<ProtocolAttr> attrs = deviceCommand.getProtocol().getAttributes();
+                           for (int i = 0; i < attrs.size(); i++) {
+                              deviceCommand.getProtocol().getAttributes().get(i).setValue(map.get(attrs.get(i).getName()));
+                           };
+                           
+                           deviceCommandServiceAsync.save(deviceCommand, new AsyncCallback<DeviceCommand>() {
+                              public void onFailure(Throwable caught) {
+                                 caught.printStackTrace();
+                                 MessageBox.info("Error", caught.getMessage(), null);
+                              }
+                              public void onSuccess(DeviceCommand deviceCommand) {
+                                 TreeDataModel<DeviceCommand> deviceCommandNode = new TreeDataModel<DeviceCommand>(deviceCommand, deviceCommand.getName());
+                                 ModelData parent = store.getParent(selected);
+                                 int index = store.getChildren(parent).indexOf(selected);
+                                 store.remove(selected);
+                                 store.insert(parent, deviceCommandNode, index, false);
+                                 deviceCommandWindow.hide();
+                              }
+                              
+                           });
+                        }
+                     }
+                  }
+                  
+               });
             }
          }
-         
       });
       toolBar.add(edit);
 
@@ -189,6 +299,19 @@ public class DevicePanel extends ContentPanel {
                      Info.display("Info", "Remove success.");
                   }
 
+               });
+            }else if(selected != null && selected.get(TreeDataModel.getDataProperty()) instanceof DeviceCommand){
+               TreeDataModel<DeviceCommand> deviceCommandNode = (TreeDataModel<DeviceCommand>) selected;
+               DeviceCommand deviceCommand = deviceCommandNode.getData();
+               deviceCommandServiceAsync.removeCommand(deviceCommand, new AsyncCallback<Void>() {
+                  public void onFailure(Throwable caught) {
+                     caught.printStackTrace();
+                     MessageBox.info("Error", caught.getMessage(), null);
+                  }
+                  public void onSuccess(Void result) {
+                     Info.display("Info", "Remove success.");
+                  }
+                  
                });
             }
             store.remove(selected);
@@ -314,29 +437,23 @@ public class DevicePanel extends ContentPanel {
                deviceCommands.add(deviceCommand);
             }
 
-            DeviceCommandServiceAsync deviceCommandServiceAsync = (DeviceCommandServiceAsync) GWT
-                  .create(DeviceCommandService.class);
             deviceCommandServiceAsync.saveAll(deviceCommands, new AsyncCallback<List<DeviceCommand>>() {
 
                public void onFailure(Throwable e) {
                   MessageBox.alert("Error", "Import IR Command occur " + e.getMessage(), null);
                }
-
                public void onSuccess(List<DeviceCommand> deviceCommands) {
                   for (DeviceCommand command : deviceCommands) {
                      TreeDataModel<DeviceCommand> deviceCommandNode = new TreeDataModel<DeviceCommand>(command, command
                            .getName());
                      tree.getStore().add(deviceNode, deviceCommandNode, false);
-                     
                   }
                   tree.setExpanded(deviceNode, true);
                   selectIRWindow.hide();
-
                }
-
             });
-
          }
       }
    }
+   
 }

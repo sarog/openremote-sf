@@ -54,7 +54,6 @@ public class DeviceWindow extends SubmitWindow {
       initial("New device");
       createFields();
       add(form);
-      setLayout(new FillLayout());
       show();
    }
    
@@ -77,7 +76,8 @@ public class DeviceWindow extends SubmitWindow {
       setWidth(360);
       setHeight(200);
       setHeading(heading);
-
+      setLayout(new FillLayout());
+      
       form.setFrame(true);
       form.setHeaderVisible(false);
       form.setWidth(350);
