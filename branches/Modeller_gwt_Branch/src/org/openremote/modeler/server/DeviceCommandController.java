@@ -30,4 +30,8 @@ public class DeviceCommandController extends BaseGWTSpringControllerWithHibernat
       deviceCommandService.removeCommand(deviceCommand);
    }
 
+   public void update(DeviceCommand deviceCommand) {
+      deviceCommandService.update(deviceCommand);
+   }
+
 }

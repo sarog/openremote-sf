@@ -44,13 +44,18 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
    }
 
    public DeviceCommand save(DeviceCommand deviceCommand) {
-      genericDAO.saveOrUpdate(deviceCommand);
+      genericDAO.save(deviceCommand);
       Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
       return deviceCommand;
    }
 
    public void removeCommand(DeviceCommand deviceCommand) {
       genericDAO.delete(deviceCommand);
+   }
+
+   public void update(DeviceCommand deviceCommand) {
+      genericDAO.saveOrUpdate(deviceCommand);
+      
    }
 
 }
