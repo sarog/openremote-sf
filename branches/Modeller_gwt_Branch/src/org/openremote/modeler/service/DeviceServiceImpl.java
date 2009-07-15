@@ -37,8 +37,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
     * @see org.openremote.modeler.client.rpc.DeviceService#saveDevice(java.util.Map)
     */
    public Device saveDevice(Device device) {
-      genericDAO.saveOrUpdate(device);
-      Hibernate.initialize(device.getDeviceCommands());
+      genericDAO.save(device);
       return device;
    }
 
@@ -63,6 +62,10 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
          }
       }
       return devices;
+   }
+
+   public void updateDevice(Device device) {
+      genericDAO.saveOrUpdate(device);
    }
    
   

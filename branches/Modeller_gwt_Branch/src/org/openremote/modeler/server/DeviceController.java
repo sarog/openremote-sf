@@ -96,5 +96,11 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
    public List<Device> loadAll(Account account) {
       return null;
    }
+
+   @Override
+   public void updateDevice(Device device) {
+      deviceService.updateDevice(device);
+      
+   }
    
 }

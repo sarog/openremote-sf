@@ -48,6 +48,8 @@ public interface DeviceCommandServiceAsync {
     */
    public void save(DeviceCommand deviceCommand,AsyncCallback<DeviceCommand> callback);
    
+   public void update(DeviceCommand deviceCommand,AsyncCallback<Void> callback);
+   
    /**
     * Removes the command.
     * 
