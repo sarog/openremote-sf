@@ -25,6 +25,7 @@
                 <prop key="/modeler/auth.smvc">authorityService</prop>
                 <prop key="/modeler/device.smvc">deviceController</prop>
                 <prop key="/modeler/deviceCommand.smvc">deviceCommandController</prop>
+                <prop key="/modeler/deviceMacro.smvc">deviceMacroController</prop>
             </props>
         </property>
     </bean>
@@ -33,5 +34,6 @@
     <bean id="authorityService" class="org.openremote.modeler.server.AuthorityServiceImpl"></bean>
     <bean id="deviceController" class="org.openremote.modeler.server.DeviceController"></bean>
     <bean id="deviceCommandController" class="org.openremote.modeler.server.DeviceCommandController"></bean>
+    <bean id="deviceMacroController" class="org.openremote.modeler.server.DeviceMacroController"></bean>
     
 </beans>

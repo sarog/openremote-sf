@@ -22,31 +22,39 @@ package org.openremote.modeler.client.widget;
 
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.model.TreeDataModel;
+import org.openremote.modeler.client.rpc.DeviceMacroService;
+import org.openremote.modeler.client.rpc.DeviceMacroServiceAsync;
+import org.openremote.modeler.domain.DeviceMacro;
+import org.openremote.modeler.domain.DeviceMacroItem;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
-import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.store.TreeStore;
+import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MacroPanel.
  */
 public class MacroPanel extends ContentPanel {
+
+   /** The device macro service. */
+   private DeviceMacroServiceAsync deviceMacroService = (DeviceMacroServiceAsync) GWT.create(DeviceMacroService.class);
    
    /** The icons. */
    private Icons icons = GWT.create(Icons.class);
-   
+
    /** The macro tree. */
-   private TreePanel<ModelData> macroTree = null;
+   private TreePanel<TreeDataModel> macroTree = null;
 
    /**
     * Instantiates a new macro panel.
@@ -58,7 +66,6 @@ public class MacroPanel extends ContentPanel {
       createMacroTree();
       setIcon(icons.macroIcon());
       setBodyBorder(false);
-
    }
 
    /**
@@ -66,49 +73,166 @@ public class MacroPanel extends ContentPanel {
     */
    private void createMenu() {
       ToolBar macroToolBar = new ToolBar();
-      
+
       Button newMacroBtn = new Button("New");
       newMacroBtn.setIcon(icons.macroAddIcon());
-      newMacroBtn.addSelectionListener(new SelectionListener<ButtonEvent>(){
+      newMacroBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
          @Override
          public void componentSelected(ButtonEvent ce) {
-            MacroWindow macroWindow = new MacroWindow();
+            final MacroWindow macroWindow = new MacroWindow();
             
+            macroWindow.addSubmitListener(new Listener<AppEvent>() {
+
+               public void handleEvent(AppEvent be) {
+                  DeviceMacro deviceMacro = be.getData();
+                  deviceMacroService.saveDeviceMacro(deviceMacro, new AsyncCallback<DeviceMacro>() {
+                     public void onFailure(Throwable e) {
+                        MessageBox.alert("Error", e.getLocalizedMessage(), null);
+                     }
+
+                     public void onSuccess(DeviceMacro deviceMacro) {
+                 
+                        if (macroTree != null) {
+                           macroTree.getStore().add(createModelWithDeviceMacro(deviceMacro), true);
+                        }
+
+                     }
+                  });
+                  macroWindow.hide();
+               }
+
+            });
+            macroWindow.show();
          }
-         
+
       });
       macroToolBar.add(newMacroBtn);
-      
+
       Button editMacroBtn = new Button("Edit");
       editMacroBtn.setIcon(icons.macroEditIcon());
+      editMacroBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            if (macroTree.getSelectionModel().getSelectedItem() != null) {
+                  final TreeDataModel dataModel = macroTree.getSelectionModel().getSelectedItem();
+                  if (dataModel.getData() instanceof DeviceMacro) {
+                     final MacroWindow macroWindow = new MacroWindow((DeviceMacro) dataModel.getData());
+                     macroWindow.addSubmitListener(new Listener<AppEvent>() {
+                        public void handleEvent(AppEvent be) {
+                           DeviceMacro deviceMacro = be.getData();
+                           deviceMacroService.updateDeviceMacro(deviceMacro, new AsyncCallback<DeviceMacro>() {
+
+                              public void onFailure(Throwable caught) {
+                                 MessageBox.alert("Error", caught.getLocalizedMessage(), null);
+                              }
+
+                              public void onSuccess(DeviceMacro result) {
+                                 int index = macroTree.getStore().indexOf(dataModel);
+                                 macroTree.getStore().remove(dataModel);
+                                 TreeDataModel newModel = createModelWithDeviceMacro(result);
+                                 macroTree.getStore().insert(newModel, index, true);
+                                 macroTree.setExpanded(newModel, true);
+                                 macroWindow.hide();
+                                 macroTree.getSelectionModel().select(newModel, false);
+                              }
+                           });
+                        }
+                       
+                     });
+                     macroWindow.show();
+
+                     
+               }
+            }
+
+         }
+
+      });
       macroToolBar.add(editMacroBtn);
-      
+
       Button deleteMacroBtn = new Button("Delete");
       deleteMacroBtn.setIcon(icons.macroDeleteIcon());
+      deleteMacroBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            if (macroTree.getSelectionModel().getSelectedItems().size() > 0) {
+               for (final TreeDataModel data : macroTree.getSelectionModel().getSelectedItems()) {
+                  if (data.getData() instanceof DeviceMacro) {
+                        DeviceMacro deviceMacro = (DeviceMacro) data.getData();
+                        deviceMacroService.deleteDeviceMacro(deviceMacro.getOid(), new AsyncCallback<Void>() {
+                           public void onFailure(Throwable caught) {
+                              MessageBox.alert("Error", caught.getLocalizedMessage(), null);
+                           }
+
+                           public void onSuccess(Void result) {
+                              macroTree.getStore().remove(data);
+                           }
+
+                        });
+                     }
+                  
+
+               }
+            }
+         }
+
+      });
       macroToolBar.add(deleteMacroBtn);
-      
+
       macroToolBar.setBorders(true);
-      
+
       setTopComponent(macroToolBar);
+   }
+   
+   /**
+    * Creates the model with device macro.
+    * 
+    * @param deviceMacro the device macro
+    * 
+    * @return the tree data model< device macro>
+    */
+   private TreeDataModel<DeviceMacro> createModelWithDeviceMacro(DeviceMacro deviceMacro){
+      TreeDataModel<DeviceMacro> deviceMacroModel = new TreeDataModel<DeviceMacro>(deviceMacro,
+            deviceMacro.getName());
+      for (DeviceMacroItem deviceMacroItem : deviceMacro.getDeviceMacroItems()) {
+         TreeDataModel<DeviceMacroItem> macroItemModel = new TreeDataModel<DeviceMacroItem>(
+               deviceMacroItem, deviceMacroItem.getLabel());
+         deviceMacroModel.add(macroItemModel);
+      }
+      return deviceMacroModel;
    }
 
    /**
     * Creates the macro tree.
     */
    private void createMacroTree() {
-      LayoutContainer treeContainer = new LayoutContainer();
-      treeContainer.setScrollMode(Scroll.AUTO);
-      treeContainer.setStyleAttribute("backgroundColor", "white");
-      treeContainer.setBorders(true);
 
-      TreeStore<ModelData> store = new TreeStore<ModelData>();
-      macroTree = new TreePanel<ModelData>(store);
-      macroTree.setDisplayProperty(TreeDataModel.getDisplayProperty());
-      macroTree.getStyle().setLeafIcon(icons.macroIcon());
-      treeContainer.add(macroTree);
+      LayoutContainer macroListContainer = new LayoutContainer();
+      macroListContainer.setScrollMode(Scroll.AUTO);
+      macroListContainer.setStyleAttribute("backgroundColor", "white");
+      macroListContainer.setBorders(true);
 
-      add(treeContainer);
+      macroTree = TreePanelBuilder.buildMacroTree();
+      macroListContainer.setHeight("100%");
+      macroListContainer.add(macroTree);
+      macroListContainer.layout();
+
+      add(macroListContainer);
+
+   }
+
+   /* (non-Javadoc)
+    * @see com.extjs.gxt.ui.client.widget.ContentPanel#afterExpand()
+    */
+   @Override
+   protected void afterExpand() {
+      //TODO This is not a good way to solve tree can't display at first. 
+      macroTree.expandAll();
+      macroTree.collapseAll();
+      super.afterExpand();
    }
 
 }

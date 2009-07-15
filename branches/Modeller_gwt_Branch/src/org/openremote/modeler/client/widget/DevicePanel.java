@@ -33,13 +33,11 @@ import org.openremote.modeler.domain.ProtocolAttr;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.ModelData;
-import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
-import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -52,7 +50,6 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
 /**
  * The Class DevicePanel.
@@ -61,9 +58,10 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
 public class DevicePanel extends ContentPanel {
 
    private final DeviceServiceAsync deviceService = (DeviceServiceAsync) GWT.create(DeviceService.class);
-   private final DeviceCommandServiceAsync deviceCommandServiceAsync = (DeviceCommandServiceAsync) GWT.create(DeviceCommandService.class);
-   private TreeStore<ModelData> store;
-   private TreePanel<ModelData> tree;
+   private final DeviceCommandServiceAsync deviceCommandServiceAsync = (DeviceCommandServiceAsync) GWT
+         .create(DeviceCommandService.class);
+
+   private TreePanel<TreeDataModel> tree;
    private Icons icon = GWT.create(Icons.class);
 
    /**
@@ -105,10 +103,11 @@ public class DevicePanel extends ContentPanel {
                         caught.printStackTrace();
                         MessageBox.info("Error", caught.getMessage(), null);
                      }
+
                      public void onSuccess(Device device) {
                         deviceWindow.hide();
                         TreeDataModel<Device> model = new TreeDataModel<Device>(device, device.getName());
-                        store.add(model, true);
+                        tree.getStore().add(model, true);
                         Info.display("Info", "Add device " + device.getName() + " success.");
                      }
                   });
@@ -116,7 +115,7 @@ public class DevicePanel extends ContentPanel {
             });
          }
       });
-      
+
       newCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             final ModelData selected = tree.getSelectionModel().getSelectedItem();
@@ -157,6 +156,7 @@ public class DevicePanel extends ContentPanel {
                            caught.printStackTrace();
                            MessageBox.info("Error", caught.getMessage(), null);
                         }
+
                         public void onSuccess(DeviceCommand deviceCommand) {
                            TreeDataModel<DeviceCommand> deviceCommandNode = new TreeDataModel<DeviceCommand>(
                                  deviceCommand, deviceCommand.getName());
@@ -182,14 +182,14 @@ public class DevicePanel extends ContentPanel {
 
       Button edit = new Button("Edit");
       edit.setIcon(icon.edit());
-      edit.addSelectionListener(new SelectionListener<ButtonEvent>(){
+      edit.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
-            final ModelData selected = tree.getSelectionModel().getSelectedItem();
+            final TreeDataModel selected = tree.getSelectionModel().getSelectedItem();
             if (selected != null && selected.get(TreeDataModel.getDataProperty()) instanceof Device) {
                TreeDataModel<Device> deviceNode = (TreeDataModel<Device>) selected;
                final Device device = deviceNode.getData();
                final DeviceWindow editDeviceWindow = new DeviceWindow(device);
-               editDeviceWindow.addSubmitListener(new Listener<AppEvent>(){
+               editDeviceWindow.addSubmitListener(new Listener<AppEvent>() {
                   public void handleEvent(AppEvent be) {
                      Map<String, String> map = be.getData();
                      device.setName(map.get("name"));
@@ -200,42 +200,44 @@ public class DevicePanel extends ContentPanel {
                            caught.printStackTrace();
                            MessageBox.info("Error", caught.getMessage(), null);
                         }
+
                         public void onSuccess(Void result) {
                            editDeviceWindow.hide();
                            selected.set(TreeDataModel.getDisplayProperty(), device.getName());
-                           store.update(selected);
+                           tree.getStore().update(selected);
                            Info.display("Info", "Edit device " + device.getName() + " success.");
                         }
                      });
                   }
-                  
+
                });
-            }else if(selected != null && selected.get(TreeDataModel.getDataProperty()) instanceof DeviceCommand){
+            } else if (selected != null && selected.get(TreeDataModel.getDataProperty()) instanceof DeviceCommand) {
                TreeDataModel<DeviceCommand> deviceCommandNode = (TreeDataModel<DeviceCommand>) selected;
                final DeviceCommand deviceCommand = deviceCommandNode.getData();
                final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(deviceCommand);
                deviceCommandWindow.show();
-               deviceCommandWindow.addSubmitListener(new Listener<AppEvent>(){
+               deviceCommandWindow.addSubmitListener(new Listener<AppEvent>() {
                   public void handleEvent(AppEvent be) {
-                           Map<String, String> map = be.getData();
-                           
-                           deviceCommand.setName(map.get("name"));
-                           List<ProtocolAttr> attrs = deviceCommand.getProtocol().getAttributes();
-                           for (int i = 0; i < attrs.size(); i++) {
-                              deviceCommand.getProtocol().getAttributes().get(i).setValue(map.get(attrs.get(i).getName()));
-                           };
-                           deviceCommandServiceAsync.update(deviceCommand, new AsyncCallback<Void>() {
-                              public void onFailure(Throwable caught) {
-                                 caught.printStackTrace();
-                                 MessageBox.info("Error", caught.getMessage(), null);
-                              }
-                              public void onSuccess(Void result) {
-                                 deviceCommandWindow.hide();
-                                 selected.set(TreeDataModel.getDisplayProperty(), deviceCommand.getName());
-                                 store.update(selected);
-                                 Info.display("Info", "Edit device command " + deviceCommand.getName() + " success.");
-                              }
-                           });
+                     Map<String, String> map = be.getData();
+
+                     deviceCommand.setName(map.get("name"));
+                     List<ProtocolAttr> attrs = deviceCommand.getProtocol().getAttributes();
+                     for (int i = 0; i < attrs.size(); i++) {
+                        deviceCommand.getProtocol().getAttributes().get(i).setValue(map.get(attrs.get(i).getName()));
+                     };
+                     deviceCommandServiceAsync.update(deviceCommand, new AsyncCallback<Void>() {
+                        public void onFailure(Throwable caught) {
+                           caught.printStackTrace();
+                           MessageBox.info("Error", caught.getMessage(), null);
+                        }
+
+                        public void onSuccess(Void result) {
+                           deviceCommandWindow.hide();
+                           selected.set(TreeDataModel.getDisplayProperty(), deviceCommand.getName());
+                           tree.getStore().update(selected);
+                           Info.display("Info", "Edit device command " + deviceCommand.getName() + " success.");
+                        }
+                     });
                   }
                });
             }
@@ -249,7 +251,7 @@ public class DevicePanel extends ContentPanel {
       delete.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
          public void componentSelected(ButtonEvent ce) {
-            ModelData selected = tree.getSelectionModel().getSelectedItem();
+            TreeDataModel selected = tree.getSelectionModel().getSelectedItem();
             if (selected != null && selected.get(TreeDataModel.getDataProperty()) instanceof Device) {
                TreeDataModel<Device> deviceNode = (TreeDataModel<Device>) selected;
                Device device = deviceNode.getData();
@@ -265,7 +267,7 @@ public class DevicePanel extends ContentPanel {
                   }
 
                });
-            }else if(selected != null && selected.get(TreeDataModel.getDataProperty()) instanceof DeviceCommand){
+            } else if (selected != null && selected.get(TreeDataModel.getDataProperty()) instanceof DeviceCommand) {
                TreeDataModel<DeviceCommand> deviceCommandNode = (TreeDataModel<DeviceCommand>) selected;
                DeviceCommand deviceCommand = deviceCommandNode.getData();
                deviceCommandServiceAsync.removeCommand(deviceCommand, new AsyncCallback<Void>() {
@@ -273,13 +275,14 @@ public class DevicePanel extends ContentPanel {
                      caught.printStackTrace();
                      MessageBox.info("Error", caught.getMessage(), null);
                   }
+
                   public void onSuccess(Void result) {
                      Info.display("Info", "Remove success.");
                   }
-                  
+
                });
             }
-            store.remove(selected);
+            tree.getStore().remove(selected);
          }
 
       });
@@ -296,45 +299,8 @@ public class DevicePanel extends ContentPanel {
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
 
-      store = new TreeStore<ModelData>();
-      tree = new TreePanel<ModelData>(store);
-      tree.setBorders(false);
-      deviceService.loadAll(new AsyncCallback<List<Device>>(){
-         public void onFailure(Throwable caught) {
-            caught.printStackTrace();
-            MessageBox.info("Error", caught.getMessage(), null);
-         }
-         public void onSuccess(List<Device> devices) {
-            if(devices != null){
-               for (Device device : devices) {
-                  TreeDataModel<Device> deviceModel = new TreeDataModel<Device>(device, device.getName());
-                  if(device.getDeviceCommands() != null){
-                     for (DeviceCommand deviceCommand : device.getDeviceCommands()) {
-                        TreeDataModel<DeviceCommand> commandModel = new TreeDataModel<DeviceCommand>(deviceCommand, deviceCommand.getName());
-                        deviceModel.add(commandModel);
-                     }
-                  }
-                  store.add(deviceModel, true);
-               }
-            }
-         }
-      });
-      tree.setDisplayProperty(TreeDataModel.getDisplayProperty());
-      tree.setIconProvider(new ModelIconProvider<ModelData>(){
+      tree = TreePanelBuilder.buildDeviceCommandTree();
 
-         public AbstractImagePrototype getIcon(ModelData model) {
-            TreeDataModel thisModel = (TreeDataModel)model;
-            
-            if(thisModel.getData() instanceof DeviceCommand){
-               return icon.deviceCmd();
-            }else if (thisModel.getData() instanceof Device){
-               return icon.device();
-            }else {
-               return icon.folder();
-            }
-         }
-         
-      });
       treeContainer.add(tree);
 
       add(treeContainer);
@@ -354,7 +320,7 @@ public class DevicePanel extends ContentPanel {
                selectIRWindow.addSubmitListener(new Listener<AppEvent>() {
                   public void handleEvent(AppEvent be) {
                      List<ModelData> datas = be.getData();
-                     importIRCommand(datas,selectIRWindow);
+                     importIRCommand(datas, selectIRWindow);
                   }
 
                });
@@ -368,7 +334,7 @@ public class DevicePanel extends ContentPanel {
       return importCommandItem;
    }
 
-   private void importIRCommand(List<ModelData> datas,final SelectIRWindow selectIRWindow) {
+   private void importIRCommand(List<ModelData> datas, final SelectIRWindow selectIRWindow) {
       if (tree.getSelectionModel().getSelectedItem() != null) {
          if (tree.getSelectionModel().getSelectedItem().get(TreeDataModel.getDataProperty()) instanceof Device) {
             final TreeDataModel<Device> deviceNode = (TreeDataModel<Device>) tree.getSelectionModel().getSelectedItem();
@@ -407,6 +373,7 @@ public class DevicePanel extends ContentPanel {
                public void onFailure(Throwable e) {
                   MessageBox.alert("Error", "Import IR Command occur " + e.getMessage(), null);
                }
+
                public void onSuccess(List<DeviceCommand> deviceCommands) {
                   for (DeviceCommand command : deviceCommands) {
                      TreeDataModel<DeviceCommand> deviceCommandNode = new TreeDataModel<DeviceCommand>(command, command
@@ -420,5 +387,5 @@ public class DevicePanel extends ContentPanel {
          }
       }
    }
-   
+
 }

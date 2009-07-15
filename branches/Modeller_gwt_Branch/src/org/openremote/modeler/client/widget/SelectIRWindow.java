@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.client.utils.NestedJsonLoadResultReader;
+import org.openremote.modeler.client.gxtExtends.NestedJsonLoadResultReader;
 
 import com.extjs.gxt.ui.client.Style.ButtonScale;
 import com.extjs.gxt.ui.client.Style.Orientation;

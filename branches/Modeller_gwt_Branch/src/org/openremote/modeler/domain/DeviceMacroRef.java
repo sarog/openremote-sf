@@ -34,7 +34,14 @@ import javax.persistence.OneToOne;
 @Entity
 @DiscriminatorValue("DEVICE_MACRO_REF")
 public class DeviceMacroRef extends DeviceMacroItem {
+
+   public DeviceMacroRef(){}
    
+   public DeviceMacroRef(DeviceMacro targetDeviceMacro) {
+      super();
+      this.targetDeviceMacro = targetDeviceMacro;
+   }
+
    /** The target device macro. */
    private DeviceMacro targetDeviceMacro;
 

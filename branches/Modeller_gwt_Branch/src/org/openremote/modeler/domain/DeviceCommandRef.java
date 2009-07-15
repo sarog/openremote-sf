@@ -35,6 +35,13 @@ import javax.persistence.OneToOne;
 @DiscriminatorValue("DEVICE_CMD_REF")
 public class DeviceCommandRef extends DeviceMacroItem {
    
+   public DeviceCommandRef() {
+   }
+   public DeviceCommandRef(DeviceCommand deviceCommand) {
+      super();
+      this.deviceCommand = deviceCommand;
+   }
+
    /** The device command. */
    private DeviceCommand deviceCommand;
 

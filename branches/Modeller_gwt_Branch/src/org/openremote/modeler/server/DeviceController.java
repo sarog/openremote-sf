@@ -44,8 +44,7 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
    /**
     * Sets the device service .
     * 
-    * @param deviceService
-    *           the new device service
+    * @param deviceService the new device service
     */
    public void setDeviceService(DeviceService deviceService) {
       this.deviceService = deviceService;
@@ -83,8 +82,7 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
    /**
     * Sets the user service.
     * 
-    * @param userService
-    *           the new user service
+    * @param userService the new user service
     */
    public void setUserService(UserServiceImpl userService) {
       this.userService = userService;
@@ -97,7 +95,10 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
       return null;
    }
 
-   @Override
+   
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.client.rpc.DeviceService#updateDevice(org.openremote.modeler.domain.Device)
+    */
    public void updateDevice(Device device) {
       deviceService.updateDevice(device);
       

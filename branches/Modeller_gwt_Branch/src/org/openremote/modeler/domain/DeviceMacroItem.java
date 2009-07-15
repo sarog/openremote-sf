@@ -28,6 +28,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * The Class Device Macro Item.
@@ -64,6 +65,19 @@ public class DeviceMacroItem extends BusinessEntity{
     */
    public void setParentDeviceMacro(DeviceMacro parentDeviceMacro) {
       this.parentDeviceMacro = parentDeviceMacro;
+   }
+   
+   @Transient
+   public String getLabel() {
+      if (this instanceof DeviceMacroRef) {
+         DeviceMacroRef deviceMacroRef = (DeviceMacroRef) this;
+         return deviceMacroRef.getTargetDeviceMacro().getName();
+      } else if (this instanceof DeviceCommandRef) {
+         DeviceCommandRef commandRef = (DeviceCommandRef) this;
+         return commandRef.getDeviceCommand().getName();
+      } else {
+         return "";
+      }
    }
 
 }
