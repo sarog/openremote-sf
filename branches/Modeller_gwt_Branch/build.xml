@@ -32,11 +32,14 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<!-- Configure path to GWT SDK -->
 	<property name="gwt.sdk" value="${gwt.sdk}" />
 
-	<!-- Some variables used -->
+	<!-- Some base dir used -->
 	<property name="project.name" value="modeler" />
 	<property name="lib.dir" value="lib" />
 	<property name="web-inf.dir" value="war/WEB-INF" />
+	<property name="src.dir" value="src"/>
 	<property name="test.dir" value="test"/>
+	<property name="config.dir" value="config"/>
+	<property name="build.config.dir" value="build_config"/>
 
 	<!-- dirs for test build and output -->
 	<property name="test.build.dir" value="test_build"/>
@@ -51,6 +54,31 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<property name="halias" value="modeler" />
 	<property name="hport" value="9001" />
 
+	<!-- Cobertura  coverage report -->
+	<property name="cobertura.lib.dir" value="${lib.dir}/cobertura"/>
+	<property name="instrumented.dir" value="${test.build.dir}/instrumented"/>
+	<property name="checkstyle.reports.dir" location="${test.build.dir}/checkstyle_report"/>
+	<property name="cobertura.report.dir" location="${test.build.dir}/cobertura_report"/>
+	<property name="cobertura.datafile" value="${test.build.dir}/cobertura.ser"/>
+
+	<path id="cobertura.classpath">
+		<fileset dir="${cobertura.lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<!-- Checkstyle report -->
+	<property name="checkstyle.lib.dir" value="${lib.dir}/checkstyle"/>
+	<property name="checkstyle.checker" value="${build.config.dir}/sun_checks.xml"/>
+	<property name="checkstyle.report.style" value="${build.config.dir}/checkstyle-noframes-sorted.xsl"/>
+
+	<path id="checkstyle.classpath">
+		<fileset dir="${checkstyle.lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+
 	<!-- ==================================================================== -->
 	<!-- project class path                                                   -->
 	<!-- ==================================================================== -->
@@ -60,7 +88,9 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		<pathelement location="${gwt.sdk}/gwt-user.jar"/>
 		<fileset dir="${gwt.sdk}" includes="gwt-dev*.jar"/>
 		<!-- Add any additional non-server libs (such as JUnit, TestNG) -->
-		<fileset dir="${lib.dir}" includes="**/*.jar"/>
+		<fileset dir="${lib.dir}" includes="core/*.jar"/>
+		<fileset dir="${lib.dir}" includes="test/*.jar"/>
+		<fileset dir="${lib.dir}" includes="compile/*.jar"/>
 	</path>
 
 	<!-- ==================================================================== -->
@@ -94,12 +124,12 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		<echo message="--------------------------------------------------------------------" />
 		<echo message="" />
 		<mkdir dir="${web-inf.dir}/classes" />
-		<javac srcdir="src" excludes="org/openremote/modeler/client/**" includes="**" encoding="utf-8" destdir="${web-inf.dir}/classes" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source">
+		<javac srcdir="${src.dir}" excludes="org/openremote/modeler/client/**" includes="**" encoding="utf-8" destdir="${web-inf.dir}/classes" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source">
 			<classpath refid="project.class.path"/>
 		</javac>
 		<copy todir="${web-inf.dir}/classes">
-			<fileset dir="src" excludes="**/*.java"/>
-			<fileset dir="config" includes="**/**"/>
+			<fileset dir="${src.dir}" excludes="**/*.java"/>
+			<fileset dir="${config.dir}" includes="**/**"/>
 			<fileset dir="protocols" includes="**/**"/>
 		</copy>
 	</target>
@@ -110,7 +140,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<target name="compile" depends="javac" description="GWT compile to JavaScript">
 		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
 			<classpath>
-				<pathelement location="src"/>
+				<pathelement location="${src.dir}"/>
 				<path refid="project.class.path"/>
 			</classpath>
 			<!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
@@ -127,7 +157,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<target name="hosted" depends="javac" description="Run hosted mode">
 		<java failonerror="true" fork="true" classname="com.google.gwt.dev.HostedMode">
 			<classpath>
-				<pathelement location="src"/>
+				<pathelement location="${src.dir}"/>
 				<path refid="project.class.path"/>
 			</classpath>
 			<jvmarg value="-Xmx256M"/>
@@ -219,6 +249,60 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	           print="yes">
 	        SHUTDOWN
 	    </sql>
+	</target>
+
+
+	<!-- define task for cobertura -->
+	<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+
+	<!-- define task for checkstyle -->
+	<taskdef classpathref="checkstyle.classpath" resource="checkstyletask.properties" />
+
+    <!-- ==================================================================== -->
+    <!-- Cobertura instrument                                                 -->
+    <!-- ==================================================================== -->
+	<target name="instrument" depends="compile-test">
+		<mkdir dir="${instrumented.dir}" />
+		<delete file="${cobertura.datafile}" />
+		<cobertura-instrument todir="${instrumented.dir}" datafile="${cobertura.datafile}">
+			<ignore regex="org.apache.log4j.*"/>
+			<fileset dir="${web-inf.dir}/classes">
+				<include name="**/*.class"/>
+			</fileset>
+		</cobertura-instrument>
+	</target>
+	
+    <!-- ==================================================================== -->
+    <!-- TestNG with coverage                                                 -->
+    <!-- ==================================================================== -->
+	<target name="testng-cov" depends="instrument" description="run cobertura coverage in testng">
+		<testng outputdir="${test.output}" classpath="${cobertura.lib.dir}/cobertura-1.9.jar;${instrumented.dir};${test.build.classes.dir};${web-inf.dir}/classes;${cobertura.lib.dir}/">
+			<classpath refid="project.class.path">
+			</classpath>
+			<xmlfileset dir="${test.dir}" includes="testng.xml" />
+			<sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.datafile}" />
+		</testng>
+	</target>
+	
+    <!-- ==================================================================== -->
+    <!-- Cobertura report                                                     -->
+    <!-- ==================================================================== -->
+	<target name="cobertura" depends="testng-cov" description="generate report of cobertura " >
+		<mkdir dir="${cobertura.report.dir}" />
+		<cobertura-report format="html" destdir="${cobertura.report.dir}" srcdir="${src.dir}" datafile="${cobertura.datafile}" />
+	</target>
+	
+    <!-- ==================================================================== -->
+    <!-- Checkstyle report                                                        -->
+    <!-- ==================================================================== -->
+	<target name="checkstyle" description="--> generates a report of code convention violations.">
+		<mkdir dir="${checkstyle.reports.dir}" />
+		<checkstyle config="${checkstyle.checker}" failureProperty="checkstyle.failure" failOnViolation="false">
+			<formatter type="xml" tofile="${checkstyle.reports.dir}/checkstyle_report.xml" />
+			<fileset dir="${src.dir}" includes="**/*.java" />
+			<fileset dir="${test.dir}" includes="**/*.java" />
+		</checkstyle>
+		<style in="${checkstyle.reports.dir}/checkstyle_report.xml" out="${checkstyle.reports.dir}/checkstyle.report.html" style="${checkstyle.report.style}" />
 	</target>
 
 
