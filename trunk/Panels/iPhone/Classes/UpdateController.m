@@ -73,14 +73,13 @@
 	@catch (CheckNetworkStaffException *e) {
 		NSLog(@"CheckNetworkStaffException %@",e.message);
 		NSLog(@"retry %d time.",retryTimes);
-		if (retryTimes == 0 && [AppSettingsDefinition isAutoDiscoveryEnable]) {
+		if (retryTimes <= MAX_RETRY_TIMES && [AppSettingsDefinition isAutoDiscoveryEnable]) {
 			NSLog(@"retry %d time.",retryTimes);
 			retryTimes = retryTimes + 1;
 			if (serverAutoDiscoveryController) {
 				[serverAutoDiscoveryController release];
 				serverAutoDiscoveryController = nil;
 			}	
-			
 			serverAutoDiscoveryController = [[ServerAutoDiscoveryController alloc] initWithDelegate:self];
 		} else {
 			[self didUseLocalCache:e.message];
@@ -112,11 +111,7 @@
 }
 
 - (void)onFindServerFail:(NSString *)errorMessage {
-	if (retryTimes >= MAX_RETRY_TIMES) {
-		[self didUseLocalCache:@"Can't discover the server, maybe your server hasn't been started or your iPhone is not under the same LAN as Server."];
-	} else {
-		[self checkConfigAndUpdate];
-	}
+		[self checkNetworkAndUpdate];
 }
 
 -(void)dealloc {
