@@ -109,20 +109,21 @@ public class SelectIRWindow extends Window {
       importButton.setScale(ButtonScale.MEDIUM);
       importButton.setWidth(80);
       importButton.setEnabled(false);
+      final Window window = this;
       importButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
          @Override
          public void componentSelected(ButtonEvent ce) {
-
+            window.mask("Wait...");
             importButton.setEnabled(false);
             if (codeGrid != null) {
                AppEvent event = new AppEvent(Events.Submit);
                event.setData(codeGrid.getStore().getModels());
                fireSubmitListener(event);
+               
             } else {
                MessageBox.alert("Warn", "Please select vendor, model first.", null);
             }
-
          }
       });
       buttonLayout.add(importButton);
