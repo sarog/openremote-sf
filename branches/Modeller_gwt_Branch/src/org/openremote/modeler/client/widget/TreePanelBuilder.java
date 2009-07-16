@@ -30,8 +30,6 @@ import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
 
-import com.extjs.gxt.ui.client.data.ModelComparer;
-import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.MessageBox;
@@ -58,7 +56,6 @@ public class TreePanelBuilder {
     * 
     * @return the a new device command tree
     */
-   @SuppressWarnings("unchecked")
    public static TreePanel<TreeDataModel> buildDeviceCommandTree() {
       final TreeStore<TreeDataModel> store = new TreeStore<TreeDataModel>();
       final TreePanel<TreeDataModel> tree = new TreePanel<TreeDataModel>(store);
@@ -72,10 +69,10 @@ public class TreePanelBuilder {
          public void onSuccess(List<Device> devices) {
             if (devices != null) {
                for (Device device : devices) {
-                  TreeDataModel<Device> deviceModel = new TreeDataModel<Device>(device, device.getName());
+                  TreeDataModel deviceModel = new TreeDataModel(device, device.getName());
                   if (device.getDeviceCommands() != null) {
                      for (DeviceCommand deviceCommand : device.getDeviceCommands()) {
-                        TreeDataModel<DeviceCommand> commandModel = new TreeDataModel<DeviceCommand>(deviceCommand,
+                        TreeDataModel commandModel = new TreeDataModel(deviceCommand,
                               deviceCommand.getName());
                         deviceModel.add(commandModel);
                      }
@@ -122,17 +119,17 @@ public class TreePanelBuilder {
          public void onSuccess(List<DeviceMacro> macros) {
             if (macros != null) {
                for (DeviceMacro macro : macros) {
-                  TreeDataModel<DeviceMacro> deviceMacroModel = new TreeDataModel<DeviceMacro>(macro, macro.getName());
+                  TreeDataModel deviceMacroModel = new TreeDataModel(macro, macro.getName());
                   if (macro.getDeviceMacroItems() != null) {
                      for (DeviceMacroItem deviceMacroItem : macro.getDeviceMacroItems()) {
                         if (deviceMacroItem instanceof DeviceMacroRef) {
                            DeviceMacroRef deviceMacroRef = (DeviceMacroRef) deviceMacroItem;
-                           TreeDataModel<DeviceMacroRef> deviceMacroItemModel = new TreeDataModel<DeviceMacroRef>(
+                           TreeDataModel deviceMacroItemModel = new TreeDataModel(
                                  deviceMacroRef, deviceMacroRef.getTargetDeviceMacro().getName());
                            deviceMacroModel.add(deviceMacroItemModel);
                         } else if (deviceMacroItem instanceof DeviceCommandRef) {
                            DeviceCommandRef commandRef = (DeviceCommandRef) deviceMacroItem;
-                           TreeDataModel<DeviceCommandRef> deviceMacroItemModel = new TreeDataModel<DeviceCommandRef>(
+                           TreeDataModel deviceMacroItemModel = new TreeDataModel(
                                  commandRef, commandRef.getDeviceCommand().getName());
                            deviceMacroModel.add(deviceMacroItemModel);
                         }
