@@ -52,11 +52,11 @@ public interface DeviceService extends RemoteService {
    public void updateDevice(Device device);
    
    /**
-    * Removes the device.
+    * Delete device.
     * 
-    * @param device the device
+    * @param id the id
     */
-   public void removeDevice(Device device);
+   public void deleteDevice(long id);
    
    /**
     * Load by id.

@@ -60,9 +60,18 @@ public interface DeviceCommandService extends RemoteService{
    void update(DeviceCommand deviceCommand);
    
    /**
-    * Removes the command.
+    * Load by id.
     * 
-    * @param deviceCommand the device command
+    * @param id the id
+    * 
+    * @return the device command
     */
-   void removeCommand(DeviceCommand deviceCommand);
+   DeviceCommand loadById(long id);
+   
+   /**
+    * Delete command.
+    * 
+    * @param id the id
+    */
+   void deleteCommand(long id);
 }

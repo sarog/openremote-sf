@@ -51,12 +51,12 @@ public interface DeviceServiceAsync {
    public void updateDevice(Device device, AsyncCallback<Void> callback);
    
    /**
-    * Removes the device.
+    * Delete device.
     * 
-    * @param device the device
+    * @param id the id
     * @param callback the callback
     */
-   public void removeDevice(Device device, AsyncCallback<Void> callback);
+   public void deleteDevice(long id, AsyncCallback<Void> callback);
    
    /**
     * Load by id.

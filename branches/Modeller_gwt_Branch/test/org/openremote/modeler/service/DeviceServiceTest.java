@@ -67,13 +67,13 @@ public class DeviceServiceTest extends TestNGBase{
    }
    
    @Test(dependsOnMethods="save",expectedExceptions={ObjectNotFoundException.class})
-   public void remove(){
+   public void delete(){
       Device device = new Device();
       device.setName("xxx");
       device.setModel("MP8640");
       device.setVendor("3m");
       deviceService.saveDevice(device);
-      deviceService.removeDevice(device);
+      deviceService.deleteDevice(device.getOid());
       Device deviceInDB = deviceService.loadById(device.getOid());
       deviceInDB.getName();//throws ObjectNotFoundException
    }

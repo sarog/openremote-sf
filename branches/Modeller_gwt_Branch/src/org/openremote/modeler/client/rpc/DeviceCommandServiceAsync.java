@@ -48,7 +48,21 @@ public interface DeviceCommandServiceAsync {
     */
    public void save(DeviceCommand deviceCommand,AsyncCallback<DeviceCommand> callback);
    
+   /**
+    * Update.
+    * 
+    * @param deviceCommand the device command
+    * @param callback the callback
+    */
    public void update(DeviceCommand deviceCommand,AsyncCallback<Void> callback);
+   
+   /**
+    * Load attrs.
+    * 
+    * @param deviceCommand the device command
+    * @param callback the callback
+    */
+   public void loadById(long id,AsyncCallback<DeviceCommand> callback);
    
    /**
     * Removes the command.
@@ -56,5 +70,7 @@ public interface DeviceCommandServiceAsync {
     * @param deviceCommand the device command
     * @param callback the callback
     */
-   public void removeCommand(DeviceCommand deviceCommand,AsyncCallback<Void> callback);
+   public void deleteCommand(long id,AsyncCallback<Void> callback);
+   
+   
 }
