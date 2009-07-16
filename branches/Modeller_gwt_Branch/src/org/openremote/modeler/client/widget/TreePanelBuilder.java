@@ -51,20 +51,28 @@ public class TreePanelBuilder {
    /** The Constant icon. */
    private final static Icons icon = GWT.create(Icons.class);
 
+   private static TreeStore<TreeDataModel> deviceCommandTreestore = null;
+   private static TreeStore<TreeDataModel> macroTreeStore = null;
+
    /**
     * Builds a device command tree.
     * 
     * @return the a new device command tree
     */
    public static TreePanel<TreeDataModel> buildDeviceCommandTree() {
-      final TreeStore<TreeDataModel> store = new TreeStore<TreeDataModel>();
-      final TreePanel<TreeDataModel> tree = new TreePanel<TreeDataModel>(store);
+      boolean first = false;
+      if (deviceCommandTreestore == null) {
+         deviceCommandTreestore = new TreeStore<TreeDataModel>();
+         first = true;
+      }
+      final TreePanel<TreeDataModel> tree = new TreePanel<TreeDataModel>(deviceCommandTreestore);
       tree.setBorders(false);
-      deviceService.loadAll(new AsyncCallback<List<Device>>() {
-         public void onFailure(Throwable caught) {
-            caught.printStackTrace();
-            MessageBox.info("Error", caught.getMessage(), null);
-         }
+      if (first) {
+         deviceService.loadAll(new AsyncCallback<List<Device>>() {
+            public void onFailure(Throwable caught) {
+               caught.printStackTrace();
+               MessageBox.info("Error", caught.getMessage(), null);
+            }
 
          public void onSuccess(List<Device> devices) {
             if (devices != null) {
@@ -75,13 +83,15 @@ public class TreePanelBuilder {
                         TreeDataModel commandModel = new TreeDataModel(deviceCommand,
                               deviceCommand.getName());
                         deviceModel.add(commandModel);
+                        }
                      }
+                     deviceCommandTreestore.add(deviceModel, true);
                   }
-                  store.add(deviceModel, true);
                }
             }
-         }
-      });
+         });
+      }
+
       tree.setDisplayProperty(TreeDataModel.getDisplayProperty());
       tree.setIconProvider(new ModelIconProvider<TreeDataModel>() {
 
@@ -106,15 +116,19 @@ public class TreePanelBuilder {
     * @return a new macro tree
     */
    public static TreePanel<TreeDataModel> buildMacroTree() {
-      TreeStore<TreeDataModel> store = new TreeStore<TreeDataModel>();
-      final TreePanel<TreeDataModel> tree = new TreePanel<TreeDataModel>(store);
+      boolean first = false;
+      if (macroTreeStore == null) {
+         macroTreeStore = new TreeStore<TreeDataModel>();
+         first = true;
+      }
+      final TreePanel<TreeDataModel> tree = new TreePanel<TreeDataModel>(macroTreeStore);
       tree.setBorders(false);
-      
-      deviceMacroServiceAsync.loadAll(new AsyncCallback<List<DeviceMacro>>() {
-         public void onFailure(Throwable caught) {
-            caught.printStackTrace();
-            MessageBox.info("Error", caught.getMessage(), null);
-         }
+      if (first) {
+         deviceMacroServiceAsync.loadAll(new AsyncCallback<List<DeviceMacro>>() {
+            public void onFailure(Throwable caught) {
+               caught.printStackTrace();
+               MessageBox.info("Error", caught.getMessage(), null);
+            }
 
          public void onSuccess(List<DeviceMacro> macros) {
             if (macros != null) {
@@ -132,15 +146,17 @@ public class TreePanelBuilder {
                            TreeDataModel deviceMacroItemModel = new TreeDataModel(
                                  commandRef, commandRef.getDeviceCommand().getName());
                            deviceMacroModel.add(deviceMacroItemModel);
+                           }
                         }
                      }
+                     tree.getStore().add(deviceMacroModel, true);
                   }
-                  tree.getStore().add(deviceMacroModel, true);
+
                }
-               
-            }           
-         }
-      });
+            }
+         });
+      }
+
       tree.setDisplayProperty(TreeDataModel.getDisplayProperty());
       tree.setIconProvider(new ModelIconProvider<TreeDataModel>() {
 

@@ -32,12 +32,10 @@ import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.dnd.ListViewDragSource;
-import com.extjs.gxt.ui.client.dnd.TreePanelDragSource;
 import com.extjs.gxt.ui.client.dnd.DND.Feedback;
 import com.extjs.gxt.ui.client.dnd.DND.Operation;
 import com.extjs.gxt.ui.client.dnd.DND.TreeSource;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
-import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -65,7 +63,6 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MacroWindow.
  */
@@ -213,9 +210,9 @@ public class MacroWindow extends Window {
          }
 
       });
-
+      
       macroForm.setButtonAlign(HorizontalAlignment.CENTER);
-
+      macroForm.addButton(submitBtn);
    }
 
    /**
