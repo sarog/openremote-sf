@@ -65,7 +65,7 @@ public class SelectIRWindow extends Window {
    private static final String LOADING = "Loading... ";
    LayoutContainer selectContainer = new LayoutContainer();
    LayoutContainer commandContainer = new LayoutContainer();
-   
+
    Button importButton = null;
 
    RemoteJsonComboBox<ModelData> vendorList = null;
@@ -87,17 +87,19 @@ public class SelectIRWindow extends Window {
       setModal(true);
       setBlinkModal(true);
       setHeading("Select IR from Beehive");
-
+      
       setLayout(new RowLayout(Orientation.VERTICAL));
 
       HBoxLayout selectContainerLayout = new HBoxLayout();
       selectContainerLayout.setPadding(new Padding(5));
       selectContainerLayout.setHBoxLayoutAlign(HBoxLayoutAlign.TOP);
+      
       selectContainer.setLayout(selectContainerLayout);
-
+      selectContainer.setLayoutOnChange(true);
       add(selectContainer, new RowData(1, 35));
 
       commandContainer.setLayout(new CenterLayout());
+      commandContainer.setLayoutOnChange(true);
       add(commandContainer, new RowData(1, 1));
 
       LayoutContainer buttonLayout = new LayoutContainer();
@@ -111,6 +113,8 @@ public class SelectIRWindow extends Window {
 
          @Override
          public void componentSelected(ButtonEvent ce) {
+
+            importButton.setEnabled(false);
             if (codeGrid != null) {
                AppEvent event = new AppEvent(Events.Submit);
                event.setData(codeGrid.getStore().getModels());
@@ -189,7 +193,6 @@ public class SelectIRWindow extends Window {
 
          });
          selectContainer.add(modelList);
-         selectContainer.layout();
       }
    }
 
@@ -231,7 +234,6 @@ public class SelectIRWindow extends Window {
 
          });
          selectContainer.add(sectionList);
-         selectContainer.layout();
       }
    }
 
@@ -304,7 +306,6 @@ public class SelectIRWindow extends Window {
             scriptTagProxy, reader);
 
       ListStore<ModelData> listStore = new ListStore<ModelData>(loader);
-      loader.load();
 
       if (cm == null) {
          List<ColumnConfig> codeGridColumns = new ArrayList<ColumnConfig>();
@@ -319,7 +320,10 @@ public class SelectIRWindow extends Window {
       codeGrid.setLoadMask(true);
       codeGrid.setHeight(200);
       commandContainer.add(codeGrid);
-      commandContainer.layout();
+      
+      loader.load();
+
+      importButton.setEnabled(true);
    }
 
    private void reloadGrid(String url) {
@@ -337,6 +341,7 @@ public class SelectIRWindow extends Window {
       ListStore<ModelData> listStore = new ListStore<ModelData>(loader);
       codeGrid.reconfigure(listStore, cm);
       loader.load();
+      importButton.setEnabled(true);
    }
 
    public void addSubmitListener(Listener<AppEvent> listener) {

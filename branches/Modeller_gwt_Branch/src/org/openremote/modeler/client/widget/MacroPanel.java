@@ -92,7 +92,6 @@ public class MacroPanel extends ContentPanel {
                      }
 
                      public void onSuccess(DeviceMacro deviceMacro) {
-                 
                         if (macroTree != null) {
                            macroTree.getStore().add(createModelWithDeviceMacro(deviceMacro), true);
                         }

@@ -15,7 +15,6 @@
  */
 package org.openremote.modeler.service;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -23,7 +22,6 @@ import org.openremote.modeler.client.rpc.DeviceMacroService;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class DeviceMacroServiceImpl.
  */
