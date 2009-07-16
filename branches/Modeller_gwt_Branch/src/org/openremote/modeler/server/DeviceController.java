@@ -61,8 +61,8 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
    /* (non-Javadoc)
     * @see org.openremote.modeler.client.rpc.DeviceService#removeDevice(org.openremote.modeler.domain.Device)
     */
-   public void removeDevice(Device device) {
-      deviceService.removeDevice(device);
+   public void deleteDevice(long id) {
+      deviceService.deleteDevice(id);
    }
 
    /* (non-Javadoc)

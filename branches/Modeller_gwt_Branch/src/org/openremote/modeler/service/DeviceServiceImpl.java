@@ -26,7 +26,6 @@ import org.hibernate.Hibernate;
 import org.openremote.modeler.client.rpc.DeviceService;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
 
 /**
  * The Class DeviceServiceImpl.
@@ -44,8 +43,8 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    /* (non-Javadoc)
     * @see org.openremote.modeler.client.rpc.DeviceService#removeDevice(org.openremote.modeler.domain.Device)
     */
-   public void removeDevice(Device device) {
-      genericDAO.delete(device);
+   public void deleteDevice(long id) {
+      genericDAO.delete(loadById(id));
    }
    
    /* (non-Javadoc)
@@ -56,9 +55,6 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       if (devices != null) {
          for (Device device : devices) {
             Hibernate.initialize(device.getDeviceCommands());
-            for (DeviceCommand deviceCommand : device.getDeviceCommands()) {
-               Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
-            }
          }
       }
       return devices;
@@ -68,5 +64,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       genericDAO.saveOrUpdate(device);
    }
    
-  
+   public Device loadById(long id){
+      return super.loadById(id);
+   }
 }

@@ -216,28 +216,37 @@ public class DevicePanel extends ContentPanel {
             } else if (selected != null && selected.get(TreeDataModel.getDataProperty()) instanceof DeviceCommand) {
                TreeDataModel<DeviceCommand> deviceCommandNode = (TreeDataModel<DeviceCommand>) selected;
                final DeviceCommand deviceCommand = deviceCommandNode.getData();
-               final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(deviceCommand);
-               deviceCommandWindow.show();
-               deviceCommandWindow.addSubmitListener(new Listener<AppEvent>() {
-                  public void handleEvent(AppEvent be) {
-                     Map<String, String> map = be.getData();
-
-                     deviceCommand.setName(map.get("name"));
-                     List<ProtocolAttr> attrs = deviceCommand.getProtocol().getAttributes();
-                     for (int i = 0; i < attrs.size(); i++) {
-                        deviceCommand.getProtocol().getAttributes().get(i).setValue(map.get(attrs.get(i).getName()));
-                     };
-                     deviceCommandServiceAsync.update(deviceCommand, new AsyncCallback<Void>() {
-                        public void onFailure(Throwable caught) {
-                           caught.printStackTrace();
-                           MessageBox.info("Error", caught.getMessage(), null);
-                        }
-
-                        public void onSuccess(Void result) {
-                           deviceCommandWindow.hide();
-                           selected.set(TreeDataModel.getDisplayProperty(), deviceCommand.getName());
-                           tree.getStore().update(selected);
-                           Info.display("Info", "Edit device command " + deviceCommand.getName() + " success.");
+               deviceCommandServiceAsync.loadById(deviceCommand.getOid(), new AsyncCallback<DeviceCommand>(){
+                  public void onFailure(Throwable caught) {
+                     caught.printStackTrace();
+                     MessageBox.info("Error", caught.getMessage(), null);
+                  }
+                  public void onSuccess(DeviceCommand command) {
+                     deviceCommand.setProtocol(command.getProtocol());
+                     final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(deviceCommand);
+                     deviceCommandWindow.show();
+                     deviceCommandWindow.addSubmitListener(new Listener<AppEvent>() {
+                        public void handleEvent(AppEvent be) {
+                           Map<String, String> map = be.getData();
+                           
+                           deviceCommand.setName(map.get("name"));
+                           List<ProtocolAttr> attrs = deviceCommand.getProtocol().getAttributes();
+                           for (int i = 0; i < attrs.size(); i++) {
+                              deviceCommand.getProtocol().getAttributes().get(i).setValue(map.get(attrs.get(i).getName()));
+                           };
+                           deviceCommandServiceAsync.update(deviceCommand, new AsyncCallback<Void>() {
+                              public void onFailure(Throwable caught) {
+                                 caught.printStackTrace();
+                                 MessageBox.info("Error", caught.getMessage(), null);
+                              }
+                              
+                              public void onSuccess(Void result) {
+                                 deviceCommandWindow.hide();
+                                 selected.set(TreeDataModel.getDisplayProperty(), deviceCommand.getName());
+                                 tree.getStore().update(selected);
+                                 Info.display("Info", "Edit device command " + deviceCommand.getName() + " success.");
+                              }
+                           });
                         }
                      });
                   }
@@ -258,28 +267,28 @@ public class DevicePanel extends ContentPanel {
                TreeDataModel<Device> deviceNode = (TreeDataModel<Device>) selected;
                Device device = deviceNode.getData();
 
-               deviceService.removeDevice(device, new AsyncCallback<Void>() {
+               deviceService.deleteDevice(device.getOid(), new AsyncCallback<Void>() {
                   public void onFailure(Throwable caught) {
                      caught.printStackTrace();
                      MessageBox.info("Error", caught.getMessage(), null);
                   }
 
                   public void onSuccess(Void result) {
-                     Info.display("Info", "Remove success.");
+                     Info.display("Info", "Delete success.");
                   }
 
                });
             } else if (selected != null && selected.get(TreeDataModel.getDataProperty()) instanceof DeviceCommand) {
                TreeDataModel<DeviceCommand> deviceCommandNode = (TreeDataModel<DeviceCommand>) selected;
                DeviceCommand deviceCommand = deviceCommandNode.getData();
-               deviceCommandServiceAsync.removeCommand(deviceCommand, new AsyncCallback<Void>() {
+               deviceCommandServiceAsync.deleteCommand(deviceCommand.getOid(), new AsyncCallback<Void>() {
                   public void onFailure(Throwable caught) {
                      caught.printStackTrace();
                      MessageBox.info("Error", caught.getMessage(), null);
                   }
 
                   public void onSuccess(Void result) {
-                     Info.display("Info", "Remove success.");
+                     Info.display("Info", "Delete success.");
                   }
 
                });

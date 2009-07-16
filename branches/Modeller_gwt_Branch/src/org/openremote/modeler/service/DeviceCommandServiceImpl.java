@@ -49,8 +49,8 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
       return deviceCommand;
    }
 
-   public void removeCommand(DeviceCommand deviceCommand) {
-      genericDAO.delete(deviceCommand);
+   public void deleteCommand(long id) {
+      genericDAO.delete(loadById(id));
    }
 
    public void update(DeviceCommand deviceCommand) {
@@ -58,4 +58,10 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
       
    }
 
+   public DeviceCommand loadById(long id) {
+      DeviceCommand deviceCommand = super.loadById(id);
+      Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
+      return deviceCommand;
+   }
+   
 }
