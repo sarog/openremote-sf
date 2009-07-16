@@ -193,11 +193,11 @@ public class MacroPanel extends ContentPanel {
     * 
     * @return the tree data model< device macro>
     */
-   private TreeDataModel<DeviceMacro> createModelWithDeviceMacro(DeviceMacro deviceMacro){
-      TreeDataModel<DeviceMacro> deviceMacroModel = new TreeDataModel<DeviceMacro>(deviceMacro,
+   private TreeDataModel createModelWithDeviceMacro(DeviceMacro deviceMacro){
+      TreeDataModel deviceMacroModel = new TreeDataModel(deviceMacro,
             deviceMacro.getName());
       for (DeviceMacroItem deviceMacroItem : deviceMacro.getDeviceMacroItems()) {
-         TreeDataModel<DeviceMacroItem> macroItemModel = new TreeDataModel<DeviceMacroItem>(
+         TreeDataModel macroItemModel = new TreeDataModel(
                deviceMacroItem, deviceMacroItem.getLabel());
          deviceMacroModel.add(macroItemModel);
       }

@@ -2,11 +2,9 @@ package org.openremote.modeler.client.model;
 
 import java.io.Serializable;
 
-import org.openremote.modeler.domain.BusinessEntity;
-
 import com.extjs.gxt.ui.client.data.BaseTreeModel;
 
-public class TreeDataModel<T extends BusinessEntity> extends BaseTreeModel implements Serializable {
+public class TreeDataModel extends BaseTreeModel implements Serializable {
 
    private static final String DATA = "data";
    private static final String LABEL = "label";
@@ -15,9 +13,9 @@ public class TreeDataModel<T extends BusinessEntity> extends BaseTreeModel imple
     */
    private static final long serialVersionUID = -3212925111586567858L;
 
-   public TreeDataModel(T t,String label) {
+   public TreeDataModel(Object o,String label) {
       set(LABEL,label);
-      set(DATA, t);
+      set(DATA, o);
    }
 
    public String getLabel() {
@@ -36,8 +34,9 @@ public class TreeDataModel<T extends BusinessEntity> extends BaseTreeModel imple
       return getLabel();
    }
 
-   public T getData() {
-      return (T)get(DATA);
+   @SuppressWarnings("unchecked")
+   public <X> X getData() {
+      return (X)get(DATA);
    }
    
   
