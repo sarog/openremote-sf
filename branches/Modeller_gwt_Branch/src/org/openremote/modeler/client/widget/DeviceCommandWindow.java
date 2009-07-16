@@ -1,5 +1,22 @@
-/**
+/* OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2009, OpenRemote Inc.
  * 
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ * 
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ * 
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package org.openremote.modeler.client.widget;
 
@@ -36,24 +53,40 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 
 /**
- * @author Tomsky
- *
+ * The Class DeviceCommandWindow.
  */
 public class DeviceCommandWindow extends SubmitWindow {
+   
+   /** The command form. */
    private FormPanel commandForm = new FormPanel();
+   
+   /** The _device command. */
    private DeviceCommand _deviceCommand = null;
    
+   /**
+    * Instantiates a new device command window.
+    */
    public DeviceCommandWindow() {
       setHeading("New command");
       initial();
       show();
    }
+   
+   /**
+    * Instantiates a new device command window.
+    * 
+    * @param deviceCommand the device command
+    */
    public DeviceCommandWindow(DeviceCommand deviceCommand) {
       this._deviceCommand = deviceCommand;
       setHeading("Edit command");
       initial();
       show();
    }
+   
+   /**
+    * Initial.
+    */
    private void initial(){
       setWidth(360);
       setAutoHeight(true);
@@ -111,6 +144,11 @@ public class DeviceCommandWindow extends SubmitWindow {
       add(commandForm);
    }
    
+   /**
+    * Creates the fields.
+    * 
+    * @param protocols the protocols
+    */
    private void createFields(Map<String, ProtocolDefinition> protocols){
       TextField<String> nameField = new TextField<String>();
       nameField.setName("name");
@@ -155,6 +193,11 @@ public class DeviceCommandWindow extends SubmitWindow {
       commandForm.layout();
    }
    
+   /**
+    * Adds the attrs.
+    * 
+    * @param data the data
+    */
    private void addAttrs(ComboBoxDataModel<ProtocolDefinition> data){
       FieldSet attrSet = new FieldSet();
       FormLayout layout = new FormLayout();  
@@ -182,6 +225,13 @@ public class DeviceCommandWindow extends SubmitWindow {
       commandForm.layout();
    }
    
+   /**
+    * Sets the validators.
+    * 
+    * @param attrFile the attr file
+    * @param messages the messages
+    * @param protocolValidators the protocol validators
+    */
    private void setValidators(TextField<String> attrFile, TextField<String>.TextFieldMessages messages,
          List<ProtocolValidator> protocolValidators) {
       for (ProtocolValidator protocolValidator : protocolValidators) {

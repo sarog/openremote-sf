@@ -112,21 +112,6 @@ public class ApplicationView implements View {
       viewport.add(builderPanel, data);
       
    }
-   private void createCenter(){
-      TabPanel builderPanel = new TabPanel();
-      BuildingModelerView buildingModelerItem = new BuildingModelerView();
-      buildingModelerItem.initialize();
-      builderPanel.add(buildingModelerItem);
-      
-      UIDesignerView uiDesignerItem = new UIDesignerView();
-      uiDesignerItem.initialize();
-      builderPanel.add(uiDesignerItem);
-      builderPanel.setAutoSelect(true);
-      BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.CENTER);
-      data.setMargins(new Margins(0, 5, 0, 5));
-      viewport.add(builderPanel, data);
-      
-   }
    
    private void createSouth(){
 //      Status status = new Status();
