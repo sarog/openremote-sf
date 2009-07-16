@@ -41,19 +41,18 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
  */
 public class DeviceCommandWindow extends SubmitWindow {
    private FormPanel commandForm = new FormPanel();
-   private ComboBox<ModelData> protocol = new ComboBox<ModelData>();
+   private DeviceCommand _deviceCommand = null;
    
    public DeviceCommandWindow() {
       setHeading("New command");
       initial();
-      createFields(Protocols.getInstance());
-      add(commandForm);
+      show();
    }
    public DeviceCommandWindow(DeviceCommand deviceCommand) {
+      this._deviceCommand = deviceCommand;
       setHeading("Edit command");
       initial();
-      createFields(Protocols.getInstance(), deviceCommand);
-      add(commandForm);
+      show();
    }
    private void initial(){
       setWidth(360);
@@ -108,7 +107,8 @@ public class DeviceCommandWindow extends SubmitWindow {
          }
 
       });
-      
+      createFields(Protocols.getInstance());
+      add(commandForm);
    }
    
    private void createFields(Map<String, ProtocolDefinition> protocols){
@@ -117,6 +117,7 @@ public class DeviceCommandWindow extends SubmitWindow {
       nameField.setFieldLabel("Name");
       nameField.setAllowBlank(false);
       
+      ComboBox<ModelData> protocol = new ComboBox<ModelData>();
       ListStore<ModelData> store = new ListStore<ModelData>();
       protocol.setStore(store);
       protocol.setFieldLabel("Protocol");
@@ -134,64 +135,27 @@ public class DeviceCommandWindow extends SubmitWindow {
       
       commandForm.add(nameField);
       commandForm.add(protocol);
-      
       protocol.addSelectionChangedListener(new SelectionChangedListener<ModelData>(){
          @SuppressWarnings("unchecked")
          public void selectionChanged(SelectionChangedEvent<ModelData> se) {
             if(commandForm.getItems().size() > 2){
                commandForm.getItem(2).removeFromParent();
             }
-            addFields((ComboBoxDataModel<ProtocolDefinition>)se.getSelectedItem());
+            addAttrs((ComboBoxDataModel<ProtocolDefinition>)se.getSelectedItem());
          }
       });
       
+      if(_deviceCommand != null){
+         String protocolName = _deviceCommand.getProtocol().getType();
+         nameField.setValue(_deviceCommand.getName());
+         ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(protocolName,protocols.get(protocolName));
+         protocol.setValue(data);
+         protocol.disable();
+      }
       commandForm.layout();
    }
    
-   private void createFields(Map<String, ProtocolDefinition> protocols, DeviceCommand deviceCommand){
-      String protocolName = deviceCommand.getProtocol().getType();
-      ProtocolDefinition protocolDefinition = protocols.get(protocolName);
-      
-      TextField<String> nameField = new TextField<String>();
-      nameField.setName("name");
-      nameField.setFieldLabel("Name");
-      nameField.setValue(deviceCommand.getName());
-      nameField.setAllowBlank(false);
-      
-      TextField<String> protocolField = new TextField<String>();
-      protocolField.setName("proto");
-      protocolField.setFieldLabel("Protocol");
-      protocolField.setValue(protocolName);
-      protocolField.disable();
-      
-      FieldSet attrSet = new FieldSet();
-      FormLayout layout = new FormLayout();  
-      layout.setLabelWidth(80);  
-      attrSet.setLayout(layout);
-      attrSet.setHeading(protocolField.getValue()+" attributes");
-      
-      for (ProtocolAttrDefinition attrDefinition : protocolDefinition.getAttrs()) {
-         TextField<String> attrField = new TextField<String>();
-         attrField.setName(attrDefinition.getName());
-         TextField<String>.TextFieldMessages messages = attrField.getMessages();
-         attrField.setFieldLabel(attrDefinition.getLabel());
-         for (ProtocolAttr attr : deviceCommand.getProtocol().getAttributes()) {
-            if(attrDefinition.getName().equals(attr.getName())){
-               attrField.setValue(attr.getValue());
-            }
-         }
-         setValidators(attrField, messages, attrDefinition.getValidators());
-         
-         attrSet.add(attrField);
-      }
-      deviceCommand.getProtocol().getAttributes();
-      commandForm.add(nameField);
-      commandForm.add(protocolField);
-      commandForm.add(attrSet);
-      
-      commandForm.layout();
-   }
-   private void addFields(ComboBoxDataModel<ProtocolDefinition> data){
+   private void addAttrs(ComboBoxDataModel<ProtocolDefinition> data){
       FieldSet attrSet = new FieldSet();
       FormLayout layout = new FormLayout();  
       layout.setLabelWidth(80);  
@@ -203,7 +167,13 @@ public class DeviceCommandWindow extends SubmitWindow {
          attrField.setName(attrDefinition.getName());
          TextField<String>.TextFieldMessages messages = attrField.getMessages();
          attrField.setFieldLabel(attrDefinition.getLabel());
-
+         if(_deviceCommand != null){
+            for (ProtocolAttr attr : _deviceCommand.getProtocol().getAttributes()) {
+               if(attrDefinition.getName().equals(attr.getName())){
+                  attrField.setValue(attr.getValue());
+               }
+            }
+         }
          setValidators(attrField, messages, attrDefinition.getValidators());
 
          attrSet.add(attrField);
@@ -233,5 +203,5 @@ public class DeviceCommandWindow extends SubmitWindow {
             messages.setRegexText(protocolValidator.getMessage());
          }
       }
-}
+   }
 }

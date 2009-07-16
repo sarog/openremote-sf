@@ -40,39 +40,41 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FillLayout;
 
 /**
- * The Class DeviceForm.
+ * The Class DeviceWindow.
  */
 public class DeviceWindow extends SubmitWindow {
    
-   /** The window. */
-   private FormPanel form;
-
+   /** The form. */
+   private FormPanel form = new FormPanel();
+   
+   /** The _device. */
+   private Device _device = null;
+   
    /**
-    * Instantiates a new create device window.
+    * Instantiates a new device window.
     */
    public DeviceWindow() {
       initial("New device");
-      createFields();
-      add(form);
       show();
    }
    
    /**
-    * Instantiates a new edit device window.
+    * Instantiates a new device window.
     * 
     * @param device the device
     */
    public DeviceWindow(Device device){
+      this._device = device;
       initial("Edit device");
-      createFields(device);
-      add(form);
       show();
    }
+   
    /**
     * Initial.
+    * 
+    * @param heading the heading
     */
    private void initial(String heading){
-      form = new FormPanel();
       setWidth(360);
       setHeight(200);
       setHeading(heading);
@@ -81,7 +83,6 @@ public class DeviceWindow extends SubmitWindow {
       form.setFrame(true);
       form.setHeaderVisible(false);
       form.setWidth(350);
-
 
       form.setButtonAlign(HorizontalAlignment.CENTER);
 
@@ -122,6 +123,9 @@ public class DeviceWindow extends SubmitWindow {
          }
 
       });
+      
+      createFields();
+      add(form);
    }
    
    /**
@@ -143,29 +147,11 @@ public class DeviceWindow extends SubmitWindow {
       modelField.setFieldLabel("Model");
       modelField.setAllowBlank(false);
       
-      form.add(nameField);
-      form.add(vendorField);
-      form.add(modelField);
-   }
-   
-   private void createFields(Device device){
-      TextField<String> nameField = new TextField<String>();
-      nameField.setName("name");
-      nameField.setFieldLabel("Name");
-      nameField.setValue(device.getName());
-      nameField.setAllowBlank(false);
-      
-      TextField<String> vendorField = new TextField<String>();
-      vendorField.setName("vendor");
-      vendorField.setFieldLabel("Vendor");
-      vendorField.setValue(device.getVendor());
-      vendorField.setAllowBlank(false);
-      
-      TextField<String> modelField = new TextField<String>();
-      modelField.setName("model");
-      modelField.setFieldLabel("Model");
-      modelField.setValue(device.getModel());
-      modelField.setAllowBlank(false);
+      if(_device != null){
+         nameField.setValue(_device.getName());
+         vendorField.setValue(_device.getVendor());
+         modelField.setValue(_device.getModel());
+      }
       
       form.add(nameField);
       form.add(vendorField);
