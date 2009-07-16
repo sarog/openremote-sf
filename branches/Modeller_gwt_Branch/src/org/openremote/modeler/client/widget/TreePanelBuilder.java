@@ -61,7 +61,7 @@ public class TreePanelBuilder {
    @SuppressWarnings("unchecked")
    public static TreePanel<TreeDataModel> buildDeviceCommandTree() {
       final TreeStore<TreeDataModel> store = new TreeStore<TreeDataModel>();
-      TreePanel<TreeDataModel> tree = new TreePanel<TreeDataModel>(store);
+      final TreePanel<TreeDataModel> tree = new TreePanel<TreeDataModel>(store);
       tree.setBorders(false);
       deviceService.loadAll(new AsyncCallback<List<Device>>() {
          public void onFailure(Throwable caught) {

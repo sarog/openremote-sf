@@ -108,6 +108,8 @@ public class DevicePanel extends ContentPanel {
                         deviceWindow.hide();
                         TreeDataModel<Device> model = new TreeDataModel<Device>(device, device.getName());
                         tree.getStore().add(model, true);
+                        //create and select it.
+                        tree.getSelectionModel().select(model, false);
                         Info.display("Info", "Add device " + device.getName() + " success.");
                      }
                   });
@@ -298,9 +300,9 @@ public class DevicePanel extends ContentPanel {
       treeContainer.setScrollMode(Scroll.AUTO);
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
-
+     
       tree = TreePanelBuilder.buildDeviceCommandTree();
-
+      
       treeContainer.add(tree);
 
       add(treeContainer);

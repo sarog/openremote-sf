@@ -95,15 +95,14 @@ public class RemoteJsonComboBox<D extends ModelData> extends ComboBox<D> {
       final BaseListLoader<ListLoadResult<D>> loader = new BaseListLoader<ListLoadResult<D>>(scriptTagProxy, reader);
 
       ListStore<D> store = new ListStore<D>(loader);
-      loader.load();
+     
       setStore(store);
-
+      
       setTypeAhead(true);
       setTriggerAction(TriggerAction.ALL);
       setMinChars(1);
-
-      this.onLoad();
-      setLoadingText("loading...");
+      
+      loader.load();
 
       addListener(Events.BeforeQuery, new Listener<FieldEvent>() {
 
@@ -111,7 +110,6 @@ public class RemoteJsonComboBox<D extends ModelData> extends ComboBox<D> {
             // cancel default event, we will handler query request.
             be.setCancelled(true);  
             RemoteJsonComboBox<D> box = be.getComponent();
-            System.out.println(box.getRawValue());
 
             if (box.getRawValue() != null && box.getRawValue().length() > 0) {
                box.getStore().filter(getDisplayField(), box.getRawValue());
@@ -132,9 +130,8 @@ public class RemoteJsonComboBox<D extends ModelData> extends ComboBox<D> {
    protected void onTriggerClick(ComponentEvent ce) {
       final RemoteJsonComboBox<D> box = this;
       // click the trigger of the combobox will show all the options. 
-      box.setRawValue("");
-      super.onTriggerClick(ce);
-      
+      box.getStore().clearFilters();
+      box.expand();
    }
    
 
