@@ -182,7 +182,6 @@ public class DevicePanel extends ContentPanel {
             TreeDataModel deviceNode = tree.getSelectionModel().getSelectedItem();
             if (deviceNode != null && deviceNode.getData() instanceof Device) {
                final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow();
-               deviceCommandWindow.show();
                deviceCommandWindow.addSubmitListener(new Listener<AppEvent>() {
                   public void handleEvent(AppEvent be) {
                      Map<String, String> map = be.getData();
@@ -298,7 +297,6 @@ public class DevicePanel extends ContentPanel {
          public void onSuccess(DeviceCommand command) {
             deviceCommand.setProtocol(command.getProtocol());
             final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(deviceCommand);
-            deviceCommandWindow.show();
             deviceCommandWindow.addSubmitListener(new Listener<AppEvent>() {
                public void handleEvent(AppEvent be) {
                   Map<String, String> map = be.getData();
