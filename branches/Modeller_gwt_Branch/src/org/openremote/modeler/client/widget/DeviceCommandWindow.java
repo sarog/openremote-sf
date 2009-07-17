@@ -88,12 +88,12 @@ public class DeviceCommandWindow extends SubmitWindow {
     * Initial.
     */
    private void initial(){
-      setWidth(360);
+      setWidth(380);
       setAutoHeight(true);
       
       commandForm.setFrame(true);
       commandForm.setHeaderVisible(false);
-      commandForm.setWidth(350);
+      commandForm.setWidth(370);
       
       commandForm.setButtonAlign(HorizontalAlignment.CENTER);
 
@@ -201,7 +201,7 @@ public class DeviceCommandWindow extends SubmitWindow {
    private void addAttrs(ComboBoxDataModel<ProtocolDefinition> data){
       FieldSet attrSet = new FieldSet();
       FormLayout layout = new FormLayout();  
-      layout.setLabelWidth(80);  
+      layout.setLabelWidth(80); 
       attrSet.setLayout(layout);
       attrSet.setHeading(data.getLabel()+" attributes");
       
@@ -218,7 +218,6 @@ public class DeviceCommandWindow extends SubmitWindow {
             }
          }
          setValidators(attrField, messages, attrDefinition.getValidators());
-
          attrSet.add(attrField);
       }
       commandForm.add(attrSet);

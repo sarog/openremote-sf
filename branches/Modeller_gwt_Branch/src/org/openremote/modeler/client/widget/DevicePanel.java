@@ -137,8 +137,8 @@ public class DevicePanel extends ContentPanel {
             final DeviceWindow deviceWindow = new DeviceWindow();
             deviceWindow.addSubmitListener(new Listener<AppEvent>() {
                public void handleEvent(AppEvent be) {
-                  Map<String, String> map = be.getData();
-                  createDevice(deviceWindow, map);
+                  Device device = be.getData();
+                  createDevice(deviceWindow, device);
                }
             });
          }
@@ -152,11 +152,7 @@ public class DevicePanel extends ContentPanel {
     * @param deviceWindow the device window
     * @param map the map
     */
-   private void createDevice(final DeviceWindow deviceWindow, Map<String, String> map) {
-      Device device = new Device();
-      device.setName(map.get("name"));
-      device.setVendor(map.get("vendor"));
-      device.setModel(map.get("model"));
+   private void createDevice(final DeviceWindow deviceWindow, Device device) {
       deviceService.saveDevice(device, new AsyncSuccessCallback<Device>() {
          public void onSuccess(Device device) {
             deviceWindow.hide();
@@ -214,7 +210,6 @@ public class DevicePanel extends ContentPanel {
       protocol.setDeviceCommand(deviceCommand);
       
       for (String key : map.keySet()) {
-         System.out.println(key + ": " + map.get(key));
          if ("name".equals(key) || "protocol".equals(key)) {
             continue;
          }
@@ -245,9 +240,9 @@ public class DevicePanel extends ContentPanel {
     * @return the button
     */
    private Button createEditButton() {
-      Button edit = new Button("Edit");
-      edit.setIcon(icon.edit());
-      edit.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      Button editBtn = new Button("Edit");
+      editBtn.setIcon(icon.edit());
+      editBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
             final TreeDataModel selectedNode = tree.getSelectionModel().getSelectedItem();
             if (selectedNode != null && selectedNode.getData() instanceof Device) {
@@ -257,7 +252,7 @@ public class DevicePanel extends ContentPanel {
             }
          }
       });
-      return edit;
+      return editBtn;
    }
    
    /**
@@ -266,20 +261,17 @@ public class DevicePanel extends ContentPanel {
     * @param selectedNode the selected node
     */
    private void editDevice(final TreeDataModel selectedNode) {
-      final Device device = (Device) selectedNode.getData();
+      Device device = (Device) selectedNode.getData();
       final DeviceWindow editDeviceWindow = new DeviceWindow(device);
       editDeviceWindow.addSubmitListener(new Listener<AppEvent>() {
          public void handleEvent(AppEvent be) {
-            Map<String, String> map = be.getData();
-            device.setName(map.get("name"));
-            device.setVendor(map.get("vendor"));
-            device.setModel(map.get("model"));
-            deviceService.updateDevice(device, new AsyncSuccessCallback<Void>() {
+            final Device dev = be.getData();
+            deviceService.updateDevice(dev, new AsyncSuccessCallback<Void>() {
                public void onSuccess(Void result) {
                   editDeviceWindow.hide();
-                  selectedNode.set(TreeDataModel.getDisplayProperty(), device.getName());
+                  selectedNode.set(TreeDataModel.getDisplayProperty(), dev.getName());
                   tree.getStore().update(selectedNode);
-                  Info.display("Info", "Edit device " + device.getName() + " success.");
+                  Info.display("Info", "Edit device " + dev.getName() + " success.");
                }
             });
          }
@@ -326,9 +318,9 @@ public class DevicePanel extends ContentPanel {
     * @return the button
     */
    private Button createDeleteButton() {
-      Button delete = new Button("Delete");
-      delete.setIcon(icon.delete());
-      delete.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      Button deleteBtn = new Button("Delete");
+      deleteBtn.setIcon(icon.delete());
+      deleteBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
             TreeDataModel selectedNode = tree.getSelectionModel().getSelectedItem();
             if (selectedNode != null && selectedNode.getData() instanceof Device) {
@@ -336,10 +328,9 @@ public class DevicePanel extends ContentPanel {
             } else if (selectedNode != null && selectedNode.getData() instanceof DeviceCommand) {
                deleteCommand(selectedNode);
             }
-            tree.getStore().remove(selectedNode);
          }
       });
-      return delete;
+      return deleteBtn;
    }
    
    /**
@@ -347,10 +338,11 @@ public class DevicePanel extends ContentPanel {
     * 
     * @param selectedNode the selected node
     */
-   private void deleteDevice(TreeDataModel selectedNode) {
+   private void deleteDevice(final TreeDataModel selectedNode) {
       Device device = (Device) selectedNode.getData();
       deviceService.deleteDevice(device.getOid(), new AsyncSuccessCallback<Void>() {
          public void onSuccess(Void result) {
+            tree.getStore().remove(selectedNode);
             Info.display("Info", "Delete success.");
          }
       });
@@ -361,10 +353,11 @@ public class DevicePanel extends ContentPanel {
     * 
     * @param selectedNode the selected node
     */
-   private void deleteCommand(TreeDataModel selectedNode) {
+   private void deleteCommand(final TreeDataModel selectedNode) {
       DeviceCommand deviceCommand = (DeviceCommand) selectedNode.getData();
       deviceCommandServiceAsync.deleteCommand(deviceCommand.getOid(), new AsyncSuccessCallback<Void>() {
          public void onSuccess(Void result) {
+            tree.getStore().remove(selectedNode);
             Info.display("Info", "Delete success.");
          }
       });

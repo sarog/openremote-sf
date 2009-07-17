@@ -98,7 +98,6 @@ public class ProtocolParser {
     */
    public HashMap<String, ProtocolDefinition> parseXmls() {
       HashMap<String, ProtocolDefinition> definitionHashMap = new HashMap<String, ProtocolDefinition>();
-      System.out.println(getPath());
       File dir = new File(getPath());
       for (File file : dir.listFiles(new FileFilter() {
 
@@ -224,7 +223,6 @@ public class ProtocolParser {
       SAXReader reader = new SAXReader();
       XMLErrorHandler errorHandler = new XMLErrorHandler();
       SAXParserFactory factory = SAXParserFactory.newInstance();
-      System.out.println(file.getAbsolutePath());
       factory.setValidating(true);
       factory.setNamespaceAware(true);
       try {
@@ -242,7 +240,6 @@ public class ProtocolParser {
          XMLWriter writer = new XMLWriter(OutputFormat.createPrettyPrint());
 
          if (errorHandler.getErrors().hasContent()) {
-            System.out.println("faild");
             writer.write(errorHandler.getErrors());
             logger.error("validate xml schema on File " + file.getAbsolutePath() + " fail.");
             throw new ParseProtocolException("validate xml schema on File " + file.getAbsolutePath() + " fail.");
