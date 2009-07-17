@@ -20,9 +20,7 @@
  */
 package org.openremote.modeler.client.widget;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.openremote.modeler.domain.Device;
 
@@ -114,11 +112,13 @@ public class DeviceWindow extends SubmitWindow {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             List<Field<?>> list = form.getFields();
-            Map<String, String> attrMap = new HashMap<String, String>();
-            for (Field<?> f : list) {
-               attrMap.put(f.getName(), f.getValue().toString());
+            if(_device == null){
+               _device = new Device();
             }
-            AppEvent appEvent = new AppEvent(Events.Submit, attrMap);
+            _device.setName(list.get(0).getValue().toString());
+            _device.setVendor(list.get(1).getValue().toString());
+            _device.setModel(list.get(2).getValue().toString());
+            AppEvent appEvent = new AppEvent(Events.Submit, _device);
             fireSubmitListener(appEvent);
          }
 
