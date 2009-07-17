@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 /**
  * The Class Role.
@@ -32,6 +33,7 @@ import javax.persistence.ManyToMany;
  */
 @SuppressWarnings("serial")
 @Entity
+@Table(name="role")
 public class Role extends BusinessEntity {
 
    /** The name. */

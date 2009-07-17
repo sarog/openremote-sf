@@ -28,6 +28,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  * The Class Protocol.
@@ -36,6 +37,7 @@ import javax.persistence.OneToOne;
  */
 @SuppressWarnings("serial")
 @Entity
+@Table(name="protocol")
 public class Protocol extends BusinessEntity {
    
    /** The type. */

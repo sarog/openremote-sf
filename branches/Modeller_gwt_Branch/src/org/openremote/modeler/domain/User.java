@@ -27,6 +27,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 
 /**
@@ -36,6 +37,7 @@ import javax.persistence.OneToOne;
  */
 @SuppressWarnings("serial")
 @Entity
+@Table(name="user")
 public class User extends BusinessEntity {
 
    /** The username. */

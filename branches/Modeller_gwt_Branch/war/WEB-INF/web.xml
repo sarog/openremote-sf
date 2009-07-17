@@ -12,7 +12,7 @@
     
 	<context-param>
 		<param-name>webAppRootKey</param-name>
-		<param-value>modeler.root</param-value>
+		<param-value>Modeler.root</param-value>
 	</context-param>
 	<context-param>
 		<param-name>contextConfigLocation</param-name>

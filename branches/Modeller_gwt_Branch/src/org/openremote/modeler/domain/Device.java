@@ -28,6 +28,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  * The Class Device.
@@ -36,6 +37,7 @@ import javax.persistence.OneToMany;
  */
 @SuppressWarnings("serial")
 @Entity
+@Table(name = "device")
 public class Device extends BusinessEntity {
    
    /** The name. */
