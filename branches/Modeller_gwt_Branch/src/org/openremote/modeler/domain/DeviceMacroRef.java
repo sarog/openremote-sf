@@ -20,6 +20,7 @@
  */
 package org.openremote.modeler.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -50,7 +51,6 @@ public class DeviceMacroRef extends DeviceMacroItem {
     * 
     * @return the target device macro
     */
-   @OneToOne
    @JoinColumn(name="target_device_macro_oid")
    public DeviceMacro getTargetDeviceMacro() {
       return targetDeviceMacro;

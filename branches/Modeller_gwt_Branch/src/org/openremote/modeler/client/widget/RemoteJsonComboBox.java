@@ -78,7 +78,6 @@ public class RemoteJsonComboBox<D extends ModelData> extends ComboBox<D> {
          @Override
          public void storeDataChanged(StoreEvent<D> se) {
             box.getStore().add(se.getStore().getModels());
-            box.fireEvent(ListStore.DataChanged);
          }
 
       });
@@ -102,7 +101,7 @@ public class RemoteJsonComboBox<D extends ModelData> extends ComboBox<D> {
       setTriggerAction(TriggerAction.ALL);
       setMinChars(1);
       
-      loader.load();
+     
 
       addListener(Events.BeforeQuery, new Listener<FieldEvent>() {
 
@@ -121,6 +120,8 @@ public class RemoteJsonComboBox<D extends ModelData> extends ComboBox<D> {
          }
 
       });
+      
+      loader.load();
    }
 
    /* (non-Javadoc)

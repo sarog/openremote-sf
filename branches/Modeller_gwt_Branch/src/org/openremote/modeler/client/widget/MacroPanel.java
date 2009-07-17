@@ -1,17 +1,22 @@
-/*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
+/* OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2009, OpenRemote Inc.
  * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
  * 
- * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
  * 
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * 
- * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
- * http://www.fsf.org.
+ * You should have received a copy of the GNU General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package org.openremote.modeler.client.widget;
 
@@ -36,6 +41,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class MacroPanel.
  */
@@ -79,17 +85,7 @@ public class MacroPanel extends ContentPanel {
             macroWindow.addSubmitListener(new Listener<AppEvent>() {
 
                public void handleEvent(AppEvent be) {
-                  DeviceMacro deviceMacro = be.getData();
-                  deviceMacroService.saveDeviceMacro(deviceMacro, new AsyncSuccessCallback<DeviceMacro>() {
-
-                     public void onSuccess(DeviceMacro deviceMacro) {
-                        if (macroTree != null) {
-                           macroTree.getStore().add(createModelWithDeviceMacro(deviceMacro), true);
-                        }
-
-                     }
-                  });
-                  macroWindow.hide();
+                  afterCreateDeviceMacro(macroWindow, be);
                }
 
             });
@@ -105,31 +101,7 @@ public class MacroPanel extends ContentPanel {
 
          @Override
          public void componentSelected(ButtonEvent ce) {
-            if (macroTree.getSelectionModel().getSelectedItem() != null) {
-               final TreeDataModel dataModel = macroTree.getSelectionModel().getSelectedItem();
-               if (dataModel.getData() instanceof DeviceMacro) {
-                  final MacroWindow macroWindow = new MacroWindow((DeviceMacro) dataModel.getData());
-                  macroWindow.addSubmitListener(new Listener<AppEvent>() {
-                     public void handleEvent(AppEvent be) {
-                        DeviceMacro deviceMacro = be.getData();
-                        deviceMacroService.updateDeviceMacro(deviceMacro, new AsyncSuccessCallback<DeviceMacro>() {
-                           public void onSuccess(DeviceMacro result) {
-                              int index = macroTree.getStore().indexOf(dataModel);
-                              macroTree.getStore().remove(dataModel);
-                              TreeDataModel newModel = createModelWithDeviceMacro(result);
-                              macroTree.getStore().insert(newModel, index, true);
-                              macroTree.setExpanded(newModel, true);
-                              macroWindow.hide();
-                              macroTree.getSelectionModel().select(newModel, false);
-                           }
-                        });
-                     }
-
-                  });
-                  macroWindow.show();
-
-               }
-            }
+            onEditDeviceMacroBtnClicked();
 
          }
 
@@ -142,21 +114,7 @@ public class MacroPanel extends ContentPanel {
 
          @Override
          public void componentSelected(ButtonEvent ce) {
-            if (macroTree.getSelectionModel().getSelectedItems().size() > 0) {
-               for (final TreeDataModel data : macroTree.getSelectionModel().getSelectedItems()) {
-                  if (data.getData() instanceof DeviceMacro) {
-                     DeviceMacro deviceMacro = (DeviceMacro) data.getData();
-                     deviceMacroService.deleteDeviceMacro(deviceMacro.getOid(), new AsyncSuccessCallback<Void>() {
-
-                        public void onSuccess(Void result) {
-                           macroTree.getStore().remove(data);
-                        }
-
-                     });
-                  }
-
-               }
-            }
+            onDeleteDeviceMacroBtnClicked();
          }
 
       });
@@ -170,8 +128,7 @@ public class MacroPanel extends ContentPanel {
    /**
     * Creates the model with device macro.
     * 
-    * @param deviceMacro
-    *           the device macro
+    * @param deviceMacro the device macro
     * 
     * @return the tree data model< device macro>
     */
@@ -216,6 +173,88 @@ public class MacroPanel extends ContentPanel {
       macroTree.expandAll();
       macroTree.collapseAll();
       super.afterExpand();
+   }
+
+   /**
+    * After create device macro.
+    * 
+    * @param macroWindow the macro window
+    * @param be the be
+    */
+   private void afterCreateDeviceMacro(final MacroWindow macroWindow, AppEvent be) {
+      DeviceMacro deviceMacro = be.getData();
+      deviceMacroService.saveDeviceMacro(deviceMacro, new AsyncSuccessCallback<DeviceMacro>() {
+
+         public void onSuccess(DeviceMacro deviceMacro) {
+            if (macroTree != null) {
+               macroTree.getStore().add(createModelWithDeviceMacro(deviceMacro), true);
+            }
+
+         }
+      });
+      macroWindow.hide();
+   }
+
+   /**
+    * On edit device macro btn clicked.
+    */
+   private void onEditDeviceMacroBtnClicked() {
+      if (macroTree.getSelectionModel().getSelectedItem() != null) {
+         final TreeDataModel dataModel = macroTree.getSelectionModel().getSelectedItem();
+         if (dataModel.getData() instanceof DeviceMacro) {
+            final MacroWindow macroWindow = new MacroWindow((DeviceMacro) dataModel.getData());
+            macroWindow.addSubmitListener(new Listener<AppEvent>() {
+               public void handleEvent(AppEvent be) {
+                  afterUpdateDeviceMacroSubmit(dataModel, macroWindow, be);
+               }
+
+            });
+            macroWindow.show();
+
+         }
+      }
+   }
+
+   /**
+    * On delete device macro btn clicked.
+    */
+   private void onDeleteDeviceMacroBtnClicked() {
+      if (macroTree.getSelectionModel().getSelectedItems().size() > 0) {
+         for (final TreeDataModel data : macroTree.getSelectionModel().getSelectedItems()) {
+            if (data.getData() instanceof DeviceMacro) {
+               DeviceMacro deviceMacro = (DeviceMacro) data.getData();
+               deviceMacroService.deleteDeviceMacro(deviceMacro.getOid(), new AsyncSuccessCallback<Void>() {
+                  public void onSuccess(Void result) {
+                     macroTree.getStore().remove(data);
+                  }
+
+               });
+            }
+
+         }
+      }
+   }
+
+   /**
+    * After update device macro submit.
+    * 
+    * @param dataModel the data model
+    * @param macroWindow the macro window
+    * @param be the be
+    */
+   private void afterUpdateDeviceMacroSubmit(final TreeDataModel dataModel, final MacroWindow macroWindow, AppEvent be) {
+      DeviceMacro deviceMacro = be.getData();
+      deviceMacroService.updateDeviceMacro(deviceMacro, new AsyncSuccessCallback<DeviceMacro>() {
+         public void onSuccess(DeviceMacro result) {
+            int index = macroTree.getStore().indexOf(dataModel);
+            macroTree.getStore().remove(dataModel);
+            TreeDataModel newModel = createModelWithDeviceMacro(result);
+            macroTree.getStore().insert(newModel, index, true);
+            macroTree.setExpanded(newModel, true);
+            macroWindow.hide();
+            macroTree.getSelectionModel().select(newModel, false);
+         }
+      });
    }
 
 }
