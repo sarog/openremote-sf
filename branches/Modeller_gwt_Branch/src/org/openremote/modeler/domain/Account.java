@@ -26,6 +26,7 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  * The Class Account.
@@ -34,6 +35,7 @@ import javax.persistence.OneToOne;
  */
 @SuppressWarnings("serial")
 @Entity
+@Table(name="account")
 public class Account extends BusinessEntity {
 
    /** The user. */
