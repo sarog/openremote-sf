@@ -12,6 +12,6 @@ public class TreePanelDragSourceMacroDragExt extends TreePanelDragSource{
 
    @Override
    protected void onDragDrop(DNDEvent event) {
-
+      //do nothing after drag drop.
    }
 }

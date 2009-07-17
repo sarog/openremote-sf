@@ -85,12 +85,11 @@ public class SelectIRWindow extends Window {
    public SelectIRWindow() {
       if (beehiveRESTUrl == null) {
          configurationService.beehiveRESTUrl(new AsyncSuccessCallback<String>(){
-
             @Override
             public void onSuccess(String result) {
                beehiveRESTUrl = result;
                setupWindow();
-               addVendersList();
+               addVendorsList();
                layout();
             }
             
@@ -132,33 +131,24 @@ public class SelectIRWindow extends Window {
 
          @Override
          public void componentSelected(ButtonEvent ce) {
-            window.mask("Wait...");
-            importButton.setEnabled(false);
-            if (codeGrid != null) {
-               AppEvent event = new AppEvent(Events.Submit);
-               event.setData(codeGrid.getStore().getModels());
-               fireSubmitListener(event);
-               
-            } else {
-               MessageBox.alert("Warn", "Please select vendor, model first.", null);
-            }
+            onImportBtnClicked(window);
          }
       });
       buttonLayout.add(importButton);
       add(buttonLayout, new RowData(-1, -1, new Margins(10)));
    }
 
-   private void addVendersList() {
-      ModelType venderType = new ModelType();
-      venderType.setRoot("vendors.vendor");
+   private void addVendorsList() {
+      ModelType vendorType = new ModelType();
+      vendorType.setRoot("vendors.vendor");
       DataField idField = new DataField("id");
       idField.setType(Long.class);
-      venderType.addField(idField);
-      venderType.addField("name");
+      vendorType.addField(idField);
+      vendorType.addField("name");
 
       final String emptyText = "Please Select Vendor ...";
 
-      vendorList = new RemoteJsonComboBox<ModelData>(beehiveRESTUrl, venderType);
+      vendorList = new RemoteJsonComboBox<ModelData>(beehiveRESTUrl, vendorType);
 
       vendorList.setEmptyText(emptyText);
       vendorList.setDisplayField("name");
@@ -377,6 +367,19 @@ public class SelectIRWindow extends Window {
 
    public void remoteSubmitListener(Listener<AppEvent> listener) {
       submitListeners.remove(listener);
+   }
+
+   private void onImportBtnClicked(final Window window) {
+      window.mask("Wait...");
+      importButton.setEnabled(false);
+      if (codeGrid != null) {
+         AppEvent event = new AppEvent(Events.Submit);
+         event.setData(codeGrid.getStore().getModels());
+         fireSubmitListener(event);
+         
+      } else {
+         MessageBox.alert("Warn", "Please select vendor, model first.", null);
+      }
    }
 
 }
