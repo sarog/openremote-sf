@@ -19,8 +19,10 @@ package org.openremote.modeler.client.widget;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.gxtExtends.NestedJsonLoadResultReader;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.rpc.ConfigurationService;
+import org.openremote.modeler.client.rpc.ConfigurationServiceAsync;
 
 import com.extjs.gxt.ui.client.Style.ButtonScale;
 import com.extjs.gxt.ui.client.Style.Orientation;
@@ -53,12 +55,16 @@ import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
+import com.google.gwt.core.client.GWT;
 
 /**
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
 public class SelectIRWindow extends Window {
 
+   private String beehiveRESTUrl = null;
+   
+   private ConfigurationServiceAsync configurationService = (ConfigurationServiceAsync)GWT.create(ConfigurationService.class);
    /** The submit listeners. */
    private List<Listener<AppEvent>> submitListeners = new ArrayList<Listener<AppEvent>>();
 
@@ -75,10 +81,22 @@ public class SelectIRWindow extends Window {
    Grid<ModelData> codeGrid = null;
    ModelType codeType = null;
    ColumnModel cm = null;
-
+   
    public SelectIRWindow() {
-      setupWindow();
-      addVendersList();
+      if (beehiveRESTUrl == null) {
+         configurationService.beehiveRESTUrl(new AsyncSuccessCallback<String>(){
+
+            @Override
+            public void onSuccess(String result) {
+               beehiveRESTUrl = result;
+               setupWindow();
+               addVendersList();
+               layout();
+            }
+            
+         });
+      }
+      
    }
 
    private void setupWindow() {
@@ -140,7 +158,7 @@ public class SelectIRWindow extends Window {
 
       final String emptyText = "Please Select Vendor ...";
 
-      vendorList = new RemoteJsonComboBox<ModelData>("http://openremote.finalist.hk/beehive/rest/lirc", venderType);
+      vendorList = new RemoteJsonComboBox<ModelData>(beehiveRESTUrl, venderType);
 
       vendorList.setEmptyText(emptyText);
       vendorList.setDisplayField("name");
@@ -169,7 +187,7 @@ public class SelectIRWindow extends Window {
       modelType.addField("fileName");
       final String emptyText = "Please Select Model ...";
 
-      String url = "http://openremote.finalist.hk/beehive/rest/lirc/" + vendor;
+      String url = beehiveRESTUrl + vendor;
       if (modelList != null) {
          clearComboBox(modelList);
          clearComboBox(sectionList);
@@ -205,7 +223,7 @@ public class SelectIRWindow extends Window {
       idField.setType(Long.class);
       sectionType.addField(idField);
       sectionType.addField("name");
-      String url = "http://openremote.finalist.hk/beehive/rest/lirc/" + venderName + "/" + modelName;
+      String url = beehiveRESTUrl + venderName + "/" + modelName;
       final String emptyText = "Please Select Section ...";
 
       if (sectionList != null) {
@@ -280,7 +298,7 @@ public class SelectIRWindow extends Window {
          codeType.addField("comment");
       }
 
-      StringBuffer url = new StringBuffer(Constants.BEEHIVE_REST_URL);
+      StringBuffer url = new StringBuffer(beehiveRESTUrl);
       url.append(vendor);
       url.append("/");
       url.append(model);

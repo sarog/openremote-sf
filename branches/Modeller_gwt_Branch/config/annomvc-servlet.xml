@@ -26,6 +26,7 @@
                 <prop key="/modeler/device.smvc">deviceController</prop>
                 <prop key="/modeler/deviceCommand.smvc">deviceCommandController</prop>
                 <prop key="/modeler/deviceMacro.smvc">deviceMacroController</prop>
+                <prop key="/modeler/config.smvc">configurationController</prop>
             </props>
         </property>
     </bean>
@@ -35,5 +36,7 @@
     <bean id="deviceController" class="org.openremote.modeler.server.DeviceController"></bean>
     <bean id="deviceCommandController" class="org.openremote.modeler.server.DeviceCommandController"></bean>
     <bean id="deviceMacroController" class="org.openremote.modeler.server.DeviceMacroController"></bean>
+    <bean id="configurationController" class="org.openremote.modeler.server.ConfigurationController">
+    </bean>
     
 </beans>
