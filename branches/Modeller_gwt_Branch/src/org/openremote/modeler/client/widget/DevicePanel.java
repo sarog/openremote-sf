@@ -96,10 +96,9 @@ public class DevicePanel extends ContentPanel {
       treeContainer.setBorders(false);
      
       tree = TreePanelBuilder.buildDeviceCommandTree();
-      
       treeContainer.add(tree);
-
       add(treeContainer);
+      treeContainer.mask("Loading...");
    }
    
    /**
