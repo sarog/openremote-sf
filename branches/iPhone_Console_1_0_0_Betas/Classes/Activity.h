@@ -22,6 +22,6 @@
 @property (nonatomic,readonly) int activityId;
 @property (nonatomic,readonly) NSString *name;
 @property (nonatomic,readonly) NSString *icon;
-@property (nonatomic,readonly) NSArray *screens;
+@property (nonatomic,readonly) NSMutableArray *screens;
 
 @end

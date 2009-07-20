@@ -72,14 +72,17 @@
 		
 		highTime = lowTime = highValue = lowValue = 0;
 		
-		[self updateLabel];
+		
+		if (count > 15 && count < 26) {
+			[self updateLabel];
+		}
 	}
 }
 
 - (void)updateLabel {
-	NSString *str = [[NSString alloc] initWithFormat:@"%d", count];
-	volume.text = str;
-	[str	release];	
+		NSString *str = [[NSString alloc] initWithFormat:@"%d", count];
+		volume.text = str;
+		[str	release];	
 }
 
 - (IBAction)showSettings {    
