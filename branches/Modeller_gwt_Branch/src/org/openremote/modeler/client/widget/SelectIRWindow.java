@@ -102,7 +102,7 @@ public class SelectIRWindow extends Window {
    private void setupWindow() {
       setSize(570, 330);
       setModal(true);
-      setHeading("Select IR from Beehive");
+      setHeading("Select IR commands from Beehive");
       
       setLayout(new RowLayout(Orientation.VERTICAL));
 
@@ -121,7 +121,7 @@ public class SelectIRWindow extends Window {
       LayoutContainer buttonLayout = new LayoutContainer();
       buttonLayout.setLayout(new CenterLayout());
 
-      importButton = new Button("import");
+      importButton = new Button("Import");
       importButton.setScale(ButtonScale.MEDIUM);
       importButton.setWidth(80);
       importButton.setEnabled(false);

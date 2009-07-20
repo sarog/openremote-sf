@@ -91,11 +91,12 @@ public class DeviceCommandWindow extends SubmitWindow {
       setWidth(380);
       setAutoHeight(true);
       setModal(true);
+      setBodyBorder(false);
       
       commandForm.setFrame(true);
       commandForm.setHeaderVisible(false);
       commandForm.setWidth(370);
-      
+      commandForm.setBorders(false);
       commandForm.setButtonAlign(HorizontalAlignment.CENTER);
 
       Button submitBtn = new Button("Submit");
