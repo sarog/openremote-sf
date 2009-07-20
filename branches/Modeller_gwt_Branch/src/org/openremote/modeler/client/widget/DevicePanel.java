@@ -375,8 +375,6 @@ public class DevicePanel extends ContentPanel {
          public void componentSelected(MenuEvent ce) {
             if (tree.getSelectionModel().getSelectedItem() != null) {
                final SelectIRWindow selectIRWindow = new SelectIRWindow();
-               add(selectIRWindow);
-               selectIRWindow.show();
                selectIRWindow.addSubmitListener(new Listener<AppEvent>() {
                   public void handleEvent(AppEvent be) {
                      List<ModelData> datas = be.getData();
