@@ -17,6 +17,8 @@ package org.openremote.modeler.service;
 
 import java.util.List;
 
+import javax.crypto.Mac;
+
 import org.hibernate.Hibernate;
 import org.openremote.modeler.client.rpc.DeviceMacroService;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -26,6 +28,14 @@ import org.openremote.modeler.domain.DeviceMacroItem;
  * The Class DeviceMacroServiceImpl.
  */
 public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> implements DeviceMacroService {
+   
+   private DeviceMacroItemService deviceMacroItemService;
+   
+   
+
+   public void setDeviceMacroItemService(DeviceMacroItemService deviceMacroItemService) {
+      this.deviceMacroItemService = deviceMacroItemService;
+   }
 
    /*
     * (non-Javadoc)
@@ -75,6 +85,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
     */
    public void deleteDeviceMacro(long id) {
       DeviceMacro deviceMacro = loadById(id);
+      deviceMacroItemService.deleteByDeviceMacro(deviceMacro);
       genericDAO.delete(deviceMacro);
    }
 
