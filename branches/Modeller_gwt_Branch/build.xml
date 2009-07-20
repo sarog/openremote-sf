@@ -304,7 +304,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 			<fileset dir="${src.dir}" includes="**/*.java" />
 			<fileset dir="${test.dir}" includes="**/*.java" />
 		</checkstyle>
-		<style in="${checkstyle.reports.dir}/checkstyle_report.xml" out="${checkstyle.reports.dir}/checkstyle.report.html" style="${checkstyle.report.style}" />
+		<xslt in="${checkstyle.reports.dir}/checkstyle_report.xml" out="${checkstyle.reports.dir}/checkstyle.report.html" style="${checkstyle.report.style}" />
 	</target>
 
 
