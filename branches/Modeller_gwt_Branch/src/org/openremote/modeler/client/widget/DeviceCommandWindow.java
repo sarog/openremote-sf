@@ -90,6 +90,7 @@ public class DeviceCommandWindow extends SubmitWindow {
    private void initial(){
       setWidth(380);
       setAutoHeight(true);
+      setModal(true);
       
       commandForm.setFrame(true);
       commandForm.setHeaderVisible(false);

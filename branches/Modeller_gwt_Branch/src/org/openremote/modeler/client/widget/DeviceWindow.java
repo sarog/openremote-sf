@@ -77,6 +77,7 @@ public class DeviceWindow extends SubmitWindow {
       setHeight(200);
       setHeading(heading);
       setLayout(new FillLayout());
+      setModal(true);
       
       form.setFrame(true);
       form.setHeaderVisible(false);
