@@ -368,7 +368,7 @@ public class MacroWindow extends Window {
 
       Button deleteBtn = new Button();
       deleteBtn.setToolTip("Delete Macro Item");
-      deleteBtn.setIcon(icons.macroDeleteIcon());
+      deleteBtn.setIcon(icons.delete());
       deleteBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
          @Override
