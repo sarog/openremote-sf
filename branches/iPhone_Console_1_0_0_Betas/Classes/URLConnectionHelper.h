@@ -10,9 +10,9 @@
 
 //Define a protocol 
 @protocol URLConnectionHelperDelegate <NSObject>
-
 - (void)definitionURLConnectionDidFinishLoading:(NSData *)data;
-
+- (void)definitionURLConnectionDidFailWithError:(NSError *)error;
+- (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response;
 @end
 
 @interface URLConnectionHelper : NSObject {

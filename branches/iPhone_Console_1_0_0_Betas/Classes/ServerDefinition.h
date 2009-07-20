@@ -16,5 +16,4 @@
 + (NSString *)imageUrl;
 + (NSString *)eventHandleRESTUrl;
 + (NSString *)serverUrl;
-+ (void)registerDefaultsFromSettingsBundle;
 @end

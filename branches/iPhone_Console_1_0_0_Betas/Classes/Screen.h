@@ -24,7 +24,7 @@
 
 @property (nonatomic,readonly) NSString *name;
 @property (nonatomic,readonly) NSString *icon;
-@property (nonatomic,readonly) NSArray *controls;
+@property (nonatomic,readonly) NSMutableArray *controls;
 
 @property (nonatomic,readonly) int rows;
 @property (nonatomic,readonly) int cols;

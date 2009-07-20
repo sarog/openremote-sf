@@ -15,7 +15,8 @@
 #import "Screen.h"
 #import "Control.h"
 #import "ViewHelper.h"
-#import "Reachability.h"
+#import "NotificationConstant.h"
+#import "CheckNetworkStaff.h"
 
 @interface Definition (Private)
 - (void) postNotificationToMainThread:(NSString *)notificationName;
@@ -23,19 +24,15 @@
 - (void)parseXMLData;
 - (void)downloadImages;
 - (void)downloadImageWithName:(NSString *)imageName;
-- (BOOL)checkWhetherNetworkAvailable;
-- (BOOL)checkWhetherControllerAvailable;
-- (BOOL)checkWhetherXmlExist;
-- (void)useLocalCacheDirectly;
 - (void)addDownloadImageOperationWithImageName:(NSString *)imageName;
+- (BOOL)canUseLocalCache;
+- (void)parseXml;
 @end
 
 static Definition *myInstance = nil;
 
 @implementation Definition
 
-NSString *const DefinationUpdateDidFinishedNotification = @"updateDidFinishedNotification";
-NSString *const DefinationNeedNotUpdate = @"needNotUpdateNotification";
 
 @synthesize isUpdating,lastUpdateTime,activities;
 
@@ -45,13 +42,8 @@ NSString *const DefinationNeedNotUpdate = @"needNotUpdateNotification";
 		[NSException raise:@"singletonClassError" format:@" Don't init singleton class %@"];
 	} else if (self == [super init]) {
 		myInstance = self; 
-		updateOperationQueue = [[NSOperationQueue alloc] init];
-		updateOperation = [[[NSInvocationOperation alloc] initWithTarget:self selector:@selector(postNotificationToMainThread:) object:DefinationUpdateDidFinishedNotification] autorelease];
-		isUpdating = NO;
-		activities = [[NSMutableArray alloc] init];
-		
-		[[Reachability sharedReachability] setHostName:@"www.google.com"];
-		
+				
+				
 //		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:@"kNetworkReachabilityChangedNotification" object:nil];
 
 	}
@@ -73,96 +65,58 @@ NSString *const DefinationNeedNotUpdate = @"needNotUpdateNotification";
 	return YES;
 }
 
-
--(BOOL)checkWhetherNetworkAvailable {
-	if ([[Reachability sharedReachability] remoteHostStatus] == NotReachable) {
-		return NO;
-	}
-	return YES;
+- (BOOL)canUseLocalCache {
+	return [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition sampleXmlUrl]]]];
 }
 
-- (BOOL)checkWhetherControllerAvailable {
-	
-	NSError *error = nil;
-	NSHTTPURLResponse *resp = nil;
-	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:[ServerDefinition serverUrl]] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:5];
-	[NSURLConnection sendSynchronousRequest:request returningResponse:&resp error:&error];
-	
-	[request release];
-	if (error ) {
-		[ViewHelper showAlertViewWithTitle:@"Can't Connect to Controller" Message:@"Make sure your server has been started and your configuration of server url is correct."];
-		return NO;
-	} else if ([resp statusCode] != 200){
-		[ViewHelper showAlertViewWithTitle:@"Can't Connect to Controller" Message:@"We detect your server has been started, but can't find controller application on the server, Make sure your url is correct."];
-		return NO;
-	}
-	return YES;
-}
-
-- (BOOL)checkWhetherXmlExist {
-	NSHTTPURLResponse *resp = nil;
-	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:[ServerDefinition sampleXmlUrl]] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:5];
-	[NSURLConnection sendSynchronousRequest:request returningResponse:&resp error:NULL];
-	
-	[request release];
-	if ([resp statusCode] != 200 ){
-		[ViewHelper showAlertViewWithTitle:@"Can't Find iphone.xml" Message:@"Make sure you have already put the iphone.xml into the controller."];
-		return NO;
-	}
-	return YES;
-}
 
 
 - (void)update {
-	if ([ServerDefinition serverUrl] == nil) {
-		[ViewHelper showAlertViewWithTitle:@"No Config Information" Message:@"There is no config information, You can modify it in your iphone 'Settings'."];
-		[self postNotificationToMainThread:DefinationNeedNotUpdate];
-		return;
+	if (updateOperationQueue) {
+		[updateOperationQueue release];
 	}
+	updateOperationQueue = [[NSOperationQueue alloc] init];
+	if (updateOperation) {
+		[updateOperation release];
+	}
+	updateOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(postNotificationToMainThread:) object:DefinationUpdateDidFinishedNotification];
+	isUpdating = NO;
+
+	
 	if (isUpdating) {
 		return;
 	}
-	
 	isUpdating = YES;
 	
-	if (![self checkWhetherNetworkAvailable]) {
-		if ([self isDataReady]) {
-			[ViewHelper showAlertViewWithTitle:@"No Network" Message:@"There is no network, you can use local cache." ];
-			[self	useLocalCacheDirectly];
-		} else {
-			[ViewHelper showAlertViewWithTitle:@"No Network" Message:@"You can't start up. Because application can't connect to server and you don't have local cache.So you can check your network and restart the application." ];
-		}
-		[self postNotificationToMainThread:DefinationNeedNotUpdate];
-	} else {
-		
-		if ([self checkWhetherControllerAvailable] && [self checkWhetherXmlExist]) {
-			if (lastUpdateTime) {
-				[lastUpdateTime release];
-			}
-			
-			lastUpdateTime = [[NSDate date] retain];
-						
-			//define Operations
-			NSInvocationOperation *downloadXmlOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(downloadXml) object:nil];
-			NSInvocationOperation *parseXmlOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(parseXMLData) object:nil];
-			
-			//define Operation dependency and add it to OperationQueue
-			[parseXmlOperation addDependency:downloadXmlOperation];
-			[updateOperationQueue addOperation:downloadXmlOperation];
-			[updateOperationQueue addOperation:parseXmlOperation];
-			
-			[updateOperation addDependency:parseXmlOperation];
-
-			[downloadXmlOperation release];
-			[parseXmlOperation release];
-		} else {
-			[self postNotificationToMainThread:DefinationNeedNotUpdate];
-		}
+	if (lastUpdateTime) {
+		[lastUpdateTime release];
 	}
+	
+	lastUpdateTime = [[NSDate date] retain];
+				
+	//define Operations
+	NSInvocationOperation *downloadXmlOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(downloadXml) object:nil];
+	NSInvocationOperation *parseXmlOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(parseXMLData) object:nil];
+	
+	//define Operation dependency and add it to OperationQueue
+	[parseXmlOperation addDependency:downloadXmlOperation];
+	[updateOperationQueue addOperation:downloadXmlOperation];
+	[updateOperationQueue addOperation:parseXmlOperation];
+	
+	[updateOperation addDependency:parseXmlOperation];
+
+	[downloadXmlOperation release];
+	[parseXmlOperation release];
 }
 
 - (void)useLocalCacheDirectly {
-	[self parseXMLData];
+	if ([self canUseLocalCache]) {
+		[self parseXml];
+	} else {
+//		[ViewHelper showAlertViewWithTitle:@"Error" Message:@"Can't find local cache, you need to connect network and retry."];
+		[[NSNotificationCenter defaultCenter] postNotificationName:DefinationNeedNotUpdate object:nil];
+	}
+	
 }
 
 #pragma mark Operation Tasks
@@ -177,26 +131,35 @@ NSString *const DefinationNeedNotUpdate = @"needNotUpdateNotification";
 	[FileUtils downloadFromURL:[[ServerDefinition imageUrl] stringByAppendingPathComponent:imageName]  path:[DirectoryDefinition imageCacheFolder]];
 }
 
-//Parses xml
-- (void)parseXMLData {	
+- (void)parseXml {
 	NSLog(@"start parse xml");
+	if (activities) {
+		[activities release];
+	}
+	activities = [[NSMutableArray alloc] init];
+	
 	NSData *data = [[NSData alloc] initWithContentsOfFile:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition sampleXmlUrl]]]];
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
-	NSLog(@"%@",data);
+	NSString *dataStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+	NSLog(@"%@",dataStr);
+	[dataStr release];
 	
 	//Set delegate to self in order to parse next elements by itself
 	[xmlParser setDelegate:self];
-
+	
 	//Calls parse method to start parse xml
 	[xmlParser parse];
 	NSLog(@"xml parse done");
-	
-	[self downloadImages];
-	NSLog(@"images download done");
-	
 	[data release];
 	[xmlParser release];
+}
+//Parses xml
+- (void)parseXMLData {	
 	
+	[self parseXml];
+	[self downloadImages];
+	NSLog(@"images download done");
+		
 	//after parse the xml all the Operation have already added to OperationQuere and addDependency to updateOperation
 	[updateOperationQueue addOperation:updateOperation];
 	NSLog(@"parse xml end element screens and add updateOperation to queue");
@@ -216,7 +179,8 @@ NSString *const DefinationNeedNotUpdate = @"needNotUpdateNotification";
 }
 
 - (void)downloadImages {
-	if  ([self checkWhetherNetworkAvailable]) {
+	@try {
+		[CheckNetworkStaff checkWhetherNetworkAvailable];
 		for (Activity *myActivity in activities) {
 			if (myActivity.icon) {
 				[self addDownloadImageOperationWithImageName:myActivity.icon];
@@ -234,6 +198,9 @@ NSString *const DefinationNeedNotUpdate = @"needNotUpdateNotification";
 			}
 		}
 	}
+	@catch (NSException * e) {
+		[ViewHelper showAlertViewWithTitle:@"Error" Message:@"Can't download image from Server, there is not network."];
+	}		
 }
 
 - (void)addDownloadImageOperationWithImageName:(NSString *)imageName {

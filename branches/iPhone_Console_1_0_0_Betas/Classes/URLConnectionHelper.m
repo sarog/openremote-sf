@@ -21,7 +21,7 @@
 		NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:15];
 		
 		//the initWithRequest constractor will invoke the request
-		[[[NSURLConnection alloc] initWithRequest:request delegate:self] release];
+		[[[NSURLConnection alloc] initWithRequest:request delegate:self] autorelease];
 		[request release];
 	}
 	return self;
@@ -32,7 +32,7 @@
 		[self setDelegate:d];
 		receivedData = [[NSMutableData alloc] init];
 		
-		[[[NSURLConnection alloc] initWithRequest:request delegate:self] release];
+		[[[NSURLConnection alloc] initWithRequest:request delegate:self] autorelease];
 	}
 	return self;
 }
@@ -48,15 +48,28 @@
 // When finished the connection invoke the deleget method
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
 	// Send data to delegate
-	NSLog(@"Finished loading");
 	//[delegate performSelector:@selector(definitionURLConnectionDidFinishLoading:) withObject:receivedData afterDelay:5];
 	[delegate definitionURLConnectionDidFinishLoading:receivedData];
 }
+
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-	[alert show];
-	[alert release];
+	if ([delegate respondsToSelector:@selector(definitionURLConnectionDidFailWithError:)]) {
+		[delegate definitionURLConnectionDidFailWithError:error];
+	} else {
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+		[alert show];
+		[alert release];
+	}
 }
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+	if (delegate && [delegate respondsToSelector:@selector(definitionURLConnectionDidReceiveResponse:)]) {
+		[delegate definitionURLConnectionDidReceiveResponse:response];
+	}
+}
+			
+
+
 
 - (void)dealloc {
 	[receivedData release];
