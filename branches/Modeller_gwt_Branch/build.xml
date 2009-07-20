@@ -292,6 +292,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<target name="cobertura" depends="testng-cov" description="generate report of cobertura " >
 		<mkdir dir="${cobertura.report.dir}" />
 		<cobertura-report format="html" destdir="${cobertura.report.dir}" srcdir="${src.dir}" datafile="${cobertura.datafile}" />
+		<cobertura-report format="xml" destdir="${cobertura.report.dir}" srcdir="${src.dir}" datafile="${cobertura.datafile}" />
 	</target>
 	
     <!-- ==================================================================== -->
