@@ -36,6 +36,12 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
    /* (non-Javadoc)
     * @see org.openremote.modeler.client.rpc.DeviceCommandService#saveAll(java.util.List)
     */
+   private DeviceMacroItemService deviceMacroItemService;
+   
+   public void setDeviceMacroItemService(DeviceMacroItemService deviceMacroItemService) {
+      this.deviceMacroItemService = deviceMacroItemService;
+   }
+
    public List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands) {
       for (DeviceCommand command : deviceCommands) {
          genericDAO.save(command);
@@ -50,7 +56,9 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
    }
 
    public void deleteCommand(long id) {
-      genericDAO.delete(loadById(id));
+      DeviceCommand deviceCommand = loadById(id);
+      deviceMacroItemService.deleteByDeviceCommand(deviceCommand);
+      genericDAO.delete(deviceCommand);
    }
 
    public void update(DeviceCommand deviceCommand) {
