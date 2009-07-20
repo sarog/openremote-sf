@@ -32,6 +32,7 @@ import org.openremote.modeler.domain.DeviceMacroRef;
 
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.store.TreeStore;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
@@ -87,6 +88,8 @@ public class TreePanelBuilder {
                      }
                      deviceCommandTreestore.add(deviceModel, true);
                   }
+               LayoutContainer treeContainer = (LayoutContainer)tree.getParent();
+               treeContainer.unmask();
                }
             }
          });
