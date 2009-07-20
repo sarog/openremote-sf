@@ -91,6 +91,7 @@ public class SelectIRWindow extends Window {
                setupWindow();
                addVendorsList();
                layout();
+               show();
             }
             
          });
@@ -100,9 +101,7 @@ public class SelectIRWindow extends Window {
 
    private void setupWindow() {
       setSize(570, 330);
-      setPlain(true);
       setModal(true);
-      setBlinkModal(true);
       setHeading("Select IR from Beehive");
       
       setLayout(new RowLayout(Orientation.VERTICAL));

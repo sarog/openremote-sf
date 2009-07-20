@@ -37,6 +37,11 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
     * @see org.openremote.modeler.client.rpc.DeviceService#saveDevice(java.util.Map)
     */
    private DeviceMacroItemService deviceMacroItemService;
+   
+   public void setDeviceMacroItemService(DeviceMacroItemService deviceMacroItemService) {
+      this.deviceMacroItemService = deviceMacroItemService;
+   }
+
    public Device saveDevice(Device device) {
       genericDAO.save(device);
       return device;
