@@ -28,6 +28,7 @@ import org.openremote.modeler.client.gxtExtends.TreePanelDragSourceMacroDragExt;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.model.DeviceMacroItemModel;
 import org.openremote.modeler.client.model.TreeDataModel;
+import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
@@ -42,6 +43,8 @@ import com.extjs.gxt.ui.client.dnd.DND.Feedback;
 import com.extjs.gxt.ui.client.dnd.DND.Operation;
 import com.extjs.gxt.ui.client.dnd.DND.TreeSource;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.DNDEvent;
+import com.extjs.gxt.ui.client.event.DNDListener;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -264,8 +267,21 @@ public class MacroWindow extends Window {
       deviceCommandTree.setHeight("100%");
 
       TreePanelDragSourceMacroDragExt dragSource = new TreePanelDragSourceMacroDragExt(deviceCommandTree);
+      dragSource.addDNDListener(new DNDListener(){
+
+         @Override
+         public void dragStart(DNDEvent e) {
+            TreePanel<TreeDataModel> tree = ((TreePanel<TreeDataModel>) e.getComponent());  
+            TreeDataModel dataModel = tree.getSelectionModel().getSelectedItem();
+            if (!(dataModel.getData() instanceof DeviceCommand)) {
+               e.setCancelled(true);
+               e.getStatus().setStatus(false);
+            }
+            super.dragStart(e);
+         }
+         
+      });
       dragSource.setGroup(MACRO_DND_GROUP);
-      dragSource.setTreeSource(TreeSource.LEAF);
 
       treeContainer.add(deviceCommandTree);
 
@@ -290,8 +306,21 @@ public class MacroWindow extends Window {
   
 
       TreePanelDragSourceMacroDragExt dragSource = new TreePanelDragSourceMacroDragExt(leftMacroList);
+      dragSource.addDNDListener(new DNDListener(){
+
+         @Override
+         public void dragStart(DNDEvent e) {
+            TreePanel<TreeDataModel> tree = ((TreePanel<TreeDataModel>) e.getComponent());  
+            TreeDataModel dataModel = tree.getSelectionModel().getSelectedItem();
+            if (!(dataModel.getData() instanceof DeviceMacro)) {
+               e.setCancelled(true);
+               e.getStatus().setStatus(false);
+            }
+            super.dragStart(e);
+         }
+         
+      });
       dragSource.setGroup(MACRO_DND_GROUP);
-      dragSource.setTreeSource(TreeSource.NODE);
 
       return leftMacroListContainer;
    }
@@ -351,8 +380,8 @@ public class MacroWindow extends Window {
     * Setup right macro item dnd.
     */
    private void setupRightMacroItemDND() {
-      ListViewDropTarget dropTarget = new ListViewDropTarget(rightMacroItemListView);
-//      ListViewDropTargetMacroDragExt dropTarget = new ListViewDropTargetMacroDragExt(rightMacroItemListView);
+//      ListViewDropTarget dropTarget = new ListViewDropTarget(rightMacroItemListView);
+      ListViewDropTargetMacroDragExt dropTarget = new ListViewDropTargetMacroDragExt(rightMacroItemListView);
       dropTarget.setAllowSelfAsSource(true);
       dropTarget.setGroup(MACRO_DND_GROUP);
       dropTarget.setFeedback(Feedback.INSERT);
@@ -371,9 +400,11 @@ public class MacroWindow extends Window {
           protected DeviceMacroItemModel prepareData(DeviceMacroItemModel model) {  
             String s = model.getLabel();
             if (model.getData() instanceof DeviceMacroRef) {
-               s+="  (DeviceMacro)";
+               DeviceMacroRef deviceMacroRef = (DeviceMacroRef)model.getData();
+               s+="  (DeviceMacro "+deviceMacroRef.getLabel() +")";
             } else if (model.getData() instanceof DeviceCommandRef) {
-               s+="  (DeviceCommand)";
+               DeviceCommandRef commandRef = (DeviceCommandRef)model.getData();
+               s+="  (DeviceCommand "+commandRef.getLabel()+")";
             }
             model.set("display", s);
             return model;  
