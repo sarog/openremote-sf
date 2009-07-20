@@ -56,6 +56,8 @@ public class MacroPanel extends ContentPanel {
    /** The macro tree. */
    private TreePanel<TreeDataModel> macroTree = null;
 
+   
+   private LayoutContainer macroListContainer = null; 
    /**
     * Instantiates a new macro panel.
     */
@@ -65,7 +67,6 @@ public class MacroPanel extends ContentPanel {
       createMenu();
       createMacroTree();
       setIcon(icons.macroIcon());
-      setBodyBorder(false);
    }
 
    /**
@@ -120,8 +121,6 @@ public class MacroPanel extends ContentPanel {
       });
       macroToolBar.add(deleteMacroBtn);
 
-      macroToolBar.setBorders(true);
-
       setTopComponent(macroToolBar);
    }
 
@@ -148,15 +147,16 @@ public class MacroPanel extends ContentPanel {
     */
    private void createMacroTree() {
 
-      LayoutContainer macroListContainer = new LayoutContainer();
+      macroListContainer = new LayoutContainer();
       macroListContainer.setScrollMode(Scroll.AUTO);
       macroListContainer.setStyleAttribute("backgroundColor", "white");
-      macroListContainer.setBorders(true);
+      macroListContainer.setBorders(false);
+      macroListContainer.setLayoutOnChange(true);
 
-      macroTree = TreePanelBuilder.buildMacroTree();
+      
+      
       macroListContainer.setHeight("100%");
-      macroListContainer.add(macroTree);
-      macroListContainer.layout();
+     
 
       add(macroListContainer);
 
@@ -169,10 +169,12 @@ public class MacroPanel extends ContentPanel {
     */
    @Override
    protected void afterExpand() {
-      // TODO This is not a good way to solve tree can't display at first.
-      macroTree.expandAll();
-      macroTree.collapseAll();
+      if (macroTree == null) {
+         macroTree = TreePanelBuilder.buildMacroTree();
+         macroListContainer.add(macroTree);
+      }
       super.afterExpand();
+      
    }
 
    /**
