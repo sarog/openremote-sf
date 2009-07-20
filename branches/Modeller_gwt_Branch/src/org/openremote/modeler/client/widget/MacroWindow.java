@@ -66,6 +66,7 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.LabelAlign;
 import com.extjs.gxt.ui.client.widget.layout.FillLayout;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
@@ -239,13 +240,16 @@ public class MacroWindow extends Window {
       leftCommandMacroTabPanel.setWidth(220);
       leftCommandMacroTabPanel.setPlain(true);
       leftCommandMacroTabPanel.setHeight(232);
-
+      
       TabItem deviceCommandTab = new TabItem("Device Command");
-
+      deviceCommandTab.setLayout(new FitLayout());
+      
       deviceCommandTab.add(createDeviceCommandTree());
       leftCommandMacroTabPanel.add(deviceCommandTab);
-
+      deviceCommandTab.scrollIntoView(leftCommandMacroTabPanel);
+      
       TabItem macroTab = new TabItem("Macro");
+      macroTab.setLayout(new FitLayout());
       macroTab.add(createLeftMacroTree());
       leftCommandMacroTabPanel.add(macroTab);
 
@@ -261,7 +265,7 @@ public class MacroWindow extends Window {
       LayoutContainer treeContainer = new LayoutContainer();
       treeContainer.setScrollMode(Scroll.AUTO);
       treeContainer.setStyleAttribute("backgroundColor", "white");
-      treeContainer.setBorders(true);
+      treeContainer.setBorders(false);
 
       deviceCommandTree = TreePanelBuilder.buildDeviceCommandTree();
       deviceCommandTree.setHeight("100%");
@@ -297,7 +301,7 @@ public class MacroWindow extends Window {
       LayoutContainer leftMacroListContainer = new LayoutContainer();
       leftMacroListContainer.setScrollMode(Scroll.AUTO);
       leftMacroListContainer.setStyleAttribute("backgroundColor", "white");
-      leftMacroListContainer.setBorders(true);
+      leftMacroListContainer.setBorders(false);
 
       leftMacroList = TreePanelBuilder.buildMacroTree();
       leftMacroListContainer.setHeight("100%");
@@ -332,7 +336,8 @@ public class MacroWindow extends Window {
       ContentPanel rightListContainer = new ContentPanel();
       rightListContainer.setHeaderVisible(false);
       rightListContainer.setWidth(230);
-
+      rightListContainer.setLayout(new FitLayout());
+      
       ToolBar toolBar = createRightMacroItemListToolbar();
 
       rightListContainer.setTopComponent(toolBar);

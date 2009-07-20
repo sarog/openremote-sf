@@ -73,16 +73,16 @@ public class DeviceWindow extends SubmitWindow {
     * @param heading the heading
     */
    private void initial(String heading){
-      setWidth(360);
-      setHeight(200);
+      setSize(360,200);
       setHeading(heading);
       setLayout(new FillLayout());
       setModal(true);
+      setBodyBorder(false);
       
       form.setFrame(true);
       form.setHeaderVisible(false);
-      form.setWidth(350);
-
+      form.setBorders(false);
+      
       form.setButtonAlign(HorizontalAlignment.CENTER);
 
       Button submitBtn = new Button("Submit");
