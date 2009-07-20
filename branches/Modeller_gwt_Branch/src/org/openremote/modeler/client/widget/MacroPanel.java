@@ -41,7 +41,6 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MacroPanel.
  */

@@ -446,9 +446,13 @@ public class MacroWindow extends Window {
     * Before form submit.
     */
    private void beforeFormSubmit() {
-      DeviceMacro newDeviceMacro = new DeviceMacro();
+      DeviceMacro newDeviceMacro = null;
+      
       if (_deviceMacro != null) {
-         newDeviceMacro.setOid(_deviceMacro.getOid());
+         newDeviceMacro = _deviceMacro;
+         _deviceMacro.getDeviceMacroItems().clear();
+      } else {
+         newDeviceMacro =  new DeviceMacro();
       }
       newDeviceMacro.setName(macroNameField.getValue());
 
