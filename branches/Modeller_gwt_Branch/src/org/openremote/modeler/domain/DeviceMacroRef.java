@@ -51,6 +51,7 @@ public class DeviceMacroRef extends DeviceMacroItem {
     * 
     * @return the target device macro
     */
+   @OneToOne
    @JoinColumn(name="target_device_macro_oid")
    public DeviceMacro getTargetDeviceMacro() {
       return targetDeviceMacro;
