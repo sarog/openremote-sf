@@ -46,8 +46,10 @@ public class ZipUtil {
     * 
     * @param inputStream the input stream
     * @param targetDir the target dir
+    * 
+    * @return true, if success
     */
-   public static void unzip(InputStream inputStream, String targetDir){
+   public static boolean unzip(InputStream inputStream, String targetDir){
       ZipInputStream zipInputStream = new ZipInputStream(inputStream);
       ZipEntry zipEntry;
       FileOutputStream fileOutputStream = null;
@@ -68,6 +70,7 @@ public class ZipUtil {
          }
       } catch (IOException e) {
          logger.error("Can't unzip to " + targetDir, e);
+         return false;
       } finally {
          try {
             zipInputStream.closeEntry();
@@ -79,6 +82,7 @@ public class ZipUtil {
          }
 
       }
+      return true;
    }
 
 }

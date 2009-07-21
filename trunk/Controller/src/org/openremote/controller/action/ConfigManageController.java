@@ -25,6 +25,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openremote.controller.Constants;
 import org.openremote.controller.service.FileService;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -57,7 +58,8 @@ public class ConfigManageController extends MultiActionController {
    public ModelAndView uploadZip(HttpServletRequest request, HttpServletResponse response) throws IOException,
          ServletRequestBindingException {
       MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-      fileService.uploadConfigZip(multipartRequest.getFile("zip_file").getInputStream());
+      boolean success = fileService.uploadConfigZip(multipartRequest.getFile("zip_file").getInputStream());
+      response.getWriter().print(success ? Constants.OK : null);
       return null;
    }
 
