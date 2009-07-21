@@ -18,28 +18,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package org.openremote.modeler.client.rpc;
 
-package org.openremote.modeler.server;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import org.openremote.modeler.protocol.ProtocolDefinition;
 
-import org.apache.log4j.Logger;
-import org.openremote.modeler.client.rpc.ConfigurationRPCService;
+import java.util.Map;
 
-import java.io.IOException;
-import java.util.Properties;
 
-public class ConfigurationController extends BaseGWTSpringController implements ConfigurationRPCService {
+// TODO: Auto-generated Javadoc
+/**
+ * The rpc interface of  ProtocolService.
+ */
+public interface ProtocolRPCServiceAsync {
    
-   private static Logger logger = Logger.getLogger(ConfigurationController.class);
 
-   public String beehiveRESTUrl() {
-      Properties properties = new Properties();
-      try {
-         properties.load(getClass().getResourceAsStream("/config.properties"));
-      } catch (IOException e) {
-         logger.error("Read config error",e);
-      }
-       
-      return properties.getProperty("beehive.REST.Url");
-   }
-
+   /**
+    * Gets the protocols.
+    * 
+    * @param callback the callback
+    * 
+    * @return the protocols
+    */
+   public void getProtocols(AsyncCallback<Map<String,ProtocolDefinition>> callback);
 }

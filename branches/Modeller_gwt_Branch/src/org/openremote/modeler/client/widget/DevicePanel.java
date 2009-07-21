@@ -1,41 +1,24 @@
-/* OpenRemote, the Home of the Digital Home.
+/*
+ * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2009, OpenRemote Inc.
- * 
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
- * 
+ *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 3.0 of
  * the License, or (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package org.openremote.modeler.client.widget;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.client.model.TreeDataModel;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.rpc.DeviceCommandService;
-import org.openremote.modeler.client.rpc.DeviceCommandServiceAsync;
-import org.openremote.modeler.client.rpc.DeviceService;
-import org.openremote.modeler.client.rpc.DeviceServiceAsync;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.Protocol;
-import org.openremote.modeler.domain.ProtocolAttr;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -55,6 +38,18 @@ import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
+import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.model.TreeDataModel;
+import org.openremote.modeler.client.rpc.*;
+import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Protocol;
+import org.openremote.modeler.domain.ProtocolAttr;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The Class DevicePanel.
@@ -62,11 +57,11 @@ import com.google.gwt.core.client.GWT;
 public class DevicePanel extends ContentPanel {
 
    /** The device service. */
-   private final DeviceServiceAsync deviceService = (DeviceServiceAsync) GWT.create(DeviceService.class);
+   private final DeviceRPCServiceAsync deviceService = (DeviceRPCServiceAsync) GWT.create(DeviceRPCService.class);
    
    /** The device command service async. */
-   private final DeviceCommandServiceAsync deviceCommandServiceAsync = (DeviceCommandServiceAsync) GWT
-         .create(DeviceCommandService.class);
+   private final DeviceCommandRPCServiceAsync deviceCommandServiceAsync = (DeviceCommandRPCServiceAsync) GWT
+         .create(DeviceCommandRPCService.class);
 
    /** The tree. */
    private TreePanel<TreeDataModel> tree;

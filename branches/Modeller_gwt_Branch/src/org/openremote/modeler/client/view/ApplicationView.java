@@ -1,31 +1,24 @@
-/* OpenRemote, the Home of the Digital Home.
+/*
+ * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2009, OpenRemote Inc.
- * 
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
- * 
+ *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 3.0 of
  * the License, or (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package org.openremote.modeler.client.view;
-
-import java.util.List;
-
-import org.openremote.modeler.auth.Authority;
-import org.openremote.modeler.client.rpc.AuthorityService;
-import org.openremote.modeler.client.rpc.AuthorityServiceAsync;
-import org.openremote.modeler.client.utils.Protocols;
 
 import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.util.Margins;
@@ -39,6 +32,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import org.openremote.modeler.auth.Authority;
+import org.openremote.modeler.client.rpc.AuthorityRPCService;
+import org.openremote.modeler.client.rpc.AuthorityRPCServiceAsync;
+import org.openremote.modeler.client.utils.Protocols;
+
+import java.util.List;
 
 /**
  * The Class ApplicationView.
@@ -53,7 +52,7 @@ public class ApplicationView implements View {
       Protocols.getInstance(); // get protocol definition from xml files 
       viewport = new Viewport();
       viewport.setLayout(new BorderLayout());
-      final AuthorityServiceAsync auth = (AuthorityServiceAsync)GWT.create(AuthorityService.class);
+      final AuthorityRPCServiceAsync auth = (AuthorityRPCServiceAsync)GWT.create(AuthorityRPCService.class);
       auth.getAuthoritication(new AsyncCallback<Authority>(){
          public void onFailure(Throwable caught) {
             MessageBox.info("Info", caught.getMessage(), null);
