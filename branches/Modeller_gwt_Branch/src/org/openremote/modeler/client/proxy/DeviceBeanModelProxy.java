@@ -21,27 +21,33 @@
 
 package org.openremote.modeler.client.proxy;
 
-import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.data.BeanModelFactory;
-import com.extjs.gxt.ui.client.data.BeanModelLookup;
-import com.google.gwt.core.client.GWT;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.rpc.DeviceRPCService;
-import org.openremote.modeler.client.rpc.DeviceRPCServiceAsync;
-import org.openremote.modeler.domain.Device;
-
 import java.util.List;
 
+import org.openremote.modeler.client.rpc.AsyncServiceFactory;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceCommand;
+
+import com.extjs.gxt.ui.client.data.BeanModel;
+
 public class DeviceBeanModelProxy {
-   public static final DeviceRPCServiceAsync deviceServiceAsync = GWT.create(DeviceRPCService.class);
-   
-   public static void loadAll(final AsyncSuccessCallback<List<BeanModel>> callback){
-      deviceServiceAsync.loadAll(new AsyncSuccessCallback<List<Device>>(){
-         public void onSuccess(List<Device> result) {
-            BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(Device.class);
-            callback.onSuccess(beanModelFactory.createModel(result));
-         }
-         
-      });
+   public static void loadDevice(BeanModel beanModel, final AsyncSuccessCallback<List<BeanModel>> callback){
+      if(beanModel == null){
+         AsyncServiceFactory.getDeviceServiceAsync().loadAll(new AsyncSuccessCallback<List<Device>>(){
+            public void onSuccess(List<Device> result) {
+               callback.onSuccess(Device.createModels(result));
+            }
+            
+         });
+      }else{
+         Device device = (Device)beanModel.getBean();
+         AsyncServiceFactory.getDeviceCommandServiceAsync().loadByDevice(device.getOid(), new AsyncSuccessCallback<List<DeviceCommand>>(){
+            @Override
+            public void onSuccess(List<DeviceCommand> result) {
+               callback.onSuccess(DeviceCommand.createModels(result));
+            }
+            
+         });
+      }
    }
 }

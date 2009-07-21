@@ -21,6 +21,7 @@
 package org.openremote.modeler.client.widget;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
+import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -90,10 +91,10 @@ public class DevicePanel extends ContentPanel {
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
      
-      tree = TreePanelBuilder.buildDeviceCommandTree();
-      treeContainer.add(tree);
+      TreePanel<BeanModel> trees = TreePanelBuilder.buildDeviceCommandTree();
+      treeContainer.add(trees);
       add(treeContainer);
-      treeContainer.mask("Loading...");
+//      treeContainer.mask("Loading...");
    }
    
    /**
