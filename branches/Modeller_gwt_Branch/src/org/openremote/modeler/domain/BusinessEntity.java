@@ -31,6 +31,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +79,7 @@ public abstract class BusinessEntity extends LightEntity implements Serializable
     * 
     * @return the bean model
     */
+   @Transient
    public BeanModel getBeanModel() {
       BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(getClass());
       return beanModelFactory.createModel(this);

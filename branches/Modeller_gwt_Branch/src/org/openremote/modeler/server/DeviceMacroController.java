@@ -20,11 +20,12 @@
  */
 package org.openremote.modeler.server;
 
+import java.util.List;
+
 import org.openremote.modeler.client.rpc.DeviceMacroRPCService;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
-
-import java.util.List;
+import org.openremote.modeler.service.DeviceMacroService;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -33,7 +34,7 @@ import java.util.List;
 public class DeviceMacroController extends BaseGWTSpringControllerWithHibernateSupport implements DeviceMacroRPCService {
    
    /** The device macro service. */
-   private DeviceMacroRPCService deviceMacroRPCService;
+   private DeviceMacroService deviceMacroService;
 
 
     /**
@@ -41,8 +42,8 @@ public class DeviceMacroController extends BaseGWTSpringControllerWithHibernateS
     * 
     * @param deviceMacroRPCService the new device macro service
     */
-   public void setDeviceMacroService(DeviceMacroRPCService deviceMacroRPCService) {
-      this.deviceMacroRPCService = deviceMacroRPCService;
+   public void setDeviceMacroService(DeviceMacroService deviceMacroService) {
+      this.deviceMacroService = deviceMacroService;
    }
 
 
@@ -50,7 +51,7 @@ public class DeviceMacroController extends BaseGWTSpringControllerWithHibernateS
     * @see org.openremote.modeler.client.rpc.DeviceMacroRPCService#loadAll()
     */
    public List<DeviceMacro> loadAll() {
-      return deviceMacroRPCService.loadAll();
+      return deviceMacroService.loadAll();
    }
 
 
@@ -58,7 +59,7 @@ public class DeviceMacroController extends BaseGWTSpringControllerWithHibernateS
     * @see org.openremote.modeler.client.rpc.DeviceMacroRPCService#save(org.openremote.modeler.domain.DeviceMacro)
     */
    public DeviceMacro saveDeviceMacro(DeviceMacro deviceMacro) {
-      return deviceMacroRPCService.saveDeviceMacro(deviceMacro);
+      return deviceMacroService.saveDeviceMacro(deviceMacro);
    }
 
 
@@ -66,7 +67,7 @@ public class DeviceMacroController extends BaseGWTSpringControllerWithHibernateS
     * @see org.openremote.modeler.client.rpc.DeviceMacroRPCService#edit(org.openremote.modeler.domain.DeviceMacro)
     */
    public DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro) {
-      return deviceMacroRPCService.updateDeviceMacro(deviceMacro);
+      return deviceMacroService.updateDeviceMacro(deviceMacro);
    }
 
 
@@ -74,7 +75,7 @@ public class DeviceMacroController extends BaseGWTSpringControllerWithHibernateS
     * @see org.openremote.modeler.client.rpc.DeviceMacroRPCService#deleteDeviceMacro(long)
     */
    public void deleteDeviceMacro(long id) {
-      deviceMacroRPCService.deleteDeviceMacro(id);
+      deviceMacroService.deleteDeviceMacro(id);
    }
 
     public List<DeviceMacroItem> loadDeviceMacroItems(DeviceMacro deviceMacro) {

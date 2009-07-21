@@ -20,15 +20,14 @@
  */
 package org.openremote.modeler.service.impl;
 
-import org.hibernate.Hibernate;
+import java.util.List;
+
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.service.DeviceService;
-
-import java.util.List;
 
 /**
  * The Class DeviceServiceImpl.
@@ -65,11 +64,6 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
     */
    public List<Device> loadAll(Account account) {
       List<Device> devices = account.getDevices();
-      if (devices != null) {
-         for (Device device : devices) {
-            Hibernate.initialize(device.getDeviceCommands());
-         }
-      }
       return devices;
    }
 

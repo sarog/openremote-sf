@@ -21,6 +21,7 @@
 package org.openremote.modeler.service.impl;
 
 import org.hibernate.Hibernate;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceCommandService;
@@ -72,6 +73,11 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
       DeviceCommand deviceCommand = super.loadById(id);
       Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
       return deviceCommand;
+   }
+
+   public List<DeviceCommand> loadByDevice(long id) {
+      Device device = genericDAO.loadById(Device.class, id);
+      return device.getDeviceCommands();
    }
 
 }

@@ -28,11 +28,27 @@ import com.google.gwt.core.client.GWT;
  */
 public class AsyncServiceFactory {
    private static DeviceMacroRPCServiceAsync deviceMacroServiceAsync = null;
-
+   private static DeviceRPCServiceAsync deviceServiceAsync = null;
+   private static DeviceCommandRPCServiceAsync deviceCommandServiceAsync = null;
+   
    public static DeviceMacroRPCServiceAsync getDeviceMacroServiceAsync() {
       if (deviceMacroServiceAsync == null) {
          deviceMacroServiceAsync = GWT.create(DeviceMacroRPCService.class);
       }
       return deviceMacroServiceAsync;
+   }
+   
+   public static DeviceRPCServiceAsync getDeviceServiceAsync() {
+      if (deviceServiceAsync == null) {
+         deviceServiceAsync = GWT.create(DeviceRPCService.class);
+      }
+      return deviceServiceAsync;
+   }
+   
+   public static DeviceCommandRPCServiceAsync getDeviceCommandServiceAsync() {
+      if (deviceCommandServiceAsync == null) {
+         deviceCommandServiceAsync = GWT.create(DeviceCommandRPCService.class);
+      }
+      return deviceCommandServiceAsync;
    }
 }

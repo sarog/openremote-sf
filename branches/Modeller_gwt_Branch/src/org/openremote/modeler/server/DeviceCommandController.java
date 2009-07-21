@@ -21,10 +21,11 @@
 
 package org.openremote.modeler.server;
 
+import java.util.List;
+
 import org.openremote.modeler.client.rpc.DeviceCommandRPCService;
 import org.openremote.modeler.domain.DeviceCommand;
-
-import java.util.List;
+import org.openremote.modeler.service.DeviceCommandService;
 
 public class DeviceCommandController extends BaseGWTSpringControllerWithHibernateSupport implements
         DeviceCommandRPCService {
@@ -33,30 +34,35 @@ public class DeviceCommandController extends BaseGWTSpringControllerWithHibernat
     * 
     */
    private static final long serialVersionUID = -8417889117208060088L;
-   private DeviceCommandRPCService deviceCommandRPCService;
+   private DeviceCommandService deviceCommandService;
 
-    public void setDeviceCommandService(DeviceCommandRPCService deviceCommandRPCService) {
-      this.deviceCommandRPCService = deviceCommandRPCService;
+    public void setDeviceCommandService(DeviceCommandService deviceCommandRPCService) {
+      this.deviceCommandService = deviceCommandRPCService;
    }
 
    public List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands) {
-      return deviceCommandRPCService.saveAll(deviceCommands);
+      return deviceCommandService.saveAll(deviceCommands);
    }
 
    public DeviceCommand save(DeviceCommand deviceCommand) {
-      return deviceCommandRPCService.save(deviceCommand);
+      return deviceCommandService.save(deviceCommand);
    }
 
    public void deleteCommand(long id) {
-      deviceCommandRPCService.deleteCommand(id);
+      deviceCommandService.deleteCommand(id);
    }
 
    public void update(DeviceCommand deviceCommand) {
-      deviceCommandRPCService.update(deviceCommand);
+      deviceCommandService.update(deviceCommand);
    }
 
    public DeviceCommand loadById(long id){
-      return deviceCommandRPCService.loadById(id);
+      return deviceCommandService.loadById(id);
+   }
+
+   @Override
+   public List<DeviceCommand> loadByDevice(long id) {
+      return deviceCommandService.loadByDevice(id);
    }
 
 }
