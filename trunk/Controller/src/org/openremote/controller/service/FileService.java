@@ -35,14 +35,14 @@ public interface FileService {
     * @param inputStream the input stream
     * @param targetDir the target dir
     */
-   void unzip(InputStream inputStream, String targetDir);
+   boolean unzip(InputStream inputStream, String targetDir);
    
    /**
     * Upload config zip.
     * 
     * @param inputStream the input stream
     */
-   void uploadConfigZip(InputStream inputStream);
+   boolean uploadConfigZip(InputStream inputStream);
    
    /**
     * Find resource.
