@@ -1,18 +1,18 @@
-/* OpenRemote, the Home of the Digital Home.
+/*
+ * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2009, OpenRemote Inc.
- * 
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
- * 
+ *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 3.0 of
  * the License, or (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
@@ -20,55 +20,57 @@
  */
 package org.openremote.modeler.client.rpc;
 
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import org.openremote.modeler.domain.DeviceCommand;
 
 import java.util.List;
 
-import org.openremote.modeler.domain.DeviceMacro;
-
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-
 // TODO: Auto-generated Javadoc
 /**
- * The Interface DeviceMacroService.
+ * The Interface DeviceCommandService.
  */
-@RemoteServiceRelativePath("deviceMacro.smvc")
-public interface DeviceMacroService extends RemoteService{
+@RemoteServiceRelativePath("deviceCommand.smvc")
+public interface DeviceCommandRPCService extends RemoteService{
    
    /**
-    * Load all.
+    * Save all.
     * 
-    * @return the list< device macro>
+    * @param deviceCommands the device commands
+    * 
+    * @return the list< device command>
     */
-   public List<DeviceMacro> loadAll();
+   List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands);
    
-
    /**
-    * Save device macro.
+    * Save.
     * 
-    * @param deviceMacro the device macro
+    * @param deviceCommand the device command
     * 
-    * @return the device macro
+    * @return the device command
     */
-   public DeviceMacro saveDeviceMacro(DeviceMacro deviceMacro);
+   DeviceCommand save(DeviceCommand deviceCommand);
    
-   
-
-
    /**
-    * Update device macro.
+    * Update.
     * 
-    * @param deviceMacro the device macro
-    * 
-    * @return the device macro
+    * @param deviceCommand the device command
     */
-   public DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro);
-   
+   void update(DeviceCommand deviceCommand);
    
    /**
-    * Delete device macro.
+    * Load by id.
+    * 
+    * @param id the id
+    * 
+    * @return the device command
+    */
+   DeviceCommand loadById(long id);
+   
+   /**
+    * Delete command.
     * 
     * @param id the id
     */
-   public void deleteDeviceMacro(long id);
+   void deleteCommand(long id);
 }

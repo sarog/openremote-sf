@@ -1,18 +1,18 @@
-/* OpenRemote, the Home of the Digital Home.
+/*
+ * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2009, OpenRemote Inc.
- * 
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
- * 
+ *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 3.0 of
  * the License, or (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
@@ -20,15 +20,14 @@
  */
 package org.openremote.modeler.client.utils;
 
-import java.util.Map;
-
-import org.openremote.modeler.client.rpc.ProtocolService;
-import org.openremote.modeler.client.rpc.ProtocolServiceAsync;
-import org.openremote.modeler.protocol.ProtocolDefinition;
-
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import org.openremote.modeler.client.rpc.ProtocolRPCService;
+import org.openremote.modeler.client.rpc.ProtocolRPCServiceAsync;
+import org.openremote.modeler.protocol.ProtocolDefinition;
+
+import java.util.Map;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -40,7 +39,7 @@ public class Protocols {
    private static Map<String, ProtocolDefinition> m_instance;
    
    /** The Constant protocolService. */
-   private static final ProtocolServiceAsync protocolService = (ProtocolServiceAsync) GWT.create(ProtocolService.class);
+   private static final ProtocolRPCServiceAsync protocolService = (ProtocolRPCServiceAsync) GWT.create(ProtocolRPCService.class);
    
    /**
     * Instantiates a new protocols.

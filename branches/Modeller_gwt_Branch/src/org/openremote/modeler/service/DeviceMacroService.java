@@ -18,17 +18,59 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.openremote.modeler.service;
 
-import org.openremote.modeler.domain.DeviceCommand;
+
 import org.openremote.modeler.domain.DeviceMacro;
+import org.openremote.modeler.domain.DeviceMacroItem;
+
+import java.util.List;
 
 /**
- * @author allen.wei
+ * The Interface DeviceMacroService.
  */
-public interface DeviceMacroItemService {
-   void deleteByDeviceCommand(DeviceCommand deviceCommand);
+public interface DeviceMacroService {
+   
+   /**
+    * Load all.
+    * 
+    * @return the list< device macro>
+    */
+   public List<DeviceMacro> loadAll();
+   
 
-   void deleteByDeviceMacro(DeviceMacro targetDeviceMacro);
+   /**
+    * Save device macro.
+    * 
+    * @param deviceMacro the device macro
+    * 
+    * @return the device macro
+    */
+   public DeviceMacro saveDeviceMacro(DeviceMacro deviceMacro);
+   
+   
+
+
+   /**
+    * Update device macro.
+    * 
+    * @param deviceMacro the device macro
+    * 
+    * @return the device macro
+    */
+   public DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro);
+   
+   
+   /**
+    * Delete device macro.
+    * 
+    * @param id the id
+    */
+   public void deleteDeviceMacro(long id);
+
+
+    public List<DeviceMacroItem> loadDeviceMacroItems(DeviceMacro deviceMacro);
+
+
+    public DeviceMacro loadDeviceMacroById(long id);
 }
