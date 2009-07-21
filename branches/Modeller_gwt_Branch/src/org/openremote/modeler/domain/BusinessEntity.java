@@ -28,6 +28,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import com.extjs.gxt.ui.client.data.BeanModelTag;
+
 import net.sf.gilead.pojo.java5.LightEntity;
 
 
@@ -38,7 +40,7 @@ import net.sf.gilead.pojo.java5.LightEntity;
  *
  */
 @MappedSuperclass
-public abstract class BusinessEntity extends LightEntity implements Serializable {
+public abstract class BusinessEntity extends LightEntity implements Serializable, BeanModelTag {
    
    
 
