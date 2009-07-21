@@ -27,10 +27,6 @@ import org.openremote.modeler.client.model.TreeDataModel;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.rpc.DeviceMacroRPCService;
-import org.openremote.modeler.client.rpc.DeviceMacroRPCServiceAsync;
-import org.openremote.modeler.client.rpc.DeviceRPCService;
-import org.openremote.modeler.client.rpc.DeviceRPCServiceAsync;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
@@ -52,13 +48,6 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
  * The Class is used for create tree.
  */
 public class TreePanelBuilder {
-
-   /** The Constant deviceService. */
-   private final static DeviceRPCServiceAsync deviceService = (DeviceRPCServiceAsync) GWT.create(DeviceRPCService.class);
-   
-   /** The Constant deviceMacroServiceAsync. */
-   private final static DeviceMacroRPCServiceAsync deviceMacroServiceAsync = (DeviceMacroRPCServiceAsync) GWT
-         .create(DeviceMacroRPCService.class);
 
    /** The Constant icon. */
    private final static Icons icon = GWT.create(Icons.class);
@@ -105,7 +94,7 @@ public class TreePanelBuilder {
       }
       final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceCommandTreestore);
       tree.setBorders(false);
-
+      tree.setStateful(true);
       tree.setDisplayProperty("name");
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
 
