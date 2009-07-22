@@ -1,18 +1,18 @@
-/*
- * OpenRemote, the Home of the Digital Home.
+/* OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2009, OpenRemote Inc.
+ * 
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
- *
+ * 
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 3.0 of
  * the License, or (at your option) any later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
+ * 
  * You should have received a copy of the GNU General Public
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
@@ -21,10 +21,32 @@
 
 package org.openremote.modeler.client.widget;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openremote.modeler.client.gxtExtends.NestedJsonLoadResultReader;
+import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.rpc.ConfigurationRPCService;
+import org.openremote.modeler.client.rpc.ConfigurationRPCServiceAsync;
+import org.openremote.modeler.domain.Device;
+
 import com.extjs.gxt.ui.client.Style.ButtonScale;
 import com.extjs.gxt.ui.client.Style.Orientation;
-import com.extjs.gxt.ui.client.data.*;
-import com.extjs.gxt.ui.client.event.*;
+import com.extjs.gxt.ui.client.data.BaseListLoader;
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.DataField;
+import com.extjs.gxt.ui.client.data.ListLoadResult;
+import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.data.ModelType;
+import com.extjs.gxt.ui.client.data.ScriptTagProxy;
+import com.extjs.gxt.ui.client.event.BaseEvent;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
+import com.extjs.gxt.ui.client.event.SelectionChangedListener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Margins;
@@ -38,45 +60,67 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.layout.CenterLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
-import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
+import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
 import com.google.gwt.core.client.GWT;
-import org.openremote.modeler.client.gxtExtends.NestedJsonLoadResultReader;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.rpc.ConfigurationRPCService;
-import org.openremote.modeler.client.rpc.ConfigurationRPCServiceAsync;
 
-import java.util.ArrayList;
-import java.util.List;
-
+// TODO: Auto-generated Javadoc
 /**
- * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
+ * The Class SelectIRWindow.
  */
 public class SelectIRWindow extends Window {
 
+   /** The beehive rest url. */
    private String beehiveRESTUrl = null;
    
+   /** The configuration service. */
    private ConfigurationRPCServiceAsync configurationService = (ConfigurationRPCServiceAsync)GWT.create(ConfigurationRPCService.class);
+   
    /** The submit listeners. */
    private List<Listener<AppEvent>> submitListeners = new ArrayList<Listener<AppEvent>>();
-
+   
+   /** The device. */
+   private Device device = null;
+   
+   /** The Constant LOADING. */
    private static final String LOADING = "Loading... ";
+   
+   /** The select container. */
    LayoutContainer selectContainer = new LayoutContainer();
+   
+   /** The command container. */
    LayoutContainer commandContainer = new LayoutContainer();
 
+   /** The import button. */
    Button importButton = null;
 
+   /** The vendor list. */
    RemoteJsonComboBox<ModelData> vendorList = null;
+   
+   /** The model list. */
    RemoteJsonComboBox<ModelData> modelList = null;
+   
+   /** The section list. */
    RemoteJsonComboBox<ModelData> sectionList = null;
 
+   /** The code grid. */
    Grid<ModelData> codeGrid = null;
+   
+   /** The code type. */
    ModelType codeType = null;
+   
+   /** The cm. */
    ColumnModel cm = null;
    
-   public SelectIRWindow() {
+   /**
+    * Instantiates a new select ir window.
+    * 
+    * @param device the device
+    */
+   public SelectIRWindow(Device device) {
       if (beehiveRESTUrl == null) {
+         this.device = device;
          configurationService.beehiveRESTUrl(new AsyncSuccessCallback<String>(){
             @Override
             public void onSuccess(String result) {
@@ -92,6 +136,9 @@ public class SelectIRWindow extends Window {
       
    }
 
+   /**
+    * Setup window.
+    */
    private void setupWindow() {
       setSize(570, 330);
       setModal(true);
@@ -123,13 +170,16 @@ public class SelectIRWindow extends Window {
 
          @Override
          public void componentSelected(ButtonEvent ce) {
-            onImportBtnClicked(window);
+            onImportBtnClicked(window, device);
          }
       });
       buttonLayout.add(importButton);
       add(buttonLayout, new RowData(-1, -1, new Margins(10)));
    }
 
+   /**
+    * Adds the vendors list.
+    */
    private void addVendorsList() {
       ModelType vendorType = new ModelType();
       vendorType.setRoot("vendors.vendor");
@@ -159,6 +209,11 @@ public class SelectIRWindow extends Window {
       selectContainer.add(vendorList);
    }
 
+   /**
+    * Adds the model list.
+    * 
+    * @param vendor the vendor
+    */
    private void addModelList(final String vendor) {
       ModelType modelType = new ModelType();
       modelType.setRoot("models.model");
@@ -197,6 +252,12 @@ public class SelectIRWindow extends Window {
       }
    }
 
+   /**
+    * Adds the section list.
+    * 
+    * @param venderName the vender name
+    * @param modelName the model name
+    */
    private void addSectionList(String venderName, String modelName) {
 
       ModelType sectionType = new ModelType();
@@ -238,11 +299,21 @@ public class SelectIRWindow extends Window {
       }
    }
 
+   /**
+    * Sets the style of combo box.
+    * 
+    * @param box the new style of combo box
+    */
    private void setStyleOfComboBox(RemoteJsonComboBox<ModelData> box) {
       box.setWidth(180);
       box.setMaxHeight(250);
    }
 
+   /**
+    * Clear combo box.
+    * 
+    * @param box the box
+    */
    private void clearComboBox(RemoteJsonComboBox<ModelData> box) {
       if (box != null) {
          box.clearSelections();
@@ -251,6 +322,12 @@ public class SelectIRWindow extends Window {
       }
    }
 
+   /**
+    * Begin update.
+    * 
+    * @param box the box
+    * @param url the url
+    */
    private void beginUpdate(RemoteJsonComboBox<ModelData> box, String url) {
       if (box != null) {
          box.reloadListStoreWithUrl(url);
@@ -259,6 +336,12 @@ public class SelectIRWindow extends Window {
       }
    }
 
+   /**
+    * End update.
+    * 
+    * @param box the box
+    * @param emptyStr the empty str
+    */
    private void endUpdate(RemoteJsonComboBox<ModelData> box, String emptyStr) {
       if (box != null) {
          box.enable();
@@ -266,6 +349,13 @@ public class SelectIRWindow extends Window {
       }
    }
 
+   /**
+    * Show codes grid.
+    * 
+    * @param vendor the vendor
+    * @param model the model
+    * @param sectionId the section id
+    */
    private void showCodesGrid(String vendor, String model, long sectionId) {
       importButton.setEnabled(true);
       if (codeType == null) {
@@ -296,6 +386,11 @@ public class SelectIRWindow extends Window {
       }
    }
 
+   /**
+    * Adds the code grid.
+    * 
+    * @param url the url
+    */
    private void addCodeGrid(String url) {
       ScriptTagProxy<ListLoadResult<ModelData>> scriptTagProxy = new ScriptTagProxy<ListLoadResult<ModelData>>(url
             .toString());
@@ -327,6 +422,11 @@ public class SelectIRWindow extends Window {
       importButton.setEnabled(true);
    }
 
+   /**
+    * Reload grid.
+    * 
+    * @param url the url
+    */
    private void reloadGrid(String url) {
       codeGrid.getStore().removeAll();
       codeGrid.setLoadMask(true);
@@ -345,11 +445,21 @@ public class SelectIRWindow extends Window {
       importButton.setEnabled(true);
    }
 
+   /**
+    * Adds the submit listener.
+    * 
+    * @param listener the listener
+    */
    public void addSubmitListener(Listener<AppEvent> listener) {
       submitListeners.add(listener);
 
    }
 
+   /**
+    * Fire submit listener.
+    * 
+    * @param event the event
+    */
    public void fireSubmitListener(AppEvent event) {
       for (Listener<AppEvent> listener : submitListeners) {
          listener.handleEvent(event);
@@ -357,17 +467,33 @@ public class SelectIRWindow extends Window {
 
    }
 
+   /**
+    * Remote submit listener.
+    * 
+    * @param listener the listener
+    */
    public void remoteSubmitListener(Listener<AppEvent> listener) {
       submitListeners.remove(listener);
    }
 
-   private void onImportBtnClicked(final Window window) {
+   /**
+    * On import btn clicked.
+    * 
+    * @param window the window
+    * @param device the device
+    */
+   private void onImportBtnClicked(final Window window, Device device) {
       window.mask("Wait...");
       importButton.setEnabled(false);
       if (codeGrid != null) {
-         AppEvent event = new AppEvent(Events.Submit);
-         event.setData(codeGrid.getStore().getModels());
-         fireSubmitListener(event);
+         DeviceCommandBeanModelProxy.saveAllDeviceCommands(device, codeGrid.getStore().getModels(), new AsyncSuccessCallback<List<BeanModel>>(){
+            @Override
+            public void onSuccess(List<BeanModel> deviceCommandModels) {
+               AppEvent event = new AppEvent(Events.Submit);
+               event.setData(deviceCommandModels);
+               fireSubmitListener(event);
+            }
+         });
          
       } else {
          MessageBox.alert("Warn", "Please select vendor, model first.", null);
