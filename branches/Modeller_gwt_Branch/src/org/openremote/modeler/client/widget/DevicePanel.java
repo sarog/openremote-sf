@@ -20,23 +20,18 @@
  */
 package org.openremote.modeler.client.widget;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.Protocol;
-import org.openremote.modeler.domain.ProtocolAttr;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeEventSource;
-import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
@@ -307,73 +302,32 @@ public class DevicePanel extends ContentPanel {
       importCommandItem.setIcon(icon.importFromDB());
       importCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
-            if (tree.getSelectionModel().getSelectedItem() != null) {
-               final SelectIRWindow selectIRWindow = new SelectIRWindow();
-               selectIRWindow.addSubmitListener(new Listener<AppEvent>() {
-                  public void handleEvent(AppEvent be) {
-                     List<ModelData> datas = be.getData();
-                     importIRCommand(datas, selectIRWindow);
-                  }
-               });
-            } else {
-               MessageBox.alert("Notice", "You must select a device first.", null);
-            }
+            importIRCommand();
          }
+
       });
       return importCommandItem;
    }
 
    /**
     * Import ir command.
-    * 
-    * @param datas the datas
-    * @param selectIRWindow the select ir window
     */
-   private void importIRCommand(List<ModelData> datas, final SelectIRWindow selectIRWindow) {
-      if (tree.getSelectionModel().getSelectedItem() != null) {
-         if (tree.getSelectionModel().getSelectedItem().getBean() instanceof Device) {
-            final BeanModel deviceNode = tree.getSelectionModel().getSelectedItem();
-            Device device = deviceNode.getBean();
-            List<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
-            for (ModelData m : datas) {
-               Protocol protocol = new Protocol();
-               protocol.setType(Constants.INFRARED_TYPE);
-
-               ProtocolAttr nameAttr = new ProtocolAttr();
-               nameAttr.setName("name");
-               nameAttr.setValue(m.get("remoteName").toString());
-               nameAttr.setProtocol(protocol);
-               protocol.getAttributes().add(nameAttr);
-
-               ProtocolAttr commandAttr = new ProtocolAttr();
-               commandAttr.setName("command");
-               commandAttr.setValue(m.get("name").toString());
-               commandAttr.setProtocol(protocol);
-               protocol.getAttributes().add(commandAttr);
-
-               DeviceCommand deviceCommand = new DeviceCommand();
-               deviceCommand.setDevice(device);
-               deviceCommand.setProtocol(protocol);
-               deviceCommand.setName(m.get("name").toString());
-
-               protocol.setDeviceCommand(deviceCommand);
-
-               device.getDeviceCommands().add(deviceCommand);
-
-               deviceCommands.add(deviceCommand);
-            }
-            AsyncServiceFactory.getDeviceCommandServiceAsync().saveAll(deviceCommands, new AsyncSuccessCallback<List<DeviceCommand>>() {
-               public void onSuccess(List<DeviceCommand> deviceCommands) {
-                  for (DeviceCommand command : deviceCommands) {
-                     BeanModel deviceCommandNode = command.getBeanModel();
-                     tree.getStore().add(deviceNode, deviceCommandNode, false);
-                  }
-                  tree.setExpanded(deviceNode, true);
-                  selectIRWindow.hide();
+   private void importIRCommand() {
+      final BeanModel deviceModel = tree.getSelectionModel().getSelectedItem();
+      if (deviceModel != null && deviceModel.getBean() instanceof Device) {
+         final SelectIRWindow selectIRWindow = new SelectIRWindow((Device)deviceModel.getBean());
+         selectIRWindow.addSubmitListener(new Listener<AppEvent>() {
+            public void handleEvent(AppEvent be) {
+               List<BeanModel> deviceCommandModels = be.getData();
+               for (BeanModel deviceCommandModel : deviceCommandModels) {
+                  tree.getStore().add(deviceModel, deviceCommandModel, false);
                }
-            });
-         }
+               tree.setExpanded(deviceModel, true);
+               selectIRWindow.hide();
+            }
+         });
+      } else {
+         MessageBox.alert("Notice", "You must select a device first.", null);
       }
    }
-
 }

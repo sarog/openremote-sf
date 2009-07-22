@@ -20,9 +20,11 @@
  */
 package org.openremote.modeler.client.proxy;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.DeviceCommandWindow;
@@ -32,6 +34,7 @@ import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.ProtocolAttr;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.ModelData;
 
 /**
  * The Class DeviceCommandBeanModelProxy.
@@ -92,6 +95,42 @@ public class DeviceCommandBeanModelProxy {
       AsyncServiceFactory.getDeviceCommandServiceAsync().update(deviceCommand, new AsyncSuccessCallback<Void>() {
          public void onSuccess(Void result) {
             callback.onSuccess(deviceCommand.getBeanModel());
+         }
+      });
+   }
+   
+   public static void saveAllDeviceCommands(Device device, List<ModelData> datas, final AsyncSuccessCallback<List<BeanModel>> callback){
+      List<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
+      for (ModelData m : datas) {
+         Protocol protocol = new Protocol();
+         protocol.setType(Constants.INFRARED_TYPE);
+
+         ProtocolAttr nameAttr = new ProtocolAttr();
+         nameAttr.setName("name");
+         nameAttr.setValue(m.get("remoteName").toString());
+         nameAttr.setProtocol(protocol);
+         protocol.getAttributes().add(nameAttr);
+
+         ProtocolAttr commandAttr = new ProtocolAttr();
+         commandAttr.setName("command");
+         commandAttr.setValue(m.get("name").toString());
+         commandAttr.setProtocol(protocol);
+         protocol.getAttributes().add(commandAttr);
+
+         DeviceCommand deviceCommand = new DeviceCommand();
+         deviceCommand.setDevice(device);
+         deviceCommand.setProtocol(protocol);
+         deviceCommand.setName(m.get("name").toString());
+
+         protocol.setDeviceCommand(deviceCommand);
+
+         device.getDeviceCommands().add(deviceCommand);
+
+         deviceCommands.add(deviceCommand);
+      }
+      AsyncServiceFactory.getDeviceCommandServiceAsync().saveAll(deviceCommands, new AsyncSuccessCallback<List<DeviceCommand>>() {
+         public void onSuccess(List<DeviceCommand> deviceCommands) {
+            callback.onSuccess(DeviceCommand.createModels(deviceCommands));
          }
       });
    }
