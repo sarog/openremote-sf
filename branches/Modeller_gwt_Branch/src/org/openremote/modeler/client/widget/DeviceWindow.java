@@ -20,11 +20,16 @@
  */
 package org.openremote.modeler.client.widget;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Device;
 
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
+import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
@@ -42,11 +47,20 @@ import com.extjs.gxt.ui.client.widget.layout.FillLayout;
  */
 public class DeviceWindow extends SubmitWindow {
    
+   /** The DEVIC e_ name. */
+   public static final String DEVICE_NAME = "name";
+   
+   /** The DEVIC e_ vendor. */
+   public static final String DEVICE_VENDOR = "vendor";
+   
+   /** The DEVIC e_ model. */
+   public static final String DEVICE_MODEL = "model";
+   
    /** The form. */
    private FormPanel form = new FormPanel();
    
-   /** The _device. */
-   private Device _device = null;
+   /** The device model. */
+   private BeanModel deviceModel = null;
    
    /**
     * Instantiates a new device window.
@@ -59,10 +73,10 @@ public class DeviceWindow extends SubmitWindow {
    /**
     * Instantiates a new device window.
     * 
-    * @param device the device
+    * @param deviceModel the device model
     */
-   public DeviceWindow(Device device){
-      this._device = device;
+   public DeviceWindow(BeanModel deviceModel){
+      this.deviceModel = deviceModel;
       initial("Edit device");
       show();
    }
@@ -113,14 +127,23 @@ public class DeviceWindow extends SubmitWindow {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             List<Field<?>> list = form.getFields();
-            if(_device == null){
-               _device = new Device();
+            Map<String, String> attrMap = new HashMap<String, String>();
+            for (Field<?> field : list) {
+               attrMap.put(field.getName(), field.getValue().toString());
             }
-            _device.setName(list.get(0).getValue().toString());
-            _device.setVendor(list.get(1).getValue().toString());
-            _device.setModel(list.get(2).getValue().toString());
-            AppEvent appEvent = new AppEvent(Events.Submit, _device);
-            fireSubmitListener(appEvent);
+            
+            AsyncSuccessCallback<BeanModel> callback = new AsyncSuccessCallback<BeanModel>() {
+               @Override
+               public void onSuccess(BeanModel deviceModel) {
+                  AppEvent appEvent = new AppEvent(Events.Submit, deviceModel);
+                  fireSubmitListener(appEvent);
+               }
+            };
+            if(deviceModel == null){
+               DeviceBeanModelProxy.saveDevice(attrMap, callback);
+            }else{
+               DeviceBeanModelProxy.updateDevice(deviceModel, attrMap, callback);
+            }
          }
 
       });
@@ -134,24 +157,25 @@ public class DeviceWindow extends SubmitWindow {
     */
    private void createFields(){
       TextField<String> nameField = new TextField<String>();
-      nameField.setName("name");
+      nameField.setName(DEVICE_NAME);
       nameField.setFieldLabel("Name");
       nameField.setAllowBlank(false);
       
       TextField<String> vendorField = new TextField<String>();
-      vendorField.setName("vendor");
+      vendorField.setName(DEVICE_VENDOR);
       vendorField.setFieldLabel("Vendor");
       vendorField.setAllowBlank(false);
       
       TextField<String> modelField = new TextField<String>();
-      modelField.setName("model");
+      modelField.setName(DEVICE_MODEL);
       modelField.setFieldLabel("Model");
       modelField.setAllowBlank(false);
       
-      if(_device != null){
-         nameField.setValue(_device.getName());
-         vendorField.setValue(_device.getVendor());
-         modelField.setValue(_device.getModel());
+      if(deviceModel != null){
+         Device device = deviceModel.getBean();
+         nameField.setValue(device.getName());
+         vendorField.setValue(device.getVendor());
+         modelField.setValue(device.getModel());
       }
       
       form.add(nameField);
