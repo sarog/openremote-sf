@@ -25,7 +25,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.openremote.modeler.client.model.ComboBoxDataModel;
+import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
+import org.openremote.modeler.client.rpc.AsyncServiceFactory;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.Protocols;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.protocol.ProtocolAttrDefinition;
@@ -34,6 +38,7 @@ import org.openremote.modeler.protocol.ProtocolValidator;
 
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.data.BaseModelData;
+import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -57,16 +62,28 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
  */
 public class DeviceCommandWindow extends SubmitWindow {
    
+   /** The Constant DEVICE_COMMAND_NAME. */
+   public static final String DEVICE_COMMAND_NAME = "name";
+   
+   /** The Constant DEVICE_COMMAND_PROTOCOL. */
+   public static final String DEVICE_COMMAND_PROTOCOL = "protocol";
+   
    /** The command form. */
    private FormPanel commandForm = new FormPanel();
    
-   /** The _device command. */
-   private DeviceCommand _deviceCommand = null;
+   /** The device command. */
+   private DeviceCommand deviceCommand = null;
+   
+   /** The device. */
+   private Device device = null;
    
    /**
     * Instantiates a new device command window.
+    * 
+    * @param device the device
     */
-   public DeviceCommandWindow() {
+   public DeviceCommandWindow(Device device) {
+      this.device = device;
       setHeading("New command");
       initial();
       show();
@@ -75,13 +92,18 @@ public class DeviceCommandWindow extends SubmitWindow {
    /**
     * Instantiates a new device command window.
     * 
-    * @param deviceCommand the device command
+    * @param command the command
     */
-   public DeviceCommandWindow(DeviceCommand deviceCommand) {
-      this._deviceCommand = deviceCommand;
-      setHeading("Edit command");
-      initial();
-      show();
+   public DeviceCommandWindow(final DeviceCommand command) {
+      AsyncServiceFactory.getDeviceCommandServiceAsync().loadById(command.getOid(), new AsyncSuccessCallback<DeviceCommand>(){
+         public void onSuccess(DeviceCommand cmd) {
+            command.setProtocol(cmd.getProtocol());
+            deviceCommand = command;
+            setHeading("Edit command");
+            initial();
+            show();
+         }
+      });
    }
    
    /**
@@ -130,15 +152,25 @@ public class DeviceCommandWindow extends SubmitWindow {
             List<Field<?>> list = commandForm.getFields();
             Map<String, String> attrMap = new HashMap<String, String>();
             for (Field<?> f : list) {
-               if("protocol".equals(f.getName())){
+               if(DEVICE_COMMAND_PROTOCOL.equals(f.getName())){
                   Field<BaseModelData> p = (Field<BaseModelData>) f;
-                  attrMap.put("protocol", p.getValue().get(ComboBoxDataModel.getDisplayProperty()).toString());
+                  attrMap.put(DEVICE_COMMAND_PROTOCOL, p.getValue().get(ComboBoxDataModel.getDisplayProperty()).toString());
                }else{
                   attrMap.put(f.getName(), f.getValue().toString());
                }
             }
-            AppEvent appEvent = new AppEvent(Events.Submit, attrMap);
-            fireSubmitListener(appEvent);
+            AsyncSuccessCallback<BeanModel> callback = new AsyncSuccessCallback<BeanModel>(){
+               @Override
+               public void onSuccess(BeanModel deviceCommandModel) {
+                  AppEvent appEvent = new AppEvent(Events.Submit, deviceCommandModel);
+                  fireSubmitListener(appEvent);                     
+               }
+            };
+            if(deviceCommand == null){
+               DeviceCommandBeanModelProxy.saveDeviceCommand(device, attrMap, callback);
+            }else{
+               DeviceCommandBeanModelProxy.updateDeviceCommand(deviceCommand, attrMap, callback);
+            }
          }
 
       });
@@ -153,7 +185,7 @@ public class DeviceCommandWindow extends SubmitWindow {
     */
    private void createFields(Map<String, ProtocolDefinition> protocols){
       TextField<String> nameField = new TextField<String>();
-      nameField.setName("name");
+      nameField.setName(DEVICE_COMMAND_NAME);
       nameField.setFieldLabel("Name");
       nameField.setAllowBlank(false);
       
@@ -161,7 +193,7 @@ public class DeviceCommandWindow extends SubmitWindow {
       ListStore<ModelData> store = new ListStore<ModelData>();
       protocol.setStore(store);
       protocol.setFieldLabel("Protocol");
-      protocol.setName("protocol");
+      protocol.setName(DEVICE_COMMAND_PROTOCOL);
       protocol.setAllowBlank(false);
       
       for (String key : protocols.keySet()) {
@@ -185,9 +217,9 @@ public class DeviceCommandWindow extends SubmitWindow {
          }
       });
       
-      if(_deviceCommand != null){
-         String protocolName = _deviceCommand.getProtocol().getType();
-         nameField.setValue(_deviceCommand.getName());
+      if(deviceCommand != null){
+         String protocolName = deviceCommand.getProtocol().getType();
+         nameField.setValue(deviceCommand.getName());
          ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(protocolName,protocols.get(protocolName));
          protocol.setValue(data);
          protocol.disable();
@@ -212,8 +244,8 @@ public class DeviceCommandWindow extends SubmitWindow {
          attrField.setName(attrDefinition.getName());
          TextField<String>.TextFieldMessages messages = attrField.getMessages();
          attrField.setFieldLabel(attrDefinition.getLabel());
-         if(_deviceCommand != null){
-            for (ProtocolAttr attr : _deviceCommand.getProtocol().getAttributes()) {
+         if(deviceCommand != null){
+            for (ProtocolAttr attr : deviceCommand.getProtocol().getAttributes()) {
                if(attrDefinition.getName().equals(attr.getName())){
                   attrField.setValue(attr.getValue());
                }

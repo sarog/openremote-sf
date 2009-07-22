@@ -1,18 +1,18 @@
-/*
- * OpenRemote, the Home of the Digital Home.
+/* OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2009, OpenRemote Inc.
+ * 
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
- *
+ * 
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 3.0 of
  * the License, or (at your option) any later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
+ * 
  * You should have received a copy of the GNU General Public
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
@@ -20,8 +20,22 @@
  */
 package org.openremote.modeler.client.widget;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.rpc.AsyncServiceFactory;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Protocol;
+import org.openremote.modeler.domain.ProtocolAttr;
+
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.ChangeEvent;
+import com.extjs.gxt.ui.client.data.ChangeEventSource;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -41,30 +55,10 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Element;
 
-import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.client.model.TreeDataModel;
-import org.openremote.modeler.client.rpc.*;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.Protocol;
-import org.openremote.modeler.domain.ProtocolAttr;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 /**
  * The Class DevicePanel.
  */
 public class DevicePanel extends ContentPanel {
-
-   /** The device service. */
-   private final DeviceRPCServiceAsync deviceService = (DeviceRPCServiceAsync) GWT.create(DeviceRPCService.class);
-   
-   /** The device command service async. */
-   private final DeviceCommandRPCServiceAsync deviceCommandServiceAsync = (DeviceCommandRPCServiceAsync) GWT
-         .create(DeviceCommandRPCService.class);
 
    /** The tree. */
    private TreePanel<BeanModel> tree;
@@ -89,7 +83,7 @@ public class DevicePanel extends ContentPanel {
     */
    private void createTreeContainer() {
       tree = TreePanelBuilder.buildDeviceCommandTree();
-      LayoutContainer treeContainer = new LayoutContainer(){
+      LayoutContainer treeContainer = new LayoutContainer() {
          @Override
          protected void onRender(Element parent, int index) {
             super.onRender(parent, index);
@@ -99,9 +93,8 @@ public class DevicePanel extends ContentPanel {
       treeContainer.setScrollMode(Scroll.AUTO);
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
-     
+
       add(treeContainer);
-//      treeContainer.mask("Loading...");
    }
    
    /**
@@ -136,13 +129,7 @@ public class DevicePanel extends ContentPanel {
       newDeviceItem.setIcon(icon.addDevice());
       newDeviceItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
-            final DeviceWindow deviceWindow = new DeviceWindow();
-            deviceWindow.addSubmitListener(new Listener<AppEvent>() {
-               public void handleEvent(AppEvent be) {
-                  Device device = be.getData();
-                  createDevice(deviceWindow, device);
-               }
-            });
+            createDevice();
          }
       });
       return newDeviceItem;
@@ -150,19 +137,17 @@ public class DevicePanel extends ContentPanel {
    
    /**
     * Creates the device.
-    * 
-    * @param deviceWindow the device window
-    * @param map the map
     */
-   private void createDevice(final DeviceWindow deviceWindow, Device device) {
-      deviceService.saveDevice(device, new AsyncSuccessCallback<Device>() {
-         public void onSuccess(Device device) {
+   private void createDevice() {
+      final DeviceWindow deviceWindow = new DeviceWindow();
+      deviceWindow.addSubmitListener(new Listener<AppEvent>() {
+         public void handleEvent(AppEvent be) {
             deviceWindow.hide();
-            BeanModel model = device.getBeanModel();
-            tree.getStore().add(model, true);
+            BeanModel deviceModel = be.getData();
+            tree.getStore().add(deviceModel, true);
             //create and select it.
-            tree.getSelectionModel().select(model, false);
-            Info.display("Info", "Add device " + device.getName() + " success.");
+            tree.getSelectionModel().select(deviceModel, false);
+            Info.display("Info", "Add device " + deviceModel.get("name") + " success.");
          }
       });
    }
@@ -177,62 +162,31 @@ public class DevicePanel extends ContentPanel {
       newCommandItem.setIcon(icon.addCmd());
       newCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
-            BeanModel deviceNode = tree.getSelectionModel().getSelectedItem();
-            if (deviceNode != null && deviceNode.getBean() instanceof Device) {
-               final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow();
-               deviceCommandWindow.addSubmitListener(new Listener<AppEvent>() {
-                  public void handleEvent(AppEvent be) {
-                     Map<String, String> map = be.getData();
-                     createDeviceCommand(deviceCommandWindow, map);
-                  }
-               });
-            } else {
-               MessageBox.info("Error", "Please select a device", null);
-            }
+            createDeviceCommand();
          }
+
       });
       return newCommandItem;
    }
    
    /**
     * Creates the device command.
-    * 
-    * @param deviceCommandWindow the device command window
-    * @param map the map
     */
-   private void createDeviceCommand(final DeviceCommandWindow deviceCommandWindow, Map<String, String> map) {
-      final BeanModel deviceNode = tree.getSelectionModel().getSelectedItem();
-      Device device = (Device) deviceNode.getBean();
-      DeviceCommand deviceCommand = new DeviceCommand();
-      deviceCommand.setName(map.get("name"));
-      deviceCommand.setDevice(device);
-      
-      Protocol protocol = new Protocol();
-      protocol.setType(map.get("protocol"));
-      protocol.setDeviceCommand(deviceCommand);
-      
-      for (String key : map.keySet()) {
-         if ("name".equals(key) || "protocol".equals(key)) {
-            continue;
-         }
-         ProtocolAttr protocolAttr = new ProtocolAttr();
-         protocolAttr.setName(key);
-         protocolAttr.setValue((map.get(key)));
-         protocolAttr.setProtocol(protocol);
-         protocol.getAttributes().add(protocolAttr);
+   private void createDeviceCommand() {
+      final BeanModel deviceModel = tree.getSelectionModel().getSelectedItem();
+      if (deviceModel != null && deviceModel.getBean() instanceof Device) {
+         final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow((Device)deviceModel.getBean());
+         deviceCommandWindow.addSubmitListener(new Listener<AppEvent>() {
+            public void handleEvent(AppEvent be) {
+               BeanModel deviceCommandModel = be.getData();
+               tree.getStore().add(deviceModel, deviceCommandModel, false);
+               tree.setExpanded(deviceModel, true);
+               deviceCommandWindow.hide();
+            }
+         });
+      } else {
+         MessageBox.info("Error", "Please select a device", null);
       }
-      
-      deviceCommand.setProtocol(protocol);
-      device.getDeviceCommands().add(deviceCommand);
-      
-      deviceCommandServiceAsync.save(deviceCommand, new AsyncSuccessCallback<DeviceCommand>() {
-         public void onSuccess(DeviceCommand deviceCommand) {
-            BeanModel deviceCommandNode = deviceCommand.getBeanModel();
-            tree.getStore().add(deviceNode, deviceCommandNode, false);
-            tree.setExpanded(deviceNode, true);
-            deviceCommandWindow.hide();
-         }
-      });
    }
    
    /**
@@ -245,11 +199,11 @@ public class DevicePanel extends ContentPanel {
       editBtn.setIcon(icon.edit());
       editBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
-            final BeanModel selectedNode = tree.getSelectionModel().getSelectedItem();
-            if (selectedNode != null && selectedNode.getBean() instanceof Device) {
-               editDevice(selectedNode);
-            } else if (selectedNode != null && selectedNode.getBean() instanceof DeviceCommand) {
-               editCommand(selectedNode);
+            BeanModel selectedModel = tree.getSelectionModel().getSelectedItem();
+            if (selectedModel != null && selectedModel.getBean() instanceof Device) {
+               editDevice(selectedModel);
+            } else if (selectedModel != null && selectedModel.getBean() instanceof DeviceCommand) {
+               editCommand(selectedModel);
             }
          }
       });
@@ -259,22 +213,16 @@ public class DevicePanel extends ContentPanel {
    /**
     * Edits the device.
     * 
-    * @param selectedNode the selected node
+    * @param selectedModel the selected model
     */
-   private void editDevice(final BeanModel selectedNode) {
-      Device device = (Device) selectedNode.getBean();
-      final DeviceWindow editDeviceWindow = new DeviceWindow(device);
+   private void editDevice(BeanModel selectedModel) {
+      final DeviceWindow editDeviceWindow = new DeviceWindow(selectedModel);
       editDeviceWindow.addSubmitListener(new Listener<AppEvent>() {
          public void handleEvent(AppEvent be) {
-            final Device dev = be.getData();
-            deviceService.updateDevice(dev, new AsyncSuccessCallback<Void>() {
-               public void onSuccess(Void result) {
-                  editDeviceWindow.hide();
-                  selectedNode.set(TreeDataModel.getDisplayProperty(), dev.getName());
-                  tree.getStore().update(selectedNode);
-                  Info.display("Info", "Edit device " + dev.getName() + " success.");
-               }
-            });
+            editDeviceWindow.hide();
+            BeanModel deviceModel = be.getData();
+            tree.getStore().update(deviceModel);
+            Info.display("Info", "Edit device " + deviceModel.get("name") + " success.");
          }
       });
    }
@@ -282,33 +230,16 @@ public class DevicePanel extends ContentPanel {
    /**
     * Edits the command.
     * 
-    * @param selectedNode the selected node
+    * @param selectedModel the selected model
     */
-   private void editCommand(final BeanModel selectedNode) {
-      final DeviceCommand deviceCommand = (DeviceCommand) selectedNode.getBean();
-      deviceCommandServiceAsync.loadById(deviceCommand.getOid(), new AsyncSuccessCallback<DeviceCommand>(){
-         public void onSuccess(DeviceCommand command) {
-            deviceCommand.setProtocol(command.getProtocol());
-            final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(deviceCommand);
-            deviceCommandWindow.addSubmitListener(new Listener<AppEvent>() {
-               public void handleEvent(AppEvent be) {
-                  Map<String, String> map = be.getData();
-                  
-                  deviceCommand.setName(map.get("name"));
-                  List<ProtocolAttr> attrs = deviceCommand.getProtocol().getAttributes();
-                  for (int i = 0; i < attrs.size(); i++) {
-                     deviceCommand.getProtocol().getAttributes().get(i).setValue(map.get(attrs.get(i).getName()));
-                  };
-                  deviceCommandServiceAsync.update(deviceCommand, new AsyncSuccessCallback<Void>() {
-                     public void onSuccess(Void result) {
-                        deviceCommandWindow.hide();
-                        selectedNode.set(TreeDataModel.getDisplayProperty(), deviceCommand.getName());
-                        tree.getStore().update(selectedNode);
-                        Info.display("Info", "Edit device command " + deviceCommand.getName() + " success.");
-                     }
-                  });
-               }
-            });
+   private void editCommand(BeanModel selectedModel) {
+      final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow((DeviceCommand) selectedModel.getBean());
+      deviceCommandWindow.addSubmitListener(new Listener<AppEvent>() {
+         public void handleEvent(AppEvent be) {
+            BeanModel deviceCommandModel = be.getData();
+            tree.getStore().update(deviceCommandModel);
+            Info.display("Info", "Edit device command " + deviceCommandModel.get("name") + " success.");
+            deviceCommandWindow.hide();
          }
       });
    }
@@ -323,11 +254,11 @@ public class DevicePanel extends ContentPanel {
       deleteBtn.setIcon(icon.delete());
       deleteBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
-            BeanModel selectedNode = tree.getSelectionModel().getSelectedItem();
-            if (selectedNode != null && selectedNode.getBean() instanceof Device) {
-               deleteDevice(selectedNode);
-            } else if (selectedNode != null && selectedNode.getBean() instanceof DeviceCommand) {
-               deleteCommand(selectedNode);
+            BeanModel selectedModel = tree.getSelectionModel().getSelectedItem();
+            if (selectedModel != null && selectedModel.getBean() instanceof Device) {
+               deleteDevice(selectedModel);
+            } else if (selectedModel != null && selectedModel.getBean() instanceof DeviceCommand) {
+               deleteCommand(selectedModel);
             }
          }
       });
@@ -337,13 +268,14 @@ public class DevicePanel extends ContentPanel {
    /**
     * Delete device.
     * 
-    * @param selectedNode the selected node
+    * @param selectedModel the selected model
     */
-   private void deleteDevice(final BeanModel selectedNode) {
-      Device device = (Device) selectedNode.getBean();
-      deviceService.deleteDevice(device.getOid(), new AsyncSuccessCallback<Void>() {
+   private void deleteDevice(final BeanModel selectedModel) {
+      Device device = (Device) selectedModel.getBean();
+      AsyncServiceFactory.getDeviceServiceAsync().deleteDevice(device.getOid(), new AsyncSuccessCallback<Void>() {
          public void onSuccess(Void result) {
-            tree.getStore().remove(selectedNode);
+            selectedModel.notify(new ChangeEvent(ChangeEventSource.Remove, tree.getStore().getParent(selectedModel), selectedModel));
+            tree.getStore().remove(selectedModel);
             Info.display("Info", "Delete success.");
          }
       });
@@ -352,13 +284,14 @@ public class DevicePanel extends ContentPanel {
    /**
     * Delete command.
     * 
-    * @param selectedNode the selected node
+    * @param selectedModel the selected model
     */
-   private void deleteCommand(final BeanModel selectedNode) {
-      DeviceCommand deviceCommand = (DeviceCommand) selectedNode.getBean();
-      deviceCommandServiceAsync.deleteCommand(deviceCommand.getOid(), new AsyncSuccessCallback<Void>() {
+   private void deleteCommand(final BeanModel selectedModel) {
+      DeviceCommand deviceCommand = (DeviceCommand) selectedModel.getBean();
+      AsyncServiceFactory.getDeviceCommandServiceAsync().deleteCommand(deviceCommand.getOid(), new AsyncSuccessCallback<Void>() {
          public void onSuccess(Void result) {
-            tree.getStore().remove(selectedNode);
+            selectedModel.notify(new ChangeEvent(ChangeEventSource.Remove, tree.getStore().getParent(selectedModel), selectedModel));
+            tree.getStore().remove(selectedModel);
             Info.display("Info", "Delete success.");
          }
       });
@@ -429,7 +362,7 @@ public class DevicePanel extends ContentPanel {
 
                deviceCommands.add(deviceCommand);
             }
-            deviceCommandServiceAsync.saveAll(deviceCommands, new AsyncSuccessCallback<List<DeviceCommand>>() {
+            AsyncServiceFactory.getDeviceCommandServiceAsync().saveAll(deviceCommands, new AsyncSuccessCallback<List<DeviceCommand>>() {
                public void onSuccess(List<DeviceCommand> deviceCommands) {
                   for (DeviceCommand command : deviceCommands) {
                      BeanModel deviceCommandNode = command.getBeanModel();
@@ -442,4 +375,5 @@ public class DevicePanel extends ContentPanel {
          }
       }
    }
+
 }

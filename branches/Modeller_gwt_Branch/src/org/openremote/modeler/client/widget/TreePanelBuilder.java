@@ -96,6 +96,7 @@ public class TreePanelBuilder {
       tree.setBorders(false);
       tree.setStateful(true);
       tree.setDisplayProperty("name");
+      tree.setHeight("100%");
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
 
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
