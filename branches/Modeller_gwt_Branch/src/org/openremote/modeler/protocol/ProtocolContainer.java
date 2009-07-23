@@ -53,7 +53,7 @@ public class ProtocolContainer implements Serializable{
    }
 
 
-   public static void ReadProtocolDefinitions() {
+   public static void readProtocolDefinitions() {
       
    }
 
