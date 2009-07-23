@@ -33,47 +33,43 @@ import java.util.List;
  * The Interface DeviceMacroService.
  */
 @RemoteServiceRelativePath("deviceMacro.smvc")
-public interface DeviceMacroRPCService extends RemoteService{
-   
+public interface DeviceMacroRPCService extends RemoteService {
+
    /**
     * Load all.
-    * 
+    *
     * @return the list< device macro>
     */
    public List<DeviceMacro> loadAll();
-   
+
 
    /**
     * Save device macro.
-    * 
+    *
     * @param deviceMacro the device macro
-    * 
     * @return the device macro
     */
    public DeviceMacro saveDeviceMacro(DeviceMacro deviceMacro);
-   
-   
 
 
    /**
     * Update device macro.
-    * 
+    *
     * @param deviceMacro the device macro
-    * 
     * @return the device macro
     */
    public DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro);
-   
-   
+
+
    /**
     * Delete device macro.
-    * 
+    *
     * @param id the id
     */
    public void deleteDeviceMacro(long id);
 
 
-    public List<DeviceMacroItem> loadDeviceMacroItems(DeviceMacro deviceMacro);
+   public List<DeviceMacroItem> loadDeviceMacroItems(DeviceMacro deviceMacro);
 
 
 }

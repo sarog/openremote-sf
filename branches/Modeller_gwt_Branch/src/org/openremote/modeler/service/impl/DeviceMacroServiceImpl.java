@@ -26,6 +26,7 @@ import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.service.DeviceMacroService;
+import org.openremote.modeler.service.UserService;
 
 import java.util.List;
 
@@ -35,11 +36,20 @@ import java.util.List;
 public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> implements DeviceMacroService {
 
    private DeviceMacroItemService deviceMacroItemService;
+   private UserService userService;
 
 
    public void setDeviceMacroItemService(DeviceMacroItemService deviceMacroItemService) {
       this.deviceMacroItemService = deviceMacroItemService;
    }
+   
+   
+
+   public void setUserService(UserService userService) {
+      this.userService = userService;
+   }
+
+
 
    /*
     * (non-Javadoc)
@@ -60,6 +70,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
     * @see org.openremote.modeler.client.rpc.DeviceMacroRPCService#save(org.openremote.modeler.domain.DeviceMacro)
     */
    public DeviceMacro saveDeviceMacro(DeviceMacro deviceMacro) {
+      deviceMacro.setAccount(userService.getAccount());
       genericDAO.save(deviceMacro);
       return deviceMacro;
    }
@@ -71,12 +82,16 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
     */
    public DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro) {
       DeviceMacro old = genericDAO.loadById(DeviceMacro.class, deviceMacro.getOid());
+      if (old.getAccount() == null) {
+         old.setAccount(userService.getAccount());
+      }
       genericDAO.deleteAll(old.getDeviceMacroItems());
       old.getDeviceMacroItems().clear();
 
       old.setName(deviceMacro.getName());
       for (DeviceMacroItem deviceMacroItem : deviceMacro.getDeviceMacroItems()) {
          deviceMacroItem.setOid(0);
+         deviceMacroItem.setParentDeviceMacro(old);
       }
       old.getDeviceMacroItems().addAll(deviceMacro.getDeviceMacroItems());
       return old;
@@ -93,12 +108,5 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
       genericDAO.delete(deviceMacro);
    }
 
-   public List<DeviceMacroItem> loadDeviceMacroItems(DeviceMacro deviceMacro) {
-       return null;
-   }
-
-   public DeviceMacro loadDeviceMacroById(long id) {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
-   }
 
 }

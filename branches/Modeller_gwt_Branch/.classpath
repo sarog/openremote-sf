@@ -4,7 +4,8 @@
 	<classpathentry kind="src" path="protocols"/>
 	<classpathentry kind="src" path="config"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="lib" path="lib/compile/gxt.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/core/activation.jar"/>
 	<classpathentry kind="lib" path="lib/core/adapter-core-1.2.2.598.jar"/>
 	<classpathentry kind="lib" path="lib/core/adapter4gwt-1.2.2.598.jar"/>
@@ -15,6 +16,7 @@
 	<classpathentry kind="lib" path="lib/core/beanlib-hibernate-3.3.0beta21c.jar"/>
 	<classpathentry kind="lib" path="lib/core/cglib-2.1.3.jar"/>
 	<classpathentry kind="lib" path="lib/core/cglib-nodep-2.1_3.jar"/>
+	<classpathentry kind="lib" path="lib/core/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/core/commons-collections-3.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/commons-dbcp.jar"/>
 	<classpathentry kind="lib" path="lib/core/commons-io.jar"/>
@@ -24,7 +26,7 @@
 	<classpathentry kind="lib" path="lib/core/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/ejb3-persistence.jar"/>
 	<classpathentry kind="lib" path="lib/core/flexjson.jar"/>
-	<classpathentry kind="lib" path="lib/core/gwt-servlet.jar" sourcepath="/Applications/eclipse/plugins/com.google.gwt.eclipse.sdkbundle.macosx_1.6.4.v200904062334"/>
+	<classpathentry kind="lib" path="lib/core/gwt-servlet.jar"/>
 	<classpathentry kind="lib" path="lib/core/hibernate-annotations.jar"/>
 	<classpathentry kind="lib" path="lib/core/hibernate-commons-annotations.jar"/>
 	<classpathentry kind="lib" path="lib/core/hibernate-util-1.2.2.598.jar"/>
@@ -35,16 +37,14 @@
 	<classpathentry kind="lib" path="lib/core/jta.jar"/>
 	<classpathentry kind="lib" path="lib/core/log4j-1.2.11.jar"/>
 	<classpathentry kind="lib" path="lib/core/mysql-connector-java-5.0.3-bin.jar"/>
-	<classpathentry kind="lib" path="lib/core/standard.jar"/>
-	<classpathentry kind="lib" path="lib/core/trove.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/test/junit-4.5.jar"/>
-	<classpathentry kind="lib" path="lib/core/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/core/spring-2.0.8.jar"/>
 	<classpathentry kind="lib" path="lib/core/spring-security-core-2.0.4.jar"/>
-	<classpathentry kind="lib" path="lib/test/spring-test-2.5.5.jar"/>
+	<classpathentry kind="lib" path="lib/core/standard.jar"/>
+	<classpathentry kind="lib" path="lib/core/trove.jar"/>
 	<classpathentry kind="lib" path="lib/test/hsqldb.jar"/>
+	<classpathentry kind="lib" path="lib/test/junit-4.5.jar"/>
+	<classpathentry kind="lib" path="lib/test/spring-test-2.5.5.jar"/>
 	<classpathentry kind="lib" path="lib/test/testng-5.9-jdk15.jar"/>
+	<classpathentry kind="lib" path="lib/core/gxt.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

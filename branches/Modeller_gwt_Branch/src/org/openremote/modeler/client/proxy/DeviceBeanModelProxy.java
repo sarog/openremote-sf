@@ -47,7 +47,9 @@ public class DeviceBeanModelProxy {
       if(beanModel == null){
          AsyncServiceFactory.getDeviceServiceAsync().loadAll(new AsyncSuccessCallback<List<Device>>(){
             public void onSuccess(List<Device> result) {
-               callback.onSuccess(Device.createModels(result));
+               List<BeanModel> beanModels = Device.createModels(result);
+               BeanModelContainer.deviceMap.putAll(beanModels);
+               callback.onSuccess(beanModels);
             }
             
          });
@@ -56,7 +58,9 @@ public class DeviceBeanModelProxy {
          AsyncServiceFactory.getDeviceCommandServiceAsync().loadByDevice(device.getOid(), new AsyncSuccessCallback<List<DeviceCommand>>(){
             @Override
             public void onSuccess(List<DeviceCommand> result) {
-               callback.onSuccess(DeviceCommand.createModels(result));
+               List<BeanModel> beanModels = DeviceCommand.createModels(result);
+               BeanModelContainer.deviceCommandMap.putAll(beanModels);
+               callback.onSuccess(beanModels);
             }
             
          });
@@ -74,7 +78,9 @@ public class DeviceBeanModelProxy {
       setAttrsToDevice(map, device);
       AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>(){
          public void onSuccess(Device result) {
-            callback.onSuccess(result.getBeanModel());
+            BeanModel deviceModel =result.getBeanModel();
+            BeanModelContainer.deviceMap.put(deviceModel);
+            callback.onSuccess(deviceModel);
          }
       });
    }
@@ -89,9 +95,11 @@ public class DeviceBeanModelProxy {
     */
    public static void updateDevice(final BeanModel deviceModel, Map<String, String> map, final AsyncSuccessCallback<BeanModel> callback){
       Device device = deviceModel.getBean();
+      BeanModelContainer.deviceMap.put(deviceModel);
       setAttrsToDevice(map, device);
       AsyncServiceFactory.getDeviceServiceAsync().updateDevice(device, new AsyncSuccessCallback<Void>(){
          public void onSuccess(Void result) {
+
             callback.onSuccess(deviceModel);
          }
       });

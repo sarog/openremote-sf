@@ -20,28 +20,19 @@
  */
 package org.openremote.modeler.client.widget;
 
-import java.util.List;
-
-import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.client.model.TreeDataModel;
-import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
-import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceCommandRef;
-import org.openremote.modeler.domain.DeviceMacro;
-
-import com.extjs.gxt.ui.client.data.BaseTreeLoader;
-import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.data.ModelIconProvider;
-import com.extjs.gxt.ui.client.data.RpcProxy;
-import com.extjs.gxt.ui.client.data.TreeLoader;
+import com.extjs.gxt.ui.client.data.*;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
+import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.domain.*;
+
+import java.util.List;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -49,12 +40,14 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
  */
 public class TreePanelBuilder {
 
+   private static final String TREE_DISPLAY_FIELD = "tree_label";
+
    /** The Constant icon. */
    private final static Icons icon = GWT.create(Icons.class);
 
    /** The device command treestore. */
    private static TreeStore<BeanModel> deviceCommandTreestore = null;
-   
+
    /** The macro tree store. */
    private static TreeStore<BeanModel> macroTreeStore = null;
 
@@ -93,10 +86,11 @@ public class TreePanelBuilder {
 //         });
       }
       final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceCommandTreestore);
+
       tree.setBorders(false);
       tree.setStateful(true);
       tree.setDisplayProperty("name");
-      tree.setHeight("100%");
+     
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
 
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
@@ -117,71 +111,71 @@ public class TreePanelBuilder {
    /**
     * After delete device or device command.
     * 
-    * @param deletedModel the deleted model
+    * @param deletedModel
+    *           the deleted model
     */
-//   private static void afterDeleteDeviceOrDeviceCommand(TreeDataModel deletedModel) {
-//      if (deletedModel.getData() instanceof DeviceCommand) {
-//         afterDeleteDeviceCommand((DeviceCommand) deletedModel.getData());
-//      } else if (deletedModel.getData() instanceof Device) {
-//         afterDeleteDevice((Device) deletedModel.getData());
-//      }
-//   }
-
+   // private static void afterDeleteDeviceOrDeviceCommand(TreeDataModel deletedModel) {
+   // if (deletedModel.getData() instanceof DeviceCommand) {
+   // afterDeleteDeviceCommand((DeviceCommand) deletedModel.getData());
+   // } else if (deletedModel.getData() instanceof Device) {
+   // afterDeleteDevice((Device) deletedModel.getData());
+   // }
+   // }
    /**
     * After delete device.
     * 
-    * @param device the device
+    * @param device
+    *           the device
     */
-//   private static void afterDeleteDevice(Device device) {
-//      for (DeviceCommand command : device.getDeviceCommands()) {
-//         afterDeleteDeviceCommand(command);
-//      }
-//   }
-
+   // private static void afterDeleteDevice(Device device) {
+   // for (DeviceCommand command : device.getDeviceCommands()) {
+   // afterDeleteDeviceCommand(command);
+   // }
+   // }
    /**
     * After delete device command.
     * 
-    * @param command the command
+    * @param command
+    *           the command
     */
-//   private static void afterDeleteDeviceCommand(DeviceCommand command) {
-//      DeviceCommandRef commandRef = new DeviceCommandRef(command);
-//      TreeDataModel newDataModel = new TreeDataModel(commandRef, commandRef.getLabel());
-//      Iterator<TreeDataModel> iterator = macroTreeStore.getAllItems().iterator();
-//      while (iterator.hasNext()) {
-//         TreeDataModel current = iterator.next();
-//         if (macroTreeStore.getModelComparer().equals(current, newDataModel)) {
-//            if (current.getParent() != null) {
-//               if (current.getParent().get(TreeDataModel.getDataProperty()) instanceof DeviceMacro) {
-//                  DeviceMacro parent = (DeviceMacro) current.getParent().get(TreeDataModel.getDataProperty());
-//                  parent.getDeviceMacroItems().remove(current.getData());
-//               }
-//            }
-//            iterator.remove();
-//            macroTreeStore.remove(current);
-//         }
-//      }
-//   }
-
+   // private static void afterDeleteDeviceCommand(DeviceCommand command) {
+   // DeviceCommandRef commandRef = new DeviceCommandRef(command);
+   // TreeDataModel newDataModel = new TreeDataModel(commandRef, commandRef.getLabel());
+   // Iterator<TreeDataModel> iterator = macroTreeStore.getAllItems().iterator();
+   // while (iterator.hasNext()) {
+   // TreeDataModel current = iterator.next();
+   // if (macroTreeStore.getModelComparer().equals(current, newDataModel)) {
+   // if (current.getParent() != null) {
+   // if (current.getParent().get(TreeDataModel.getDataProperty()) instanceof DeviceMacro) {
+   // DeviceMacro parent = (DeviceMacro) current.getParent().get(TreeDataModel.getDataProperty());
+   // parent.getDeviceMacroItems().remove(current.getData());
+   // }
+   // }
+   // iterator.remove();
+   // macroTreeStore.remove(current);
+   // }
+   // }
+   // }
    /**
     * After delete device macro.
     * 
-    * @param deletedModel the deleted model
+    * @param deletedModel
+    *           the deleted model
     */
-//   private static void afterDeleteDeviceMacro(TreeDataModel deletedModel) {
-//      if (deletedModel.getData() instanceof DeviceMacro) {
-//         DeviceMacroRef deviceMacroRef = new DeviceMacroRef((DeviceMacro) deletedModel.getData());
-//         TreeDataModel newDataModel = new TreeDataModel(deviceMacroRef, deviceMacroRef.getLabel());
-//         Iterator<TreeDataModel> iterator = macroTreeStore.getAllItems().iterator();
-//         while (iterator.hasNext()) {
-//            TreeDataModel current = iterator.next();
-//            if (macroTreeStore.getModelComparer().equals(current, newDataModel)) {
-//               iterator.remove();
-//               macroTreeStore.remove(current);
-//            }
-//         }
-//      }
-//   }
-
+   // private static void afterDeleteDeviceMacro(TreeDataModel deletedModel) {
+   // if (deletedModel.getData() instanceof DeviceMacro) {
+   // DeviceMacroRef deviceMacroRef = new DeviceMacroRef((DeviceMacro) deletedModel.getData());
+   // TreeDataModel newDataModel = new TreeDataModel(deviceMacroRef, deviceMacroRef.getLabel());
+   // Iterator<TreeDataModel> iterator = macroTreeStore.getAllItems().iterator();
+   // while (iterator.hasNext()) {
+   // TreeDataModel current = iterator.next();
+   // if (macroTreeStore.getModelComparer().equals(current, newDataModel)) {
+   // iterator.remove();
+   // macroTreeStore.remove(current);
+   // }
+   // }
+   // }
+   // }
    /**
     * Builds a new macro tree.
     * 
@@ -189,34 +183,45 @@ public class TreePanelBuilder {
     */
    public static TreePanel<BeanModel> buildMacroTree() {
       if (macroTreeStore == null) {
-          RpcProxy<List<BeanModel>> loadDeviceMacroRPCProxy = new RpcProxy<List<BeanModel>>() {
+         RpcProxy<List<BeanModel>> loadDeviceMacroRPCProxy = new RpcProxy<List<BeanModel>>() {
 
-              protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
-                  DeviceMacroBeanModelProxy.loadDeviceMaro((BeanModel) o,new AsyncSuccessCallback<List<BeanModel>>(){
+            protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
+               DeviceMacroBeanModelProxy.loadDeviceMaro((BeanModel) o, new AsyncSuccessCallback<List<BeanModel>>() {
 
-                      public void onSuccess(List<BeanModel> result) {
-                          listAsyncCallback.onSuccess(result);
-                      }
-                  });
-              }
-          };
-          BaseTreeLoader<BeanModel> loadDeviceMacroTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceMacroRPCProxy){
-              @Override
-              public boolean hasChildren(BeanModel beanModel) {
-                  if (beanModel.getBean() instanceof DeviceMacro) {
-                      return true;
+                  public void onSuccess(List<BeanModel> result) {
+                     listAsyncCallback.onSuccess(result);
                   }
-                  return false;
-              }
-          };
+               });
+            }
+         };
+         BaseTreeLoader<BeanModel> loadDeviceMacroTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceMacroRPCProxy) {
+            @Override
+            public boolean hasChildren(BeanModel beanModel) {
+               if (beanModel.getBean() instanceof DeviceMacro) {
+                  return true;
+               }
+               return false;
+            }
+         };
          macroTreeStore = new TreeStore<BeanModel>(loadDeviceMacroTreeLoader);
       }
 
       final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(macroTreeStore);
+      tree.setStateful(true);
       tree.setBorders(false);
-    
+      
+      tree.setLabelProvider(new ModelStringProvider<BeanModel>() {
 
-      tree.setDisplayProperty(TreeDataModel.getDisplayProperty());
+         public String getStringValue(BeanModel model, String property) {
+            if (model.getBean() instanceof DeviceMacro) {
+               return model.get("name");
+            } else {
+               DeviceMacroItem deviceMacroItem = (DeviceMacroItem) model.getBean();
+               return deviceMacroItem.getLabel();
+            }
+         }
+
+      });
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
 
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
