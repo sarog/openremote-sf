@@ -32,6 +32,7 @@ import org.openremote.modeler.domain.DeviceCommand;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class DeviceBeanModelProxy.
  */
@@ -95,11 +96,10 @@ public class DeviceBeanModelProxy {
     */
    public static void updateDevice(final BeanModel deviceModel, Map<String, String> map, final AsyncSuccessCallback<BeanModel> callback){
       Device device = deviceModel.getBean();
-      BeanModelDataBase.deviceMap.insert(deviceModel);
       setAttrsToDevice(map, device);
       AsyncServiceFactory.getDeviceServiceAsync().updateDevice(device, new AsyncSuccessCallback<Void>(){
          public void onSuccess(Void result) {
-
+            BeanModelDataBase.deviceMap.update(deviceModel);
             callback.onSuccess(deviceModel);
          }
       });
@@ -115,5 +115,20 @@ public class DeviceBeanModelProxy {
       device.setName(map.get(DeviceWindow.DEVICE_NAME));
       device.setVendor(map.get(DeviceWindow.DEVICE_VENDOR));
       device.setModel(map.get(DeviceWindow.DEVICE_MODEL));
+   }
+   
+   /**
+    * Delete device.
+    * 
+    * @param deviceModel the device model
+    * @param callback the callback
+    */
+   public static void deleteDevice(BeanModel deviceModel, final AsyncSuccessCallback<Void> callback){
+      final Device device = deviceModel.getBean();
+      AsyncServiceFactory.getDeviceServiceAsync().deleteDevice(device.getOid(), new AsyncSuccessCallback<Void>() {
+         public void onSuccess(Void result) {
+            BeanModelDataBase.deviceMap.delete(device.getOid());
+         }
+      });
    }
 }
