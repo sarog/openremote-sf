@@ -62,7 +62,7 @@ public class MacroPanel extends ContentPanel {
    private TreePanel<BeanModel> macroTree = null;
 
    private LayoutContainer macroListContainer = null;
-   
+
    //Do NOT use it directly, use getter method
    private ChangeListener dragSourceBeanModelChangeListener = null;
 
@@ -160,7 +160,7 @@ public class MacroPanel extends ContentPanel {
    protected void afterExpand() {
       if (macroTree == null) {
          macroTree = TreePanelBuilder.buildMacroTree();
-         macroTree.getStore().addStoreListener(new StoreListener<BeanModel>(){
+         macroTree.getStore().addStoreListener(new StoreListener<BeanModel>() {
 
             @Override
             public void storeDataChanged(StoreEvent<BeanModel> se) {
@@ -177,16 +177,18 @@ public class MacroPanel extends ContentPanel {
          macroListContainer.add(macroTree);
       }
       super.afterExpand();
-
    }
 
    private void afterCreateDeviceMacro(DeviceMacro deviceMacro) {
       BeanModel deviceBeanModel = deviceMacro.getBeanModel();
       macroTree.getStore().add(deviceBeanModel, false);
       for (DeviceMacroItem deviceMacroItem : deviceMacro.getDeviceMacroItems()) {
+         BeanModel deviceMacroItemModel = BeanModelDataBase.getDeviceMacroItemBeanModel(deviceMacroItem);
+         deviceMacroItemModel.addChangeListener(getDragSourceBeanModelChangeListener());
          macroTree.getStore().add(deviceBeanModel, deviceMacroItem.getBeanModel(), false);
       }
    }
+   
 
    /**
     * On edit device macro btn clicked.
@@ -213,11 +215,9 @@ public class MacroPanel extends ContentPanel {
       if (macroTree.getSelectionModel().getSelectedItems().size() > 0) {
          for (final BeanModel data : macroTree.getSelectionModel().getSelectedItems()) {
             if (data.getBean() instanceof DeviceMacro) {
-               DeviceMacroBeanModelProxy.deleteDeviceMacro(data,new AsyncSuccessCallback<Void>() {
+               DeviceMacroBeanModelProxy.deleteDeviceMacro(data, new AsyncSuccessCallback<Void>() {
                   @Override
                   public void onSuccess(Void result) {
-                     ChangeEvent evt = new ChangeEvent(ChangeEventSupport.Remove, macroTree.getStore().getParent(data),data);
-                     data.notify(evt);
                      macroTree.getStore().remove(data);
                   }
                });
@@ -244,17 +244,16 @@ public class MacroPanel extends ContentPanel {
                   if (changeEvent.getItem() instanceof BeanModel) {
                      BeanModel beanModel = (BeanModel) changeEvent.getItem();
                      if (beanModel.getBean() instanceof DeviceMacro || beanModel.getBean() instanceof DeviceCommand) {
-
                         macroTree.getStore().remove((BeanModel) changeEvent.getItem());
                      }
                   }
                }
                if (changeEvent.getType() == ChangeEventSupport.Update) {
-                  
+
                }
             }
          };
-      } 
+      }
       return dragSourceBeanModelChangeListener;
    }
 

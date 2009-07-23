@@ -32,21 +32,24 @@ import com.extjs.gxt.ui.client.data.BeanModel;
  */
 public class BeanModelDataBase {
 
-   public static BeanModelTable deviceMap = new BeanModelTable();
-   public static BeanModelTable deviceCommandMap = new BeanModelTable();
-   public static BeanModelTable deviceMacroMap = new BeanModelTable();
-   public static BeanModelTable deviceMacroItemMap = new BeanModelTable();
+   public static final BeanModelTable deviceMap = new BeanModelTable();
+   public static final BeanModelTable deviceCommandMap = new BeanModelTable();
+   public static final BeanModelTable deviceMacroMap = new BeanModelTable();
+   public static final BeanModelTable deviceMacroItemMap = new BeanModelTable();
 
-   public static BeanModel getDeviceMacroItemBeanModel (DeviceMacroItem deviceMacroItem) {
+
+   public static BeanModel getDeviceMacroItemBeanModel(DeviceMacroItem deviceMacroItem) {
       if (deviceMacroItem instanceof DeviceMacroRef) {
          DeviceMacroRef deviceMacroRef = (DeviceMacroRef) deviceMacroItem;
-         return deviceMacroMap.get(deviceMacroRef.getOid());
+         return deviceMacroMap.get(deviceMacroRef.getTargetDeviceMacro().getOid());
       }
       if (deviceMacroItem instanceof DeviceCommandRef) {
          DeviceCommandRef deviceCommandRef = (DeviceCommandRef) deviceMacroItem;
-         return deviceCommandMap.get(deviceCommandRef.getOid());
+         return deviceCommandMap.get(deviceCommandRef.getDeviceCommand().getOid());
       }
       throw new IllegalArgumentException("Illegal DeviceMacroItem type which passed in");
    }
+   
+
 
 }
