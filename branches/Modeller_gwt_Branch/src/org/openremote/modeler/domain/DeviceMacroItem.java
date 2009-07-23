@@ -37,11 +37,11 @@ import javax.persistence.Transient;
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name="device_macro_item")
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="type")
+@Table(name = "device_macro_item")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type")
 @DiscriminatorValue("DEVICE_MACRO_ITEM")
-public class DeviceMacroItem extends BusinessEntity{
+public class DeviceMacroItem extends BusinessEntity {
 
    /** The parent device macro. */
    private DeviceMacro parentDeviceMacro;
@@ -67,6 +67,11 @@ public class DeviceMacroItem extends BusinessEntity{
       this.parentDeviceMacro = parentDeviceMacro;
    }
    
+   /**
+    * Gets the label.
+    * 
+    * @return the label
+    */
    @Transient
    public String getLabel() {
       if (this instanceof DeviceMacroRef) {

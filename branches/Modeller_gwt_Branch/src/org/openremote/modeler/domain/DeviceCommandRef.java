@@ -35,8 +35,18 @@ import javax.persistence.OneToOne;
 @DiscriminatorValue("DEVICE_CMD_REF")
 public class DeviceCommandRef extends DeviceMacroItem {
    
+   /**
+    * Instantiates a new device command ref.
+    */
    public DeviceCommandRef() {
    }
+   
+   /**
+    * Instantiates a new device command ref.
+    * 
+    * @param deviceCommand
+    *           the device command
+    */
    public DeviceCommandRef(DeviceCommand deviceCommand) {
       super();
       this.deviceCommand = deviceCommand;
@@ -51,7 +61,7 @@ public class DeviceCommandRef extends DeviceMacroItem {
     * @return the device command
     */
    @OneToOne
-   @JoinColumn(name="target_device_cmd_oid")
+   @JoinColumn(name = "target_device_cmd_oid")
    public DeviceCommand getDeviceCommand() {
       return deviceCommand;
    }

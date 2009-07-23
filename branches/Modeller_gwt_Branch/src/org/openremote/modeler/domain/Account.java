@@ -35,7 +35,7 @@ import javax.persistence.Table;
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name="account")
+@Table(name = "account")
 public class Account extends BusinessEntity {
 
    /** The user. */
@@ -49,6 +49,9 @@ public class Account extends BusinessEntity {
    
    
 
+   /**
+    * Instantiates a new account.
+    */
    public Account() {
       devices = new ArrayList<Device>();
       deviceMacros = new ArrayList<DeviceMacro>();
@@ -79,7 +82,7 @@ public class Account extends BusinessEntity {
     * 
     * @return the devices
     */
-   @OneToMany(mappedBy="account")
+   @OneToMany(mappedBy = "account")
    public List<Device> getDevices() {
       return devices;
    }
@@ -99,7 +102,7 @@ public class Account extends BusinessEntity {
     * 
     * @return the device macros
     */
-   @OneToMany(mappedBy="account")
+   @OneToMany(mappedBy = "account")
    public List<DeviceMacro> getDeviceMacros() {
       return deviceMacros;
    }
@@ -121,7 +124,7 @@ public class Account extends BusinessEntity {
     * @param device
     *           the device
     */
-   public void addDevice(Device device){
+   public void addDevice(Device device) {
       devices.add(device);
    }
    

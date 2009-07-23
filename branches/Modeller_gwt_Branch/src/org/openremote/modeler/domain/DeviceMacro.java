@@ -75,7 +75,7 @@ public class DeviceMacro extends BusinessEntity {
     * 
     * @return the device macro items
     */
-   @OneToMany(mappedBy = "parentDeviceMacro",cascade = CascadeType.ALL)
+   @OneToMany(mappedBy = "parentDeviceMacro", cascade = CascadeType.ALL)
    public List<DeviceMacroItem> getDeviceMacroItems() {
       return deviceMacroItems;
    }

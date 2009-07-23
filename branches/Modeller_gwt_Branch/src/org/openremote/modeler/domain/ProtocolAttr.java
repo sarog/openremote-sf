@@ -34,7 +34,7 @@ import javax.persistence.Table;
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name="protocol_attr")
+@Table(name = "protocol_attr")
 public class ProtocolAttr extends BusinessEntity {
 
    /** The name. */
