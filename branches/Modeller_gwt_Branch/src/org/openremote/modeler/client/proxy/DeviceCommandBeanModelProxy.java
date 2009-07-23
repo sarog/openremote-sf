@@ -155,11 +155,12 @@ public class DeviceCommandBeanModelProxy {
     * @param deviceCommnadModel the device commnad model
     * @param callback the callback
     */
-   public static void deleteDeviceCommand(BeanModel deviceCommnadModel, AsyncSuccessCallback<Void> callback){
+   public static void deleteDeviceCommand(BeanModel deviceCommnadModel, final AsyncSuccessCallback<Void> callback){
       final DeviceCommand deviceCommand = deviceCommnadModel.getBean();
       AsyncServiceFactory.getDeviceCommandServiceAsync().deleteCommand(deviceCommand.getOid(), new AsyncSuccessCallback<Void>() {
          public void onSuccess(Void result) {
             BeanModelDataBase.deviceCommandMap.delete(deviceCommand.getOid());
+            callback.onSuccess(result);
          }
       });
    }
