@@ -20,12 +20,12 @@
  */
 package org.openremote.modeler.server;
 
-import java.util.List;
-
 import org.openremote.modeler.client.rpc.DeviceMacroRPCService;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.service.DeviceMacroService;
+
+import java.util.List;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -40,7 +40,7 @@ public class DeviceMacroController extends BaseGWTSpringControllerWithHibernateS
     /**
     * Sets the device macro service.
     * 
-    * @param deviceMacroRPCService the new device macro service
+    * @param deviceMacroService the new device macro service
     */
    public void setDeviceMacroService(DeviceMacroService deviceMacroService) {
       this.deviceMacroService = deviceMacroService;
@@ -79,12 +79,7 @@ public class DeviceMacroController extends BaseGWTSpringControllerWithHibernateS
    }
 
     public List<DeviceMacroItem> loadDeviceMacroItems(DeviceMacro deviceMacro) {
-        return null;
+        return deviceMacroService.loadById(deviceMacro.getOid()).getDeviceMacroItems();
     }
-
-    public DeviceMacro loadDeviceMacroById(long id) {
-        return null;
-    }
-
 
 }

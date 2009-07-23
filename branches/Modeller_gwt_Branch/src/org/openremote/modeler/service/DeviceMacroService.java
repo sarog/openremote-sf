@@ -22,7 +22,6 @@ package org.openremote.modeler.service;
 
 
 import org.openremote.modeler.domain.DeviceMacro;
-import org.openremote.modeler.domain.DeviceMacroItem;
 
 import java.util.List;
 
@@ -69,8 +68,5 @@ public interface DeviceMacroService {
    public void deleteDeviceMacro(long id);
 
 
-    public List<DeviceMacroItem> loadDeviceMacroItems(DeviceMacro deviceMacro);
-
-
-    public DeviceMacro loadDeviceMacroById(long id);
+    public DeviceMacro loadById(long id);
 }

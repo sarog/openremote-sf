@@ -21,11 +21,11 @@
 
 package org.openremote.modeler.server;
 
-import java.util.List;
-
 import org.openremote.modeler.client.rpc.DeviceCommandRPCService;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.service.DeviceCommandService;
+
+import java.util.List;
 
 public class DeviceCommandController extends BaseGWTSpringControllerWithHibernateSupport implements
         DeviceCommandRPCService {
@@ -60,7 +60,6 @@ public class DeviceCommandController extends BaseGWTSpringControllerWithHibernat
       return deviceCommandService.loadById(id);
    }
 
-   @Override
    public List<DeviceCommand> loadByDevice(long id) {
       return deviceCommandService.loadByDevice(id);
    }

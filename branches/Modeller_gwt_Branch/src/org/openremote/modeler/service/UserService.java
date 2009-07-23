@@ -20,6 +20,7 @@
  */
 package org.openremote.modeler.service;
 
+import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.User;
 
 /**
@@ -36,5 +37,7 @@ public interface UserService {
     *           the user
     */
    void saveUser(User user);
+   
+   Account getAccount();
 
 }

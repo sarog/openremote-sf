@@ -21,10 +21,16 @@
 package org.openremote.modeler.client.widget;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.ChangeEvent;
+import com.extjs.gxt.ui.client.data.ChangeEventSupport;
+import com.extjs.gxt.ui.client.data.ChangeListener;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
+import com.extjs.gxt.ui.client.store.StoreEvent;
+import com.extjs.gxt.ui.client.store.StoreListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -33,10 +39,10 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.client.model.TreeDataModel;
+import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
+import org.openremote.modeler.client.proxy.BeanModelContainer;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.rpc.DeviceMacroRPCService;
-import org.openremote.modeler.client.rpc.DeviceMacroRPCServiceAsync;
+import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 
@@ -45,17 +51,21 @@ import org.openremote.modeler.domain.DeviceMacroItem;
  */
 public class MacroPanel extends ContentPanel {
 
-   /** The device macro service. */
-   private DeviceMacroRPCServiceAsync deviceMacroService = (DeviceMacroRPCServiceAsync) GWT.create(DeviceMacroRPCService.class);
-
-   /** The icons. */
+   /**
+    * The icons.
+    */
    private Icons icons = GWT.create(Icons.class);
 
-   /** The macro tree. */
-   private TreePanel<TreeDataModel> macroTree = null;
+   /**
+    * The macro tree.
+    */
+   private TreePanel<BeanModel> macroTree = null;
 
+   private LayoutContainer macroListContainer = null;
    
-   private LayoutContainer macroListContainer = null; 
+   //Do NOT use it directly, use getter method
+   private ChangeListener dragSourceBeanModelChangeListener = null;
+
    /**
     * Instantiates a new macro panel.
     */
@@ -84,10 +94,12 @@ public class MacroPanel extends ContentPanel {
             macroWindow.addSubmitListener(new Listener<AppEvent>() {
 
                public void handleEvent(AppEvent be) {
-                  afterCreateDeviceMacro(macroWindow, be);
+                  afterCreateDeviceMacro(be.<DeviceMacro>getData());
+                  macroWindow.hide();
                }
-
             });
+
+            macroWindow.setDragSourceBeanModelChangeListener(getDragSourceBeanModelChangeListener());
             macroWindow.show();
          }
 
@@ -123,24 +135,6 @@ public class MacroPanel extends ContentPanel {
    }
 
    /**
-    * Creates the model with device macro.
-    * 
-    * @param deviceMacro the device macro
-    * 
-    * @return the tree data model< device macro>
-    */
-   private TreeDataModel createModelWithDeviceMacro(DeviceMacro deviceMacro){
-      TreeDataModel deviceMacroModel = new TreeDataModel(deviceMacro,
-            deviceMacro.getName());
-      for (DeviceMacroItem deviceMacroItem : deviceMacro.getDeviceMacroItems()) {
-         TreeDataModel macroItemModel = new TreeDataModel(
-               deviceMacroItem, deviceMacroItem.getLabel());
-         deviceMacroModel.add(macroItemModel);
-      }
-      return deviceMacroModel;
-   }
-
-   /**
     * Creates the macro tree.
     */
    private void createMacroTree() {
@@ -151,10 +145,7 @@ public class MacroPanel extends ContentPanel {
       macroListContainer.setBorders(false);
       macroListContainer.setLayoutOnChange(true);
 
-      
-      
       macroListContainer.setHeight("100%");
-     
 
       add(macroListContainer);
 
@@ -169,30 +160,32 @@ public class MacroPanel extends ContentPanel {
    protected void afterExpand() {
       if (macroTree == null) {
          macroTree = TreePanelBuilder.buildMacroTree();
+         macroTree.getStore().addStoreListener(new StoreListener<BeanModel>(){
+
+            @Override
+            public void storeDataChanged(StoreEvent<BeanModel> se) {
+               super.storeDataChanged(se);
+               for (BeanModel beanModel : se.getModels()) {
+                  if (beanModel.getBean() instanceof DeviceMacroItem) {
+                     DeviceMacroItem deviceMacroItem = (DeviceMacroItem) beanModel.getBean();
+                     BeanModel deviceMacroItemModel = BeanModelContainer.getDeviceMacroItemBeanModel(deviceMacroItem);
+                     deviceMacroItemModel.addChangeListener(getDragSourceBeanModelChangeListener());
+                  }
+               }
+            }
+         });
          macroListContainer.add(macroTree);
       }
       super.afterExpand();
-      
+
    }
 
-   /**
-    * After create device macro.
-    * 
-    * @param macroWindow the macro window
-    * @param be the be
-    */
-   private void afterCreateDeviceMacro(final MacroWindow macroWindow, AppEvent be) {
-      DeviceMacro deviceMacro = be.getData();
-      deviceMacroService.saveDeviceMacro(deviceMacro, new AsyncSuccessCallback<DeviceMacro>() {
-
-         public void onSuccess(DeviceMacro deviceMacro) {
-            if (macroTree != null) {
-               macroTree.getStore().add(createModelWithDeviceMacro(deviceMacro), true);
-            }
-
-         }
-      });
-      macroWindow.hide();
+   private void afterCreateDeviceMacro(DeviceMacro deviceMacro) {
+      BeanModel deviceBeanModel = deviceMacro.getBeanModel();
+      macroTree.getStore().add(deviceBeanModel, false);
+      for (DeviceMacroItem deviceMacroItem : deviceMacro.getDeviceMacroItems()) {
+         macroTree.getStore().add(deviceBeanModel, deviceMacroItem.getBeanModel(), false);
+      }
    }
 
    /**
@@ -200,18 +193,16 @@ public class MacroPanel extends ContentPanel {
     */
    private void onEditDeviceMacroBtnClicked() {
       if (macroTree.getSelectionModel().getSelectedItem() != null) {
-         final TreeDataModel dataModel = macroTree.getSelectionModel().getSelectedItem();
-         if (dataModel.getData() instanceof DeviceMacro) {
-            final MacroWindow macroWindow = new MacroWindow((DeviceMacro) dataModel.getData());
-            macroWindow.addSubmitListener(new Listener<AppEvent>() {
-               public void handleEvent(AppEvent be) {
-                  afterUpdateDeviceMacroSubmit(dataModel, macroWindow, be);
-               }
+         final BeanModel oldModel = macroTree.getSelectionModel().getSelectedItem();
+         final MacroWindow macroWindow = new MacroWindow(macroTree.getSelectionModel().getSelectedItem());
+         macroWindow.addSubmitListener(new Listener<AppEvent>() {
+            public void handleEvent(AppEvent be) {
+               afterUpdateDeviceMacroSubmit(oldModel, be.<DeviceMacro>getData());
+               macroWindow.hide();
+            }
+         });
+         macroWindow.show();
 
-            });
-            macroWindow.show();
-
-         }
       }
    }
 
@@ -220,14 +211,15 @@ public class MacroPanel extends ContentPanel {
     */
    private void onDeleteDeviceMacroBtnClicked() {
       if (macroTree.getSelectionModel().getSelectedItems().size() > 0) {
-         for (final TreeDataModel data : macroTree.getSelectionModel().getSelectedItems()) {
-            if (data.getData() instanceof DeviceMacro) {
-               DeviceMacro deviceMacro = (DeviceMacro) data.getData();
-               deviceMacroService.deleteDeviceMacro(deviceMacro.getOid(), new AsyncSuccessCallback<Void>() {
+         for (final BeanModel data : macroTree.getSelectionModel().getSelectedItems()) {
+            if (data.getBean() instanceof DeviceMacro) {
+               DeviceMacroBeanModelProxy.deleteDeviceMacro(data,new AsyncSuccessCallback<Void>() {
+                  @Override
                   public void onSuccess(Void result) {
+                     ChangeEvent evt = new ChangeEvent(ChangeEventSupport.Remove, macroTree.getStore().getParent(data),data);
+                     data.notify(evt);
                      macroTree.getStore().remove(data);
                   }
-
                });
             }
 
@@ -235,26 +227,35 @@ public class MacroPanel extends ContentPanel {
       }
    }
 
-   /**
-    * After update device macro submit.
-    * 
-    * @param dataModel the data model
-    * @param macroWindow the macro window
-    * @param be the be
-    */
-   private void afterUpdateDeviceMacroSubmit(final TreeDataModel dataModel, final MacroWindow macroWindow, AppEvent be) {
-      DeviceMacro deviceMacro = be.getData();
-      deviceMacroService.updateDeviceMacro(deviceMacro, new AsyncSuccessCallback<DeviceMacro>() {
-         public void onSuccess(DeviceMacro result) {
-            int index = macroTree.getStore().indexOf(dataModel);
-            macroTree.getStore().remove(dataModel);
-            TreeDataModel newModel = createModelWithDeviceMacro(result);
-            macroTree.getStore().insert(newModel, index, true);
-            macroTree.setExpanded(newModel, true);
-            macroWindow.hide();
-            macroTree.getSelectionModel().select(newModel, false);
-         }
-      });
+   private void afterUpdateDeviceMacroSubmit(final BeanModel dataModel, DeviceMacro deviceMacro) {
+      int index = macroTree.getStore().indexOf(dataModel);
+      macroTree.getStore().remove(dataModel);
+      BeanModel newDeviceMacroModel = deviceMacro.getBeanModel();
+      macroTree.getStore().insert(newDeviceMacroModel, index, false);
+      macroTree.getStore().insert(newDeviceMacroModel, DeviceMacroItem.createModels(deviceMacro.getDeviceMacroItems()), 0, false);
+      macroTree.setExpanded(newDeviceMacroModel, true);
+   }
+
+   private ChangeListener getDragSourceBeanModelChangeListener() {
+      if (dragSourceBeanModelChangeListener == null) {
+         dragSourceBeanModelChangeListener = new ChangeListener() {
+            public void modelChanged(ChangeEvent changeEvent) {
+               if (changeEvent.getType() == ChangeEventSupport.Remove) {
+                  if (changeEvent.getItem() instanceof BeanModel) {
+                     BeanModel beanModel = (BeanModel) changeEvent.getItem();
+                     if (beanModel.getBean() instanceof DeviceMacro || beanModel.getBean() instanceof DeviceCommand) {
+
+                        macroTree.getStore().remove((BeanModel) changeEvent.getItem());
+                     }
+                  }
+               }
+               if (changeEvent.getType() == ChangeEventSupport.Update) {
+                  
+               }
+            }
+         };
+      } 
+      return dragSourceBeanModelChangeListener;
    }
 
 }

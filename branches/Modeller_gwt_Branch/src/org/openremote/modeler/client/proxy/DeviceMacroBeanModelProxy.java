@@ -22,31 +22,87 @@
 package org.openremote.modeler.client.proxy;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.data.BeanModelFactory;
-import com.extjs.gxt.ui.client.data.BeanModelLookup;
-import com.google.gwt.core.client.GWT;
+import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.rpc.DeviceMacroRPCServiceAsync;
-import org.openremote.modeler.domain.DeviceMacro;
+import org.openremote.modeler.domain.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DeviceMacroBeanModelProxy {
-    private final static BeanModelFactory deviceMacroBeanModelFactory = BeanModelLookup.get().getFactory(DeviceMacro.class);
-    public static DeviceMacroRPCServiceAsync deviceMacroServiceAsync = GWT.create(DeviceMacro.class);
 
-    public static void loadDeviceMaro(BeanModel beanModel, final AsyncSuccessCallback<List<BeanModel>> callback) {
-        if (beanModel == null) {
-            deviceMacroServiceAsync.loadAll(new AsyncSuccessCallback<List<DeviceMacro>>() {
+   public static void loadDeviceMaro(BeanModel deviceMacroBeanModel, final AsyncSuccessCallback<List<BeanModel>> callback) {
+      if (deviceMacroBeanModel == null) {
+         AsyncServiceFactory.getDeviceMacroServiceAsync().loadAll(new AsyncSuccessCallback<List<DeviceMacro>>() {
 
-                public void onSuccess(List<DeviceMacro> result) {
+            public void onSuccess(List<DeviceMacro> result) {
+               List<BeanModel> beanModels = DeviceMacro.createModels(result);
+               BeanModelContainer.deviceMacroMap.putAll(beanModels);
+               callback.onSuccess(beanModels);
+            }
+         });
+      } else {
+         AsyncServiceFactory.getDeviceMacroServiceAsync().loadDeviceMacroItems((DeviceMacro) deviceMacroBeanModel.getBean(), new AsyncSuccessCallback<List<DeviceMacroItem>>() {
+            public void onSuccess(List<DeviceMacroItem> result) {
+               List<BeanModel> beanModels = DeviceMacroItem.createModels(result);
+               BeanModelContainer.deviceMacroItemMap.putAll(beanModels);
+               callback.onSuccess(beanModels);
+            }
+         });
+      }
 
-                    callback.onSuccess(deviceMacroBeanModelFactory.createModel(result));
-                }
-            });
-        } else {
-            
-        }
+   }
 
-    }
+   public static void saveDeviceMacro(String deviceMacroName, List<BeanModel> items, final AsyncSuccessCallback<DeviceMacro> callback) {
+      DeviceMacro deviceMacro = new DeviceMacro();
+      deviceMacro.setName(deviceMacroName);
+      deviceMacro.getDeviceMacroItems().addAll(convertMacroItemRef(items));
+
+      AsyncServiceFactory.getDeviceMacroServiceAsync().saveDeviceMacro(deviceMacro, new AsyncSuccessCallback<DeviceMacro>() {
+         @Override
+         public void onSuccess(DeviceMacro result) {
+            BeanModelContainer.deviceMacroMap.put(result.getBeanModel());
+            BeanModelContainer.deviceMacroItemMap.putAll(DeviceMacroItem.createModels(result.getDeviceMacroItems()));
+            callback.onSuccess(result);
+         }
+      });
+   }
+
+   public static List<DeviceMacroItem> convertMacroItemRef(List<BeanModel> beanModels) {
+      List<DeviceMacroItem> deviceMacroItems = new ArrayList<DeviceMacroItem>();
+      for (BeanModel beanModel : beanModels) {
+         if (beanModel.getBean() instanceof DeviceCommand) {
+            DeviceCommand deviceCommand = (DeviceCommand) beanModel.getBean();
+            DeviceCommandRef deviceCommandRef = new DeviceCommandRef(deviceCommand);
+            deviceMacroItems.add(deviceCommandRef);
+         } else if (beanModel.getBean() instanceof DeviceMacro) {
+            DeviceMacro macro = (DeviceMacro) beanModel.getBean();
+            DeviceMacroRef deviceMacroRef = new DeviceMacroRef(macro);
+            deviceMacroItems.add(deviceMacroRef);
+         }
+      }
+      return deviceMacroItems;
+   }
+
+   public static void updateDeviceMacro(DeviceMacro deviceMacro, List<BeanModel> items, final AsyncSuccessCallback<DeviceMacro> callback) {
+      deviceMacro.getDeviceMacroItems().clear();
+      deviceMacro.getDeviceMacroItems().addAll(convertMacroItemRef(items));
+      AsyncServiceFactory.getDeviceMacroServiceAsync().updateDeviceMacro(deviceMacro, new AsyncSuccessCallback<DeviceMacro>() {
+         @Override
+         public void onSuccess(DeviceMacro result) {
+            callback.onSuccess(result);
+         }
+      });
+   }
+
+
+   public static void deleteDeviceMacro(BeanModel deviceMacroBeanModel, final AsyncSuccessCallback<Void> callback) {
+      DeviceMacro deviceMacro = deviceMacroBeanModel.getBean();
+      AsyncServiceFactory.getDeviceMacroServiceAsync().deleteDeviceMacro(deviceMacro.getOid(), new AsyncSuccessCallback<Void>() {
+         @Override
+         public void onSuccess(Void result) {
+            callback.onSuccess(result);
+         }
+      });
+   }
 }
