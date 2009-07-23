@@ -21,7 +21,7 @@
 
 package org.openremote.modeler.client.proxy;
 
-import org.openremote.modeler.client.utils.BeanModelHashMap;
+import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.DeviceCommandRef;
@@ -30,21 +30,21 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 /**
  * @author allen.wei
  */
-public class BeanModelContainer {
+public class BeanModelDataBase {
 
-   public static BeanModelHashMap deviceMap = new BeanModelHashMap();
-   public static BeanModelHashMap deviceCommandMap = new BeanModelHashMap();
-   public static BeanModelHashMap deviceMacroMap = new BeanModelHashMap();
-   public static BeanModelHashMap deviceMacroItemMap = new BeanModelHashMap();
+   public static BeanModelTable deviceMap = new BeanModelTable();
+   public static BeanModelTable deviceCommandMap = new BeanModelTable();
+   public static BeanModelTable deviceMacroMap = new BeanModelTable();
+   public static BeanModelTable deviceMacroItemMap = new BeanModelTable();
 
    public static BeanModel getDeviceMacroItemBeanModel (DeviceMacroItem deviceMacroItem) {
       if (deviceMacroItem instanceof DeviceMacroRef) {
          DeviceMacroRef deviceMacroRef = (DeviceMacroRef) deviceMacroItem;
-         return deviceMacroMap.getByOid(deviceMacroRef.getOid());
+         return deviceMacroMap.get(deviceMacroRef.getOid());
       }
       if (deviceMacroItem instanceof DeviceCommandRef) {
          DeviceCommandRef deviceCommandRef = (DeviceCommandRef) deviceMacroItem;
-         return deviceCommandMap.getByOid(deviceCommandRef.getOid());
+         return deviceCommandMap.get(deviceCommandRef.getOid());
       }
       throw new IllegalArgumentException("Illegal DeviceMacroItem type which passed in");
    }

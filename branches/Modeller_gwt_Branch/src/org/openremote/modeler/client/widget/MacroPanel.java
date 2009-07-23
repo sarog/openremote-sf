@@ -40,7 +40,7 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
-import org.openremote.modeler.client.proxy.BeanModelContainer;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -168,7 +168,7 @@ public class MacroPanel extends ContentPanel {
                for (BeanModel beanModel : se.getModels()) {
                   if (beanModel.getBean() instanceof DeviceMacroItem) {
                      DeviceMacroItem deviceMacroItem = (DeviceMacroItem) beanModel.getBean();
-                     BeanModel deviceMacroItemModel = BeanModelContainer.getDeviceMacroItemBeanModel(deviceMacroItem);
+                     BeanModel deviceMacroItemModel = BeanModelDataBase.getDeviceMacroItemBeanModel(deviceMacroItem);
                      deviceMacroItemModel.addChangeListener(getDragSourceBeanModelChangeListener());
                   }
                }

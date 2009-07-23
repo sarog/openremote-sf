@@ -21,11 +21,10 @@
 package org.openremote.modeler.service;
 
 import junit.framework.Assert;
+
 import org.hibernate.ObjectNotFoundException;
 import org.openremote.modeler.SpringContext;
 import org.openremote.modeler.TestNGBase;
-import org.openremote.modeler.client.rpc.DeviceRPCService;
-import org.openremote.modeler.client.rpc.UserRPCService;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.User;
@@ -39,10 +38,10 @@ import org.testng.annotations.Test;
 public class DeviceServiceTest extends TestNGBase{
    
    /** The device service. */
-   private DeviceRPCService deviceRPCService =
-      (DeviceRPCService) SpringContext.getInstance().getBean("deviceRPCService");
-   private UserRPCService userRPCService =
-      (UserRPCService) SpringContext.getInstance().getBean("userRPCService");
+   private DeviceService deviceService =
+      (DeviceService) SpringContext.getInstance().getBean("deviceService");
+   private UserService userService =
+      (UserService) SpringContext.getInstance().getBean("userService");
 
     /**
     * Test save device.
@@ -53,15 +52,15 @@ public class DeviceServiceTest extends TestNGBase{
       device.setName("tv");
       device.setModel("tv");
       device.setVendor("sony");
-      deviceRPCService.saveDevice(device);
-      Device deviceInDB = deviceRPCService.loadById(device.getOid());
+      deviceService.saveDevice(device);
+      Device deviceInDB = deviceService.loadById(device.getOid());
       Assert.assertEquals(deviceInDB.getName(), device.getName());
       
       device.setName("xxx");
       device.setModel("MP8640");
       device.setVendor("3m");
-      deviceRPCService.saveDevice(device);
-      deviceInDB = deviceRPCService.loadById(device.getOid());
+      deviceService.saveDevice(device);
+      deviceInDB = deviceService.loadById(device.getOid());
       Assert.assertEquals(deviceInDB.getName(), device.getName());
    }
    
@@ -71,9 +70,9 @@ public class DeviceServiceTest extends TestNGBase{
       device.setName("xxx");
       device.setModel("MP8640");
       device.setVendor("3m");
-      deviceRPCService.saveDevice(device);
-      deviceRPCService.deleteDevice(device.getOid());
-      Device deviceInDB = deviceRPCService.loadById(device.getOid());
+      deviceService.saveDevice(device);
+      deviceService.deleteDevice(device.getOid());
+      Device deviceInDB = deviceService.loadById(device.getOid());
       deviceInDB.getName();//throws ObjectNotFoundException
    }
    
@@ -93,8 +92,8 @@ public class DeviceServiceTest extends TestNGBase{
       account.addDevice(device);
       account.addDevice(device);
       account.addDevice(device);
-      userRPCService.saveUser(user);
-      Assert.assertEquals(6, deviceRPCService.loadAll(account).size());
+      userService.saveUser(user);
+      Assert.assertEquals(6, deviceService.loadAll(account).size());
       
    }
    

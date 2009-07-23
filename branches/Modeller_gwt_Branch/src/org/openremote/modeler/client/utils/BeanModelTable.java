@@ -21,25 +21,27 @@
 
 package org.openremote.modeler.client.utils;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.openremote.modeler.domain.BusinessEntity;
+
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeEventSource;
 
-import java.util.HashMap;
-import java.util.Collection;
-
-import org.openremote.modeler.domain.BusinessEntity;
-
 /**
  * @author allen.wei
  */
-public class BeanModelHashMap extends HashMap<Long,BeanModel> {
-
+public class BeanModelTable {
+   
+   private Map<Long,BeanModel> map = new HashMap<Long,BeanModel>();
    // the same as ChangeEventSource
-   private static final int ADD = 10;
-   private static final int UPDATE = 40;
-   private static final int DELETE = 30;
-   public void put(BeanModel beanModel) {
+   private static final int ADD = ChangeEventSource.Add;
+   private static final int UPDATE = ChangeEventSource.Update;
+   private static final int REMOVE = ChangeEventSource.Remove;
+   public void insert(BeanModel beanModel) {
       if (beanModel.getBean() == null) {
          throw new IllegalArgumentException("Gets Bean from BeanModel is null");
 
@@ -49,38 +51,39 @@ public class BeanModelHashMap extends HashMap<Long,BeanModel> {
 
       }
       if (beanModel.getBean() instanceof BusinessEntity) {
-         super.put(getIdFromBeanModel(beanModel), beanModel);
+         map.put(getIdFromBeanModel(beanModel), beanModel);
       }
    }
 
-   public void putAll(Collection<BeanModel> beanModels) {
+   public void insertAll(Collection<BeanModel> beanModels) {
       for (BeanModel beanModel :beanModels) {
-         put(beanModel);
+         insert(beanModel);
       }
    }
 
-   public BeanModel getByOid(long oid) {
-      return (BeanModel) super.get(oid);
+   public BeanModel get(long oid) {
+      return (BeanModel) map.get(oid);
    }
 
-   public void remove(long id) {
-      BeanModel beanModel = getByOid(id);
-      super.remove(id);
-      notifyBeanModel(DELETE,beanModel);
+   public void delete(long id) {
+      BeanModel beanModel = get(id);
+      map.remove(id);
+      notifyBeanModel(REMOVE,beanModel);
    }
 
-   public void remove(BeanModel beanModel) {
-      super.remove(getIdFromBeanModel(beanModel));
-      notifyBeanModel(DELETE,beanModel);
+   public void delete(BeanModel beanModel) {
+      delete(getIdFromBeanModel(beanModel));
    }
-
 
    public void notifyBeanModel(int type,BeanModel beanModel) {
       ChangeEvent changeEvent = new ChangeEvent(type,null,beanModel);
       beanModel.notify(changeEvent);
    }
 
-
+   public void update(BeanModel beanModel){
+      map.put(getIdFromBeanModel(beanModel), beanModel);
+      notifyBeanModel(UPDATE,beanModel);
+   }
    private long getIdFromBeanModel(BeanModel beanModel) {
       BusinessEntity businessEntity = beanModel.getBean();
       return businessEntity.getOid();
