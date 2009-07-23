@@ -41,7 +41,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<property name="config.dir" value="config"/>
 	<property name="build.config.dir" value="build_config"/>
 	<property name="output.dir" value="output"/>
-	
+
 	<!-- dirs for test build and output -->
 	<property name="test.build.dir" value="test_build"/>
 	<property name="test.build.classes.dir" value="${test.build.dir}/classes"/>
@@ -79,6 +79,9 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		</fileset>
 	</path>
 
+	<!-- javadoc -->
+	<property name="javadoc.dir" value="doc" />
+	<property name="javadoc.locale" value="en_US" />
 
 	<!-- ==================================================================== -->
 	<!-- project class path                                                   -->
@@ -260,9 +263,9 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<!-- define task for checkstyle -->
 	<taskdef classpathref="checkstyle.classpath" resource="checkstyletask.properties" />
 
-    <!-- ==================================================================== -->
-    <!-- Cobertura instrument                                                 -->
-    <!-- ==================================================================== -->
+	<!-- ==================================================================== -->
+	<!-- Cobertura instrument                                                 -->
+	<!-- ==================================================================== -->
 	<target name="instrument" depends="compile-test">
 		<mkdir dir="${instrumented.dir}" />
 		<delete file="${cobertura.datafile}" />
@@ -273,10 +276,10 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 			</fileset>
 		</cobertura-instrument>
 	</target>
-	
-    <!-- ==================================================================== -->
-    <!-- TestNG with coverage                                                 -->
-    <!-- ==================================================================== -->
+
+	<!-- ==================================================================== -->
+	<!-- TestNG with coverage                                                 -->
+	<!-- ==================================================================== -->
 	<target name="testng-cov" depends="instrument" description="run cobertura coverage in testng">
 		<testng outputdir="${test.output}" classpath="${cobertura.lib.dir}/cobertura-1.9.jar;${instrumented.dir};${test.build.classes.dir};${web-inf.dir}/classes;${cobertura.lib.dir}/">
 			<classpath refid="project.class.path">
@@ -285,19 +288,19 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 			<sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.datafile}" />
 		</testng>
 	</target>
-	
-    <!-- ==================================================================== -->
-    <!-- Cobertura report                                                     -->
-    <!-- ==================================================================== -->
+
+	<!-- ==================================================================== -->
+	<!-- Cobertura report                                                     -->
+	<!-- ==================================================================== -->
 	<target name="cobertura" depends="testng-cov" description="generate report of cobertura " >
 		<mkdir dir="${cobertura.report.dir}" />
 		<cobertura-report format="html" destdir="${cobertura.report.dir}" srcdir="${src.dir}" datafile="${cobertura.datafile}" />
 		<cobertura-report format="xml" destdir="${cobertura.report.dir}" srcdir="${src.dir}" datafile="${cobertura.datafile}" />
 	</target>
-	
-    <!-- ==================================================================== -->
-    <!-- Checkstyle report                                                        -->
-    <!-- ==================================================================== -->
+
+	<!-- ==================================================================== -->
+	<!-- Checkstyle report                                                    -->
+	<!-- ==================================================================== -->
 	<target name="checkstyle" description="--> generates a report of code convention violations.">
 		<mkdir dir="${checkstyle.reports.dir}" />
 		<checkstyle config="${checkstyle.checker}" failureProperty="checkstyle.failure" failOnViolation="false">
@@ -307,7 +310,29 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		</checkstyle>
 		<xslt in="${checkstyle.reports.dir}/checkstyle_report.xml" out="${checkstyle.reports.dir}/checkstyle.report.html" style="${checkstyle.report.style}" />
 	</target>
-
+	
+    <!-- ==================================================================== -->
+    <!-- Javadoc                                                              -->
+    <!-- ==================================================================== -->
+	<target name="javadoc" description="Generate API docs for the DocCheck source">
+		<echo message="--------------------------------------------------------------------" />
+		<echo message=" Generating javadoc..." />
+		<echo message="--------------------------------------------------------------------" />
+		<echo message="" />
+		<mkdir dir="${javadoc.dir}" />
+		<javadoc
+	              locale           ="${javadoc.locale}"
+	              defaultexcludes  = "yes"
+	              use              = "yes"
+	              header           = "OpenRemote Modeler API "
+	              doctitle         = "OpenRemote Modeler API Specification V1.0"
+	              nodeprecatedlist = "yes"
+			      classpathref     = "project.class.path" 
+	              sourcepath       = "./${src.dir}"
+	              destdir          = "./${javadoc.dir}"
+	              additionalparam  = "-breakiterator"
+	          />
+	</target>
 
 
 </project>
