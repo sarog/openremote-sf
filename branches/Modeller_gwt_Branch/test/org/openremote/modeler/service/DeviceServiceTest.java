@@ -1,18 +1,18 @@
-/*
- * OpenRemote, the Home of the Digital Home.
+/* OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2009, OpenRemote Inc.
+ * 
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
- *
+ * 
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 3.0 of
  * the License, or (at your option) any later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
+ * 
  * You should have received a copy of the GNU General Public
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
@@ -30,6 +30,7 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.User;
 import org.testng.annotations.Test;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class DeviceServiceTest.
  * 
@@ -44,8 +45,8 @@ public class DeviceServiceTest extends TestNGBase{
       (UserService) SpringContext.getInstance().getBean("userService");
 
     /**
-    * Test save device.
-    */
+       * Test save device.
+       */
    @Test
    public void save(){
       Device device = new Device();
@@ -64,6 +65,9 @@ public class DeviceServiceTest extends TestNGBase{
       Assert.assertEquals(deviceInDB.getName(), device.getName());
    }
    
+   /**
+    * Delete.
+    */
    @Test(dependsOnMethods="save",expectedExceptions={ObjectNotFoundException.class})
    public void delete(){
       Device device = new Device();
@@ -76,6 +80,9 @@ public class DeviceServiceTest extends TestNGBase{
       deviceInDB.getName();//throws ObjectNotFoundException
    }
    
+   /**
+    * Load all.
+    */
    @Test(dependsOnMethods="save")
    public void loadAll(){
       
