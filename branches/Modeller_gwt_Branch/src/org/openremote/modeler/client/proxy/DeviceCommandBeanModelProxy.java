@@ -36,6 +36,7 @@ import org.openremote.modeler.domain.ProtocolAttr;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class DeviceCommandBeanModelProxy.
  */
@@ -73,7 +74,9 @@ public class DeviceCommandBeanModelProxy {
       
       AsyncServiceFactory.getDeviceCommandServiceAsync().save(deviceCommand, new AsyncSuccessCallback<DeviceCommand>() {
          public void onSuccess(DeviceCommand deviceCommand) {
-            callback.onSuccess(deviceCommand.getBeanModel());
+            BeanModel deviceCommandModel = deviceCommand.getBeanModel();
+            BeanModelDataBase.deviceCommandMap.insert(deviceCommandModel);
+            callback.onSuccess(deviceCommandModel);
          }
       });
    }
@@ -94,11 +97,20 @@ public class DeviceCommandBeanModelProxy {
       };
       AsyncServiceFactory.getDeviceCommandServiceAsync().update(deviceCommand, new AsyncSuccessCallback<Void>() {
          public void onSuccess(Void result) {
-            callback.onSuccess(deviceCommand.getBeanModel());
+            BeanModel deviceCommandModel = deviceCommand.getBeanModel();
+            BeanModelDataBase.deviceCommandMap.update(deviceCommandModel);
+            callback.onSuccess(deviceCommandModel);
          }
       });
    }
    
+   /**
+    * Save all device commands.
+    * 
+    * @param device the device
+    * @param datas the datas
+    * @param callback the callback
+    */
    public static void saveAllDeviceCommands(Device device, List<ModelData> datas, final AsyncSuccessCallback<List<BeanModel>> callback){
       List<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
       for (ModelData m : datas) {
@@ -130,7 +142,24 @@ public class DeviceCommandBeanModelProxy {
       }
       AsyncServiceFactory.getDeviceCommandServiceAsync().saveAll(deviceCommands, new AsyncSuccessCallback<List<DeviceCommand>>() {
          public void onSuccess(List<DeviceCommand> deviceCommands) {
-            callback.onSuccess(DeviceCommand.createModels(deviceCommands));
+            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(deviceCommands);
+            BeanModelDataBase.deviceCommandMap.insertAll(deviceCommandModels);
+            callback.onSuccess(deviceCommandModels);
+         }
+      });
+   }
+   
+   /**
+    * Delete device command.
+    * 
+    * @param deviceCommnadModel the device commnad model
+    * @param callback the callback
+    */
+   public static void deleteDeviceCommand(BeanModel deviceCommnadModel, AsyncSuccessCallback<Void> callback){
+      final DeviceCommand deviceCommand = deviceCommnadModel.getBean();
+      AsyncServiceFactory.getDeviceCommandServiceAsync().deleteCommand(deviceCommand.getOid(), new AsyncSuccessCallback<Void>() {
+         public void onSuccess(Void result) {
+            BeanModelDataBase.deviceCommandMap.delete(deviceCommand.getOid());
          }
       });
    }

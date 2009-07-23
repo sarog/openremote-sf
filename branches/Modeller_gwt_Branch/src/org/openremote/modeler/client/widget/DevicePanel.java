@@ -23,15 +23,14 @@ package org.openremote.modeler.client.widget;
 import java.util.List;
 
 import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.client.rpc.AsyncServiceFactory;
+import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
+import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.data.ChangeEvent;
-import com.extjs.gxt.ui.client.data.ChangeEventSource;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
@@ -265,14 +264,14 @@ public class DevicePanel extends ContentPanel {
     * 
     * @param selectedModel the selected model
     */
-   private void deleteDevice(final BeanModel selectedModel) {
-      Device device = (Device) selectedModel.getBean();
-      AsyncServiceFactory.getDeviceServiceAsync().deleteDevice(device.getOid(), new AsyncSuccessCallback<Void>() {
+   private void deleteDevice(final BeanModel deviceModel) {
+      DeviceBeanModelProxy.deleteDevice(deviceModel, new AsyncSuccessCallback<Void>(){
+         @Override
          public void onSuccess(Void result) {
-            selectedModel.notify(new ChangeEvent(ChangeEventSource.Remove, tree.getStore().getParent(selectedModel), selectedModel));
-            tree.getStore().remove(selectedModel);
+            tree.getStore().remove(deviceModel);
             Info.display("Info", "Delete success.");
          }
+         
       });
    }
    
@@ -281,12 +280,11 @@ public class DevicePanel extends ContentPanel {
     * 
     * @param selectedModel the selected model
     */
-   private void deleteCommand(final BeanModel selectedModel) {
-      DeviceCommand deviceCommand = (DeviceCommand) selectedModel.getBean();
-      AsyncServiceFactory.getDeviceCommandServiceAsync().deleteCommand(deviceCommand.getOid(), new AsyncSuccessCallback<Void>() {
+   private void deleteCommand(final BeanModel deviceCommnadModel) {
+      DeviceCommandBeanModelProxy.deleteDeviceCommand(deviceCommnadModel, new AsyncSuccessCallback<Void>(){
+         @Override
          public void onSuccess(Void result) {
-            selectedModel.notify(new ChangeEvent(ChangeEventSource.Remove, tree.getStore().getParent(selectedModel), selectedModel));
-            tree.getStore().remove(selectedModel);
+            tree.getStore().remove(deviceCommnadModel);
             Info.display("Info", "Delete success.");
          }
       });
