@@ -70,10 +70,10 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		<path location="${classes.dir}"/>
 	</path>
 
-	<!-- defind task for cobertura -->
+	<!-- define task for cobertura -->
 	<taskdef classpathref="cobertura.path.id" resource="tasks.properties"/>
 
-	<!-- defind task for checkstyle -->
+	<!-- define task for checkstyle -->
 	<taskdef resource="checkstyletask.properties" classpathref="test.path.id"/>
 
 	<!--
@@ -192,10 +192,10 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		  	  locale           ="${javadoc.locale}"
 		      defaultexcludes  = "yes"
 		      use              = "yes"
-		      header           = "Beehive Database API"
-		      doctitle         = "Beehive Database API Specification V1.0"
+		      header           = "OpenRemote Beehive Database API"
+		      doctitle         = "OpenRemote Beehive Database API Specification V1.0"
 		      nodeprecatedlist = "yes"
-		      classpath        = "${lib.dir}/core/commons-lang.jar"
+			  classpathref     = "compile.path.id" 
 		      sourcepath       = "./${src.dir}"
 		      destdir          = "./${javadoc.dir}"
 		      packagenames     = "org.openremote.beehive.api.dto, org.openremote.beehive.api.service"
