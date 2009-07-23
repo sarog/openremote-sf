@@ -48,7 +48,7 @@ public class DeviceBeanModelProxy {
          AsyncServiceFactory.getDeviceServiceAsync().loadAll(new AsyncSuccessCallback<List<Device>>(){
             public void onSuccess(List<Device> result) {
                List<BeanModel> beanModels = Device.createModels(result);
-               BeanModelContainer.deviceMap.putAll(beanModels);
+               BeanModelDataBase.deviceMap.insertAll(beanModels);
                callback.onSuccess(beanModels);
             }
             
@@ -59,7 +59,7 @@ public class DeviceBeanModelProxy {
             @Override
             public void onSuccess(List<DeviceCommand> result) {
                List<BeanModel> beanModels = DeviceCommand.createModels(result);
-               BeanModelContainer.deviceCommandMap.putAll(beanModels);
+               BeanModelDataBase.deviceCommandMap.insertAll(beanModels);
                callback.onSuccess(beanModels);
             }
             
@@ -79,7 +79,7 @@ public class DeviceBeanModelProxy {
       AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>(){
          public void onSuccess(Device result) {
             BeanModel deviceModel =result.getBeanModel();
-            BeanModelContainer.deviceMap.put(deviceModel);
+            BeanModelDataBase.deviceMap.insert(deviceModel);
             callback.onSuccess(deviceModel);
          }
       });
@@ -95,7 +95,7 @@ public class DeviceBeanModelProxy {
     */
    public static void updateDevice(final BeanModel deviceModel, Map<String, String> map, final AsyncSuccessCallback<BeanModel> callback){
       Device device = deviceModel.getBean();
-      BeanModelContainer.deviceMap.put(deviceModel);
+      BeanModelDataBase.deviceMap.insert(deviceModel);
       setAttrsToDevice(map, device);
       AsyncServiceFactory.getDeviceServiceAsync().updateDevice(device, new AsyncSuccessCallback<Void>(){
          public void onSuccess(Void result) {

@@ -37,7 +37,7 @@ public class DeviceMacroBeanModelProxy {
 
             public void onSuccess(List<DeviceMacro> result) {
                List<BeanModel> beanModels = DeviceMacro.createModels(result);
-               BeanModelContainer.deviceMacroMap.putAll(beanModels);
+               BeanModelDataBase.deviceMacroMap.insertAll(beanModels);
                callback.onSuccess(beanModels);
             }
          });
@@ -45,7 +45,7 @@ public class DeviceMacroBeanModelProxy {
          AsyncServiceFactory.getDeviceMacroServiceAsync().loadDeviceMacroItems((DeviceMacro) deviceMacroBeanModel.getBean(), new AsyncSuccessCallback<List<DeviceMacroItem>>() {
             public void onSuccess(List<DeviceMacroItem> result) {
                List<BeanModel> beanModels = DeviceMacroItem.createModels(result);
-               BeanModelContainer.deviceMacroItemMap.putAll(beanModels);
+               BeanModelDataBase.deviceMacroItemMap.insertAll(beanModels);
                callback.onSuccess(beanModels);
             }
          });
@@ -61,8 +61,8 @@ public class DeviceMacroBeanModelProxy {
       AsyncServiceFactory.getDeviceMacroServiceAsync().saveDeviceMacro(deviceMacro, new AsyncSuccessCallback<DeviceMacro>() {
          @Override
          public void onSuccess(DeviceMacro result) {
-            BeanModelContainer.deviceMacroMap.put(result.getBeanModel());
-            BeanModelContainer.deviceMacroItemMap.putAll(DeviceMacroItem.createModels(result.getDeviceMacroItems()));
+            BeanModelDataBase.deviceMacroMap.insert(result.getBeanModel());
+            BeanModelDataBase.deviceMacroItemMap.insertAll(DeviceMacroItem.createModels(result.getDeviceMacroItems()));
             callback.onSuccess(result);
          }
       });

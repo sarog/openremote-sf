@@ -20,19 +20,29 @@
  */
 package org.openremote.modeler.client.widget;
 
-import com.extjs.gxt.ui.client.data.*;
+import java.util.List;
+
+import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
+import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.DeviceCommandRef;
+import org.openremote.modeler.domain.DeviceMacro;
+import org.openremote.modeler.domain.DeviceMacroItem;
+
+import com.extjs.gxt.ui.client.data.BaseTreeLoader;
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.ModelIconProvider;
+import com.extjs.gxt.ui.client.data.ModelStringProvider;
+import com.extjs.gxt.ui.client.data.RpcProxy;
+import com.extjs.gxt.ui.client.data.TreeLoader;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
-import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.*;
-
-import java.util.List;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -90,7 +100,7 @@ public class TreePanelBuilder {
       tree.setBorders(false);
       tree.setStateful(true);
       tree.setDisplayProperty("name");
-     
+      tree.setHeight("100%");
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
 
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
@@ -209,7 +219,7 @@ public class TreePanelBuilder {
       final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(macroTreeStore);
       tree.setStateful(true);
       tree.setBorders(false);
-      
+      tree.setHeight("100%");
       tree.setLabelProvider(new ModelStringProvider<BeanModel>() {
 
          public String getStringValue(BeanModel model, String property) {
