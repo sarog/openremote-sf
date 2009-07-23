@@ -128,6 +128,7 @@ public class DeviceBeanModelProxy {
       AsyncServiceFactory.getDeviceServiceAsync().deleteDevice(device.getOid(), new AsyncSuccessCallback<Void>() {
          public void onSuccess(Void result) {
             BeanModelDataBase.deviceMap.delete(device.getOid());
+            callback.onSuccess(result);
          }
       });
    }
