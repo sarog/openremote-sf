@@ -55,9 +55,9 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<path id="compile.path.id">
 		<fileset dir="${lib.dir}/compile"/>
 		<fileset dir="${lib.dir}/core"/>
-    <fileset dir="${lib.dir}/calimero"/>
-    <fileset dir="${lib.dir}/apache/commons-net"/>
-    <path location="${classes.dir}"/>
+        <fileset dir="${lib.dir}/calimero"/>
+        <fileset dir="${lib.dir}/apache/commons-net"/>
+        <path location="${classes.dir}"/>
 	</path>
 	<path id="test.path.id">
 		<fileset dir="${lib.dir}/compile"/>
@@ -197,10 +197,10 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		  	  locale           ="${javadoc.locale}"
 		      defaultexcludes  = "yes"
 		      use              = "yes"
-		      header           = "Controller API"
-		      doctitle         = "Controller API Specification V1.0"
+		      header           = "OpenRemote Controller API"
+		      doctitle         = "OpenRemote Controller API Specification V1.0"
 		      nodeprecatedlist = "yes"
-		      classpath        = "${lib.dir}/core/log4j-1.2.11.jar;${lib.dir}/core/spring.jar;${lib.dir}/compile/javax.servlet.jar;${lib.dir}/core/commons-io-1.4.jar;"
+			  classpathref     = "compile.path.id" 
 		      sourcepath       = "./${src.dir}"
 		      destdir          = "./${javadoc.dir}"
 		      packagenames     = "org.openremote.controller.*"
