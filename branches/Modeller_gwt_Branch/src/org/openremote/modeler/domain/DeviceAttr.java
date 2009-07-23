@@ -34,7 +34,7 @@ import javax.persistence.Table;
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name="device_attr")
+@Table(name = "device_attr")
 public class DeviceAttr extends BusinessEntity {
 
    /** The name. */

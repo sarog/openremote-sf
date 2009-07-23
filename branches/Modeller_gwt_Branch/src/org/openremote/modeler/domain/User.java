@@ -37,7 +37,7 @@ import javax.persistence.Table;
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name="user")
+@Table(name = "user")
 public class User extends BusinessEntity {
 
    /** The username. */
@@ -95,7 +95,7 @@ public class User extends BusinessEntity {
     * 
     * @return the account
     */
-   @OneToOne(mappedBy="user")
+   @OneToOne(mappedBy = "user")
    public Account getAccount() {
       return account;
    }
@@ -116,7 +116,7 @@ public class User extends BusinessEntity {
     * @return the roles
     */
    @ManyToMany
-   @JoinTable(name = "user_role", joinColumns = { @JoinColumn(name ="user_oid" )}, inverseJoinColumns = { @JoinColumn(name = "role_oid") })
+   @JoinTable(name = "user_role", joinColumns = { @JoinColumn(name = "user_oid") }, inverseJoinColumns = { @JoinColumn(name = "role_oid") })
    public List<Role> getRoles() {
       return roles;
    }

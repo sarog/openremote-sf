@@ -33,7 +33,7 @@ import javax.persistence.Table;
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name="role")
+@Table(name = "role")
 public class Role extends BusinessEntity {
 
    /** The name. */

@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-// TODO: Auto-generated Javadoc
 /**
  * Business entity class for all JPA entities with the common property oid.
  * 
@@ -46,7 +45,6 @@ import java.util.List;
  */
 @MappedSuperclass
 public abstract class BusinessEntity extends LightEntity implements Serializable, BeanModelTag {
-
 
    /** The Constant serialVersionUID. */
    private static final long serialVersionUID = -4133577592315343274L;
@@ -68,7 +66,8 @@ public abstract class BusinessEntity extends LightEntity implements Serializable
    /**
     * Sets the oid.
     * 
-    * @param oid the new oid
+    * @param oid
+    *           the new oid
     */
    public void setOid(long oid) {
       this.oid = oid;

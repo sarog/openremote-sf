@@ -37,7 +37,7 @@ import javax.persistence.Table;
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name="protocol")
+@Table(name = "protocol")
 public class Protocol extends BusinessEntity {
    
    /** The type. */
@@ -94,7 +94,7 @@ public class Protocol extends BusinessEntity {
     * 
     * @return the device event
     */
-   @OneToOne(mappedBy="protocol")
+   @OneToOne(mappedBy = "protocol")
    public DeviceCommand getDeviceCommand() {
       return deviceCommand;
    }

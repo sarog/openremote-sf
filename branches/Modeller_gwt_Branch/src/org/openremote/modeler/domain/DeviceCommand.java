@@ -72,7 +72,7 @@ public class DeviceCommand extends BusinessEntity {
     * 
     * @return the device
     */
-   @ManyToOne(cascade = {CascadeType.REFRESH,CascadeType.MERGE})
+   @ManyToOne(cascade = { CascadeType.REFRESH, CascadeType.MERGE })
    public Device getDevice() {
       return device;
    }
