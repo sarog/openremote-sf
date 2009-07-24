@@ -1,51 +1,23 @@
 /*
- * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2009, OpenRemote Inc.
- * See the contributors.txt file in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You should have received a copy of the GNU General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
+ * http://www.fsf.org.
  */
 package org.openremote.modeler.client.widget;
 
-import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
-import com.extjs.gxt.ui.client.Style.Scroll;
-import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.data.ChangeListener;
-import com.extjs.gxt.ui.client.dnd.DND.Feedback;
-import com.extjs.gxt.ui.client.dnd.DND.Operation;
-import com.extjs.gxt.ui.client.dnd.ListViewDragSource;
-import com.extjs.gxt.ui.client.event.*;
-import com.extjs.gxt.ui.client.mvc.AppEvent;
-import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.util.Margins;
-import com.extjs.gxt.ui.client.widget.*;
-import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.form.AdapterField;
-import com.extjs.gxt.ui.client.widget.form.FieldSet;
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
-import com.extjs.gxt.ui.client.widget.form.FormPanel.LabelAlign;
-import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.extjs.gxt.ui.client.widget.layout.FillLayout;
-import com.extjs.gxt.ui.client.widget.layout.FitLayout;
-import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
-import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
-import com.extjs.gxt.ui.client.widget.layout.HBoxLayoutData;
-import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
-import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
-import com.google.gwt.core.client.GWT;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openremote.modeler.client.gxtExtends.ListViewDropTargetMacroDragExt;
 import org.openremote.modeler.client.gxtExtends.TreePanelDragSourceMacroDragExt;
 import org.openremote.modeler.client.icon.Icons;
@@ -56,62 +28,78 @@ import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroRef;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
+import com.extjs.gxt.ui.client.Style.Scroll;
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.dnd.ListViewDragSource;
+import com.extjs.gxt.ui.client.dnd.DND.Feedback;
+import com.extjs.gxt.ui.client.dnd.DND.Operation;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.DNDEvent;
+import com.extjs.gxt.ui.client.event.DNDListener;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.FormEvent;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.mvc.AppEvent;
+import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.util.Margins;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.ListView;
+import com.extjs.gxt.ui.client.widget.TabItem;
+import com.extjs.gxt.ui.client.widget.TabPanel;
+import com.extjs.gxt.ui.client.widget.Text;
+import com.extjs.gxt.ui.client.widget.Window;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.AdapterField;
+import com.extjs.gxt.ui.client.widget.form.FieldSet;
+import com.extjs.gxt.ui.client.widget.form.FormPanel;
+import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.form.FormPanel.LabelAlign;
+import com.extjs.gxt.ui.client.widget.layout.FillLayout;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
+import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
+import com.extjs.gxt.ui.client.widget.layout.HBoxLayoutData;
+import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
+import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
+import com.google.gwt.core.client.GWT;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MacroWindow.
  */
 public class MacroWindow extends Window {
 
-   /**
-    * The _device macro.
-    */
-   private DeviceMacro _deviceMacro = null;
+   /** The _device macro. */
+   private BeanModel _deviceMacroBeanModel = null;
 
-   /**
-    * The Constant MACRO_DND_GROUP.
-    */
+   /** The Constant MACRO_DND_GROUP. */
    private static final String MACRO_DND_GROUP = "macro";
 
-   /**
-    * The icons.
-    */
+   /** The icons. */
    private Icons icons = GWT.create(Icons.class);
 
-   /**
-    * The macro form.
-    */
+   /** The macro form. */
    private FormPanel macroForm = new FormPanel();
 
-   /**
-    * The macro name field.
-    */
+   /** The macro name field. */
    private TextField<String> macroNameField = null;
 
-   /**
-    * The add macro item container.
-    */
+   /** The add macro item container. */
    private LayoutContainer addMacroItemContainer;
 
-   /**
-    * The device command tree.
-    */
+   /** The device command tree. */
    private TreePanel<BeanModel> deviceCommandTree = null;
 
-   /**
-    * The left macro list.
-    */
+   /** The left macro list. */
    private TreePanel<BeanModel> leftMacroList = null;
 
-   /**
-    * The right macro item list view.
-    */
+   /** The right macro item list view. */
    private ListView<BeanModel> rightMacroItemListView = null;
-   private static final String MACRO_ITEM_LIST_DISPLAY_FIELD = "macro_item_label";
 
-   private ChangeListener dragSourceBeanModelChangeListener = null;
+   /** The Constant MACRO_ITEM_LIST_DISPLAY_FIELD. */
+   private static final String MACRO_ITEM_LIST_DISPLAY_FIELD = "macro_item_label";
 
    /**
     * Instantiates a new macro window.
@@ -124,34 +112,25 @@ public class MacroWindow extends Window {
 
    /**
     * Instantiates a new macro window.
-    *
-    * @param deviceMacroModel the device macro
+    * 
+    * @param deviceMacroModel
+    *           the device macro
     */
    public MacroWindow(BeanModel deviceMacroModel) {
-      this._deviceMacro = deviceMacroModel.getBean();
+      this._deviceMacroBeanModel = deviceMacroModel;
       setHeading("Edit Macro");
       setup();
 
    }
 
-   public ChangeListener getDragSourceBeanModelChangeListener() {
-      return dragSourceBeanModelChangeListener;
-   }
-
-   public void setDragSourceBeanModelChangeListener(ChangeListener dragSourceBeanModelChangeListener) {
-      this.dragSourceBeanModelChangeListener = dragSourceBeanModelChangeListener;
-   }
-
-
-   /**
-    * The submit listeners.
-    */
+   /** The submit listeners. */
    private List<Listener<AppEvent>> submitListeners = new ArrayList<Listener<AppEvent>>();
 
    /**
     * Listener will be called after form submit and all the validator on fields pass.
-    *
-    * @param listener the listener
+    * 
+    * @param listener
+    *           the listener
     */
    public void addSubmitListener(Listener<AppEvent> listener) {
       submitListeners.add(listener);
@@ -159,8 +138,9 @@ public class MacroWindow extends Window {
 
    /**
     * Remote submit listener.
-    *
-    * @param listener the listener
+    * 
+    * @param listener
+    *           the listener
     */
    public void remoteSubmitListener(Listener<AppEvent> listener) {
       submitListeners.remove(listener);
@@ -197,8 +177,8 @@ public class MacroWindow extends Window {
    private void createFormElement() {
 
       macroNameField = new TextField<String>();
-      if (_deviceMacro != null) {
-         macroNameField.setValue(_deviceMacro.getName());
+      if (_deviceMacroBeanModel != null) {
+         macroNameField.setValue(((DeviceMacro)_deviceMacroBeanModel.getBean()).getName());
       }
       macroNameField.setAllowBlank(false);
       macroNameField.setFieldLabel("Macro Name");
@@ -274,7 +254,7 @@ public class MacroWindow extends Window {
 
    /**
     * Creates the device command tree.
-    *
+    * 
     * @return the layout container
     */
    private LayoutContainer createDeviceCommandTree() {
@@ -288,6 +268,7 @@ public class MacroWindow extends Window {
 
       TreePanelDragSourceMacroDragExt dragSource = new TreePanelDragSourceMacroDragExt(deviceCommandTree);
       dragSource.addDNDListener(new DNDListener() {
+         @SuppressWarnings("unchecked")
          @Override
          public void dragStart(DNDEvent e) {
             TreePanel<BeanModel> tree = (TreePanel<BeanModel>) e.getComponent();
@@ -307,10 +288,9 @@ public class MacroWindow extends Window {
       return treeContainer;
    }
 
-
    /**
     * Creates the left macro list.
-    *
+    * 
     * @return the layout container
     */
    private LayoutContainer createLeftMacroTree() {
@@ -323,10 +303,10 @@ public class MacroWindow extends Window {
       leftMacroListContainer.setHeight("100%");
       leftMacroListContainer.add(leftMacroList);
 
-
       TreePanelDragSourceMacroDragExt dragSource = new TreePanelDragSourceMacroDragExt(leftMacroList);
       dragSource.addDNDListener(new DNDListener() {
 
+         @SuppressWarnings("unchecked")
          @Override
          public void dragStart(DNDEvent e) {
             TreePanel<BeanModel> tree = ((TreePanel<BeanModel>) e.getComponent());
@@ -343,7 +323,6 @@ public class MacroWindow extends Window {
 
       return leftMacroListContainer;
    }
-
 
    /**
     * Creates the right macro list.
@@ -371,7 +350,7 @@ public class MacroWindow extends Window {
 
    /**
     * Creates the right macro item list toolbar.
-    *
+    * 
     * @return the tool bar
     */
    private ToolBar createRightMacroItemListToolbar() {
@@ -402,21 +381,6 @@ public class MacroWindow extends Window {
     */
    private void setupRightMacroItemDND() {
       ListViewDropTargetMacroDragExt dropTarget = new ListViewDropTargetMacroDragExt(rightMacroItemListView);
-      dropTarget.addDNDListener(new DNDListener() {
-         @Override
-         public void dragDrop(DNDEvent dndEvent) {
-            super.dragDrop(dndEvent);
-            if (dndEvent.getData() instanceof List) {
-               List<BeanModel> list = dndEvent.getData();
-               for (BeanModel beanModel : list) {
-                  addChangeListenerToDragSource(beanModel);
-               }
-            } else if (dndEvent.getData() instanceof BeanModel) {
-               addChangeListenerToDragSource((BeanModel)dndEvent.getData());
-            }
-
-         }
-      });
       dropTarget.setAllowSelfAsSource(true);
       dropTarget.setGroup(MACRO_DND_GROUP);
       dropTarget.setFeedback(Feedback.INSERT);
@@ -426,14 +390,10 @@ public class MacroWindow extends Window {
       dragSource.setGroup(MACRO_DND_GROUP);
    }
 
-   private void addChangeListenerToDragSource(BeanModel beanModel) {
-      if (dragSourceBeanModelChangeListener != null) {
-         beanModel.addChangeListener(dragSourceBeanModelChangeListener);
-      }
-   }
-
    /**
     * Setup right macro item list view.
+    * 
+    * @return the list view< bean model>
     */
    private ListView<BeanModel> createRightMacroItemListView() {
       rightMacroItemListView = new ListView<BeanModel>() {
@@ -458,21 +418,22 @@ public class MacroWindow extends Window {
       rightMacroItemListView.setStore(store);
       rightMacroItemListView.setHeight(203);
 
-      if (_deviceMacro != null) {
-         DeviceMacroBeanModelProxy.loadDeviceMaro(_deviceMacro.getBeanModel(), new AsyncSuccessCallback<List<BeanModel>>() {
-            @Override
-            public void onSuccess(List<BeanModel> result) {
-               for (BeanModel beanModel : result) {
-                  if (beanModel.getBean() instanceof DeviceMacroRef) {
-                     DeviceMacroRef deviceMacroRef = (DeviceMacroRef) beanModel.getBean();
-                     rightMacroItemListView.getStore().add(deviceMacroRef.getTargetDeviceMacro().getBeanModel());
-                  } else if (beanModel.getBean() instanceof DeviceCommandRef) {
-                     DeviceCommandRef deviceCommandRef = (DeviceCommandRef) beanModel.getBean();
-                     rightMacroItemListView.getStore().add(deviceCommandRef.getDeviceCommand().getBeanModel());
+      if (_deviceMacroBeanModel != null) {
+         DeviceMacroBeanModelProxy.loadDeviceMaro(_deviceMacroBeanModel,
+               new AsyncSuccessCallback<List<BeanModel>>() {
+                  @Override
+                  public void onSuccess(List<BeanModel> result) {
+                     for (BeanModel beanModel : result) {
+                        if (beanModel.getBean() instanceof DeviceMacroRef) {
+                           DeviceMacroRef deviceMacroRef = (DeviceMacroRef) beanModel.getBean();
+                           rightMacroItemListView.getStore().add(deviceMacroRef.getTargetDeviceMacro().getBeanModel());
+                        } else if (beanModel.getBean() instanceof DeviceCommandRef) {
+                           DeviceCommandRef deviceCommandRef = (DeviceCommandRef) beanModel.getBean();
+                           rightMacroItemListView.getStore().add(deviceCommandRef.getDeviceCommand().getBeanModel());
+                        }
+                     }
                   }
-               }
-            }
-         });
+               });
 
       }
       return rightMacroItemListView;
@@ -480,8 +441,9 @@ public class MacroWindow extends Window {
 
    /**
     * Fire submit listener.
-    *
-    * @param event the event
+    * 
+    * @param event
+    *           the event
     */
    protected void fireSubmitListener(AppEvent event) {
       for (Listener<AppEvent> listener : submitListeners) {
@@ -500,21 +462,23 @@ public class MacroWindow extends Window {
             fireSubmitListener(appEvent);
          }
       };
-      if (_deviceMacro != null) {
-         DeviceMacroBeanModelProxy.updateDeviceMacro(_deviceMacro, rightMacroItemListView.getStore().getModels(), submitSuccessListener);
+      if (_deviceMacroBeanModel != null) {
+         
+         ((DeviceMacro)_deviceMacroBeanModel.getBean()).setName(macroNameField.getValue());
+         DeviceMacroBeanModelProxy.updateDeviceMacro(_deviceMacroBeanModel, rightMacroItemListView.getStore().getModels(),
+               submitSuccessListener);
       } else {
-         DeviceMacroBeanModelProxy.saveDeviceMacro(macroNameField.getValue(), rightMacroItemListView.getStore().getModels(), submitSuccessListener);
+         DeviceMacroBeanModelProxy.saveDeviceMacro(macroNameField.getValue(), rightMacroItemListView.getStore()
+               .getModels(), submitSuccessListener);
       }
 
    }
-
 
    /**
     * On delete macro item btn clicked.
     */
    private void onDeleteMacroItemBtnClicked() {
       for (BeanModel data : rightMacroItemListView.getSelectionModel().getSelectedItems()) {
-         data.removeChangeListener(dragSourceBeanModelChangeListener);
          int index = rightMacroItemListView.getStore().indexOf(data);
          rightMacroItemListView.getStore().remove(data);
          if (rightMacroItemListView.getStore().getCount() > 0) {
@@ -525,3 +489,4 @@ public class MacroWindow extends Window {
    }
 
 }
+;

@@ -19,24 +19,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.openremote.modeler.service;
+package org.openremote.modeler.client.proxy;
 
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceCommandRef;
-import org.openremote.modeler.domain.DeviceMacro;
-import org.openremote.modeler.domain.DeviceMacroRef;
-
-import java.util.List;
 
 /**
  * @author allen.wei
  */
-public interface DeviceMacroItemService {
-   void deleteByDeviceCommand(DeviceCommand deviceCommand);
+public class DeviceMacroItemBeanModelProxy {
 
-   void deleteByDeviceMacro(DeviceMacro targetDeviceMacro);
 
-   List<DeviceCommandRef> LoadByDeviceCommandId(long id);
-
-   List<DeviceMacroRef> loadByDeviceMacroId(long id);
 }

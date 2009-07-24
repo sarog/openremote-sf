@@ -1,24 +1,33 @@
 /*
- * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2009, OpenRemote Inc.
- * See the contributors.txt file in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You should have received a copy of the GNU General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
+ * http://www.fsf.org.
  */
 package org.openremote.modeler.client.widget;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.domain.DeviceCommandRef;
+import org.openremote.modeler.domain.DeviceMacro;
+import org.openremote.modeler.domain.DeviceMacroItem;
+import org.openremote.modeler.domain.DeviceMacroRef;
+import org.openremote.modeler.domain.DeviceCommand;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -29,8 +38,8 @@ import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
-import com.extjs.gxt.ui.client.store.StoreEvent;
-import com.extjs.gxt.ui.client.store.StoreListener;
+import com.extjs.gxt.ui.client.store.Store;
+import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -38,13 +47,6 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
-import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceMacro;
-import org.openremote.modeler.domain.DeviceMacroItem;
 
 /**
  * The Class MacroPanel.
@@ -61,10 +63,15 @@ public class MacroPanel extends ContentPanel {
     */
    private TreePanel<BeanModel> macroTree = null;
 
+   /**
+    * The macro list container.
+    */
    private LayoutContainer macroListContainer = null;
 
-   //Do NOT use it directly, use getter method
-   private ChangeListener dragSourceBeanModelChangeListener = null;
+   /**
+    * The change listener map.
+    */
+   private Map<BeanModel, ChangeListener> changeListenerMap = null;
 
    /**
     * Instantiates a new macro panel.
@@ -99,7 +106,6 @@ public class MacroPanel extends ContentPanel {
                }
             });
 
-            macroWindow.setDragSourceBeanModelChangeListener(getDragSourceBeanModelChangeListener());
             macroWindow.show();
          }
 
@@ -160,35 +166,88 @@ public class MacroPanel extends ContentPanel {
    protected void afterExpand() {
       if (macroTree == null) {
          macroTree = TreePanelBuilder.buildMacroTree();
-         macroTree.getStore().addStoreListener(new StoreListener<BeanModel>() {
+         macroTree.getStore().addListener(Store.Add, new Listener<TreeStoreEvent<BeanModel>>() {
 
-            @Override
-            public void storeDataChanged(StoreEvent<BeanModel> se) {
-               super.storeDataChanged(se);
-               for (BeanModel beanModel : se.getModels()) {
-                  if (beanModel.getBean() instanceof DeviceMacroItem) {
-                     DeviceMacroItem deviceMacroItem = (DeviceMacroItem) beanModel.getBean();
-                     BeanModel deviceMacroItemModel = BeanModelDataBase.getDeviceMacroItemBeanModel(deviceMacroItem);
-                     deviceMacroItemModel.addChangeListener(getDragSourceBeanModelChangeListener());
-                  }
-               }
+            public void handleEvent(TreeStoreEvent<BeanModel> be) {
+               addChangeListenerToDragSource(be.getChildren());
             }
+
          });
+         macroTree.getStore().addListener(Store.DataChanged, new Listener<TreeStoreEvent<BeanModel>>() {
+
+            public void handleEvent(TreeStoreEvent<BeanModel> be) {
+               addChangeListenerToDragSource(be.getChildren());
+            }
+
+         });
+         macroTree.getStore().addListener(Store.Clear, new Listener<TreeStoreEvent<BeanModel>>() {
+
+            public void handleEvent(TreeStoreEvent<BeanModel> be) {
+               removeChangeListenerToDragSource(be.getChildren());
+            }
+
+         });
+         macroTree.getStore().addListener(Store.Remove, new Listener<TreeStoreEvent<BeanModel>>() {
+
+            public void handleEvent(TreeStoreEvent<BeanModel> be) {
+               removeChangeListenerToDragSource(be.getChildren());
+            }
+
+         });
+
          macroListContainer.add(macroTree);
       }
       super.afterExpand();
    }
 
+   /**
+    * Adds the change listener to drag source.
+    *
+    * @param models the models
+    */
+   private void addChangeListenerToDragSource(List<BeanModel> models) {
+      if (models == null) {
+         return;
+      }
+      for (BeanModel beanModel : models) {
+         if (beanModel.getBean() instanceof DeviceMacroRef) {
+            BeanModelDataBase.deviceMacroMap.addChangeListener(getDragSourceBeanModelChangeListener(beanModel));
+         }
+         if (beanModel.getBean() instanceof DeviceCommandRef) {
+            BeanModelDataBase.deviceCommandMap.addChangeListener(getDragSourceBeanModelChangeListener(beanModel));
+         }
+      }
+   }
+
+   /**
+    * Removes the change listener to drag source.
+    *
+    * @param models the models
+    */
+   private void removeChangeListenerToDragSource(List<BeanModel> models) {
+      if (models == null) {
+         return;
+      }
+      for (BeanModel beanModel : models) {
+         if (beanModel.getBean() instanceof DeviceMacroRef) {
+            BeanModelDataBase.deviceMacroMap.addChangeListener(getDragSourceBeanModelChangeListener(beanModel));
+         }
+         if (beanModel.getBean() instanceof DeviceCommandRef) {
+            BeanModelDataBase.deviceCommandMap.addChangeListener(getDragSourceBeanModelChangeListener(beanModel));
+         }
+      }
+   }
+
+   /**
+    * After create device macro.
+    *
+    * @param deviceMacro the device macro
+    */
    private void afterCreateDeviceMacro(DeviceMacro deviceMacro) {
       BeanModel deviceBeanModel = deviceMacro.getBeanModel();
       macroTree.getStore().add(deviceBeanModel, false);
-      for (DeviceMacroItem deviceMacroItem : deviceMacro.getDeviceMacroItems()) {
-         BeanModel deviceMacroItemModel = BeanModelDataBase.getDeviceMacroItemBeanModel(deviceMacroItem);
-         deviceMacroItemModel.addChangeListener(getDragSourceBeanModelChangeListener());
-         macroTree.getStore().add(deviceBeanModel, deviceMacroItem.getBeanModel(), false);
-      }
+      macroTree.setExpanded(deviceBeanModel, true);
    }
-   
 
    /**
     * On edit device macro btn clicked.
@@ -227,34 +286,61 @@ public class MacroPanel extends ContentPanel {
       }
    }
 
+   /**
+    * After update device macro submit.
+    *
+    * @param dataModel   the data model
+    * @param deviceMacro the device macro
+    */
    private void afterUpdateDeviceMacroSubmit(final BeanModel dataModel, DeviceMacro deviceMacro) {
-      int index = macroTree.getStore().indexOf(dataModel);
-      macroTree.getStore().remove(dataModel);
-      BeanModel newDeviceMacroModel = deviceMacro.getBeanModel();
-      macroTree.getStore().insert(newDeviceMacroModel, index, false);
-      macroTree.getStore().insert(newDeviceMacroModel, DeviceMacroItem.createModels(deviceMacro.getDeviceMacroItems()), 0, false);
-      macroTree.setExpanded(newDeviceMacroModel, true);
+      DeviceMacro old = dataModel.getBean();
+      old.setName(deviceMacro.getName());
+      old.setDeviceMacroItems(deviceMacro.getDeviceMacroItems());
+      macroTree.getStore().removeAll(dataModel);
+      if (deviceMacro.getDeviceMacroItems().size() > 0) {
+         macroTree.getStore().add(dataModel, DeviceMacroItem.createModels(deviceMacro.getDeviceMacroItems()), false);
+      }
+      macroTree.getStore().update(dataModel);
    }
 
-   private ChangeListener getDragSourceBeanModelChangeListener() {
-      if (dragSourceBeanModelChangeListener == null) {
-         dragSourceBeanModelChangeListener = new ChangeListener() {
+   /**
+    * Gets the drag source bean model change listener.
+    *
+    * @param target the target
+    * @return the drag source bean model change listener
+    */
+   private ChangeListener getDragSourceBeanModelChangeListener(final BeanModel target) {
+      if (changeListenerMap == null) {
+         changeListenerMap = new HashMap<BeanModel, ChangeListener>();
+      }
+      ChangeListener changeListener = changeListenerMap.get(target);
+
+      if (changeListener == null) {
+         changeListener = new ChangeListener() {
             public void modelChanged(ChangeEvent changeEvent) {
                if (changeEvent.getType() == ChangeEventSupport.Remove) {
-                  if (changeEvent.getItem() instanceof BeanModel) {
-                     BeanModel beanModel = (BeanModel) changeEvent.getItem();
-                     if (beanModel.getBean() instanceof DeviceMacro || beanModel.getBean() instanceof DeviceCommand) {
-                        macroTree.getStore().remove((BeanModel) changeEvent.getItem());
-                     }
-                  }
+                  macroTree.getStore().remove(target);
                }
                if (changeEvent.getType() == ChangeEventSupport.Update) {
+                  BeanModel source = (BeanModel) changeEvent.getItem();
+                  if (source.getBean() instanceof DeviceMacro) {
+                     DeviceMacro deviceMacro = (DeviceMacro) source.getBean();
+                     DeviceMacroRef deviceMacroRef = (DeviceMacroRef) target.getBean();
+                     deviceMacroRef.setTargetDeviceMacro(deviceMacro);
+                  }
 
+                  if (source.getBean() instanceof DeviceCommand) {
+                     DeviceCommand deviceCommand = (DeviceCommand) source.getBean();
+                     DeviceCommandRef deviceCommandRef = (DeviceCommandRef) target.getBean();
+                     deviceCommandRef.setDeviceCommand(deviceCommand);
+                  }
+                  macroTree.getStore().update(target);
                }
             }
          };
+         changeListenerMap.put(target, changeListener);
       }
-      return dragSourceBeanModelChangeListener;
+      return changeListener;
    }
 
 }

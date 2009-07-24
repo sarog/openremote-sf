@@ -32,26 +32,38 @@ import java.util.List;
  * The Class DeviceMacroItemService.
  */
 public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroItem> implements DeviceMacroItemService {
-   
+
    /**
     * Delete by device command.
-    * 
+    *
     * @param deviceCommand the device command
     */
-   public void deleteByDeviceCommand(DeviceCommand deviceCommand){
+   public void deleteByDeviceCommand(DeviceCommand deviceCommand) {
       DetachedCriteria criteria = DetachedCriteria.forClass(DeviceCommandRef.class);
       List<DeviceCommandRef> deviceCommandRefs = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("deviceCommand", deviceCommand)));
       genericDAO.deleteAll(deviceCommandRefs);
    }
-   
+
    /**
     * Delete by device macro.
-    * 
+    *
     * @param targetDeviceMacro the target device macro
     */
-   public void deleteByDeviceMacro(DeviceMacro targetDeviceMacro){
+   public void deleteByDeviceMacro(DeviceMacro targetDeviceMacro) {
       DetachedCriteria criteria = DetachedCriteria.forClass(DeviceMacroRef.class);
       List<DeviceMacroRef> deviceMacroRefs = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("targetDeviceMacro", targetDeviceMacro)));
       genericDAO.deleteAll(deviceMacroRefs);
+   }
+
+   public List<DeviceCommandRef> LoadByDeviceCommandId(long id) {
+      DeviceCommand deviceCommand = genericDAO.loadById(DeviceCommand.class, id);
+      DetachedCriteria criteria = DetachedCriteria.forClass(DeviceCommandRef.class);
+      return genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("deviceCommand", deviceCommand)));
+   }
+
+   public List<DeviceMacroRef> loadByDeviceMacroId(long id) {
+      DeviceMacro targetDeviceMacro = genericDAO.loadById(DeviceMacro.class, id);
+      DetachedCriteria criteria = DetachedCriteria.forClass(DeviceMacroRef.class);
+      return genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("targetDeviceMacro", targetDeviceMacro)));
    }
 }
