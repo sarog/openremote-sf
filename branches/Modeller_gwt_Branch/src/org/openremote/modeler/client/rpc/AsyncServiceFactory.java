@@ -30,6 +30,8 @@ public class AsyncServiceFactory {
    private static DeviceMacroRPCServiceAsync deviceMacroServiceAsync = null;
    private static DeviceRPCServiceAsync deviceServiceAsync = null;
    private static DeviceCommandRPCServiceAsync deviceCommandServiceAsync = null;
+   private static DeviceMacroItemRPCServiceAsync deviceMacroItemRPCServiceAsync = null;
+
    
    public static DeviceMacroRPCServiceAsync getDeviceMacroServiceAsync() {
       if (deviceMacroServiceAsync == null) {
@@ -50,5 +52,12 @@ public class AsyncServiceFactory {
          deviceCommandServiceAsync = GWT.create(DeviceCommandRPCService.class);
       }
       return deviceCommandServiceAsync;
+   }
+
+   public static DeviceMacroItemRPCServiceAsync getDeviceMacroItemRPCServiceAsync() {
+      if (deviceMacroItemRPCServiceAsync == null) {
+         deviceMacroItemRPCServiceAsync = GWT.create(DeviceMacroItemRPCService.class);
+      }
+      return deviceMacroItemRPCServiceAsync;
    }
 }
