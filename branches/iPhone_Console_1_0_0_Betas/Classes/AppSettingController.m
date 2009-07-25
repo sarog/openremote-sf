@@ -189,7 +189,8 @@
 		
 - (void)saveSettings {
 	if (serverArray.count == 0) {
-		[ViewHelper showAlertViewWithTitle:@"Warning" Message:@"Can't find Server automatically, You need to set a custom Server."];
+		[ViewHelper showAlertViewWithTitle:@"Warning" 
+								   Message:@"Controller autodiscovery failed. Please configure controller URL manually."];
 	} else {
 		[[AppSettingsDefinition getAutoDiscoveryDic] setValue:[NSNumber numberWithBool:autoDiscovery] forKey:@"value"];
 		[AppSettingsDefinition writeToFile];
