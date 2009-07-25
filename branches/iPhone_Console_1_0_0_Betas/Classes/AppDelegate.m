@@ -41,7 +41,7 @@
 }
 
 - (void)didUseLocalCache:(NSString *)errorMessage {
-	[ViewHelper showAlertViewWithTitle:@"Warning" Message:[errorMessage stringByAppendingString:@"Use local cache directly."]];
+	[ViewHelper showAlertViewWithTitle:@"Warning" Message:[errorMessage stringByAppendingString:@" Using cached content."]];
 	[self updateDidFinished];
 }
 
