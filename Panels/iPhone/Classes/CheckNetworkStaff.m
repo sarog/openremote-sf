@@ -50,10 +50,12 @@
 	[request release];
 	if (error ) {
 		NSLog(@"checkControllerAvailable occur error %@",[error localizedDescription]);
-		@throw [CheckNetworkStaffException exceptionWithTitle:@"Server not Started" message:@"Your server is not started or the server url which you configed is wrong."];
-	} else if ([resp statusCode] != 200){	
+		@throw [CheckNetworkStaffException exceptionWithTitle:@"Controller Not Started" 
+													  message:@"Could not find OpenRemote Controller. It may not be running or the connection URL in Settings is invalid."];
+	} else if ([resp statusCode] != 200) {	
 		NSLog(@"checkControllerAvailable statusCode %d",[resp statusCode] );
-		@throw [CheckNetworkStaffException exceptionWithTitle:@"Can't find controller Application" message:@"Can't find controller appliaction on your server."];
+		@throw [CheckNetworkStaffException exceptionWithTitle:@"OpenRemote Controller Not Found" 
+													  message:@"OpenRemote Controller not found on the configured URL. See 'Settings' to reconfigure. "];
 	}
 }
 
