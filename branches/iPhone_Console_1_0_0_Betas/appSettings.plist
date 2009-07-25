@@ -13,7 +13,7 @@
 			<true/>
 		</dict>
 		<key>footer</key>
-		<string>If you don&apos;t want to automaticly discover server, you can specify the server url</string>
+		<string>Turn off auto-discovery to input controller URL manually.</string>
 	</dict>
 	<dict>
 		<key>header</key>
