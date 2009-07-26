@@ -73,7 +73,8 @@
 	
 	[request release];
 	if ([resp statusCode] != 200 ){
-		@throw [CheckNetworkStaffException exceptionWithTitle:@"Can't find xml resource" message:@"Make sure the xml config file is in you server."];
+		@throw [CheckNetworkStaffException exceptionWithTitle:@"Can't find xml resource" 
+													  message:@"Please check that the iphone.xml file has been correctly deployed on the controller."];
 	}
 }
 
