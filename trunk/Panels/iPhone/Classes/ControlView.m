@@ -214,31 +214,31 @@
 	[button setFrame:[self bounds]];
 	if (control.icon && [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:control.icon]]) {
 		icon = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:control.icon]];
-		if (icon.size.width > self.bounds.size.width || icon.size.height > self.bounds.size.height) {
-			CGSize size = CGSizeMake(0,0);
-			if ((icon.size.width -  self.bounds.size.width) > (icon.size.height - self.bounds.size.height)) {
-				size = CGSizeMake(self.bounds.size.width, icon.size.height * ((icon.size.width -  self.bounds.size.width) /icon.size.width ));
-			} else {
-				size = CGSizeMake(icon.size.width * ((icon.size.height -  self.bounds.size.height) /icon.size.height ), self.bounds.size.height);
-			}
-			NSLog(@"CGSize width = %d,height = %d",size.width,size.height);
-			UIGraphicsBeginImageContext(size);
-			
-			CGContextRef context = UIGraphicsGetCurrentContext();
-			CGContextTranslateCTM(context, 0.0, size.height);
-			CGContextScaleCTM(context, 1.0, -1.0);
-			
-			CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), icon.CGImage);
-			
-			UIImage* scaledImage = UIGraphicsGetImageFromCurrentImageContext();
-			
-			UIGraphicsEndImageContext();
-			
-			
-			[button setImage:scaledImage forState:UIControlStateNormal];
-		} else {
+//		if (icon.size.width > self.bounds.size.width || icon.size.height > self.bounds.size.height) {
+//			CGSize size = CGSizeMake(0,0);
+//			if ((icon.size.width -  self.bounds.size.width) > (icon.size.height - self.bounds.size.height)) {
+//				size = CGSizeMake(self.bounds.size.width, icon.size.height * ((icon.size.width -  self.bounds.size.width) /icon.size.width ));
+//			} else {
+//				size = CGSizeMake(icon.size.width * ((icon.size.height -  self.bounds.size.height) /icon.size.height ), self.bounds.size.height);
+//			}
+//			NSLog(@"CGSize width = %d,height = %d",size.width,size.height);
+//			UIGraphicsBeginImageContext(size);
+//			
+//			CGContextRef context = UIGraphicsGetCurrentContext();
+//			CGContextTranslateCTM(context, 0.0, size.height);
+//			CGContextScaleCTM(context, 1.0, -1.0);
+//			
+//			CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), icon.CGImage);
+//			
+//			UIImage* scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+//			
+//			UIGraphicsEndImageContext();
+//			
+//			
+//			[button setImage:scaledImage forState:UIControlStateNormal];
+//		} else {
 			[button setImage:icon forState:UIControlStateNormal];
-		}
+//		}
 
 		
 	} else {
