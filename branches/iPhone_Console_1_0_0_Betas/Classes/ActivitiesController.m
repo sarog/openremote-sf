@@ -81,8 +81,8 @@
 #pragma mark UITableViewDataSource implementation
 - (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section
 {
-//    return activities.count;
-	return activities.count+2;
+    return activities.count;
+//	return activities.count+2;
 }
 
 
@@ -94,34 +94,34 @@
 		cell.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	}
 	
-	if (indexPath.row == activities.count) {
-		cell.text = @"Control The Light(Mockup)";
-		cell.image = [UIImage imageNamed:@"lightIcon.png"];
-	} else if (indexPath.row == activities.count + 1) {
-		cell.text = @"Control the AirConditioner(Mockup)";
-		cell.image = [UIImage imageNamed:@"AirConditionerIcon.png"];
-	} else {
+//	if (indexPath.row == activities.count) {
+//		cell.text = @"Control The Light(Mockup)";
+//		cell.image = [UIImage imageNamed:@"lightIcon.png"];
+//	} else if (indexPath.row == activities.count + 1) {
+//		cell.text = @"Control the AirConditioner(Mockup)";
+//		cell.image = [UIImage imageNamed:@"AirConditionerIcon.png"];
+//	} else {
 		Activity *currentActivity = [activities objectAtIndex:indexPath.row ];
 		cell.text = currentActivity.name;
 		cell.image = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:[[activities objectAtIndex:indexPath.row] icon]]] autorelease];
-	}
+//	}
 	return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {	
-	NSLog(@"(indexPath.row is %d,activities.count is %d" ,indexPath.row ,activities.count);
-	if (indexPath.row == activities.count) {
-		LightsController *lightsController = [[LightsController alloc] init];
-		[lightsController setTitle:@"Control The Light(Mockup)"];
-		[[self navigationController] pushViewController:lightsController animated:YES];
-		[lightsController release];
-	} else if (indexPath.row == activities.count + 1) {
-		AccelerometerController *accelerometerController =[[AccelerometerController alloc] init];
-		[accelerometerController setTitle:@"Control the AirConditioner(Mockup)"];
-		[[self navigationController] pushViewController:accelerometerController animated:YES];
-		[accelerometerController release];
-	} else {
+//	NSLog(@"(indexPath.row is %d,activities.count is %d" ,indexPath.row ,activities.count);
+//	if (indexPath.row == activities.count) {
+//		LightsController *lightsController = [[LightsController alloc] init];
+//		[lightsController setTitle:@"Control The Light(Mockup)"];
+//		[[self navigationController] pushViewController:lightsController animated:YES];
+//		[lightsController release];
+//	} else if (indexPath.row == activities.count + 1) {
+//		AccelerometerController *accelerometerController =[[AccelerometerController alloc] init];
+//		[accelerometerController setTitle:@"Control the AirConditioner(Mockup)"];
+//		[[self navigationController] pushViewController:accelerometerController animated:YES];
+//		[accelerometerController release];
+//	} else {
 		PaginationController *paginationController = [[PaginationController alloc] init];
 			
 		// Get array of screens
@@ -141,7 +141,7 @@
 		
 		[[self navigationController] pushViewController:paginationController animated:YES];
 		[paginationController release];	
-	}
+//	}
 	
 }
 
