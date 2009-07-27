@@ -147,10 +147,10 @@ public class DeviceMacroBeanModelProxy {
             new AsyncSuccessCallback<DeviceMacro>() {
                @Override
                public void onSuccess(DeviceMacro result) {
-                  BeanModelDataBase.deviceMacroMap.update(deviceMacroBeanModel);
                   for (DeviceMacroItem deviceMacroItem : result.getDeviceMacroItems()) {
                      BeanModelDataBase.deviceMacroItemMap.insert(deviceMacroItem.getBeanModel());
                   }
+                  BeanModelDataBase.deviceMacroMap.update(deviceMacroBeanModel);
                   callback.onSuccess(result);
                }
             });
