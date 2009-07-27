@@ -27,11 +27,17 @@
 #import "CheckNetworkStaffException.h"
 #import "Definition.h"
 #import "NotificationConstant.h"
+#import "StringUtils.h"
+#import "ServerDefinition.h"
+#import "DirectoryDefinition.h"
 
 #define MAX_RETRY_TIMES 1
 
 @interface UpdateController (private)
 - (void)checkNetworkAndUpdate;
+- (void)findServer;
+- (void)updateFailOrUseLocalCache:(NSString *)errorMessage;
+- (void)useDefaultUrl;
 @end
 
 
@@ -61,21 +67,30 @@
 - (void)checkConfigAndUpdate {
 	NSLog(@"check config");
 
-	
 	if ([AppSettingsDefinition readServerUrlFromFile]) {
+		NSLog(@"readServerUrlFromFile success.");
 		[self checkNetworkAndUpdate];
 	} else {
+		NSLog(@"readServerUrlFromFile fail.");
 		if ([AppSettingsDefinition isAutoDiscoveryEnable]) {
-			if (serverAutoDiscoveryController) {
-				[serverAutoDiscoveryController release];
-				serverAutoDiscoveryController = nil;
-			}	
-			
-			serverAutoDiscoveryController = [[ServerAutoDiscoveryController alloc] initWithDelegate:self];
+			[self findServer];
 		} else {
-			[self didUseLocalCache:@"Can't find server url configuration. You can turn on auto-discovery or specify a server url in settings."];
+			[self updateFailOrUseLocalCache:@"Can't find server url configuration. You can turn on auto-discovery or specify a server url in settings."];
 		}
 	}
+}
+
+- (void)findServer {
+	if (retryTimes <= MAX_RETRY_TIMES) {
+		retryTimes = retryTimes + 1;
+		if (serverAutoDiscoveryController) {
+			[serverAutoDiscoveryController release];
+			serverAutoDiscoveryController = nil;
+		}
+		serverAutoDiscoveryController = [[ServerAutoDiscoveryController alloc] initWithDelegate:self];
+	} else {
+		[self updateFailOrUseLocalCache:@"Can't find OpenRemote controller automatically."];
+	}	
 }
 
 - (void)checkNetworkAndUpdate {
@@ -86,19 +101,41 @@
 	}
 	@catch (CheckNetworkStaffException *e) {
 		NSLog(@"CheckNetworkStaffException %@",e.message);
-		NSLog(@"retry %d time.",retryTimes);
-		if (retryTimes <= MAX_RETRY_TIMES && [AppSettingsDefinition isAutoDiscoveryEnable]) {
-			NSLog(@"retry %d time.",retryTimes);
+		if (retryTimes <= MAX_RETRY_TIMES) {
 			retryTimes = retryTimes + 1;
-			if (serverAutoDiscoveryController) {
-				[serverAutoDiscoveryController release];
-				serverAutoDiscoveryController = nil;
-			}	
-			serverAutoDiscoveryController = [[ServerAutoDiscoveryController alloc] initWithDelegate:self];
+			[self checkNetworkAndUpdate];
 		} else {
-			[self didUseLocalCache:e.message];
+			[self updateFailOrUseLocalCache:e.message];
 		}
+		
 	}	
+}
+
+- (void)updateFailOrUseLocalCache:(NSString *)errorMessage {
+	NSString *path = [[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition sampleXmlUrl]]];
+	if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+		[self didUseLocalCache:errorMessage];
+	} else {
+		[self useDefaultUrl];
+	}
+}
+
+- (void)useDefaultUrl {
+	if ([[AppSettingsDefinition getCustomServers] count] > 0) {
+		[AppSettingsDefinition setAutoDiscovery:NO];
+		NSMutableDictionary *customServer = [[AppSettingsDefinition getCustomServers] objectAtIndex:0];
+		[customServer setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
+		[AppSettingsDefinition setCurrentServerUrl:[customServer valueForKey:@"url"]];
+		[AppSettingsDefinition writeToFile];
+		@try {
+			[CheckNetworkStaff checkAll];
+		}
+		@catch (CheckNetworkStaffException *e) {
+			[self didUpdateFail:e.message];
+		}
+	} else {
+		[self didUpdateFail:@"There is no default url.Application init error."];
+	}
 }
 
 - (void)didUpadted {
@@ -112,8 +149,13 @@
 	[[Definition sharedDefinition] useLocalCacheDirectly];
 	if (theDelegate && [theDelegate respondsToSelector:@selector(didUseLocalCache:)]) {
 		[theDelegate performSelector:@selector(didUseLocalCache:) withObject:errorMessage];
-	} 
-	
+	}
+}
+
+- (void)didUpdateFail:(NSString *)errorMessage {
+	if (theDelegate && [theDelegate respondsToSelector:@selector(didUpdateFail:)]) {
+		[theDelegate performSelector:@selector(didUpdateFail:) withObject:errorMessage];
+	}
 }
 
 
@@ -125,7 +167,8 @@
 }
 
 - (void)onFindServerFail:(NSString *)errorMessage {
-		[self checkNetworkAndUpdate];
+	NSLog(@"onFindServerFail %@",errorMessage);
+		[self findServer];
 }
 
 -(void)dealloc {
