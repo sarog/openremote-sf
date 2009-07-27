@@ -304,10 +304,11 @@ public class MacroPanel extends ContentPanel {
       List<BeanModel> macroItemBeanModels = BeanModelDataBase.getBeanModelsByBeans(deviceMacro.getDeviceMacroItems(),
             BeanModelDataBase.deviceMacroItemMap);
       macroTree.getStore().removeAll(dataModel);
-      if (deviceMacro.getDeviceMacroItems().size() > 0) {
-         macroTree.getStore().add(dataModel, macroItemBeanModels, false);
+      for (BeanModel beanModel : macroItemBeanModels) {
+         macroTree.getStore().add(dataModel, beanModel, false);
       }
       macroTree.getStore().update(dataModel);
+      macroTree.setExpanded(dataModel, true);
    }
 
    /**
