@@ -36,5 +36,6 @@
 #pragma mark delegate method
 - (void)didUpadted;
 - (void)didUseLocalCache:(NSString *)errorMessage;
+- (void)didUpdateFail:(NSString *)errorMessage;
 
 @end

@@ -19,7 +19,14 @@
 		<key>header</key>
 		<string>Choose a Server</string>
 		<key>servers</key>
-		<array/>
+		<array>
+			<dict>
+				<key>choose</key>
+				<true/>
+				<key>url</key>
+				<string>http://controller.openremote.org/1.0/controller</string>
+			</dict>
+		</array>
 		<key>footer</key>
 		<string></string>
 	</dict>
