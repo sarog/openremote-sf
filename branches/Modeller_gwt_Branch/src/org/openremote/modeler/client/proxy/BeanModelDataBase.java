@@ -16,13 +16,18 @@
 
 package org.openremote.modeler.client.proxy;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openremote.modeler.client.utils.BeanModelTable;
+import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class BeanModelDataBase.
  * 
@@ -43,14 +48,14 @@ public class BeanModelDataBase {
    public static final BeanModelTable deviceMacroItemMap = new BeanModelTable();
 
    /**
-    * Gets the device macro item bean model.
+    * Gets the original device macro item bean model,if not find return null.
     * 
     * @param deviceMacroItemBeanModel
     *           the device macro item bean model
     * 
-    * @return the device macro item bean model
+    * @return the original device macro item bean model,If not find return null.
     */
-   public static BeanModel getDeviceMacroItemBeanModel(BeanModel deviceMacroItemBeanModel) {
+   public static BeanModel getOriginalDeviceMacroItemBeanModel(BeanModel deviceMacroItemBeanModel) {
       if (deviceMacroItemBeanModel.getBean() instanceof DeviceMacroItem) {
          DeviceMacroItem deviceMacroItem = (DeviceMacroItem) deviceMacroItemBeanModel.getBean();
          if (deviceMacroItem instanceof DeviceMacroRef) {
@@ -63,6 +68,34 @@ public class BeanModelDataBase {
          }
       }
       return null;
+   }
+
+   /**
+    * Gets the bean model id,if not find return 0.
+    * 
+    * @param beanModel
+    *           the bean model
+    * 
+    * @return the bean model id,if not find return 0.
+    */
+   public static long getBeanModelId(BeanModel beanModel) {
+      if (beanModel == null) return 0;
+      if (beanModel.getBean() instanceof BusinessEntity) {
+         BusinessEntity entity = (BusinessEntity) beanModel.getBean();
+         return entity.getOid();
+      }
+      return 0;
+   }
+
+   public static List<BeanModel> getBeanModelsByBeans(List<? extends BusinessEntity> businessEntities,
+         BeanModelTable beanModelTable) {
+      List<BeanModel> list = new ArrayList<BeanModel>();
+      for (BusinessEntity businessEntity : businessEntities) {
+         if (beanModelTable.get(businessEntity.getOid()) != null) {
+            list.add(beanModelTable.get(businessEntity.getOid()));
+         }
+      }
+      return list;
    }
 
 }

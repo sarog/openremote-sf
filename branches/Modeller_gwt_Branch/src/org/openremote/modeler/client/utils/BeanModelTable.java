@@ -126,8 +126,9 @@ public class BeanModelTable {
     */
    public void delete(long id) {
       BeanModel beanModel = get(id);
-      map.remove(id);
       notifyBeanModel(REMOVE, beanModel);
+      map.remove(id);
+      
    }
 
    /**
@@ -156,8 +157,8 @@ public class BeanModelTable {
     * @param newBeanModel the new bean model
     */
    public void update(BeanModel newBeanModel) {
-      map.put(getIdFromBeanModel(newBeanModel), newBeanModel);
       notifyBeanModel(UPDATE, newBeanModel);
+      map.put(getIdFromBeanModel(newBeanModel), newBeanModel);
    }
 
    /**
