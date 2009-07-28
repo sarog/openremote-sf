@@ -107,6 +107,7 @@
 		cell.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	}
 	
+	[cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
 	if (indexPath.row == activities.count) {
 		cell.text = @"Control The Light(Mockup)";
 		cell.image = [UIImage imageNamed:@"lightIcon.png"];
@@ -156,11 +157,6 @@
 		[paginationController release];	
 	}
 	
-}
-
-- (UITableViewCellAccessoryType)tableView:(UITableView *)tableView accessoryTypeForRowWithIndexPath:(NSIndexPath *)indexPath
-{
-    return UITableViewCellAccessoryDisclosureIndicator;
 }
 
 /*
