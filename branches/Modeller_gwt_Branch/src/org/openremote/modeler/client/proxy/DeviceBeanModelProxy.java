@@ -125,10 +125,20 @@ public class DeviceBeanModelProxy {
     */
    public static void deleteDevice(BeanModel deviceModel, final AsyncSuccessCallback<Void> callback){
       final Device device = deviceModel.getBean();
-      AsyncServiceFactory.getDeviceServiceAsync().deleteDevice(device.getOid(), new AsyncSuccessCallback<Void>() {
-         public void onSuccess(Void result) {
-            BeanModelDataBase.deviceMap.delete(device.getOid());
-            callback.onSuccess(result);
+      AsyncServiceFactory.getDeviceCommandServiceAsync().loadByDevice(device.getOid(), new AsyncSuccessCallback<List<DeviceCommand>>(){
+         @Override
+         public void onSuccess(List<DeviceCommand> result) {
+            List<BeanModel> beanModels = DeviceCommand.createModels(result);
+            BeanModelDataBase.deviceCommandMap.insertAll(beanModels);
+            for (BeanModel beanModel : beanModels) {
+               BeanModelDataBase.deviceCommandMap.delete( beanModel.<DeviceCommand> getBean().getOid());
+            }
+            AsyncServiceFactory.getDeviceServiceAsync().deleteDevice(device.getOid(), new AsyncSuccessCallback<Void>() {
+               public void onSuccess(Void result) {
+                  BeanModelDataBase.deviceMap.delete(device.getOid());
+                  callback.onSuccess(result);
+               }
+            });
          }
       });
    }
