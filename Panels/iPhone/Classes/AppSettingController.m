@@ -91,6 +91,9 @@
 }
 - (BOOL)isCustomServerSection:(NSIndexPath *)indexPath {
 	if (!autoDiscovery && indexPath.row < [serverArray count] && indexPath.section == 1) {
+		if (indexPath.row == 0) {
+			return NO;
+		}
 		return YES;
 	}
 	return NO;
