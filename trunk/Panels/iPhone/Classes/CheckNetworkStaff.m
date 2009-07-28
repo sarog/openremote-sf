@@ -58,7 +58,8 @@
 	
 	NSError *error = nil;
 	NSHTTPURLResponse *resp = nil;
-	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:[ServerDefinition serverUrl]] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:5];
+	NSURL *url = [NSURL URLWithString:[ServerDefinition serverUrl]]; 
+	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:5];
 	[NSURLConnection sendSynchronousRequest:request returningResponse:&resp error:&error];
 	NSLog([ServerDefinition serverUrl]);
 	[request release];
@@ -82,7 +83,8 @@
 	}
 
 	NSHTTPURLResponse *resp = nil;
-	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:[ServerDefinition sampleXmlUrl]] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:5];
+	NSURL *url = [NSURL URLWithString:[ServerDefinition sampleXmlUrl]]; 
+	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:5];
 	[NSURLConnection sendSynchronousRequest:request returningResponse:&resp error:NULL];
 	
 	[request release];
