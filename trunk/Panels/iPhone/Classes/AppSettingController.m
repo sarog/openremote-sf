@@ -34,6 +34,7 @@
 @interface AppSettingController (Private)
 -(NSMutableArray *)getCurrentServersWithAutoDiscoveryEnable:(BOOL)b;
 - (void)autoDiscoverChanged:(id)sender;
+- (void)deleteAllRow;
 - (void)updateTableView;
 - (void)saveSettings;
 - (BOOL)isAutoDiscoverySection:(NSIndexPath *)indexPath;
@@ -108,6 +109,9 @@
 - (void)autoDiscoverChanged:(id)sender {
 	UISwitch *s = (UISwitch *)sender;
 	autoDiscovery = s.on;
+	
+	[self deleteAllRow];
+	
 	if (autoDiscovery) {
 		self.navigationItem.leftBarButtonItem = nil;
 		if (autoDiscoverController) {
@@ -128,8 +132,10 @@
 		
 }
 
-- (void)updateTableView {
+
+- (void)deleteAllRow {
 	UITableView *tv = (UITableView *)self.view;
+	
 	[tv beginUpdates];
 	NSMutableArray *deleteIndexPaths = [[NSMutableArray alloc] init];
 	for (int i=0;i <serverArray.count;i++){
@@ -138,11 +144,25 @@
 	if (autoDiscovery) {
 		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:[serverArray count] inSection:1]];
 	}
-	NSLog(@"Delete paths %d",[deleteIndexPaths count]);
 	[serverArray removeAllObjects];
-	autoDiscovery = !autoDiscovery;
 	[tv deleteRowsAtIndexPaths:deleteIndexPaths withRowAnimation:UITableViewRowAnimationTop];
-	autoDiscovery = !autoDiscovery;
+	
+	NSMutableArray *insertIndexPaths = [[NSMutableArray alloc] init];
+	
+	if (!autoDiscovery) {
+		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:0 inSection:1]];
+		[tv insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationBottom];
+	}
+	[tv endUpdates];
+	
+	[deleteIndexPaths release];
+	[insertIndexPaths release];
+	
+}
+- (void)updateTableView {
+	UITableView *tv = (UITableView *)self.view;
+	[tv beginUpdates];
+	
 	NSArray *newArray = nil;
 	newArray = [self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery];
 	
@@ -150,16 +170,12 @@
 	for (int j=0;j < newArray.count;j++){
 		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:j inSection:1]];
 	}
-	if (!autoDiscovery) {
-		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:[newArray count] inSection:1]];
-	}
+
 	[serverArray addObjectsFromArray:newArray];
-		NSLog(@"Delete paths %d",[insertIndexPaths count]);
+		NSLog(@"Insert paths %d",[insertIndexPaths count]);
 	[tv insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationBottom];
 	[tv endUpdates];
 	
-	
-	[deleteIndexPaths release];
 	[insertIndexPaths release];
 }
 
@@ -245,23 +261,6 @@
 - (void)onFindServerFail:(NSString *)errorMessage {
 	
 	[ViewHelper showAlertViewWithTitle:@"Find Server Error" Message:errorMessage];
-	UITableView *tv = (UITableView *)self.view;
-	
-	[tv beginUpdates];
-	NSMutableArray *deleteIndexPaths = [[NSMutableArray alloc] init];
-	for (int i=0;i <serverArray.count;i++){
-		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:i inSection:1]];
-	}
-	if (autoDiscovery) {
-		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:[serverArray count] inSection:1]];
-	}
-	[serverArray removeAllObjects];
-	autoDiscovery = !autoDiscovery;
-	[tv deleteRowsAtIndexPaths:deleteIndexPaths withRowAnimation:UITableViewRowAnimationTop];
-	autoDiscovery = !autoDiscovery;
-	[tv endUpdates];
-	
-	[deleteIndexPaths release];
 	
 }
 
