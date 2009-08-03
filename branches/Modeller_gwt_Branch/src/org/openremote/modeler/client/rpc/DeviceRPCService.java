@@ -26,9 +26,8 @@ import org.openremote.modeler.domain.Device;
 
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Interface DeviceService.
+ * The Interface DeviceService, define the method to operate device.
  */
 @RemoteServiceRelativePath("device.smvc")
 public interface DeviceRPCService extends RemoteService {

@@ -25,9 +25,8 @@ import org.openremote.modeler.domain.DeviceCommand;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Interface DeviceCommandRPCServiceAsync.
+ * The async counterpart of <code>DeviceCommandRPCService</code>.
  */
 public interface DeviceCommandRPCServiceAsync {
    

@@ -57,7 +57,7 @@ public class ApplicationView implements View {
       viewport = new Viewport();
       viewport.setLayout(new BorderLayout());
       final AuthorityRPCServiceAsync auth = (AuthorityRPCServiceAsync)GWT.create(AuthorityRPCService.class);
-      auth.getAuthoritication(new AsyncCallback<Authority>(){
+      auth.getAuthority(new AsyncCallback<Authority>(){
          public void onFailure(Throwable caught) {
             MessageBox.info("Info", caught.getMessage(), null);
             caught.printStackTrace();

@@ -25,17 +25,16 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import org.openremote.modeler.auth.Authority;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Interface AuthorityRPCService.
+ * The Interface AuthorityRPCService, get the current user's authority.
  */
 @RemoteServiceRelativePath("auth.smvc")
 public interface AuthorityRPCService extends RemoteService {
    
    /**
-    * Gets the authoritication.
+    * Gets the authority.
     * 
-    * @return the authoritication
+    * @return the authority
     */
-   public Authority getAuthoritication();
+   public Authority getAuthority();
 }
