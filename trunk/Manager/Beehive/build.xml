@@ -51,21 +51,21 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 	<!-- paths used for compilation and run  -->
 	<path id="compile.path.id">
-		<fileset dir="${lib.dir}/compile"/>
-		<fileset dir="${lib.dir}/core"/>
+		<fileset dir="${lib.dir}/compile" includes="**/*.jar"/>
+		<fileset dir="${lib.dir}/core" includes="**/*.jar"/>
 		<path location="${classes.dir}"/>
 	</path>
 	<path id="test.path.id">
-		<fileset dir="${lib.dir}/compile"/>
-		<fileset dir="${lib.dir}/core"/>
-		<fileset dir="${lib.dir}/cobertura"/>
+		<fileset dir="${lib.dir}/compile" includes="**/*.jar"/>
+		<fileset dir="${lib.dir}/core" includes="**/*.jar"/>
+		<fileset dir="${lib.dir}/cobertura" includes="**/*.jar"/>
 		<path location="${classes.dir}"/>
-		<fileset dir="${lib.dir}/test"/>
+		<fileset dir="${lib.dir}/test" includes="**/*.jar"/>
 		<path location="${config.dir}"/>
 	</path>
 
 	<path id="cobertura.path.id">
-		<fileset dir="${lib.dir}/cobertura"/>
+		<fileset dir="${lib.dir}/cobertura" includes="**/*.jar"/>
 		<path location="${classes.dir}"/>
 	</path>
 
@@ -89,11 +89,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
      |
      | INIT:
      |
-     | Make directory for this project.
+     | Make directory for this project and copy libs for package.
      +-->
 	<target name="init" depends="clean" description="create folder">
-		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.dir}/lib" />
 		<mkdir dir="${output.dir}" />
+		<copy todir="${build.dir}/lib" flatten="true">
+			<fileset dir="${lib.dir}/core">
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
 	</target>
 
 	<!--
@@ -113,9 +118,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 			</fileset>
 			<fileset dir="${src.dir}">
 				<include name="**/*.xml"/>
-			</fileset>			
+			</fileset>
 		</copy>
-
 		<javac destdir="${classes.dir}" classpathref="compile.path.id" debug="${build.debug}">
 			<src path="${src.dir}"/>
 		</javac>
@@ -152,7 +156,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 		</copy>
 		<javac srcdir="${test.dir}" destdir="${classes.dir}" classpathref="test.path.id"/>
 	</target>
-	
+
 	<!--
 	 | WAR:
 	 |
@@ -171,7 +175,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 			<fileset dir=".">
 				<include name="readme.txt"/>
 			</fileset>
-			<lib dir="${lib.dir}/core" />
+			<lib dir="${build.dir}/lib" includes="*.jar"/>
 			<classes dir="${classes.dir}" />
 		</war>
 	</target>
@@ -265,7 +269,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	 | COBERTURA_INSTRUMENT:
 	 |
 	 | Make instrument for cobertura.
-	 +-->	
+	 +-->
 	<target name="cobertura_instrument" depends="compile-test">
 		<delete file="${cobertura.datafile}"/>
 		<cobertura-instrument todir="${instrumented.dir}" datafile="${cobertura.datafile}">
@@ -281,7 +285,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	 | REPORT-COBERTURA:
 	 |
 	 | Generate the cobertura report.
-	 +-->	
+	 +-->
 	<target name="report-cobertura" depends="cobertura_instrument"
             description="--> generate the coverage report.">
 		<property name="test.targetclasspath" value="${instrumented.dir}"/>
@@ -297,7 +301,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	 | REPORT-CHECKSTYLE:
 	 |
 	 | Generate the checkstyle report.
-	 +-->	
+	 +-->
 	<target name="report-checkstyle" description="--> generates a report of code convention violations.">
 		<mkdir dir="${checkstyle.reports.dir}"/>
 		<checkstyle config="${build-config.dir}/checkstyle-finalist.xml" failureProperty="checkstyle.failure"
