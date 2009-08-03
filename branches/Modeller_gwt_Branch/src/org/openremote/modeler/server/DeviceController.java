@@ -27,9 +27,8 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.impl.UserServiceImpl;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class DeviceController.
+ * The server side implementation of the RPC service <code>DeviceRPCService</code>
  */
 public class DeviceController extends BaseGWTSpringControllerWithHibernateSupport implements DeviceRPCService {
 
@@ -51,7 +50,9 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
       this.deviceService = deviceService;
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
+    * 
     * @see org.openremote.modeler.client.rpc.DeviceRPCService#saveDevice(java.util.Map)
     */
    public Device saveDevice(Device device) {
@@ -59,21 +60,27 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
       return deviceService.saveDevice(device);
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
+    * 
     * @see org.openremote.modeler.client.rpc.DeviceRPCService#removeDevice(org.openremote.modeler.domain.Device)
     */
    public void deleteDevice(long id) {
       deviceService.deleteDevice(id);
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
+    * 
     * @see org.openremote.modeler.client.rpc.DeviceRPCService#loadById(long)
     */
    public Device loadById(long id) {
       return deviceService.loadById(id);
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
+    * 
     * @see org.openremote.modeler.client.rpc.DeviceRPCService#loadAll()
     */
    public List<Device> loadAll() {
@@ -89,7 +96,9 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
       this.userService = userService;
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
+    * 
     * @see org.openremote.modeler.client.rpc.DeviceRPCService#loadAll(org.openremote.modeler.domain.Account)
     */
    public List<Device> loadAll(Account account) {
@@ -97,7 +106,9 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
    }
 
    
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
+    * 
     * @see org.openremote.modeler.client.rpc.DeviceRPCService#updateDevice(org.openremote.modeler.domain.Device)
     */
    public void updateDevice(Device device) {

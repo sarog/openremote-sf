@@ -21,15 +21,13 @@ package org.openremote.modeler.client.rpc;
 
 import java.util.List;
 
-import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Interface DeviceCommandRPCService.
+ * The Interface DeviceCommandRPCService, define the method to operate deviceCommand.
  */
 @RemoteServiceRelativePath("deviceCommand.smvc")
 public interface DeviceCommandRPCService extends RemoteService{

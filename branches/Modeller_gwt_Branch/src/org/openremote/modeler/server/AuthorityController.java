@@ -26,19 +26,20 @@ import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.context.SecurityContextHolder;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class AuthorityController.
+ * The server side implementation of the RPC service <code>AuthorityRPCService</code>
  */
 public class AuthorityController extends BaseGWTSpringController implements AuthorityRPCService {
    
    /** The Constant serialVersionUID. */
    private static final long serialVersionUID = 9014403953508227827L;
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
+    * 
     * @see org.openremote.modeler.client.rpc.AuthorityRPCService#getAuthoritication()
     */
-   public Authority getAuthoritication() {
+   public Authority getAuthority() {
       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
       Authority authority = new Authority();
       if (auth != null) {

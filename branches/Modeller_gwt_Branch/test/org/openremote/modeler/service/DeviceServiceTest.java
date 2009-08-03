@@ -57,12 +57,6 @@ public class DeviceServiceTest extends TestNGBase{
       Device deviceInDB = deviceService.loadById(device.getOid());
       Assert.assertEquals(deviceInDB.getName(), device.getName());
       
-      device.setName("xxx");
-      device.setModel("MP8640");
-      device.setVendor("3m");
-      deviceService.saveDevice(device);
-      deviceInDB = deviceService.loadById(device.getOid());
-      Assert.assertEquals(deviceInDB.getName(), device.getName());
    }
    
    /**
@@ -104,4 +98,23 @@ public class DeviceServiceTest extends TestNGBase{
       
    }
    
+   @Test(dependsOnMethods="save")
+   public void update(){
+      Device device = new Device();
+      device.setName("xxx");
+      device.setModel("MP8640");
+      device.setVendor("3m");
+      deviceService.saveDevice(device);
+      Device deviceInDB = deviceService.loadById(device.getOid());
+      
+      deviceInDB.setName("aaa");
+      deviceInDB.setVendor("sony");
+      deviceInDB.setModel("tv");
+      deviceService.updateDevice(deviceInDB);
+      
+      device = deviceService.loadById(device.getOid());
+      Assert.assertEquals(deviceInDB.getName(), device.getName());
+      
+      deviceService.deleteDevice(device.getOid());
+   }
 }

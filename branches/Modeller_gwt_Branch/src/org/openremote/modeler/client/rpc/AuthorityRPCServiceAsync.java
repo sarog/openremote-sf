@@ -24,18 +24,17 @@ package org.openremote.modeler.client.rpc;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.openremote.modeler.auth.Authority;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Interface AuthorityRPCServiceAsync.
+ * The async counterpart of <code>AuthorityRPCService</code>.
  */
 public interface AuthorityRPCServiceAsync {
    
    /**
-    * Gets the authoritication.
+    * Gets the authority.
     * 
     * @param callback the callback
     * 
-    * @return the authoritication
+    * @return the authority
     */
-   public void getAuthoritication(AsyncCallback<Authority> callback);
+   public void getAuthority(AsyncCallback<Authority> callback);
 }

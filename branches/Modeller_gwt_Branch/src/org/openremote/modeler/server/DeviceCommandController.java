@@ -26,9 +26,8 @@ import org.openremote.modeler.service.DeviceCommandService;
 
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class DeviceCommandController.
+ * The server side implementation of the RPC service <code>DeviceCommandRPCService</code>
  */
 public class DeviceCommandController extends BaseGWTSpringControllerWithHibernateSupport implements
         DeviceCommandRPCService {
@@ -48,42 +47,54 @@ public class DeviceCommandController extends BaseGWTSpringControllerWithHibernat
       this.deviceCommandService = deviceCommandRPCService;
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
+    * 
     * @see org.openremote.modeler.client.rpc.DeviceCommandRPCService#saveAll(java.util.List)
     */
    public List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands) {
       return deviceCommandService.saveAll(deviceCommands);
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
+    * 
     * @see org.openremote.modeler.client.rpc.DeviceCommandRPCService#save(org.openremote.modeler.domain.DeviceCommand)
     */
    public DeviceCommand save(DeviceCommand deviceCommand) {
       return deviceCommandService.save(deviceCommand);
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
+    * 
     * @see org.openremote.modeler.client.rpc.DeviceCommandRPCService#deleteCommand(long)
     */
    public void deleteCommand(long id) {
       deviceCommandService.deleteCommand(id);
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
+    * 
     * @see org.openremote.modeler.client.rpc.DeviceCommandRPCService#update(org.openremote.modeler.domain.DeviceCommand)
     */
    public void update(DeviceCommand deviceCommand) {
       deviceCommandService.update(deviceCommand);
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
+    * 
     * @see org.openremote.modeler.client.rpc.DeviceCommandRPCService#loadById(long)
     */
    public DeviceCommand loadById(long id){
       return deviceCommandService.loadById(id);
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
+    * 
     * @see org.openremote.modeler.client.rpc.DeviceCommandRPCService#loadByDevice(long)
     */
    public List<DeviceCommand> loadByDevice(long id) {

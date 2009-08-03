@@ -26,9 +26,8 @@ import org.openremote.modeler.domain.Device;
 import java.util.List;
 
 
-// TODO: Auto-generated Javadoc
 /**
- * The Interface DeviceServiceAsync.
+ * The async counterpart of <code>DeviceRPCService</code>.
  */
 public interface DeviceRPCServiceAsync {
    
