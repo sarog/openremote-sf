@@ -1,23 +1,22 @@
 /* OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2009, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a
- * full listing of individual contributors.
- * 
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
- * 
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
- * You should have received a copy of the GNU General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 package org.openremote.modeler.client.proxy;
 
@@ -49,7 +48,7 @@ public class DeviceBeanModelProxy {
          AsyncServiceFactory.getDeviceServiceAsync().loadAll(new AsyncSuccessCallback<List<Device>>(){
             public void onSuccess(List<Device> result) {
                List<BeanModel> beanModels = Device.createModels(result);
-               BeanModelDataBase.deviceMap.insertAll(beanModels);
+               BeanModelDataBase.deviceTable.insertAll(beanModels);
                callback.onSuccess(beanModels);
             }
             
@@ -60,7 +59,7 @@ public class DeviceBeanModelProxy {
             @Override
             public void onSuccess(List<DeviceCommand> result) {
                List<BeanModel> beanModels = DeviceCommand.createModels(result);
-               BeanModelDataBase.deviceCommandMap.insertAll(beanModels);
+               BeanModelDataBase.deviceCommandTable.insertAll(beanModels);
                callback.onSuccess(beanModels);
             }
             
@@ -80,7 +79,7 @@ public class DeviceBeanModelProxy {
       AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>(){
          public void onSuccess(Device result) {
             BeanModel deviceModel =result.getBeanModel();
-            BeanModelDataBase.deviceMap.insert(deviceModel);
+            BeanModelDataBase.deviceTable.insert(deviceModel);
             callback.onSuccess(deviceModel);
          }
       });
@@ -99,7 +98,7 @@ public class DeviceBeanModelProxy {
       setAttrsToDevice(map, device);
       AsyncServiceFactory.getDeviceServiceAsync().updateDevice(device, new AsyncSuccessCallback<Void>(){
          public void onSuccess(Void result) {
-            BeanModelDataBase.deviceMap.update(deviceModel);
+            BeanModelDataBase.deviceTable.update(deviceModel);
             callback.onSuccess(deviceModel);
          }
       });
@@ -129,13 +128,13 @@ public class DeviceBeanModelProxy {
          @Override
          public void onSuccess(List<DeviceCommand> result) {
             List<BeanModel> beanModels = DeviceCommand.createModels(result);
-            BeanModelDataBase.deviceCommandMap.insertAll(beanModels);
+            BeanModelDataBase.deviceCommandTable.insertAll(beanModels);
             for (BeanModel beanModel : beanModels) {
-               BeanModelDataBase.deviceCommandMap.delete( beanModel.<DeviceCommand> getBean().getOid());
+               BeanModelDataBase.deviceCommandTable.delete( beanModel.<DeviceCommand> getBean().getOid());
             }
             AsyncServiceFactory.getDeviceServiceAsync().deleteDevice(device.getOid(), new AsyncSuccessCallback<Void>() {
                public void onSuccess(Void result) {
-                  BeanModelDataBase.deviceMap.delete(device.getOid());
+                  BeanModelDataBase.deviceTable.delete(device.getOid());
                   callback.onSuccess(result);
                }
             });

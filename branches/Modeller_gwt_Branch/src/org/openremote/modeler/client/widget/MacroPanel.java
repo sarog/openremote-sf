@@ -1,18 +1,22 @@
-/*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
- * 
- * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
- * 
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
- * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
- * http://www.fsf.org.
- */
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.client.widget;
 
 import java.util.HashMap;
@@ -47,6 +51,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class MacroPanel.
  */
@@ -201,8 +206,7 @@ public class MacroPanel extends ContentPanel {
    /**
     * Adds the change listener to drag source.
     * 
-    * @param models
-    *           the models
+    * @param models the models
     */
    private void addChangeListenerToDragSource(List<BeanModel> models) {
       if (models == null) {
@@ -210,10 +214,10 @@ public class MacroPanel extends ContentPanel {
       }
       for (BeanModel beanModel : models) {
          if (beanModel.getBean() instanceof DeviceMacroRef) {
-            BeanModelDataBase.deviceMacroMap.addChangeListener(getDragSourceBeanModelChangeListener(beanModel));
+            BeanModelDataBase.deviceMacroTable.addChangeListener(getDragSourceBeanModelChangeListener(beanModel));
          }
          if (beanModel.getBean() instanceof DeviceCommandRef) {
-            BeanModelDataBase.deviceCommandMap.addChangeListener(getDragSourceBeanModelChangeListener(beanModel));
+            BeanModelDataBase.deviceCommandTable.addChangeListener(getDragSourceBeanModelChangeListener(beanModel));
          }
       }
    }
@@ -221,8 +225,7 @@ public class MacroPanel extends ContentPanel {
    /**
     * Removes the change listener to drag source.
     * 
-    * @param models
-    *           the models
+    * @param models the models
     */
    private void removeChangeListenerToDragSource(List<BeanModel> models) {
       if (models == null) {
@@ -230,11 +233,11 @@ public class MacroPanel extends ContentPanel {
       }
       for (BeanModel beanModel : models) {
          if (beanModel.getBean() instanceof DeviceMacroRef) {
-            BeanModelDataBase.deviceMacroMap.removeChangeListener(getDragSourceBeanModelChangeListener(beanModel));
+            BeanModelDataBase.deviceMacroTable.removeChangeListener(getDragSourceBeanModelChangeListener(beanModel));
 
          }
          if (beanModel.getBean() instanceof DeviceCommandRef) {
-            BeanModelDataBase.deviceCommandMap.removeChangeListener(getDragSourceBeanModelChangeListener(beanModel));
+            BeanModelDataBase.deviceCommandTable.removeChangeListener(getDragSourceBeanModelChangeListener(beanModel));
          }
          changeListenerMap.remove(beanModel);
       }
@@ -243,8 +246,7 @@ public class MacroPanel extends ContentPanel {
    /**
     * After create device macro.
     * 
-    * @param deviceMacro
-    *           the device macro
+    * @param deviceMacro the device macro
     */
    private void afterCreateDeviceMacro(DeviceMacro deviceMacro) {
       BeanModel deviceBeanModel = deviceMacro.getBeanModel();
@@ -292,10 +294,8 @@ public class MacroPanel extends ContentPanel {
    /**
     * After update device macro submit.
     * 
-    * @param dataModel
-    *           the data model
-    * @param deviceMacro
-    *           the device macro
+    * @param dataModel the data model
+    * @param deviceMacro the device macro
     */
    private void afterUpdateDeviceMacroSubmit(final BeanModel dataModel, DeviceMacro deviceMacro) {
       DeviceMacro old = dataModel.getBean();
@@ -314,8 +314,7 @@ public class MacroPanel extends ContentPanel {
    /**
     * Gets the drag source bean model change listener.
     * 
-    * @param target
-    *           the target
+    * @param target the target
     * 
     * @return the drag source bean model change listener
     */

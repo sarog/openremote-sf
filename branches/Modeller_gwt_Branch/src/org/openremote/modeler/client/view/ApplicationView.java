@@ -1,23 +1,22 @@
-/*
- * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2009, OpenRemote Inc.
- * See the contributors.txt file in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You should have received a copy of the GNU General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.client.view;
 
 import com.extjs.gxt.ui.client.Style;
@@ -39,6 +38,7 @@ import org.openremote.modeler.client.utils.Protocols;
 
 import java.util.List;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class ApplicationView.
  * 
@@ -46,8 +46,12 @@ import java.util.List;
  */
 public class ApplicationView implements View {
    
+   /** The viewport. */
    private Viewport viewport;
    
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.client.view.View#initialize()
+    */
    public void initialize() {
       Protocols.getInstance(); // get protocol definition from xml files 
       viewport = new Viewport();
@@ -75,11 +79,19 @@ public class ApplicationView implements View {
 //      createSouth();
    }
    
+   /**
+    * Show.
+    */
    private void show(){
       RootPanel.get().add(viewport);
    }
    
    
+   /**
+    * Creates the north.
+    * 
+    * @param authority the authority
+    */
    private void createNorth(Authority authority){
       HorizontalPanel headerPanel = new HorizontalPanel();
       Anchor logout = new Anchor("logout "+authority.getUsername(),"j_security_logout");
@@ -92,6 +104,11 @@ public class ApplicationView implements View {
       viewport.add(headerPanel, data);
    }
    
+   /**
+    * Creates the center.
+    * 
+    * @param authority the authority
+    */
    private void createCenter(Authority authority){
       List<String> roles = authority.getRoles();
       TabPanel builderPanel = new TabPanel();
@@ -112,6 +129,9 @@ public class ApplicationView implements View {
       
    }
    
+   /**
+    * Creates the south.
+    */
    private void createSouth(){
 //      Status status = new Status();
 //      BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.SOUTH, 20);
