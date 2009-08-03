@@ -1,18 +1,22 @@
-/*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
- * 
- * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
- * 
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
- * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
- * http://www.fsf.org.
- */
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 package org.openremote.modeler.client.proxy;
 
@@ -30,6 +34,7 @@ import org.openremote.modeler.domain.DeviceMacroRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class DeviceMacroBeanModelProxy.
  */
@@ -38,10 +43,8 @@ public class DeviceMacroBeanModelProxy {
    /**
     * Load device maro.
     * 
-    * @param deviceMacroBeanModel
-    *           the device macro bean model
-    * @param callback
-    *           the callback
+    * @param deviceMacroBeanModel the device macro bean model
+    * @param callback the callback
     */
    public static void loadDeviceMaro(BeanModel deviceMacroBeanModel,
          final AsyncSuccessCallback<List<BeanModel>> callback) {
@@ -50,7 +53,7 @@ public class DeviceMacroBeanModelProxy {
 
             public void onSuccess(List<DeviceMacro> result) {
                List<BeanModel> beanModels = DeviceMacro.createModels(result);
-               BeanModelDataBase.deviceMacroMap.insertAll(beanModels);
+               BeanModelDataBase.deviceMacroTable.insertAll(beanModels);
                callback.onSuccess(beanModels);
             }
          });
@@ -70,12 +73,9 @@ public class DeviceMacroBeanModelProxy {
    /**
     * Save device macro.
     * 
-    * @param deviceMacroName
-    *           the device macro name
-    * @param items
-    *           the items
-    * @param callback
-    *           the callback
+    * @param deviceMacroName the device macro name
+    * @param items the items
+    * @param callback the callback
     */
    public static void saveDeviceMacro(String deviceMacroName, List<BeanModel> items,
          final AsyncSuccessCallback<DeviceMacro> callback) {
@@ -87,7 +87,7 @@ public class DeviceMacroBeanModelProxy {
             new AsyncSuccessCallback<DeviceMacro>() {
                @Override
                public void onSuccess(DeviceMacro result) {
-                  BeanModelDataBase.deviceMacroMap.insert(result.getBeanModel());
+                  BeanModelDataBase.deviceMacroTable.insert(result.getBeanModel());
                   BeanModelDataBase.deviceMacroItemMap.insertAll(DeviceMacroItem.createModels(result
                         .getDeviceMacroItems()));
                   callback.onSuccess(result);
@@ -98,10 +98,8 @@ public class DeviceMacroBeanModelProxy {
    /**
     * Convert macro item ref.
     * 
-    * @param beanModels
-    *           the bean models
-    * @param deviceMacro
-    *           the device macro
+    * @param beanModels the bean models
+    * @param deviceMacro the device macro
     * 
     * @return the list< device macro item>
     */
@@ -126,12 +124,9 @@ public class DeviceMacroBeanModelProxy {
    /**
     * Update device macro.
     * 
-    * @param deviceMacro
-    *           the device macro
-    * @param items
-    *           the items
-    * @param callback
-    *           the callback
+    * @param items the items
+    * @param callback the callback
+    * @param deviceMacroBeanModel the device macro bean model
     */
    public static void updateDeviceMacro(final BeanModel deviceMacroBeanModel, List<BeanModel> items,
          final AsyncSuccessCallback<DeviceMacro> callback) {
@@ -150,7 +145,7 @@ public class DeviceMacroBeanModelProxy {
                   for (DeviceMacroItem deviceMacroItem : result.getDeviceMacroItems()) {
                      BeanModelDataBase.deviceMacroItemMap.insert(deviceMacroItem.getBeanModel());
                   }
-                  BeanModelDataBase.deviceMacroMap.update(deviceMacroBeanModel);
+                  BeanModelDataBase.deviceMacroTable.update(deviceMacroBeanModel);
                   callback.onSuccess(result);
                }
             });
@@ -159,10 +154,8 @@ public class DeviceMacroBeanModelProxy {
    /**
     * Delete device macro.
     * 
-    * @param deviceMacroBeanModel
-    *           the device macro bean model
-    * @param callback
-    *           the callback
+    * @param deviceMacroBeanModel the device macro bean model
+    * @param callback the callback
     */
    public static void deleteDeviceMacro(final BeanModel deviceMacroBeanModel, final AsyncSuccessCallback<Void> callback) {
       DeviceMacro deviceMacro = deviceMacroBeanModel.getBean();
@@ -170,7 +163,7 @@ public class DeviceMacroBeanModelProxy {
             new AsyncSuccessCallback<Void>() {
                @Override
                public void onSuccess(Void result) {
-                  BeanModelDataBase.deviceMacroMap.delete(deviceMacroBeanModel);
+                  BeanModelDataBase.deviceMacroTable.delete(deviceMacroBeanModel);
                   callback.onSuccess(result);
                }
             });

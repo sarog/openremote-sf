@@ -1,23 +1,22 @@
 /* OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2009, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a
- * full listing of individual contributors.
- * 
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
- * 
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
- * You should have received a copy of the GNU General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 package org.openremote.modeler.dao;
 
@@ -36,19 +35,19 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
+// TODO: Auto-generated Javadoc
 /**
  * The general DAO for all the DAO. It provides basic CRUD operations using Hibernate.
- *
+ * 
  * @author Dan 2009-2-6
- *
  */
 public class GenericDAO extends HibernateDaoSupport {
 
    /**
     * Persist the given transient instance.
-    *
-    * @param o
-    *           the transient instance to persist
+    * 
+    * @param o the transient instance to persist
+    * 
     * @return the generated identifier
     */
    public Serializable save(Object o) {
@@ -59,13 +58,13 @@ public class GenericDAO extends HibernateDaoSupport {
     * Copy the state of the given object onto the persistent object with the same identifier. Follows JSR-220 semantics.
     * Similar to saveOrUpdate, but never associates the given object with the current Hibernate Session. In case of a
     * new entity, the state will be copied over as well.
-    *
+    * 
     * Note that merge will not update the identifiers in the passed-in object graph (in contrast to TopLink)! Consider
     * registering Spring's IdTransferringMergeEventListener if you would like to have newly assigned ids transferred to
     * the original object graph too.
-    *
-    * @param o
-    *           the object to merge with the corresponding persistence instance
+    * 
+    * @param o the object to merge with the corresponding persistence instance
+    * 
     * @return the updated, registered persistent instance
     */
    public Object merge(Object o) {
@@ -80,18 +79,16 @@ public class GenericDAO extends HibernateDaoSupport {
    public void saveOrUpdate(Object o){
       getHibernateTemplate().saveOrUpdate(o);
    }
+   
    /**
     * Return the persistent instance of the given entity class with the given identifier, throwing an exception if not
     * found. This method is a thin wrapper around HibernateTemplate.load(Class, java.io.Serializable) for convenience.
     * For an explanation of the exact semantics of this method, please do refer to the Hibernate API documentation in
     * the first instance.
-    *
-    * @param <T>
-    *           a persistent generics
-    * @param clazz
-    *           a persistent class
-    * @param id
-    *           the identifier of the persistent instance
+    * 
+    * @param clazz a persistent class
+    * @param id the identifier of the persistent instance
+    * 
     * @return the persistent instance
     */
    @SuppressWarnings("unchecked")
@@ -104,13 +101,10 @@ public class GenericDAO extends HibernateDaoSupport {
     * method is a thin wrapper around HibernateTemplate.get(Class, java.io.Serializable) for convenience. For an
     * explanation of the exact semantics of this method, please do refer to the Hibernate API documentation in the first
     * instance.
-    *
-    * @param <T>
-    *           a persistent generics
-    * @param clazz
-    *           a persistent class
-    * @param id
-    *           the identifier of the persistent instance
+    * 
+    * @param clazz a persistent class
+    * @param id the identifier of the persistent instance
+    * 
     * @return the persistent instance, or null if not found
     */
    @SuppressWarnings("unchecked")
@@ -123,15 +117,11 @@ public class GenericDAO extends HibernateDaoSupport {
     * found. This method is a thin wrapper around HibernateTemplate.findByCriteria(DetachedCriteria criteria, int
     * firstResult, int maxResults)convenience. For an explanation of the exact semantics of this method, please do refer
     * to the Hibernate API documentation in the first instance.
-    *
-    * @param <T>
-    *           a persistent generics
-    * @param clazz
-    *           a persistent class
-    * @param fieldName
-    *           field name
-    * @param fieldValue
-    *           field value
+    * 
+    * @param clazz a persistent class
+    * @param fieldName field name
+    * @param fieldValue field value
+    * 
     * @return the persistent instance, or null if not found
     */
    @SuppressWarnings("unchecked")
@@ -149,9 +139,8 @@ public class GenericDAO extends HibernateDaoSupport {
 
    /**
     * Delete the given persistent instance.
-    *
-    * @param o
-    *           the persistent instance to delete
+    * 
+    * @param o the persistent instance to delete
     */
    public void delete(Object o) {
       getHibernateTemplate().delete(o);
@@ -160,11 +149,8 @@ public class GenericDAO extends HibernateDaoSupport {
    /**
     * Delete all given persistent instances. This can be combined with any of the find methods to delete by query in two
     * lines of code.
-    *
-    * @param <T>
-    *           a persistent generics
-    * @param entities
-    *           the persistent instances to delete
+    * 
+    * @param entities the persistent instances to delete
     */
    public <T> void deleteAll(List<T> entities) {
       getHibernateTemplate().deleteAll(entities);
@@ -173,11 +159,9 @@ public class GenericDAO extends HibernateDaoSupport {
    /**
     * Return all persistent instances of the given entity class. Note: Use queries or criteria for retrieving a specific
     * subset.
-    *
-    * @param <T>
-    *           a persistent generics
-    * @param clazz
-    *           a persistent class
+    * 
+    * @param clazz a persistent class
+    * 
     * @return a List containing 0 or more persistent instances
     */
    @SuppressWarnings("unchecked")
@@ -187,11 +171,8 @@ public class GenericDAO extends HibernateDaoSupport {
 
    /**
     * Inserts a batch of given persistent instances.
-    *
-    * @param <T>
-    *           a persistent generics
-    * @param insertList
-    *           persistent instances to insert.
+    * 
+    * @param insertList persistent instances to insert.
     */
    public <T> void batchInsert(final List<T> insertList) {
       StatelessSession statelessSession = getSessionFactory().openStatelessSession();
@@ -209,12 +190,10 @@ public class GenericDAO extends HibernateDaoSupport {
    }
 
    /**
-    * Finds by DetachedCriteria
-    *
-    * @param <T>
-    *           a persistent generics
-    * @param detachedCriteria
-    *           DetachedCriteria
+    * Finds by DetachedCriteria.
+    * 
+    * @param detachedCriteria DetachedCriteria
+    * 
     * @return the objects (of the target class) to find
     */
    @SuppressWarnings("unchecked")
@@ -223,10 +202,9 @@ public class GenericDAO extends HibernateDaoSupport {
    }
 
    /**
-    * Closes the StatelessSession
-    *
-    * @param session
-    *           the session to close
+    * Closes the StatelessSession.
+    * 
+    * @param session the session to close
     */
    private void closeStatelessSession(StatelessSession session) {
       if (session != null) {
@@ -242,12 +220,12 @@ public class GenericDAO extends HibernateDaoSupport {
    }
 
    /**
-    * Counts all the record according to one field
-    *
-    * @param clazz
-    *           the class you want to count
-    * @param fieldName
-    * @param fieldValue
+    * Counts all the record according to one field.
+    * 
+    * @param clazz the class you want to count
+    * @param fieldName the field name
+    * @param fieldValue the field value
+    * 
     * @return count number
     */
    @SuppressWarnings("unchecked")
@@ -267,9 +245,8 @@ public class GenericDAO extends HibernateDaoSupport {
 
    /**
     * Re-read the state of the given persistent instance.
-    *
-    * @param o
-    *           the persistent instance to re-read
+    * 
+    * @param o the persistent instance to re-read
     */
    public void refresh(Object o) {
       getHibernateTemplate().refresh(o);
@@ -277,15 +254,11 @@ public class GenericDAO extends HibernateDaoSupport {
 
    /**
     * Find persistent instances by DetachedCriteria in pagination.
-    *
-    * @param <T>
-    *           a persistent generics
-    * @param detachedCriteria
-    *           DetachedCriteria
-    * @param pageSize
-    *           page size
-    * @param startPos
-    *           start position
+    * 
+    * @param detachedCriteria DetachedCriteria
+    * @param pageSize page size
+    * @param startPos start position
+    * 
     * @return persistent instances to find
     */
    @SuppressWarnings("unchecked")
@@ -301,10 +274,10 @@ public class GenericDAO extends HibernateDaoSupport {
    }
 
    /**
-    * Counts By DetachedCriteria
-    *
-    * @param detachedCriteria
-    *           must have Projections.count
+    * Counts By DetachedCriteria.
+    * 
+    * @param detachedCriteria must have Projections.count
+    * 
     * @return the count
     */
    public int countByDetachedCriteria(final DetachedCriteria detachedCriteria) {
@@ -316,6 +289,11 @@ public class GenericDAO extends HibernateDaoSupport {
       }, true).toString());
    }
    
+   /**
+    * Initialize.
+    * 
+    * @param arg0 the arg0
+    */
    public void initialize(Object arg0) {
        this.getHibernateTemplate().initialize(arg0);
    }

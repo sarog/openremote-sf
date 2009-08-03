@@ -1,18 +1,22 @@
-/*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
- * 
- * This is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any later version.
- * 
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
- * You should have received a copy of the GNU General Public License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
- * http://www.fsf.org.
- */
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.client.widget;
 
 import java.util.ArrayList;
@@ -66,6 +70,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class MacroWindow.
  */
@@ -113,8 +118,7 @@ public class MacroWindow extends Window {
    /**
     * Instantiates a new macro window.
     * 
-    * @param deviceMacroModel
-    *           the device macro
+    * @param deviceMacroModel the device macro
     */
    public MacroWindow(BeanModel deviceMacroModel) {
       this._deviceMacroBeanModel = deviceMacroModel;
@@ -129,8 +133,7 @@ public class MacroWindow extends Window {
    /**
     * Listener will be called after form submit and all the validator on fields pass.
     * 
-    * @param listener
-    *           the listener
+    * @param listener the listener
     */
    public void addSubmitListener(Listener<AppEvent> listener) {
       submitListeners.add(listener);
@@ -139,8 +142,7 @@ public class MacroWindow extends Window {
    /**
     * Remote submit listener.
     * 
-    * @param listener
-    *           the listener
+    * @param listener the listener
     */
    public void remoteSubmitListener(Listener<AppEvent> listener) {
       submitListeners.remove(listener);
@@ -442,8 +444,7 @@ public class MacroWindow extends Window {
    /**
     * Fire submit listener.
     * 
-    * @param event
-    *           the event
+    * @param event the event
     */
    protected void fireSubmitListener(AppEvent event) {
       for (Listener<AppEvent> listener : submitListeners) {
