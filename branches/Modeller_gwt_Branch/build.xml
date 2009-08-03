@@ -114,8 +114,8 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<target name="libs" depends="clean" description="Copy libs to WEB-INF/lib">
 		<mkdir dir="${output.dir}" />
 		<mkdir dir="${web-inf.dir}/lib" />
-		<copy todir="${web-inf.dir}/lib">
-			<fileset dir="${lib.dir}/core" includes="*.jar"/>
+		<copy todir="${web-inf.dir}/lib" flatten="true">
+			<fileset dir="${lib.dir}/core" includes="**/*.jar"/>
 		</copy>
 		<!-- Add any additional server libs that need to be copied -->
 	</target>
