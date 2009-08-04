@@ -52,7 +52,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<property name="test.report" value="${test.build.dir}/test-report"/>
 
 	<!-- Some variables for HSQLDB Engine Server Mode, NOT In-Memory Mode -->
-	<property name="hjar" value="${lib.dir}/test/hsqldb.jar" />
+	<property name="hjar" value="${lib.dir}/test/hsqldb/hsqldb.jar" />
 	<property name="hclass" value="org.hsqldb.Server" />
 	<property name="hfile" value="-database.0 hsqldb/modeler" />
 	<property name="halias" value="modeler" />
@@ -67,7 +67,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
 	<path id="cobertura.classpath">
 		<fileset dir="${cobertura.lib.dir}">
-			<include name="*.jar" />
+			<include name="**/*.jar" />
 		</fileset>
 	</path>
 
@@ -78,7 +78,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
 	<path id="checkstyle.classpath">
 		<fileset dir="${checkstyle.lib.dir}">
-			<include name="*.jar" />
+			<include name="**/*.jar" />
 		</fileset>
 	</path>
 
