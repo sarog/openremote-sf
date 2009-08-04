@@ -49,7 +49,6 @@ import org.openremote.modeler.protocol.ProtocolDefinition;
 import org.openremote.modeler.protocol.ProtocolValidator;
 import org.xml.sax.SAXException;
 
-// TODO: Auto-generated Javadoc
 /**
  * Parse all the protocol describe xml file in classpath/protocols.
  * 

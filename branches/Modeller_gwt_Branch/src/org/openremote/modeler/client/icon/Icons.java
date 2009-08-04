@@ -22,7 +22,6 @@ package org.openremote.modeler.client.icon;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.ImageBundle;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface Icons.
  */

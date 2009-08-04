@@ -23,13 +23,13 @@ package org.openremote.modeler.service;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
+import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
 
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Interface DeviceMacroItemService.
+ * Provides functions to operate {@link DeviceMacroItem}.
  * 
  * @author allen.wei
  */

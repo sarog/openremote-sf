@@ -31,7 +31,7 @@ import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class BuildingModelerView.
  */

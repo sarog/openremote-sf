@@ -29,7 +29,6 @@ import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class BaseGWTSpringControllerWithHibernateSupport is use for supper class of rpc implement. all the method in the
  * subclass can return an hibernate object to frontend.

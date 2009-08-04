@@ -29,7 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class Device Macro Item.
  * 

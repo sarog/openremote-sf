@@ -35,7 +35,7 @@ import com.extjs.gxt.ui.client.store.StoreEvent;
 import com.extjs.gxt.ui.client.store.StoreListener;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class RemoteJsonComboBox.
  */

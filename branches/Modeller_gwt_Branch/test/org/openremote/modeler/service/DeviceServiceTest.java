@@ -30,7 +30,7 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.User;
 import org.testng.annotations.Test;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class DeviceServiceTest.
  * 

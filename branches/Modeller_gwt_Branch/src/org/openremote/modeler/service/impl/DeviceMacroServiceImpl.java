@@ -29,9 +29,9 @@ import org.openremote.modeler.service.UserService;
 
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
+
 /**
- * The Class DeviceMacroServiceImpl.
+ * Default implements of {@link DeviceMacroService} 
  */
 public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> implements DeviceMacroService {
 
@@ -43,30 +43,28 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
 
 
    /**
-    * Sets the device macro item service.
+    * For spring IOC
     * 
     * @param deviceMacroItemService the new device macro item service
     */
-   public void setDeviceMacroItemService(DeviceMacroItemService deviceMacroItemService) {
+   private void setDeviceMacroItemService(DeviceMacroItemService deviceMacroItemService) {
       this.deviceMacroItemService = deviceMacroItemService;
    }
    
    
 
    /**
-    * Sets the user service.
+    * For spring IOC
     * 
     * @param userService the new user service
     */
-   public void setUserService(UserService userService) {
+   private void setUserService(UserService userService) {
       this.userService = userService;
    }
 
 
 
-   /*
-    * (non-Javadoc)
-    * 
+   /* (non-Javadoc)
     * @see org.openremote.modeler.service.BaseAbstractService#loadAll()
     */
    public List<DeviceMacro> loadAll() {
@@ -77,10 +75,8 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
       return list;
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.openremote.modeler.client.rpc.DeviceMacroRPCService#save(org.openremote.modeler.domain.DeviceMacro)
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.service.DeviceMacroService#saveDeviceMacro(org.openremote.modeler.domain.DeviceMacro)
     */
    public DeviceMacro saveDeviceMacro(DeviceMacro deviceMacro) {
       deviceMacro.setAccount(userService.getAccount());
@@ -88,10 +84,8 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
       return deviceMacro;
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.openremote.modeler.client.rpc.DeviceMacroRPCService#edit(org.openremote.modeler.domain.DeviceMacro)
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.service.DeviceMacroService#updateDeviceMacro(org.openremote.modeler.domain.DeviceMacro)
     */
    public DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro) {
       DeviceMacro old = genericDAO.loadById(DeviceMacro.class, deviceMacro.getOid());
@@ -110,10 +104,9 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
       return old;
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.openremote.modeler.client.rpc.DeviceMacroRPCService#deleteDeviceMacro(long)
+
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.service.DeviceMacroService#deleteDeviceMacro(long)
     */
    public void deleteDeviceMacro(long id) {
       DeviceMacro deviceMacro = loadById(id);

@@ -43,7 +43,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class is used for create tree.
  */

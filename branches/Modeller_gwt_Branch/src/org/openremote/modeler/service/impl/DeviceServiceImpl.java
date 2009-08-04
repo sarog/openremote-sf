@@ -28,7 +28,6 @@ import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.service.DeviceService;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class DeviceServiceImpl.
  */

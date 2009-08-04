@@ -24,7 +24,6 @@ import org.openremote.modeler.domain.Device;
 
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface DeviceService.
  */

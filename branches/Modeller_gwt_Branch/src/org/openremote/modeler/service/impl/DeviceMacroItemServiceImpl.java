@@ -27,16 +27,16 @@ import org.openremote.modeler.service.DeviceMacroItemService;
 
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class DeviceMacroItemService.
+ * Default implement of DeviceMacroItemService.
+ * 
+ * @author allen.wei
  */
 public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroItem> implements DeviceMacroItemService {
 
-   /**
-    * Delete by device command.
-    * 
-    * @param deviceCommand the device command
+
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.service.DeviceMacroItemService#deleteByDeviceCommand(org.openremote.modeler.domain.DeviceCommand)
     */
    public void deleteByDeviceCommand(DeviceCommand deviceCommand) {
       DetachedCriteria criteria = DetachedCriteria.forClass(DeviceCommandRef.class);
@@ -44,10 +44,9 @@ public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroI
       genericDAO.deleteAll(deviceCommandRefs);
    }
 
-   /**
-    * Delete by device macro.
-    * 
-    * @param targetDeviceMacro the target device macro
+
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.service.DeviceMacroItemService#deleteByDeviceMacro(org.openremote.modeler.domain.DeviceMacro)
     */
    public void deleteByDeviceMacro(DeviceMacro targetDeviceMacro) {
       DetachedCriteria criteria = DetachedCriteria.forClass(DeviceMacroRef.class);
@@ -55,6 +54,7 @@ public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroI
       genericDAO.deleteAll(deviceMacroRefs);
    }
 
+   
    /* (non-Javadoc)
     * @see org.openremote.modeler.service.DeviceMacroItemService#LoadByDeviceCommandId(long)
     */
@@ -64,6 +64,7 @@ public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroI
       return genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("deviceCommand", deviceCommand)));
    }
 
+   
    /* (non-Javadoc)
     * @see org.openremote.modeler.service.DeviceMacroItemService#loadByDeviceMacroId(long)
     */

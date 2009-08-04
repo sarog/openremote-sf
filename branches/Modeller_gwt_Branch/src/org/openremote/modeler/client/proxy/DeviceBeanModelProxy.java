@@ -31,7 +31,7 @@ import org.openremote.modeler.domain.DeviceCommand;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class DeviceBeanModelProxy.
  */

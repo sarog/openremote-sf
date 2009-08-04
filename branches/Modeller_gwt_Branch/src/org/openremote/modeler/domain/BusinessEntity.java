@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-// TODO: Auto-generated Javadoc
+
 /**
  * Business entity class for all JPA entities with the common property oid.
  * 

@@ -21,7 +21,7 @@ package org.openremote.modeler.client.view;
 
 import com.extjs.gxt.ui.client.widget.TabItem;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class UIDesignerView.
  */

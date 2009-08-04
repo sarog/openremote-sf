@@ -29,7 +29,6 @@ import org.springframework.web.servlet.mvc.Controller;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class BaseGWTSpringController is a supper class of rpc implement. the subclass can only return common pojo.
  */

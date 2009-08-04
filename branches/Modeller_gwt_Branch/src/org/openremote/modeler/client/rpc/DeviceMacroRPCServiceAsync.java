@@ -25,7 +25,7 @@ import org.openremote.modeler.domain.DeviceMacroItem;
 
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Interface DeviceMacroServiceAsync.
  */

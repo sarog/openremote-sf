@@ -22,7 +22,6 @@ package org.openremote.modeler.utils;
 
 import java.lang.reflect.ParameterizedType;
 
-// TODO: Auto-generated Javadoc
 /**
  * Generic utility class User: allenwei Date: 2009-2-13 Time: 10:57:22.
  */

@@ -21,7 +21,7 @@ package org.openremote.modeler.client.rpc;
 
 import org.openremote.modeler.domain.User;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The service for User.
  * 

@@ -23,7 +23,7 @@ package org.openremote.modeler.client.rpc;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Interface ConfigurationRPCService.
  */

@@ -28,7 +28,7 @@ import org.openremote.modeler.protocol.ProtocolDefinition;
 
 import java.util.Map;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class Protocols. Used for get all protocol definitions from xml files.
  */

@@ -22,7 +22,7 @@ package org.openremote.modeler.client.rpc;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Interface ConfigurationRPCServiceAsync.
  */

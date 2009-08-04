@@ -41,7 +41,7 @@ import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * This FormPanel widget is used for render protocol form.
  * 

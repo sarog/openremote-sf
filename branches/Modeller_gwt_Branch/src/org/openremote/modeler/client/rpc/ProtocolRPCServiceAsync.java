@@ -25,7 +25,7 @@ import org.openremote.modeler.protocol.ProtocolDefinition;
 import java.util.Map;
 
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The rpc interface of  ProtocolService.
  */

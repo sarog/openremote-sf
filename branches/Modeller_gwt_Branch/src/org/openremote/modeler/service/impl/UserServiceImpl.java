@@ -25,7 +25,6 @@ import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.UserService;
 import org.springframework.security.context.SecurityContextHolder;
 
-// TODO: Auto-generated Javadoc
 /**
  * The service for User.
  * 

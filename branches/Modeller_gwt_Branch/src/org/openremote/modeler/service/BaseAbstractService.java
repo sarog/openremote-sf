@@ -27,7 +27,6 @@ import org.openremote.modeler.dao.GenericDAO;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.utils.GenericUtil;
 
-// TODO: Auto-generated Javadoc
 /**
  * The common service for all the services.
  * <p/>
