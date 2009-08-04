@@ -34,7 +34,7 @@ import org.openremote.modeler.domain.DeviceMacroRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class DeviceMacroBeanModelProxy.
  */

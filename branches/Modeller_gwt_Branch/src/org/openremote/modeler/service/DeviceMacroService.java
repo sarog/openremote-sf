@@ -24,14 +24,15 @@ import org.openremote.modeler.domain.DeviceMacro;
 
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Interface DeviceMacroService.
+ * Provides functions to operate {@link DeviceMacro}.
+ * 
+ * @author allen.wei
  */
 public interface DeviceMacroService {
    
    /**
-    * Load all.
+    * Load all {@link DeviceMacro}.
     * 
     * @return the list< device macro>
     */
@@ -39,7 +40,7 @@ public interface DeviceMacroService {
    
 
    /**
-    * Save device macro.
+    * Save {@link DeviceMacro}.
     * 
     * @param deviceMacro the device macro
     * 

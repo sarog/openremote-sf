@@ -29,7 +29,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class Protocol.
  * 

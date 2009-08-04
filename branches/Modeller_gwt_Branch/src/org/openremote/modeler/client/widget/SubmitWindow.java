@@ -26,7 +26,7 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.widget.Window;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class SubmitForm.
  */

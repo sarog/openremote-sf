@@ -48,7 +48,7 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Element;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class DevicePanel.
  */

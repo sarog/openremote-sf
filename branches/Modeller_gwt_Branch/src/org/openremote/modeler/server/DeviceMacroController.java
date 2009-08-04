@@ -26,7 +26,6 @@ import org.openremote.modeler.service.DeviceMacroService;
 
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class DeviceMacroController.
  */

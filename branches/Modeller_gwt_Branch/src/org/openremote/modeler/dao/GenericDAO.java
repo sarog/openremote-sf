@@ -35,7 +35,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The general DAO for all the DAO. It provides basic CRUD operations using Hibernate.
  * 

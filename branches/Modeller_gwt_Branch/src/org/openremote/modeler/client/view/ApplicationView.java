@@ -38,7 +38,7 @@ import org.openremote.modeler.client.utils.Protocols;
 
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class ApplicationView.
  * 

@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.openremote.modeler.domain.DeviceCommand;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface DeviceCommandService.
  */

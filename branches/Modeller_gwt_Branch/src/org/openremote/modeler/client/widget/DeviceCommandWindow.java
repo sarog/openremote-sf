@@ -56,7 +56,7 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class DeviceCommandWindow.
  */

@@ -27,7 +27,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class DeviceCommand.
  * 

@@ -26,7 +26,6 @@ import org.openremote.modeler.service.ProtocolParser;
 
 import java.util.Map;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ProtocolServiceImpl.
  */

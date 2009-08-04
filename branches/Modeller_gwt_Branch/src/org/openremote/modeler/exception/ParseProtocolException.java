@@ -19,7 +19,7 @@
 */
 package org.openremote.modeler.exception;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * If the parse protocol XMLs procedure occurr error, application will throw this exception.
  */

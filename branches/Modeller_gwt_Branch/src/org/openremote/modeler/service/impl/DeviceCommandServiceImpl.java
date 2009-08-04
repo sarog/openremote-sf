@@ -28,7 +28,6 @@ import org.openremote.modeler.service.DeviceMacroItemService;
 
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
  * The implementation for DeviceCommandService interface.
  * 
@@ -36,9 +35,7 @@ import java.util.List;
  */
 public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand> implements DeviceCommandService {
 
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.client.rpc.DeviceCommandRPCService#saveAll(java.util.List)
-    */
+ 
    /** The device macro item service. */
    private DeviceMacroItemService deviceMacroItemService;
 

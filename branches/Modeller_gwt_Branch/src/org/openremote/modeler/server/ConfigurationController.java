@@ -26,9 +26,8 @@ import org.openremote.modeler.client.rpc.ConfigurationRPCService;
 import java.io.IOException;
 import java.util.Properties;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class ConfigurationController.
+ * Gets the system configuration 
  */
 public class ConfigurationController extends BaseGWTSpringController implements ConfigurationRPCService {
    

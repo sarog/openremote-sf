@@ -21,7 +21,7 @@ package org.openremote.modeler.client.model;
 
 import com.extjs.gxt.ui.client.data.BaseModelData;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class DeviceMacroItemModel.
  */

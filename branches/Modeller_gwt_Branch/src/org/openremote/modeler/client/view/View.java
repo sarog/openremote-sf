@@ -19,7 +19,7 @@
 */
 package org.openremote.modeler.client.view;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Interface View.
  * 

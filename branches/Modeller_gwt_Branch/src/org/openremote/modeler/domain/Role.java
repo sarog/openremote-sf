@@ -25,7 +25,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class Role.
  * 

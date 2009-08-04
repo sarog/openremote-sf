@@ -28,7 +28,6 @@ import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.service.DeviceMacroItemService;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class DeviceMacroItemController.
  * 

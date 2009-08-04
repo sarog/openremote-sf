@@ -24,7 +24,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class Device Command Reference.
  * 
