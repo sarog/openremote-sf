@@ -24,6 +24,18 @@
                 <value>org.openremote.beehive.domain.Code</value>
                 <value>org.openremote.beehive.domain.Icon</value>
                 <value>org.openremote.beehive.domain.SyncHistory</value>
+                <value>org.openremote.beehive.domain.User</value>
+                <value>org.openremote.beehive.domain.Role</value>
+                <value>org.openremote.beehive.domain.GCVendor</value>
+                <value>org.openremote.beehive.domain.GCDeviceModel</value>
+                <value>org.openremote.beehive.domain.GCRemoteModel</value>
+                <value>org.openremote.beehive.domain.GCIRCode</value>
+                <value>org.openremote.beehive.domain.GCIRFlag</value>
+                <value>org.openremote.beehive.domain.TmpGCVendor</value>
+                <value>org.openremote.beehive.domain.TmpGCDeviceModel</value>
+                <value>org.openremote.beehive.domain.TmpGCRemoteModel</value>
+                <value>org.openremote.beehive.domain.TmpGCIRCode</value>
+                <value>org.openremote.beehive.domain.TmpGCIRFlag</value>
             </list>
         </property>
         <property name="mappingResources">
