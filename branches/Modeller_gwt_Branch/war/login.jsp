@@ -43,8 +43,8 @@
             <a href="http://www.openremote.org" ><img src="image/global.logo.png" /></a>
             <div style="padding-left:120px">
 	            <h3>Login to Modeler</h3>
-	            <p><b class="form_label">Username</b><input style="width:150px" type="text" name="j_username" value="super"></p>
-	            <p><b class="form_label">Password</b><input style="width:150px" type="password" name="j_password" value="123"></p>
+	            <p><b class="form_label">Username</b><input id="username" style="width:150px" type="text" name="j_username" value="super"></p>
+	            <p><b class="form_label">Password</b><input id="password" style="width:150px" type="password" name="j_password" value="123"></p>
                 <c:if test="${param.fail ne null }">
 	                <p class="fail">The username or password you entered is incorrect.</p>
                 </c:if>

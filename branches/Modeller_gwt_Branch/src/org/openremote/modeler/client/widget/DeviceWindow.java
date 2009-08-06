@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openremote.modeler.client.DebugId;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Device;
@@ -67,6 +68,7 @@ public class DeviceWindow extends SubmitWindow {
     */
    public DeviceWindow() {
       initial("New device");
+      this.ensureDebugId(DebugId.NEW_DEVICE_WINDOW);
       show();
    }
    
@@ -100,6 +102,7 @@ public class DeviceWindow extends SubmitWindow {
       form.setButtonAlign(HorizontalAlignment.CENTER);
 
       Button submitBtn = new Button("Submit");
+      submitBtn.ensureDebugId(DebugId.DEVICE_SUBMIT_BTN);
       Button resetButton = new Button("Reset");
 
       submitBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -158,17 +161,20 @@ public class DeviceWindow extends SubmitWindow {
    private void createFields(){
       TextField<String> nameField = new TextField<String>();
       nameField.setName(DEVICE_NAME);
+      nameField.ensureDebugId(DebugId.DEVICE_NAME_FIELD);
       nameField.setFieldLabel("Name");
       nameField.setAllowBlank(false);
       
       TextField<String> vendorField = new TextField<String>();
       vendorField.setName(DEVICE_VENDOR);
       vendorField.setFieldLabel("Vendor");
+      vendorField.ensureDebugId(DebugId.DEVICE_VENDOR_FIELD);
       vendorField.setAllowBlank(false);
       
       TextField<String> modelField = new TextField<String>();
       modelField.setName(DEVICE_MODEL);
       modelField.setFieldLabel("Model");
+      modelField.ensureDebugId(DebugId.DEVICE_MODEL_FIELD);
       modelField.setAllowBlank(false);
       
       if(deviceModel != null){

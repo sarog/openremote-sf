@@ -8,6 +8,10 @@
   <inherits name='com.extjs.gxt.ui.GXT'/>
   <inherits name='net.sf.gilead.Adapter4Gwt15'/>
   
+  <!-- Ensure that UIElement has an ID property for Selenium test -->
+  <!-- will have no effect unless you inherit this DebugID module -->
+  <inherits name="com.google.gwt.user.Debug"/>
+  
   <!-- Inherit the default GWT style sheet.  You can change       -->
   <!-- the theme of your GWT application by uncommenting          -->
   <!-- any one of the following lines.                            -->

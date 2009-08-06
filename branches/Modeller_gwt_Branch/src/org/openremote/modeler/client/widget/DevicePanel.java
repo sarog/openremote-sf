@@ -21,6 +21,7 @@ package org.openremote.modeler.client.widget;
 
 import java.util.List;
 
+import org.openremote.modeler.client.DebugId;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
@@ -84,6 +85,7 @@ public class DevicePanel extends ContentPanel {
             add(tree);
          }
       };
+      treeContainer.ensureDebugId(DebugId.DEVICE_TREE_CONTAINER);
       treeContainer.setScrollMode(Scroll.AUTO);
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
@@ -97,6 +99,7 @@ public class DevicePanel extends ContentPanel {
    private void createMenu() {
       ToolBar toolBar = new ToolBar();
       Button newButton = new Button("New");
+      newButton.ensureDebugId(DebugId.DEVICE_NEW_BTN);
       newButton.setIcon(icon.add());
       
       Menu newMenu = new Menu();
@@ -120,6 +123,7 @@ public class DevicePanel extends ContentPanel {
     */
    private MenuItem createNewDeviceMenu() {
       MenuItem newDeviceItem = new MenuItem("New Device");
+      newDeviceItem.ensureDebugId(DebugId.NEW_DEVICE_MENU_ITEM);
       newDeviceItem.setIcon(icon.addDevice());
       newDeviceItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
@@ -190,6 +194,7 @@ public class DevicePanel extends ContentPanel {
     */
    private Button createEditButton() {
       Button editBtn = new Button("Edit");
+      editBtn.ensureDebugId(DebugId.DEVICE_EDIT_BTN);
       editBtn.setIcon(icon.edit());
       editBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
@@ -245,6 +250,7 @@ public class DevicePanel extends ContentPanel {
     */
    private Button createDeleteButton() {
       Button deleteBtn = new Button("Delete");
+      deleteBtn.ensureDebugId(DebugId.DELETE_DEVICE_BUTTON);
       deleteBtn.setIcon(icon.delete());
       deleteBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
