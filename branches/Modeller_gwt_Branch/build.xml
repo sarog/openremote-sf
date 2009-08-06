@@ -274,7 +274,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<!-- ==================================================================== -->
 	<!-- Cobertura instrument                                                 -->
 	<!-- ==================================================================== -->
-	<target name="instrument" depends="compile-test">
+	<target name="instrument" depends="compile-test" description="adds the logging code to the already compiled class files">
 		<mkdir dir="${instrumented.dir}" />
 		<delete file="${cobertura.datafile}" />
 		<cobertura-instrument todir="${instrumented.dir}" datafile="${cobertura.datafile}">
@@ -289,7 +289,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<!-- TestNG with coverage                                                 -->
 	<!-- ==================================================================== -->
 	<target name="testng-cov" depends="instrument" description="run cobertura coverage in testng">
-		<testng outputdir="${test.output}" classpath="${cobertura.lib.dir}/cobertura-1.9.jar;${instrumented.dir};${test.build.classes.dir};${web-inf.dir}/classes;${cobertura.lib.dir}/">
+		<testng outputdir="${test.output}" classpath="${cobertura.lib.dir}/cobertura/cobertura-1.9.jar;${instrumented.dir};${test.build.classes.dir};${web-inf.dir}/classes;${cobertura.lib.dir}/">
 			<classpath refid="project.class.path">
 			</classpath>
 			<xmlfileset dir="${test.dir}" includes="testng.xml" />
