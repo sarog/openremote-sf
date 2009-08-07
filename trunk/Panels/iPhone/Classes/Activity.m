@@ -73,8 +73,8 @@
  */
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
 	if ([elementName isEqualToString:@"activity"]) {
-		[parser setDelegate:nil];
- 		//[parser setDelegate:xmlParserParentDelegate];
+		NSLog(@"end parse Activity");
+ 		[parser setDelegate:xmlParserParentDelegate];
 		[xmlParserParentDelegate release];
 		xmlParserParentDelegate = nil;
 	}
