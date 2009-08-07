@@ -23,6 +23,7 @@ package org.openremote.modeler.client.widget;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtExtends.NestedJsonLoadResultReader;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
@@ -41,12 +42,10 @@ import com.extjs.gxt.ui.client.data.ModelType;
 import com.extjs.gxt.ui.client.data.ScriptTagProxy;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
-import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.util.Padding;
@@ -67,7 +66,7 @@ import com.google.gwt.core.client.GWT;
 /**
  * The window allow user to select Infrared.
  */
-public class SelectIRWindow extends SubmitWindow {
+public class SelectIRWindow extends Window {
 
    /** The beehive rest url. */
    private String beehiveRESTUrl = null;
@@ -454,9 +453,7 @@ public class SelectIRWindow extends SubmitWindow {
          DeviceCommandBeanModelProxy.saveAllDeviceCommands(device, codeGrid.getStore().getModels(), new AsyncSuccessCallback<List<BeanModel>>() {
             @Override
             public void onSuccess(List<BeanModel> deviceCommandModels) {
-               AppEvent event = new AppEvent(Events.Submit);
-               event.setData(deviceCommandModels);
-               fireSubmitListener(event);
+               fireEvent(SubmitEvent.Submit, new SubmitEvent(deviceCommandModels));
             }
          });
          

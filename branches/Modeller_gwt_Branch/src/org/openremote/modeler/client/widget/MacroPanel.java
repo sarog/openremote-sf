@@ -23,7 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
@@ -40,7 +42,6 @@ import com.extjs.gxt.ui.client.data.ChangeListener;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.store.Store;
 import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
@@ -94,9 +95,9 @@ public class MacroPanel extends ContentPanel {
          public void componentSelected(ButtonEvent ce) {
             final MacroWindow macroWindow = new MacroWindow();
 
-            macroWindow.addSubmitListener(new Listener<AppEvent>() {
-
-               public void handleEvent(AppEvent be) {
+            macroWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+               @Override
+               public void afterSubmit(SubmitEvent be) {
                   afterCreateDeviceMacro(be.<DeviceMacro> getData());
                   macroWindow.hide();
                }
@@ -261,8 +262,9 @@ public class MacroPanel extends ContentPanel {
       if (macroTree.getSelectionModel().getSelectedItem() != null) {
          final BeanModel oldModel = macroTree.getSelectionModel().getSelectedItem();
          final MacroWindow macroWindow = new MacroWindow(macroTree.getSelectionModel().getSelectedItem());
-         macroWindow.addSubmitListener(new Listener<AppEvent>() {
-            public void handleEvent(AppEvent be) {
+         macroWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+            @Override
+            public void afterSubmit(SubmitEvent be) {
                afterUpdateDeviceMacroSubmit(oldModel, be.<DeviceMacro> getData());
                macroWindow.hide();
             }

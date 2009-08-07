@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
@@ -46,8 +47,8 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.Field;
@@ -60,7 +61,7 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 /**
  * The Class DeviceCommandWindow.
  */
-public class DeviceCommandWindow extends SubmitWindow {
+public class DeviceCommandWindow extends Window {
    
    /** The Constant DEVICE_COMMAND_NAME. */
    public static final String DEVICE_COMMAND_NAME = "name";
@@ -164,8 +165,7 @@ public class DeviceCommandWindow extends SubmitWindow {
             AsyncSuccessCallback<BeanModel> callback = new AsyncSuccessCallback<BeanModel>() {
                @Override
                public void onSuccess(BeanModel deviceCommandModel) {
-                  AppEvent appEvent = new AppEvent(Events.Submit, deviceCommandModel);
-                  fireSubmitListener(appEvent);
+                  fireEvent(SubmitEvent.Submit, new SubmitEvent(deviceCommandModel));
                }
             };
             if (deviceCommand == null) {

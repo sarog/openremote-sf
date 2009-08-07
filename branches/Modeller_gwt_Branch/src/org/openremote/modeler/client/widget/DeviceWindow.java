@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Device;
@@ -35,7 +36,7 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.mvc.AppEvent;
+import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
@@ -46,7 +47,7 @@ import com.extjs.gxt.ui.client.widget.layout.FillLayout;
 /**
  * The Class DeviceWindow.
  */
-public class DeviceWindow extends SubmitWindow {
+public class DeviceWindow extends Window {
    
    /** The DEVIC e_ name. */
    public static final String DEVICE_NAME = "name";
@@ -138,8 +139,7 @@ public class DeviceWindow extends SubmitWindow {
             AsyncSuccessCallback<BeanModel> callback = new AsyncSuccessCallback<BeanModel>() {
                @Override
                public void onSuccess(BeanModel deviceModel) {
-                  AppEvent appEvent = new AppEvent(Events.Submit, deviceModel);
-                  fireSubmitListener(appEvent);
+                  fireEvent(SubmitEvent.Submit, new SubmitEvent(deviceModel));
                }
             };
             if (deviceModel == null) {

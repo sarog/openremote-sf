@@ -47,7 +47,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
     * 
     * @param deviceMacroItemService the new device macro item service
     */
-   private void setDeviceMacroItemService(DeviceMacroItemService deviceMacroItemService) {
+   public void setDeviceMacroItemService(DeviceMacroItemService deviceMacroItemService) {
       this.deviceMacroItemService = deviceMacroItemService;
    }
    
@@ -58,7 +58,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
     * 
     * @param userService the new user service
     */
-   private void setUserService(UserService userService) {
+   public void setUserService(UserService userService) {
       this.userService = userService;
    }
 

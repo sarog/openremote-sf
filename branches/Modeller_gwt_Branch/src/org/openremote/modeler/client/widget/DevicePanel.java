@@ -21,7 +21,9 @@ package org.openremote.modeler.client.widget;
 
 import java.util.List;
 
+import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
@@ -32,10 +34,8 @@ import org.openremote.modeler.selenium.DebugId;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
-import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -138,14 +138,16 @@ public class DevicePanel extends ContentPanel {
     */
    private void createDevice() {
       final DeviceWindow deviceWindow = new DeviceWindow();
-      deviceWindow.addSubmitListener(new Listener<AppEvent>() {
-         public void handleEvent(AppEvent be) {
+      deviceWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+         @Override
+         public void afterSubmit(SubmitEvent be) {
             deviceWindow.hide();
             BeanModel deviceModel = be.getData();
             tree.getStore().add(deviceModel, true);
             //create and select it.
             tree.getSelectionModel().select(deviceModel, false);
             Info.display("Info", "Add device " + deviceModel.get("name") + " success.");
+            
          }
       });
    }
@@ -174,8 +176,9 @@ public class DevicePanel extends ContentPanel {
       final BeanModel deviceModel = tree.getSelectionModel().getSelectedItem();
       if (deviceModel != null && deviceModel.getBean() instanceof Device) {
          final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow((Device) deviceModel.getBean());
-         deviceCommandWindow.addSubmitListener(new Listener<AppEvent>() {
-            public void handleEvent(AppEvent be) {
+         deviceCommandWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+            @Override
+            public void afterSubmit(SubmitEvent be) {
                BeanModel deviceCommandModel = be.getData();
                tree.getStore().add(deviceModel, deviceCommandModel, false);
                tree.setExpanded(deviceModel, true);
@@ -216,8 +219,9 @@ public class DevicePanel extends ContentPanel {
     */
    private void editDevice(BeanModel selectedModel) {
       final DeviceWindow editDeviceWindow = new DeviceWindow(selectedModel);
-      editDeviceWindow.addSubmitListener(new Listener<AppEvent>() {
-         public void handleEvent(AppEvent be) {
+      editDeviceWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+         @Override
+         public void afterSubmit(SubmitEvent be) {
             editDeviceWindow.hide();
             BeanModel deviceModel = be.getData();
             tree.getStore().update(deviceModel);
@@ -233,8 +237,9 @@ public class DevicePanel extends ContentPanel {
     */
    private void editCommand(BeanModel selectedModel) {
       final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow((DeviceCommand) selectedModel.getBean());
-      deviceCommandWindow.addSubmitListener(new Listener<AppEvent>() {
-         public void handleEvent(AppEvent be) {
+      deviceCommandWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+         @Override
+         public void afterSubmit(SubmitEvent be) {
             BeanModel deviceCommandModel = be.getData();
             tree.getStore().update(deviceCommandModel);
             Info.display("Info", "Edit device command " + deviceCommandModel.get("name") + " success.");
@@ -320,8 +325,9 @@ public class DevicePanel extends ContentPanel {
       final BeanModel deviceModel = tree.getSelectionModel().getSelectedItem();
       if (deviceModel != null && deviceModel.getBean() instanceof Device) {
          final SelectIRWindow selectIRWindow = new SelectIRWindow((Device) deviceModel.getBean());
-         selectIRWindow.addSubmitListener(new Listener<AppEvent>() {
-            public void handleEvent(AppEvent be) {
+         selectIRWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+            @Override
+            public void afterSubmit(SubmitEvent be) {
                List<BeanModel> deviceCommandModels = be.getData();
                for (BeanModel deviceCommandModel : deviceCommandModels) {
                   tree.getStore().add(deviceModel, deviceCommandModel, false);
