@@ -160,9 +160,11 @@ static Definition *myInstance = nil;
 	
 	//Set delegate to self in order to parse next elements by itself
 	[xmlParser setDelegate:self];
+
 	
 	//Calls parse method to start parse xml
 	[xmlParser parse];
+	NSLog(@"activities %d",[activities count]);
 	NSLog(@"xml parse done");
 	[data release];
 	[xmlParser release];
@@ -191,6 +193,19 @@ static Definition *myInstance = nil;
 		[activity release];
 	}
 }
+
+/**
+ * When we find an activity end element, restore the original XML parser delegate.
+ */
+- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
+	if ([elementName isEqualToString:@"openremote"]) {
+		NSLog(@"End parse openremote");
+//		[parser setDelegate:nil];
+// 		[parser setDelegate:xmlParserParentDelegate];
+
+	}
+}
+
 
 - (void)downloadImages {
 	@try {
