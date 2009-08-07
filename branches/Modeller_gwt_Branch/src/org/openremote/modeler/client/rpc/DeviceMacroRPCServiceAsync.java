@@ -37,7 +37,6 @@ public interface DeviceMacroRPCServiceAsync {
      * 
      * @param async the async
      * 
-     * @return the list< device macro>
      */
     void loadAll(AsyncCallback<List<DeviceMacro>> async);
 
@@ -47,7 +46,6 @@ public interface DeviceMacroRPCServiceAsync {
      * @param deviceMacro the device macro
      * @param async the async
      * 
-     * @return the device macro
      */
     void saveDeviceMacro(DeviceMacro deviceMacro, AsyncCallback<DeviceMacro> async);
 
@@ -57,7 +55,6 @@ public interface DeviceMacroRPCServiceAsync {
      * @param deviceMacro the device macro
      * @param async the async
      * 
-     * @return the device macro
      */
     void updateDeviceMacro(DeviceMacro deviceMacro, AsyncCallback<DeviceMacro> async);
 

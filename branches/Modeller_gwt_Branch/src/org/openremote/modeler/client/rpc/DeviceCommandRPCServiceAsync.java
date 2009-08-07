@@ -36,7 +36,7 @@ public interface DeviceCommandRPCServiceAsync {
     * @param deviceCommands the device commands
     * @param callback the callback
     */
-   public void saveAll(List<DeviceCommand> deviceCommands,AsyncCallback<List<DeviceCommand>> callback);
+   void saveAll(List<DeviceCommand> deviceCommands, AsyncCallback<List<DeviceCommand>> callback);
    
    /**
     * Save.
@@ -44,7 +44,7 @@ public interface DeviceCommandRPCServiceAsync {
     * @param deviceCommand the device command
     * @param callback the callback
     */
-   public void save(DeviceCommand deviceCommand,AsyncCallback<DeviceCommand> callback);
+   void save(DeviceCommand deviceCommand, AsyncCallback<DeviceCommand> callback);
    
    /**
     * Update.
@@ -52,7 +52,7 @@ public interface DeviceCommandRPCServiceAsync {
     * @param deviceCommand the device command
     * @param callback the callback
     */
-   public void update(DeviceCommand deviceCommand,AsyncCallback<Void> callback);
+   void update(DeviceCommand deviceCommand, AsyncCallback<Void> callback);
    
    /**
     * Load by id.
@@ -60,15 +60,17 @@ public interface DeviceCommandRPCServiceAsync {
     * @param id the id
     * @param callback the callback
     */
-   public void loadById(long id,AsyncCallback<DeviceCommand> callback);
-   
+   void loadById(long id, AsyncCallback<DeviceCommand> callback);
+
    /**
     * Delete command.
     * 
-    * @param id the id
-    * @param callback the callback
+    * @param id
+    *           the id
+    * @param callback
+    *           the callback
     */
-   public void deleteCommand(long id,AsyncCallback<Void> callback);
+   void deleteCommand(long id, AsyncCallback<Void> callback);
 
    /**
     * Load by device.
@@ -76,7 +78,7 @@ public interface DeviceCommandRPCServiceAsync {
     * @param id the id
     * @param asyncCallback the async callback
     */
-   public void loadByDevice(long id, AsyncCallback<List<DeviceCommand>> asyncCallback);
+   void loadByDevice(long id, AsyncCallback<List<DeviceCommand>> asyncCallback);
    
    
 }

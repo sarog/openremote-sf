@@ -27,7 +27,7 @@ import com.extjs.gxt.ui.client.widget.TabItem;
  */
 public class UIDesignerView extends TabItem implements View {
 
-   /* (non-Javadoc)
+   /**
     * @see org.openremote.modeler.client.view.View#initialize()
     */
    public void initialize() {

@@ -173,7 +173,7 @@ public class DevicePanel extends ContentPanel {
    private void createDeviceCommand() {
       final BeanModel deviceModel = tree.getSelectionModel().getSelectedItem();
       if (deviceModel != null && deviceModel.getBean() instanceof Device) {
-         final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow((Device)deviceModel.getBean());
+         final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow((Device) deviceModel.getBean());
          deviceCommandWindow.addSubmitListener(new Listener<AppEvent>() {
             public void handleEvent(AppEvent be) {
                BeanModel deviceCommandModel = be.getData();
@@ -271,7 +271,7 @@ public class DevicePanel extends ContentPanel {
     * @param deviceModel the device model
     */
    private void deleteDevice(final BeanModel deviceModel) {
-      DeviceBeanModelProxy.deleteDevice(deviceModel, new AsyncSuccessCallback<Void>(){
+      DeviceBeanModelProxy.deleteDevice(deviceModel, new AsyncSuccessCallback<Void>() {
          @Override
          public void onSuccess(Void result) {
             tree.getStore().remove(deviceModel);
@@ -287,7 +287,7 @@ public class DevicePanel extends ContentPanel {
     * @param deviceCommnadModel the device commnad model
     */
    private void deleteCommand(final BeanModel deviceCommnadModel) {
-      DeviceCommandBeanModelProxy.deleteDeviceCommand(deviceCommnadModel, new AsyncSuccessCallback<Void>(){
+      DeviceCommandBeanModelProxy.deleteDeviceCommand(deviceCommnadModel, new AsyncSuccessCallback<Void>() {
          @Override
          public void onSuccess(Void result) {
             tree.getStore().remove(deviceCommnadModel);
@@ -319,7 +319,7 @@ public class DevicePanel extends ContentPanel {
    private void importIRCommand() {
       final BeanModel deviceModel = tree.getSelectionModel().getSelectedItem();
       if (deviceModel != null && deviceModel.getBean() instanceof Device) {
-         final SelectIRWindow selectIRWindow = new SelectIRWindow((Device)deviceModel.getBean());
+         final SelectIRWindow selectIRWindow = new SelectIRWindow((Device) deviceModel.getBean());
          selectIRWindow.addSubmitListener(new Listener<AppEvent>() {
             public void handleEvent(AppEvent be) {
                List<BeanModel> deviceCommandModels = be.getData();

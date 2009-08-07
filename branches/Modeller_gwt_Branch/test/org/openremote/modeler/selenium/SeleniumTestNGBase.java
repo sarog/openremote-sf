@@ -24,7 +24,6 @@ import org.testng.annotations.BeforeClass;
 
 import com.thoughtworks.selenium.DefaultSelenium;
 
-// TODO: Auto-generated Javadoc
 /**
  * The TestNG TestBase for Selenium Test. This Class registers the website and browser to be tested.
  * 
@@ -53,7 +52,7 @@ public class SeleniumTestNGBase {
    /**
     * Login.
     */
-   private void login(){
+   private void login() {
       selenium.open("modeler/login.jsp");
       selenium.waitForPageToLoad("3000");
       selenium.windowMaximize();
@@ -94,7 +93,7 @@ public class SeleniumTestNGBase {
     * 
     * @return the string
     */
-   protected String addDebugIdPrefix(String debugId){
+   protected String addDebugIdPrefix(String debugId) {
       return DEBUG_ID_PREFIX + debugId;
    }
 
@@ -104,7 +103,7 @@ public class SeleniumTestNGBase {
     * @param locator
     *           the locator
     */
-   protected void click(String locator){
+   protected void click(String locator) {
       selenium.click(addDebugIdPrefix(locator));
    }
 
@@ -116,7 +115,7 @@ public class SeleniumTestNGBase {
     * @param value
     *           the value
     */
-   protected void type(String locator,String value) {
+   protected void type(String locator, String value) {
       selenium.type(addDebugIdPrefix(locator), value);
    }
    

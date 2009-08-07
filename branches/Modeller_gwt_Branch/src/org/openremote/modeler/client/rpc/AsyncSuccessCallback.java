@@ -27,9 +27,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * 
  * @author allen.wei
  */
-public abstract class AsyncSuccessCallback<T> implements AsyncCallback<T>{
+public abstract class AsyncSuccessCallback<T> implements AsyncCallback<T> {
 
-   /* (non-Javadoc)
+   /**
+    * 
     * @see com.google.gwt.user.client.rpc.AsyncCallback#onFailure(java.lang.Throwable)
     */
    public void onFailure(Throwable caught) {

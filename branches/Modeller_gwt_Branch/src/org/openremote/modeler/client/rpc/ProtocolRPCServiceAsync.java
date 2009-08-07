@@ -37,7 +37,6 @@ public interface ProtocolRPCServiceAsync {
     * 
     * @param callback the callback
     * 
-    * @return the protocols
     */
-   public void getProtocols(AsyncCallback<Map<String,ProtocolDefinition>> callback);
+   void getProtocols(AsyncCallback<Map<String, ProtocolDefinition>> callback);
 }

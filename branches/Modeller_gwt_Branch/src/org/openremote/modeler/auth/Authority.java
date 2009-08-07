@@ -75,7 +75,7 @@ public class Authority implements Serializable {
     * 
     * @param role the role
     */
-   public void addRole(String role){
+   public void addRole(String role) {
       roles.add(role);
    }
    

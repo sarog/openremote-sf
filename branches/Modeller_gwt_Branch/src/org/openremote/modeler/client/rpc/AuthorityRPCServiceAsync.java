@@ -34,7 +34,6 @@ public interface AuthorityRPCServiceAsync {
     * 
     * @param callback the callback
     * 
-    * @return the authority
     */
-   public void getAuthority(AsyncCallback<Authority> callback);
+   void getAuthority(AsyncCallback<Authority> callback);
 }

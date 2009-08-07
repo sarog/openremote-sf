@@ -42,7 +42,8 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
         return genericDAO.getByNonIdField(User.class, "username", username).getAccount();
     }
 
-    /* (non-Javadoc)
+    /**
+     * {@inheritDoc}
     * @see org.openremote.modeler.client.rpc.UserRPCService#saveUser(org.openremote.modeler.domain.User)
     */
     public void saveUser(User user) {

@@ -183,14 +183,24 @@ public class ProtocolValidator implements Serializable {
     */
    @Override
    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o) {
+         return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+         return false;
+      }
 
       ProtocolValidator that = (ProtocolValidator) o;
 
-      if (_type != that._type) return false;
-      if (_message != null ? !_message.equals(that._message) : that._message != null) return false;
-      if (_value != null ? !_value.equals(that._value) : that._value != null) return false;
+      if (_type != that._type) {
+         return false;
+      }
+      if (_message != null ? !_message.equals(that._message) : that._message != null) {
+         return false;
+      }
+      if (_value != null ? !_value.equals(that._value) : that._value != null) {
+         return false;
+      }
 
       return true;
    }

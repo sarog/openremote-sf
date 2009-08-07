@@ -37,7 +37,7 @@ public interface DeviceRPCServiceAsync {
     * @param device the device
     * @param callback the callback
     */
-   public void saveDevice(Device device, AsyncCallback<Device> callback);
+   void saveDevice(Device device, AsyncCallback<Device> callback);
    
    /**
     * Update device.
@@ -45,7 +45,7 @@ public interface DeviceRPCServiceAsync {
     * @param device the device
     * @param callback the callback
     */
-   public void updateDevice(Device device, AsyncCallback<Void> callback);
+   void updateDevice(Device device, AsyncCallback<Void> callback);
    
    /**
     * Delete device.
@@ -53,7 +53,7 @@ public interface DeviceRPCServiceAsync {
     * @param id the id
     * @param callback the callback
     */
-   public void deleteDevice(long id, AsyncCallback<Void> callback);
+   void deleteDevice(long id, AsyncCallback<Void> callback);
    
    /**
     * Load by id.
@@ -61,14 +61,14 @@ public interface DeviceRPCServiceAsync {
     * @param id the id
     * @param callback the callback
     */
-   public void loadById(long id, AsyncCallback<Device> callback);
+   void loadById(long id, AsyncCallback<Device> callback);
    
    /**
     * Load all.
     * 
     * @param callback the callback
     */
-   public void loadAll(AsyncCallback<List<Device>> callback);
+   void loadAll(AsyncCallback<List<Device>> callback);
    
    /**
     * Load all.
@@ -76,6 +76,6 @@ public interface DeviceRPCServiceAsync {
     * @param account the account
     * @param callback the callback
     */
-   public void loadAll(Account account, AsyncCallback<List<Device>> callback);
+   void loadAll(Account account, AsyncCallback<List<Device>> callback);
    
 }

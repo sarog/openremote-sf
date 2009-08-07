@@ -48,7 +48,8 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
       this.deviceMacroItemService = deviceMacroItemService;
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#saveAll(java.util.List)
     */
    public List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands) {
@@ -58,7 +59,8 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
       return deviceCommands;
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#save(org.openremote.modeler.domain.DeviceCommand)
     */
    public DeviceCommand save(DeviceCommand deviceCommand) {
@@ -67,7 +69,8 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
       return deviceCommand;
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#deleteCommand(long)
     */
    public void deleteCommand(long id) {
@@ -76,7 +79,8 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
       genericDAO.delete(deviceCommand);
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#update(org.openremote.modeler.domain.DeviceCommand)
     */
    public void update(DeviceCommand deviceCommand) {
@@ -84,7 +88,8 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
 
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.service.BaseAbstractService#loadById(long)
     */
    public DeviceCommand loadById(long id) {
@@ -93,7 +98,8 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
       return deviceCommand;
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#loadByDevice(long)
     */
    public List<DeviceCommand> loadByDevice(long id) {

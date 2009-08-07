@@ -27,7 +27,7 @@ import org.springframework.security.GrantedAuthority;
 import org.springframework.security.context.SecurityContextHolder;
 
 /**
- * The server side implementation of the RPC service <code>AuthorityRPCService</code>
+ * The server side implementation of the RPC service <code>AuthorityRPCService</code>.
  */
 public class AuthorityController extends BaseGWTSpringController implements AuthorityRPCService {
    

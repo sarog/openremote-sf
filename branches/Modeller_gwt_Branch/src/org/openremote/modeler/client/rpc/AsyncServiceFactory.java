@@ -29,6 +29,12 @@ import com.google.gwt.core.client.GWT;
  */
 public class AsyncServiceFactory {
    
+   /**
+    * Not be instantiated.
+    */
+   private AsyncServiceFactory() {
+   }
+
    /** The device macro service async. */
    private static DeviceMacroRPCServiceAsync deviceMacroServiceAsync = null;
    

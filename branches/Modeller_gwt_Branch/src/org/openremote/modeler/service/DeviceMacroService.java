@@ -36,7 +36,7 @@ public interface DeviceMacroService {
     * 
     * @return the list< device macro>
     */
-   public List<DeviceMacro> loadAll();
+   List<DeviceMacro> loadAll();
    
 
    /**
@@ -46,7 +46,7 @@ public interface DeviceMacroService {
     * 
     * @return the device macro
     */
-   public DeviceMacro saveDeviceMacro(DeviceMacro deviceMacro);
+   DeviceMacro saveDeviceMacro(DeviceMacro deviceMacro);
    
    
 
@@ -58,7 +58,7 @@ public interface DeviceMacroService {
     * 
     * @return the device macro
     */
-   public DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro);
+   DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro);
    
    
    /**
@@ -66,7 +66,7 @@ public interface DeviceMacroService {
     * 
     * @param id the id
     */
-   public void deleteDeviceMacro(long id);
+   void deleteDeviceMacro(long id);
 
 
     /**
@@ -76,5 +76,5 @@ public interface DeviceMacroService {
      * 
      * @return the device macro
      */
-    public DeviceMacro loadById(long id);
+    DeviceMacro loadById(long id);
 }

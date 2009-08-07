@@ -116,7 +116,9 @@ public class ListViewDropTargetMacroDragExt extends DropTarget {
                   listView.getStore().add(temp);
                } else {
                   int idx = listView.getStore().indexOf(activeItem);
-                  if (!before) idx++;
+                  if (!before) {
+                     idx++;
+                  }
                   listView.getStore().insert(temp, idx);
                }
                if (autoSelect) {
@@ -138,7 +140,9 @@ public class ListViewDropTargetMacroDragExt extends DropTarget {
    private boolean handleDragFromDeviceCommandAndDeviceMacro(DNDEvent e) {
       boolean handle = false;
       int activeIdx = listView.getStore().indexOf(activeItem);
-      if (!before) activeIdx++;
+      if (!before) {
+         activeIdx++;
+      }
       if (e.getData() instanceof List) {
          List<ModelData> models = (List<ModelData>) e.getData();
          for (ModelData modelData : models) {

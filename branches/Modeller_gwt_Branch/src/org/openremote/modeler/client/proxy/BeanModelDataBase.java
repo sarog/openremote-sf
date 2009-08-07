@@ -38,10 +38,16 @@ import com.extjs.gxt.ui.client.data.BeanModel;
  */
 public class BeanModelDataBase {
 
+   /**
+    * Not be instantiated.
+    */
+   private BeanModelDataBase() {
+   }
+   
    /** Stores all the device models. */
    public static final BeanModelTable deviceTable = new BeanModelTable();
 
-   /** Stores all the DeviceCommand models */
+   /** Stores all the DeviceCommand models. */
    public static final BeanModelTable deviceCommandTable = new BeanModelTable();
 
    /** Store all the DeviceMacro models. */
@@ -80,7 +86,9 @@ public class BeanModelDataBase {
     * @return the bean model id,if not find return 0.
     */
    public static long getBeanModelId(BeanModel beanModel) {
-      if (beanModel == null) return 0;
+      if (beanModel == null) {
+         return 0;
+      }
       if (beanModel.getBean() instanceof BusinessEntity) {
          BusinessEntity entity = (BusinessEntity) beanModel.getBean();
          return entity.getOid();

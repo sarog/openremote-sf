@@ -30,12 +30,12 @@ import java.util.Map;
  * The Interface ProtocolService.
  */
 @RemoteServiceRelativePath("protocol.smvc")
-public interface ProtocolRPCService extends RemoteService{
+public interface ProtocolRPCService extends RemoteService {
 
    /**
     * Gets the protocols.
     * 
     * @return the protocols
     */
-   public Map<String,ProtocolDefinition> getProtocols();
+   Map<String, ProtocolDefinition> getProtocols();
 }

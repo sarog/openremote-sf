@@ -27,16 +27,21 @@ package org.openremote.modeler.selenium;
  */
 public class Browser {
    
+   /**
+    * Not be instantiated.
+    */
+   private Browser() {
+   }
    /** The FIREFOX. */
-   public final static String FIREFOX = "*chrome";
+   public static final String FIREFOX = "*chrome";
    
    /** The OPERA. */
-   public final static String OPERA = "*opera";
+   public static final String OPERA = "*opera";
    
    /** The IE. */
-   public final static String IE = "*iexplore";
+   public static final String IE = "*iexplore";
    
    /** The SAFARI. */
-   public final static String SAFARI = "*safari";
+   public static final String SAFARI = "*safari";
 
 }

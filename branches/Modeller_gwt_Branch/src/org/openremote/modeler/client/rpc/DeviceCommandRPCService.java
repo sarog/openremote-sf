@@ -30,7 +30,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  * The Interface DeviceCommandRPCService, define the method to operate deviceCommand.
  */
 @RemoteServiceRelativePath("deviceCommand.smvc")
-public interface DeviceCommandRPCService extends RemoteService{
+public interface DeviceCommandRPCService extends RemoteService {
    
    /**
     * Save all.

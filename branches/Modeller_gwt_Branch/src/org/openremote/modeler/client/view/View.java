@@ -30,5 +30,5 @@ public interface View {
    /**
     * Initialize the view but not show it.
     */
-   public void initialize();
+   void initialize();
 }

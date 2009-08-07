@@ -28,7 +28,7 @@ import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.impl.UserServiceImpl;
 
 /**
- * The server side implementation of the RPC service <code>DeviceRPCService</code>
+ * The server side implementation of the RPC service <code>DeviceRPCService</code>.
  */
 public class DeviceController extends BaseGWTSpringControllerWithHibernateSupport implements DeviceRPCService {
 

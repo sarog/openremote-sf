@@ -17,9 +17,15 @@
 package org.openremote.modeler.client;
 
 /**
- * Puts all the frontend contant here.
+ * Puts all the fronted constant here.
  */
 public class Constants {
+
+   /**
+    * Not be instantiated.
+    */
+   private Constants() {
+   }
 
    /**
     * The Constant INFRARED_TYPE. For assign protocol type. It will be removed after read protocol type from database.

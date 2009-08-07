@@ -48,7 +48,8 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       this.deviceMacroItemService = deviceMacroItemService;
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceService#saveDevice(org.openremote.modeler.domain.Device)
     */
    public Device saveDevice(Device device) {
@@ -56,7 +57,8 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       return device;
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.client.rpc.DeviceRPCService#removeDevice(org.openremote.modeler.domain.Device)
     */
    public void deleteDevice(long id) {
@@ -67,7 +69,8 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       genericDAO.delete(device);
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.client.rpc.DeviceRPCService#loadAll(org.openremote.modeler.domain.Account)
     */
    public List<Device> loadAll(Account account) {
@@ -75,14 +78,16 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       return devices;
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceService#updateDevice(org.openremote.modeler.domain.Device)
     */
    public void updateDevice(Device device) {
       genericDAO.saveOrUpdate(device);
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.service.BaseAbstractService#loadById(long)
     */
    public Device loadById(long id) {

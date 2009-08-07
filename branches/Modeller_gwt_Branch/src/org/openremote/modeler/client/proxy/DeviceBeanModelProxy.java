@@ -38,14 +38,20 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 public class DeviceBeanModelProxy {
    
    /**
+    * Not be instantiated.
+    */
+   private DeviceBeanModelProxy() {
+   }
+
+   /**
     * Load device.
     * 
     * @param beanModel the bean model
     * @param callback the callback
     */
-   public static void loadDevice(BeanModel beanModel, final AsyncSuccessCallback<List<BeanModel>> callback){
-      if(beanModel == null){
-         AsyncServiceFactory.getDeviceServiceAsync().loadAll(new AsyncSuccessCallback<List<Device>>(){
+   public static void loadDevice(BeanModel beanModel, final AsyncSuccessCallback<List<BeanModel>> callback) {
+      if (beanModel == null) {
+         AsyncServiceFactory.getDeviceServiceAsync().loadAll(new AsyncSuccessCallback<List<Device>>() {
             public void onSuccess(List<Device> result) {
                List<BeanModel> beanModels = Device.createModels(result);
                BeanModelDataBase.deviceTable.insertAll(beanModels);
@@ -53,9 +59,9 @@ public class DeviceBeanModelProxy {
             }
             
          });
-      }else{
-         Device device = (Device)beanModel.getBean();
-         AsyncServiceFactory.getDeviceCommandServiceAsync().loadByDevice(device.getOid(), new AsyncSuccessCallback<List<DeviceCommand>>(){
+      } else {
+         Device device = (Device) beanModel.getBean();
+         AsyncServiceFactory.getDeviceCommandServiceAsync().loadByDevice(device.getOid(), new AsyncSuccessCallback<List<DeviceCommand>>() {
             @Override
             public void onSuccess(List<DeviceCommand> result) {
                List<BeanModel> beanModels = DeviceCommand.createModels(result);
@@ -73,12 +79,12 @@ public class DeviceBeanModelProxy {
     * @param map the map
     * @param callback the callback
     */
-   public static void saveDevice(Map<String, String> map, final AsyncSuccessCallback<BeanModel> callback){
+   public static void saveDevice(Map<String, String> map, final AsyncSuccessCallback<BeanModel> callback) {
       Device device = new Device();
       setAttrsToDevice(map, device);
-      AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>(){
+      AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>() {
          public void onSuccess(Device result) {
-            BeanModel deviceModel =result.getBeanModel();
+            BeanModel deviceModel = result.getBeanModel();
             BeanModelDataBase.deviceTable.insert(deviceModel);
             callback.onSuccess(deviceModel);
          }
@@ -93,10 +99,10 @@ public class DeviceBeanModelProxy {
     * @param map the map
     * @param callback the callback
     */
-   public static void updateDevice(final BeanModel deviceModel, Map<String, String> map, final AsyncSuccessCallback<BeanModel> callback){
+   public static void updateDevice(final BeanModel deviceModel, Map<String, String> map, final AsyncSuccessCallback<BeanModel> callback) {
       Device device = deviceModel.getBean();
       setAttrsToDevice(map, device);
-      AsyncServiceFactory.getDeviceServiceAsync().updateDevice(device, new AsyncSuccessCallback<Void>(){
+      AsyncServiceFactory.getDeviceServiceAsync().updateDevice(device, new AsyncSuccessCallback<Void>() {
          public void onSuccess(Void result) {
             BeanModelDataBase.deviceTable.update(deviceModel);
             callback.onSuccess(deviceModel);
@@ -122,15 +128,15 @@ public class DeviceBeanModelProxy {
     * @param deviceModel the device model
     * @param callback the callback
     */
-   public static void deleteDevice(BeanModel deviceModel, final AsyncSuccessCallback<Void> callback){
+   public static void deleteDevice(BeanModel deviceModel, final AsyncSuccessCallback<Void> callback) {
       final Device device = deviceModel.getBean();
-      AsyncServiceFactory.getDeviceCommandServiceAsync().loadByDevice(device.getOid(), new AsyncSuccessCallback<List<DeviceCommand>>(){
+      AsyncServiceFactory.getDeviceCommandServiceAsync().loadByDevice(device.getOid(), new AsyncSuccessCallback<List<DeviceCommand>>() {
          @Override
          public void onSuccess(List<DeviceCommand> result) {
             List<BeanModel> beanModels = DeviceCommand.createModels(result);
             BeanModelDataBase.deviceCommandTable.insertAll(beanModels);
             for (BeanModel beanModel : beanModels) {
-               BeanModelDataBase.deviceCommandTable.delete( beanModel.<DeviceCommand> getBean().getOid());
+               BeanModelDataBase.deviceCommandTable.delete(beanModel.<DeviceCommand> getBean().getOid());
             }
             AsyncServiceFactory.getDeviceServiceAsync().deleteDevice(device.getOid(), new AsyncSuccessCallback<Void>() {
                public void onSuccess(Void result) {

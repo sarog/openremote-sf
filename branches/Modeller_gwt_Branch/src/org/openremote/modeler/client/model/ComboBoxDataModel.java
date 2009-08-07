@@ -28,7 +28,7 @@ import com.extjs.gxt.ui.client.data.BaseModelData;
  * 
  * @author Tomsky
  */
-public class ComboBoxDataModel<T> extends BaseModelData implements Serializable{
+public class ComboBoxDataModel<T> extends BaseModelData implements Serializable {
    
    /** The Constant LABEL. */
    private static final String LABEL = "label";

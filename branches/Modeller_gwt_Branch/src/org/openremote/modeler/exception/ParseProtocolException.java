@@ -24,7 +24,7 @@ package org.openremote.modeler.exception;
  * If the parse protocol XMLs procedure occurr error, application will throw this exception.
  */
 @SuppressWarnings("serial")
-public class ParseProtocolException extends RuntimeException{
+public class ParseProtocolException extends RuntimeException {
 
    /**
     * Instantiates a new parses the protocol exception.

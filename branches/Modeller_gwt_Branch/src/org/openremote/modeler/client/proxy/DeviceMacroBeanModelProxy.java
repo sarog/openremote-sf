@@ -41,6 +41,12 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 public class DeviceMacroBeanModelProxy {
 
    /**
+    * Not be instantiated.
+    */
+   private DeviceMacroBeanModelProxy() {
+   }
+
+   /**
     * Load device maro.
     * 
     * @param deviceMacroBeanModel the device macro bean model
