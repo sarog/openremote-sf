@@ -20,6 +20,7 @@
 	<source path='client'/>
 	<source path='protocol'/>
 	<source path='auth'/>
+	<source path='selenium'/>
   <!-- Other module inherits                                      -->
 
   <!-- Specify the app entry point class.                         -->
