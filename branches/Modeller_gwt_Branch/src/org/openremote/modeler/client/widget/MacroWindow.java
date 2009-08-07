@@ -21,6 +21,7 @@ package org.openremote.modeler.client.widget;
 
 import java.util.List;
 
+import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtExtends.ListViewDropTargetMacroDragExt;
 import org.openremote.modeler.client.gxtExtends.TreePanelDragSourceMacroDragExt;
 import org.openremote.modeler.client.icon.Icons;
@@ -44,7 +45,6 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
@@ -53,6 +53,7 @@ import com.extjs.gxt.ui.client.widget.ListView;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.Text;
+import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
@@ -72,7 +73,7 @@ import com.google.gwt.core.client.GWT;
 /**
  * The Class MacroWindow.
  */
-public class MacroWindow extends SubmitWindow {
+public class MacroWindow extends Window {
 
    /** The _device macro. */
    private BeanModel deviceMacroBeanModel = null;
@@ -425,8 +426,7 @@ public class MacroWindow extends SubmitWindow {
       AsyncSuccessCallback<DeviceMacro> submitSuccessListener = new AsyncSuccessCallback<DeviceMacro>() {
          @Override
          public void onSuccess(DeviceMacro result) {
-            AppEvent appEvent = new AppEvent(Events.Submit, result);
-            fireSubmitListener(appEvent);
+            fireEvent(SubmitEvent.Submit, new SubmitEvent(result));
          }
       };
       if (deviceMacroBeanModel != null) {
