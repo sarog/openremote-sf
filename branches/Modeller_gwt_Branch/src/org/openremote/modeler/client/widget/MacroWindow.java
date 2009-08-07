@@ -19,7 +19,6 @@
 */
 package org.openremote.modeler.client.widget;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.gxtExtends.ListViewDropTargetMacroDragExt;
@@ -54,7 +53,6 @@ import com.extjs.gxt.ui.client.widget.ListView;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.Text;
-import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
@@ -74,7 +72,7 @@ import com.google.gwt.core.client.GWT;
 /**
  * The Class MacroWindow.
  */
-public class MacroWindow extends Window {
+public class MacroWindow extends SubmitWindow {
 
    /** The _device macro. */
    private BeanModel deviceMacroBeanModel = null;
@@ -125,27 +123,6 @@ public class MacroWindow extends Window {
       setHeading("Edit Macro");
       setup();
 
-   }
-
-   /** The submit listeners. */
-   private List<Listener<AppEvent>> submitListeners = new ArrayList<Listener<AppEvent>>();
-
-   /**
-    * Listener will be called after form submit and all the validator on fields pass.
-    * 
-    * @param listener the listener
-    */
-   public void addSubmitListener(Listener<AppEvent> listener) {
-      submitListeners.add(listener);
-   }
-
-   /**
-    * Remote submit listener.
-    * 
-    * @param listener the listener
-    */
-   public void remoteSubmitListener(Listener<AppEvent> listener) {
-      submitListeners.remove(listener);
    }
 
    /**
@@ -439,17 +416,6 @@ public class MacroWindow extends Window {
 
       }
       return rightMacroItemListView;
-   }
-
-   /**
-    * Fire submit listener.
-    * 
-    * @param event the event
-    */
-   protected void fireSubmitListener(AppEvent event) {
-      for (Listener<AppEvent> listener : submitListeners) {
-         listener.handleEvent(event);
-      }
    }
 
    /**

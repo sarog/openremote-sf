@@ -45,11 +45,11 @@ public class SubmitWindow extends Window {
    }
 
    /**
-    * Remote submit listener.
+    * Remove submit listener.
     * 
     * @param listener the listener
     */
-   public void remoteSubmitListener(Listener<AppEvent> listener) {
+   public void removeSubmitListener(Listener<AppEvent> listener) {
       submitListeners.remove(listener);
    }
 

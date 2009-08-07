@@ -67,7 +67,7 @@ import com.google.gwt.core.client.GWT;
 /**
  * The window allow user to select Infrared.
  */
-public class SelectIRWindow extends Window {
+public class SelectIRWindow extends SubmitWindow {
 
    /** The beehive rest url. */
    private String beehiveRESTUrl = null;
@@ -75,9 +75,6 @@ public class SelectIRWindow extends Window {
    /** The configuration service. */
    private ConfigurationRPCServiceAsync configurationService = (ConfigurationRPCServiceAsync) GWT
          .create(ConfigurationRPCService.class);
-   
-   /** The submit listeners. */
-   private List<Listener<AppEvent>> submitListeners = new ArrayList<Listener<AppEvent>>();
    
    /** The device. */
    private Device device = null;
@@ -442,37 +439,6 @@ public class SelectIRWindow extends Window {
       codeGrid.reconfigure(listStore, cm);
       loader.load();
       importButton.setEnabled(true);
-   }
-
-   /**
-    * Adds the submit listener.
-    * 
-    * @param listener the listener
-    */
-   public void addSubmitListener(Listener<AppEvent> listener) {
-      submitListeners.add(listener);
-
-   }
-
-   /**
-    * Fire submit listener.
-    * 
-    * @param event the event
-    */
-   public void fireSubmitListener(AppEvent event) {
-      for (Listener<AppEvent> listener : submitListeners) {
-         listener.handleEvent(event);
-      }
-
-   }
-
-   /**
-    * Remote submit listener.
-    * 
-    * @param listener the listener
-    */
-   public void remoteSubmitListener(Listener<AppEvent> listener) {
-      submitListeners.remove(listener);
    }
 
    /**
