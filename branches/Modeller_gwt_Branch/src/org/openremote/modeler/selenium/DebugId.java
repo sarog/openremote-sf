@@ -27,6 +27,12 @@ package org.openremote.modeler.selenium;
  */
 public class DebugId {
    
+   /**
+    * Not be instantiated.
+    */
+   private DebugId() {
+   }
+   
    /* DevicePanel */
    /** The Constant DEVICE_TREE_CONTAINER. */
    public static final String DEVICE_TREE_CONTAINER = "deviceTreeContainer";
