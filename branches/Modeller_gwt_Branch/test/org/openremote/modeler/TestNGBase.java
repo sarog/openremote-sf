@@ -41,7 +41,7 @@ public class TestNGBase {
     * SetUp.
     */
    @BeforeClass
-   public void setUp(){
+   public void setUp() {
       sessionFactory = (SessionFactory) SpringContext.getInstance().getBean("sessionFactory");
       Session s = sessionFactory.openSession();
       TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(s));
@@ -51,7 +51,7 @@ public class TestNGBase {
     * Tear down.
     */
    @AfterClass
-   public void tearDown(){
+   public void tearDown() {
       SessionHolder holder = (SessionHolder) TransactionSynchronizationManager.getResource(sessionFactory);
       Session s = holder.getSession();
       try {

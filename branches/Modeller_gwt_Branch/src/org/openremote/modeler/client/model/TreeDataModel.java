@@ -44,8 +44,8 @@ public class TreeDataModel extends BaseTreeModel implements Serializable {
     * @param o the o
     * @param label the label
     */
-   public TreeDataModel(Object o,String label) {
-      set(LABEL,label);
+   public TreeDataModel(Object o, String label) {
+      set(LABEL, label);
       set(DATA, o);
    }
 
@@ -90,7 +90,7 @@ public class TreeDataModel extends BaseTreeModel implements Serializable {
     */
    @SuppressWarnings("unchecked")
    public <X> X getData() {
-      return (X)get(DATA);
+      return (X) get(DATA);
    }
    
   

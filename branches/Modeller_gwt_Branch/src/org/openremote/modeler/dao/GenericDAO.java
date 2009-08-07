@@ -76,7 +76,7 @@ public class GenericDAO extends HibernateDaoSupport {
     * 
     * @param o the o
     */
-   public void saveOrUpdate(Object o){
+   public void saveOrUpdate(Object o) {
       getHibernateTemplate().saveOrUpdate(o);
    }
    
@@ -232,7 +232,7 @@ public class GenericDAO extends HibernateDaoSupport {
    public int countByField(final Class clazz, final String fieldName, final Object fieldValue) {
       if (fieldValue != null && !"".equals(fieldValue.toString().trim())) {
          return Integer.valueOf(getHibernateTemplate().execute(new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+            public Object doInHibernate(Session session) throws SQLException {
                Criteria criteria = session.createCriteria(clazz.getName());
                return criteria.add(Restrictions.eq(fieldName, fieldValue)).setProjection(Projections.count(fieldName))
                      .uniqueResult();
@@ -265,7 +265,7 @@ public class GenericDAO extends HibernateDaoSupport {
    public <T> List<T> findPagedDateByDetachedCriteria(final DetachedCriteria detachedCriteria, final int pageSize,
          final int startPos) {
       return (List<T>) getHibernateTemplate().execute(new HibernateCallback() {
-         public Object doInHibernate(Session session) throws HibernateException, SQLException {
+         public Object doInHibernate(Session session) throws SQLException {
             Criteria criteria = detachedCriteria.getExecutableCriteria(session);
             criteria.setMaxResults(pageSize).setFirstResult(startPos);
             return criteria.list();
@@ -282,7 +282,7 @@ public class GenericDAO extends HibernateDaoSupport {
     */
    public int countByDetachedCriteria(final DetachedCriteria detachedCriteria) {
       return Integer.valueOf(getHibernateTemplate().execute(new HibernateCallback() {
-         public Object doInHibernate(Session session) throws HibernateException, SQLException {
+         public Object doInHibernate(Session session) throws SQLException {
             Criteria criteria = detachedCriteria.getExecutableCriteria(session);
             return criteria.uniqueResult();
          }

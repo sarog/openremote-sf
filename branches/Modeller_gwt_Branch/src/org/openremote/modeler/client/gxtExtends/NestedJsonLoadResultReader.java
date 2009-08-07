@@ -99,7 +99,9 @@ public class NestedJsonLoadResultReader<D> extends JsonLoadResultReader<D> {
             String map = field.getMap() != null ? field.getMap() : field.getName();
             JSONValue value = obj.get(map);
 
-            if (value == null) continue;
+            if (value == null) {
+               continue;
+            }
             if (value.isArray() != null) {
                // nothing
             } else if (value.isBoolean() != null) {

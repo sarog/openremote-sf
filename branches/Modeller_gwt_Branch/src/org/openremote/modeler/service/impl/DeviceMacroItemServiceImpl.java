@@ -35,7 +35,8 @@ import java.util.List;
 public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroItem> implements DeviceMacroItemService {
 
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroItemService#deleteByDeviceCommand(org.openremote.modeler.domain.DeviceCommand)
     */
    public void deleteByDeviceCommand(DeviceCommand deviceCommand) {
@@ -45,7 +46,8 @@ public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroI
    }
 
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroItemService#deleteByDeviceMacro(org.openremote.modeler.domain.DeviceMacro)
     */
    public void deleteByDeviceMacro(DeviceMacro targetDeviceMacro) {
@@ -55,7 +57,8 @@ public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroI
    }
 
    
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroItemService#LoadByDeviceCommandId(long)
     */
    public List<DeviceCommandRef> LoadByDeviceCommandId(long id) {
@@ -65,7 +68,8 @@ public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroI
    }
 
    
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroItemService#loadByDeviceMacroId(long)
     */
    public List<DeviceMacroRef> loadByDeviceMacroId(long id) {

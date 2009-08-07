@@ -29,13 +29,13 @@ import java.util.Map;
  * 
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
-public class ProtocolContainer implements Serializable{
+public class ProtocolContainer implements Serializable {
    
    /** The Constant serialVersionUID. */
    private static final long serialVersionUID = -5478194408714473866L;
    
    /** The protocols. */
-   private static Map<String,ProtocolDefinition> protocols = new HashMap<String, ProtocolDefinition>();
+   private static Map<String, ProtocolDefinition> protocols = new HashMap<String, ProtocolDefinition>();
 
    /**
     * Gets the protocols.

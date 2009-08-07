@@ -35,7 +35,7 @@ import java.util.Map;
 public class Protocols {
    
    /** The m_instance. */
-   private static Map<String, ProtocolDefinition> m_instance;
+   private static Map<String, ProtocolDefinition> instanceMap;
    
    /** The Constant protocolService. */
    private static final ProtocolRPCServiceAsync protocolService = (ProtocolRPCServiceAsync) GWT.create(ProtocolRPCService.class);
@@ -51,18 +51,18 @@ public class Protocols {
     * 
     * @return single instance of Protocols
     */
-   public synchronized static Map<String, ProtocolDefinition> getInstance() {
-      if (m_instance == null) {
+   public static synchronized Map<String, ProtocolDefinition> getInstance() {
+      if (instanceMap == null) {
          protocolService.getProtocols(new AsyncCallback<Map<String, ProtocolDefinition>>() {
             public void onFailure(Throwable caught) {
                caught.printStackTrace();
                MessageBox.info("Error", "Can't get protocols from xml file!", null);
             }
             public void onSuccess(Map<String, ProtocolDefinition> protocols) {
-               m_instance = protocols;
+               instanceMap = protocols;
             }
          });
       }
-      return m_instance;
+      return instanceMap;
    }
 }

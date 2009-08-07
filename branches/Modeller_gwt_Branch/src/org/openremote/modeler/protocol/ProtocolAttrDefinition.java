@@ -100,15 +100,27 @@ public class ProtocolAttrDefinition implements Serializable {
     */
    @Override
    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o) {
+         return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+         return false;
+      }
 
       ProtocolAttrDefinition that = (ProtocolAttrDefinition) o;
 
-      if (label != null ? !label.equals(that.label) : that.label != null) return false;
-      if (name != null ? !name.equals(that.name) : that.name != null) return false;
-      if (validators == null && that.getValidators() == null) return true;
-      if (validators == null || that.getValidators() == null) return false;
+      if (label != null ? !label.equals(that.label) : that.label != null) {
+         return false;
+      }
+      if (name != null ? !name.equals(that.name) : that.name != null) {
+         return false;
+      }
+      if (validators == null && that.getValidators() == null) {
+         return true;
+      }
+      if (validators == null || that.getValidators() == null) {
+         return false;
+      }
 
       if (validators.size() == that.getValidators().size()) {
          for (int i = 0; i < validators.size(); i++) {

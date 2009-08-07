@@ -37,7 +37,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
  */
 public class BuildingModelerView extends TabItem implements View {
 
-   /* (non-Javadoc)
+   /**
     * @see org.openremote.modeler.client.view.View#initialize()
     */
    public void initialize() {
@@ -51,7 +51,7 @@ public class BuildingModelerView extends TabItem implements View {
    /**
     * Creates the north.
     */
-   private void createNorth(){
+   private void createNorth() {
       ToolBar north = new ToolBar();
       BorderLayoutData northData = new BorderLayoutData(LayoutRegion.NORTH, 200);
       northData.setCollapsible(false);
@@ -62,9 +62,9 @@ public class BuildingModelerView extends TabItem implements View {
    /**
     * Creates the west.
     */
-   private void createWest(){
+   private void createWest() {
       ContentPanel west = new ContentPanel();
-      BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST,200);
+      BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 200);
       westData.setSplit(true);
       westData.setCollapsible(true);
       west.setLayout(new AccordionLayout());
@@ -72,19 +72,19 @@ public class BuildingModelerView extends TabItem implements View {
       west.setHeading("Explorer");
       west.add(new DevicePanel());
       west.add(new MacroPanel());
-  
+
       westData.setMargins(new Margins(2));
-      add(west,westData);
+      add(west, westData);
    }
    
    /**
     * Creates the center.
     */
-   private void createCenter(){
+   private void createCenter() {
       ContentPanel center = new ContentPanel();
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setMargins(new Margins(2));
 
-      add(center,centerData);
+      add(center, centerData);
    }
 }

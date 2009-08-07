@@ -35,6 +35,6 @@ public interface ConfigurationRPCService extends RemoteService {
    * 
    * @return the string
    */
-  public String beehiveRESTUrl();
+  String beehiveRESTUrl();
 
 }

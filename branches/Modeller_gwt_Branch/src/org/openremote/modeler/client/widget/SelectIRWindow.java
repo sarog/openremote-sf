@@ -73,7 +73,8 @@ public class SelectIRWindow extends Window {
    private String beehiveRESTUrl = null;
    
    /** The configuration service. */
-   private ConfigurationRPCServiceAsync configurationService = (ConfigurationRPCServiceAsync)GWT.create(ConfigurationRPCService.class);
+   private ConfigurationRPCServiceAsync configurationService = (ConfigurationRPCServiceAsync) GWT
+         .create(ConfigurationRPCService.class);
    
    /** The submit listeners. */
    private List<Listener<AppEvent>> submitListeners = new ArrayList<Listener<AppEvent>>();
@@ -119,7 +120,7 @@ public class SelectIRWindow extends Window {
    public SelectIRWindow(Device device) {
       if (beehiveRESTUrl == null) {
          this.device = device;
-         configurationService.beehiveRESTUrl(new AsyncSuccessCallback<String>(){
+         configurationService.beehiveRESTUrl(new AsyncSuccessCallback<String>() {
             @Override
             public void onSuccess(String result) {
                beehiveRESTUrl = result;
@@ -484,7 +485,7 @@ public class SelectIRWindow extends Window {
       window.mask("Wait...");
       importButton.setEnabled(false);
       if (codeGrid != null) {
-         DeviceCommandBeanModelProxy.saveAllDeviceCommands(device, codeGrid.getStore().getModels(), new AsyncSuccessCallback<List<BeanModel>>(){
+         DeviceCommandBeanModelProxy.saveAllDeviceCommands(device, codeGrid.getStore().getModels(), new AsyncSuccessCallback<List<BeanModel>>() {
             @Override
             public void onSuccess(List<BeanModel> deviceCommandModels) {
                AppEvent event = new AppEvent(Events.Submit);

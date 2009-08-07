@@ -38,7 +38,8 @@ public abstract class TestBase extends TestCase {
    /** The session factory. */
    private SessionFactory sessionFactory;
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see junit.framework.TestCase#setUp()
     */
    protected void setUp() throws Exception {
@@ -50,7 +51,8 @@ public abstract class TestBase extends TestCase {
 
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see junit.framework.TestCase#tearDown()
     */
    protected void tearDown() throws Exception {

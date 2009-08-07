@@ -35,11 +35,13 @@ import org.testng.annotations.Test;
  * 
  * @author Tomsky,Dan 2009-7-10
  */
-public class DeviceServiceTest extends TestNGBase{
+public class DeviceServiceTest extends TestNGBase {
    
    /** The device service. */
    private DeviceService deviceService =
       (DeviceService) SpringContext.getInstance().getBean("deviceService");
+   
+   /** The user service. */
    private UserService userService =
       (UserService) SpringContext.getInstance().getBean("userService");
 
@@ -47,7 +49,7 @@ public class DeviceServiceTest extends TestNGBase{
        * Test save device.
        */
    @Test
-   public void save(){
+   public void save() {
       Device device = new Device();
       device.setName("tv");
       device.setModel("tv");
@@ -61,8 +63,8 @@ public class DeviceServiceTest extends TestNGBase{
    /**
     * Delete.
     */
-   @Test(dependsOnMethods="save",expectedExceptions={ObjectNotFoundException.class})
-   public void delete(){
+   @Test(dependsOnMethods = "save", expectedExceptions = { ObjectNotFoundException.class })
+   public void delete() {
       Device device = new Device();
       device.setName("xxx");
       device.setModel("MP8640");
@@ -70,14 +72,14 @@ public class DeviceServiceTest extends TestNGBase{
       deviceService.saveDevice(device);
       deviceService.deleteDevice(device.getOid());
       Device deviceInDB = deviceService.loadById(device.getOid());
-      deviceInDB.getName();//throws ObjectNotFoundException
+      deviceInDB.getName(); //throws ObjectNotFoundException
    }
    
    /**
     * Load all.
     */
-   @Test(dependsOnMethods="save")
-   public void loadAll(){
+   @Test(dependsOnMethods = "save")
+   public void loadAll() {
       
       User user = new User();
       Account account = new Account();
@@ -97,8 +99,11 @@ public class DeviceServiceTest extends TestNGBase{
       
    }
    
-   @Test(dependsOnMethods="save")
-   public void update(){
+   /**
+    * Update.
+    */
+   @Test(dependsOnMethods = "save")
+   public void update() {
       Device device = new Device();
       device.setName("xxx");
       device.setModel("MP8640");

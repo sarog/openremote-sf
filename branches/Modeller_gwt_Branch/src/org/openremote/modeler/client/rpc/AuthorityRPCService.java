@@ -36,5 +36,5 @@ public interface AuthorityRPCService extends RemoteService {
     * 
     * @return the authority
     */
-   public Authority getAuthority();
+   Authority getAuthority();
 }

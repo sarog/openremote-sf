@@ -42,13 +42,19 @@ import com.extjs.gxt.ui.client.data.ModelData;
 public class DeviceCommandBeanModelProxy {
    
    /**
+    * Not be instantiated.
+    */
+   private DeviceCommandBeanModelProxy() {
+   }
+
+   /**
     * Save device command.
     * 
     * @param device the device
     * @param map the map
     * @param callback the callback
     */
-   public static void saveDeviceCommand(Device device, Map<String, String> map, final AsyncSuccessCallback<BeanModel> callback){
+   public static void saveDeviceCommand(Device device, Map<String, String> map, final AsyncSuccessCallback<BeanModel> callback) {
       DeviceCommand deviceCommand = new DeviceCommand();
       deviceCommand.setName(map.get(DeviceCommandWindow.DEVICE_COMMAND_NAME));
       deviceCommand.setDevice(device);
@@ -93,7 +99,7 @@ public class DeviceCommandBeanModelProxy {
       List<ProtocolAttr> attrs = deviceCommand.getProtocol().getAttributes();
       for (int i = 0; i < attrs.size(); i++) {
          deviceCommand.getProtocol().getAttributes().get(i).setValue(map.get(attrs.get(i).getName()));
-      };
+      }
       AsyncServiceFactory.getDeviceCommandServiceAsync().update(deviceCommand, new AsyncSuccessCallback<Void>() {
          public void onSuccess(Void result) {
             BeanModel deviceCommandModel = deviceCommand.getBeanModel();
@@ -110,7 +116,7 @@ public class DeviceCommandBeanModelProxy {
     * @param datas the datas
     * @param callback the callback
     */
-   public static void saveAllDeviceCommands(Device device, List<ModelData> datas, final AsyncSuccessCallback<List<BeanModel>> callback){
+   public static void saveAllDeviceCommands(Device device, List<ModelData> datas, final AsyncSuccessCallback<List<BeanModel>> callback) {
       List<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
       for (ModelData m : datas) {
          Protocol protocol = new Protocol();
@@ -154,7 +160,7 @@ public class DeviceCommandBeanModelProxy {
     * @param deviceCommnadModel the device commnad model
     * @param callback the callback
     */
-   public static void deleteDeviceCommand(BeanModel deviceCommnadModel, final AsyncSuccessCallback<Void> callback){
+   public static void deleteDeviceCommand(BeanModel deviceCommnadModel, final AsyncSuccessCallback<Void> callback) {
       final DeviceCommand deviceCommand = deviceCommnadModel.getBean();
       AsyncServiceFactory.getDeviceCommandServiceAsync().deleteCommand(deviceCommand.getOid(), new AsyncSuccessCallback<Void>() {
          public void onSuccess(Void result) {

@@ -33,6 +33,6 @@ public interface ConfigurationRPCServiceAsync {
     * 
     * @param callback the callback
     */
-   public void beehiveRESTUrl(AsyncCallback<String> callback);
+   void beehiveRESTUrl(AsyncCallback<String> callback);
 
 }

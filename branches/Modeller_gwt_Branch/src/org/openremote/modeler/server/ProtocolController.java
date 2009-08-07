@@ -34,7 +34,8 @@ public class ProtocolController extends BaseGWTSpringController implements Proto
    /** The Constant serialVersionUID. */
    private static final long serialVersionUID = 8057648010410493998L;
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.client.rpc.ProtocolRPCService#getProtocolContainer()
     */
    public Map<String, ProtocolDefinition> getProtocols() {

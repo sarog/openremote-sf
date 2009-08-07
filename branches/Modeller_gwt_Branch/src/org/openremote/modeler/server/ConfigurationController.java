@@ -27,22 +27,23 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Gets the system configuration 
+ * Gets the system configuration.
  */
 public class ConfigurationController extends BaseGWTSpringController implements ConfigurationRPCService {
    
    /** The logger. */
    private static Logger logger = Logger.getLogger(ConfigurationController.class);
 
-   /* (non-Javadoc)
+   /**
     * @see org.openremote.modeler.client.rpc.ConfigurationRPCService#beehiveRESTUrl()
+    * @return beehive rest url.
     */
    public String beehiveRESTUrl() {
       Properties properties = new Properties();
       try {
          properties.load(getClass().getResourceAsStream("/config.properties"));
       } catch (IOException e) {
-         logger.error("Read config error",e);
+         logger.error("Read config error", e);
       }
        
       return properties.getProperty("beehive.REST.Url");

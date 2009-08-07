@@ -19,7 +19,7 @@
 */
 package org.openremote.modeler.ui;
 
-import org.openremote.modeler.client.DebugId;
+import org.openremote.modeler.selenium.DebugId;
 import org.openremote.modeler.selenium.SeleniumTestNGBase;
 import org.testng.Assert;
 import org.testng.annotations.Test;

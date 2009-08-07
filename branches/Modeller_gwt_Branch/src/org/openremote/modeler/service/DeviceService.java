@@ -36,21 +36,21 @@ public interface DeviceService {
     * 
     * @return the device
     */
-   public Device saveDevice(Device device);
+   Device saveDevice(Device device);
    
    /**
     * Update device.
     * 
     * @param device the device
     */
-   public void updateDevice(Device device);
+   void updateDevice(Device device);
    
    /**
     * Delete device.
     * 
     * @param id the id
     */
-   public void deleteDevice(long id);
+   void deleteDevice(long id);
    
    /**
     * Load by id.
@@ -59,7 +59,7 @@ public interface DeviceService {
     * 
     * @return the device
     */
-   public Device loadById(long id);
+   Device loadById(long id);
    
 
    /**
@@ -67,7 +67,7 @@ public interface DeviceService {
     * 
     * @return the list< device>
     */
-   public List<Device> loadAll();
+   List<Device> loadAll();
    
    /**
     * Load all.
@@ -76,5 +76,5 @@ public interface DeviceService {
     * 
     * @return the list< device>
     */
-   public List<Device> loadAll(Account account);
+   List<Device> loadAll(Account account);
 }

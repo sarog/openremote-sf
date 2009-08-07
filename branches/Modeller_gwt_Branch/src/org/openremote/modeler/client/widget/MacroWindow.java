@@ -77,7 +77,7 @@ import com.google.gwt.core.client.GWT;
 public class MacroWindow extends Window {
 
    /** The _device macro. */
-   private BeanModel _deviceMacroBeanModel = null;
+   private BeanModel deviceMacroBeanModel = null;
 
    /** The Constant MACRO_DND_GROUP. */
    private static final String MACRO_DND_GROUP = "macro";
@@ -121,7 +121,7 @@ public class MacroWindow extends Window {
     * @param deviceMacroModel the device macro
     */
    public MacroWindow(BeanModel deviceMacroModel) {
-      this._deviceMacroBeanModel = deviceMacroModel;
+      this.deviceMacroBeanModel = deviceMacroModel;
       setHeading("Edit Macro");
       setup();
 
@@ -179,8 +179,8 @@ public class MacroWindow extends Window {
    private void createFormElement() {
 
       macroNameField = new TextField<String>();
-      if (_deviceMacroBeanModel != null) {
-         macroNameField.setValue(((DeviceMacro)_deviceMacroBeanModel.getBean()).getName());
+      if (deviceMacroBeanModel != null) {
+         macroNameField.setValue(((DeviceMacro) deviceMacroBeanModel.getBean()).getName());
       }
       macroNameField.setAllowBlank(false);
       macroNameField.setFieldLabel("Macro Name");
@@ -420,8 +420,8 @@ public class MacroWindow extends Window {
       rightMacroItemListView.setStore(store);
       rightMacroItemListView.setHeight(203);
 
-      if (_deviceMacroBeanModel != null) {
-         DeviceMacroBeanModelProxy.loadDeviceMaro(_deviceMacroBeanModel,
+      if (deviceMacroBeanModel != null) {
+         DeviceMacroBeanModelProxy.loadDeviceMaro(deviceMacroBeanModel,
                new AsyncSuccessCallback<List<BeanModel>>() {
                   @Override
                   public void onSuccess(List<BeanModel> result) {
@@ -463,10 +463,10 @@ public class MacroWindow extends Window {
             fireSubmitListener(appEvent);
          }
       };
-      if (_deviceMacroBeanModel != null) {
+      if (deviceMacroBeanModel != null) {
          
-         ((DeviceMacro)_deviceMacroBeanModel.getBean()).setName(macroNameField.getValue());
-         DeviceMacroBeanModelProxy.updateDeviceMacro(_deviceMacroBeanModel, rightMacroItemListView.getStore().getModels(),
+         ((DeviceMacro) deviceMacroBeanModel.getBean()).setName(macroNameField.getValue());
+         DeviceMacroBeanModelProxy.updateDeviceMacro(deviceMacroBeanModel, rightMacroItemListView.getStore().getModels(),
                submitSuccessListener);
       } else {
          DeviceMacroBeanModelProxy.saveDeviceMacro(macroNameField.getValue(), rightMacroItemListView.getStore()
@@ -490,4 +490,3 @@ public class MacroWindow extends Window {
    }
 
 }
-;

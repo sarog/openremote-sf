@@ -40,21 +40,21 @@ public class BaseGWTSpringController extends RemoteServiceServlet implements Con
    /** The servlet context. */
    private ServletContext servletContext;
 
-   /* (non-Javadoc)
+   /**
     * @see org.springframework.web.context.ServletContextAware#setServletContext(javax.servlet.ServletContext)
     */
    public void setServletContext(ServletContext servletContext) {
       this.servletContext = servletContext;
    }
 
-   /* (non-Javadoc)
+   /**
     * @see javax.servlet.GenericServlet#getServletContext()
     */
    public ServletContext getServletContext() {
       return servletContext;
    }
 
-   /* (non-Javadoc)
+   /**
     * @see org.springframework.web.servlet.mvc.Controller#handleRequest(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
     */
    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {

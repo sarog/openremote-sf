@@ -215,11 +215,6 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 				<include name="**/*.xml" />
 			</fileset>
 		</copy>
-		<copy todir="${test.dir}">
-			<fileset dir="${src.dir}">
-                <include name="**/DebugId.java"/>
-            </fileset>
-		</copy>
 		<javac srcdir="${test.dir}" destdir="${test.build.classes.dir}" classpathref="project.class.path" />
 	</target>
 

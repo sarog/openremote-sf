@@ -28,11 +28,12 @@ import org.springframework.test.AbstractTransactionalDataSourceSpringContextTest
  */
 public abstract class SpringDAOTestCase extends AbstractTransactionalDataSourceSpringContextTests {
    
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.springframework.test.AbstractSingleSpringContextTests#getConfigLocations()
     */
    protected String[] getConfigLocations() {
-      return new String[] {"applicationContext.xml","spring-service-hibernate-impl.xml","datasource-test.xml"};
+      return new String[] {"applicationContext.xml", "spring-service-hibernate-impl.xml", "datasource-test.xml"};
    }
    
 }

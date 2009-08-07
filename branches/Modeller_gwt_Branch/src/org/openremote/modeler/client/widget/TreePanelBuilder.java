@@ -49,11 +49,16 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
  */
 public class TreePanelBuilder {
 
+   /**
+    * Not be instantiated.
+    */
+   private TreePanelBuilder() {
+   }
    /** The Constant TREE_DISPLAY_FIELD. */
    private static final String TREE_DISPLAY_FIELD = "tree_label";
 
    /** The Constant icon. */
-   private final static Icons icon = GWT.create(Icons.class);
+   private static final Icons ICON = GWT.create(Icons.class);
 
    /** The device command treestore. */
    private static TreeStore<BeanModel> deviceCommandTreestore = null;
@@ -71,14 +76,14 @@ public class TreePanelBuilder {
          RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
             @Override
             protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
-                DeviceBeanModelProxy.loadDevice((BeanModel) o,new AsyncSuccessCallback<List<BeanModel>>(){
+                DeviceBeanModelProxy.loadDevice((BeanModel) o, new AsyncSuccessCallback<List<BeanModel>>() {
                     public void onSuccess(List<BeanModel> result) {
                         listAsyncCallback.onSuccess(result);
                     }
                 });
             }
         };
-        TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy){
+        TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy) {
             @Override
             public boolean hasChildren(BeanModel beanModel) {
                 if (beanModel.getBean() instanceof Device) {
@@ -106,11 +111,11 @@ public class TreePanelBuilder {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
 
             if (thisModel.getBean() instanceof DeviceCommand) {
-               return icon.deviceCmd();
+               return ICON.deviceCmd();
             } else if (thisModel.getBean() instanceof Device) {
-               return icon.device();
+               return ICON.device();
             } else {
-               return icon.folder();
+               return ICON.folder();
             }
          }
 
@@ -236,11 +241,11 @@ public class TreePanelBuilder {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
 
             if (thisModel.getBean() instanceof DeviceMacro) {
-               return icon.macroIcon();
+               return ICON.macroIcon();
             } else if (thisModel.getBean() instanceof DeviceCommandRef) {
-               return icon.deviceCmd();
+               return ICON.deviceCmd();
             } else {
-               return icon.macroIcon();
+               return ICON.macroIcon();
             }
          }
 

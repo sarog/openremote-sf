@@ -31,10 +31,11 @@ import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
 public class SpringContext {
 
    /** The m_instance. */
-   private static SpringContext m_instance;
+   private static SpringContext instance;
 
    /** The context files. */
-   private static String[] contextFiles = new String[] { "applicationContext.xml","spring-service-hibernate-impl.xml","datasource-test.xml","annomvc-servlet.xml" };
+   private static String[] contextFiles = new String[] {"applicationContext.xml", "spring-service-hibernate-impl.xml",
+         "datasource-test.xml", "annomvc-servlet.xml" };
 
    /** The ctx. */
    private ApplicationContext ctx;
@@ -61,11 +62,11 @@ public class SpringContext {
     * 
     * @return the instance of <code>SpringContext</code>
     */
-   public synchronized static SpringContext getInstance() {
-      if (m_instance == null) {
-         m_instance = new SpringContext(contextFiles);
+   public static synchronized SpringContext getInstance() {
+      if (instance == null) {
+         instance = new SpringContext(contextFiles);
       }
-      return m_instance;
+      return instance;
    }
 
    /**

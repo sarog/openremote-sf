@@ -49,26 +49,26 @@ public class ApplicationView implements View {
    /** The viewport. */
    private Viewport viewport;
    
-   /* (non-Javadoc)
+   /**
     * @see org.openremote.modeler.client.view.View#initialize()
     */
    public void initialize() {
       Protocols.getInstance(); // get protocol definition from xml files 
       viewport = new Viewport();
       viewport.setLayout(new BorderLayout());
-      final AuthorityRPCServiceAsync auth = (AuthorityRPCServiceAsync)GWT.create(AuthorityRPCService.class);
-      auth.getAuthority(new AsyncCallback<Authority>(){
+      final AuthorityRPCServiceAsync auth = (AuthorityRPCServiceAsync) GWT.create(AuthorityRPCService.class);
+      auth.getAuthority(new AsyncCallback<Authority>() {
          public void onFailure(Throwable caught) {
             MessageBox.info("Info", caught.getMessage(), null);
             caught.printStackTrace();
          }
          public void onSuccess(Authority authority) {
-            if(authority!=null){
+            if (authority != null) {
                createNorth(authority);
                createCenter(authority);
                createSouth();
                show();
-            }else{
+            } else {
                MessageBox.info("Info", "you haven't login", null);
             }
          }
@@ -82,7 +82,7 @@ public class ApplicationView implements View {
    /**
     * Show.
     */
-   private void show(){
+   private void show() {
       RootPanel.get().add(viewport);
    }
    
@@ -92,50 +92,51 @@ public class ApplicationView implements View {
     * 
     * @param authority the authority
     */
-   private void createNorth(Authority authority){
+   private void createNorth(Authority authority) {
       HorizontalPanel headerPanel = new HorizontalPanel();
-      Anchor logout = new Anchor("logout "+authority.getUsername(),"j_security_logout");
+      Anchor logout = new Anchor("logout " + authority.getUsername(), "j_security_logout");
       headerPanel.add(logout);
       logout.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
       headerPanel.setCellHorizontalAlignment(logout, HorizontalPanel.ALIGN_RIGHT);
       headerPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
       BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.NORTH, 25);
-      data.setMargins(new Margins(0,5,0,5));
+      data.setMargins(new Margins(0, 5, 0, 5));
       viewport.add(headerPanel, data);
    }
-   
+
    /**
     * Creates the center.
     * 
-    * @param authority the authority
+    * @param authority
+    *           the authority
     */
-   private void createCenter(Authority authority){
+   private void createCenter(Authority authority) {
       List<String> roles = authority.getRoles();
       TabPanel builderPanel = new TabPanel();
-      if(roles.contains("ROLE_MODELER")){
+      if (roles.contains("ROLE_MODELER")) {
          BuildingModelerView buildingModelerItem = new BuildingModelerView();
          buildingModelerItem.initialize();
          builderPanel.add(buildingModelerItem);
       }
-      if(roles.contains("ROLE_DESIGNER")){
+      if (roles.contains("ROLE_DESIGNER")) {
          UIDesignerView uiDesignerItem = new UIDesignerView();
          uiDesignerItem.initialize();
          builderPanel.add(uiDesignerItem);
       }
       builderPanel.setAutoSelect(true);
       BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.CENTER);
-      data.setMargins(new Margins(0,5,0,5));
+      data.setMargins(new Margins(0, 5, 0, 5));
       viewport.add(builderPanel, data);
-      
+
    }
    
    /**
     * Creates the south.
     */
-   private void createSouth(){
-//      Status status = new Status();
-//      BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.SOUTH, 20);
-//      data.setMargins(new Margins(0,5,0,5));
-//      viewport.add(status, data);
+   private void createSouth() {
+      // Status status = new Status();
+      // BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.SOUTH, 20);
+      // data.setMargins(new Margins(0,5,0,5));
+      // viewport.add(status, data);
    }
 }

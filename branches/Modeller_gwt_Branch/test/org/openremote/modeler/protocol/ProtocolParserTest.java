@@ -33,13 +33,19 @@ import org.testng.annotations.Test;
  */
 public class ProtocolParserTest {
 
-   @Test(expectedExceptions= {ParseProtocolException.class})
+   /**
+    * Test protocol schema validate is fail.
+    */
+   @Test(expectedExceptions = { ParseProtocolException.class })
    public void testSchemaValidateFail() {
       ProtocolParser protocolParser = new ProtocolParser();
       protocolParser.setPath(getClass().getResource("testXml").getPath() + "/schemaValidateFail");
       protocolParser.parseXmls();
    }
 
+   /**
+    * Test parse protocol xml.
+    */
    @Test
    public void testParseXmls() {
       ProtocolParser protocolParser = new ProtocolParser();
@@ -51,6 +57,11 @@ public class ProtocolParserTest {
       Assert.assertEquals(pros, protocolParser.parseXmls());
    }
 
+   /**
+    * Gets the correct protocol definition.
+    * 
+    * @return the correct protocol definition
+    */
    private ProtocolDefinition getCorrectProtocolDefinition() {
       ProtocolDefinition definition = new ProtocolDefinition();
       definition.setName("KNX");

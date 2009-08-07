@@ -31,7 +31,7 @@ import java.util.List;
 
 
 /**
- * Default implements of {@link DeviceMacroService} 
+ * Default implements of {@link DeviceMacroService}.
  */
 public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> implements DeviceMacroService {
 
@@ -43,7 +43,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
 
 
    /**
-    * For spring IOC
+    * For spring IOC.
     * 
     * @param deviceMacroItemService the new device macro item service
     */
@@ -54,7 +54,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
    
 
    /**
-    * For spring IOC
+    * For spring IOC.
     * 
     * @param userService the new user service
     */
@@ -64,7 +64,8 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
 
 
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.service.BaseAbstractService#loadAll()
     */
    public List<DeviceMacro> loadAll() {
@@ -75,7 +76,8 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
       return list;
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroService#saveDeviceMacro(org.openremote.modeler.domain.DeviceMacro)
     */
    public DeviceMacro saveDeviceMacro(DeviceMacro deviceMacro) {
@@ -84,7 +86,8 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
       return deviceMacro;
    }
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroService#updateDeviceMacro(org.openremote.modeler.domain.DeviceMacro)
     */
    public DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro) {
@@ -105,7 +108,8 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
    }
 
 
-   /* (non-Javadoc)
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroService#deleteDeviceMacro(long)
     */
    public void deleteDeviceMacro(long id) {

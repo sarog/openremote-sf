@@ -77,7 +77,7 @@ public class DeviceWindow extends SubmitWindow {
     * 
     * @param deviceModel the device model
     */
-   public DeviceWindow(BeanModel deviceModel){
+   public DeviceWindow(BeanModel deviceModel) {
       this.deviceModel = deviceModel;
       initial("Edit device");
       show();
@@ -88,8 +88,8 @@ public class DeviceWindow extends SubmitWindow {
     * 
     * @param heading the heading
     */
-   private void initial(String heading){
-      setSize(360,200);
+   private void initial(String heading) {
+      setSize(360, 200);
       setHeading(heading);
       setLayout(new FillLayout());
       setModal(true);
@@ -142,9 +142,9 @@ public class DeviceWindow extends SubmitWindow {
                   fireSubmitListener(appEvent);
                }
             };
-            if(deviceModel == null){
+            if (deviceModel == null) {
                DeviceBeanModelProxy.saveDevice(attrMap, callback);
-            }else{
+            } else {
                DeviceBeanModelProxy.updateDevice(deviceModel, attrMap, callback);
             }
          }
@@ -158,7 +158,7 @@ public class DeviceWindow extends SubmitWindow {
    /**
     * Creates the fields.
     */
-   private void createFields(){
+   private void createFields() {
       TextField<String> nameField = new TextField<String>();
       nameField.setName(DEVICE_NAME);
       nameField.ensureDebugId(DebugId.DEVICE_NAME_FIELD);
@@ -177,7 +177,7 @@ public class DeviceWindow extends SubmitWindow {
       modelField.ensureDebugId(DebugId.DEVICE_MODEL_FIELD);
       modelField.setAllowBlank(false);
       
-      if(deviceModel != null){
+      if (deviceModel != null) {
          Device device = deviceModel.getBean();
          nameField.setValue(device.getName());
          vendorField.setValue(device.getVendor());
