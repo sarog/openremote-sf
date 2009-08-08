@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.openremote.android.console.R;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -47,7 +46,7 @@ public class ImageLoader implements Runnable {
 		this.typers = Collections.synchronizedMap(this.typers);
 	}
 	
-	public void load(String url, /*ImageView view,*/ Typer typer) {
+	public void load(String url, Typer typer) {
 		if(this.images.get(url) == null) {
 			this.images.put(url, null);
 		}
@@ -55,7 +54,6 @@ public class ImageLoader implements Runnable {
 		if(iviews == null) {
 			iviews = new ArrayList<ImageView>();
 		}
-		//iviews.add(view);
 		this.views.put(url,iviews);
 		List<Typer> itypers = this.typers.get(url);
 		if(itypers == null) {
@@ -122,7 +120,7 @@ public class ImageLoader implements Runnable {
 					URL url = new URL(string);
 					HttpURLConnection con = (HttpURLConnection) url.openConnection();
 					InputStream stream = con.getInputStream();
-				    Bitmap b = BitmapFactory.decodeStream(stream);
+				    Bitmap b = BitmapFactory.decodeStream(stream);				   
 				    stream.close();
 				    Log.d(this.toString(),"loaded a bitmap in "+(System.currentTimeMillis()-time));
 				    this.images.put(string, b);
@@ -149,6 +147,7 @@ public class ImageLoader implements Runnable {
 				for (Typer typer : itypers) {
 					Log.d(this.toString(),"adding a image for "+key);
 					ImageView iview = typer.type(this.images.get(key));
+					//iview.setAlpha(0);
 					iviews.add(iview); 
 					iview.setImageBitmap(b);
 				}

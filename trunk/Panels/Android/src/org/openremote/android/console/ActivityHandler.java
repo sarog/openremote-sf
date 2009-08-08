@@ -48,6 +48,7 @@ public class ActivityHandler extends Activity implements OnGestureListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		this.imageLoader = Main.imageLoader;
 		this.imageLoader.reset();
 		this.url = getSharedPreferences(ConfigureActivity.OPEN_REMOTE_PREFS, 0).getString(Constants.URL, "http://192.168.1.1");
@@ -86,7 +87,7 @@ public class ActivityHandler extends Activity implements OnGestureListener {
 			public ImageView type(Bitmap bitmap) {
 				if (bitmap == null) {
 					ImageButton ib2 = new ImageButton(c);
-					ib2.setImageResource(R.drawable.ic_notfound);
+                    ib2.setImageResource(R.drawable.ic_notfound);
 				}
 				int rowsize = 420/s.getRow();
 				int colsize = 310/s.getCol();
@@ -101,6 +102,7 @@ public class ActivityHandler extends Activity implements OnGestureListener {
 				} else {
 					ImageView iv = new ImageView(c);
 					iv.setImageBitmap(bitmap);
+					iv.setBackgroundColor(0);					
 					return iv;
 				}
 			}
@@ -112,6 +114,7 @@ public class ActivityHandler extends Activity implements OnGestureListener {
 		Map<String,Integer> loaded = new HashMap<String,Integer>();
 		for(Screen screen: screens) {
 			AbsoluteLayout tl = constructScreen(screen.getCol(),screen.getRow(),screen.getButtons(),loaded);
+			tl.setBackgroundColor(0);
 			tl.setTag(screen.getName());
 			vf.addView(tl);
 		}
@@ -126,6 +129,7 @@ private AbsoluteLayout constructScreen(int col, int row, List<Button> buttons, M
 	Log.d(this.toString(),"rowsize="+rowsize+",colsize="+colsize);
 
 	AbsoluteLayout screen = new AbsoluteLayout(this);
+	screen.setBackgroundColor(0);
 		for (Button button : buttons) {
 			int posX = (colsize * button.getX());
 			int posY = (rowsize * button.getY());
@@ -141,18 +145,12 @@ private AbsoluteLayout constructScreen(int col, int row, List<Button> buttons, M
 				i++;
 				loaded.put(button.getIcon(),i);
 				if(height < (rowsize-(yinset*2)) && width < (colsize-(xinset*2))) {
-					//ImageButton ib = new ImageButton(this);
-					//ib.setImageBitmap(bitmap);
 
 					height = (rowsize-(yinset*2));
 					width = (colsize-(xinset*2));
 					posX+=xinset;
 					posY+=yinset;
-				} //else {
-					//view = getViewForButton(button.getIcon());//new ImageView(this);
-					//iv.setImageBitmap(bitmap);
-					//view = iv;
-				//}
+				}
 				if ((posX+width) > 320) {
 					posX += (320-(posX+width));
 					posX = posX >= 0 ? posX : 0;
@@ -178,8 +176,7 @@ private AbsoluteLayout constructScreen(int col, int row, List<Button> buttons, M
 				b.setTypeface(Typeface.DEFAULT_BOLD);
 				b.setTextSize(18);
 				b.setOnTouchListener(createTouchListener(url,button.getId()));
-				b.setOnClickListener(createClickListener(url, button.getId()));
-				//b.setBackgroundColor(0x869db7);
+				b.setOnClickListener(createClickListener(url, button.getId()));	
 				b.setText(button.getLabel());
 				screen.addView(b, new AbsoluteLayout.LayoutParams((colsize-(xinset*2)),(rowsize-(yinset*2)),posX+xinset,posY+yinset));
 			}
@@ -190,7 +187,7 @@ private AbsoluteLayout constructScreen(int col, int row, List<Button> buttons, M
 	
 	private ImageView constructNotFoundButton() {
 		ImageButton b = new ImageButton(this);
-		b.setImageResource(R.drawable.ic_notfound);
+		b.setImageResource(R.drawable.ic_notfound);		
 		return b;
     }
 
@@ -255,21 +252,6 @@ private AbsoluteLayout constructScreen(int col, int row, List<Button> buttons, M
 	private Bitmap getImage(Button button) {
 		return this.imageLoader.getBitmap(this.url+"/"+button.getIcon());
 	}
-
-/*	private Bitmap getImage(Button button) {
-		//ImageView ib = new ImageView(this);
-		//BitmapFactory bf = new BitmapFactory();
-		Bitmap b= null;
-		URL imageUrl;
-		try {
-			imageUrl = new URL(this.url+"/"+button.getIcon());
-			HttpURLConnection con = (HttpURLConnection) imageUrl.openConnection();
-		    b = BitmapFactory.decodeStream(con.getInputStream());
-		} catch (Exception e) {
-			Log.d(this.toString(), e.getMessage(), e);
-		}
-		return b;
-}*/
 
 	private boolean nvl(String label) {
 		return label == null || label.equals("");
