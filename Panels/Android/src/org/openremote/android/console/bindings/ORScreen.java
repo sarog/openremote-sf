@@ -4,31 +4,32 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * This is a exists simply for consistency's sake.  It serves no purpose whatsoever other than to waste a few bytes on your phone.
+ * This is a exists simply for consistency's sake. It serves no purpose
+ * whatsoever other than to waste a few bytes on your phone.
  * 
  * @see org.openremote.android.console.bindings.Screen
  * @author Andrew C. Oliver <acoliver osintegrators.com>
  */
 public interface ORScreen extends Serializable {
 
-	List<Button> getButtons();
+    List<Button> getButtons();
 
-	void setButtons(List<Button> buttons);
+    void setButtons(List<Button> buttons);
 
-	String getId();
+    String getId();
 
-	void setId(String id);
+    void setId(String id);
 
-	String getName();
+    String getName();
 
-	void setName(String name);
+    void setName(String name);
 
-	int getRow();
+    int getRow();
 
-	void setRow(int row);
+    void setRow(int row);
 
-	int getCol();
+    int getCol();
 
-	void setCol(int col);
+    void setCol(int col);
 
 }
