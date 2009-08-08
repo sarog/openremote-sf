@@ -54,6 +54,7 @@ public class Main extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
         imageLoader = new ImageLoader();
         ArrayList<String> activityNames = new ArrayList<String>(); //used solely for making our list view
         activities = new ArrayList<ORActivity>();
@@ -96,10 +97,12 @@ public class Main extends Activity {
 	        
 	        // Set main.XML as the layout for this Activity
 	        activitiesListView = new LinearLayout(this);
+	        activitiesListView.setBackgroundColor(0);
 	        activitiesListView.setTag(R.string.activities);
 	        activitiesListView.setLayoutParams(new LinearLayout.LayoutParams(320,480));
 	        ListView lv = constructListView(activityNames);
-	        
+	        lv.setCacheColorHint(0);
+	        lv.setBackgroundColor(0);	        
 	       
 	        activitiesListView.addView(lv);
 	        this.setContentView(activitiesListView);
@@ -204,6 +207,8 @@ public class Main extends Activity {
 	 */
 	public ListView constructListView(List<String> activityNames) {
     	ListView lv = new ListView(this);
+    	lv.setBackgroundColor(0);
+    	lv.setCacheColorHint(0);
         ArrayAdapter<String> aa = new ArrayAdapter<String>(activitiesListView.getContext(),android.R.layout.simple_list_item_1, activityNames);
       
         lv.setAdapter(aa);
