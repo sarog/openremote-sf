@@ -25,8 +25,10 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtExtends.ListViewDropTargetMacroDragExt;
 import org.openremote.modeler.client.gxtExtends.TreePanelDragSourceMacroDragExt;
 import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -48,8 +50,10 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.ListView;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.Text;
@@ -339,7 +343,25 @@ public class MacroWindow extends Window {
       Button addDelayBtn = new Button();
       addDelayBtn.setToolTip("Add Delay");
       addDelayBtn.setIcon(icons.addDelayIcon());
+      addDelayBtn.addSelectionListener(new SelectionListener<ButtonEvent>(){
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            addDelay();
+         }
+         
+      });
       toolBar.add(addDelayBtn);
+      
+      Button editDelayBtn = new Button();
+      editDelayBtn.setToolTip("Edit Delay");
+      editDelayBtn.setIcon(icons.editDelayIcon());
+      editDelayBtn.addSelectionListener(new SelectionListener<ButtonEvent>(){
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            editDelay();
+         }
+      });
+      toolBar.add(editDelayBtn);
 
       Button deleteBtn = new Button();
       deleteBtn.setToolTip("Delete Macro Item");
@@ -386,6 +408,8 @@ public class MacroWindow extends Window {
             } else if (model.getBean() instanceof DeviceCommand) {
                DeviceCommand command = (DeviceCommand) model.getBean();
                s += "  (Device " + command.getDevice().getName() + ")";
+            }else if (model.getBean() instanceof CommandDelay){
+               s = "Delay("+model.get("delaySecond")+"s)";
             }
             model.set(MACRO_ITEM_LIST_DISPLAY_FIELD, s);
             return model;
@@ -410,7 +434,9 @@ public class MacroWindow extends Window {
                         } else if (beanModel.getBean() instanceof DeviceCommandRef) {
                            DeviceCommandRef deviceCommandRef = (DeviceCommandRef) beanModel.getBean();
                            rightMacroItemListView.getStore().add(deviceCommandRef.getDeviceCommand().getBeanModel());
-                        }
+                        } else if (beanModel.getBean() instanceof CommandDelay) {
+                           rightMacroItemListView.getStore().add(beanModel);
+                        } 
                      }
                   }
                });
@@ -452,7 +478,36 @@ public class MacroWindow extends Window {
             rightMacroItemListView.getSelectionModel().select(index, false);
          }
       }
-
    }
-
+   
+   private void addDelay(){
+      final DelayWindow delayWindow = new DelayWindow();
+      delayWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+         @Override
+         public void afterSubmit(SubmitEvent be) {
+            delayWindow.hide();
+            BeanModel delayModel = be.getData();
+            rightMacroItemListView.getStore().add(delayModel);
+            Info.display("Info", "Add delay " + delayModel.get("name") + " success.");
+         }
+      });
+   }
+   
+   private void editDelay(){
+      BeanModel data = rightMacroItemListView.getSelectionModel().getSelectedItem();
+      if(data.getBean() instanceof CommandDelay){
+         final DelayWindow editDelayWindow = new DelayWindow(data);
+         editDelayWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+            @Override
+            public void afterSubmit(SubmitEvent be) {
+               editDelayWindow.hide();
+               BeanModel delayModel = be.getData();
+               rightMacroItemListView.getStore().update(delayModel);
+               Info.display("Info", "Edit delay " + delayModel.get("name") + " success.");
+            }
+         });
+      }else{
+         MessageBox.info("Warn", "please select a CommandDelay", null);
+      }
+   }
 }

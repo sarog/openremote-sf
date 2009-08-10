@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -122,6 +123,10 @@ public class DeviceMacroBeanModelProxy {
             DeviceMacroRef deviceMacroRef = new DeviceMacroRef(macro);
             deviceMacroRef.setParentDeviceMacro(deviceMacro);
             deviceMacroItems.add(deviceMacroRef);
+         } else if (beanModel.getBean() instanceof CommandDelay) {
+            CommandDelay commandDelay = (CommandDelay) beanModel.getBean();
+            commandDelay.setParentDeviceMacro(deviceMacro);
+            deviceMacroItems.add(commandDelay);
          }
       }
       return deviceMacroItems;

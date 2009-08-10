@@ -33,6 +33,7 @@
                 <value>org.openremote.modeler.domain.DeviceCommandRef</value> 
                 <value>org.openremote.modeler.domain.DeviceMacro</value>
                 <value>org.openremote.modeler.domain.DeviceMacroRef</value> 
+                <value>org.openremote.modeler.domain.CommandDelay</value> 
                 <value>org.openremote.modeler.domain.DeviceMacroItem</value> 
                 <value>org.openremote.modeler.domain.User</value> 
                 <value>org.openremote.modeler.domain.Role</value> 

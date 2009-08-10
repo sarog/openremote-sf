@@ -25,6 +25,7 @@ import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
@@ -244,6 +245,8 @@ public class TreePanelBuilder {
                return ICON.macroIcon();
             } else if (thisModel.getBean() instanceof DeviceCommandRef) {
                return ICON.deviceCmd();
+            } else if (thisModel.getBean() instanceof CommandDelay) {
+               return ICON.delayIcon();
             } else {
                return ICON.macroIcon();
             }
