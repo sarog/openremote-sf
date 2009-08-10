@@ -81,7 +81,7 @@ public class DeviceMacroItem extends BusinessEntity {
          return commandRef.getDeviceCommand().getName();
       } else if (this instanceof CommandDelay) {
          CommandDelay commandDelay = (CommandDelay) this;
-         return "Delay("+commandDelay.getDelaySecond()+"s)";
+         return "Delay(" + commandDelay.getDelaySecond() + "s)";
       } else {
          return "";
       }

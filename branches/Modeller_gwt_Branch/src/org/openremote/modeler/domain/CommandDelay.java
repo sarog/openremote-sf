@@ -22,28 +22,47 @@ package org.openremote.modeler.domain;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+/**
+ * The Class CommandDelay.
+ */
 @SuppressWarnings("serial")
 @Entity
 @DiscriminatorValue("CMD_DELAY")
 public class CommandDelay extends DeviceMacroItem {
 
+   /** The delay second. */
    private String delaySecond;
    
    /**
-    * Instantiates a new command delay, this must be here, else error occurs in rpc serial
+    * Instantiates a new command delay, this constructor is for gwt rpc serial.
     */
    public CommandDelay() {
    }
    
+   /**
+    * Instantiates a new command delay.
+    * 
+    * @param delaySecond the delay second
+    */
    public CommandDelay(String delaySecond) {
       super();
       this.delaySecond = delaySecond;
    }
 
+   /**
+    * Gets the delay second.
+    * 
+    * @return the delay second
+    */
    public String getDelaySecond() {
       return delaySecond;
    }
 
+   /**
+    * Sets the delay second.
+    * 
+    * @param delaySecond the new delay second
+    */
    public void setDelaySecond(String delaySecond) {
       this.delaySecond = delaySecond;
    }
