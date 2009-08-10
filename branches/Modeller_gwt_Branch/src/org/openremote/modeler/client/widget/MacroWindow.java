@@ -343,7 +343,7 @@ public class MacroWindow extends Window {
       Button addDelayBtn = new Button();
       addDelayBtn.setToolTip("Add Delay");
       addDelayBtn.setIcon(icons.addDelayIcon());
-      addDelayBtn.addSelectionListener(new SelectionListener<ButtonEvent>(){
+      addDelayBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             addDelay();
@@ -355,7 +355,7 @@ public class MacroWindow extends Window {
       Button editDelayBtn = new Button();
       editDelayBtn.setToolTip("Edit Delay");
       editDelayBtn.setIcon(icons.editDelayIcon());
-      editDelayBtn.addSelectionListener(new SelectionListener<ButtonEvent>(){
+      editDelayBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             editDelay();
@@ -408,8 +408,8 @@ public class MacroWindow extends Window {
             } else if (model.getBean() instanceof DeviceCommand) {
                DeviceCommand command = (DeviceCommand) model.getBean();
                s += "  (Device " + command.getDevice().getName() + ")";
-            }else if (model.getBean() instanceof CommandDelay){
-               s = "Delay("+model.get("delaySecond")+"s)";
+            } else if (model.getBean() instanceof CommandDelay) {
+               s = "Delay(" + model.get("delaySecond") + "s)";
             }
             model.set(MACRO_ITEM_LIST_DISPLAY_FIELD, s);
             return model;
@@ -480,7 +480,10 @@ public class MacroWindow extends Window {
       }
    }
    
-   private void addDelay(){
+   /**
+    * Adds the delay.
+    */
+   private void addDelay() {
       final DelayWindow delayWindow = new DelayWindow();
       delayWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
          @Override
@@ -493,9 +496,12 @@ public class MacroWindow extends Window {
       });
    }
    
-   private void editDelay(){
+   /**
+    * Edits the delay.
+    */
+   private void editDelay() {
       BeanModel data = rightMacroItemListView.getSelectionModel().getSelectedItem();
-      if(data.getBean() instanceof CommandDelay){
+      if (data.getBean() instanceof CommandDelay) {
          final DelayWindow editDelayWindow = new DelayWindow(data);
          editDelayWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
             @Override
@@ -506,7 +512,7 @@ public class MacroWindow extends Window {
                Info.display("Info", "Edit delay " + delayModel.get("name") + " success.");
             }
          });
-      }else{
+      } else {
          MessageBox.info("Warn", "please select a CommandDelay", null);
       }
    }
