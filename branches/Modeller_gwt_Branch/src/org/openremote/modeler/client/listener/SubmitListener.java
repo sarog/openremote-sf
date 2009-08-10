@@ -19,11 +19,8 @@
 */
 package org.openremote.modeler.client.listener;
 
-import java.util.List;
-
 import org.openremote.modeler.client.event.SubmitEvent;
 
-import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Listener;
 
 /**
@@ -46,7 +43,6 @@ public abstract class SubmitListener implements Listener<SubmitEvent> {
     * {@inheritDoc}
     * @see com.extjs.gxt.ui.client.event.Listener#handleEvent(com.extjs.gxt.ui.client.event.BaseEvent)
     */
-   @Override
    public void handleEvent(SubmitEvent be) {
       if (be.getType() == SubmitEvent.Submit) {
          afterSubmit(be);

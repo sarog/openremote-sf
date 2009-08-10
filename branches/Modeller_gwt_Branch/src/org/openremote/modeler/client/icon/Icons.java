@@ -138,4 +138,20 @@ public interface Icons extends ImageBundle {
     */
    @Resource("add_delay.png")
    AbstractImagePrototype addDelayIcon();
+   
+   /**
+    * Edits the delay icon.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("edit_delay.png")
+   AbstractImagePrototype editDelayIcon();
+   
+   /**
+    * Delay icon.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("delay.png")
+   AbstractImagePrototype delayIcon();
 }
