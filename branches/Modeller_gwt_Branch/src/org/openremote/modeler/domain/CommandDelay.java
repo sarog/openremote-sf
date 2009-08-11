@@ -21,6 +21,7 @@ package org.openremote.modeler.domain;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 /**
  * The Class CommandDelay.
@@ -66,4 +67,15 @@ public class CommandDelay extends DeviceMacroItem {
    public void setDelaySecond(String delaySecond) {
       this.delaySecond = delaySecond;
    }
+
+   /**
+    * {@inheritDoc}
+    * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()
+    */
+   @Override
+   @Transient
+   public String getDisplayName() {
+      return "Delay (" + getDelaySecond() + "s)";
+   }
+   
 }

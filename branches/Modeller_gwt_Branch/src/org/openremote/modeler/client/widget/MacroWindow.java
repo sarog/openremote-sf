@@ -28,13 +28,12 @@ import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
-import org.openremote.modeler.domain.DeviceMacroRef;
+import org.openremote.modeler.domain.DeviceMacroItem;
 
-import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.dnd.ListViewDragSource;
@@ -57,14 +56,11 @@ import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.Text;
-import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.LabelAlign;
-import com.extjs.gxt.ui.client.widget.layout.FillLayout;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayoutData;
@@ -77,7 +73,7 @@ import com.google.gwt.core.client.GWT;
 /**
  * The Class MacroWindow.
  */
-public class MacroWindow extends Window {
+public class MacroWindow extends FormWindow {
 
    /** The _device macro. */
    private BeanModel deviceMacroBeanModel = null;
@@ -87,9 +83,6 @@ public class MacroWindow extends Window {
 
    /** The icons. */
    private Icons icons = GWT.create(Icons.class);
-
-   /** The macro form. */
-   private FormPanel macroForm = new FormPanel();
 
    /** The macro name field. */
    private TextField<String> macroNameField = null;
@@ -115,7 +108,7 @@ public class MacroWindow extends Window {
    public MacroWindow() {
       setHeading("New Macro");
       setup();
-
+      show();
    }
 
    /**
@@ -127,7 +120,7 @@ public class MacroWindow extends Window {
       this.deviceMacroBeanModel = deviceMacroModel;
       setHeading("Edit Macro");
       setup();
-
+      show();
    }
 
    /**
@@ -135,24 +128,20 @@ public class MacroWindow extends Window {
     */
    private void setup() {
       setPlain(true);
-      setModal(true);
       setBlinkModal(true);
-      setLayout(new FillLayout());
       setWidth(530);
       setResizable(false);
       createFormElement();
 
-      macroForm.setHeaderVisible(false);
-      macroForm.setFrame(true);
-      macroForm.setLabelAlign(LabelAlign.TOP);
-      macroForm.setHeight(380);
-      macroForm.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
+      form.setLabelAlign(LabelAlign.TOP);
+      form.setHeight(380);
+      form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             beforeFormSubmit();
          }
 
       });
-      add(macroForm);
+      add(form);
    }
 
    /**
@@ -169,7 +158,7 @@ public class MacroWindow extends Window {
       macroNameField.setName("macroName");
       macroNameField.setStyleAttribute("marginBottom", "10px");
 
-      macroForm.add(macroNameField);
+      form.add(macroNameField);
 
       createSelectCommandContainer();
 
@@ -178,15 +167,14 @@ public class MacroWindow extends Window {
 
          @Override
          public void componentSelected(ButtonEvent ce) {
-            if (macroForm.isValid()) {
-               macroForm.submit();
+            if (form.isValid()) {
+               form.submit();
             }
          }
 
       });
 
-      macroForm.setButtonAlign(HorizontalAlignment.CENTER);
-      macroForm.addButton(submitBtn);
+      form.addButton(submitBtn);
    }
 
    /**
@@ -201,7 +189,7 @@ public class MacroWindow extends Window {
       fieldSet.add(adapterField);
       fieldSet.setHeading("Add Macro Item");
 
-      macroForm.add(fieldSet);
+      form.add(fieldSet);
 
       HBoxLayout layout = new HBoxLayout();
       layout.setHBoxLayoutAlign(HBoxLayoutAlign.TOP);
@@ -401,17 +389,17 @@ public class MacroWindow extends Window {
       rightMacroItemListView = new ListView<BeanModel>() {
          @Override
          protected BeanModel prepareData(BeanModel model) {
-            String s = model.get("name");
-            if (model.getBean() instanceof DeviceMacro) {
-               DeviceMacro deviceMacro = (DeviceMacro) model.getBean();
-               s += "  (DeviceMacro " + deviceMacro.getName() + ")";
-            } else if (model.getBean() instanceof DeviceCommand) {
-               DeviceCommand command = (DeviceCommand) model.getBean();
-               s += "  (Device " + command.getDevice().getName() + ")";
-            } else if (model.getBean() instanceof CommandDelay) {
-               s = "Delay(" + model.get("delaySecond") + "s)";
-            }
-            model.set(MACRO_ITEM_LIST_DISPLAY_FIELD, s);
+//            String s = model.get("name");
+//            if (model.getBean() instanceof DeviceMacro) {
+//               DeviceMacro deviceMacro = (DeviceMacro) model.getBean();
+//               s += "  (DeviceMacro " + deviceMacro.getName() + ")";
+//            } else if (model.getBean() instanceof DeviceCommand) {
+//               DeviceCommand command = (DeviceCommand) model.getBean();
+//               s += "  (Device " + command.getDevice().getName() + ")";
+//            } else if (model.getBean() instanceof CommandDelay) {
+//               s = "Delay(" + model.get("delaySecond") + "s)";
+//            }
+            model.set(MACRO_ITEM_LIST_DISPLAY_FIELD, ((BusinessEntity) model.getBean()).getDisplayName());
             return model;
          }
       };
@@ -428,15 +416,16 @@ public class MacroWindow extends Window {
                   @Override
                   public void onSuccess(List<BeanModel> result) {
                      for (BeanModel beanModel : result) {
-                        if (beanModel.getBean() instanceof DeviceMacroRef) {
-                           DeviceMacroRef deviceMacroRef = (DeviceMacroRef) beanModel.getBean();
-                           rightMacroItemListView.getStore().add(deviceMacroRef.getTargetDeviceMacro().getBeanModel());
-                        } else if (beanModel.getBean() instanceof DeviceCommandRef) {
-                           DeviceCommandRef deviceCommandRef = (DeviceCommandRef) beanModel.getBean();
-                           rightMacroItemListView.getStore().add(deviceCommandRef.getDeviceCommand().getBeanModel());
-                        } else if (beanModel.getBean() instanceof CommandDelay) {
-                           rightMacroItemListView.getStore().add(beanModel);
-                        } 
+                        rightMacroItemListView.getStore().add(((DeviceMacroItem) beanModel.getBean()).getTargetBeanModel());
+//                        if (beanModel.getBean() instanceof DeviceMacroRef) {
+//                           DeviceMacroRef deviceMacroRef = (DeviceMacroRef) beanModel.getBean();
+//                           rightMacroItemListView.getStore().add(deviceMacroRef.getTargetDeviceMacro().getBeanModel());
+//                        } else if (beanModel.getBean() instanceof DeviceCommandRef) {
+//                           DeviceCommandRef deviceCommandRef = (DeviceCommandRef) beanModel.getBean();
+//                           rightMacroItemListView.getStore().add(deviceCommandRef.getDeviceCommand().getBeanModel());
+//                        } else if (beanModel.getBean() instanceof CommandDelay) {
+//                           rightMacroItemListView.getStore().add(beanModel);
+//                        } 
                      }
                   }
                });

@@ -29,6 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 
 /**
@@ -108,6 +109,12 @@ public class DeviceMacro extends BusinessEntity {
     */
    public void setAccount(Account account) {
       this.account = account;
+   }
+
+   @Override
+   @Transient
+   public String getDisplayName() {
+      return getName() + " (Macro)";
    }
    
 }

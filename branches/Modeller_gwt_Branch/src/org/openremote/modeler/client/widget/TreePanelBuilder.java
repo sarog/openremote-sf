@@ -25,6 +25,7 @@ import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -228,12 +229,13 @@ public class TreePanelBuilder {
       tree.setLabelProvider(new ModelStringProvider<BeanModel>() {
 
          public String getStringValue(BeanModel model, String property) {
-            if (model.getBean() instanceof DeviceMacro) {
-               return model.get("name");
-            } else {
-               DeviceMacroItem deviceMacroItem = (DeviceMacroItem) model.getBean();
-               return deviceMacroItem.getLabel();
-            }
+//            if (model.getBean() instanceof DeviceMacro) {
+//               return model.get("name");
+//            } else {
+//               DeviceMacroItem deviceMacroItem = (DeviceMacroItem) model.getBean();
+//               return deviceMacroItem.getTreeNodeLabel();
+//            }
+            return ((BusinessEntity) model.getBean()).getDisplayName();
          }
 
       });

@@ -102,8 +102,6 @@ public class MacroPanel extends ContentPanel {
                   macroWindow.hide();
                }
             });
-
-            macroWindow.show();
          }
 
       });
@@ -269,8 +267,6 @@ public class MacroPanel extends ContentPanel {
                macroWindow.hide();
             }
          });
-         macroWindow.show();
-
       }
    }
 

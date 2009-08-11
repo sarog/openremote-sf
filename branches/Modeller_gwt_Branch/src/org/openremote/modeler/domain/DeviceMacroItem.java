@@ -29,6 +29,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.extjs.gxt.ui.client.data.BeanModel;
+
 
 /**
  * The Class Device Macro Item.
@@ -72,7 +74,7 @@ public class DeviceMacroItem extends BusinessEntity {
     * @return the label
     */
    @Transient
-   public String getLabel() {
+   public String getTreeNodeLabel() {
       if (this instanceof DeviceMacroRef) {
          DeviceMacroRef deviceMacroRef = (DeviceMacroRef) this;
          return deviceMacroRef.getTargetDeviceMacro().getName();
@@ -85,6 +87,18 @@ public class DeviceMacroItem extends BusinessEntity {
       } else {
          return "";
       }
+   }
+   
+   @Transient
+   public BeanModel getTargetBeanModel() {
+      if (this instanceof DeviceMacroRef) {
+         return ((DeviceMacroRef) this).getTargetDeviceMacro().getBeanModel();
+      } else if (this instanceof DeviceCommandRef) {
+         return ((DeviceCommandRef) this).getDeviceCommand().getBeanModel();
+      } else if (this instanceof CommandDelay) {
+         return this.getBeanModel();
+      }
+      return null;
    }
 
 }
