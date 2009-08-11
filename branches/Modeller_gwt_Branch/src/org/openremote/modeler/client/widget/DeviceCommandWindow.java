@@ -36,7 +36,6 @@ import org.openremote.modeler.protocol.ProtocolAttrDefinition;
 import org.openremote.modeler.protocol.ProtocolDefinition;
 import org.openremote.modeler.protocol.ProtocolValidator;
 
-import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.data.BaseModelData;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -48,12 +47,10 @@ import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 
@@ -61,16 +58,13 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 /**
  * The Class DeviceCommandWindow.
  */
-public class DeviceCommandWindow extends Window {
+public class DeviceCommandWindow extends FormWindow {
    
    /** The Constant DEVICE_COMMAND_NAME. */
    public static final String DEVICE_COMMAND_NAME = "name";
    
    /** The Constant DEVICE_COMMAND_PROTOCOL. */
    public static final String DEVICE_COMMAND_PROTOCOL = "protocol";
-   
-   /** The command form. */
-   private FormPanel commandForm = new FormPanel();
    
    /** The device command. */
    private DeviceCommand deviceCommand = null;
@@ -84,6 +78,7 @@ public class DeviceCommandWindow extends Window {
     * @param device the device
     */
    public DeviceCommandWindow(Device device) {
+      super();
       this.device = device;
       setHeading("New command");
       initial();
@@ -96,6 +91,7 @@ public class DeviceCommandWindow extends Window {
     * @param command the command
     */
    public DeviceCommandWindow(final DeviceCommand command) {
+      super();
       AsyncServiceFactory.getDeviceCommandServiceAsync().loadById(command.getOid(),
             new AsyncSuccessCallback<DeviceCommand>() {
          public void onSuccess(DeviceCommand cmd) {
@@ -114,14 +110,8 @@ public class DeviceCommandWindow extends Window {
    private void initial() {
       setWidth(380);
       setAutoHeight(true);
-      setModal(true);
-      setBodyBorder(false);
       
-      commandForm.setFrame(true);
-      commandForm.setHeaderVisible(false);
-      commandForm.setWidth(370);
-      commandForm.setBorders(false);
-      commandForm.setButtonAlign(HorizontalAlignment.CENTER);
+      form.setWidth(370);
 
       Button submitBtn = new Button("Submit");
       Button resetButton = new Button("Reset");
@@ -129,8 +119,8 @@ public class DeviceCommandWindow extends Window {
       submitBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            if (commandForm.isValid()) {
-               commandForm.submit();
+            if (form.isValid()) {
+               form.submit();
             }
          }
 
@@ -139,19 +129,19 @@ public class DeviceCommandWindow extends Window {
       resetButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            List<Field<?>> list = commandForm.getFields();
+            List<Field<?>> list = form.getFields();
             for (Field<?> f : list) {
                f.reset();
             }
          }
 
       });
-      commandForm.addButton(submitBtn);
-      commandForm.addButton(resetButton);
-      commandForm.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
+      form.addButton(submitBtn);
+      form.addButton(resetButton);
+      form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          @SuppressWarnings("unchecked")
          public void handleEvent(FormEvent be) {
-            List<Field<?>> list = commandForm.getFields();
+            List<Field<?>> list = form.getFields();
             Map<String, String> attrMap = new HashMap<String, String>();
             for (Field<?> f : list) {
                if (DEVICE_COMMAND_PROTOCOL.equals(f.getName())) {
@@ -177,7 +167,7 @@ public class DeviceCommandWindow extends Window {
 
       });
       createFields(Protocols.getInstance());
-      add(commandForm);
+      add(form);
    }
    
    /**
@@ -207,13 +197,13 @@ public class DeviceCommandWindow extends Window {
       protocol.setEmptyText("Please Select Protocol...");
       protocol.setValueField(ComboBoxDataModel.getDisplayProperty());
 
-      commandForm.add(nameField);
-      commandForm.add(protocol);
+      form.add(nameField);
+      form.add(protocol);
       protocol.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
          @SuppressWarnings("unchecked")
          public void selectionChanged(SelectionChangedEvent<ModelData> se) {
-            if (commandForm.getItems().size() > 2) {
-               commandForm.getItem(2).removeFromParent();
+            if (form.getItems().size() > 2) {
+               form.getItem(2).removeFromParent();
             }
             addAttrs((ComboBoxDataModel<ProtocolDefinition>) se.getSelectedItem());
          }
@@ -227,7 +217,7 @@ public class DeviceCommandWindow extends Window {
          protocol.setValue(data);
          protocol.disable();
       }
-      commandForm.layout();
+      form.layout();
    }
    
    /**
@@ -257,8 +247,8 @@ public class DeviceCommandWindow extends Window {
          setValidators(attrField, messages, attrDefinition.getValidators());
          attrSet.add(attrField);
       }
-      commandForm.add(attrSet);
-      commandForm.layout();
+      form.add(attrSet);
+      form.layout();
    }
    
    /**

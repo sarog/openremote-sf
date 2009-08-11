@@ -29,25 +29,21 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.selenium.DebugId;
 
-import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.Field;
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.extjs.gxt.ui.client.widget.layout.FillLayout;
 
 
 /**
  * The Class DeviceWindow.
  */
-public class DeviceWindow extends Window {
+public class DeviceWindow extends FormWindow {
    
    /** The DEVIC e_ name. */
    public static final String DEVICE_NAME = "name";
@@ -58,8 +54,6 @@ public class DeviceWindow extends Window {
    /** The DEVIC e_ model. */
    public static final String DEVICE_MODEL = "model";
    
-   /** The form. */
-   private FormPanel form = new FormPanel();
    
    /** The device model. */
    private BeanModel deviceModel = null;
@@ -68,6 +62,7 @@ public class DeviceWindow extends Window {
     * Instantiates a new device window.
     */
    public DeviceWindow() {
+      super();
       initial("New device");
       this.ensureDebugId(DebugId.NEW_DEVICE_WINDOW);
       show();
@@ -79,6 +74,7 @@ public class DeviceWindow extends Window {
     * @param deviceModel the device model
     */
    public DeviceWindow(BeanModel deviceModel) {
+      super();
       this.deviceModel = deviceModel;
       initial("Edit device");
       show();
@@ -92,15 +88,6 @@ public class DeviceWindow extends Window {
    private void initial(String heading) {
       setSize(360, 200);
       setHeading(heading);
-      setLayout(new FillLayout());
-      setModal(true);
-      setBodyBorder(false);
-      
-      form.setFrame(true);
-      form.setHeaderVisible(false);
-      form.setBorders(false);
-      
-      form.setButtonAlign(HorizontalAlignment.CENTER);
 
       Button submitBtn = new Button("Submit");
       submitBtn.ensureDebugId(DebugId.DEVICE_SUBMIT_BTN);

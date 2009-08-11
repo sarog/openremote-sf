@@ -24,30 +24,23 @@ import java.util.List;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.domain.CommandDelay;
 
-import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.Field;
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.NumberField;
-import com.extjs.gxt.ui.client.widget.layout.FillLayout;
 
 /**
  * The Class DelayWindow.
  */
-public class DelayWindow extends Window {
+public class DelayWindow extends FormWindow {
 
    /** The Constant DELAY. */
    public static final String DELAY = "delay";
-   
-   /** The form. */
-   private FormPanel form = new FormPanel();
    
    /** The command delay model. */
    private BeanModel commandDelayModel = null;
@@ -56,6 +49,7 @@ public class DelayWindow extends Window {
     * Instantiates a new delay window.
     */
    public DelayWindow() {
+      super();
       initial("Add Delay");
       show();
    }
@@ -66,6 +60,7 @@ public class DelayWindow extends Window {
     * @param commandDelayModel the command delay model
     */
    public DelayWindow(BeanModel commandDelayModel) {
+      super();
       this.commandDelayModel = commandDelayModel;
       initial("Edit Delay");
       show();
@@ -78,15 +73,7 @@ public class DelayWindow extends Window {
     */
    private void initial(String Heading) {
       setHeading("Add Delay");
-      setLayout(new FillLayout());
-      setModal(true);
-      setBodyBorder(false);
       setSize(280, 120);
-      form.setFrame(true);
-      form.setHeaderVisible(false);
-      form.setBorders(false);
-      
-      form.setButtonAlign(HorizontalAlignment.CENTER);
 
       Button addBtn = new Button("OK");
       

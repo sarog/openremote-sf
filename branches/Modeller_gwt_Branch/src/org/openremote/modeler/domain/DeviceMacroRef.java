@@ -23,12 +23,12 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 
+// TODO: Auto-generated Javadoc
 /**
- * The Class Device Macro Reference.
- * 
- * @author Dan 2009-7-6
+ * The Class DeviceMacroRef.
  */
 @SuppressWarnings("serial")
 @Entity
@@ -75,4 +75,14 @@ public class DeviceMacroRef extends DeviceMacroItem {
       this.targetDeviceMacro = targetDeviceMacro;
    }
 
+   /**
+    * {@inheritDoc}
+    * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()
+    */
+   @Override
+   @Transient
+   public String getDisplayName() {
+      return getTargetDeviceMacro().getDisplayName();
+   }
+   
 }
