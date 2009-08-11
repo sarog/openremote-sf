@@ -27,11 +27,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 
 /**
- * The Class DeviceMacro.
+ * The Class Device Macro. It's a macro of {@link DeviceCommand}.
  * 
  * @author Dan 2009-7-6
  */
@@ -70,11 +71,13 @@ public class DeviceMacro extends BusinessEntity {
    }
 
    /**
-    * Gets the device macro items.
+    * Gets the device macro items. 
+    * Here the order of macro items is very important.
     * 
     * @return the device macro items
     */
    @OneToMany(mappedBy = "parentDeviceMacro", cascade = CascadeType.ALL)
+   @OrderBy(value = "oid")// NOTE: *OrderBy* never be removed!
    public List<DeviceMacroItem> getDeviceMacroItems() {
       return deviceMacroItems;
    }
