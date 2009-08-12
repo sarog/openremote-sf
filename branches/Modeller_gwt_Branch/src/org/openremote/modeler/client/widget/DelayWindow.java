@@ -89,7 +89,7 @@ public class DelayWindow extends FormWindow {
       
       form.addButton(addBtn);
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
-         @Override
+
          public void handleEvent(FormEvent be) {
             List<Field<?>> list = form.getFields();
             String delay = list.get(0).getValue().toString();
