@@ -52,6 +52,7 @@ import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 
 
@@ -110,6 +111,7 @@ public class DeviceCommandWindow extends FormWindow {
    private void initial() {
       setWidth(380);
       setAutoHeight(true);
+      setLayout(new FlowLayout());
       
       form.setWidth(370);
 
