@@ -19,7 +19,17 @@
 */
 package org.openremote.modeler.client.view;
 
+import org.openremote.modeler.client.widget.DevicePanel;
+import org.openremote.modeler.client.widget.MacroPanel;
+import org.openremote.modeler.client.widget.UIDesigner.ActivityPanel;
+
+import com.extjs.gxt.ui.client.Style.LayoutRegion;
+import com.extjs.gxt.ui.client.util.Margins;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.TabItem;
+import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
+import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
+import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 
 
 /**
@@ -32,6 +42,40 @@ public class UIDesignerView extends TabItem implements View {
     */
    public void initialize() {
       setText("UI Designer");
+      
+      setLayout(new BorderLayout());
+      createWest();
+      createCenter();
    }
+   
+   
+   /**
+    * Creates the west.
+    */
+   private void createWest(){
+      ContentPanel west = new ContentPanel();
+      BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST,200);
+      westData.setSplit(true);
+      westData.setCollapsible(true);
+      west.setLayout(new AccordionLayout());
+      west.setBodyBorder(false);
+      west.setHeading("Browse");
+      west.add(new ActivityPanel());
+  
+      westData.setMargins(new Margins(2));
+      add(west,westData);
+   }
+   
+   /**
+    * Creates the center.
+    */
+   private void createCenter(){
+      ContentPanel center = new ContentPanel();
+      BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
+      centerData.setMargins(new Margins(2));
+
+      add(center,centerData);
+   }
+   
 
 }
