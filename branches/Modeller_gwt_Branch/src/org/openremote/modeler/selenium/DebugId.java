@@ -22,6 +22,7 @@ package org.openremote.modeler.selenium;
 /**
  * Used to collect all the debug identifiers of Selenium test on widget, so that if one is changed, its test can detect
  * it. This can also keep unique for all identifiers.
+ * Selenium use Javascript to test your app, GWT allows you to set debug id for a widget, the debug id is the id of a html element.
  * 
  * @author Dan 2009-8-6
  */
@@ -49,6 +50,9 @@ public class DebugId {
    /** The Constant DELETE_DEVICE_BUTTON. */
    public static final String DELETE_DEVICE_BUTTON = "deleteDeviceButton";
    
+   /** The Constant NEW_COMMAND_ITEM. */
+   public static final String NEW_COMMAND_ITEM = "newCommandItem";
+   
    /* DeviceWindow */
    /** The Constant NEW_DEVICE_WINDOW. */
    public static final String NEW_DEVICE_WINDOW = "newDeviceWindow";
@@ -64,5 +68,25 @@ public class DebugId {
    
    /** The Constant DEVICE_MODEL_FIELD. */
    public static final String DEVICE_MODEL_FIELD = "deviceModelField";
+   
+   /* DeviceCommand Window*/
+   
+   /** The Constant DEVICE_COMMAND_NAME_FIELD. */
+   public static final String DEVICE_COMMAND_NAME_FIELD = "deviceCommandNameField";
+   
+   /** The Constant DEVICE_COMMAND_PROTOCOL_FIELD. */
+   public static final String DEVICE_COMMAND_PROTOCOL_FIELD = "deviceCommandProtocolField";
+   
+   /* DeviceMacro Panel */
+   /** The Constant DEVICE_MACRO_PANEL. */
+   public static final String DEVICE_MACRO_PANEL_HEADER = "DeviceMacroPanelHeader";
+   
+   /** The Constant NEW_MACRO_BTN. */
+   public static final String NEW_MACRO_BTN = "newMacroBtn";
+   
+   /** The Constant DEVICE_MACRO_NAME_FIELD. */
+   public static final String DEVICE_MACRO_NAME_FIELD = "deviceMacroNameField";
 
+   
+   
 }

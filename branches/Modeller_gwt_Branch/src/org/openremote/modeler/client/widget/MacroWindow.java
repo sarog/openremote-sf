@@ -33,6 +33,7 @@ import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
+import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -130,11 +131,12 @@ public class MacroWindow extends FormWindow {
       setPlain(true);
       setBlinkModal(true);
       setWidth(530);
+      setHeight(460);
       setResizable(false);
       createFormElement();
 
       form.setLabelAlign(LabelAlign.TOP);
-      form.setHeight(380);
+      form.setHeight(400);
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             beforeFormSubmit();
@@ -157,7 +159,7 @@ public class MacroWindow extends FormWindow {
       macroNameField.setFieldLabel("Macro Name");
       macroNameField.setName("macroName");
       macroNameField.setStyleAttribute("marginBottom", "10px");
-
+      macroNameField.ensureDebugId(DebugId.DEVICE_MACRO_NAME_FIELD);
       form.add(macroNameField);
 
       createSelectCommandContainer();
@@ -207,7 +209,7 @@ public class MacroWindow extends FormWindow {
       TabPanel leftCommandMacroTabPanel = new TabPanel();
       leftCommandMacroTabPanel.setWidth(220);
       leftCommandMacroTabPanel.setPlain(true);
-      leftCommandMacroTabPanel.setHeight(232);
+      leftCommandMacroTabPanel.setHeight(275);
 
       TabItem deviceCommandTab = new TabItem("Device Command");
       deviceCommandTab.setLayout(new FitLayout());
@@ -303,6 +305,7 @@ public class MacroWindow extends FormWindow {
       ContentPanel rightListContainer = new ContentPanel();
       rightListContainer.setHeaderVisible(false);
       rightListContainer.setWidth(230);
+      rightListContainer.setHeight(275);
       rightListContainer.setLayout(new FitLayout());
 
       ToolBar toolBar = createRightMacroItemListToolbar();
