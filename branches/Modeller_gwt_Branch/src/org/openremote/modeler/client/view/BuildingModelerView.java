@@ -19,17 +19,24 @@
 */
 package org.openremote.modeler.client.view;
 
+import org.openremote.modeler.client.icon.uidesigner.UIDesignerImages;
 import org.openremote.modeler.client.widget.DevicePanel;
 import org.openremote.modeler.client.widget.MacroPanel;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
+import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 
 
 /**
@@ -84,7 +91,7 @@ public class BuildingModelerView extends TabItem implements View {
       ContentPanel center = new ContentPanel();
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setMargins(new Margins(2));
-
+      
       add(center, centerData);
    }
 }

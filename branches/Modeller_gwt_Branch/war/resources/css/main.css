@@ -1,3 +1,20 @@
-.z-index-top {
-	z-index:2700
+.iphone-background {
+   background-image: url(../images/iphone_background.jpg);
+}
+.panel-table {
+	border-collapse: collapse;
+	border: 1px dashed yellow;
+}
+.panel-table td{
+	border: 1px dashed yellow;
+}
+
+.absolute{
+	position: absolute;
+}
+.backgroud-yellow {
+   background-color: yellow;
+}
+.font-white {
+   color: white;
 }

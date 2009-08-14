@@ -19,17 +19,21 @@
 */
 package org.openremote.modeler.client.view;
 
-import org.openremote.modeler.client.widget.DevicePanel;
-import org.openremote.modeler.client.widget.MacroPanel;
+import org.openremote.modeler.client.gxtExtends.TreePanelDragSourceMacroDragExt;
+import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.client.widget.UIDesigner.ActivityPanel;
+import org.openremote.modeler.client.widget.UIDesigner.ScreenPanel;
+import org.openremote.modeler.domain.Screen;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
+import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
+import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 
 
 /**
@@ -46,9 +50,23 @@ public class UIDesignerView extends TabItem implements View {
       setLayout(new BorderLayout());
       createWest();
       createCenter();
+      createEast();
    }
    
    
+   private void createEast() {
+      ContentPanel east = new ContentPanel();
+      BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.EAST);
+      centerData.setMargins(new Margins(2));
+      TreePanel<BeanModel> commandTree = TreePanelBuilder.buildDeviceCommandTree();
+      TreePanel<BeanModel> macroTree = TreePanelBuilder.buildMacroTree();
+//      commandTree.get
+      new TreePanelDragSourceMacroDragExt(commandTree);
+      east.add(commandTree);
+      add(east,centerData);
+   }
+
+
    /**
     * Creates the west.
     */
@@ -73,7 +91,7 @@ public class UIDesignerView extends TabItem implements View {
       ContentPanel center = new ContentPanel();
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setMargins(new Margins(2));
-
+      center.add(new ScreenPanel(new Screen()));
       add(center,centerData);
    }
    
