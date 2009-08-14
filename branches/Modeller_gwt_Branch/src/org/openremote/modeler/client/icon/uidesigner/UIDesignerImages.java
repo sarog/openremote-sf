@@ -34,6 +34,14 @@ public interface UIDesignerImages extends ImageBundle {
     * @return the abstract image prototype
     */
    @Resource("iphone_background.jpg")
-   AbstractImagePrototype iphone_background();
+   AbstractImagePrototype iphoneBackground();
+   
+   /**
+    * Iphone_btn.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("iphone_btn.jpg")
+   AbstractImagePrototype iphoneBtn();
    //TODO we will store the screen background name in the database to support multi-device.
 }

@@ -14,6 +14,7 @@
     <!-- Consider inlining CSS to reduce the number of requested files -->
     <!--                                                               -->
 	<link rel="stylesheet" type="text/css" href="resources/css/gxt-all.css" />
+	<link rel="stylesheet" type="text/css" href="resources/css/main.css" />
 	
     <!--                                           -->
     <!-- Any title is fine                         -->

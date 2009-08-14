@@ -122,6 +122,7 @@ public class ApplicationView implements View {
          UIDesignerView uiDesignerItem = new UIDesignerView();
          uiDesignerItem.initialize();
          builderPanel.add(uiDesignerItem);
+         builderPanel.setSelection(uiDesignerItem); // Temp to show uiDesigner. It will remove after development.
       }
       builderPanel.setAutoSelect(true);
       BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.CENTER);
