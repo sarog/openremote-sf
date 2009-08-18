@@ -19,20 +19,171 @@
 */
 package org.openremote.modeler.client.widget.UIDesigner;
 
+import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.selenium.DebugId;
 
-import com.extjs.gxt.ui.client.widget.Window;
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.FormEvent;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.Field;
+import com.extjs.gxt.ui.client.widget.form.TextField;
 
 /**
  * The Class ScreenWindow.
+ * 
+ * @author handy.wang
  */
-public class ScreenWindow extends Window {
+public class ScreenWindow extends FormWindow {
+
+   /** The Constant SCREEN_NAME. */
+   private static final String SCREEN_NAME = "screenName";
+
+   /** The Constant SCREEN_ROW_COUNT. */
+   private static final String SCREEN_ROW_COUNT = "screenRowCount";
+   
+   /** The Constant SCREEN_COLUM_COUNT. */
+   private static final String SCREEN_COLUMN_COUNT = "screenColumnCount";
+
+   /** The screen model. */
+   private BeanModel screenModel = null;
 
    /**
     * Instantiates a new screen window.
     */
    public ScreenWindow() {
-      setHeading("Screen");
-      add(new ScreenPanel(new Screen()));
+      super();
+      initial("New Screen");
+      this.ensureDebugId(DebugId.NEW_SCREEN_WINDOW);
+      show();
+   }
+
+   /**
+    * Instantiates a new screen window.
+    * 
+    * @param screenModel the screen model
+    */
+   public ScreenWindow(BeanModel screenModel) {
+      super();
+      this.screenModel = screenModel;
+      initial("Edit Screen");
+      this.ensureDebugId(DebugId.EDIT_SCREEN_WINDOW);
+      show();
+   }
+
+   /**
+    * Initial.
+    * 
+    * @param heading the heading
+    */
+   private void initial(String heading) {
+      setHeading(heading);
+      setSize(360, 200);
+      createFields();
+      createButtons();
+      addListenersToForm();
+   }
+
+   /**
+    * Creates the fields.
+    */
+   private void createFields() {
+      TextField<String> screenNameField = new TextField<String>();
+      screenNameField.setName(SCREEN_NAME);
+      screenNameField.ensureDebugId(DebugId.SCREEN_NAME_FIELD);
+      screenNameField.setFieldLabel("Name");
+      screenNameField.setAllowBlank(false);
+      
+      TextField<Integer> screenRowCountField = new TextField<Integer>();
+      screenRowCountField.setName(SCREEN_ROW_COUNT);
+      screenRowCountField.ensureDebugId(DebugId.SCREEN_ROW_COUNT_FIELD);
+      screenRowCountField.setFieldLabel("Row Count");
+      screenRowCountField.setAllowBlank(false);
+      
+      TextField<Integer> screenColumnCountField = new TextField<Integer>();
+      screenColumnCountField.setName(SCREEN_COLUMN_COUNT);
+      screenColumnCountField.ensureDebugId(DebugId.SCREEN_COLUMN_COUNT_FIELD);
+      screenColumnCountField.setFieldLabel("Col Count");
+      screenColumnCountField.setAllowBlank(false);
+      
+      if (screenModel != null) {
+         Screen screen = screenModel.getBean();
+         screenNameField.setValue(screen.getName());
+         screenRowCountField.setValue(screen.getRowCount());
+         screenColumnCountField.setValue(screen.getColumnCount());
+      }
+      form.add(screenNameField);
+      form.add(screenRowCountField);
+      form.add(screenColumnCountField);
+   }
+
+   /**
+    * Creates the buttons.
+    */
+   private void createButtons() {
+      Button submitBtn = new Button("submit");
+      submitBtn.ensureDebugId(DebugId.NEW_SCREEN_WINDOW_SUBMIT_BTN);
+      Button resetBtn = new Button("reset");
+      resetBtn.ensureDebugId(DebugId.NEW_SCREEN_WINDOW_RESET_BTN);
+
+      submitBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            if (form.isValid()) {
+               form.submit();
+            }
+         }
+      });
+      resetBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            form.reset();
+         }
+      });
+
+      form.addButton(submitBtn);
+      form.addButton(resetBtn);
+   }
+
+   /**
+    * Adds the listeners to form.
+    */
+   private void addListenersToForm() {
+      form.addListener(Events.BeforeSubmit, new Listener<FormEvent>(){
+         public void handleEvent(FormEvent be) {
+            Screen screen = new Screen();
+            if (screenModel == null) {
+               screen.setOid((long) (Math.random() * 10000));//:TODO auto increase.
+            } else {
+               screen = screenModel.getBean();
+            }
+            updateScreenAttrs(screen);
+            screenModel = screen.getBeanModel();
+            fireEvent(SubmitEvent.Submit, new SubmitEvent(screenModel));
+         }
+      });
+      add(form);
+   }
+   
+   /**
+    * Update screen attrs.
+    * 
+    * @param screen the screen
+    */
+   private void updateScreenAttrs(Screen screen) {
+      for(Field<?> field : form.getFields()){
+         if("screenName".equals(field.getName())){
+            screen.setName(field.getValue().toString());
+         }else if("screenRowCount".equals(field.getName())){
+            screen.setRowCount(Integer.parseInt(field.getValue().toString()));
+         }else if("screenColumnCount".equals(field.getName())) {
+            screen.setColumnCount(Integer.parseInt(field.getValue().toString()));
+         }
+      }
    }
 }
