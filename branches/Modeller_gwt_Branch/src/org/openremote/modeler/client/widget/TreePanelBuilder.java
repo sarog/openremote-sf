@@ -25,13 +25,14 @@ import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
-import org.openremote.modeler.domain.DeviceMacroItem;
+import org.openremote.modeler.domain.Screen;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -67,6 +68,9 @@ public class TreePanelBuilder {
 
    /** The macro tree store. */
    private static TreeStore<BeanModel> macroTreeStore = null;
+   
+   /** The activity tree store. */
+   private static TreeStore<BeanModel> activityTreeStore = null;
 
    /**
     * Builds a device command tree.
@@ -256,5 +260,35 @@ public class TreePanelBuilder {
 
       });
       return tree;
+   }
+   
+   /**
+    * Builds a new activity tree.
+    * 
+    * @return a new activity tree.
+    */
+   public static TreePanel<BeanModel> buildActivityTree() {
+      if (activityTreeStore == null) {
+         activityTreeStore = new TreeStore<BeanModel>();
+      }
+      final TreePanel<BeanModel> activityTree = new TreePanel<BeanModel>(activityTreeStore);
+      activityTree.setStateful(true);
+      activityTree.setBorders(false);
+      activityTree.setHeight("100%");      
+      activityTree.setDisplayProperty("name");
+      
+      activityTree.setIconProvider(new ModelIconProvider<BeanModel>() {
+         public AbstractImagePrototype getIcon(BeanModel thisModel) {
+            if (thisModel.getBean() instanceof Activity) {
+               return ICON.activityIcon();
+            } else if (thisModel.getBean() instanceof Screen) {
+               return ICON.screenIcon();
+            } else {
+               return ICON.activityIcon();
+            }
+         }
+      });
+      
+      return activityTree;
    }
 }

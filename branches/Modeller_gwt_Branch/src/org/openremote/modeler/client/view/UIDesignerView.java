@@ -77,7 +77,7 @@ public class UIDesignerView extends TabItem implements View {
       westData.setCollapsible(true);
       west.setLayout(new AccordionLayout());
       west.setBodyBorder(false);
-      west.setHeading("Browse");
+      west.setHeading("Browser");
       west.add(new ActivityPanel());
   
       westData.setMargins(new Margins(2));

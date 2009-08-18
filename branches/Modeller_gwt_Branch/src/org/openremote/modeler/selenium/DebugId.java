@@ -86,7 +86,71 @@ public class DebugId {
    
    /** The Constant DEVICE_MACRO_NAME_FIELD. */
    public static final String DEVICE_MACRO_NAME_FIELD = "deviceMacroNameField";
-
    
+   /** Activity */
+
+   /** The Constant NEW_ACTIVITY_MENU_ITEM. */
+   public static final String NEW_ACTIVITY_MENU_ITEM = "newActivityMenuItem";
+
+   /** The Constant NEW_ACTIVITY_WINDOW. */
+   public static final String NEW_ACTIVITY_WINDOW = "newActivityWindow";
+
+   /** The Constant EDIT_ACTIVITY_WINDOW. */
+   public static final String EDIT_ACTIVITY_WINDOW = "editActivityWindow";
+   
+   /** The Constant NEW_ACTIVITY_WINDOW_SUBMIT_BTN. */
+   public static final String NEW_ACTIVITY_WINDOW_SUBMIT_BTN = "newActivityWindowSubmitBtn";
+
+   /** The Constant NEW_ACTIVITY_WINDOW_RESET_BTN. */
+   public static final String NEW_ACTIVITY_WINDOW_RESET_BTN = "newActivityWindowResetBtn";
+
+   /** The Constant ACTIVITY_NAME_FIELD. */
+   public static final String ACTIVITY_NAME_FIELD = "activityNameField";
+
+   /** The Constant ACTIVITY_TREE_CONTAINER. */
+   public static final String ACTIVITY_TREE_CONTAINER = "activityTreeContainer";
+
+   /** The Constant ACTIVITY_NEW_BTN. */
+   public static final String ACTIVITY_NEW_BTN = "activityNewButton";
+
+   /** The Constant ACTIVITY_EDIT_BTN. */
+   public static final String ACTIVITY_EDIT_BTN = "activityEditButton";
+
+   /** The Constant ACTIVITY_DELETE_BTN. */
+   public static final String ACTIVITY_DELETE_BTN = "activityDeleteButton";
+   
+   /** The Constant ACTIVITY_EXPORT_BTN. */
+   public static final String ACTIVITY_EXPORT_BTN = "activityExportButton";
+
+   /** The Constant ACTIVITY_IMPORT_BTN. */
+   public static final String ACTIVITY_IMPORT_BTN = "activityImportButton";
+
+   /** Screen */
+
+   /** The Constant NEW_SCREEN_MENU_ITEM. */
+   public static final String NEW_SCREEN_MENU_ITEM = "newScreenMenuItem";
+   
+   /** The Constant NEW_SCREEN_WINDOW. */
+   public static final String NEW_SCREEN_WINDOW = "newScreenWindow";
+
+   /** The Constant EDIT_SCREEN_WINDOW. */
+   public static final String EDIT_SCREEN_WINDOW = "editScreenWindow";
+
+   /** The Constant NEW_SCREEN_WINDOW_SUBMIT_BTN. */
+   public static final String NEW_SCREEN_WINDOW_SUBMIT_BTN = "newScreenWindowSubmitBtn";
+
+   /** The Constant NEW_SCREEN_WINDOW_RESET_BTN. */
+   public static final String NEW_SCREEN_WINDOW_RESET_BTN = "newScreenWindowResetBtn";
+
+   /** The Constant SCREEN_NAME_FIELD. */
+   public static final String SCREEN_NAME_FIELD = "screenNameField";
+
+   /** The Constant SCREEN_ROW_COUNT_FIELD. */
+   public static final String SCREEN_ROW_COUNT_FIELD = "screenRowCountField";
+
+   /** The Constant SCREEN_COLUMN_COUNT_FIELD. */
+   public static final String SCREEN_COLUMN_COUNT_FIELD = "screenColumnCountField";
+
+
    
 }

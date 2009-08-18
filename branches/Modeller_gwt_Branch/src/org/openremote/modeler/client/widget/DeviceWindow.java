@@ -106,10 +106,7 @@ public class DeviceWindow extends FormWindow {
       resetButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            List<Field<?>> list = form.getFields();
-            for (Field<?> f : list) {
-               f.reset();
-            }
+            form.reset();
          }
 
       });

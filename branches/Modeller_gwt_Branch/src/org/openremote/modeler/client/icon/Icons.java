@@ -26,7 +26,7 @@ import com.google.gwt.user.client.ui.ImageBundle;
  * The Interface Icons.
  */
 public interface Icons extends ImageBundle {
-   
+
    /**
     * Folder.
     * 
@@ -34,7 +34,7 @@ public interface Icons extends ImageBundle {
     */
    @Resource("folder.gif")
    AbstractImagePrototype folder();
-   
+
    /**
     * Adds the cmd.
     * 
@@ -42,7 +42,7 @@ public interface Icons extends ImageBundle {
     */
    @Resource("cmd_add.png")
    AbstractImagePrototype addCmd();
-   
+
    /**
     * Device cmd.
     * 
@@ -50,7 +50,7 @@ public interface Icons extends ImageBundle {
     */
    @Resource("cmd.png")
    AbstractImagePrototype deviceCmd();
-   
+
    /**
     * Delete.
     * 
@@ -58,7 +58,7 @@ public interface Icons extends ImageBundle {
     */
    @Resource("delete.png")
    AbstractImagePrototype delete();
-   
+
    /**
     * Adds the device.
     * 
@@ -66,7 +66,7 @@ public interface Icons extends ImageBundle {
     */
    @Resource("tv_add.png")
    AbstractImagePrototype addDevice();
-   
+
    /**
     * Device.
     * 
@@ -74,7 +74,7 @@ public interface Icons extends ImageBundle {
     */
    @Resource("tv.png")
    AbstractImagePrototype device();
-   
+
    /**
     * Edits the.
     * 
@@ -82,7 +82,7 @@ public interface Icons extends ImageBundle {
     */
    @Resource("pencil.png")
    AbstractImagePrototype edit();
-   
+
    /**
     * Adds the.
     * 
@@ -90,7 +90,7 @@ public interface Icons extends ImageBundle {
     */
    @Resource("add.png")
    AbstractImagePrototype add();
-   
+
    /**
     * Import from db.
     * 
@@ -98,7 +98,7 @@ public interface Icons extends ImageBundle {
     */
    @Resource("database_go.png")
    AbstractImagePrototype importFromDB();
-   
+
    /**
     * Macro add icon.
     * 
@@ -106,7 +106,7 @@ public interface Icons extends ImageBundle {
     */
    @Resource("brick_add.png")
    AbstractImagePrototype macroAddIcon();
-   
+
    /**
     * Macro delete icon.
     * 
@@ -114,7 +114,7 @@ public interface Icons extends ImageBundle {
     */
    @Resource("brick_delete.png")
    AbstractImagePrototype macroDeleteIcon();
-   
+
    /**
     * Macro edit icon.
     * 
@@ -122,7 +122,7 @@ public interface Icons extends ImageBundle {
     */
    @Resource("brick_edit.png")
    AbstractImagePrototype macroEditIcon();
-   
+
    /**
     * Macro icon.
     * 
@@ -130,7 +130,7 @@ public interface Icons extends ImageBundle {
     */
    @Resource("brick.png")
    AbstractImagePrototype macroIcon();
-   
+
    /**
     * Adds the delay icon.
     * 
@@ -138,7 +138,7 @@ public interface Icons extends ImageBundle {
     */
    @Resource("add_delay.png")
    AbstractImagePrototype addDelayIcon();
-   
+
    /**
     * Edits the delay icon.
     * 
@@ -146,7 +146,7 @@ public interface Icons extends ImageBundle {
     */
    @Resource("edit_delay.png")
    AbstractImagePrototype editDelayIcon();
-   
+
    /**
     * Delay icon.
     * 
@@ -154,4 +154,85 @@ public interface Icons extends ImageBundle {
     */
    @Resource("delay.png")
    AbstractImagePrototype delayIcon();
+
+   /**
+    * Activity icon.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("activity.png")
+   AbstractImagePrototype activityIcon();
+
+   /**
+    * Activity edit icon.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("activity_edit.png")
+   AbstractImagePrototype editActivityIcon();
+
+   /**
+    * Activity delete icon.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("activity_del.png")
+   AbstractImagePrototype delActivityIcon();
+
+   /**
+    * Activity add icon.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("activity_add.png")
+   AbstractImagePrototype addActivityIcon();
+
+   /**
+    * Export icon.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("export.gif")
+   AbstractImagePrototype exportIcon();
+   
+   /**
+    * Import icon.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("import.gif")
+   AbstractImagePrototype importIcon();
+   
+   
+   /**
+    * Screen icon.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("screen.png")
+   AbstractImagePrototype screenIcon();
+   
+   /**
+    * Screen-add icon.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("screen_add.png")
+   AbstractImagePrototype addScreenIcon();
+   
+   /**
+    * Screen-delete icon.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("screen_delete.png")
+   AbstractImagePrototype delScreenIcon();
+   
+   /**
+    * Screen-edit icon.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("screen_edit.png")
+   AbstractImagePrototype editScreenIcon();
 }
