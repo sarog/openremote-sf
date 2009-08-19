@@ -1,5 +1,6 @@
 .iphone-background {
    background-image: url(../images/iphone_background.jpg);
+   background-repeat: no-repeat;
 }
 .panel-table {
 	border-collapse: collapse;
@@ -17,4 +18,7 @@
 }
 .font-white {
    color: white;
+}
+.cursor-move {
+   cursor: move;	
 }
