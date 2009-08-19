@@ -20,6 +20,7 @@
 package org.openremote.modeler.client.widget.UIDesigner;
 
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.selenium.DebugId;
@@ -97,19 +98,19 @@ public class ScreenWindow extends FormWindow {
       screenNameField.setName(SCREEN_NAME);
       screenNameField.ensureDebugId(DebugId.SCREEN_NAME_FIELD);
       screenNameField.setFieldLabel("Name");
-      screenNameField.setAllowBlank(false);
+      screenNameField.setAllowBlank(false);screenNameField.setValue("iphone1");
       
       TextField<Integer> screenRowCountField = new TextField<Integer>();
       screenRowCountField.setName(SCREEN_ROW_COUNT);
       screenRowCountField.ensureDebugId(DebugId.SCREEN_ROW_COUNT_FIELD);
       screenRowCountField.setFieldLabel("Row Count");
-      screenRowCountField.setAllowBlank(false);
+      screenRowCountField.setAllowBlank(false);screenRowCountField.setValue(6);
       
       TextField<Integer> screenColumnCountField = new TextField<Integer>();
       screenColumnCountField.setName(SCREEN_COLUMN_COUNT);
       screenColumnCountField.ensureDebugId(DebugId.SCREEN_COLUMN_COUNT_FIELD);
       screenColumnCountField.setFieldLabel("Col Count");
-      screenColumnCountField.setAllowBlank(false);
+      screenColumnCountField.setAllowBlank(false);screenColumnCountField.setValue(4);
       
       if (screenModel != null) {
          Screen screen = screenModel.getBean();
@@ -158,7 +159,7 @@ public class ScreenWindow extends FormWindow {
          public void handleEvent(FormEvent be) {
             Screen screen = new Screen();
             if (screenModel == null) {
-               screen.setOid((long) (Math.random() * 10000));//:TODO auto increase.
+               screen.setOid(IDUtil.nextID());
             } else {
                screen = screenModel.getBean();
             }

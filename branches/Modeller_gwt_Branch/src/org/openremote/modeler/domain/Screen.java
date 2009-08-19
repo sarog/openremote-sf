@@ -40,7 +40,7 @@ public class Screen extends BusinessEntity {
    private Integer columnCount;
 
    /** The buttons. */
-   private List<Button> buttons = new ArrayList<Button>();
+   private List<UIButton> buttons = new ArrayList<UIButton>();
    
    /**
     * Gets the row count.
@@ -101,7 +101,7 @@ public class Screen extends BusinessEntity {
     * 
     * @return the buttons
     */
-   public List<Button> getButtons() {
+   public List<UIButton> getButtons() {
       return buttons;
    }
 
@@ -110,15 +110,15 @@ public class Screen extends BusinessEntity {
     * 
     * @param buttons the new buttons
     */
-   public void setButtons(List<Button> buttons) {
+   public void setButtons(List<UIButton> buttons) {
       this.buttons = buttons;
    }
    
-   public void addButton(Button button) {
+   public void addButton(UIButton button) {
       this.buttons.add(button);
    }
    
-   public void deleteButton(Button button) {
+   public void deleteButton(UIButton button) {
       if(this.buttons.contains(button)){
          this.buttons.remove(button);
       }

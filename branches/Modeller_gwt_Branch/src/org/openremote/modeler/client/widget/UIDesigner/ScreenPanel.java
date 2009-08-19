@@ -19,35 +19,38 @@ package org.openremote.modeler.client.widget.UIDesigner;
 import java.util.List;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtExtends.ScreenDropTarget;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.icon.uidesigner.UIDesignerImages;
+import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.Position;
 import org.openremote.modeler.client.utils.IDUtil;
-import org.openremote.modeler.domain.Button;
+import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.UIButton;
 import org.openremote.modeler.domain.UICommand;
 
-import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.dnd.DragSource;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.event.DNDListener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.TabItem;
-import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
-import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
+import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
 
 /**
  * The Class ScreenPanel.
@@ -57,10 +60,14 @@ public class ScreenPanel extends TabItem {
    /** The screen. */
    private Screen screen;
 
-   /** The designer images. */
-   private Icons icons = GWT.create(Icons.class);
+   /** The icon. */
+   private Icons icon = GWT.create(Icons.class);
+   
    private UIDesignerImages uiDesignerImages = GWT.create(UIDesignerImages.class);
-
+   
+   private ScreenButton selectButton;
+   
+   private LayoutContainer iphoneContainer;
    /**
     * Instantiates a new screen panel.
     * 
@@ -69,7 +76,6 @@ public class ScreenPanel extends TabItem {
     */
    public ScreenPanel(Screen s) {
       screen = s;
-      setStyleAttribute("position", "relative");
       setText(screen.getName());
       setClosable(true);
       setLayout(new FlowLayout());
@@ -83,23 +89,62 @@ public class ScreenPanel extends TabItem {
     * Creates the tool bar.
     */
    private void createToolBar() {
-
+      ToolBar toolBar = new ToolBar();
+      toolBar.add(createRenameBtn());
+      toolBar.add(createDeleteBtn());
+      add(toolBar);
    }
-
+   private Button createRenameBtn(){
+      Button renameBtn = new Button("Rename");
+      renameBtn.setIcon(icon.edit());
+      renameBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            final RenameButtonWindow renameButtonWindow = new RenameButtonWindow((UIButton)selectButton.getData("button"));
+            renameButtonWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+               @Override
+               public void afterSubmit(SubmitEvent be) {
+                  renameButtonWindow.hide();
+                  UIButton button = be.getData();
+                  selectButton.setLabel(button.getLabel());
+                  selectButton.setToolTip(button.getName());
+                  layout();
+                  Info.display("Info", "Edit device " + button.getName() + " success.");
+               }
+            });
+         }
+      });
+      return renameBtn;
+   }
+   private Button createDeleteBtn(){
+      Button deleteBtn = new Button("Delete");
+      deleteBtn.setIcon(icon.delete());
+      deleteBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            if(selectButton != null){
+               screen.deleteButton((UIButton)selectButton.getData("button"));
+               iphoneContainer.remove(selectButton);
+               System.out.println(screen.getButtons().size());
+               layout();
+            }
+         }
+      });
+      return deleteBtn;
+   }
    /**
     * Creates the screen background.
     */
    private void createScreenBackground() {
 
-      LayoutContainer iphoneContainer = new LayoutContainer();
+      iphoneContainer = new LayoutContainer();
+      iphoneContainer.setStyleAttribute("position", "relative");
       LayoutContainer tableWapper = new LayoutContainer();
       FlexTable iphoneTable = new FlexTable();
       iphoneContainer.setSize(269, 500);
       iphoneContainer.addStyleName("iphone-background");
       iphoneTable.setPixelSize(196, 294);
       tableWapper.add(iphoneTable);
-//      tableWapper.setPosition(0, 0);
-//      tableWapper.addStyleName("absolute");
       tableWapper.setStyleAttribute("paddingLeft", "35");
       tableWapper.setStyleAttribute("paddingTop", "105");
       iphoneTable.setCellPadding(0);
@@ -112,15 +157,15 @@ public class ScreenPanel extends TabItem {
          @SuppressWarnings("unchecked")
          public void dragDrop(DNDEvent e) {
             LayoutContainer targetCell = (LayoutContainer)e.getDropTarget().getComponent();
-            Button button = null;
+            UIButton button = null;
             Object data = e.getData();
-            if (data instanceof Button) {
-               button = (Button) data;
+            if (data instanceof UIButton) {
+               button = (UIButton) data;
             } else if (data instanceof List) {
                List<ModelData> models = (List<ModelData>) e.getData();
                if (models.size() > 0) {
                   BeanModel dataModel = models.get(0).get("model");
-                  button = new Button(IDUtil.nextID());
+                  button = new UIButton(IDUtil.nextID());
                   button.setLabel(dataModel.get("name").toString());
                   UICommand uiCommand = null;
                   if (dataModel.getBean() instanceof DeviceCommand) {
@@ -133,8 +178,7 @@ public class ScreenPanel extends TabItem {
             }
             button.setPosition((Position)targetCell.getData("position"));
             screen.addButton(button);
-            LayoutContainer cell = createCell(button, width, height);
-            cell.setData("button", button);
+            ScreenButton screenBtn = createScreenButton(width, height, button);
 //            Resizable resizable = new Resizable(panel);  
 //            resizable.setDynamic(false);
 //            resizable.addResizeListener(new ResizeListener(){
@@ -157,25 +201,8 @@ public class ScreenPanel extends TabItem {
 //               }
 //
 //            });
-            add(cell);
-            DragSource source = new DragSource(cell) {
-               @Override
-               protected void onDragStart(DNDEvent event) {
-                  // by default drag is allowed
-                  event.setData(event.getDragSource().getComponent().getData("button"));
-                  event.getStatus().setStatus(true);
-                  event.getStatus().update(uiDesignerImages.iphoneBtn().createImage().getElement());
-               }
-
-               @Override
-               protected void onDragDrop(DNDEvent event) {
-                  Button button = event.getDragSource().getComponent().getData("button");
-                  screen.deleteButton(button);
-                  remove(event.getDragSource().getComponent());
-                  super.onDragDrop(event);
-               }
-               
-            };
+            iphoneContainer.add(screenBtn);
+            DragSource source = createDragSource(screenBtn, iphoneContainer);
 //            source.addDNDListener(new DNDListener(){
 //
 //               public void dragMove(DNDEvent e) {
@@ -187,49 +214,31 @@ public class ScreenPanel extends TabItem {
 //               }
 //            });
             source.setGroup(Constants.BUTTON_DND_GROUP);
-            cell.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
+            screenBtn.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
             layout();
             super.dragDrop(e);
          }
       };
       for (int i=0; i < screen.getRowCount(); i++) {
          for (int j=0; j < screen.getColumnCount(); j++) {
-            LayoutContainer cellCont = new LayoutContainer();
-            cellCont.setSize(width, height);
-            iphoneTable.setWidget(i, j, cellCont);
-            cellCont.setData("position", new Position(i, j));
-            ScreenDropTarget dropTarget = new ScreenDropTarget(cellCont);
+            LayoutContainer cell = new LayoutContainer();
+            cell.setSize(width, height);
+            iphoneTable.setWidget(i, j, cell);
+            cell.setData("position", new Position(i, j));
+            ScreenDropTarget dropTarget = new ScreenDropTarget(cell);
             dropTarget.setGroup(Constants.BUTTON_DND_GROUP);
             dropTarget.setOverStyle("backgroud-yellow");
             dropTarget.addDNDListener(dndListener);
          }
       }
       if(screen.getButtons().size() > 0){
-         List<Button> buttons = screen.getButtons();
-         for (Button button : buttons) {
+         List<UIButton> buttons = screen.getButtons();
+         for (UIButton button : buttons) {
             Position pos = button.getPosition();
-            LayoutContainer cellCont = createCell(button, width, height);
-            cellCont.setData("button", button);
-            cellCont.setPosition(35+49*pos.getPosY()+pos.getPosY()+1, 105+49*pos.getPosX()+pos.getPosX()+1);
-            add(cellCont);
-            DragSource source = new DragSource(cellCont) {
-               @Override
-               protected void onDragStart(DNDEvent event) {
-                  // by default drag is allowed
-                  event.setData(event.getDragSource().getComponent().getData("button"));
-                  event.getStatus().setStatus(true);
-                  event.getStatus().update(uiDesignerImages.iphoneBtn().createImage().getElement());
-               } 
-
-               @Override
-               protected void onDragDrop(DNDEvent event) {
-                  Button button = event.getDragSource().getComponent().getData("button");
-                  screen.deleteButton(button);
-                  remove(event.getDragSource().getComponent());
-                  super.onDragDrop(event);
-               }
-               
-            };
+            ScreenButton screenBtn = createScreenButton(width, height, button);
+            screenBtn.setPosition(35+49*pos.getPosY()+pos.getPosY()+1, 105+49*pos.getPosX()+pos.getPosX()+1);
+            iphoneContainer.add(screenBtn);
+            DragSource source = createDragSource(screenBtn, iphoneContainer);
             layout();
             source.setGroup(Constants.BUTTON_DND_GROUP);
          }
@@ -237,25 +246,57 @@ public class ScreenPanel extends TabItem {
       add(iphoneContainer);
       
    }
-   
-   private LayoutContainer createCell(Button button, int width, int height) {
-      LayoutContainer panel = new LayoutContainer();
-      panel.setToolTip(button.getName());
-      panel.setLayout(new BorderLayout());
-      panel.setSize(width, height);
-      panel.setBorders(false);
-      panel.addStyleName("absolute");
-      panel.addStyleName("cursor-move");
-      Label nameLabel = new Label(button.getLabel());
-      nameLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-      nameLabel.addStyleName("font-white");
-      Image image = uiDesignerImages.iphoneBtn().createImage();
-      panel.add(nameLabel, new BorderLayoutData(LayoutRegion.CENTER));
-      panel.add(image, new BorderLayoutData(LayoutRegion.CENTER));
-      return panel;
+
+   /**
+    * @param screenBtn
+    * @return
+    */
+   private DragSource createDragSource(ScreenButton screenBtn, final LayoutContainer iphoneContainer) {
+      DragSource source = new DragSource(screenBtn) {
+         @Override
+         protected void onDragStart(DNDEvent event) {
+            // by default drag is allowed
+            event.setData(event.getDragSource().getComponent().getData("button"));
+            event.getStatus().setStatus(true);
+            event.getStatus().update(uiDesignerImages.iphoneBtn().createImage().getElement());
+         } 
+
+         @Override
+         protected void onDragDrop(DNDEvent event) {
+            UIButton button = event.getDragSource().getComponent().getData("button");
+            screen.deleteButton(button);
+            iphoneContainer.remove(event.getDragSource().getComponent());
+            super.onDragDrop(event);
+         }
+         
+      };
+      return source;
    }
-   
+
+   /**
+    * @param width
+    * @param height
+    * @param button
+    * @return
+    */
+   private ScreenButton createScreenButton(final int width, final int height, UIButton button) {
+      ScreenButton screenBtn = new ScreenButton(button, width, height){
+         @Override
+         public void onBrowserEvent(Event event) {
+            if(event.getTypeInt() == Event.ONMOUSEDOWN){
+               this.addStyleName("border-orange");
+               if(selectButton != null && (ScreenButton)this != selectButton){
+                  selectButton.removeStyleName("border-orange");
+               }
+               selectButton = (ScreenButton)this;
+            }
+            super.onBrowserEvent(event);
+         }
+      };
+      return screenBtn;
+   }
    public Screen getScreen(){
       return screen;
    }
+   
 }
