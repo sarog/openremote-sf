@@ -22,3 +22,7 @@
 .cursor-move {
    cursor: move;	
 }
+.border-orange {
+   border: 1px solid orange;
+   opacity:0.9;
+}
