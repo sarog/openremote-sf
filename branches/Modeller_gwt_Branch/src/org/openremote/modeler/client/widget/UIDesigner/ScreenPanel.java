@@ -16,9 +16,9 @@
  */
 package org.openremote.modeler.client.widget.UIDesigner;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.gxtExtends.ScreenDropTarget;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.icon.uidesigner.UIDesignerImages;
@@ -69,6 +69,7 @@ public class ScreenPanel extends TabItem {
     */
    public ScreenPanel(Screen s) {
       screen = s;
+      setStyleAttribute("position", "relative");
       setText(screen.getName());
       setClosable(true);
       setLayout(new FlowLayout());
@@ -132,11 +133,7 @@ public class ScreenPanel extends TabItem {
             }
             button.setPosition((Position)targetCell.getData("position"));
             screen.addButton(button);
-            final LayoutContainer cell = createCell(button, width, height);
-//            cell.setSize(49, 49);
-//            cell.setBorders(false);
-//            cell.addStyleName("absolute");
-//            cell.addStyleName("cursor-move");
+            LayoutContainer cell = createCell(button, width, height);
             cell.setData("button", button);
 //            Resizable resizable = new Resizable(panel);  
 //            resizable.setDynamic(false);
@@ -188,9 +185,8 @@ public class ScreenPanel extends TabItem {
 //                  simple.setHeight(size*49);
 //                  super.dragMove(e);
 //               }
-//               
 //            });
-            
+            source.setGroup(Constants.BUTTON_DND_GROUP);
             cell.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
             layout();
             super.dragDrop(e);
@@ -203,11 +199,41 @@ public class ScreenPanel extends TabItem {
             iphoneTable.setWidget(i, j, cellCont);
             cellCont.setData("position", new Position(i, j));
             ScreenDropTarget dropTarget = new ScreenDropTarget(cellCont);
+            dropTarget.setGroup(Constants.BUTTON_DND_GROUP);
             dropTarget.setOverStyle("backgroud-yellow");
             dropTarget.addDNDListener(dndListener);
          }
       }
-      
+      if(screen.getButtons().size() > 0){
+         List<Button> buttons = screen.getButtons();
+         for (Button button : buttons) {
+            Position pos = button.getPosition();
+            LayoutContainer cellCont = createCell(button, width, height);
+            cellCont.setData("button", button);
+            cellCont.setPosition(35+49*pos.getPosY()+pos.getPosY()+1, 105+49*pos.getPosX()+pos.getPosX()+1);
+            add(cellCont);
+            DragSource source = new DragSource(cellCont) {
+               @Override
+               protected void onDragStart(DNDEvent event) {
+                  // by default drag is allowed
+                  event.setData(event.getDragSource().getComponent().getData("button"));
+                  event.getStatus().setStatus(true);
+                  event.getStatus().update(uiDesignerImages.iphoneBtn().createImage().getElement());
+               } 
+
+               @Override
+               protected void onDragDrop(DNDEvent event) {
+                  Button button = event.getDragSource().getComponent().getData("button");
+                  screen.deleteButton(button);
+                  remove(event.getDragSource().getComponent());
+                  super.onDragDrop(event);
+               }
+               
+            };
+            layout();
+            source.setGroup(Constants.BUTTON_DND_GROUP);
+         }
+      }
       add(iphoneContainer);
       
    }
