@@ -55,27 +55,29 @@ public class BeanModelDataBase {
 
    /** Store all the DeviceItem models. */
    public static final BeanModelTable deviceMacroItemMap = new BeanModelTable();
+   
+   public static final BeanModelTable activityTable = new BeanModelTable();
 
    /**
-    * Gets the original device macro item bean model,if not find return null.
+    * Gets the original device macro item bean model id,if not find return 0.
     * 
     * @param deviceMacroItemBeanModel the device macro item bean model
     * 
-    * @return the original device macro item bean model,If not find return null.
+    * @return the original device macro item bean model id,If not find return 0.
     */
-   public static BeanModel getOriginalDeviceMacroItemBeanModel(BeanModel deviceMacroItemBeanModel) {
+   public static long getOriginalDeviceMacroItemBeanModelId(BeanModel deviceMacroItemBeanModel) {
       if (deviceMacroItemBeanModel.getBean() instanceof DeviceMacroItem) {
          DeviceMacroItem deviceMacroItem = (DeviceMacroItem) deviceMacroItemBeanModel.getBean();
          if (deviceMacroItem instanceof DeviceMacroRef) {
             DeviceMacroRef deviceMacroRef = (DeviceMacroRef) deviceMacroItem;
-            return deviceMacroTable.get(deviceMacroRef.getTargetDeviceMacro().getOid());
+            return deviceMacroRef.getTargetDeviceMacro().getOid();
          }
          if (deviceMacroItem instanceof DeviceCommandRef) {
             DeviceCommandRef deviceCommandRef = (DeviceCommandRef) deviceMacroItem;
-            return deviceCommandTable.get(deviceCommandRef.getDeviceCommand().getOid());
+            return deviceCommandRef.getDeviceCommand().getOid();
          }
       }
-      return null;
+      return 0;
    }
 
    /**

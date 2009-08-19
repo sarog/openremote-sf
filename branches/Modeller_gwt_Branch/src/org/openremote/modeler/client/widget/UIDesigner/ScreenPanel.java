@@ -16,12 +16,21 @@
  */
 package org.openremote.modeler.client.widget.UIDesigner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.gxtExtends.ScreenDropTarget;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.icon.uidesigner.UIDesignerImages;
+import org.openremote.modeler.client.model.Position;
+import org.openremote.modeler.client.utils.IDUtil;
+import org.openremote.modeler.domain.Button;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.DeviceCommandRef;
+import org.openremote.modeler.domain.DeviceMacro;
+import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.UICommand;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -30,6 +39,7 @@ import com.extjs.gxt.ui.client.dnd.DragSource;
 import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.event.DNDListener;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
@@ -42,7 +52,7 @@ import com.google.gwt.user.client.ui.Label;
 /**
  * The Class ScreenPanel.
  */
-public class ScreenPanel extends LayoutContainer {
+public class ScreenPanel extends TabItem {
 
    /** The screen. */
    private Screen screen;
@@ -59,6 +69,8 @@ public class ScreenPanel extends LayoutContainer {
     */
    public ScreenPanel(Screen s) {
       screen = s;
+      setText(screen.getName());
+      setClosable(true);
       setLayout(new FlowLayout());
       createToolBar();
 
@@ -78,116 +90,137 @@ public class ScreenPanel extends LayoutContainer {
     */
    private void createScreenBackground() {
 
-//       Image image = uiDesignerImages.iphone_background().createImage();
       LayoutContainer iphoneContainer = new LayoutContainer();
       LayoutContainer tableWapper = new LayoutContainer();
       FlexTable iphoneTable = new FlexTable();
-      // panel.add(image);
       iphoneContainer.setSize(269, 500);
       iphoneContainer.addStyleName("iphone-background");
       iphoneTable.setPixelSize(196, 294);
       tableWapper.add(iphoneTable);
-      tableWapper.setPosition(35, 105);
-      tableWapper.addStyleName("absolute");
+//      tableWapper.setPosition(0, 0);
+//      tableWapper.addStyleName("absolute");
+      tableWapper.setStyleAttribute("paddingLeft", "35");
+      tableWapper.setStyleAttribute("paddingTop", "105");
       iphoneTable.setCellPadding(0);
       iphoneTable.setCellSpacing(0);
-//      flexTable.setBorderWidth(1);
       iphoneTable.addStyleName("panel-table");
       iphoneContainer.add(tableWapper);
-      for (int i=0; i < 6; i++) {
-         for (int j=0; j <4; j++) {
-            final LayoutContainer cellCont = new LayoutContainer();
-            cellCont.setSize(49, 49);
-            iphoneTable.setWidget(i, j, cellCont);
-            
-            ScreenDropTarget dropTarget = new ScreenDropTarget(cellCont);
-            dropTarget.setOverStyle("backgroud-yellow");
-            dropTarget.addDNDListener(new DNDListener() {
-               @SuppressWarnings("unchecked")
-               public void dragDrop(DNDEvent e) {
-                  Object data = e.getData();
-                  BeanModel dataModel = null;
-                  if (data instanceof BeanModel) {
-                     dataModel = (BeanModel)data;
-                  } else if (data instanceof List) {
-                     List<ModelData> models = (List<ModelData>) e.getData();
-                     if(models.size()>0){
-                        dataModel = models.get(0).get("model");
-                     }
+      final int width = (int)Math.round(196.0/screen.getColumnCount());
+      final int height = (int)Math.round(294.0/screen.getRowCount());
+      DNDListener dndListener = new DNDListener() {
+         @SuppressWarnings("unchecked")
+         public void dragDrop(DNDEvent e) {
+            LayoutContainer targetCell = (LayoutContainer)e.getDropTarget().getComponent();
+            Button button = null;
+            Object data = e.getData();
+            if (data instanceof Button) {
+               button = (Button) data;
+            } else if (data instanceof List) {
+               List<ModelData> models = (List<ModelData>) e.getData();
+               if (models.size() > 0) {
+                  BeanModel dataModel = models.get(0).get("model");
+                  button = new Button(IDUtil.nextID());
+                  button.setLabel(dataModel.get("name").toString());
+                  UICommand uiCommand = null;
+                  if (dataModel.getBean() instanceof DeviceCommand) {
+                     uiCommand = new DeviceCommandRef((DeviceCommand) dataModel.getBean());
+                  } else if (dataModel.getBean() instanceof DeviceMacro) {
+                     uiCommand = new DeviceMacroRef((DeviceMacro) dataModel.getBean());
                   }
-                  LayoutContainer targetCell = (LayoutContainer)e.getDropTarget().getComponent();
-                  final LayoutContainer button = createBtn(dataModel.get("name").toString());
-                  button.setSize(49, 49);
-                  button.setBorders(false);
-                  button.addStyleName("absolute");
-                  button.setData("command", dataModel);
-//                  Resizable resizable = new Resizable(panel);  
-//                  resizable.setDynamic(false);
-//                  resizable.addResizeListener(new ResizeListener(){
+                  button.setUiCommand(uiCommand);
+               }
+            }
+            button.setPosition((Position)targetCell.getData("position"));
+            screen.addButton(button);
+            final LayoutContainer cell = createCell(button, width, height);
+//            cell.setSize(49, 49);
+//            cell.setBorders(false);
+//            cell.addStyleName("absolute");
+//            cell.addStyleName("cursor-move");
+            cell.setData("button", button);
+//            Resizable resizable = new Resizable(panel);  
+//            resizable.setDynamic(false);
+//            resizable.addResizeListener(new ResizeListener(){
 //
-//                     @Override
-//                     public void resizeEnd(ResizeEvent re) {
-//                        
-//                        LayoutContainer simple = (LayoutContainer)re.getComponent();
-////                        System.out.println("height: "+simple.getHeight());
-//                        int size = (int) Math.round(simple.getHeight()/49.0);
-////                        System.out.println("size: "+size);
-//                        simple.setHeight(size*49);
-//                     }
+//               @Override
+//               public void resizeEnd(ResizeEvent re) {
+//                  
+//                  LayoutContainer simple = (LayoutContainer)re.getComponent();
+////                  System.out.println("height: "+simple.getHeight());
+//                  int size = (int) Math.round(simple.getHeight()/49.0);
+////                  System.out.println("size: "+size);
+//                  simple.setHeight(size*49);
+//               }
 //
-//                     @Override
-//                     public void resizeStart(ResizeEvent re) {
-//                        LayoutContainer simple = (LayoutContainer)re.getComponent();
-//                        System.out.println(simple.getHeight());
-////                        super.resizeStart(re);
-//                     }
+//               @Override
+//               public void resizeStart(ResizeEvent re) {
+//                  LayoutContainer simple = (LayoutContainer)re.getComponent();
+//                  System.out.println(simple.getHeight());
+////                  super.resizeStart(re);
+//               }
 //
-//                  });
-                  add(button);
-                  DragSource source = new DragSource(button) {
-                     @Override
-                     protected void onDragStart(DNDEvent event) {
-                        // by default drag is allowed
-                        event.setData(event.getDragSource().getComponent().getData("command"));
-                        event.getStatus().setStatus(true);
-                        event.getStatus().update(uiDesignerImages.iphoneBtn().createImage().getElement());
-                     }
-
-                     @Override
-                     protected void onDragDrop(DNDEvent event) {
-                        remove(event.getDragSource().getComponent());
-                        super.onDragDrop(event);
-                     }
-                     
-                  };
-//                  source.addDNDListener(new DNDListener(){
-//
-//                     public void dragMove(DNDEvent e) {
-//                        LayoutContainer simple = (LayoutContainer)e.getDropTarget().getComponent();
-//                        int size = (int) Math.round(simple.getSize().height/49.0);
-//                        System.out.println(size);
-//                        simple.setHeight(size*49);
-//                        super.dragMove(e);
-//                     }
-//                     
-//                  });
-                  
-                  button.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
-                  layout();
-                  super.dragDrop(e);
+//            });
+            add(cell);
+            DragSource source = new DragSource(cell) {
+               @Override
+               protected void onDragStart(DNDEvent event) {
+                  // by default drag is allowed
+                  event.setData(event.getDragSource().getComponent().getData("button"));
+                  event.getStatus().setStatus(true);
+                  event.getStatus().update(uiDesignerImages.iphoneBtn().createImage().getElement());
                }
 
-            });
-            add(iphoneContainer);
+               @Override
+               protected void onDragDrop(DNDEvent event) {
+                  Button button = event.getDragSource().getComponent().getData("button");
+                  screen.deleteButton(button);
+                  remove(event.getDragSource().getComponent());
+                  super.onDragDrop(event);
+               }
+               
+            };
+//            source.addDNDListener(new DNDListener(){
+//
+//               public void dragMove(DNDEvent e) {
+//                  LayoutContainer simple = (LayoutContainer)e.getDropTarget().getComponent();
+//                  int size = (int) Math.round(simple.getSize().height/49.0);
+//                  System.out.println(size);
+//                  simple.setHeight(size*49);
+//                  super.dragMove(e);
+//               }
+//               
+//            });
+            
+            cell.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
+            layout();
+            super.dragDrop(e);
+         }
+      };
+      for (int i=0; i < screen.getRowCount(); i++) {
+         for (int j=0; j < screen.getColumnCount(); j++) {
+            LayoutContainer cellCont = new LayoutContainer();
+            cellCont.setSize(width, height);
+            iphoneTable.setWidget(i, j, cellCont);
+            cellCont.setData("position", new Position(i, j));
+            ScreenDropTarget dropTarget = new ScreenDropTarget(cellCont);
+            dropTarget.setOverStyle("backgroud-yellow");
+            dropTarget.addDNDListener(dndListener);
          }
       }
       
+      add(iphoneContainer);
+      
    }
    
-   private LayoutContainer createBtn(String name) {
+   private LayoutContainer createCell(Button button, int width, int height) {
       LayoutContainer panel = new LayoutContainer();
+      panel.setToolTip(button.getName());
       panel.setLayout(new BorderLayout());
-      Label nameLabel = new Label(name);
+      panel.setSize(width, height);
+      panel.setBorders(false);
+      panel.addStyleName("absolute");
+      panel.addStyleName("cursor-move");
+      Label nameLabel = new Label(button.getLabel());
       nameLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
       nameLabel.addStyleName("font-white");
       Image image = uiDesignerImages.iphoneBtn().createImage();
@@ -195,5 +228,8 @@ public class ScreenPanel extends LayoutContainer {
       panel.add(image, new BorderLayoutData(LayoutRegion.CENTER));
       return panel;
    }
-
+   
+   public Screen getScreen(){
+      return screen;
+   }
 }

@@ -52,7 +52,7 @@ public class ActivityWindow extends FormWindow {
    public ActivityWindow() {
       super();
       initial("New Activity");
-      this.ensureDebugId(DebugId.NEW_ACTIVITY_WINDOW);
+//      this.ensureDebugId(DebugId.NEW_ACTIVITY_WINDOW);
       show();
    }
 
@@ -66,7 +66,7 @@ public class ActivityWindow extends FormWindow {
       super();
       this.activityModel = activityModel;
       initial("Edit Activity");
-      this.ensureDebugId(DebugId.EDIT_ACTIVITY_WINDOW);
+//      this.ensureDebugId(DebugId.EDIT_ACTIVITY_WINDOW);
       show();
    }
 
@@ -90,7 +90,7 @@ public class ActivityWindow extends FormWindow {
    private void createFields() {
       TextField<String> activityNameField = new TextField<String>();
       activityNameField.setName(ACTIVITY_NAME);
-      activityNameField.ensureDebugId(DebugId.ACTIVITY_NAME_FIELD);
+//      activityNameField.ensureDebugId(DebugId.ACTIVITY_NAME_FIELD);
       activityNameField.setFieldLabel("Name");
       activityNameField.setAllowBlank(false);
       if (activityModel != null) {
@@ -105,9 +105,9 @@ public class ActivityWindow extends FormWindow {
     */
    private void createButtons() {
       Button submitBtn = new Button("submit");
-      submitBtn.ensureDebugId(DebugId.NEW_ACTIVITY_WINDOW_SUBMIT_BTN);
+//      submitBtn.ensureDebugId(DebugId.NEW_ACTIVITY_WINDOW_SUBMIT_BTN);
       Button resetBtn = new Button("reset");
-      resetBtn.ensureDebugId(DebugId.NEW_ACTIVITY_WINDOW_RESET_BTN);
+//      resetBtn.ensureDebugId(DebugId.NEW_ACTIVITY_WINDOW_RESET_BTN);
 
       submitBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override

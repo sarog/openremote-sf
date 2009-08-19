@@ -39,6 +39,7 @@ import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
@@ -57,16 +58,18 @@ public class ActivityPanel extends ContentPanel {
 
    /** The tree. */
    private TreePanel<BeanModel> tree;
-
+   
+   private TabPanel screens;
    /** The icon. */
    private Icons icon = GWT.create(Icons.class);
 
    /**
     * Instantiates a new activity panel.
     */
-   public ActivityPanel() {
+   public ActivityPanel(TabPanel screens) {
+      this.screens = screens;
       setHeading("Activity");
-      setIcon(icon.activityIcon());
+//      setIcon(icon.activityIcon());
       setLayout(new FitLayout());
       createMenu();
       createActivityTree();
@@ -76,7 +79,7 @@ public class ActivityPanel extends ContentPanel {
     * Creates the activity tree.
     */
    private void createActivityTree() {
-      tree = TreePanelBuilder.buildActivityTree();
+      tree = TreePanelBuilder.buildActivityTree(screens);
       LayoutContainer treeContainer = new LayoutContainer() {
          @Override
          protected void onRender(Element parent, int index) {
@@ -194,6 +197,10 @@ public class ActivityPanel extends ContentPanel {
                BeanModel screenModel = be.getData();
                tree.getStore().add(activityModel, screenModel, false);
                tree.setExpanded(activityModel, true);
+               Screen screen = screenModel.getBean();
+               ScreenPanel screenPanel = new ScreenPanel(screen);
+               screens.add(screenPanel);
+               screens.setSelection(screenPanel);
                Info.display("Info", "Add screen " + screenModel.get("name") + " success.");
             }
          });

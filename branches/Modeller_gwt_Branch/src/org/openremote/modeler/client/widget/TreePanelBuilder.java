@@ -25,6 +25,7 @@ import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.widget.UIDesigner.ScreenPanel;
 import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.CommandDelay;
@@ -41,8 +42,11 @@ import com.extjs.gxt.ui.client.data.ModelStringProvider;
 import com.extjs.gxt.ui.client.data.RpcProxy;
 import com.extjs.gxt.ui.client.data.TreeLoader;
 import com.extjs.gxt.ui.client.store.TreeStore;
+import com.extjs.gxt.ui.client.widget.TabItem;
+import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
@@ -267,11 +271,42 @@ public class TreePanelBuilder {
     * 
     * @return a new activity tree.
     */
-   public static TreePanel<BeanModel> buildActivityTree() {
+   public static TreePanel<BeanModel> buildActivityTree(final TabPanel screens) {
       if (activityTreeStore == null) {
          activityTreeStore = new TreeStore<BeanModel>();
       }
-      final TreePanel<BeanModel> activityTree = new TreePanel<BeanModel>(activityTreeStore);
+      final TreePanel<BeanModel> activityTree = new TreePanel<BeanModel>(activityTreeStore){
+
+         @Override
+         public void onBrowserEvent(Event event) {
+            if(event.getTypeInt() == Event.ONDBLCLICK){
+               BeanModel beanModel = this.getSelectionModel().getSelectedItem();
+//               System.out.println("baseevent "+beanModel.get("name"));
+               if(beanModel.getBean() instanceof Screen){
+                  Screen screen = beanModel.getBean();
+                  ScreenPanel screenPanel = null;
+                  for (TabItem tabPanel : screens.getItems()) {
+                     screenPanel = (ScreenPanel)tabPanel;
+                     if(screen == screenPanel.getScreen()){
+                        screens.setSelection(screenPanel);
+                        return;
+                     }else{
+                        screenPanel = null;
+                     }
+                  }
+                  if(screenPanel == null){
+                     screenPanel = new ScreenPanel(screen);
+                     screens.add(screenPanel);
+                     screens.setSelection(screenPanel);
+                  }
+                  
+               }
+            }
+            
+            super.onBrowserEvent(event);
+         }
+         
+      };
       activityTree.setStateful(true);
       activityTree.setBorders(false);
       activityTree.setHeight("100%");      

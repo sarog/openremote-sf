@@ -30,6 +30,7 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.TabItem;
+import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
@@ -41,12 +42,14 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
  */
 public class UIDesignerView extends TabItem implements View {
 
+   private TabPanel center = new TabPanel();
+
    /**
     * @see org.openremote.modeler.client.view.View#initialize()
     */
    public void initialize() {
       setText("UI Designer");
-      
+
       setLayout(new BorderLayout());
       createWest();
       createCenter();
@@ -59,41 +62,37 @@ public class UIDesignerView extends TabItem implements View {
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.EAST);
       centerData.setMargins(new Margins(2));
       TreePanel<BeanModel> commandTree = TreePanelBuilder.buildDeviceCommandTree();
-      TreePanel<BeanModel> macroTree = TreePanelBuilder.buildMacroTree();
-//      commandTree.get
       new TreePanelDragSourceMacroDragExt(commandTree);
       east.add(commandTree);
-      add(east,centerData);
+      add(east, centerData);
    }
-
 
    /**
     * Creates the west.
     */
-   private void createWest(){
+   private void createWest() {
       ContentPanel west = new ContentPanel();
-      BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST,200);
+      BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 200);
       westData.setSplit(true);
       westData.setCollapsible(true);
       west.setLayout(new AccordionLayout());
       west.setBodyBorder(false);
       west.setHeading("Browser");
-      west.add(new ActivityPanel());
-  
+      west.add(new ActivityPanel(center));
+
       westData.setMargins(new Margins(2));
-      add(west,westData);
+      add(west, westData);
    }
-   
+
    /**
     * Creates the center.
     */
-   private void createCenter(){
-      ContentPanel center = new ContentPanel();
+   private void createCenter() {
+      center.setTabScroll(true);
+      center.setAnimScroll(true);
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setMargins(new Margins(2));
-      center.add(new ScreenPanel(new Screen()));
-      add(center,centerData);
+      add(center, centerData);
    }
-   
 
 }
