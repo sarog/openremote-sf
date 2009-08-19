@@ -53,6 +53,23 @@ public abstract class BusinessEntity extends LightEntity implements Serializable
    private long oid;
 
    /**
+    * Instantiates a new business entity.
+    */
+   public BusinessEntity() {
+      super();
+   }
+
+   /**
+    * Instantiates a new business entity.
+    * 
+    * @param oid the oid
+    */
+   public BusinessEntity(long oid) {
+      super();
+      this.oid = oid;
+   }
+
+   /**
     * Gets the oid.
     * 
     * @return the oid

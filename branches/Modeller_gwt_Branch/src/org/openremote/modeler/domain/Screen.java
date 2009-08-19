@@ -19,6 +19,9 @@
 */
 package org.openremote.modeler.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The Class Screen.
  * 
@@ -36,6 +39,9 @@ public class Screen extends BusinessEntity {
    /** The column count. */
    private Integer columnCount;
 
+   /** The buttons. */
+   private List<Button> buttons = new ArrayList<Button>();
+   
    /**
     * Gets the row count.
     * 
@@ -89,4 +95,33 @@ public class Screen extends BusinessEntity {
    public void setName(String name) {
       this.name = name;
    }
+
+   /**
+    * Gets the buttons.
+    * 
+    * @return the buttons
+    */
+   public List<Button> getButtons() {
+      return buttons;
+   }
+
+   /**
+    * Sets the buttons.
+    * 
+    * @param buttons the new buttons
+    */
+   public void setButtons(List<Button> buttons) {
+      this.buttons = buttons;
+   }
+   
+   public void addButton(Button button) {
+      this.buttons.add(button);
+   }
+   
+   public void deleteButton(Button button) {
+      if(this.buttons.contains(button)){
+         this.buttons.remove(button);
+      }
+   }
+   
 }

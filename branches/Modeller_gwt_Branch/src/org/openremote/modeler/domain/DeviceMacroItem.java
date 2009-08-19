@@ -43,7 +43,7 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type")
 @DiscriminatorValue("DEVICE_MACRO_ITEM")
-public class DeviceMacroItem extends BusinessEntity {
+public class DeviceMacroItem extends UICommand {
 
    /** The parent device macro. */
    private DeviceMacro parentDeviceMacro;

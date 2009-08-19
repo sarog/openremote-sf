@@ -17,8 +17,10 @@
 
 package org.openremote.modeler.client.utils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.openremote.modeler.domain.BusinessEntity;
@@ -26,7 +28,6 @@ import org.openremote.modeler.domain.BusinessEntity;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeEventSource;
-import com.extjs.gxt.ui.client.data.ChangeEventSupport;
 import com.extjs.gxt.ui.client.data.ChangeListener;
 
 /**
@@ -57,13 +58,12 @@ public class BeanModelTable {
    public static final int REMOVE = ChangeEventSource.Remove;
 
    /** The change event support. */
-   private ChangeEventSupport changeEventSupport = null;
+   private Map<Long, List<ChangeListener>> changeListeners = new HashMap<Long, List<ChangeListener>>();
 
    /**
     * Instantiates a new bean model table.
     */
    public BeanModelTable() {
-      changeEventSupport = new ChangeEventSupport();
    }
 
    /**
@@ -75,8 +75,14 @@ public class BeanModelTable {
     * @param listener
     *           the {@link ChangeListener}
     */
-   public void addChangeListener(ChangeListener... listener) {
-      changeEventSupport.addChangeListener(listener);
+   public void addChangeListener(Long id, ChangeListener listener) {
+      List<ChangeListener> listeners = null;
+      if((listeners = changeListeners.get(id)) == null){
+         listeners = new ArrayList<ChangeListener>();
+      }
+      listeners.add(listener);
+      
+      changeListeners.put(id, listeners);
    }
 
    /**
@@ -86,7 +92,13 @@ public class BeanModelTable {
     *           the {@link ChangeEvent}
     */
    public void notify(ChangeEvent evt) {
-      changeEventSupport.notify(evt);
+      BeanModel beanModel = (BeanModel)evt.getItem();
+      if (changeListeners.get(getIdFromBeanModel(beanModel))!=null) {
+         for (ChangeListener changeListener : changeListeners.get(getIdFromBeanModel(beanModel))) {
+            changeListener.modelChanged(evt);
+         }
+      }
+      
    }
 
    /**
@@ -95,8 +107,10 @@ public class BeanModelTable {
     * @param listener
     *           the listener
     */
-   public void removeChangeListener(ChangeListener... listener) {
-      changeEventSupport.removeChangeListener(listener);
+   public void removeChangeListener(Long id, ChangeListener listener) {
+      List<ChangeListener> listeners = changeListeners.get(id);
+      listeners.remove(listener);
+      changeListeners.put(id, listeners);
    }
 
    /**

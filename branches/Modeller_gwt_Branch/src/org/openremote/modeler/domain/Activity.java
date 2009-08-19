@@ -26,6 +26,7 @@ import java.util.List;
  * User Activity
  * @author allen.wei
  */
+@SuppressWarnings("serial")
 public class Activity extends BusinessEntity {
    
    /** The name of the activity. It is the  display name on the device */
