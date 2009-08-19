@@ -19,11 +19,10 @@
 */
 package org.openremote.modeler.client.view;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.gxtExtends.TreePanelDragSourceMacroDragExt;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.client.widget.UIDesigner.ActivityPanel;
-import org.openremote.modeler.client.widget.UIDesigner.ScreenPanel;
-import org.openremote.modeler.domain.Screen;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -62,7 +61,8 @@ public class UIDesignerView extends TabItem implements View {
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.EAST);
       centerData.setMargins(new Margins(2));
       TreePanel<BeanModel> commandTree = TreePanelBuilder.buildDeviceCommandTree();
-      new TreePanelDragSourceMacroDragExt(commandTree);
+      TreePanelDragSourceMacroDragExt dragSource = new TreePanelDragSourceMacroDragExt(commandTree);
+      dragSource.setGroup(Constants.BUTTON_DND_GROUP);
       east.add(commandTree);
       add(east, centerData);
    }
