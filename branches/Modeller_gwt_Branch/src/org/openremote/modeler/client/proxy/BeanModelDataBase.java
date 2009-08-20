@@ -54,7 +54,7 @@ public class BeanModelDataBase {
    public static final BeanModelTable deviceMacroTable = new BeanModelTable();
 
    /** Store all the DeviceItem models. */
-   public static final BeanModelTable deviceMacroItemMap = new BeanModelTable();
+   public static final BeanModelTable deviceMacroItemTable = new BeanModelTable();
    
    public static final BeanModelTable activityTable = new BeanModelTable();
 

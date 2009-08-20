@@ -69,7 +69,7 @@ public class DeviceMacroBeanModelProxy {
                (DeviceMacro) deviceMacroBeanModel.getBean(), new AsyncSuccessCallback<List<DeviceMacroItem>>() {
                   public void onSuccess(List<DeviceMacroItem> result) {
                      List<BeanModel> beanModels = DeviceMacroItem.createModels(result);
-                     BeanModelDataBase.deviceMacroItemMap.insertAll(beanModels);
+                     BeanModelDataBase.deviceMacroItemTable.insertAll(beanModels);
                      callback.onSuccess(beanModels);
                   }
                });
@@ -95,7 +95,7 @@ public class DeviceMacroBeanModelProxy {
                @Override
                public void onSuccess(DeviceMacro result) {
                   BeanModelDataBase.deviceMacroTable.insert(result.getBeanModel());
-                  BeanModelDataBase.deviceMacroItemMap.insertAll(DeviceMacroItem.createModels(result
+                  BeanModelDataBase.deviceMacroItemTable.insertAll(DeviceMacroItem.createModels(result
                         .getDeviceMacroItems()));
                   callback.onSuccess(result);
                }
@@ -145,7 +145,7 @@ public class DeviceMacroBeanModelProxy {
       Iterator<DeviceMacroItem> macroItemIterator = deviceMacro.getDeviceMacroItems().iterator();
       while (macroItemIterator.hasNext()) {
          DeviceMacroItem deviceMacroItem = macroItemIterator.next();
-         BeanModelDataBase.deviceMacroItemMap.delete(deviceMacroItem.getOid());
+         BeanModelDataBase.deviceMacroItemTable.delete(deviceMacroItem.getOid());
          macroItemIterator.remove();
       }
       deviceMacro.getDeviceMacroItems().addAll(convertMacroItemRef(items, deviceMacro));
@@ -154,7 +154,7 @@ public class DeviceMacroBeanModelProxy {
                @Override
                public void onSuccess(DeviceMacro result) {
                   for (DeviceMacroItem deviceMacroItem : result.getDeviceMacroItems()) {
-                     BeanModelDataBase.deviceMacroItemMap.insert(deviceMacroItem.getBeanModel());
+                     BeanModelDataBase.deviceMacroItemTable.insert(deviceMacroItem.getBeanModel());
                   }
                   BeanModelDataBase.deviceMacroTable.update(deviceMacroBeanModel);
                   callback.onSuccess(result);
