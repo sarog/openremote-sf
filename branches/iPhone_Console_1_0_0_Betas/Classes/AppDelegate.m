@@ -59,6 +59,10 @@
 	[self updateDidFinished];
 }
 
+- (void)didUpdateFail:(NSString *)errorMessage {
+	[ViewHelper showAlertViewWithTitle:@"Warning" Message:errorMessage];
+	[self updateDidFinished];
+}
 
 - (void)updateDidFinished {
 	NSLog(@"----------updateDidFinished------");

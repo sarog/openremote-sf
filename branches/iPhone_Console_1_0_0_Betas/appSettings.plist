@@ -10,7 +10,7 @@
 			<key>name</key>
 			<string>Auto Discovery</string>
 			<key>value</key>
-			<true/>
+			<false/>
 		</dict>
 		<key>footer</key>
 		<string>Turn off auto-discovery to input controller URL manually.</string>
@@ -27,7 +27,14 @@
 		<key>header</key>
 		<string>Choose Controller</string>
 		<key>servers</key>
-		<array/>
+		<array>
+			<dict>
+				<key>choose</key>
+				<true/>
+				<key>url</key>
+				<string>http://controller.openremote.org/1.0/controller</string>
+			</dict>
+		</array>
 		<key>footer</key>
 		<string></string>
 	</dict>
