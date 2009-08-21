@@ -61,6 +61,30 @@ public class Device extends BusinessEntity {
    
 
    /**
+    * Instantiates a new device.
+    */
+   public Device() {
+      super();
+   }
+
+   /**
+    * Instantiates a new device.
+    * 
+    * @param model
+    *           the model
+    * @param name
+    *           the name
+    * @param vendor
+    *           the vendor
+    */
+   public Device(String name, String vendor, String model) {
+      super();
+      this.model = model;
+      this.name = name;
+      this.vendor = vendor;
+   }
+
+   /**
     * Gets the name.
     * 
     * @return the name
@@ -120,7 +144,7 @@ public class Device extends BusinessEntity {
     * 
     * @return the device commands
     */
-   @OneToMany(mappedBy = "device", cascade = CascadeType.REMOVE)
+   @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
    public List<DeviceCommand> getDeviceCommands() {
       return deviceCommands;
    }

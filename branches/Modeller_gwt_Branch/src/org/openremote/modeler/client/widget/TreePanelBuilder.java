@@ -41,9 +41,11 @@ import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.data.ModelStringProvider;
 import com.extjs.gxt.ui.client.data.RpcProxy;
 import com.extjs.gxt.ui.client.data.TreeLoader;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Event;
@@ -61,8 +63,6 @@ public class TreePanelBuilder {
     */
    private TreePanelBuilder() {
    }
-   /** The Constant TREE_DISPLAY_FIELD. */
-   private static final String TREE_DISPLAY_FIELD = "tree_label";
 
    /** The Constant icon. */
    private static final Icons ICON = GWT.create(Icons.class);

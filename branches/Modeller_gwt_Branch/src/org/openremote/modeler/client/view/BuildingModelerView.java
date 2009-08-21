@@ -20,8 +20,8 @@
 package org.openremote.modeler.client.view;
 
 import org.openremote.modeler.client.icon.uidesigner.UIDesignerImages;
-import org.openremote.modeler.client.widget.DevicePanel;
-import org.openremote.modeler.client.widget.MacroPanel;
+import org.openremote.modeler.client.widget.buildingmodeler.DevicePanel;
+import org.openremote.modeler.client.widget.buildingmodeler.MacroPanel;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.util.Margins;

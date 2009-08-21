@@ -17,7 +17,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.client.widget;
+package org.openremote.modeler.client.widget.buildingmodeler;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,12 +29,14 @@ import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.Protocols;
+import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.protocol.ProtocolAttrDefinition;
 import org.openremote.modeler.protocol.ProtocolDefinition;
 import org.openremote.modeler.protocol.ProtocolValidator;
+import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.data.BaseModelData;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -182,6 +184,7 @@ public class DeviceCommandWindow extends FormWindow {
       nameField.setName(DEVICE_COMMAND_NAME);
       nameField.setFieldLabel("Name");
       nameField.setAllowBlank(false);
+      nameField.ensureDebugId(DebugId.DEVICE_COMMAND_NAME_FIELD);
 
       ComboBox<ModelData> protocol = new ComboBox<ModelData>();
       ListStore<ModelData> store = new ListStore<ModelData>();
@@ -189,7 +192,8 @@ public class DeviceCommandWindow extends FormWindow {
       protocol.setFieldLabel("Protocol");
       protocol.setName(DEVICE_COMMAND_PROTOCOL);
       protocol.setAllowBlank(false);
-
+      protocol.ensureDebugId(DebugId.DEVICE_COMMAND_PROTOCOL_FIELD);
+      
       for (String key : protocols.keySet()) {
          ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(key, protocols.get(key));
          store.add(data);

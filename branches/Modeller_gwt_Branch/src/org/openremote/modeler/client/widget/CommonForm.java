@@ -23,63 +23,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openremote.modeler.client.listener.FormResetListener;
+import org.openremote.modeler.client.listener.FormSubmitListener;
+
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
-import com.extjs.gxt.ui.client.widget.Window;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
-import com.extjs.gxt.ui.client.widget.layout.FillLayout;
 
 /**
- * The Window with Form.
+ * Common Form with common style and submit/reset buttons.
  * 
- * @author Dan 2009-8-14
+ * @author Dan 2009-8-19
  */
-public class FormWindow extends Window {
+public class CommonForm extends FormPanel{
    
-   /** The form. */
-   protected FormPanel form = new FormPanel();
    
    /**
-    * Instantiates a new form window.
-    */
-   public FormWindow() {
-      setWindowStyles();
-      setFormStyles();
-   }
-
-
-
-   private void setFormStyles() {
-      form.setFrame(true);
-      form.setHeaderVisible(false);
-      form.setBorders(false);
-      form.setButtonAlign(HorizontalAlignment.CENTER);
-   }
-
-
-
-   private void setWindowStyles() {
-      setLayout(new FillLayout());
-      setModal(true);
-      setBodyBorder(false);
-   }
-   
-
-
-
-
-   /*
-    * (non-Javadoc)
+    * Instantiates a new common form with submit/reset button..
     * 
-    * @see com.extjs.gxt.ui.client.widget.Window#show()
     */
-   /* (non-Javadoc)
-    * @see com.extjs.gxt.ui.client.widget.Window#show()
-    */
-   @Override
-   public void show() {
-      setFocusWidget(form.getWidget(0));
-      super.show();
+   public CommonForm() {
+      super();
+      setFrame(true);
+      setHeaderVisible(false);
+      setBorders(false);
+      setButtonAlign(HorizontalAlignment.CENTER);
+      if (!isNoButton()) {
+         addButtons();
+      }
    }
 
    /**
@@ -87,12 +59,37 @@ public class FormWindow extends Window {
     * 
     * @return the attr map
     */
-   public Map<String, String> getAttrMap() {
-      List<Field<?>> list = form.getFields();
+   public Map<String, String> getFieldMap() {
+      List<Field<?>> list = getFields();
       Map<String, String> attrMap = new HashMap<String, String>();
       for (Field<?> field : list) {
          attrMap.put(field.getName(), field.getValue().toString());
       }
       return attrMap;
    }
+   
+   /**
+    * Adds the buttons. By default Submit and Reset button are added. 
+    *
+    */
+   protected void addButtons() {
+      Button submitBtn = new Button("Submit");
+      Button resetButton = new Button("Reset");
+      submitBtn.addSelectionListener(new FormSubmitListener(this));
+      resetButton.addSelectionListener(new FormResetListener(this));
+      addButton(submitBtn);
+      addButton(resetButton);
+   }
+
+   /**
+    * Checks if is no button.
+    * 
+    * @return true, if is you needn't submit/reset button. default is false.
+    */
+   public boolean isNoButton() {
+      return false;
+   }
+   
+   
+   
 }

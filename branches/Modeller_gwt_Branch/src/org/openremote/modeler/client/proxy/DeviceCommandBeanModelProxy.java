@@ -26,7 +26,7 @@ import java.util.Map;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.widget.DeviceCommandWindow;
+import org.openremote.modeler.client.widget.buildingmodeler.DeviceCommandWindow;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
@@ -117,6 +117,27 @@ public class DeviceCommandBeanModelProxy {
     * @param callback the callback
     */
    public static void saveAllDeviceCommands(Device device, List<ModelData> datas, final AsyncSuccessCallback<List<BeanModel>> callback) {
+      List<DeviceCommand> deviceCommands = convert2DeviceCommand(device, datas);
+      AsyncServiceFactory.getDeviceCommandServiceAsync().saveAll(deviceCommands, new AsyncSuccessCallback<List<DeviceCommand>>() {
+         public void onSuccess(List<DeviceCommand> deviceCommands) {
+            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(deviceCommands);
+            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
+            callback.onSuccess(deviceCommandModels);
+         }
+      });
+   }
+   
+   /**
+    * Convert to device command.
+    * 
+    * @param device
+    *           the device
+    * @param datas
+    *           the datas
+    * 
+    * @return the list< device command>
+    */
+   public static List<DeviceCommand> convert2DeviceCommand(Device device, List<ModelData> datas) {
       List<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
       for (ModelData m : datas) {
          Protocol protocol = new Protocol();
@@ -145,13 +166,7 @@ public class DeviceCommandBeanModelProxy {
 
          deviceCommands.add(deviceCommand);
       }
-      AsyncServiceFactory.getDeviceCommandServiceAsync().saveAll(deviceCommands, new AsyncSuccessCallback<List<DeviceCommand>>() {
-         public void onSuccess(List<DeviceCommand> deviceCommands) {
-            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(deviceCommands);
-            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
-            callback.onSuccess(deviceCommandModels);
-         }
-      });
+      return deviceCommands;
    }
    
    /**

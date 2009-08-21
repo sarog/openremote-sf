@@ -17,7 +17,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.client.widget;
+package org.openremote.modeler.client.widget.buildingmodeler;
 
 import java.util.List;
 
@@ -27,6 +27,7 @@ import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.selenium.DebugId;
@@ -56,9 +57,8 @@ import com.google.gwt.user.client.Element;
 public class DevicePanel extends ContentPanel {
 
    /** The tree. */
-   private TreePanel<BeanModel> tree = null;
+   private TreePanel<BeanModel> tree;
    
-   private LayoutContainer deviceTreeContainer = null;
    /** The icon. */
    private Icons icon = GWT.create(Icons.class);
 
@@ -78,33 +78,36 @@ public class DevicePanel extends ContentPanel {
     * Creates the tree container.
     */
    private void createTreeContainer() {
-      deviceTreeContainer = new LayoutContainer();
-      deviceTreeContainer.ensureDebugId(DebugId.DEVICE_TREE_CONTAINER);
-      deviceTreeContainer.setScrollMode(Scroll.AUTO);
-      deviceTreeContainer.setStyleAttribute("backgroundColor", "white");
-      deviceTreeContainer.setLayoutOnChange(true);
-      deviceTreeContainer.setBorders(false);
-      deviceTreeContainer.setHeight("100%");
-      if (tree == null) {
-         tree = TreePanelBuilder.buildDeviceCommandTree();
-         deviceTreeContainer.add(tree);
-      }
-      add(deviceTreeContainer);
-   }
+      tree = TreePanelBuilder.buildDeviceCommandTree();
+      LayoutContainer treeContainer = new LayoutContainer() {
+         @Override
+         protected void onRender(Element parent, int index) {
+            super.onRender(parent, index);
+            add(tree);
+         }
+      };
+      treeContainer.ensureDebugId(DebugId.DEVICE_TREE_CONTAINER);
+      treeContainer.setScrollMode(Scroll.AUTO);
+      treeContainer.setStyleAttribute("backgroundColor", "white");
+      treeContainer.setBorders(false);
 
+      add(treeContainer);
+   }
+   
    /**
     * Creates the menu.
     */
    private void createMenu() {
       ToolBar toolBar = new ToolBar();
       Button newButton = new Button("New");
+      newButton.setToolTip("Create Device or DeviceCommand");
       newButton.ensureDebugId(DebugId.DEVICE_NEW_BTN);
       newButton.setIcon(icon.add());
       
       Menu newMenu = new Menu();
-      newMenu.add(createNewDeviceMenu());
+      newMenu.add(createNewDeviceMenuItem());
       newMenu.add(createNewCommandMenu());
-      newMenu.add(createImportMenu());
+      newMenu.add(createImportMenuItem());
 
       newButton.setMenu(newMenu);
       
@@ -120,35 +123,35 @@ public class DevicePanel extends ContentPanel {
     * 
     * @return the menu item
     */
-   private MenuItem createNewDeviceMenu() {
+   private MenuItem createNewDeviceMenuItem() {
       MenuItem newDeviceItem = new MenuItem("New Device");
       newDeviceItem.ensureDebugId(DebugId.NEW_DEVICE_MENU_ITEM);
       newDeviceItem.setIcon(icon.addDevice());
       newDeviceItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
-            createDevice();
+//            final DeviceWindow deviceWindow = new DeviceWindow(new Device().getBeanModel());
+            final DeviceWizardWindow deviceWindow = new DeviceWizardWindow(new Device().getBeanModel());
+            deviceWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+               @Override
+               public void afterSubmit(SubmitEvent be) {
+                  deviceWindow.hide();
+                  BeanModel deviceModel = be.getData();
+                  tree.getStore().add(deviceModel, true);
+                  
+                  for (BeanModel deviceCommandModel : DeviceCommand.createModels(((Device)deviceModel.getBean()).getDeviceCommands())) {
+                     tree.getStore().add(deviceModel, deviceCommandModel, false);
+                  }
+                  tree.setExpanded(deviceModel, true);
+                  
+                  //create and select it.
+                  tree.getSelectionModel().select(deviceModel, false);
+                  Info.display("Info", "Add device " + deviceModel.get("name") + " success.");
+                  
+               }
+            });
          }
       });
       return newDeviceItem;
-   }
-   
-   /**
-    * Creates the device.
-    */
-   private void createDevice() {
-      final DeviceWindow deviceWindow = new DeviceWindow();
-      deviceWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
-         @Override
-         public void afterSubmit(SubmitEvent be) {
-            deviceWindow.hide();
-            BeanModel deviceModel = be.getData();
-            tree.getStore().add(deviceModel, true);
-            //create and select it.
-            tree.getSelectionModel().select(deviceModel, false);
-            Info.display("Info", "Add device " + deviceModel.get("name") + " success.");
-            
-         }
-      });
    }
    
    /**
@@ -158,6 +161,7 @@ public class DevicePanel extends ContentPanel {
     */
    private MenuItem createNewCommandMenu() {
       MenuItem newCommandItem = new MenuItem("New Command");
+      newCommandItem.ensureDebugId(DebugId.NEW_COMMAND_ITEM);
       newCommandItem.setIcon(icon.addCmd());
       newCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
@@ -196,6 +200,7 @@ public class DevicePanel extends ContentPanel {
     */
    private Button createEditButton() {
       Button editBtn = new Button("Edit");
+      editBtn.setToolTip("Edit Device or DeviceCommand");
       editBtn.ensureDebugId(DebugId.DEVICE_EDIT_BTN);
       editBtn.setIcon(icon.edit());
       editBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -254,15 +259,18 @@ public class DevicePanel extends ContentPanel {
     */
    private Button createDeleteButton() {
       Button deleteBtn = new Button("Delete");
+      deleteBtn.setToolTip("Delete Device or DeviceCommand");
       deleteBtn.ensureDebugId(DebugId.DELETE_DEVICE_BUTTON);
       deleteBtn.setIcon(icon.delete());
       deleteBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
-            BeanModel selectedModel = tree.getSelectionModel().getSelectedItem();
-            if (selectedModel != null && selectedModel.getBean() instanceof Device) {
-               deleteDevice(selectedModel);
-            } else if (selectedModel != null && selectedModel.getBean() instanceof DeviceCommand) {
-               deleteCommand(selectedModel);
+            List<BeanModel> selectedModels = tree.getSelectionModel().getSelectedItems();
+            for (BeanModel selectedModel : selectedModels) {
+               if (selectedModel != null && selectedModel.getBean() instanceof Device) {
+                  deleteDevice(selectedModel);
+               } else if (selectedModel != null && selectedModel.getBean() instanceof DeviceCommand) {
+                  deleteCommand(selectedModel);
+               }
             }
          }
       });
@@ -301,11 +309,11 @@ public class DevicePanel extends ContentPanel {
    }
    
    /**
-    * Creates the import menu.
+    * Creates the import menu item.
     * 
     * @return the menu item
     */
-   private MenuItem createImportMenu() {
+   private MenuItem createImportMenuItem() {
       MenuItem importCommandItem = new MenuItem("Import Commands");
       importCommandItem.setIcon(icon.importFromDB());
       importCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
@@ -323,7 +331,7 @@ public class DevicePanel extends ContentPanel {
    private void importIRCommand() {
       final BeanModel deviceModel = tree.getSelectionModel().getSelectedItem();
       if (deviceModel != null && deviceModel.getBean() instanceof Device) {
-         final SelectIRWindow selectIRWindow = new SelectIRWindow((Device) deviceModel.getBean());
+         final IRCommandImportWindow selectIRWindow = new IRCommandImportWindow(deviceModel);
          selectIRWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {

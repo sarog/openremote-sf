@@ -17,7 +17,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.client.widget;
+package org.openremote.modeler.client.widget.buildingmodeler;
 
 import java.util.List;
 
@@ -28,6 +28,8 @@ import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.widget.FormWindow;
+import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.DeviceCommand;
