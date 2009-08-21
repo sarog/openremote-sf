@@ -190,28 +190,28 @@
 		NSString *errorMessage = nil;
 		switch (statusCode) {
 			case 404:
-				errorMessage = [NSString stringWithString:@"Request URL is invalid"];
+				errorMessage = [NSString stringWithString:@"The command was sent to an invalid URL."];
 				break;
 			case 418:
-				errorMessage = [NSString stringWithString:@"Event Build Error. Happens when an event can't be built from a DOM Element."];
+				errorMessage = [NSString stringWithString:@"Controller failed to construct an event for this command. Please check the controller log."];
 				break;
 			case 419:
-				errorMessage = [NSString stringWithString:@"No Such Button Error."];
+				errorMessage = [NSString stringWithString:@"Controller did not recognize the sent command id."];
 				break;
 			case 420:
-				errorMessage = [NSString stringWithString:@"No Such Event Builder Error."];
+				errorMessage = [NSString stringWithString:@"Controller failed to create an event for the command. Please check controller configuration and log."];
 				break;
 			case 422:
-				errorMessage = [NSString stringWithString:@"controller.xml Not Found Error."];
+				errorMessage = [NSString stringWithString:@"Error in controller - controller.xml is not correctly deployed."];
 				break;
 			case 423:
-				errorMessage = [NSString stringWithString:@"No Such Event Error."];
+				errorMessage = [NSString stringWithString:@"Controller did not locate a mapped event correctly. Please check the controller.xml configuration."];
 				break;
 			case 424:
-				errorMessage = [NSString stringWithString:@"Invalid controller.xml Error."];
+				errorMessage = [NSString stringWithString:@"Error in controller - invalid controller.xml. Please check controller log for errors."];
 				break;
 			case 500:
-				errorMessage = [NSString stringWithString:@"Server error"];
+				errorMessage = [NSString stringWithString:@"Error in controller. Please check controller log."];
 				break;
 		}
 		if (!errorMessage) {
