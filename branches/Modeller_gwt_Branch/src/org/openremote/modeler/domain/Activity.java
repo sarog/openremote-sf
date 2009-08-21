@@ -71,5 +71,21 @@ public class Activity extends BusinessEntity {
       this.screens = screens;
    }
    
+   /**
+    * Adds the screen.
+    * 
+    * @param screen the screen
+    */
+   public void addScreen(Screen screen){
+      screens.add(screen);
+   }
    
+   /**
+    * Delete screen.
+    * 
+    * @param screen the screen
+    */
+   public void deleteScreen(Screen screen){
+      screens.remove(screen);
+   }
 }

@@ -19,14 +19,10 @@ package org.openremote.modeler.client.widget.UIDesigner;
 import java.util.List;
 
 import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtExtends.ScreenDropTarget;
-import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.icon.uidesigner.UIDesignerImages;
-import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.Position;
 import org.openremote.modeler.client.utils.IDUtil;
-import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -38,16 +34,9 @@ import org.openremote.modeler.domain.UICommand;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.dnd.DragSource;
-import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.event.DNDListener;
-import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
-import com.extjs.gxt.ui.client.widget.TabItem;
-import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
-import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -55,19 +44,15 @@ import com.google.gwt.user.client.ui.FlexTable;
 /**
  * The Class ScreenPanel.
  */
-public class ScreenPanel extends TabItem {
+public class ScreenPanel extends LayoutContainer {
 
    /** The screen. */
    private Screen screen;
 
-   /** The icon. */
-   private Icons icon = GWT.create(Icons.class);
-   
    private UIDesignerImages uiDesignerImages = GWT.create(UIDesignerImages.class);
    
    private ScreenButton selectButton;
    
-   private LayoutContainer iphoneContainer;
    /**
     * Instantiates a new screen panel.
     * 
@@ -76,73 +61,19 @@ public class ScreenPanel extends TabItem {
     */
    public ScreenPanel(Screen s) {
       screen = s;
-      setText(screen.getName());
-      setClosable(true);
-      setLayout(new FlowLayout());
-      createToolBar();
-
-      createScreenBackground();
+      setStyleAttribute("position", "relative");
+      setSize(269, 500);
+      addStyleName("iphone-background");
+      createTable();
 
    }
 
-   /**
-    * Creates the tool bar.
-    */
-   private void createToolBar() {
-      ToolBar toolBar = new ToolBar();
-      toolBar.add(createRenameBtn());
-      toolBar.add(createDeleteBtn());
-      add(toolBar);
-   }
-   private Button createRenameBtn(){
-      Button renameBtn = new Button("Rename");
-      renameBtn.setIcon(icon.edit());
-      renameBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            final RenameButtonWindow renameButtonWindow = new RenameButtonWindow((UIButton)selectButton.getData("button"));
-            renameButtonWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  renameButtonWindow.hide();
-                  UIButton button = be.getData();
-                  selectButton.setLabel(button.getLabel());
-                  selectButton.setToolTip(button.getName());
-                  layout();
-                  Info.display("Info", "Edit device " + button.getName() + " success.");
-               }
-            });
-         }
-      });
-      return renameBtn;
-   }
-   private Button createDeleteBtn(){
-      Button deleteBtn = new Button("Delete");
-      deleteBtn.setIcon(icon.delete());
-      deleteBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            if(selectButton != null){
-               screen.deleteButton((UIButton)selectButton.getData("button"));
-               iphoneContainer.remove(selectButton);
-               System.out.println(screen.getButtons().size());
-               layout();
-            }
-         }
-      });
-      return deleteBtn;
-   }
    /**
     * Creates the screen background.
     */
-   private void createScreenBackground() {
-
-      iphoneContainer = new LayoutContainer();
-      iphoneContainer.setStyleAttribute("position", "relative");
+   private void createTable() {
       LayoutContainer tableWapper = new LayoutContainer();
       FlexTable iphoneTable = new FlexTable();
-      iphoneContainer.setSize(269, 500);
-      iphoneContainer.addStyleName("iphone-background");
       iphoneTable.setPixelSize(196, 294);
       tableWapper.add(iphoneTable);
       tableWapper.setStyleAttribute("paddingLeft", "35");
@@ -150,7 +81,7 @@ public class ScreenPanel extends TabItem {
       iphoneTable.setCellPadding(0);
       iphoneTable.setCellSpacing(0);
       iphoneTable.addStyleName("panel-table");
-      iphoneContainer.add(tableWapper);
+      add(tableWapper);
       final int width = (int)Math.round(196.0/screen.getColumnCount());
       final int height = (int)Math.round(294.0/screen.getRowCount());
       DNDListener dndListener = new DNDListener() {
@@ -179,6 +110,11 @@ public class ScreenPanel extends TabItem {
             button.setPosition((Position)targetCell.getData("position"));
             screen.addButton(button);
             ScreenButton screenBtn = createScreenButton(width, height, button);
+            screenBtn.addStyleName("border-orange");
+            if(selectButton != null){
+               selectButton.removeStyleName("border-orange");
+            }
+            selectButton = screenBtn;
 //            Resizable resizable = new Resizable(panel);  
 //            resizable.setDynamic(false);
 //            resizable.addResizeListener(new ResizeListener(){
@@ -201,8 +137,8 @@ public class ScreenPanel extends TabItem {
 //               }
 //
 //            });
-            iphoneContainer.add(screenBtn);
-            DragSource source = createDragSource(screenBtn, iphoneContainer);
+            add(screenBtn);
+            DragSource source = createDragSource(screenBtn);
 //            source.addDNDListener(new DNDListener(){
 //
 //               public void dragMove(DNDEvent e) {
@@ -237,13 +173,12 @@ public class ScreenPanel extends TabItem {
             Position pos = button.getPosition();
             ScreenButton screenBtn = createScreenButton(width, height, button);
             screenBtn.setPosition(35+49*pos.getPosY()+pos.getPosY()+1, 105+49*pos.getPosX()+pos.getPosX()+1);
-            iphoneContainer.add(screenBtn);
-            DragSource source = createDragSource(screenBtn, iphoneContainer);
+            add(screenBtn);
+            DragSource source = createDragSource(screenBtn);
             layout();
             source.setGroup(Constants.BUTTON_DND_GROUP);
          }
       }
-      add(iphoneContainer);
       
    }
 
@@ -251,7 +186,7 @@ public class ScreenPanel extends TabItem {
     * @param screenBtn
     * @return
     */
-   private DragSource createDragSource(ScreenButton screenBtn, final LayoutContainer iphoneContainer) {
+   private DragSource createDragSource(ScreenButton screenBtn) {
       DragSource source = new DragSource(screenBtn) {
          @Override
          protected void onDragStart(DNDEvent event) {
@@ -265,7 +200,7 @@ public class ScreenPanel extends TabItem {
          protected void onDragDrop(DNDEvent event) {
             UIButton button = event.getDragSource().getComponent().getData("button");
             screen.deleteButton(button);
-            iphoneContainer.remove(event.getDragSource().getComponent());
+            remove(event.getDragSource().getComponent());
             super.onDragDrop(event);
          }
          
@@ -295,8 +230,8 @@ public class ScreenPanel extends TabItem {
       };
       return screenBtn;
    }
-   public Screen getScreen(){
-      return screen;
-   }
    
+   public ScreenButton getSelectButton(){
+      return selectButton;
+   }
 }
