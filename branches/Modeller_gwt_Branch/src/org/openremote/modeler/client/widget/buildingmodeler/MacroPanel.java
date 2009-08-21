@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.openremote.modeler.client.widget;
+package org.openremote.modeler.client.widget.buildingmodeler;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,10 +26,12 @@ import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroRef;
+import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -75,6 +77,7 @@ public class MacroPanel extends ContentPanel {
       createMenu();
       createMacroTree();
       setIcon(icons.macroIcon());
+      getHeader().ensureDebugId(DebugId.DEVICE_MACRO_PANEL_HEADER);
    }
 
    /**
@@ -84,7 +87,9 @@ public class MacroPanel extends ContentPanel {
       ToolBar macroToolBar = new ToolBar();
 
       Button newMacroBtn = new Button("New");
+      newMacroBtn.setToolTip("Create Macro");
       newMacroBtn.setIcon(icons.macroAddIcon());
+      newMacroBtn.ensureDebugId(DebugId.NEW_MACRO_BTN);
       newMacroBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
          @Override
@@ -104,6 +109,7 @@ public class MacroPanel extends ContentPanel {
       macroToolBar.add(newMacroBtn);
 
       Button editMacroBtn = new Button("Edit");
+      editMacroBtn.setToolTip("Edit Macro");
       editMacroBtn.setIcon(icons.macroEditIcon());
       editMacroBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
@@ -117,6 +123,7 @@ public class MacroPanel extends ContentPanel {
       macroToolBar.add(editMacroBtn);
 
       Button deleteMacroBtn = new Button("Delete");
+      deleteMacroBtn.setToolTip("Delete Macro");
       deleteMacroBtn.setIcon(icons.macroDeleteIcon());
       deleteMacroBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
 

@@ -17,128 +17,70 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.client.widget;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+package org.openremote.modeler.client.widget.buildingmodeler;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.form.Field;
+import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 
-
 /**
- * The Class DeviceWindow.
+ * Device Info Form, contains basic info of a device, such as name, vendor, model.
+ * 
+ * @author Dan 2009-8-21
  */
-public class DeviceWindow extends FormWindow {
+public class DeviceInfoForm extends CommonForm{
    
-   /** The DEVIC e_ name. */
+   /** The Constant DEVICE_NAME. */
    public static final String DEVICE_NAME = "name";
    
-   /** The DEVIC e_ vendor. */
+   /** The Constant DEVICE_VENDOR. */
    public static final String DEVICE_VENDOR = "vendor";
    
-   /** The DEVIC e_ model. */
+   /** The Constant DEVICE_MODEL. */
    public static final String DEVICE_MODEL = "model";
    
    
-   /** The device model. */
-   private BeanModel deviceModel = null;
+   protected BeanModel deviceBeanModel = null;
    
-   /**
-    * Instantiates a new device window.
-    */
-   public DeviceWindow() {
+   protected Component wrapper;
+   
+   public DeviceInfoForm(final Component wrapper, final BeanModel deviceBeanModel) {
       super();
-      initial("New device");
-      this.ensureDebugId(DebugId.NEW_DEVICE_WINDOW);
-      show();
-   }
-   
-   /**
-    * Instantiates a new device window.
-    * 
-    * @param deviceModel the device model
-    */
-   public DeviceWindow(BeanModel deviceModel) {
-      super();
-      this.deviceModel = deviceModel;
-      initial("Edit device");
-      show();
-   }
-   
-   /**
-    * Initial.
-    * 
-    * @param heading the heading
-    */
-   private void initial(String heading) {
-      setSize(360, 200);
-      setHeading(heading);
-
-      Button submitBtn = new Button("Submit");
-      submitBtn.ensureDebugId(DebugId.DEVICE_SUBMIT_BTN);
-      Button resetButton = new Button("Reset");
-
-      submitBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            if (form.isValid()) {
-               form.submit();
-            }
-         }
-
-      });
-
-      resetButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            form.reset();
-         }
-
-      });
-      form.addButton(submitBtn);
-      form.addButton(resetButton);
-      form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
+      this.deviceBeanModel = deviceBeanModel;
+      this.wrapper = wrapper;
+      addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
-            List<Field<?>> list = form.getFields();
-            Map<String, String> attrMap = new HashMap<String, String>();
-            for (Field<?> field : list) {
-               attrMap.put(field.getName(), field.getValue().toString());
-            }
             
             AsyncSuccessCallback<BeanModel> callback = new AsyncSuccessCallback<BeanModel>() {
                @Override
                public void onSuccess(BeanModel deviceModel) {
-                  fireEvent(SubmitEvent.Submit, new SubmitEvent(deviceModel));
+                  wrapper.fireEvent(SubmitEvent.Submit, new SubmitEvent(deviceModel));
                }
             };
-            if (deviceModel == null) {
-               DeviceBeanModelProxy.saveDevice(attrMap, callback);
+            if (((Device)deviceBeanModel.getBean()).getName() == null) {
+               DeviceBeanModelProxy.saveDevice(getFieldMap(), callback);
             } else {
-               DeviceBeanModelProxy.updateDevice(deviceModel, attrMap, callback);
+               DeviceBeanModelProxy.updateDevice(deviceBeanModel, getFieldMap(), callback);
             }
          }
 
       });
-      
       createFields();
-      add(form);
    }
-   
+
+
+
+
    /**
     * Creates the fields.
     */
@@ -161,15 +103,17 @@ public class DeviceWindow extends FormWindow {
       modelField.ensureDebugId(DebugId.DEVICE_MODEL_FIELD);
       modelField.setAllowBlank(false);
       
-      if (deviceModel != null) {
-         Device device = deviceModel.getBean();
+      if (deviceBeanModel != null) {
+         Device device = deviceBeanModel.getBean();
          nameField.setValue(device.getName());
          vendorField.setValue(device.getVendor());
          modelField.setValue(device.getModel());
       }
       
-      form.add(nameField);
-      form.add(vendorField);
-      form.add(modelField);
+      add(nameField);
+      add(vendorField);
+      add(modelField);
    }
+   
+   
 }

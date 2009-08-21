@@ -25,11 +25,12 @@ import java.util.Map;
 
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.widget.DeviceWindow;
+import org.openremote.modeler.client.widget.buildingmodeler.DeviceInfoForm;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.ModelData;
 
 
 /**
@@ -90,6 +91,47 @@ public class DeviceBeanModelProxy {
          }
       });
    }
+   
+   /**
+    * Save device with commands.
+    * 
+    * @param device
+    *           the device
+    * @param datas
+    *           the datas
+    * @param callback
+    *           the callback
+    */
+   public static void saveDeviceWithCommands(final Device device, List<ModelData> datas, final AsyncSuccessCallback<BeanModel> callback) {
+      device.setDeviceCommands(DeviceCommandBeanModelProxy.convert2DeviceCommand(device, datas));
+      AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>() {
+         public void onSuccess(Device result) {
+            BeanModel deviceModel = result.getBeanModel();
+            BeanModelDataBase.deviceTable.insert(deviceModel);
+            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(device.getDeviceCommands());
+            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
+            callback.onSuccess(deviceModel);
+         }
+      });
+   }
+   
+   /**
+    * Save device.
+    * 
+    * @param device
+    *           the device
+    * @param callback
+    *           the callback
+    */
+   public static void saveDevice(Device device, final AsyncSuccessCallback<BeanModel> callback) {
+      AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>() {
+         public void onSuccess(Device result) {
+            BeanModel deviceModel = result.getBeanModel();
+            BeanModelDataBase.deviceTable.insert(deviceModel);
+            callback.onSuccess(deviceModel);
+         }
+      });
+   }
 
    
    /**
@@ -117,9 +159,9 @@ public class DeviceBeanModelProxy {
     * @param device the device
     */
    private static void setAttrsToDevice(Map<String, String> map, Device device) {
-      device.setName(map.get(DeviceWindow.DEVICE_NAME));
-      device.setVendor(map.get(DeviceWindow.DEVICE_VENDOR));
-      device.setModel(map.get(DeviceWindow.DEVICE_MODEL));
+      device.setName(map.get(DeviceInfoForm.DEVICE_NAME));
+      device.setVendor(map.get(DeviceInfoForm.DEVICE_VENDOR));
+      device.setModel(map.get(DeviceInfoForm.DEVICE_MODEL));
    }
    
    /**
@@ -147,4 +189,5 @@ public class DeviceBeanModelProxy {
          }
       });
    }
+   
 }
