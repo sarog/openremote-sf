@@ -17,7 +17,7 @@
 	</dict>
 	<dict>
 		<key>header</key>
-		<string>Choose a Server</string>
+		<string>Choose Controller</string>
 		<key>servers</key>
 		<array/>
 		<key>footer</key>
@@ -25,7 +25,7 @@
 	</dict>
 	<dict>
 		<key>header</key>
-		<string>Choose a Server</string>
+		<string>Choose Controller</string>
 		<key>servers</key>
 		<array>
 			<dict>
