@@ -25,7 +25,7 @@ import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.widget.UIDesigner.ScreenPanel;
+import org.openremote.modeler.client.widget.UIDesigner.ScreenTabItem;
 import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.CommandDelay;
@@ -284,20 +284,20 @@ public class TreePanelBuilder {
 //               System.out.println("baseevent "+beanModel.get("name"));
                if(beanModel.getBean() instanceof Screen){
                   Screen screen = beanModel.getBean();
-                  ScreenPanel screenPanel = null;
+                  ScreenTabItem screenTabItem = null;
                   for (TabItem tabPanel : screens.getItems()) {
-                     screenPanel = (ScreenPanel)tabPanel;
-                     if(screen == screenPanel.getScreen()){
-                        screens.setSelection(screenPanel);
+                     screenTabItem = (ScreenTabItem)tabPanel;
+                     if(screen == screenTabItem.getScreen()){
+                        screens.setSelection(screenTabItem);
                         return;
                      }else{
-                        screenPanel = null;
+                        screenTabItem = null;
                      }
                   }
-                  if(screenPanel == null){
-                     screenPanel = new ScreenPanel(screen);
-                     screens.add(screenPanel);
-                     screens.setSelection(screenPanel);
+                  if(screenTabItem == null){
+                     screenTabItem = new ScreenTabItem(screen);
+                     screens.add(screenTabItem);
+                     screens.setSelection(screenTabItem);
                   }
                   
                }

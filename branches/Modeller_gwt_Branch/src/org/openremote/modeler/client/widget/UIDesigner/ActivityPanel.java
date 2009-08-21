@@ -69,7 +69,7 @@ public class ActivityPanel extends ContentPanel {
    public ActivityPanel(TabPanel screens) {
       this.screens = screens;
       setHeading("Activity");
-//      setIcon(icon.activityIcon());
+      setIcon(icon.activityIcon());
       setLayout(new FitLayout());
       createMenu();
       createActivityTree();
@@ -197,10 +197,12 @@ public class ActivityPanel extends ContentPanel {
                BeanModel screenModel = be.getData();
                tree.getStore().add(activityModel, screenModel, false);
                tree.setExpanded(activityModel, true);
+               Activity activity = activityModel.getBean();
                Screen screen = screenModel.getBean();
-               ScreenPanel screenPanel = new ScreenPanel(screen);
-               screens.add(screenPanel);
-               screens.setSelection(screenPanel);
+               activity.addScreen(screen);
+               ScreenTabItem screenTabItem = new ScreenTabItem(screen);
+               screens.add(screenTabItem);
+               screens.setSelection(screenTabItem);
                Info.display("Info", "Add screen " + screenModel.get("name") + " success.");
             }
          });
@@ -261,9 +263,9 @@ public class ActivityPanel extends ContentPanel {
          @Override
          public void afterSubmit(SubmitEvent be) {
             screenWindow.hide();
-            BeanModel activityModel = be.getData();
-            tree.getStore().update(activityModel);
-            Info.display("Info", "Edit screen " + activityModel.get("name") + " success.");
+            BeanModel screenModel = be.getData();
+            tree.getStore().update(screenModel);
+            Info.display("Info", "Edit screen " + screenModel.get("name") + " success.");
          }
       });
    }

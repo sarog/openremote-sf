@@ -21,7 +21,6 @@ package org.openremote.modeler.domain;
 
 import org.openremote.modeler.client.model.Position;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class UIButton.
  */

@@ -56,8 +56,9 @@ import com.google.gwt.user.client.Element;
 public class DevicePanel extends ContentPanel {
 
    /** The tree. */
-   private TreePanel<BeanModel> tree;
+   private TreePanel<BeanModel> tree = null;
    
+   private LayoutContainer deviceTreeContainer = null;
    /** The icon. */
    private Icons icon = GWT.create(Icons.class);
 
@@ -77,22 +78,20 @@ public class DevicePanel extends ContentPanel {
     * Creates the tree container.
     */
    private void createTreeContainer() {
-      tree = TreePanelBuilder.buildDeviceCommandTree();
-      LayoutContainer treeContainer = new LayoutContainer() {
-         @Override
-         protected void onRender(Element parent, int index) {
-            super.onRender(parent, index);
-            add(tree);
-         }
-      };
-      treeContainer.ensureDebugId(DebugId.DEVICE_TREE_CONTAINER);
-      treeContainer.setScrollMode(Scroll.AUTO);
-      treeContainer.setStyleAttribute("backgroundColor", "white");
-      treeContainer.setBorders(false);
-
-      add(treeContainer);
+      deviceTreeContainer = new LayoutContainer();
+      deviceTreeContainer.ensureDebugId(DebugId.DEVICE_TREE_CONTAINER);
+      deviceTreeContainer.setScrollMode(Scroll.AUTO);
+      deviceTreeContainer.setStyleAttribute("backgroundColor", "white");
+      deviceTreeContainer.setLayoutOnChange(true);
+      deviceTreeContainer.setBorders(false);
+      deviceTreeContainer.setHeight("100%");
+      if (tree == null) {
+         tree = TreePanelBuilder.buildDeviceCommandTree();
+         deviceTreeContainer.add(tree);
+      }
+      add(deviceTreeContainer);
    }
-   
+
    /**
     * Creates the menu.
     */
