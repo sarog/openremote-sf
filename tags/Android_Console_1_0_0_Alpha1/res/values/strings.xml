@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Open Remote Console</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="quit">Quit</string>
+    <string name="back">Back</string>
+    <string name="configure">Configure</string>
+    <string name="config_file_at">Config file at </string>
+    <string name="has_an_error">has an error.</string>
+    <string name="error_connecting_to">Error connecting to server while fetching URL: </string>
+    <string name="activities">Activities</string>
+    <string name="enter_device_url">Enter Device URL (i.e. http://192.168.1.1 or http://myremote.myhouse.net):</string>
+    <string name="save">Save</string>
+</resources>
