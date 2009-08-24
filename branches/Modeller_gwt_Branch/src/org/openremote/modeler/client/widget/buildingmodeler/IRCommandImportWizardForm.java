@@ -76,8 +76,6 @@ public class IRCommandImportWizardForm extends IRCommandImportForm {
    @Override
    protected void onSubmit(final Component wrapper) {
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
-
-         @Override
          public void handleEvent(FormEvent be) {
             wrapper.mask("Please Wait...");
             if (codeGrid != null) {

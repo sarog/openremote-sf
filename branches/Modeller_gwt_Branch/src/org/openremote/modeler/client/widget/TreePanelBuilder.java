@@ -21,9 +21,12 @@ package org.openremote.modeler.client.widget;
 
 import java.util.List;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
+import org.openremote.modeler.client.proxy.DevicesAndMacrosBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.UIDesigner.ScreenTab;
 import org.openremote.modeler.client.widget.UIDesigner.ScreenTabItem;
@@ -34,6 +37,7 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
+import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Screen;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
@@ -49,7 +53,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
-
 
 /**
  * The Class is used for create tree.
@@ -73,6 +76,9 @@ public class TreePanelBuilder {
    
    /** The activity tree store. */
    private static TreeStore<BeanModel> activityTreeStore = null;
+   
+   /** The devicesmacros tree store. */
+   private static TreeStore<BeanModel> devicesAndMacrosTreeStore = null;
 
    /**
     * Builds a device command tree.
@@ -112,7 +118,7 @@ public class TreePanelBuilder {
 
       tree.setBorders(false);
       tree.setStateful(true);
-      tree.setDisplayProperty("name");
+      tree.setDisplayProperty("displayName");
       tree.setHeight("100%");
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
 
@@ -267,6 +273,8 @@ public class TreePanelBuilder {
    /**
     * Builds a new activity tree.
     * 
+    * @param screens the screens
+    * 
     * @return a new activity tree.
     */
    public static TreePanel<BeanModel> buildActivityTree(final ScreenTab screenTab) {
@@ -307,7 +315,7 @@ public class TreePanelBuilder {
       activityTree.setStateful(true);
       activityTree.setBorders(false);
       activityTree.setHeight("100%");      
-      activityTree.setDisplayProperty("name");
+      activityTree.setDisplayProperty("displayName");
       
       activityTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
@@ -322,5 +330,87 @@ public class TreePanelBuilder {
       });
       
       return activityTree;
+   }
+   
+   /**
+    * Builds the DevicesMacros tree.
+    * 
+    * @return the tree panel<BeanModel>
+    */
+   public static TreePanel<BeanModel> buildDevicesAndMacrosTree() {
+      initDevicesAndMacrosTreeStore();
+      return initDevicesAndMacrosTree();
+   }
+
+   /**
+    * Inits the devices and macros tree store.
+    */
+   private static void initDevicesAndMacrosTreeStore() {
+      if(devicesAndMacrosTreeStore == null) {
+         RpcProxy<List<BeanModel>> devicesAndMacrosProxy = new RpcProxy<List<BeanModel>>(){
+            @Override
+            protected void load(Object loadConfig, final AsyncCallback<List<BeanModel>> callback) {
+               DevicesAndMacrosBeanModelProxy.loadDevicesMacros((BeanModel)loadConfig, new AsyncSuccessCallback<List<BeanModel>>(){
+                  @Override
+                  public void onSuccess(List<BeanModel> result) {
+                     callback.onSuccess(result);
+                  }                  
+               });
+            }            
+         };
+         TreeLoader<BeanModel> devicesAndMacrosTreeLoader = new BaseTreeLoader<BeanModel>(devicesAndMacrosProxy) {
+            @Override
+            public boolean hasChildren(BeanModel beanModel) {
+               if((beanModel.getBean() instanceof Device) || (beanModel.getBean() instanceof DeviceMacro) || (beanModel.getBean() instanceof TreeFolderBean)) {
+                  return true;
+               }
+               return false;
+            }
+         };
+         devicesAndMacrosTreeStore = new TreeStore<BeanModel>(devicesAndMacrosTreeLoader);
+         createRootFolder();
+      }
+   }
+
+   /**
+    * Creates the root folder.
+    */
+   private static void createRootFolder() {
+      TreeFolderBean devicesBean = new TreeFolderBean();
+      devicesBean.setDisplayName("Devices");
+      devicesBean.setType(Constants.DEVICES);
+      TreeFolderBean macrosBean = new TreeFolderBean();
+      macrosBean.setDisplayName("Marcos");
+      macrosBean.setType(Constants.MACROS);
+      devicesAndMacrosTreeStore.add(devicesBean.getBeanModel(), true);
+      devicesAndMacrosTreeStore.add(macrosBean.getBeanModel(), true);
+   }
+   
+   /**
+    * Inits the devices and macros tree.
+    * 
+    * @return the tree panel< bean model>
+    */
+   private static TreePanel<BeanModel> initDevicesAndMacrosTree() {
+      TreePanel<BeanModel> devicesAndMacrosTree = new TreePanel<BeanModel>(devicesAndMacrosTreeStore);
+      devicesAndMacrosTree.setBorders(false);
+      devicesAndMacrosTree.setStateful(true);
+      devicesAndMacrosTree.setDisplayProperty("displayName");
+      devicesAndMacrosTree.setHeight("100%");
+      devicesAndMacrosTree.setIconProvider(new ModelIconProvider<BeanModel>() {
+         public AbstractImagePrototype getIcon(BeanModel beanModel) {
+            if(beanModel.getBean() instanceof Device) {
+               return ICON.device();
+            } else if((beanModel.getBean() instanceof DeviceCommand) || (beanModel.getBean() instanceof DeviceCommandRef)) {
+               return ICON.deviceCmd();
+            } else if((beanModel.getBean() instanceof DeviceMacro) || (beanModel.getBean() instanceof DeviceMacroRef)) {
+               return ICON.macroIcon();
+            } else if(beanModel.getBean() instanceof CommandDelay) {
+               return ICON.delayIcon();
+            }
+            return ICON.folder();
+         }
+      });
+      return devicesAndMacrosTree;
    }
 }
