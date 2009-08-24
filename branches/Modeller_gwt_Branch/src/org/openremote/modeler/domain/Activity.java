@@ -22,6 +22,8 @@ package org.openremote.modeler.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Transient;
+
 /**
  * User Activity
  * @author allen.wei
@@ -87,5 +89,10 @@ public class Activity extends BusinessEntity {
     */
    public void deleteScreen(Screen screen){
       screens.remove(screen);
+   }
+   
+   @Transient
+   public String getDisplayName() {
+      return name;
    }
 }
