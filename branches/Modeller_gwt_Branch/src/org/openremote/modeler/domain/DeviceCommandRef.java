@@ -75,6 +75,17 @@ public class DeviceCommandRef extends DeviceMacroItem {
       this.deviceCommand = deviceCommand;
    }
    
+   private String deviceName;
+   
+   @Transient
+   public String getDeviceName() {
+      return deviceName;
+   }
+
+   public void setDeviceName(String deviceName) {
+      this.deviceName = deviceName;
+   }
+
    /**
     * {@inheritDoc}
     * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()
@@ -82,6 +93,8 @@ public class DeviceCommandRef extends DeviceMacroItem {
    @Override
    @Transient
    public String getDisplayName() {
-      return getDeviceCommand().getDisplayName();
+      this.deviceName = (this.deviceName == null || "".equals(this.deviceName)) ? getDeviceCommand().getDevice().getName() : this.deviceName;
+      return getDeviceCommand().getName() + " (" + this.deviceName + ")";
+//      return getDeviceCommand().getName() + " (" + getDeviceCommand().getDevice().getName() + ")";
    }
 }
