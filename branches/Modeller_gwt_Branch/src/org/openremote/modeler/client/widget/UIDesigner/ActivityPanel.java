@@ -120,13 +120,6 @@ public class ActivityPanel extends ContentPanel {
       newMenu.add(createNewActivityMenuItem());
       newMenu.add(createNewScreenMenuItem());
       newButton.setMenu(newMenu);
-      newButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            
-         }
-         
-      });
       return newButton;
    }
 
