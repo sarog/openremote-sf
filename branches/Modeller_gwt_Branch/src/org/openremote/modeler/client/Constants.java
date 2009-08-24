@@ -38,4 +38,10 @@ public class Constants {
    /** The Constant BUTTON_DND_GROUP. For assign UIDesigner to DND button. */
    public static final String BUTTON_DND_GROUP = "buttonDNDGroup";
    
+   /** The Constant DEVICES. */
+   public static final String DEVICES = "devices";
+   
+   /** The Constant MACROS. */
+   public static final String MACROS = "macros";
+   
 }

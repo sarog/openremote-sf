@@ -24,7 +24,10 @@ import java.util.List;
 
 import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.domain.BusinessEntity;
+import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
+import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
 
@@ -56,6 +59,7 @@ public class BeanModelDataBase {
    /** Store all the DeviceItem models. */
    public static final BeanModelTable deviceMacroItemTable = new BeanModelTable();
    
+   /** The Constant activityTable. */
    public static final BeanModelTable activityTable = new BeanModelTable();
 
    public static final BeanModelTable screenTable = new BeanModelTable();
@@ -73,8 +77,7 @@ public class BeanModelDataBase {
          if (deviceMacroItem instanceof DeviceMacroRef) {
             DeviceMacroRef deviceMacroRef = (DeviceMacroRef) deviceMacroItem;
             return deviceMacroRef.getTargetDeviceMacro().getOid();
-         }
-         if (deviceMacroItem instanceof DeviceCommandRef) {
+         } else if (deviceMacroItem instanceof DeviceCommandRef) {
             DeviceCommandRef deviceCommandRef = (DeviceCommandRef) deviceMacroItem;
             return deviceCommandRef.getDeviceCommand().getOid();
          }
@@ -82,6 +85,28 @@ public class BeanModelDataBase {
       return 0;
    }
 
+   
+   /**
+    * Gets the source bean model id.
+    * 
+    * @param beanModel the bean model
+    * 
+    * @return the source bean model id
+    */
+   public static Long getSourceBeanModelId(BeanModel beanModel) {
+      if (beanModel.getBean() instanceof Device) {
+         return ((Device)beanModel.getBean()).getOid();
+      } else if (beanModel.getBean() instanceof DeviceCommand) {
+         return ((DeviceCommand)beanModel.getBean()).getOid();
+      } else if (beanModel.getBean() instanceof DeviceMacro) {
+         return ((DeviceMacro)beanModel.getBean()).getOid();
+      } else if (beanModel.getBean() instanceof DeviceCommandRef) {
+         DeviceCommandRef deviceCommandRef = (DeviceCommandRef)beanModel.getBean();
+         return deviceCommandRef.getDeviceCommand().getDevice().getOid();
+      }
+      return 0L;
+   }
+   
    /**
     * Gets the bean model id,if not find return 0.
     * 
@@ -118,5 +143,4 @@ public class BeanModelDataBase {
       }
       return list;
    }
-
 }

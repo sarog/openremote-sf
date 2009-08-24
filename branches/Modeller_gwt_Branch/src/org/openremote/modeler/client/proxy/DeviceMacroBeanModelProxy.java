@@ -156,7 +156,7 @@ public class DeviceMacroBeanModelProxy {
                   for (DeviceMacroItem deviceMacroItem : result.getDeviceMacroItems()) {
                      BeanModelDataBase.deviceMacroItemTable.insert(deviceMacroItem.getBeanModel());
                   }
-                  BeanModelDataBase.deviceMacroTable.update(deviceMacroBeanModel);
+                  BeanModelDataBase.deviceMacroTable.update(result.getBeanModel());
                   callback.onSuccess(result);
                }
             });
