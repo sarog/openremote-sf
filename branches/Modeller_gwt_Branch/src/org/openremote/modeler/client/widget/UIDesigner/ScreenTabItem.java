@@ -48,6 +48,10 @@ public class ScreenTabItem extends TabItem {
    private Icons icon = GWT.create(Icons.class);
    
    private ScreenPanel screenPanel;
+   
+   private int row;
+   
+   private int column;
    /**
     * Instantiates a new screen panel.
     * 
@@ -57,6 +61,8 @@ public class ScreenTabItem extends TabItem {
    public ScreenTabItem(Screen s) {
       screen = s;
       setText(screen.getName());
+      setRow(screen.getRowCount());
+      setColumn(screen.getColumnCount());
       setClosable(true);
       setLayout(new FlowLayout());
       createToolBar();
@@ -74,7 +80,7 @@ public class ScreenTabItem extends TabItem {
       add(toolBar);
    }
    private Button createRenameBtn(){
-      Button renameBtn = new Button("Rename");
+      Button renameBtn = new Button("Rename Button");
       renameBtn.setIcon(icon.edit());
       renameBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
@@ -110,7 +116,6 @@ public class ScreenTabItem extends TabItem {
             if(selectButton != null){
                screen.deleteButton((UIButton)selectButton.getData("button"));
                screenPanel.remove(selectButton);
-               System.out.println(screen.getButtons().size());
                layout();
             } else {
                MessageBox.info("Warning", "Please select a button.", null);
@@ -130,6 +135,22 @@ public class ScreenTabItem extends TabItem {
 
    public Screen getScreen(){
       return screen;
+   }
+
+   public int getRow() {
+      return row;
+   }
+
+   public void setRow(int row) {
+      this.row = row;
+   }
+
+   public int getColumn() {
+      return column;
+   }
+
+   public void setColumn(int column) {
+      this.column = column;
    }
    
 }

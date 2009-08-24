@@ -1,19 +1,22 @@
-/*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
- */
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.client.widget.UIDesigner;
 
 import java.util.List;
@@ -49,15 +52,16 @@ public class ScreenPanel extends LayoutContainer {
    /** The screen. */
    private Screen screen;
 
+   /** The ui designer images. */
    private UIDesignerImages uiDesignerImages = GWT.create(UIDesignerImages.class);
    
+   /** The select button. */
    private ScreenButton selectButton;
    
    /**
     * Instantiates a new screen panel.
     * 
-    * @param s
-    *           the s
+    * @param s the s
     */
    public ScreenPanel(Screen s) {
       screen = s;
@@ -69,7 +73,7 @@ public class ScreenPanel extends LayoutContainer {
    }
 
    /**
-    * Creates the screen background.
+    * Creates the table.
     */
    private void createTable() {
       LayoutContainer tableWapper = new LayoutContainer();
@@ -183,8 +187,11 @@ public class ScreenPanel extends LayoutContainer {
    }
 
    /**
-    * @param screenBtn
-    * @return
+    * Creates the drag source.
+    * 
+    * @param screenBtn the screen btn
+    * 
+    * @return the drag source
     */
    private DragSource createDragSource(ScreenButton screenBtn) {
       DragSource source = new DragSource(screenBtn) {
@@ -209,10 +216,13 @@ public class ScreenPanel extends LayoutContainer {
    }
 
    /**
-    * @param width
-    * @param height
-    * @param button
-    * @return
+    * Creates the screen button.
+    * 
+    * @param width the width
+    * @param height the height
+    * @param button the button
+    * 
+    * @return the screen button
     */
    private ScreenButton createScreenButton(final int width, final int height, UIButton button) {
       ScreenButton screenBtn = new ScreenButton(button, width, height){
@@ -231,6 +241,11 @@ public class ScreenPanel extends LayoutContainer {
       return screenBtn;
    }
    
+   /**
+    * Gets the select button.
+    * 
+    * @return the select button
+    */
    public ScreenButton getSelectButton(){
       return selectButton;
    }

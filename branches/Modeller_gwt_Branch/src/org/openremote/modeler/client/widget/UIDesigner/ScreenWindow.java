@@ -19,9 +19,14 @@
 */
 package org.openremote.modeler.client.widget.UIDesigner;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.utils.IDUtil;
+import org.openremote.modeler.client.proxy.ScreenBeanModelProxy;
 import org.openremote.modeler.client.widget.FormWindow;
+import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.selenium.DebugId;
 
@@ -35,30 +40,35 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class ScreenWindow.
- * 
- * @author handy.wang
  */
 public class ScreenWindow extends FormWindow {
 
    /** The Constant SCREEN_NAME. */
-   private static final String SCREEN_NAME = "screenName";
+   public static final String SCREEN_NAME = "screenName";
 
    /** The Constant SCREEN_ROW_COUNT. */
-   private static final String SCREEN_ROW_COUNT = "screenRowCount";
+   public static final String SCREEN_ROW_COUNT = "screenRowCount";
    
-   /** The Constant SCREEN_COLUM_COUNT. */
-   private static final String SCREEN_COLUMN_COUNT = "screenColumnCount";
-
+   /** The Constant SCREEN_COLUMN_COUNT. */
+   public static final String SCREEN_COLUMN_COUNT = "screenColumnCount";
+   
+   /** The activity. */
+   private Activity activity = null;
+   
    /** The screen model. */
-   private BeanModel screenModel = null;
+   private Screen screen = null;
 
    /**
     * Instantiates a new screen window.
+    * 
+    * @param activity the activity
     */
-   public ScreenWindow() {
+   public ScreenWindow(Activity activity) {
       super();
+      this.activity = activity;
       initial("New Screen");
       this.ensureDebugId(DebugId.NEW_SCREEN_WINDOW);
       show();
@@ -69,9 +79,9 @@ public class ScreenWindow extends FormWindow {
     * 
     * @param screenModel the screen model
     */
-   public ScreenWindow(BeanModel screenModel) {
+   public ScreenWindow(Screen screen) {
       super();
-      this.screenModel = screenModel;
+      this.screen = screen;
       initial("Edit Screen");
       this.ensureDebugId(DebugId.EDIT_SCREEN_WINDOW);
       show();
@@ -112,8 +122,7 @@ public class ScreenWindow extends FormWindow {
       screenColumnCountField.setFieldLabel("Col Count");
       screenColumnCountField.setAllowBlank(false);screenColumnCountField.setValue(4);
       
-      if (screenModel != null) {
-         Screen screen = screenModel.getBean();
+      if (screen != null) {
          screenNameField.setValue(screen.getName());
          screenRowCountField.setValue(screen.getRowCount());
          screenColumnCountField.setValue(screen.getColumnCount());
@@ -157,34 +166,20 @@ public class ScreenWindow extends FormWindow {
    private void addListenersToForm() {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>(){
          public void handleEvent(FormEvent be) {
-            Screen screen = new Screen();
-            if (screenModel == null) {
-               screen.setOid(IDUtil.nextID());
-            } else {
-               screen = screenModel.getBean();
+            List<Field<?>> list = form.getFields();
+            Map<String, String> attrMap = new HashMap<String, String>();
+            for (Field<?> field : list) {
+               attrMap.put(field.getName(), field.getValue().toString());
             }
-            updateScreenAttrs(screen);
-            screenModel = screen.getBeanModel();
-            fireEvent(SubmitEvent.Submit, new SubmitEvent(screenModel));
+            BeanModel screenBeanModel = null;
+            if (screen == null) {
+               screenBeanModel = ScreenBeanModelProxy.createScreen(activity, attrMap);
+            } else {
+               screenBeanModel = ScreenBeanModelProxy.updateScreen(screen, attrMap);
+            }
+            fireEvent(SubmitEvent.Submit, new SubmitEvent(screenBeanModel));
          }
       });
       add(form);
-   }
-   
-   /**
-    * Update screen attrs.
-    * 
-    * @param screen the screen
-    */
-   private void updateScreenAttrs(Screen screen) {
-      for(Field<?> field : form.getFields()){
-         if("screenName".equals(field.getName())){
-            screen.setName(field.getValue().toString());
-         }else if("screenRowCount".equals(field.getName())){
-            screen.setRowCount(Integer.parseInt(field.getValue().toString()));
-         }else if("screenColumnCount".equals(field.getName())) {
-            screen.setColumnCount(Integer.parseInt(field.getValue().toString()));
-         }
-      }
    }
 }

@@ -23,13 +23,17 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.gxtExtends.TreePanelDragSourceMacroDragExt;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.client.widget.UIDesigner.ActivityPanel;
+import org.openremote.modeler.client.widget.UIDesigner.ScreenTab;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.DeviceMacro;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.event.DNDEvent;
+import com.extjs.gxt.ui.client.event.DNDListener;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.TabItem;
-import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
@@ -41,7 +45,7 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
  */
 public class UIDesignerView extends TabItem implements View {
 
-   private TabPanel center = new TabPanel();
+   private ScreenTab screenTab = new ScreenTab();
 
    /**
     * @see org.openremote.modeler.client.view.View#initialize()
@@ -62,6 +66,20 @@ public class UIDesignerView extends TabItem implements View {
       centerData.setMargins(new Margins(2));
       TreePanel<BeanModel> commandTree = TreePanelBuilder.buildDeviceCommandTree();
       TreePanelDragSourceMacroDragExt dragSource = new TreePanelDragSourceMacroDragExt(commandTree);
+      dragSource.addDNDListener(new DNDListener() {
+         @SuppressWarnings("unchecked")
+         @Override
+         public void dragStart(DNDEvent e) {
+            TreePanel<BeanModel> tree = (TreePanel<BeanModel>) e.getComponent();
+            BeanModel beanModel = tree.getSelectionModel().getSelectedItem();
+            e.setCancelled(true);
+            if ((beanModel.getBean() instanceof DeviceCommand) || (beanModel.getBean() instanceof DeviceMacro)) {
+               e.setCancelled(false);
+            }
+            super.dragStart(e);
+         }
+
+      });
       dragSource.setGroup(Constants.BUTTON_DND_GROUP);
       east.add(commandTree);
       add(east, centerData);
@@ -78,7 +96,7 @@ public class UIDesignerView extends TabItem implements View {
       west.setLayout(new AccordionLayout());
       west.setBodyBorder(false);
       west.setHeading("Browser");
-      west.add(new ActivityPanel(center));
+      west.add(new ActivityPanel(screenTab));
 
       westData.setMargins(new Margins(2));
       add(west, westData);
@@ -88,11 +106,11 @@ public class UIDesignerView extends TabItem implements View {
     * Creates the center.
     */
    private void createCenter() {
-      center.setTabScroll(true);
-      center.setAnimScroll(true);
+//      center.setTabScroll(true);
+//      center.setAnimScroll(true);
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setMargins(new Margins(2));
-      add(center, centerData);
+      add(screenTab, centerData);
    }
 
 }
