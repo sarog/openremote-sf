@@ -1,19 +1,22 @@
-/*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
- */
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 package org.openremote.modeler.client.utils;
 
@@ -59,6 +62,8 @@ public class BeanModelTable {
 
    /** The change event support. */
    private Map<Long, List<ChangeListener>> changeListeners = new HashMap<Long, List<ChangeListener>>();
+   
+   private ChangeListener insertListener ;
 
    /**
     * Instantiates a new bean model table.
@@ -84,6 +89,15 @@ public class BeanModelTable {
       
       changeListeners.put(id, listeners);
    }
+   
+   /**
+    * Adds the insert listener.
+    * 
+    * @param listener the listener
+    */
+   public void addInsertListener(ChangeListener listener) {
+      this.insertListener = listener;
+   }
 
    /**
     * Notify all the {@link ChangeListener}.
@@ -99,6 +113,12 @@ public class BeanModelTable {
          }
       }
       
+   }
+   
+   public void excuteNotify(ChangeEvent evt) {
+      if(this.insertListener != null) {
+         this.insertListener.modelChanged(evt);
+      }
    }
 
    /**
@@ -133,6 +153,7 @@ public class BeanModelTable {
       }
       if (beanModel.getBean() instanceof BusinessEntity) {
          map.put(getIdFromBeanModel(beanModel), beanModel);
+         notifyTableAddData(beanModel);
       }
    }
 
@@ -170,8 +191,8 @@ public class BeanModelTable {
     */
    public void delete(long id) {
       BeanModel beanModel = get(id);
-      notifyBeanModel(REMOVE, beanModel);
       map.remove(id);
+      notifyBeanModel(REMOVE, beanModel);
 
    }
 
@@ -198,6 +219,11 @@ public class BeanModelTable {
       ChangeEvent changeEvent = new ChangeEvent(type, null, beanModel);
       notify(changeEvent);
    }
+   
+   public void notifyTableAddData(BeanModel beanModel) {
+      ChangeEvent changeEvent = new ChangeEvent(ADD, null, beanModel);
+      excuteNotify(changeEvent);
+   }
 
    /**
     * Update BeanModel. It use id to judge whether two object equals.
@@ -208,8 +234,16 @@ public class BeanModelTable {
     *           the new bean model
     */
    public void update(BeanModel newBeanModel) {
-      notifyBeanModel(UPDATE, newBeanModel);
       map.put(getIdFromBeanModel(newBeanModel), newBeanModel);
+      notifyBeanModel(UPDATE, newBeanModel);
+   }
+   public static <T extends BusinessEntity> void updateWithBean(BeanModel oldBeanModel,T bean) {
+      for (String property : oldBeanModel.getPropertyNames()) {
+         
+      }
+      
+//      notifyBeanModel(UPDATE, newBeanModel);
+//      map.put(getIdFromBeanModel(newBeanModel), newBeanModel);
    }
 
    /**
