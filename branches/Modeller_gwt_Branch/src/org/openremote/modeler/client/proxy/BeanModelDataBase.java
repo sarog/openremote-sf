@@ -58,6 +58,8 @@ public class BeanModelDataBase {
    
    public static final BeanModelTable activityTable = new BeanModelTable();
 
+   public static final BeanModelTable screenTable = new BeanModelTable();
+
    /**
     * Gets the original device macro item bean model id,if not find return 0.
     * 

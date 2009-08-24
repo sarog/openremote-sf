@@ -24,8 +24,6 @@ import java.util.List;
 
 /**
  * The Class Screen.
- * 
- * @author handy.wang
  */
 @SuppressWarnings("serial")
 public class Screen extends BusinessEntity {
@@ -33,6 +31,9 @@ public class Screen extends BusinessEntity {
    /** The name. */
    private String name;
 
+   /** The activity. */
+   private Activity activity;
+   
    /** The row count. */
    private Integer rowCount;
 
@@ -114,14 +115,32 @@ public class Screen extends BusinessEntity {
       this.buttons = buttons;
    }
    
+   /**
+    * Adds the button.
+    * 
+    * @param button the button
+    */
    public void addButton(UIButton button) {
       this.buttons.add(button);
    }
    
+   /**
+    * Delete button.
+    * 
+    * @param button the button
+    */
    public void deleteButton(UIButton button) {
       if(this.buttons.contains(button)){
          this.buttons.remove(button);
       }
+   }
+
+   public Activity getActivity() {
+      return activity;
+   }
+
+   public void setActivity(Activity activity) {
+      this.activity = activity;
    }
    
 }

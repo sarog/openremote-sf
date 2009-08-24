@@ -25,6 +25,7 @@ import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.widget.UIDesigner.ScreenTab;
 import org.openremote.modeler.client.widget.UIDesigner.ScreenTabItem;
 import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.domain.BusinessEntity;
@@ -41,11 +42,8 @@ import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.data.ModelStringProvider;
 import com.extjs.gxt.ui.client.data.RpcProxy;
 import com.extjs.gxt.ui.client.data.TreeLoader;
-import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.TabItem;
-import com.extjs.gxt.ui.client.widget.TabPanel;
-import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Event;
@@ -271,7 +269,7 @@ public class TreePanelBuilder {
     * 
     * @return a new activity tree.
     */
-   public static TreePanel<BeanModel> buildActivityTree(final TabPanel screens) {
+   public static TreePanel<BeanModel> buildActivityTree(final ScreenTab screenTab) {
       if (activityTreeStore == null) {
          activityTreeStore = new TreeStore<BeanModel>();
       }
@@ -281,14 +279,13 @@ public class TreePanelBuilder {
          public void onBrowserEvent(Event event) {
             if(event.getTypeInt() == Event.ONDBLCLICK){
                BeanModel beanModel = this.getSelectionModel().getSelectedItem();
-//               System.out.println("baseevent "+beanModel.get("name"));
                if(beanModel.getBean() instanceof Screen){
                   Screen screen = beanModel.getBean();
                   ScreenTabItem screenTabItem = null;
-                  for (TabItem tabPanel : screens.getItems()) {
+                  for (TabItem tabPanel : screenTab.getItems()) {
                      screenTabItem = (ScreenTabItem)tabPanel;
                      if(screen == screenTabItem.getScreen()){
-                        screens.setSelection(screenTabItem);
+                        screenTab.setSelection(screenTabItem);
                         return;
                      }else{
                         screenTabItem = null;
@@ -296,8 +293,8 @@ public class TreePanelBuilder {
                   }
                   if(screenTabItem == null){
                      screenTabItem = new ScreenTabItem(screen);
-                     screens.add(screenTabItem);
-                     screens.setSelection(screenTabItem);
+                     screenTab.add(screenTabItem);
+                     screenTab.setSelection(screenTabItem);
                   }
                   
                }

@@ -24,6 +24,8 @@ import java.util.List;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.SubmitListener;
+import org.openremote.modeler.client.proxy.ActivityBeanModelProxy;
+import org.openremote.modeler.client.proxy.ScreenBeanModelProxy;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.domain.Screen;
@@ -39,7 +41,6 @@ import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
-import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
@@ -59,15 +60,15 @@ public class ActivityPanel extends ContentPanel {
    /** The tree. */
    private TreePanel<BeanModel> tree;
    
-   private TabPanel screens;
+   private ScreenTab screenTab;
    /** The icon. */
    private Icons icon = GWT.create(Icons.class);
 
    /**
     * Instantiates a new activity panel.
     */
-   public ActivityPanel(TabPanel screens) {
-      this.screens = screens;
+   public ActivityPanel(ScreenTab screenTab) {
+      this.screenTab = screenTab;
       setHeading("Activity");
       setIcon(icon.activityIcon());
       setLayout(new FitLayout());
@@ -79,7 +80,7 @@ public class ActivityPanel extends ContentPanel {
     * Creates the activity tree.
     */
    private void createActivityTree() {
-      tree = TreePanelBuilder.buildActivityTree(screens);
+      tree = TreePanelBuilder.buildActivityTree(screenTab);
       LayoutContainer treeContainer = new LayoutContainer() {
          @Override
          protected void onRender(Element parent, int index) {
@@ -189,7 +190,7 @@ public class ActivityPanel extends ContentPanel {
    protected void createScreen() {
       final BeanModel activityModel = tree.getSelectionModel().getSelectedItem();
       if (activityModel != null && (activityModel.getBean() instanceof Activity)) {
-         final ScreenWindow screenWindow = new ScreenWindow();
+         final ScreenWindow screenWindow = new ScreenWindow((Activity)activityModel.getBean());
          screenWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
@@ -197,12 +198,9 @@ public class ActivityPanel extends ContentPanel {
                BeanModel screenModel = be.getData();
                tree.getStore().add(activityModel, screenModel, false);
                tree.setExpanded(activityModel, true);
-               Activity activity = activityModel.getBean();
-               Screen screen = screenModel.getBean();
-               activity.addScreen(screen);
-               ScreenTabItem screenTabItem = new ScreenTabItem(screen);
-               screens.add(screenTabItem);
-               screens.setSelection(screenTabItem);
+               ScreenTabItem screenTabItem = new ScreenTabItem((Screen)screenModel.getBean());
+               screenTab.add(screenTabItem);
+               screenTab.setSelection(screenTabItem);
                Info.display("Info", "Add screen " + screenModel.get("name") + " success.");
             }
          });
@@ -258,7 +256,7 @@ public class ActivityPanel extends ContentPanel {
     * @param selectedModel the selected model
     */
    protected void editScreen(BeanModel selectedModel) {
-      final ScreenWindow screenWindow = new ScreenWindow(selectedModel);
+      final ScreenWindow screenWindow = new ScreenWindow((Screen)selectedModel.getBean());
       screenWindow.addListener(SubmitEvent.Submit, new SubmitListener(){
          @Override
          public void afterSubmit(SubmitEvent be) {
@@ -285,9 +283,11 @@ public class ActivityPanel extends ContentPanel {
             List<BeanModel> selectedModels = tree.getSelectionModel().getSelectedItems();
             for (BeanModel selectedModel : selectedModels) {
                if (selectedModel != null && (selectedModel.getBean() instanceof Activity)) {
+                  ActivityBeanModelProxy.deleteActivity(selectedModel);
                   tree.getStore().remove(selectedModel);
                   Info.display("Info", "Delete activity " + selectedModel.get("name") + " success.");
                }else if(selectedModel != null && (selectedModel.getBean() instanceof Screen)) {
+                  ScreenBeanModelProxy.deleteScreen(selectedModel);
                   tree.getStore().remove(selectedModel);
                   Info.display("Info", "Delete screen " + selectedModel.get("name") + " success.");
                }
