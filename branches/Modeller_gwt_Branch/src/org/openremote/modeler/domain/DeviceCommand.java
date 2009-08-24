@@ -109,7 +109,7 @@ public class DeviceCommand extends BusinessEntity {
    @Override
    @Transient
    public String getDisplayName() {
-      return getName() + " (" + getDevice().getName() + ")";
+      return getName();
    }
 
    

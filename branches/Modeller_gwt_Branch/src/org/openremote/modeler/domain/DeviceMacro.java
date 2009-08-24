@@ -114,7 +114,7 @@ public class DeviceMacro extends BusinessEntity {
    @Override
    @Transient
    public String getDisplayName() {
-      return getName() + " (Macro)";
+      return getName();
    }
    
 }

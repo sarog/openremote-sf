@@ -82,7 +82,7 @@ public class DeviceMacroRef extends DeviceMacroItem {
    @Override
    @Transient
    public String getDisplayName() {
-      return getTargetDeviceMacro().getDisplayName();
+      return getTargetDeviceMacro().getName() + " (Macro)";
    }
    
 }

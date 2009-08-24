@@ -28,6 +28,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 
 /**
@@ -194,6 +195,16 @@ public class Device extends BusinessEntity {
     */
    public void setAccount(Account account) {
       this.account = account;
+   }
+   
+   /**
+    * Gets the display name.
+    * 
+    * @return the display name
+    */
+   @Transient
+   public String getDisplayName(){
+      return getName();
    }
    
 }
