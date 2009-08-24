@@ -124,6 +124,6 @@ public abstract class BusinessEntity extends LightEntity implements Serializable
     */
    @Transient
    public String getDisplayName(){
-      return getClass().getName();
+      return "unKnown";
    }
 }

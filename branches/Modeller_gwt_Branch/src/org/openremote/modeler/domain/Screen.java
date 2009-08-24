@@ -22,6 +22,8 @@ package org.openremote.modeler.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Transient;
+
 /**
  * The Class Screen.
  */
@@ -143,4 +145,8 @@ public class Screen extends BusinessEntity {
       this.activity = activity;
    }
    
+   @Transient
+   public String getDisplayName() {
+      return name;
+   }
 }
