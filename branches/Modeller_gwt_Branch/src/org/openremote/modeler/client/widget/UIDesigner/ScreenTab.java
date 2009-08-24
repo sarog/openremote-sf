@@ -48,14 +48,12 @@ public class ScreenTab extends TabPanel {
       setTabScroll(true);
       setAnimScroll(true);
       addListener(Events.Add, new Listener<TabPanelEvent>(){
-         @Override
          public void handleEvent(TabPanelEvent be) {
             final ScreenTabItem screenTabItem = (ScreenTabItem)be.getItem();
             BeanModelDataBase.screenTable.addChangeListener(screenTabItem.getScreen().getOid(), getScreenChangeListener(screenTabItem));
          }
       });
       addListener(Events.Remove, new Listener<TabPanelEvent>(){
-         @Override
          public void handleEvent(TabPanelEvent be) {
             final ScreenTabItem screenTabItem = (ScreenTabItem)be.getItem();
             BeanModelDataBase.screenTable.removeChangeListener(screenTabItem.getScreen().getOid(), getScreenChangeListener(screenTabItem));
@@ -78,7 +76,6 @@ public class ScreenTab extends TabPanel {
       
       if(changeListener == null){
          changeListener = new ChangeListener(){
-            @Override
             public void modelChanged(ChangeEvent event) {
                Screen screen = screenTabItem.getScreen();
                if(event.getType() == BeanModelTable.REMOVE){

@@ -150,8 +150,6 @@ public class IRCommandImportForm extends CommonForm {
 
    protected void onSubmit(final Component wrapper) {
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
-
-         @Override
          public void handleEvent(FormEvent be) {
             wrapper.mask("Please Wait...");
             if(importButton != null){
