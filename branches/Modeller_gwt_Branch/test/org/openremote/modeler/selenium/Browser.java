@@ -21,7 +21,8 @@
 package org.openremote.modeler.selenium;
 
 /**
- * Class for selenium browser test of incompatibility.
+ * Class for Selenium browser test of incompatibility.
+ * Defines all the browser type string for Selenium.
  * 
  * @author Dan 2009-7-31
  */
