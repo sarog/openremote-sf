@@ -24,7 +24,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /**
- * The Class SampleTest.
+ * The TestNG sample test.
  * 
  * @author Dan 2009-7-22
  */

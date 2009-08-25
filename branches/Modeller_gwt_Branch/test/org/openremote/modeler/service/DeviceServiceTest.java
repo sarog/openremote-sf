@@ -31,9 +31,9 @@ import org.testng.annotations.Test;
 
 
 /**
- * The Class DeviceServiceTest.
+ * The TestNG Unit Test for Device Service CRUD.
  * 
- * @author Tomsky,Dan 2009-7-10
+ * @author Tomsky, Dan 2009-7-10
  */
 public class DeviceServiceTest extends TestNGBase {
    

@@ -26,12 +26,15 @@ import com.thoughtworks.selenium.DefaultSelenium;
 
 /**
  * The TestNG TestBase for Selenium Test. This Class registers the website and browser to be tested.
+ * Supports basic action, such as click, type, getValue, etc.
+ * This TestBase will login first before your sub test goes.
+ * By default, this Selenium testbase will launch Firefox and login at 'http://localhost:8080/modeler/login.jsp'.
  * 
  * @author Dan 2009-7-31
  */
 public class SeleniumTestNGBase {
    
-   /** The selenium. */
+   /** The default implementation of the Selenium interface. */
    protected DefaultSelenium selenium;
    
    /** The Constant DEBUG_ID_PREFIX, GWT will add this prefix before real debug id. */
@@ -46,18 +49,23 @@ public class SeleniumTestNGBase {
       selenium.start();
       selenium.setTimeout("10000");
 //      selenium.setSpeed("1000");
-      login();
+      login("super", "123");
    }
 
    /**
-    * Login.
+    * Login '/modeler/login.jsp' with specified username and password.
+    * 
+    * @param username
+    *           the username
+    * @param password
+    *           the password
     */
-   private void login() {
+   private void login(String username, String password) {
       selenium.open("modeler/login.jsp");
       selenium.waitForPageToLoad("3000");
       selenium.windowMaximize();
-      selenium.type("username", "super");
-      selenium.type("password", "123");
+      selenium.type("username", username);
+      selenium.type("password", password);
 //      selenium.click("rememberme");
       selenium.click("//input[@value='Login']");
       selenium.waitForPageToLoad("30000");
