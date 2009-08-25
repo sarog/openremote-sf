@@ -18,6 +18,8 @@ $(document).ready(function() {
     $('#uploadForm').ajaxForm(function(result) {
     	if(result == 'OK'){
     		message("upload successful");
+    	}else if (result == 'disabled'){
+    		error("upload is disabled");
     	}else{
     		error("upload failed");
     	}
