@@ -55,8 +55,15 @@ public class ScreenPanel extends LayoutContainer {
    /** The ui designer images. */
    private UIDesignerImages uiDesignerImages = GWT.create(UIDesignerImages.class);
    
-   /** The select button. */
-   private ScreenButton selectButton;
+   private static final String POSITION = "position";
+   
+   private static final int TABLE_WIDTH = 196;
+   private static final int TABLE_HEIGHT = 294;
+   private static final int PADDING_LEFT = 35;
+   private static final int PADDING_TOP = 105;
+   
+   /** The selected button. */
+   private ScreenButton selectedButton;
    
    /**
     * Instantiates a new screen panel.
@@ -65,29 +72,26 @@ public class ScreenPanel extends LayoutContainer {
     */
    public ScreenPanel(Screen s) {
       screen = s;
-      setStyleAttribute("position", "relative");
-      setSize(269, 500);
-      addStyleName("iphone-background");
+      addStyleName("screen-background");
+      setStyleAttribute("paddingLeft", String.valueOf(PADDING_LEFT));
+      setStyleAttribute("paddingTop", String.valueOf(PADDING_TOP));
       createTable();
-
+      
    }
 
    /**
     * Creates the table.
     */
    private void createTable() {
-      LayoutContainer tableWapper = new LayoutContainer();
+//      LayoutContainer tableWapper = new LayoutContainer();
       FlexTable iphoneTable = new FlexTable();
-      iphoneTable.setPixelSize(196, 294);
-      tableWapper.add(iphoneTable);
-      tableWapper.setStyleAttribute("paddingLeft", "35");
-      tableWapper.setStyleAttribute("paddingTop", "105");
       iphoneTable.setCellPadding(0);
       iphoneTable.setCellSpacing(0);
       iphoneTable.addStyleName("panel-table");
-      add(tableWapper);
-      final int width = (int)Math.round(196.0/screen.getColumnCount());
-      final int height = (int)Math.round(294.0/screen.getRowCount());
+      iphoneTable.setPixelSize(TABLE_WIDTH, TABLE_HEIGHT);
+      add(iphoneTable);
+      final int width = (int)Math.round((float)TABLE_WIDTH/screen.getColumnCount());
+      final int height = (int)Math.round((float)TABLE_HEIGHT/screen.getRowCount());
       DNDListener dndListener = new DNDListener() {
          @SuppressWarnings("unchecked")
          public void dragDrop(DNDEvent e) {
@@ -111,14 +115,14 @@ public class ScreenPanel extends LayoutContainer {
                   button.setUiCommand(uiCommand);
                }
             }
-            button.setPosition((Position)targetCell.getData("position"));
+            button.setPosition((Position)targetCell.getData(POSITION));
             screen.addButton(button);
             ScreenButton screenBtn = createScreenButton(width, height, button);
-            screenBtn.addStyleName("border-orange");
-            if(selectButton != null){
-               selectButton.removeStyleName("border-orange");
+            screenBtn.addStyleName("button-border");
+            if(selectedButton != null){
+               selectedButton.removeStyleName("button-border");
             }
-            selectButton = screenBtn;
+            selectedButton = screenBtn;
 //            Resizable resizable = new Resizable(panel);  
 //            resizable.setDynamic(false);
 //            resizable.addResizeListener(new ResizeListener(){
@@ -164,10 +168,10 @@ public class ScreenPanel extends LayoutContainer {
             LayoutContainer cell = new LayoutContainer();
             cell.setSize(width, height);
             iphoneTable.setWidget(i, j, cell);
-            cell.setData("position", new Position(i, j));
+            cell.setData(POSITION, new Position(i, j));
             ScreenDropTarget dropTarget = new ScreenDropTarget(cell);
             dropTarget.setGroup(Constants.BUTTON_DND_GROUP);
-            dropTarget.setOverStyle("backgroud-yellow");
+            dropTarget.setOverStyle("background-color");
             dropTarget.addDNDListener(dndListener);
          }
       }
@@ -176,7 +180,7 @@ public class ScreenPanel extends LayoutContainer {
          for (UIButton button : buttons) {
             Position pos = button.getPosition();
             ScreenButton screenBtn = createScreenButton(width, height, button);
-            screenBtn.setPosition(35+49*pos.getPosY()+pos.getPosY()+1, 105+49*pos.getPosX()+pos.getPosX()+1);
+            screenBtn.setPosition(PADDING_LEFT+height*pos.getPosY()+pos.getPosY()+1, PADDING_TOP+width*pos.getPosX()+pos.getPosX()+1);
             add(screenBtn);
             DragSource source = createDragSource(screenBtn);
             layout();
@@ -198,14 +202,14 @@ public class ScreenPanel extends LayoutContainer {
          @Override
          protected void onDragStart(DNDEvent event) {
             // by default drag is allowed
-            event.setData(event.getDragSource().getComponent().getData("button"));
+            event.setData(event.getDragSource().getComponent().getData(ScreenButton.DATA_BUTTON));
             event.getStatus().setStatus(true);
             event.getStatus().update(uiDesignerImages.iphoneBtn().createImage().getElement());
          } 
 
          @Override
          protected void onDragDrop(DNDEvent event) {
-            UIButton button = event.getDragSource().getComponent().getData("button");
+            UIButton button = event.getDragSource().getComponent().getData(ScreenButton.DATA_BUTTON);
             screen.deleteButton(button);
             remove(event.getDragSource().getComponent());
             super.onDragDrop(event);
@@ -229,11 +233,11 @@ public class ScreenPanel extends LayoutContainer {
          @Override
          public void onBrowserEvent(Event event) {
             if(event.getTypeInt() == Event.ONMOUSEDOWN){
-               this.addStyleName("border-orange");
-               if(selectButton != null && (ScreenButton)this != selectButton){
-                  selectButton.removeStyleName("border-orange");
+               this.addStyleName("button-border");
+               if(selectedButton != null && (ScreenButton)this != selectedButton){
+                  selectedButton.removeStyleName("button-border");
                }
-               selectButton = (ScreenButton)this;
+               selectedButton = (ScreenButton)this;
             }
             super.onBrowserEvent(event);
          }
@@ -242,11 +246,11 @@ public class ScreenPanel extends LayoutContainer {
    }
    
    /**
-    * Gets the select button.
+    * Gets the selected button.
     * 
-    * @return the select button
+    * @return the selected button
     */
-   public ScreenButton getSelectButton(){
-      return selectButton;
+   public ScreenButton getSelectedButton(){
+      return selectedButton;
    }
 }

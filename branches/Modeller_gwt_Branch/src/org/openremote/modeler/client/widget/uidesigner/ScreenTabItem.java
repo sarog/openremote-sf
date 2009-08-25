@@ -36,7 +36,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 
 /**
- * The Class ScreenTab.
+ * The Class ScreenTabItem contain a screenPanel.
  */
 public class ScreenTabItem extends TabItem {
 
@@ -85,16 +85,16 @@ public class ScreenTabItem extends TabItem {
       renameBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            final ScreenButton selectButton = screenPanel.getSelectButton();
-            if(selectButton != null){
-               final RenameButtonWindow renameButtonWindow = new RenameButtonWindow((UIButton)selectButton.getData("button"));
+            final ScreenButton selectedButton = screenPanel.getSelectedButton();
+            if(selectedButton != null){
+               final RenameButtonWindow renameButtonWindow = new RenameButtonWindow((UIButton)selectedButton.getData("button"));
                renameButtonWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
                   @Override
                   public void afterSubmit(SubmitEvent be) {
                      renameButtonWindow.hide();
                      UIButton button = be.getData();
-                     selectButton.setLabel(button.getLabel());
-                     selectButton.setToolTip(button.getName());
+                     selectedButton.setLabel(button.getLabel());
+                     selectedButton.setToolTip(button.getName());
                      layout();
                      Info.display("Info", "Edit device " + button.getName() + " success.");
                   }
@@ -112,9 +112,9 @@ public class ScreenTabItem extends TabItem {
       deleteBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            ScreenButton selectButton = screenPanel.getSelectButton();
+            ScreenButton selectButton = screenPanel.getSelectedButton();
             if(selectButton != null){
-               screen.deleteButton((UIButton)selectButton.getData("button"));
+               screen.deleteButton((UIButton)selectButton.getData(ScreenButton.DATA_BUTTON));
                screenPanel.remove(selectButton);
                layout();
             } else {
