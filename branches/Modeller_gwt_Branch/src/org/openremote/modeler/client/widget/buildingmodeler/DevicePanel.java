@@ -90,15 +90,13 @@ public class DevicePanel extends ContentPanel {
       treeContainer.setScrollMode(Scroll.AUTO);
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
-
       add(treeContainer);
    }
    
    /**
     * Creates the menu.
     */
-   private void createMenu() {
-      ToolBar toolBar = new ToolBar();
+   private void createMenu() {      
       Button newButton = new Button("New");
       newButton.setToolTip("Create Device or DeviceCommand");
       newButton.ensureDebugId(DebugId.DEVICE_NEW_BTN);
@@ -111,6 +109,7 @@ public class DevicePanel extends ContentPanel {
 
       newButton.setMenu(newMenu);
       
+      ToolBar toolBar = new ToolBar();
       toolBar.add(newButton);
       toolBar.add(createEditButton());
       toolBar.add(createDeleteButton());
@@ -129,7 +128,6 @@ public class DevicePanel extends ContentPanel {
       newDeviceItem.setIcon(icon.addDevice());
       newDeviceItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
-//            final DeviceWindow deviceWindow = new DeviceWindow(new Device().getBeanModel());
             final DeviceWizardWindow deviceWindow = new DeviceWizardWindow(new Device().getBeanModel());
             deviceWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
                @Override
