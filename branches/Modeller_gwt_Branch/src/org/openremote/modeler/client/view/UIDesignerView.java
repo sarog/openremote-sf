@@ -24,6 +24,9 @@ import org.openremote.modeler.client.widget.uidesigner.DevicesAndMacrosPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
+import com.extjs.gxt.ui.client.event.BaseEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.TabItem;
@@ -81,8 +84,6 @@ public class UIDesignerView extends TabItem implements View {
     * Creates the center.
     */
    private void createCenter() {
-//      center.setTabScroll(true);
-//      center.setAnimScroll(true);
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setMargins(new Margins(2));
       add(screenTab, centerData);

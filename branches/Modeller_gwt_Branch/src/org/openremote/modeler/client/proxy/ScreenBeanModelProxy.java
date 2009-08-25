@@ -71,6 +71,9 @@ public class ScreenBeanModelProxy {
    }
    
    public static void deleteScreen(BeanModel screenBeanModel) {
+      Screen screen = screenBeanModel.getBean();
+      Activity activity = screen.getActivity();
+      activity.deleteScreen(screen);
       BeanModelDataBase.screenTable.delete(screenBeanModel);
    }
 

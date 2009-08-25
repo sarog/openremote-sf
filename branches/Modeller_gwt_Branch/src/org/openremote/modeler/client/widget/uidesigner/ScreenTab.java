@@ -26,6 +26,7 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.domain.Screen;
 
+import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeListener;
 import com.extjs.gxt.ui.client.event.Events;
@@ -59,6 +60,7 @@ public class ScreenTab extends TabPanel {
             BeanModelDataBase.screenTable.removeChangeListener(screenTabItem.getScreen().getOid(), getScreenChangeListener(screenTabItem));
          }
       });
+      addInsertListener();
    }
    
    /**
@@ -98,5 +100,26 @@ public class ScreenTab extends TabPanel {
          changeListenerMap.put(screenTabItem, changeListener);
       }
       return changeListener;
+   }
+   
+   /**
+    * Adds the insert listener.
+    */
+   private void addInsertListener(){
+      BeanModelDataBase.screenTable.addInsertListener(new ChangeListener(){
+
+         @Override
+         public void modelChanged(ChangeEvent event) {
+            if(event.getType() == BeanModelTable.ADD){
+               BeanModel beanModel = (BeanModel) event.getItem();
+               if(beanModel.getBean() instanceof Screen){
+                  ScreenTabItem screenTabItem = new ScreenTabItem((Screen)beanModel.getBean());
+                  add(screenTabItem);
+                  setSelection(screenTabItem);
+               }
+            }
+         }
+         
+      });
    }
 }

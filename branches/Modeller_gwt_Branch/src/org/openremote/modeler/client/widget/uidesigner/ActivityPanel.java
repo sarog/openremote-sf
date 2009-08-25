@@ -60,7 +60,6 @@ public class ActivityPanel extends ContentPanel {
    /** The tree. */
    private TreePanel<BeanModel> tree;
    
-   private ScreenTab screenTab;
    /** The icon. */
    private Icons icon = GWT.create(Icons.class);
 
@@ -68,18 +67,17 @@ public class ActivityPanel extends ContentPanel {
     * Instantiates a new activity panel.
     */
    public ActivityPanel(ScreenTab screenTab) {
-      this.screenTab = screenTab;
       setHeading("Activity");
       setIcon(icon.activityIcon());
       setLayout(new FitLayout());
       createMenu();
-      createActivityTree();
+      createActivityTree(screenTab);
    }
 
    /**
     * Creates the activity tree.
     */
-   private void createActivityTree() {
+   private void createActivityTree(ScreenTab screenTab) {
       tree = TreePanelBuilder.buildActivityTree(screenTab);
       LayoutContainer treeContainer = new LayoutContainer() {
          @Override
@@ -191,9 +189,6 @@ public class ActivityPanel extends ContentPanel {
                BeanModel screenModel = be.getData();
                tree.getStore().add(activityModel, screenModel, false);
                tree.setExpanded(activityModel, true);
-               ScreenTabItem screenTabItem = new ScreenTabItem((Screen)screenModel.getBean());
-               screenTab.add(screenTabItem);
-               screenTab.setSelection(screenTabItem);
                Info.display("Info", "Add screen " + screenModel.get("name") + " success.");
             }
          });

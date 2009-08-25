@@ -304,7 +304,6 @@ public class TreePanelBuilder {
                      screenTab.add(screenTabItem);
                      screenTab.setSelection(screenTabItem);
                   }
-                  
                }
             }
             
@@ -347,7 +346,7 @@ public class TreePanelBuilder {
     */
    private static void initDevicesAndMacrosTreeStore() {
       if(devicesAndMacrosTreeStore == null) {
-         RpcProxy<List<BeanModel>> devicesAndMacrosProxy = new RpcProxy<List<BeanModel>>(){
+         RpcProxy<List<BeanModel>> devicesAndMacrosRpcProxy = new RpcProxy<List<BeanModel>>(){
             @Override
             protected void load(Object loadConfig, final AsyncCallback<List<BeanModel>> callback) {
                DevicesAndMacrosBeanModelProxy.loadDevicesMacros((BeanModel)loadConfig, new AsyncSuccessCallback<List<BeanModel>>(){
@@ -358,7 +357,7 @@ public class TreePanelBuilder {
                });
             }            
          };
-         TreeLoader<BeanModel> devicesAndMacrosTreeLoader = new BaseTreeLoader<BeanModel>(devicesAndMacrosProxy) {
+         TreeLoader<BeanModel> devicesAndMacrosTreeLoader = new BaseTreeLoader<BeanModel>(devicesAndMacrosRpcProxy) {
             @Override
             public boolean hasChildren(BeanModel beanModel) {
                if((beanModel.getBean() instanceof Device) || (beanModel.getBean() instanceof DeviceMacro) || (beanModel.getBean() instanceof TreeFolderBean)) {
@@ -368,14 +367,14 @@ public class TreePanelBuilder {
             }
          };
          devicesAndMacrosTreeStore = new TreeStore<BeanModel>(devicesAndMacrosTreeLoader);
-         createRootFolder();
+         createFolders();
       }
    }
 
    /**
     * Creates the root folder.
     */
-   private static void createRootFolder() {
+   private static void createFolders() {
       TreeFolderBean devicesBean = new TreeFolderBean();
       devicesBean.setDisplayName("Devices");
       devicesBean.setType(Constants.DEVICES);
