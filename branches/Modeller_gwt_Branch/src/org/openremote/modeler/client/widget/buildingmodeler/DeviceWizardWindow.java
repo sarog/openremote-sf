@@ -64,8 +64,8 @@ public class DeviceWizardWindow extends WizardWindow {
    @Override
    protected void initForms() {
       forms = new CommonForm[]{
-            new DeviceInfoWizardForm(this,deviceBeanModel),
-            new IRCommandImportWizardForm(this,deviceBeanModel)
+            new DeviceInfoWizardForm(this,beanModel),
+            new IRCommandImportWizardForm(this,beanModel)
             };
    }
 
