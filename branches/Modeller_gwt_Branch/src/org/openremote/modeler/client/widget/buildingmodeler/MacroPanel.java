@@ -50,6 +50,7 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Element;
 
 /**
  * The Class MacroPanel.
@@ -85,13 +86,11 @@ public class MacroPanel extends ContentPanel {
     */
    private void createMenu() {
       ToolBar macroToolBar = new ToolBar();
-
       Button newMacroBtn = new Button("New");
       newMacroBtn.setToolTip("Create Macro");
       newMacroBtn.setIcon(icons.macroAddIcon());
       newMacroBtn.ensureDebugId(DebugId.NEW_MACRO_BTN);
       newMacroBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-
          @Override
          public void componentSelected(ButtonEvent ce) {
             final MacroWindow macroWindow = new MacroWindow();
@@ -104,7 +103,6 @@ public class MacroPanel extends ContentPanel {
                }
             });
          }
-
       });
       macroToolBar.add(newMacroBtn);
 
@@ -112,29 +110,24 @@ public class MacroPanel extends ContentPanel {
       editMacroBtn.setToolTip("Edit Macro");
       editMacroBtn.setIcon(icons.macroEditIcon());
       editMacroBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-
          @Override
          public void componentSelected(ButtonEvent ce) {
             onEditDeviceMacroBtnClicked();
 
          }
-
       });
       macroToolBar.add(editMacroBtn);
-
       Button deleteMacroBtn = new Button("Delete");
       deleteMacroBtn.setToolTip("Delete Macro");
       deleteMacroBtn.setIcon(icons.macroDeleteIcon());
+      
       deleteMacroBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-
          @Override
          public void componentSelected(ButtonEvent ce) {
             onDeleteDeviceMacroBtnClicked();
          }
-
       });
       macroToolBar.add(deleteMacroBtn);
-
       setTopComponent(macroToolBar);
    }
 
@@ -142,33 +135,24 @@ public class MacroPanel extends ContentPanel {
     * Creates the macro tree.
     */
    private void createMacroTree() {
-
-      macroListContainer = new LayoutContainer();
+      macroListContainer = new LayoutContainer() {
+         @Override
+         protected void onRender(Element parent, int index) {
+            super.onRender(parent, index);
+            if (macroTree == null) {
+               macroTree = TreePanelBuilder.buildMacroTree();
+               addTreeStoreEventListener();
+               macroListContainer.add(macroTree);
+            }
+            add(macroTree);
+         }
+      };
       macroListContainer.setScrollMode(Scroll.AUTO);
       macroListContainer.setStyleAttribute("backgroundColor", "white");
       macroListContainer.setBorders(false);
       macroListContainer.setLayoutOnChange(true);
-
       macroListContainer.setHeight("100%");
-
       add(macroListContainer);
-
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
-    * @see com.extjs.gxt.ui.client.widget.ContentPanel#afterExpand()
-    */
-   @Override
-   protected void afterExpand() {
-      if (macroTree == null) {
-         macroTree = TreePanelBuilder.buildMacroTree();
-         addTreeStoreEventListener();
-
-         macroListContainer.add(macroTree);
-      }
-      super.afterExpand();
    }
 
    /**
@@ -176,32 +160,24 @@ public class MacroPanel extends ContentPanel {
     */
    private void addTreeStoreEventListener() {
       macroTree.getStore().addListener(Store.Add, new Listener<TreeStoreEvent<BeanModel>>() {
-
          public void handleEvent(TreeStoreEvent<BeanModel> be) {
             addChangeListenerToDragSource(be.getChildren());
          }
-
       });
       macroTree.getStore().addListener(Store.DataChanged, new Listener<TreeStoreEvent<BeanModel>>() {
-
          public void handleEvent(TreeStoreEvent<BeanModel> be) {
             addChangeListenerToDragSource(be.getChildren());
          }
-
       });
       macroTree.getStore().addListener(Store.Clear, new Listener<TreeStoreEvent<BeanModel>>() {
-
          public void handleEvent(TreeStoreEvent<BeanModel> be) {
             removeChangeListenerToDragSource(be.getChildren());
          }
-
       });
       macroTree.getStore().addListener(Store.Remove, new Listener<TreeStoreEvent<BeanModel>>() {
-
          public void handleEvent(TreeStoreEvent<BeanModel> be) {
             removeChangeListenerToDragSource(be.getChildren());
          }
-
       });
    }
 
@@ -348,7 +324,6 @@ public class MacroPanel extends ContentPanel {
                      DeviceMacroRef deviceMacroRef = (DeviceMacroRef) target.getBean();
                      deviceMacroRef.setTargetDeviceMacro(deviceMacro);
                   }
-
                   if (source.getBean() instanceof DeviceCommand) {
                      DeviceCommand deviceCommand = (DeviceCommand) source.getBean();
                      DeviceCommandRef deviceCommandRef = (DeviceCommandRef) target.getBean();
