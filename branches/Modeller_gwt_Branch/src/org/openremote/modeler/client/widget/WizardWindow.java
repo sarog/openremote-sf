@@ -45,7 +45,7 @@ public class WizardWindow extends CommonWindow {
    protected int currentStep;
 
    /** The device bean model. */
-   protected BeanModel deviceBeanModel;
+   protected BeanModel beanModel;
 
    /** The back btn. */
    protected Button backBtn;
@@ -64,7 +64,7 @@ public class WizardWindow extends CommonWindow {
     */
    public WizardWindow(BeanModel deviceBeanModel) {
       super();
-      this.deviceBeanModel = deviceBeanModel;
+      this.beanModel = deviceBeanModel;
       init();
    }
 

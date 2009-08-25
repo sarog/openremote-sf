@@ -17,7 +17,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.client.widget.UIDesigner;
+package org.openremote.modeler.client.widget.uidesigner;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.client.gxtExtends.TreePanelDragSourceMacroDragExt;
+import org.openremote.modeler.client.gxtextends.TreePanelDragSourceMacroDragExt;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
@@ -74,10 +74,10 @@ public class DevicesAndMacrosPanel extends ContentPanel {
     * Instantiates a devicesAndMacrosPanel.
     */
    public DevicesAndMacrosPanel() {
-      setHeading("Buttons Box");
+      setHeading("Devices/Macros");
       setLayout(new FitLayout());
       createDevicesAndMacrosTree();
-      setIcon(icons.device());
+//      setIcon(icons.device());
    }
 
 

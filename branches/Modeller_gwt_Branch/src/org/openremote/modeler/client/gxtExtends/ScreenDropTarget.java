@@ -1,4 +1,4 @@
-package org.openremote.modeler.client.gxtExtends;
+package org.openremote.modeler.client.gxtextends;
 
 import com.extjs.gxt.ui.client.dnd.DropTarget;
 import com.extjs.gxt.ui.client.event.DNDEvent;

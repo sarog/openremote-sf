@@ -22,8 +22,8 @@ package org.openremote.modeler.client.widget.buildingmodeler;
 import java.util.List;
 
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.gxtExtends.ListViewDropTargetMacroDragExt;
-import org.openremote.modeler.client.gxtExtends.TreePanelDragSourceMacroDragExt;
+import org.openremote.modeler.client.gxtextends.ListViewDropTargetMacroDragExt;
+import org.openremote.modeler.client.gxtextends.TreePanelDragSourceMacroDragExt;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;

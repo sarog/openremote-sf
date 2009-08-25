@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.gxtExtends.NestedJsonLoadResultReader;
+import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.rpc.ConfigurationRPCService;

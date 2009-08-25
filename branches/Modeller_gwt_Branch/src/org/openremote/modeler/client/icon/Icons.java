@@ -235,4 +235,9 @@ public interface Icons extends ImageBundle {
     */
    @Resource("screen_edit.png")
    AbstractImagePrototype editScreenIcon();
+   
+   @Resource("devices.png")
+   AbstractImagePrototype devicesRoot();
+   @Resource("macros.png")
+   AbstractImagePrototype macrosRoot();
 }
