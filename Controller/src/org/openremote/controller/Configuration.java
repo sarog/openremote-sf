@@ -46,6 +46,9 @@ public class Configuration {
    
    /** The resource path. */
    private String resourcePath;
+   
+   /** The resource upload switch. */
+   private String resourceUpload;
 
    /**
     * Gets the irsend path.
@@ -155,12 +158,40 @@ public class Configuration {
       this.multicastPort = multicastPort;
    }
 
+   /**
+    * Gets the resource path.
+    * 
+    * @return the resource path
+    */
    public String getResourcePath() {
       return resourcePath;
    }
 
+   /**
+    * Sets the resource path.
+    * 
+    * @param resourcePath the new resource path
+    */
    public void setResourcePath(String resourcePath) {
       this.resourcePath = resourcePath;
+   }
+
+   /**
+    * Gets the resource upload.
+    * 
+    * @return the resource upload
+    */
+   public String getResourceUpload() {
+      return resourceUpload;
+   }
+
+   /**
+    * Sets the resource upload.
+    * 
+    * @param resourceUpload the new resource upload
+    */
+   public void setResourceUpload(String resourceUpload) {
+      this.resourceUpload = resourceUpload;
    }
    
 }
