@@ -19,9 +19,9 @@
 */
 package org.openremote.modeler.client.view;
 
-import org.openremote.modeler.client.widget.UIDesigner.ActivityPanel;
-import org.openremote.modeler.client.widget.UIDesigner.DevicesAndMacrosPanel;
-import org.openremote.modeler.client.widget.UIDesigner.ScreenTab;
+import org.openremote.modeler.client.widget.uidesigner.ActivityPanel;
+import org.openremote.modeler.client.widget.uidesigner.DevicesAndMacrosPanel;
+import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.util.Margins;

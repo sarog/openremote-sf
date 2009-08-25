@@ -22,7 +22,7 @@ package org.openremote.modeler.client.proxy;
 import java.util.Map;
 
 import org.openremote.modeler.client.utils.IDUtil;
-import org.openremote.modeler.client.widget.UIDesigner.ScreenWindow;
+import org.openremote.modeler.client.widget.uidesigner.ScreenWindow;
 import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.domain.Screen;
 

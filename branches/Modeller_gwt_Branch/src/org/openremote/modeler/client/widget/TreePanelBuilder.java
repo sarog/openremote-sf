@@ -28,8 +28,8 @@ import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.proxy.DevicesAndMacrosBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.widget.UIDesigner.ScreenTab;
-import org.openremote.modeler.client.widget.UIDesigner.ScreenTabItem;
+import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
+import org.openremote.modeler.client.widget.uidesigner.ScreenTabItem;
 import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.CommandDelay;
@@ -407,6 +407,12 @@ public class TreePanelBuilder {
                return ICON.macroIcon();
             } else if(beanModel.getBean() instanceof CommandDelay) {
                return ICON.delayIcon();
+            } else if(beanModel.getBean() instanceof TreeFolderBean) {
+               if(((TreeFolderBean)beanModel.getBean()).getType().equals(Constants.DEVICES)){
+                  return ICON.devicesRoot();
+               }else if(((TreeFolderBean)beanModel.getBean()).getType().equals(Constants.MACROS)){
+                  return ICON.macrosRoot();
+               }
             }
             return ICON.folder();
          }
