@@ -32,13 +32,14 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 
 /**
- * The Class ScreenButton.
+ * The <Code>Button</Code> to be used in ScreenPanel.
  */
 public class ScreenButton extends LayoutContainer {
    
    /** The ui designer images. */
    private UIDesignerImages uiDesignerImages = GWT.create(UIDesignerImages.class);
    
+   public static final String DATA_BUTTON = "button"; 
    /** The name label. */
    private Label nameLabel;
    
@@ -61,7 +62,7 @@ public class ScreenButton extends LayoutContainer {
     * @param height the height
     */
    private void initial(UIButton button, int width, int height){
-      setData("button", button);
+      setData(DATA_BUTTON, button);
       setToolTip(button.getName());
       setLayout(new BorderLayout());
       setSize(width, height);

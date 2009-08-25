@@ -1,8 +1,12 @@
-.iphone-background {
+.screen-background {
    background-image: url(../images/iphone_background.jpg);
    background-repeat: no-repeat;
+   position: relative;
+   width: 269px;
+   height: 500px;
 }
 .panel-table {
+	position: absolute;
 	border-collapse: collapse;
 	border: 1px dashed yellow;
 }
@@ -13,7 +17,7 @@
 .absolute{
 	position: absolute;
 }
-.backgroud-yellow {
+.background-color {
    background-color: yellow;
 }
 .label-font {
@@ -22,7 +26,7 @@
 .cursor-move {
    cursor: move;	
 }
-.border-orange {
+.button-border {
    border: 1px solid orange;
    opacity:0.9;
 }
