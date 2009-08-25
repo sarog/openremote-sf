@@ -107,12 +107,6 @@ public class TreePanelBuilder {
             }
         };
         deviceCommandTreestore = new TreeStore<BeanModel>(loadDeviceTreeLoader);
-//
-//         deviceCommandTreestore.addListener(Store.Remove, new Listener<TreeStoreEvent<BeanModel>>() {
-//            public void handleEvent(TreeStoreEvent<BeanModel> be) {
-//               afterDeleteDeviceOrDeviceCommand(be.getChild());
-//            }
-//         });
       }
       final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceCommandTreestore);
 

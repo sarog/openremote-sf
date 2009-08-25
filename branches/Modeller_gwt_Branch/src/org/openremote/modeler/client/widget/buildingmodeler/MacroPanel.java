@@ -27,6 +27,7 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -193,12 +194,10 @@ public class MacroPanel extends ContentPanel {
       }
       for (BeanModel beanModel : models) {
          if (beanModel.getBean() instanceof DeviceMacroRef) {
-            BeanModelDataBase.deviceMacroTable.addChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-         }
-         if (beanModel.getBean() instanceof DeviceCommandRef) {
-            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
+            BeanModelDataBase.deviceMacroTable.addChangeListener(BeanModelDataBase.getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
+         }else if (beanModel.getBean() instanceof DeviceCommandRef) {
+            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase.getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
+            BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
          }
       }
    }
@@ -215,13 +214,11 @@ public class MacroPanel extends ContentPanel {
       }
       for (BeanModel beanModel : models) {
          if (beanModel.getBean() instanceof DeviceMacroRef) {
-            BeanModelDataBase.deviceMacroTable.removeChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
+            BeanModelDataBase.deviceMacroTable.removeChangeListener(BeanModelDataBase.getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
 
          }
          if (beanModel.getBean() instanceof DeviceCommandRef) {
-            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
+            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase.getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
          }
          changeListenerMap.remove(beanModel);
       }
@@ -310,7 +307,6 @@ public class MacroPanel extends ContentPanel {
          changeListenerMap = new HashMap<BeanModel, ChangeListener>();
       }
       ChangeListener changeListener = changeListenerMap.get(target);
-
       if (changeListener == null) {
          changeListener = new ChangeListener() {
             public void modelChanged(ChangeEvent changeEvent) {
@@ -323,11 +319,14 @@ public class MacroPanel extends ContentPanel {
                      DeviceMacro deviceMacro = (DeviceMacro) source.getBean();
                      DeviceMacroRef deviceMacroRef = (DeviceMacroRef) target.getBean();
                      deviceMacroRef.setTargetDeviceMacro(deviceMacro);
-                  }
-                  if (source.getBean() instanceof DeviceCommand) {
+                  } else if (source.getBean() instanceof DeviceCommand) {
                      DeviceCommand deviceCommand = (DeviceCommand) source.getBean();
                      DeviceCommandRef deviceCommandRef = (DeviceCommandRef) target.getBean();
                      deviceCommandRef.setDeviceCommand(deviceCommand);
+                  } else if (source.getBean() instanceof Device) {
+                     Device device = (Device) source.getBean();
+                     DeviceCommandRef targetDeviceCommandRef = (DeviceCommandRef)target.getBean();
+                     targetDeviceCommandRef.setDeviceName(device.getName());
                   }
                   macroTree.getStore().update(target);
                }

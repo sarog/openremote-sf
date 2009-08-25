@@ -107,8 +107,6 @@ public class ScreenTab extends TabPanel {
     */
    private void addInsertListener(){
       BeanModelDataBase.screenTable.addInsertListener(new ChangeListener(){
-
-         @Override
          public void modelChanged(ChangeEvent event) {
             if(event.getType() == BeanModelTable.ADD){
                BeanModel beanModel = (BeanModel) event.getItem();

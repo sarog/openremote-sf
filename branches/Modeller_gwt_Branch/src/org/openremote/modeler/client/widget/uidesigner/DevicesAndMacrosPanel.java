@@ -29,12 +29,15 @@ import org.openremote.modeler.client.gxtextends.TreePanelDragSourceMacroDragExt;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
+import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroRef;
+import org.openremote.modeler.domain.Screen;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -51,7 +54,6 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
-
 
 /**
  * The Class DevicesAndMacrosPanel.
@@ -70,6 +72,12 @@ public class DevicesAndMacrosPanel extends ContentPanel {
    /** The changeListenerMap. */
    private Map<BeanModel, ChangeListener> changeListenerMap = null;
 
+   /** The insert listener map. */
+   private Map<BeanModel, ChangeListener> insertListenerMap = null;
+   
+   /** The update listener map. */
+   private Map<BeanModel, ChangeListener> updateListenerMap = null;
+
    /**
     * Instantiates a devicesAndMacrosPanel.
     */
@@ -77,9 +85,7 @@ public class DevicesAndMacrosPanel extends ContentPanel {
       setHeading("Devices/Macros");
       setLayout(new FitLayout());
       createDevicesAndMacrosTree();
-//      setIcon(icons.device());
    }
-
 
    /**
     * Creates the devicesAndMacrosTree.
@@ -88,7 +94,7 @@ public class DevicesAndMacrosPanel extends ContentPanel {
       initDevicesAndMacrosTreeContainer();
       initDevicesAndMacrosTree();
    }
-   
+
    /**
     * Inits the devicesAndMacrosTreeContainer.
     */
@@ -112,7 +118,7 @@ public class DevicesAndMacrosPanel extends ContentPanel {
          devicesAndMacrosTreeContainer.add(devicesAndMacrosTree);
       }
    }
-   
+
    /**
     * Adds the TreeEventListeners.
     */
@@ -120,7 +126,7 @@ public class DevicesAndMacrosPanel extends ContentPanel {
       addTreeDragEventListener();
       addTreeStoreEventListener();
    }
-   
+
    /**
     * Adds the TreeDragEventListener.
     */
@@ -141,7 +147,7 @@ public class DevicesAndMacrosPanel extends ContentPanel {
 
       });
       dragSource.setGroup(Constants.BUTTON_DND_GROUP);
-   } 
+   }
 
    /**
     * Adds the tree store event listener.
@@ -172,27 +178,34 @@ public class DevicesAndMacrosPanel extends ContentPanel {
    /**
     * Adds the change listener to drag source.
     * 
-    * @param models the models
+    * @param models
+    *           the models
     */
    private void addChangeListenerToSource(List<BeanModel> models) {
       if (models == null) {
          return;
       }
-      BeanModelDataBase.deviceTable.addInsertListener(getBeanModelSourceChangeListener(null));
-      BeanModelDataBase.deviceMacroTable.addInsertListener(getBeanModelSourceChangeListener(null));
       for (BeanModel beanModel : models) {
          if (beanModel.getBean() instanceof Device) {
-            BeanModelDataBase.deviceCommandTable.addInsertListener(getBeanModelSourceChangeListener(null));
-            BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel), getBeanModelSourceChangeListener(beanModel));
+            BeanModelDataBase.deviceTable.addInsertListener(getInsertListener("deviceTable", getRootBeanModel(Constants.DEVICES)));
+            BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel), getUpdateListener(beanModel));
+            BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel), getRemoveListener(beanModel));
+            BeanModelDataBase.deviceCommandTable.addInsertListener(getInsertListener("deviceCommandTable", beanModel));
          } else if (beanModel.getBean() instanceof DeviceCommand) {
-            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel), getBeanModelSourceChangeListener(beanModel));
+            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel), getUpdateListener(beanModel));
+            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel), getRemoveListener(beanModel));
          } else if (beanModel.getBean() instanceof DeviceMacro) {
-            BeanModelDataBase.deviceMacroTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel), getBeanModelSourceChangeListener(beanModel));
+            BeanModelDataBase.deviceMacroTable.addInsertListener(getInsertListener("deviceMacroTable", getRootBeanModel(Constants.MACROS)));
+            BeanModelDataBase.deviceMacroTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel), getUpdateListener(beanModel));
+            BeanModelDataBase.deviceMacroTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel), getRemoveListener(beanModel));
          } else if (beanModel.getBean() instanceof DeviceMacroRef) {
-            BeanModelDataBase.deviceMacroTable.addChangeListener(BeanModelDataBase.getOriginalDeviceMacroItemBeanModelId(beanModel), getBeanModelSourceChangeListener(beanModel));
+            BeanModelDataBase.deviceMacroTable.addChangeListener(BeanModelDataBase.getOriginalDeviceMacroItemBeanModelId(beanModel), getUpdateListener(beanModel));
+            BeanModelDataBase.deviceMacroTable.addChangeListener(BeanModelDataBase.getOriginalDeviceMacroItemBeanModelId(beanModel), getRemoveListener(beanModel));
          } else if (beanModel.getBean() instanceof DeviceCommandRef) {
-            BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel), getBeanModelSourceChangeListener(beanModel));
-            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase.getOriginalDeviceMacroItemBeanModelId(beanModel), getBeanModelSourceChangeListener(beanModel));
+            BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel), getUpdateListener(beanModel));
+            BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel), getRemoveListener(beanModel));
+            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase.getOriginalDeviceMacroItemBeanModelId(beanModel), getUpdateListener(beanModel));
+            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase.getOriginalDeviceMacroItemBeanModelId(beanModel), getRemoveListener(beanModel));
          }
       }
    }
@@ -200,7 +213,8 @@ public class DevicesAndMacrosPanel extends ContentPanel {
    /**
     * Removes the change listener to drag source.
     * 
-    * @param models the models
+    * @param models
+    *           the models
     */
    private void removeChangeListenerFromSource(List<BeanModel> models) {
       if (models == null) {
@@ -209,25 +223,26 @@ public class DevicesAndMacrosPanel extends ContentPanel {
       for (BeanModel beanModel : models) {
          if (beanModel.getBean() instanceof DeviceMacroRef) {
             BeanModelDataBase.deviceMacroTable.removeChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getBeanModelSourceChangeListener(beanModel));
+                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getRemoveListener(beanModel));
 
          }
          if (beanModel.getBean() instanceof DeviceCommandRef) {
             BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getBeanModelSourceChangeListener(beanModel));
+                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getRemoveListener(beanModel));
          }
          changeListenerMap.remove(beanModel);
       }
    }
-   
+
    /**
     * Gets source BeanModel change listener.
     * 
-    * @param targetBeanModel the target
+    * @param targetBeanModel
+    *           the target
     * 
     * @return the source BeanModel change listener
     */
-   private ChangeListener getBeanModelSourceChangeListener(final BeanModel targetBeanModel) {
+   private ChangeListener getRemoveListener(final BeanModel targetBeanModel) {
       if (changeListenerMap == null) {
          changeListenerMap = new HashMap<BeanModel, ChangeListener>();
       }
@@ -236,91 +251,8 @@ public class DevicesAndMacrosPanel extends ContentPanel {
       if (changeListener == null) {
          changeListener = new ChangeListener() {
             public void modelChanged(ChangeEvent changeEvent) {
-               BeanModel sourceBeanModel = (BeanModel) changeEvent.getItem();
                if (changeEvent.getType() == ChangeEventSupport.Remove) {
                   devicesAndMacrosTree.getStore().remove(targetBeanModel);
-               }
-               if (changeEvent.getType() == ChangeEventSupport.Add) {
-                  if ((sourceBeanModel.getBean() instanceof DeviceMacro)) {
-                     for(BeanModel rootBeanModel : devicesAndMacrosTree.getStore().getRootItems()) {
-                        TreeFolderBean treeFolderBean = (TreeFolderBean)rootBeanModel.getBean();
-                        if (Constants.MACROS.equals(treeFolderBean.getType())) {
-                           devicesAndMacrosTree.getStore().add(rootBeanModel, sourceBeanModel, false);
-                           devicesAndMacrosTree.setExpanded(rootBeanModel, false);
-                           break;
-                        }
-                     }
-                  }else if ((sourceBeanModel.getBean() instanceof Device)) {
-                     for(BeanModel rootBeanModel : devicesAndMacrosTree.getStore().getRootItems()) {
-                        TreeFolderBean treeFolderBean = (TreeFolderBean)rootBeanModel.getBean();
-                        if(Constants.DEVICES.equals(treeFolderBean.getType())) {
-                           devicesAndMacrosTree.getStore().add(rootBeanModel, sourceBeanModel, true);
-                           devicesAndMacrosTree.setExpanded(rootBeanModel, false);
-                           break;
-                        }
-                     }
-                  } else if((sourceBeanModel.getBean() instanceof DeviceCommand)) {
-                     DeviceCommand deviceCommand = (DeviceCommand)sourceBeanModel.getBean();
-                     Iterator<BeanModel> iterator = devicesAndMacrosTree.getStore().getAllItems().iterator();
-                     BeanModel find = null;
-                     while(iterator.hasNext()) {
-                        BeanModel beanModel = iterator.next();
-                        if (beanModel.getBean() instanceof Device) {
-                           Device device = (Device)beanModel.getBean();
-                           if (device.getOid() == deviceCommand.getDevice().getOid()) {
-                              find = beanModel;
-                              break;
-                           }
-                        }
-                     }
-                     devicesAndMacrosTree.getStore().add(find, deviceCommand.getBeanModel(), true);
-                     devicesAndMacrosTree.setExpanded(find, true);
-                     System.out.println(deviceCommand.getDevice().getOid());
-                  }
-               }
-               if (changeEvent.getType() == ChangeEventSupport.Update) {
-                  
-                  if (sourceBeanModel.getBean() instanceof Device) {
-                     if (targetBeanModel.getBean() instanceof Device) {
-                        for(String propertyName : sourceBeanModel.getPropertyNames()) {
-                           targetBeanModel.set(propertyName, sourceBeanModel.get(propertyName));
-                        }
-                     } else if (targetBeanModel.getBean() instanceof DeviceCommandRef) {
-                        DeviceCommandRef deviceCommandRef = (DeviceCommandRef)targetBeanModel.getBean();
-                        Device device = (Device)sourceBeanModel.getBean();
-                        deviceCommandRef.setDeviceName(device.getName());
-                     }
-                  } else if (sourceBeanModel.getBean() instanceof DeviceCommand) {
-                     if (targetBeanModel.getBean() instanceof DeviceCommandRef) {
-                        DeviceCommand deviceCommand = (DeviceCommand)sourceBeanModel.getBean();
-                        DeviceCommandRef deviceCommandRef = (DeviceCommandRef)targetBeanModel.getBean();
-                        deviceCommandRef.setDeviceCommand(deviceCommand);
-                     } else if (targetBeanModel.getBean() instanceof DeviceCommand) {
-                        for(String propertyName : sourceBeanModel.getPropertyNames()) {
-                           targetBeanModel.set(propertyName, sourceBeanModel.get(propertyName));
-                        }
-                     }
-                  } else if (sourceBeanModel.getBean() instanceof DeviceMacro) {
-                     if (targetBeanModel.getBean() instanceof DeviceMacroRef) {
-                        DeviceMacro sourceDeviceMacro = (DeviceMacro)sourceBeanModel.getBean();
-                        DeviceMacroRef targetDeviceMacroRef = (DeviceMacroRef)targetBeanModel.getBean();
-                        targetDeviceMacroRef.setTargetDeviceMacro(sourceDeviceMacro);
-                     } else if (targetBeanModel.getBean() instanceof DeviceMacro) {
-                        DeviceMacro sourceDeviceMacro = (DeviceMacro)sourceBeanModel.getBean();
-                        //following three lines are useful when only modity the DeviceMacro node data and DeviceMacroItems datas in the tree.
-                        DeviceMacro old = targetBeanModel.getBean();                        
-                        old.setName(sourceDeviceMacro.getName());
-                        old.setDeviceMacroItems(sourceDeviceMacro.getDeviceMacroItems());
-                        //following several lines are useful when re-render the synchronized node and it's subnodes in the tree.
-                        List<BeanModel> macroItemBeanModels = BeanModelDataBase.getBeanModelsByBeans(sourceDeviceMacro.getDeviceMacroItems(),
-                              BeanModelDataBase.deviceMacroItemTable);
-                        devicesAndMacrosTree.getStore().removeAll(targetBeanModel);
-                        for (BeanModel itemBeanModel : macroItemBeanModels) {
-                           devicesAndMacrosTree.getStore().add(targetBeanModel, itemBeanModel, false);
-                        }
-                     }                    
-                  }
-                  devicesAndMacrosTree.getStore().update(targetBeanModel);
                }
             }
          };
@@ -329,71 +261,124 @@ public class DevicesAndMacrosPanel extends ContentPanel {
       return changeListener;
    }
 
-
    /**
-    * After create device macro.
+    * Gets the insert listener.
     * 
-    * @param deviceMacro the device macro
+    * @param beanModelTable the bean model table
+    * 
+    * @return the insert listener
     */
-   /*private void afterCreateDeviceMacro(DeviceMacro deviceMacro) {
-      BeanModel deviceBeanModel = deviceMacro.getBeanModel();
-      devicesAndMacrosTree.getStore().add(deviceBeanModel, false);
-      devicesAndMacrosTree.setExpanded(deviceBeanModel, true);
-   }*/
-
-   /**
-    * On edit device macro btn clicked.
-    */
-/*   private void onEditDeviceMacroBtnClicked() {
-      if (devicesAndMacrosTree.getSelectionModel().getSelectedItem() != null) {
-         final BeanModel oldModel = devicesAndMacrosTree.getSelectionModel().getSelectedItem();
-         final MacroWindow macroWindow = new MacroWindow(devicesAndMacrosTree.getSelectionModel().getSelectedItem());
-         macroWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
-            @Override
-            public void afterSubmit(SubmitEvent be) {
-               afterUpdateDeviceMacroSubmit(oldModel, be.<DeviceMacro> getData());
-               macroWindow.hide();
-            }
-         });
+   private ChangeListener getInsertListener(final String beanModelTableName, final BeanModel parentNode) {
+      if (insertListenerMap == null) {
+         insertListenerMap = new HashMap<BeanModel, ChangeListener>();
       }
-   }*/
+      ChangeListener addListener = insertListenerMap.get(parentNode);
+      if (addListener == null) {
+         addListener = new ChangeListener() {
+            public void modelChanged(ChangeEvent changeEvent) {
+               BeanModel sourceBeanModel = (BeanModel) changeEvent.getItem();
+               if (changeEvent.getType() == ChangeEventSupport.Add) {
+                  if ((sourceBeanModel.getBean() instanceof DeviceCommand)) {
+                     DeviceCommand deviceCommand = ((DeviceCommand)sourceBeanModel.getBean());
+                     Device device = ((Device)parentNode.getBean());
+                     if (deviceCommand.getDevice().getOid() == device.getOid()) {
+                        devicesAndMacrosTree.getStore().add(parentNode, sourceBeanModel, true);
+                        devicesAndMacrosTree.setExpanded(parentNode, false);
+                     }
+                  } else { //sourceBeanModel is DeviceBeanModel or DeviceMacroBeanModel
+                     devicesAndMacrosTree.getStore().add(parentNode, sourceBeanModel, true);
+                     devicesAndMacrosTree.setExpanded(parentNode, false);
+                  }                  
+               }
+            }
+         };
+         insertListenerMap.put(parentNode, addListener);
+      }
+      return addListener;
+   }
 
    /**
-    * On delete device macro btn clicked.
+    * Gets the update listener.
+    * 
+    * @param targetBeanModel the target bean model
+    * 
+    * @return the update listener
     */
-  /* private void onDeleteDeviceMacroBtnClicked() {
-      if (devicesAndMacrosTree.getSelectionModel().getSelectedItems().size() > 0) {
-         for (final BeanModel data : devicesAndMacrosTree.getSelectionModel().getSelectedItems()) {
-            if (data.getBean() instanceof DeviceMacro) {
-               DeviceMacroBeanModelProxy.deleteDeviceMacro(data, new AsyncSuccessCallback<Void>() {
-                  @Override
-                  public void onSuccess(Void result) {
-                     devicesAndMacrosTree.getStore().remove(data);
+   private ChangeListener getUpdateListener(final BeanModel targetBeanModel) {
+      if (updateListenerMap == null) {
+         updateListenerMap = new HashMap<BeanModel, ChangeListener>();
+      }
+      ChangeListener updateListener = updateListenerMap.get(targetBeanModel);
+      if (updateListener == null) {
+         updateListener = new ChangeListener() {
+            public void modelChanged(ChangeEvent changeEvent) {
+               BeanModel sourceBeanModel = (BeanModel) changeEvent.getItem();
+               if (changeEvent.getType() == ChangeEventSupport.Update) {
+                  if (sourceBeanModel.getBean() instanceof Device) {
+                     if (targetBeanModel.getBean() instanceof Device) {
+                        for (String propertyName : sourceBeanModel.getPropertyNames()) {
+                           targetBeanModel.set(propertyName, sourceBeanModel.get(propertyName));
+                        }
+                     } else if (targetBeanModel.getBean() instanceof DeviceCommandRef) {
+                        DeviceCommandRef deviceCommandRef = (DeviceCommandRef) targetBeanModel.getBean();
+                        Device device = (Device) sourceBeanModel.getBean();
+                        deviceCommandRef.setDeviceName(device.getName());
+                     }
+                  } else if (sourceBeanModel.getBean() instanceof DeviceCommand) {
+                     if (targetBeanModel.getBean() instanceof DeviceCommandRef) {
+                        DeviceCommand deviceCommand = (DeviceCommand) sourceBeanModel.getBean();
+                        DeviceCommandRef deviceCommandRef = (DeviceCommandRef) targetBeanModel.getBean();
+                        deviceCommandRef.setDeviceCommand(deviceCommand);
+                     } else if (targetBeanModel.getBean() instanceof DeviceCommand) {
+                        for (String propertyName : sourceBeanModel.getPropertyNames()) {
+                           targetBeanModel.set(propertyName, sourceBeanModel.get(propertyName));
+                        }
+                     }
+                  } else if (sourceBeanModel.getBean() instanceof DeviceMacro) {
+                     if (targetBeanModel.getBean() instanceof DeviceMacroRef) {
+                        DeviceMacro sourceDeviceMacro = (DeviceMacro) sourceBeanModel.getBean();
+                        DeviceMacroRef targetDeviceMacroRef = (DeviceMacroRef) targetBeanModel.getBean();
+                        targetDeviceMacroRef.setTargetDeviceMacro(sourceDeviceMacro);
+                     } else if (targetBeanModel.getBean() instanceof DeviceMacro) {
+                        DeviceMacro sourceDeviceMacro = (DeviceMacro) sourceBeanModel.getBean();
+                        // following three lines are useful when only modity the DeviceMacro node data and
+                        // DeviceMacroItems datas in the tree.
+                        DeviceMacro old = targetBeanModel.getBean();
+                        old.setName(sourceDeviceMacro.getName());
+                        old.setDeviceMacroItems(sourceDeviceMacro.getDeviceMacroItems());
+                        // following several lines are useful when re-render the synchronized node and it's subnodes in
+                        // the tree.
+                        List<BeanModel> macroItemBeanModels = BeanModelDataBase.getBeanModelsByBeans(sourceDeviceMacro
+                              .getDeviceMacroItems(), BeanModelDataBase.deviceMacroItemTable);
+                        devicesAndMacrosTree.getStore().removeAll(targetBeanModel);
+                        for (BeanModel itemBeanModel : macroItemBeanModels) {
+                           devicesAndMacrosTree.getStore().add(targetBeanModel, itemBeanModel, false);
+                        }
+                     }
                   }
-               });
+                  devicesAndMacrosTree.getStore().update(targetBeanModel);
+               }
             }
-
+         };
+         updateListenerMap.put(targetBeanModel, updateListener);
+      }
+      return updateListener;
+   }
+   
+   /**
+    * Gets the root bean model.
+    * 
+    * @param beanType the bean type
+    * 
+    * @return the root bean model
+    */
+   private BeanModel getRootBeanModel(String beanType) {
+      for (BeanModel rootBeanModel : devicesAndMacrosTree.getStore().getRootItems()) {
+         TreeFolderBean treeFolderBean = (TreeFolderBean) rootBeanModel.getBean();
+         if (beanType.equals(treeFolderBean.getType())) {
+            return rootBeanModel;
          }
       }
-   }*/
-
-   /**
-    * After update device macro submit.
-    * 
-    * @param dataModel the data model
-    * @param deviceMacro the device macro
-    */
-   /*private void afterUpdateDeviceMacroSubmit(final BeanModel dataModel, DeviceMacro deviceMacro) {
-      DeviceMacro old = dataModel.getBean();
-      old.setName(deviceMacro.getName());
-      old.setDeviceMacroItems(deviceMacro.getDeviceMacroItems());
-      List<BeanModel> macroItemBeanModels = BeanModelDataBase.getBeanModelsByBeans(deviceMacro.getDeviceMacroItems(),
-            BeanModelDataBase.deviceMacroItemMap);
-      devicesAndMacrosTree.getStore().removeAll(dataModel);
-      for (BeanModel beanModel : macroItemBeanModels) {
-         devicesAndMacrosTree.getStore().add(dataModel, beanModel, false);
-      }
-      devicesAndMacrosTree.getStore().update(dataModel);
-      devicesAndMacrosTree.setExpanded(dataModel, true);
-   }*/
+      return null;
+   }
 }

@@ -63,7 +63,8 @@ public class BeanModelTable {
    /** The change event support. */
    private Map<Long, List<ChangeListener>> changeListeners = new HashMap<Long, List<ChangeListener>>();
    
-   private ChangeListener insertListener ;
+   /** The insert listeners. */
+   private List<ChangeListener> insertListeners ;
 
    /**
     * Instantiates a new bean model table.
@@ -96,7 +97,10 @@ public class BeanModelTable {
     * @param listener the listener
     */
    public void addInsertListener(ChangeListener listener) {
-      this.insertListener = listener;
+      if (insertListeners == null) {
+         insertListeners = new ArrayList<ChangeListener>();
+      }
+      insertListeners.add(listener);
    }
 
    /**
@@ -116,8 +120,10 @@ public class BeanModelTable {
    }
    
    public void excuteNotify(ChangeEvent evt) {
-      if(this.insertListener != null) {
-         this.insertListener.modelChanged(evt);
+      if(insertListeners != null) {
+         for (ChangeListener insertListener : insertListeners) {
+            insertListener.modelChanged(evt);
+         }
       }
    }
 
@@ -152,6 +158,9 @@ public class BeanModelTable {
 
       }
       if (beanModel.getBean() instanceof BusinessEntity) {
+         if(map.get(getIdFromBeanModel(beanModel)) != null) { 
+            return;
+         }
          map.put(getIdFromBeanModel(beanModel), beanModel);
          notifyTableAddData(beanModel);
       }
