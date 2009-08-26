@@ -19,6 +19,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+/*
+  * This is the entrypoint of the application.
+  *  After application have been started applicationDidFinishLaunching method will be called.
+  */
 
 #import "AppDelegate.h"
 #import "Activity.h"
@@ -28,28 +32,52 @@
 #import "UpdateController.h"
 #import "ViewHelper.h"
 
+//Private method declare
 @interface AppDelegate (Private)
 - (void)updateDidFinished;
+- (void)didUpadted;
+- (void)didUseLocalCache:(NSString *)errorMessage;
+- (void)didUpdateFail:(NSString *)errorMessage;
 @end
 
 @implementation AppDelegate
 
+//Entry point method
 - (void)applicationDidFinishLaunching:(UIApplication *)application {    
-    // Override point for customization after application launch
+	// Default window for the app
 	window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	[window makeKeyAndVisible];
 	
+	// Create a default view with window size.
 	defaultView = [[UIView alloc] initWithFrame:CGRectMake(window.bounds.origin.x, window.bounds.origin.y+20, window.bounds.size.height, window.bounds.size.width) ];
+	//add the default view to window
 	[window addSubview:defaultView];
 	
+	//Init the loading view
 	initViewController = [[InitViewController alloc] init];
-	
 	[defaultView addSubview:initViewController.view];
 	
+	//Init UpdateController and set delegate to this class, it have three delegate methods
+    // - (void)didUpadted;
+    // - (void)didUseLocalCache:(NSString *)errorMessage;
+    // - (void)didUpdateFail:(NSString *)errorMessage;
 	updateController = [[UpdateController alloc] initWithDelegate:self];
 	[updateController checkConfigAndUpdate];
 }
 
+
+// this method will be called after UpdateController give a callback.
+- (void)updateDidFinished {
+	NSLog(@"----------updateDidFinished------");
+	[initViewController.view removeFromSuperview];
+	ActivitiesController *activityController = [[ActivitiesController alloc] init];
+	[activityController setTitle:@"Activities"];
+	navigationController = [[UINavigationController alloc] initWithRootViewController:activityController];
+	[window addSubview:navigationController.view];
+	[activityController release];
+}
+
+#pragma mark delegate method of updateController
 - (void)didUpadted {
 	[self updateDidFinished];
 }
@@ -63,17 +91,6 @@
 	[ViewHelper showAlertViewWithTitle:@"Warning" Message:errorMessage];
 	[self updateDidFinished];
 }
-
-- (void)updateDidFinished {
-	NSLog(@"----------updateDidFinished------");
-	[initViewController.view removeFromSuperview];
-	ActivitiesController *activityController = [[ActivitiesController alloc] init];
-	[activityController setTitle:@"Activities"];
-	navigationController = [[UINavigationController alloc] initWithRootViewController:activityController];
-	[window addSubview:navigationController.view];
-	[activityController release];
-}
-
 
 - (void)dealloc {
 	[updateController release];

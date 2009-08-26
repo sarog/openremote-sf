@@ -42,20 +42,27 @@
 	if (self ==[super init]) {
 		
 		isReceiveServerUrl = NO;
+		//Store the received TcpClient sockets.
 		clients = [[NSMutableArray alloc] initWithCapacity:1];
 		udpSocket = [[AsyncUdpSocket alloc] initWithDelegate:self]; 
 		
+		// init the data send to multicast server
 		NSData *d = [@"openremote" dataUsingEncoding:NSUTF8StringEncoding]; 
+		// init the multicast ip
 		NSString *host = @"224.0.1.100"; 
-		UInt16 port = 3333;		
-		UInt16 serverPort = 2346;
-		
+		// init the multicast port
+		UInt16 port = 3333;
+		// Send the data to multicast ip with timeout 3 seconds.
 		[udpSocket sendData:d toHost:host port:port withTimeout:3 tag:0];
 		[udpSocket closeAfterSending];
 		
+		// init the tcp server port
+		UInt16 serverPort = 2346;
+		//Setup a tcp server recevice the multicast feedback.
 		tcpSever = [[AsyncSocket alloc] initWithDelegate:self];
 		[tcpSever acceptOnPort:serverPort error:NULL];
 		
+		//Set a timer with 5 interval.
 		tcpTImer = [[NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(checkFindServerFail) userInfo:nil repeats:NO] retain];
 		
 	}
@@ -63,30 +70,7 @@
 }
 
 
-- (void)dealloc {
-	if (tcpTImer && [tcpTImer isValid])  {
-		[tcpTImer invalidate];
-		[tcpTImer release];
-	}
-	NSLog(@"clients count is %d",[clients count]);
-	for(int i = 0; i < [clients count]; i++)
-	{
 
-		[[clients objectAtIndex:i] disconnect];
-	}
-	[clients release];
-
-	[tcpSever release];
-	[udpSocket release];
-	
-	if (theDelegate) {
-		[theDelegate release];
-		theDelegate = nil;
-	}
-	
-	[super dealloc];
-	
-}
 
 - (void)reTry {
 	
@@ -111,6 +95,7 @@
 	}
 }
 
+//check where find server time out.
 - (void)checkFindServerFail {
 	if (!isReceiveServerUrl) {
 		[self onFindServerFail:@"Find Server Timeout"];
@@ -118,18 +103,71 @@
 	isReceiveServerUrl = NO;	
 }
 
+//after find server		
+- (void)onFindServer:(NSString *)serverUrl {
+	isReceiveServerUrl = YES;
+	NSMutableDictionary *server = [NSMutableDictionary dictionaryWithObject:serverUrl forKey:@"url"];
+	[server setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
+	//Remove all the auto discovery server url 
+	[AppSettingsDefinition removeAllAutoServer];
+	// Add finded auto server url 
+	[AppSettingsDefinition addAutoServer:server];
+	// Write the result into plist file
+	[AppSettingsDefinition writeToFile];
+	//Set AppSettingsDefinition currentServerUrl attribute
+	[AppSettingsDefinition setCurrentServerUrl:serverUrl];
+	
+	NSLog(@"current url at receive socket %@",[AppSettingsDefinition getCurrentServerUrl]);
+
+    //Disconnect all the tcp client received
+	for(int i = 0; i < [clients count]; i++)
+	{
+		// Call disconnect on the socket,
+		// which will invoke the onSocketDidDisconnect: method,
+		// which will remove the socket from the list.
+		[[clients objectAtIndex:i] disconnect];
+		[clients removeObjectAtIndex:i];
+	}
+	[clients release];
+	clients = nil;
+	
+	
+	[tcpSever disconnectAfterReading];
+	[tcpTImer invalidate];
+	
+			
+	// Call the delegate method delegate implemented
+	if (theDelegate && [theDelegate  respondsToSelector:@selector(onFindServer:)]) {
+		NSLog(@"performSelector onFindServer");
+		[theDelegate performSelector:@selector(onFindServer:) withObject:serverUrl];
+	}
+}
+		
+//after find server fail
+- (void)onFindServerFail:(NSString *)errorMessage{
+	[tcpTImer invalidate];
+	// Call the delegate method delegate implemented
+	if (theDelegate && [theDelegate  respondsToSelector:@selector(onFindServerFail:)]) {
+		NSLog(@"performSelector onFindServerFail");
+		[theDelegate performSelector:@selector(onFindServerFail:) withObject:errorMessage];
+	}
+}
+		
+#pragma mark UdpSocket delegate method
 - (void)onUdpSocket:(AsyncUdpSocket *)sock didSendDataWithTag:(long)tag {
 	NSString *myString = [NSString stringWithFormat:@"onUdpSocket didSendData."];
 	NSLog(myString); 
 	[sock close];	
 }
 
+//Called after AsyncUdpSocket did not send data 
 - (void)onUdpSocket:(AsyncUdpSocket *)sock
 didNotSendDataWithTag:(long)tag dueToError:(NSError *)error{
 	NSLog(@"DidNotSend: %@", error);
 	[self onFindServerFail:[error localizedDescription]];
 } 
 
+#pragma mark TCPSocket delegate method		
 - (void)onSocket:(AsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag {
 	
 	NSLog(@"receive data from server");
@@ -151,47 +189,29 @@ didNotSendDataWithTag:(long)tag dueToError:(NSError *)error{
 	NSLog(@"receive socket host %@ port %d",host,port);
 }
 
-
-- (void)onFindServer:(NSString *)serverUrl {
-	isReceiveServerUrl = YES;
-	
-	NSMutableDictionary *server = [NSMutableDictionary dictionaryWithObject:serverUrl forKey:@"url"];
-	[server setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
-	[AppSettingsDefinition removeAllAutoServer];
-	[AppSettingsDefinition addAutoServer:server];
-	[AppSettingsDefinition writeToFile];
-	[AppSettingsDefinition setCurrentServerUrl:serverUrl];
-	
-	NSLog(@"current url at receive socket %@",[AppSettingsDefinition getCurrentServerUrl]);
-
+- (void)dealloc {
+	if (tcpTImer && [tcpTImer isValid])  {
+		[tcpTImer invalidate];
+		[tcpTImer release];
+	}
+	NSLog(@"clients count is %d",[clients count]);
 	for(int i = 0; i < [clients count]; i++)
 	{
-		// Call disconnect on the socket,
-		// which will invoke the onSocketDidDisconnect: method,
-		// which will remove the socket from the list.
+		
 		[[clients objectAtIndex:i] disconnect];
 		[clients removeObjectAtIndex:i];
 	}
 	[clients release];
-	clients = nil;
 	
+	[tcpSever release];
+	[udpSocket release];
 	
-	[tcpSever disconnectAfterReading];
-	[tcpTImer invalidate];
-	
-	if (theDelegate && [theDelegate  respondsToSelector:@selector(onFindServer:)]) {
-		NSLog(@"performSelector onFindServer");
-		[theDelegate performSelector:@selector(onFindServer:) withObject:serverUrl];
+	if (theDelegate) {
+		[theDelegate release];
+		theDelegate = nil;
 	}
+	
+	[super dealloc];
+	
 }
-- (void)onFindServerFail:(NSString *)errorMessage{
-	[tcpTImer invalidate];
-	if (theDelegate && [theDelegate  respondsToSelector:@selector(onFindServerFail:)]) {
-		NSLog(@"performSelector onFindServerFail");
-		[theDelegate performSelector:@selector(onFindServerFail:) withObject:errorMessage];
-	}
-}
-
-
-
 @end
