@@ -174,7 +174,7 @@ public class IRCommandImportForm extends CommonForm {
    @Override
    protected void addButtons() {
       importButton = new Button("Import");
-      importButton.setEnabled(false);
+//      importButton.setEnabled(false);
       importButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
          @Override
@@ -312,7 +312,7 @@ public class IRCommandImportForm extends CommonForm {
     * @param box the new style of combo box
     */
    private void setStyleOfComboBox(RemoteJsonComboBox<ModelData> box) {
-      box.setWidth(180);
+      box.setWidth(170);
       box.setMaxHeight(250);
    }
 
