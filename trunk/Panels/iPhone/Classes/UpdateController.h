@@ -31,11 +31,15 @@
 
 - (id)initWithDelegate:(id)delegate;
 - (void)setDelegate:(id)delegate;
+
 - (void)checkConfigAndUpdate;
 
 #pragma mark delegate method
+// This method will be called after update did finished.
 - (void)didUpadted;
+// This method will be called after application choose to use local cache.
 - (void)didUseLocalCache:(NSString *)errorMessage;
+// This method will be called after update failed and application can't use local cache.
 - (void)didUpdateFail:(NSString *)errorMessage;
 
 @end
