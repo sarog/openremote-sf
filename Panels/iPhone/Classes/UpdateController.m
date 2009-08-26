@@ -19,7 +19,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
+/*
+  * For the update behavior.  
+  * If you need know the update result and do something, you must set delegate and implement three delegate methods
+  * - (void)didUpadted;
+  * - (void)didUseLocalCache:(NSString *)errorMessage;
+  * - (void)didUpdateFail:(NSString *)errorMessage;
+  */
 #import "UpdateController.h"
 #import "ServerAutoDiscoveryController.h"
 #import "AppSettingsDefinition.h"
@@ -31,6 +37,7 @@
 #import "ServerDefinition.h"
 #import "DirectoryDefinition.h"
 
+//Define the default max retry times. It should be set by user in later version.
 #define MAX_RETRY_TIMES 1
 
 @interface UpdateController (private)
@@ -45,6 +52,7 @@
 
 - (id)init {
 	if (self = [super init]) {
+		// Set retryTime to 0
 		retryTimes = 0;
 	}
 	return self;
@@ -64,6 +72,10 @@
 }
 
 
+// Read Application settings from appSettings.plist.
+// If there have an defined server url. It will call checkNetworkAndUpdate method
+// else if auto discovery is enable it will try to find another server url using auto discovery,
+//        elese it will check local cache or call didUpdateFail method.
 - (void)checkConfigAndUpdate {
 	NSLog(@"check config");
 
@@ -80,6 +92,7 @@
 	}
 }
 
+// Try to find a server using auto discovery mechanism. 
 - (void)findServer {
 	if (retryTimes <= MAX_RETRY_TIMES) {
 		retryTimes = retryTimes + 1;
@@ -87,6 +100,9 @@
 			[serverAutoDiscoveryController release];
 			serverAutoDiscoveryController = nil;
 		}
+		//ServerAutoDiscoveryController have  tow delegate methods
+		// - (void)onFindServer:(NSString *)serverUrl;
+		// - (void)onFindServerFail:(NSString *)errorMessage;
 		serverAutoDiscoveryController = [[ServerAutoDiscoveryController alloc] initWithDelegate:self];
 	} else {
 		[self updateFailOrUseLocalCache:@"Can't find OpenRemote controller automatically."];
@@ -95,12 +111,17 @@
 
 - (void)checkNetworkAndUpdate {
 	@try {	
+		// this method will throw CheckNetworkStaffException if the check failed.
 		[CheckNetworkStaff checkAll];
+		
+		//Add an Observer to listern Definition's update behavior
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpadted) name:DefinationUpdateDidFinishedNotification object:nil];
+		// If all the check success, it will call Definition's update method to update resouces.
 		[[Definition sharedDefinition] update];
 	}
 	@catch (CheckNetworkStaffException *e) {
 		NSLog(@"CheckNetworkStaffException %@",e.message);
+
 		if (retryTimes <= MAX_RETRY_TIMES) {
 			retryTimes = retryTimes + 1;
 			[self checkNetworkAndUpdate];
@@ -129,6 +150,7 @@
 		[AppSettingsDefinition writeToFile];
 		@try {
 			[CheckNetworkStaff checkAll];
+			[self checkNetworkAndUpdate];
 		}
 		@catch (CheckNetworkStaffException *e) {
 			[self didUpdateFail:e.message];
@@ -138,6 +160,7 @@
 	}
 }
 
+#pragma mark call the delegate method which the the delegate implemented.
 - (void)didUpadted {
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:DefinationUpdateDidFinishedNotification object:nil];
 	if (theDelegate && [theDelegate respondsToSelector:@selector(didUpadted)]) {
