@@ -23,6 +23,7 @@ package org.openremote.modeler.client.proxy;
 import java.util.List;
 import java.util.Map;
 
+import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.buildingmodeler.DeviceInfoForm;
@@ -51,7 +52,7 @@ public class DeviceBeanModelProxy {
     * @param callback the callback
     */
    public static void loadDevice(BeanModel beanModel, final AsyncSuccessCallback<List<BeanModel>> callback) {
-      if (beanModel == null) {
+      if (beanModel == null || beanModel.getBean() instanceof TreeFolderBean) {
          AsyncServiceFactory.getDeviceServiceAsync().loadAll(new AsyncSuccessCallback<List<Device>>() {
             public void onSuccess(List<Device> result) {
                List<BeanModel> beanModels = Device.createModels(result);

@@ -21,29 +21,23 @@ package org.openremote.modeler.client.widget;
 
 import java.util.List;
 
-import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
-import org.openremote.modeler.client.proxy.DevicesAndMacrosBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTabItem;
 import org.openremote.modeler.domain.Activity;
-import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
-import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Screen;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
-import com.extjs.gxt.ui.client.data.ModelStringProvider;
 import com.extjs.gxt.ui.client.data.RpcProxy;
 import com.extjs.gxt.ui.client.data.TreeLoader;
 import com.extjs.gxt.ui.client.store.TreeStore;
@@ -77,9 +71,6 @@ public class TreePanelBuilder {
    /** The activity tree store. */
    private static TreeStore<BeanModel> activityTreeStore = null;
    
-   /** The devicesmacros tree store. */
-   private static TreeStore<BeanModel> devicesAndMacrosTreeStore = null;
-
    /**
     * Builds a device command tree.
     * 
@@ -115,9 +106,7 @@ public class TreePanelBuilder {
       tree.setDisplayProperty("displayName");
       tree.setHeight("100%");
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
-
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
-
             if (thisModel.getBean() instanceof DeviceCommand) {
                return ICON.deviceCmd();
             } else if (thisModel.getBean() instanceof Device) {
@@ -130,74 +119,7 @@ public class TreePanelBuilder {
       });
       return tree;
    }
-
-   /**
-    * After delete device or device command.
-    * 
-    * @return the tree panel< bean model>
-    */
-   // private static void afterDeleteDeviceOrDeviceCommand(TreeDataModel deletedModel) {
-   // if (deletedModel.getData() instanceof DeviceCommand) {
-   // afterDeleteDeviceCommand((DeviceCommand) deletedModel.getData());
-   // } else if (deletedModel.getData() instanceof Device) {
-   // afterDeleteDevice((Device) deletedModel.getData());
-   // }
-   // }
-   /**
-    * After delete device.
-    * 
-    * @param device
-    *           the device
-    */
-   // private static void afterDeleteDevice(Device device) {
-   // for (DeviceCommand command : device.getDeviceCommands()) {
-   // afterDeleteDeviceCommand(command);
-   // }
-   // }
-   /**
-    * After delete device command.
-    * 
-    * @param command
-    *           the command
-    */
-   // private static void afterDeleteDeviceCommand(DeviceCommand command) {
-   // DeviceCommandRef commandRef = new DeviceCommandRef(command);
-   // TreeDataModel newDataModel = new TreeDataModel(commandRef, commandRef.getLabel());
-   // Iterator<TreeDataModel> iterator = macroTreeStore.getAllItems().iterator();
-   // while (iterator.hasNext()) {
-   // TreeDataModel current = iterator.next();
-   // if (macroTreeStore.getModelComparer().equals(current, newDataModel)) {
-   // if (current.getParent() != null) {
-   // if (current.getParent().get(TreeDataModel.getDataProperty()) instanceof DeviceMacro) {
-   // DeviceMacro parent = (DeviceMacro) current.getParent().get(TreeDataModel.getDataProperty());
-   // parent.getDeviceMacroItems().remove(current.getData());
-   // }
-   // }
-   // iterator.remove();
-   // macroTreeStore.remove(current);
-   // }
-   // }
-   // }
-   /**
-    * After delete device macro.
-    * 
-    * @param deletedModel
-    *           the deleted model
-    */
-   // private static void afterDeleteDeviceMacro(TreeDataModel deletedModel) {
-   // if (deletedModel.getData() instanceof DeviceMacro) {
-   // DeviceMacroRef deviceMacroRef = new DeviceMacroRef((DeviceMacro) deletedModel.getData());
-   // TreeDataModel newDataModel = new TreeDataModel(deviceMacroRef, deviceMacroRef.getLabel());
-   // Iterator<TreeDataModel> iterator = macroTreeStore.getAllItems().iterator();
-   // while (iterator.hasNext()) {
-   // TreeDataModel current = iterator.next();
-   // if (macroTreeStore.getModelComparer().equals(current, newDataModel)) {
-   // iterator.remove();
-   // macroTreeStore.remove(current);
-   // }
-   // }
-   // }
-   // }
+   
    /**
     * Builds a new macro tree.
     * 
@@ -232,21 +154,9 @@ public class TreePanelBuilder {
       tree.setStateful(true);
       tree.setBorders(false);
       tree.setHeight("100%");
-      tree.setLabelProvider(new ModelStringProvider<BeanModel>() {
-
-         public String getStringValue(BeanModel model, String property) {
-//            if (model.getBean() instanceof DeviceMacro) {
-//               return model.get("name");
-//            } else {
-//               DeviceMacroItem deviceMacroItem = (DeviceMacroItem) model.getBean();
-//               return deviceMacroItem.getTreeNodeLabel();
-//            }
-            return ((BusinessEntity) model.getBean()).getDisplayName();
-         }
-
-      });
+      tree.setDisplayProperty("displayName");
+      
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
-
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
 
             if (thisModel.getBean() instanceof DeviceMacro) {
@@ -259,7 +169,6 @@ public class TreePanelBuilder {
                return ICON.macroIcon();
             }
          }
-
       });
       return tree;
    }
@@ -323,93 +232,5 @@ public class TreePanelBuilder {
       });
       
       return activityTree;
-   }
-   
-   /**
-    * Builds the DevicesMacros tree.
-    * 
-    * @return the tree panel<BeanModel>
-    */
-   public static TreePanel<BeanModel> buildDevicesAndMacrosTree() {
-      initDevicesAndMacrosTreeStore();
-      return initDevicesAndMacrosTree();
-   }
-
-   /**
-    * Inits the devices and macros tree store.
-    */
-   private static void initDevicesAndMacrosTreeStore() {
-      if(devicesAndMacrosTreeStore == null) {
-         RpcProxy<List<BeanModel>> devicesAndMacrosRpcProxy = new RpcProxy<List<BeanModel>>(){
-            @Override
-            protected void load(Object loadConfig, final AsyncCallback<List<BeanModel>> callback) {
-               DevicesAndMacrosBeanModelProxy.loadDevicesMacros((BeanModel)loadConfig, new AsyncSuccessCallback<List<BeanModel>>(){
-                  @Override
-                  public void onSuccess(List<BeanModel> result) {
-                     callback.onSuccess(result);
-                  }                  
-               });
-            }            
-         };
-         TreeLoader<BeanModel> devicesAndMacrosTreeLoader = new BaseTreeLoader<BeanModel>(devicesAndMacrosRpcProxy) {
-            @Override
-            public boolean hasChildren(BeanModel beanModel) {
-               if((beanModel.getBean() instanceof Device) || (beanModel.getBean() instanceof DeviceMacro) || (beanModel.getBean() instanceof TreeFolderBean)) {
-                  return true;
-               }
-               return false;
-            }
-         };
-         devicesAndMacrosTreeStore = new TreeStore<BeanModel>(devicesAndMacrosTreeLoader);
-         createFolders();
-      }
-   }
-
-   /**
-    * Creates the root folder.
-    */
-   private static void createFolders() {
-      TreeFolderBean devicesBean = new TreeFolderBean();
-      devicesBean.setDisplayName("Devices");
-      devicesBean.setType(Constants.DEVICES);
-      TreeFolderBean macrosBean = new TreeFolderBean();
-      macrosBean.setDisplayName("Marcos");
-      macrosBean.setType(Constants.MACROS);
-      devicesAndMacrosTreeStore.add(devicesBean.getBeanModel(), true);
-      devicesAndMacrosTreeStore.add(macrosBean.getBeanModel(), true);
-   }
-   
-   /**
-    * Inits the devices and macros tree.
-    * 
-    * @return the tree panel< bean model>
-    */
-   private static TreePanel<BeanModel> initDevicesAndMacrosTree() {
-      TreePanel<BeanModel> devicesAndMacrosTree = new TreePanel<BeanModel>(devicesAndMacrosTreeStore);
-      devicesAndMacrosTree.setBorders(false);
-      devicesAndMacrosTree.setStateful(true);
-      devicesAndMacrosTree.setDisplayProperty("displayName");
-      devicesAndMacrosTree.setHeight("100%");
-      devicesAndMacrosTree.setIconProvider(new ModelIconProvider<BeanModel>() {
-         public AbstractImagePrototype getIcon(BeanModel beanModel) {
-            if(beanModel.getBean() instanceof Device) {
-               return ICON.device();
-            } else if((beanModel.getBean() instanceof DeviceCommand) || (beanModel.getBean() instanceof DeviceCommandRef)) {
-               return ICON.deviceCmd();
-            } else if((beanModel.getBean() instanceof DeviceMacro) || (beanModel.getBean() instanceof DeviceMacroRef)) {
-               return ICON.macroIcon();
-            } else if(beanModel.getBean() instanceof CommandDelay) {
-               return ICON.delayIcon();
-            } else if(beanModel.getBean() instanceof TreeFolderBean) {
-               if(((TreeFolderBean)beanModel.getBean()).getType().equals(Constants.DEVICES)){
-                  return ICON.devicesRoot();
-               }else if(((TreeFolderBean)beanModel.getBean()).getType().equals(Constants.MACROS)){
-                  return ICON.macrosRoot();
-               }
-            }
-            return ICON.folder();
-         }
-      });
-      return devicesAndMacrosTree;
    }
 }

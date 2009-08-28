@@ -22,7 +22,12 @@ package org.openremote.modeler.client.proxy;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.utils.BeanModelTable;
+import org.openremote.modeler.client.utils.DeviceBeanModelTable;
+import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
+import org.openremote.modeler.client.utils.ScreenTable;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -48,21 +53,21 @@ public class BeanModelDataBase {
    }
    
    /** Stores all the device models. */
-   public static final BeanModelTable deviceTable = new BeanModelTable();
+   public static final BeanModelTable deviceTable = new DeviceBeanModelTable();
 
    /** Stores all the DeviceCommand models. */
-   public static final BeanModelTable deviceCommandTable = new BeanModelTable();
+   public static final BeanModelTable deviceCommandTable = new DeviceBeanModelTable();
 
    /** Store all the DeviceMacro models. */
-   public static final BeanModelTable deviceMacroTable = new BeanModelTable();
+   public static final BeanModelTable deviceMacroTable = new DeviceMacroBeanModelTable();
 
    /** Store all the DeviceItem models. */
-   public static final BeanModelTable deviceMacroItemTable = new BeanModelTable();
+   public static final BeanModelTable deviceMacroItemTable = new DeviceMacroBeanModelTable();
    
    /** The Constant activityTable. */
    public static final BeanModelTable activityTable = new BeanModelTable();
 
-   public static final BeanModelTable screenTable = new BeanModelTable();
+   public static final BeanModelTable screenTable = new ScreenTable();
 
    /**
     * Gets the original device macro item bean model id,if not find return 0.
@@ -94,7 +99,16 @@ public class BeanModelDataBase {
     * @return the source bean model id
     */
    public static Long getSourceBeanModelId(BeanModel beanModel) {
-      if (beanModel.getBean() instanceof Device) {
+      if (beanModel == null) {
+         return Constants.NULL_PARENT_OID;
+      } else if (beanModel.getBean() instanceof TreeFolderBean) {
+         TreeFolderBean treeFolderBean = (TreeFolderBean) beanModel.getBean();
+         if (Constants.DEVICES.equals(treeFolderBean.getType())) {
+            return Constants.DEVICES_OID;
+         }else if (Constants.MACROS.equals(treeFolderBean.getType())) {
+            return Constants.MACROS_OID;
+         }
+      } else if (beanModel.getBean() instanceof Device) {
          return ((Device)beanModel.getBean()).getOid();
       } else if (beanModel.getBean() instanceof DeviceCommand) {
          return ((DeviceCommand)beanModel.getBean()).getOid();
@@ -143,4 +157,7 @@ public class BeanModelDataBase {
       }
       return list;
    }
+
+
+  
 }
