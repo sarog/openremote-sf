@@ -22,6 +22,7 @@ package org.openremote.modeler.client.widget.uidesigner;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.domain.Screen;
@@ -41,7 +42,6 @@ public class ScreenTab extends TabPanel {
    
    /** The change listener map. */
    private Map<ScreenTabItem, ChangeListener> changeListenerMap = null;
-   
    /**
     * Instantiates a new screen tab.
     */
@@ -106,7 +106,7 @@ public class ScreenTab extends TabPanel {
     * Adds the insert listener.
     */
    private void addInsertListener(){
-      BeanModelDataBase.screenTable.addInsertListener(new ChangeListener(){
+      BeanModelDataBase.screenTable.addInsertListener(Constants.SCREEN_TABLE_OID, new ChangeListener(){
          public void modelChanged(ChangeEvent event) {
             if(event.getType() == BeanModelTable.ADD){
                BeanModel beanModel = (BeanModel) event.getItem();

@@ -30,9 +30,7 @@ public class Constants {
    private Constants() {
    }
 
-   /**
-    * The Constant INFRARED_TYPE. For assign protocol type. It will be removed after read protocol type from database.
-    */
+   /** The Constant INFRARED_TYPE. For assign protocol type. It will be removed after read protocol type from database. */
    public static final String INFRARED_TYPE = "infrared";
    
    /** The Constant BUTTON_DND_GROUP. For assign UIDesigner to DND button. */
@@ -43,5 +41,18 @@ public class Constants {
    
    /** The Constant MACROS. */
    public static final String MACROS = "macros";
+   
+   /** The Constant DEVICES_OID. */
+   public static final long DEVICES_OID = -100;
+   
+   /** The Constant MACROS_OID. */
+   public static final long MACROS_OID = -200;
+
+   /** The Constant NULL_PARENT_OID. */
+   public static final long NULL_PARENT_OID = -300;
+   
+   /** The Constant SCREEN_TABLE_OID. */
+   public static final long SCREEN_TABLE_OID = -400;
+   
    
 }

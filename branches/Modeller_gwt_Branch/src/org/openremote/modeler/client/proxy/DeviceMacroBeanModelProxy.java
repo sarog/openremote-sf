@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.CommandDelay;
@@ -55,9 +56,8 @@ public class DeviceMacroBeanModelProxy {
     */
    public static void loadDeviceMaro(BeanModel deviceMacroBeanModel,
          final AsyncSuccessCallback<List<BeanModel>> callback) {
-      if (deviceMacroBeanModel == null) {
+      if (deviceMacroBeanModel == null || deviceMacroBeanModel.getBean() instanceof TreeFolderBean) {
          AsyncServiceFactory.getDeviceMacroServiceAsync().loadAll(new AsyncSuccessCallback<List<DeviceMacro>>() {
-
             public void onSuccess(List<DeviceMacro> result) {
                List<BeanModel> beanModels = DeviceMacro.createModels(result);
                BeanModelDataBase.deviceMacroTable.insertAll(beanModels);
