@@ -118,9 +118,7 @@ public class DeviceMacroBeanModelTable extends BeanModelTable{
                public void modelChanged(ChangeEvent event) {
                   BeanModel sourceBeanModel = (BeanModel) event.getItem();
                   if (event.getType() == UPDATE) {
-                     for (String propertyName : sourceBeanModel.getPropertyNames()) {
-                        targetBeanModel.set(propertyName, sourceBeanModel.get(propertyName));
-                     }
+                       targetBeanModel.set("name", sourceBeanModel.get("name"));
                      treeStore.update(targetBeanModel);
                   } else if (event.getType() == REMOVE) {
                      treeStore.remove(targetBeanModel);
@@ -141,24 +139,29 @@ public class DeviceMacroBeanModelTable extends BeanModelTable{
     */
    @SuppressWarnings("unchecked")
    private void addDeviceMacroItemCascadeChangeListener(final AutoListenableTreeStore treeStore, final BeanModel targetBeanModel) {
+      
       ChangeListener cascadeChangeLisntener = new ChangeListener() {
          public void modelChanged(ChangeEvent event) {
-            BeanModel sourceBeanModel = (BeanModel) event.getItem();
-            
-            if (sourceBeanModel.getBean() instanceof DeviceMacro) {
-               DeviceMacro deviceMacro = (DeviceMacro) sourceBeanModel.getBean();
-               DeviceMacroRef deviceMacroRef = (DeviceMacroRef) targetBeanModel.getBean();
-               deviceMacroRef.setTargetDeviceMacro(deviceMacro);
-            } else if (sourceBeanModel.getBean() instanceof DeviceCommand) {
-               DeviceCommand deviceCommand = (DeviceCommand) sourceBeanModel.getBean();
-               DeviceCommandRef deviceCommandRef = (DeviceCommandRef) targetBeanModel.getBean();
-               deviceCommandRef.setDeviceCommand(deviceCommand);
-            } else if (sourceBeanModel.getBean() instanceof Device) {
-               Device device = (Device) sourceBeanModel.getBean();
-               DeviceCommandRef targetDeviceCommandRef = (DeviceCommandRef)targetBeanModel.getBean();
-               targetDeviceCommandRef.setDeviceName(device.getName());
+            if (event.getType() == UPDATE) {
+               BeanModel sourceBeanModel = (BeanModel) event.getItem();
+
+               if (sourceBeanModel.getBean() instanceof DeviceMacro) {
+                  DeviceMacro deviceMacro = (DeviceMacro) sourceBeanModel.getBean();
+                  DeviceMacroRef deviceMacroRef = (DeviceMacroRef) targetBeanModel.getBean();
+                  deviceMacroRef.setTargetDeviceMacro(deviceMacro);
+               } else if (sourceBeanModel.getBean() instanceof DeviceCommand) {
+                  DeviceCommand deviceCommand = (DeviceCommand) sourceBeanModel.getBean();
+                  DeviceCommandRef deviceCommandRef = (DeviceCommandRef) targetBeanModel.getBean();
+                  deviceCommandRef.setDeviceCommand(deviceCommand);
+               } else if (sourceBeanModel.getBean() instanceof Device) {
+                  Device device = (Device) sourceBeanModel.getBean();
+                  DeviceCommandRef targetDeviceCommandRef = (DeviceCommandRef) targetBeanModel.getBean();
+                  targetDeviceCommandRef.setDeviceName(device.getName());
+               }
+               treeStore.update(targetBeanModel);
+            } else if (event.getType() == REMOVE) {
+               treeStore.remove(targetBeanModel);
             }
-            treeStore.update(targetBeanModel);
          }
       };
       
