@@ -39,6 +39,9 @@ import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.dnd.DragSource;
 import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.event.DNDListener;
+import com.extjs.gxt.ui.client.event.ResizeEvent;
+import com.extjs.gxt.ui.client.event.ResizeListener;
+import com.extjs.gxt.ui.client.fx.Resizable;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Event;
@@ -123,28 +126,33 @@ public class ScreenPanel extends LayoutContainer {
                selectedButton.removeStyleName("button-border");
             }
             selectedButton = screenBtn;
-//            Resizable resizable = new Resizable(panel);  
-//            resizable.setDynamic(false);
-//            resizable.addResizeListener(new ResizeListener(){
-//
-//               @Override
-//               public void resizeEnd(ResizeEvent re) {
-//                  
-//                  LayoutContainer simple = (LayoutContainer)re.getComponent();
-////                  System.out.println("height: "+simple.getHeight());
-//                  int size = (int) Math.round(simple.getHeight()/49.0);
-////                  System.out.println("size: "+size);
-//                  simple.setHeight(size*49);
-//               }
-//
-//               @Override
-//               public void resizeStart(ResizeEvent re) {
-//                  LayoutContainer simple = (LayoutContainer)re.getComponent();
-//                  System.out.println(simple.getHeight());
-////                  super.resizeStart(re);
-//               }
-//
-//            });
+            Resizable resizable = new Resizable(screenBtn); 
+            final Position sourcePosition = new Position(0, 0);
+            resizable.addResizeListener(new ResizeListener(){
+
+               @Override
+               public void resizeEnd(ResizeEvent re) {
+                  
+                  LayoutContainer simple = (LayoutContainer)re.getComponent();
+                  int lSize = (int) Math.round((sourcePosition.getPosX()-simple.getAbsoluteLeft())/49.0);
+                  int tSize = (int) Math.round((sourcePosition.getPosY()-simple.getAbsoluteTop())/49.0);
+                  simple.setPagePosition(sourcePosition.getPosX()-lSize*49-lSize, sourcePosition.getPosY()-tSize*49-tSize);
+                  
+                  int vSize = (int) Math.round(simple.getHeight()/49.0);
+                  int hSize = (int) Math.round(simple.getWidth()/49.0);
+                  simple.setHeight(vSize*49+vSize-1);
+                  simple.setWidth(hSize*49+hSize-1);
+               }
+
+               @Override
+               public void resizeStart(ResizeEvent re) {
+                  LayoutContainer simple = (LayoutContainer)re.getComponent();
+                  sourcePosition.setPosX(simple.getAbsoluteLeft());
+                  sourcePosition.setPosY(simple.getAbsoluteTop());
+//                  super.resizeStart(re);
+               }
+
+            });
             add(screenBtn);
             DragSource source = createDragSource(screenBtn);
 //            source.addDNDListener(new DNDListener(){
