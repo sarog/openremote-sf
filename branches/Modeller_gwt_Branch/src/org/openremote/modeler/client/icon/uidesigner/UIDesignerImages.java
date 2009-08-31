@@ -22,14 +22,14 @@ package org.openremote.modeler.client.icon.uidesigner;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.ImageBundle;
 
+// TODO: Auto-generated Javadoc
 /**
- * The Interface Icons.
+ * The Interface UIDesignerImages.
  */
 public interface UIDesignerImages extends ImageBundle {
    
    /**
-    * Folder.
-    *
+    * Iphone background.
     * 
     * @return the abstract image prototype
     */
@@ -37,11 +37,28 @@ public interface UIDesignerImages extends ImageBundle {
    AbstractImagePrototype iphoneBackground();
    
    /**
-    * Iphone_btn.
+    * Iphone btn.
     * 
     * @return the abstract image prototype
     */
    @Resource("iphone_btn.jpg")
    AbstractImagePrototype iphoneBtn();
    //TODO we will store the screen background name in the database to support multi-device.
+   
+   /**
+    * Iphone btn sprite.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("iphone_btn_sprite.png")
+   AbstractImagePrototype iphoneBtnSprite();
+   
+   /**
+    * Iphone btn vertical.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("iphone_btn_vertical.png")
+   AbstractImagePrototype iphoneBtnVertical();
+   
 }
