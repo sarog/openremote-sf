@@ -290,9 +290,6 @@ public class BeanModelTable {
       for (String property : oldBeanModel.getPropertyNames()) {
 
       }
-
-      // notifyBeanModel(UPDATE, newBeanModel);
-      // map.put(getIdFromBeanModel(newBeanModel), newBeanModel);
    }
 
    /**

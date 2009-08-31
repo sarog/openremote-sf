@@ -83,7 +83,7 @@ public class DeviceBeanModelTable extends BeanModelTable{
                if (parentBeanModel == null) {
                   treeStore.add(sourceBeanModel, false);
                }else {
-                  long sourceParentBeanModelOid = -1;
+                  long sourceParentBeanModelOid = -1L;
                   if (sourceBeanModel.getBean() instanceof Device) {
                      treeStore.add(parentBeanModel, sourceBeanModel, false);
                   } else if (sourceBeanModel.getBean() instanceof DeviceCommand) {
