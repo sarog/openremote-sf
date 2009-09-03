@@ -74,7 +74,7 @@ public class RenameButtonWindow extends FormWindow {
       buttonName.setAllowBlank(false);
       buttonName.setName("name");
       buttonName.setFieldLabel("Name");
-      buttonName.setValue(button.getName());
+      buttonName.setValue(button.getLabel());
       form.add(buttonName);
    }
    

@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.gxtextends.ScreenDropTarget;
-import org.openremote.modeler.client.icon.uidesigner.UIDesignerImages;
 import org.openremote.modeler.client.model.Position;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -43,7 +42,6 @@ import com.extjs.gxt.ui.client.event.ResizeEvent;
 import com.extjs.gxt.ui.client.event.ResizeListener;
 import com.extjs.gxt.ui.client.fx.Resizable;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 
@@ -55,19 +53,30 @@ public class ScreenPanel extends LayoutContainer {
    /** The screen. */
    private Screen screen;
 
-   /** The ui designer images. */
-   private UIDesignerImages uiDesignerImages = GWT.create(UIDesignerImages.class);
-   
+   /** The Constant POSITION. */
    private static final String POSITION = "position";
-   
+
+   /** The Constant TABLE_WIDTH. */
    private static final int TABLE_WIDTH = 196;
+   
+   /** The Constant TABLE_HEIGHT. */
    private static final int TABLE_HEIGHT = 294;
+   
+   /** The Constant PADDING_LEFT. */
    private static final int PADDING_LEFT = 35;
+   
+   /** The Constant PADDING_TOP. */
    private static final int PADDING_TOP = 105;
+   
+   /** The Constant RESIZABLE_HANDLES. */
+   private static final String RESIZABLE_HANDLES = "e s"; // Make resizable in east and south direction.
+   
+   /** The button in area. Record the buttons position and hold area in screen table. */
+   private boolean[][] btnInArea;
    
    /** The selected button. */
    private ScreenButton selectedButton;
-   
+
    /**
     * Instantiates a new screen panel.
     * 
@@ -75,40 +84,63 @@ public class ScreenPanel extends LayoutContainer {
     */
    public ScreenPanel(Screen s) {
       screen = s;
+      btnInArea = new boolean[screen.getColumnCount()][screen.getRowCount()];
       addStyleName("screen-background");
       setStyleAttribute("paddingLeft", String.valueOf(PADDING_LEFT));
       setStyleAttribute("paddingTop", String.valueOf(PADDING_TOP));
+      initBtnInArea();
       createTable();
-      
+
    }
 
    /**
-    * Creates the table.
+    * Make sure btnInArea to be initial.
+    */
+   private void initBtnInArea() {
+      for (int x = 0; x < screen.getColumnCount(); x++) {
+         for (int y = 0; y < screen.getRowCount(); y++) {
+            btnInArea[x][y] = false;
+         }
+      }
+   }
+
+   /**
+    * Creates the screen table.
     */
    private void createTable() {
-//      LayoutContainer tableWapper = new LayoutContainer();
-      FlexTable iphoneTable = new FlexTable();
-      iphoneTable.setCellPadding(0);
-      iphoneTable.setCellSpacing(0);
-      iphoneTable.addStyleName("panel-table");
-      iphoneTable.setPixelSize(TABLE_WIDTH, TABLE_HEIGHT);
-      add(iphoneTable);
-      final int width = (int)Math.round((float)TABLE_WIDTH/screen.getColumnCount());
-      final int height = (int)Math.round((float)TABLE_HEIGHT/screen.getRowCount());
+      FlexTable screenTable = new FlexTable();
+      screenTable.setCellPadding(0);
+      screenTable.setCellSpacing(0);
+      screenTable.addStyleName("panel-table");
+      screenTable.setPixelSize(TABLE_WIDTH, TABLE_HEIGHT);
+      add(screenTable);
+      final int cellWidth = (int) Math.round((float) TABLE_WIDTH / screen.getColumnCount());
+      final int cellHeight = (int) Math.round((float) TABLE_HEIGHT / screen.getRowCount());
       DNDListener dndListener = new DNDListener() {
          @SuppressWarnings("unchecked")
          public void dragDrop(DNDEvent e) {
-            LayoutContainer targetCell = (LayoutContainer)e.getDropTarget().getComponent();
-            UIButton button = null;
+            LayoutContainer targetCell = (LayoutContainer) e.getDropTarget().getComponent();
+            Position targetPosition = (Position) targetCell.getData(POSITION);
+            ScreenButton screenBtn = new ScreenButton();
+
             Object data = e.getData();
-            if (data instanceof UIButton) {
-               button = (UIButton) data;
+            if (data instanceof ScreenButton) {
+               screenBtn = (ScreenButton) data;
+               if (canDrop(targetPosition.getPosX(), targetPosition.getPosY(), screenBtn, screen)) {
+                  screenBtn.setButtonPosition(targetPosition);
+                  screenBtn.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
+               } else {
+                  screenBtn.setPagePosition(screenBtn.getAbsoluteLeft(), screenBtn.getAbsoluteTop());
+               }
+               screenBtn.addStyleName("button-border");
             } else if (data instanceof List) {
                List<ModelData> models = (List<ModelData>) e.getData();
                if (models.size() > 0) {
                   BeanModel dataModel = models.get(0).get("model");
-                  button = new UIButton(IDUtil.nextID());
+                  UIButton button = new UIButton(IDUtil.nextID());
                   button.setLabel(dataModel.get("name").toString());
+                  button.setWidth(1);
+                  button.setHeight(1);
                   UICommand uiCommand = null;
                   if (dataModel.getBean() instanceof DeviceCommand) {
                      uiCommand = new DeviceCommandRef((DeviceCommand) dataModel.getBean());
@@ -116,149 +148,227 @@ public class ScreenPanel extends LayoutContainer {
                      uiCommand = new DeviceMacroRef((DeviceMacro) dataModel.getBean());
                   }
                   button.setUiCommand(uiCommand);
+                  button.setPosition(targetPosition);
+                  screen.addButton(button);
+                  screenBtn = createScreenButton(cellWidth, cellHeight, button);
+                  createDragSource(screenBtn);
+                  add(screenBtn);
+                  screenBtn.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
                }
             }
-            button.setPosition((Position)targetCell.getData(POSITION));
-            screen.addButton(button);
-            ScreenButton screenBtn = createScreenButton(width, height, button);
-            screenBtn.addStyleName("button-border");
-            if(selectedButton != null){
+            screenBtn.fillArea(btnInArea);
+            if (selectedButton != null) {
                selectedButton.removeStyleName("button-border");
             }
+            screenBtn.addStyleName("button-border");
             selectedButton = screenBtn;
-            Resizable resizable = new Resizable(screenBtn); 
-            final Position sourcePosition = new Position(0, 0);
-            resizable.addResizeListener(new ResizeListener(){
-
-               @Override
-               public void resizeEnd(ResizeEvent re) {
-                  
-                  LayoutContainer simple = (LayoutContainer)re.getComponent();
-                  int lSize = (int) Math.round((sourcePosition.getPosX()-simple.getAbsoluteLeft())/49.0);
-                  int tSize = (int) Math.round((sourcePosition.getPosY()-simple.getAbsoluteTop())/49.0);
-                  simple.setPagePosition(sourcePosition.getPosX()-lSize*49-lSize, sourcePosition.getPosY()-tSize*49-tSize);
-                  
-                  int vSize = (int) Math.round(simple.getHeight()/49.0);
-                  int hSize = (int) Math.round(simple.getWidth()/49.0);
-                  simple.setHeight(vSize*49+vSize-1);
-                  simple.setWidth(hSize*49+hSize-1);
-               }
-
-               @Override
-               public void resizeStart(ResizeEvent re) {
-                  LayoutContainer simple = (LayoutContainer)re.getComponent();
-                  sourcePosition.setPosX(simple.getAbsoluteLeft());
-                  sourcePosition.setPosY(simple.getAbsoluteTop());
-//                  super.resizeStart(re);
-               }
-
-            });
-            add(screenBtn);
-            DragSource source = createDragSource(screenBtn);
-//            source.addDNDListener(new DNDListener(){
-//
-//               public void dragMove(DNDEvent e) {
-//                  LayoutContainer simple = (LayoutContainer)e.getDropTarget().getComponent();
-//                  int size = (int) Math.round(simple.getSize().height/49.0);
-//                  System.out.println(size);
-//                  simple.setHeight(size*49);
-//                  super.dragMove(e);
-//               }
-//            });
-            source.setGroup(Constants.BUTTON_DND_GROUP);
-            screenBtn.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
+            makeButtonResizable(cellWidth, cellHeight, screenBtn);
             layout();
             super.dragDrop(e);
          }
       };
-      for (int i=0; i < screen.getRowCount(); i++) {
-         for (int j=0; j < screen.getColumnCount(); j++) {
+      for (int i = 0; i < screen.getRowCount(); i++) {  // Initial the screen table, make it can be drop buttons.  
+         for (int j = 0; j < screen.getColumnCount(); j++) {
             LayoutContainer cell = new LayoutContainer();
-            cell.setSize(width, height);
-            iphoneTable.setWidget(i, j, cell);
-            cell.setData(POSITION, new Position(i, j));
+            cell.setSize(cellWidth, cellHeight);
+            screenTable.setWidget(i, j, cell);
+            cell.setData(POSITION, new Position(j, i));
             ScreenDropTarget dropTarget = new ScreenDropTarget(cell);
             dropTarget.setGroup(Constants.BUTTON_DND_GROUP);
             dropTarget.setOverStyle("background-color");
             dropTarget.addDNDListener(dndListener);
          }
       }
-      if(screen.getButtons().size() > 0){
+      if (screen.getButtons().size() > 0) {  // If the Panel has closed, there may have some buttons on screen to be rendered. 
          List<UIButton> buttons = screen.getButtons();
          for (UIButton button : buttons) {
             Position pos = button.getPosition();
-            ScreenButton screenBtn = createScreenButton(width, height, button);
-            screenBtn.setPosition(PADDING_LEFT+height*pos.getPosY()+pos.getPosY()+1, PADDING_TOP+width*pos.getPosX()+pos.getPosX()+1);
+            ScreenButton screenBtn = createScreenButton((cellWidth + 1) * button.getWidth() - 1, (cellHeight + 1) * button.getHeight() -1, button);
+            makeButtonResizable(cellWidth, cellHeight, screenBtn);
+            screenBtn.setPosition(PADDING_LEFT + cellWidth * pos.getPosX() + pos.getPosX() + 1, PADDING_TOP + cellHeight
+                  * pos.getPosY() + pos.getPosY() + 1);
             add(screenBtn);
-            DragSource source = createDragSource(screenBtn);
+            screenBtn.fillArea(btnInArea);
+            createDragSource(screenBtn);
             layout();
-            source.setGroup(Constants.BUTTON_DND_GROUP);
+
          }
       }
-      
+
+   }
+
+   /**
+    * Find max x position when resize.
+    * 
+    * @param screenButton the screen button
+    * @param screen the screen
+    * 
+    * @return the max x position
+    */
+   private int findMaxXWhenResize(ScreenButton screenButton, Screen screen) {
+      Position btnPosition = screenButton.getButtonPosition();
+      int maxX = btnPosition.getPosX();
+      for (; maxX < screen.getColumnCount() - 1; maxX++) {
+         for (int tmpY = btnPosition.getPosY(); ((tmpY < screen.getRowCount()) && (tmpY < btnPosition.getPosY()
+               + screenButton.getButtonHeight())); tmpY++) {
+            if ((btnInArea[maxX + 1][tmpY])
+                  && ((maxX + 1) > (btnPosition.getPosX() + screenButton.getButtonWidth() - 1))) {
+               return maxX;
+            }
+         }
+      }
+      return maxX;
+   }
+
+   /**
+    * Find max y position when resize.
+    * 
+    * @param screenButton the screen button
+    * @param screen the screen
+    * 
+    * @return the max y position
+    */
+   private int findMaxYWhenResize(ScreenButton screenButton, Screen screen) {
+      Position btnPosition = screenButton.getButtonPosition();
+      int maxY = btnPosition.getPosY();
+      for (; maxY < screen.getRowCount() - 1; maxY++) {
+         for (int tmpX = btnPosition.getPosX(); ((tmpX < screen.getColumnCount()) && (tmpX < btnPosition.getPosX()
+               + screenButton.getButtonWidth())); tmpX++) {
+            if ((btnInArea[tmpX][maxY + 1])
+                  && ((maxY + 1) > (btnPosition.getPosY() + screenButton.getButtonHeight() - 1))) {
+               return maxY;
+            }
+         }
+      }
+      return maxY;
+   }
+
+   /**
+    * Calculate the position can drop the screenButton.
+    * 
+    * @param x the x
+    * @param y the y
+    * @param screenButton the screen button
+    * @param screen the screen
+    * 
+    * @return true, if successful
+    */
+   private boolean canDrop(int x, int y, ScreenButton screenButton, Screen screen) {
+      for (int tmpX = x; tmpX < x + screenButton.getButtonWidth(); tmpX++) {
+         for (int tmpY = y; tmpY < y + screenButton.getButtonHeight(); tmpY++) {
+            if (tmpX > screen.getColumnCount() - 1 || tmpY > screen.getRowCount() - 1) {
+               return false;
+            }
+            if (btnInArea[tmpX][tmpY]) {
+               return false;
+            }
+         }
+      }
+
+      return true;
    }
 
    /**
     * Creates the drag source.
     * 
-    * @param screenBtn the screen btn
-    * 
-    * @return the drag source
+    * @param screenBtn the screen button
     */
-   private DragSource createDragSource(ScreenButton screenBtn) {
+   private void createDragSource(final ScreenButton screenBtn) {
       DragSource source = new DragSource(screenBtn) {
          @Override
          protected void onDragStart(DNDEvent event) {
-            // by default drag is allowed
-            event.setData(event.getDragSource().getComponent().getData(ScreenButton.DATA_BUTTON));
+            screenBtn.clearArea(btnInArea);
+            event.setData(screenBtn);
             event.getStatus().setStatus(true);
-            event.getStatus().update(uiDesignerImages.iphoneBtn().createImage().getElement());
-         } 
-
-         @Override
-         protected void onDragDrop(DNDEvent event) {
-            UIButton button = event.getDragSource().getComponent().getData(ScreenButton.DATA_BUTTON);
-            screen.deleteButton(button);
-            remove(event.getDragSource().getComponent());
-            super.onDragDrop(event);
+            event.getStatus().update("1 item selected");
          }
-         
       };
-      return source;
+      source.setGroup(Constants.BUTTON_DND_GROUP);
    }
 
    /**
     * Creates the screen button.
     * 
-    * @param width the width
-    * @param height the height
+    * @param width the button width
+    * @param height the button height
     * @param button the button
     * 
     * @return the screen button
     */
    private ScreenButton createScreenButton(final int width, final int height, UIButton button) {
-      ScreenButton screenBtn = new ScreenButton(button, width, height){
+      ScreenButton screenBtn = new ScreenButton(button, width, height) {
          @Override
          public void onBrowserEvent(Event event) {
-            if(event.getTypeInt() == Event.ONMOUSEDOWN){
+            if (event.getTypeInt() == Event.ONMOUSEDOWN) {
                this.addStyleName("button-border");
-               if(selectedButton != null && (ScreenButton)this != selectedButton){
+               if (selectedButton != null && (ScreenButton) this != selectedButton) {
                   selectedButton.removeStyleName("button-border");
                }
-               selectedButton = (ScreenButton)this;
+               selectedButton = (ScreenButton) this;
             }
             super.onBrowserEvent(event);
          }
       };
       return screenBtn;
    }
-   
+
    /**
     * Gets the selected button.
     * 
     * @return the selected button
     */
-   public ScreenButton getSelectedButton(){
+   public ScreenButton getSelectedButton() {
       return selectedButton;
    }
+
+   /**
+    * Delete.
+    * 
+    * @param screenButton the screen button
+    */
+   public void delete(ScreenButton screenButton) {
+      screenButton.clearArea(btnInArea);
+      remove(screenButton);
+   }
+
+   /**
+    * Make the button can be resizable.
+    * @param cellWidth
+    * @param cellHeight
+    * @param screenBtn
+    */
+   private void makeButtonResizable(final int cellWidth, final int cellHeight, ScreenButton screenBtn) {
+      final Resizable resizable = new Resizable(screenBtn, RESIZABLE_HANDLES);
+      resizable.addResizeListener(new ResizeListener() {
+
+         @Override
+         public void resizeEnd(ResizeEvent re) {
+
+            ScreenButton resizedBtn = (ScreenButton) re.getComponent();
+            int vSize = (int) Math.round((float) resizedBtn.getHeight() / cellHeight);
+            int hSize = (int) Math.round((float) resizedBtn.getWidth() / cellWidth);
+            resizedBtn.setHeight(vSize * cellHeight + vSize - 1);
+            resizedBtn.setWidth(hSize * cellWidth + hSize - 1);
+            resizedBtn.setButtonWidth(hSize);
+            resizedBtn.setButtonHeight(vSize);
+            resizedBtn.adjust(); // Adjust the button's display.
+            resizedBtn.fillArea(btnInArea);
+         }
+
+         @Override
+         public void resizeStart(ResizeEvent re) {
+            ScreenButton resizeBtn = (ScreenButton) re.getComponent();
+            if(resizeBtn.getWidth()/cellWidth == 2){  // In IE if the button width is 2 cell width, it can't be resize to 1 cell width.
+               resizeBtn.adjustCenter(cellWidth);
+            }
+            int maxX = findMaxXWhenResize(resizeBtn, screen);
+            int maxY = findMaxYWhenResize(resizeBtn, screen);
+            resizable.setMaxWidth((maxX - resizeBtn.getButtonPosition().getPosX() + 1) * cellWidth);
+            resizable.setMaxHeight((maxY - resizeBtn.getButtonPosition().getPosY() + 1) * cellHeight);
+            resizeBtn.clearArea(btnInArea);
+         }
+
+      });
+   }
+
 }
