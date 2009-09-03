@@ -3,10 +3,15 @@
  */
 package org.openremote.console.web.client;
 
-import org.openremote.console.web.client.def.ActivityDef;
-import org.openremote.console.web.client.def.UiDef;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.google.gwt.user.client.ui.RootPanel;
+import org.openremote.console.web.client.def.ActivityDef;
+import org.openremote.console.web.client.def.ScreenDef;
+import org.openremote.console.web.client.def.UiDef;
+import org.openremote.console.web.client.widget.Activities;
+import org.openremote.console.web.client.widget.Activity;
+import org.openremote.console.web.client.widget.Screen;
 
 /**
  * Responsible for bulding the web console ui from the UiDef binding result.
@@ -15,17 +20,27 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class UiBuilder {
 
-	private ActivitiesTable activitiesTable;
+	public Activities buildActivities(UiDef uiDef) {
 
-	public void buildUi(UiDef uiDef) {
-
-		this.activitiesTable = new ActivitiesTable();
-		activitiesTable.setTitle("Activities");
+		Activities activities = new Activities();
+		activities.setTitle("Activities");
 		for (ActivityDef activityDef : uiDef.getActivityDefs()) {
-			activitiesTable.addActivityDef(activityDef);
+			List<Screen> screens = buildScreens(activityDef);
+			Activity activity = new Activity(activityDef.getName(), screens);
+			activities.addActivity(activity);
 		}
-		RootPanel.get("console").add(activitiesTable.asWidget());
+		return activities;
 
+	}
+
+	private List<Screen> buildScreens(ActivityDef activityDef) {
+		List<Screen> screens = new ArrayList<Screen>(activityDef
+				.getScreenDefs().size());
+		for (ScreenDef screenDef : activityDef.getScreenDefs()) {
+			Screen screen = new Screen(screenDef.getName());
+			screens.add(screen);
+		}
+		return screens;
 	}
 
 }
