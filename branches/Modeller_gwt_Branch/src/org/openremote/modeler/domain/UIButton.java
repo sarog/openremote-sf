@@ -114,7 +114,7 @@ public class UIButton extends BusinessEntity {
     * @return the label
     */
    public String getLabel() {
-      return label.length() > 4 ? label.substring(0, 4) + "..." : label;
+      return label;
    }
 
    /**
@@ -162,12 +162,4 @@ public class UIButton extends BusinessEntity {
       this.uiCommand = uiCommand;
    }
 
-   /**
-    * Gets the name.
-    * 
-    * @return the name
-    */
-   public String getName() {
-      return label;
-   }
 }

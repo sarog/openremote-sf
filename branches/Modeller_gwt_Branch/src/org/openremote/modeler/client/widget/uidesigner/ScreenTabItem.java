@@ -94,9 +94,8 @@ public class ScreenTabItem extends TabItem {
                      renameButtonWindow.hide();
                      UIButton button = be.getData();
                      selectedButton.setLabel(button.getLabel());
-                     selectedButton.setToolTip(button.getName());
                      layout();
-                     Info.display("Info", "Edit device " + button.getName() + " success.");
+                     Info.display("Info", "Edit device " + button.getLabel() + " success.");
                   }
                });
             } else {
@@ -115,7 +114,7 @@ public class ScreenTabItem extends TabItem {
             ScreenButton selectButton = screenPanel.getSelectedButton();
             if(selectButton != null){
                screen.deleteButton((UIButton)selectButton.getData(ScreenButton.DATA_BUTTON));
-               screenPanel.remove(selectButton);
+               screenPanel.delete(selectButton);
                layout();
             } else {
                MessageBox.info("Warning", "Please select a button.", null);
