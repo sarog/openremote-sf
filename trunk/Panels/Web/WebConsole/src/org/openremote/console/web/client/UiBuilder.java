@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.console.web.client.def.ActivityDef;
+import org.openremote.console.web.client.def.ButtonDef;
 import org.openremote.console.web.client.def.ScreenDef;
 import org.openremote.console.web.client.def.UiDef;
 import org.openremote.console.web.client.widget.Activities;
@@ -38,9 +39,17 @@ public class UiBuilder {
 				.getScreenDefs().size());
 		for (ScreenDef screenDef : activityDef.getScreenDefs()) {
 			Screen screen = new Screen(screenDef.getName());
+			addButtons(screen, screenDef);
 			screens.add(screen);
 		}
 		return screens;
+	}
+
+	private void addButtons(Screen screen, ScreenDef screenDef) {
+		for (ButtonDef buttonDef : screenDef.getButtonDefs()) {
+			screen.addButton(buttonDef.getLabel(), buttonDef.getX(), buttonDef.getY(), buttonDef
+					.getWidth(), buttonDef.getHeight());
+		}
 	}
 
 }
