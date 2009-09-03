@@ -1,9 +1,7 @@
-/**
- * 
- */
-package org.openremote.console.web.client;
+package org.openremote.console.web.client.widget;
 
-import org.openremote.console.web.client.def.ActivityDef;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -12,17 +10,14 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Table containing the list of activities.
+ * Represents the list of activities for the web console.
  * 
  * @author David Reines
  */
-public class ActivitiesTable {
+public class Activities {
 
-	private final FlexTable flexTable;
-
-	public ActivitiesTable() {
-		this.flexTable = new FlexTable();
-	}
+	private final FlexTable flexTable = new FlexTable();
+	private final List<Activity> activities = new ArrayList<Activity>();
 
 	/**
 	 * Sets the title of the activity.
@@ -34,18 +29,30 @@ public class ActivitiesTable {
 	/**
 	 * Adds the activity to the last row in the underlying FlexTable.
 	 */
-	public void addActivityDef(ActivityDef activityDef) {
-		Hyperlink link = new Hyperlink(activityDef.getName(), "activities");
+	public void addActivity(Activity activity) {
+
+		activities.add(activity);
+		addActivityLink(activity);
+
+	}
+
+	private void addActivityLink(final Activity activity) {
+		Hyperlink link = new Hyperlink(activity.getName(), "activity");
 		link.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				flexTable.setVisible(false);
+				activity.show();
 			}
 		});
 		flexTable.setWidget(flexTable.getRowCount(), 0, link);
 	}
 
-	public Widget asWidget() {
+	public List<Activity> getActivities() {
+		return activities;
+	}
+
+	public Widget asGwtWidget() {
 		return this.flexTable;
 	}
 
