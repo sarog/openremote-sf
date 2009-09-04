@@ -52,6 +52,7 @@ public class WebConsole implements EntryPoint {
 		RootPanel root = RootPanel.get("console");
 		root.add(activities.asGwtWidget());
 		for (Activity activity : activities.getActivities()) {
+			root.add(activity.asGwtWidget());
 			for (Screen screen : activity.getScreens()) {
 				root.add(screen.asGwtWidget());
 			}

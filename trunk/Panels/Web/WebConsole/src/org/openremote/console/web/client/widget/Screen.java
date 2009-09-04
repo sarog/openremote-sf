@@ -1,9 +1,7 @@
 package org.openremote.console.web.client.widget;
 
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -13,30 +11,26 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class Screen {
 
-	private final VerticalPanel parentPanel = new VerticalPanel();
-	private final AbsolutePanel titlePanel = new AbsolutePanel();
-	private final AbsolutePanel panel = new AbsolutePanel();
+	private final AbsolutePanel screenPanel = new AbsolutePanel();
 	private final String name;
 
 	public Screen(String name) {
 		super();
 		this.name = name;
-		titlePanel.add(new Label(this.name));
-		parentPanel.add(titlePanel);
-		parentPanel.add(panel);
 		setVisible(false);
 	}
 
 	public void addButton(String label, int x, int y, int width, int height) {
 		PushButton button = new PushButton();
 		button.setText(label);
+		// TODO: determine why buttons are not displaying outside of GWT browser
 		button.setWidth(width + "px");
 		button.setHeight(height + "px");
-		panel.add(button, x, y);
+		screenPanel.add(button, x, y);
 	}
 
 	public void setVisible(boolean visible) {
-		this.parentPanel.setVisible(visible);
+		this.screenPanel.setVisible(visible);
 	}
 
 	public String getName() {
@@ -44,7 +38,7 @@ public class Screen {
 	}
 
 	public Widget asGwtWidget() {
-		return this.parentPanel;
+		return this.screenPanel;
 	}
 
 }
