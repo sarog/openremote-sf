@@ -37,12 +37,13 @@ public class Activities {
 	}
 
 	private void addActivityLink(final Activity activity) {
+		// TODO: make sure back button's working
 		Hyperlink link = new Hyperlink(activity.getName(), "activity");
 		link.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				flexTable.setVisible(false);
-				activity.show();
+				activity.setVisible(true);
 			}
 		});
 		flexTable.setWidget(flexTable.getRowCount(), 0, link);
