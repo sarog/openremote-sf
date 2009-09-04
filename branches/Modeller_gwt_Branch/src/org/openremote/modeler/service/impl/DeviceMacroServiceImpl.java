@@ -20,6 +20,7 @@
 package org.openremote.modeler.service.impl;
 
 import org.hibernate.Hibernate;
+import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.service.BaseAbstractService;
@@ -64,12 +65,12 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
 
 
 
+
    /**
-    * {@inheritDoc}
-    * @see org.openremote.modeler.service.BaseAbstractService#loadAll()
+    * @see org.openremote.modeler.service.DeviceMacroService#loadAll(org.openremote.modeler.domain.Account)
     */
-   public List<DeviceMacro> loadAll() {
-      List<DeviceMacro> list = super.loadAll();
+   public List<DeviceMacro> loadAll(Account account) {
+      List<DeviceMacro> list = account.getDeviceMacros();
       for (DeviceMacro deviceMacro : list) {
          Hibernate.initialize(deviceMacro.getDeviceMacroItems());
       }
