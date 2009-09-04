@@ -20,6 +20,7 @@
 package org.openremote.modeler.service;
 
 
+import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.DeviceMacro;
 
 import java.util.List;
@@ -34,9 +35,11 @@ public interface DeviceMacroService {
    /**
     * Load all {@link DeviceMacro}.
     * 
+    * @param account the account
+    * 
     * @return the list< device macro>
     */
-   List<DeviceMacro> loadAll();
+   List<DeviceMacro> loadAll(Account account);
    
 
    /**

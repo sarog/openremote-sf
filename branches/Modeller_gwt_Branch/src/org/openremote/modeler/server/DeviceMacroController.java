@@ -23,16 +23,21 @@ import org.openremote.modeler.client.rpc.DeviceMacroRPCService;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.service.DeviceMacroService;
+import org.openremote.modeler.service.impl.UserServiceImpl;
 
 import java.util.List;
 
 /**
  * The Class DeviceMacroController.
  */
+@SuppressWarnings("serial")
 public class DeviceMacroController extends BaseGWTSpringControllerWithHibernateSupport implements DeviceMacroRPCService {
    
    /** The device macro service. */
    private DeviceMacroService deviceMacroService;
+   
+   /** The user service. */
+   private UserServiceImpl userService;
 
 
     /**
@@ -50,7 +55,7 @@ public class DeviceMacroController extends BaseGWTSpringControllerWithHibernateS
     * @see org.openremote.modeler.client.rpc.DeviceMacroRPCService#loadAll()
     */
    public List<DeviceMacro> loadAll() {
-      return deviceMacroService.loadAll();
+      return deviceMacroService.loadAll(userService.getAccount());
    }
 
 
@@ -87,5 +92,17 @@ public class DeviceMacroController extends BaseGWTSpringControllerWithHibernateS
     public List<DeviceMacroItem> loadDeviceMacroItems(DeviceMacro deviceMacro) {
         return deviceMacroService.loadById(deviceMacro.getOid()).getDeviceMacroItems();
     }
+
+
+   /**
+    * Sets the user service.
+    * 
+    * @param userService the new user service
+    */
+   public void setUserService(UserServiceImpl userService) {
+      this.userService = userService;
+   }
+    
+    
 
 }
