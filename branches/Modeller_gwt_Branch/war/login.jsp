@@ -1,4 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<jsp:useBean id="now" class="java.util.Date" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -34,6 +36,12 @@
     p.fail{
         color:red;
     }
+    p.pass{
+        color:green;
+    }
+    .register_btn{
+    	margin-left: 40px;
+    }
 </style>
 </head>
 <body>
@@ -43,15 +51,21 @@
             <a href="http://www.openremote.org" ><img src="image/global.logo.png" /></a>
             <div style="padding-left:120px">
 	            <h3>Login to Modeler</h3>
-	            <p><b class="form_label">Username</b><input id="username" style="width:150px" type="text" name="j_username" value="super"></p>
-	            <p><b class="form_label">Password</b><input id="password" style="width:150px" type="password" name="j_password" value="123"></p>
+	            <p><b class="form_label">Username</b><input id="username" style="width:150px" type="text" name="j_username" value="${username}"></p>
+	            <c:if test="${success ne null and success}">
+	                <p class="pass"><b>${username}</b> has been created.</p>
+                </c:if>
+	            <p><b class="form_label">Password</b><input id="password" style="width:150px" type="password" name="j_password" value=""></p>
                 <c:if test="${param.fail ne null }">
 	                <p class="fail">The username or password you entered is incorrect.</p>
                 </c:if>
-                <p><input id="rememberme" type="checkbox" name="_spring_security_remember_me"><label for="rememberme">remember me</label></p> 
+                <p>
+                	<input id="rememberme" type="checkbox" name="_spring_security_remember_me"><label for="rememberme">remember me</label>
+                	<a class="register_btn" href="register.jsp">Create an account</a>
+                </p> 
 	            <div><input class="login_submit" type="submit" value="Login"></div>
             </div>                       
-	        <p class="copyright">Copyright &copy; 2008-2009  <a href="http://www.openremote.org">OpenRemote</a> All rights reserved.</p>            
+	        <p class="copyright">Copyright &copy; 2008-<fmt:formatDate value="${now}"pattern="yyyy" />  <a href="http://www.openremote.org">OpenRemote</a>. All rights reserved.</p>            
       </div>
 </form>
 </body>
