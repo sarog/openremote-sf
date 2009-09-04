@@ -165,6 +165,7 @@ public class IRCommandImportForm extends CommonForm {
                
             } else {
                MessageBox.alert("Warn", "Please select vendor, model first.", null);
+               wrapper.unmask();
             }
          }
          
@@ -338,8 +339,8 @@ public class IRCommandImportForm extends CommonForm {
    private void beginUpdate(RemoteJsonComboBox<ModelData> box, String url) {
       if (box != null) {
          box.reloadListStoreWithUrl(url);
-         box.setEmptyText(LOADING);
-         box.disable();
+//         box.setEmptyText(LOADING);
+//         box.disable();
       }
    }
 
@@ -351,8 +352,8 @@ public class IRCommandImportForm extends CommonForm {
     */
    private void endUpdate(RemoteJsonComboBox<ModelData> box, String emptyStr) {
       if (box != null) {
-         box.enable();
-         box.setEmptyText(emptyStr);
+//         box.enable();
+//         box.setEmptyText(emptyStr);
       }
    }
 
