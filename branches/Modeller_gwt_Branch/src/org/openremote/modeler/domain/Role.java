@@ -35,6 +35,12 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "role")
 public class Role extends BusinessEntity {
+   
+   /** The Constant ROLE_MODELER. */
+   public final static String ROLE_MODELER = "ROLE_MODELER";
+   
+   /** The Constant ROLE_DESIGNER. */
+   public final static String ROLE_DESIGNER = "ROLE_DESIGNER";
 
    /** The name. */
    private String name;

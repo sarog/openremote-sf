@@ -19,11 +19,15 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.util.List;
+
 import org.openremote.modeler.domain.Account;
+import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.UserService;
 import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.providers.encoding.Md5PasswordEncoder;
 
 /**
  * The service for User.
@@ -41,6 +45,38 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return genericDAO.getByNonIdField(User.class, "username", username).getAccount();
     }
+    
+    /**
+     * Creates the account.
+     * 
+     * @param username the username
+     * @param password the password
+     * @param roleStr the role string
+     * 
+     * @return true, if successful
+     */
+    public boolean createAccount(String username, String password, String roleStr) {
+      User user = new User();
+      user.setUsername(username);
+      user.setPassword(new Md5PasswordEncoder().encodePassword(password, username));
+      if (genericDAO.getByNonIdField(User.class, "username", username) == null){
+         List<Role> allRoles = genericDAO.loadAll(Role.class);
+         for (Role r : allRoles) {
+            if (r.getName().equals(Role.ROLE_DESIGNER) && roleStr.indexOf("role_ud") != -1 ) {
+               user.addRole(r);
+            } else if (r.getName().equals(Role.ROLE_MODELER) && roleStr.indexOf("role_bm") != -1) {
+               user.addRole(r);
+            }
+         }
+         Account acc = new Account();
+         acc.setUser(user);
+         user.setAccount(acc);
+         genericDAO.save(user);
+         return true;
+      } else {
+         return false;
+      }
+   }
 
     /**
      * {@inheritDoc}

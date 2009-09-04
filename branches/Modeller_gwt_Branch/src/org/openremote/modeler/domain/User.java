@@ -19,8 +19,11 @@
 */
 package org.openremote.modeler.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -52,11 +55,20 @@ public class User extends BusinessEntity {
    /** The roles. */
    private List<Role> roles;
    
+   
+   /**
+    * Instantiates a new user.
+    */
+   public User() {
+      roles = new ArrayList<Role>();
+   }
+
    /**
     * Gets the username.
     * 
     * @return the username
     */
+   @Column(unique = true, nullable = false)
    public String getUsername() {
       return username;
    }
@@ -75,6 +87,7 @@ public class User extends BusinessEntity {
     * 
     * @return the password
     */
+   @Column(nullable = false)
    public String getPassword() {
       return password;
    }
@@ -93,7 +106,7 @@ public class User extends BusinessEntity {
     * 
     * @return the account
     */
-   @OneToOne(mappedBy = "user")
+   @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
    public Account getAccount() {
       return account;
    }
@@ -125,6 +138,15 @@ public class User extends BusinessEntity {
     */
    public void setRoles(List<Role> roles) {
       this.roles = roles;
+   }
+   
+   /**
+    * Adds the role.
+    * 
+    * @param role the role
+    */
+   public void addRole(Role role){
+      roles.add(role);
    }
    
 }

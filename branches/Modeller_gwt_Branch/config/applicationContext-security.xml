@@ -17,10 +17,12 @@
    <security:authentication-manager alias="authenticationManager"/>
    
 	<security:authentication-provider>
-	  <security:jdbc-user-service data-source-ref="dataSource"  
+		<security:jdbc-user-service data-source-ref="dataSource"  
     users-by-username-query="SELECT U.username, U.password, true AS 'enabled' FROM user U where U.username=?"  
     authorities-by-username-query="SELECT U.username, R.name as 'authority' FROM user U JOIN user_role A ON U.oid = A.user_oid JOIN role R ON R.oid = A.role_oid WHERE U.username=?"/>
-		<!-- security:password-encoder hash="md5"/-->
+		<security:password-encoder hash="md5">
+			<security:salt-source user-property="username"/> 
+		</security:password-encoder>
 	</security:authentication-provider>
 <!--		
     <security:authentication-provider>
