@@ -113,6 +113,9 @@ public class IRCommandImportForm extends CommonForm {
    
    protected Component wrapper;
    
+   /** The section id. */
+   private String sectionId;
+   
    
    public IRCommandImportForm(final Component wrapper, BeanModel deviceBeanModel) {
       super();
@@ -134,7 +137,7 @@ public class IRCommandImportForm extends CommonForm {
 
       device = (Device)deviceBeanModel.getBean();
       if (beehiveLircRestUrl == null) {
-         configurationService.beehiveRESTUrl(new AsyncSuccessCallback<String>() {
+         configurationService.beehiveRESTRootUrl(new AsyncSuccessCallback<String>() {
             @Override
             public void onSuccess(String result) {
                beehiveLircRestUrl = result;
@@ -156,7 +159,11 @@ public class IRCommandImportForm extends CommonForm {
                importButton.setEnabled(false);
             }
             if (codeGrid != null) {
-               DeviceCommandBeanModelProxy.saveAllDeviceCommands(device, codeGrid.getStore().getModels(), new AsyncSuccessCallback<List<BeanModel>>() {
+               List<ModelData> modelDatas = codeGrid.getStore().getModels();
+               for (ModelData modelData :modelDatas) {
+                  modelData.set("sectionId", sectionId);
+               }
+               DeviceCommandBeanModelProxy.saveAllDeviceCommands(device, modelDatas, new AsyncSuccessCallback<List<BeanModel>>() {
                   @Override
                   public void onSuccess(List<BeanModel> deviceCommandModels) {
                      wrapper.fireEvent(SubmitEvent.Submit, new SubmitEvent(deviceCommandModels));
@@ -394,6 +401,7 @@ public class IRCommandImportForm extends CommonForm {
       } else {
          reloadGrid(url.toString());
       }
+      this.sectionId = String.valueOf(sectionId);
    }
 
    /**
@@ -463,6 +471,14 @@ public class IRCommandImportForm extends CommonForm {
 
    public void setDevice(Device device) {
       this.device = device;
+   }
+
+   public String getSectionId() {
+      return sectionId;
+   }
+
+   public void setSectionId(String sectionId) {
+      this.sectionId = sectionId;
    }
    
 

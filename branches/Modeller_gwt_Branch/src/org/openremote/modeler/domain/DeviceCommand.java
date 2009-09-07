@@ -48,6 +48,9 @@ public class DeviceCommand extends BusinessEntity {
    /** The name. */
    private String name;
    
+   /** The section id. */
+   private String sectionId;
+
    /**
     * Gets the name.
     * 
@@ -106,11 +109,30 @@ public class DeviceCommand extends BusinessEntity {
       this.protocol = protocol;
    }
 
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()
+    */
    @Override
    @Transient
    public String getDisplayName() {
       return getName();
    }
 
-   
+   /**
+    * Sets the section id.
+    * 
+    * @param string the new section id
+    */
+   public void setSectionId(String sectionId) {
+      this.sectionId = sectionId;
+   }
+
+   /**
+    * Gets the section id.
+    * 
+    * @return the section id
+    */
+   public String getSectionId() {
+      return sectionId;
+   }
 }

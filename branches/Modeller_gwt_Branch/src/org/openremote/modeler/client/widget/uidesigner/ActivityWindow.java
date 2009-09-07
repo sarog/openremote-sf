@@ -20,6 +20,7 @@
 package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Activity;
@@ -142,6 +143,7 @@ public class ActivityWindow extends FormWindow {
             }
             updateActivityAttrs(activity);
             activityModel = activity.getBeanModel();
+            BeanModelDataBase.activityTable.insert(activityModel);
             fireEvent(SubmitEvent.Submit, new SubmitEvent(activityModel));
          }
       });

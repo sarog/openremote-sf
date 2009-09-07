@@ -20,33 +20,35 @@
 
 package org.openremote.modeler.server;
 
-import org.apache.log4j.Logger;
+import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.rpc.ConfigurationRPCService;
-
-import java.io.IOException;
-import java.util.Properties;
 
 /**
  * Gets the system configuration.
  */
+@SuppressWarnings("serial")
 public class ConfigurationController extends BaseGWTSpringController implements ConfigurationRPCService {
    
-   /** The logger. */
-   private static Logger logger = Logger.getLogger(ConfigurationController.class);
+   /** The configuration. */
+   private Configuration configuration;
 
    /**
-    * @see org.openremote.modeler.client.rpc.ConfigurationRPCService#beehiveRESTUrl()
+    * Beehive rest root url.
+    * 
     * @return beehive rest url.
+    * 
+    * @see org.openremote.modeler.client.rpc.ConfigurationRPCService#beehiveRESTRootUrl()
     */
-   public String beehiveRESTUrl() {
-      Properties properties = new Properties();
-      try {
-         properties.load(getClass().getResourceAsStream("/config.properties"));
-      } catch (IOException e) {
-         logger.error("Read config error", e);
-      }
-       
-      return properties.getProperty("beehive.REST.Url");
+   public String beehiveRESTRootUrl() {
+      return configuration.getBeehiveRESTRootUrl();
    }
 
+   /**
+    * Sets the configuration.
+    * 
+    * @param configuration the new configuration
+    */
+   public void setConfiguration(Configuration configuration) {
+      this.configuration = configuration;
+   }
 }

@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.util.List;
+
 import org.hibernate.Hibernate;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -27,8 +29,6 @@ import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.UserService;
-
-import java.util.List;
 
 
 /**
@@ -63,10 +63,17 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
       this.userService = userService;
    }
 
-
-
+   /**
+    * {@inheritDoc}
+    * @see org.openremote.modeler.service.BaseAbstractService#loadAll()
+    */
+   public List<DeviceMacroItem> loadByDeviceMacro(long id) {
+      return loadById(id).getDeviceMacroItems();
+   }
 
    /**
+    * {@inheritDoc}
+    * @see org.openremote.modeler.service.BaseAbstractService#loadAll()
     * @see org.openremote.modeler.service.DeviceMacroService#loadAll(org.openremote.modeler.domain.Account)
     */
    public List<DeviceMacro> loadAll(Account account) {

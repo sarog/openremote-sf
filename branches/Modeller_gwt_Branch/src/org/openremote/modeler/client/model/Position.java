@@ -19,10 +19,13 @@
 */
 package org.openremote.modeler.client.model;
 
+import java.io.Serializable;
+
 /**
  * The Class PanelPosition.
  */
-public class Position {
+@SuppressWarnings("serial")
+public class Position implements Serializable{
    
    /** The pos x. */
    private int posX;
@@ -30,10 +33,24 @@ public class Position {
    /** The pos y. */
    private int posY;
    
+   /**
+    * Instantiates a new position.
+    */
+   public Position() {
+      super();
+   }
+   
+   /**
+    * Instantiates a new position.
+    * 
+    * @param posX the pos x
+    * @param posY the pos y
+    */
    public Position(int posX, int posY) {
       this.posX = posX;
       this.posY = posY;
    }
+   
    /**
     * Gets the pos x.
     * 

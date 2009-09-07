@@ -312,5 +312,18 @@ public class BeanModelTable {
     * @param asyncSuccessCallback the async success callback
     */
    public void loadFromTable(BeanModel parent, final AsyncSuccessCallback<List<BeanModel>> asyncSuccessCallback) {}
+   
+   /**
+    * Load all.
+    * 
+    * @return the list< bean model>
+    */
+   public List<BeanModel> loadAll() {
+      List<BeanModel> beanModelList = new ArrayList<BeanModel>();
+      for (Long key : map.keySet()) {
+         beanModelList.add(map.get(key));
+      }
+      return beanModelList;
+   }
 
 }

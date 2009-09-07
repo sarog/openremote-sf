@@ -104,7 +104,11 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     */
    public List<DeviceCommand> loadByDevice(long id) {
       Device device = genericDAO.loadById(Device.class, id);
-      return device.getDeviceCommands();
+      List<DeviceCommand> deviceCommandList = device.getDeviceCommands();
+      for (DeviceCommand deviceCommand : deviceCommandList) {
+         Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
+      }
+      return deviceCommandList;
    }
 
 }

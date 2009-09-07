@@ -159,6 +159,7 @@ public class DeviceCommandBeanModelProxy {
          deviceCommand.setDevice(device);
          deviceCommand.setProtocol(protocol);
          deviceCommand.setName(m.get("name").toString());
+         deviceCommand.setSectionId(m.get("sectionId").toString());
 
          protocol.setDeviceCommand(deviceCommand);
 

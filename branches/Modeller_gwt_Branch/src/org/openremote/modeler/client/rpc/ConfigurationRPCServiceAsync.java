@@ -27,12 +27,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * The Interface ConfigurationRPCServiceAsync.
  */
 public interface ConfigurationRPCServiceAsync {
-   
+
    /**
-    * Beehive rest url.
+    * Beehive rest root url.
     * 
     * @param callback the callback
     */
-   void beehiveRESTUrl(AsyncCallback<String> callback);
+   void beehiveRESTRootUrl(AsyncCallback<String> callback);
 
 }

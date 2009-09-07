@@ -16,7 +16,7 @@
   <!-- the theme of your GWT application by uncommenting          -->
   <!-- any one of the following lines.                            -->
  <inherits name='com.extjs.gxt.themes.Themes' />            
-<source path='domain'/>
+	<source path='domain'/>
 	<source path='client'/>
 	<source path='protocol'/>
 	<source path='auth'/>

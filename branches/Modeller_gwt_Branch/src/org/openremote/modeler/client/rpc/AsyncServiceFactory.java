@@ -46,6 +46,9 @@ public class AsyncServiceFactory {
    
    /** The device macro item rpc service async. */
    private static DeviceMacroItemRPCServiceAsync deviceMacroItemRPCServiceAsync = null;
+   
+   /** The utils rpc service async. */
+   private static UtilsRPCServiceAsync utilsRPCServiceAsync = null;
 
    
    /**
@@ -94,5 +97,17 @@ public class AsyncServiceFactory {
          deviceMacroItemRPCServiceAsync = GWT.create(DeviceMacroItemRPCService.class);
       }
       return deviceMacroItemRPCServiceAsync;
+   }
+   
+   /**
+    * Gets the utils rpc service async.
+    * 
+    * @return the utils rpc service async
+    */
+   public static UtilsRPCServiceAsync getUtilsRPCServiceAsync() {
+      if (utilsRPCServiceAsync == null) {
+         utilsRPCServiceAsync = GWT.create(UtilsRPCService.class);
+      }
+      return utilsRPCServiceAsync;
    }
 }

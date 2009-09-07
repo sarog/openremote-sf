@@ -30,8 +30,14 @@ public class Constants {
    private Constants() {
    }
 
-   /** The Constant INFRARED_TYPE. For assign protocol type. It will be removed after read protocol type from database. */
+   /** The Constant INFRARED_TYPE. For assign protocol type. */
    public static final String INFRARED_TYPE = "infrared";
+   
+   /** The Constant KNX_TYPE. */
+   public static final String KNX_TYPE = "knx";
+   
+   /** The Constant X10. */
+   public static final String X10_TYPE = "x10";
    
    /** The Constant BUTTON_DND_GROUP. For assign UIDesigner to DND button. */
    public static final String BUTTON_DND_GROUP = "buttonDNDGroup";
@@ -54,5 +60,6 @@ public class Constants {
    /** The Constant SCREEN_TABLE_OID. */
    public static final long SCREEN_TABLE_OID = -400;
    
-   
+   /** The Constant PANEL_DESC_FILE_EXT. */
+   public static final String PANEL_DESC_FILE_EXT = "irb";
 }

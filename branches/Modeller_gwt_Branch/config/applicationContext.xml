@@ -20,6 +20,14 @@
 			</list>
 		</property>
 	</bean>
+	<bean id="configuration" class="org.openremote.modeler.client.Configuration">
+		<property name="beehiveRESTRootUrl" value="${beehive.REST.Root.Url}" />
+		<property name="beehiveLircdConfRESTUrl" value="${beehive.lircdconf.REST.Url}" />
+		<property name="iphoneXsdPath" value="${iphone.xsd.path}" />
+		<property name="controllerXsdPath" value="${controller.xsd.path}" />
+		<property name="osWebappsRoot" value="${os.webapps.root}" />
+		<property name="webappServerRoot" value="${webapp.server.root}" />
+	</bean>
 	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
 		parent="baseSessionFactory">
