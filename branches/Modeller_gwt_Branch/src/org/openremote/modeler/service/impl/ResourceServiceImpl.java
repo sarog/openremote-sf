@@ -122,10 +122,9 @@ public class ResourceServiceImpl implements ResourceService {
          FileUtilsExt.writeStringToFile(controllerXMLFile, controllerXmlContent);
 
          if (sectionIds != "") {
-            FileUtils
-                  .copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
+            FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
          } else {
-            FileUtils.writeStringToFile(lircdFile, "");
+            FileUtilsExt.writeStringToFile(lircdFile, "");
          }
       } catch (IOException e) {
          logger.error("Compress zip file occur IOException", e);
@@ -374,6 +373,7 @@ public class ResourceServiceImpl implements ResourceService {
          String protocolType = deviceCommand.getProtocol().getType();
          List<ProtocolAttr> protocolAttrs = deviceCommand.getProtocol().getAttributes();
 
+         UIButtonEvent uiButtonEvent = new UIButtonIREvent();
          String name = "";
          String command = "";
          for (ProtocolAttr protocolAttr : protocolAttrs) {
@@ -383,7 +383,6 @@ public class ResourceServiceImpl implements ResourceService {
                command = protocolAttr.getValue();
             }
          }
-         UIButtonEvent uiButtonEvent = new UIButtonIREvent();
          uiButtonEvent.setId(this.eventId++);
          uiButtonEvent.setName(name);
          uiButtonEvent.setCommand(command);

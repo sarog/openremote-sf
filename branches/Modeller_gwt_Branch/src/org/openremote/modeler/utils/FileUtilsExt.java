@@ -23,7 +23,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
 
@@ -208,6 +210,35 @@ public class FileUtilsExt {
            String message =
                "Unable to delete directory " + directory + ".";
            throw new IOException(message);
+       }
+   }
+   
+   /**
+    * Copies bytes from the URL <code>source</code> to a file
+    * <code>destination</code>. The directories up to <code>destination</code>
+    * will be created if they don't already exist. <code>destination</code>
+    * will be overwritten if it already exists.
+    *
+    * @param source  the <code>URL</code> to copy bytes from, must not be <code>null</code>
+    * @param destination  the non-directory <code>File</code> to write bytes to
+    *  (possibly overwriting), must not be <code>null</code>
+    * @throws IOException if <code>source</code> URL cannot be opened
+    * @throws IOException if <code>destination</code> is a directory
+    * @throws IOException if <code>destination</code> cannot be written
+    * @throws IOException if <code>destination</code> needs creating but can't be
+    * @throws IOException if an IO error occurs during copying
+    */
+   public static void copyURLToFile(URL source, File destination) throws IOException {
+       InputStream input = source.openStream();
+       try {
+           FileOutputStream output = openOutputStream(destination);
+           try {
+               IOUtils.copy(input, output);
+           } finally {
+               IOUtils.closeQuietly(output);
+           }
+       } finally {
+           IOUtils.closeQuietly(input);
        }
    }
 }
