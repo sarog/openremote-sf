@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.ActivityBeanModelProxy;
 import org.openremote.modeler.client.proxy.ScreenBeanModelProxy;
@@ -265,9 +266,9 @@ public class ActivityPanel extends ContentPanel {
       Button deleteBtn = new Button("Delete");
       deleteBtn.ensureDebugId(DebugId.ACTIVITY_DELETE_BTN);
       deleteBtn.setIcon(icon.delete());
-      deleteBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
          @Override
-         public void componentSelected(ButtonEvent ce) {
+         public void onDelete(ButtonEvent ce) {
             List<BeanModel> selectedModels = tree.getSelectionModel().getSelectedItems();
             for (BeanModel selectedModel : selectedModels) {
                if (selectedModel != null && (selectedModel.getBean() instanceof Activity)) {

@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
@@ -260,8 +261,8 @@ public class DevicePanel extends ContentPanel {
       deleteBtn.setToolTip("Delete Device or DeviceCommand");
       deleteBtn.ensureDebugId(DebugId.DELETE_DEVICE_BUTTON);
       deleteBtn.setIcon(icon.delete());
-      deleteBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         public void componentSelected(ButtonEvent ce) {
+      deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
+         public void onDelete(ButtonEvent ce) {
             List<BeanModel> selectedModels = tree.getSelectionModel().getSelectedItems();
             for (BeanModel selectedModel : selectedModels) {
                if (selectedModel != null && selectedModel.getBean() instanceof Device) {
