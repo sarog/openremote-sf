@@ -260,8 +260,7 @@ public class ApplicationView implements View {
       logoutMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          @Override
          public void componentSelected(MenuEvent ce) {
-//            Anchor logout = new Anchor("logout " + authority.getUsername(), "j_security_logout");
-//            logout.fireEvent(new ClickEvent(){});
+            Window.open("j_security_logout", "_self", "");
          }
       });
       return logoutMenuItem;
