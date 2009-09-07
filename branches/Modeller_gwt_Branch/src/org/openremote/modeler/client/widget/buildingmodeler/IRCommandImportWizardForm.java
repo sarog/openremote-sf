@@ -19,11 +19,14 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.List;
+
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -79,6 +82,10 @@ public class IRCommandImportWizardForm extends IRCommandImportForm {
          public void handleEvent(FormEvent be) {
             wrapper.mask("Please Wait...");
             if (codeGrid != null) {
+               List<ModelData> modelDatas = codeGrid.getStore().getModels();
+               for (ModelData modelData :modelDatas) {
+                  modelData.set("sectionId", getSectionId());
+               }
                AsyncSuccessCallback<BeanModel> callback = new AsyncSuccessCallback<BeanModel>() {
                   @Override
                   public void onSuccess(BeanModel deviceModel) {
@@ -87,7 +94,7 @@ public class IRCommandImportWizardForm extends IRCommandImportForm {
 
                };
                if (getDevice().getOid() == 0L) {
-                  DeviceBeanModelProxy.saveDeviceWithCommands(getDevice(),codeGrid.getStore().getModels(), callback);
+                  DeviceBeanModelProxy.saveDeviceWithCommands(getDevice(),modelDatas, callback);
                } else {
                   //TODO update function
                }

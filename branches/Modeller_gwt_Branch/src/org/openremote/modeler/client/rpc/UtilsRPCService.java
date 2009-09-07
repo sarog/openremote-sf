@@ -17,24 +17,30 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
 package org.openremote.modeler.client.rpc;
+
+
+import java.util.List;
+
+import org.openremote.modeler.domain.Activity;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 
 /**
- * The Interface ConfigurationRPCService.
+ * The Interface DeviceMacroService.
  */
-@RemoteServiceRelativePath("config.smvc")
-public interface ConfigurationRPCService extends RemoteService {
-   
-  /**
-   * Beehive rest url.
-   * 
-   * @return the string
-   */
-  String beehiveRESTRootUrl();
+@RemoteServiceRelativePath("utils.smvc")
+public interface UtilsRPCService extends RemoteService {
 
+   /**
+    * Export.
+    * 
+    * @param maxId the max id
+    * @param activityList the activity list
+    * 
+    * @return the string
+    */
+   String export(long maxId, List<Activity> activityList);
 }

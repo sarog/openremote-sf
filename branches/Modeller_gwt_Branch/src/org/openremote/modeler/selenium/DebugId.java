@@ -151,6 +151,21 @@ public class DebugId {
    /** The Constant SCREEN_COLUMN_COUNT_FIELD. */
    public static final String SCREEN_COLUMN_COUNT_FIELD = "screenColumnCountField";
 
+   /** The Constant APPLICATION_FILE_BTN. */
+   public static final String APPLICATION_FILE_BTN = "applicationFileBtn";
+
+   /** The Constant IMPORT. */
+   public static final String IMPORT = "import";
+
+   /** The Constant EXPORT. */
+   public static final String EXPORT = "export";
+
+   /** The Constant LOGOUT. */
+   public static final String LOGOUT = "logout";
+
+   /** The Constant APPLICATION_HELP_BTN. */
+   public static final String APPLICATION_HELP_BTN = "applicationHelpBtn";
+
 
    
 }

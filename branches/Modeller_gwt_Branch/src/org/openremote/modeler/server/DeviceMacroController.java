@@ -90,7 +90,7 @@ public class DeviceMacroController extends BaseGWTSpringControllerWithHibernateS
      * @see org.openremote.modeler.client.rpc.DeviceMacroRPCService#loadDeviceMacroItems(org.openremote.modeler.domain.DeviceMacro)
      */
     public List<DeviceMacroItem> loadDeviceMacroItems(DeviceMacro deviceMacro) {
-        return deviceMacroService.loadById(deviceMacro.getOid()).getDeviceMacroItems();
+        return deviceMacroService.loadByDeviceMacro(deviceMacro.getOid());
     }
 
 

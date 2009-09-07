@@ -47,6 +47,13 @@ public class UIButton extends BusinessEntity {
 
    /**
     * Instantiates a new uI button.
+    */
+   public UIButton() {
+      super();
+   }
+   
+   /**
+    * Instantiates a new uI button.
     * 
     * @param id the id
     */

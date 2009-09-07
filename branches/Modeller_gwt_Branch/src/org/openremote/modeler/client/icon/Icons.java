@@ -251,4 +251,12 @@ public interface Icons extends ImageBundle {
     */
    @Resource("macros.png")
    AbstractImagePrototype macrosRoot();
+   
+   /**
+    * Logout.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("log_out.png")
+   AbstractImagePrototype logout();
 }

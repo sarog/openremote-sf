@@ -49,6 +49,7 @@
                 <prop key="/modeler/deviceMacro.smvc">deviceMacroController</prop>
                 <prop key="/modeler/config.smvc">configurationController</prop>
                 <prop key="/modeler/deviceMacroItem.smvc">deviceMacroItemController</prop>
+                <prop key="/modeler/utils.smvc">utilsController</prop>
                 <prop key="/account.htm">accountController</prop>
             </props>
         </property>
@@ -66,6 +67,7 @@
     <bean id="deviceMacroController" class="org.openremote.modeler.server.DeviceMacroController"></bean>
     <bean id="configurationController" class="org.openremote.modeler.server.ConfigurationController"></bean>
     <bean id="deviceMacroItemController" class="org.openremote.modeler.server.DeviceMacroItemController"></bean>
+    <bean id="utilsController" class="org.openremote.modeler.server.UtilsController"></bean>
     <bean id="accountController" class="org.openremote.modeler.action.AccountController"></bean>
     
 </beans>

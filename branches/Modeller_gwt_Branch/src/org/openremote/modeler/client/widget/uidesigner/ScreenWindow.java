@@ -40,7 +40,6 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ScreenWindow.
  */
