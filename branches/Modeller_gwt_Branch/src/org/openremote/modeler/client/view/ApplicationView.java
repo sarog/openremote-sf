@@ -51,7 +51,6 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -117,9 +116,6 @@ public class ApplicationView implements View {
     * Creates the north.
     */
    private void createNorth() {
-      Anchor logout = new Anchor("logout " + authority.getUsername(), "j_security_logout");
-      logout.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
-      
       HorizontalPanel headerPanel = new HorizontalPanel();
       headerPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
       
@@ -128,9 +124,6 @@ public class ApplicationView implements View {
       applicationToolBar.add(createApplicationHelpBtn());
       headerPanel.add(applicationToolBar);
       headerPanel.setCellHorizontalAlignment(applicationToolBar, HorizontalPanel.ALIGN_LEFT);
-      
-      headerPanel.add(logout);
-      headerPanel.setCellHorizontalAlignment(logout, HorizontalPanel.ALIGN_RIGHT);
       
       BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.NORTH, 25);
       data.setMargins(new Margins(0, 5, 0, 5));
