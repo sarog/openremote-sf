@@ -25,6 +25,7 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.ListViewDropTargetMacroDragExt;
 import org.openremote.modeler.client.gxtextends.TreePanelDragSourceMacroDragExt;
 import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
@@ -359,10 +360,10 @@ public class MacroWindow extends FormWindow {
       Button deleteBtn = new Button();
       deleteBtn.setToolTip("Delete Macro Item");
       deleteBtn.setIcon(icons.delete());
-      deleteBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
 
          @Override
-         public void componentSelected(ButtonEvent ce) {
+         public void onDelete(ButtonEvent ce) {
             onDeleteMacroItemBtnClicked();
          }
 
@@ -394,16 +395,6 @@ public class MacroWindow extends FormWindow {
       rightMacroItemListView = new ListView<BeanModel>() {
          @Override
          protected BeanModel prepareData(BeanModel model) {
-//            String s = model.get("name");
-//            if (model.getBean() instanceof DeviceMacro) {
-//               DeviceMacro deviceMacro = (DeviceMacro) model.getBean();
-//               s += "  (DeviceMacro " + deviceMacro.getName() + ")";
-//            } else if (model.getBean() instanceof DeviceCommand) {
-//               DeviceCommand command = (DeviceCommand) model.getBean();
-//               s += "  (Device " + command.getDevice().getName() + ")";
-//            } else if (model.getBean() instanceof CommandDelay) {
-//               s = "Delay(" + model.get("delaySecond") + "s)";
-//            }
             model.set(MACRO_ITEM_LIST_DISPLAY_FIELD, ((BusinessEntity) model.getBean()).getDisplayName());
             return model;
          }
@@ -422,15 +413,6 @@ public class MacroWindow extends FormWindow {
                   public void onSuccess(List<BeanModel> result) {
                      for (BeanModel beanModel : result) {
                         rightMacroItemListView.getStore().add(((DeviceMacroItem) beanModel.getBean()).getTargetBeanModel());
-//                        if (beanModel.getBean() instanceof DeviceMacroRef) {
-//                           DeviceMacroRef deviceMacroRef = (DeviceMacroRef) beanModel.getBean();
-//                           rightMacroItemListView.getStore().add(deviceMacroRef.getTargetDeviceMacro().getBeanModel());
-//                        } else if (beanModel.getBean() instanceof DeviceCommandRef) {
-//                           DeviceCommandRef deviceCommandRef = (DeviceCommandRef) beanModel.getBean();
-//                           rightMacroItemListView.getStore().add(deviceCommandRef.getDeviceCommand().getBeanModel());
-//                        } else if (beanModel.getBean() instanceof CommandDelay) {
-//                           rightMacroItemListView.getStore().add(beanModel);
-//                        } 
                      }
                   }
                });

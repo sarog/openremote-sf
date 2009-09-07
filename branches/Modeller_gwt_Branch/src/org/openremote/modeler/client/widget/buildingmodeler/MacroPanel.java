@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
@@ -45,6 +46,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.Store;
 import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
@@ -122,9 +124,9 @@ public class MacroPanel extends ContentPanel {
       deleteMacroBtn.setToolTip("Delete Macro");
       deleteMacroBtn.setIcon(icons.macroDeleteIcon());
       
-      deleteMacroBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      deleteMacroBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
          @Override
-         public void componentSelected(ButtonEvent ce) {
+         public void onDelete(ButtonEvent ce) {
             onDeleteDeviceMacroBtnClicked();
          }
       });
@@ -264,6 +266,7 @@ public class MacroPanel extends ContentPanel {
                   @Override
                   public void onSuccess(Void result) {
                      macroTree.getStore().remove(data);
+                     Info.display("Info", "Delete success.");
                   }
                });
             }

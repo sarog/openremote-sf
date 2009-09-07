@@ -21,6 +21,7 @@ package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.UIButton;
@@ -108,9 +109,9 @@ public class ScreenTabItem extends TabItem {
    private Button createDeleteBtn(){
       Button deleteBtn = new Button("Delete");
       deleteBtn.setIcon(icon.delete());
-      deleteBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
          @Override
-         public void componentSelected(ButtonEvent ce) {
+         public void onDelete(ButtonEvent ce) {
             ScreenButton selectButton = screenPanel.getSelectedButton();
             if(selectButton != null){
                screen.deleteButton((UIButton)selectButton.getData(ScreenButton.DATA_BUTTON));
