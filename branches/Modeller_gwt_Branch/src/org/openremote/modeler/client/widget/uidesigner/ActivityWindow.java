@@ -20,6 +20,8 @@
 package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.listener.FormResetListener;
+import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.FormWindow;
@@ -27,11 +29,9 @@ import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.TextField;
@@ -111,20 +111,8 @@ public class ActivityWindow extends FormWindow {
       Button resetBtn = new Button("reset");
       resetBtn.ensureDebugId(DebugId.NEW_ACTIVITY_WINDOW_RESET_BTN);
 
-      submitBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            if (form.isValid()) {
-               form.submit();
-            }
-         }
-      });
-      resetBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            form.reset();
-         }
-      });
+      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      resetBtn.addSelectionListener(new FormResetListener(form));
       form.addButton(submitBtn);
       form.addButton(resetBtn);
    }

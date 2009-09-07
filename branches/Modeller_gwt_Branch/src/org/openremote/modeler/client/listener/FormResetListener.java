@@ -24,13 +24,9 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 
 /**
- * The listener interface for receiving formReset events. The class that is interested in processing a formReset event
- * implements this interface, and the object created with that class is registered with a component using the
- * component's <code>addFormResetListener<code> method. When
- * the formReset event occurs, that object's appropriate
- * method is invoked.
+ * The listener invokes forms reset event.
  * 
- * @see FormResetEvent
+ * @author Dan 2009-8-21
  */
 public class FormResetListener extends SelectionListener<ButtonEvent> {
    

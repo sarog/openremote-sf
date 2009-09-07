@@ -25,16 +25,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openremote.modeler.client.listener.FormResetListener;
+import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.protocol.ProtocolAttrDefinition;
 import org.openremote.modeler.protocol.ProtocolDefinition;
 import org.openremote.modeler.protocol.ProtocolValidator;
 
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
-import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.Field;
@@ -124,26 +124,9 @@ public class ProtocolForm extends FormPanel {
       Button submitBtn = new Button("Submit");
       Button resetButton = new Button("Reset");
 
-      submitBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            if (f.isValid()) {
-               f.submit();
-            }
-         }
+      submitBtn.addSelectionListener(new FormSubmitListener(f));
 
-      });
-
-      resetButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            List<Field<?>> list = f.getFields();
-            for (Field<?> f : list) {
-               f.reset();
-            }
-         }
-
-      });
+      resetButton.addSelectionListener(new FormResetListener(f));
       addButton(submitBtn);
       addButton(resetButton);
 

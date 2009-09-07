@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.listener.FormResetListener;
+import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
@@ -41,13 +43,11 @@ import org.openremote.modeler.selenium.DebugId;
 import com.extjs.gxt.ui.client.data.BaseModelData;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
-import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
-import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
@@ -120,26 +120,8 @@ public class DeviceCommandWindow extends FormWindow {
       Button submitBtn = new Button("Submit");
       Button resetButton = new Button("Reset");
 
-      submitBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            if (form.isValid()) {
-               form.submit();
-            }
-         }
-
-      });
-
-      resetButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            List<Field<?>> list = form.getFields();
-            for (Field<?> f : list) {
-               f.reset();
-            }
-         }
-
-      });
+      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      resetButton.addSelectionListener(new FormResetListener(form));
       form.addButton(submitBtn);
       form.addButton(resetButton);
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {

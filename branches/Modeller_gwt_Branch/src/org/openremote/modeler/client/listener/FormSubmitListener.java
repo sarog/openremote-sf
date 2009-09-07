@@ -24,13 +24,10 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 
 /**
- * The listener interface for receiving formSubmit events. The class that is interested in processing a formSubmit event
- * implements this interface, and the object created with that class is registered with a component using the
- * component's <code>addFormSubmitListener<code> method. When
- * the formSubmit event occurs, that object's appropriate
- * method is invoked.
+ * This listener invokes form's submit event.
  * 
- * @see FormSubmitEvent
+ * @author Dan 2009-8-21
+ * 
  */
 public class FormSubmitListener extends SelectionListener<ButtonEvent> {
    
