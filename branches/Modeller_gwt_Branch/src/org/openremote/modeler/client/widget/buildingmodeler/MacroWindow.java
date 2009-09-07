@@ -26,6 +26,7 @@ import org.openremote.modeler.client.gxtextends.ListViewDropTargetMacroDragExt;
 import org.openremote.modeler.client.gxtextends.TreePanelDragSourceMacroDragExt;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
+import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
@@ -168,16 +169,7 @@ public class MacroWindow extends FormWindow {
       createSelectCommandContainer();
 
       Button submitBtn = new Button("OK");
-      submitBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            if (form.isValid()) {
-               form.submit();
-            }
-         }
-
-      });
+      submitBtn.addSelectionListener(new FormSubmitListener(form));
 
       form.addButton(submitBtn);
    }

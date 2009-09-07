@@ -16,16 +16,15 @@
  */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.domain.Activity;
 
 import com.extjs.gxt.ui.client.binding.FieldBinding;
 import com.extjs.gxt.ui.client.binding.FormBinding;
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
@@ -70,16 +69,7 @@ public class ActivityFormPanel extends FormPanel {
       add(nameField);
       Button submitBtn = new Button("submit");
       
-      submitBtn.addSelectionListener(new SelectionListener<ButtonEvent>(){
-
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            if (form.isValid()) {
-               form.submit();
-            }
-         }
-         
-      });
+      submitBtn.addSelectionListener(new FormSubmitListener(form));
       
       addButton(submitBtn);
 

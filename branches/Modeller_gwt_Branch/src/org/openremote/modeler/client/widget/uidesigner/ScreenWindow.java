@@ -19,11 +19,11 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.listener.FormResetListener;
+import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.proxy.ScreenBeanModelProxy;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Activity;
@@ -31,13 +31,10 @@ import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 
 /**
@@ -140,20 +137,8 @@ public class ScreenWindow extends FormWindow {
       Button resetBtn = new Button("reset");
       resetBtn.ensureDebugId(DebugId.NEW_SCREEN_WINDOW_RESET_BTN);
 
-      submitBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            if (form.isValid()) {
-               form.submit();
-            }
-         }
-      });
-      resetBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            form.reset();
-         }
-      });
+      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      resetBtn.addSelectionListener(new FormResetListener(form));
 
       form.addButton(submitBtn);
       form.addButton(resetBtn);
@@ -165,11 +150,7 @@ public class ScreenWindow extends FormWindow {
    private void addListenersToForm() {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>(){
          public void handleEvent(FormEvent be) {
-            List<Field<?>> list = form.getFields();
-            Map<String, String> attrMap = new HashMap<String, String>();
-            for (Field<?> field : list) {
-               attrMap.put(field.getName(), field.getValue().toString());
-            }
+            Map<String, String> attrMap = getAttrMap();
             BeanModel screenBeanModel = null;
             if (screen == null) {
                screenBeanModel = ScreenBeanModelProxy.createScreen(activity, attrMap);

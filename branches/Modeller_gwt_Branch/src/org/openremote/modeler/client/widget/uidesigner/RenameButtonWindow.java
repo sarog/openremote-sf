@@ -22,14 +22,14 @@ package org.openremote.modeler.client.widget.uidesigner;
 import java.util.List;
 
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.listener.FormResetListener;
+import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.UIButton;
 
-import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.TextField;
@@ -85,20 +85,8 @@ public class RenameButtonWindow extends FormWindow {
       Button submitBtn = new Button("submit");
       Button resetBtn = new Button("reset");
 
-      submitBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            if (form.isValid()) {
-               form.submit();
-            }
-         }
-      });
-      resetBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            form.reset();
-         }
-      });
+      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      resetBtn.addSelectionListener(new FormResetListener(form));
       form.addButton(submitBtn);
       form.addButton(resetBtn);
    }
