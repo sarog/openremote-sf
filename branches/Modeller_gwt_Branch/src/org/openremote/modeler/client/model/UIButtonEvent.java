@@ -30,7 +30,7 @@ import java.util.Map;
 public class UIButtonEvent {
 
    /** The type. */
-   private String type;
+   private String protocolType;
 
    /** The id. */
    private long id;
@@ -38,23 +38,6 @@ public class UIButtonEvent {
    /** The attributes. */
    private Map<String, String> protocolAttrs = new HashMap<String, String>();
 
-   /**
-    * Gets the type.
-    * 
-    * @return the type
-    */
-   public String getType() {
-      return type;
-   }
-
-   /**
-    * Sets the type.
-    * 
-    * @param type the new type
-    */
-   public void setType(String type) {
-      this.type = type;
-   }
 
    /**
     * Gets the id.
@@ -72,6 +55,24 @@ public class UIButtonEvent {
     */
    public void setId(long id) {
       this.id = id;
+   }
+
+   /**
+    * Gets the protocol type.
+    * 
+    * @return the protocol type
+    */
+   public String getProtocolType() {
+      return protocolType;
+   }
+
+   /**
+    * Sets the protocol type.
+    * 
+    * @param protocolType the new protocol type
+    */
+   public void setProtocolType(String protocolType) {
+      this.protocolType = protocolType;
    }
 
    /**
