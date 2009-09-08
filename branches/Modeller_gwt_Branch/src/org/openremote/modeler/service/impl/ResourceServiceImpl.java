@@ -36,7 +36,6 @@ import org.apache.log4j.Logger;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.UIButtonEvent;
-import org.openremote.modeler.client.model.UIButtonIREvent;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -55,6 +54,7 @@ import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.IphoneXmlParser;
+import org.openremote.modeler.utils.ProtocolEventContainer;
 import org.openremote.modeler.utils.StringUtils;
 import org.openremote.modeler.utils.ZipUtils;
 
@@ -73,15 +73,6 @@ public class ResourceServiceImpl implements ResourceService {
 
    /** The device command service. */
    private DeviceCommandService deviceCommandService;
-
-   /** The ir events. */
-   private List<UIButtonEvent> irEvents = new ArrayList<UIButtonEvent>();
-
-   /** The knx events. */
-   private List<UIButtonEvent> knxEvents = new ArrayList<UIButtonEvent>();
-
-   /** The x10 events. */
-   private List<UIButtonEvent> x10Events = new ArrayList<UIButtonEvent>();
 
    /** The event id. */
    private long eventId;
@@ -110,8 +101,7 @@ public class ResourceServiceImpl implements ResourceService {
       File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(userId));
       File lircdFile = new File(pathConfig.lircFilePath(userId));
 
-      String newIphoneXML = IphoneXmlParser.parserXML(new File(getClass().getResource(configuration.getIphoneXsdPath())
-            .getPath()), panelXmlContent, sessionFolder);
+      String newIphoneXML = IphoneXmlParser.parserXML(new File(getClass().getResource(configuration.getIphoneXsdPath()).getPath()), panelXmlContent, sessionFolder);
 
       try {
          FileUtilsExt.deleteQuietly(iphoneXMLFile);
@@ -306,12 +296,13 @@ public class ResourceServiceImpl implements ResourceService {
     */
    private String getControllerXmlContent(long maxId, List<Activity> activityList) {
       this.eventId = maxId + 1;
+      ProtocolEventContainer protocolEventContainer = new ProtocolEventContainer();
       StringBuffer controllerXml = new StringBuffer();
       controllerXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
       controllerXml
             .append("<openremote xmlns=\"http://www.openremote.org\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openremote.org http://www.openremote.org/schemas/controller.xsd\">\n");
-      controllerXml.append(getButtonsXmlContent(activityList));
-      controllerXml.append(getEventsXmlContent());
+      controllerXml.append(getButtonsXmlContent(activityList, protocolEventContainer));
+      controllerXml.append(protocolEventContainer.generateUIButtonEventsXml());
       controllerXml.append("</openremote>");
       return controllerXml.toString();
    }
@@ -324,13 +315,13 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the buttons xml content
     */
-   private String getButtonsXmlContent(List<Activity> activityList) {
+   private String getButtonsXmlContent(List<Activity> activityList, ProtocolEventContainer protocolEventContainer) {
       StringBuffer uiButtonsXml = new StringBuffer();
       for (Activity activity : activityList) {
          for (Screen screen : activity.getScreens()) {
             uiButtonsXml.append("  <buttons>\n");
             for (UIButton btn : screen.getButtons()) {
-               uiButtonsXml.append(getButtonXmlContent(btn));
+               uiButtonsXml.append(getButtonXmlContent(btn, protocolEventContainer));
             }
             uiButtonsXml.append("  </buttons>\n");
          }
@@ -346,10 +337,10 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the events from button
     */
-   private String getButtonXmlContent(UIButton uiButton) {
+   private String getButtonXmlContent(UIButton uiButton, ProtocolEventContainer protocolEventContainer) {
       UICommand uiCommand = uiButton.getUiCommand();
       if (uiCommand instanceof DeviceMacroItem) {
-         List<UIButtonEvent> uiButtonEventList = getEventsOfDeviceMacroItem((DeviceMacroItem) uiCommand);
+         List<UIButtonEvent> uiButtonEventList = getEventsOfDeviceMacroItem((DeviceMacroItem) uiCommand, protocolEventContainer);
          return generateButtonXmlString(uiButton.getOid(), uiButtonEventList);
       } else {
          // :TODO some other type of UICommand implementation
@@ -365,54 +356,29 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the controller xml segment content
     */
-   private List<UIButtonEvent> getEventsOfDeviceMacroItem(DeviceMacroItem deviceMacroItem) {
-      List<UIButtonEvent> uiButtonEventList = new ArrayList<UIButtonEvent>();
+   private List<UIButtonEvent> getEventsOfDeviceMacroItem(DeviceMacroItem deviceMacroItem, ProtocolEventContainer protocolEventContainer) {
+      List<UIButtonEvent> oneUIButtonEventList = new ArrayList<UIButtonEvent>();
       if (deviceMacroItem instanceof DeviceCommandRef) {
          DeviceCommand deviceCommand = deviceCommandService.loadById(((DeviceCommandRef) deviceMacroItem)
                .getDeviceCommand().getOid());
          String protocolType = deviceCommand.getProtocol().getType();
          List<ProtocolAttr> protocolAttrs = deviceCommand.getProtocol().getAttributes();
 
-         UIButtonEvent uiButtonEvent = new UIButtonIREvent();
-         String name = "";
-         String command = "";
-         for (ProtocolAttr protocolAttr : protocolAttrs) {
-            if ("name".equals(protocolAttr.getName())) {
-               name = protocolAttr.getValue();
-            } else if ("command".equals(protocolAttr.getName())) {
-               command = protocolAttr.getValue();
-            }
-         }
+         UIButtonEvent uiButtonEvent = new UIButtonEvent();
          uiButtonEvent.setId(this.eventId++);
-         uiButtonEvent.setName(name);
-         uiButtonEvent.setCommand(command);
          uiButtonEvent.setType(protocolType);
-         if (Constants.INFRARED_TYPE.equals(protocolType)) {
-            addUIButtonEvent(uiButtonEvent, irEvents);
-         } else if (Constants.KNX_TYPE.equals(protocolType)) {
-            addUIButtonEvent(uiButtonEvent, knxEvents);
-         } else if (Constants.X10_TYPE.equals(protocolType)) {
-            addUIButtonEvent(uiButtonEvent, x10Events);
+         for (ProtocolAttr protocolAttr : protocolAttrs) {
+            uiButtonEvent.getProtocolAttrs().put(protocolAttr.getName(), protocolAttr.getValue());
          }
-         uiButtonEventList.add(uiButtonEvent);
+         protocolEventContainer.addUIButtonEvent(uiButtonEvent);
+         oneUIButtonEventList.add(uiButtonEvent);
       } else if (deviceMacroItem instanceof DeviceMacroRef) {
          DeviceMacro deviceMacro = ((DeviceMacroRef) deviceMacroItem).getTargetDeviceMacro();
          for (DeviceMacroItem tempDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
-            uiButtonEventList.addAll(getEventsOfDeviceMacroItem(tempDeviceMacroItem));
+            oneUIButtonEventList.addAll(getEventsOfDeviceMacroItem(tempDeviceMacroItem, protocolEventContainer));
          }
       }
-      return uiButtonEventList;
-   }
-
-   private void addUIButtonEvent(UIButtonEvent newUIButtonEvent, List<UIButtonEvent> uiButtonEvents) {
-      for (UIButtonEvent uiButtonEvent : uiButtonEvents) {
-         if (newUIButtonEvent.getName().equals(uiButtonEvent.getName())
-               && newUIButtonEvent.getCommand().equals(uiButtonEvent.getCommand())) {
-            newUIButtonEvent.setId(uiButtonEvent.getId());
-            return;
-         }
-      }
-      irEvents.add(newUIButtonEvent);
+      return oneUIButtonEventList;
    }
 
    /**
@@ -435,64 +401,6 @@ public class ResourceServiceImpl implements ResourceService {
       }
       buttonXml.append("    </button>\n");
       return buttonXml.toString();
-   }
-
-   /**
-    * Gets the events xml content.
-    * 
-    * @return the events xml content
-    */
-   private String getEventsXmlContent() {
-      StringBuffer eventsXml = new StringBuffer();
-      eventsXml.append("  <events>\n");
-      eventsXml.append(getIREventXmlContent());
-      eventsXml.append(getKNXEventXmlContent());
-      eventsXml.append(getX10EventXmlContent());
-      eventsXml.append("  </events>\n");
-      irEvents.clear();
-      knxEvents.clear();
-      x10Events.clear();
-      return eventsXml.toString();
-   }
-
-   /**
-    * Gets the iR event xml content.
-    * 
-    * @return the iR event xml content
-    */
-   private String getIREventXmlContent() {
-      StringBuffer irEventsXml = new StringBuffer();
-      irEventsXml.append("    <irEvents>\n");
-      for (UIButtonEvent irEvent : irEvents) {
-         irEventsXml.append("      <irEvent id=\"" + irEvent.getId() + "\" name=\"" + irEvent.getName()
-               + "\" command=\"" + irEvent.getCommand() + "\"/>\n");
-      }
-      irEventsXml.append("    </irEvents>\n");
-      return irEventsXml.toString();
-   }
-
-   /**
-    * Gets the kNX event xml content.
-    * 
-    * @return the kNX event xml content
-    */
-   private String getKNXEventXmlContent() {
-      StringBuffer knxEventsXml = new StringBuffer();
-      knxEventsXml.append("    <knxEvents>\n");
-      knxEventsXml.append("    </knxEvents>\n");
-      return knxEventsXml.toString();
-   }
-
-   /**
-    * Gets the x10 event xml content.
-    * 
-    * @return the x10 event xml content
-    */
-   private String getX10EventXmlContent() {
-      StringBuffer x10EventsXml = new StringBuffer();
-      x10EventsXml.append("    <x10Events>\n");
-      x10EventsXml.append("    </x10Events>\n");
-      return x10EventsXml.toString();
    }
 
    /*

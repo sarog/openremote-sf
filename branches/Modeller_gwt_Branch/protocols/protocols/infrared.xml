@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.openremote.org protocol.xsd">
-	<protocol name="x10">
-		<attr name="address" label="Address">
+	<protocol name="infrared">
+		<attr name="name" label="Name">
 			<validations>
 				<allowBlank>false</allowBlank>
 			</validations>
 		</attr>
-		<attr name="command" label="Command">
+		<attr name="command" label="IR Command">
 			<validations>
 				<allowBlank>false</allowBlank>
 				<maxLength>10</maxLength>
