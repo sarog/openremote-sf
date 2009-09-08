@@ -366,7 +366,7 @@ public class ResourceServiceImpl implements ResourceService {
 
          UIButtonEvent uiButtonEvent = new UIButtonEvent();
          uiButtonEvent.setId(this.eventId++);
-         uiButtonEvent.setType(protocolType);
+         uiButtonEvent.setProtocolType(protocolType);
          for (ProtocolAttr protocolAttr : protocolAttrs) {
             uiButtonEvent.getProtocolAttrs().put(protocolAttr.getName(), protocolAttr.getValue());
          }
