@@ -19,12 +19,15 @@
 */
 package org.openremote.modeler.client.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The Class UIButtonEvent.
  * 
  * @author handy.wang
  */
-public abstract class UIButtonEvent {
+public class UIButtonEvent {
 
    /** The type. */
    private String type;
@@ -32,18 +35,15 @@ public abstract class UIButtonEvent {
    /** The id. */
    private long id;
 
-   /** The name. */
-   private String name;
-
-   /** The command. */
-   private String command;
+   /** The attributes. */
+   private Map<String, String> protocolAttrs = new HashMap<String, String>();
 
    /**
     * Gets the type.
     * 
     * @return the type
     */
-   protected String getType() {
+   public String getType() {
       return type;
    }
 
@@ -75,38 +75,20 @@ public abstract class UIButtonEvent {
    }
 
    /**
-    * Gets the name.
+    * Gets the protocol attrs.
     * 
-    * @return the name
+    * @return the protocol attrs
     */
-   public String getName() {
-      return name;
+   public Map<String, String> getProtocolAttrs() {
+      return protocolAttrs;
    }
 
    /**
-    * Sets the name.
+    * Sets the protocol attrs.
     * 
-    * @param name the new name
+    * @param protocolAttrs the protocol attrs
     */
-   public void setName(String name) {
-      this.name = name;
-   }
-
-   /**
-    * Gets the command.
-    * 
-    * @return the command
-    */
-   public String getCommand() {
-      return command;
-   }
-
-   /**
-    * Sets the command.
-    * 
-    * @param command the new command
-    */
-   public void setCommand(String command) {
-      this.command = command;
+   public void setProtocolAttrs(Map<String, String> protocolAttrs) {
+      this.protocolAttrs = protocolAttrs;
    }
 }
