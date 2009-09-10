@@ -20,21 +20,12 @@
 package org.openremote.modeler.action;
 
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.service.ResourceService;
@@ -67,7 +58,7 @@ public class FileUploadController extends MultiActionController {
     * 
     * @return the model and view
     */
-   public ModelAndView uploadFile(HttpServletRequest request, HttpServletResponse response) {
+   public ModelAndView importFile(HttpServletRequest request, HttpServletResponse response) {
       try {
          /*FileItemFactory factory = new DiskFileItemFactory();
          ServletFileUpload upload = new ServletFileUpload(factory);
