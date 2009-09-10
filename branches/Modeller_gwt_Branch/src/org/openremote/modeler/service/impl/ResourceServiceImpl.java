@@ -24,11 +24,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -48,7 +56,6 @@ import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.UIButton;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.exception.FileOperationException;
-import org.openremote.modeler.exception.XmlParserException;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.UserService;
@@ -169,6 +176,39 @@ public class ResourceServiceImpl implements ResourceService {
       }
       return lircUrl;
    }
+   
+   @SuppressWarnings({ "finally", "unchecked" })
+   public InputStream getInputStream(HttpServletRequest request, String fileFieldName) {
+      FileItemFactory factory = new DiskFileItemFactory();
+      ServletFileUpload upload = new ServletFileUpload(factory);
+      List items = null;
+      try {
+         items = upload.parseRequest(request);
+      } catch (FileUploadException e) {
+         logger.error("get InputStream from httpServletRequest error.", e);
+         e.printStackTrace();
+      }
+      if (items == null) {
+         return null;
+      }
+      Iterator it = items.iterator();
+      FileItem fileItem = null;
+      while (it.hasNext()) {
+         fileItem = (FileItem) it.next();
+         if (!fileItem.isFormField() && fileFieldName != null && fileFieldName.equals(fileItem.getFieldName())) {
+            break;
+         }
+      }
+      InputStream fileItemInputStream = null;
+      try {
+         fileItemInputStream =  (fileItem == null) ? null : fileItem.getInputStream();
+      } catch (IOException e) {
+         logger.error("get InputStream from httpServletRequest error.", e);
+         e.printStackTrace();
+      } finally {
+         return fileItemInputStream;
+      }
+   }
 
    /*
     * (non-Javadoc)
@@ -196,13 +236,13 @@ public class ResourceServiceImpl implements ResourceService {
                   irbFileContent = IOUtils.toString(zipInputStream);
                }
 
-               if (!checkXML(zipInputStream, zipEntry, "iphone")) {
-                  throw new XmlParserException("The iphone.xml schema validation fail, please check it");
-               } else if (!checkXML(zipInputStream, zipEntry, "controller")) {
-                  throw new XmlParserException("The controller.xml schema validation fail, please check it");
-               }
+//               if (!checkXML(zipInputStream, zipEntry, "iphone")) {
+//                  throw new XmlParserException("The iphone.xml schema validation fail, please check it");
+//               } else if (!checkXML(zipInputStream, zipEntry, "controller")) {
+//                  throw new XmlParserException("The controller.xml schema validation fail, please check it");
+//               }
 
-               if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|irb)")) {
+               if (FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|conf)")) {
                   File file = new File(PathConfig.getInstance(configuration).userFolder(sessionId) + zipEntry.getName());
                   FileUtils.touch(file);
 

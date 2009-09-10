@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.openremote.modeler.domain.Activity;
 
 /**
@@ -42,6 +44,8 @@ public interface ResourceService {
     * @return the URL string
     */
    public String downloadZipResource(long maxId, List<Activity> activities);
+   
+   public InputStream getInputStream(HttpServletRequest request, String fileFieldName);
 
    /**
     * Gets the irb file from zip.
