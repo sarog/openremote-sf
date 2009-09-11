@@ -40,4 +40,7 @@ public interface UtilsRPCServiceAsync {
     * @param callback the callback
     */
    void export(long maxId, List<Activity> activityList, AsyncCallback<String> callback);
+
+   void beehiveRestIconUrl(AsyncCallback<String> callback);
+
 }

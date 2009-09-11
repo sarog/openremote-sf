@@ -21,6 +21,8 @@ package org.openremote.modeler.server;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.rpc.UtilsRPCService;
 import org.openremote.modeler.domain.Activity;
@@ -102,4 +104,9 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
+
+   public String beehiveRestIconUrl() {
+      return configuration.getBeehiveRestIconUrl();
+   }
+
 }

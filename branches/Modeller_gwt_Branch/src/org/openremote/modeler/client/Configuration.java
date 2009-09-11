@@ -30,6 +30,9 @@ public class Configuration {
    /** The beehive lircd.conf rest url. */
    private String beehiveLircdConfRESTUrl;
 
+   /** The beehive rest icon url. */
+   private String beehiveRestIconUrl;
+   
    /** The iphone xsd path. */
    private String iphoneXsdPath;
 
@@ -158,4 +161,24 @@ public class Configuration {
    public void setBeehiveLircdConfRESTUrl(String beehiveLircdConfRESTUrl) {
       this.beehiveLircdConfRESTUrl = beehiveLircdConfRESTUrl;
    }
+
+   /**
+    * Gets the beehive rest icon url.
+    * 
+    * @return the beehive rest icon url
+    */
+   public String getBeehiveRestIconUrl() {
+      return beehiveRestIconUrl;
+   }
+
+   /**
+    * Sets the beehive rest icon url.
+    * 
+    * @param beehiveRestIconUrl the new beehive rest icon url
+    */
+   public void setBeehiveRestIconUrl(String beehiveRestIconUrl) {
+      this.beehiveRestIconUrl = beehiveRestIconUrl;
+   }
+   
+   
 }

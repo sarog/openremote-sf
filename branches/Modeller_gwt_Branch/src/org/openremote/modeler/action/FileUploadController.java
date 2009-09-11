@@ -21,6 +21,7 @@ package org.openremote.modeler.action;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +32,7 @@ import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.FileUtilsExt;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -85,7 +87,7 @@ public class FileUploadController extends MultiActionController {
          }
          
 //         resourceService.getIrbFileFromZip(fileItem.getInputStream(), userId);
-         resourceService.getIrbFileFromZip(resourceService.getInputStream(request, "file"), userId);
+         resourceService.getIrbFileFromZip(resourceService.getMultipartFileFromRequest(request, "file").getInputStream(), userId);
          
          PrintWriter printWriter = response.getWriter();
          printWriter.write("OK");
@@ -93,6 +95,21 @@ public class FileUploadController extends MultiActionController {
          e.printStackTrace();
       }
       return null;
+   }
+   
+   /**
+    * Upload image.
+    * 
+    * @param request the request
+    * @param response the response
+    * 
+    * @throws IOException Signals that an I/O exception has occurred.
+    */
+   public void uploadImage(HttpServletRequest request, HttpServletResponse response) throws IOException{
+      String userId = String.valueOf(userService.getAccount().getUser().getOid());
+      MultipartFile multipartFile = resourceService.getMultipartFileFromRequest(request, "uploadImage");
+      File file = resourceService.uploadImage(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), userId);
+      response.getWriter().print(resourceService.getRelativeResourcePath(userId, file.getName()));
    }
 
    /**
