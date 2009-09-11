@@ -137,6 +137,7 @@ public class ChangeIconWindow extends Dialog {
       setLayout(new BorderLayout());
       setButtons(Dialog.OKCANCEL);  
       setHideOnButtonClick(true);
+      setBodyBorder(false);
       
       addListener(Events.BeforeHide, new Listener<WindowEvent>() {
          public void handleEvent(WindowEvent be) {
@@ -242,7 +243,7 @@ public class ChangeIconWindow extends Dialog {
       radioContainer.add(radioGroup);
       
       BorderLayoutData northData = new BorderLayoutData(LayoutRegion.NORTH, 25);
-      northData.setMargins(new Margins(0, 5, 0, 5));
+      northData.setMargins(new Margins(5, 5, 0, 5));
       
       add(radioContainer, northData);
    }
@@ -257,6 +258,7 @@ public class ChangeIconWindow extends Dialog {
       iconContainer.setBorders(true);
       iconContainer.setBodyBorder(false);
       iconContainer.setHeaderVisible(false);
+//      iconContainer.set
       
       iconContainer.add(createBeehiveIconsView());
       urlPanel.setHeaderVisible(false);
@@ -272,13 +274,20 @@ public class ChangeIconWindow extends Dialog {
          @Override
          protected void onChange(ComponentEvent ce) {
             super.onChange(ce);
+            if(!uploadPanel.isValid()){
+//               uploadPanel.reset();
+               return;
+            }
             uploadPanel.submit();
             window.mask("Uploading image...");
          }
       };
       imageUpload.setFieldLabel("File");
       imageUpload.setName("uploadImage");
+      imageUpload.setRegex(".+?\\.(png|gif|jpg)");
+      imageUpload.getMessages().setRegexText("Please select a gif, jpg or png type image.");
       uploadPanel.setSize(320, 80);
+      uploadPanel.setLabelWidth(45);
       uploadPanel.setHeaderVisible(false);
       uploadPanel.setBorders(false);
       uploadPanel.setBodyBorder(false);
@@ -336,7 +345,6 @@ public class ChangeIconWindow extends Dialog {
       }
       previewIconContainer.add(previewImage, new VBoxLayoutData(new Margins(0, 0, 5, 0)));
       previewIconContainer.add(preview, new VBoxLayoutData(new Margins(5, 0, 5, 0)));
-      
    }
    
    /**
