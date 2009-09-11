@@ -77,6 +77,7 @@ public class ScreenTabItem extends TabItem {
    private void createToolBar() {
       ToolBar toolBar = new ToolBar();
       toolBar.add(createRenameBtn());
+      toolBar.add(createChangeIconBtn());
       toolBar.add(createDeleteBtn());
       add(toolBar);
    }
@@ -106,6 +107,35 @@ public class ScreenTabItem extends TabItem {
       });
       return renameBtn;
    }
+   
+   private Button createChangeIconBtn() {
+      Button changeIconBtn = new Button("Change Icon");
+      changeIconBtn.setIcon(icon.edit());
+      changeIconBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            final ScreenButton selectedButton = screenPanel.getSelectedButton();
+            if (selectedButton != null) {
+               final ChangeIconWindow changeIconWindow = new ChangeIconWindow(selectedButton);
+               changeIconWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+                  @Override
+                  public void afterSubmit(SubmitEvent be) {
+                     changeIconWindow.hide();
+                     String icon = be.getData();
+                     selectedButton.setIcon(icon);
+                     layout();
+                     Info.display("Info", "Change icon success.");
+                  }
+               });
+            } else {
+               MessageBox.info("Warning", "Please select a button.", null);
+            }
+         }
+
+      });
+      return changeIconBtn;
+   }
+   
    private Button createDeleteBtn(){
       Button deleteBtn = new Button("Delete");
       deleteBtn.setIcon(icon.delete());

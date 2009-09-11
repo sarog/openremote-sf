@@ -43,4 +43,7 @@ public interface UtilsRPCService extends RemoteService {
     * @return the string
     */
    String export(long maxId, List<Activity> activityList);
+   
+   String beehiveRestIconUrl();
+   
 }

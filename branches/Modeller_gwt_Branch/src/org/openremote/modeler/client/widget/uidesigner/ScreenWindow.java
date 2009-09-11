@@ -104,7 +104,7 @@ public class ScreenWindow extends FormWindow {
       screenNameField.setName(SCREEN_NAME);
       screenNameField.ensureDebugId(DebugId.SCREEN_NAME_FIELD);
       screenNameField.setFieldLabel("Name");
-      screenNameField.setAllowBlank(false);screenNameField.setValue("iphone1");
+      screenNameField.setAllowBlank(false);screenNameField.setValue("screen1");
       
       TextField<Integer> screenRowCountField = new TextField<Integer>();
       screenRowCountField.setName(SCREEN_ROW_COUNT);

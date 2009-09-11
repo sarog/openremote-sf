@@ -40,6 +40,7 @@ public class PathConfig {
    /** The Constant myInstance. */
    private static final PathConfig myInstance = new PathConfig();
    
+   private static final String RESOURCEFOLDER = "tmp";
    /** The configuration. */
    private Configuration configuration;
 
@@ -72,7 +73,7 @@ public class PathConfig {
          logger.fatal("Can't find modeler.root in system property, please check web.xml.");
          throw new IllegalStateException("Can't find modeler.root in system property, please check web.xml.");
       }
-      return  root + "tmp" + File.separator;
+      return  root + RESOURCEFOLDER + File.separator;
    }
 
   
@@ -149,9 +150,20 @@ public class PathConfig {
     * @return the zip url
     */
    public String getZipUrl(String userId) {
-      return configuration.getWebappServerRoot() + "/" + userId + "/";
+      return configuration.getWebappServerRoot() + "/" + RESOURCEFOLDER + "/" + userId + "/";
    }
 
+   /**
+    * Gets the relative resource path.
+    * 
+    * @param userId the user id
+    * @param fileName the file name
+    * 
+    * @return the relative resource path
+    */
+   public String getRelativeResourcePath(String userId, String fileName) {
+      return "../" + RESOURCEFOLDER + "/" + userId + "/" + fileName;
+   }
    /**
     * Gets the configuration.
     * 

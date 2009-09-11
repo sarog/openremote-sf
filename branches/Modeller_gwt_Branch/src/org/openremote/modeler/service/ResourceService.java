@@ -26,6 +26,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.openremote.modeler.domain.Activity;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * The Interface ResourceService.
@@ -45,7 +46,7 @@ public interface ResourceService {
     */
    public String downloadZipResource(long maxId, List<Activity> activities);
    
-   public InputStream getInputStream(HttpServletRequest request, String fileFieldName);
+   public MultipartFile getMultipartFileFromRequest(HttpServletRequest request, String fileFieldName);
 
    /**
     * Gets the irb file from zip.
@@ -67,4 +68,14 @@ public interface ResourceService {
     * @return the file
     */
    public File uploadImage(InputStream inputStream,String fileName,String sessionId);
+   
+   /**
+    * Gets the relative resource path.
+    * 
+    * @param sessionId the session id
+    * @param fileName the file name
+    * 
+    * @return the relative resource path
+    */
+   public String getRelativeResourcePath(String sessionId,String fileName);
 }

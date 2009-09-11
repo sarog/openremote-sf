@@ -143,6 +143,7 @@ public class ScreenButton extends LayoutContainer {
    public void setIcon(String icon) {
       // btnTable.remove(center);
       image.setUrl(icon);
+      button.setIcon(icon);
       btnTable.removeStyleName("screen-btn-cont");
       btnTable.setWidget(1, 1, image);
    }
@@ -237,7 +238,9 @@ public class ScreenButton extends LayoutContainer {
     * Adjust layout.
     */
    public void adjust() {
-      adjustTextLength(getWidth());
+      if(center.isVisible()){
+         adjustTextLength(getWidth());
+      }
    }
 
    /**
@@ -256,6 +259,12 @@ public class ScreenButton extends LayoutContainer {
    
    //In IE if the button width is 2 cell width, it can't be resize to 1 cell width.
    public void adjustCenter(int width){ 
-      adjustTextLength(width-2);
+      if(center.isVisible()){
+         adjustTextLength(width-2);
+      }
+   }
+   
+   public String getButtonIcon(){
+      return button.getIcon();
    }
 }

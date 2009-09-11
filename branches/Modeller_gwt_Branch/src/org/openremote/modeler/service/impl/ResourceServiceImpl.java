@@ -1,19 +1,22 @@
-/*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
- */
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.service.impl;
 
 import java.io.File;
@@ -64,6 +67,8 @@ import org.openremote.modeler.utils.IphoneXmlParser;
 import org.openremote.modeler.utils.ProtocolEventContainer;
 import org.openremote.modeler.utils.StringUtils;
 import org.openremote.modeler.utils.ZipUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 /**
  * The Class ResourceServiceImpl.
@@ -177,8 +182,9 @@ public class ResourceServiceImpl implements ResourceService {
       return lircUrl;
    }
    
-   @SuppressWarnings({ "finally", "unchecked" })
-   public InputStream getInputStream(HttpServletRequest request, String fileFieldName) {
+   @SuppressWarnings({ "unchecked" })
+   public MultipartFile getMultipartFileFromRequest(HttpServletRequest request, String fileFieldName) {
+      MultipartFile multipartFile = null;
       FileItemFactory factory = new DiskFileItemFactory();
       ServletFileUpload upload = new ServletFileUpload(factory);
       List items = null;
@@ -199,15 +205,19 @@ public class ResourceServiceImpl implements ResourceService {
             break;
          }
       }
-      InputStream fileItemInputStream = null;
-      try {
-         fileItemInputStream =  (fileItem == null) ? null : fileItem.getInputStream();
-      } catch (IOException e) {
-         logger.error("get InputStream from httpServletRequest error.", e);
-         e.printStackTrace();
-      } finally {
-         return fileItemInputStream;
+      if(fileItem != null){
+         multipartFile = new CommonsMultipartFile(fileItem);
       }
+      return multipartFile;
+//      InputStream fileItemInputStream = null;
+//      try {
+//         fileItemInputStream =  (fileItem == null) ? null : fileItem.getInputStream();
+//      } catch (IOException e) {
+//         logger.error("get InputStream from httpServletRequest error.", e);
+//         e.printStackTrace();
+//      } finally {
+//         return fileItemInputStream;
+//      }
    }
 
    /*
@@ -310,6 +320,10 @@ public class ResourceServiceImpl implements ResourceService {
       File file = new File(PathConfig.getInstance(configuration).userFolder(sessionId) + File.separator + fileName);
       FileOutputStream fileOutputStream = null;
       try {
+         File dir = file.getParentFile();
+         if (dir.exists() == false) {
+            dir.mkdirs();
+         }
          FileUtils.touch(file);
          fileOutputStream = new FileOutputStream(file);
          IOUtils.copy(inputStream, fileOutputStream);
@@ -462,7 +476,11 @@ public class ResourceServiceImpl implements ResourceService {
             for (UIButton btn : screen.getButtons()) {
                xmlContent.append("        <button id=\"" + btn.getOid() + "\" label=\"" + btn.getLabel() + "\" x=\""
                      + btn.getPosition().getPosX() + "\" y=\"" + btn.getPosition().getPosY() + "\" width=\""
-                     + btn.getWidth() + "\" height=\"" + btn.getHeight() + "\" />\n");
+                     + btn.getWidth() + "\" height=\"" + btn.getHeight() + "\"");
+               if(btn.getIcon() != null){
+                  xmlContent.append(" icon=\""+btn.getIcon()+"\"");
+               }
+               xmlContent.append(" />\n");
             }
             xmlContent.append("      </buttons>\n");
             xmlContent.append("    </screen>\n");
@@ -581,5 +599,12 @@ public class ResourceServiceImpl implements ResourceService {
     */
    public void setUserService(UserService userService) {
       this.userService = userService;
+   }
+
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.service.ResourceService#getRelativeResourcePath(java.lang.String, java.lang.String)
+    */
+   public String getRelativeResourcePath(String sessionId, String fileName) {
+      return PathConfig.getInstance(configuration).getRelativeResourcePath(sessionId, fileName);
    }
 }
