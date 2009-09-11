@@ -36,7 +36,6 @@ import com.extjs.gxt.ui.client.data.ScriptTagProxy;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
@@ -114,6 +113,7 @@ public class ChangeIconWindow extends Dialog {
    /** The preview image. */
    private Image previewImage = ((UIDesignerImages)GWT.create(UIDesignerImages.class)).iphoneBtn().createImage();
    
+   private ChangeIconWindow window;
    /**
     * Instantiates a new change icon window.
     * 
@@ -121,6 +121,7 @@ public class ChangeIconWindow extends Dialog {
     */
    public ChangeIconWindow(ScreenButton screenButton) {
       this.screenButton = screenButton;
+      window = this;
       initial();
       show();
    }
@@ -267,17 +268,16 @@ public class ChangeIconWindow extends Dialog {
       urlPanel.add(urlField);
       iconContainer.add(urlPanel);
       
-      FileUploadField imageUpload = new FileUploadField();
+      FileUploadField imageUpload = new FileUploadField() {
+         @Override
+         protected void onChange(ComponentEvent ce) {
+            super.onChange(ce);
+            uploadPanel.submit();
+            window.mask("Uploading image...");
+         }
+      };
       imageUpload.setFieldLabel("File");
       imageUpload.setName("uploadImage");
-      imageUpload.addListener(Events.Change, new Listener<FieldEvent>(){
-         @Override
-         public void handleEvent(FieldEvent be) {
-            mask("Uploading image...");
-            uploadPanel.submit();
-         }
-         
-      });
       uploadPanel.setSize(320, 80);
       uploadPanel.setHeaderVisible(false);
       uploadPanel.setBorders(false);
@@ -290,9 +290,8 @@ public class ChangeIconWindow extends Dialog {
          @Override
          public void handleEvent(FormEvent be) {
             uploadImageURL = be.getResultHtml();
-            unmask();
+            window.unmask();
          }
-         
       });
       iconContainer.add(uploadPanel);
       beehiveIconsView.show();
