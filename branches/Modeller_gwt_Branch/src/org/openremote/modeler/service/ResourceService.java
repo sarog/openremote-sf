@@ -46,17 +46,25 @@ public interface ResourceService {
     */
    public String downloadZipResource(long maxId, List<Activity> activities);
    
+   
+   /**
+    * Gets the multipart file from request.
+    * 
+    * @param request the request
+    * @param fileFieldName the file field name
+    * 
+    * @return the multipart file from request
+    */
    public MultipartFile getMultipartFileFromRequest(HttpServletRequest request, String fileFieldName);
 
    /**
     * Gets the irb file from zip.
     * 
     * @param inputStream the input stream
-    * @param sessionId the session id
     * 
     * @return the irb file from zip
     */
-   public String getIrbFileFromZip(InputStream inputStream,String sessionId);
+   public String getDotImportFileForRender(InputStream inputStream);
    
    /**
     * Upload image.

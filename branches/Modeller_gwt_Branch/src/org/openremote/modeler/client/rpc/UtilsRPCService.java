@@ -30,6 +30,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
  * The Interface DeviceMacroService.
+ * 
+ * @author handy.wang
  */
 @RemoteServiceRelativePath("utils.smvc")
 public interface UtilsRPCService extends RemoteService {
@@ -42,7 +44,7 @@ public interface UtilsRPCService extends RemoteService {
     * 
     * @return the string
     */
-   String export(long maxId, List<Activity> activityList);
+   String exportFiles(long maxId, List<Activity> activityList);
    
    String beehiveRestIconUrl();
    

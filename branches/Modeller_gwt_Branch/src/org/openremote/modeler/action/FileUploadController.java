@@ -22,16 +22,12 @@ package org.openremote.modeler.action;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openremote.modeler.client.Configuration;
-import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.UserService;
-import org.openremote.modeler.utils.FileUtilsExt;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -43,14 +39,11 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
  */
 public class FileUploadController extends MultiActionController {
    
-   /** The configuration. */
-   private Configuration configuration;
+   /** The resource service. */
+   private ResourceService resourceService;
    
    /** The user service. */
    private UserService userService;
-   
-   /** The resource service. */
-   private ResourceService resourceService;
 
    /**
     * Creates the.
@@ -60,41 +53,17 @@ public class FileUploadController extends MultiActionController {
     * 
     * @return the model and view
     */
+   @SuppressWarnings("finally")
    public ModelAndView importFile(HttpServletRequest request, HttpServletResponse response) {
-      try {
-         /*FileItemFactory factory = new DiskFileItemFactory();
-         ServletFileUpload upload = new ServletFileUpload(factory);
-         List items = upload.parseRequest(request);
-         Iterator it = items.iterator();
-         FileItem fileItem = null;
-         while (it.hasNext()) {
-            fileItem = (FileItem) it.next();
-            if (!fileItem.isFormField() && "file".equals(fileItem.getFieldName())) {
-               break;
-            }
-         }*/
-         
-         
-         
-         String userId = String.valueOf(userService.getAccount().getUser().getOid());
-         PathConfig pathConfig = PathConfig.getInstance(configuration);
-         File sessionFolder = new File(pathConfig.userFolder(userId));
-         if (!sessionFolder.exists()) {
-            sessionFolder.mkdirs();
-         }
-         for (File file : sessionFolder.listFiles()) {
-            FileUtilsExt.deleteQuietly(file);
-         }
-         
-//         resourceService.getIrbFileFromZip(fileItem.getInputStream(), userId);
-         resourceService.getIrbFileFromZip(resourceService.getMultipartFileFromRequest(request, "file").getInputStream(), userId);
-         
-         PrintWriter printWriter = response.getWriter();
-         printWriter.write("OK");
+      try {     
+         String importJson = resourceService.getDotImportFileForRender(resourceService.getMultipartFileFromRequest(request, "file").getInputStream());
+         response.getWriter().write(importJson);
       } catch (Exception e) {
          e.printStackTrace();
+         response.getWriter().write("");
+      } finally {
+         return null;
       }
-      return null;
    }
    
    /**
@@ -113,12 +82,12 @@ public class FileUploadController extends MultiActionController {
    }
 
    /**
-    * Sets the configuration.
+    * Sets the resource service.
     * 
-    * @param configuration the new configuration
+    * @param resourceService the new resource service
     */
-   public void setConfiguration(Configuration configuration) {
-      this.configuration = configuration;
+   public void setResourceService(ResourceService resourceService) {
+      this.resourceService = resourceService;
    }
 
    /**
@@ -129,10 +98,4 @@ public class FileUploadController extends MultiActionController {
    public void setUserService(UserService userService) {
       this.userService = userService;
    }
-
-   public void setResourceService(ResourceService resourceService) {
-      this.resourceService = resourceService;
-   }
-   
-   
 }

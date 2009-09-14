@@ -17,43 +17,47 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+package org.openremote.modeler.client.event;
 
-package org.openremote.modeler.client.proxy;
-
-import java.util.List;
-
-import org.openremote.modeler.client.rpc.AsyncServiceFactory;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.Activity;
-
+import com.extjs.gxt.ui.client.event.BaseEvent;
+import com.extjs.gxt.ui.client.event.EventType;
 
 /**
- * The Class DeviceBeanModelProxy.
- * 
+ * The event for SubmitListener.
  * @author handy.wang
  */
-public class UtilsProxy {
-   
-   /**
-    * Not be instantiated.
-    */
-   private UtilsProxy() {
-   }
+public class ResponseJSONEvent extends BaseEvent{
 
-   /**
-    * Load device.
-    * 
-    * @param callback the callback
-    * @param maxId the max id
-    * @param activityList the activity list
-    */
-   public static void exportFiles(long maxId, List<Activity> activityList, final AsyncSuccessCallback<String> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().exportFiles(maxId, activityList, new AsyncSuccessCallback<String>() {
-         @Override
-         public void onSuccess(String exportURL) {
-            callback.onSuccess(exportURL);
-         }
-      });
+   /** The Constant Submit. */
+   public static final EventType ResponseJSON = new EventType();
    
+   /** The data. */
+   private Object data;
+   
+   /**
+    * Instantiates a new submit event.
+    */
+   public ResponseJSONEvent() {
+      super(ResponseJSON);
    }
+   
+   /**
+    * Instantiates a new submit event.
+    * 
+    * @param d the d
+    */
+   public ResponseJSONEvent(Object d) {
+      this();
+      data = d;
+   }
+   
+   /**
+    * Gets the data.
+    * 
+    * @return the data
+    */
+   @SuppressWarnings("unchecked")
+   public <X> X getData() {
+      return (X) data;
+    }
 }

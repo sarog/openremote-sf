@@ -23,7 +23,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.auth.Authority;
+import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.event.ResponseJSONEvent;
+import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.listener.ResponseJSONListener;
+import org.openremote.modeler.client.listener.SubmitListener;
+import org.openremote.modeler.client.model.Position;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
@@ -31,7 +37,15 @@ import org.openremote.modeler.client.rpc.AuthorityRPCService;
 import org.openremote.modeler.client.rpc.AuthorityRPCServiceAsync;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.Protocols;
+import org.openremote.modeler.client.widget.uidesigner.ActivityPanel;
+import org.openremote.modeler.client.widget.uidesigner.ImportWindow;
 import org.openremote.modeler.domain.Activity;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.DeviceCommandRef;
+import org.openremote.modeler.domain.DeviceMacro;
+import org.openremote.modeler.domain.DeviceMacroRef;
+import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.UIButton;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style;
@@ -39,6 +53,7 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.Margins;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.Viewport;
@@ -48,7 +63,14 @@ import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -69,6 +91,9 @@ public class ApplicationView implements View {
    
    /** The authority. */
    private Authority authority;
+   
+   /** The activity panel. */
+   private ActivityPanel activityPanel;
    
    /**
     * Initialize.
@@ -167,20 +192,22 @@ public class ApplicationView implements View {
       MenuItem importMenuItem = new MenuItem("Import");
       importMenuItem.ensureDebugId(DebugId.IMPORT);
       importMenuItem.setIcon(icons.importIcon());
+      final ApplicationView that = this;
       importMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          @Override
          public void componentSelected(MenuEvent ce) {
-            importXml();
+            final ImportWindow importWindow = new ImportWindow();
+            importWindow.addListener(ResponseJSONEvent.ResponseJSON, new ResponseJSONListener() {
+               @Override
+               public void afterSubmit(ResponseJSONEvent be) {
+                  that.activityPanel.reRenderTree(be.getData().toString(), importWindow);
+               }
+            });
          }
       });
       return importMenuItem;
    }
-
-   /**
-    * Import xml.
-    */
-   protected void importXml() {}
-
+   
    /**
     * Creates the export menu item.
     * 
@@ -197,7 +224,7 @@ public class ApplicationView implements View {
                MessageBox.info("Info", "Sorry, the data you want to export is invalid.", null);
                return;
             }
-            UtilsProxy.export(IDUtil.currentID(), getAllActivities(), new AsyncSuccessCallback<String>() {
+            UtilsProxy.exportFiles(IDUtil.currentID(), getAllActivities(), new AsyncSuccessCallback<String>() {
                @Override
                public void onSuccess(String exportURL) {
                   Window.open(exportURL, "_blank", "");
@@ -266,22 +293,23 @@ public class ApplicationView implements View {
     */
    private void createCenter(Authority authority) {
       List<String> roles = authority.getRoles();
-      TabPanel builderPanel = new TabPanel();
+      TabPanel modelerTabPanel = new TabPanel();
       if (roles.contains("ROLE_MODELER")) {
          BuildingModelerView buildingModelerItem = new BuildingModelerView();
          buildingModelerItem.initialize();
-         builderPanel.add(buildingModelerItem);
+         modelerTabPanel.add(buildingModelerItem);
       }
       if (roles.contains("ROLE_DESIGNER")) {
          UIDesignerView uiDesignerItem = new UIDesignerView();
+         uiDesignerItem.setApplicationView(this);
          uiDesignerItem.initialize();
-         builderPanel.add(uiDesignerItem);
-         builderPanel.setSelection(uiDesignerItem); // Temp to show uiDesigner. It will remove after development.
+         modelerTabPanel.add(uiDesignerItem);
+         modelerTabPanel.setSelection(uiDesignerItem); // Temp to show uiDesigner. It will remove after development.
       }
-      builderPanel.setAutoSelect(true);
+      modelerTabPanel.setAutoSelect(true);
       BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.CENTER);
       data.setMargins(new Margins(0, 5, 0, 5));
-      viewport.add(builderPanel, data);
+      viewport.add(modelerTabPanel, data);
 
    }
    
@@ -293,5 +321,14 @@ public class ApplicationView implements View {
       // BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.SOUTH, 20);
       // data.setMargins(new Margins(0,5,0,5));
       // viewport.add(status, data);
+   }
+
+   /**
+    * Sets the activity panel.
+    * 
+    * @param activityPanel the new activity panel
+    */
+   public void setActivityPanel(ActivityPanel activityPanel) {
+      this.activityPanel = activityPanel;
    }
 }

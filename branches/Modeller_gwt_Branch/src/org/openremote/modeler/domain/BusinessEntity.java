@@ -20,11 +20,9 @@
 
 package org.openremote.modeler.domain;
 
-import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.data.BeanModelFactory;
-import com.extjs.gxt.ui.client.data.BeanModelLookup;
-import com.extjs.gxt.ui.client.data.BeanModelTag;
-import net.sf.gilead.pojo.java5.LightEntity;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -32,10 +30,14 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import net.sf.gilead.pojo.java5.LightEntity;
 
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.BeanModelFactory;
+import com.extjs.gxt.ui.client.data.BeanModelLookup;
+import com.extjs.gxt.ui.client.data.BeanModelTag;
+
+import flexjson.JSON;
 
 
 /**
@@ -95,6 +97,7 @@ public abstract class BusinessEntity extends LightEntity implements Serializable
     * @return the bean model
     */
    @Transient
+   @JSON(include = false)
    public BeanModel getBeanModel() {
       BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(getClass());
       return beanModelFactory.createModel(this);
@@ -125,5 +128,12 @@ public abstract class BusinessEntity extends LightEntity implements Serializable
    @Transient
    public String getDisplayName(){
       return "unKnown";
+   }
+   
+   @Override
+   @Transient
+   @JSON(include = false)
+   public String getDebugString() {
+      return super.getDebugString();
    }
 }

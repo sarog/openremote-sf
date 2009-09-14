@@ -28,6 +28,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * The Interface UtilsRPCServiceAsync.
+ * @author handy.wang
  */
 public interface UtilsRPCServiceAsync {
 
@@ -39,7 +40,7 @@ public interface UtilsRPCServiceAsync {
     * @param sectionIds the section ids
     * @param callback the callback
     */
-   void export(long maxId, List<Activity> activityList, AsyncCallback<String> callback);
+   void exportFiles(long maxId, List<Activity> activityList, AsyncCallback<String> callback);
 
    void beehiveRestIconUrl(AsyncCallback<String> callback);
 

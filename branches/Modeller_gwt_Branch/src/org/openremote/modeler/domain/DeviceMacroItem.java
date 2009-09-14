@@ -31,6 +31,8 @@ import javax.persistence.Transient;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
+import flexjson.JSON;
+
 
 /**
  * The Class Device Macro Item.
@@ -55,6 +57,7 @@ public class DeviceMacroItem extends UICommand {
     */
    @ManyToOne
    @JoinColumn(name = "parent_device_macro_oid")
+   @JSON(include = false)
    public DeviceMacro getParentDeviceMacro() {
       return parentDeviceMacro;
    }
@@ -74,6 +77,7 @@ public class DeviceMacroItem extends UICommand {
     * @return the label
     */
    @Transient
+   @JSON(include = false)
    public String getTreeNodeLabel() {
       if (this instanceof DeviceMacroRef) {
          DeviceMacroRef deviceMacroRef = (DeviceMacroRef) this;
@@ -90,6 +94,7 @@ public class DeviceMacroItem extends UICommand {
    }
    
    @Transient
+   @JSON(include = false)
    public BeanModel getTargetBeanModel() {
       if (this instanceof DeviceMacroRef) {
          return ((DeviceMacroRef) this).getTargetDeviceMacro().getBeanModel();
