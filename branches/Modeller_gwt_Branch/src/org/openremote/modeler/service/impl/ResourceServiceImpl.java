@@ -59,11 +59,14 @@ import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.UIButton;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.exception.FileOperationException;
+import org.openremote.modeler.exception.XmlParserException;
 import org.openremote.modeler.service.DeviceCommandService;
+import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.IphoneXmlParser;
+import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ProtocolEventContainer;
 import org.openremote.modeler.utils.StringUtils;
 import org.openremote.modeler.utils.ZipUtils;
@@ -91,6 +94,9 @@ public class ResourceServiceImpl implements ResourceService {
 
    /** The user service. */
    private UserService userService;
+   
+   /** The device macro service. */
+   private DeviceMacroService deviceMacroService;
 
    /*
     * (non-Javadoc)
@@ -102,16 +108,18 @@ public class ResourceServiceImpl implements ResourceService {
       String controllerXmlContent = getControllerXmlContent(maxId, activities);
       String panelXmlContent = getPanelXmlContent(activities);
       String sectionIds = getSectionIds(activities);
+      String activitiesJson = getActivitiesJson(activities);
       String userId = String.valueOf(userService.getAccount().getUser().getOid());
 
-      PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File sessionFolder = new File(pathConfig.userFolder(userId));
+      PathConfig pathConfig = PathConfig.getInstance(userId, configuration);
+      File sessionFolder = new File(pathConfig.userFolder());
       if (!sessionFolder.exists()) {
          sessionFolder.mkdirs();
       }
-      File iphoneXMLFile = new File(pathConfig.iPhoneXmlFilePath(userId));
-      File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(userId));
-      File lircdFile = new File(pathConfig.lircFilePath(userId));
+      File iphoneXMLFile = new File(pathConfig.iPhoneXmlFilePath());
+      File controllerXMLFile = new File(pathConfig.controllerXmlFilePath());
+      File lircdFile = new File(pathConfig.lircFilePath());
+      File dotImport = new File(pathConfig.dotImportFilePath());
 
       String newIphoneXML = IphoneXmlParser.parserXML(new File(getClass().getResource(configuration.getIphoneXsdPath()).getPath()), panelXmlContent, sessionFolder);
 
@@ -119,9 +127,11 @@ public class ResourceServiceImpl implements ResourceService {
          FileUtilsExt.deleteQuietly(iphoneXMLFile);
          FileUtilsExt.deleteQuietly(controllerXMLFile);
          FileUtilsExt.deleteQuietly(lircdFile);
+         FileUtilsExt.deleteQuietly(dotImport);
 
          FileUtilsExt.writeStringToFile(iphoneXMLFile, newIphoneXML);
          FileUtilsExt.writeStringToFile(controllerXMLFile, controllerXmlContent);
+         FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
 
          if (sectionIds != "") {
             FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
@@ -133,17 +143,34 @@ public class ResourceServiceImpl implements ResourceService {
          throw new FileOperationException("Compress zip file occur IOException", e);
       }
 
-      File zipFile = compressFilesToZip(sessionFolder.listFiles(), pathConfig.openremoteZipFilePath(userId));
-      return PathConfig.getInstance(configuration).getZipUrl(String.valueOf(userId)) + zipFile.getName();
+      File zipFile = compressFilesToZip(sessionFolder.listFiles(), pathConfig.openremoteZipFilePath());
+      return pathConfig.getZipUrl() + zipFile.getName();
+   }
+
+   /**
+    * Gets the activities json.
+    * 
+    * @param activities the activities
+    * 
+    * @return the activities json
+    */
+   private String getActivitiesJson(List<Activity> activities) {
+      try {
+         String [] includedPropertyNames = {"screens", "screens.buttons", "screens.buttons.uiCommand"};
+         String [] excludePropertyNames = {};
+         String activitiesJson = JsonGenerator.serializerObjectInclude(activities, includedPropertyNames, excludePropertyNames);
+         return activitiesJson;
+      } catch (Exception e) {
+         e.printStackTrace();
+         return "";
+      }
    }
 
    /**
     * Compress files to zip.
     * 
-    * @param files
-    *           the files
-    * @param zipFilePath
-    *           the zip file path
+    * @param files the files
+    * @param zipFilePath the zip file path
     * 
     * @return the file
     */
@@ -164,10 +191,8 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Builds the lirc rest url.
     * 
-    * @param RESTAPIUrl
-    *           the rESTAPI url
-    * @param ids
-    *           the ids
+    * @param RESTAPIUrl the rESTAPI url
+    * @param ids the ids
     * 
     * @return the uRL
     */
@@ -225,8 +250,10 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @see org.openremote.modeler.service.ResourceService#getIrbFileFromZip(java.io.InputStream, java.lang.String)
     */
-   public String getIrbFileFromZip(InputStream inputStream, String sessionId) {
-      File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
+   public String getDotImportFileForRender(InputStream inputStream) {
+      String userId = String.valueOf(userService.getAccount().getUser().getOid());
+      
+      File tmpDir = new File(PathConfig.getInstance(userId, configuration).userFolder());
       if (tmpDir.exists() && tmpDir.isDirectory()) {
          try {
             FileUtils.deleteDirectory(tmpDir);
@@ -235,40 +262,27 @@ public class ResourceServiceImpl implements ResourceService {
             throw new FileOperationException("Delete temp dir Occur IOException", e);
          }
       }
-      String irbFileContent = "";
+      String dotImportFileContent = "";
       ZipInputStream zipInputStream = new ZipInputStream(inputStream);
       ZipEntry zipEntry;
       FileOutputStream fileOutputStream = null;
       try {
          while ((zipEntry = zipInputStream.getNextEntry()) != null) {
             if (!zipEntry.isDirectory()) {
-               if (Constants.PANEL_DESC_FILE_EXT.equalsIgnoreCase(StringUtils.getFileExt(zipEntry.getName()))) {
-                  irbFileContent = IOUtils.toString(zipInputStream);
+               if (Constants.PANEL_DESC_FILE.equalsIgnoreCase(StringUtils.getFileExt(zipEntry.getName()))) {
+                  dotImportFileContent = IOUtils.toString(zipInputStream);
                }
-
-//               if (!checkXML(zipInputStream, zipEntry, "iphone")) {
-//                  throw new XmlParserException("The iphone.xml schema validation fail, please check it");
-//               } else if (!checkXML(zipInputStream, zipEntry, "controller")) {
-//                  throw new XmlParserException("The controller.xml schema validation fail, please check it");
-//               }
-
-               if (FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|conf)")) {
-                  File file = new File(PathConfig.getInstance(configuration).userFolder(sessionId) + zipEntry.getName());
-                  FileUtils.touch(file);
-
-                  fileOutputStream = new FileOutputStream(file);
-                  int b;
-                  while ((b = zipInputStream.read()) != -1) {
-                     fileOutputStream.write(b);
-                  }
-                  fileOutputStream.close();
+               if (!checkXML(zipInputStream, zipEntry, "iphone")) {
+                  throw new XmlParserException("The iphone.xml schema validation fail, please check it");
+               } else if (!checkXML(zipInputStream, zipEntry, "controller")) {
+                  throw new XmlParserException("The controller.xml schema validation fail, please check it");
                }
             }
 
          }
       } catch (IOException e) {
-         logger.error("Get Irb file from zip file Occur IOException", e);
-         throw new FileOperationException("Get Irb file from zip file Occur IOException", e);
+         logger.error("Get import file from zip file Occur IOException", e);
+         throw new FileOperationException("Get import file from zip file Occur IOException", e);
       } finally {
          try {
             zipInputStream.closeEntry();
@@ -280,28 +294,23 @@ public class ResourceServiceImpl implements ResourceService {
          }
 
       }
-      return irbFileContent;
+      return dotImportFileContent;
    }
 
    /**
     * Check xml.
     * 
-    * @param zipInputStream
-    *           the zip input stream
-    * @param zipEntry
-    *           the zip entry
-    * @param xmlName
-    *           the xml name
+    * @param zipInputStream the zip input stream
+    * @param zipEntry the zip entry
+    * @param xmlName the xml name
     * 
     * @return true, if successful
     * 
-    * @throws IOException
-    *            Signals that an I/O exception has occurred.
+    * @throws IOException Signals that an I/O exception has occurred.
     */
    private boolean checkXML(ZipInputStream zipInputStream, ZipEntry zipEntry, String xmlName) throws IOException {
       if (zipEntry.getName().equals(xmlName + ".xml")) {
-         String xsdRelativePath = "iphone".equals(xmlName) ? configuration.getIphoneXsdPath() : configuration
-               .getControllerXsdPath();
+         String xsdRelativePath = "iphone".equals(xmlName) ? configuration.getIphoneXsdPath() : configuration.getControllerXsdPath();
          String xsdPath = getClass().getResource(xsdRelativePath).getPath();
          if (!IphoneXmlParser.checkXmlSchema(xsdPath, IOUtils.toString(zipInputStream))) {
             return false;
@@ -316,8 +325,8 @@ public class ResourceServiceImpl implements ResourceService {
     * @see org.openremote.modeler.service.ResourceService#uploadImage(java.io.InputStream, java.lang.String,
     * java.lang.String)
     */
-   public File uploadImage(InputStream inputStream, String fileName, String sessionId) {
-      File file = new File(PathConfig.getInstance(configuration).userFolder(sessionId) + File.separator + fileName);
+   public File uploadImage(InputStream inputStream, String fileName, String userId) {
+      File file = new File(PathConfig.getInstance(userId, configuration).userFolder() + File.separator + fileName);
       FileOutputStream fileOutputStream = null;
       try {
          File dir = file.getParentFile();
@@ -348,6 +357,14 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @see org.openremote.modeler.service.ResourceService#getControllerXmlContent(java.util.List)
     */
+   /**
+    * Gets the controller xml content.
+    * 
+    * @param maxId the max id
+    * @param activityList the activity list
+    * 
+    * @return the controller xml content
+    */
    private String getControllerXmlContent(long maxId, List<Activity> activityList) {
       this.eventId = maxId + 1;
       ProtocolEventContainer protocolEventContainer = new ProtocolEventContainer();
@@ -364,8 +381,8 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Gets the buttons xml content.
     * 
-    * @param activityList
-    *           the activity list
+    * @param activityList the activity list
+    * @param protocolEventContainer the protocol event container
     * 
     * @return the buttons xml content
     */
@@ -386,8 +403,8 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Gets the events from button.
     * 
-    * @param uiButton
-    *           the ui button
+    * @param uiButton the ui button
+    * @param protocolEventContainer the protocol event container
     * 
     * @return the events from button
     */
@@ -397,7 +414,6 @@ public class ResourceServiceImpl implements ResourceService {
          List<UIButtonEvent> uiButtonEventList = getEventsOfDeviceMacroItem((DeviceMacroItem) uiCommand, protocolEventContainer);
          return generateButtonXmlString(uiButton.getOid(), uiButtonEventList);
       } else {
-         // :TODO some other type of UICommand implementation
          return "";
       }
    }
@@ -405,16 +421,15 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Gets the controller xml segment content.
     * 
-    * @param deviceMacroItem
-    *           the device command item
+    * @param deviceMacroItem the device command item
+    * @param protocolEventContainer the protocol event container
     * 
     * @return the controller xml segment content
     */
    private List<UIButtonEvent> getEventsOfDeviceMacroItem(DeviceMacroItem deviceMacroItem, ProtocolEventContainer protocolEventContainer) {
       List<UIButtonEvent> oneUIButtonEventList = new ArrayList<UIButtonEvent>();
       if (deviceMacroItem instanceof DeviceCommandRef) {
-         DeviceCommand deviceCommand = deviceCommandService.loadById(((DeviceCommandRef) deviceMacroItem)
-               .getDeviceCommand().getOid());
+         DeviceCommand deviceCommand = deviceCommandService.loadById(((DeviceCommandRef) deviceMacroItem).getDeviceCommand().getOid());
          String protocolType = deviceCommand.getProtocol().getType();
          List<ProtocolAttr> protocolAttrs = deviceCommand.getProtocol().getAttributes();
 
@@ -428,6 +443,7 @@ public class ResourceServiceImpl implements ResourceService {
          oneUIButtonEventList.add(uiButtonEvent);
       } else if (deviceMacroItem instanceof DeviceMacroRef) {
          DeviceMacro deviceMacro = ((DeviceMacroRef) deviceMacroItem).getTargetDeviceMacro();
+         deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
          for (DeviceMacroItem tempDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
             oneUIButtonEventList.addAll(getEventsOfDeviceMacroItem(tempDeviceMacroItem, protocolEventContainer));
          }
@@ -438,10 +454,8 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Generate button xml string.
     * 
-    * @param uiButtonId
-    *           the ui button id
-    * @param uiButtonEventList
-    *           the ui button event list
+    * @param uiButtonId the ui button id
+    * @param uiButtonEventList the ui button event list
     * 
     * @return the string
     */
@@ -461,6 +475,13 @@ public class ResourceServiceImpl implements ResourceService {
     * (non-Javadoc)
     * 
     * @see org.openremote.modeler.service.ResourceService#getPanelXmlContent()
+    */
+   /**
+    * Gets the panel xml content.
+    * 
+    * @param activityList the activity list
+    * 
+    * @return the panel xml content
     */
    private String getPanelXmlContent(List<Activity> activityList) {
       StringBuffer xmlContent = new StringBuffer();
@@ -496,6 +517,13 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @see org.openremote.modeler.service.ResourceService#getSectionIds()
     */
+   /**
+    * Gets the section ids.
+    * 
+    * @param activityList the activity list
+    * 
+    * @return the section ids
+    */
    private String getSectionIds(List<Activity> activityList) {
       Set<String> sectionIds = new HashSet<String>();
       for (Activity activity : activityList) {
@@ -526,8 +554,7 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Gets the devcie macro item section ids.
     * 
-    * @param deviceMacroItem
-    *           the device macro item
+    * @param deviceMacroItem the device macro item
     * 
     * @return the devcie macro item section ids
     */
@@ -536,8 +563,9 @@ public class ResourceServiceImpl implements ResourceService {
       if (deviceMacroItem instanceof DeviceCommandRef) {
          deviceMacroRefSectionIds.add(((DeviceCommandRef) deviceMacroItem).getDeviceCommand().getSectionId());
       } else if (deviceMacroItem instanceof DeviceMacroRef) {
-         DeviceMacroRef deviceMacroRef = (DeviceMacroRef) deviceMacroItem;
-         for (DeviceMacroItem nextDeviceMacroItem : deviceMacroRef.getTargetDeviceMacro().getDeviceMacroItems()) {
+         DeviceMacro deviceMacro = ((DeviceMacroRef) deviceMacroItem).getTargetDeviceMacro();
+         deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
+         for (DeviceMacroItem nextDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
             deviceMacroRefSectionIds.addAll(getDevcieMacroItemSectionIds(nextDeviceMacroItem));
          }
       }
@@ -556,8 +584,7 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Sets the configuration.
     * 
-    * @param configuration
-    *           the new configuration
+    * @param configuration the new configuration
     */
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
@@ -575,8 +602,7 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Sets the device command service.
     * 
-    * @param deviceCommandService
-    *           the new device command service
+    * @param deviceCommandService the new device command service
     */
    public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
       this.deviceCommandService = deviceCommandService;
@@ -594,17 +620,25 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Sets the user service.
     * 
-    * @param userService
-    *           the new user service
+    * @param userService the new user service
     */
    public void setUserService(UserService userService) {
       this.userService = userService;
+   }
+
+   /**
+    * Sets the device macro service.
+    * 
+    * @param deviceMacroService the new device macro service
+    */
+   public void setDeviceMacroService(DeviceMacroService deviceMacroService) {
+      this.deviceMacroService = deviceMacroService;
    }
 
    /* (non-Javadoc)
     * @see org.openremote.modeler.service.ResourceService#getRelativeResourcePath(java.lang.String, java.lang.String)
     */
    public String getRelativeResourcePath(String sessionId, String fileName) {
-      return PathConfig.getInstance(configuration).getRelativeResourcePath(sessionId, fileName);
+      return PathConfig.getInstance(sessionId, configuration).getRelativeResourcePath(fileName);
    }
 }

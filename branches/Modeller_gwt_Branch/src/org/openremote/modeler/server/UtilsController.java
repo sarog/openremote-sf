@@ -31,6 +31,7 @@ import org.openremote.modeler.service.impl.UserServiceImpl;
 
 /**
  * The server side implementation of the RPC service <code>DeviceRPCService</code>.
+ * @author handy.wang
  */
 @SuppressWarnings("serial")
 public class UtilsController extends BaseGWTSpringController implements UtilsRPCService {
@@ -47,7 +48,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    /* (non-Javadoc)
     * @see org.openremote.modeler.client.rpc.UtilsRPCService#export(java.lang.String, java.lang.String, java.lang.String)
     */
-   public String export(long maxId, List<Activity> activities) {      
+   public String exportFiles(long maxId, List<Activity> activities) {      
       return resourceService.downloadZipResource(maxId, activities);
    }
    

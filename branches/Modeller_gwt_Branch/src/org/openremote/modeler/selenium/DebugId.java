@@ -166,6 +166,12 @@ public class DebugId {
    /** The Constant APPLICATION_HELP_BTN. */
    public static final String APPLICATION_HELP_BTN = "applicationHelpBtn";
 
+   /** The Constant IMPORT_WINDOW. */
+   public static final String IMPORT_WINDOW = "importWindow";
 
-   
+   /** The Constant IMPORT_WINDOW_UPLOAD_BTN. */
+   public static final String IMPORT_WINDOW_UPLOAD_BTN = "importWindowUploadBtn";
+
+   /** The Constant IMPORT_WINDOW_CANCEL_BTN. */
+   public static final String IMPORT_WINDOW_CANCEL_BTN = "importWindowCancelBtn";
 }

@@ -26,7 +26,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class DeviceMacroRef.
  */
@@ -35,6 +34,9 @@ import javax.persistence.Transient;
 @DiscriminatorValue("DEVICE_MACRO_REF")
 public class DeviceMacroRef extends DeviceMacroItem {
 
+   /** The target device macro. */
+   private DeviceMacro targetDeviceMacro;
+   
    /**
     * Instantiates a new device macro ref.
     */
@@ -51,9 +53,6 @@ public class DeviceMacroRef extends DeviceMacroItem {
       super();
       this.targetDeviceMacro = targetDeviceMacro;
    }
-
-   /** The target device macro. */
-   private DeviceMacro targetDeviceMacro;
 
    /**
     * Gets the target device macro.

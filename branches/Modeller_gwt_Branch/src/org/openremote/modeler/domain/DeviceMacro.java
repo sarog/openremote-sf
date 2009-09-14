@@ -31,6 +31,8 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import flexjson.JSON;
+
 
 /**
  * The Class Device Macro. It's a macro of {@link DeviceCommand}.
@@ -98,6 +100,7 @@ public class DeviceMacro extends BusinessEntity {
     * @return the account
     */
    @ManyToOne
+   @JSON(include = false)
    public Account getAccount() {
       return account;
    }

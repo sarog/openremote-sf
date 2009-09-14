@@ -24,9 +24,6 @@ import org.openremote.modeler.client.widget.uidesigner.DevicesAndMacrosPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
-import com.extjs.gxt.ui.client.event.BaseEvent;
-import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.TabItem;
@@ -40,9 +37,15 @@ import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
  */
 public class UIDesignerView extends TabItem implements View {
 
+   /** The screen tab. */
    private ScreenTab screenTab = new ScreenTab();
+   
+   /** The application view. */
+   private ApplicationView applicationView;
 
    /**
+    * Initialize.
+    * 
     * @see org.openremote.modeler.client.view.View#initialize()
     */
    public void initialize() {
@@ -55,6 +58,9 @@ public class UIDesignerView extends TabItem implements View {
    }
    
    
+   /**
+    * Creates the east.
+    */
    private void createEast() {
       BorderLayoutData eastLayout = new BorderLayoutData(LayoutRegion.EAST);
       eastLayout.setSplit(true);
@@ -74,8 +80,9 @@ public class UIDesignerView extends TabItem implements View {
       west.setLayout(new AccordionLayout());
       west.setBodyBorder(false);
       west.setHeading("Browser");
-      west.add(new ActivityPanel(screenTab));
-
+      ActivityPanel activityPanel = new ActivityPanel(screenTab);
+      west.add(activityPanel);
+      applicationView.setActivityPanel(activityPanel);
       westData.setMargins(new Margins(2));
       add(west, westData);
    }
@@ -87,6 +94,15 @@ public class UIDesignerView extends TabItem implements View {
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setMargins(new Margins(2));
       add(screenTab, centerData);
+   }
+
+   /**
+    * Sets the application view.
+    * 
+    * @param applicationView the new application view
+    */
+   public void setApplicationView(ApplicationView applicationView) {
+      this.applicationView = applicationView;
    }
 
 }

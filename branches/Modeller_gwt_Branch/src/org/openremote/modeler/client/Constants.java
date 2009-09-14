@@ -61,5 +61,5 @@ public class Constants {
    public static final long SCREEN_TABLE_OID = -400;
    
    /** The Constant PANEL_DESC_FILE_EXT. */
-   public static final String PANEL_DESC_FILE_EXT = "irb";
+   public static final String PANEL_DESC_FILE = "import";
 }

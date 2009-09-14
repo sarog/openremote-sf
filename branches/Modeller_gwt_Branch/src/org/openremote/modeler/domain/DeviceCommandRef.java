@@ -36,6 +36,12 @@ import javax.persistence.Transient;
 @DiscriminatorValue("DEVICE_CMD_REF")
 public class DeviceCommandRef extends DeviceMacroItem {
    
+   /** The device command. */
+   private DeviceCommand deviceCommand;
+   
+   /** The device name. */
+   private String deviceName;
+   
    /**
     * Instantiates a new device command ref.
     */
@@ -51,9 +57,6 @@ public class DeviceCommandRef extends DeviceMacroItem {
       super();
       this.deviceCommand = deviceCommand;
    }
-
-   /** The device command. */
-   private DeviceCommand deviceCommand;
 
    /**
     * Gets the device command.
@@ -74,8 +77,6 @@ public class DeviceCommandRef extends DeviceMacroItem {
    public void setDeviceCommand(DeviceCommand deviceCommand) {
       this.deviceCommand = deviceCommand;
    }
-   
-   private String deviceName;
    
    @Transient
    public String getDeviceName() {

@@ -20,13 +20,13 @@
 
 package org.openremote.modeler.service;
 
+import java.util.List;
+
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
-
-import java.util.List;
 
 /**
  * Provides functions to operate {@link DeviceMacroItem}.
@@ -66,4 +66,13 @@ public interface DeviceMacroItemService {
     * @return the list< device macro ref>
     */
    List<DeviceMacroRef> loadByDeviceMacroId(long id);
+   
+   /**
+    * Load by device macro item oid.
+    * 
+    * @param deviceMacroItemOid the device macro item oid
+    * 
+    * @return the list< device macro item>
+    */
+   DeviceMacroItem loadByDeviceMacroItemOid(long deviceMacroItemOid);
 }

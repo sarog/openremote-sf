@@ -43,6 +43,9 @@ public class PathConfig {
    private static final String RESOURCEFOLDER = "tmp";
    /** The configuration. */
    private Configuration configuration;
+   
+   /** The user id. */
+   private String userId;
 
    /**
     * Instantiates a new path config.
@@ -57,7 +60,8 @@ public class PathConfig {
     * 
     * @return single instance of PathConfig
     */
-   public static PathConfig getInstance(Configuration configuration) {
+   public static PathConfig getInstance(String userId, Configuration configuration) {
+      myInstance.userId = userId;
       myInstance.configuration = configuration;
       return myInstance;
    }
@@ -84,8 +88,8 @@ public class PathConfig {
     * 
     * @return file absolute path
     */
-   public String iPhoneXmlFilePath(String userId) {
-      return userFolder(userId) + "iphone.xml";
+   public String iPhoneXmlFilePath() {
+      return userFolder() + "iphone.xml";
    }
 
    /**
@@ -95,8 +99,8 @@ public class PathConfig {
     * 
     * @return file absolute path
     */
-   public String controllerXmlFilePath(String userId) {
-      return userFolder(userId) + "controller.xml";
+   public String controllerXmlFilePath() {
+      return userFolder() + "controller.xml";
    }
 
    /**
@@ -106,8 +110,8 @@ public class PathConfig {
     * 
     * @return file absolute path
     */
-   public String panelDescFilePath(String userId) {
-      return userFolder(userId) + "panel." + Constants.PANEL_DESC_FILE_EXT;
+   public String panelDescFilePath() {
+      return userFolder() + "." + Constants.PANEL_DESC_FILE;
    }
 
    /**
@@ -117,8 +121,8 @@ public class PathConfig {
     * 
     * @return file absolute path
     */
-   public String lircFilePath(String userId) {
-      return userFolder(userId) + "lircd.conf";
+   public String lircFilePath() {
+      return userFolder() + "lircd.conf";
    }
 
    /**
@@ -128,8 +132,17 @@ public class PathConfig {
     * 
     * @return file absolute path
     */
-   public String openremoteZipFilePath(String userId) {
-      return userFolder(userId) + "openremote." + UUID.randomUUID() + ".zip";
+   public String openremoteZipFilePath() {
+      return userFolder() + "openremote." + UUID.randomUUID() + ".zip";
+   }
+   
+   /**
+    * Dot import file path.
+    * 
+    * @return the string
+    */
+   public String dotImportFilePath() {
+      return userFolder() + ".import";
    }
    
    /**
@@ -139,7 +152,7 @@ public class PathConfig {
     * 
     * @return file absolute path
     */
-   public String userFolder(String userId)
+   public String userFolder()
    {
       return tempFolder() + userId + File.separator;
    }
@@ -147,9 +160,11 @@ public class PathConfig {
    /**
     * Gets the zip url.
     * 
+    * @param userId the user id
+    * 
     * @return the zip url
     */
-   public String getZipUrl(String userId) {
+   public String getZipUrl() {
       return configuration.getWebappServerRoot() + "/" + RESOURCEFOLDER + "/" + userId + "/";
    }
 
@@ -161,7 +176,7 @@ public class PathConfig {
     * 
     * @return the relative resource path
     */
-   public String getRelativeResourcePath(String userId, String fileName) {
+   public String getRelativeResourcePath(String fileName) {
       return "../" + RESOURCEFOLDER + "/" + userId + "/" + fileName;
    }
    /**
@@ -180,5 +195,23 @@ public class PathConfig {
     */
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
+   }
+
+   /**
+    * Gets the user id.
+    * 
+    * @return the user id
+    */
+   public String getUserId() {
+      return userId;
+   }
+
+   /**
+    * Sets the user id.
+    * 
+    * @param userId the new user id
+    */
+   public void setUserId(String userId) {
+      this.userId = userId;
    }
 }

@@ -19,17 +19,26 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.SubmitListener;
+import org.openremote.modeler.client.model.Position;
 import org.openremote.modeler.client.proxy.ActivityBeanModelProxy;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.ScreenBeanModelProxy;
+import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.Activity;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.DeviceCommandRef;
+import org.openremote.modeler.domain.DeviceMacro;
+import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.UIButton;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -49,6 +58,10 @@ import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Element;
 
 /**
@@ -79,7 +92,7 @@ public class ActivityPanel extends ContentPanel {
     * Creates the activity tree.
     */
    private void createActivityTree(ScreenTab screenTab) {
-      tree = TreePanelBuilder.buildActivityTree(screenTab);
+      tree = TreePanelBuilder.buildActivityTree(screenTab);    
       LayoutContainer treeContainer = new LayoutContainer() {
          @Override
          protected void onRender(Element parent, int index) {
@@ -93,7 +106,7 @@ public class ActivityPanel extends ContentPanel {
       treeContainer.setBorders(false);
       add(treeContainer);
    }
-
+   
    /**
     * Creates the menu.
     */
@@ -284,5 +297,103 @@ public class ActivityPanel extends ContentPanel {
          }
       });
       return deleteBtn;
+   }
+
+   /**
+    * Gets the tree.
+    * 
+    * @return the tree
+    */
+   public TreePanel<BeanModel> getTree() {
+      return tree;
+   }
+   
+   /**
+    * Clear tree.
+    */
+   public void reRenderTree(String activitiesJSON, ImportWindow importWindow) {
+      if (activitiesJSON == null || "".equals(activitiesJSON)) {
+         MessageBox.info("Error", "Import fail, server is busy now and try again later.", null);
+      }
+      tree.getStore().removeAll();
+      BeanModelDataBase.screenTable.clear();
+      BeanModelDataBase.activityTable.clear();      
+      List<Activity> activities = parseJson(activitiesJSON);
+      for (Activity activity : activities) {
+         BeanModel activityBeanModel = activity.getBeanModel();
+         tree.getStore().add(activityBeanModel, false);
+         BeanModelDataBase.activityTable.insert(activityBeanModel);
+         for (Screen screen : activity.getScreens()) {
+            BeanModel screenBeanModel = screen.getBeanModel();
+            tree.getStore().add(activityBeanModel, screenBeanModel, false);
+            BeanModelDataBase.screenTable.insert(screenBeanModel);
+         }
+      }
+//      System.out.println(activitiesJSON);
+      importWindow.hide();
+   }
+   
+   @SuppressWarnings("finally")
+   private List<Activity> parseJson(String importJsonString) {
+      List<Activity> activities = new ArrayList<Activity>();
+      try {
+         JSONArray activityJSONArray = JSONParser.parse(importJsonString).isArray();
+         for (int i = 0; i < activityJSONArray.size(); i++) {
+            JSONObject activityJSON = activityJSONArray.get(i).isObject();
+            Activity activity = new Activity();
+            activity.setOid(IDUtil.nextID());
+            activity.setName(activityJSON.get("name").isString().stringValue());
+            JSONArray screenJSONArray = activityJSON.get("screens").isArray();
+            for (int j = 0; j < screenJSONArray.size(); j++) {
+               JSONObject screenJSON = screenJSONArray.get(j).isObject();
+               Screen screen = new Screen();
+               screen.setOid(IDUtil.nextID());
+               activity.addScreen(screen);
+               screen.setActivity(activity);
+               screen.setColumnCount(Integer.parseInt(screenJSON.get("columnCount").isNumber().toString()));
+               screen.setRowCount(Integer.parseInt(screenJSON.get("rowCount").toString()));
+               screen.setName(screenJSON.get("name").isString().stringValue());
+               JSONArray uiButtonJSONArray = screenJSON.get("buttons").isArray();
+               for (int m = 0; m < uiButtonJSONArray.size(); m++) {
+                  JSONObject uiButtonJSON = uiButtonJSONArray.get(m).isObject();
+                  UIButton uiButton = new UIButton();
+                  uiButton.setOid(IDUtil.nextID());
+                  screen.addButton(uiButton);
+                  String iconStr = ("null".equals(uiButtonJSON.get("icon").toString())) ? "" : uiButtonJSON.get("icon").isString().stringValue();
+                  uiButton.setIcon(iconStr);
+                  uiButton.setLabel(uiButtonJSON.get("label").isString().stringValue());
+                  uiButton.setHeight(Integer.parseInt(uiButtonJSON.get("height").toString()));
+                  uiButton.setWidth(Integer.parseInt(uiButtonJSON.get("width").toString()));
+                  Position position = new Position();
+                  position.setPosX(Integer.parseInt(uiButtonJSON.get("position").isObject().get("posX").toString()));
+                  position.setPosY(Integer.parseInt(uiButtonJSON.get("position").isObject().get("posY").toString()));
+                  uiButton.setPosition(position);
+                  JSONObject uiCommandJSON = uiButtonJSON.get("uiCommand").isObject();
+                  JSONValue targetDeviceMacroJSONValue = uiCommandJSON.get("targetDeviceMacro");
+                  JSONValue deviceCommandJSONValue = uiCommandJSON.get("deviceCommand");
+                  if (targetDeviceMacroJSONValue != null) {
+                     JSONObject targetDeviceMacroJSON = targetDeviceMacroJSONValue.isObject();
+                     DeviceMacroRef deviceMacroRef = new DeviceMacroRef();
+                     DeviceMacro targetDeviceMacro = new DeviceMacro();
+                     targetDeviceMacro.setOid(Integer.parseInt(targetDeviceMacroJSON.get("oid").toString()));
+                     deviceMacroRef.setTargetDeviceMacro(targetDeviceMacro);
+                     uiButton.setUiCommand(deviceMacroRef);
+                  } else if (deviceCommandJSONValue != null) {
+                     JSONObject deviceCommandJSON = deviceCommandJSONValue.isObject();
+                     DeviceCommandRef deviceCommandRef = new DeviceCommandRef();
+                     DeviceCommand deviceCommand = new DeviceCommand();
+                     deviceCommand.setOid(Integer.parseInt(deviceCommandJSON.get("oid").toString()));
+                     deviceCommandRef.setDeviceCommand(deviceCommand);
+                     uiButton.setUiCommand(deviceCommandRef);
+                  }
+               }
+            }
+            activities.add(activity);
+         }
+      } catch (Exception e) {
+         e.printStackTrace();
+      } finally {
+         return activities;
+      }
    }
 }

@@ -172,6 +172,12 @@ public class BeanModelTable {
       return beanModelChangeListenerMap.get(beanModel);
    }
    
+   /**
+    * Put change listener into map.
+    * 
+    * @param beanModel the bean model
+    * @param changeListener the change listener
+    */
    public void putChangeListenerIntoMap(BeanModel beanModel, ChangeListener changeListener) {
       beanModelChangeListenerMap.put(beanModel, changeListener);
    }
@@ -325,5 +331,17 @@ public class BeanModelTable {
       }
       return beanModelList;
    }
-
+   
+   /**
+    * Clear table.
+    */
+   public void clear() {
+      for (long key : map.keySet()) {
+         delete(map.get(key));
+      }
+      changeListeners.clear();
+      insertListeners.clear();
+      beanModelChangeListenerMap.clear();
+      beanModelInsertListenerMap.clear();
+   }
 }

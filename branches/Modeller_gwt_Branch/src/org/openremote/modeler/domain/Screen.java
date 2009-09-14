@@ -24,6 +24,8 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import flexjson.JSON;
+
 /**
  * The Class Screen.
  */
@@ -137,14 +139,28 @@ public class Screen extends BusinessEntity {
       }
    }
 
+   /**
+    * Gets the activity.
+    * 
+    * @return the activity
+    */
+   @JSON(include = false)
    public Activity getActivity() {
       return activity;
    }
 
+   /**
+    * Sets the activity.
+    * 
+    * @param activity the new activity
+    */
    public void setActivity(Activity activity) {
       this.activity = activity;
    }
    
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()
+    */
    @Transient
    public String getDisplayName() {
       return name;

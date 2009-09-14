@@ -22,5 +22,6 @@ package org.openremote.modeler.domain;
 /**
  * The Class UICommand is for inherit by DeviceMacroItem. It was used in UIDesigner.
  */
+@SuppressWarnings("serial")
 public class UICommand extends BusinessEntity {
 }

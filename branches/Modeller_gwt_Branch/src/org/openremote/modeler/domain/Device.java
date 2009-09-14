@@ -30,6 +30,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import flexjson.JSON;
+
 
 /**
  * The Class Device.
@@ -57,9 +59,7 @@ public class Device extends BusinessEntity {
    private List<DeviceAttr> deviceAttrs;
    
    /** The account. */
-   private Account account;
-   
-   
+   private Account account; 
 
    /**
     * Instantiates a new device.
@@ -184,6 +184,7 @@ public class Device extends BusinessEntity {
     * @return the account
     */
    @ManyToOne
+   @JSON(include = false)
    public Account getAccount() {
       return account;
    }
