@@ -296,7 +296,6 @@ public class ChangeIconWindow extends Dialog {
       uploadPanel.setEncoding(Encoding.MULTIPART);
       uploadPanel.setMethod(Method.POST);
       uploadPanel.addListener(Events.Submit, new Listener<FormEvent>(){
-         @Override
          public void handleEvent(FormEvent be) {
             uploadImageURL = be.getResultHtml();
             window.unmask();
