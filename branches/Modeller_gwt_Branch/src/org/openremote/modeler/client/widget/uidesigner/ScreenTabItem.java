@@ -126,7 +126,6 @@ public class ScreenTabItem extends TabItem {
                changeIconWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
                   @Override
                   public void afterSubmit(SubmitEvent be) {
-                     changeIconWindow.hide();
                      String icon = be.getData();
                      selectedButton.setIcon(icon);
                      layout();
