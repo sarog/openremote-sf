@@ -1,9 +1,6 @@
 .screen-background {
-   background-image: url(../images/iphone_background.jpg);
    background-repeat: no-repeat;
    position: relative;
-   width: 269px;
-   height: 500px;
 }
 .panel-table {
 	position: absolute;

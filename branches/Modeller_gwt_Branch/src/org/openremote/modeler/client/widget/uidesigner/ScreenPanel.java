@@ -32,6 +32,7 @@ import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.UIButton;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -56,18 +57,6 @@ public class ScreenPanel extends LayoutContainer {
    /** The Constant POSITION. */
    private static final String POSITION = "position";
 
-   /** The Constant TABLE_WIDTH. */
-   private static final int TABLE_WIDTH = 196;
-   
-   /** The Constant TABLE_HEIGHT. */
-   private static final int TABLE_HEIGHT = 294;
-   
-   /** The Constant PADDING_LEFT. */
-   private static final int PADDING_LEFT = 35;
-   
-   /** The Constant PADDING_TOP. */
-   private static final int PADDING_TOP = 105;
-   
    /** The Constant RESIZABLE_HANDLES. */
    private static final String RESIZABLE_HANDLES = "e s"; // Make resizable in east and south direction.
    
@@ -76,18 +65,23 @@ public class ScreenPanel extends LayoutContainer {
    
    /** The selected button. */
    private ScreenButton selectedButton;
+   
+   private TouchPanelDefinition panelDefinition;
 
    /**
     * Instantiates a new screen panel.
     * 
     * @param s the s
     */
-   public ScreenPanel(Screen s) {
-      screen = s;
+   public ScreenPanel(Screen screen, TouchPanelDefinition panelDefinition) {
+      this.screen = screen;
+      this.panelDefinition = panelDefinition;
       btnInArea = new boolean[screen.getColumnCount()][screen.getRowCount()];
       addStyleName("screen-background");
-      setStyleAttribute("paddingLeft", String.valueOf(PADDING_LEFT));
-      setStyleAttribute("paddingTop", String.valueOf(PADDING_TOP));
+      setSize(panelDefinition.getWidth(), panelDefinition.getHeight());
+      setStyleAttribute("backgroundImage", "url(" + panelDefinition.getBgImage() + ")");
+      setStyleAttribute("paddingLeft", String.valueOf(panelDefinition.getPaddingLeft()));
+      setStyleAttribute("paddingTop", String.valueOf(panelDefinition.getPaddingTop()));
       initBtnInArea();
       createTable();
 
@@ -108,14 +102,16 @@ public class ScreenPanel extends LayoutContainer {
     * Creates the screen table.
     */
    private void createTable() {
+      int gridWidth = panelDefinition.getGrid().getWidth();
+      int gridHeight = panelDefinition.getGrid().getHeight();
       FlexTable screenTable = new FlexTable();
       screenTable.setCellPadding(0);
       screenTable.setCellSpacing(0);
       screenTable.addStyleName("panel-table");
-      screenTable.setPixelSize(TABLE_WIDTH, TABLE_HEIGHT);
+      screenTable.setPixelSize(gridWidth, gridHeight);
       add(screenTable);
-      final int cellWidth = (int) Math.round((float) TABLE_WIDTH / screen.getColumnCount());
-      final int cellHeight = (int) Math.round((float) TABLE_HEIGHT / screen.getRowCount());
+      final int cellWidth = (int) Math.round((float) gridWidth / screen.getColumnCount());
+      final int cellHeight = (int) Math.round((float) gridHeight / screen.getRowCount());
       DNDListener dndListener = new DNDListener() {
          @SuppressWarnings("unchecked")
          public void dragDrop(DNDEvent e) {
@@ -185,7 +181,7 @@ public class ScreenPanel extends LayoutContainer {
             Position pos = button.getPosition();
             ScreenButton screenBtn = createScreenButton((cellWidth + 1) * button.getWidth() - 1, (cellHeight + 1) * button.getHeight() -1, button);
             makeButtonResizable(cellWidth, cellHeight, screenBtn);
-            screenBtn.setPosition(PADDING_LEFT + cellWidth * pos.getPosX() + pos.getPosX() + 1, PADDING_TOP + cellHeight
+            screenBtn.setPosition(panelDefinition.getPaddingLeft() + cellWidth * pos.getPosX() + pos.getPosX() + 1, panelDefinition.getPaddingTop() + cellHeight
                   * pos.getPosY() + pos.getPosY() + 1);
             add(screenBtn);
             screenBtn.fillArea(btnInArea);
