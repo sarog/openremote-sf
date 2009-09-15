@@ -33,6 +33,7 @@ import org.openremote.modeler.client.proxy.ScreenBeanModelProxy;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.Activity;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -333,6 +334,10 @@ public class ActivityPanel extends ContentPanel {
       importWindow.hide();
    }
    
+   /**
+    * @param importJsonString
+    * @return
+    */
    @SuppressWarnings("finally")
    private List<Activity> parseJson(String importJsonString) {
       List<Activity> activities = new ArrayList<Activity>();
@@ -376,13 +381,21 @@ public class ActivityPanel extends ContentPanel {
                      DeviceMacroRef deviceMacroRef = new DeviceMacroRef();
                      DeviceMacro targetDeviceMacro = new DeviceMacro();
                      targetDeviceMacro.setOid(Integer.parseInt(targetDeviceMacroJSON.get("oid").toString()));
+                     targetDeviceMacro.setName(targetDeviceMacroJSON.get("name").isString().stringValue());
                      deviceMacroRef.setTargetDeviceMacro(targetDeviceMacro);
                      uiButton.setUiCommand(deviceMacroRef);
                   } else if (deviceCommandJSONValue != null) {
                      JSONObject deviceCommandJSON = deviceCommandJSONValue.isObject();
                      DeviceCommandRef deviceCommandRef = new DeviceCommandRef();
+                     
+                     Device device = new Device();
+                     device.setName(deviceCommandJSON.get("device").isObject().get("name").isString().stringValue());
+                     
                      DeviceCommand deviceCommand = new DeviceCommand();
+                     deviceCommand.setName(deviceCommandJSON.get("name").isString().stringValue());
                      deviceCommand.setOid(Integer.parseInt(deviceCommandJSON.get("oid").toString()));
+                     deviceCommand.setDevice(device);
+                     
                      deviceCommandRef.setDeviceCommand(deviceCommand);
                      uiButton.setUiCommand(deviceCommandRef);
                   }

@@ -105,11 +105,13 @@ public class ResourceServiceImpl implements ResourceService {
     * java.lang.String, java.lang.String, java.lang.String, java.lang.String)
     */
    public String downloadZipResource(long maxId, List<Activity> activities) {
+      String userId = String.valueOf(userService.getAccount().getUser().getOid());
       String controllerXmlContent = getControllerXmlContent(maxId, activities);
       String panelXmlContent = getPanelXmlContent(activities);
       String sectionIds = getSectionIds(activities);
+
+      replaceUrl(activities, userId);      
       String activitiesJson = getActivitiesJson(activities);
-      String userId = String.valueOf(userService.getAccount().getUser().getOid());
 
       PathConfig pathConfig = PathConfig.getInstance(userId, configuration);
       File sessionFolder = new File(pathConfig.userFolder());
@@ -122,7 +124,7 @@ public class ResourceServiceImpl implements ResourceService {
       File dotImport = new File(pathConfig.dotImportFilePath());
 
       String newIphoneXML = IphoneXmlParser.parserXML(new File(getClass().getResource(configuration.getIphoneXsdPath()).getPath()), panelXmlContent, sessionFolder);
-
+      
       try {
          FileUtilsExt.deleteQuietly(iphoneXMLFile);
          FileUtilsExt.deleteQuietly(controllerXMLFile);
@@ -145,6 +147,26 @@ public class ResourceServiceImpl implements ResourceService {
 
       File zipFile = compressFilesToZip(sessionFolder.listFiles(), pathConfig.openremoteZipFilePath());
       return pathConfig.getZipUrl() + zipFile.getName();
+   }
+
+   /**
+    * Replace url.
+    * 
+    * @param activities the activities
+    * @param userId the user id
+    */
+   private void replaceUrl(List<Activity> activities, String userId) {
+      for (Activity activity : activities) {
+         for (Screen screen : activity.getScreens()) {
+            for (UIButton uiButton : screen.getButtons()) {
+               if (uiButton.getIcon() != null && !"".equals(uiButton.getIcon())) {
+                  String iconValue = uiButton.getIcon();
+                  String iconName = iconValue.substring(iconValue.lastIndexOf("/")+1);
+                  uiButton.setIcon(PathConfig.getInstance(userId, configuration).getRelativeResourcePath(iconName));
+               }
+            }
+         }
+      }
    }
 
    /**
@@ -234,15 +256,6 @@ public class ResourceServiceImpl implements ResourceService {
          multipartFile = new CommonsMultipartFile(fileItem);
       }
       return multipartFile;
-//      InputStream fileItemInputStream = null;
-//      try {
-//         fileItemInputStream =  (fileItem == null) ? null : fileItem.getInputStream();
-//      } catch (IOException e) {
-//         logger.error("get InputStream from httpServletRequest error.", e);
-//         e.printStackTrace();
-//      } finally {
-//         return fileItemInputStream;
-//      }
    }
 
    /*
@@ -262,6 +275,7 @@ public class ResourceServiceImpl implements ResourceService {
             throw new FileOperationException("Delete temp dir Occur IOException", e);
          }
       }
+      new File(PathConfig.getInstance(userId, configuration).userFolder()).mkdirs();
       String dotImportFileContent = "";
       ZipInputStream zipInputStream = new ZipInputStream(inputStream);
       ZipEntry zipEntry;
@@ -276,6 +290,18 @@ public class ResourceServiceImpl implements ResourceService {
                   throw new XmlParserException("The iphone.xml schema validation fail, please check it");
                } else if (!checkXML(zipInputStream, zipEntry, "controller")) {
                   throw new XmlParserException("The controller.xml schema validation fail, please check it");
+               }
+               
+               if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|import|conf)")) {
+                  File file = new File(PathConfig.getInstance(userId, configuration).userFolder() + zipEntry.getName());
+                  FileUtils.touch(file);
+
+                  fileOutputStream = new FileOutputStream(file);
+                  int b;
+                  while ((b = zipInputStream.read()) != -1) {
+                     fileOutputStream.write(b);
+                  }
+                  fileOutputStream.close();
                }
             }
 
