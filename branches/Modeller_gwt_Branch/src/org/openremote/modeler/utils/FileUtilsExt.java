@@ -241,4 +241,8 @@ public class FileUtilsExt {
            IOUtils.closeQuietly(input);
        }
    }
+   
+   public static String replaceURL(String sourceString, String regex, String replacement ) {
+      return sourceString.replaceAll(regex, replacement);
+   }
 }

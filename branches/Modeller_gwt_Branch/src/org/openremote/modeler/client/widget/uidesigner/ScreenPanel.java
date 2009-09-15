@@ -183,6 +183,9 @@ public class ScreenPanel extends LayoutContainer {
             makeButtonResizable(cellWidth, cellHeight, screenBtn);
             screenBtn.setPosition(panelDefinition.getPaddingLeft() + cellWidth * pos.getPosX() + pos.getPosX() + 1, panelDefinition.getPaddingTop() + cellHeight
                   * pos.getPosY() + pos.getPosY() + 1);
+            if(button.getIcon() != null && !"".equals(button.getIcon())){
+               screenBtn.setIcon(button.getIcon());
+            }
             add(screenBtn);
             screenBtn.fillArea(btnInArea);
             createDragSource(screenBtn);

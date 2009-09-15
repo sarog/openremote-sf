@@ -71,7 +71,7 @@ public class IphoneXmlParser {
           List<Element> elements = xpath.selectNodes(doc);
           for (Element element : elements) {
              String iconVal = element.getAttributeValue("icon");
-             String iconName = iconVal.substring(iconVal.lastIndexOf("/")+1);;
+             String iconName = iconVal.substring(iconVal.lastIndexOf("/")+1);
              element.setAttribute("icon", iconName);
              File iphoneIconFile = new File(folder,iconName);
              if(iconVal.startsWith("http")){

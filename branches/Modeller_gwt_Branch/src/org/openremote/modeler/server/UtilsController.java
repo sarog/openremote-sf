@@ -21,8 +21,6 @@ package org.openremote.modeler.server;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.rpc.UtilsRPCService;
 import org.openremote.modeler.domain.Activity;
