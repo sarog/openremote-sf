@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.view;
 
+import org.openremote.modeler.client.utils.TouchPanels;
 import org.openremote.modeler.client.widget.uidesigner.ActivityPanel;
 import org.openremote.modeler.client.widget.uidesigner.DevicesAndMacrosPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
@@ -55,6 +56,7 @@ public class UIDesignerView extends TabItem implements View {
       createWest();
       createCenter();
       createEast();
+      prepareData();
    }
    
    
@@ -105,4 +107,10 @@ public class UIDesignerView extends TabItem implements View {
       this.applicationView = applicationView;
    }
 
+   /**
+    * Prepare data.
+    */
+   private void prepareData(){
+      TouchPanels.load();
+   }
 }

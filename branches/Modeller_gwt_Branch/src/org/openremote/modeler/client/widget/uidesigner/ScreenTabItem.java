@@ -19,12 +19,17 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import java.util.List;
+import java.util.Map;
+
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.SubmitListener;
+import org.openremote.modeler.client.utils.TouchPanels;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.UIButton;
+import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
@@ -53,6 +58,7 @@ public class ScreenTabItem extends TabItem {
    private int row;
    
    private int column;
+   
    /**
     * Instantiates a new screen panel.
     * 
@@ -158,7 +164,9 @@ public class ScreenTabItem extends TabItem {
     * Creates the screen background.
     */
    private void createScreenPanel(Screen screen) {
-      screenPanel = new ScreenPanel(screen);
+      Map<String, List<TouchPanelDefinition>> panels = TouchPanels.getInstance();
+      TouchPanelDefinition panelDefinition = panels.get("iphone").get(0);
+      screenPanel = new ScreenPanel(screen, panelDefinition);
       add(screenPanel);
       
    }

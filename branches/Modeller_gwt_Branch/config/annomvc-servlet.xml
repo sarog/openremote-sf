@@ -43,6 +43,7 @@
         <property name="mappings">
             <props>
                 <prop key="/modeler/protocol.smvc">protocolController</prop>
+                <prop key="/modeler/touchpanel.smvc">panelController</prop>
                 <prop key="/modeler/auth.smvc">authorityController</prop>
                 <prop key="/modeler/device.smvc">deviceController</prop>
                 <prop key="/modeler/deviceCommand.smvc">deviceCommandController</prop>
@@ -66,6 +67,7 @@
 	</bean> -->
     
     <bean id="protocolController" class="org.openremote.modeler.server.ProtocolController"></bean>
+    <bean id="panelController" class="org.openremote.modeler.server.PanelController"></bean>
     <bean id="authorityController" class="org.openremote.modeler.server.AuthorityController"></bean>
     <bean id="deviceController" class="org.openremote.modeler.server.DeviceController"></bean>
     <bean id="deviceCommandController" class="org.openremote.modeler.server.DeviceCommandController"></bean>

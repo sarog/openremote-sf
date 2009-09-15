@@ -19,6 +19,7 @@
 	<source path='domain'/>
 	<source path='client'/>
 	<source path='protocol'/>
+	<source path='touchpanel'/>
 	<source path='auth'/>
 	<source path='selenium'/>
   <!-- Other module inherits                                      -->
