@@ -22,7 +22,8 @@
 			<xsd:sequence>
 				<xsd:element ref="attr" minOccurs="1" maxOccurs="unbounded" />
 			</xsd:sequence>
-			<xsd:attribute name="name" type="xsd:string" use="required" />
+			<xsd:attribute name="displayName" type="xsd:string" use="required" />
+			<xsd:attribute name="tagName" type="xsd:string" use="required" />
 		</xsd:complexType>
 	</xsd:element>
 

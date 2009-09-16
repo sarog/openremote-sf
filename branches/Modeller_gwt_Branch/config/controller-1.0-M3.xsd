@@ -88,7 +88,6 @@
           <xsd:element ref="httpEvents"/>
           <xsd:element ref="socketEvents"/>
           <xsd:element ref="telnetEvents"/>
-          <xsd:element ref="tcpipEvents"/>
 				</xsd:choice>
 			</xsd:sequence>
 		</xsd:complexType>		
@@ -295,34 +294,4 @@
 			<xsd:minInclusive value="1"/>
 		</xsd:restriction>
 	</xsd:simpleType>
-	
-  <!--================= TCPIP EVENTS ==============-->
-
-	<xsd:element name = "tcpipEvents">
-		<xsd:annotation>
-			<xsd:documentation><![CDATA[
-				The parent element of <tcpipEvent> tags.
-			]]></xsd:documentation>
-		</xsd:annotation>
-	    <xsd:complexType>
-			<xsd:sequence>
-				<xsd:element ref = "tcpipEvent" minOccurs = "0" maxOccurs = "unbounded"/>
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-
-	<xsd:element name = "tcpipEvent">
-		<xsd:annotation>
-			<xsd:documentation><![CDATA[
-				The event to control a device with tcpip protocol.
-			]]></xsd:documentation>
-		</xsd:annotation>
-	    <xsd:complexType>
-			<xsd:attributeGroup ref = "idAttr"/>
-			<xsd:attribute name = "label"    type = "xsd:string" use = "required"/>
-			<xsd:attribute name = "ip"       type = "xsd:string" use = "required"/>
-	        <xsd:attribute name = "port"     type = "xsd:string" use = "required"/>
-	        <xsd:attribute name = "command"  type = "xsd:string" use = "required"/>
-		</xsd:complexType>
-	</xsd:element>
 </xsd:schema>

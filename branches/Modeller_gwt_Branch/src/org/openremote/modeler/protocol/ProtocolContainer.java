@@ -83,7 +83,6 @@ public class ProtocolContainer implements Serializable {
       
    }
 
-
    /**
     * Gets the.
     * 
@@ -98,6 +97,15 @@ public class ProtocolContainer implements Serializable {
       return null;
    }
    
-   
-
+   /**
+    * Find tag name.
+    * 
+    * @param protocolDisplayName the protocol display name
+    * 
+    * @return the string
+    */
+   public static String findTagName(String protocolDisplayName) {
+      ProtocolDefinition protocolDefinition = protocols.get(protocolDisplayName);
+      return protocolDefinition == null ? "" : protocolDefinition.getTagName();
+   }
 }

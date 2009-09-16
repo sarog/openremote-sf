@@ -415,13 +415,13 @@ public class ResourceServiceImpl implements ResourceService {
    private String getButtonsXmlContent(List<Activity> activityList, ProtocolEventContainer protocolEventContainer) {
       StringBuffer uiButtonsXml = new StringBuffer();
       for (Activity activity : activityList) {
+         uiButtonsXml.append("  <buttons>\n");
          for (Screen screen : activity.getScreens()) {
-            uiButtonsXml.append("  <buttons>\n");
             for (UIButton btn : screen.getButtons()) {
                uiButtonsXml.append(getButtonXmlContent(btn, protocolEventContainer));
             }
-            uiButtonsXml.append("  </buttons>\n");
          }
+         uiButtonsXml.append("  </buttons>\n");
       }
       return uiButtonsXml.toString();
    }
@@ -461,7 +461,7 @@ public class ResourceServiceImpl implements ResourceService {
 
          UIButtonEvent uiButtonEvent = new UIButtonEvent();
          uiButtonEvent.setId(this.eventId++);
-         uiButtonEvent.setProtocolType(protocolType);
+         uiButtonEvent.setProtocolDisplayName(protocolType);
          for (ProtocolAttr protocolAttr : protocolAttrs) {
             uiButtonEvent.getProtocolAttrs().put(protocolAttr.getName(), protocolAttr.getValue());
          }

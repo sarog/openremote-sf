@@ -84,6 +84,12 @@ public class ProtocolParser {
    /** The Constant NAME_ATTR_NAME. */
    private static final String NAME_ATTR_NAME = "name";
    
+   /** The Constant DISPLAY_NAME_ATTR_NAME. */
+   private static final String DISPLAY_NAME_ATTR_NAME = "displayName";
+   
+   /** The Constant TAG_NAME_ATTR_NAME. */
+   private static final String TAG_NAME_ATTR_NAME = "tagName"; 
+   
    /** The Constant MESSAGE_ATTR_NAME. */
    private static final String MESSAGE_ATTR_NAME = "message";
 
@@ -129,12 +135,14 @@ public class ProtocolParser {
       while (protocolItr.hasNext()) {
          Element protocolElement = protocolItr.next();
          ProtocolDefinition protocolDefinition = new ProtocolDefinition();
-         // set protocol name
-         protocolDefinition.setName(protocolElement.attributeValue(NAME_ATTR_NAME));
+         // set protocol displayName
+         protocolDefinition.setDisplayName(protocolElement.attributeValue(DISPLAY_NAME_ATTR_NAME));
+         // set protocol tagName
+         protocolDefinition.setTagName(protocolElement.attributeValue(TAG_NAME_ATTR_NAME));
 
          // parse attr element start
          protocolDefinition.getAttrs().addAll(parseAttributs(protocolElement));
-         map.put(protocolDefinition.getName(), protocolDefinition);
+         map.put(protocolDefinition.getDisplayName(), protocolDefinition);
       }
       return map;
    }

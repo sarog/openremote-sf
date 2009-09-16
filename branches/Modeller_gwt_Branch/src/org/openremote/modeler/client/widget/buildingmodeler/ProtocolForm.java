@@ -114,7 +114,7 @@ public class ProtocolForm extends FormPanel {
    private void setupForm(ProtocolDefinition definition) {
       final FormPanel f = this;
 
-      setHeading(definition.getName() + " Form");
+      setHeading(definition.getDisplayName() + " Form");
       setFrame(true);
       setWidth(350);
 

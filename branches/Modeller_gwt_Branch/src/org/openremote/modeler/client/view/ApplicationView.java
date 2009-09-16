@@ -196,7 +196,7 @@ public class ApplicationView implements View {
     * @return the menu item
     */
    private MenuItem createExportMenuItem() {
-      MenuItem exportMenuItem = new MenuItem("Export");
+      final MenuItem exportMenuItem = new MenuItem("Export");
       exportMenuItem.ensureDebugId(DebugId.EXPORT);
       exportMenuItem.setIcon(icons.exportIcon());
       exportMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {

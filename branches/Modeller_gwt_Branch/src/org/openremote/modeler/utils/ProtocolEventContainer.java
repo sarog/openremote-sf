@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.UIButtonEvent;
 import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.service.ProtocolParser;
@@ -79,22 +78,22 @@ public class ProtocolEventContainer {
          ProtocolParser parser = new ProtocolParser();
          ProtocolContainer.getInstance().setProtocols(parser.parseXmls());
       }      
-      Set<String> protocolTypes = ProtocolContainer.getInstance().getProtocols().keySet();
-      for (String protocolType : protocolTypes) {
-         protocolEvents.put(protocolType, new ArrayList<UIButtonEvent>());
+      Set<String> protocolDisplayNames = ProtocolContainer.getInstance().getProtocols().keySet();
+      for (String protocolDisplayName : protocolDisplayNames) {
+         protocolEvents.put(protocolDisplayName, new ArrayList<UIButtonEvent>());
       }
    }
    
    /**
-    * Adds a UIButtonEvent to property <b>protocolEvents</b> depend on the uiButtonEvent protocolType.
+    * Adds a UIButtonEvent to property <b>protocolEvents</b> depend on the uiButtonEvent protocolDisplayName.
     * 
     * @param uiButtonEvent
     */
    public void addUIButtonEvent(UIButtonEvent uiButtonEvent) {
-      Set<String> protocolTypes = protocolEvents.keySet();
-      for (String protocolType : protocolTypes) {
-         if (protocolType.equals(uiButtonEvent.getProtocolType())) {
-            List<UIButtonEvent> uiButtonEvents = protocolEvents.get(protocolType);
+      Set<String> protocolDisplayNames = protocolEvents.keySet();
+      for (String protocolDisplayName : protocolDisplayNames) {
+         if (protocolDisplayName.equals(uiButtonEvent.getProtocolDisplayName())) {
+            List<UIButtonEvent> uiButtonEvents = protocolEvents.get(protocolDisplayName);
             for (UIButtonEvent uiBtnEvent : uiButtonEvents) {
                Map<String, String> protocolAttrs = uiBtnEvent.getProtocolAttrs();
                Set<String> protocolAttrKeySet = protocolAttrs.keySet();
@@ -110,7 +109,7 @@ public class ProtocolEventContainer {
                   return;
                }               
             }
-            protocolEvents.get(protocolType).add(uiButtonEvent);
+            protocolEvents.get(protocolDisplayName).add(uiButtonEvent);
          }
       }
    }
@@ -127,13 +126,13 @@ public class ProtocolEventContainer {
    /**
     * Gets the uI button events.
     * 
-    * @param protocolType the protocol type
+    * @param protocolDisplayName the protocol type
     * 
     * @return the uI button events
     */
-   public List<UIButtonEvent> getUIButtonEvents(String protocolType) {
-      if (protocolEvents.containsKey(protocolType)) {
-         return protocolEvents.get(protocolType);
+   public List<UIButtonEvent> getUIButtonEvents(String protocolDisplayName) {
+      if (protocolEvents.containsKey(protocolDisplayName)) {
+         return protocolEvents.get(protocolDisplayName);
       } else {
          return new ArrayList<UIButtonEvent>();
       }
@@ -146,13 +145,14 @@ public class ProtocolEventContainer {
     */
    public String generateUIButtonEventsXml () {
       StringBuffer uiButtonEventXml = new StringBuffer();
-      Set<String> protocolTypes = protocolEvents.keySet();
+      Set<String> protocolDisplayNames = protocolEvents.keySet();
       uiButtonEventXml.append("  <events>\n");
-      for (String protocolType : protocolTypes) {
-         String eventsTagName = (Constants.INFRARED_TYPE.equals(protocolType)) ? "irEvents" : protocolType + "Events";
+      for (String protocolDisplayName : protocolDisplayNames) {
+         String protocolTagName = ProtocolContainer.findTagName(protocolDisplayName);
+         String eventsTagName = protocolTagName + "Events";
          uiButtonEventXml.append("    <" + eventsTagName + ">\n");
-         for(UIButtonEvent uiButtonEvent : protocolEvents.get(protocolType)) {
-            String eventTagName = (Constants.INFRARED_TYPE.equals(protocolType)) ? "irEvent" : protocolType + "Event";
+         for(UIButtonEvent uiButtonEvent : protocolEvents.get(protocolDisplayName)) {
+            String eventTagName = protocolTagName + "Event";
             uiButtonEventXml.append("      <" + eventTagName + " id=\"" + uiButtonEvent.getId() + "\"");
             Set<String> protocolAttrKeySet = uiButtonEvent.getProtocolAttrs().keySet();
             for (String attrKey : protocolAttrKeySet) {
