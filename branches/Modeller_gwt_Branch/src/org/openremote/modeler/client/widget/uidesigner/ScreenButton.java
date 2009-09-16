@@ -91,9 +91,7 @@ public class ScreenButton extends LayoutContainer {
       btnTable.setCellPadding(0);
       btnTable.setCellSpacing(0);
 
-//      center.setTagName("span");
       adjustTextLength(width);
-      // image.setUrl("http://localhost:8080/modeler/resources/images/iphone_btn.jpg");
       btnTable.setWidget(0, 0, null);
       btnTable.setWidget(0, 1, null);
       btnTable.setWidget(0, 2, null);
@@ -141,7 +139,6 @@ public class ScreenButton extends LayoutContainer {
     * @param icon the new icon
     */
    public void setIcon(String icon) {
-      // btnTable.remove(center);
       image.setUrl(icon);
       button.setIcon(icon);
       btnTable.removeStyleName("screen-btn-cont");

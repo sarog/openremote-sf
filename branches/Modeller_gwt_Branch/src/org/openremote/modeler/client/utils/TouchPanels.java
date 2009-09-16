@@ -32,7 +32,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
- * The Class Panels.
+ * The Class Panels, get all touch panel definitions from xml files.
  */
 public class TouchPanels {
    
