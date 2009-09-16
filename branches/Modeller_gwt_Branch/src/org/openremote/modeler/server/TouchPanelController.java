@@ -8,7 +8,7 @@ import org.openremote.modeler.service.TouchPanelParser;
 import org.openremote.modeler.touchpanel.TouchPanelContainer;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
-public class PanelController extends BaseGWTSpringController implements TouchPanelRPCService {
+public class TouchPanelController extends BaseGWTSpringController implements TouchPanelRPCService {
 
    /**
     * 

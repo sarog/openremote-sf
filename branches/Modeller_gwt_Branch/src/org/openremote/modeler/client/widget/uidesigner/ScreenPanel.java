@@ -110,8 +110,8 @@ public class ScreenPanel extends LayoutContainer {
       screenTable.addStyleName("panel-table");
       screenTable.setPixelSize(gridWidth, gridHeight);
       add(screenTable);
-      final int cellWidth = (int) Math.round((float) gridWidth / screen.getColumnCount());
-      final int cellHeight = (int) Math.round((float) gridHeight / screen.getRowCount());
+      final int cellWidth =  gridWidth / screen.getColumnCount();
+      final int cellHeight = gridHeight / screen.getRowCount();
       DNDListener dndListener = new DNDListener() {
          @SuppressWarnings("unchecked")
          public void dragDrop(DNDEvent e) {
