@@ -54,11 +54,12 @@ table.screen-btn-cont{
 table.screen-btn-cont tr.screen-top {
    height:3px;
 }
+/*
 .screen-btn table .middle img {
    height:43px;
    width:43px;
 }
-
+*/
 table.screen-btn-cont td.tl-c{
     width:3px;
     background: url(../images/iphone_btn_sprite.png) no-repeat 0 0;
