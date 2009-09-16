@@ -27,7 +27,10 @@ import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.FileUploadField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
@@ -89,12 +92,23 @@ public class ImportWindow extends FormWindow {
       cancelBtn.ensureDebugId(DebugId.IMPORT_WINDOW_CANCEL_BTN);
 
       importBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @SuppressWarnings("static-access")
          @Override
          public void componentSelected(ButtonEvent ce) {
             if (form.isValid()) {
-               form.submit();
-               mask("Importing, please wait.");
+               MessageBox box = new MessageBox();
+               box.setButtons(MessageBox.YESNO);
+               box.setIcon(MessageBox.QUESTION);
+               box.setTitle("Import");
+               box.setMessage("The activities tree will be rebuilt. Are you sure you want to import?");
+               box.addCallback(new Listener<MessageBoxEvent>() {
+                   public void handleEvent(MessageBoxEvent be) {
+                       if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
+                          form.submit();
+                          mask("Importing, please wait.");
+                       }
+                   }
+               });
+               box.show();       
             }
          }
       });
