@@ -30,7 +30,7 @@ import java.util.Map;
 public class UIButtonEvent {
 
    /** The type. */
-   private String protocolType;
+   private String protocolDisplayName;
 
    /** The id. */
    private long id;
@@ -58,21 +58,21 @@ public class UIButtonEvent {
    }
 
    /**
-    * Gets the protocol type.
+    * Gets the protocol display name.
     * 
-    * @return the protocol type
+    * @return the protocol display name
     */
-   public String getProtocolType() {
-      return protocolType;
+   public String getProtocolDisplayName() {
+      return protocolDisplayName;
    }
 
    /**
-    * Sets the protocol type.
+    * Sets the protocol display name.
     * 
-    * @param protocolType the new protocol type
+    * @param protocolDisplayName the new protocol display name
     */
-   public void setProtocolType(String protocolType) {
-      this.protocolType = protocolType;
+   public void setProtocolDisplayName(String protocolDisplayName) {
+      this.protocolDisplayName = protocolDisplayName;
    }
 
    /**

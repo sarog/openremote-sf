@@ -31,7 +31,7 @@ public class Constants {
    }
 
    /** The Constant INFRARED_TYPE. For assign protocol type. */
-   public static final String INFRARED_TYPE = "infrared";
+   public static final String INFRARED_TYPE = "Infrared";
    
    /** The Constant KNX_TYPE. */
    public static final String KNX_TYPE = "knx";

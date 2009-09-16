@@ -52,7 +52,7 @@ public class ProtocolParserTest {
       protocolParser.setPath(getClass().getResource("testXml").getPath());
       Map<String, ProtocolDefinition> pros = new HashMap<String, ProtocolDefinition>();
       ProtocolDefinition definition = getCorrectProtocolDefinition();
-      pros.put(definition.getName(), definition);
+      pros.put(definition.getDisplayName(), definition);
 
       Assert.assertEquals(pros, protocolParser.parseXmls());
    }
@@ -64,7 +64,7 @@ public class ProtocolParserTest {
     */
    private ProtocolDefinition getCorrectProtocolDefinition() {
       ProtocolDefinition definition = new ProtocolDefinition();
-      definition.setName("KNX");
+      definition.setDisplayName("KNX");
 
       ProtocolAttrDefinition groupAddressAttr = new ProtocolAttrDefinition();
       groupAddressAttr.setName("groupAddress");

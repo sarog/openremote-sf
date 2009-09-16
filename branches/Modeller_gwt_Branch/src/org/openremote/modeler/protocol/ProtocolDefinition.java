@@ -35,27 +35,48 @@ public class ProtocolDefinition implements Serializable {
    private static final long serialVersionUID = -726881807822688804L;
    
    /** The name. */
-   private String name;
+   private String displayName;
+   
+   /** The tag name. */
+   private String tagName;
    
    /** The attrs. */
    private List<ProtocolAttrDefinition> attrs = new ArrayList<ProtocolAttrDefinition>();
 
    /**
-    * Gets the name.
+    * Gets the display name.
     * 
-    * @return the name
+    * @return the display name
     */
-   public String getName() {
-      return name;
+   public String getDisplayName() {
+      return displayName;
    }
 
    /**
-    * Sets the name.
+    * Sets the display name.
     * 
-    * @param name the new name
+    * @param displayName the new display name
     */
-   public void setName(String name) {
-      this.name = name;
+   public void setDisplayName(String displayName) {
+      this.displayName = displayName;
+   }
+
+   /**
+    * Gets the tag name.
+    * 
+    * @return the tag name
+    */
+   public String getTagName() {
+      return tagName;
+   }
+
+   /**
+    * Sets the tag name.
+    * 
+    * @param tagName the new tag name
+    */
+   public void setTagName(String tagName) {
+      this.tagName = tagName;
    }
 
    /**
@@ -90,7 +111,10 @@ public class ProtocolDefinition implements Serializable {
 
       ProtocolDefinition that = (ProtocolDefinition) o;
 
-      if (name != null ? !name.equals(that.name) : that.name != null) {
+      if (displayName != null ? !displayName.equals(that.displayName) : that.displayName != null) {
+         return false;
+      }
+      if (tagName != null ? !tagName.equals(that.tagName) : that.tagName != null) {
          return false;
       }
       if (attrs == null && that.attrs == null) {
@@ -116,8 +140,8 @@ public class ProtocolDefinition implements Serializable {
     */
    @Override
    public int hashCode() {
-      int result = name != null ? name.hashCode() : 0;
-      result = 31 * result + (attrs != null ? attrs.hashCode() : 0);
-      return result;
+      int result = (displayName != null) ? displayName.hashCode() : 0;
+      result += (tagName != null) ? tagName.hashCode() : 0;
+      return 31 * result + (attrs != null ? attrs.hashCode() : 0);
    }
 }
