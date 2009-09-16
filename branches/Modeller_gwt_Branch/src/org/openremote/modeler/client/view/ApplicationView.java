@@ -196,7 +196,7 @@ public class ApplicationView implements View {
     * @return the menu item
     */
    private MenuItem createExportMenuItem() {
-      final MenuItem exportMenuItem = new MenuItem("Export");
+      MenuItem exportMenuItem = new MenuItem("Export");
       exportMenuItem.ensureDebugId(DebugId.EXPORT);
       exportMenuItem.setIcon(icons.exportIcon());
       exportMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
@@ -206,9 +206,11 @@ public class ApplicationView implements View {
                MessageBox.info("Info", "Sorry, the data you want to export is invalid.", null);
                return;
             }
+            viewport.mask("Exporting, please wait.");
             UtilsProxy.exportFiles(IDUtil.currentID(), getAllActivities(), new AsyncSuccessCallback<String>() {
                @Override
                public void onSuccess(String exportURL) {
+                  viewport.unmask();
                   Window.open(exportURL, "_blank", "");
                }
             });
