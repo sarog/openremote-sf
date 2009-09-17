@@ -113,4 +113,13 @@ public class UIDesignerView extends TabItem implements View {
    private void prepareData() {
       TouchPanels.load();
    }
+
+   /**
+    * Gets the screen tab.
+    * 
+    * @return the screen tab
+    */
+   public ScreenTab getScreenTab() {
+      return screenTab;
+   }
 }

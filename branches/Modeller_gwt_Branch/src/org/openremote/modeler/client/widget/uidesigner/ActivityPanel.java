@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
@@ -34,6 +35,7 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.ScreenBeanModelProxy;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.Activity;
@@ -48,6 +50,8 @@ import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.ChangeEvent;
+import com.extjs.gxt.ui.client.data.ChangeListener;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
@@ -155,7 +159,7 @@ public class ActivityPanel extends ContentPanel {
             add(tree);
          }
       };
-      initTreeWithAutoSavedJson();
+      initTreeWithAutoSavedJson(screenTab);
       treeContainer.ensureDebugId(DebugId.ACTIVITY_TREE_CONTAINER);
       treeContainer.setScrollMode(Scroll.AUTO);
       treeContainer.setStyleAttribute("backgroundColor", "white");
@@ -166,12 +170,12 @@ public class ActivityPanel extends ContentPanel {
    /**
     * Inits the tree with auto saved json in session.
     */
-   private void initTreeWithAutoSavedJson() {
+   private void initTreeWithAutoSavedJson(final ScreenTab screenTab) {
       UtilsProxy.loadJsonStringFromSession(new AsyncSuccessCallback<String>() {
          @Override
          public void onSuccess(String acvitityJsonResp) {
             if (!"".equals(acvitityJsonResp)) {         
-               reRenderTree(acvitityJsonResp);
+               reRenderTree(acvitityJsonResp, screenTab);
             }
          }
       });      
@@ -383,13 +387,13 @@ public class ActivityPanel extends ContentPanel {
     * 
     * @param activitiesJSON the activities json
     */
-   public void reRenderTree(String activitiesJSON) {
+   public void reRenderTree(String activitiesJSON, final ScreenTab screenTab) {
       if (activitiesJSON == null || "".equals(activitiesJSON)) {
          MessageBox.info("Info", "The Json Object for reRendering activityTree is null.", null);
       }
       tree.getStore().removeAll();
       BeanModelDataBase.screenTable.clear();
-      BeanModelDataBase.activityTable.clear();      
+      BeanModelDataBase.activityTable.clear();   
       List<Activity> activities = parseJson(activitiesJSON);
       for (Activity activity : activities) {
          BeanModel activityBeanModel = activity.getBeanModel();
@@ -401,6 +405,18 @@ public class ActivityPanel extends ContentPanel {
             BeanModelDataBase.screenTable.insert(screenBeanModel);
          }
       }
+      BeanModelDataBase.screenTable.addInsertListener(Constants.SCREEN_TABLE_OID, new ChangeListener(){
+         public void modelChanged(ChangeEvent event) {
+            if(event.getType() == BeanModelTable.ADD){
+               BeanModel beanModel = (BeanModel) event.getItem();
+               if(beanModel.getBean() instanceof Screen){
+                  ScreenTabItem screenTabItem = new ScreenTabItem((Screen)beanModel.getBean());
+                  screenTab.add(screenTabItem);
+               }
+            }
+         }
+         
+      });
    }
    
    /**
@@ -436,7 +452,7 @@ public class ActivityPanel extends ContentPanel {
                   UIButton uiButton = new UIButton();
                   uiButton.setOid(IDUtil.nextID());
                   screen.addButton(uiButton);
-                  String iconStr = ("null".equals(uiButtonJSON.get("icon").toString())) ? "" : uiButtonJSON.get("icon").isString().stringValue();
+                  String iconStr = ("null".equals(uiButtonJSON.get("icon").toString())) ? null : uiButtonJSON.get("icon").isString().stringValue();
                   uiButton.setIcon(iconStr);
                   uiButton.setLabel(uiButtonJSON.get("label").isString().stringValue());
                   uiButton.setHeight(Integer.parseInt(uiButtonJSON.get("height").toString()));

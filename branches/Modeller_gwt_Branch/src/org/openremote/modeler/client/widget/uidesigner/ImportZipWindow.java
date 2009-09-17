@@ -43,12 +43,12 @@ import com.google.gwt.core.client.GWT;
  * 
  * @author handy.wang
  */
-public class ImportWindow extends FormWindow {
+public class ImportZipWindow extends FormWindow {
    
    /**
     * Instantiates a new import window.
     */
-   public ImportWindow() {
+   public ImportZipWindow() {
       super();
       initial("Import");
       this.ensureDebugId(DebugId.IMPORT_WINDOW);
@@ -112,7 +112,7 @@ public class ImportWindow extends FormWindow {
             }
          }
       });
-      final ImportWindow that = this;
+      final ImportZipWindow that = this;
       cancelBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
