@@ -25,7 +25,6 @@ import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.rpc.UtilsRPCService;
 import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.service.ResourceService;
-import org.openremote.modeler.service.impl.UserServiceImpl;
 
 /**
  * The server side implementation of the RPC service <code>DeviceRPCService</code>.
@@ -33,9 +32,6 @@ import org.openremote.modeler.service.impl.UserServiceImpl;
  */
 @SuppressWarnings("serial")
 public class UtilsController extends BaseGWTSpringController implements UtilsRPCService {
-   
-   /** The user service. */
-   private UserServiceImpl userService;
    
    /** The resource service. */
    private ResourceService resourceService;
@@ -46,28 +42,10 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    /* (non-Javadoc)
     * @see org.openremote.modeler.client.rpc.UtilsRPCService#export(java.lang.String, java.lang.String, java.lang.String)
     */
-   public String exportFiles(long maxId, List<Activity> activities) {      
-      return resourceService.downloadZipResource(maxId, activities);
+   public String exportFiles(long maxId, List<Activity> activities) {  
+      return resourceService.downloadZipResource(maxId, this.getThreadLocalRequest().getSession().getId(), activities);
    }
    
-   /**
-    * Gets the user service.
-    * 
-    * @return the user service
-    */
-   public UserServiceImpl getUserService() {
-      return userService;
-   }
-
-   /**
-    * Sets the user service.
-    * 
-    * @param userService the new user service
-    */
-   public void setUserService(UserServiceImpl userService) {
-      this.userService = userService;
-   }
-
    /**
     * Gets the resource service.
     * 
