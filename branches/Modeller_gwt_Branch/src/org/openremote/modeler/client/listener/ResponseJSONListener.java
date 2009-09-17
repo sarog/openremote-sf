@@ -44,7 +44,7 @@ public abstract class ResponseJSONListener implements Listener<ResponseJSONEvent
     * @see com.extjs.gxt.ui.client.event.Listener#handleEvent(com.extjs.gxt.ui.client.event.BaseEvent)
     */
    public void handleEvent(ResponseJSONEvent rje) {
-      if (rje.getType() == ResponseJSONEvent.ResponseJSON) {
+      if (rje.getType() == ResponseJSONEvent.RESPONSEJSON) {
          afterSubmit(rje);
       }
    }

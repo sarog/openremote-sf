@@ -193,7 +193,7 @@ public class ApplicationView implements View {
          @Override
          public void componentSelected(MenuEvent ce) {
             final ImportWindow importWindow = new ImportWindow();
-            importWindow.addListener(ResponseJSONEvent.ResponseJSON, new ResponseJSONListener() {
+            importWindow.addListener(ResponseJSONEvent.RESPONSEJSON, new ResponseJSONListener() {
                @Override
                public void afterSubmit(ResponseJSONEvent be) {
                   that.activityPanel.reRenderTree(be.getData().toString());
