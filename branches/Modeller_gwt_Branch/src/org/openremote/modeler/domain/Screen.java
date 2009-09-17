@@ -134,7 +134,7 @@ public class Screen extends BusinessEntity {
     * @param button the button
     */
    public void deleteButton(UIButton button) {
-      if(this.buttons.contains(button)){
+      if (this.buttons.contains(button)) {
          this.buttons.remove(button);
       }
    }

@@ -78,7 +78,7 @@ public class ActivityFormPanel extends FormPanel {
       binding.autoBind();
       binding.bind(activityBeanModel);
       
-      addListener(Events.BeforeSubmit, new Listener<FormEvent>(){
+      addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
          }
       });

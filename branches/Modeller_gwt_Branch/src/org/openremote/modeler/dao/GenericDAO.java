@@ -88,6 +88,7 @@ public class GenericDAO extends HibernateDaoSupport {
     * 
     * @param clazz a persistent class
     * @param id the identifier of the persistent instance
+    * @param <T> t
     * 
     * @return the persistent instance
     */
@@ -104,6 +105,7 @@ public class GenericDAO extends HibernateDaoSupport {
     * 
     * @param clazz a persistent class
     * @param id the identifier of the persistent instance
+    * @param <T> t
     * 
     * @return the persistent instance, or null if not found
     */
@@ -121,6 +123,7 @@ public class GenericDAO extends HibernateDaoSupport {
     * @param clazz a persistent class
     * @param fieldName field name
     * @param fieldValue field value
+    * @param <T> t
     * 
     * @return the persistent instance, or null if not found
     */
@@ -149,6 +152,7 @@ public class GenericDAO extends HibernateDaoSupport {
    /**
     * Delete all given persistent instances. This can be combined with any of the find methods to delete by query in two
     * lines of code.
+    * @param <T> t
     * 
     * @param entities the persistent instances to delete
     */
@@ -161,6 +165,7 @@ public class GenericDAO extends HibernateDaoSupport {
     * subset.
     * 
     * @param clazz a persistent class
+    * @param <T> t
     * 
     * @return a List containing 0 or more persistent instances
     */
@@ -173,6 +178,7 @@ public class GenericDAO extends HibernateDaoSupport {
     * Inserts a batch of given persistent instances.
     * 
     * @param insertList persistent instances to insert.
+    * @param <T> t
     */
    public <T> void batchInsert(final List<T> insertList) {
       StatelessSession statelessSession = getSessionFactory().openStatelessSession();
@@ -193,6 +199,7 @@ public class GenericDAO extends HibernateDaoSupport {
     * Finds by DetachedCriteria.
     * 
     * @param detachedCriteria DetachedCriteria
+    * @param <T> t
     * 
     * @return the objects (of the target class) to find
     */
@@ -258,6 +265,7 @@ public class GenericDAO extends HibernateDaoSupport {
     * @param detachedCriteria DetachedCriteria
     * @param pageSize page size
     * @param startPos start position
+    * @param <T> t
     * 
     * @return persistent instances to find
     */

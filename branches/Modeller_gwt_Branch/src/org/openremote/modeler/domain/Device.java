@@ -204,7 +204,7 @@ public class Device extends BusinessEntity {
     * @return the display name
     */
    @Transient
-   public String getDisplayName(){
+   public String getDisplayName() {
       return getName();
    }
    

@@ -69,9 +69,6 @@ public class ProtocolParser {
    /** The Constant PROTOCOL_XSD_FILE_NAME. */
    private static final String PROTOCOL_XSD_FILE_NAME = "protocol.xsd";
 
-   /** The Constant OPENREMOTE_ElEMENT_NAME. */
-   private static final String OPENREMOTE_ElEMENT_NAME = "openremote";
-   
    /** The Constant VALIDATIONS_ElEMENT_NAME. */
    private static final String VALIDATIONS_ElEMENT_NAME = "validations";
    

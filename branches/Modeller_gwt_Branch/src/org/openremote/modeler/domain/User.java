@@ -145,7 +145,7 @@ public class User extends BusinessEntity {
     * 
     * @param role the role
     */
-   public void addRole(Role role){
+   public void addRole(Role role) {
       roles.add(role);
    }
    
