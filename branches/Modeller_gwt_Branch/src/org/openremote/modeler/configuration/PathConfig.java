@@ -44,9 +44,6 @@ public class PathConfig {
    /** The configuration. */
    private Configuration configuration;
    
-   /** The user id. */
-   private String userId;
-
    /**
     * Instantiates a new path config.
     */
@@ -60,8 +57,7 @@ public class PathConfig {
     * 
     * @return single instance of PathConfig
     */
-   public static PathConfig getInstance(String userId, Configuration configuration) {
-      myInstance.userId = userId;
+   public static PathConfig getInstance(Configuration configuration) {
       myInstance.configuration = configuration;
       return myInstance;
    }
@@ -84,56 +80,56 @@ public class PathConfig {
    /**
     * Gets iphone xml path.
     * 
-    * @param userId the session id
+    * @param sessionId the session id
     * 
     * @return file absolute path
     */
-   public String iPhoneXmlFilePath() {
-      return userFolder() + "iphone.xml";
+   public String iPhoneXmlFilePath(String sessionId) {
+      return userFolder(sessionId) + "iphone.xml";
    }
 
    /**
     * Gets controller xml file path.
     * 
-    * @param userId the session id
+    * @param sessionId the session id
     * 
     * @return file absolute path
     */
-   public String controllerXmlFilePath() {
-      return userFolder() + "controller.xml";
+   public String controllerXmlFilePath(String sessionId) {
+      return userFolder(sessionId) + "controller.xml";
    }
 
    /**
     * Gets panel description file path.
     * 
-    * @param userId the session id
+    * @param sessionId the session id
     * 
     * @return file absolute path
     */
-   public String panelDescFilePath() {
-      return userFolder() + "." + Constants.PANEL_DESC_FILE;
+   public String panelDescFilePath(String sessionId) {
+      return userFolder(sessionId) + "." + Constants.PANEL_DESC_FILE;
    }
 
    /**
     * Gets lirc.conf file path
     * 
-    * @param userId the session id
+    * @param sessionId the session id
     * 
     * @return file absolute path
     */
-   public String lircFilePath() {
-      return userFolder() + "lircd.conf";
+   public String lircFilePath(String sessionId) {
+      return userFolder(sessionId) + "lircd.conf";
    }
 
    /**
     * Gets compressed file path.
     * 
-    * @param userId the session id
+    * @param sessionId the session id
     * 
     * @return file absolute path
     */
-   public String openremoteZipFilePath() {
-      return userFolder() + "openremote." + UUID.randomUUID() + ".zip";
+   public String openremoteZipFilePath(String sessionId) {
+      return userFolder(sessionId) + "openremote." + UUID.randomUUID() + ".zip";
    }
    
    /**
@@ -141,43 +137,43 @@ public class PathConfig {
     * 
     * @return the string
     */
-   public String dotImportFilePath() {
-      return userFolder() + ".import";
+   public String dotImportFilePath(String sessionId) {
+      return userFolder(sessionId) + ".import";
    }
    
    /**
     * Gets session folder path.
     * 
-    * @param userId the session id
+    * @param sessionId the session id
     * 
     * @return file absolute path
     */
-   public String userFolder()
+   public String userFolder(String sessionId)
    {
-      return tempFolder() + userId + File.separator;
+      return tempFolder() + sessionId + File.separator;
    }
    
    /**
     * Gets the zip url.
     * 
-    * @param userId the user id
+    * @param sessionId the session id
     * 
     * @return the zip url
     */
-   public String getZipUrl() {
-      return configuration.getWebappServerRoot() + "/" + RESOURCEFOLDER + "/" + userId + "/";
+   public String getZipUrl(String sessionId) {
+      return configuration.getWebappServerRoot() + "/" + RESOURCEFOLDER + "/" + sessionId + "/";
    }
 
    /**
     * Gets the relative resource path.
     * 
-    * @param userId the user id
+    * @param sessionId the session id
     * @param fileName the file name
     * 
     * @return the relative resource path
     */
-   public String getRelativeResourcePath(String fileName) {
-      return "../" + RESOURCEFOLDER + "/" + userId + "/" + fileName;
+   public String getRelativeResourcePath(String fileName, String sessionId) {
+      return "../" + RESOURCEFOLDER + "/" + sessionId + "/" + fileName;
    }
    /**
     * Gets the configuration.
@@ -195,23 +191,5 @@ public class PathConfig {
     */
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
-   }
-
-   /**
-    * Gets the user id.
-    * 
-    * @return the user id
-    */
-   public String getUserId() {
-      return userId;
-   }
-
-   /**
-    * Sets the user id.
-    * 
-    * @param userId the new user id
-    */
-   public void setUserId(String userId) {
-      this.userId = userId;
    }
 }
