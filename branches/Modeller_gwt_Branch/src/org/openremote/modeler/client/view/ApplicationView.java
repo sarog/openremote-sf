@@ -34,7 +34,8 @@ import org.openremote.modeler.client.rpc.AuthorityRPCServiceAsync;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.Protocols;
 import org.openremote.modeler.client.widget.uidesigner.ActivityPanel;
-import org.openremote.modeler.client.widget.uidesigner.ImportWindow;
+import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
+import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.selenium.DebugId;
 
@@ -76,6 +77,9 @@ public class ApplicationView implements View {
    
    /** The activity panel. */
    private ActivityPanel activityPanel;
+   
+   /** The screen tab. */
+   private ScreenTab screenTab;
    
    /**
     * Initialize.
@@ -197,11 +201,11 @@ public class ApplicationView implements View {
       importMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          @Override
          public void componentSelected(MenuEvent ce) {
-            final ImportWindow importWindow = new ImportWindow();
+            final ImportZipWindow importWindow = new ImportZipWindow();
             importWindow.addListener(ResponseJSONEvent.RESPONSEJSON, new ResponseJSONListener() {
                @Override
                public void afterSubmit(ResponseJSONEvent be) {
-                  that.activityPanel.reRenderTree(be.getData().toString());
+                  that.activityPanel.reRenderTree(be.getData().toString(), screenTab);
                   importWindow.hide();
                }
             });
@@ -266,7 +270,7 @@ public class ApplicationView implements View {
    protected List<Activity> getAllActivities() {
       List<Activity> activityList = new ArrayList<Activity>();
       for (BeanModel activityBeanModel : BeanModelDataBase.activityTable.loadAll()) {
-         activityList.add((Activity) activityBeanModel.getBean());
+         activityList.add((Activity)activityBeanModel.getBean());
       }
       return activityList;
    }
@@ -309,6 +313,7 @@ public class ApplicationView implements View {
          uiDesignerItem.initialize();
          modelerTabPanel.add(uiDesignerItem);
          modelerTabPanel.setSelection(uiDesignerItem); // Temp to show uiDesigner. It will remove after development.
+         this.screenTab = uiDesignerItem.getScreenTab();
       }
       modelerTabPanel.setAutoSelect(true);
       BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.CENTER);
