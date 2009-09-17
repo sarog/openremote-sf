@@ -36,6 +36,19 @@ import org.apache.commons.io.IOUtils;
  */
 public class FileUtilsExt {
    
+   /**
+    * Instantiates a new file utils ext.
+    */
+   private FileUtilsExt() {
+   }
+   
+   /**
+    * Delete quietly.
+    * 
+    * @param file the file
+    * 
+    * @return true, if successful
+    */
    public static boolean deleteQuietly(File file) {
       if (file == null || !file.exists()) {
           return false;
@@ -45,6 +58,7 @@ public class FileUtilsExt {
               cleanDirectory(file);
           }
       } catch (Exception e) {
+         System.out.println();
       }
 
       try {
@@ -75,7 +89,6 @@ public class FileUtilsExt {
     * @param data  the content to write to the file
     * @param encoding  the encoding to use, <code>null</code> means platform default
     * @throws IOException in case of an I/O error
-    * @throws java.io.UnsupportedEncodingException if the encoding is not supported by the VM
     */
    public static void writeStringToFile(File file, String data, String encoding) throws IOException {
        OutputStream out = null;
@@ -112,13 +125,13 @@ public class FileUtilsExt {
            if (file.isDirectory()) {
                throw new IOException("File '" + file + "' exists but is a directory");
            }
-           if (file.canWrite() == false) {
+           if (!file.canWrite()) {
                throw new IOException("File '" + file + "' cannot be written to");
            }
        } else {
            File parent = file.getParentFile();
-           if (parent != null && parent.exists() == false) {
-               if (parent.mkdirs() == false) {
+           if (parent != null && !parent.exists()) {
+               if (!parent.mkdirs()) {
                    throw new IOException("File '" + file + "' could not be created");
                }
            }
@@ -174,8 +187,6 @@ public class FileUtilsExt {
     * </ul>
     *
     * @param file  file or directory to delete, must not be <code>null</code>
-    * @throws NullPointerException if the directory is <code>null</code>
-    * @throws FileNotFoundException if the file was not found
     * @throws IOException in case deletion is unsuccessful
     */
    public static void forceDelete(File file) throws IOException {
@@ -184,7 +195,7 @@ public class FileUtilsExt {
        } else {
            boolean filePresent = file.exists();
            if (!file.delete()) {
-               if (!filePresent){
+               if (!filePresent) {
                    throw new FileNotFoundException("File does not exist: " + file);
                }
                String message =
@@ -242,7 +253,16 @@ public class FileUtilsExt {
        }
    }
    
-   public static String replaceURL(String sourceString, String regex, String replacement ) {
+   /**
+    * Replace url.
+    * 
+    * @param sourceString the source string
+    * @param regex the regex
+    * @param replacement the replacement
+    * 
+    * @return the string
+    */
+   public static String replaceURL(String sourceString, String regex, String replacement) {
       return sourceString.replaceAll(regex, replacement);
    }
 }

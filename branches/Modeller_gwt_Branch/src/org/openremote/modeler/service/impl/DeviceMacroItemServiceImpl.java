@@ -58,9 +58,9 @@ public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroI
    
    /**
     * {@inheritDoc}
-    * @see org.openremote.modeler.service.DeviceMacroItemService#LoadByDeviceCommandId(long)
+    * @see org.openremote.modeler.service.DeviceMacroItemService#loadByDeviceCommandId(long)
     */
-   public List<DeviceCommandRef> LoadByDeviceCommandId(long id) {
+   public List<DeviceCommandRef> loadByDeviceCommandId(long id) {
       DeviceCommand deviceCommand = genericDAO.loadById(DeviceCommand.class, id);
       DetachedCriteria criteria = DetachedCriteria.forClass(DeviceCommandRef.class);
       return genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("deviceCommand", deviceCommand)));

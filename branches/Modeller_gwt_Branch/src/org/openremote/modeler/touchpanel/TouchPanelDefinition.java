@@ -208,13 +208,13 @@ public class TouchPanelDefinition implements Serializable {
     */
    @Override
    public boolean equals(Object o) {
-      if(this == o){
+      if (this == o) {
          return true;
       }
       if (o == null || getClass() != o.getClass()) {
          return false;
       }
-      TouchPanelDefinition that = (TouchPanelDefinition)o;
+      TouchPanelDefinition that = (TouchPanelDefinition) o;
       if (width != that.width) {
          return false;
       }
@@ -227,13 +227,13 @@ public class TouchPanelDefinition implements Serializable {
       if (paddingTop != that.paddingTop) {
          return false;
       }
-      if(type != null ? !type.equals(that.type) : that.type != null){
+      if (type != null ? !type.equals(that.type) : that.type != null) {
          return false;
       }
-      if(name != null ? !name.equals(that.name) : that.name != null){
+      if (name != null ? !name.equals(that.name) : that.name != null) {
          return false;
       }
-      if(bgImage != null ? !bgImage.equals(that.bgImage) : that.bgImage != null){
+      if (bgImage != null ? !bgImage.equals(that.bgImage) : that.bgImage != null) {
          return false;
       }
       if (grid == null && that.grid == null) {
@@ -242,10 +242,10 @@ public class TouchPanelDefinition implements Serializable {
       if (grid == null || that.grid == null) {
          return false;
       }
-      if(grid.getWidth() != that.grid.getWidth()){
+      if (grid.getWidth() != that.grid.getWidth()) {
          return false;
       }
-      if(grid.getHeight() != that.grid.getHeight()){
+      if (grid.getHeight() != that.grid.getHeight()) {
          return false;
       }
       return true;

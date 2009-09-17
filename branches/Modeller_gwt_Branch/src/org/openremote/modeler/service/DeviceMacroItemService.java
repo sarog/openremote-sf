@@ -56,7 +56,7 @@ public interface DeviceMacroItemService {
     * 
     * @return the list< device command ref>
     */
-   List<DeviceCommandRef> LoadByDeviceCommandId(long id);
+   List<DeviceCommandRef> loadByDeviceCommandId(long id);
 
    /**
     * Load by device macro id.

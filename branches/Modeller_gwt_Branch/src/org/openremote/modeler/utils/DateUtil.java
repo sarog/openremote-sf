@@ -30,25 +30,25 @@ import java.util.Date;
 public final class DateUtil {
 
    /** default date format pattern. */
-   public final static String DATE_FORMAT = "yyyy-MM-dd";
+   public static final String DATE_FORMAT = "yyyy-MM-dd";
    
    /** The Constant DATE_TIME_FORMAT. */
-   public final static String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
+   public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
    
    /** The Constant DATE_TIME_FORMAT2. */
-   public final static String DATE_TIME_FORMAT2 = "MM-dd HH:mm";
+   public static final String DATE_TIME_FORMAT2 = "MM-dd HH:mm";
    
    /** The Constant TIME_FORMAT. */
-   public final static String TIME_FORMAT = "HH:mm";
+   public static final String TIME_FORMAT = "HH:mm";
    
    /** The Constant DATE_FORMAT2. */
-   public final static String DATE_FORMAT2 = "MM/dd/yyyy";
+   public static final String DATE_FORMAT2 = "MM/dd/yyyy";
    
    /** The Constant DATE_FORMAT_SLASH. */
-   public final static String DATE_FORMAT_SLASH = "yyyy/MM/dd";
+   public static final String DATE_FORMAT_SLASH = "yyyy/MM/dd";
    
    /** The Constant MONTH_DAY_SLASH. */
-   public final static String MONTH_DAY_SLASH = "MM/dd";
+   public static final String MONTH_DAY_SLASH = "MM/dd";
    
    /**
     * Instantiates a new date util.
@@ -172,19 +172,6 @@ public final class DateUtil {
    }
 
    /**
-    * get number of days between the two given date.
-    * 
-    * @param fromDate the begin date
-    * @param endDate the end date
-    * 
-    * @return the number of days between the two date
-    */
-   public static int getDateNum(Date fromDate, Date endDate) {
-      long days = (endDate.getTime() - fromDate.getTime()) / (1000 * 60 * 60 * 24);
-      return (int) days;
-   }
-
-   /**
     * add day to the date.
     * 
     * @param date the added date
@@ -248,40 +235,7 @@ public final class DateUtil {
       calendar.setTime(date);
       return calendar;
    }
-
-   /**
-    * Gets the interval.
-    * 
-    * @param startDate the start date
-    * @param endDate the end date
-    * 
-    * @return the interval
-    */
-   public static String getInterval(Date startDate, Date endDate) {
-      long intervalTime = endDate.getTime() - startDate.getTime();
-      return getInterval(intervalTime);
-   }
    
-   /**
-    * Gets the interval.
-    * 
-    * @param intervalTime the interval time
-    * 
-    * @return the interval
-    */
-   public static String getInterval(long intervalTime) {
-      int hour = (int) (intervalTime / (1000 * 60 * 60));
-      int minute = (int) (intervalTime / (1000 * 60) - hour * 60);
-      int second = (int) ((intervalTime / 1000) - hour * 60 * 60 - minute * 60);
-      if (hour > 0) {
-         return hour + "H " + minute + "m " + second + "s";
-      } else if (minute > 0) {
-         return minute + "m " + second + "s";
-      } else {
-         return second + "s";
-      }
-   }
-
    /**
     * Gets the year.
     * 
@@ -360,11 +314,11 @@ public final class DateUtil {
     * @return the current date
     */
    public static Date getCurrentDate() {
-	   Calendar calendar = getCalendarFromDate(new Date());
-	   calendar.set(Calendar.HOUR_OF_DAY, 0);
-	   calendar.set(Calendar.MINUTE, 0);
-	   calendar.set(Calendar.SECOND, 0);
-	   return calendar.getTime();
+      Calendar calendar = getCalendarFromDate(new Date());
+      calendar.set(Calendar.HOUR_OF_DAY, 0);
+      calendar.set(Calendar.MINUTE, 0);
+      calendar.set(Calendar.SECOND, 0);
+      return calendar.getTime();
    }
 
 }

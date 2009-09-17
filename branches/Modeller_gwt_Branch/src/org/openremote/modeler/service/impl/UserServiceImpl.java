@@ -59,10 +59,10 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       User user = new User();
       user.setUsername(username);
       user.setPassword(new Md5PasswordEncoder().encodePassword(password, username));
-      if (genericDAO.getByNonIdField(User.class, "username", username) == null){
+      if (genericDAO.getByNonIdField(User.class, "username", username) == null) {
          List<Role> allRoles = genericDAO.loadAll(Role.class);
          for (Role r : allRoles) {
-            if (r.getName().equals(Role.ROLE_DESIGNER) && roleStr.indexOf("role_ud") != -1 ) {
+            if (r.getName().equals(Role.ROLE_DESIGNER) && roleStr.indexOf("role_ud") != -1) {
                user.addRole(r);
             } else if (r.getName().equals(Role.ROLE_MODELER) && roleStr.indexOf("role_bm") != -1) {
                user.addRole(r);

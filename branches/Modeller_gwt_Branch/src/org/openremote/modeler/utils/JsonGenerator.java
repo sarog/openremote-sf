@@ -46,11 +46,13 @@ public final class JsonGenerator {
       return serializer.exclude("*.class").serialize(object);
    }
 
+
    /**
     * Serializer object include.
     * 
     * @param object the object
-    * @param includedPropertyNames the property name
+    * @param includedPropertyNames the included property names
+    * @param excludedPropertyNames the excluded property names
     * 
     * @return the string
     */
