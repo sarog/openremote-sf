@@ -21,6 +21,7 @@ package org.openremote.modeler.client.rpc;
 
 import java.util.List;
 
+import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.domain.Activity;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -28,6 +29,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * The Interface UtilsRPCServiceAsync.
+ * 
  * @author handy.wang
  */
 public interface UtilsRPCServiceAsync {
@@ -35,13 +37,31 @@ public interface UtilsRPCServiceAsync {
    /**
     * Export.
     * 
-    * @param controllerXmlContent the controller xml content
-    * @param panelXmlContent the panel xml content
-    * @param sectionIds the section ids
     * @param callback the callback
+    * @param maxId the max id
+    * @param activityList the activity list
     */
    void exportFiles(long maxId, List<Activity> activityList, AsyncCallback<String> callback);
 
+   /**
+    * Beehive rest icon url.
+    * 
+    * @param callback the callback
+    */
    void beehiveRestIconUrl(AsyncCallback<String> callback);
 
+   /**
+    * Load json string from session.
+    * 
+    * @param asyncSuccessCallback the async success callback
+    */
+   void loadJsonStringFromSession(AsyncCallback<String> asyncSuccessCallback);
+
+   /**
+    * Auto save activity json.
+    * @param activities 
+    * 
+    * @param asyncSuccessCallback the async success callback
+    */
+   void autoSaveUiDesignerLayoutJSON(List<Activity> activities, AsyncCallback<AutoSaveResponse> asyncSuccessCallback);
 }

@@ -171,7 +171,7 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the activities json
     */
-   private String getActivitiesJson(List<Activity> activities) {
+   public String getActivitiesJson(List<Activity> activities) {
       try {
          String [] includedPropertyNames = {"screens", "screens.buttons", "screens.buttons.uiCommand"};
          String [] excludePropertyNames = {};

@@ -20,16 +20,20 @@
 package org.openremote.modeler.client.widget.uidesigner;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.SubmitListener;
+import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.model.Position;
 import org.openremote.modeler.client.proxy.ActivityBeanModelProxy;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.ScreenBeanModelProxy;
+import org.openremote.modeler.client.proxy.UtilsProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.Activity;
@@ -59,11 +63,13 @@ import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 
 /**
  * The Class ActivityPanel.
@@ -77,9 +83,14 @@ public class ActivityPanel extends ContentPanel {
    
    /** The icon. */
    private Icons icon = GWT.create(Icons.class);
-
+   
+   /** The SCHEDUL e_ repeatin g_ ms. */
+   private static int SCHEDULE_REPEATING_MS = 30000;
+   
    /**
     * Instantiates a new activity panel.
+    * 
+    * @param screenTab the screen tab
     */
    public ActivityPanel(ScreenTab screenTab) {
       setHeading("Activity");
@@ -87,10 +98,53 @@ public class ActivityPanel extends ContentPanel {
       setLayout(new FitLayout());
       createMenu();
       createActivityTree(screenTab);
+      createTimer();
+   }
+
+   /**
+    * Creates the timer.
+    */
+   private void createTimer() {
+      Timer timer = new Timer() {
+         @Override
+         public void run() {
+            autoSaveUiDesignerLayoutJSON();
+         }
+        };
+        timer.scheduleRepeating(SCHEDULE_REPEATING_MS);
+   }
+   
+   /**
+    * Auto save ui designer layout json.
+    */
+   public void autoSaveUiDesignerLayoutJSON() {
+      UtilsProxy.autoSaveUiDesignerLayoutJSON(getAllActivities(), new AsyncSuccessCallback<AutoSaveResponse>() {
+         @Override
+         public void onSuccess(AutoSaveResponse result) {
+            if (result != null) {
+               Info.display("Info", "Ui designer layout auto saved at " + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
+            }
+         }
+      });
+   }
+   
+   /**
+    * Gets the all activities.
+    * 
+    * @return the all activities
+    */
+   protected List<Activity> getAllActivities() {
+      List<Activity> activityList = new ArrayList<Activity>();
+      for (BeanModel activityBeanModel : BeanModelDataBase.activityTable.loadAll()) {
+         activityList.add((Activity)activityBeanModel.getBean());
+      }
+      return activityList;
    }
 
    /**
     * Creates the activity tree.
+    * 
+    * @param screenTab the screen tab
     */
    private void createActivityTree(ScreenTab screenTab) {
       tree = TreePanelBuilder.buildActivityTree(screenTab);    
@@ -101,6 +155,7 @@ public class ActivityPanel extends ContentPanel {
             add(tree);
          }
       };
+      initTreeWithAutoSavedJson();
       treeContainer.ensureDebugId(DebugId.ACTIVITY_TREE_CONTAINER);
       treeContainer.setScrollMode(Scroll.AUTO);
       treeContainer.setStyleAttribute("backgroundColor", "white");
@@ -108,6 +163,20 @@ public class ActivityPanel extends ContentPanel {
       add(treeContainer);
    }
    
+   /**
+    * Inits the tree with auto saved json in session.
+    */
+   private void initTreeWithAutoSavedJson() {
+      UtilsProxy.loadJsonStringFromSession(new AsyncSuccessCallback<String>() {
+         @Override
+         public void onSuccess(String acvitityJsonResp) {
+            if (!"".equals(acvitityJsonResp)) {         
+               reRenderTree(acvitityJsonResp);
+            }
+         }
+      });      
+   }
+
    /**
     * Creates the menu.
     */
@@ -311,10 +380,12 @@ public class ActivityPanel extends ContentPanel {
    
    /**
     * Clear tree.
+    * 
+    * @param activitiesJSON the activities json
     */
-   public void reRenderTree(String activitiesJSON, ImportWindow importWindow) {
+   public void reRenderTree(String activitiesJSON) {
       if (activitiesJSON == null || "".equals(activitiesJSON)) {
-         MessageBox.info("Error", "Import fail, server is busy now and try again later.", null);
+         MessageBox.info("Info", "The Json Object for reRendering activityTree is null.", null);
       }
       tree.getStore().removeAll();
       BeanModelDataBase.screenTable.clear();
@@ -330,13 +401,14 @@ public class ActivityPanel extends ContentPanel {
             BeanModelDataBase.screenTable.insert(screenBeanModel);
          }
       }
-//      System.out.println(activitiesJSON);
-      importWindow.hide();
    }
    
    /**
-    * @param importJsonString
-    * @return
+    * Parses the json.
+    * 
+    * @param importJsonString the import json string
+    * 
+    * @return the list< activity>
     */
    @SuppressWarnings("finally")
    private List<Activity> parseJson(String importJsonString) {

@@ -147,6 +147,7 @@ public class ApplicationView implements View {
       applicationFileButton.ensureDebugId(DebugId.APPLICATION_FILE_BTN);
 
       Menu fileMenu = new Menu();
+      fileMenu.add(createSaveMenuItem());
       fileMenu.add(createImportMenuItem());
       fileMenu.add(createExportMenuItem());
       fileMenu.add(createLogoutMenuItem());
@@ -163,6 +164,19 @@ public class ApplicationView implements View {
       Button applicationHelpButton = new Button("Help");
       applicationHelpButton.ensureDebugId(DebugId.APPLICATION_HELP_BTN);
       return applicationHelpButton;
+   }
+   
+   private MenuItem createSaveMenuItem() {
+      MenuItem saveMenuItem = new MenuItem("Save");
+      saveMenuItem.ensureDebugId(DebugId.SAVE);
+      saveMenuItem.setIcon(icons.saveIcon());
+      saveMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+         @Override
+         public void componentSelected(MenuEvent ce) {
+            activityPanel.autoSaveUiDesignerLayoutJSON();
+         }
+      });
+      return saveMenuItem;
    }
    
    /**
@@ -182,7 +196,8 @@ public class ApplicationView implements View {
             importWindow.addListener(ResponseJSONEvent.ResponseJSON, new ResponseJSONListener() {
                @Override
                public void afterSubmit(ResponseJSONEvent be) {
-                  that.activityPanel.reRenderTree(be.getData().toString(), importWindow);
+                  that.activityPanel.reRenderTree(be.getData().toString());
+                  importWindow.hide();
                }
             });
          }

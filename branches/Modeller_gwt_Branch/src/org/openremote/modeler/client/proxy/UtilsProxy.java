@@ -22,6 +22,7 @@ package org.openremote.modeler.client.proxy;
 
 import java.util.List;
 
+import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Activity;
@@ -55,5 +56,33 @@ public class UtilsProxy {
          }
       });
    
+   }
+
+   /**
+    * Load json string from session.
+    * 
+    * @param asyncSuccessCallback the async success callback
+    */
+   public static void loadJsonStringFromSession(final AsyncSuccessCallback<String> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().loadJsonStringFromSession(new AsyncSuccessCallback<String>() {
+         @Override
+         public void onSuccess(String activityJSON) {
+            callback.onSuccess(activityJSON);
+         }
+      });
+   }
+
+   /**
+    * Auto save activity json.
+    * 
+    * @param asyncSuccessCallback the async success callback
+    */
+   public static void autoSaveUiDesignerLayoutJSON(List<Activity> activities, final AsyncSuccessCallback<AutoSaveResponse> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().autoSaveUiDesignerLayoutJSON(activities, new AsyncSuccessCallback<AutoSaveResponse>() {
+         @Override
+         public void onSuccess(AutoSaveResponse result) {
+            callback.onSuccess(result);
+         }
+      });
    }
 }

@@ -22,12 +22,14 @@ package org.openremote.modeler.server;
 import java.util.List;
 
 import org.openremote.modeler.client.Configuration;
+import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.rpc.UtilsRPCService;
 import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.service.ResourceService;
 
 /**
  * The server side implementation of the RPC service <code>DeviceRPCService</code>.
+ * 
  * @author handy.wang
  */
 @SuppressWarnings("serial")
@@ -38,6 +40,9 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    
    /** The configuration. */
    private Configuration configuration;
+   
+   /** The Constant ACTIVIY_JSON_SESSION_ATTR_KEY. */
+   private final static String UI_DESIGNER_LAYOUT_JSON_KEY = "activityJSON";
    
    /* (non-Javadoc)
     * @see org.openremote.modeler.client.rpc.UtilsRPCService#export(java.lang.String, java.lang.String, java.lang.String)
@@ -82,8 +87,43 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       this.configuration = configuration;
    }
 
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.client.rpc.UtilsRPCService#beehiveRestIconUrl()
+    */
    public String beehiveRestIconUrl() {
       return configuration.getBeehiveRestIconUrl();
    }
 
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.client.rpc.UtilsRPCService#loadJsonStringFromSession()
+    */
+   public String loadJsonStringFromSession() {
+      Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_JSON_KEY);
+      return (obj == null) ? "" : obj.toString();
+      /*
+      StringBuffer sb = new StringBuffer();
+      try {
+         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("D:/.import")));
+         String temp = null;
+         while ((temp = br.readLine()) != null) {
+            sb.append(temp);
+         }
+      } catch (Exception e) {
+         e.printStackTrace();
+      }
+      return sb.toString();*/
+   }
+
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.client.rpc.UtilsRPCService#autoSaveActivityJSON(java.util.List)
+    */
+   public AutoSaveResponse autoSaveUiDesignerLayoutJSON(List<Activity> activities) {
+      String jsonString = resourceService.getActivitiesJson(activities);
+      AutoSaveResponse autoSaveResponse = new AutoSaveResponse();
+      if (!"".equals(jsonString)) {
+         getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_JSON_KEY, jsonString);
+         autoSaveResponse.setSavedSuccess(true);
+      }
+      return autoSaveResponse;
+   }
 }
