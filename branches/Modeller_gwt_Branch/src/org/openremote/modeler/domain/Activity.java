@@ -24,8 +24,9 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+
 /**
- * User Activity
+ * The Class Activity.
  * @author allen.wei
  */
 @SuppressWarnings("serial")
@@ -78,7 +79,7 @@ public class Activity extends BusinessEntity {
     * 
     * @param screen the screen
     */
-   public void addScreen(Screen screen){
+   public void addScreen(Screen screen) {
       screens.add(screen);
    }
    
@@ -87,10 +88,13 @@ public class Activity extends BusinessEntity {
     * 
     * @param screen the screen
     */
-   public void deleteScreen(Screen screen){
+   public void deleteScreen(Screen screen) {
       screens.remove(screen);
    }
    
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()
+    */
    @Transient
    public String getDisplayName() {
       return name;

@@ -82,5 +82,12 @@ public interface DeviceMacroService {
      */
     DeviceMacro loadById(long id);
     
+    /**
+     * Load by device macro.
+     * 
+     * @param id the id
+     * 
+     * @return the list< device macro item>
+     */
     List<DeviceMacroItem> loadByDeviceMacro(long id);
 }

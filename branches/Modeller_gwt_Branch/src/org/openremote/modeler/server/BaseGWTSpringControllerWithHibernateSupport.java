@@ -46,6 +46,7 @@ public class BaseGWTSpringControllerWithHibernateSupport extends PersistentRemot
     *
     * 
     * @see org.springframework.web.context.ServletContextAware#setServletContext(javax.servlet.ServletContext)
+    * @param servletContext servletContext
     */
    public void setServletContext(ServletContext servletContext) {
       this.servletContext = servletContext;
@@ -64,6 +65,9 @@ public class BaseGWTSpringControllerWithHibernateSupport extends PersistentRemot
     * 
     * @see org.springframework.web.servlet.mvc.Controller#handleRequest(javax.servlet.http.HttpServletRequest,
     * javax.servlet.http.HttpServletResponse)
+    * @param request request
+    * @param response response
+    * @throws Exception Exception
     * @return null
     */
    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {

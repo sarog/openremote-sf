@@ -118,10 +118,11 @@ public class DeviceCommand extends BusinessEntity {
       return getName();
    }
 
+
    /**
     * Sets the section id.
     * 
-    * @param string the new section id
+    * @param sectionId the new section id
     */
    public void setSectionId(String sectionId) {
       this.sectionId = sectionId;

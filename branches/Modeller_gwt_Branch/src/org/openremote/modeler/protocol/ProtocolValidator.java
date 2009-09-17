@@ -66,13 +66,13 @@ public class ProtocolValidator implements Serializable {
    private static final long serialVersionUID = 8253342291315353016L;
 
    /** The _message. */
-   private String _message = null;
+   private String message = null;
 
    /** The _value. */
-   private String _value = null;
+   private String value = null;
 
    /** The _type. */
-   private int _type = -1;
+   private int type = -1;
 
    /**
     * Instantiates a new protocol validator.
@@ -93,18 +93,19 @@ public class ProtocolValidator implements Serializable {
          setMessage(message);
       } else {
          switch (type) {
-            case ALLOW_BLANK_TYPE:
-               setMessage(ALLOW_BLANK_MESSAGE);
-               break;
-            case MAX_LENGTH_TYPE:
-               setMessage(MAX_LENGTH_MESSAGE + value.toString());
-               break;
-            case MIN_LENGTH_TYPE:
-               setMessage(MIN_LENGTH_MESSAGE + value.toString());
-               break;
-            case REGEX_TYPE:
-               setMessage(REGEX_MESSAGE + value.toString() + "'");
-               break;
+         case ALLOW_BLANK_TYPE:
+            setMessage(ALLOW_BLANK_MESSAGE);
+            break;
+         case MAX_LENGTH_TYPE:
+            setMessage(MAX_LENGTH_MESSAGE + value.toString());
+            break;
+         case MIN_LENGTH_TYPE:
+            setMessage(MIN_LENGTH_MESSAGE + value.toString());
+            break;
+         case REGEX_TYPE:
+            setMessage(REGEX_MESSAGE + value.toString() + "'");
+            break;
+         default:
          }
       }
       setValue(value);
@@ -118,7 +119,7 @@ public class ProtocolValidator implements Serializable {
     * @return the type
     */
    public int getType() {
-      return _type;
+      return type;
    }
 
    /**
@@ -127,7 +128,7 @@ public class ProtocolValidator implements Serializable {
     * @param type the new type
     */
    public void setType(int type) {
-      this._type = type;
+      this.type = type;
    }
 
    /**
@@ -136,7 +137,7 @@ public class ProtocolValidator implements Serializable {
     * @return the message
     */
    public String getMessage() {
-      return _message;
+      return message;
    }
 
    /**
@@ -145,7 +146,7 @@ public class ProtocolValidator implements Serializable {
     * @param message the new message
     */
    public void setMessage(String message) {
-      this._message = message;
+      this.message = message;
    }
 
    /**
@@ -154,7 +155,7 @@ public class ProtocolValidator implements Serializable {
     * @return the value
     */
    public String getValue() {
-      return _value;
+      return value;
    }
 
    /**
@@ -163,7 +164,7 @@ public class ProtocolValidator implements Serializable {
     * @param value the new value
     */
    public void setValue(String value) {
-      this._value = value;
+      this.value = value;
    }
 
    /**
@@ -192,13 +193,13 @@ public class ProtocolValidator implements Serializable {
 
       ProtocolValidator that = (ProtocolValidator) o;
 
-      if (_type != that._type) {
+      if (type != that.type) {
          return false;
       }
-      if (_message != null ? !_message.equals(that._message) : that._message != null) {
+      if (message != null ? !message.equals(that.message) : that.message != null) {
          return false;
       }
-      if (_value != null ? !_value.equals(that._value) : that._value != null) {
+      if (value != null ? !value.equals(that.value) : that.value != null) {
          return false;
       }
 
@@ -210,9 +211,9 @@ public class ProtocolValidator implements Serializable {
     */
    @Override
    public int hashCode() {
-      int result = _message != null ? _message.hashCode() : 0;
-      result = 31 * result + (_value != null ? _value.hashCode() : 0);
-      result = 31 * result + _type;
+      int result = message != null ? message.hashCode() : 0;
+      result = 31 * result + (value != null ? value.hashCode() : 0);
+      result = 31 * result + type;
       return result;
    }
 }

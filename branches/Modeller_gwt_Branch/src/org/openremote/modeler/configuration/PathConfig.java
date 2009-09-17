@@ -35,12 +35,14 @@ import org.openremote.modeler.client.Constants;
 public class PathConfig {
    
    /** The Constant logger. */
-   private static final Logger logger = Logger.getLogger(PathConfig.class);
+   private static final Logger LOGGER = Logger.getLogger(PathConfig.class);
 
    /** The Constant myInstance. */
    private static final PathConfig myInstance = new PathConfig();
    
+   /** The Constant RESOURCEFOLDER. */
    private static final String RESOURCEFOLDER = "tmp";
+   
    /** The configuration. */
    private Configuration configuration;
    
@@ -70,7 +72,7 @@ public class PathConfig {
    public String tempFolder() {
       String root = configuration.getOsWebappsRoot() + File.separator;
       if (root == null) {
-         logger.fatal("Can't find modeler.root in system property, please check web.xml.");
+         LOGGER.fatal("Can't find modeler.root in system property, please check web.xml.");
          throw new IllegalStateException("Can't find modeler.root in system property, please check web.xml.");
       }
       return  root + RESOURCEFOLDER + File.separator;
@@ -111,11 +113,11 @@ public class PathConfig {
    }
 
    /**
-    * Gets lirc.conf file path
+    * Lirc file path.
     * 
     * @param sessionId the session id
     * 
-    * @return file absolute path
+    * @return the string
     */
    public String lircFilePath(String sessionId) {
       return userFolder(sessionId) + "lircd.conf";
@@ -135,21 +137,23 @@ public class PathConfig {
    /**
     * Dot import file path.
     * 
+    * @param sessionId the session id
+    * 
     * @return the string
     */
    public String dotImportFilePath(String sessionId) {
       return userFolder(sessionId) + ".import";
    }
    
+
    /**
-    * Gets session folder path.
+    * User folder.
     * 
     * @param sessionId the session id
     * 
-    * @return file absolute path
+    * @return the string
     */
-   public String userFolder(String sessionId)
-   {
+   public String userFolder(String sessionId) {
       return tempFolder() + sessionId + File.separator;
    }
    
@@ -175,6 +179,7 @@ public class PathConfig {
    public String getRelativeResourcePath(String fileName, String sessionId) {
       return "../" + RESOURCEFOLDER + "/" + sessionId + "/" + fileName;
    }
+   
    /**
     * Gets the configuration.
     * 

@@ -93,6 +93,11 @@ public class DeviceMacroItem extends UICommand {
       }
    }
    
+   /**
+    * Gets the target bean model.
+    * 
+    * @return the target bean model
+    */
    @Transient
    @JSON(include = false)
    public BeanModel getTargetBeanModel() {

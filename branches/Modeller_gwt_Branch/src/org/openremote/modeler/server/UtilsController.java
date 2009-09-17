@@ -42,7 +42,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    private Configuration configuration;
    
    /** The Constant ACTIVIY_JSON_SESSION_ATTR_KEY. */
-   private final static String UI_DESIGNER_LAYOUT_JSON_KEY = "activityJSON";
+   private static final String UI_DESIGNER_LAYOUT_JSON_KEY = "activityJSON";
    
    /* (non-Javadoc)
     * @see org.openremote.modeler.client.rpc.UtilsRPCService#export(java.lang.String, java.lang.String, java.lang.String)

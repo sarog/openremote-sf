@@ -78,11 +78,21 @@ public class DeviceCommandRef extends DeviceMacroItem {
       this.deviceCommand = deviceCommand;
    }
    
+   /**
+    * Gets the device name.
+    * 
+    * @return the device name
+    */
    @Transient
    public String getDeviceName() {
       return deviceName;
    }
 
+   /**
+    * Sets the device name.
+    * 
+    * @param deviceName the new device name
+    */
    public void setDeviceName(String deviceName) {
       this.deviceName = deviceName;
    }

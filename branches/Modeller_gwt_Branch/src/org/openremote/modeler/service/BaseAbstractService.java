@@ -30,6 +30,7 @@ import org.openremote.modeler.utils.GenericUtil;
 /**
  * The common service for all the services.
  * <p/>
+ * @param <T> t
  * User: allenwei Date: 2009-2-13 Time: 10:49:20
  */
 public abstract class BaseAbstractService<T extends BusinessEntity> {

@@ -40,7 +40,7 @@ public class TouchPanelParserTest {
     * Test parse xmls.
     */
    @Test
-   public void testParseXmls(){
+   public void testParseXmls() {
       TouchPanelParser panelParser = new TouchPanelParser();
       panelParser.setPath(getClass().getResource("testXml").getPath());
       

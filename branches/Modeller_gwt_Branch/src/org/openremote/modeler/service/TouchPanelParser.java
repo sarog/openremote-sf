@@ -97,7 +97,7 @@ public class TouchPanelParser {
     * 
     * @return the hash map< string, list< panel definition>>
     */
-   public HashMap<String, List<TouchPanelDefinition>> parseXmls(){
+   public HashMap<String, List<TouchPanelDefinition>> parseXmls() {
       HashMap<String, List<TouchPanelDefinition>> panelMap = new HashMap<String, List<TouchPanelDefinition>>();
       File dir = new File(getPath());
       for (File file : dir.listFiles(new FileFilter() {
@@ -129,7 +129,7 @@ public class TouchPanelParser {
       while (panelItr.hasNext()) {
          Element panelElement = panelItr.next();
          String type = panelElement.attributeValue(TYPE_ATTR_NAME);
-         if(panelMap.containsKey(type)){
+         if (panelMap.containsKey(type)) {
             panelList = panelMap.get(type);
          }
          TouchPanelDefinition panelDefinition = new TouchPanelDefinition();
@@ -155,9 +155,10 @@ public class TouchPanelParser {
     * 
     * @return the grid definition
     */
-   private TouchPanelGridDefinition parseGrid(Element panelElement){
+   private TouchPanelGridDefinition parseGrid(Element panelElement) {
       Element gridElement = panelElement.element(GRID_ELEMENT_NAME);
-      TouchPanelGridDefinition grid = new TouchPanelGridDefinition(Integer.valueOf(gridElement.attributeValue(WIDTH_ATTR_NAME)), Integer.valueOf(gridElement.attributeValue(HEIGHT_ATTR_NAME)));
+      TouchPanelGridDefinition grid = new TouchPanelGridDefinition(Integer.valueOf(gridElement.attributeValue(WIDTH_ATTR_NAME)), 
+            Integer.valueOf(gridElement.attributeValue(HEIGHT_ATTR_NAME)));
       return grid;
    }
    

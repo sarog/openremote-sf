@@ -1,19 +1,22 @@
-/*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
- */
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.domain;
 
 import org.openremote.modeler.client.model.Position;
@@ -27,7 +30,9 @@ public class Button extends BusinessEntity {
    /** The label. */
    private String label;
 
+   /** The position. */
    private Position position;
+   
    /** The icon. */
    private String icon;
 
@@ -40,6 +45,11 @@ public class Button extends BusinessEntity {
    /** The ui command. */
    private UICommand uiCommand;
 
+   /**
+    * Instantiates a new button.
+    * 
+    * @param id the id
+    */
    public Button(long id) {
       super(id);
    }
@@ -63,10 +73,20 @@ public class Button extends BusinessEntity {
       this.height = height;
    }
 
+   /**
+    * Gets the position.
+    * 
+    * @return the position
+    */
    public Position getPosition() {
       return position;
    }
 
+   /**
+    * Sets the position.
+    * 
+    * @param position the new position
+    */
    public void setPosition(Position position) {
       this.position = position;
    }
@@ -147,6 +167,11 @@ public class Button extends BusinessEntity {
       this.uiCommand = uiCommand;
    }
 
+   /**
+    * Gets the name.
+    * 
+    * @return the name
+    */
    public String getName() {
       return label;
    }
