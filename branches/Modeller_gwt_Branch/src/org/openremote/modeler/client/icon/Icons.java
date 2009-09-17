@@ -259,4 +259,12 @@ public interface Icons extends ImageBundle {
     */
    @Resource("log_out.png")
    AbstractImagePrototype logout();
+
+   /**
+    * Save icon.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("save.gif")
+   AbstractImagePrototype saveIcon();
 }

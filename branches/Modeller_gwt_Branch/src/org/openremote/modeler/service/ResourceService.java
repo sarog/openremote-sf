@@ -86,4 +86,13 @@ public interface ResourceService {
     * @return the relative resource path
     */
    public String getRelativeResourcePath(String sessionId,String fileName);
+   
+   /**
+    * Gets the activities json.
+    * 
+    * @param activities the activities
+    * 
+    * @return the activities json
+    */
+   public String getActivitiesJson(List<Activity> activities);
 }

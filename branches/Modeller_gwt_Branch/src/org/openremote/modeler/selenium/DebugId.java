@@ -174,4 +174,7 @@ public class DebugId {
 
    /** The Constant IMPORT_WINDOW_CANCEL_BTN. */
    public static final String IMPORT_WINDOW_CANCEL_BTN = "importWindowCancelBtn";
+
+   /** The Constant Save. */
+   public static final String SAVE = "save";
 }

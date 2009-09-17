@@ -193,7 +193,6 @@ public class TreePanelBuilder {
                if(beanModel.getBean() instanceof Screen){
                   Screen screen = beanModel.getBean();
                   ScreenTabItem screenTabItem = null;
-                  List<TabItem> list = screenTab.getItems();
                   for (TabItem tabPanel : screenTab.getItems()) {
                      screenTabItem = (ScreenTabItem)tabPanel;
                      if(screen == screenTabItem.getScreen()){
