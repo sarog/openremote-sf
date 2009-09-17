@@ -144,7 +144,7 @@ public class ChangeIconWindow extends Dialog {
             if (be.getButtonClicked() == getButtonById("ok")) {
                setImageURL();
                if (imageURL != null) {
-                  fireEvent(SubmitEvent.Submit, new SubmitEvent(imageURL));
+                  fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(imageURL));
                } else {
                   MessageBox.alert("Error", "Please select a image.", null);
                }

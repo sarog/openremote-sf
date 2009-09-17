@@ -91,7 +91,7 @@ public class DelayWindow extends FormWindow {
             } else {
                commandDelayModel.set("delaySecond", delay);
             }
-            fireEvent(SubmitEvent.Submit, new SubmitEvent(commandDelayModel));
+            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(commandDelayModel));
          }
          
       });

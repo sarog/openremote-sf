@@ -228,7 +228,7 @@ public class ActivityPanel extends ContentPanel {
     */
    protected void createActivity() {
       final ActivityWindow activityWindow = new ActivityWindow();
-      activityWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+      activityWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
             activityWindow.hide();
@@ -266,7 +266,7 @@ public class ActivityPanel extends ContentPanel {
       final BeanModel activityModel = tree.getSelectionModel().getSelectedItem();
       if (activityModel != null && (activityModel.getBean() instanceof Activity)) {
          final ScreenWindow screenWindow = new ScreenWindow((Activity)activityModel.getBean());
-         screenWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+         screenWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
                screenWindow.hide();
@@ -311,7 +311,7 @@ public class ActivityPanel extends ContentPanel {
     */
    protected void editActivity(BeanModel selectedModel) {
       final ActivityWindow activityWindow = new ActivityWindow(selectedModel);
-      activityWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+      activityWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
             activityWindow.hide();
@@ -329,7 +329,7 @@ public class ActivityPanel extends ContentPanel {
     */
    protected void editScreen(BeanModel selectedModel) {
       final ScreenWindow screenWindow = new ScreenWindow((Screen)selectedModel.getBean());
-      screenWindow.addListener(SubmitEvent.Submit, new SubmitListener(){
+      screenWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener(){
          @Override
          public void afterSubmit(SubmitEvent be) {
             screenWindow.hide();

@@ -44,7 +44,7 @@ public abstract class SubmitListener implements Listener<SubmitEvent> {
     * @see com.extjs.gxt.ui.client.event.Listener#handleEvent(com.extjs.gxt.ui.client.event.BaseEvent)
     */
    public void handleEvent(SubmitEvent be) {
-      if (be.getType() == SubmitEvent.Submit) {
+      if (be.getType() == SubmitEvent.SUBMIT) {
          afterSubmit(be);
       }
    }

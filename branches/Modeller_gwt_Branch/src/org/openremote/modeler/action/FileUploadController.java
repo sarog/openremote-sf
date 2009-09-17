@@ -17,6 +17,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
 package org.openremote.modeler.action;
 
 
@@ -52,7 +53,8 @@ public class FileUploadController extends MultiActionController {
    @SuppressWarnings("finally")
    public ModelAndView importFile(HttpServletRequest request, HttpServletResponse response) {
       try {     
-         String importJson = resourceService.getDotImportFileForRender(request.getSession().getId(), resourceService.getMultipartFileFromRequest(request, "file").getInputStream());
+         String importJson = resourceService.getDotImportFileForRender(request.getSession().getId(), 
+               resourceService.getMultipartFileFromRequest(request, "file").getInputStream());
          response.getWriter().write(importJson);
       } catch (Exception e) {
          e.printStackTrace();
@@ -70,7 +72,7 @@ public class FileUploadController extends MultiActionController {
     * 
     * @throws IOException Signals that an I/O exception has occurred.
     */
-   public void uploadImage(HttpServletRequest request, HttpServletResponse response) throws IOException{
+   public void uploadImage(HttpServletRequest request, HttpServletResponse response) throws IOException {
       String sessionId = request.getSession().getId();
       MultipartFile multipartFile = resourceService.getMultipartFileFromRequest(request, "uploadImage");
       File file = resourceService.uploadImage(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), sessionId);

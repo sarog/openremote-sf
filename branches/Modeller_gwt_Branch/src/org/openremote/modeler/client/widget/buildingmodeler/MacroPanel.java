@@ -98,7 +98,7 @@ public class MacroPanel extends ContentPanel {
          public void componentSelected(ButtonEvent ce) {
             final MacroWindow macroWindow = new MacroWindow();
 
-            macroWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+            macroWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   afterCreateDeviceMacro(be.<DeviceMacro> getData());
@@ -245,7 +245,7 @@ public class MacroPanel extends ContentPanel {
       if (macroTree.getSelectionModel().getSelectedItem() != null) {
          final BeanModel oldModel = macroTree.getSelectionModel().getSelectedItem();
          final MacroWindow macroWindow = new MacroWindow(macroTree.getSelectionModel().getSelectedItem());
-         macroWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+         macroWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
                afterUpdateDeviceMacroSubmit(oldModel, be.<DeviceMacro> getData());

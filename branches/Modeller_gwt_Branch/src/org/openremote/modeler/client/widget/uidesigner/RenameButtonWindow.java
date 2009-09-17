@@ -99,7 +99,7 @@ public class RenameButtonWindow extends FormWindow {
             List<Field<?>> list = form.getFields();
             String buttonName = list.get(0).getValue().toString();
             button.setLabel(buttonName);
-            fireEvent(SubmitEvent.Submit, new SubmitEvent(button));
+            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(button));
          }
       });
       add(form);

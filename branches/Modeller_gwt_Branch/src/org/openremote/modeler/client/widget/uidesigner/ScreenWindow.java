@@ -157,7 +157,7 @@ public class ScreenWindow extends FormWindow {
             } else {
                screenBeanModel = ScreenBeanModelProxy.updateScreen(screen, attrMap);
             }
-            fireEvent(SubmitEvent.Submit, new SubmitEvent(screenBeanModel));
+            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenBeanModel));
          }
       });
       add(form);
