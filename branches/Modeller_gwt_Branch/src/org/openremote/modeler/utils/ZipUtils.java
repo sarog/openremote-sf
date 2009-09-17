@@ -1,19 +1,22 @@
-/*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
- */
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 package org.openremote.modeler.utils;
 
@@ -36,19 +39,32 @@ import org.openremote.modeler.exception.FileOperationException;
  * @author Allen, Handy
  */
 public class ZipUtils {
-   private static final Logger logger = Logger.getLogger(ZipUtils.class);
+   
+   /** The Constant LOGGER. */
+   private static final Logger LOGGER = Logger.getLogger(ZipUtils.class);
 
+   /**
+    * Instantiates a new zip utils.
+    */
    private ZipUtils() {
    }
 
+   /**
+    * Compress.
+    * 
+    * @param outputFilePath the output file path
+    * @param files the files
+    * 
+    * @return the file
+    */
    public static File compress(String outputFilePath, List<File> files) {
-      final int BUFFER = 2048;
+      final int buffer = 2048;
       BufferedInputStream bufferedInputStream;
       File outputFile = new File(outputFilePath);
       try {
          FileUtils.touch(outputFile);
       } catch (IOException e) {
-         logger.error("create zip file fail.", e);
+         LOGGER.error("create zip file fail.", e);
          throw new FileOperationException("create zip file fail.", e);
       }
       FileOutputStream fileOutputStream = null;
@@ -57,38 +73,46 @@ public class ZipUtils {
       try {
          fileOutputStream = new FileOutputStream(outputFilePath);
          zipOutputStream = new ZipOutputStream(new BufferedOutputStream(fileOutputStream));
-         byte data[] = new byte[BUFFER];
+         byte[] data = new byte[buffer];
          for (File file : files) {
             if (!file.exists()) {
                continue;
             }
             fileInputStream = new FileInputStream(file);
-            bufferedInputStream = new BufferedInputStream(fileInputStream, BUFFER);
+            bufferedInputStream = new BufferedInputStream(fileInputStream, buffer);
             ZipEntry entry = new ZipEntry(file.getName());
             entry.setSize(file.length());
             entry.setTime(file.lastModified());
             zipOutputStream.putNextEntry(entry);
 
             int count;
-            while ((count = bufferedInputStream.read(data, 0, BUFFER)) != -1) {
+            while ((count = bufferedInputStream.read(data, 0, buffer)) != -1) {
                zipOutputStream.write(data, 0, count);
             }
             zipOutputStream.closeEntry();
-            if (fileInputStream != null) fileInputStream.close();
-            if (bufferedInputStream != null) bufferedInputStream.close();
+            if (fileInputStream != null) {
+               fileInputStream.close();
+            }
+            if (bufferedInputStream != null) {
+               bufferedInputStream.close();
+            }
          }
       } catch (FileNotFoundException e) {
-         logger.error("Can't find the output file.", e);
+         LOGGER.error("Can't find the output file.", e);
          throw new FileOperationException("Can't find the output file.", e);
       } catch (IOException e) {
-         logger.error("Can't compress file to zip archive, occured IOException", e);
+         LOGGER.error("Can't compress file to zip archive, occured IOException", e);
          throw new FileOperationException("Can't compress file to zip archive, occured IOException", e);
       } finally {
          try {
-            if (zipOutputStream != null) zipOutputStream.close();
-            if (fileOutputStream != null) fileOutputStream.close();
+            if (zipOutputStream != null) {
+               zipOutputStream.close();
+            }
+            if (fileOutputStream != null) {
+               fileOutputStream.close();
+            }
          } catch (IOException e) {
-            logger.error("Close zipOutputStream and fileOutputStream occur IOException", e);
+            LOGGER.error("Close zipOutputStream and fileOutputStream occur IOException", e);
          }
       }
       return outputFile;

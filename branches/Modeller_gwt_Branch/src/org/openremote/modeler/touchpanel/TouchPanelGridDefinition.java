@@ -35,6 +35,9 @@ public class TouchPanelGridDefinition implements Serializable {
    /** The height. */
    private int height;
 
+   /**
+    * Instantiates a new touch panel grid definition.
+    */
    public TouchPanelGridDefinition() {
    }
    /**
@@ -86,13 +89,13 @@ public class TouchPanelGridDefinition implements Serializable {
    
    @Override
    public boolean equals(Object o) {
-      if(this == o){
+      if (this == o) {
          return true;
       }
       if (o == null || getClass() != o.getClass()) {
          return false;
       }
-      TouchPanelGridDefinition that = (TouchPanelGridDefinition)o;
+      TouchPanelGridDefinition that = (TouchPanelGridDefinition) o;
       if (width != that.width) {
          return false;
       }

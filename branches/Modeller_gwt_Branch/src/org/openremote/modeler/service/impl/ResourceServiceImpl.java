@@ -80,7 +80,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 public class ResourceServiceImpl implements ResourceService {
 
    /** The Constant logger. */
-   private static final Logger logger = Logger.getLogger(ResourceServiceImpl.class);
+   private static final Logger LOGGER = Logger.getLogger(ResourceServiceImpl.class);
 
    /** The configuration. */
    private Configuration configuration;
@@ -94,11 +94,9 @@ public class ResourceServiceImpl implements ResourceService {
    /** The device macro service. */
    private DeviceMacroService deviceMacroService;
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.openremote.modeler.service.ResourceService#downloadZipResource(java.lang.String, java.lang.String,
-    * java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.service.ResourceService#downloadZipResource(long, java.lang.String, java.util.List)
     */
    public String downloadZipResource(long maxId, String sessionId, List<Activity> activities) {
       String controllerXmlContent = getControllerXmlContent(maxId, activities);
@@ -118,7 +116,8 @@ public class ResourceServiceImpl implements ResourceService {
       File lircdFile = new File(pathConfig.lircFilePath(sessionId));
       File dotImport = new File(pathConfig.dotImportFilePath(sessionId));
 
-      String newIphoneXML = IphoneXmlParser.parserXML(new File(getClass().getResource(configuration.getIphoneXsdPath()).getPath()), panelXmlContent, sessionFolder);
+      String newIphoneXML = IphoneXmlParser.parserXML(new File(getClass().getResource(configuration.getIphoneXsdPath()).getPath()), 
+            panelXmlContent, sessionFolder);
       
       try {
          FileUtilsExt.deleteQuietly(iphoneXMLFile);
@@ -136,7 +135,7 @@ public class ResourceServiceImpl implements ResourceService {
             FileUtilsExt.writeStringToFile(lircdFile, "");
          }
       } catch (IOException e) {
-         logger.error("Compress zip file occur IOException", e);
+         LOGGER.error("Compress zip file occur IOException", e);
          throw new FileOperationException("Compress zip file occur IOException", e);
       }
 
@@ -156,7 +155,7 @@ public class ResourceServiceImpl implements ResourceService {
             for (UIButton uiButton : screen.getButtons()) {
                if (uiButton.getIcon() != null && !"".equals(uiButton.getIcon())) {
                   String iconValue = uiButton.getIcon();
-                  String iconName = iconValue.substring(iconValue.lastIndexOf("/")+1);
+                  String iconName = iconValue.substring(iconValue.lastIndexOf("/") + 1);
                   uiButton.setIcon(PathConfig.getInstance(configuration).getRelativeResourcePath(iconName, sessionId));
                }
             }
@@ -208,23 +207,26 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Builds the lirc rest url.
     * 
-    * @param RESTAPIUrl the rESTAPI url
+    * @param restAPIUrl the rESTAPI url
     * @param ids the ids
     * 
     * @return the uRL
     */
-   private URL buildLircRESTUrl(String RESTAPIUrl, String ids) {
+   private URL buildLircRESTUrl(String restAPIUrl, String ids) {
       URL lircUrl;
       try {
-         lircUrl = new URL(RESTAPIUrl + "?ids=" + ids);
+         lircUrl = new URL(restAPIUrl + "?ids=" + ids);
       } catch (MalformedURLException e) {
-         logger.error("Lirc file url is invalid", e);
+         LOGGER.error("Lirc file url is invalid", e);
          throw new IllegalArgumentException("Lirc file url is invalid", e);
       }
       return lircUrl;
    }
    
-   @SuppressWarnings({ "unchecked" })
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.service.ResourceService#getMultipartFileFromRequest(javax.servlet.http.HttpServletRequest, java.lang.String)
+    */
+   @SuppressWarnings("unchecked")
    public MultipartFile getMultipartFileFromRequest(HttpServletRequest request, String fileFieldName) {
       MultipartFile multipartFile = null;
       FileItemFactory factory = new DiskFileItemFactory();
@@ -233,7 +235,7 @@ public class ResourceServiceImpl implements ResourceService {
       try {
          items = upload.parseRequest(request);
       } catch (FileUploadException e) {
-         logger.error("get InputStream from httpServletRequest error.", e);
+         LOGGER.error("get InputStream from httpServletRequest error.", e);
          e.printStackTrace();
       }
       if (items == null) {
@@ -247,7 +249,7 @@ public class ResourceServiceImpl implements ResourceService {
             break;
          }
       }
-      if(fileItem != null){
+      if (fileItem != null) {
          multipartFile = new CommonsMultipartFile(fileItem);
       }
       return multipartFile;
@@ -264,7 +266,7 @@ public class ResourceServiceImpl implements ResourceService {
          try {
             FileUtils.deleteDirectory(tmpDir);
          } catch (IOException e) {
-            logger.error("Delete temp dir Occur IOException", e);
+            LOGGER.error("Delete temp dir Occur IOException", e);
             throw new FileOperationException("Delete temp dir Occur IOException", e);
          }
       }
@@ -300,7 +302,7 @@ public class ResourceServiceImpl implements ResourceService {
 
          }
       } catch (IOException e) {
-         logger.error("Get import file from zip file Occur IOException", e);
+         LOGGER.error("Get import file from zip file Occur IOException", e);
          throw new FileOperationException("Get import file from zip file Occur IOException", e);
       } finally {
          try {
@@ -309,7 +311,7 @@ public class ResourceServiceImpl implements ResourceService {
                fileOutputStream.close();
             }
          } catch (IOException e) {
-            logger.error("Clean Resource used occured IOException when import a file", e);
+            LOGGER.error("Clean Resource used occured IOException when import a file", e);
          }
 
       }
@@ -349,14 +351,14 @@ public class ResourceServiceImpl implements ResourceService {
       FileOutputStream fileOutputStream = null;
       try {
          File dir = file.getParentFile();
-         if (dir.exists() == false) {
+         if (!dir.exists()) {
             dir.mkdirs();
          }
          FileUtils.touch(file);
          fileOutputStream = new FileOutputStream(file);
          IOUtils.copy(inputStream, fileOutputStream);
       } catch (IOException e) {
-         logger.error("Save uploaded image to file occur IOException.", e);
+         LOGGER.error("Save uploaded image to file occur IOException.", e);
          throw new FileOperationException("Save uploaded image to file occur IOException.", e);
       } finally {
          try {
@@ -364,7 +366,7 @@ public class ResourceServiceImpl implements ResourceService {
                fileOutputStream.close();
             }
          } catch (IOException e) {
-            logger.error("Close FileOutputStream Occur IOException while save a uploaded image.", e);
+            LOGGER.error("Close FileOutputStream Occur IOException while save a uploaded image.", e);
          }
 
       }
@@ -517,8 +519,8 @@ public class ResourceServiceImpl implements ResourceService {
                xmlContent.append("        <button id=\"" + btn.getOid() + "\" label=\"" + btn.getLabel() + "\" x=\""
                      + btn.getPosition().getPosX() + "\" y=\"" + btn.getPosition().getPosY() + "\" width=\""
                      + btn.getWidth() + "\" height=\"" + btn.getHeight() + "\"");
-               if(btn.getIcon() != null){
-                  xmlContent.append(" icon=\""+btn.getIcon()+"\"");
+               if (btn.getIcon() != null) {
+                  xmlContent.append(" icon=\"" + btn.getIcon() + "\"");
                }
                xmlContent.append(" />\n");
             }

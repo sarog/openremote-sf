@@ -40,11 +40,12 @@ public interface ResourceService {
     * Download zip resource.
     * 
     * @param maxId the max id
+    * @param sessionId the session id
     * @param activities the activities
     * 
-    * @return the URL string
+    * @return the string
     */
-   public String downloadZipResource(long maxId, String sessionId, List<Activity> activities);
+   String downloadZipResource(long maxId, String sessionId, List<Activity> activities);
    
    
    /**
@@ -55,16 +56,17 @@ public interface ResourceService {
     * 
     * @return the multipart file from request
     */
-   public MultipartFile getMultipartFileFromRequest(HttpServletRequest request, String fileFieldName);
+   MultipartFile getMultipartFileFromRequest(HttpServletRequest request, String fileFieldName);
 
    /**
     * Gets the irb file from zip.
     * 
     * @param inputStream the input stream
+    * @param sessionId the session id
     * 
     * @return the irb file from zip
     */
-   public String getDotImportFileForRender(String sessionId, InputStream inputStream);
+   String getDotImportFileForRender(String sessionId, InputStream inputStream);
    
    /**
     * Upload image.
@@ -75,7 +77,7 @@ public interface ResourceService {
     * 
     * @return the file
     */
-   public File uploadImage(InputStream inputStream,String fileName,String sessionId);
+   File uploadImage(InputStream inputStream, String fileName, String sessionId);
    
    /**
     * Gets the relative resource path.
@@ -85,7 +87,7 @@ public interface ResourceService {
     * 
     * @return the relative resource path
     */
-   public String getRelativeResourcePath(String sessionId,String fileName);
+   String getRelativeResourcePath(String sessionId, String fileName);
    
    /**
     * Gets the activities json.
@@ -94,5 +96,5 @@ public interface ResourceService {
     * 
     * @return the activities json
     */
-   public String getActivitiesJson(List<Activity> activities);
+   String getActivitiesJson(List<Activity> activities);
 }

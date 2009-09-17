@@ -51,7 +51,7 @@ public class DeviceMacroItemController extends BaseGWTSpringController implement
     */
    public List<Long> getDeviceMacroItemIdsByDeviceCommandId(long id) {
       List<Long> ids = new ArrayList<Long>();
-      for (DeviceCommandRef deviceCommandRef : deviceMacroItemService.LoadByDeviceCommandId(id)) {
+      for (DeviceCommandRef deviceCommandRef : deviceMacroItemService.loadByDeviceCommandId(id)) {
          ids.add(deviceCommandRef.getDeviceCommand().getOid());
       }
       return ids;

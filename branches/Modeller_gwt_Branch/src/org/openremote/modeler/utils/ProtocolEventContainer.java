@@ -87,7 +87,7 @@ public class ProtocolEventContainer {
    /**
     * Adds a UIButtonEvent to property <b>protocolEvents</b> depend on the uiButtonEvent protocolDisplayName.
     * 
-    * @param uiButtonEvent
+    * @param uiButtonEvent uiButtonEvent
     */
    public void addUIButtonEvent(UIButtonEvent uiButtonEvent) {
       Set<String> protocolDisplayNames = protocolEvents.keySet();
@@ -119,7 +119,7 @@ public class ProtocolEventContainer {
     * 
     * @return the protocol events
     */
-   public Map<String, List<UIButtonEvent>> getProtocolEvents () {
+   public Map<String, List<UIButtonEvent>> getProtocolEvents() {
       return protocolEvents;
    }
    
@@ -143,7 +143,7 @@ public class ProtocolEventContainer {
     * 
     * @return the xml string
     */
-   public String generateUIButtonEventsXml () {
+   public String generateUIButtonEventsXml() {
       StringBuffer uiButtonEventXml = new StringBuffer();
       Set<String> protocolDisplayNames = protocolEvents.keySet();
       uiButtonEventXml.append("  <events>\n");
@@ -151,7 +151,7 @@ public class ProtocolEventContainer {
          String protocolTagName = ProtocolContainer.findTagName(protocolDisplayName);
          String eventsTagName = protocolTagName + "Events";
          uiButtonEventXml.append("    <" + eventsTagName + ">\n");
-         for(UIButtonEvent uiButtonEvent : protocolEvents.get(protocolDisplayName)) {
+         for (UIButtonEvent uiButtonEvent : protocolEvents.get(protocolDisplayName)) {
             String eventTagName = protocolTagName + "Event";
             uiButtonEventXml.append("      <" + eventTagName + " id=\"" + uiButtonEvent.getId() + "\"");
             Set<String> protocolAttrKeySet = uiButtonEvent.getProtocolAttrs().keySet();
