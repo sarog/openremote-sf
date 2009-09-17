@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openremote.modeler.service.ResourceService;
-import org.openremote.modeler.service.UserService;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -42,9 +41,6 @@ public class FileUploadController extends MultiActionController {
    /** The resource service. */
    private ResourceService resourceService;
    
-   /** The user service. */
-   private UserService userService;
-
    /**
     * Creates the.
     * 
@@ -56,7 +52,7 @@ public class FileUploadController extends MultiActionController {
    @SuppressWarnings("finally")
    public ModelAndView importFile(HttpServletRequest request, HttpServletResponse response) {
       try {     
-         String importJson = resourceService.getDotImportFileForRender(resourceService.getMultipartFileFromRequest(request, "file").getInputStream());
+         String importJson = resourceService.getDotImportFileForRender(request.getSession().getId(), resourceService.getMultipartFileFromRequest(request, "file").getInputStream());
          response.getWriter().write(importJson);
       } catch (Exception e) {
          e.printStackTrace();
@@ -75,10 +71,10 @@ public class FileUploadController extends MultiActionController {
     * @throws IOException Signals that an I/O exception has occurred.
     */
    public void uploadImage(HttpServletRequest request, HttpServletResponse response) throws IOException{
-      String userId = String.valueOf(userService.getAccount().getUser().getOid());
+      String sessionId = request.getSession().getId();
       MultipartFile multipartFile = resourceService.getMultipartFileFromRequest(request, "uploadImage");
-      File file = resourceService.uploadImage(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), userId);
-      response.getWriter().print(resourceService.getRelativeResourcePath(userId, file.getName()));
+      File file = resourceService.uploadImage(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), sessionId);
+      response.getWriter().print(resourceService.getRelativeResourcePath(sessionId, file.getName()));
    }
 
    /**
@@ -90,12 +86,4 @@ public class FileUploadController extends MultiActionController {
       this.resourceService = resourceService;
    }
 
-   /**
-    * Sets the user service.
-    * 
-    * @param userService the new user service
-    */
-   public void setUserService(UserService userService) {
-      this.userService = userService;
-   }
 }

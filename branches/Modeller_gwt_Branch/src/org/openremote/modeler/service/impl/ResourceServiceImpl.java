@@ -63,7 +63,6 @@ import org.openremote.modeler.exception.XmlParserException;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.ResourceService;
-import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.IphoneXmlParser;
 import org.openremote.modeler.utils.JsonGenerator;
@@ -92,9 +91,6 @@ public class ResourceServiceImpl implements ResourceService {
    /** The event id. */
    private long eventId;
 
-   /** The user service. */
-   private UserService userService;
-   
    /** The device macro service. */
    private DeviceMacroService deviceMacroService;
 
@@ -104,16 +100,15 @@ public class ResourceServiceImpl implements ResourceService {
     * @see org.openremote.modeler.service.ResourceService#downloadZipResource(java.lang.String, java.lang.String,
     * java.lang.String, java.lang.String, java.lang.String, java.lang.String)
     */
-   public String downloadZipResource(long maxId, List<Activity> activities) {
-      String userId = String.valueOf(userService.getAccount().getUser().getOid());
+   public String downloadZipResource(long maxId, String sessionId, List<Activity> activities) {
       String controllerXmlContent = getControllerXmlContent(maxId, activities);
       String panelXmlContent = getPanelXmlContent(activities);
       String sectionIds = getSectionIds(activities);
 
-      replaceUrl(activities, userId);      
+      replaceUrl(activities, sessionId);      
       String activitiesJson = getActivitiesJson(activities);
 
-      PathConfig pathConfig = PathConfig.getInstance(userId, configuration);
+      PathConfig pathConfig = PathConfig.getInstance(sessionId, configuration);
       File sessionFolder = new File(pathConfig.userFolder());
       if (!sessionFolder.exists()) {
          sessionFolder.mkdirs();
@@ -263,10 +258,8 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @see org.openremote.modeler.service.ResourceService#getIrbFileFromZip(java.io.InputStream, java.lang.String)
     */
-   public String getDotImportFileForRender(InputStream inputStream) {
-      String userId = String.valueOf(userService.getAccount().getUser().getOid());
-      
-      File tmpDir = new File(PathConfig.getInstance(userId, configuration).userFolder());
+   public String getDotImportFileForRender(String sessionId, InputStream inputStream) {
+      File tmpDir = new File(PathConfig.getInstance(sessionId, configuration).userFolder());
       if (tmpDir.exists() && tmpDir.isDirectory()) {
          try {
             FileUtils.deleteDirectory(tmpDir);
@@ -275,7 +268,7 @@ public class ResourceServiceImpl implements ResourceService {
             throw new FileOperationException("Delete temp dir Occur IOException", e);
          }
       }
-      new File(PathConfig.getInstance(userId, configuration).userFolder()).mkdirs();
+      new File(PathConfig.getInstance(sessionId, configuration).userFolder()).mkdirs();
       String dotImportFileContent = "";
       ZipInputStream zipInputStream = new ZipInputStream(inputStream);
       ZipEntry zipEntry;
@@ -293,7 +286,7 @@ public class ResourceServiceImpl implements ResourceService {
                }
                
                if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|import|conf)")) {
-                  File file = new File(PathConfig.getInstance(userId, configuration).userFolder() + zipEntry.getName());
+                  File file = new File(PathConfig.getInstance(sessionId, configuration).userFolder() + zipEntry.getName());
                   FileUtils.touch(file);
 
                   fileOutputStream = new FileOutputStream(file);
@@ -351,8 +344,8 @@ public class ResourceServiceImpl implements ResourceService {
     * @see org.openremote.modeler.service.ResourceService#uploadImage(java.io.InputStream, java.lang.String,
     * java.lang.String)
     */
-   public File uploadImage(InputStream inputStream, String fileName, String userId) {
-      File file = new File(PathConfig.getInstance(userId, configuration).userFolder() + File.separator + fileName);
+   public File uploadImage(InputStream inputStream, String fileName, String sessionId) {
+      File file = new File(PathConfig.getInstance(sessionId, configuration).userFolder() + File.separator + fileName);
       FileOutputStream fileOutputStream = null;
       try {
          File dir = file.getParentFile();
@@ -632,24 +625,6 @@ public class ResourceServiceImpl implements ResourceService {
     */
    public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
       this.deviceCommandService = deviceCommandService;
-   }
-
-   /**
-    * Gets the user service.
-    * 
-    * @return the user service
-    */
-   public UserService getUserService() {
-      return userService;
-   }
-
-   /**
-    * Sets the user service.
-    * 
-    * @param userService the new user service
-    */
-   public void setUserService(UserService userService) {
-      this.userService = userService;
    }
 
    /**

@@ -44,7 +44,7 @@ public interface ResourceService {
     * 
     * @return the URL string
     */
-   public String downloadZipResource(long maxId, List<Activity> activities);
+   public String downloadZipResource(long maxId, String sessionId, List<Activity> activities);
    
    
    /**
@@ -64,7 +64,7 @@ public interface ResourceService {
     * 
     * @return the irb file from zip
     */
-   public String getDotImportFileForRender(InputStream inputStream);
+   public String getDotImportFileForRender(String sessionId, InputStream inputStream);
    
    /**
     * Upload image.
