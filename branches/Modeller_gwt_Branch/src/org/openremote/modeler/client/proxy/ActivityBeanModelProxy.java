@@ -28,15 +28,21 @@ import com.extjs.gxt.ui.client.data.BeanModel;
  * The Class ActivityBeanModelProxy.
  */
 public class ActivityBeanModelProxy {
+   
 
+   /**
+    * The class shouldn't be instantiated.
+    */
+   private ActivityBeanModelProxy() {
+   }
    /**
     * Delete activity.
     * 
     * @param activityBeanModel the activity bean model
     */
-   public static void deleteActivity(BeanModel activityBeanModel){
+   public static void deleteActivity(BeanModel activityBeanModel) {
       Activity activity = activityBeanModel.getBean();
-      for (Screen screen: activity.getScreens()) {
+      for (Screen screen : activity.getScreens()) {
          BeanModelDataBase.screenTable.delete(screen.getOid());
       }
    }

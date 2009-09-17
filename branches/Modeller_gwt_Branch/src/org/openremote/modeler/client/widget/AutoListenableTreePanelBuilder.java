@@ -67,6 +67,9 @@ public class AutoListenableTreePanelBuilder {
       return initDevicesAndMacrosTree();
    }
 
+   /**
+    * Inits the tree store.
+    */
    @SuppressWarnings("unchecked")
    private static void initTreeStore() {
       if (devicesAndMacrosTreeStore == null) {
@@ -74,20 +77,20 @@ public class AutoListenableTreePanelBuilder {
            
            @Override
            protected BeanModelTable getBeanModelTable(BeanModel beanModel) {
-              if(beanModel.getBean() instanceof TreeFolderBean) {
-                 TreeFolderBean treeFolderBean = (TreeFolderBean)beanModel.getBean();
-                 if(Constants.DEVICES.equals(treeFolderBean.getType())) {
-                    return BeanModelDataBase.deviceTable;
-                 }else if(Constants.MACROS.equals(treeFolderBean.getType())) {
-                    return BeanModelDataBase.deviceMacroTable;
-                 }
-              } else if (beanModel.getBean() instanceof Device) {
-                 return BeanModelDataBase.deviceCommandTable;
-              } else if (beanModel.getBean() instanceof DeviceMacro) {
-                 return BeanModelDataBase.deviceMacroItemTable;
-              } 
-              return null;
-           }
+               if (beanModel.getBean() instanceof TreeFolderBean) {
+                  TreeFolderBean treeFolderBean = (TreeFolderBean) beanModel.getBean();
+                  if (Constants.DEVICES.equals(treeFolderBean.getType())) {
+                     return BeanModelDataBase.deviceTable;
+                  } else if (Constants.MACROS.equals(treeFolderBean.getType())) {
+                     return BeanModelDataBase.deviceMacroTable;
+                  }
+               } else if (beanModel.getBean() instanceof Device) {
+                  return BeanModelDataBase.deviceCommandTable;
+               } else if (beanModel.getBean() instanceof DeviceMacro) {
+                  return BeanModelDataBase.deviceMacroItemTable;
+               }
+               return null;
+            }
 
          @Override
          protected boolean isReallyHasChildren(BeanModel beanModel) {
@@ -105,6 +108,9 @@ public class AutoListenableTreePanelBuilder {
       createFolders();
    }
    
+   /**
+    * Creates the folders.
+    */
    private static void createFolders() {
       TreeFolderBean devicesBean = new TreeFolderBean();
       devicesBean.setDisplayName("Devices");
@@ -118,6 +124,11 @@ public class AutoListenableTreePanelBuilder {
       devicesAndMacrosTreeStore.add(macrosBean.getBeanModel(), true);
    }
 
+   /**
+    * Inits the devices and macros tree.
+    * 
+    * @return the tree panel< bean model>
+    */
    private static TreePanel<BeanModel> initDevicesAndMacrosTree() {
       TreePanel<BeanModel> devicesAndMacrosTree = new TreePanel<BeanModel>(devicesAndMacrosTreeStore);
       devicesAndMacrosTree.setBorders(false);
@@ -126,18 +137,19 @@ public class AutoListenableTreePanelBuilder {
       devicesAndMacrosTree.setHeight("100%");
       devicesAndMacrosTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel beanModel) {
-            if(beanModel.getBean() instanceof Device) {
+            if (beanModel.getBean() instanceof Device) {
                return ICON.device();
-            } else if((beanModel.getBean() instanceof DeviceCommand) || (beanModel.getBean() instanceof DeviceCommandRef)) {
+            } else if ((beanModel.getBean() instanceof DeviceCommand)
+                  || (beanModel.getBean() instanceof DeviceCommandRef)) {
                return ICON.deviceCmd();
-            } else if((beanModel.getBean() instanceof DeviceMacro) || (beanModel.getBean() instanceof DeviceMacroRef)) {
+            } else if ((beanModel.getBean() instanceof DeviceMacro) || (beanModel.getBean() instanceof DeviceMacroRef)) {
                return ICON.macroIcon();
-            } else if(beanModel.getBean() instanceof CommandDelay) {
+            } else if (beanModel.getBean() instanceof CommandDelay) {
                return ICON.delayIcon();
-            } else if(beanModel.getBean() instanceof TreeFolderBean) {
-               if(((TreeFolderBean)beanModel.getBean()).getType().equals(Constants.DEVICES)){
+            } else if (beanModel.getBean() instanceof TreeFolderBean) {
+               if (((TreeFolderBean) beanModel.getBean()).getType().equals(Constants.DEVICES)) {
                   return ICON.devicesRoot();
-               }else if(((TreeFolderBean)beanModel.getBean()).getType().equals(Constants.MACROS)){
+               } else if (((TreeFolderBean) beanModel.getBean()).getType().equals(Constants.MACROS)) {
                   return ICON.macrosRoot();
                }
             }

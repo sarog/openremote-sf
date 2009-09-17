@@ -70,7 +70,7 @@ public class IRCommandImportWizardForm extends IRCommandImportForm {
    @Override
    public void show() {
       super.show();
-      ((Window)wrapper).setSize(600, 330);
+      ((Window) wrapper).setSize(600, 330);
    }
 
    /* (non-Javadoc)
@@ -83,7 +83,7 @@ public class IRCommandImportWizardForm extends IRCommandImportForm {
             wrapper.mask("Please Wait...");
             if (codeGrid != null) {
                List<ModelData> modelDatas = codeGrid.getStore().getModels();
-               for (ModelData modelData :modelDatas) {
+               for (ModelData modelData : modelDatas) {
                   modelData.set("sectionId", getSectionId());
                }
                AsyncSuccessCallback<BeanModel> callback = new AsyncSuccessCallback<BeanModel>() {
@@ -94,7 +94,7 @@ public class IRCommandImportWizardForm extends IRCommandImportForm {
 
                };
                if (getDevice().getOid() == 0L) {
-                  DeviceBeanModelProxy.saveDeviceWithCommands(getDevice(),modelDatas, callback);
+                  DeviceBeanModelProxy.saveDeviceWithCommands(getDevice(), modelDatas, callback);
                } else {
                   //TODO update function
                }

@@ -22,9 +22,8 @@ package org.openremote.modeler.client.widget.uidesigner;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
 import org.openremote.modeler.client.icon.uidesigner.UIDesignerImages;
+import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.rpc.UtilsRPCService;
-import org.openremote.modeler.client.rpc.UtilsRPCServiceAsync;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BaseListLoader;
@@ -72,10 +71,7 @@ import com.google.gwt.user.client.ui.Image;
 public class ChangeIconWindow extends Dialog {
 
    /** The beehive rest icon url. */
-   public static String beehiveRestIconUrl = null;
-   
-   /** The utils service. */
-   private UtilsRPCServiceAsync utilsService = (UtilsRPCServiceAsync) GWT.create(UtilsRPCService.class);
+   private static String beehiveRestIconUrl = null;
    
    /** The Constant FROM_BEEHIVE. */
    private static final String FROM_BEEHIVE = "fromBeehive";
@@ -111,8 +107,9 @@ public class ChangeIconWindow extends Dialog {
    private ScreenButton screenButton;
    
    /** The preview image. */
-   private Image previewImage = ((UIDesignerImages)GWT.create(UIDesignerImages.class)).iphoneBtn().createImage();
+   private Image previewImage = ((UIDesignerImages) GWT.create(UIDesignerImages.class)).iphoneBtn().createImage();
    
+   /** The window. */
    private ChangeIconWindow window;
    /**
     * Instantiates a new change icon window.
@@ -129,7 +126,7 @@ public class ChangeIconWindow extends Dialog {
    /**
     * Initial.
     */
-   private void initial(){
+   private void initial() {
       setHeading("Change Icon");
       setMinWidth(500);
       setMinHeight(350);
@@ -153,8 +150,8 @@ public class ChangeIconWindow extends Dialog {
       }); 
       createRadioContainer();
       
-      if(beehiveRestIconUrl == null) {
-         utilsService.beehiveRestIconUrl(new AsyncSuccessCallback<String>(){
+      if (beehiveRestIconUrl == null) {
+         UtilsProxy.getBeehiveRestIconUrl(new AsyncSuccessCallback<String>() {
             @Override
             public void onSuccess(String result) {
                beehiveRestIconUrl = result;
@@ -177,11 +174,11 @@ public class ChangeIconWindow extends Dialog {
     */
    private void createRadioContainer() {
       LayoutContainer radioContainer = new LayoutContainer();
-      Radio beehiveRadio = new Radio(){
+      Radio beehiveRadio = new Radio() {
          @Override
          protected void onClick(ComponentEvent be) {
             super.onClick(be);
-            if(FROM_BEEHIVE.equals(group.getValue().getValueAttribute())){
+            if (FROM_BEEHIVE.equals(group.getValue().getValueAttribute())) {
                imageURL = null;
                beehiveIconsView.show();
                beehiveIconsView.getSelectionModel().select(0, false);
@@ -196,16 +193,16 @@ public class ChangeIconWindow extends Dialog {
       beehiveRadio.setValueAttribute(FROM_BEEHIVE);
       beehiveRadio.setValue(true);
       
-      Radio fromURL = new Radio(){
+      Radio fromURL = new Radio() {
          @Override
          protected void onClick(ComponentEvent be) {
             super.onClick(be);
-            if(FROM_URL.equals(group.getValue().getValueAttribute())){
+            if (FROM_URL.equals(group.getValue().getValueAttribute())) {
                imageURL = null;
                urlPanel.show();
                beehiveIconsView.hide();
                uploadPanel.hide();
-               if(previewIconContainer.getItemCount() == 0){
+               if (previewIconContainer.getItemCount() == 0) {
                   initPreviewContainer();
                }
                previewIconContainer.show();
@@ -216,14 +213,14 @@ public class ChangeIconWindow extends Dialog {
       fromURL.setBoxLabel("From a URL");
       fromURL.setValueAttribute(FROM_URL);
       
-      Radio uploadIcon = new Radio(){
+      Radio uploadIcon = new Radio() {
          @Override
          protected void onClick(ComponentEvent be) {
             super.onClick(be);
-            if(FROM_LOCAL.equals(group.getValue().getValueAttribute())){
+            if (FROM_LOCAL.equals(group.getValue().getValueAttribute())) {
                imageURL = null;
                uploadPanel.show();
-               if(previewIconContainer.getItemCount() == 0){
+               if (previewIconContainer.getItemCount() == 0) {
                   initPreviewContainer();
                }
                previewIconContainer.show();
@@ -274,7 +271,7 @@ public class ChangeIconWindow extends Dialog {
          @Override
          protected void onChange(ComponentEvent ce) {
             super.onChange(ce);
-            if(!uploadPanel.isValid()){
+            if (!uploadPanel.isValid()) {
 //               uploadPanel.reset();
                return;
             }
@@ -295,7 +292,7 @@ public class ChangeIconWindow extends Dialog {
       uploadPanel.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage");
       uploadPanel.setEncoding(Encoding.MULTIPART);
       uploadPanel.setMethod(Method.POST);
-      uploadPanel.addListener(Events.Submit, new Listener<FormEvent>(){
+      uploadPanel.addListener(Events.Submit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             uploadImageURL = be.getResultHtml();
             window.unmask();
@@ -325,11 +322,11 @@ public class ChangeIconWindow extends Dialog {
       previewIconContainer.setStyleAttribute("backgroundColor", "white");
       
       Button preview = new Button("Preview");
-      preview.addSelectionListener(new SelectionListener<ButtonEvent>(){
+      preview.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             setImageURL(); 
-            if(imageURL != null){
+            if (imageURL != null) {
                previewImage.setUrl(imageURL);
                previewImage.setSize("46px", "46px");
             } else {
@@ -338,7 +335,7 @@ public class ChangeIconWindow extends Dialog {
          }
       });
       imageURL = screenButton.getButtonIcon();
-      if(imageURL != null) {
+      if (imageURL != null) {
          previewImage.setUrl(imageURL);
          previewImage.setSize("46px", "46px");
       }
@@ -351,7 +348,7 @@ public class ChangeIconWindow extends Dialog {
     * 
     * @return the list view< model data>
     */
-   private ListView<ModelData> createBeehiveIconsView(){
+   private ListView<ModelData> createBeehiveIconsView() {
       ModelType iconType = new ModelType();
       iconType.setRoot("icons.icon");
       DataField idField = new DataField("id");
@@ -396,12 +393,12 @@ public class ChangeIconWindow extends Dialog {
     * Sets the image url.
     */
    @SuppressWarnings("unchecked")
-   private void setImageURL(){
+   private void setImageURL() {
       String radioValue = radioGroup.getValue().getValueAttribute();
       if (FROM_BEEHIVE.equals(radioValue)) {
          imageURL = beehiveIconsView.getSelectionModel().getSelectedItem().get("fileName").toString();
       } else if (FROM_URL.equals(radioValue)) {
-         imageURL = ((TextField<String>)urlPanel.getItem(0)).getValue();
+         imageURL = ((TextField<String>) urlPanel.getItem(0)).getValue();
       } else if (FROM_LOCAL.equals(radioValue)) {
          imageURL = uploadImageURL;
       }

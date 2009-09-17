@@ -25,6 +25,11 @@ package org.openremote.modeler.client.utils;
  */
 public class IDUtil {
    
+   /**
+    * Not be instantiates.
+    */
+   private IDUtil() {
+   }
    /** The id. */
    private static long id = 0L;
 
@@ -43,7 +48,7 @@ public class IDUtil {
     * 
     * @return the long
     */
-   public static long currentID(){
+   public static long currentID() {
       return id;
    }
 }

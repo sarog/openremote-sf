@@ -137,7 +137,8 @@ public class DevicePanel extends ContentPanel {
                   BeanModel deviceModel = be.getData();
                   tree.getStore().add(deviceModel, true);
                   
-                  for (BeanModel deviceCommandModel : DeviceCommand.createModels(((Device)deviceModel.getBean()).getDeviceCommands())) {
+                  for (BeanModel deviceCommandModel : DeviceCommand.createModels(((Device) deviceModel.getBean())
+                        .getDeviceCommands())) {
                      tree.getStore().add(deviceModel, deviceCommandModel, false);
                   }
                   tree.setExpanded(deviceModel, true);

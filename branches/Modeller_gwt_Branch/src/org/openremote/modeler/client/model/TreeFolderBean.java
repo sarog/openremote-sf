@@ -25,26 +25,46 @@ import org.openremote.modeler.domain.BusinessEntity;
  * The Class TreeFolderBean.
  */
 @SuppressWarnings("serial")
-public class TreeFolderBean extends BusinessEntity{
+public class TreeFolderBean extends BusinessEntity {
 
+   /**
+    * Gets the type.
+    * 
+    * @return the type
+    */
    public String getType() {
       return type;
    }
 
+   /**
+    * {@inheritDoc}
+    */
    public String getDisplayName() {
       return displayName;
    }
 
+   /**
+    * Sets the display name.
+    * 
+    * @param displayName the new display name
+    */
    public void setDisplayName(String displayName) {
       this.displayName = displayName;
    }
 
+   /**
+    * Sets the type.
+    * 
+    * @param type the new type
+    */
    public void setType(String type) {
       this.type = type;
    }
 
+   /** The display name. */
    private String displayName;
    
+   /** The type. */
    private String type;
 
 }

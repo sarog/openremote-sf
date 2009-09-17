@@ -117,6 +117,12 @@ public class IRCommandImportForm extends CommonForm {
    private String sectionId;
    
    
+   /**
+    * Instantiates a new iR command import form.
+    * 
+    * @param wrapper the wrapper
+    * @param deviceBeanModel the device bean model
+    */
    public IRCommandImportForm(final Component wrapper, BeanModel deviceBeanModel) {
       super();
       setHeight(300);
@@ -135,7 +141,7 @@ public class IRCommandImportForm extends CommonForm {
       commandContainer.setLayoutOnChange(true);
       add(commandContainer, new RowData(1, 1));
 
-      device = (Device)deviceBeanModel.getBean();
+      device = (Device) deviceBeanModel.getBean();
       if (beehiveLircRestUrl == null) {
          configurationService.beehiveRESTRootUrl(new AsyncSuccessCallback<String>() {
             @Override
@@ -151,16 +157,21 @@ public class IRCommandImportForm extends CommonForm {
       onSubmit(wrapper);
    }
 
+   /**
+    * On submit.
+    * 
+    * @param wrapper the wrapper
+    */
    protected void onSubmit(final Component wrapper) {
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             wrapper.mask("Please Wait...");
-            if(importButton != null){
+            if (importButton != null) {
                importButton.setEnabled(false);
             }
             if (codeGrid != null) {
                List<ModelData> modelDatas = codeGrid.getStore().getModels();
-               for (ModelData modelData :modelDatas) {
+               for (ModelData modelData : modelDatas) {
                   modelData.set("sectionId", sectionId);
                }
                DeviceCommandBeanModelProxy.saveAllDeviceCommands(device, modelDatas, new AsyncSuccessCallback<List<BeanModel>>() {
@@ -437,7 +448,7 @@ public class IRCommandImportForm extends CommonForm {
       
       loader.load();
 
-      if(importButton != null){
+      if (importButton != null) {
          importButton.setEnabled(true);
       }
    }
@@ -465,18 +476,38 @@ public class IRCommandImportForm extends CommonForm {
       importButton.setEnabled(true);
    }
 
+   /**
+    * Gets the device.
+    * 
+    * @return the device
+    */
    public Device getDevice() {
       return device;
    }
 
+   /**
+    * Sets the device.
+    * 
+    * @param device the new device
+    */
    public void setDevice(Device device) {
       this.device = device;
    }
 
+   /**
+    * Gets the section id.
+    * 
+    * @return the section id
+    */
    public String getSectionId() {
       return sectionId;
    }
 
+   /**
+    * Sets the section id.
+    * 
+    * @param sectionId the new section id
+    */
    public void setSectionId(String sectionId) {
       this.sectionId = sectionId;
    }

@@ -56,7 +56,7 @@ public class DeviceInfoWizardForm extends DeviceInfoForm {
    @Override
    public void show() {
       super.show();
-      ((Window)wrapper).setSize(360, 200);
+      ((Window) wrapper).setSize(360, 200);
    }
    
    

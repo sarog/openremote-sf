@@ -34,14 +34,15 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 public class ScreenBeanModelProxy {
 
    /**
-    * Instantiates a new screen bean model proxy.
+    * The class shouldn't be instantiated.
     */
-   public ScreenBeanModelProxy() {
+   private ScreenBeanModelProxy() {
    }
 
    /**
     * Creates the screen.
     * 
+    * @param activity the activity
     * @param map the map
     * 
     * @return the bean model
@@ -59,7 +60,7 @@ public class ScreenBeanModelProxy {
    /**
     * Update screen.
     * 
-    * @param screenBeanModel the screen bean model
+    * @param screen the screen
     * @param map the map
     * 
     * @return the bean model
@@ -70,6 +71,11 @@ public class ScreenBeanModelProxy {
       return screen.getBeanModel();
    }
    
+   /**
+    * Delete screen.
+    * 
+    * @param screenBeanModel the screen bean model
+    */
    public static void deleteScreen(BeanModel screenBeanModel) {
       Screen screen = screenBeanModel.getBean();
       Activity activity = screen.getActivity();

@@ -136,7 +136,7 @@ public class ActivityPanel extends ContentPanel {
    protected List<Activity> getAllActivities() {
       List<Activity> activityList = new ArrayList<Activity>();
       for (BeanModel activityBeanModel : BeanModelDataBase.activityTable.loadAll()) {
-         activityList.add((Activity)activityBeanModel.getBean());
+         activityList.add((Activity) activityBeanModel.getBean());
       }
       return activityList;
    }
@@ -265,7 +265,7 @@ public class ActivityPanel extends ContentPanel {
    protected void createScreen() {
       final BeanModel activityModel = tree.getSelectionModel().getSelectedItem();
       if (activityModel != null && (activityModel.getBean() instanceof Activity)) {
-         final ScreenWindow screenWindow = new ScreenWindow((Activity)activityModel.getBean());
+         final ScreenWindow screenWindow = new ScreenWindow((Activity) activityModel.getBean());
          screenWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
@@ -296,7 +296,7 @@ public class ActivityPanel extends ContentPanel {
             BeanModel selectedModel = tree.getSelectionModel().getSelectedItem();
             if (selectedModel != null && (selectedModel.getBean() instanceof Activity)) {
                editActivity(selectedModel);
-            } else if(selectedModel != null && (selectedModel.getBean() instanceof Screen)) {
+            } else if (selectedModel != null && (selectedModel.getBean() instanceof Screen)) {
                editScreen(selectedModel);
             }
          }
@@ -328,8 +328,8 @@ public class ActivityPanel extends ContentPanel {
     * @param selectedModel the selected model
     */
    protected void editScreen(BeanModel selectedModel) {
-      final ScreenWindow screenWindow = new ScreenWindow((Screen)selectedModel.getBean());
-      screenWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener(){
+      final ScreenWindow screenWindow = new ScreenWindow((Screen) selectedModel.getBean());
+      screenWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
             screenWindow.hide();
@@ -358,7 +358,7 @@ public class ActivityPanel extends ContentPanel {
                   ActivityBeanModelProxy.deleteActivity(selectedModel);
                   tree.getStore().remove(selectedModel);
                   Info.display("Info", "Delete activity " + selectedModel.get("name") + " success.");
-               }else if(selectedModel != null && (selectedModel.getBean() instanceof Screen)) {
+               } else if (selectedModel != null && (selectedModel.getBean() instanceof Screen)) {
                   ScreenBeanModelProxy.deleteScreen(selectedModel);
                   tree.getStore().remove(selectedModel);
                   Info.display("Info", "Delete screen " + selectedModel.get("name") + " success.");

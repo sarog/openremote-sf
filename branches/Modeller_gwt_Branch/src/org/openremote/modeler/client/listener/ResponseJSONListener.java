@@ -52,7 +52,7 @@ public abstract class ResponseJSONListener implements Listener<ResponseJSONEvent
    /**
     * After submit.
     * 
-    * @param be the SubmitEvent
+    * @param rje the rje
     */
    public abstract void afterSubmit(ResponseJSONEvent rje);
 

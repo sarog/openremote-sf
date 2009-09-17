@@ -22,7 +22,7 @@ package org.openremote.modeler.touchpanel;
 import java.io.Serializable;
 
 /**
- * The Class PanelDefinition.
+ * The Class TouchPanelDefinition define the touch panel's properties, which match along with panel xml file.
  */
 public class TouchPanelDefinition implements Serializable {
 

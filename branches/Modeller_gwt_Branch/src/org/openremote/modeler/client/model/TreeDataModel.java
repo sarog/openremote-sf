@@ -76,8 +76,9 @@ public class TreeDataModel extends BaseTreeModel implements Serializable {
       return DATA;
    }
 
-   /* (non-Javadoc)
-    * @see java.lang.Object#toString()
+   /**
+    * Get the model's label.
+    * @return label.
     */
    public String toString() {
       return getLabel();
@@ -86,6 +87,7 @@ public class TreeDataModel extends BaseTreeModel implements Serializable {
    /**
     * Gets the data.
     * 
+    * @param <X> the X
     * @return the data
     */
    @SuppressWarnings("unchecked")

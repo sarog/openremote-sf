@@ -26,6 +26,7 @@ import com.extjs.gxt.ui.client.data.BaseModelData;
 /**
  *  The data structure for the ComboBox. Define label and original model field. And getter method.
  * 
+ * @param <T> the generics
  * @author Tomsky
  */
 public class ComboBoxDataModel<T> extends BaseModelData implements Serializable {
@@ -77,8 +78,9 @@ public class ComboBoxDataModel<T> extends BaseModelData implements Serializable 
       return DATA;
    }
 
-   /* (non-Javadoc)
-    * @see java.lang.Object#toString()
+   /**
+    * Get the model's label.
+    * @return label.
     */
    public String toString() {
       return getLabel();

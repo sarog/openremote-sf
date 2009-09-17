@@ -51,7 +51,7 @@ public class ScreenButton extends LayoutContainer {
    /** The button. */
    private UIButton button;
    
-   
+   /** The original name. */
    private String originalName = "<br />OriginalName: ";
 
    /**
@@ -211,8 +211,8 @@ public class ScreenButton extends LayoutContainer {
          for (int j = 0; j < button.getHeight(); j++) {
             int y = position.getPosY() + j;
             btnArea[x][y] = true;
-         };
-      };
+         }
+      }
    }
 
    /**
@@ -227,15 +227,15 @@ public class ScreenButton extends LayoutContainer {
          for (int j = 0; j < button.getHeight(); j++) {
             int y = position.getPosY() + j;
             btnArea[x][y] = false;
-         };
-      };
+         }
+      }
    }
 
    /**
     * Adjust layout.
     */
    public void adjust() {
-      if(center.isVisible()){
+      if (center.isVisible()) {
          adjustTextLength(getWidth());
       }
    }
@@ -254,14 +254,23 @@ public class ScreenButton extends LayoutContainer {
       }
    }
    
-   //In IE if the button width is 2 cell width, it can't be resize to 1 cell width.
-   public void adjustCenter(int width){ 
-      if(center.isVisible()){
-         adjustTextLength(width-2);
+   /**
+    * In IE if the button width is 2 cell width, it can't be resize to 1 cell width.
+    * 
+    * @param width the width
+    */
+   public void adjustCenter(int width) {
+      if (center.isVisible()) {
+         adjustTextLength(width - 2);
       }
    }
    
-   public String getButtonIcon(){
+   /**
+    * Gets the button's icon.
+    * 
+    * @return the button icon
+    */
+   public String getButtonIcon() {
       return button.getIcon();
    }
 }
