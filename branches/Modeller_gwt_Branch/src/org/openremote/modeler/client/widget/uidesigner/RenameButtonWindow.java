@@ -57,7 +57,7 @@ public class RenameButtonWindow extends FormWindow {
    /**
     * Initial.
     */
-   private void initial(){
+   private void initial() {
       setSize(360, 140);
       setHeading("Rename Button");
       createField();

@@ -22,7 +22,7 @@ package org.openremote.modeler.touchpanel;
 import java.io.Serializable;
 
 /**
- * The Class GridDefinition.
+ * The Class GridDefinition defined the touch panel inner grid.
  */
 public class TouchPanelGridDefinition implements Serializable {
 

@@ -35,12 +35,13 @@ import com.extjs.gxt.ui.client.widget.layout.RowLayout;
  */
 public class IRCommandImportWindow extends CommonWindow {
 
+   /** The ir command import form. */
    private CommonForm irCommandImportForm;
    
    /**
-    * Instantiates a new select ir window.
+    * Instantiates a new iR command import window.
     * 
-    * @param device the device
+    * @param deviceBeanModel the device bean model
     */
    public IRCommandImportWindow(BeanModel deviceBeanModel) {
       setupWindow();

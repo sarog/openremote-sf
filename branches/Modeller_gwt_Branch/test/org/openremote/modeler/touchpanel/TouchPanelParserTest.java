@@ -59,7 +59,7 @@ public class TouchPanelParserTest {
     * 
     * @return the correct panel definition
     */
-   private TouchPanelDefinition getCorrectPanelDefinition(){
+   private TouchPanelDefinition getCorrectPanelDefinition() {
       TouchPanelDefinition panelDefinition = new TouchPanelDefinition();
       TouchPanelGridDefinition grid = new TouchPanelGridDefinition(196, 294);
       panelDefinition.setType("iphone");

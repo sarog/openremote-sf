@@ -48,16 +48,18 @@ public class ScreenTab extends TabPanel {
    public ScreenTab() {
       setTabScroll(true);
       setAnimScroll(true);
-      addListener(Events.Add, new Listener<TabPanelEvent>(){
+      addListener(Events.Add, new Listener<TabPanelEvent>() {
          public void handleEvent(TabPanelEvent be) {
-            final ScreenTabItem screenTabItem = (ScreenTabItem)be.getItem();
-            BeanModelDataBase.screenTable.addChangeListener(screenTabItem.getScreen().getOid(), getScreenChangeListener(screenTabItem));
+            final ScreenTabItem screenTabItem = (ScreenTabItem) be.getItem();
+            BeanModelDataBase.screenTable.addChangeListener(screenTabItem.getScreen().getOid(),
+                  getScreenChangeListener(screenTabItem));
          }
       });
-      addListener(Events.Remove, new Listener<TabPanelEvent>(){
+      addListener(Events.Remove, new Listener<TabPanelEvent>() {
          public void handleEvent(TabPanelEvent be) {
-            final ScreenTabItem screenTabItem = (ScreenTabItem)be.getItem();
-            BeanModelDataBase.screenTable.removeChangeListener(screenTabItem.getScreen().getOid(), getScreenChangeListener(screenTabItem));
+            final ScreenTabItem screenTabItem = (ScreenTabItem) be.getItem();
+            BeanModelDataBase.screenTable.removeChangeListener(screenTabItem.getScreen().getOid(),
+                  getScreenChangeListener(screenTabItem));
          }
       });
       addInsertListener();
@@ -70,27 +72,28 @@ public class ScreenTab extends TabPanel {
     * 
     * @return the screen change listener
     */
-   private ChangeListener getScreenChangeListener(final ScreenTabItem screenTabItem){
+   private ChangeListener getScreenChangeListener(final ScreenTabItem screenTabItem) {
       if (changeListenerMap == null) {
          changeListenerMap = new HashMap<ScreenTabItem, ChangeListener>();
       }
       ChangeListener changeListener = changeListenerMap.get(screenTabItem);
-      
-      if(changeListener == null){
-         changeListener = new ChangeListener(){
+
+      if (changeListener == null) {
+         changeListener = new ChangeListener() {
             public void modelChanged(ChangeEvent event) {
                Screen screen = screenTabItem.getScreen();
-               if(event.getType() == BeanModelTable.REMOVE){
+               if (event.getType() == BeanModelTable.REMOVE) {
                   remove(screenTabItem);
-               } else if(event.getType() == BeanModelTable.UPDATE){
-                  if(screenTabItem.getRow() != screen.getRowCount() || screenTabItem.getColumn() != screen.getColumnCount()){
+               } else if (event.getType() == BeanModelTable.UPDATE) {
+                  if (screenTabItem.getRow() != screen.getRowCount()
+                        || screenTabItem.getColumn() != screen.getColumnCount()) {
                      remove(screenTabItem);
                      ScreenTabItem newScreenTabItem = new ScreenTabItem(screen);
                      add(newScreenTabItem);
                      setSelection(newScreenTabItem);
                      return;
                   }
-                  if(!screen.getName().equals(screenTabItem.getText())){
+                  if (!screen.getName().equals(screenTabItem.getText())) {
                      screenTabItem.setText(screen.getName());
                      setSelection(screenTabItem);
                   }
@@ -105,19 +108,19 @@ public class ScreenTab extends TabPanel {
    /**
     * Adds the insert listener.
     */
-   private void addInsertListener(){
-      BeanModelDataBase.screenTable.addInsertListener(Constants.SCREEN_TABLE_OID, new ChangeListener(){
+   private void addInsertListener() {
+      BeanModelDataBase.screenTable.addInsertListener(Constants.SCREEN_TABLE_OID, new ChangeListener() {
          public void modelChanged(ChangeEvent event) {
-            if(event.getType() == BeanModelTable.ADD){
+            if (event.getType() == BeanModelTable.ADD) {
                BeanModel beanModel = (BeanModel) event.getItem();
-               if(beanModel.getBean() instanceof Screen){
-                  ScreenTabItem screenTabItem = new ScreenTabItem((Screen)beanModel.getBean());
+               if (beanModel.getBean() instanceof Screen) {
+                  ScreenTabItem screenTabItem = new ScreenTabItem((Screen) beanModel.getBean());
                   add(screenTabItem);
                   setSelection(screenTabItem);
                }
             }
          }
-         
+
       });
    }
 }

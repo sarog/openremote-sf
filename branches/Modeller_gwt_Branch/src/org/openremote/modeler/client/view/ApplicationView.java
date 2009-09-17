@@ -166,6 +166,11 @@ public class ApplicationView implements View {
       return applicationHelpButton;
    }
    
+   /**
+    * Creates the save menu item.
+    * 
+    * @return the menu item
+    */
    private MenuItem createSaveMenuItem() {
       MenuItem saveMenuItem = new MenuItem("Save");
       saveMenuItem.ensureDebugId(DebugId.SAVE);
@@ -261,7 +266,7 @@ public class ApplicationView implements View {
    protected List<Activity> getAllActivities() {
       List<Activity> activityList = new ArrayList<Activity>();
       for (BeanModel activityBeanModel : BeanModelDataBase.activityTable.loadAll()) {
-         activityList.add((Activity)activityBeanModel.getBean());
+         activityList.add((Activity) activityBeanModel.getBean());
       }
       return activityList;
    }

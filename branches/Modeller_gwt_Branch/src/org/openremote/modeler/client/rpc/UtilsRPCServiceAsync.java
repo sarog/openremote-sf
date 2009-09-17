@@ -58,9 +58,9 @@ public interface UtilsRPCServiceAsync {
    void loadJsonStringFromSession(AsyncCallback<String> asyncSuccessCallback);
 
    /**
-    * Auto save activity json.
-    * @param activities 
+    * Auto save ui designer layout json.
     * 
+    * @param activities the activities
     * @param asyncSuccessCallback the async success callback
     */
    void autoSaveUiDesignerLayoutJSON(List<Activity> activities, AsyncCallback<AutoSaveResponse> asyncSuccessCallback);

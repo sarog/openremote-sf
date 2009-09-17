@@ -53,7 +53,7 @@ public class DeviceWizardWindow extends WizardWindow {
    public DeviceWizardWindow(BeanModel deviceBeanModel) {
       super(deviceBeanModel);
       Device device = deviceBeanModel.getBean();
-      session.put("device",device);
+      session.put("device", device);
       setHeading("New Device");
       show();
    }
@@ -64,8 +64,8 @@ public class DeviceWizardWindow extends WizardWindow {
    @Override
    protected void initForms() {
       forms = new CommonForm[]{
-            new DeviceInfoWizardForm(this,beanModel),
-            new IRCommandImportWizardForm(this,beanModel)
+            new DeviceInfoWizardForm(this, beanModel),
+            new IRCommandImportWizardForm(this, beanModel)
             };
    }
 
@@ -92,14 +92,14 @@ public class DeviceWizardWindow extends WizardWindow {
     */
    @Override
    protected void finish(int step, FormPanel currentForm) {
-      IRCommandImportWizardForm commandImportWizardForm = (IRCommandImportWizardForm)forms[IMPORT_IR_STEP];
-      DeviceInfoWizardForm deviceInfoWizardForm = (DeviceInfoWizardForm)forms[DEVICE_INFO_STEP];
+      IRCommandImportWizardForm commandImportWizardForm = (IRCommandImportWizardForm) forms[IMPORT_IR_STEP];
+      DeviceInfoWizardForm deviceInfoWizardForm = (DeviceInfoWizardForm) forms[DEVICE_INFO_STEP];
       switch (step) {
       case DEVICE_INFO_STEP:
          
          break;
       case IMPORT_IR_STEP:
-         Map<String,String> map = deviceInfoWizardForm.getFieldMap();
+         Map<String, String> map = deviceInfoWizardForm.getFieldMap();
          Device device = commandImportWizardForm.getDevice();
          device.setName(map.get(DeviceInfoForm.DEVICE_NAME));
          device.setModel(map.get(DeviceInfoForm.DEVICE_MODEL));

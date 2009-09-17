@@ -75,6 +75,9 @@ public class WizardWindow extends CommonWindow {
       forms = new CommonForm[] {};
    }
 
+   /**
+    * Inits the window.
+    */
    private void init() {
       setAutoHeight(true);
       setLayout(new FlowLayout());
@@ -83,6 +86,9 @@ public class WizardWindow extends CommonWindow {
       showFirstForm();
    }
 
+   /**
+    * Show buttons.
+    */
    private void showButtons() {
 
       backBtn = new Button("< Back");
@@ -129,6 +135,9 @@ public class WizardWindow extends CommonWindow {
    }
 
 
+   /**
+    * Show first form.
+    */
    private void showFirstForm() {
       for (int i = 0; i < forms.length; i++) {
          add(forms[i]);
@@ -140,6 +149,11 @@ public class WizardWindow extends CommonWindow {
       }
    }
 
+   /**
+    * Show step form.
+    * 
+    * @param step the step
+    */
    private void showStepForm(int step) {
       forms[step].show();
       setFocusWidget(forms[step].getFields().get(0));

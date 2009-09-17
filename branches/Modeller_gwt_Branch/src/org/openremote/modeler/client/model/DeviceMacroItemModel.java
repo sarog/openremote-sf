@@ -25,6 +25,7 @@ import com.extjs.gxt.ui.client.data.BaseModelData;
 /**
  * The Class DeviceMacroItemModel.
  */
+@SuppressWarnings("serial")
 public class DeviceMacroItemModel extends BaseModelData {
 
    /** The Constant DATA_FIELD. */

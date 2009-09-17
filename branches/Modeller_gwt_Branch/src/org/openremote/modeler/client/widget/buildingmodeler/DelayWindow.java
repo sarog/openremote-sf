@@ -69,10 +69,10 @@ public class DelayWindow extends FormWindow {
    /**
     * Initial.
     * 
-    * @param Heading the heading
+    * @param heading the heading
     */
-   private void initial(String Heading) {
-      setHeading("Add Delay");
+   private void initial(String heading) {
+      setHeading(heading);
       setSize(280, 120);
 
       Button addBtn = new Button("OK");

@@ -33,6 +33,7 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 public class DeviceWindow extends CommonWindow {
    
    
+   /** The device form. */
    private CommonForm deviceForm;
    /** The device model. */
    protected BeanModel deviceModel = null;
@@ -54,11 +55,11 @@ public class DeviceWindow extends CommonWindow {
    /**
     * Initial.
     * 
-    * @param heading the heading
+    * @param deviceBeanModel the device bean model
     */
    protected void initial(BeanModel deviceBeanModel) {
       setSize(360, 200);
-      setHeading(((Device)deviceBeanModel.getBean()).getName() == null? "New Device" :"Edit Device");
+      setHeading(((Device) deviceBeanModel.getBean()).getName() == null ? "New Device" : "Edit Device");
       deviceForm = new DeviceInfoForm(this, deviceBeanModel);
       ensureDebugId(DebugId.NEW_DEVICE_WINDOW);
       add(deviceForm);

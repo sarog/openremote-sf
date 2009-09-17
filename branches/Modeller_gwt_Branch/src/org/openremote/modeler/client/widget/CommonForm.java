@@ -36,7 +36,7 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel;
  * 
  * @author Dan 2009-8-19
  */
-public class CommonForm extends FormPanel{
+public class CommonForm extends FormPanel {
    
    
    /**

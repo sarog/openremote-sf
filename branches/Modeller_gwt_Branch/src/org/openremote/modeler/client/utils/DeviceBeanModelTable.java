@@ -46,7 +46,7 @@ import com.extjs.gxt.ui.client.store.TreeStoreEvent;
  * 
  * @author allen.wei
  */
-public class DeviceBeanModelTable extends BeanModelTable{
+public class DeviceBeanModelTable extends BeanModelTable {
 
    /**
     * Instantiates a new bean model table.
@@ -55,8 +55,8 @@ public class DeviceBeanModelTable extends BeanModelTable{
       super();
    }
 
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.client.utils.BeanModelTable#loadFromTable(com.extjs.gxt.ui.client.data.BeanModel, org.openremote.modeler.client.rpc.AsyncSuccessCallback)
+   /**
+    * {@inheritDoc}
     */
    @Override
    public void loadFromTable(BeanModel parent, final AsyncSuccessCallback<List<BeanModel>> asyncSuccessCallback) {
@@ -68,8 +68,8 @@ public class DeviceBeanModelTable extends BeanModelTable{
      
    }
    
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.client.utils.BeanModelTable#addInsertListener(com.extjs.gxt.ui.client.data.BeanModel, com.extjs.gxt.ui.client.store.TreeStore)
+   /**
+    * {@inheritDoc}
     */
    @SuppressWarnings("unchecked")
    @Override
@@ -82,25 +82,25 @@ public class DeviceBeanModelTable extends BeanModelTable{
             if (event.getType() == BeanModelTable.ADD) {
                if (parentBeanModel == null) {
                   treeStore.add(sourceBeanModel, false);
-               }else {
+               } else {
                   long sourceParentBeanModelOid = -1L;
                   if (sourceBeanModel.getBean() instanceof Device) {
                      treeStore.add(parentBeanModel, sourceBeanModel, false);
                   } else if (sourceBeanModel.getBean() instanceof DeviceCommand) {
-                     sourceParentBeanModelOid = ((DeviceCommand)sourceBeanModel.getBean()).getDevice().getOid();
+                     sourceParentBeanModelOid = ((DeviceCommand) sourceBeanModel.getBean()).getDevice().getOid();
                   }
-                  if (((BusinessEntity)parentBeanModel.getBean()).getOid() == sourceParentBeanModelOid) {
+                  if (((BusinessEntity) parentBeanModel.getBean()).getOid() == sourceParentBeanModelOid) {
                      treeStore.add(parentBeanModel, sourceBeanModel, false);
                   }
                }
             }
          }
-         
+
       });
    }
    
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.client.utils.BeanModelTable#addChangeListener(org.openremote.modeler.client.model.MagicTreeStore, com.extjs.gxt.ui.client.store.TreeStoreEvent)
+   /**
+    * {@inheritDoc}
     */
    @SuppressWarnings("unchecked")
    @Override
@@ -127,8 +127,8 @@ public class DeviceBeanModelTable extends BeanModelTable{
       }
    }
    
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.client.utils.BeanModelTable#excuteNotify(com.extjs.gxt.ui.client.data.ChangeEvent)
+   /**
+    * {@inheritDoc}
     */
    @Override
    protected void excuteNotify(ChangeEvent evt) {
@@ -138,7 +138,7 @@ public class DeviceBeanModelTable extends BeanModelTable{
             insertListeners.get(Constants.DEVICES_OID).modelChanged(evt);
          }
       } else if (beanModel.getBean() instanceof DeviceCommand) {
-         DeviceCommand deviceCommand = (DeviceCommand)beanModel.getBean();
+         DeviceCommand deviceCommand = (DeviceCommand) beanModel.getBean();
          ChangeListener changeListener = insertListeners.get(deviceCommand.getDevice().getOid());
          if (changeListener != null) {
             changeListener.modelChanged(evt);

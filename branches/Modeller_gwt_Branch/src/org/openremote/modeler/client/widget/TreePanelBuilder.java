@@ -174,35 +174,35 @@ public class TreePanelBuilder {
    }
    
    /**
-    * Builds a new activity tree.
+    * Builds the activity tree.
     * 
-    * @param screens the screens
+    * @param screenTab the screen tab
     * 
-    * @return a new activity tree.
+    * @return the tree panel< bean model>
     */
    public static TreePanel<BeanModel> buildActivityTree(final ScreenTab screenTab) {
       if (activityTreeStore == null) {
          activityTreeStore = new TreeStore<BeanModel>();
       }
-      final TreePanel<BeanModel> activityTree = new TreePanel<BeanModel>(activityTreeStore){
+      final TreePanel<BeanModel> activityTree = new TreePanel<BeanModel>(activityTreeStore) {
 
          @Override
          public void onBrowserEvent(Event event) {
-            if(event.getTypeInt() == Event.ONDBLCLICK){
+            if (event.getTypeInt() == Event.ONDBLCLICK) {
                BeanModel beanModel = this.getSelectionModel().getSelectedItem();
-               if(beanModel.getBean() instanceof Screen){
+               if (beanModel.getBean() instanceof Screen) {
                   Screen screen = beanModel.getBean();
                   ScreenTabItem screenTabItem = null;
                   for (TabItem tabPanel : screenTab.getItems()) {
-                     screenTabItem = (ScreenTabItem)tabPanel;
-                     if(screen == screenTabItem.getScreen()){
+                     screenTabItem = (ScreenTabItem) tabPanel;
+                     if (screen == screenTabItem.getScreen()) {
                         screenTab.setSelection(screenTabItem);
                         return;
-                     }else{
+                     } else {
                         screenTabItem = null;
                      }
                   }
-                  if(screenTabItem == null){
+                  if (screenTabItem == null) {
                      screenTabItem = new ScreenTabItem(screen);
                      screenTab.add(screenTabItem);
                      screenTab.setSelection(screenTabItem);

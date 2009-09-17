@@ -110,7 +110,7 @@ public class UIDesignerView extends TabItem implements View {
    /**
     * Prepare data.
     */
-   private void prepareData(){
+   private void prepareData() {
       TouchPanels.load();
    }
 }

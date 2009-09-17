@@ -39,7 +39,9 @@ import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * The Class MagicTreeStore.
+ * The Class AutoListenableTreeStore.
+ * 
+ * @param <T> the generics
  */
 @SuppressWarnings("unchecked")
 public class AutoListenableTreeStore<T extends ModelData> extends TreeStore {
@@ -126,7 +128,9 @@ public class AutoListenableTreeStore<T extends ModelData> extends TreeStore {
     * @param targetParentBeanModel the target parent bean model
     * @param treeStoreEvent the tree store event
     */
-   private void addListenersToBeanModelTable(final AutoListenableTreeStore currentTreeStore, final BeanModelTable beanModelTable, final BeanModel targetParentBeanModel, TreeStoreEvent<BeanModel> treeStoreEvent) {
+   private void addListenersToBeanModelTable(final AutoListenableTreeStore currentTreeStore,
+         final BeanModelTable beanModelTable, final BeanModel targetParentBeanModel,
+         TreeStoreEvent<BeanModel> treeStoreEvent) {
       beanModelTable.addInsertListener(targetParentBeanModel, currentTreeStore);
       beanModelTable.addChangeListener(currentTreeStore, treeStoreEvent);
    }

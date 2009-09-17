@@ -34,7 +34,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface TouchPanelRPCService extends RemoteService {
    
    /**
-    * Gets the panels.
+    * Gets the touch panel definitions.
     * 
     * @return the panels
     */

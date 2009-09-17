@@ -196,10 +196,13 @@ public class MacroPanel extends ContentPanel {
       }
       for (BeanModel beanModel : models) {
          if (beanModel.getBean() instanceof DeviceMacroRef) {
-            BeanModelDataBase.deviceMacroTable.addChangeListener(BeanModelDataBase.getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-         }else if (beanModel.getBean() instanceof DeviceCommandRef) {
-            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase.getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-            BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
+            BeanModelDataBase.deviceMacroTable.addChangeListener(BeanModelDataBase
+                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
+         } else if (beanModel.getBean() instanceof DeviceCommandRef) {
+            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase
+                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
+            BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel),
+                  getDragSourceBeanModelChangeListener(beanModel));
          }
       }
    }
@@ -216,11 +219,12 @@ public class MacroPanel extends ContentPanel {
       }
       for (BeanModel beanModel : models) {
          if (beanModel.getBean() instanceof DeviceMacroRef) {
-            BeanModelDataBase.deviceMacroTable.removeChangeListener(BeanModelDataBase.getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-
+            BeanModelDataBase.deviceMacroTable.removeChangeListener(BeanModelDataBase
+                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
          }
          if (beanModel.getBean() instanceof DeviceCommandRef) {
-            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase.getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
+            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase
+                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
          }
          changeListenerMap.remove(beanModel);
       }
@@ -328,7 +332,7 @@ public class MacroPanel extends ContentPanel {
                      deviceCommandRef.setDeviceCommand(deviceCommand);
                   } else if (source.getBean() instanceof Device) {
                      Device device = (Device) source.getBean();
-                     DeviceCommandRef targetDeviceCommandRef = (DeviceCommandRef)target.getBean();
+                     DeviceCommandRef targetDeviceCommandRef = (DeviceCommandRef) target.getBean();
                      targetDeviceCommandRef.setDeviceName(device.getName());
                   }
                   macroTree.getStore().update(target);

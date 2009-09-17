@@ -53,10 +53,13 @@ public class ScreenTabItem extends TabItem {
    /** The icon. */
    private Icons icon = GWT.create(Icons.class);
    
+   /** The screen panel. */
    private ScreenPanel screenPanel;
    
+   /** The row. */
    private int row;
    
+   /** The column. */
    private int column;
    
    /**
@@ -87,15 +90,22 @@ public class ScreenTabItem extends TabItem {
       toolBar.add(createDeleteBtn());
       add(toolBar);
    }
-   private Button createRenameBtn(){
+   
+   /**
+    * Creates the rename btn.
+    * 
+    * @return the button
+    */
+   private Button createRenameBtn() {
       Button renameBtn = new Button("Rename Button");
       renameBtn.setIcon(icon.edit());
       renameBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             final ScreenButton selectedButton = screenPanel.getSelectedButton();
-            if(selectedButton != null){
-               final RenameButtonWindow renameButtonWindow = new RenameButtonWindow((UIButton)selectedButton.getData("button"));
+            if (selectedButton != null) {
+               final RenameButtonWindow renameButtonWindow = new RenameButtonWindow((UIButton) selectedButton
+                     .getData("button"));
                renameButtonWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                   @Override
                   public void afterSubmit(SubmitEvent be) {
@@ -114,6 +124,11 @@ public class ScreenTabItem extends TabItem {
       return renameBtn;
    }
    
+   /**
+    * Creates the change icon btn.
+    * 
+    * @return the button
+    */
    private Button createChangeIconBtn() {
       Button changeIconBtn = new Button("Change Icon");
       changeIconBtn.setIcon(icon.edit());
@@ -141,15 +156,20 @@ public class ScreenTabItem extends TabItem {
       return changeIconBtn;
    }
    
-   private Button createDeleteBtn(){
+   /**
+    * Creates the delete btn.
+    * 
+    * @return the button
+    */
+   private Button createDeleteBtn() {
       Button deleteBtn = new Button("Delete");
       deleteBtn.setIcon(icon.delete());
       deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
          @Override
          public void onDelete(ButtonEvent ce) {
             ScreenButton selectButton = screenPanel.getSelectedButton();
-            if(selectButton != null){
-               screen.deleteButton((UIButton)selectButton.getData(ScreenButton.DATA_BUTTON));
+            if (selectButton != null) {
+               screen.deleteButton((UIButton) selectButton.getData(ScreenButton.DATA_BUTTON));
                screenPanel.delete(selectButton);
                layout();
             } else {
@@ -159,8 +179,11 @@ public class ScreenTabItem extends TabItem {
       });
       return deleteBtn;
    }
+   
    /**
-    * Creates the screen background.
+    * Creates the screen panel.
+    * 
+    * @param screen the screen
     */
    private void createScreenPanel(Screen screen) {
       Map<String, List<TouchPanelDefinition>> panels = TouchPanels.getInstance();
@@ -170,22 +193,47 @@ public class ScreenTabItem extends TabItem {
       
    }
 
-   public Screen getScreen(){
+   /**
+    * Gets the screen.
+    * 
+    * @return the screen
+    */
+   public Screen getScreen() {
       return screen;
    }
 
+   /**
+    * Gets the row.
+    * 
+    * @return the row
+    */
    public int getRow() {
       return row;
    }
 
+   /**
+    * Sets the row.
+    * 
+    * @param row the new row
+    */
    public void setRow(int row) {
       this.row = row;
    }
 
+   /**
+    * Gets the column.
+    * 
+    * @return the column
+    */
    public int getColumn() {
       return column;
    }
 
+   /**
+    * Sets the column.
+    * 
+    * @param column the new column
+    */
    public void setColumn(int column) {
       this.column = column;
    }

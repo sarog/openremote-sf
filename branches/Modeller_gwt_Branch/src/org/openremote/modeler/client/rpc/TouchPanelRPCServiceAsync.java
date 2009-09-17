@@ -36,7 +36,6 @@ public interface TouchPanelRPCServiceAsync {
     * 
     * @param callback the callback
     * 
-    * @return the panels
     */
    void getPanels(AsyncCallback<Map<String, List<TouchPanelDefinition>>> callback);
 }

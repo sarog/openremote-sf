@@ -25,7 +25,7 @@ import java.io.Serializable;
  * The Class PanelPosition.
  */
 @SuppressWarnings("serial")
-public class Position implements Serializable{
+public class Position implements Serializable {
    
    /** The pos x. */
    private int posX;

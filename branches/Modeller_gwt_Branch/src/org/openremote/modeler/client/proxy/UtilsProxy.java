@@ -61,7 +61,7 @@ public class UtilsProxy {
    /**
     * Load json string from session.
     * 
-    * @param asyncSuccessCallback the async success callback
+    * @param callback the callback
     */
    public static void loadJsonStringFromSession(final AsyncSuccessCallback<String> callback) {
       AsyncServiceFactory.getUtilsRPCServiceAsync().loadJsonStringFromSession(new AsyncSuccessCallback<String>() {
@@ -73,9 +73,10 @@ public class UtilsProxy {
    }
 
    /**
-    * Auto save activity json.
+    * Auto save ui designer layout json.
     * 
-    * @param asyncSuccessCallback the async success callback
+    * @param activities the activities
+    * @param callback the callback
     */
    public static void autoSaveUiDesignerLayoutJSON(List<Activity> activities, final AsyncSuccessCallback<AutoSaveResponse> callback) {
       AsyncServiceFactory.getUtilsRPCServiceAsync().autoSaveUiDesignerLayoutJSON(activities, new AsyncSuccessCallback<AutoSaveResponse>() {
@@ -83,6 +84,22 @@ public class UtilsProxy {
          public void onSuccess(AutoSaveResponse result) {
             callback.onSuccess(result);
          }
+      });
+   }
+   
+   /**
+    * Gets the beehive rest icon url.
+    * 
+    * @param callback the callback
+    * 
+    */
+   public static void getBeehiveRestIconUrl(final AsyncSuccessCallback<String> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().beehiveRestIconUrl(new AsyncSuccessCallback<String>() {
+         @Override
+         public void onSuccess(String result) {
+            callback.onSuccess(result);
+         }
+         
       });
    }
 }

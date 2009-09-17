@@ -50,7 +50,7 @@ import com.extjs.gxt.ui.client.store.TreeStoreEvent;
  * 
  * @author allen.wei
  */
-public class DeviceMacroBeanModelTable extends BeanModelTable{
+public class DeviceMacroBeanModelTable extends BeanModelTable {
 
    /**
     * Instantiates a new bean model table.
@@ -59,8 +59,8 @@ public class DeviceMacroBeanModelTable extends BeanModelTable{
       super();
    }
 
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.client.utils.BeanModelTable#loadFromTable(com.extjs.gxt.ui.client.data.BeanModel, org.openremote.modeler.client.rpc.AsyncSuccessCallback)
+   /**
+    * {@inheritDoc}
     */
    @Override
    public void loadFromTable(BeanModel parent, final AsyncSuccessCallback<List<BeanModel>> asyncSuccessCallback) {
@@ -86,27 +86,30 @@ public class DeviceMacroBeanModelTable extends BeanModelTable{
             if (event.getType() == BeanModelTable.ADD) {
                if (parentBeanModel == null) {
                   treeStore.add(sourceBeanModel, false);
-               }else {
+               } else {
                   long sourceParentBeanModelOid = -1;
                   if (sourceBeanModel.getBean() instanceof DeviceMacro) {
                      treeStore.add(parentBeanModel, sourceBeanModel, false);
                      return;
                   } else if (sourceBeanModel.getBean() instanceof DeviceMacroItem) {
-                     DeviceMacroItem deviceMacroItem = (DeviceMacroItem)sourceBeanModel.getBean();
+                     DeviceMacroItem deviceMacroItem = (DeviceMacroItem) sourceBeanModel.getBean();
                      sourceParentBeanModelOid = deviceMacroItem.getParentDeviceMacro().getOid();
                   }
-                  if (((BusinessEntity)parentBeanModel.getBean()).getOid() == sourceParentBeanModelOid) {
+                  if (((BusinessEntity) parentBeanModel.getBean()).getOid() == sourceParentBeanModelOid) {
                      treeStore.add(parentBeanModel, sourceBeanModel, false);
                   }
                }
             }
          }
-         
+
       });
    }
-   
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.client.utils.BeanModelTable#addChangeListener(org.openremote.modeler.client.model.MagicTreeStore, org.openremote.modeler.client.utils.BeanModelTable, com.extjs.gxt.ui.client.store.TreeStoreEvent)
+
+   /*
+    * (non-Javadoc)
+    * 
+    * @seeorg.openremote.modeler.client.utils.BeanModelTable#addChangeListener(org.openremote.modeler.client.model.
+    * MagicTreeStore, org.openremote.modeler.client.utils.BeanModelTable, com.extjs.gxt.ui.client.store.TreeStoreEvent)
     */
    @SuppressWarnings("unchecked")
    @Override
@@ -166,8 +169,8 @@ public class DeviceMacroBeanModelTable extends BeanModelTable{
       };
       
       if (targetBeanModel.getBean() instanceof DeviceMacroItem) {
-         DeviceMacroItem deviceMacroItem = (DeviceMacroItem)targetBeanModel.getBean();
-         if(deviceMacroItem instanceof DeviceMacroRef) {
+         DeviceMacroItem deviceMacroItem = (DeviceMacroItem) targetBeanModel.getBean();
+         if (deviceMacroItem instanceof DeviceMacroRef) {
             long deviceMacroOid = BeanModelDataBase.getOriginalDeviceMacroItemBeanModelId(targetBeanModel);
             BeanModelDataBase.deviceMacroTable.addChangeListener(deviceMacroOid, cascadeChangeLisntener);
          } else if (deviceMacroItem instanceof DeviceCommandRef) {
@@ -190,7 +193,7 @@ public class DeviceMacroBeanModelTable extends BeanModelTable{
             insertListeners.get(Constants.MACROS_OID).modelChanged(evt);
          }
       } else if (beanModel.getBean() instanceof DeviceMacroItem) {
-         DeviceMacroItem deviceMacroItem = (DeviceMacroItem)beanModel.getBean();
+         DeviceMacroItem deviceMacroItem = (DeviceMacroItem) beanModel.getBean();
          ChangeListener changeListener = insertListeners.get(deviceMacroItem.getParentDeviceMacro().getOid());
          if (changeListener != null) {
             changeListener.modelChanged(evt);

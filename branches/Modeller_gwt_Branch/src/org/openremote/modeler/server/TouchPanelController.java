@@ -28,15 +28,15 @@ import org.openremote.modeler.touchpanel.TouchPanelContainer;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 /**
- * The Class TouchPanelController.
+ * The Class TouchPanelController for get defined touch panels from panel xml file.
  */
 public class TouchPanelController extends BaseGWTSpringController implements TouchPanelRPCService {
 
    /** The Constant serialVersionUID. */
    private static final long serialVersionUID = -1064152509394362895L;
 
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.client.rpc.TouchPanelRPCService#getPanels()
+   /**
+    * {@inheritDoc}
     */
    public Map<String, List<TouchPanelDefinition>> getPanels() {
       if (TouchPanelContainer.getInstance().getPanels().size() == 0) {

@@ -38,7 +38,7 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
  * 
  * @author Dan 2009-8-21
  */
-public class DeviceInfoForm extends CommonForm{
+public class DeviceInfoForm extends CommonForm {
    
    /** The Constant DEVICE_NAME. */
    public static final String DEVICE_NAME = "name";
@@ -50,10 +50,18 @@ public class DeviceInfoForm extends CommonForm{
    public static final String DEVICE_MODEL = "model";
    
    
+   /** The device bean model. */
    protected BeanModel deviceBeanModel = null;
    
+   /** The wrapper. */
    protected Component wrapper;
    
+   /**
+    * Instantiates a new device info form.
+    * 
+    * @param wrapper the wrapper
+    * @param deviceBeanModel the device bean model
+    */
    public DeviceInfoForm(final Component wrapper, final BeanModel deviceBeanModel) {
       super();
       this.deviceBeanModel = deviceBeanModel;
@@ -67,7 +75,7 @@ public class DeviceInfoForm extends CommonForm{
                   wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceModel));
                }
             };
-            if (((Device)deviceBeanModel.getBean()).getName() == null) {
+            if (((Device) deviceBeanModel.getBean()).getName() == null) {
                DeviceBeanModelProxy.saveDevice(getFieldMap(), callback);
             } else {
                DeviceBeanModelProxy.updateDevice(deviceBeanModel, getFieldMap(), callback);

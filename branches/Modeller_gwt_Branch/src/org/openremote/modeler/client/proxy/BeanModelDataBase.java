@@ -67,6 +67,7 @@ public class BeanModelDataBase {
    /** The Constant activityTable. */
    public static final BeanModelTable activityTable = new BeanModelTable();
 
+   /** The Constant screenTable. */
    public static final BeanModelTable screenTable = new ScreenTable();
 
    /**
@@ -105,17 +106,17 @@ public class BeanModelDataBase {
          TreeFolderBean treeFolderBean = (TreeFolderBean) beanModel.getBean();
          if (Constants.DEVICES.equals(treeFolderBean.getType())) {
             return Constants.DEVICES_OID;
-         }else if (Constants.MACROS.equals(treeFolderBean.getType())) {
+         } else if (Constants.MACROS.equals(treeFolderBean.getType())) {
             return Constants.MACROS_OID;
          }
       } else if (beanModel.getBean() instanceof Device) {
-         return ((Device)beanModel.getBean()).getOid();
+         return ((Device) beanModel.getBean()).getOid();
       } else if (beanModel.getBean() instanceof DeviceCommand) {
-         return ((DeviceCommand)beanModel.getBean()).getOid();
+         return ((DeviceCommand) beanModel.getBean()).getOid();
       } else if (beanModel.getBean() instanceof DeviceMacro) {
-         return ((DeviceMacro)beanModel.getBean()).getOid();
+         return ((DeviceMacro) beanModel.getBean()).getOid();
       } else if (beanModel.getBean() instanceof DeviceCommandRef) {
-         DeviceCommandRef deviceCommandRef = (DeviceCommandRef)beanModel.getBean();
+         DeviceCommandRef deviceCommandRef = (DeviceCommandRef) beanModel.getBean();
          return deviceCommandRef.getDeviceCommand().getDevice().getOid();
       }
       return 0L;

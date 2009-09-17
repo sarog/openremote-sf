@@ -73,7 +73,7 @@ public class ScreenWindow extends FormWindow {
    /**
     * Instantiates a new screen window.
     * 
-    * @param screenModel the screen model
+    * @param screen the screen
     */
    public ScreenWindow(Screen screen) {
       super();
@@ -104,19 +104,22 @@ public class ScreenWindow extends FormWindow {
       screenNameField.setName(SCREEN_NAME);
       screenNameField.ensureDebugId(DebugId.SCREEN_NAME_FIELD);
       screenNameField.setFieldLabel("Name");
-      screenNameField.setAllowBlank(false);screenNameField.setValue("screen1");
+      screenNameField.setAllowBlank(false);
+      screenNameField.setValue("screen1");
       
       TextField<Integer> screenRowCountField = new TextField<Integer>();
       screenRowCountField.setName(SCREEN_ROW_COUNT);
       screenRowCountField.ensureDebugId(DebugId.SCREEN_ROW_COUNT_FIELD);
       screenRowCountField.setFieldLabel("Row Count");
-      screenRowCountField.setAllowBlank(false);screenRowCountField.setValue(6);
+      screenRowCountField.setAllowBlank(false);
+      screenRowCountField.setValue(6);
       
       TextField<Integer> screenColumnCountField = new TextField<Integer>();
       screenColumnCountField.setName(SCREEN_COLUMN_COUNT);
       screenColumnCountField.ensureDebugId(DebugId.SCREEN_COLUMN_COUNT_FIELD);
       screenColumnCountField.setFieldLabel("Col Count");
-      screenColumnCountField.setAllowBlank(false);screenColumnCountField.setValue(4);
+      screenColumnCountField.setAllowBlank(false);
+      screenColumnCountField.setValue(4);
       
       if (screen != null) {
          screenNameField.setValue(screen.getName());
@@ -148,7 +151,7 @@ public class ScreenWindow extends FormWindow {
     * Adds the listeners to form.
     */
    private void addListenersToForm() {
-      form.addListener(Events.BeforeSubmit, new Listener<FormEvent>(){
+      form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             Map<String, String> attrMap = getAttrMap();
             BeanModel screenBeanModel = null;

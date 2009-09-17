@@ -60,18 +60,20 @@ public class ScreenPanel extends LayoutContainer {
    /** The Constant RESIZABLE_HANDLES. */
    private static final String RESIZABLE_HANDLES = "e s"; // Make resizable in east and south direction.
    
-   /** The button in area. Record the buttons position and hold area in screen table. */
+   /** The btn in area. */
    private boolean[][] btnInArea;
    
    /** The selected button. */
    private ScreenButton selectedButton;
    
+   /** The panel definition. */
    private TouchPanelDefinition panelDefinition;
 
    /**
     * Instantiates a new screen panel.
     * 
-    * @param s the s
+    * @param screen the screen
+    * @param panelDefinition the panel definition
     */
    public ScreenPanel(Screen screen, TouchPanelDefinition panelDefinition) {
       this.screen = screen;
@@ -88,7 +90,7 @@ public class ScreenPanel extends LayoutContainer {
    }
 
    /**
-    * Make sure btnInArea to be initial.
+    * Inits the btn in area.
     */
    private void initBtnInArea() {
       for (int x = 0; x < screen.getColumnCount(); x++) {
@@ -99,7 +101,7 @@ public class ScreenPanel extends LayoutContainer {
    }
 
    /**
-    * Creates the screen table.
+    * Creates the table.
     */
    private void createTable() {
       int gridWidth = panelDefinition.getGrid().getWidth();
@@ -179,11 +181,11 @@ public class ScreenPanel extends LayoutContainer {
          List<UIButton> buttons = screen.getButtons();
          for (UIButton button : buttons) {
             Position pos = button.getPosition();
-            ScreenButton screenBtn = createScreenButton((cellWidth + 1) * button.getWidth() - 1, (cellHeight + 1) * button.getHeight() -1, button);
+            ScreenButton screenBtn = createScreenButton((cellWidth + 1) * button.getWidth() - 1, (cellHeight + 1) * button.getHeight() - 1, button);
             makeButtonResizable(cellWidth, cellHeight, screenBtn);
             screenBtn.setPosition(panelDefinition.getPaddingLeft() + cellWidth * pos.getPosX() + pos.getPosX() + 1, panelDefinition.getPaddingTop() + cellHeight
                   * pos.getPosY() + pos.getPosY() + 1);
-            if(button.getIcon() != null && !"".equals(button.getIcon())){
+            if (button.getIcon() != null && !"".equals(button.getIcon())) {
                screenBtn.setIcon(button.getIcon());
             }
             add(screenBtn);
@@ -197,12 +199,12 @@ public class ScreenPanel extends LayoutContainer {
    }
 
    /**
-    * Find max x position when resize.
+    * Find max x when resize.
     * 
     * @param screenButton the screen button
     * @param screen the screen
     * 
-    * @return the max x position
+    * @return the int
     */
    private int findMaxXWhenResize(ScreenButton screenButton, Screen screen) {
       Position btnPosition = screenButton.getButtonPosition();
@@ -220,12 +222,12 @@ public class ScreenPanel extends LayoutContainer {
    }
 
    /**
-    * Find max y position when resize.
+    * Find max y when resize.
     * 
     * @param screenButton the screen button
     * @param screen the screen
     * 
-    * @return the max y position
+    * @return the int
     */
    private int findMaxYWhenResize(ScreenButton screenButton, Screen screen) {
       Position btnPosition = screenButton.getButtonPosition();
@@ -243,7 +245,7 @@ public class ScreenPanel extends LayoutContainer {
    }
 
    /**
-    * Calculate the position can drop the screenButton.
+    * Can drop.
     * 
     * @param x the x
     * @param y the y
@@ -270,7 +272,7 @@ public class ScreenPanel extends LayoutContainer {
    /**
     * Creates the drag source.
     * 
-    * @param screenBtn the screen button
+    * @param screenBtn the screen btn
     */
    private void createDragSource(final ScreenButton screenBtn) {
       DragSource source = new DragSource(screenBtn) {
@@ -288,8 +290,8 @@ public class ScreenPanel extends LayoutContainer {
    /**
     * Creates the screen button.
     * 
-    * @param width the button width
-    * @param height the button height
+    * @param width the width
+    * @param height the height
     * @param button the button
     * 
     * @return the screen button
@@ -331,10 +333,11 @@ public class ScreenPanel extends LayoutContainer {
    }
 
    /**
-    * Make the button can be resizable.
-    * @param cellWidth
-    * @param cellHeight
-    * @param screenBtn
+    * Make button resizable.
+    * 
+    * @param cellWidth the cell width
+    * @param cellHeight the cell height
+    * @param screenBtn the screen btn
     */
    private void makeButtonResizable(final int cellWidth, final int cellHeight, ScreenButton screenBtn) {
       final Resizable resizable = new Resizable(screenBtn, RESIZABLE_HANDLES);
@@ -357,7 +360,7 @@ public class ScreenPanel extends LayoutContainer {
          @Override
          public void resizeStart(ResizeEvent re) {
             ScreenButton resizeBtn = (ScreenButton) re.getComponent();
-            if(resizeBtn.getWidth()/cellWidth == 2){  // In IE if the button width is 2 cell width, it can't be resize to 1 cell width.
+            if (resizeBtn.getWidth() / cellWidth == 2) { // In IE if the button width is 2 cell width, it can't be resize to 1 cell width.
                resizeBtn.adjustCenter(cellWidth);
             }
             int maxX = findMaxXWhenResize(resizeBtn, screen);
