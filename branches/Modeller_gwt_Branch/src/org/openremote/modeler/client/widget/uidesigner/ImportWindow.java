@@ -129,7 +129,7 @@ public class ImportWindow extends FormWindow {
    private void addListenersToForm() {
       form.addListener(Events.Submit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
-            fireEvent(ResponseJSONEvent.ResponseJSON, new ResponseJSONEvent(be.getResultHtml()));
+            fireEvent(ResponseJSONEvent.RESPONSEJSON, new ResponseJSONEvent(be.getResultHtml()));
          }
       });
       add(form);
