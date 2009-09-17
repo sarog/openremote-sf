@@ -132,7 +132,7 @@ public class ActivityWindow extends FormWindow {
             updateActivityAttrs(activity);
             activityModel = activity.getBeanModel();
             BeanModelDataBase.activityTable.insert(activityModel);
-            fireEvent(SubmitEvent.Submit, new SubmitEvent(activityModel));
+            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(activityModel));
          }
       });
       add(form);

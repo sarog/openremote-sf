@@ -141,7 +141,7 @@ public class DeviceCommandWindow extends FormWindow {
             AsyncSuccessCallback<BeanModel> callback = new AsyncSuccessCallback<BeanModel>() {
                @Override
                public void onSuccess(BeanModel deviceCommandModel) {
-                  fireEvent(SubmitEvent.Submit, new SubmitEvent(deviceCommandModel));
+                  fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceCommandModel));
                }
             };
             if (deviceCommand == null) {

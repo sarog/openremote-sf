@@ -89,7 +89,7 @@ public class IRCommandImportWizardForm extends IRCommandImportForm {
                AsyncSuccessCallback<BeanModel> callback = new AsyncSuccessCallback<BeanModel>() {
                   @Override
                   public void onSuccess(BeanModel deviceModel) {
-                     wrapper.fireEvent(SubmitEvent.Submit, new SubmitEvent(deviceModel));
+                     wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceModel));
                   }
 
                };

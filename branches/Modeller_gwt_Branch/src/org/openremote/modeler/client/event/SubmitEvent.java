@@ -25,10 +25,10 @@ import com.extjs.gxt.ui.client.event.EventType;
 /**
  * The event for SubmitListener.
  */
-public class SubmitEvent extends BaseEvent{
+public class SubmitEvent extends BaseEvent {
 
    /** The Constant Submit. */
-   public static final EventType Submit = new EventType();
+   public static final EventType SUBMIT = new EventType();
    
    /** The data. */
    private Object data;
@@ -37,7 +37,7 @@ public class SubmitEvent extends BaseEvent{
     * Instantiates a new submit event.
     */
    public SubmitEvent() {
-      super(Submit);
+      super(SUBMIT);
    }
    
    /**
@@ -52,7 +52,7 @@ public class SubmitEvent extends BaseEvent{
    
    /**
     * Gets the data.
-    * 
+    * @param <X> x
     * @return the data
     */
    @SuppressWarnings("unchecked")

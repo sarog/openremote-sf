@@ -420,7 +420,7 @@ public class MacroWindow extends FormWindow {
       AsyncSuccessCallback<DeviceMacro> submitSuccessListener = new AsyncSuccessCallback<DeviceMacro>() {
          @Override
          public void onSuccess(DeviceMacro result) {
-            fireEvent(SubmitEvent.Submit, new SubmitEvent(result));
+            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result));
          }
       };
       if (deviceMacroBeanModel != null) {
@@ -453,7 +453,7 @@ public class MacroWindow extends FormWindow {
     */
    private void addDelay() {
       final DelayWindow delayWindow = new DelayWindow();
-      delayWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+      delayWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
             delayWindow.hide();
@@ -471,7 +471,7 @@ public class MacroWindow extends FormWindow {
       BeanModel data = rightMacroItemListView.getSelectionModel().getSelectedItem();
       if (data.getBean() instanceof CommandDelay) {
          final DelayWindow editDelayWindow = new DelayWindow(data);
-         editDelayWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+         editDelayWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
                editDelayWindow.hide();

@@ -64,7 +64,7 @@ public class DeviceInfoForm extends CommonForm{
             AsyncSuccessCallback<BeanModel> callback = new AsyncSuccessCallback<BeanModel>() {
                @Override
                public void onSuccess(BeanModel deviceModel) {
-                  wrapper.fireEvent(SubmitEvent.Submit, new SubmitEvent(deviceModel));
+                  wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceModel));
                }
             };
             if (((Device)deviceBeanModel.getBean()).getName() == null) {

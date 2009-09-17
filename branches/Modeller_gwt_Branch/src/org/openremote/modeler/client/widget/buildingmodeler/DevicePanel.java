@@ -130,7 +130,7 @@ public class DevicePanel extends ContentPanel {
       newDeviceItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             final DeviceWizardWindow deviceWindow = new DeviceWizardWindow(new Device().getBeanModel());
-            deviceWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+            deviceWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   deviceWindow.hide();
@@ -178,7 +178,7 @@ public class DevicePanel extends ContentPanel {
       final BeanModel deviceModel = tree.getSelectionModel().getSelectedItem();
       if (deviceModel != null && deviceModel.getBean() instanceof Device) {
          final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow((Device) deviceModel.getBean());
-         deviceCommandWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+         deviceCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
                BeanModel deviceCommandModel = be.getData();
@@ -222,7 +222,7 @@ public class DevicePanel extends ContentPanel {
     */
    private void editDevice(BeanModel selectedModel) {
       final DeviceWindow editDeviceWindow = new DeviceWindow(selectedModel);
-      editDeviceWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+      editDeviceWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
             editDeviceWindow.hide();
@@ -240,7 +240,7 @@ public class DevicePanel extends ContentPanel {
     */
    private void editCommand(BeanModel selectedModel) {
       final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow((DeviceCommand) selectedModel.getBean());
-      deviceCommandWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+      deviceCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
             BeanModel deviceCommandModel = be.getData();
@@ -331,7 +331,7 @@ public class DevicePanel extends ContentPanel {
       final BeanModel deviceModel = tree.getSelectionModel().getSelectedItem();
       if (deviceModel != null && deviceModel.getBean() instanceof Device) {
          final IRCommandImportWindow selectIRWindow = new IRCommandImportWindow(deviceModel);
-         selectIRWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+         selectIRWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
                List<BeanModel> deviceCommandModels = be.getData();

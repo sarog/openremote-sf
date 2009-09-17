@@ -96,7 +96,7 @@ public class ScreenTabItem extends TabItem {
             final ScreenButton selectedButton = screenPanel.getSelectedButton();
             if(selectedButton != null){
                final RenameButtonWindow renameButtonWindow = new RenameButtonWindow((UIButton)selectedButton.getData("button"));
-               renameButtonWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+               renameButtonWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                   @Override
                   public void afterSubmit(SubmitEvent be) {
                      renameButtonWindow.hide();
@@ -123,7 +123,7 @@ public class ScreenTabItem extends TabItem {
             final ScreenButton selectedButton = screenPanel.getSelectedButton();
             if (selectedButton != null) {
                final ChangeIconWindow changeIconWindow = new ChangeIconWindow(selectedButton);
-               changeIconWindow.addListener(SubmitEvent.Submit, new SubmitListener() {
+               changeIconWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                   @Override
                   public void afterSubmit(SubmitEvent be) {
                      String icon = be.getData();

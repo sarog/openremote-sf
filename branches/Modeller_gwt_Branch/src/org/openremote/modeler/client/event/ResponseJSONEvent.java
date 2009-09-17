@@ -17,6 +17,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
 package org.openremote.modeler.client.event;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -24,12 +25,13 @@ import com.extjs.gxt.ui.client.event.EventType;
 
 /**
  * The event for SubmitListener.
+ * 
  * @author handy.wang
  */
-public class ResponseJSONEvent extends BaseEvent{
+public class ResponseJSONEvent extends BaseEvent {
 
    /** The Constant Submit. */
-   public static final EventType ResponseJSON = new EventType();
+   public static final EventType RESPONSEJSON = new EventType();
    
    /** The data. */
    private Object data;
@@ -38,7 +40,7 @@ public class ResponseJSONEvent extends BaseEvent{
     * Instantiates a new submit event.
     */
    public ResponseJSONEvent() {
-      super(ResponseJSON);
+      super(RESPONSEJSON);
    }
    
    /**
@@ -53,7 +55,7 @@ public class ResponseJSONEvent extends BaseEvent{
    
    /**
     * Gets the data.
-    * 
+    * @param <X> x
     * @return the data
     */
    @SuppressWarnings("unchecked")
