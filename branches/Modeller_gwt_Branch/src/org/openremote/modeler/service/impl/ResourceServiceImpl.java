@@ -108,15 +108,15 @@ public class ResourceServiceImpl implements ResourceService {
       replaceUrl(activities, sessionId);      
       String activitiesJson = getActivitiesJson(activities);
 
-      PathConfig pathConfig = PathConfig.getInstance(sessionId, configuration);
-      File sessionFolder = new File(pathConfig.userFolder());
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      File sessionFolder = new File(pathConfig.userFolder(sessionId));
       if (!sessionFolder.exists()) {
          sessionFolder.mkdirs();
       }
-      File iphoneXMLFile = new File(pathConfig.iPhoneXmlFilePath());
-      File controllerXMLFile = new File(pathConfig.controllerXmlFilePath());
-      File lircdFile = new File(pathConfig.lircFilePath());
-      File dotImport = new File(pathConfig.dotImportFilePath());
+      File iphoneXMLFile = new File(pathConfig.iPhoneXmlFilePath(sessionId));
+      File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(sessionId));
+      File lircdFile = new File(pathConfig.lircFilePath(sessionId));
+      File dotImport = new File(pathConfig.dotImportFilePath(sessionId));
 
       String newIphoneXML = IphoneXmlParser.parserXML(new File(getClass().getResource(configuration.getIphoneXsdPath()).getPath()), panelXmlContent, sessionFolder);
       
@@ -140,24 +140,24 @@ public class ResourceServiceImpl implements ResourceService {
          throw new FileOperationException("Compress zip file occur IOException", e);
       }
 
-      File zipFile = compressFilesToZip(sessionFolder.listFiles(), pathConfig.openremoteZipFilePath());
-      return pathConfig.getZipUrl() + zipFile.getName();
+      File zipFile = compressFilesToZip(sessionFolder.listFiles(), pathConfig.openremoteZipFilePath(sessionId));
+      return pathConfig.getZipUrl(sessionId) + zipFile.getName();
    }
 
    /**
     * Replace url.
     * 
     * @param activities the activities
-    * @param userId the user id
+    * @param sessionId the user id
     */
-   private void replaceUrl(List<Activity> activities, String userId) {
+   private void replaceUrl(List<Activity> activities, String sessionId) {
       for (Activity activity : activities) {
          for (Screen screen : activity.getScreens()) {
             for (UIButton uiButton : screen.getButtons()) {
                if (uiButton.getIcon() != null && !"".equals(uiButton.getIcon())) {
                   String iconValue = uiButton.getIcon();
                   String iconName = iconValue.substring(iconValue.lastIndexOf("/")+1);
-                  uiButton.setIcon(PathConfig.getInstance(userId, configuration).getRelativeResourcePath(iconName));
+                  uiButton.setIcon(PathConfig.getInstance(configuration).getRelativeResourcePath(iconName, sessionId));
                }
             }
          }
@@ -259,7 +259,7 @@ public class ResourceServiceImpl implements ResourceService {
     * @see org.openremote.modeler.service.ResourceService#getIrbFileFromZip(java.io.InputStream, java.lang.String)
     */
    public String getDotImportFileForRender(String sessionId, InputStream inputStream) {
-      File tmpDir = new File(PathConfig.getInstance(sessionId, configuration).userFolder());
+      File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
       if (tmpDir.exists() && tmpDir.isDirectory()) {
          try {
             FileUtils.deleteDirectory(tmpDir);
@@ -268,7 +268,7 @@ public class ResourceServiceImpl implements ResourceService {
             throw new FileOperationException("Delete temp dir Occur IOException", e);
          }
       }
-      new File(PathConfig.getInstance(sessionId, configuration).userFolder()).mkdirs();
+      new File(PathConfig.getInstance(configuration).userFolder(sessionId)).mkdirs();
       String dotImportFileContent = "";
       ZipInputStream zipInputStream = new ZipInputStream(inputStream);
       ZipEntry zipEntry;
@@ -286,7 +286,7 @@ public class ResourceServiceImpl implements ResourceService {
                }
                
                if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|import|conf)")) {
-                  File file = new File(PathConfig.getInstance(sessionId, configuration).userFolder() + zipEntry.getName());
+                  File file = new File(PathConfig.getInstance(configuration).userFolder(sessionId) + zipEntry.getName());
                   FileUtils.touch(file);
 
                   fileOutputStream = new FileOutputStream(file);
@@ -345,7 +345,7 @@ public class ResourceServiceImpl implements ResourceService {
     * java.lang.String)
     */
    public File uploadImage(InputStream inputStream, String fileName, String sessionId) {
-      File file = new File(PathConfig.getInstance(sessionId, configuration).userFolder() + File.separator + fileName);
+      File file = new File(PathConfig.getInstance(configuration).userFolder(sessionId) + File.separator + fileName);
       FileOutputStream fileOutputStream = null;
       try {
          File dir = file.getParentFile();
@@ -407,15 +407,15 @@ public class ResourceServiceImpl implements ResourceService {
     */
    private String getButtonsXmlContent(List<Activity> activityList, ProtocolEventContainer protocolEventContainer) {
       StringBuffer uiButtonsXml = new StringBuffer();
+      uiButtonsXml.append("  <buttons>\n");
       for (Activity activity : activityList) {
-         uiButtonsXml.append("  <buttons>\n");
          for (Screen screen : activity.getScreens()) {
             for (UIButton btn : screen.getButtons()) {
                uiButtonsXml.append(getButtonXmlContent(btn, protocolEventContainer));
             }
          }
-         uiButtonsXml.append("  </buttons>\n");
       }
+      uiButtonsXml.append("  </buttons>\n");
       return uiButtonsXml.toString();
    }
 
@@ -640,6 +640,6 @@ public class ResourceServiceImpl implements ResourceService {
     * @see org.openremote.modeler.service.ResourceService#getRelativeResourcePath(java.lang.String, java.lang.String)
     */
    public String getRelativeResourcePath(String sessionId, String fileName) {
-      return PathConfig.getInstance(sessionId, configuration).getRelativeResourcePath(fileName);
+      return PathConfig.getInstance(configuration).getRelativeResourcePath(fileName, sessionId);
    }
 }
