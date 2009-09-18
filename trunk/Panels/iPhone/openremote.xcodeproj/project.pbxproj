@@ -25,7 +25,6 @@
 		8C652A490FC125AD002632BF /* loading.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C652A480FC125AD002632BF /* loading.png */; };
 		8C652A4D0FC125FE002632BF /* global.logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C652A4C0FC125FE002632BF /* global.logo.png */; };
 		8C652ADA0FC12B0D002632BF /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C652AD90FC12B0D002632BF /* Default.png */; };
-		8C652AE80FC12C41002632BF /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C652AE70FC12C41002632BF /* Icon.png */; };
 		8C652C1F0FC13EC3002632BF /* ServerAutoDiscoveryController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C652C1E0FC13EC3002632BF /* ServerAutoDiscoveryController.m */; };
 		8C652C600FC14697002632BF /* NotificationConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C652C5F0FC14697002632BF /* NotificationConstant.m */; };
 		8C6620F00F524EEC006A0976 /* ControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6620EF0F524EEC006A0976 /* ControlView.m */; };
@@ -61,6 +60,9 @@
 		954467CC0F565F98002E9D97 /* Activity.m in Sources */ = {isa = PBXBuildFile; fileRef = 954467CB0F565F98002E9D97 /* Activity.m */; };
 		954467D60F5663EF002E9D97 /* Definition.m in Sources */ = {isa = PBXBuildFile; fileRef = 954467D50F5663EF002E9D97 /* Definition.m */; };
 		955882DC0F56786700527BA2 /* PaginationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 955882DB0F56786700527BA2 /* PaginationController.m */; };
+		974DAC881063ADEF00B1B04B /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 974DAC871063ADEF00B1B04B /* Entitlements.plist */; };
+		974DAC991063B2E300B1B04B /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 974DAC981063B2E300B1B04B /* Icon.png */; };
+		97B00120106127AF00C31E4A /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 97B0011F106127AF00C31E4A /* iTunesArtwork */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -96,7 +98,6 @@
 		8C652A480FC125AD002632BF /* loading.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = loading.png; sourceTree = "<group>"; };
 		8C652A4C0FC125FE002632BF /* global.logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = global.logo.png; sourceTree = "<group>"; };
 		8C652AD90FC12B0D002632BF /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
-		8C652AE70FC12C41002632BF /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		8C652C1D0FC13EC3002632BF /* ServerAutoDiscoveryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerAutoDiscoveryController.h; sourceTree = "<group>"; };
 		8C652C1E0FC13EC3002632BF /* ServerAutoDiscoveryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServerAutoDiscoveryController.m; sourceTree = "<group>"; };
 		8C652C5E0FC14697002632BF /* NotificationConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationConstant.h; sourceTree = "<group>"; };
@@ -154,6 +155,9 @@
 		954467D50F5663EF002E9D97 /* Definition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Definition.m; sourceTree = "<group>"; };
 		955882DA0F56786700527BA2 /* PaginationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PaginationController.h; sourceTree = "<group>"; };
 		955882DB0F56786700527BA2 /* PaginationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PaginationController.m; sourceTree = "<group>"; };
+		974DAC871063ADEF00B1B04B /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
+		974DAC981063B2E300B1B04B /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		97B0011F106127AF00C31E4A /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -206,6 +210,7 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				974DAC871063ADEF00B1B04B /* Entitlements.plist */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -222,8 +227,9 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				974DAC981063B2E300B1B04B /* Icon.png */,
+				97B0011F106127AF00C31E4A /* iTunesArtwork */,
 				8C6528470FC0F64F002632BF /* InitViewController.xib */,
-				8C652AE70FC12C41002632BF /* Icon.png */,
 				8C652A4C0FC125FE002632BF /* global.logo.png */,
 				8C652A480FC125AD002632BF /* loading.png */,
 				8CA7607A0F57EA7100ADF0C0 /* buttonHighlighted.png */,
@@ -368,9 +374,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1D6058900D05DD3D006BFB54 /* openremote */ = {
+		1D6058900D05DD3D006BFB54 /* OpenRemote */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "openremote" */;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "OpenRemote" */;
 			buildPhases = (
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
@@ -380,7 +386,7 @@
 			);
 			dependencies = (
 			);
-			name = openremote;
+			name = OpenRemote;
 			productName = openremote;
 			productReference = 1D6058910D05DD3D006BFB54 /* openremote.app */;
 			productType = "com.apple.product-type.application";
@@ -390,6 +396,9 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				ORGANIZATIONNAME = "OpenRemote Inc.";
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "openremote" */;
 			compatibilityVersion = "Xcode 3.1";
 			hasScannedForEncodings = 1;
@@ -397,7 +406,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1D6058900D05DD3D006BFB54 /* openremote */,
+				1D6058900D05DD3D006BFB54 /* OpenRemote */,
 			);
 		};
 /* End PBXProject section */
@@ -423,7 +432,9 @@
 				8C652A490FC125AD002632BF /* loading.png in Resources */,
 				8C652A4D0FC125FE002632BF /* global.logo.png in Resources */,
 				8C652ADA0FC12B0D002632BF /* Default.png in Resources */,
-				8C652AE80FC12C41002632BF /* Icon.png in Resources */,
+				97B00120106127AF00C31E4A /* iTunesArtwork in Resources */,
+				974DAC881063ADEF00B1B04B /* Entitlements.plist in Resources */,
+				974DAC991063B2E300B1B04B /* Icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -486,8 +497,8 @@
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "B3DB6719-5E12-4E1E-A68A-CEDA20A5833C";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "B3DB6719-5E12-4E1E-A68A-CEDA20A5833C";
+				PROVISIONING_PROFILE = "86B242D3-CB25-4395-A7D0-20978516F728";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "86B242D3-CB25-4395-A7D0-20978516F728";
 				SDKROOT = iphoneos2.2.1;
 			};
 			name = Debug;
@@ -497,8 +508,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "Don't Code Sign";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -511,28 +522,30 @@
 			};
 			name = Release;
 		};
-		8C599D660F7156E5001833AD /* distribute */ = {
+		8C599D660F7156E5001833AD /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Finalist IT Group";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D7265412-380A-4ECE-AC79-651A57197CCF";
-				SDKROOT = iphoneos2.1;
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos3.0;
 			};
-			name = distribute;
+			name = Distribution;
 		};
-		8C599D670F7156E5001833AD /* distribute */ = {
+		8C599D670F7156E5001833AD /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "Don't Code Sign";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
@@ -542,9 +555,9 @@
 				PRODUCT_NAME = openremote;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos2.2.1;
+				SDKROOT = iphoneos3.0;
 			};
-			name = distribute;
+			name = Distribution;
 		};
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -556,7 +569,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos2.1;
+				SDKROOT = iphoneos3.0;
 			};
 			name = Debug;
 		};
@@ -564,23 +577,26 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos2.1;
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos3.0;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "openremote" */ = {
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "OpenRemote" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1D6058940D05DD3E006BFB54 /* Debug */,
-				8C599D670F7156E5001833AD /* distribute */,
+				8C599D670F7156E5001833AD /* Distribution */,
 				1D6058950D05DD3E006BFB54 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -590,7 +606,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
-				8C599D660F7156E5001833AD /* distribute */,
+				8C599D660F7156E5001833AD /* Distribution */,
 				C01FCF5008A954540054247B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
