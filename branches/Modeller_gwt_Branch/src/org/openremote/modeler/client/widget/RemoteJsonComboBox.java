@@ -38,6 +38,7 @@ import com.extjs.gxt.ui.client.widget.form.ComboBox;
 
 /**
  * The Class RemoteJsonComboBox.
+ * @param <D> any ModelData
  */
 public class RemoteJsonComboBox<D extends ModelData> extends ComboBox<D> {
 

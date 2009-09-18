@@ -29,6 +29,7 @@ import org.openremote.modeler.domain.DeviceCommand;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 
+
 /**
  * Device Wizard Window for create a new device, including basic info and basic {@link DeviceCommand} import.
  * 
@@ -58,8 +59,8 @@ public class DeviceWizardWindow extends WizardWindow {
       show();
    }
 
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.client.widget.WizardWindow#initForms()
+   /**
+    * {@inheritDoc}
     */
    @Override
    protected void initForms() {
@@ -69,8 +70,8 @@ public class DeviceWizardWindow extends WizardWindow {
             };
    }
 
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.client.widget.WizardWindow#postProcess(int, com.extjs.gxt.ui.client.widget.form.FormPanel)
+   /**
+    * {@inheritDoc}
     */
    @Override
    protected void postProcess(int step, FormPanel currentForm) {
@@ -87,8 +88,8 @@ public class DeviceWizardWindow extends WizardWindow {
       }
    }
 
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.client.widget.WizardWindow#finish(int, com.extjs.gxt.ui.client.widget.form.FormPanel)
+   /**
+    * {@inheritDoc}
     */
    @Override
    protected void finish(int step, FormPanel currentForm) {

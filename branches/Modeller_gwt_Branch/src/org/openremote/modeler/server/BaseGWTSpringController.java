@@ -58,8 +58,8 @@ public class BaseGWTSpringController extends RemoteServiceServlet implements Con
 
    /**
     * @see org.springframework.web.servlet.mvc.Controller#handleRequest(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-    * @param request
-    * @param response
+    * @param request request
+    * @param response response
     * @throws Exception exception
     * @return null
     */

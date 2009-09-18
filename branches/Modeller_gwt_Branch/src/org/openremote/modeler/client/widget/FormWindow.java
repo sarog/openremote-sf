@@ -49,6 +49,9 @@ public class FormWindow extends Window {
 
 
 
+   /**
+    * Sets the form styles.
+    */
    private void setFormStyles() {
       form.setFrame(true);
       form.setHeaderVisible(false);
@@ -58,6 +61,9 @@ public class FormWindow extends Window {
 
 
 
+   /**
+    * Sets the window styles.
+    */
    private void setWindowStyles() {
       setLayout(new FillLayout());
       setModal(true);
@@ -68,13 +74,8 @@ public class FormWindow extends Window {
 
 
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see com.extjs.gxt.ui.client.widget.Window#show()
-    */
-   /* (non-Javadoc)
-    * @see com.extjs.gxt.ui.client.widget.Window#show()
+   /**
+    * {@inheritDoc}
     */
    @Override
    public void show() {
