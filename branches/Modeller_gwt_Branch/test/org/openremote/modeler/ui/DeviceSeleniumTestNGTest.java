@@ -32,6 +32,11 @@ import org.testng.annotations.Test;
 public class DeviceSeleniumTestNGTest extends SeleniumTestNGBase {
    
    /**
+    * Constant pause millisecond.
+    */
+   private static final int PAUSE_MS = 2000;
+   
+   /**
     * Creates the device.
     * 
     * @throws Exception
@@ -39,17 +44,17 @@ public class DeviceSeleniumTestNGTest extends SeleniumTestNGBase {
     */
    @Test
    public void createDevice() throws Exception {
-      pause(2000);
+      pause(PAUSE_MS);
       click(DebugId.DEVICE_NEW_BTN);
-      pause(2000);
+      pause(PAUSE_MS);
       click(DebugId.NEW_DEVICE_MENU_ITEM);
-      // pause(2000);
+      // pause(PAUSE_MS);
       String name = "seleniumTest" + Math.random();
       type(DebugId.DEVICE_NAME_FIELD, name);
       type(DebugId.DEVICE_VENDOR_FIELD, "ThoughtWorks");
       type(DebugId.DEVICE_MODEL_FIELD, "Selenium RC");
       click(DebugId.DEVICE_SUBMIT_BTN);
-      pause(1000);
+      pause(PAUSE_MS);
       
       Assert.assertTrue(selenium.isTextPresent(name));
    }
@@ -63,20 +68,20 @@ public class DeviceSeleniumTestNGTest extends SeleniumTestNGBase {
    @Test(dependsOnMethods = { "createDevice" })
    public void editDevice() throws Exception {
       click(DebugId.DEVICE_EDIT_BTN);
-      pause(2000);
+      pause(PAUSE_MS);
       double random = Math.random();
       String name = "seleniumTestUpdated" + random;
       
       String vendor = "ThoughtWorks" + random;
       String model = "Selenium RC" + random;
-      pause(2000);
+      pause(PAUSE_MS);
       type(DebugId.DEVICE_NAME_FIELD, name);
       type(DebugId.DEVICE_VENDOR_FIELD, vendor);
       type(DebugId.DEVICE_MODEL_FIELD, model);
       click(DebugId.DEVICE_SUBMIT_BTN);
-      pause(1000);
+      pause(PAUSE_MS);
       click(DebugId.DEVICE_EDIT_BTN);
-      pause(2000);
+      pause(PAUSE_MS);
       Assert.assertEquals(getValue(DebugId.DEVICE_NAME_FIELD), name);
       Assert.assertEquals(getValue(DebugId.DEVICE_VENDOR_FIELD), vendor);
       Assert.assertEquals(getValue(DebugId.DEVICE_MODEL_FIELD), model);
@@ -93,9 +98,9 @@ public class DeviceSeleniumTestNGTest extends SeleniumTestNGBase {
    public void deleteDevice() throws Exception {
       String lastDeviceName = getValue(DebugId.DEVICE_NAME_FIELD);
       click(DebugId.DEVICE_SUBMIT_BTN);
-      pause(2000);
+      pause(PAUSE_MS);
       click(DebugId.DELETE_DEVICE_BUTTON);
-      pause(2000);
+      pause(PAUSE_MS);
       Assert.assertFalse(selenium.isTextPresent(lastDeviceName));
    }
 

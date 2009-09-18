@@ -360,17 +360,17 @@ public class ActivityPanel extends ContentPanel {
             BeanModelDataBase.screenTable.insert(screenBeanModel);
          }
       }
-      BeanModelDataBase.screenTable.addInsertListener(Constants.SCREEN_TABLE_OID, new ChangeListener(){
+      BeanModelDataBase.screenTable.addInsertListener(Constants.SCREEN_TABLE_OID, new ChangeListener() {
          public void modelChanged(ChangeEvent event) {
-            if(event.getType() == BeanModelTable.ADD){
+            if (event.getType() == BeanModelTable.ADD) {
                BeanModel beanModel = (BeanModel) event.getItem();
-               if(beanModel.getBean() instanceof Screen){
-                  ScreenTabItem screenTabItem = new ScreenTabItem((Screen)beanModel.getBean());
+               if (beanModel.getBean() instanceof Screen) {
+                  ScreenTabItem screenTabItem = new ScreenTabItem((Screen) beanModel.getBean());
                   screenTab.add(screenTabItem);
                }
             }
          }
-         
+
       });
    }
    

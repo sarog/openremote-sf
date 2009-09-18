@@ -95,8 +95,8 @@ public class ResourceServiceImpl implements ResourceService {
    private DeviceMacroService deviceMacroService;
 
 
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.service.ResourceService#downloadZipResource(long, java.lang.String, java.util.List)
+   /**
+    * {@inheritDoc}
     */
    public String downloadZipResource(long maxId, String sessionId, List<Activity> activities) {
       String controllerXmlContent = getControllerXmlContent(maxId, activities);
@@ -223,8 +223,8 @@ public class ResourceServiceImpl implements ResourceService {
       return lircUrl;
    }
    
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.service.ResourceService#getMultipartFileFromRequest(javax.servlet.http.HttpServletRequest, java.lang.String)
+   /**
+    * {@inheritDoc}
     */
    @SuppressWarnings("unchecked")
    public MultipartFile getMultipartFileFromRequest(HttpServletRequest request, String fileFieldName) {
@@ -255,10 +255,8 @@ public class ResourceServiceImpl implements ResourceService {
       return multipartFile;
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.openremote.modeler.service.ResourceService#getIrbFileFromZip(java.io.InputStream, java.lang.String)
+   /**
+    * {@inheritDoc}
     */
    public String getDotImportFileForRender(String sessionId, InputStream inputStream) {
       File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
@@ -340,11 +338,8 @@ public class ResourceServiceImpl implements ResourceService {
       return true;
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.openremote.modeler.service.ResourceService#uploadImage(java.io.InputStream, java.lang.String,
-    * java.lang.String)
+   /**
+    * {@inheritDoc}
     */
    public File uploadImage(InputStream inputStream, String fileName, String sessionId) {
       File file = new File(PathConfig.getInstance(configuration).userFolder(sessionId) + File.separator + fileName);
@@ -391,8 +386,10 @@ public class ResourceServiceImpl implements ResourceService {
       ProtocolEventContainer protocolEventContainer = new ProtocolEventContainer();
       StringBuffer controllerXml = new StringBuffer();
       controllerXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-      controllerXml
-            .append("<openremote xmlns=\"http://www.openremote.org\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openremote.org http://www.openremote.org/schemas/controller.xsd\">\n");
+      controllerXml.append("<openremote xmlns=\"http://www.openremote.org\" " 
+            + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " 
+            + "xsi:schemaLocation=\"http://www.openremote.org " 
+            + "http://www.openremote.org/schemas/controller.xsd\">\n");
       controllerXml.append(getButtonsXmlContent(activityList, protocolEventContainer));
       controllerXml.append(protocolEventContainer.generateUIButtonEventsXml());
       controllerXml.append("</openremote>");
@@ -492,11 +489,7 @@ public class ResourceServiceImpl implements ResourceService {
       return buttonXml.toString();
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.openremote.modeler.service.ResourceService#getPanelXmlContent()
-    */
+
    /**
     * Gets the panel xml content.
     * 
@@ -507,8 +500,10 @@ public class ResourceServiceImpl implements ResourceService {
    private String getPanelXmlContent(List<Activity> activityList) {
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-      xmlContent
-            .append("<openremote xmlns=\"http://www.openremote.org\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openremote.org http://www.openremote.org/schemas/iphone.xsd\">\n");
+      xmlContent.append("<openremote xmlns=\"http://www.openremote.org\" " 
+            + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " 
+            + "xsi:schemaLocation=\"http://www.openremote.org " 
+            + "http://www.openremote.org/schemas/controller.xsd\">\n");
       for (Activity activity : activityList) {
          xmlContent.append("  <activity id=\"" + activity.getOid() + "\" name=\"" + activity.getName() + "\">\n");
          for (Screen screen : activity.getScreens()) {
@@ -638,8 +633,8 @@ public class ResourceServiceImpl implements ResourceService {
       this.deviceMacroService = deviceMacroService;
    }
 
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.service.ResourceService#getRelativeResourcePath(java.lang.String, java.lang.String)
+   /**
+    * {@inheritDoc}
     */
    public String getRelativeResourcePath(String sessionId, String fileName) {
       return PathConfig.getInstance(configuration).getRelativeResourcePath(fileName, sessionId);

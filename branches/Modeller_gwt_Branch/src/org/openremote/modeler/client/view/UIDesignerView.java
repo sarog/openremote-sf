@@ -58,7 +58,7 @@ public class UIDesignerView extends TabItem implements View {
    private ApplicationView applicationView;
    
    /** The auto_save_interval millisecond. */
-   private static int AUTO_SAVE_INTERVAL_MS = 30000;
+   private static final int AUTO_SAVE_INTERVAL_MS = 30000;
    
    /**
     * Instantiates a new uI designer view.

@@ -28,7 +28,6 @@ import java.io.StringReader;
 import java.util.List;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.jdom.Document;
@@ -42,7 +41,7 @@ import org.openremote.modeler.exception.XmlParserException;
 import org.xml.sax.InputSource;
 
 /**
- * The Class IphoneXmlParser.
+ * The iphone.xml parser .
  * 
  * @author Tomsky, Handy
  */
@@ -50,6 +49,15 @@ public class IphoneXmlParser {
    
    /** The Constant LOGGER. */
    private static final Logger LOGGER = Logger.getLogger(IphoneXmlParser.class);
+   
+   /** The Constant SCHEMA_LANGUAGE. */
+   public static final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+   
+   /** The Constant XML_SCHEMA. */
+   public static final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+   
+   /** The Constant SCHEMA_SOURCE. */
+   public static final String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
    
    /**
     * Instantiates a new iphone xml parser.
@@ -70,11 +78,9 @@ public class IphoneXmlParser {
    public static String parserXML(File xsdfile, String xmlString, File folder) {
       SAXBuilder sb = new SAXBuilder(true);
       sb.setValidation(true);
-      final String schema_language = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
-      final String xml_schema = "http://www.w3.org/2001/XMLSchema";
-      final String schema_source = "http://java.sun.com/xml/jaxp/properties/schemaSource";
-      sb.setProperty(schema_language, xml_schema);
-      sb.setProperty(schema_source, xsdfile);
+
+      sb.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
+      sb.setProperty(SCHEMA_SOURCE, xsdfile);
       String iphoneXml = "";
       try {         
           Document doc = sb.build(new InputSource(new StringReader(xmlString)));
@@ -111,10 +117,9 @@ public class IphoneXmlParser {
     * @param srcUrl the src url
     * @param destFile the dest file
     * 
-    * @throws HttpException the http exception
     * @throws IOException Signals that an I/O exception has occurred.
     */
-   private static void downloadFile(String srcUrl, File destFile) throws HttpException, IOException {
+   private static void downloadFile(String srcUrl, File destFile) throws IOException {
       HttpClient client = new HttpClient();
       GetMethod get = new GetMethod(srcUrl);
       client.executeMethod(get);
@@ -137,11 +142,9 @@ public class IphoneXmlParser {
       sb.setValidation(true);
       
       File xsdfile = new File(xsdPath);
-      final String schema_language = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
-      final String xml_schema = "http://www.w3.org/2001/XMLSchema";
-      final String schema_source = "http://java.sun.com/xml/jaxp/properties/schemaSource";
-      sb.setProperty(schema_language, xml_schema);
-      sb.setProperty(schema_source, xsdfile);
+
+      sb.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
+      sb.setProperty(SCHEMA_SOURCE, xsdfile);
       try {
          sb.build(new InputSource(new StringReader(xmlString)));
       } catch (JDOMException e) {

@@ -44,8 +44,10 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    /** The Constant ACTIVIY_JSON_SESSION_ATTR_KEY. */
    private static final String UI_DESIGNER_LAYOUT_JSON_KEY = "activityJSON";
    
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.client.rpc.UtilsRPCService#export(java.lang.String, java.lang.String, java.lang.String)
+
+  
+   /**
+    * {@inheritDoc}
     */
    public String exportFiles(long maxId, List<Activity> activities) {  
       return resourceService.downloadZipResource(maxId, this.getThreadLocalRequest().getSession().getId(), activities);
@@ -87,23 +89,23 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       this.configuration = configuration;
    }
 
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.client.rpc.UtilsRPCService#beehiveRestIconUrl()
+   /**
+    * {@inheritDoc}
     */
    public String beehiveRestIconUrl() {
       return configuration.getBeehiveRestIconUrl();
    }
 
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.client.rpc.UtilsRPCService#loadJsonStringFromSession()
+   /**
+    * {@inheritDoc}
     */
    public String loadJsonStringFromSession() {
       Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_JSON_KEY);
       return (obj == null) ? "" : obj.toString();
    }
 
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.client.rpc.UtilsRPCService#autoSaveActivityJSON(java.util.List)
+   /**
+    * {@inheritDoc}
     */
    public AutoSaveResponse autoSaveUiDesignerLayoutJSON(List<Activity> activities) {
       String jsonString = resourceService.getActivitiesJson(activities);

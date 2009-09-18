@@ -40,12 +40,16 @@ public class SeleniumTestNGBase {
    /** The Constant DEBUG_ID_PREFIX, GWT will add this prefix before real debug id. */
    protected static final String DEBUG_ID_PREFIX = "gwt-debug-";
    
+   
+   /** The Constant port. */
+   private static final int PORT = 4444;
+   
    /**
     * Sets the up.
     */
    @BeforeClass(alwaysRun = true)
    public void setUp() {
-      selenium = new DefaultSelenium("localhost", 4444, Browser.FIREFOX, "http://localhost:8080/");
+      selenium = new DefaultSelenium("localhost", PORT, Browser.FIREFOX, "http://localhost:8080/");
       selenium.start();
       selenium.setTimeout("10000");
 //      selenium.setSpeed("1000");
@@ -90,6 +94,7 @@ public class SeleniumTestNGBase {
        try {
            Thread.sleep(millisecs);
        } catch (InterruptedException e) {
+          e.printStackTrace();
        }
    }
    
