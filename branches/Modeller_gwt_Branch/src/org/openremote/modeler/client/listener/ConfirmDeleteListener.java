@@ -28,7 +28,9 @@ import com.extjs.gxt.ui.client.widget.MessageBox;
 
 /**
  * This listener asks for a confirmation before something is deleted.
- * <code>onDeleted</code> method should be implemented.
+ * <code>onDelete</code> method should be implemented.
+ * 
+ * @param <E> any ComponentEvent
  * 
  * @see DeleteSelectionEvent
  * 

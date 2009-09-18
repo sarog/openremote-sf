@@ -39,6 +39,7 @@ public class WizardWindow extends CommonWindow {
    /** The session. */
    protected Map<String, Object> session = new HashMap<String, Object>();
 
+   /** The form series. */
    protected CommonForm[] forms;
 
    /** The current step. */

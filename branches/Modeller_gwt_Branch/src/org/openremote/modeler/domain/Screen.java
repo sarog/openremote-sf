@@ -158,7 +158,10 @@ public class Screen extends BusinessEntity {
       this.activity = activity;
    }
    
-   /* (non-Javadoc)
+   
+   
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()
     */
    @Transient

@@ -25,11 +25,16 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 /**
  * Inherited from {@link AsyncCallback}. For global error handle.
  * 
+ * @param <T> 
+ * 
  * @author allen.wei
  */
 public abstract class AsyncSuccessCallback<T> implements AsyncCallback<T> {
 
    /**
+    * On failure.
+    * 
+    * @param caught the caught
     * 
     * @see com.google.gwt.user.client.rpc.AsyncCallback#onFailure(java.lang.Throwable)
     */
@@ -37,7 +42,14 @@ public abstract class AsyncSuccessCallback<T> implements AsyncCallback<T> {
       MessageBox.alert("ERROR", caught.getLocalizedMessage(), null);
    }
 
-   /* (non-Javadoc)
+
+   
+   
+   /**
+    * onSuccess.
+    * 
+    * @param result the result
+    * 
     * @see com.google.gwt.user.client.rpc.AsyncCallback#onSuccess(java.lang.Object)
     */
    public abstract void onSuccess(T result);
