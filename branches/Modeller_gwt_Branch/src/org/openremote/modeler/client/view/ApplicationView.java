@@ -108,7 +108,7 @@ public class ApplicationView implements View {
                createSouth();
                show();
             } else {
-               MessageBox.info("Info", "you haven't login", null);
+               Window.open("login.jsp", "_self", null);
             }
          }
          
