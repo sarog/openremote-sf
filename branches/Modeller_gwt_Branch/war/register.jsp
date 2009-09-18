@@ -5,6 +5,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta content="openremote, knx, iphone, insteon, x10, infrared, crestron, zigbee, opensource, gpl, iknx, lirc, beehive, modeler, uicomposer" name="KEYWORDS"/>
+<link href="http://community.openremote.org/download/attachments/295282/OpenRemote+Logo+16x16.png" rel="shortcut icon"/>
+<link href="http://community.openremote.org/download/attachments/295282/OpenRemote+Logo+16x16.png" type="image/png" rel="icon"/>
 <title>Login - Modeler</title>
 <style type="text/css">
     body{
