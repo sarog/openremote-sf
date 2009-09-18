@@ -92,7 +92,9 @@ public class Activity extends BusinessEntity {
       screens.remove(screen);
    }
    
-   /* (non-Javadoc)
+   
+   /**
+    * {@inheritDoc}
     * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()
     */
    @Transient

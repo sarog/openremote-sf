@@ -37,6 +37,8 @@ import com.google.gwt.json.client.JSONValue;
  * This class is used for fix gxt read xml bug (auto convert number to double) and limitation (json root not support
  * nested structure).
  * 
+ * @param <D> any JsonLoadResultReader
+ * 
  * @author allen.wei
  */
 public class NestedJsonLoadResultReader<D> extends JsonLoadResultReader<D> {

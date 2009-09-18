@@ -104,9 +104,7 @@ public class DeviceCommandRef extends DeviceMacroItem {
    @Override
    @Transient
    public String getDisplayName() {
-      DeviceCommand dc = getDeviceCommand();
       this.deviceName = (this.deviceName == null || "".equals(this.deviceName)) ? getDeviceCommand().getDevice().getName() : this.deviceName;
       return getDeviceCommand().getName() + " (" + this.deviceName + ")";
-//      return getDeviceCommand().getName() + " (" + getDeviceCommand().getDevice().getName() + ")";
    }
 }

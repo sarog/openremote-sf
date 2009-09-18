@@ -17,6 +17,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
 package org.openremote.modeler.action;
 
 
@@ -52,12 +53,12 @@ public class AccountController extends MultiActionController {
       String username = request.getParameter("username");
       String password = request.getParameter("password");
       String password2 = request.getParameter("r_password");
-      registerMav.addObject("username",username);
-      registerMav.addObject("password",password);
-      registerMav.addObject("r_password",password2);
+      registerMav.addObject("username", username);
+      registerMav.addObject("password", password);
+      registerMav.addObject("r_password", password2);
       String roleStr = "";
       String[] roles = request.getParameterValues("role");
-      if(roles != null) {
+      if (roles != null) {
          for (String role : roles) {
             roleStr += role;
          }
@@ -84,11 +85,11 @@ public class AccountController extends MultiActionController {
       }
       boolean success = userService.createAccount(username, password, roleStr);
       if (success) {
-         loginMav.addObject("success",success);
-         loginMav.addObject("username",username);
+         loginMav.addObject("success", success);
+         loginMav.addObject("username", username);
          return loginMav;
-      }else{
-         registerMav.addObject("success",success);
+      } else {
+         registerMav.addObject("success", success);
          return registerMav;
       }
    }
