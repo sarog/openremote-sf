@@ -32,6 +32,10 @@ import javax.persistence.Transient;
 @SuppressWarnings("serial")
 public class Activity extends BusinessEntity {
    
+   
+   /** The default name index. */
+   private static int defaultNameIndex = 1;
+   
    /** The name of the activity. It is the  display name on the device */
    private String name;
    
@@ -100,5 +104,16 @@ public class Activity extends BusinessEntity {
    @Transient
    public String getDisplayName() {
       return name;
+   }
+   
+
+   /**
+    * Gets the new default name when you want a new name. such as activity1.
+    * 
+    * @return the new default name
+    */
+   @Transient
+   public static String getNewDefaultName() {
+      return "actitivy" + defaultNameIndex++;
    }
 }
