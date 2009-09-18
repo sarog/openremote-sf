@@ -95,7 +95,7 @@ public class ActivityWindow extends FormWindow {
       activityNameField.ensureDebugId(DebugId.ACTIVITY_NAME_FIELD);
       activityNameField.setFieldLabel("Name");
       activityNameField.setAllowBlank(false);
-      activityNameField.setValue("activity1");
+      activityNameField.setValue(Activity.getNewDefaultName());
       if (activityModel != null) {
          Activity activity = activityModel.getBean();
          activityNameField.setValue(activity.getName());

@@ -56,6 +56,12 @@ public class ScreenWindow extends FormWindow {
    
    /** The screen model. */
    private Screen screen = null;
+   
+   /** The Constant DEFAULT_ROW_COUNT. */
+   private static final int DEFAULT_ROW_COUNT = 6;
+   
+   /** The Constant DEFAULT_COLUMN_COUNT. */
+   private static final int DEFAULT_COLUMN_COUNT = 4;
 
    /**
     * Instantiates a new screen window.
@@ -105,21 +111,21 @@ public class ScreenWindow extends FormWindow {
       screenNameField.ensureDebugId(DebugId.SCREEN_NAME_FIELD);
       screenNameField.setFieldLabel("Name");
       screenNameField.setAllowBlank(false);
-      screenNameField.setValue("screen1");
+      screenNameField.setValue(Screen.getNewDefaultName());
       
       TextField<Integer> screenRowCountField = new TextField<Integer>();
       screenRowCountField.setName(SCREEN_ROW_COUNT);
       screenRowCountField.ensureDebugId(DebugId.SCREEN_ROW_COUNT_FIELD);
       screenRowCountField.setFieldLabel("Row Count");
       screenRowCountField.setAllowBlank(false);
-      screenRowCountField.setValue(6);
+      screenRowCountField.setValue(DEFAULT_ROW_COUNT);
       
       TextField<Integer> screenColumnCountField = new TextField<Integer>();
       screenColumnCountField.setName(SCREEN_COLUMN_COUNT);
       screenColumnCountField.ensureDebugId(DebugId.SCREEN_COLUMN_COUNT_FIELD);
       screenColumnCountField.setFieldLabel("Col Count");
       screenColumnCountField.setAllowBlank(false);
-      screenColumnCountField.setValue(4);
+      screenColumnCountField.setValue(DEFAULT_COLUMN_COUNT);
       
       if (screen != null) {
          screenNameField.setValue(screen.getName());

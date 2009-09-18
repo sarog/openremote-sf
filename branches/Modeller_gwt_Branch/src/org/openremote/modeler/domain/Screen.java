@@ -31,6 +31,9 @@ import flexjson.JSON;
  */
 @SuppressWarnings("serial")
 public class Screen extends BusinessEntity {
+   
+   /** The default name index. */
+   private static int defaultNameIndex = 1;
 
    /** The name. */
    private String name;
@@ -167,5 +170,15 @@ public class Screen extends BusinessEntity {
    @Transient
    public String getDisplayName() {
       return name;
+   }
+   
+   /**
+    * Gets the new default name when you want a new name. such as screen1.
+    * 
+    * @return the new default name
+    */
+   @Transient
+   public static String getNewDefaultName() {
+      return "screen" + defaultNameIndex++;
    }
 }
