@@ -78,6 +78,9 @@ public class ApplicationView implements View {
    /** The activity panel. */
    private ActivityPanel activityPanel;
    
+   /** The ui designer view. */
+   private UIDesignerView uiDesignerView;
+   
    /** The screen tab. */
    private ScreenTab screenTab;
    
@@ -182,7 +185,7 @@ public class ApplicationView implements View {
       saveMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          @Override
          public void componentSelected(MenuEvent ce) {
-            activityPanel.autoSaveUiDesignerLayoutJSON();
+            uiDesignerView.autoSaveUiDesignerLayoutJSON();
          }
       });
       return saveMenuItem;
@@ -313,6 +316,7 @@ public class ApplicationView implements View {
          uiDesignerItem.initialize();
          modelerTabPanel.add(uiDesignerItem);
          modelerTabPanel.setSelection(uiDesignerItem); // Temp to show uiDesigner. It will remove after development.
+         this.uiDesignerView = uiDesignerItem;
          this.screenTab = uiDesignerItem.getScreenTab();
       }
       modelerTabPanel.setAutoSelect(true);
