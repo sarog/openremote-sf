@@ -19,18 +19,31 @@
 */
 package org.openremote.modeler.client.view;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.openremote.modeler.client.model.AutoSaveResponse;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.proxy.UtilsProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.TouchPanels;
 import org.openremote.modeler.client.widget.uidesigner.ActivityPanel;
 import org.openremote.modeler.client.widget.uidesigner.DevicesAndMacrosPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
+import org.openremote.modeler.domain.Activity;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
+import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Timer;
 
 
 /**
@@ -43,6 +56,60 @@ public class UIDesignerView extends TabItem implements View {
    
    /** The application view. */
    private ApplicationView applicationView;
+   
+   /** The auto_save_interval millisecond. */
+   private static int AUTO_SAVE_INTERVAL_MS = 30000;
+   
+   /**
+    * Instantiates a new uI designer view.
+    */
+   public UIDesignerView() {
+      super();
+      createAutoSaveTimer();
+   }
+   
+   /**
+    * Creates the timer.
+    */
+   private void createAutoSaveTimer() {
+      Timer timer = new Timer() {
+         @Override
+         public void run() {
+            autoSaveUiDesignerLayoutJSON();
+         }
+        };
+        timer.scheduleRepeating(AUTO_SAVE_INTERVAL_MS);
+   }
+   
+   /**
+    * Auto save ui designer layout json.
+    */
+   public void autoSaveUiDesignerLayoutJSON() {
+      UtilsProxy.autoSaveUiDesignerLayoutJSON(getAllActivities(), new AsyncSuccessCallback<AutoSaveResponse>() {
+         @Override
+         public void onSuccess(AutoSaveResponse result) {
+            if (result != null && result.isSavedSuccess()) {
+               Info.display("Info", "UI designer layout saved at " + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
+            } else {
+               Info.display("Info", "UI designer layout save failed.");
+            }
+         }
+      });
+   }
+   
+   /**
+    * Gets the all activities.
+    * 
+    * @return the all activities
+    */
+   protected List<Activity> getAllActivities() {
+      List<Activity> activityList = new ArrayList<Activity>();
+      for (BeanModel activityBeanModel : BeanModelDataBase.activityTable.loadAll()) {
+         activityList.add((Activity) activityBeanModel.getBean());
+      }
+      return activityList;
+   }
+
 
    /**
     * Initialize.

@@ -100,18 +100,6 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    public String loadJsonStringFromSession() {
       Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_JSON_KEY);
       return (obj == null) ? "" : obj.toString();
-      /*
-      StringBuffer sb = new StringBuffer();
-      try {
-         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("D:/.import")));
-         String temp = null;
-         while ((temp = br.readLine()) != null) {
-            sb.append(temp);
-         }
-      } catch (Exception e) {
-         e.printStackTrace();
-      }
-      return sb.toString();*/
    }
 
    /* (non-Javadoc)
