@@ -50,6 +50,11 @@ public class Constants {
    
    /** The Constant SCHEMA_SOURCE. */
    public final static String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
-
+   
+   /** The Constant TRUE. */
+   public final static String TRUE = "TRUE";
+   
+   /** The Constant OK. */
+   public final static String OK = "OK";
 
 }

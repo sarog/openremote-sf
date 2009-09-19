@@ -50,34 +50,40 @@ public class FileServiceImpl implements FileService {
    /**
     * {@inheritDoc}
     */
-   public void unzip(InputStream inputStream, String targetDir) {
-      ZipUtil.unzip(inputStream, targetDir);
+   public boolean unzip(InputStream inputStream, String targetDir) {
+      return ZipUtil.unzip(inputStream, targetDir);
    }
 
    /**
     * {@inheritDoc}
     */
-   public void uploadConfigZip(InputStream inputStream) {
+   public boolean uploadConfigZip(InputStream inputStream) {
       String resourcePath = configuration.getResourcePath();
       try {
          FileUtils.forceDeleteOnExit(new File(resourcePath));
       } catch (IOException e1) {
          logger.error("Can't delete" + resourcePath, e1);
       }
-      unzip(inputStream, resourcePath);
+      if (!unzip(inputStream, resourcePath)){
+         return false; 
+      }
       File lircdConfFile = new File(resourcePath + Constants.LIRCD_CONF);
       File lircdconfDir = new File(configuration.getLircdconfPath().replaceAll(Constants.LIRCD_CONF, ""));
       try {
          if(lircdconfDir.exists() && lircdConfFile.exists()){
             //this needs root user to put lircd.conf into /etc.
             //because it's readonly, or it won't be modified.
-            if ("true".equalsIgnoreCase(configuration.getCopyLircdconf())) {
+            if (Constants.TRUE.equalsIgnoreCase(configuration.getCopyLircdconf())) {
                FileUtils.copyFileToDirectory(lircdConfFile, lircdconfDir);
             }
          }
+         logger.info("copy lircd.conf to" + configuration.getLircdconfPath());
       } catch (IOException e) {
          logger.error("Can't copy lircd.conf to " + configuration.getLircdconfPath(), e);
+         return false;
       }
+      logger.info("uploaded config zip to " + resourcePath);
+      return true;
    }
 
 
