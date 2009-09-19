@@ -53,23 +53,23 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
 	<!-- paths used for compilation and run  -->
 	<path id="compile.path.id">
-		<fileset dir="${lib.dir}/compile"/>
-		<fileset dir="${lib.dir}/core"/>
+		<fileset dir="${lib.dir}/compile" />
+		<fileset dir="${lib.dir}/core" includes="**/*.jar"/>
         <fileset dir="${lib.dir}/calimero"/>
         <fileset dir="${lib.dir}/apache/commons-net"/>
         <path location="${classes.dir}"/>
 	</path>
 	<path id="test.path.id">
-		<fileset dir="${lib.dir}/compile"/>
-		<fileset dir="${lib.dir}/core"/>
-		<fileset dir="${lib.dir}/cobertura"/>
+		<fileset dir="${lib.dir}/compile" />
+		<fileset dir="${lib.dir}/core" includes="**/*.jar"/>
+		<fileset dir="${lib.dir}/cobertura" includes="*.jar"/>
 		<path location="${classes.dir}"/>
-		<fileset dir="${lib.dir}/test"/>
+		<fileset dir="${lib.dir}/test" includes="**/*.jar"/>
 		<path location="${config.dir}"/>
 	</path>
 
 	<path id="cobertura.path.id">
-		<fileset dir="${lib.dir}/cobertura"/>
+		<fileset dir="${lib.dir}/cobertura" includes="*.jar"/>
 		<path location="${classes.dir}"/>
 	</path>
 
@@ -98,6 +98,17 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<target name="init" depends="clean" description="create folder">
 		<mkdir dir="${build.dir}" />
 		<mkdir dir="${output.dir}" />
+		<copy todir="${build.dir}/lib" flatten="true">
+            <fileset dir="${lib.dir}/core">
+                <include name="**/*.jar" />
+            </fileset>
+			<fileset dir="${lib.dir}/calimero">
+                <include name="**/*.jar" />
+            </fileset>
+			<fileset dir="${lib.dir}/apache">
+                <include name="**/*.jar" />
+            </fileset>
+        </copy>
 	</target>
 
 	<!--
@@ -129,7 +140,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	 |
 	 | Initialize the database schema only for test.
 	 +-->
-	<target name="schema">
+	<target name="schema" description="test fixture">
 		<sql driver="com.mysql.jdbc.Driver" url="${jdbc.url.test}" userid="${jdbc.username.test}" password="${jdbc.password.test}" delimiter=";" onerror="continue">
 			<classpath>
 				<path refid="compile.path.id" />
@@ -175,10 +186,8 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 			<fileset dir=".">
 				<include name="readme.txt"/>
 			</fileset>
-			<lib dir="${lib.dir}/core" />
-      <lib dir="${lib.dir}/calimero"/>
-      <lib dir="${lib.dir}/apache/commons-net"/>
-      <classes dir="${classes.dir}" />
+			<lib dir="${build.dir}/lib" includes="*.jar"/>
+			<classes dir="${classes.dir}" />
 		</war>
 	</target>
 
@@ -227,7 +236,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	 |
 	 | JUnit test.
 	 +-->
-	<target name="test">
+	<target name="test" description="junit test">
 		<delete includeemptydirs="true" dir="${junit.reports.dir}"/>
 		<mkdir dir="${junit.reports.dir}"/>
 		<junit dir="${basedir}" fork="true" showoutput="true" failureproperty="tests.failed">
@@ -272,7 +281,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	 |
 	 | Make instrument for cobertura.
 	 +-->	
-	<target name="cobertura_instrument" depends="compile-test">
+	<target name="cobertura_instrument" depends="compile-test" description="add log info in class files">
 		<delete file="${cobertura.datafile}"/>
 		<cobertura-instrument todir="${instrumented.dir}" datafile="${cobertura.datafile}">
 			<ignore regex="org.apache.log4j.*"/>
