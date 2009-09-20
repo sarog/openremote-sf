@@ -15,24 +15,33 @@
  */
 
 $(document).ready(function() {
-    $('#uploadForm').ajaxForm(function() {
-    	$('#msg').text("upload successful");
+    $('#uploadForm').ajaxForm(function(result) {
+    	if(result == 'OK'){
+    		message("upload successful");
+    	}else{
+    		error("upload failed");
+    	}
     }); 
 	$('#uploadSubmit').click(function(){
-		$('#errMsg').text("");
-		$('#msg').text("");
 		var zipPath = $('#zip').val();
 		if(zipPath == ''){
-			$('#errMsg').text("Please select a zip first");
+			error("Please select a zip first");
 			return false;
 		}else if(!/.+?\.zip/.test(zipPath)){
-			$('#errMsg').text("Only zip is allowed");
+			error("Only zip is allowed");
 			return false;
 		}
 	});
 	$("#version").append(getVersionLabel());
 });
-
+function message(msg){
+	$('#errMsg').text("");
+	$('#msg').text(msg);
+}
+function error(msg){
+	$('#errMsg').text(msg);
+	$('#msg').text("");
+}
 function getVersionLabel(){
 	var headUrl = "$HeadURL$";
 	var revision = "$Revision$";
