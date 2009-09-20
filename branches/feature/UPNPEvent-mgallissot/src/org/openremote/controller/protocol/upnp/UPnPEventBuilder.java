@@ -9,12 +9,13 @@ import org.cybergarage.upnp.ControlPoint;
 import org.cybergarage.upnp.UPnP;
 import org.openremote.controller.event.Event;
 import org.openremote.controller.event.EventBuilder;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.jdom.Element;
 
 /**
  * UPnPEventBuilder class
+ *
  * @author Mathieu Gallissot
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class UPnPEventBuilder implements EventBuilder {
 
@@ -44,15 +45,13 @@ public class UPnPEventBuilder implements EventBuilder {
 	 */
 	@Override
 	public Event build(Element element) {
-		String device = element.getAttribute("device");
-		String action = element.getAttribute("action");
+		String device = element.getAttributeValue("device");
+		String action = element.getAttributeValue("action");
 		HashMap<String, String> args = new HashMap<String, String>();
-		for (int i = 0; i < element.getChildNodes().getLength(); i++) {
-			Node child = element.getChildNodes().item(i);
-			if (child.getNodeName().equals("argument")) {
-				args.put(child.getAttributes().getNamedItem("name")
-						.getNodeValue(), child.getAttributes().getNamedItem(
-						"value").getNodeValue());
+		for (int i = 0; i < element.getChildren().size(); i++) {
+			Element child = (Element)element.getChildren().get(i);
+			if (child.getName().equals("argument")) {
+				args.put(child.getAttributeValue("name"), child.getAttributeValue("value"));
 			}
 		}
 
