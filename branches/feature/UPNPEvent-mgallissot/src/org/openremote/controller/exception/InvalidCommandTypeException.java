@@ -26,13 +26,14 @@ package org.openremote.controller.exception;
  * @author Dan 2009-5-22
  */
 @SuppressWarnings("serial")
-public class InvalidCommandTypeException extends RuntimeException {
+public class InvalidCommandTypeException extends ButtonCommandException {
 
    /**
     * Instantiates a new invalid command type exception.
     */
    public InvalidCommandTypeException() {
       super("Invalid button command type (should be one of click, press and release)");
+      setErrorCode(ButtonCommandException.INVALID_COMMAND_TYPE);
    }
 
    /**
@@ -43,6 +44,7 @@ public class InvalidCommandTypeException extends RuntimeException {
     */
    public InvalidCommandTypeException(String message, Throwable cause) {
       super("Invalid button command type : " + message+" (should be one of click, press and release)" , cause);
+      setErrorCode(ButtonCommandException.INVALID_COMMAND_TYPE);
    }
 
    /**
@@ -52,6 +54,7 @@ public class InvalidCommandTypeException extends RuntimeException {
     */
    public InvalidCommandTypeException(String message) {
       super("Invalid button command type : " + message+" (should be one of click, press and release)");
+      setErrorCode(ButtonCommandException.INVALID_COMMAND_TYPE);
    }
    
    

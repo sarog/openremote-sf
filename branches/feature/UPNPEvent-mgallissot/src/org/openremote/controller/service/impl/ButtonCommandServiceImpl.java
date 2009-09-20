@@ -25,8 +25,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.openremote.controller.event.CommandType;
 import org.openremote.controller.event.Event;
+import org.openremote.controller.event.RemoteActionXMLParser;
 import org.openremote.controller.service.ButtonCommandService;
-import org.openremote.controller.utils.RemoteActionXMLParser;
 
 
 /**

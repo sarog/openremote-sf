@@ -21,40 +21,41 @@
 package org.openremote.controller.exception;
 
 /**
- * The exception class when NoSuchEvent.
+ * The exception class when InvalidControllerXML.
  * 
  * @author Dan 2009-5-23
  */
 @SuppressWarnings("serial")
-public class NoSuchEventException extends ButtonCommandException {
+public class InvalidControllerXMLException extends ButtonCommandException {
 
    /**
-    * Instantiates a new no such event exception.
+    * Instantiates a new invalid controller xml exception.
     */
-   public NoSuchEventException() {
+   public InvalidControllerXMLException() {
       super();
-      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
+      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
    }
 
    /**
-    * Instantiates a new no such event exception.
+    * Instantiates a new invalid controller xml exception.
     * 
     * @param message the message
     * @param cause the cause
     */
-   public NoSuchEventException(String message, Throwable cause) {
+   public InvalidControllerXMLException(String message, Throwable cause) {
       super(message, cause);
-      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
+      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
    }
 
    /**
-    * Instantiates a new no such event exception.
+    * Instantiates a new invalid controller xml exception.
     * 
     * @param message the message
     */
-   public NoSuchEventException(String message) {
+   public InvalidControllerXMLException(String message) {
       super(message);
-      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
+      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
    }
+   
 
 }
