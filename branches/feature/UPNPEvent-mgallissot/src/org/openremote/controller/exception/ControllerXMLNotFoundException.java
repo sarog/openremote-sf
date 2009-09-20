@@ -18,25 +18,41 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.protocol.x10;
-
-import org.jdom.Element;
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
+package org.openremote.controller.exception;
 
 /**
- * The Class X10EventBuilder.
+ * The exception class when controller.xml Not Found.
  * 
- * @author Dan 2009-4-30
+ * @author Dan 2009-5-22
  */
-public class X10EventBuilder implements EventBuilder {
-	
+@SuppressWarnings("serial")
+public class ControllerXMLNotFoundException extends RuntimeException {
+
    /**
-    * {@inheritDoc}
+    * Instantiates a new controller xml not found exception.
     */
-   public Event build(Element element) {
-      // TODO Auto-generated method stub
-      return new X10Event();
+   public ControllerXMLNotFoundException() {
+      super("*controller.xml* not found.");
    }
+
+   /**
+    * Instantiates a new controller xml not found exception.
+    * 
+    * @param message the message
+    * @param cause the cause
+    */
+   public ControllerXMLNotFoundException(String message, Throwable cause) {
+      super("*controller.xml* not found." + message, cause);
+   }
+
+   /**
+    * Instantiates a new controller xml not found exception.
+    * 
+    * @param message the message
+    */
+   public ControllerXMLNotFoundException(String message) {
+      super("*controller.xml* not found." + message);
+   }
+   
 
 }

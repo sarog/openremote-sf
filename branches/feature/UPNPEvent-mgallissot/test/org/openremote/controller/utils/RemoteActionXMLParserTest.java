@@ -20,8 +20,12 @@
  */
 package org.openremote.controller.utils;
 
+import java.util.List;
+
 import junit.framework.TestCase;
 
+import org.openremote.controller.event.Event;
+import org.openremote.controller.protocol.infrared.IREvent;
 import org.openremote.controller.spring.SpringContext;
 
 
@@ -40,8 +44,9 @@ public class RemoteActionXMLParserTest extends TestCase {
     * Test find ir event by button id.
     */
    public void testFindIREventByButtonID(){
-      //List<Event> list= remoteActionXMLParser.findEventsByButtonID("4");
-      //assertEquals(1, list.size());
+//      List<Event> list= remoteActionXMLParser.findEventsByButtonID("13");
+//      System.out.println(((IREvent)list.get(0)).getName());
+//      assertEquals(1, list.size());
    }
    
 }

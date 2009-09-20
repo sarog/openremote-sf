@@ -23,13 +23,14 @@ package org.openremote.controller.service.impl;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.event.CommandType;
 import org.openremote.controller.event.Event;
 import org.openremote.controller.service.ButtonCommandService;
 import org.openremote.controller.utils.RemoteActionXMLParser;
 
 
 /**
- * A implementation for ButtonCommandService class.
+ * The implementation for ButtonCommandService class.
  * 
  * @author Dan 2009-4-3
  */
@@ -51,14 +52,36 @@ public class ButtonCommandServiceImpl implements ButtonCommandService {
    /**
     * {@inheritDoc}
     */
-   public void trigger(String buttonID) {
+   public void trigger(String buttonID){
+      trigger(buttonID, CommandType.SEND_ONCE);
+   }
+   
+   /**
+    * {@inheritDoc}
+    */
+   public void trigger(String buttonID, CommandType commandType) {
       List<Event> events = remoteActionXMLParser.findEventsByButtonID(buttonID);
       for (Event event : events) {
-         event.exec();
+           
+         switch (commandType) {
+         case SEND_ONCE:
+            event.exec();
+            break;
+         case SEND_START:
+            event.start();
+            break;
+         case SEND_STOP:
+            event.stop();
+            break;
+         default:
+            event.exec();
+            break;
+         }
+         
          try {
             //if this is a macro, then there should be the delay
             if (events.size() > 1) {
-               Thread.sleep(macroCmdExecutionDelay);
+               Thread.sleep(macroCmdExecutionDelay + event.getDelay() * 1000 );
             }
          } catch (InterruptedException e) {
             logger.error("ButtonCommandService was interrupted.", e);
