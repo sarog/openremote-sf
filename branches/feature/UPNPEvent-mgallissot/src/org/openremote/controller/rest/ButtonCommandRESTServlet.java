@@ -29,6 +29,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+import org.openremote.controller.event.CommandType;
+import org.openremote.controller.exception.ButtonCommandException;
+import org.openremote.controller.exception.InvalidCommandTypeException;
+import org.openremote.controller.service.ButtonCommandService;
+import org.openremote.controller.spring.SpringContext;
+
 /**
  * The Class Button Command REST Servlet.
  * 
@@ -36,6 +43,11 @@ import javax.servlet.http.HttpServletResponse;
  */
 @SuppressWarnings("serial")
 public class ButtonCommandRESTServlet extends HttpServlet {
+   
+   private Logger logger = Logger.getLogger(ButtonCommandRESTServlet.class.getName());
+   
+   private static ButtonCommandService buttonCommandService = 
+      (ButtonCommandService) SpringContext.getInstance().getBean("buttonCommandService");
    
    /* (non-Javadoc)
     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -54,12 +66,33 @@ public class ButtonCommandRESTServlet extends HttpServlet {
       String regexp = "rest\\/button\\/(\\d+)\\/(\\w+)";
       Pattern pattern = Pattern.compile(regexp);
       String buttonID = null;
-      String commandType = null;
+      String commandTypeStr = null;
       Matcher matcher = pattern.matcher(url);
       if (matcher.find()) {
          buttonID = matcher.group(1);
-         commandType = matcher.group(2);
-         request.getSession().getServletContext().getRequestDispatcher("/cmd.htm?id=" + buttonID + "&commandType=" + commandType).forward(request,response);
+         commandTypeStr = matcher.group(2);
+         try{
+            if (commandTypeStr != null) {
+               CommandType commandType = null;
+               if ("press".equalsIgnoreCase(commandTypeStr)) {
+                  commandType = CommandType.SEND_START;
+               } else if ("release".equalsIgnoreCase(commandTypeStr)) {
+                  commandType = CommandType.SEND_STOP;
+               } else if ("click".equalsIgnoreCase(commandTypeStr)) {
+                  commandType = CommandType.SEND_ONCE;
+               }
+               if (commandType != null) {
+                  buttonCommandService.trigger(buttonID, commandType);
+               } else {
+                  throw new InvalidCommandTypeException(commandTypeStr);
+               }
+            } else {
+               buttonCommandService.trigger(buttonID);
+            }
+         } catch (ButtonCommandException e) {
+            logger.error("ButtonCommandException occurs", e);
+            response.sendError(e.getErrorCode(),e.getMessage());
+         }
       } else {
          response.sendError(400,"Bad REST Request, should be /rest/button/{button_id}/{command_type}");
       }

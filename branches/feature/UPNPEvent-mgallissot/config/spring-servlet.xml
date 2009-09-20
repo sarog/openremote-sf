@@ -21,12 +21,7 @@
     <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
         <property name="exceptionMappings">
             <props>
-                <prop key="org.openremote.controller.exception.EventBuildException">exception/eventBuildError</prop>
-                <prop key="org.openremote.controller.exception.NoSuchButtonException">exception/noSuchButtonError</prop>
-                <prop key="org.openremote.controller.exception.NoSuchEventBuilderException">exception/noSuchEventBuilderError</prop>
-                <prop key="org.openremote.controller.exception.InvalidCommandTypeException">exception/invalidCommandTypeError</prop>
-                <prop key="org.openremote.controller.exception.ControllerXMLNotFoundException">exception/controllerXMLNotFoundError</prop>
-                <prop key="org.openremote.controller.exception.NoSuchEventException">exception/noSuchEventError</prop>
+                <prop key="org.openremote.controller.exception.ButtonCommandException">exception/errorCode</prop>
             </props>
         </property>
         <property name="defaultErrorView" value="exception/defaultError"/>

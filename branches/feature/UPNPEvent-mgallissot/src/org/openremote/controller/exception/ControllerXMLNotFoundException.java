@@ -26,13 +26,14 @@ package org.openremote.controller.exception;
  * @author Dan 2009-5-22
  */
 @SuppressWarnings("serial")
-public class ControllerXMLNotFoundException extends RuntimeException {
+public class ControllerXMLNotFoundException extends ButtonCommandException {
 
    /**
     * Instantiates a new controller xml not found exception.
     */
    public ControllerXMLNotFoundException() {
       super("*controller.xml* not found.");
+      setErrorCode(ButtonCommandException.CONTROLLER_XML_NOT_FOUND);
    }
 
    /**
@@ -43,6 +44,7 @@ public class ControllerXMLNotFoundException extends RuntimeException {
     */
    public ControllerXMLNotFoundException(String message, Throwable cause) {
       super("*controller.xml* not found." + message, cause);
+      setErrorCode(ButtonCommandException.CONTROLLER_XML_NOT_FOUND);
    }
 
    /**
@@ -52,6 +54,7 @@ public class ControllerXMLNotFoundException extends RuntimeException {
     */
    public ControllerXMLNotFoundException(String message) {
       super("*controller.xml* not found." + message);
+      setErrorCode(ButtonCommandException.CONTROLLER_XML_NOT_FOUND);
    }
    
 

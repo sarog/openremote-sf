@@ -26,7 +26,7 @@ package org.openremote.controller.exception;
  * @author Dan 2009-4-30
  */
 @SuppressWarnings("serial")
-public class NoSuchEventBuilderException extends RuntimeException {
+public class NoSuchEventBuilderException extends ButtonCommandException {
 
    /**
     * Instantiates a new no such event builder exception.
@@ -34,6 +34,7 @@ public class NoSuchEventBuilderException extends RuntimeException {
    public NoSuchEventBuilderException() {
       super("Please check the property 'eventBuilders' " +
       "configuration of bean 'eventFactory' in applicationContext.xml");
+      setErrorCode(ButtonCommandException.NO_SUCH_EVENT_BUILDER);
    }
 
    /**
@@ -45,6 +46,7 @@ public class NoSuchEventBuilderException extends RuntimeException {
    public NoSuchEventBuilderException(String message, Throwable cause) {
       super(message + ", please check the property 'eventBuilders' " +
       "configuration of bean 'eventFactory' in applicationContext.xml",cause);
+      setErrorCode(ButtonCommandException.NO_SUCH_EVENT_BUILDER);
    }
 
    /**
@@ -55,6 +57,7 @@ public class NoSuchEventBuilderException extends RuntimeException {
    public NoSuchEventBuilderException(String message) {
       super(message + ", please check the property 'eventBuilders' " +
       		"configuration of bean 'eventFactory' in applicationContext.xml");
+      setErrorCode(ButtonCommandException.NO_SUCH_EVENT_BUILDER);
    }
 
    /**
@@ -64,6 +67,7 @@ public class NoSuchEventBuilderException extends RuntimeException {
     */
    public NoSuchEventBuilderException(Throwable cause) {
       super(cause);
+      setErrorCode(ButtonCommandException.NO_SUCH_EVENT_BUILDER);
    }
    
 
