@@ -24,6 +24,7 @@
         <property name="multicastAddress" value="${multicast.address}" />
         <property name="multicastPort" value="${multicast.port}" />
         <property name="resourcePath" value="${resource.path}" />
+        <property name="resourceUpload" value="${resource.upload.enable}" />
     </bean>
     
     <!-- service for button command from iPhone -->
