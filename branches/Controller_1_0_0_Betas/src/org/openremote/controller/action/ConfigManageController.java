@@ -24,6 +24,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openremote.controller.Configuration;
 import org.openremote.controller.Constants;
 import org.openremote.controller.service.FileService;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -41,6 +42,8 @@ public class ConfigManageController extends MultiActionController {
    /** The file service. */
    private FileService fileService;
    
+   private Configuration configuration;
+   
 
 
    /**
@@ -56,9 +59,13 @@ public class ConfigManageController extends MultiActionController {
     */
    public ModelAndView uploadZip(HttpServletRequest request, HttpServletResponse response) throws IOException,
          ServletRequestBindingException {
-      MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-      boolean success = fileService.uploadConfigZip(multipartRequest.getFile("zip_file").getInputStream());
-      response.getWriter().print(success ? Constants.OK : null);
+      if (Constants.TRUE.equalsIgnoreCase(configuration.getResourceUpload())) {
+         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+         boolean success = fileService.uploadConfigZip(multipartRequest.getFile("zip_file").getInputStream());
+         response.getWriter().print(success ? Constants.OK : null);
+      } else {
+         response.getWriter().print("disabled");
+      }
       return null;
    }
 
@@ -69,6 +76,15 @@ public class ConfigManageController extends MultiActionController {
     */
    public void setFileService(FileService fileService) {
       this.fileService = fileService;
+   }
+
+   /**
+    * Sets the configuration.
+    * 
+    * @param configuration the new configuration
+    */
+   public void setConfiguration(Configuration configuration) {
+      this.configuration = configuration;
    }
    
 
