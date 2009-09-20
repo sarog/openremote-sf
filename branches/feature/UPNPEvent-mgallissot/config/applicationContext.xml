@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
@@ -21,6 +23,7 @@
         <property name="webappPort" value="${webapp.port}" />
         <property name="multicastAddress" value="${multicast.address}" />
         <property name="multicastPort" value="${multicast.port}" />
+        <property name="resourcePath" value="${resource.path}" />
     </bean>
     
     <!-- service for button command from iPhone -->
@@ -35,18 +38,25 @@
     <!-- service for file system operation : upload, unzip etc. -->
     <bean id="fileService" class="org.openremote.controller.service.impl.FileServiceImpl">
     </bean>
-    
-	<bean id="eventFactory" class="org.openremote.controller.event.EventFactory">
-		<property name="eventBuilders">
+
+
+
+
+  <bean id = "eventFactory" class = "org.openremote.controller.event.EventFactory">
+		<property name = "eventBuilders">
 		    <props>
-				<prop key="upnpEvent">upnpEventBuilder</prop>
-		        <prop key="irEvent">irEventBuilder</prop>
-		        <prop key="knxEvent">knxEventBuilder</prop>
-		        <prop key="x10Event">x10EventBuilder</prop>
+		        <prop key = "irEvent">irEventBuilder</prop>
+		        <prop key = "knxEvent">knxEventBuilder</prop>
+		        <prop key = "x10Event">x10EventBuilder</prop>
+            <prop key = "upnpEvent">upnpEventBuilder</prop>
+            <prop key = "tcpSocketEvent">tcpSocketEventBuilder</prop>
+            <prop key = "telnetEvent">telnetEventBuilder</prop>
+            <prop key = "httpGetEvent">httpGetEventBuilder</prop>
 		    </props>
 		</property>
 	</bean>
-	
+
+
 	<!-- EVENT BUILDERS ============================================================================
 	 |
 	 | Implementation specific builders for the Event Factory bean. In short, each distinct event
@@ -56,15 +66,27 @@
 	 | extend the implementation with additional event types.
 	 +-->
 	
-    <!-- Infrared Event Builder -->
-    <bean id="irEventBuilder" class="org.openremote.controller.protocol.infrared.IREventBuilder" ></bean>
-    
-    <!-- KNX Event Builder -->
-    <bean id="knxEventBuilder" class="org.openremote.controller.protocol.knx.KNXEventBuilder" ></bean>
-    <bean id="upnpEventBuilder" class="org.openremote.controller.protocol.upnp.UPnPEventBuilder" scope="singleton" ></bean>
-    
-    <!-- X10 Event Builder -->
-    <bean id="x10EventBuilder" class="org.openremote.controller.protocol.x10.X10EventBuilder" ></bean>
-    
-    
+  <!-- Infrared Event Builder -->
+  <bean id = "irEventBuilder" class = "org.openremote.controller.protocol.infrared.IREventBuilder"/>
+
+  <!-- KNX Event Builder -->
+  <bean id = "knxEventBuilder" class = "org.openremote.controller.protocol.knx.KNXEventBuilder"/>
+
+   <!-- TCP Socket Event Builder for IP enabled devices -->
+   <bean id = "tcpSocketEventBuilder" class = "org.openremote.controller.protocol.socket.TCPSocketEventBuilder"
+         scope = "prototype"/>
+
+  <!-- X10 Event Builder -->
+  <bean id = "x10EventBuilder" class = "org.openremote.controller.protocol.x10.X10EventBuilder"/>
+
+  <!-- Universal Plug'n'Play Event Builder -->
+  <bean id = "upnpEventBuilder" class = "org.openremote.controller.protocol.upnp.UPnPEventBuilder"
+        scope = "singleton" />
+
+  <bean id = "telnetEventBuilder" class = "org.openremote.controller.protocol.telnet.TelnetEventBuilder"
+        scope = "prototype" />
+
+  <bean id = "httpGetEventBuilder" class = "org.openremote.controller.protocol.http.HttpGetEventBuilder"
+        scope = "prototype" />
+
 </beans>

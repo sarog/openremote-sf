@@ -1,23 +1,22 @@
 /* OpenRemote, the Home of the Digital Home.
- * Copyright 2008, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a
- * full listing of individual contributors.
- * 
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
- * 
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
- * You should have received a copy of the GNU General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 package org.openremote.controller.event;
 
@@ -32,6 +31,8 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
+import org.openremote.controller.Configuration;
+import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.InvalidControllerXMLException;
 import org.openremote.controller.exception.NoSuchButtonException;
@@ -51,6 +52,9 @@ public class RemoteActionXMLParser {
    
    /** The event factory. */
    private EventFactory eventFactory;
+   
+   /** The configuration. */
+   private Configuration configuration;
    
 
 
@@ -95,7 +99,7 @@ public class RemoteActionXMLParser {
     * @return the element
     */
    private Element queryElementFromXMLById(String id){
-      return queryElementFromXML("//or:*[@id='" + id + "']");
+      return queryElementFromXML("//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']");
    }
    
 
@@ -110,30 +114,30 @@ public class RemoteActionXMLParser {
    private Element queryElementFromXML(String xPath) {
       SAXBuilder sb = new SAXBuilder(true);
       sb.setValidation(true);
-      File xsdfile = new File(getClass().getResource("/controller.xsd").getPath());
-      final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
-      final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
-      final String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
-      sb.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
-      sb.setProperty(SCHEMA_SOURCE, xsdfile);
-      String xmlPath = PathUtil.resourcesPath() + "controller.xml";
+      File xsdfile = new File(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath());
       
+      sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
+      sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+      String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.CONTROLLER_XML;
       if (!new File(xmlPath).exists()) {
-         throw new ControllerXMLNotFoundException(" Make sure it's in controller/resources");
+         throw new ControllerXMLNotFoundException(" Make sure it's in /resources");
       }
       try {
          Document doc = sb.build(new File(xmlPath));
          XPath xpath = XPath.newInstance(xPath);
-         xpath.addNamespace("or", "http://www.openremote.org");
+         xpath.addNamespace(Constants.OPENREMOTE_NAMESPACE, Constants.OPENREMOTE_WEBSITE);
          List<Element> elements = xpath.selectNodes(doc);
          if(!elements.isEmpty()){
            return elements.get(0);
          }
       } catch (JDOMException e) {
-         logger.error("Parser controller.xml occur JDOMException", e);
-         throw new InvalidControllerXMLException();
+         logger.error("JDOMException occurs when parsing controller.xml.", e);
+         throw new InvalidControllerXMLException("check the version of schema or structure of controller.xml with "
+               + Constants.CONTROLLER_XSD_PATH);
       } catch (IOException e) {
-         logger.error("Parser controller.xml occur IOException", e);
+         String msg = " An I/O error prevents a controller.xml from being fully parsed";
+         logger.error(msg, e);
+         throw new ControllerXMLNotFoundException(msg);
       }
       return null;
    }
@@ -147,5 +151,16 @@ public class RemoteActionXMLParser {
    public void setEventFactory(EventFactory eventFactory) {
       this.eventFactory = eventFactory;
    }
+
+
+   /**
+    * Sets the configuration.
+    * 
+    * @param configuration the new configuration
+    */
+   public void setConfiguration(Configuration configuration) {
+      this.configuration = configuration;
+   }
+   
    
 }
