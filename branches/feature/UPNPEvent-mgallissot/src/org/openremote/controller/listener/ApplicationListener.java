@@ -18,25 +18,40 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.openremote.controller.protocol.x10;
+package org.openremote.controller.listener;
 
-import org.jdom.Element;
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+
+import org.openremote.controller.net.IPAutoDiscoveryServer;
+
 
 /**
- * The Class X10EventBuilder.
+ * The listener interface for receiving application events.
+ * The class that is interested in processing a application
+ * event implements this interface, and the object created
+ * with that class is registered with a component using the
+ * component's <code>addApplicationListener<code> method. When
+ * the application event occurs, that object's appropriate
+ * method is invoked.
  * 
- * @author Dan 2009-4-30
+ * @see ApplicationEvent
+ * @author Dan 2009-5-18
  */
-public class X10EventBuilder implements EventBuilder {
-	
+public class ApplicationListener implements ServletContextListener {
+
    /**
     * {@inheritDoc}
     */
-   public Event build(Element element) {
-      // TODO Auto-generated method stub
-      return new X10Event();
+   public void contextDestroyed(ServletContextEvent event) {
+      ;//do nothing
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void contextInitialized(ServletContextEvent event) {
+      new Thread(new IPAutoDiscoveryServer()).start(); 
    }
 
 }

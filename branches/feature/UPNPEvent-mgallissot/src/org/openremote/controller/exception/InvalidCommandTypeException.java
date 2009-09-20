@@ -20,47 +20,40 @@
  */
 package org.openremote.controller.exception;
 
-
 /**
- * The exception for NoSuchButton.
+ * The exception class when Invalid Command Type.
  * 
- * @author Dan 2009-4-30
+ * @author Dan 2009-5-22
  */
 @SuppressWarnings("serial")
-public class NoSuchButtonException extends RuntimeException {
+public class InvalidCommandTypeException extends RuntimeException {
 
    /**
-    * Instantiates a new no such button exception.
+    * Instantiates a new invalid command type exception.
     */
-   public NoSuchButtonException() {
+   public InvalidCommandTypeException() {
+      super("Invalid button command type (should be one of click, press and release)");
    }
 
    /**
-    * Instantiates a new no such button exception.
-    * 
-    * @param message the message
-    */
-   public NoSuchButtonException(String message) {
-      super(message);
-   }
-
-   /**
-    * Instantiates a new no such button exception.
-    * 
-    * @param cause the cause
-    */
-   public NoSuchButtonException(Throwable cause) {
-      super(cause);
-   }
-
-   /**
-    * Instantiates a new no such button exception.
+    * Instantiates a new invalid command type exception.
     * 
     * @param message the message
     * @param cause the cause
     */
-   public NoSuchButtonException(String message, Throwable cause) {
-      super(message, cause);
+   public InvalidCommandTypeException(String message, Throwable cause) {
+      super("Invalid button command type : " + message+" (should be one of click, press and release)" , cause);
    }
+
+   /**
+    * Instantiates a new invalid command type exception.
+    * 
+    * @param message the message
+    */
+   public InvalidCommandTypeException(String message) {
+      super("Invalid button command type : " + message+" (should be one of click, press and release)");
+   }
+   
+   
 
 }
