@@ -13,7 +13,7 @@ Device configurations can be retrieved from Beehive database and scenes and even
 
 II. Requirements
 ================
-The "Beehive" requires this 3rd party software:
+The "Modeler" requires this 3rd party software:
 1) GWT 1.6.4 or above
 2) JBoss 4.2.3 GA or above, Tomcat 5.5.26 or above
 3) Java 1.5 or above
@@ -28,7 +28,11 @@ III. "Modeler" site deployment
     a) set "jdbc.url" parameter value to MySQL URL 
     b) set "jdbc.username" parameter value to username to MySQL (for example: scott)
     c) set "jdbc.password" parameter value to password to MySQL (for example: tiger)
-    d) set "beehive.REST.Url" parameter value to your Beehive REST URL
+    d) set "beehive.REST.Root.Url" parameter value to your Beehive REST Root URL
+    e) set "beehive.lircdconf.REST.Url" parameter value to your Beehive REST lirc.conf URL
+    f) set "beehive.RESR.Icon.Url" parameter value to your Beehive REST icons URL
+    g) set "os.webapps.root" parameter value to your web server webapps root (eg: E:\\apache-tomcat-5.5.28\\webapps)
+    h) set "webapp.server.root" parameter value to your web server root (eg: http://localhost:8080)
     
 3) modify following configuration variables in "%PROJECT_ROOT%/build.properties"
     a) set parameter 'gwt.sdk' in build.properties to your GWT SDK home. This is required by GWT build.
@@ -40,12 +44,17 @@ III. "Modeler" site deployment
 IV. Supported functions
 =======================
 In the current iteration we are focusing on infrared (LIRC), KNX, X10, HTTP, TCP/IP, Telnet protocol.
-
+And we can resize button, change button icon, export/import XML.
 Building Modeler:
     1) Device
     2) DeviceCommnad
     3) DeviceMacro
 
+UI Designer:
+    1) Activity
+    2) Screen
+    3) ScreenButton
+    
 V. "Modeler" logging
 ====================================
 You can modify the log4j configuration in "%PROJECT_ROOT%/config/log4j.properties".
