@@ -144,7 +144,7 @@ public interface Icons extends ImageBundle {
     * 
     * @return the abstract image prototype
     */
-   @Resource("delay.png")
+   @Resource("edit_delay.png")
    AbstractImagePrototype editDelayIcon();
 
    /**
@@ -168,7 +168,7 @@ public interface Icons extends ImageBundle {
     * 
     * @return the abstract image prototype
     */
-   @Resource("activity.png")
+   @Resource("activity_edit.png")
    AbstractImagePrototype editActivityIcon();
 
    /**
@@ -176,7 +176,7 @@ public interface Icons extends ImageBundle {
     * 
     * @return the abstract image prototype
     */
-   @Resource("activity.png")
+   @Resource("activity_del.png")
    AbstractImagePrototype delActivityIcon();
 
    /**
@@ -184,7 +184,7 @@ public interface Icons extends ImageBundle {
     * 
     * @return the abstract image prototype
     */
-   @Resource("activity.png")
+   @Resource("activity_add.png")
    AbstractImagePrototype addActivityIcon();
 
    /**
