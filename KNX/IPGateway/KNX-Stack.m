@@ -9,10 +9,10 @@ int main (int argc, const char * argv[])
     NSLog(@"Test KNX connection");
 
 	KNXtest *testConnection=[[KNXtest alloc] init];
-	[testConnection connectTo:@"192.168.0.14"];	// my gateway - don't spread the address around :-)
+	[testConnection searchGateway];
 
-	[[NSRunLoop currentRunLoop] run];
-	
+//	[testConnection connectTo:@"192.168.0.14"];	// my gateway - don't spread the address around :-)
+
 	// clean up
 	[pool drain];
     return 0;
