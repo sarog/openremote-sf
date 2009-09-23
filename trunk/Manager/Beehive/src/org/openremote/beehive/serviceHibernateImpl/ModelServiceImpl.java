@@ -35,13 +35,14 @@ import org.hibernate.criterion.Restrictions;
 import org.openremote.beehive.Configuration;
 import org.openremote.beehive.api.dto.ModelDTO;
 import org.openremote.beehive.api.service.ModelService;
+import org.openremote.beehive.domain.Code;
 import org.openremote.beehive.domain.Model;
+import org.openremote.beehive.domain.RemoteOption;
 import org.openremote.beehive.domain.RemoteSection;
 import org.openremote.beehive.domain.Vendor;
 import org.openremote.beehive.file.LircConfFile;
 import org.openremote.beehive.utils.FileUtil;
 
-// TODO: Auto-generated Javadoc
 /**
  * {@inheritDoc}.
  * 
@@ -170,7 +171,8 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
    }
    
    /**
-    * Merge.
+    * Merge from file into DB. Ensure that {@link RemoteSection} oid won't be changed, 
+    * for REST API '/{vendor_name}/{model_name}/ids=1,2' use this oid to show lircd.conf.
     * 
     * @param fis
     *           the fis
@@ -180,13 +182,57 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
    public void merge(FileInputStream fis, long id){
       List<RemoteSection> remoteSectionList = LircConfFile.getRemoteSectionList(fis);
       Model model = loadById(id);
-      genericDAO.deleteAll(model.getRemoteSections());
+      List<RemoteSection> oldSectionList = model.getRemoteSections();
       model.setRemoteSections(null);
       if (remoteSectionList.size() > 0) {
          String comment = remoteSectionList.get(0).getModel().getComment();
          model.setComment(comment);
          genericDAO.merge(model);
       }
+      
+      List<Integer> removedOldIndexs = new ArrayList<Integer>();
+      List<RemoteSection> mergedRMSections = new ArrayList<RemoteSection>();
+      
+      for (int i = 0; i < oldSectionList.size(); i++) {
+         int oldIndex = i;
+         for (int j = i; j < remoteSectionList.size(); j++) {
+            if(oldSectionList.get(i).getName().equals(remoteSectionList.get(j).getName())){
+               RemoteSection dbSection = oldSectionList.get(i);
+               RemoteSection newSection = remoteSectionList.get(j);
+               genericDAO.deleteAll(dbSection.getCodes());
+               genericDAO.deleteAll(dbSection.getRemoteOptions());
+               oldSectionList.get(i).setCodes(null);
+               oldSectionList.get(i).setRemoteOptions(null);
+              
+               dbSection.setRaw(newSection.isRaw());
+               dbSection.setComment(newSection.getComment());
+               dbSection.setModel(model);
+               genericDAO.merge(dbSection);
+               
+               for (Code code : newSection.getCodes()) {
+                  code.setRemoteSection(dbSection);
+                  genericDAO.save(code);
+               }
+               
+               for (RemoteOption remoteOption : newSection.getRemoteOptions()) {
+                  remoteOption.setRemoteSection(dbSection);
+                  genericDAO.save(remoteOption);
+               }
+               mergedRMSections.add(newSection);
+               oldIndex = -1;
+               break;
+            }
+         }
+         if(oldIndex == i){
+            removedOldIndexs.add(oldIndex);
+         }
+      }
+      
+      for (Integer oldIndex : removedOldIndexs) {
+         genericDAO.delete(oldSectionList.get(oldIndex.intValue()));
+      }
+      
+      remoteSectionList.removeAll(mergedRMSections);
       for (RemoteSection remoteSection : remoteSectionList) {
          remoteSection.setModel(model);
          genericDAO.save(remoteSection);
