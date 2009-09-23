@@ -30,9 +30,9 @@
 
 
 @interface KNXtest : NSObject {
-
 }
 
 -(void)connectTo:(NSString *)address;
+-(void)searchGateway;
 -(BOOL)isActive;
 @end
