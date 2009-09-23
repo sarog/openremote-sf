@@ -26,6 +26,7 @@
  */
 
 #import "KNXnetPacket.h"
+#include <arpa/inet.h>
 
 @implementation KNXnetPacket
 
@@ -35,7 +36,7 @@
 	{
 		// Instanz angelegt
 		serviceTypeIdentifier=typ;
-		eibVerbindung=verbindung;
+		knxConnection=verbindung;
 	}
 	return self;
 }
@@ -64,10 +65,9 @@ static short istneuer(unsigned char neuer, unsigned char alter)
 
 -(KNXnetPacket *)initFromPacket:(NSData *)packet fuerVerbindung:(KNXconnection *)verbindung
 {
-	unsigned char headerLength;
-	unsigned char protocolVersion;
+	unsigned char headerLength, protocolVersion;
 	unsigned char *headerPtr;
-	unsigned char channelID, statusCode /*, CRDlength, CRDtypeCode, */;
+	unsigned char channelID, statusCode;
 	unsigned char structureLength, sequenceCounter;
 	KNXnetPacket *zweitpaket;
 	NSMutableData *antwort;
@@ -80,7 +80,9 @@ static short istneuer(unsigned char neuer, unsigned char alter)
 		protocolVersion=*headerPtr++;
 		if(headerLength!=6 || protocolVersion!=0x10)
 		{
-			// NSLog(@"Invalid header: length=%d, protocol version=%d\n",headerLength,protocolVersion);
+#ifdef _DEBUG
+			NSLog(@"Invalid header: length=%d, protocol version=%d\n",headerLength,protocolVersion);
+#endif
 			[self release];
 			return nil;
 		}
@@ -93,6 +95,21 @@ static short istneuer(unsigned char neuer, unsigned char alter)
 			headerPtr+=2;
 			switch(serviceTypeIdentifier)
 			{
+				case KNX__SEARCH_RESPONSE:
+					/* got a packet, now check who was responding */
+#ifdef _DEBUG
+					NSLog(@"Got a search response, total length=%d\n",totalLength);
+#endif
+					serverHPAI=[[KNXHPAI alloc] initFromPacket:headerPtr];
+					headerPtr+=8;
+					serverDescription=[[KNXServerDescription alloc] initFromPacket:headerPtr];
+					if(serverDescription)
+					{
+						// success, now offer the new gateway to the connection
+						[verbindung foundGatewayOnAddress:[serverHPAI IPAsText] ofType:[serverDescription friendlyName]];
+					}
+					// ignore capabilities for now...
+					break;
 				case KNX__CONNECT_RESPONSE:
 					/* we made it - we are connected, now check packet and extract some interesting information */
 					channelID=*headerPtr++;
@@ -100,13 +117,17 @@ static short istneuer(unsigned char neuer, unsigned char alter)
 					headerPtr+=10;	// skip HPAI
 					if(totalLength>=20 && !statusCode)
 					{
-						// NSLog(@"Successfully connected, channel ID: %d\n", channelID);
+#ifdef _DEBUG
+						NSLog(@"Successfully connected, channel ID: %d\n", channelID);
+#endif
 						[verbindung activateConnectionWithID:channelID];
 						[verbindung setzeGeraeteAdresse:headerPtr];
 					}
 					else
 					{
-						// NSLog(@"Could not connect, statusCode: %d\n",statusCode);
+#ifdef _DEBUG
+						NSLog(@"Could not connect, statusCode: %d\n",statusCode);
+#endif
 						[verbindung aufbauFehlgeschlagen];
 					}
 					break;
@@ -142,7 +163,9 @@ static short istneuer(unsigned char neuer, unsigned char alter)
 					}
 					break;
 				case KNX__TUNNELING_RESPONSE:
-					// NSLog(@"ACK for %@",[verbindung description]);
+#ifdef _DEBUG
+					NSLog(@"ACK for %@",[verbindung description]);
+#endif
 					[verbindung gatewayAck];
 					break;
 				case KNX__DISCONNECT_REQUEST:
@@ -175,6 +198,26 @@ static short istneuer(unsigned char neuer, unsigned char alter)
 	// now add data, depending on type
 	switch (serviceTypeIdentifier)
 	{
+		case KNX__SEARCH_REQUEST:
+			// finish header
+			zwischenpuffer[4]=0;
+			zwischenpuffer[5]=0x0E;	// Length of packet
+			[packet appendBytes:zwischenpuffer length:6];
+
+			// gather information about my IP address and ports first
+			// meineAdresse=[[knxConnection searchSocket] localHostAsInteger];
+			// meineAdresse=0xC0A8001B;
+			meineAdresse=ntohl(inet_addr([knxConnection.myIP UTF8String]));
+#ifdef _DEBUG
+			NSLog(@"my address: %08X",meineAdresse);
+#endif
+			// put them in their classes
+			controlHPAI=[[KNXHPAI alloc] initWithAddress:meineAdresse andPort:3671];
+			// and append to the packet
+			[controlHPAI dataIntoPacket:packet];
+			// release those temporary class objects
+			[controlHPAI release];
+			break;
 		case KNX__CONNECT_REQUEST:
 			// finish header
 			zwischenpuffer[4]=0;
@@ -182,9 +225,9 @@ static short istneuer(unsigned char neuer, unsigned char alter)
 			[packet appendBytes:zwischenpuffer length:6];
 
 			// gather information about my IP address and ports first
-			meineAdresse=[[eibVerbindung controlSocket] localHostAsInteger];
-			meinControlPort=[[eibVerbindung controlSocket] localPort];
-			meinDataPort=[[eibVerbindung dataSocket] localPort];
+			meineAdresse=[[knxConnection controlSocket] localHostAsInteger];
+			meinControlPort=[[knxConnection controlSocket] localPort];
+			meinDataPort=[[knxConnection dataSocket] localPort];
 
 			// put them in their classes
 			controlHPAI=[[KNXHPAI alloc] initWithAddress:meineAdresse andPort:meinControlPort];
@@ -206,11 +249,11 @@ static short istneuer(unsigned char neuer, unsigned char alter)
 			zwischenpuffer[4]=0;
 			zwischenpuffer[5]=0x2B;	// Length of packet (why 0x2B? no idea yet...)
 			zwischenpuffer[6]=4;	// Length of connection header
-			zwischenpuffer[7]=[eibVerbindung channelID];
-			zwischenpuffer[8]=[eibVerbindung getSendeSequenceCounter];
+			zwischenpuffer[7]=[knxConnection channelID];
+			zwischenpuffer[8]=[knxConnection getSendeSequenceCounter];
 			zwischenpuffer[9]=KNX__E_NO_ERROR;
 			[packet appendBytes:zwischenpuffer length:10];
-			[eibVerbindung setSendeSequenceCounter:(zwischenpuffer[8]+1)&255];	// increment sequence counter
+			[knxConnection setSendeSequenceCounter:(zwischenpuffer[8]+1)&255];	// increment sequence counter
 
 			// cEMI header with addresses
 			cEMIHeader=[KNXcEMIHeader alloc];
@@ -240,8 +283,8 @@ static short istneuer(unsigned char neuer, unsigned char alter)
 			zwischenpuffer[4]=0;
 			zwischenpuffer[5]=0x0A;	// Length of packet
 			zwischenpuffer[6]=4;	// Length connection header
-			zwischenpuffer[7]=[eibVerbindung channelID];
-			zwischenpuffer[8]=[eibVerbindung getDataSequenceCounter];
+			zwischenpuffer[7]=[knxConnection channelID];
+			zwischenpuffer[8]=[knxConnection getDataSequenceCounter];
 			zwischenpuffer[9]=KNX__E_NO_ERROR;
 			[packet appendBytes:zwischenpuffer length:10];
 			break;
@@ -249,12 +292,12 @@ static short istneuer(unsigned char neuer, unsigned char alter)
 		case KNX__DISCONNECT_REQUEST:
 			zwischenpuffer[4]=0;
 			zwischenpuffer[5]=0x10;							// Length of packet
-			zwischenpuffer[6]=[eibVerbindung channelID];	// Channel ID
+			zwischenpuffer[6]=[knxConnection channelID];	// Channel ID
 			zwischenpuffer[7]=0;
 			[packet appendBytes:zwischenpuffer length:8];
 			// fill in sub structures
-			meineAdresse=[[eibVerbindung controlSocket] localHostAsInteger];
-			meinControlPort=[[eibVerbindung controlSocket] localPort];
+			meineAdresse=[[knxConnection controlSocket] localHostAsInteger];
+			meinControlPort=[[knxConnection controlSocket] localPort];
 			controlHPAI=[[KNXHPAI alloc] initWithAddress:meineAdresse andPort:meinControlPort];
 			[controlHPAI dataIntoPacket:packet];
 			[controlHPAI autorelease];
@@ -285,10 +328,17 @@ static short istneuer(unsigned char neuer, unsigned char alter)
 
 -(NSString *)description
 {
-	char *paketbeschreibung;
+	char *paketbeschreibung="?";
 	NSString *zusatzinfo=nil;
 	switch (serviceTypeIdentifier)
 	{
+		case KNX__SEARCH_REQUEST:
+			paketbeschreibung="SEARCH_REQUEST";
+			break;
+		case KNX__SEARCH_RESPONSE:
+			paketbeschreibung="SEARCH_RESPONSE";
+			zusatzinfo=[serverDescription description];
+			break;
 		case KNX__CONNECT_REQUEST:
 			paketbeschreibung="CONNECT_REQUEST";
 			break;
@@ -311,6 +361,7 @@ static short istneuer(unsigned char neuer, unsigned char alter)
 - (void)dealloc
 {
 	[cEMIHeader release];
+	[serverHPAI release];
 	[super dealloc];
 }
 

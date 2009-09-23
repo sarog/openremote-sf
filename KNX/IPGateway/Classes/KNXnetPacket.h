@@ -33,7 +33,10 @@
 #import "KNXHPAI.h"
 #import "KNXCRI.h"
 #import "KNXDeviceAddress.h"
+#import "KNXServerDescription.h"
 
+#define KNX__SEARCH_REQUEST				0x0201
+#define KNX__SEARCH_RESPONSE			0x0202
 #define KNX__CONNECT_REQUEST			0x0205 
 #define KNX__CONNECT_RESPONSE			0x0206
 #define KNX__CONNECTIONSTATE_REQUEST	0x0207
@@ -50,10 +53,12 @@
 	int serviceTypeIdentifier;
 	int totalLength;
 	KNXcEMIHeader *cEMIHeader;
-	KNXconnection *eibVerbindung;
+	KNXconnection *knxConnection;
 	unsigned char *zieladresse;
 	unsigned char pakettyp;
 	NSData *nutzdaten;
+	KNXHPAI *serverHPAI;
+	KNXServerDescription *serverDescription;
 }
 -(KNXnetPacket *)initMitTyp: (int)serviceTypeIdentifier fuerVerbindung:(KNXconnection *)verbindung;
 -(KNXnetPacket *)initFromPacket: (NSData *)packet fuerVerbindung:(KNXconnection *)verbindung;

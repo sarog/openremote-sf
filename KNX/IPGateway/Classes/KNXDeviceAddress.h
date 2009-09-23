@@ -42,7 +42,7 @@
 	short typ;	// YES, wenn Gruppenadresse, NO wenn Geräteadresse
 	unsigned char adresse[3];
 }
--(id)initAusZweiByteAdresse:(unsigned char *)daten vomTyp:(short)welcher;
+-(id)initAusZweiByteAdresse:(unsigned char *)daten ofType:(short)welcher;
 -(id)initMitDreibyteAdresse:(unsigned char *)daten;
 -(void)dataIntoPacket:(NSMutableData *)packet;
 -(NSString *)description;

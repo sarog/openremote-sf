@@ -55,7 +55,7 @@
 				ctrl2=*headerPtr++;
 				source=[[KNXDeviceAddress alloc] initAusZweiByteAdresse:headerPtr];
 				headerPtr+=2;
-				destination=[[KNXGroupAddress alloc] initAusZweiByteAdresse:headerPtr vomTyp:ctrl2&0x80?YES:NO];
+				destination=[[KNXGroupAddress alloc] initAusZweiByteAdresse:headerPtr ofType:ctrl2&0x80?YES:NO];
 				headerPtr+=2;
 				// payload starting here
 				range.location=2+additionalInfoLength+6;

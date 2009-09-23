@@ -30,14 +30,14 @@
 @implementation KNXHPAI
 
 // initializes instance from packet
--(KNXHPAI *)initFromPacket:(NSData *)packet
+-(KNXHPAI *)initFromPacket:(unsigned char *)packet
 {
 	unsigned char *headerPtr, c;
 	int i;
 
 	if(self=[super init])
 	{
-		headerPtr=(unsigned char *)[packet bytes];
+		headerPtr=packet;
 		c=*headerPtr++;
 		if(c!=8)
 		{
@@ -89,6 +89,10 @@
 	[packet appendBytes:daten length:8];
 }
 
+-(NSString *)IPAsText
+{
+	return [NSString stringWithFormat:@"%d.%d.%d.%d",(ip_adresse>>24)&255,(ip_adresse>>16)&255,(ip_adresse>>8)&255,ip_adresse&255];
+}
 -(NSString *)description
 {
 	return [NSString stringWithFormat:@"HPAI: IP %08X, Port %d\n",ip_adresse,port];
