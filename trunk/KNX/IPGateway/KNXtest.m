@@ -28,6 +28,30 @@
 #import "KNXtest.h"
 #import "KNXconnection.h"
 #import "KNXnetPacket.h"
+#import "AsyncUdpSocket.h"
+
+//------- includes
+
+#include <ifaddrs.h>
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <net/if.h>
+#include <net/if_dl.h>
+#include <arpa/inet.h>
+#include <ifaddrs.h>
+
+#if ! defined(IFT_ETHER)
+#define IFT_ETHER 0x6/* Ethernet CSMACD */
+#endif
+
+#if TARGET_OS_IPHONE && ! TARGET_IPHONE_SIMULATOR
+	#define _INTERFACE	@"en0"
+#else
+	#define _INTERFACE	@"en1"
+#endif
+
+//------- Implementation
 
 @implementation KNXtest
 
@@ -59,9 +83,15 @@ BOOL active;
 	packets++;
 }
 
+/* called when a gateway gave an answer to the search request */
+-(void)foundGatewayOnAddress:(NSString *)address ofType:(NSString *)type
+{
+	NSLog(@"foundGatewayOnAddress: %@, %@",address,type);
+}
+
 -(void)timerExpired:(NSTimer *)timer
 {
-	NSLog(@"Timer expired");
+	NSLog(@"Connection timer expired");
 	active=FALSE;
 }
 -(BOOL)isActive
@@ -82,5 +112,53 @@ BOOL active;
 								   userInfo:nil
 									repeats:NO];
 }
+- (NSString*)getWiFiIPAddress
+{
+	
+	BOOL success;
+	struct ifaddrs * addrs;
+	const struct ifaddrs * cursor;
 
+	success = getifaddrs(&addrs) == 0;
+	if (success) {
+		cursor = addrs;
+		while (cursor != NULL) {
+			if (cursor->ifa_addr->sa_family == AF_INET && (cursor->ifa_flags & IFF_LOOPBACK) == 0) // this second test keeps from picking up the loopback address
+			{
+				NSString *name = [NSString stringWithUTF8String:cursor->ifa_name];
+				//NSLog(@"Interface: %@, Address: %@",name,[NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)cursor->ifa_addr)->sin_addr)]);
+				if ([name isEqualToString:_INTERFACE]) { // found the WiFi adapter
+					NSString *myaddress=[NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)cursor->ifa_addr)->sin_addr)];
+					freeifaddrs(addrs);
+					return myaddress;
+				}
+			}
+			cursor = cursor->ifa_next;
+		}
+		freeifaddrs(addrs);
+	}
+	return NULL;
+}
+
+// test function for gateway search
+-(void)searchGateway
+{
+	int counter;
+
+	KNXconnection *knxConnection=[[[KNXconnection alloc] init] retain];
+	knxConnection.myIP=[self getWiFiIPAddress];
+	[knxConnection setMeindelegate:self];
+	[knxConnection searchGateway];
+
+	// now wait 3 seconds for replies
+	counter=0;
+	while (counter<3)
+	{
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
+		NSLog(@"Counter: %d",counter);
+		counter++;
+	}
+
+	[knxConnection release];
+}
 @end
