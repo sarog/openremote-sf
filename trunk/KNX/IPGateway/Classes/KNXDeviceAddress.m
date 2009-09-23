@@ -80,7 +80,7 @@
 
 // convert 2 byte into KNX address
 // 'welcher' is YES for group address, NO for device address
--(id)initAusZweiByteAdresse:(unsigned char *)daten vomTyp:(short)welcher
+-(id)initAusZweiByteAdresse:(unsigned char *)daten ofType:(short)welcher
 {
 	if(self=[super init])
 	{
