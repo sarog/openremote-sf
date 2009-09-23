@@ -43,6 +43,7 @@
 	KNXDeviceAddress *deviceAddressGateway;// device address of gateway (KNX side)
 	AsyncUdpSocket *controlSocket;			// socket of control channel
 	AsyncUdpSocket *dataSocket;				// socket of data channel
+	AsyncUdpSocket *searchSocket;			// socket for discovery operations
 	NSMutableData *controlrequest;			// data packet for control channel
 	NSMutableData *datarequest;				// data packet for data channel
 	NSString *addressGateway;				// IP address of gateway
@@ -51,14 +52,19 @@
 	id meindelegate;						// delegate for connection related callbacks
 	volatile BOOL sendingFlag;				// flag, indicating that send operation is running
 	NSTimer *connectionTimer;				// Timer for connection timeout
+	NSMutableArray *foundGateways;			// Array with addresses of found gateways
+	NSMutableArray *gatewayDescriptions;	// Descriptions of found gateways
+	NSString *myIP;							// IP address of this host
 }
 
 @property (nonatomic, retain) id meindelegate;
+@property (nonatomic, retain) NSString *myIP;
 
 // initializes new instance
 -(id)initWithAddress:(NSString *)adresse andAddressType:(int)typ forBuilding:(NSString *)name;
 // open connection with gateway
 -(id)connectWithGateway:(NSString *)adresse;
+-(void)searchGateway;
 
 // returns connection status
 -(short)connectionActive;
@@ -67,6 +73,7 @@
 // return sockets
 -(AsyncUdpSocket *)controlSocket;
 -(AsyncUdpSocket *)dataSocket;
+-(AsyncUdpSocket *)searchSocket;
 
 // notifier for lower level classes, setting "connection active" flag
 -(void)activateConnectionWithID:(short)id;
@@ -94,13 +101,15 @@
 // got ACK packet from gateway
 -(void)gatewayAck;
 
+// returns IP address
+-(NSString *)myIP;
 @end
 
 // declare delegate functions, so XCode won't claim unknown selectors
 @interface NSObject (KNXconnectionDelegate)
 
 /* called when the connection could not be established */
--(void)aufbauFehlgeschlagen;
+-(void)aufbauFehlgeschlagen:(bool)timeout;
 
 /* called when the connection was established */
 -(void)verbindungAufgebaut;
@@ -110,5 +119,8 @@
 
 /* called when a packet has been received */
 -(void)paketEmpfangen:(void *)packet;
+
+/* called when gateway search found one */
+-(void)foundGatewayOnAddress:(NSString *)address ofType:(NSString *)type;
 
 @end

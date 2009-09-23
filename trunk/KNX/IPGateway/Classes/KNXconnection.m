@@ -32,11 +32,10 @@
 #import "KNXCRI.h"
 #import "KNXHPAI.h"
 #import "KNXnetPacket.h"
-//‚#import "iKNXAppDelegate.h"
 
 @implementation KNXconnection
 
-@synthesize meindelegate;
+@synthesize meindelegate, myIP;
 
 -(id)initWithAddress:(NSString *)adresse andAddressType:(int)typ forBuilding:(NSString *)name
 {
@@ -47,6 +46,59 @@
 		nameOfBuilding=[name copy];
 	}
 	return self;
+}
+
+-(void)searchGateway
+{
+	NSError *searchError;
+	int result;
+	KNXnetPacket *searchRequest;
+	NSMutableData *searchData;
+
+	searchSocket = [[AsyncUdpSocket alloc] initWithDelegate:self userData:0 enableIPv4:YES enableIPv6:NO];
+	result = [searchSocket bindToPort:3671 error:&searchError];
+#ifdef _DEBUG
+	NSLog(@"Bind: %d",result);
+#endif
+	result = [searchSocket enableBroadcast:YES error:&searchError];
+#ifdef _DEBUG
+	NSLog(@"EnableBroadcast: %d",result);
+#endif
+	result=[searchSocket joinMulticastGroup:@"224.0.23.12"  error:&searchError];
+#ifdef _DEBUG
+	NSLog(@"join: %d",result);
+	if(!result)
+		NSLog(@"Error on joinMulticast: %@ - %d\n",[searchError localizedDescription],[searchError code]);
+#endif
+
+	searchData=[[NSMutableData alloc] init];
+
+	// generate data packet for connection request
+	[searchSocket receiveWithTimeout:-1 tag:KNX__SEARCH_RESPONSE];
+	searchRequest=[[KNXnetPacket alloc] initMitTyp:KNX__SEARCH_REQUEST fuerVerbindung:self];
+	[searchRequest dataIntoPacket:searchData];
+	result=[searchSocket sendData:searchData toHost:@"224.0.23.12" port:3671 withTimeout:-1	tag:KNX__SEARCH_REQUEST];
+#ifdef _DEBUG
+	NSLog(@"send: %d",result);
+#endif
+	[searchData autorelease];
+	[searchSocket maybeDequeueSend];	// call Runloop of AsyncUdpSocket to be sure search packet is sent
+
+	// OK, now wait some seconds for results
+//	[searchSocket closeAfterSending];
+}
+
+/* called when gateway search found one */
+-(void)foundGatewayOnAddress:(NSString *)address ofType:(NSString *)type
+{
+#ifdef _DEBUG
+	NSLog(@"foundGatewayOnAddress: %@, %@",address,type);
+#endif
+	if ([meindelegate respondsToSelector:@selector(foundGatewayOnAddress)])
+	{
+		// send delegate a copy of the found gateway
+		[meindelegate foundGatewayOnAddress:address ofType:type];
+	}
 }
 
 -(id)connectWithGateway:(NSString *)adresse
@@ -104,9 +156,9 @@
 {
 	if(connectionActive==NO)
 	{
-		if ([meindelegate respondsToSelector:@selector(aufbauFehlgeschlagen)])
+		if ([meindelegate respondsToSelector:@selector(aufbauFehlgeschlagen:)])
 		{
-			[meindelegate aufbauFehlgeschlagen];
+			[meindelegate aufbauFehlgeschlagen:YES];
 		}
 		connectionTimer=nil;
 	}
@@ -119,12 +171,22 @@
 	channelID=id;
 	if ([meindelegate respondsToSelector:@selector(verbindungAufgebaut)])
 	{
-		[meindelegate verbindungAufgebaut];
+#ifdef _DEBUG
+		NSLog(@"Notify AppDelegate");
+#endif
+		// use timer, else it will crash under 3.0
+		[NSTimer scheduledTimerWithTimeInterval:.1
+										 target:meindelegate 
+									   selector:@selector(verbindungAufgebaut)
+									   userInfo:nil
+										repeats:NO];
 	}
 	if(connectionTimer)
 		[connectionTimer invalidate];
 	connectionTimer=nil;
-//	NSLog(@"verbindungAufgebaut beendet");
+#ifdef _DEBUG
+	NSLog(@"verbindungAufgebaut finished");
+#endif
 }
 // Could not connect
 -(void)aufbauFehlgeschlagen
@@ -133,9 +195,9 @@
 	if(connectionTimer)
 		[connectionTimer invalidate];
 	connectionTimer=nil;
-	if ([meindelegate respondsToSelector:@selector(aufbauFehlgeschlagen)])
+	if ([meindelegate respondsToSelector:@selector(aufbauFehlgeschlagen:)])
 	{
-		[meindelegate aufbauFehlgeschlagen];
+		[meindelegate aufbauFehlgeschlagen:NO];
 	}
 }
 // setzt Adresstyp auf 0 oder 1
@@ -245,6 +307,10 @@
 {
 	return dataSocket;
 }
+-(AsyncUdpSocket *)searchSocket
+{
+	return searchSocket;
+}
 
 // übergibt Daten zum Versenden
 -(void)sendeAnDataSocket:(NSMutableData *)daten
@@ -286,15 +352,27 @@
 }
 
 //  socket callback functions
-- (void)onUdpSocket:(AsyncUdpSocket *)socket didReceiveData:(NSData *)paketDaten withTag:(long)tag fromHost:(NSString *)host port:(UInt16)port
+- (BOOL)onUdpSocket:(AsyncUdpSocket *)socket didReceiveData:(NSData *)paketDaten withTag:(long)tag fromHost:(NSString *)host port:(UInt16)port
 {
 	KNXnetPacket *eibnetpaket;
+#ifdef _DEBUG
+	NSLog(@"Packet with Tag %x from %@",tag,host);
+#endif
 	@try{
 		eibnetpaket=[KNXnetPacket alloc];
-		[eibnetpaket initFromPacket:(NSData *)paketDaten fuerVerbindung:self];
+		[eibnetpaket initFromPacket:paketDaten fuerVerbindung:self];
 		if ([meindelegate respondsToSelector:@selector(paketEmpfangen:)])
 		{
+#ifdef _DEBUG
+			NSLog(@"Forward to delegate");
+#endif
 			[meindelegate paketEmpfangen:eibnetpaket];
+		}
+		else
+		{
+#ifdef _DEBUG
+			NSLog(@"No delegate :-(");
+#endif
 		}
 		[eibnetpaket release];
 	}
@@ -309,6 +387,7 @@
 		if (![paketDaten length])
 			[socket close];
 	}
+	return NO;	// do not close connection!
 }
 
 - (void)onUdpSocket:(AsyncUdpSocket *)socket didNotReceiveDataWithTag:(long)tag dueToError:(NSError *)error

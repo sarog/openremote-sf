@@ -33,9 +33,10 @@
 	unsigned long ip_adresse;
 	unsigned short port;
 }
--(KNXHPAI *)initFromPacket:(NSData *)packet;
+-(KNXHPAI *)initFromPacket:(unsigned char *)packet;
 -(KNXHPAI *)initWithAddress:(unsigned long)adresse andPort:(unsigned short)portnummer;
 -(void)dataIntoPacket:(NSMutableData *)packet;
+-(NSString *)IPAsText;
 -(NSString *)description;
 @end
 
