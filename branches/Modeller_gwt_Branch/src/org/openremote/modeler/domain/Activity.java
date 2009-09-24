@@ -114,6 +114,6 @@ public class Activity extends BusinessEntity {
     */
    @Transient
    public static String getNewDefaultName() {
-      return "actitivy" + defaultNameIndex++;
+      return "activity" + defaultNameIndex++;
    }
 }
