@@ -38,6 +38,7 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
@@ -60,6 +61,7 @@ public class UIDesignerView extends TabItem implements View {
    /** The auto_save_interval millisecond. */
    private static final int AUTO_SAVE_INTERVAL_MS = 30000;
    
+   private Timer timer;
    /**
     * Instantiates a new uI designer view.
     */
@@ -72,7 +74,7 @@ public class UIDesignerView extends TabItem implements View {
     * Creates the timer.
     */
    private void createAutoSaveTimer() {
-      Timer timer = new Timer() {
+      timer = new Timer() {
          @Override
          public void run() {
             autoSaveUiDesignerLayoutJSON();
@@ -88,12 +90,16 @@ public class UIDesignerView extends TabItem implements View {
       UtilsProxy.autoSaveUiDesignerLayoutJSON(getAllActivities(), new AsyncSuccessCallback<AutoSaveResponse>() {
          @Override
          public void onSuccess(AutoSaveResponse result) {
-            if (result != null && result.isSavedSuccess()) {
+            if (result != null && result.isUpdated()) {
                Info.display("Info", "UI designer layout saved at " + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
-            } else {
-               Info.display("Info", "UI designer layout save failed.");
             }
          }
+         @Override
+         public void onFailure(Throwable caught) {
+            timer.cancel();
+            MessageBox.alert("ERROR", "Server error, UI designer layout save failed.", null);
+         }
+         
       });
    }
    

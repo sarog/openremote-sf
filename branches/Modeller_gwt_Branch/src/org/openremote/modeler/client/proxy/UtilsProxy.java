@@ -84,6 +84,12 @@ public class UtilsProxy {
          public void onSuccess(AutoSaveResponse result) {
             callback.onSuccess(result);
          }
+
+         @Override
+         public void onFailure(Throwable caught) {
+            callback.onFailure(caught);
+         }
+         
       });
    }
    

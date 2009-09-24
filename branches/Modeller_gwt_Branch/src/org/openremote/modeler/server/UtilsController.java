@@ -110,9 +110,13 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    public AutoSaveResponse autoSaveUiDesignerLayoutJSON(List<Activity> activities) {
       String jsonString = resourceService.getActivitiesJson(activities);
       AutoSaveResponse autoSaveResponse = new AutoSaveResponse();
-      if (!"".equals(jsonString)) {
+      String oldJsonString = null;
+      if(getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_JSON_KEY) != null){
+         oldJsonString = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_JSON_KEY).toString();
+      }
+      if (!"".equals(jsonString) && !jsonString.equals(oldJsonString)) {
          getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_JSON_KEY, jsonString);
-         autoSaveResponse.setSavedSuccess(true);
+         autoSaveResponse.setUpdated(true);
       }
       return autoSaveResponse;
    }
