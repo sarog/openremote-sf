@@ -363,7 +363,7 @@
 		return autoCell;
 	} else {
 		if ([self isAddCustomServerRow:indexPath]) {
-			serverCell.text = @"add another server";
+			serverCell.text = @"Add New Controller...";
 			serverCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 			serverCell.selectionStyle = UITableViewCellSelectionStyleBlue;
 		}
