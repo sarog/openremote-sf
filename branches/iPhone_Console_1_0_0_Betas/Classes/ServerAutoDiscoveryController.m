@@ -113,7 +113,7 @@
 
 - (void)checkFindServerFail {
 	if (!isReceiveServerUrl) {
-		[self onFindServerFail:@"Find Server Timeout"];
+		[self onFindServerFail:@"Auto-discovery timed out."];
 	}
 	isReceiveServerUrl = NO;	
 }
