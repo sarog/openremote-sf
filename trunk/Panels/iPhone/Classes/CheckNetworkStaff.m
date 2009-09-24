@@ -29,7 +29,7 @@
 @implementation CheckNetworkStaff
 +(void)checkWhetherNetworkAvailable {
 	if ([[Reachability sharedReachability] localWiFiConnectionStatus] == NotReachable) {
-		@throw [CheckNetworkStaffException exceptionWithTitle:@"Check Network Fail" message:@"Please connect your device to network"];
+		@throw [CheckNetworkStaffException exceptionWithTitle:@"Check Network Fail" message:@"Please connect your device to network."];
 	}
 }
 
