@@ -38,7 +38,7 @@ public class UIButtonEvent {
    /** The attributes. */
    private Map<String, String> protocolAttrs = new HashMap<String, String>();
 
-
+   private String delay = "";
    /**
     * Gets the id.
     * 
@@ -92,4 +92,24 @@ public class UIButtonEvent {
    public void setProtocolAttrs(Map<String, String> protocolAttrs) {
       this.protocolAttrs = protocolAttrs;
    }
+
+   /**
+    * Gets the delay.
+    * 
+    * @return the delay
+    */
+   public String getDelay() {
+      return delay;
+   }
+
+   /**
+    * Sets the delay.
+    * 
+    * @param delay the new delay
+    */
+   public void setDelay(String delay) {
+      this.delay = delay;
+   }
+   
+   
 }

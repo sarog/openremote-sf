@@ -49,6 +49,7 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.UIButtonEvent;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Activity;
+import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -465,6 +466,12 @@ public class ResourceServiceImpl implements ResourceService {
          for (DeviceMacroItem tempDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
             oneUIButtonEventList.addAll(getEventsOfDeviceMacroItem(tempDeviceMacroItem, protocolEventContainer));
          }
+      } else if(deviceMacroItem instanceof CommandDelay){
+         CommandDelay delay = (CommandDelay)deviceMacroItem;
+         UIButtonEvent uiButtonEvent = new UIButtonEvent();
+         uiButtonEvent.setId(this.eventId++);
+         uiButtonEvent.setDelay(delay.getDelaySecond());
+         oneUIButtonEventList.add(uiButtonEvent);
       }
       return oneUIButtonEventList;
    }
@@ -480,10 +487,27 @@ public class ResourceServiceImpl implements ResourceService {
    private String generateButtonXmlString(long uiButtonId, List<UIButtonEvent> uiButtonEventList) {
       StringBuffer buttonXml = new StringBuffer();
       buttonXml.append("    <button id=\"" + uiButtonId + "\">\n");
-      for (UIButtonEvent uiButtonEvent : uiButtonEventList) {
-         buttonXml.append("      <event>");
-         buttonXml.append(uiButtonEvent.getId());
-         buttonXml.append("</event>\n");
+//      for (UIButtonEvent uiButtonEvent : uiButtonEventList) {
+//         buttonXml.append("      <event>");
+//         buttonXml.append(uiButtonEvent.getId());
+//         buttonXml.append("</event>\n");
+//      }
+      for (int i = 0; i < uiButtonEventList.size(); i++) {
+         UIButtonEvent uiButtonEvent = uiButtonEventList.get(i);
+         if("".equals(uiButtonEvent.getDelay())){
+            if(uiButtonEventList.size() > (i+1)){
+               UIButtonEvent nextButtonEvent = uiButtonEventList.get(i+1);
+               if("".equals(nextButtonEvent.getDelay())){
+                  buttonXml.append("      <event>");
+               } else {
+                  buttonXml.append("      <event delay=\"" + nextButtonEvent.getDelay() + "\">");
+               }
+            } else {
+               buttonXml.append("      <event>");
+            }
+            buttonXml.append(uiButtonEvent.getId());
+            buttonXml.append("</event>\n");
+         }
       }
       buttonXml.append("    </button>\n");
       return buttonXml.toString();
