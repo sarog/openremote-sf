@@ -30,32 +30,33 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class AutoSaveResponse implements Serializable {
 
-   /** The is saved success. */
-   private boolean isSavedSuccess;
+   /** The is updated. */
+   private boolean isUpdated;
    
    /**
     * Instantiates a new auto save response.
     */
    public AutoSaveResponse() {
       super();
-      this.isSavedSuccess = false;
+      this.isUpdated = false;
    }
 
    /**
-    * Checks if is saved success.
+    * Checks if is updated.
     * 
-    * @return true, if is saved success
+    * @return true, if is updated
     */
-   public boolean isSavedSuccess() {
-      return isSavedSuccess;
+   public boolean isUpdated() {
+      return isUpdated;
    }
 
    /**
-    * Sets the saved success.
+    * Sets the updated.
     * 
-    * @param isSavedSuccess the new saved success
+    * @param isUpdated the new updated
     */
-   public void setSavedSuccess(boolean isSavedSuccess) {
-      this.isSavedSuccess = isSavedSuccess;
+   public void setUpdated(boolean isUpdated) {
+      this.isUpdated = isUpdated;
    }
+
 }
