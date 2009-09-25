@@ -458,6 +458,7 @@ public class ResourceServiceImpl implements ResourceService {
          for (ProtocolAttr protocolAttr : protocolAttrs) {
             uiButtonEvent.getProtocolAttrs().put(protocolAttr.getName(), protocolAttr.getValue());
          }
+         uiButtonEvent.setLabel(deviceCommand.getName());
          protocolEventContainer.addUIButtonEvent(uiButtonEvent);
          oneUIButtonEventList.add(uiButtonEvent);
       } else if (deviceMacroItem instanceof DeviceMacroRef) {

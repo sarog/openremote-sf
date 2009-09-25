@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.UIButtonEvent;
 import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.service.ProtocolParser;
@@ -154,6 +155,10 @@ public class ProtocolEventContainer {
          for (UIButtonEvent uiButtonEvent : protocolEvents.get(protocolDisplayName)) {
             String eventTagName = protocolTagName + "Event";
             uiButtonEventXml.append("      <" + eventTagName + " id=\"" + uiButtonEvent.getId() + "\"");
+            // All other protocol events required "label" attribute except Infrared protocol event.
+            if (!Constants.INFRARED_TYPE.equals(protocolDisplayName)) {
+               uiButtonEventXml.append(" label=\"" + uiButtonEvent.getLabel() + "\"");
+            }
             Set<String> protocolAttrKeySet = uiButtonEvent.getProtocolAttrs().keySet();
             for (String attrKey : protocolAttrKeySet) {
                uiButtonEventXml.append(" " + attrKey + "=\"" + uiButtonEvent.getProtocolAttrs().get(attrKey) + "\"");
