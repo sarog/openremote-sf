@@ -283,6 +283,7 @@ public class ChangeIconWindow extends Dialog {
       imageUpload.setName("uploadImage");
       imageUpload.setRegex(".+?\\.(png|gif|jpg)");
       imageUpload.getMessages().setRegexText("Please select a gif, jpg or png type image.");
+      imageUpload.setStyleAttribute("overflow", "hidden");
       uploadPanel.setSize(320, 80);
       uploadPanel.setLabelWidth(45);
       uploadPanel.setHeaderVisible(false);
