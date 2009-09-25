@@ -79,6 +79,7 @@ public class ImportZipWindow extends FormWindow {
       fileUploadField.setName("file");
       fileUploadField.setAllowBlank(false);
       fileUploadField.setFieldLabel("File");
+      fileUploadField.setStyleAttribute("overflow", "hidden");
       form.add(fileUploadField);
    }
 
