@@ -438,6 +438,7 @@ public class ActivityPanel extends ContentPanel {
                      deviceCommand.setName(deviceCommandJSON.get("name").isString().stringValue());
                      deviceCommand.setOid(Integer.parseInt(deviceCommandJSON.get("oid").toString()));
                      deviceCommand.setDevice(device);
+                     deviceCommand.setSectionId(deviceCommandJSON.get("sectionId").isString().stringValue());
                      
                      deviceCommandRef.setDeviceCommand(deviceCommand);
                      uiButton.setUiCommand(deviceCommandRef);
