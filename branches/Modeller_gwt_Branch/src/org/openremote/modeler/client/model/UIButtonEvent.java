@@ -24,21 +24,24 @@ import java.util.Map;
 
 /**
  * The Class UIButtonEvent.
- * 
- * @author handy.wang
  */
 public class UIButtonEvent {
 
-   /** The type. */
+   /** The protocol display name. */
    private String protocolDisplayName;
 
    /** The id. */
    private long id;
 
-   /** The attributes. */
+   /** The protocol attrs. */
    private Map<String, String> protocolAttrs = new HashMap<String, String>();
 
+   /** The delay is used in a button event. */
    private String delay = "";
+
+   /** The label is used by all event except irEvent. */
+   private String label = "";
+   
    /**
     * Gets the id.
     * 
@@ -110,6 +113,23 @@ public class UIButtonEvent {
    public void setDelay(String delay) {
       this.delay = delay;
    }
-   
+
+   /**
+    * Gets the label.
+    * 
+    * @return the label
+    */
+   public String getLabel() {
+      return label;
+   }
+
+   /**
+    * Sets the label.
+    * 
+    * @param label the new label
+    */
+   public void setLabel(String label) {
+      this.label = label;
+   }
    
 }
