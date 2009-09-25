@@ -15,6 +15,7 @@
 		30A5A27B0F8BCC59000FCB89 /* KNXHPAI.m in Sources */ = {isa = PBXBuildFile; fileRef = 30A5A2720F8BCC59000FCB89 /* KNXHPAI.m */; };
 		30A5A27C0F8BCC59000FCB89 /* KNXnetPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 30A5A2740F8BCC59000FCB89 /* KNXnetPacket.m */; };
 		30A5A28C0F8BD72E000FCB89 /* KNXtest.m in Sources */ = {isa = PBXBuildFile; fileRef = 30A5A28B0F8BD72E000FCB89 /* KNXtest.m */; };
+		30AC1F5A0FFE49C2009617F9 /* KNXServerDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 30AC1F590FFE49C2009617F9 /* KNXServerDescription.m */; };
 		8DD76F9A0486AA7600D96B5E /* KNX-Stack.m in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* KNX-Stack.m */; settings = {ATTRIBUTES = (); }; };
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
 		8DD76F9F0486AA7600D96B5E /* KNX-Stack.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859EA3029092ED04C91782 /* KNX-Stack.1 */; };
@@ -53,6 +54,8 @@
 		30A5A2740F8BCC59000FCB89 /* KNXnetPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KNXnetPacket.m; path = Classes/KNXnetPacket.m; sourceTree = "<group>"; };
 		30A5A28A0F8BD72E000FCB89 /* KNXtest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KNXtest.h; sourceTree = "<group>"; };
 		30A5A28B0F8BD72E000FCB89 /* KNXtest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KNXtest.m; sourceTree = "<group>"; };
+		30AC1F580FFE49C2009617F9 /* KNXServerDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KNXServerDescription.h; path = Classes/KNXServerDescription.h; sourceTree = "<group>"; };
+		30AC1F590FFE49C2009617F9 /* KNXServerDescription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KNXServerDescription.m; path = Classes/KNXServerDescription.m; sourceTree = "<group>"; };
 		32A70AAB03705E1F00C91783 /* KNX-Stack_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KNX-Stack_Prefix.pch"; sourceTree = "<group>"; };
 		8DD76FA10486AA7600D96B5E /* KNX-Stack */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "KNX-Stack"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6859EA3029092ED04C91782 /* KNX-Stack.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = "KNX-Stack.1"; sourceTree = "<group>"; };
@@ -123,6 +126,8 @@
 		30A5A2620F8BCC12000FCB89 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				30AC1F580FFE49C2009617F9 /* KNXServerDescription.h */,
+				30AC1F590FFE49C2009617F9 /* KNXServerDescription.m */,
 				30A5A2670F8BCC59000FCB89 /* KNXcEMIHeader.h */,
 				30A5A2680F8BCC59000FCB89 /* KNXcEMIHeader.m */,
 				30A5A2690F8BCC59000FCB89 /* KNXconnection.h */,
@@ -199,6 +204,7 @@
 				30A5A27B0F8BCC59000FCB89 /* KNXHPAI.m in Sources */,
 				30A5A27C0F8BCC59000FCB89 /* KNXnetPacket.m in Sources */,
 				30A5A28C0F8BD72E000FCB89 /* KNXtest.m in Sources */,
+				30AC1F5A0FFE49C2009617F9 /* KNXServerDescription.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
