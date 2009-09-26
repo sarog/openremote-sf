@@ -85,9 +85,10 @@
 					<xsd:element ref="irEvents"/>
 					<xsd:element ref="knxEvents"/>
 					<xsd:element ref="x10Events"/>
-          <xsd:element ref="httpEvents"/>
-          <xsd:element ref="socketEvents"/>
-          <xsd:element ref="telnetEvents"/>
+         			<xsd:element ref="httpEvents"/>
+          			<xsd:element ref="socketEvents"/>
+          			<xsd:element ref="telnetEvents"/>
+          			<xsd:element ref="upnpEvents"/>
 				</xsd:choice>
 			</xsd:sequence>
 		</xsd:complexType>		
@@ -272,6 +273,60 @@
 			<xsd:attribute name = "ip"       type = "xsd:string" use = "required"/>
       <xsd:attribute name = "port"     type = "xsd:string" use = "required"/>
       <xsd:attribute name = "command"  type = "xsd:string" use = "required"/>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<!--================= UPnP EVENTS ==============-->
+	<xsd:element name="upnpEvents">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+				The parent element of <upnpEvent> tags.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="upnpEvent" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="upnpEvent">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+				The event to control a device with UPnP protocol.
+			]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence maxOccurs="unbounded" minOccurs="0">
+				<xsd:element name="upnpEventArgument">
+					<xsd:annotation>
+						<xsd:documentation>
+							<![CDATA[
+				Optionnal arguments for upnpEvent.
+			]]>
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attributeGroup ref="idAttr" />
+			<xsd:attribute name="label" type="xsd:string"
+    				use="required" />
+			<xsd:attribute name="device" type="xsd:string"
+    				use="required" />
+			<xsd:attribute name="action" type="xsd:string"
+    				use="required" />
+
+		</xsd:complexType>
+	</xsd:element>
+
+
+	<xsd:element name="upnpEventArgument">
+		<xsd:complexType>
+			<xsd:attribute name="name" type="xsd:string" use="required" />
+			<xsd:attribute name="value" type="xsd:string" use="required" />
 		</xsd:complexType>
 	</xsd:element>
 
