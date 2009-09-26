@@ -50,7 +50,7 @@ public class UPnPEventBuilder implements EventBuilder {
 		HashMap<String, String> args = new HashMap<String, String>();
 		for (int i = 0; i < element.getChildren().size(); i++) {
 			Element child = (Element)element.getChildren().get(i);
-			if (child.getName().equals("argument")) {
+			if (child.getName().equals("upnpEventArgument")) {
 				args.put(child.getAttributeValue("name"), child.getAttributeValue("value"));
 			}
 		}
