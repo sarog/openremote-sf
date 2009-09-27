@@ -60,6 +60,8 @@ public class Constants {
    /** The Constant SCREEN_TABLE_OID. */
    public static final long SCREEN_TABLE_OID = -400;
    
+   public static final long PREVIEW_SCREENBUTTON_OID = -500;
+   
    /** The Constant PANEL_DESC_FILE_EXT. */
    public static final String PANEL_DESC_FILE = "import";
 }

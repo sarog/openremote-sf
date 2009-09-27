@@ -19,11 +19,12 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
-import org.openremote.modeler.client.icon.uidesigner.UIDesignerImages;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.domain.UIButton;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BaseListLoader;
@@ -63,7 +64,6 @@ import com.extjs.gxt.ui.client.widget.layout.VBoxLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.BoxLayout.BoxLayoutPack;
 import com.extjs.gxt.ui.client.widget.layout.VBoxLayout.VBoxLayoutAlign;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Image;
 
 /**
  * The Class ChangeIconWindow.
@@ -107,7 +107,7 @@ public class ChangeIconWindow extends Dialog {
    private ScreenButton screenButton;
    
    /** The preview image. */
-   private Image previewImage = ((UIDesignerImages) GWT.create(UIDesignerImages.class)).iphoneBtn().createImage();
+//   private Image previewImage = ((UIDesignerImages) GWT.create(UIDesignerImages.class)).iphoneBtn().createImage();
    
    /** The window. */
    private ChangeIconWindow window;
@@ -117,8 +117,14 @@ public class ChangeIconWindow extends Dialog {
     * @param screenButton the screen button
     */
    public ChangeIconWindow(ScreenButton screenButton) {
-      this.screenButton = screenButton;
+      cloneScreenButton(screenButton);
       window = this;
+      System.out.println(screenButton.getWidth());
+      if(screenButton.getWidth() > 90){
+         setMinWidth(400 + screenButton.getWidth() + 16);
+      } else {
+         setMinWidth(500);
+      }
       initial();
       show();
    }
@@ -127,9 +133,8 @@ public class ChangeIconWindow extends Dialog {
     * Initial.
     */
    private void initial() {
-      setHeading("Change Icon");
-      setMinWidth(500);
       setMinHeight(350);
+      setHeading("Change Icon");
       setModal(true);
       setLayout(new BorderLayout());
       setButtons(Dialog.OKCANCEL);  
@@ -163,9 +168,9 @@ public class ChangeIconWindow extends Dialog {
          createContentCotainer();
       }
       
-      BorderLayoutData eastData = new BorderLayoutData(LayoutRegion.EAST, 100, 100, 200);  
-      eastData.setSplit(true);
-      add(previewIconContainer, eastData);
+      BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);  
+      centerData.setSplit(true);
+      add(previewIconContainer, centerData);
       
    }
    
@@ -305,9 +310,9 @@ public class ChangeIconWindow extends Dialog {
       urlPanel.hide();
       uploadPanel.hide();
       
-      BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);  
-      centerData.setMargins(new Margins(0, 5, 0, 0));
-      add(iconContainer, centerData);
+      BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 380, 320, 400);
+      westData.setMargins(new Margins(0, 5, 0, 0));
+      add(iconContainer, westData);
    }
 
    /**
@@ -321,26 +326,27 @@ public class ChangeIconWindow extends Dialog {
       previewIconContainer.setLayout(layout);
       previewIconContainer.setBorders(true);
       previewIconContainer.setStyleAttribute("backgroundColor", "white");
-      
       Button preview = new Button("Preview");
       preview.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             setImageURL(); 
             if (imageURL != null) {
-               previewImage.setUrl(imageURL);
-               previewImage.setSize("46px", "46px");
+//               previewImage.setUrl(imageURL);
+//               previewImage.setSize("46px", "46px");
+               screenButton.setIcon(imageURL);
+               layout();
             } else {
                MessageBox.alert("Error", "Please input a image URL.", null);
             }
          }
       });
-      imageURL = screenButton.getButtonIcon();
-      if (imageURL != null) {
-         previewImage.setUrl(imageURL);
-         previewImage.setSize("46px", "46px");
-      }
-      previewIconContainer.add(previewImage, new VBoxLayoutData(new Margins(0, 0, 5, 0)));
+//      imageURL = screenButton.getButtonIcon();
+//      if (imageURL != null) {
+//         previewImage.setUrl(imageURL);
+//         previewImage.setSize("46px", "46px");
+//      }
+      previewIconContainer.add(screenButton, new VBoxLayoutData(new Margins(0, 0, 5, 0)));
       previewIconContainer.add(preview, new VBoxLayoutData(new Margins(5, 0, 5, 0)));
    }
    
@@ -406,4 +412,16 @@ public class ChangeIconWindow extends Dialog {
          
    }
    
+   private void cloneScreenButton(ScreenButton screenButton) {
+      UIButton oldUIButton = (UIButton) screenButton.getData(ScreenButton.DATA_BUTTON);
+      UIButton newUIButton = new UIButton(Constants.PREVIEW_SCREENBUTTON_OID);
+      newUIButton.setLabel(oldUIButton.getLabel());
+      newUIButton.setUiCommand(oldUIButton.getUiCommand());
+      this.screenButton = new ScreenButton(newUIButton, screenButton.getWidth(), screenButton.getHeight());
+      imageURL = screenButton.getButtonIcon();
+      if (imageURL != null) {
+         this.screenButton.setIcon(imageURL);
+      }
+      this.screenButton.addStyleName("button-border");
+   }
 }
