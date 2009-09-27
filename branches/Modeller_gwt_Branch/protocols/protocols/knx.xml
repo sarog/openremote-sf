@@ -6,7 +6,7 @@
 			<validations>
 				<allowBlank>false</allowBlank>
 				<!-- message is option -->
-				<regex message="group address should be 1.4.1.4">(\d\.){3}\d</regex>
+				<!-- <regex message="group address should be 1.4.1.4">(\d\.){3}\d</regex> -->
 			</validations>
 		</attr>
 		<attr name="command" label="KNX Command">
