@@ -267,4 +267,12 @@ public interface Icons extends ImageBundle {
     */
    @Resource("save.gif")
    AbstractImagePrototype saveIcon();
+   
+   /**
+    * Change icon.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("picture_edit.png")
+   AbstractImagePrototype changeIcon();
 }

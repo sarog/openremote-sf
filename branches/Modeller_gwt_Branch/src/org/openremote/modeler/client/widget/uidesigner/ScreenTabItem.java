@@ -131,7 +131,7 @@ public class ScreenTabItem extends TabItem {
     */
    private Button createChangeIconBtn() {
       Button changeIconBtn = new Button("Change Icon");
-      changeIconBtn.setIcon(icon.edit());
+      changeIconBtn.setIcon(icon.changeIcon());
       changeIconBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
