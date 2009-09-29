@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,10 @@ import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.UIButton;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
+import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
@@ -75,20 +79,31 @@ public class ScreenTabItem extends TabItem {
       setColumn(screen.getColumnCount());
       setClosable(true);
       setLayout(new FlowLayout());
-      createToolBar();
-      createScreenPanel(s);
+      List<Button> toolBarBtns = createToolBar();
+      createScreenPanel(s, toolBarBtns);
 
    }
 
    /**
     * Creates the tool bar.
+    * 
+    * @return the list< button>
     */
-   private void createToolBar() {
+   private List<Button> createToolBar() {
       ToolBar toolBar = new ToolBar();
-      toolBar.add(createRenameBtn());
-      toolBar.add(createChangeIconBtn());
-      toolBar.add(createDeleteBtn());
+      List<Button> toolBarBtns = new ArrayList<Button>();
+      Button renameBtn = createRenameBtn();
+      Button changeIconBtn = createChangeIconBtn();
+      Button deleteBtn = createDeleteBtn();
+      toolBarBtns.add(renameBtn);
+      toolBarBtns.add(changeIconBtn);
+      toolBarBtns.add(deleteBtn);
+      
+      toolBar.add(renameBtn);
+      toolBar.add(changeIconBtn);
+      toolBar.add(deleteBtn);
       add(toolBar);
+      return toolBarBtns;
    }
    
    /**
@@ -98,6 +113,7 @@ public class ScreenTabItem extends TabItem {
     */
    private Button createRenameBtn() {
       Button renameBtn = new Button("Rename Button");
+      renameBtn.setEnabled(false);
       renameBtn.setIcon(icon.edit());
       renameBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
@@ -131,6 +147,7 @@ public class ScreenTabItem extends TabItem {
     */
    private Button createChangeIconBtn() {
       Button changeIconBtn = new Button("Change Icon");
+      changeIconBtn.setEnabled(false);
       changeIconBtn.setIcon(icon.changeIcon());
       changeIconBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
@@ -163,6 +180,7 @@ public class ScreenTabItem extends TabItem {
     */
    private Button createDeleteBtn() {
       Button deleteBtn = new Button("Delete");
+      deleteBtn.setEnabled(false);
       deleteBtn.setIcon(icon.delete());
       deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
          @Override
@@ -184,11 +202,29 @@ public class ScreenTabItem extends TabItem {
     * Creates the screen panel.
     * 
     * @param screen the screen
+    * @param toolBarBtns the tool bar btns
     */
-   private void createScreenPanel(Screen screen) {
+   private void createScreenPanel(Screen screen, final List<Button> toolBarBtns) {
       Map<String, List<TouchPanelDefinition>> panels = TouchPanels.getInstance();
       TouchPanelDefinition panelDefinition = panels.get("iphone").get(0);
       screenPanel = new ScreenPanel(screen, panelDefinition);
+      screenPanel.addListener(Events.AfterLayout, new Listener<BaseEvent>() {
+         @Override
+         public void handleEvent(BaseEvent be) {
+            if (screenPanel.getSelectedButton() != null) {
+               if (!toolBarBtns.get(0).isEnabled()) {
+                  for (Button button : toolBarBtns) {
+                     button.setEnabled(true);
+                  }
+               }
+            } else {
+               for (Button button : toolBarBtns) {
+                  button.setEnabled(false);
+               }
+            }
+         }
+         
+      });
       add(screenPanel);
       
    }

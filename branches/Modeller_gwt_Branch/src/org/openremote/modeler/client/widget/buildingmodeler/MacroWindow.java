@@ -19,13 +19,17 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.ListViewDropTargetMacroDragExt;
+import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
+import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
 import org.openremote.modeler.client.gxtextends.TreePanelDragSourceMacroDragExt;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
+import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
@@ -107,6 +111,9 @@ public class MacroWindow extends FormWindow {
    /** The Constant MACRO_ITEM_LIST_DISPLAY_FIELD. */
    private static final String MACRO_ITEM_LIST_DISPLAY_FIELD = "macro_item_label";
 
+   /** The selection service. */
+   private SelectionServiceExt<BeanModel> selectionService;
+   
    /**
     * Instantiates a new macro window.
     */
@@ -132,6 +139,7 @@ public class MacroWindow extends FormWindow {
     * Setup.
     */
    private void setup() {
+      selectionService = new SelectionServiceExt<BeanModel>();
       setPlain(true);
       setBlinkModal(true);
       setWidth(530);
@@ -308,7 +316,9 @@ public class MacroWindow extends FormWindow {
       rightListContainer.setTopComponent(toolBar);
 
       rightMacroItemListView = createRightMacroItemListView();
-
+      
+      selectionService.addListener(new SourceSelectionChangeListenerExt(rightMacroItemListView.getSelectionModel()));
+      selectionService.register(rightMacroItemListView.getSelectionModel());
       setupRightMacroItemDND();
 
       rightListContainer.add(rightMacroItemListView);
@@ -325,7 +335,8 @@ public class MacroWindow extends FormWindow {
     */
    private ToolBar createRightMacroItemListToolbar() {
       ToolBar toolBar = new ToolBar();
-
+      List<Button> editDelBtns = new ArrayList<Button>();
+      
       Button addDelayBtn = new Button();
       addDelayBtn.setToolTip("Add Delay");
       addDelayBtn.setIcon(icons.addDelayIcon());
@@ -339,6 +350,7 @@ public class MacroWindow extends FormWindow {
       toolBar.add(addDelayBtn);
       
       Button editDelayBtn = new Button();
+      editDelayBtn.setEnabled(false);
       editDelayBtn.setToolTip("Edit Delay");
       editDelayBtn.setIcon(icons.editDelayIcon());
       editDelayBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -348,8 +360,10 @@ public class MacroWindow extends FormWindow {
          }
       });
       toolBar.add(editDelayBtn);
-
+      editDelBtns.add(editDelayBtn);
+      
       Button deleteBtn = new Button();
+      deleteBtn.setEnabled(false);
       deleteBtn.setToolTip("Delete Macro Item");
       deleteBtn.setIcon(icons.delete());
       deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
@@ -361,6 +375,8 @@ public class MacroWindow extends FormWindow {
 
       });
       toolBar.add(deleteBtn);
+      editDelBtns.add(deleteBtn);
+      selectionService.addListener(new EditDelBtnSelectionListener(editDelBtns));
       return toolBar;
    }
 
@@ -459,6 +475,7 @@ public class MacroWindow extends FormWindow {
             delayWindow.hide();
             BeanModel delayModel = be.getData();
             rightMacroItemListView.getStore().add(delayModel);
+            rightMacroItemListView.getSelectionModel().select(delayModel, false);
             Info.display("Info", "Add delay " + delayModel.get("name") + " success.");
          }
       });

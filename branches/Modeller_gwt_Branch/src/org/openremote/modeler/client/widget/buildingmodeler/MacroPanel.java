@@ -20,13 +20,17 @@
 
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
+import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
+import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
@@ -76,12 +80,16 @@ public class MacroPanel extends ContentPanel {
    /** The change listener map. */
    private Map<BeanModel, ChangeListener> changeListenerMap = null;
 
+   /** The selection service. */
+   private SelectionServiceExt<BeanModel> selectionService;
+   
    /**
     * Instantiates a new macro panel.
     */
    public MacroPanel() {
       setHeading("Macros");
       setLayout(new FitLayout());
+      selectionService = new SelectionServiceExt<BeanModel>();
       createMenu();
       createMacroTree();
       setIcon(icons.macroIcon());
@@ -112,8 +120,10 @@ public class MacroPanel extends ContentPanel {
          }
       });
       macroToolBar.add(newMacroBtn);
-
+      
+      List<Button> editDelBtns = new ArrayList<Button>();
       Button editMacroBtn = new Button("Edit");
+      editMacroBtn.setEnabled(false);
       editMacroBtn.setToolTip("Edit Macro");
       editMacroBtn.setIcon(icons.macroEditIcon());
       editMacroBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -125,6 +135,7 @@ public class MacroPanel extends ContentPanel {
       });
       macroToolBar.add(editMacroBtn);
       Button deleteMacroBtn = new Button("Delete");
+      deleteMacroBtn.setEnabled(false);
       deleteMacroBtn.setToolTip("Delete Macro");
       deleteMacroBtn.setIcon(icons.macroDeleteIcon());
       
@@ -135,6 +146,9 @@ public class MacroPanel extends ContentPanel {
          }
       });
       macroToolBar.add(deleteMacroBtn);
+      editDelBtns.add(editMacroBtn);
+      editDelBtns.add(deleteMacroBtn);
+      selectionService.addListener(new EditDelBtnSelectionListener(editDelBtns));
       setTopComponent(macroToolBar);
    }
 
@@ -148,6 +162,8 @@ public class MacroPanel extends ContentPanel {
             super.onRender(parent, index);
             if (macroTree == null) {
                macroTree = TreePanelBuilder.buildMacroTree();
+               selectionService.addListener(new SourceSelectionChangeListenerExt(macroTree.getSelectionModel()));
+               selectionService.register(macroTree.getSelectionModel());
                addTreeStoreEventListener();
                macroListContainer.add(macroTree);
             }
