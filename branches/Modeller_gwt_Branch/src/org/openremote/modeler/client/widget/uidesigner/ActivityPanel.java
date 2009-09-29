@@ -24,8 +24,11 @@ import java.util.List;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
+import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
+import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.Position;
 import org.openremote.modeler.client.proxy.ActivityBeanModelProxy;
@@ -51,9 +54,10 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeListener;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -84,12 +88,15 @@ public class ActivityPanel extends ContentPanel {
    /** The icon. */
    private Icons icon = GWT.create(Icons.class);
    
+   /** The selection service. */
+   private SelectionServiceExt<BeanModel> selectionService;
    /**
     * Instantiates a new activity panel.
     * 
     * @param screenTab the screen tab
     */
    public ActivityPanel(ScreenTab screenTab) {
+      selectionService = new SelectionServiceExt<BeanModel>();
       setHeading("Activity");
       setIcon(icon.activityIcon());
       setLayout(new FitLayout());
@@ -104,6 +111,8 @@ public class ActivityPanel extends ContentPanel {
     */
    private void createActivityTree(ScreenTab screenTab) {
       tree = TreePanelBuilder.buildActivityTree(screenTab);    
+      selectionService.addListener(new SourceSelectionChangeListenerExt(tree.getSelectionModel()));
+      selectionService.register(tree.getSelectionModel());
       LayoutContainer treeContainer = new LayoutContainer() {
          @Override
          protected void onRender(Element parent, int index) {
@@ -140,9 +149,19 @@ public class ActivityPanel extends ContentPanel {
     */
    private void createMenu() {
       ToolBar toolBar = new ToolBar();
+      List<Button> editDelBtns = new ArrayList<Button>();
       toolBar.add(createNewBtn());
-      toolBar.add(createEditBtn());
-      toolBar.add(createDeleteBtn());
+      
+      Button editBtn = createEditBtn();
+      editBtn.setEnabled(false);
+      Button deleteBtn = createDeleteBtn();
+      deleteBtn.setEnabled(false);
+      
+      toolBar.add(editBtn);
+      toolBar.add(deleteBtn);
+      editDelBtns.add(editBtn);
+      editDelBtns.add(deleteBtn);
+      selectionService.addListener(new EditDelBtnSelectionListener(editDelBtns));
       setTopComponent(toolBar);
    }
 
@@ -157,8 +176,21 @@ public class ActivityPanel extends ContentPanel {
       newButton.setIcon(icon.add());
 
       Menu newMenu = new Menu();
+      final MenuItem newScreenMenuItem = createNewScreenMenuItem();
       newMenu.add(createNewActivityMenuItem());
-      newMenu.add(createNewScreenMenuItem());
+      newMenu.add(newScreenMenuItem);
+      newMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>(){
+         @Override
+         public void handleEvent(MenuEvent be) {
+            boolean enabled = false;
+            BeanModel selectedBeanModel = tree.getSelectionModel().getSelectedItem();
+            if(selectedBeanModel != null && selectedBeanModel.getBean() instanceof Activity){
+               enabled = true;
+            }
+            newScreenMenuItem.setEnabled(enabled);
+         }
+         
+      });
       newButton.setMenu(newMenu);
       return newButton;
    }
@@ -244,7 +276,7 @@ public class ActivityPanel extends ContentPanel {
     * 
     * @return a edit buttion
     */
-   private Component createEditBtn() {
+   private Button createEditBtn() {
       Button editBtn = new Button("Edit");
       editBtn.ensureDebugId(DebugId.ACTIVITY_EDIT_BTN);
       editBtn.setIcon(icon.edit());
@@ -303,7 +335,7 @@ public class ActivityPanel extends ContentPanel {
     * 
     * @return a delete button
     */
-   private Component createDeleteBtn() {
+   private Button createDeleteBtn() {
       Button deleteBtn = new Button("Delete");
       deleteBtn.ensureDebugId(DebugId.ACTIVITY_DELETE_BTN);
       deleteBtn.setIcon(icon.delete());

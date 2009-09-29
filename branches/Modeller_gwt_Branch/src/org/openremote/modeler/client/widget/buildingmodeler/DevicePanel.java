@@ -19,11 +19,15 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
+import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
+import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
@@ -36,6 +40,8 @@ import org.openremote.modeler.selenium.DebugId;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
@@ -60,6 +66,9 @@ public class DevicePanel extends ContentPanel {
    /** The tree. */
    private TreePanel<BeanModel> tree;
    
+   /** The selection service. */
+   private SelectionServiceExt<BeanModel> selectionService;
+   
    /** The icon. */
    private Icons icon = GWT.create(Icons.class);
 
@@ -70,6 +79,7 @@ public class DevicePanel extends ContentPanel {
       setHeading("Device");
       setIcon(icon.device());
       setLayout(new FitLayout());
+      selectionService = new SelectionServiceExt<BeanModel>();
       createMenu();
       createTreeContainer();
       show();
@@ -80,18 +90,23 @@ public class DevicePanel extends ContentPanel {
     */
    private void createTreeContainer() {
       tree = TreePanelBuilder.buildDeviceCommandTree();
+      selectionService.addListener(new SourceSelectionChangeListenerExt(tree.getSelectionModel()));
+      selectionService.register(tree.getSelectionModel());
       LayoutContainer treeContainer = new LayoutContainer() {
          @Override
          protected void onRender(Element parent, int index) {
             super.onRender(parent, index);
             add(tree);
          }
+         
       };
+      
       treeContainer.ensureDebugId(DebugId.DEVICE_TREE_CONTAINER);
       treeContainer.setScrollMode(Scroll.AUTO);
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
       add(treeContainer);
+      
    }
    
    /**
@@ -105,16 +120,39 @@ public class DevicePanel extends ContentPanel {
       
       Menu newMenu = new Menu();
       newMenu.add(createNewDeviceMenuItem());
-      newMenu.add(createNewCommandMenu());
-      newMenu.add(createImportMenuItem());
-
+      final MenuItem newCommandMemuItem = createNewCommandMenu();
+      final MenuItem importCommandMemuItem = createImportMenuItem();
+      newMenu.add(newCommandMemuItem);
+      newMenu.add(importCommandMemuItem);
+      newMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
+         @Override
+         public void handleEvent(MenuEvent be) {
+            boolean enabled = false;
+            BeanModel selectedBeanModel = tree.getSelectionModel().getSelectedItem();
+            if (selectedBeanModel != null && selectedBeanModel.getBean() instanceof Device) {
+               enabled = true;
+            }
+            newCommandMemuItem.setEnabled(enabled);
+            importCommandMemuItem.setEnabled(enabled);
+         }
+         
+      });
       newButton.setMenu(newMenu);
       
       ToolBar toolBar = new ToolBar();
       toolBar.add(newButton);
-      toolBar.add(createEditButton());
-      toolBar.add(createDeleteButton());
       
+      List<Button> editDelBtns = new ArrayList<Button>(); 
+      Button editBtn = createEditButton();
+      editBtn.setEnabled(false);
+      Button deleteBtn = createDeleteButton();
+      deleteBtn.setEnabled(false);
+      editDelBtns.add(editBtn);
+      editDelBtns.add(deleteBtn);
+      
+      toolBar.add(editBtn);
+      toolBar.add(deleteBtn);
+      selectionService.addListener(new EditDelBtnSelectionListener(editDelBtns));
       setTopComponent(toolBar);
    }
 
@@ -348,3 +386,4 @@ public class DevicePanel extends ContentPanel {
       }
    }
 }
+

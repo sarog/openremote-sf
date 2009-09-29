@@ -37,10 +37,13 @@ import org.openremote.modeler.client.widget.uidesigner.ActivityPanel;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.domain.Activity;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.Margins;
@@ -98,7 +101,6 @@ public class ApplicationView implements View {
       auth.getAuthority(new AsyncCallback<Authority>() {
          public void onFailure(Throwable caught) {
             MessageBox.info("Info", caught.getMessage(), null);
-            caught.printStackTrace();
          }
          public void onSuccess(Authority authority) {
             if (authority != null) {
@@ -154,10 +156,27 @@ public class ApplicationView implements View {
       applicationFileButton.ensureDebugId(DebugId.APPLICATION_FILE_BTN);
 
       Menu fileMenu = new Menu();
-      fileMenu.add(createSaveMenuItem());
+      final MenuItem saveMenuItem = createSaveMenuItem();
+      final MenuItem exportMenuItem = createExportMenuItem();
+      saveMenuItem.setEnabled(false);
+      exportMenuItem.setEnabled(false);
+      
+      fileMenu.add(saveMenuItem);
       fileMenu.add(createImportMenuItem());
-      fileMenu.add(createExportMenuItem());
+      fileMenu.add(exportMenuItem);
       fileMenu.add(createLogoutMenuItem());
+      fileMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
+         @Override
+         public void handleEvent(MenuEvent be) {
+            boolean enabled = false;
+            if (BeanModelDataBase.activityTable.loadAll().size() > 0) {
+               enabled = true;
+            }
+            saveMenuItem.setEnabled(enabled);
+            exportMenuItem.setEnabled(enabled);
+         }
+         
+      });
       applicationFileButton.setMenu(fileMenu);
       return applicationFileButton;
    }
@@ -273,7 +292,7 @@ public class ApplicationView implements View {
    protected List<Activity> getAllActivities() {
       List<Activity> activityList = new ArrayList<Activity>();
       for (BeanModel activityBeanModel : BeanModelDataBase.activityTable.loadAll()) {
-         activityList.add((Activity)activityBeanModel.getBean());
+         activityList.add((Activity) activityBeanModel.getBean());
       }
       return activityList;
    }

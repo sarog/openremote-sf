@@ -119,8 +119,7 @@ public class ChangeIconWindow extends Dialog {
    public ChangeIconWindow(ScreenButton screenButton) {
       cloneScreenButton(screenButton);
       window = this;
-      System.out.println(screenButton.getWidth());
-      if(screenButton.getWidth() > 90){
+      if (screenButton.getWidth() > 90) {
          setMinWidth(400 + screenButton.getWidth() + 16);
       } else {
          setMinWidth(500);
@@ -412,6 +411,11 @@ public class ChangeIconWindow extends Dialog {
          
    }
    
+   /**
+    * Clone screen button attributes to the window's ScreenButton.
+    * 
+    * @param screenButton the screen button
+    */
    private void cloneScreenButton(ScreenButton screenButton) {
       UIButton oldUIButton = (UIButton) screenButton.getData(ScreenButton.DATA_BUTTON);
       UIButton newUIButton = new UIButton(Constants.PREVIEW_SCREENBUTTON_OID);

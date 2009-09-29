@@ -50,7 +50,6 @@ import com.google.gwt.user.client.ui.FlexTable;
  * The Class ScreenPanel.
  */
 public class ScreenPanel extends LayoutContainer {
-
    /** The screen. */
    private Screen screen;
 
@@ -85,7 +84,7 @@ public class ScreenPanel extends LayoutContainer {
       setStyleAttribute("paddingLeft", String.valueOf(panelDefinition.getPaddingLeft()));
       setStyleAttribute("paddingTop", String.valueOf(panelDefinition.getPaddingTop()));
       initBtnInArea();
-      createTable();
+      createTable(this);
 
    }
 
@@ -102,8 +101,10 @@ public class ScreenPanel extends LayoutContainer {
 
    /**
     * Creates the table.
+    * 
+    * @param screenPanel the screen panel
     */
-   private void createTable() {
+   private void createTable(final ScreenPanel screenPanel) {
       int gridWidth = panelDefinition.getGrid().getWidth();
       int gridHeight = panelDefinition.getGrid().getHeight();
       FlexTable screenTable = new FlexTable();
@@ -148,7 +149,7 @@ public class ScreenPanel extends LayoutContainer {
                   button.setUiCommand(uiCommand);
                   button.setPosition(targetPosition);
                   screen.addButton(button);
-                  screenBtn = createScreenButton(cellWidth, cellHeight, button);
+                  screenBtn = createScreenButton(cellWidth, cellHeight, button, screenPanel);
                   createDragSource(screenBtn);
                   add(screenBtn);
                   screenBtn.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
@@ -181,7 +182,8 @@ public class ScreenPanel extends LayoutContainer {
          List<UIButton> buttons = screen.getButtons();
          for (UIButton button : buttons) {
             Position pos = button.getPosition();
-            ScreenButton screenBtn = createScreenButton((cellWidth + 1) * button.getWidth() - 1, (cellHeight + 1) * button.getHeight() - 1, button);
+            ScreenButton screenBtn = createScreenButton((cellWidth + 1) * button.getWidth() - 1, (cellHeight + 1)
+                  * button.getHeight() - 1, button, screenPanel);
             makeButtonResizable(cellWidth, cellHeight, screenBtn);
             screenBtn.setPosition(panelDefinition.getPaddingLeft() + cellWidth * pos.getPosX() + pos.getPosX() + 1, panelDefinition.getPaddingTop() + cellHeight
                   * pos.getPosY() + pos.getPosY() + 1);
@@ -293,10 +295,11 @@ public class ScreenPanel extends LayoutContainer {
     * @param width the width
     * @param height the height
     * @param button the button
+    * @param screenPanel the screen panel
     * 
     * @return the screen button
     */
-   private ScreenButton createScreenButton(final int width, final int height, UIButton button) {
+   private ScreenButton createScreenButton(final int width, final int height, UIButton button, final ScreenPanel screenPanel) {
       ScreenButton screenBtn = new ScreenButton(button, width, height) {
          @Override
          public void onBrowserEvent(Event event) {
@@ -306,6 +309,7 @@ public class ScreenPanel extends LayoutContainer {
                   selectedButton.removeStyleName("button-border");
                }
                selectedButton = (ScreenButton) this;
+               screenPanel.layout();  // this would fire AfterLayout event.
             }
             super.onBrowserEvent(event);
          }
@@ -329,6 +333,7 @@ public class ScreenPanel extends LayoutContainer {
     */
    public void delete(ScreenButton screenButton) {
       screenButton.clearArea(btnInArea);
+      selectedButton = null;
       remove(screenButton);
    }
 
