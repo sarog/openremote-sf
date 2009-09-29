@@ -40,7 +40,6 @@ import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceMacro;
-import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -292,6 +291,10 @@ public class MacroWindow extends FormWindow {
                e.setCancelled(true);
                e.getStatus().setStatus(false);
             }
+            if (beanModel.equals(deviceMacroBeanModel)) { // when edit macro, can not dnd oneself.
+               e.setCancelled(true);
+               e.getStatus().setStatus(false);
+            }
             super.dragStart(e);
          }
 
@@ -389,7 +392,7 @@ public class MacroWindow extends FormWindow {
       dropTarget.setGroup(MACRO_DND_GROUP);
       dropTarget.setFeedback(Feedback.INSERT);
       dropTarget.setOperation(Operation.MOVE);
-
+      
       ListViewDragSource dragSource = new ListViewDragSource(rightMacroItemListView);
       dragSource.setGroup(MACRO_DND_GROUP);
    }
@@ -420,7 +423,7 @@ public class MacroWindow extends FormWindow {
                   @Override
                   public void onSuccess(List<BeanModel> result) {
                      for (BeanModel beanModel : result) {
-                        rightMacroItemListView.getStore().add(((DeviceMacroItem) beanModel.getBean()).getTargetBeanModel());
+                        rightMacroItemListView.getStore().add(beanModel);
                      }
                   }
                });

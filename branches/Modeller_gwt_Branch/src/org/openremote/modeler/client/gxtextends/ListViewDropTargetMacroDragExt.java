@@ -19,21 +19,26 @@
 */
 package org.openremote.modeler.client.gxtextends;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.DeviceCommandRef;
+import org.openremote.modeler.domain.DeviceMacro;
+import org.openremote.modeler.domain.DeviceMacroRef;
+
 import com.extjs.gxt.ui.client.core.El;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
-import com.extjs.gxt.ui.client.dnd.DND.Feedback;
 import com.extjs.gxt.ui.client.dnd.DropTarget;
 import com.extjs.gxt.ui.client.dnd.Insert;
+import com.extjs.gxt.ui.client.dnd.DND.Feedback;
 import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.util.Rectangle;
 import com.extjs.gxt.ui.client.widget.ListView;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A <code>DropTarget</code> implementation for the ListView component.
@@ -148,6 +153,15 @@ public class ListViewDropTargetMacroDragExt extends DropTarget {
          for (ModelData modelData : models) {
             if (modelData.get("model") instanceof BeanModel) {
                BeanModel beanModel = modelData.get("model");
+               if (beanModel.getBean() instanceof DeviceCommand) {
+                  DeviceCommand deviceCommand = (DeviceCommand) beanModel.getBean();
+                  DeviceCommandRef deviceCommandRef = new DeviceCommandRef(deviceCommand);
+                  beanModel = deviceCommandRef.getBeanModel();
+               } else if (beanModel.getBean() instanceof DeviceMacro) {
+                  DeviceMacro macro = (DeviceMacro) beanModel.getBean();
+                  DeviceMacroRef deviceMacroRef = new DeviceMacroRef(macro);
+                  beanModel = deviceMacroRef.getBeanModel();
+               }
                listView.getStore().insert(beanModel, activeIdx);
                handle = true;
             }
