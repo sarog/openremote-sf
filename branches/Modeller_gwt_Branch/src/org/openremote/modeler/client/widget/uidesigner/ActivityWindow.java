@@ -107,9 +107,9 @@ public class ActivityWindow extends FormWindow {
     * Creates the buttons.
     */
    private void createButtons() {
-      Button submitBtn = new Button("submit");
+      Button submitBtn = new Button("Submit");
       submitBtn.ensureDebugId(DebugId.NEW_ACTIVITY_WINDOW_SUBMIT_BTN);
-      Button resetBtn = new Button("reset");
+      Button resetBtn = new Button("Reset");
       resetBtn.ensureDebugId(DebugId.NEW_ACTIVITY_WINDOW_RESET_BTN);
 
       submitBtn.addSelectionListener(new FormSubmitListener(form));
