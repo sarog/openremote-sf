@@ -54,6 +54,7 @@ import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.ListModelPropertyEditor;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
@@ -302,15 +303,46 @@ public class IRCommandImportForm extends CommonForm {
       } else {
          sectionList = new RemoteJsonComboBox<ModelData>(url, sectionType);
          sectionList.setEmptyText(emptyText);
-         sectionList.setDisplayField("name");
          sectionList.setValueField("id");
          setStyleOfComboBox(sectionList);
+         /*
+          * To resolve the issue that selection changed event can't work with the same display name. We use custom
+          * <code>ListModelPropertyEditor</code> to "format" the value that is displayed in the combo's text field and
+          * append its id to differentiate the items with the same display name.
+          */
+         sectionList.setPropertyEditor(new ListModelPropertyEditor<ModelData>() {
 
+            @Override
+            public String getStringValue(ModelData value) {
+               Object obj = value.get(displayProperty);
+               String id = value.get("id").toString();
+               if (obj != null) {
+                  return obj.toString() + " [" + id + "]";
+               }
+               return null;
+            }
+
+            @Override
+            public ModelData convertStringValue(String value) {
+               for (ModelData d : models) {
+                  Object val = d.get("id");
+                  int left = value.lastIndexOf("[");
+                  int right = value.lastIndexOf("]");
+                  String id = value.substring(left + 1, right);
+                  if (id.equals(val != null ? val.toString() : null)) {
+                     return d;
+                  }
+               }
+               return null;
+            }
+
+         });
+         sectionList.setDisplayField("name");// must be called after sectionList.setPropertyEditor()
          sectionList.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
             @Override
             public void selectionChanged(SelectionChangedEvent<ModelData> se) {
                long idstr = se.getSelectedItem().get("id");
-               showCodesGrid(vendorList.getRawValue(), sectionList.getRawValue(), idstr);
+               showCodesGrid(vendorList.getRawValue(), modelList.getRawValue(), idstr);
             }
 
          });
