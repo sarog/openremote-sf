@@ -25,6 +25,8 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  |  Build file for OpenRemote controller
  |
  |  Author: Dan Cong
+ |  Author: Juha Lindfors
+ |  Author: Jerome Velociter
  |
  |  $Id: $
  +-->
@@ -56,6 +58,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		<fileset dir="${lib.dir}/compile" />
 		<fileset dir="${lib.dir}/core" includes="**/*.jar"/>
         <fileset dir="${lib.dir}/calimero"/>
+        <fileset dir="${lib.dir}/x10"/>
         <fileset dir="${lib.dir}/apache/commons-net"/>
         <path location="${classes.dir}"/>
 	</path>
@@ -103,6 +106,9 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
                 <include name="**/*.jar" />
             </fileset>
 			<fileset dir="${lib.dir}/calimero">
+                <include name="**/*.jar" />
+            </fileset>
+            <fileset dir="${lib.dir}/x10">
                 <include name="**/*.jar" />
             </fileset>
 			<fileset dir="${lib.dir}/apache">
