@@ -115,6 +115,12 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
       <fileset dir = "${lib.dir}/apache">
         <include name = "**/*.jar"/>
       </fileset>
+      <fileset dir = "${lib.dir}/gnu">
+        <include name = "**/*.jar"/>
+      </fileset>
+      <fileset dir = "${lib.dir}/rxtx">
+        <include name = "**/*.jar"/>
+      </fileset>
     </copy>
   </target>
 
