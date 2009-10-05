@@ -122,6 +122,13 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
         <include name = "**/*.jar"/>
       </fileset>
     </copy>
+    <copy todir = "${build.dir}/lib/native" flatten = "true">
+      <fileset dir = "${lib.dir}/rxtx">
+        <include name = "**/*.dll"/>
+        <include name = "**/*.so"/>
+        <include name = "**/*.jnilib"/>
+      </fileset>
+    </copy>
   </target>
 
   <!--
@@ -200,7 +207,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
       <fileset dir = ".">
         <include name = "readme.txt"/>
       </fileset>
-      <lib dir = "${build.dir}/lib" includes = "*.jar"/>
+      <lib dir = "${build.dir}/lib"/>
       <classes dir = "${classes.dir}"/>
     </war>
   </target>
