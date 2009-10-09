@@ -16,11 +16,6 @@
             /WEB-INF/classes/spring-context.xml
         </param-value>
     </context-param>
-    
-    <context-param>
-        <param-name>webAppRootKey</param-name>
-        <param-value>controller.root</param-value>
-    </context-param> 
 
     <context-param>
         <param-name>log4jConfigLocation</param-name>
