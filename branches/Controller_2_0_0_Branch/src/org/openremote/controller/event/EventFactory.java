@@ -30,6 +30,7 @@ import org.springframework.context.support.ApplicationObjectSupport;
  * A factory for creating Event objects.
  * 
  * @author Dan 2009-4-3
+ * @author Handy.Wang 2009-10-13
  */
 public class EventFactory extends ApplicationObjectSupport{
    
@@ -60,6 +61,23 @@ public class EventFactory extends ApplicationObjectSupport{
     */
    public void setEventBuilders(Properties eventBuilders) {
       this.eventBuilders = eventBuilders;
+   }
+
+   /**
+    * Gets the status event.
+    * 
+    * @param element the element
+    * 
+    * @return the status event
+    */
+   public Stateful getStatusEvent(Element element) {
+       String name = element.getName();
+       String builder = eventBuilders.getProperty(name);
+       if (builder == null){
+          throw new NoSuchEventBuilderException("Cannot find " + builder + " by " + name);
+       }
+       EventBuilder eventBuilder = (EventBuilder) getApplicationContext().getBean(builder);
+       return (Stateful)eventBuilder.build(element);
    }
    
 

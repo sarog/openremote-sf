@@ -85,6 +85,7 @@ public class KNXEventBuilder implements EventBuilder
   public final static String KNX_LOG_CATEGORY  = "KNX";   // TODO : externalize user-friendly log category constants
   public final static String GROUP_ADDRESS_XML_ATTRIBUTE = "groupAddress";
   public final static String COMMAND_XML_ATTRIBUTE = "command";
+  private static final Object STATUS_COMMAND = "status";
 
 
   // Class Members --------------------------------------------------------------------------------
@@ -138,9 +139,17 @@ public class KNXEventBuilder implements EventBuilder
       knxCommand = KNXCommand.SWITCH_ON;
     else if (KNXCommand.SWITCH_OFF.isEqual(command))
       knxCommand = KNXCommand.SWITCH_OFF;
+    else if (KNXCommand.STATUS.isEqual(command)) {
+       knxCommand = KNXCommand.STATUS;
+    }
 
-    KNXEvent knxEvent = new KNXEvent(connectionManager, groupAddress, knxCommand);
-
+    KNXEvent knxEvent = null;
+    if (command != null && !"".equals(command) && command.equals(STATUS_COMMAND)) {
+       knxEvent =  new KNXStatusEvent(connectionManager, groupAddress);
+    } else {
+       knxEvent = new KNXEvent(connectionManager, groupAddress, knxCommand);
+    }
+    
     log.info("Created KNX Event " + knxCommand + " for group address '" + groupAddress + "'");
 
     return knxEvent;
