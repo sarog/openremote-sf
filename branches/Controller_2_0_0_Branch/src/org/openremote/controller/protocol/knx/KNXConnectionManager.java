@@ -25,15 +25,26 @@ import java.net.UnknownHostException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import org.apache.log4j.Logger;
+
+import tuwien.auto.calimero.GroupAddress;
+import tuwien.auto.calimero.IndividualAddress;
+import tuwien.auto.calimero.Priority;
+import tuwien.auto.calimero.cemi.CEMILData;
+import tuwien.auto.calimero.datapoint.Datapoint;
+import tuwien.auto.calimero.datapoint.StateDP;
+import tuwien.auto.calimero.exception.KNXException;
+import tuwien.auto.calimero.exception.KNXFormatException;
 import tuwien.auto.calimero.knxnetip.Discoverer;
 import tuwien.auto.calimero.knxnetip.KNXnetIPTunnel;
 import tuwien.auto.calimero.knxnetip.servicetype.SearchResponse;
 import tuwien.auto.calimero.knxnetip.util.HPAI;
-import tuwien.auto.calimero.exception.KNXException;
-import tuwien.auto.calimero.GroupAddress;
-import tuwien.auto.calimero.IndividualAddress;
-import tuwien.auto.calimero.cemi.CEMILData;
-import org.apache.log4j.Logger;
+import tuwien.auto.calimero.link.KNXNetworkLink;
+import tuwien.auto.calimero.link.KNXNetworkLinkIP;
+import tuwien.auto.calimero.link.medium.TPSettings;
+import tuwien.auto.calimero.process.ProcessCommunicator;
+import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
+import tuwien.auto.calimero.process.ProcessListener;
 
 /**
  * The goal of the KNXConnectionManager is to:
@@ -103,11 +114,22 @@ class KNXConnectionManager
 
   // Constants ------------------------------------------------------------------------------------
 
+  /** The Constant CLIENT_DISCOVERY_LISTENER_PORT. */
   private final static int CLIENT_DISCOVERY_LISTENER_PORT = 0;  // zero = any free port TODO : this setting needs to be externalized
+  
+  /** The Constant CLIENT_CONNECTION_PORT. */
   private final static int CLIENT_CONNECTION_PORT = 0;          // zero = any free port TODO : this setting needs to be externalized
+  
+  /** The Constant DISCOVERY_USE_NAT. */
   private final static boolean DISCOVERY_USE_NAT = false;       // TODO : this setting needs to be externalized
+  
+  /** The Constant CONNECTION_USE_NAT. */
   private final static boolean CONNECTION_USE_NAT = true;       // TODO : this setting needs to be externalized
+  
+  /** The Constant DISCOVERY_TIMEOUT. */
   private final static int DISCOVERY_TIMEOUT = 10;              // value in seconds  TODO : this setting needs to be externalized
+  
+  /** The Constant BLOCKING_DISCOVERY. */
   private final static boolean BLOCKING_DISCOVERY = false;
 
 
@@ -447,7 +469,10 @@ class KNXConnectionManager
    */
   private class CalimeroConnection implements KNXConnection
   {
+    /** The connection. */
     private KNXnetIPTunnel connection = null;
+    /** The ProcessCommunicator. */
+    private ProcessCommunicator pc; 
 
     private CalimeroConnection(KNXnetIPTunnel connection)
     {
@@ -458,8 +483,13 @@ class KNXConnectionManager
 
     public void send(String groupAddress, KNXCommand command)
     {
-//      GroupAddress group = new GroupAddress(0, 0, 4);
-//      IndividualAddress src = new IndividualAddress(0);
+      GroupAddress group = new GroupAddress(0, 0, 4);
+      IndividualAddress src = new IndividualAddress(0);
+      try {
+        group = new GroupAddress(groupAddress);
+    } catch (KNXFormatException e) {
+        e.printStackTrace();
+    }
 
       byte commandPayload = 0;
       
@@ -482,9 +512,9 @@ class KNXConnectionManager
           log.error("");    // TODO
       }
 
-      //CEMILData cEMI = new CEMILData(0x11, src, group, new byte[] { (byte)SWITCH_OFF }, Priority.NORMAL);
+      CEMILData cEMI = new CEMILData(0x11, src, group, new byte[] {(byte)0x00, commandPayload }, Priority.NORMAL);
 
-      CEMILData cEMI = null;
+      /*CEMILData cEMI = null;
 
       try
       {
@@ -499,7 +529,7 @@ class KNXConnectionManager
       catch (Throwable t)
       {
         log.error(t);
-      }
+      }*/
       
       try
       {
@@ -523,6 +553,80 @@ class KNXConnectionManager
         log.error(t);
       }
     }
+    
+    /* (non-Javadoc)
+     * @see org.openremote.controller.protocol.knx.KNXConnection#readDeviceStatus(java.lang.String, java.lang.String)
+     */
+    public String readDeviceStatus(String groupAddress, String dptTypeID) {
+        try {
+            sendReadStatusRequest(connection, null);
+            return read(groupAddress, dptTypeID);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "unknown";
+    }
+    
+    /**
+     * Sends read request to Device.
+     * 
+     * @param knxNetIPTunnel KNXnetIPTunnel
+     * @param l the ProcessListener
+     * 
+     * @throws Exception the exception
+     */
+    private void sendReadStatusRequest(KNXnetIPTunnel knxNetIPTunnel, ProcessListener l) throws Exception {
+        // create the network link to the KNX network
+        KNXNetworkLink lnk = createLink(knxNetIPTunnel);
+        
+        // create process communicator with the established link
+        pc = new ProcessCommunicatorImpl(lnk);
+        if (l != null) {
+            pc.addProcessListener(l);
+        }
+        pc.setResponseTimeout(10);
+    }
+    
+    /**
+     * Creates the knxNetIPTunnel link.
+     * 
+     * @param knxNetIPTunnel the knx net ip tunnel
+     * 
+     * @return the kNX network link
+     * 
+     * @throws Exception the exception
+     */
+    private KNXNetworkLink createLink(KNXnetIPTunnel knxNetIPTunnel) throws Exception {
+        // create local and remote socket address for network link
+        final InetSocketAddress local = new InetSocketAddress(InetAddress.getLocalHost(), CLIENT_CONNECTION_PORT);
+        final InetSocketAddress host = new InetSocketAddress(InetAddress.getByName("192.168.0.10"), 3671);//knxNetIPTunnel.getRemoteAddress();
+        final int mode = KNXNetworkLinkIP.TUNNEL;
+        this.connection.close();
+        return new KNXNetworkLinkIP(mode, local, host, CONNECTION_USE_NAT, TPSettings.TP1);
+    }
+    
+    /**
+     * Read status of device with group address and DataPointType id.
+     * 
+     * @param groupAddress the group address
+     * @param dptTypeID the dpt type id
+     * 
+     * @return the string
+     * 
+     * @throws KNXException the KNX exception
+     */
+    private String read(String groupAddress, String dptTypeID) throws KNXException {
+            // check if we are doing a read or write operation
+            final GroupAddress main = new GroupAddress(groupAddress);
+            // encapsulate information into a datapoint
+            // this is a convenient way to let the process communicator
+            // handle the DPT stuff, so an already formatted string will be
+            // returned
+            final Datapoint dp = new StateDP(main, "", 0, dptTypeID);
+            String rst = pc.read(dp);
+            System.out.println("read value: " + rst);
+            return rst;
+        }
   }
 
 

@@ -33,18 +33,23 @@ public class KNXEvent extends Event
 
   // Class Members --------------------------------------------------------------------------------
 
-  private final static Logger log = Logger.getLogger(KNXEventBuilder.KNX_LOG_CATEGORY);
+  protected final static Logger log = Logger.getLogger(KNXEventBuilder.KNX_LOG_CATEGORY);
 
 
   // Instance Fields ------------------------------------------------------------------------------
 
-  private String groupAddress = null;
-  private KNXConnectionManager connectionManager = null;
-  private KNXCommand command = null;
+  protected String groupAddress = null;
+  protected KNXConnectionManager connectionManager = null;
+  protected KNXCommand command = null;
 
 
   // Constructors ---------------------------------------------------------------------------------
 
+  /**
+   * Instantiates a new kNX event.
+   */
+  public KNXEvent() {}
+  
   /**
    * TODO : javadoc
    *

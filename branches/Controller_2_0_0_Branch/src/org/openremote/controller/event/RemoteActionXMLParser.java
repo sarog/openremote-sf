@@ -56,6 +56,11 @@ public class RemoteActionXMLParser {
    /** The configuration. */
    private Configuration configuration;
    
+   /** The Constant STATUS_ELEMENT_NAME. */
+   private static final String STATUS_ELEMENT_NAME = "status"; 
+    
+   /** The Constant REF_EVENT_ATTRIBUTE_NAME. */
+   private static final String REF_EVENT_ATTRIBUTE_NAME = "ref";
 
 
    /**
@@ -112,12 +117,12 @@ public class RemoteActionXMLParser {
     */
    @SuppressWarnings("unchecked")
    private Element queryElementFromXML(String xPath) {
-      SAXBuilder sb = new SAXBuilder(true);
-      sb.setValidation(true);
-      File xsdfile = new File(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath());
-      
-      sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
-      sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+      SAXBuilder sb = new SAXBuilder();
+//    sb.setValidation(true);
+//    File xsdfile = new File(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath());
+
+//    sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
+//    sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
       String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.CONTROLLER_XML;
       if (!new File(xmlPath).exists()) {
          throw new ControllerXMLNotFoundException(" Make sure it's in /resources");
@@ -161,6 +166,38 @@ public class RemoteActionXMLParser {
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
-   
-   
+
+   /**
+    * Find status events by control id.
+    * 
+    * @param controlID the control id
+    * 
+    * @return the event
+    */
+   @SuppressWarnings("unchecked")
+   public Stateful findStatusEventsByControlID(String controlID) {
+      Stateful statusEvent = null;
+      Element control = queryElementFromXMLById(controlID);
+      if (control == null) {
+         throw new NoSuchButtonException("Cannot find that control with id = " + controlID);
+        }
+      List<Element> children = control.getChildren();
+      for (Element elementRef : children) {
+         if(STATUS_ELEMENT_NAME.equalsIgnoreCase(elementRef.getName())) {
+            Element statusElement = (Element) elementRef.getChildren().get(0);
+            String statusEventID = statusElement.getAttributeValue(REF_EVENT_ATTRIBUTE_NAME);            
+            Element statusEventElement = queryElementFromXMLById(statusEventID);
+            
+               if (statusEventElement != null) {
+                  statusEvent = eventFactory.getStatusEvent(statusEventElement);
+               } else {
+                  throw new NoSuchEventException("Cannot find that event with id = " + statusEventID);
+               }
+            break;
+         }
+      }
+      return statusEvent;
+   }
+
+
 }
