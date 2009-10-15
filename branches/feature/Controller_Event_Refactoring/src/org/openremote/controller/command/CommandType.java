@@ -17,58 +17,42 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.protocol.x10;
-
-import org.openremote.controller.event.Event;
+package org.openremote.controller.command;
 
 /**
- * The X10 Event.
+ * The Enum CommandType.
  * 
- * @author Dan 2009-4-20
+ * @author Dan 2009-5-21
  */
-public class X10Event extends Event {
+public enum CommandType {
    
-   /** The address. */
-   private String address;
+   /** send command once. */
+   SEND_ONCE("SEND_ONCE"), 
    
-   /** The command. */
-   private String command;
+   /** send command start. */
+   SEND_START("SEND_START"), 
+   
+   /** send command stop. */
+   SEND_STOP("SEND_STOP"); 
+
+   /** The type. */
+   private String type;
 
    /**
-    * Gets the address.
+    * Instantiates a new command type.
     * 
-    * @return the address
+    * @param type the type
     */
-   public String getAddress() {
-      return address;
+   private CommandType(String type) {
+      this.type = type;
    }
 
-   /**
-    * Sets the address.
-    * 
-    * @param address the new address
+   /* (non-Javadoc)
+    * @see java.lang.Enum#toString()
     */
-   public void setAddress(String address) {
-      this.address = address;
+   @Override
+   public String toString() {
+      return type;
    }
 
-   /**
-    * Gets the command.
-    * 
-    * @return the command
-    */
-   public String getCommand() {
-      return command;
-   }
-
-   /**
-    * Sets the command.
-    * 
-    * @param command the new command
-    */
-   public void setCommand(String command) {
-      this.command = command;
-   }
-   
-   
 }

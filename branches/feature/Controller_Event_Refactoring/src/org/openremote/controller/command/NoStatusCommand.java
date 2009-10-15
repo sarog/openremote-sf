@@ -17,30 +17,21 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.protocol.socket;
-
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
-import org.jdom.Element;
-
+package org.openremote.controller.command;
 
 /**
- * The Class SocketEventBuilder.
- *
- * @author Marcus 2009-4-26
+ * The Class NoStatusCommand.
+ * 
+ * @author Handy.Wang 2009-10-15
  */
-public class TCPSocketEventBuilder implements EventBuilder {
+public class NoStatusCommand implements StatusCommand {
 
-   /**
-    * {@inheritDoc}
-    */
-   public Event build(Element element) {
-      TCPSocketEvent irEvent = new TCPSocketEvent();
-      irEvent.setCommand(element.getAttributeValue("command"));
-      irEvent.setName(element.getAttributeValue("name"));
-      irEvent.setIp(element.getAttributeValue("ip"));
-      irEvent.setPort(element.getAttributeValue("port"));
-      return irEvent;
-   }
+    /* (non-Javadoc)
+     * @see org.openremote.controller.command.StatusCommand#read()
+     */
+    @Override
+    public String read() {
+        return "noStatus";
+    }
 
 }

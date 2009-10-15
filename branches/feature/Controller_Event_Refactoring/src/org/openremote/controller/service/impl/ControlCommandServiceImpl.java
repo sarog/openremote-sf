@@ -26,15 +26,15 @@ import org.openremote.controller.command.CommandType;
 import org.openremote.controller.command.DelayCommand;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.RemoteActionXMLParser;
-import org.openremote.controller.service.ButtonCommandService;
+import org.openremote.controller.service.ControlCommandService;
 
 
 /**
- * The implementation for ButtonCommandService class.
+ * The implementation for ControlCommandService class.
  * 
- * @author Dan 2009-4-3
+ * @author Handy.Wang
  */
-public class ButtonCommandServiceImpl implements ButtonCommandService {
+public class ControlCommandServiceImpl implements ControlCommandService {
 
    /** The remote action xml parser. */
    private RemoteActionXMLParser remoteActionXMLParser;
@@ -64,7 +64,7 @@ public class ButtonCommandServiceImpl implements ButtonCommandService {
 ////            event.stop();
 //            break;
 //         default:
-//             doTrigger(command);
+//            doTrigger(command);
 //            break;
 //         }
 //      }

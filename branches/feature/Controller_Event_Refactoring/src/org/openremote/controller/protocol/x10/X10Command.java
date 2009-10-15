@@ -17,43 +17,63 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.exception;
+package org.openremote.controller.protocol.x10;
+
+import org.openremote.controller.command.ExecutableCommand;
+
 
 /**
- * The exception class when NoSuchEvent.
+ * The X10 Event.
  * 
- * @author Dan 2009-5-23
+ * @author Dan 2009-4-20
  */
-@SuppressWarnings("serial")
-public class NoSuchEventException extends ButtonCommandException {
+public class X10Command implements ExecutableCommand {
+   
+   /** The address. */
+   private String address;
+   
+   /** The command. */
+   private String command;
 
    /**
-    * Instantiates a new no such event exception.
-    */
-   public NoSuchEventException() {
-      super();
-      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
-   }
-
-   /**
-    * Instantiates a new no such event exception.
+    * Gets the address.
     * 
-    * @param message the message
-    * @param cause the cause
+    * @return the address
     */
-   public NoSuchEventException(String message, Throwable cause) {
-      super(message, cause);
-      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
+   public String getAddress() {
+      return address;
    }
 
    /**
-    * Instantiates a new no such event exception.
+    * Sets the address.
     * 
-    * @param message the message
+    * @param address the new address
     */
-   public NoSuchEventException(String message) {
-      super(message);
-      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
+   public void setAddress(String address) {
+      this.address = address;
    }
 
+   /**
+    * Gets the command.
+    * 
+    * @return the command
+    */
+   public String getCommand() {
+      return command;
+   }
+
+   /**
+    * Sets the command.
+    * 
+    * @param command the new command
+    */
+   public void setCommand(String command) {
+      this.command = command;
+   }
+
+   @Override
+   public void send() {
+   }
+   
+   
 }

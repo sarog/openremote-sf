@@ -23,14 +23,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.openremote.controller.event.RemoteActionXMLParser;
-import org.openremote.controller.event.Stateful;
+import org.openremote.controller.command.RemoteActionXMLParser;
+import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.service.StatusCommandService;
 
 /**
  * The implementation for ButtonCommandService class.
  * 
- * @author Handy.Wang
+ * @author Handy.Wang 2009-10-15
  */
 public class StatusCommandServiceImpl implements StatusCommandService {
     
@@ -58,17 +58,17 @@ public class StatusCommandServiceImpl implements StatusCommandService {
     public String trigger(String unParsedcontrolIDs){
         
        String[] parsedBtnIDs = unParsedcontrolIDs.split(CONTROL_ID_SEPARATOR);
-       Map<String, Stateful> statusEvents = new HashMap<String, Stateful>();
+       Map<String, StatusCommand> statusCommands = new HashMap<String, StatusCommand>();
        for (String controlID : parsedBtnIDs) {
-           statusEvents.put(controlID, remoteActionXMLParser.findStatusEventsByControlID(controlID));
+           statusCommands.put(controlID, remoteActionXMLParser.findStatusCommandByControlID(controlID));
        }
        StringBuffer sb = new StringBuffer();
        sb.append(XML_HEADER);
        
-       Set<String> controlIDs = statusEvents.keySet();
+       Set<String> controlIDs = statusCommands.keySet();
        for (String controlID : controlIDs) {
            sb.append("<" + XML_STATUS_RESULT_ELEMENT_NAME + " " + XML_STATUS_RESULT_ELEMENT_CONTROL_IDENTITY + "=\"" + controlID + "\">");
-           sb.append(statusEvents.get(controlID).queryStatus());
+           sb.append(statusCommands.get(controlID).read());
            sb.append("</" + XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
            sb.append("\n");
        }

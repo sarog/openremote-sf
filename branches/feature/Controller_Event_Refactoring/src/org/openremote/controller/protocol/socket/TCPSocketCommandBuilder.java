@@ -17,25 +17,30 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.protocol.x10;
+package org.openremote.controller.protocol.socket;
 
 import org.jdom.Element;
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
+import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.command.ExecutableCommand;
+
 
 /**
- * The Class X10EventBuilder.
- * 
- * @author Dan 2009-4-30
+ * The Class SocketEventBuilder.
+ *
+ * @author Marcus 2009-4-26
  */
-public class X10EventBuilder implements EventBuilder {
+public class TCPSocketCommandBuilder implements CommandBuilder {
 
    /**
     * {@inheritDoc}
     */
-   public Event build(Element element) {
-      // TODO Auto-generated method stub
-      return new X10Event();
+   public ExecutableCommand build(Element element) {
+      TCPSocketCommand irEvent = new TCPSocketCommand();
+      irEvent.setCommand(element.getAttributeValue("command"));
+      irEvent.setName(element.getAttributeValue("name"));
+      irEvent.setIp(element.getAttributeValue("ip"));
+      irEvent.setPort(element.getAttributeValue("port"));
+      return irEvent;
    }
 
 }
