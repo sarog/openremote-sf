@@ -26,14 +26,14 @@ package org.openremote.controller.exception;
  * @author Dan 2009-4-30
  */
 @SuppressWarnings("serial")
-public class NoSuchButtonException extends ButtonCommandException {
+public class NoSuchButtonException extends ControlCommandException {
 
    /**
     * Instantiates a new no such button exception.
     */
    public NoSuchButtonException() {
       super();
-      setErrorCode(ButtonCommandException.NO_SUCH_BUTTON);
+      setErrorCode(ControlCommandException.NO_SUCH_BUTTON);
    }
 
    /**
@@ -43,7 +43,7 @@ public class NoSuchButtonException extends ButtonCommandException {
     */
    public NoSuchButtonException(String message) {
       super(message);
-      setErrorCode(ButtonCommandException.NO_SUCH_BUTTON);
+      setErrorCode(ControlCommandException.NO_SUCH_BUTTON);
    }
 
    /**
@@ -53,7 +53,7 @@ public class NoSuchButtonException extends ButtonCommandException {
     */
    public NoSuchButtonException(Throwable cause) {
       super(cause);
-      setErrorCode(ButtonCommandException.NO_SUCH_BUTTON);
+      setErrorCode(ControlCommandException.NO_SUCH_BUTTON);
    }
 
    /**
@@ -64,7 +64,7 @@ public class NoSuchButtonException extends ButtonCommandException {
     */
    public NoSuchButtonException(String message, Throwable cause) {
       super(message, cause);
-      setErrorCode(ButtonCommandException.NO_SUCH_BUTTON);
+      setErrorCode(ControlCommandException.NO_SUCH_BUTTON);
    }
 
 }

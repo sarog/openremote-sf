@@ -19,10 +19,11 @@
 */
 package org.openremote.controller.protocol.knx;
 
-import org.jdom.Element;
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
 import org.apache.log4j.Logger;
+import org.jdom.Element;
+import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.command.Command;
+import org.openremote.controller.exception.NoSuchCommandException;
 
 
 /**
@@ -32,7 +33,7 @@ import org.apache.log4j.Logger;
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class KNXEventBuilder implements EventBuilder
+public class KNXCommandBuilder implements CommandBuilder
 {
   /*
    * Implementation Notes:
@@ -84,8 +85,7 @@ public class KNXEventBuilder implements EventBuilder
 
   public final static String KNX_LOG_CATEGORY  = "KNX";   // TODO : externalize user-friendly log category constants
   public final static String GROUP_ADDRESS_XML_ATTRIBUTE = "groupAddress";
-  public final static String COMMAND_XML_ATTRIBUTE = "command";
-  private static final Object STATUS_COMMAND = "status";
+  private final static String STATUS_COMMAND = "STATUS";
 
 
   // Class Members --------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ public class KNXEventBuilder implements EventBuilder
   /**
    * TODO
    */
-  public KNXEventBuilder()
+  public KNXCommandBuilder()
   {
     try
     {
@@ -128,31 +128,33 @@ public class KNXEventBuilder implements EventBuilder
    *
    * {@inheritDoc}
    */
-  public Event build(Element element)
+  public Command build(Element element)
   {
     String groupAddress = element.getAttributeValue(GROUP_ADDRESS_XML_ATTRIBUTE);
-    String command = element.getAttributeValue(COMMAND_XML_ATTRIBUTE);
+    String knxCommandStr = element.getTextTrim();
 
-    KNXCommand knxCommand = null;
+    KNXCommandType knxCommand = null;
 
-    if (KNXCommand.SWITCH_ON.isEqual(command))
-      knxCommand = KNXCommand.SWITCH_ON;
-    else if (KNXCommand.SWITCH_OFF.isEqual(command))
-      knxCommand = KNXCommand.SWITCH_OFF;
-    else if (KNXCommand.STATUS.isEqual(command)) {
-       knxCommand = KNXCommand.STATUS;
+    if (KNXCommandType.SWITCH_ON.isEqual(knxCommandStr))
+      knxCommand = KNXCommandType.SWITCH_ON;
+    else if (KNXCommandType.SWITCH_OFF.isEqual(knxCommandStr))
+      knxCommand = KNXCommandType.SWITCH_OFF;
+    else if (KNXCommandType.STATUS.isEqual(knxCommandStr)) {
+       knxCommand = KNXCommandType.STATUS;
+    } else {
+       throw new NoSuchCommandException("Couldn't find command " + knxCommandStr + " in KNXCommandType.");
     }
 
-    KNXEvent knxEvent = null;
-    if (command != null && !"".equals(command) && command.equals(STATUS_COMMAND)) {
-       knxEvent =  new KNXStatusEvent(connectionManager, groupAddress);
+    Command command = null;
+    if (knxCommandStr != null && !"".equals(knxCommandStr) && knxCommandStr.equalsIgnoreCase(STATUS_COMMAND)) {
+       command =  new KNXStatusCommand(connectionManager, groupAddress);
     } else {
-       knxEvent = new KNXEvent(connectionManager, groupAddress, knxCommand);
+       command = new KNXExecutableCommand(connectionManager, groupAddress, knxCommand);
     }
     
-    log.info("Created KNX Event " + knxCommand + " for group address '" + groupAddress + "'");
+    log.info("Created KNX Command " + knxCommand + " for group address '" + groupAddress + "'");
 
-    return knxEvent;
+    return command;
   }
 
 

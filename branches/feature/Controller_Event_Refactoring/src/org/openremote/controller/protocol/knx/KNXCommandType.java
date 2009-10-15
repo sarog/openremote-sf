@@ -25,19 +25,54 @@ package org.openremote.controller.protocol.knx;
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public interface KNXConnection
+public enum KNXCommandType
 {
+  /**
+   * TODO
+   */
+  SWITCH_ON
+  (
+      new String[] { "ON" }
+  ),
 
-    void send(String groupAddress, KNXCommandType command);
-    
-    /**
-     * Read devices status.
-     * 
-     * @param groupAddress the group address
-     * @param dptTypeID the dpt type id
-     * 
-     * @return the string
-     */
-    String readDeviceStatus(String groupAddress, String dptTypeID);
+  /**
+   * TODO
+   */
+  SWITCH_OFF
+  (
+      new String[] { "OFF" }
+  ),
+  
+  /**
+   * TODO
+   */
+  STATUS
+  (
+      new String[] {"STATUS"}
+  );
 
+
+  private String[] commandTranslations = null;
+
+  private KNXCommandType(String[] commandTranslations)
+  {
+    this.commandTranslations = commandTranslations;
+  }
+
+  /**
+   * TODO
+   *
+   * @param command
+   * @return
+   */
+  boolean isEqual(String command)
+  {
+    for (String translation : commandTranslations)
+    {
+      if (translation.equalsIgnoreCase(command))
+        return true;
+    }
+
+    return false;
+  }
 }

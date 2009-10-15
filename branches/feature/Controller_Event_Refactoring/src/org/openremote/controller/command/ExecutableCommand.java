@@ -17,27 +17,17 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.protocol.knx;
-
+package org.openremote.controller.command;
 
 /**
- * TODO
- *
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * The Interface ExecutableCommand.
+ * 
+ * @author Handy.Wang 2009-10-15
  */
-public interface KNXConnection
-{
-
-    void send(String groupAddress, KNXCommandType command);
+public interface ExecutableCommand extends Command {
     
     /**
-     * Read devices status.
-     * 
-     * @param groupAddress the group address
-     * @param dptTypeID the dpt type id
-     * 
-     * @return the string
+     * Send some executable command to device.
      */
-    String readDeviceStatus(String groupAddress, String dptTypeID);
-
+    public void send();
 }

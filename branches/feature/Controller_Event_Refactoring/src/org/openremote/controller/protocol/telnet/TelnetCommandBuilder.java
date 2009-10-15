@@ -19,9 +19,9 @@
 */
 package org.openremote.controller.protocol.telnet;
 
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
 import org.jdom.Element;
+import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.command.ExecutableCommand;
 
 
 /**
@@ -29,13 +29,13 @@ import org.jdom.Element;
  *
  * @author Marcus 2009-4-26
  */
-public class TelnetEventBuilder implements EventBuilder {
+public class TelnetCommandBuilder implements CommandBuilder {
 
    /**
     * {@inheritDoc}
     */
-   public Event build(Element element) {
-      TelnetEvent telnetEvent = new TelnetEvent();
+   public ExecutableCommand build(Element element) {
+      TelnetCommand telnetEvent = new TelnetCommand();
       telnetEvent.setCommand(element.getAttributeValue("command"));
       telnetEvent.setName(element.getAttributeValue("name"));
       telnetEvent.setIp(element.getAttributeValue("ip"));

@@ -25,12 +25,12 @@ package org.openremote.controller.service;
  * This service is responsible for trigger event of control which can be found by the control ids in the controller.xml
  * and return the status result.
  * 
- * @author Handy.Wang 
+ * @author Handy.Wang 2009-10-15
  */
 public interface StatusCommandService {
    
    /**
-    * Trigger .
+    * Trigger command .
     * 
     * @param buttonID the button id
     */

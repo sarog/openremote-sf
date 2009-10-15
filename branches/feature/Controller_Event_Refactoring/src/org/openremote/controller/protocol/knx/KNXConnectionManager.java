@@ -139,7 +139,7 @@ class KNXConnectionManager
   /**
    * KNX logger. Uses a common category for all KNX related logging.
    */
-  private final static Logger log = Logger.getLogger(KNXEventBuilder.KNX_LOG_CATEGORY);
+  private final static Logger log = Logger.getLogger(KNXCommandBuilder.KNX_LOG_CATEGORY);
 
 
   // Instance Fields ------------------------------------------------------------------------------
@@ -481,7 +481,7 @@ class KNXConnectionManager
       this.connection = connection;
     }
 
-    public void send(String groupAddress, KNXCommand command)
+    public void send(String groupAddress, KNXCommandType command)
     {
       GroupAddress group = new GroupAddress(0, 0, 4);
       IndividualAddress src = new IndividualAddress(0);

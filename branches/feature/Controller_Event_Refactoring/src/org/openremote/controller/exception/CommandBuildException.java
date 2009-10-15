@@ -19,42 +19,52 @@
 */
 package org.openremote.controller.exception;
 
+
 /**
- * The exception class when controller.xml Not Found.
+ * The exception for EventBuild.
  * 
- * @author Dan 2009-5-22
+ * @author Dan 2009-4-30
  */
 @SuppressWarnings("serial")
-public class ControllerXMLNotFoundException extends ControlCommandException {
+public class CommandBuildException extends ControlCommandException {
 
    /**
-    * Instantiates a new controller xml not found exception.
-    */
-   public ControllerXMLNotFoundException() {
-      super("*controller.xml* not found.");
-      setErrorCode(ControlCommandException.CONTROLLER_XML_NOT_FOUND);
-   }
-
-   /**
-    * Instantiates a new controller xml not found exception.
+    * Instantiates a new invalid event exception.
     * 
     * @param message the message
     * @param cause the cause
     */
-   public ControllerXMLNotFoundException(String message, Throwable cause) {
-      super("*controller.xml* not found." + message, cause);
-      setErrorCode(ControlCommandException.CONTROLLER_XML_NOT_FOUND);
+   public CommandBuildException(String message, Throwable cause) {
+      super(message, cause);
+      setErrorCode(ControlCommandException.EVENT_BUILDER_ERROR);
    }
 
    /**
-    * Instantiates a new controller xml not found exception.
+    * Instantiates a new invalid event exception.
     * 
     * @param message the message
     */
-   public ControllerXMLNotFoundException(String message) {
-      super("*controller.xml* not found." + message);
-      setErrorCode(ControlCommandException.CONTROLLER_XML_NOT_FOUND);
+   public CommandBuildException(String message) {
+      super(message);
+      setErrorCode(ControlCommandException.EVENT_BUILDER_ERROR);
    }
-   
+
+   /**
+    * Instantiates a new event build exception.
+    */
+   public CommandBuildException() {
+      super();
+      setErrorCode(ControlCommandException.EVENT_BUILDER_ERROR);
+   }
+
+   /**
+    * Instantiates a new event build exception.
+    * 
+    * @param cause the cause
+    */
+   public CommandBuildException(Throwable cause) {
+      super(cause);
+      setErrorCode(ControlCommandException.EVENT_BUILDER_ERROR);
+   }
 
 }

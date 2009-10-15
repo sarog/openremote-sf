@@ -17,35 +17,25 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.protocol.infrared;
+package org.openremote.controller.protocol.x10;
 
 import org.jdom.Element;
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
-import org.openremote.controller.exception.EventBuildException;
-
+import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.command.ExecutableCommand;
 
 /**
- * The IREvent Builder which can build a IREvent from a DOM Element in controller.xml.
+ * The Class X10EventBuilder.
  * 
- * @author Dan 2009-4-3
+ * @author Dan 2009-4-30
  */
-public class IREventBuilder implements EventBuilder {
+public class X10CommandBuilder implements CommandBuilder {
 
    /**
     * {@inheritDoc}
     */
-   public Event build(Element element) {
-      IREvent irEvent = new IREvent();
-      String command = element.getAttributeValue("command");
-      String name = element.getAttributeValue("name");
-      if ("".equals(command) || "".equals(name)) {
-         throw new EventBuildException("Cannot build a IREvent with empty property : command=" + command + ",name=" + name);
-      } else {
-         irEvent.setCommand(command);
-         irEvent.setName(name);
-      }
-      return irEvent;
+   public ExecutableCommand build(Element element) {
+      // TODO Auto-generated method stub
+      return new X10Command();
    }
 
 }

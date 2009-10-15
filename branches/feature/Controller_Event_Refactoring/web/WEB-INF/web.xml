@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
 	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-    <display-name>controller</display-name>
+    <display-name>controller_event_refactoring</display-name>
 
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
