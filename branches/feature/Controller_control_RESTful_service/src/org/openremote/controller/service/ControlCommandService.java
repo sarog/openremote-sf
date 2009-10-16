@@ -1,6 +1,5 @@
 package org.openremote.controller.service;
 
-import org.openremote.controller.command.CommandType;
 
 /**
  * The Interface ControlCommandService.
@@ -12,14 +11,8 @@ public interface ControlCommandService {
      * Trigger.
      * 
      * @param buttonID the button id
-     * @param commandType the command type
+     * @param commandParam the command type
      */
-    void trigger(String buttonID, CommandType commandType);
+    void trigger(String buttonID, String commandParam);
     
-    /**
-     * Trigger.
-     * 
-     * @param buttonID the button id
-     */
-    void trigger(String buttonID);
 }
