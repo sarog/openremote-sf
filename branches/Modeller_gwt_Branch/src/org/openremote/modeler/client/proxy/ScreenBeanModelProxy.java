@@ -87,7 +87,7 @@ public class ScreenBeanModelProxy {
     * @param screen the screen
     */
    private static void setAttrsToScreen(Map<String, String> map, UIScreen screen) {
-      screen.setLabel(map.get(ScreenWindow.SCREEN_NAME));
+      screen.setName(map.get(ScreenWindow.SCREEN_NAME));
       String layout = map.get(ScreenWindow.SCREEN_RADIOLAYOUTGROUP);
       if(ScreenWindow.SCREEN_GRIDRADIO.equals(layout)) {
          screen.setAbsoluteLayout(false);

@@ -249,11 +249,40 @@ public class TreePanelBuilder {
     * 
     * @return the tree panel< bean model>
     */
-   public static TreePanel<BeanModel> buildScreenTree() {
+   public static TreePanel<BeanModel> buildScreenTree(final ScreenTab screenTab) {
       if (screenTreeStore == null) {
          screenTreeStore = new TreeStore<BeanModel>();
       }
-      TreePanel<BeanModel> screenTree = new TreePanel<BeanModel>(screenTreeStore);
+      TreePanel<BeanModel> screenTree = new TreePanel<BeanModel>(screenTreeStore) {
+         @Override
+         public void onBrowserEvent(Event event) {
+            if (event.getTypeInt() == Event.ONDBLCLICK) {
+               BeanModel beanModel = this.getSelectionModel().getSelectedItem();
+               if (beanModel.getBean() instanceof UIScreen) {
+                  UIScreen screen = beanModel.getBean();
+                  ScreenTabItem screenTabItem = null;
+                  for (TabItem tabPanel : screenTab.getItems()) {
+                     screenTabItem = (ScreenTabItem) tabPanel;
+                     if (screen == screenTabItem.getScreen()) {
+                        screenTab.setSelection(screenTabItem);
+                        return;
+                     } else {
+                        screenTabItem = null;
+                     }
+                  }
+                  if (screenTabItem == null) {
+                     screenTabItem = new ScreenTabItem(screen);
+                     screenTab.add(screenTabItem);
+                     screenTab.setSelection(screenTabItem);
+                  }
+               }
+            }
+            
+            super.onBrowserEvent(event);
+         }
+         
+      
+      };
       screenTree.setStateful(true);
       screenTree.setBorders(false);
       screenTree.setHeight("100%");      

@@ -130,15 +130,20 @@ public class ScreenWindow extends FormWindow {
       panel.setFieldLabel("Panel");
       panel.setName(SCREEN_PANEL);
       panel.setAllowBlank(false);
+      ComboBoxDataModel<TouchPanelDefinition> iphoneData = null;
       for (String key : panels.keySet()) {
          for (TouchPanelDefinition touchPanel : panels.get(key)) {
             ComboBoxDataModel<TouchPanelDefinition> data = new ComboBoxDataModel<TouchPanelDefinition>(touchPanel.getName(), touchPanel);
+            if ("iphone1".equals(touchPanel.getName())) {
+               iphoneData = data;
+            }
             store.add(data);
          }
       }
       panel.setDisplayField(ComboBoxDataModel.getDisplayProperty());
       panel.setEmptyText("Please Select Panel...");
       panel.setValueField(ComboBoxDataModel.getDataProperty());
+      panel.setValue(iphoneData);   //temp select iphone panel.
       
       FileUploadField background = new FileUploadField();
       background.setFieldLabel("Background");
@@ -187,7 +192,7 @@ public class ScreenWindow extends FormWindow {
       
       if (screen != null) {
          TouchPanelDefinition touchPanelDefinition = screen.getTouchPanelDefinition();
-         screenNameField.setValue(screen.getLabel());
+         screenNameField.setValue(screen.getName());
          ComboBoxDataModel<TouchPanelDefinition> data = new ComboBoxDataModel<TouchPanelDefinition>(touchPanelDefinition
                .getName(), touchPanelDefinition);
          panel.setValue(data);

@@ -162,3 +162,7 @@ table.screen-btn-cont td.br-c{
   padding-left: 20px;
   margin: 10px;
 }
+
+.cursor-move {
+	cursor: move;
+}

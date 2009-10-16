@@ -48,12 +48,15 @@ public class ScreenTabItem extends TabItem {
     */
    public ScreenTabItem(UIScreen screen) {
       this.screen = screen;
-      setText(screen.getLabel());
+      setText(screen.getName());
       setClosable(true);
       setLayout(new FlowLayout());
       addScreenContainer();
    }
 
+   /**
+    * Adds the screen container.
+    */
    private void addScreenContainer() {
       LayoutContainer screenContainer = new LayoutContainer();
       TouchPanelDefinition touchPanelDefinition = screen.getTouchPanelDefinition();
@@ -62,7 +65,17 @@ public class ScreenTabItem extends TabItem {
       screenContainer.setStyleAttribute("backgroundImage", "url(" + touchPanelDefinition.getBgImage() + ")");
       screenContainer.setStyleAttribute("paddingLeft", String.valueOf(touchPanelDefinition.getPaddingLeft()));
       screenContainer.setStyleAttribute("paddingTop", String.valueOf(touchPanelDefinition.getPaddingTop()));
-      screenContainer.add(new ScreenWorkSpaceContainer(screen));
+      screenContainer.add(new ScreenCanvas(screen));
+      screenContainer.setBorders(false);
       add(screenContainer);
+   }
+   
+   /**
+    * Gets the screen.
+    * 
+    * @return the screen
+    */
+   public UIScreen getScreen() {
+      return screen;
    }
 }

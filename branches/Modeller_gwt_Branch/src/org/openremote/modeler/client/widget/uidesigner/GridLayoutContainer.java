@@ -1,3 +1,22 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.client.widget.uidesigner;
 
 import java.util.List;
@@ -28,6 +47,9 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 
+/**
+ * The Class GridLayoutContainer.
+ */
 public class GridLayoutContainer extends LayoutContainer {
 
    /** The screen. */
@@ -49,10 +71,9 @@ public class GridLayoutContainer extends LayoutContainer {
    private TouchPanelDefinition panelDefinition;
 
    /**
-    * Instantiates a new screen panel.
+    * Instantiates a new grid layout container.
     * 
     * @param screen the screen
-    * @param panelDefinition the panel definition
     */
    public GridLayoutContainer(UIScreen screen) {
       this.screen = screen;
@@ -71,6 +92,8 @@ public class GridLayoutContainer extends LayoutContainer {
 
    /**
     * Inits the btn in area.
+    * 
+    * @param grid the grid
     */
    private void initBtnInArea(Grid grid) {
       for (int x = 0; x < grid.getColumnCount(); x++) {
@@ -84,20 +107,24 @@ public class GridLayoutContainer extends LayoutContainer {
     * Creates the table.
     * 
     * @param screenPanel the screen panel
+    * @param grid the grid
     */
    private void createTable(final GridLayoutContainer screenPanel, final Grid grid) {
 //      int gridWidth = grid.getWidth();
 //      int gridHeight = grid.getHeight();
       int gridWidth = panelDefinition.getGrid().getWidth(); // temp use.
       int gridHeight = panelDefinition.getGrid().getHeight();
+      setSize(gridWidth, gridHeight);
+      setPosition(0, 0);
+      setBorders(false);
       FlexTable screenTable = new FlexTable();
       screenTable.setCellPadding(0);
       screenTable.setCellSpacing(0);
       screenTable.addStyleName("panel-table");
       screenTable.setPixelSize(gridWidth, gridHeight);
       add(screenTable);
-      final int cellWidth =  gridWidth / grid.getColumnCount();
-      final int cellHeight = gridHeight / grid.getRowCount();
+      final int cellWidth =  (gridWidth - (grid.getColumnCount() + 1)) / grid.getColumnCount();
+      final int cellHeight = (gridHeight - (grid.getRowCount() + 1)) / grid.getRowCount();
       DNDListener dndListener = new DNDListener() {
          @SuppressWarnings("unchecked")
          public void dragDrop(DNDEvent e) {
@@ -187,7 +214,7 @@ public class GridLayoutContainer extends LayoutContainer {
     * Find max x when resize.
     * 
     * @param screenButton the screen button
-    * @param screen the screen
+    * @param grid the grid
     * 
     * @return the int
     */
@@ -210,7 +237,7 @@ public class GridLayoutContainer extends LayoutContainer {
     * Find max y when resize.
     * 
     * @param screenButton the screen button
-    * @param screen the screen
+    * @param grid the grid
     * 
     * @return the int
     */
@@ -235,7 +262,7 @@ public class GridLayoutContainer extends LayoutContainer {
     * @param x the x
     * @param y the y
     * @param screenButton the screen button
-    * @param screen the screen
+    * @param grid the grid
     * 
     * @return true, if successful
     */

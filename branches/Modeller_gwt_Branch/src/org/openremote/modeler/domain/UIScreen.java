@@ -34,8 +34,8 @@ public class UIScreen extends BusinessEntity {
    /** The default name index. */
    private static int defaultNameIndex = 1;
    
-   /** The label. */
-   private String label;
+   /** The name. */
+   private String name;
    
    /** The absolute. */
    private boolean absoluteLayout;
@@ -53,12 +53,12 @@ public class UIScreen extends BusinessEntity {
    private String background;
 
    /**
-    * Gets the label.
+    * Gets the name.
     * 
-    * @return the label
+    * @return the name
     */
-   public String getLabel() {
-      return label;
+   public String getName() {
+      return name;
    }
 
    /**
@@ -98,12 +98,12 @@ public class UIScreen extends BusinessEntity {
    }
 
    /**
-    * Sets the label.
+    * Sets the name.
     * 
-    * @param label the new label
+    * @param name the new name
     */
-   public void setLabel(String label) {
-      this.label = label;
+   public void setName(String name) {
+      this.name = name;
    }
 
    /**
@@ -181,7 +181,7 @@ public class UIScreen extends BusinessEntity {
     */
    @Transient
    public String getDisplayName() {
-      return label;
+      return name;
    }
    
    /**
