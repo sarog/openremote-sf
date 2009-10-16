@@ -47,6 +47,7 @@ import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.UIButton;
+import org.openremote.modeler.domain.UIScreen;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -255,10 +256,10 @@ public class ActivityPanel extends ContentPanel {
    protected void createScreen() {
       final BeanModel activityModel = tree.getSelectionModel().getSelectedItem();
       if (activityModel != null && (activityModel.getBean() instanceof Activity)) {
-         final ScreenWindow screenWindow = new ScreenWindow((Activity) activityModel.getBean());
+         final ScreenWindow screenWindow = new ScreenWindow((UIScreen) activityModel.getBean());
          screenWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
-            public void afterSubmit(SubmitEvent be) {
+            public void afterSubmit(SubmitEvent be) { 
                screenWindow.hide();
                BeanModel screenModel = be.getData();
                tree.getStore().add(activityModel, screenModel, false);
@@ -318,7 +319,7 @@ public class ActivityPanel extends ContentPanel {
     * @param selectedModel the selected model
     */
    protected void editScreen(BeanModel selectedModel) {
-      final ScreenWindow screenWindow = new ScreenWindow((Screen) selectedModel.getBean());
+      final ScreenWindow screenWindow = new ScreenWindow((UIScreen) selectedModel.getBean());
       screenWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
@@ -397,7 +398,7 @@ public class ActivityPanel extends ContentPanel {
             if (event.getType() == BeanModelTable.ADD) {
                BeanModel beanModel = (BeanModel) event.getItem();
                if (beanModel.getBean() instanceof Screen) {
-                  ScreenTabItem screenTabItem = new ScreenTabItem((Screen) beanModel.getBean());
+                  ScreenTabItem screenTabItem = new ScreenTabItem((UIScreen) beanModel.getBean());
                   screenTab.add(screenTabItem);
                }
             }

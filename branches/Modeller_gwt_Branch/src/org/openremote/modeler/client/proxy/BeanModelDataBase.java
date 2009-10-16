@@ -35,6 +35,7 @@ import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
+import org.openremote.modeler.domain.ScreenRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
@@ -66,10 +67,13 @@ public class BeanModelDataBase {
    
    /** The Constant activityTable. */
    public static final BeanModelTable activityTable = new BeanModelTable();
+   
+   /** The Constant groupTable. */
+   public static final BeanModelTable groupTable = new BeanModelTable();
 
    /** The Constant screenTable. */
    public static final BeanModelTable screenTable = new ScreenTable();
-
+   
    /**
     * Gets the original device macro item bean model id,if not find return 0.
     * 
@@ -159,6 +163,22 @@ public class BeanModelDataBase {
       return list;
    }
 
-
+   /**
+    * Gets the original screen ref bean model id.
+    * 
+    * @param beanModel the bean model
+    * 
+    * @return the original screen ref bean model id
+    */
+   public static long getOriginalScreenRefBeanModelId(BeanModel beanModel) {
+      if (beanModel == null) {
+         return 0;
+      }
+      if (beanModel.getBean() instanceof ScreenRef) {
+         ScreenRef screenRef = (ScreenRef) beanModel.getBean();
+         return screenRef.getScreen().getOid();
+      }
+      return 0;
+   }
   
 }

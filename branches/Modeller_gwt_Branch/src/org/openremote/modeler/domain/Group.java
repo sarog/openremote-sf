@@ -1,0 +1,114 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+package org.openremote.modeler.domain;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Transient;
+
+/**
+ * The Class Group.
+ */
+@SuppressWarnings("serial")
+public class Group extends BusinessEntity {
+
+   /** The default name index. */
+   private static int defaultNameIndex = 1;
+   
+   /** The label. */
+   private String label;
+   
+   /** The screen refs. */
+   private List<ScreenRef> screenRefs = new ArrayList<ScreenRef>();
+
+   /**
+    * Gets the label.
+    * 
+    * @return the label
+    */
+   public String getLabel() {
+      return label;
+   }
+
+   /**
+    * Sets the label.
+    * 
+    * @param label the new label
+    */
+   public void setLabel(String label) {
+      this.label = label;
+   }
+
+   
+   /**
+    * Gets the screen refs.
+    * 
+    * @return the screen refs
+    */
+   public List<ScreenRef> getScreenRefs() {
+      return screenRefs;
+   }
+
+   /**
+    * Sets the screen refs.
+    * 
+    * @param screenRefs the new screen refs
+    */
+   public void setScreenRefs(List<ScreenRef> screenRefs) {
+      this.screenRefs = screenRefs;
+   }
+
+   /**
+    * Adds the screen ref.
+    * 
+    * @param screen the screen
+    */
+   public void addScreenRef(ScreenRef screen) {
+      screenRefs.add(screen);
+   }
+   
+   /**
+    * Delete screen ref.
+    * 
+    * @param screen the screen
+    */
+   public void deleteScreenRef(ScreenRef screen) {
+      screenRefs.remove(screen);
+   }
+   
+   /* (non-Javadoc)
+    * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()
+    */
+   @Transient
+   public String getDisplayName() {
+      return label;
+   }
+   
+   /**
+    * Gets the new default name.
+    * 
+    * @return the new default name
+    */
+   @Transient
+   public static String getNewDefaultName() {
+      return "group" + defaultNameIndex++;
+   }
+}

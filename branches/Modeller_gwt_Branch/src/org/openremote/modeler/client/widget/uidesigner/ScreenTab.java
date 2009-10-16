@@ -25,7 +25,7 @@ import java.util.Map;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.BeanModelTable;
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.UIScreen;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
@@ -51,15 +51,15 @@ public class ScreenTab extends TabPanel {
       addListener(Events.Add, new Listener<TabPanelEvent>() {
          public void handleEvent(TabPanelEvent be) {
             final ScreenTabItem screenTabItem = (ScreenTabItem) be.getItem();
-            BeanModelDataBase.screenTable.addChangeListener(screenTabItem.getScreen().getOid(),
-                  getScreenChangeListener(screenTabItem));
+//            BeanModelDataBase.screenTable.addChangeListener(screenTabItem.getScreen().getOid(),
+//                  getScreenChangeListener(screenTabItem));
          }
       });
-      addListener(Events.Remove, new Listener<TabPanelEvent>() {
+      addListener(Events.Remove, new Listener<TabPanelEvent>() {                
          public void handleEvent(TabPanelEvent be) {
             final ScreenTabItem screenTabItem = (ScreenTabItem) be.getItem();
-            BeanModelDataBase.screenTable.removeChangeListener(screenTabItem.getScreen().getOid(),
-                  getScreenChangeListener(screenTabItem));
+//            BeanModelDataBase.screenTable.removeChangeListener(screenTabItem.getScreen().getOid(),
+//                  getScreenChangeListener(screenTabItem));
          }
       });
       addInsertListener();
@@ -81,22 +81,22 @@ public class ScreenTab extends TabPanel {
       if (changeListener == null) {
          changeListener = new ChangeListener() {
             public void modelChanged(ChangeEvent event) {
-               Screen screen = screenTabItem.getScreen();
+//               Screen screen = screenTabItem.getScreen();
                if (event.getType() == BeanModelTable.REMOVE) {
                   remove(screenTabItem);
                } else if (event.getType() == BeanModelTable.UPDATE) {
-                  if (screenTabItem.getRow() != screen.getRowCount()
-                        || screenTabItem.getColumn() != screen.getColumnCount()) {
-                     remove(screenTabItem);
-                     ScreenTabItem newScreenTabItem = new ScreenTabItem(screen);
-                     add(newScreenTabItem);
-                     setSelection(newScreenTabItem);
-                     return;
-                  }
-                  if (!screen.getName().equals(screenTabItem.getText())) {
-                     screenTabItem.setText(screen.getName());
-                     setSelection(screenTabItem);
-                  }
+//                  if (screenTabItem.getRow() != screen.getRowCount()
+//                        || screenTabItem.getColumn() != screen.getColumnCount()) {
+//                     remove(screenTabItem);
+//                     ScreenTabItem newScreenTabItem = new ScreenTabItem(screen);
+//                     add(newScreenTabItem);
+//                     setSelection(newScreenTabItem);
+//                     return;
+//                  }
+//                  if (!screen.getName().equals(screenTabItem.getText())) {
+//                     screenTabItem.setText(screen.getName());
+//                     setSelection(screenTabItem);
+//                  }
                }
             }
          };
@@ -113,8 +113,8 @@ public class ScreenTab extends TabPanel {
          public void modelChanged(ChangeEvent event) {
             if (event.getType() == BeanModelTable.ADD) {
                BeanModel beanModel = (BeanModel) event.getItem();
-               if (beanModel.getBean() instanceof Screen) {
-                  ScreenTabItem screenTabItem = new ScreenTabItem((Screen) beanModel.getBean());
+               if (beanModel.getBean() instanceof UIScreen) {
+                  ScreenTabItem screenTabItem = new ScreenTabItem((UIScreen) beanModel.getBean());
                   add(screenTabItem);
                   setSelection(screenTabItem);
                }

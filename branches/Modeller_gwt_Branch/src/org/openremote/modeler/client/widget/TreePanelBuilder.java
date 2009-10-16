@@ -33,7 +33,10 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
+import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.UIScreen;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -70,6 +73,13 @@ public class TreePanelBuilder {
    
    /** The activity tree store. */
    private static TreeStore<BeanModel> activityTreeStore = null;
+   
+   /** The screen tree store. */
+   private static TreeStore<BeanModel> screenTreeStore = null;
+   
+   /** The group tree store. */
+   private static TreeStore<BeanModel> groupTreeStore = null;
+   
    
    /**
     * Builds a device command tree.
@@ -191,16 +201,16 @@ public class TreePanelBuilder {
             if (event.getTypeInt() == Event.ONDBLCLICK) {
                BeanModel beanModel = this.getSelectionModel().getSelectedItem();
                if (beanModel.getBean() instanceof Screen) {
-                  Screen screen = beanModel.getBean();
+                  UIScreen screen = beanModel.getBean();
                   ScreenTabItem screenTabItem = null;
                   for (TabItem tabPanel : screenTab.getItems()) {
                      screenTabItem = (ScreenTabItem) tabPanel;
-                     if (screen == screenTabItem.getScreen()) {
-                        screenTab.setSelection(screenTabItem);
-                        return;
-                     } else {
-                        screenTabItem = null;
-                     }
+//                     if (screen == screenTabItem.getScreen()) {
+//                        screenTab.setSelection(screenTabItem);
+//                        return;
+//                     } else {
+//                        screenTabItem = null;
+//                     }
                   }
                   if (screenTabItem == null) {
                      screenTabItem = new ScreenTabItem(screen);
@@ -232,5 +242,59 @@ public class TreePanelBuilder {
       });
       
       return activityTree;
+   }
+   
+   /**
+    * Builds the screen tree.
+    * 
+    * @return the tree panel< bean model>
+    */
+   public static TreePanel<BeanModel> buildScreenTree() {
+      if (screenTreeStore == null) {
+         screenTreeStore = new TreeStore<BeanModel>();
+      }
+      TreePanel<BeanModel> screenTree = new TreePanel<BeanModel>(screenTreeStore);
+      screenTree.setStateful(true);
+      screenTree.setBorders(false);
+      screenTree.setHeight("100%");      
+      screenTree.setDisplayProperty("displayName");
+      
+      screenTree.setIconProvider(new ModelIconProvider<BeanModel>() {
+         public AbstractImagePrototype getIcon(BeanModel thisModel) {
+            return ICON.screenIcon();
+         }
+      });
+      
+      return screenTree;
+   }
+   
+   /**
+    * Builds the group tree.
+    * 
+    * @return the tree panel< bean model>
+    */
+   public static TreePanel<BeanModel> buildGroupTree() {
+      if (groupTreeStore == null) {
+         groupTreeStore = new TreeStore<BeanModel>();
+      }
+      TreePanel<BeanModel> groupTree = new TreePanel<BeanModel>(groupTreeStore);
+      groupTree.setStateful(true);
+      groupTree.setBorders(false);
+      groupTree.setHeight("100%");      
+      groupTree.setDisplayProperty("displayName");
+      
+      groupTree.setIconProvider(new ModelIconProvider<BeanModel>() {
+         public AbstractImagePrototype getIcon(BeanModel thisModel) {
+            if (thisModel.getBean() instanceof Group) {
+               return ICON.activityIcon();
+            } else if (thisModel.getBean() instanceof ScreenRef) {
+               return ICON.screenIcon();
+            } else {
+               return ICON.activityIcon();
+            }
+         }
+      });
+      
+      return groupTree;
    }
 }

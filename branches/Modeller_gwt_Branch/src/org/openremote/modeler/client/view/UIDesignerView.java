@@ -28,9 +28,10 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.TouchPanels;
-import org.openremote.modeler.client.widget.uidesigner.ActivityPanel;
 import org.openremote.modeler.client.widget.uidesigner.DevicesAndMacrosPanel;
+import org.openremote.modeler.client.widget.uidesigner.GroupPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
+import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
 import org.openremote.modeler.domain.Activity;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
@@ -77,7 +78,7 @@ public class UIDesignerView extends TabItem implements View {
       timer = new Timer() {
          @Override
          public void run() {
-            autoSaveUiDesignerLayoutJSON();
+//            autoSaveUiDesignerLayoutJSON();
          }
         };
         timer.scheduleRepeating(AUTO_SAVE_INTERVAL_MS);
@@ -155,9 +156,12 @@ public class UIDesignerView extends TabItem implements View {
       west.setLayout(new AccordionLayout());
       west.setBodyBorder(false);
       west.setHeading("Browser");
-      ActivityPanel activityPanel = new ActivityPanel(screenTab);
-      west.add(activityPanel);
-      applicationView.setActivityPanel(activityPanel);
+//      ActivityPanel activityPanel = new ActivityPanel(screenTab);
+//      west.add(activityPanel);
+//      applicationView.setActivityPanel(activityPanel);
+      
+      west.add(new ScreenPanel());
+      west.add(new GroupPanel());
       westData.setMargins(new Margins(2));
       add(west, westData);
    }

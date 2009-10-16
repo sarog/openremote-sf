@@ -23,8 +23,9 @@ import java.util.Map;
 
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.uidesigner.ScreenWindow;
-import org.openremote.modeler.domain.Activity;
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.Grid;
+import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
@@ -47,12 +48,11 @@ public class ScreenBeanModelProxy {
     * 
     * @return the bean model
     */
-   public static BeanModel createScreen(Activity activity, Map<String, String> map) {
-      Screen screen = new Screen();
+   public static BeanModel createScreen(Map<String, String> map, TouchPanelDefinition touchPanelDefinition) {
+      UIScreen screen = new UIScreen();
       screen.setOid(IDUtil.nextID());
+      screen.setTouchPanelDefinition(touchPanelDefinition);
       setAttrsToScreen(map, screen);
-      activity.addScreen(screen);
-      screen.setActivity(activity);
       BeanModelDataBase.screenTable.insert(screen.getBeanModel());
       return screen.getBeanModel();
    }
@@ -65,7 +65,7 @@ public class ScreenBeanModelProxy {
     * 
     * @return the bean model
     */
-   public static BeanModel updateScreen(Screen screen, Map<String, String> map) {
+   public static BeanModel updateScreen(UIScreen screen, Map<String, String> map) {
       setAttrsToScreen(map, screen);
       BeanModelDataBase.screenTable.update(screen.getBeanModel());
       return screen.getBeanModel();
@@ -77,9 +77,6 @@ public class ScreenBeanModelProxy {
     * @param screenBeanModel the screen bean model
     */
    public static void deleteScreen(BeanModel screenBeanModel) {
-      Screen screen = screenBeanModel.getBean();
-      Activity activity = screen.getActivity();
-      activity.deleteScreen(screen);
       BeanModelDataBase.screenTable.delete(screenBeanModel);
    }
 
@@ -89,14 +86,25 @@ public class ScreenBeanModelProxy {
     * @param map the map
     * @param screen the screen
     */
-   private static void setAttrsToScreen(Map<String, String> map, Screen screen) {
-      screen.setName(map.get(ScreenWindow.SCREEN_NAME));
-      Integer row = Integer.parseInt(map.get(ScreenWindow.SCREEN_ROW_COUNT));
-      Integer column = Integer.parseInt(map.get(ScreenWindow.SCREEN_COLUMN_COUNT));
-      if (!row.equals(screen.getRowCount()) || !column.equals(screen.getColumnCount())) {
-         screen.getButtons().clear();
+   private static void setAttrsToScreen(Map<String, String> map, UIScreen screen) {
+      screen.setLabel(map.get(ScreenWindow.SCREEN_NAME));
+      String layout = map.get(ScreenWindow.SCREEN_RADIOLAYOUTGROUP);
+      if(ScreenWindow.SCREEN_GRIDRADIO.equals(layout)) {
+         screen.setAbsoluteLayout(false);
+         Grid grid = new Grid(Integer.valueOf(map.get("gridRow")), Integer.valueOf(map.get("gridColumn")));
+         screen.setGrid(grid);
+      } else if(ScreenWindow.SCREEN_ABSOLUTERADIO.equals(layout)) {
+         screen.setAbsoluteLayout(true);
+      } 
+      if (map.get(ScreenWindow.SCREEN_BACKGROUND) != null) {
+         screen.setBackground(map.get(ScreenWindow.SCREEN_BACKGROUND));
       }
-      screen.setRowCount(row);
-      screen.setColumnCount(column);
+//      Integer row = Integer.parseInt(map.get(ScreenWindow.SCREEN_ROW_COUNT));
+//      Integer column = Integer.parseInt(map.get(ScreenWindow.SCREEN_COLUMN_COUNT));
+//      if (!row.equals(screen.getRowCount()) || !column.equals(screen.getColumnCount())) {
+//         screen.getButtons().clear();
+//      }
+//      screen.setRowCount(row);
+//      screen.setColumnCount(column);
    }
 }
