@@ -244,7 +244,7 @@ public class GroupPanel extends ContentPanel {
                if (selectedModel != null && selectedModel.getBean() instanceof Group) {
                   BeanModelDataBase.groupTable.delete(selectedModel);
                   groupTree.getStore().remove(selectedModel);
-                  Info.display("Info", "Delete group " + selectedModel.get("label") + " success.");
+                  Info.display("Info", "Delete group " + selectedModel.get("name") + " success.");
                } 
             }
          }
@@ -264,7 +264,7 @@ public class GroupPanel extends ContentPanel {
          groupTree.getStore().add(groupBeanModel, screenRef.getBeanModel(), false);
       }
       groupTree.setExpanded(groupBeanModel, true);
-      Info.display("Info", "Create Group " + group.getLabel()+ " success.");
+      Info.display("Info", "Create Group " + group.getName()+ " success.");
    }
    
    /**
@@ -275,7 +275,7 @@ public class GroupPanel extends ContentPanel {
     */
    private void afterUpdateGroup(final BeanModel groupBeanModel, Group group) {
       Group oldGroup = groupBeanModel.getBean();
-      oldGroup.setLabel(group.getLabel());
+      oldGroup.setName(group.getName());
       oldGroup.setScreenRefs(group.getScreenRefs());
       
       groupTree.getStore().removeAll(groupBeanModel);
@@ -286,7 +286,7 @@ public class GroupPanel extends ContentPanel {
       
       groupTree.getStore().update(groupBeanModel);
       groupTree.setExpanded(groupBeanModel, true);
-      Info.display("Info", "Edit Group " + group.getLabel()+ " success.");
+      Info.display("Info", "Edit Group " + group.getName()+ " success.");
    }
    
    /**

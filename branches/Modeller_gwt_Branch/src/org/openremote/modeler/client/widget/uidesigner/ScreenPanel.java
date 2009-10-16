@@ -64,13 +64,13 @@ public class ScreenPanel extends ContentPanel {
    /**
     * Instantiates a new uI screen panel.
     */
-   public ScreenPanel() {
+   public ScreenPanel(ScreenTab screenTab) {
       selectionService = new SelectionServiceExt<BeanModel>();
       setHeading("Screen");
       setIcon(icon.screenIcon());
       setLayout(new FitLayout());
       createMenu();
-      createScreenTree();
+      createScreenTree(screenTab);
    }
    
    /**
@@ -97,8 +97,8 @@ public class ScreenPanel extends ContentPanel {
    /**
     * Creates the screen tree.
     */
-   private void createScreenTree() {
-      screenTree = TreePanelBuilder.buildScreenTree();
+   private void createScreenTree(ScreenTab screenTab) {
+      screenTree = TreePanelBuilder.buildScreenTree(screenTab);
       selectionService.addListener(new SourceSelectionChangeListenerExt(screenTree.getSelectionModel()));
       selectionService.register(screenTree.getSelectionModel());
       LayoutContainer treeContainer = new LayoutContainer() {
@@ -145,7 +145,7 @@ public class ScreenPanel extends ContentPanel {
             BeanModel screenModel = be.getData();
             screenTree.getStore().add(screenModel, true);
             screenTree.getSelectionModel().select(screenModel, false);
-            Info.display("Info", "Add screen " + screenModel.get("label") + " success.");
+            Info.display("Info", "Add screen " + screenModel.get("name") + " success.");
          }
          
       });
@@ -184,7 +184,7 @@ public class ScreenPanel extends ContentPanel {
             screenWindow.hide();
             BeanModel screenModel = be.getData();
             screenTree.getStore().update(screenModel);
-            Info.display("Info", "Edit screen " + screenModel.get("label") + " success.");
+            Info.display("Info", "Edit screen " + screenModel.get("name") + " success.");
          }
          
       });
@@ -206,7 +206,7 @@ public class ScreenPanel extends ContentPanel {
                if (selectedModel != null) {
                   ScreenBeanModelProxy.deleteScreen(selectedModel);
                   screenTree.getStore().remove(selectedModel);
-                  Info.display("Info", "Delete screen " + selectedModel.get("label") + " success.");
+                  Info.display("Info", "Delete screen " + selectedModel.get("name") + " success.");
                } 
             }
          }

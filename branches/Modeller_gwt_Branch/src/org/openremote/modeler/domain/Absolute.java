@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.domain;
 
+import org.openremote.modeler.domain.control.UIControl;
+
 /**
  * The Class Absolute.
  */
@@ -37,8 +39,8 @@ public class Absolute extends BusinessEntity {
    /** The height. */
    private int height;
    
-   /** The screen widget. */
-   private ScreenWidget screenWidget;
+   /** The ui control. */
+   private UIControl uiControl;
    
    /**
     * Gets the left.
@@ -113,22 +115,21 @@ public class Absolute extends BusinessEntity {
    }
 
    /**
-    * Gets the screen widget.
+    * Gets the ui control.
     * 
-    * @return the screen widget
+    * @return the ui control
     */
-   public ScreenWidget getScreenWidget() {
-      return screenWidget;
+   public UIControl getUiControl() {
+      return uiControl;
    }
 
    /**
-    * Sets the screen widget.
+    * Sets the ui control.
     * 
-    * @param screenWidget the new screen widget
+    * @param uiControl the new ui control
     */
-   public void setScreenWidget(ScreenWidget screenWidget) {
-      this.screenWidget = screenWidget;
+   public void setUiControl(UIControl uiControl) {
+      this.uiControl = uiControl;
    }
-   
-   
+
 }

@@ -33,28 +33,28 @@ public class Group extends BusinessEntity {
    /** The default name index. */
    private static int defaultNameIndex = 1;
    
-   /** The label. */
-   private String label;
+   /** The name. */
+   private String name;
    
    /** The screen refs. */
    private List<ScreenRef> screenRefs = new ArrayList<ScreenRef>();
 
    /**
-    * Gets the label.
+    * Gets the name.
     * 
-    * @return the label
+    * @return the name
     */
-   public String getLabel() {
-      return label;
+   public String getName() {
+      return name;
    }
 
    /**
-    * Sets the label.
+    * Sets the name.
     * 
-    * @param label the new label
+    * @param name the new name
     */
-   public void setLabel(String label) {
-      this.label = label;
+   public void setName(String name) {
+      this.name = name;
    }
 
    
@@ -99,7 +99,7 @@ public class Group extends BusinessEntity {
     */
    @Transient
    public String getDisplayName() {
-      return label;
+      return name;
    }
    
    /**

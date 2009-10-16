@@ -89,6 +89,6 @@ public class ScreenRef extends BusinessEntity {
    @Override
    @Transient
    public String getDisplayName() {
-      return screen.getLabel();
+      return screen.getName();
    }
 }

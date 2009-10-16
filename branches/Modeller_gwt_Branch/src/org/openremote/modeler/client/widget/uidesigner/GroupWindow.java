@@ -131,7 +131,7 @@ public class GroupWindow extends Dialog {
       adapterField.setFieldLabel("Screens");
       if (groupModel != null) {
          Group group = groupModel.getBean();
-         groupNameField.setValue(group.getLabel());
+         groupNameField.setValue(group.getName());
       }
       form.add(groupNameField);
       form.add(adapterField);
@@ -180,7 +180,7 @@ public class GroupWindow extends Dialog {
     * @param group the group
     */
    private void updateGroupAttrs(Group group) {
-      group.setLabel(groupNameField.getValue().toString());
+      group.setName(groupNameField.getValue().toString());
       List<BeanModel> screenModels = screenView.getChecked();
       group.getScreenRefs().clear();
       if (screenModels.size() > 0) {
