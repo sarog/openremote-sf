@@ -97,7 +97,7 @@ public class DeviceCommandBeanModelProxy {
          final AsyncSuccessCallback<BeanModel> callback) {
       deviceCommand.setName(map.get(DeviceCommandWindow.DEVICE_COMMAND_NAME));
       List<ProtocolAttr> attrs = deviceCommand.getProtocol().getAttributes();
-      for (int i = 0; i < attrs.size(); i++) {
+      for (int i = 0; i < attrs.size(); i++) { 
          deviceCommand.getProtocol().getAttributes().get(i).setValue(map.get(attrs.get(i).getName()));
       }
       AsyncServiceFactory.getDeviceCommandServiceAsync().update(deviceCommand, new AsyncSuccessCallback<Void>() {

@@ -60,8 +60,8 @@ public class EditDelBtnSelectionListener extends SelectionChangedListener<BeanMo
     * {@inheritDoc}
     */
    public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
-      List<BeanModel> sel = se.getSelection();
-      if (sel.size() > 0) {
+      List<BeanModel> sels = se.getSelection();
+      if (sels.size() > 0 && isEditableAndDeletable(sels)) {
          if (!btns.get(0).isEnabled()) {
             for (Button btn : btns) {
                btn.setEnabled(true);
@@ -74,5 +74,15 @@ public class EditDelBtnSelectionListener extends SelectionChangedListener<BeanMo
       }
 
    }
+   
+   /**
+    * Checks if is editable and deletable.
+    * 
+    * @return true, if is editable and deletable
+    */
+   protected boolean isEditableAndDeletable(List<BeanModel> sels){
+      return true;
+   }
+   
 
 }

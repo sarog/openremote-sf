@@ -19,30 +19,13 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.client.listener.ConfirmDeleteListener;
-import org.openremote.modeler.client.listener.SubmitListener;
-import org.openremote.modeler.client.utils.TouchPanels;
-import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.UIButton;
+import org.openremote.modeler.domain.UIScreen;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
-import com.extjs.gxt.ui.client.event.BaseEvent;
-import com.extjs.gxt.ui.client.event.ButtonEvent;
-import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.Info;
-import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.TabItem;
-import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
-import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 
 /**
@@ -52,226 +35,34 @@ public class ScreenTabItem extends TabItem {
 
 
    /** The screen. */
-   private Screen screen;
+   private UIScreen screen;
 
    /** The icon. */
    private Icons icon = GWT.create(Icons.class);
    
-   /** The screen panel. */
-   private ScreenPanel screenPanel;
-   
-   /** The row. */
-   private int row;
-   
-   /** The column. */
-   private int column;
-   
    /**
     * Instantiates a new screen panel.
     * 
-    * @param s
+    * @param screen
     *           the s
     */
-   public ScreenTabItem(Screen s) {
-      screen = s;
-      setText(screen.getName());
-      setRow(screen.getRowCount());
-      setColumn(screen.getColumnCount());
+   public ScreenTabItem(UIScreen screen) {
+      this.screen = screen;
+      setText(screen.getLabel());
       setClosable(true);
       setLayout(new FlowLayout());
-      List<Button> toolBarBtns = createToolBar();
-      createScreenPanel(s, toolBarBtns);
-
+      addScreenContainer();
    }
 
-   /**
-    * Creates the tool bar.
-    * 
-    * @return the list< button>
-    */
-   private List<Button> createToolBar() {
-      ToolBar toolBar = new ToolBar();
-      List<Button> toolBarBtns = new ArrayList<Button>();
-      Button renameBtn = createRenameBtn();
-      Button changeIconBtn = createChangeIconBtn();
-      Button deleteBtn = createDeleteBtn();
-      toolBarBtns.add(renameBtn);
-      toolBarBtns.add(changeIconBtn);
-      toolBarBtns.add(deleteBtn);
-      
-      toolBar.add(renameBtn);
-      toolBar.add(changeIconBtn);
-      toolBar.add(deleteBtn);
-      add(toolBar);
-      return toolBarBtns;
+   private void addScreenContainer() {
+      LayoutContainer screenContainer = new LayoutContainer();
+      TouchPanelDefinition touchPanelDefinition = screen.getTouchPanelDefinition();
+      screenContainer.addStyleName("screen-background");
+      screenContainer.setSize(touchPanelDefinition.getWidth(), touchPanelDefinition.getHeight());
+      screenContainer.setStyleAttribute("backgroundImage", "url(" + touchPanelDefinition.getBgImage() + ")");
+      screenContainer.setStyleAttribute("paddingLeft", String.valueOf(touchPanelDefinition.getPaddingLeft()));
+      screenContainer.setStyleAttribute("paddingTop", String.valueOf(touchPanelDefinition.getPaddingTop()));
+      screenContainer.add(new ScreenWorkSpaceContainer(screen));
+      add(screenContainer);
    }
-   
-   /**
-    * Creates the rename btn.
-    * 
-    * @return the button
-    */
-   private Button createRenameBtn() {
-      Button renameBtn = new Button("Rename Button");
-      renameBtn.setEnabled(false);
-      renameBtn.setIcon(icon.edit());
-      renameBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            final ScreenButton selectedButton = screenPanel.getSelectedButton();
-            if (selectedButton != null) {
-               final RenameButtonWindow renameButtonWindow = new RenameButtonWindow((UIButton) selectedButton
-                     .getData("button"));
-               renameButtonWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-                  @Override
-                  public void afterSubmit(SubmitEvent be) {
-                     renameButtonWindow.hide();
-                     UIButton button = be.getData();
-                     selectedButton.setLabel(button.getLabel());
-                     layout();
-                     Info.display("Info", "Edit device " + button.getLabel() + " success.");
-                  }
-               });
-            } else {
-               MessageBox.info("Warning", "Please select a button.", null);
-            }
-         }
-      });
-      return renameBtn;
-   }
-   
-   /**
-    * Creates the change icon btn.
-    * 
-    * @return the button
-    */
-   private Button createChangeIconBtn() {
-      Button changeIconBtn = new Button("Change Icon");
-      changeIconBtn.setEnabled(false);
-      changeIconBtn.setIcon(icon.changeIcon());
-      changeIconBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            final ScreenButton selectedButton = screenPanel.getSelectedButton();
-            if (selectedButton != null) {
-               final ChangeIconWindow changeIconWindow = new ChangeIconWindow(selectedButton);
-               changeIconWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-                  @Override
-                  public void afterSubmit(SubmitEvent be) {
-                     String icon = be.getData();
-                     selectedButton.setIcon(icon);
-                     layout();
-                     Info.display("Info", "Change icon success.");
-                  }
-               });
-            } else {
-               MessageBox.info("Warning", "Please select a button.", null);
-            }
-         }
-
-      });
-      return changeIconBtn;
-   }
-   
-   /**
-    * Creates the delete btn.
-    * 
-    * @return the button
-    */
-   private Button createDeleteBtn() {
-      Button deleteBtn = new Button("Delete");
-      deleteBtn.setEnabled(false);
-      deleteBtn.setIcon(icon.delete());
-      deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
-         @Override
-         public void onDelete(ButtonEvent ce) {
-            ScreenButton selectButton = screenPanel.getSelectedButton();
-            if (selectButton != null) {
-               screen.deleteButton((UIButton) selectButton.getData(ScreenButton.DATA_BUTTON));
-               screenPanel.delete(selectButton);
-               layout();
-            } else {
-               MessageBox.info("Warning", "Please select a button.", null);
-            }
-         }
-      });
-      return deleteBtn;
-   }
-   
-   /**
-    * Creates the screen panel.
-    * 
-    * @param screen the screen
-    * @param toolBarBtns the tool bar btns
-    */
-   private void createScreenPanel(Screen screen, final List<Button> toolBarBtns) {
-      Map<String, List<TouchPanelDefinition>> panels = TouchPanels.getInstance();
-      TouchPanelDefinition panelDefinition = panels.get("iphone").get(0);
-      screenPanel = new ScreenPanel(screen, panelDefinition);
-      screenPanel.addListener(Events.AfterLayout, new Listener<BaseEvent>() {
-         @Override
-         public void handleEvent(BaseEvent be) {
-            if (screenPanel.getSelectedButton() != null) {
-               if (!toolBarBtns.get(0).isEnabled()) {
-                  for (Button button : toolBarBtns) {
-                     button.setEnabled(true);
-                  }
-               }
-            } else {
-               for (Button button : toolBarBtns) {
-                  button.setEnabled(false);
-               }
-            }
-         }
-         
-      });
-      add(screenPanel);
-      
-   }
-
-   /**
-    * Gets the screen.
-    * 
-    * @return the screen
-    */
-   public Screen getScreen() {
-      return screen;
-   }
-
-   /**
-    * Gets the row.
-    * 
-    * @return the row
-    */
-   public int getRow() {
-      return row;
-   }
-
-   /**
-    * Sets the row.
-    * 
-    * @param row the new row
-    */
-   public void setRow(int row) {
-      this.row = row;
-   }
-
-   /**
-    * Gets the column.
-    * 
-    * @return the column
-    */
-   public int getColumn() {
-      return column;
-   }
-
-   /**
-    * Sets the column.
-    * 
-    * @param column the new column
-    */
-   public void setColumn(int column) {
-      this.column = column;
-   }
-   
 }
