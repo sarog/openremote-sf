@@ -19,7 +19,11 @@
 */
 package org.openremote.controller.control.button;
 
+import java.util.List;
+
 import org.jdom.Element;
+import org.openremote.controller.command.DelayCommand;
+import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.control.Control;
 import org.openremote.controller.control.ControlBuilder;
 
@@ -30,12 +34,29 @@ import org.openremote.controller.control.ControlBuilder;
  */
 public class ButtonBuilder extends ControlBuilder {
 
-    /* (non-Javadoc)
-     * @see org.openremote.controller.control.ControlBuilder#build(org.jdom.Element, java.lang.String)
+    /**
+     * Build Button with button xml element.
+     * 
+     * Button instance has been initialized with property status = Status(new NoStatusCommand()). 
+     * So, if commandParam is non-executable command(e.g: status),
+     * the Button instance will get default status with read method in the StatusCommand. 
      */
-    @Override
+    @SuppressWarnings("unchecked")
+   @Override
     public Control build(Element buttonElement, String commandParam) {
-        Button button = new Button();
+       //commandParam could be "click" 
+       Button button = new Button();
+       List<Element> commandRefElements = buttonElement.getChildren();
+       for (Element commandRefElement : commandRefElements) {
+           if (Control.DELAY_ELEMENT_NAME.equalsIgnoreCase(commandRefElement.getName())) {
+               button.addExecutableCommand(new DelayCommand(commandRefElement.getTextTrim()));
+               continue;
+           }
+           String commandID = commandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
+           Element commandElement = remoteActionXMLParser.queryElementFromXMLById(commandID);
+           ExecutableCommand command = (ExecutableCommand) commandFactory.getCommand(commandElement);
+           button.addExecutableCommand(command);
+       }
         return button;
     }
 }

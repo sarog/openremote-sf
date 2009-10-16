@@ -30,12 +30,17 @@ import org.openremote.controller.command.StatusCommand;
  * @author Handy.Wang 2009-10-15
  */
 public abstract class Control {
+   
+    public static String CURRENT_STATUS = "off";
 
     /** The Constant CONTROL_COMMAND_REF_ATTRIBUTE_NAME. */
     public static final String CONTROL_COMMAND_REF_ATTRIBUTE_NAME = "ref";
 
     /** The Constant STATUS_ELEMENT_NAME. */
     public static final String STATUS_ELEMENT_NAME = "status";
+    
+    /** The Constant DELAY_ELEMENT_NAME. */
+    public static final String DELAY_ELEMENT_NAME = "delay";
 
     /** The status. */
     private Status status;

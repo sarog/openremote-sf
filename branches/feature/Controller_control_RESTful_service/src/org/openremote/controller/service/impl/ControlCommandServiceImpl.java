@@ -21,11 +21,11 @@ package org.openremote.controller.service.impl;
 
 import java.util.List;
 
-import org.openremote.controller.command.Command;
-import org.openremote.controller.command.CommandType;
-import org.openremote.controller.command.DelayCommand;
+import org.jdom.Element;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.RemoteActionXMLParser;
+import org.openremote.controller.control.Control;
+import org.openremote.controller.control.ControlFactory;
 import org.openremote.controller.service.ControlCommandService;
 
 
@@ -39,43 +39,18 @@ public class ControlCommandServiceImpl implements ControlCommandService {
    /** The remote action xml parser. */
    private RemoteActionXMLParser remoteActionXMLParser;
    
-   /**
-    * {@inheritDoc}
-    */
-   public void trigger(String buttonID){
-      trigger(buttonID, CommandType.SEND_ONCE);
-   }
+   private ControlFactory controlFactory;
    
    /**
     * {@inheritDoc}
     */
-   public void trigger(String buttonID, CommandType commandType) {
-//      List<Command> commands = remoteActionXMLParser.findCommandsByControlID(buttonID);
-//      for (Command command : commands) {
-//           
-//         switch (commandType) {
-//         case SEND_ONCE:
-//            doTrigger(command);
-//            break;
-//         case SEND_START:
-////            event.start();
-//            break;
-//         case SEND_STOP:
-////            event.stop();
-//            break;
-//         default:
-//            doTrigger(command);
-//            break;
-//         }
-//      }
-   }
-   
-   public void doTrigger(Command command) {
-       if (command instanceof ExecutableCommand) {
-           ((ExecutableCommand)command).send();
-       } else if (command instanceof DelayCommand) {
-           ((DelayCommand)command).send();
-       }
+   public void trigger(String controlID, String commandParam) {
+      Element controlElement = remoteActionXMLParser.queryElementFromXMLById(controlID);
+      Control control = controlFactory.getControl(controlElement, commandParam);
+      List<ExecutableCommand> executableCommands = control.getExecutableCommands();
+      for (ExecutableCommand executableCommand : executableCommands) {
+         executableCommand.send();
+      }
    }
    
    /**
@@ -85,6 +60,15 @@ public class ControlCommandServiceImpl implements ControlCommandService {
     */
    public void setRemoteActionXMLParser(RemoteActionXMLParser remoteActionXMLParser) {
       this.remoteActionXMLParser = remoteActionXMLParser;
+   }
+
+   /**
+    * Sets the control factory.
+    * 
+    * @param controlFactory the new control factory
+    */
+   public void setControlFactory(ControlFactory controlFactory) {
+      this.controlFactory = controlFactory;
    }
    
 }

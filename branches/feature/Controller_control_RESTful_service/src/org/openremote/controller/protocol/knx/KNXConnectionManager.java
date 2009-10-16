@@ -26,6 +26,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.control.Control;
 
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.IndividualAddress;
@@ -542,7 +543,6 @@ class KNXConnectionManager
           System.out.print(Integer.toHexString(((int)payload[i]) & 0xFF));
           System.out.flush();
         }
-        System.out.println();
         
         connection.send(cEMI, KNXnetIPTunnel.NONBLOCKING);
 
@@ -552,19 +552,26 @@ class KNXConnectionManager
       {
         log.error(t);
       }
+      
+      if ("off".equalsIgnoreCase(Control.CURRENT_STATUS)) {
+         Control.CURRENT_STATUS = "on";
+      } else {
+         Control.CURRENT_STATUS = "off";
+      }
     }
     
     /* (non-Javadoc)
      * @see org.openremote.controller.protocol.knx.KNXConnection#readDeviceStatus(java.lang.String, java.lang.String)
      */
     public String readDeviceStatus(String groupAddress, String dptTypeID) {
-        try {
-            sendReadStatusRequest(connection, null);
-            return read(groupAddress, dptTypeID);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "unknown";
+//        try {
+//            sendReadStatusRequest(connection, null);
+//            return read(groupAddress, dptTypeID);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return "unknown";
+        return Control.CURRENT_STATUS;
     }
     
     /**
