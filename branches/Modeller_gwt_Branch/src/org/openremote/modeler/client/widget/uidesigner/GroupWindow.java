@@ -159,13 +159,13 @@ public class GroupWindow extends Dialog {
          store.add(screenModel);
       }
       screenView.setStore(store);
-      screenView.setDisplayProperty("label");
+      screenView.setDisplayProperty("name");
       screenContainer.add(screenView);
       if (groupModel != null) {
          Group group = groupModel.getBean();
          for (ScreenRef screenRef : group.getScreenRefs()) {
             for (BeanModel beanModel : screenModels) {
-               if (screenRef.getDisplayName().equals(beanModel.get("label"))) {
+               if (screenRef.getDisplayName().equals(beanModel.get("name"))) {
                   screenView.setChecked(beanModel, true);
                }
             }
