@@ -42,7 +42,13 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeEventSupport;
 import com.extjs.gxt.ui.client.data.ChangeListener;
+import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.dnd.TreePanelDragSource;
+import com.extjs.gxt.ui.client.dnd.TreePanelDropTarget;
+import com.extjs.gxt.ui.client.dnd.DND.Feedback;
+import com.extjs.gxt.ui.client.dnd.DND.Operation;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.Store;
@@ -64,16 +70,16 @@ public class GroupPanel extends ContentPanel {
 
    /** The group tree. */
    private TreePanel<BeanModel> groupTree;
-   
+
    /** The icon. */
    private Icons icon = GWT.create(Icons.class);
-   
+
    /** The selection service. */
    private SelectionServiceExt<BeanModel> selectionService;
-   
+
    /** The change listener map. */
    private Map<BeanModel, ChangeListener> changeListenerMap = null;
-   
+
    /**
     * Instantiates a new group panel.
     */
@@ -85,7 +91,7 @@ public class GroupPanel extends ContentPanel {
       createMenu();
       createScreenTree();
    }
-   
+
    /**
     * Creates the menu.
     */
@@ -93,12 +99,12 @@ public class GroupPanel extends ContentPanel {
       ToolBar toolBar = new ToolBar();
       List<Button> editDelBtns = new ArrayList<Button>();
       toolBar.add(createNewBtn());
-      
+
       Button editBtn = createEditBtn();
       editBtn.setEnabled(false);
       Button deleteBtn = createDeleteBtn();
       deleteBtn.setEnabled(false);
-      
+
       toolBar.add(editBtn);
       toolBar.add(deleteBtn);
       editDelBtns.add(editBtn);
@@ -113,34 +119,17 @@ public class GroupPanel extends ContentPanel {
             return false;
          }
       });
-      
+
       setTopComponent(toolBar);
    }
-   
+
    /**
     * Creates the screen tree.
     */
    private void createScreenTree() {
       groupTree = TreePanelBuilder.buildGroupTree();
-      
-//      TreePanelDragSource source = new TreePanelDragSource(groupTree);
-//      source.addDNDListener(new DNDListener() {
-//         @Override
-//         public void dragStart(DNDEvent e) {
-//            ModelData sel = groupTree.getSelectionModel().getSelectedItem();
-//            if (sel != null && sel == groupTree.getStore().getRootItems().get(0)) {
-//               e.setCancelled(true);
-//               e.getStatus().setStatus(false);
-//               return;
-//            }
-//            super.dragStart(e);
-//         }
-//      });
-//
-//      TreePanelDropTarget target = new TreePanelDropTarget(groupTree);
-//      target.setAllowSelfAsSource(true);
-//      target.setFeedback(Feedback.BOTH);
-      
+      createDragSource();
+      createDropTarget();
       selectionService.addListener(new SourceSelectionChangeListenerExt(groupTree.getSelectionModel()));
       selectionService.register(groupTree.getSelectionModel());
       LayoutContainer treeContainer = new LayoutContainer() {
@@ -151,13 +140,14 @@ public class GroupPanel extends ContentPanel {
             add(groupTree);
          }
       };
-//      initTreeWithAutoSavedJson(screenTab);
+      // initTreeWithAutoSavedJson(screenTab);
       treeContainer.setScrollMode(Scroll.AUTO);
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
       add(treeContainer);
+
    }
-   
+
    /**
     * Creates the new btn.
     * 
@@ -171,25 +161,25 @@ public class GroupPanel extends ContentPanel {
          public void componentSelected(ButtonEvent ce) {
             createGroup();
          }
-         
+
       });
       return newButton;
    }
-   
+
    /**
     * Creates the group.
     */
    private void createGroup() {
       GroupWindow groupWindow = new GroupWindow();
-      groupWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener(){
+      groupWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
             afterCreateGroup(be.<Group> getData());
          }
-         
+
       });
    }
-   
+
    /**
     * Creates the edit btn.
     * 
@@ -209,25 +199,24 @@ public class GroupPanel extends ContentPanel {
       });
       return editBtn;
    }
-   
+
    /**
     * Edits the group.
     * 
-    * @param groupBeanModel the group bean model
+    * @param groupBeanModel
+    *           the group bean model
     */
    private void editGroup(final BeanModel groupBeanModel) {
       GroupWindow groupWindow = new GroupWindow(groupBeanModel);
-      groupWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener(){
+      groupWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
             afterUpdateGroup(groupBeanModel, be.<Group> getData());
          }
 
-         
       });
    }
-   
-   
+
    /**
     * Creates the delete btn.
     * 
@@ -245,7 +234,7 @@ public class GroupPanel extends ContentPanel {
                   BeanModelDataBase.groupTable.delete(selectedModel);
                   groupTree.getStore().remove(selectedModel);
                   Info.display("Info", "Delete group " + selectedModel.get("name") + " success.");
-               } 
+               }
             }
          }
       });
@@ -255,40 +244,46 @@ public class GroupPanel extends ContentPanel {
    /**
     * After create group.
     * 
-    * @param group the group
+    * @param group
+    *           the group
     */
    private void afterCreateGroup(Group group) {
       BeanModel groupBeanModel = group.getBeanModel();
-      groupTree.getStore().add(groupBeanModel, false);
+      BeanModel root = groupTree.getStore().getRootItems().get(0);
+      groupTree.getStore().add(root, groupBeanModel, false);
       for (ScreenRef screenRef : group.getScreenRefs()) {
          groupTree.getStore().add(groupBeanModel, screenRef.getBeanModel(), false);
       }
+      groupTree.setExpanded(root, true);
       groupTree.setExpanded(groupBeanModel, true);
-      Info.display("Info", "Create Group " + group.getName()+ " success.");
+      groupTree.getSelectionModel().select(groupBeanModel, false);
+      Info.display("Info", "Create Group " + group.getName() + " success.");
    }
-   
+
    /**
     * After update group.
     * 
-    * @param groupBeanModel the group bean model
-    * @param group the group
+    * @param groupBeanModel
+    *           the group bean model
+    * @param group
+    *           the group
     */
    private void afterUpdateGroup(final BeanModel groupBeanModel, Group group) {
       Group oldGroup = groupBeanModel.getBean();
       oldGroup.setName(group.getName());
       oldGroup.setScreenRefs(group.getScreenRefs());
-      
+
       groupTree.getStore().removeAll(groupBeanModel);
-      
+
       for (ScreenRef screenRef : group.getScreenRefs()) {
          groupTree.getStore().add(groupBeanModel, screenRef.getBeanModel(), false);
       }
-      
+
       groupTree.getStore().update(groupBeanModel);
       groupTree.setExpanded(groupBeanModel, true);
-      Info.display("Info", "Edit Group " + group.getName()+ " success.");
+      Info.display("Info", "Edit Group " + group.getName() + " success.");
    }
-   
+
    /**
     * Adds the tree store event listener.
     */
@@ -314,11 +309,12 @@ public class GroupPanel extends ContentPanel {
          }
       });
    }
-   
+
    /**
     * Adds the change listener to drag source.
     * 
-    * @param models the models
+    * @param models
+    *           the models
     */
    private void addChangeListenerToDragSource(List<BeanModel> models) {
       if (models == null) {
@@ -331,11 +327,12 @@ public class GroupPanel extends ContentPanel {
          }
       }
    }
-   
+
    /**
     * Removes the change listener to drag source.
     * 
-    * @param models the models
+    * @param models
+    *           the models
     */
    private void removeChangeListenerToDragSource(List<BeanModel> models) {
       if (models == null) {
@@ -349,11 +346,12 @@ public class GroupPanel extends ContentPanel {
          changeListenerMap.remove(beanModel);
       }
    }
-   
+
    /**
     * Gets the drag source bean model change listener.
     * 
-    * @param target the target
+    * @param target
+    *           the target
     * 
     * @return the drag source bean model change listener
     */
@@ -367,7 +365,7 @@ public class GroupPanel extends ContentPanel {
             public void modelChanged(ChangeEvent changeEvent) {
                if (changeEvent.getType() == ChangeEventSupport.Remove) {
                   if (target.getBean() instanceof ScreenRef) {
-                     ScreenRef screenRef = (ScreenRef)target.getBean();
+                     ScreenRef screenRef = (ScreenRef) target.getBean();
                      Group group = screenRef.getGroup();
                      group.deleteScreenRef(screenRef);
                   }
@@ -379,7 +377,7 @@ public class GroupPanel extends ContentPanel {
                      UIScreen screen = (UIScreen) source.getBean();
                      ScreenRef screenRef = (ScreenRef) target.getBean();
                      screenRef.setScreen(screen);
-                  } 
+                  }
                   groupTree.getStore().update(target);
                }
             }
@@ -388,4 +386,59 @@ public class GroupPanel extends ContentPanel {
       }
       return changeListener;
    }
+
+   private void createDropTarget() {
+      final TreePanelDropTarget target = new TreePanelDropTarget(groupTree) {
+         @SuppressWarnings("unchecked")
+         @Override
+         protected void onDragDrop(DNDEvent event) {
+            boolean successed = false;
+            
+            if (activeItem == null || event.getData() == null) {
+               event.setCancelled(true);
+               return;
+            }
+
+            BeanModel targetNode = (BeanModel) activeItem.getModel(); 
+            BeanModel sourceNode = ((List<ModelData>) event.getData()).get(0).get("model"); 
+            ModelData targetParentNode = tree.getStore().getParent(targetNode); 
+            ModelData sourceParentNode = tree.getStore().getParent(sourceNode); 
+            //append operation
+            if (status == -1) { 
+               tree.getView().onDropChange(activeItem, false);
+               /*
+                * only allow to append a group into "groups" or append a screen
+                * to the group it belongs to.
+                */
+               if (sourceParentNode == targetNode) { 
+                  tree.getStore().remove(sourceNode);
+                  handleAppendDrop(event, activeItem);
+                  successed = true;
+               }
+            } else if (targetParentNode == sourceParentNode) { // insert operation
+               tree.getStore().remove(sourceNode);
+               handleInsertDrop(event, activeItem, status);
+               successed = true;
+            }
+            if (!successed) {
+               event.setCancelled(true);
+            }
+         }
+      };
+
+      target.setAllowSelfAsSource(true);
+      target.setOperation(Operation.MOVE);
+      target.setAutoExpand(false);
+      target.setFeedback(Feedback.BOTH);
+   }
+
+   private void createDragSource() {
+      new TreePanelDragSource(groupTree) {
+         @Override
+         protected void onDragDrop(DNDEvent event) {
+            return;
+         }
+      };
+   }
+
 }

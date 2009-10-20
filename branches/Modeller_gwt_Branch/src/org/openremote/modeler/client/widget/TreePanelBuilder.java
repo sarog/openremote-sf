@@ -22,6 +22,7 @@ package org.openremote.modeler.client.widget;
 import java.util.List;
 
 import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
@@ -309,9 +310,12 @@ public class TreePanelBuilder {
       TreePanel<BeanModel> groupTree = new TreePanel<BeanModel>(groupTreeStore);
       groupTree.setStateful(true);
       groupTree.setBorders(false);
-      groupTree.setHeight("100%");      
+      groupTree.setHeight("100%");
       groupTree.setDisplayProperty("displayName");
-      
+      TreeFolderBean folderBean = new TreeFolderBean();
+      folderBean.setDisplayName("groups");
+      groupTreeStore.add(folderBean.getBeanModel(), true);
+
       groupTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
             if (thisModel.getBean() instanceof Group) {
@@ -323,7 +327,7 @@ public class TreePanelBuilder {
             }
          }
       });
-      
+
       return groupTree;
    }
 }
