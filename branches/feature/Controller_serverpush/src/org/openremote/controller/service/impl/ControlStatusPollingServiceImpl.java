@@ -33,9 +33,6 @@ import org.openremote.controller.status_cache.PollingData;
  */
 public class ControlStatusPollingServiceImpl implements ControlStatusPollingService {
    
-   /** DBManager cache the statuses which was statused or changed. */
-   private DBManager dbManager;
-   
    /** header of xml-formatted polling result data. */
    private static final String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<openremote xmlns=\"http://www.openremote.org\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"\">\n";
    
@@ -88,11 +85,4 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
       return sb.toString();
    }
    
-   /**
-    * Inject the DBManager instance. 
-    */
-   public void setHsqlConnectionManager(DBManager hsqlConnectionManager) {
-      this.dbManager = hsqlConnectionManager;
-   }
-
 }
