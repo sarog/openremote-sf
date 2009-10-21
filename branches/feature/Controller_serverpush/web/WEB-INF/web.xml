@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
 	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-    <display-name>controller_control_RESTful_service</display-name>
+    <display-name>controller_controller_serverpush</display-name>
 
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
@@ -74,6 +74,16 @@
     <servlet-mapping>
         <servlet-name>statusRESTServlet</servlet-name>
         <url-pattern>/rest/status/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+    	<servlet-name>ControlStatusPollingRESTServlet</servlet-name>
+    	<servlet-class>org.openremote.controller.rest.ControlStatusPollingRESTServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+    	<servlet-name>ControlStatusPollingRESTServlet</servlet-name>
+    	<url-pattern>/rest/polling/*</url-pattern>
     </servlet-mapping>
     
     <servlet>

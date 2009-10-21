@@ -35,6 +35,9 @@
     <!-- service for status command from iPhone -->
     <bean id="statusCommandService" class="org.openremote.controller.service.impl.StatusCommandServiceImpl" />
     
+    <!-- service for listenning the status of control -->
+    <bean id="controlStatusPollingService" class="org.openremote.controller.service.impl.ControlStatusPollingServiceImpl" />
+    
     <!-- service for control command from iPhone -->
     <bean id="controlCommandService" class="org.openremote.controller.service.impl.ControlCommandServiceImpl" />
     
