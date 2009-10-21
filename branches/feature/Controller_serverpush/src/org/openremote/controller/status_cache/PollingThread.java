@@ -23,12 +23,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Polling Thread is responsiable for listenning the statuses change
+ * Polling Thread is responsiable for listenning the statuses which it care about.
  * 
  * @author Handy.Wang 2009-10-21
  */
 public class PollingThread extends Thread {
    
+   /** It store the controlIDs which a polling request associate with and store the changed statuses*/
    private PollingData pollingData;
    
    public PollingThread() {
@@ -39,8 +40,10 @@ public class PollingThread extends Thread {
       this.pollingData = pollingData;
    }
    
-   /* (non-Javadoc)
-    * @see java.lang.Thread#run()
+   /**
+    * It's the implementation of current thread.
+    * It's mainly responsible for observe the status change and get the changed statuses.
+    * Currently, it's simulated.
     */
    @Override
    public void run() {
