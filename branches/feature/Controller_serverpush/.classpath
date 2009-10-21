@@ -18,7 +18,6 @@
 	<classpathentry kind="lib" path="lib/core/spring/spring.jar"/>
 	<classpathentry kind="lib" path="lib/test/junit/junit.jar"/>
 	<classpathentry kind="lib" path="lib/calimero/calimero-tools-2.0a2.jar" sourcepath="E:/KNX/calimero-all-2.0a4/calimero-tools-2.0a2_src.zip"/>
-	<classpathentry kind="lib" path="lib/core/database_hsql/hsqldb.jar"/>
 	<classpathentry kind="lib" path="lib/test/spring/spring-test-2.5.5.jar"/>
 	<classpathentry kind="lib" path="lib/test/httpunit/httpunit.jar"/>
 	<classpathentry kind="lib" path="lib/test/js/js-1.6R5.jar"/>
