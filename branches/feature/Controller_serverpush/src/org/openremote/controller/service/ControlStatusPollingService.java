@@ -29,7 +29,7 @@ import org.openremote.controller.status_cache.PollingData;
 public interface ControlStatusPollingService {
    
    /**
-    * get the changed statuses. 
+    * get the changed statuses from cached DB. 
     */
    public String getChangedStatuses(String unParsedcontrolIDs);
 
