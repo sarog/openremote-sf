@@ -1,4 +1,5 @@
-/* OpenRemote, the Home of the Digital Home.
+/* 
+ * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2009, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
@@ -21,102 +22,109 @@ package org.openremote.controller;
 
 /**
  * TODO
- * 
+ *
  * @author Dan 2009-6-1
  * @author Jerome Velociter
  * @author <a href="mailto:juha@openremote.org>Juha Lindfors</a>
  */
 public class Configuration {
-   
-   private String irsendPath;
-   
-   private String lircdconfPath;
-   
-   /** Whether copy lircd.conf for user. */
-   private boolean copyLircdconf;
-   
-   private String webappPort;
-   
-   private String multicastAddress;
-   
-   private int multicastPort;
-   
-   private String resourcePath;
-   
-   /** The resource upload switch. */
-   private boolean resourceUpload;
 
-   /** The COM (Serial) port the ORC should use (for example, to send X10 events)*/
-   private String comPort;
-   
-   /** The transmitter to use for X10 */
-   private String x10transmitter;
+  private String irsendPath;
+
+  private String lircdconfPath;
+
+  /**
+   * Whether copy lircd.conf for user.
+   */
+  private boolean copyLircdconf;
+
+  private String webappPort;
+
+  private String multicastAddress;
+
+  private int multicastPort;
+
+  private String resourcePath;
+
+  /**
+   * The resource upload switch.
+   */
+  private boolean resourceUpload;
+
+  /**
+   * The COM (Serial) port the ORC should use (for example, to send X10 events)
+   */
+  private String comPort;
+
+  /**
+   * The transmitter to use for X10
+   */
+  private String x10transmitter;
 
 
+  public String getIrsendPath() {
+    return irsendPath;
+  }
 
-   public String getIrsendPath() {
-      return irsendPath;
-   }
+  public void setIrsendPath(String irsendPath) {
+    this.irsendPath = irsendPath;
+  }
 
-   public void setIrsendPath(String irsendPath) {
-      this.irsendPath = irsendPath;
-   }
+  public String getLircdconfPath() {
+    return lircdconfPath;
+  }
 
-   public String getLircdconfPath() {
-      return lircdconfPath;
-   }
+  public void setLircdconfPath(String lircdconfPath) {
+    this.lircdconfPath = lircdconfPath;
+  }
 
-   public void setLircdconfPath(String lircdconfPath) {
-      this.lircdconfPath = lircdconfPath;
-   }
+  public boolean isCopyLircdconf() {
+    return copyLircdconf;
+  }
 
-   public boolean isCopyLircdconf() {
-      return copyLircdconf;
-   }
+  public void setCopyLircdconf(boolean copyLircdconf) {
+    this.copyLircdconf = copyLircdconf;
+  }
 
-   public void setCopyLircdconf(boolean copyLircdconf) {
-      this.copyLircdconf = copyLircdconf;
-   }
+  public String getWebappPort() {
+    return webappPort;
+  }
 
-   public String getWebappPort() {
-      return webappPort;
-   }
+  public void setWebappPort(String webappPort) {
+    this.webappPort = webappPort;
+  }
 
-   public void setWebappPort(String webappPort) {
-      this.webappPort = webappPort;
-   }
+  public String getMulticastAddress() {
+    return multicastAddress;
+  }
 
-   public String getMulticastAddress() {
-      return multicastAddress;
-   }
+  public void setMulticastAddress(String multicastAddress) {
+    this.multicastAddress = multicastAddress;
+  }
 
-   public void setMulticastAddress(String multicastAddress) {
-      this.multicastAddress = multicastAddress;
-   }
+  public int getMulticastPort() {
+    return multicastPort;
+  }
 
-   public int getMulticastPort() {
-      return multicastPort;
-   }
+  public void setMulticastPort(int multicastPort) {
+    this.multicastPort = multicastPort;
+  }
 
-   public void setMulticastPort(int multicastPort) {
-      this.multicastPort = multicastPort;
-   }
+  public String getResourcePath() {
+    return resourcePath;
+  }
 
-   public String getResourcePath() {
-      return resourcePath;
-   }
+  public void setResourcePath(String resourcePath) {
+    this.resourcePath = resourcePath;
+  }
 
-   public void setResourcePath(String resourcePath) {
-      this.resourcePath = resourcePath;
-   }
+  public boolean isResourceUpload() {
+    return resourceUpload;
+  }
 
-   public boolean isResourceUpload() {
-      return resourceUpload;
-   }
-
-   public void setResourceUpload(boolean resourceUpload) {
-      this.resourceUpload = resourceUpload;
-   }
+  public void setResourceUpload(boolean resourceUpload) {
+    this.resourceUpload = resourceUpload;
+  }
 
 
   /**
