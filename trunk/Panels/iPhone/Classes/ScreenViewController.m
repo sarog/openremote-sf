@@ -40,15 +40,15 @@
 	[screen release];
 	screen = s;
 	
-	[self setTitle:screen.name];
+	//[self setTitle:screen.name];
 	
 }
 
 // Implement loadView to create a view hierarchy programmatically.
 - (void)loadView {
 	ScreenView *view = [[ScreenView alloc] init];
-	
-	//set Screen in ScreeenView
+
+	//set Screen in ScreenView
 	[view setScreen:screen];
 	[self setView:view];
 	[view release];

@@ -21,6 +21,7 @@
 
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 // DENNIS: Maybe you can add these helper methods as an Objective-C category to the NSFileManager class? (Make sure to use a precise and unique name for your methods.)
 

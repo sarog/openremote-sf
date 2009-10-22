@@ -25,7 +25,7 @@
 	
 }
 
-+ (NSString *)sampleXmlUrl;
++ (NSString *)panelXmlUrl;
 + (NSString *)imageUrl;
 + (NSString *)eventHandleRESTUrl;
 + (NSString *)serverUrl;

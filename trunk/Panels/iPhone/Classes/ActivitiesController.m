@@ -51,7 +51,7 @@
 
 - (id)init {
 	if (self == [super initWithStyle:UITableViewStyleGrouped]) {
-		activities = [[Definition sharedDefinition] activities];
+		activities = nil;
 		UIBarButtonItem *settingButton = [[UIBarButtonItem alloc] initWithTitle:@"Settings" style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsView)];
 		self.navigationItem.leftBarButtonItem = settingButton;
 		[settingButton release];
@@ -67,7 +67,7 @@
 */
 - (void)refreshView {
 	NSLog(@"reload activity controller.");
-	activities = [[Definition sharedDefinition] activities];
+	activities = nil;
 	[self.tableView  reloadData];
 }
 - (void)clearView {

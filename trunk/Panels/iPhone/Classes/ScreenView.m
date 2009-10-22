@@ -23,57 +23,49 @@
 #import "ScreenView.h"
 #import "Control.h"
 #import "ControlView.h"
+#import "LayoutContainer.h"
+#import "LayoutContainerView.h"
 
 
 @interface ScreenView (Private) 
-- (void)createButtons;
+- (void)createLayout;
 @end
 
 @implementation ScreenView
 
-@synthesize screen;
+@synthesize screen, layoutContainerViews;
 
 //override the constractor
 - (id)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
-        controlViews = [[NSMutableArray alloc] init];
+			layoutContainerViews = [[NSMutableArray alloc] init];
     }
     return self;
 }
 
-//Set screen and create button on it
+//Set screen *and* render its layout 
 - (void)setScreen:(Screen *)s {
 	[s retain];
 	[screen release];
 	screen = s;
-	screenNameLabel = [[UILabel alloc] init];
-	screenNameLabel.text = s.name;
-	[screenNameLabel setTextColor:[UIColor whiteColor]];
-	[screenNameLabel setFont:[UIFont boldSystemFontOfSize:14]];
-	[screenNameLabel setTextAlignment:UITextAlignmentCenter];
-	[screenNameLabel setShadowColor:[UIColor grayColor]];
-	[screenNameLabel setBackgroundColor:[UIColor clearColor]];
-	[self addSubview:screenNameLabel];
-	[self createButtons];
+	[self createLayout];
 }
 	
-//create buttons for each control in screen
-- (void)createButtons {
-	if (controlViews.count != 0) {
-		[controlViews release];
-		 controlViews = [[NSMutableArray alloc] init];
-	}
-	[self setBackgroundColor:[UIColor blackColor]];
+//create each layout container in screen
+- (void)createLayout {
+//	if (layoutContainerViews.count != 0) {
+//		[layoutContainerViews release];
+//		layoutContainerViews = [[NSMutableArray alloc] init];
+//	}
 
-	for (Control *control in screen.controls) {
-		
-		ControlView *controlView = [[ControlView alloc] init];
-		[controlView setControl:control];
-		[self addSubview:controlView];
-		
-		[controlViews addObject:controlView];
-		[controlView release];
+
+	for (LayoutContainer *layout in screen.layouts) { 
+		LayoutContainerView *layoutView = [LayoutContainerView buildWithLayoutContainer:layout];
+		[self addSubview:layoutView];
+		[layoutContainerViews addObject:layoutView];
+		[layoutView release];
 	}
+	
 }
 
 
@@ -82,24 +74,24 @@
 - (void)layoutSubviews {
 	//[screenNameLabel setFrame:CGRectMake(self.bounds.origin.x, self.bounds.origin.y, self.bounds.size.width, 20)];
 
-	int h = self.bounds.size.height/screen.rows;	
-	//int h = (self.bounds.size.height-20)/screen.rows;
-	int w = self.bounds.size.width/screen.cols;
-	
-	
-	for (ControlView *controlView in controlViews) {
-		Control *control = [controlView control];
-		[controlView setFrame:CGRectInset(CGRectMake(control.x*w, control.y*h, w*control.width, h*control.height),roundf(w*0.1),  roundf(h*0.1))];
-		//[controlView setFrame:CGRectInset(CGRectMake(control.x*w, (control.y*h +20), w*control.width, h*control.height),roundf(w*0.1), roundf(h*0.1))];
-		[controlView layoutSubviews];
-	}
+	//int h = self.bounds.size.height/screen.rows;	
+//	//int h = (self.bounds.size.height-20)/screen.rows;
+//	int w = self.bounds.size.width/screen.cols;
+//	
+//	
+//	for (ControlView *controlView in controlViews) {
+//		Control *control = [controlView control];
+//		[controlView setFrame:CGRectInset(CGRectMake(control.x*w, control.y*h, w*control.width, h*control.height),roundf(w*0.1),  roundf(h*0.1))];
+//		//[controlView setFrame:CGRectInset(CGRectMake(control.x*w, (control.y*h +20), w*control.width, h*control.height),roundf(w*0.1), roundf(h*0.1))];
+//		[controlView layoutSubviews];
+	//}
 }
 
 - (void)dealloc {
 	[screen release];
-	[controlViews release];
+	[layoutContainerViews release];
 	
-    [super dealloc];
+	[super dealloc];
 }
 
 

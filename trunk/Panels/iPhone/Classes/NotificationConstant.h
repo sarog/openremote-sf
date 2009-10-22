@@ -27,6 +27,7 @@ extern NSString *const DefinationNeedNotUpdate;
 extern NSString *const NotificationShowSettingsView; 
 extern NSString *const NotificationHideInitView; 
 extern NSString *const NotificationRefreshAcitivitiesView;
+extern NSString *const NotificationRefreshGroupsView;
 
 @interface NotificationConstant : NSObject {
 

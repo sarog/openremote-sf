@@ -22,15 +22,13 @@
 
 #import <Foundation/Foundation.h>
 
+@interface CheckNetwork : NSObject {
 
-@interface CheckNetworkStaffException : NSException {
-	NSString *title;
-	NSString *message;
 }
 
-+ (CheckNetworkStaffException *)exceptionWithTitle:(NSString *)t message:(NSString *)msg; 
-
-@property (nonatomic,copy) NSString *title;
-@property (nonatomic,copy) NSString *message;
-
++ (void)checkWhetherNetworkAvailable;
++ (void)checkIPAddress;
++ (void)checkControllerAvailable;
++ (void)checkXmlExist;
++ (void)checkAll;
 @end

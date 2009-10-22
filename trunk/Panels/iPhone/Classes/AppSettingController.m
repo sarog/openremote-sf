@@ -268,13 +268,13 @@
 #pragma mark Delegate method of UpdateController
 - (void)didUpadted {
 	[self dismissModalViewControllerAnimated:YES];
-	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshAcitivitiesView object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
 }
 
 - (void)didUseLocalCache:(NSString *)errorMessage {
 	[ViewHelper showAlertViewWithTitle:@"Warning" Message:errorMessage];
 	[self dismissModalViewControllerAnimated:YES];
-	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshAcitivitiesView object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
 }
 
 
