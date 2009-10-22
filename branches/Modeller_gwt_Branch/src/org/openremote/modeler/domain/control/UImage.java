@@ -22,16 +22,32 @@ package org.openremote.modeler.domain.control;
 import org.openremote.modeler.domain.BusinessEntity;
 
 /**
- * UIControl act as all domain component's super class.
+ * The Class UImage.
  */
 @SuppressWarnings("serial")
-public class UIControl extends BusinessEntity {
+public class UImage extends BusinessEntity {
 
-   public UIControl() {
-      super();
+   private String src;
+   private String state;
+   private int border;
+   public String getSrc() {
+      return src;
+   }
+   public String getState() {
+      return state;
+   }
+   public int getBorder() {
+      return border;
+   }
+   public void setSrc(String src) {
+      this.src = src;
+   }
+   public void setState(String state) {
+      this.state = state;
+   }
+   public void setBorder(int border) {
+      this.border = border;
    }
    
-   public UIControl(long id) {
-      super(id);
-   }
+   
 }

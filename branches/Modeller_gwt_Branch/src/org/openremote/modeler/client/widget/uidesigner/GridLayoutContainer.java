@@ -48,7 +48,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 
 /**
- * The Class GridLayoutContainer.
+ * A layout container to display as grid, the inner is relative position.
  */
 public class GridLayoutContainer extends LayoutContainer {
 
@@ -58,8 +58,8 @@ public class GridLayoutContainer extends LayoutContainer {
    /** The Constant POSITION. */
    private static final String POSITION = "position";
 
-   /** The Constant RESIZABLE_HANDLES. */
-   private static final String RESIZABLE_HANDLES = "e s"; // Make resizable in east and south direction.
+   /** Make resizable in east and south direction. */
+   private static final String RESIZABLE_HANDLES = "e s";
    
    /** The btn in area. */
    private boolean[][] btnInArea;
@@ -183,7 +183,7 @@ public class GridLayoutContainer extends LayoutContainer {
             screenTable.setWidget(i, j, cell);
             cell.setData(POSITION, new Position(j, i));
             ScreenDropTarget dropTarget = new ScreenDropTarget(cell);
-            dropTarget.setGroup(Constants.BUTTON_DND_GROUP);
+            dropTarget.setGroup(Constants.CONTROL_DND_GROUP);
             dropTarget.setOverStyle("background-color");
             dropTarget.addDNDListener(dndListener);
          }

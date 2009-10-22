@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Transient;
@@ -44,7 +45,7 @@ public class UIScreen extends BusinessEntity {
    private Grid grid;
    
    /** The absolutes. */
-   private List<Absolute> absolutes;
+   private List<Absolute> absolutes = new ArrayList<Absolute>();
    
    /** The touch panel definition. */
    private TouchPanelDefinition touchPanelDefinition;

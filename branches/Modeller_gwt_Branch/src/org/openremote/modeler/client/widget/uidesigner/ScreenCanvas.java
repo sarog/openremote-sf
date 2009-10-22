@@ -19,19 +19,28 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import java.util.List;
+
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.utils.IDUtil;
+import org.openremote.modeler.client.widget.control.ScreenButton;
+import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.control.UIButton;
 import org.openremote.modeler.touchpanel.TouchPanelGridDefinition;
 
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.dnd.DragSource;
 import com.extjs.gxt.ui.client.dnd.DropTarget;
 import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.event.DNDListener;
 import com.extjs.gxt.ui.client.util.Point;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.google.gwt.user.client.Event;
 
 /**
- * The Class ScreenCanvas.
+ * A layout container for create and dnd components.
  */
 public class ScreenCanvas extends LayoutContainer {
 
@@ -41,6 +50,7 @@ public class ScreenCanvas extends LayoutContainer {
    /** The move back ground. */
    private LayoutContainer moveBackGround = new LayoutContainer();
    
+   private LayoutContainer selectedComponet;
    /**
     * Instantiates a new screen canvas.
     * 
@@ -50,20 +60,26 @@ public class ScreenCanvas extends LayoutContainer {
       TouchPanelGridDefinition touchPanelGridDefinition = screen.getTouchPanelDefinition().getGrid();
       setSize(touchPanelGridDefinition.getWidth(), touchPanelGridDefinition.getHeight());
       setBorders(true);
-      addWidgets(screen);
+      setStyleAttribute("position", "relative");
+      if (screen.isAbsoluteLayout()) {
+         addDropTargetDNDListener(screen);
+      } else {
+         LayoutContainer gridLayoutContainer = new GridLayoutContainer(screen);
+         add(gridLayoutContainer);
+      }
       moveBackGround.setStyleAttribute("background-color", "yellow");
-      moveBackGround.setStyleAttribute("position", "relative");
+      moveBackGround.setStyleAttribute("position", "absolute");
       moveBackGround.hide();
       add(moveBackGround);
       
    }
    
    /**
-    * Adds the widgets.
+    * Adds the drop target dnd listener.
     * 
     * @param screen the screen
     */
-   private void addWidgets(UIScreen screen) {
+   private void addDropTargetDNDListener(final UIScreen screen) {
       final ScreenCanvas canvas = this;
       DropTarget target = new DropTarget(canvas);
       target.addDNDListener(new DNDListener() {
@@ -80,32 +96,62 @@ public class ScreenCanvas extends LayoutContainer {
             moveBackGround.hide();
             super.dragLeave(e);
          }
+         @SuppressWarnings("unchecked")
          @Override
          public void dragDrop(DNDEvent e) {
             if (absolutePosition == null) {
                absolutePosition = new Point(canvas.getAbsoluteLeft(), canvas.getAbsoluteTop());
             }
-            LayoutContainer lay = e.getData();
-            Point position = getPosition(e);
-            lay.setPosition(position.x, position.y);
-            canvas.add(lay);
+            AbsoluteLayoutContainer controlContainer = null;
+            Object data = e.getData();
+            if (data instanceof AbsoluteLayoutContainer) {
+               controlContainer = (AbsoluteLayoutContainer) data;
+               Point position = getPosition(e);
+               controlContainer.setPosition(position.x, position.y);
+            } else if (data instanceof List) {
+               List<ModelData> models = (List<ModelData>) data;
+               if (models.size() > 0) {
+                  BeanModel dataModel = models.get(0).get("model");
+                  Absolute absolute = new Absolute(IDUtil.nextID());
+                  screen.addAbsolute(absolute);
+                  if(dataModel.getBean() instanceof UIButton) {
+                     absolute.setUiControl(new UIButton("Button"));
+                     controlContainer = new AbsoluteLayoutContainer(absolute, new ScreenButton()) {
+                        @Override
+                        public void onBrowserEvent(Event event) {
+                           if (event.getTypeInt() == Event.ONMOUSEDOWN) {
+                              this.addStyleName("button-border");
+                              if (selectedComponet != null && (LayoutContainer) this != selectedComponet) {
+                                 selectedComponet.removeStyleName("button-border");
+                              }
+                              selectedComponet = (LayoutContainer) this;
+                              PropertyPanel.getInstance().update(selectedComponet);
+                           }
+                           super.onBrowserEvent(event);
+                        }
+                     
+                     };
+                     controlContainer.setSize(50, 30);
+                     
+                     if (selectedComponet != null) {
+                        selectedComponet.removeStyleName("button-border");
+                     }
+                     selectedComponet = controlContainer;
+                     selectedComponet.addStyleName("button-border");
+                     PropertyPanel.getInstance().update(selectedComponet);
+                     canvas.add(controlContainer);
+                     createDragSource(canvas, controlContainer);
+                  }
+               }
+            }
+            
             moveBackGround.hide();
             layout();
             super.dragDrop(e);
          }
       });
       target.setGroup(Constants.CONTROL_DND_GROUP);
-      if(screen.isAbsoluteLayout()) {
-         LayoutContainer absoluteLayoutContainer = new AbsoluteLayoutContainer();
-         absoluteLayoutContainer.setBorders(true);
-         absoluteLayoutContainer.setSize(20, 20);
-         add(absoluteLayoutContainer);
-         createDragSource(canvas, absoluteLayoutContainer);
-      } else {
-         LayoutContainer gridLayoutContainer = new GridLayoutContainer(screen);
-         add(gridLayoutContainer);
-//         createDragSource(canvas, gridLayoutContainer);
-      }
+      
    }
 
    /**
@@ -114,7 +160,7 @@ public class ScreenCanvas extends LayoutContainer {
     * @param canvas the canvas
     * @param layoutContainer the layout container
     */
-   private void createDragSource(final ScreenCanvas canvas, final LayoutContainer layoutContainer) {
+   private void createDragSource(final ScreenCanvas canvas, final AbsoluteLayoutContainer layoutContainer) {
       DragSource source = new DragSource(layoutContainer){
          @Override
          protected void onDragStart(DNDEvent event) {

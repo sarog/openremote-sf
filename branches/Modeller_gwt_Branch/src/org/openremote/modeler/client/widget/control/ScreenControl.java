@@ -17,21 +17,13 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.domain.control;
+package org.openremote.modeler.client.widget.control;
 
-import org.openremote.modeler.domain.BusinessEntity;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
 
 /**
- * UIControl act as all domain component's super class.
+ * ScreenControl as the component's super class.
  */
-@SuppressWarnings("serial")
-public class UIControl extends BusinessEntity {
+public class ScreenControl extends LayoutContainer {
 
-   public UIControl() {
-      super();
-   }
-   
-   public UIControl(long id) {
-      super(id);
-   }
 }

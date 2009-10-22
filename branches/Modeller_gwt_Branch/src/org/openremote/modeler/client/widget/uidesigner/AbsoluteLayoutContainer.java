@@ -19,41 +19,48 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
-import org.openremote.modeler.domain.control.UIControl;
+import org.openremote.modeler.client.widget.control.ScreenControl;
+import org.openremote.modeler.domain.Absolute;
 
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 
 /**
- * The Class AbsoluteLayoutContainer.
+ * A layout container act as absolute position in screen canvas.
  */
 public class AbsoluteLayoutContainer extends LayoutContainer {
 
-   /** The ui control. */
-   private UIControl uiControl;
-
+   private Absolute absolute;
+   private ScreenControl screenControl;
    /**
     * Instantiates a new absolute layout container.
     */
-   public AbsoluteLayoutContainer() {
+   public AbsoluteLayoutContainer(Absolute absolute, ScreenControl screenControl) {
       addStyleName("cursor-move");
-   }
-   
-   /**
-    * Gets the ui control.
-    * 
-    * @return the ui control
-    */
-   public UIControl getUiControl() {
-      return uiControl;
+      setStyleAttribute("position", "absolute");
+      this.absolute = absolute;
+      this.screenControl = screenControl;
+      add(screenControl);
    }
 
-   /**
-    * Sets the ui control.
-    * 
-    * @param uiControl the new ui control
-    */
-   public void setUiControl(UIControl uiControl) {
-      this.uiControl = uiControl;
+   public Absolute getAbsolute() {
+      return absolute;
+   }
+
+   public ScreenControl getScreenControl() {
+      return screenControl;
+   }
+
+   @Override
+   public void setSize(int width, int height) {
+      super.setSize(width, height);
+      absolute.setSize(width, height);
+      screenControl.setSize(width-2, height-2);
+   }
+
+   @Override
+   public void setPosition(int left, int top) {
+      super.setPosition(left, top);
+      absolute.setPosition(left, top);
    }
    
 }

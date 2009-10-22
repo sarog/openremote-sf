@@ -42,6 +42,14 @@ public class Absolute extends BusinessEntity {
    /** The ui control. */
    private UIControl uiControl;
    
+   public Absolute() {
+      super();
+   }
+   
+   public Absolute(long id) {
+      super(id);
+   }
+   
    /**
     * Gets the left.
     * 
@@ -132,4 +140,13 @@ public class Absolute extends BusinessEntity {
       this.uiControl = uiControl;
    }
 
+   public void setSize(int width, int height) {
+      this.width = width;
+      this.height = height;
+   }
+   
+   public void setPosition(int left, int top) {
+      this.left = left;
+      this.top = top;
+   }
 }
