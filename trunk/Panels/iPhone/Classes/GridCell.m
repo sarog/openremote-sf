@@ -19,16 +19,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+#import "GridCell.h"
 
-#import <Foundation/Foundation.h>
 
-@interface CheckNetworkStaff : NSObject {
+@implementation GridCell
 
+@synthesize x,y,rowspan,colspan,control;
+
+- (void)dealloc {
+	[control release];
+	[super dealloc];
 }
 
-+ (void)checkWhetherNetworkAvailable;
-+ (void)checkIPAddress;
-+ (void)checkControllerAvailable;
-+ (void)checkXmlExist;
-+ (void)checkAll;
 @end

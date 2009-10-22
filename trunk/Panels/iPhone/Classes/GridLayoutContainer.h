@@ -19,19 +19,22 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+#import <Foundation/Foundation.h>
+#import "LayoutContainer.h"
 
-#import "CheckNetworkStaffException.h"
 
 
-@implementation CheckNetworkStaffException
+@interface GridLayoutContainer : LayoutContainer {
+	
+	NSMutableArray *cells;
+	int rows;
+	int cols;
 
-@synthesize title,message;
-
-+(CheckNetworkStaffException *)exceptionWithTitle:(NSString *)t message:(NSString *)msg {
-	CheckNetworkStaffException *e = [[CheckNetworkStaffException alloc] initWithName:@"checkNetworkStaffException" reason:@"Check Network Fail" userInfo:nil];
-	e.title = t;
-	e.message = msg;
-	[e autorelease];
-	return e;
 }
+
+@property (nonatomic, readonly) NSMutableArray *cells;
+@property (nonatomic, readonly) int rows;
+@property (nonatomic, readonly) int cols;
+
+
 @end

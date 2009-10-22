@@ -25,9 +25,11 @@
   */
 
 #import "AppDelegate.h"
-#import "Activity.h"
+
 #import "ScreenViewController.h"
-#import "ActivitiesController.h"
+#import "GroupController.h"
+#import "Group.h"
+#import "Definition.h"
 #import "InitViewController.h"
 #import "UpdateController.h"
 #import "ViewHelper.h"
@@ -70,11 +72,12 @@
 - (void)updateDidFinished {
 	NSLog(@"----------updateDidFinished------");
 	[initViewController.view removeFromSuperview];
-	ActivitiesController *activityController = [[ActivitiesController alloc] init];
-	[activityController setTitle:@"Activities"];
-	navigationController = [[UINavigationController alloc] initWithRootViewController:activityController];
+	Group *defaultGroup = [[[Definition sharedDefinition] groups] objectAtIndex:0];
+	GroupController *groupController = [[GroupController alloc] initWithGroup:defaultGroup];
+
+	navigationController = [[UINavigationController alloc] initWithRootViewController:groupController];
 	[window addSubview:navigationController.view];
-	[activityController release];
+	[groupController release];
 }
 
 #pragma mark delegate method of updateController
@@ -97,7 +100,7 @@
 	[defaultView release];
 	[navigationController release];
 	[window release];
-    [super dealloc];
+	[super dealloc];
 	
 }
 

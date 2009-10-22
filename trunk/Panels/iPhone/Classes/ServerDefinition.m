@@ -30,7 +30,7 @@
 	return  serverUrl;
 }
 
-+ (NSString *)sampleXmlUrl {
++ (NSString *)panelXmlUrl {
 	return [[self serverUrl] stringByAppendingPathComponent:@"resources/iphone.xml"];
 }
 

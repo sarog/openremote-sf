@@ -19,21 +19,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
 #import <UIKit/UIKit.h>
 #import "Control.h"
-#import "URLConnectionHelper.h"
 
-@interface ControlView : UIView <URLConnectionHelperDelegate> {
-
+@interface ControlView : UIView {
+	
 	Control *control;
-	UIButton *button;
-	NSTimer *buttonTimer;
-	BOOL isTouchUp;
-	BOOL shouldSendEnd;
-	BOOL isError;
-	UIImage *icon;
+
 }
+- (id)initWithControl:(Control *)cotrol;
++ (ControlView *)buildWithControl:(Control *)control;
 
 @property (nonatomic,retain) Control *control;
+
 @end

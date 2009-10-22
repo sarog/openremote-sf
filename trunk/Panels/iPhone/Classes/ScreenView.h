@@ -26,10 +26,11 @@
 
 @interface ScreenView : UIView {
 	Screen *screen;
-	NSMutableArray *controlViews;
-	UILabel *screenNameLabel;
+	NSMutableArray *layoutContainerViews;
 }
 
 @property(nonatomic,retain) Screen *screen;
+@property(nonatomic,readonly) NSMutableArray *layoutContainerViews;
+
 
 @end

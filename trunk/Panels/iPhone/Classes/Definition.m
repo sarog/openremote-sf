@@ -26,14 +26,19 @@
 #import "DirectoryDefinition.h"
 #import "StringUtils.h"
 #import "Activity.h"
+#import "Group.h"
 #import "Screen.h"
 #import "Control.h"
+#import "LayoutContainer.h"
+#import "AbsoluteLayoutContainer.h"
+#import "Toggle.h"
+#import "ToggleState.h"
 #import "ViewHelper.h"
 #import "NotificationConstant.h"
-#import "CheckNetworkStaff.h"
+#import "CheckNetwork.h"
 
 @interface Definition (Private)
-- (void) postNotificationToMainThread:(NSString *)notificationName;
+- (void)postNotificationToMainThread:(NSString *)notificationName;
 - (void)downloadXml;
 - (void)parseXMLData;
 - (void)downloadImages;
@@ -48,18 +53,18 @@ static Definition *myInstance = nil;
 @implementation Definition
 
 
-@synthesize isUpdating,lastUpdateTime,activities;
+@synthesize isUpdating, lastUpdateTime, groups, screens;
 
 - (id)init {			
 	if (myInstance != nil) {
 		[self release];
 		[NSException raise:@"singletonClassError" format:@" Don't init singleton class %@"];
-	} else if (self == [super init]) {
+	} else if (self = [super init]) {
 		myInstance = self; 
-				
-				
-//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:@"kNetworkReachabilityChangedNotification" object:nil];
-
+		groups = [[NSMutableArray alloc] init];
+		screens = [[NSMutableArray alloc] init];
+		//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:@"kNetworkReachabilityChangedNotification" object:nil];
+		
 	}
 	return myInstance;
 }
@@ -73,14 +78,13 @@ static Definition *myInstance = nil;
 	return myInstance;
 }
 
-
 - (BOOL)isDataReady {
 	//need to implement
 	return YES;
 }
 
 - (BOOL)canUseLocalCache {
-	return [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition sampleXmlUrl]]]];
+	return [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlUrl]]]];
 }
 
 
@@ -95,7 +99,7 @@ static Definition *myInstance = nil;
 	}
 	updateOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(postNotificationToMainThread:) object:DefinationUpdateDidFinishedNotification];
 	isUpdating = NO;
-
+	
 	
 	if (isUpdating) {
 		return;
@@ -107,7 +111,7 @@ static Definition *myInstance = nil;
 	}
 	
 	lastUpdateTime = [[NSDate date] retain];
-				
+	
 	//define Operations
 	NSInvocationOperation *downloadXmlOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(downloadXml) object:nil];
 	NSInvocationOperation *parseXmlOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(parseXMLData) object:nil];
@@ -118,7 +122,7 @@ static Definition *myInstance = nil;
 	[updateOperationQueue addOperation:parseXmlOperation];
 	
 	[updateOperation addDependency:parseXmlOperation];
-
+	
 	[downloadXmlOperation release];
 	[parseXmlOperation release];
 }
@@ -127,7 +131,7 @@ static Definition *myInstance = nil;
 	if ([self canUseLocalCache]) {
 		[self parseXml];
 	} else {
-//		[ViewHelper showAlertViewWithTitle:@"Error" Message:@"Can't find local cache, you need to connect network and retry."];
+		//		[ViewHelper showAlertViewWithTitle:@"Error" Message:@"Can't find local cache, you need to connect network and retry."];
 		[[NSNotificationCenter defaultCenter] postNotificationName:DefinationNeedNotUpdate object:nil];
 	}
 	
@@ -136,7 +140,7 @@ static Definition *myInstance = nil;
 #pragma mark Operation Tasks
 - (void)downloadXml {
 	NSLog(@"start download xml");
-	[FileUtils downloadFromURL:[ServerDefinition sampleXmlUrl]  path:[DirectoryDefinition xmlCacheFolder]];
+	[FileUtils downloadFromURL:[ServerDefinition panelXmlUrl]  path:[DirectoryDefinition xmlCacheFolder]];
 	NSLog(@"xml file downloaded.");
 }
 
@@ -147,12 +151,17 @@ static Definition *myInstance = nil;
 
 - (void)parseXml {
 	NSLog(@"start parse xml");
-	if (activities) {
-		[activities release];
+	if (groups) {
+		[groups release];
 	}
-	activities = [[NSMutableArray alloc] init];
+	groups = [[NSMutableArray alloc] init];
 	
-	NSData *data = [[NSData alloc] initWithContentsOfFile:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition sampleXmlUrl]]]];
+	if (screens) {
+		[screens release];
+	}
+	screens = [[NSMutableArray alloc] init];
+	
+	NSData *data = [[NSData alloc] initWithContentsOfFile:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlUrl]]]];
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
 	NSString *dataStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 	NSLog(@"%@",dataStr);
@@ -160,11 +169,36 @@ static Definition *myInstance = nil;
 	
 	//Set delegate to self in order to parse next elements by itself
 	[xmlParser setDelegate:self];
-
+	
 	
 	//Calls parse method to start parse xml
 	[xmlParser parse];
-	NSLog(@"activities %d",[activities count]);
+	
+//	for (Group *group in groups) {
+//		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
+//		for (Screen *screen in group.screens) {
+//			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
+//			for (LayoutContainer *layout in screen.layouts) {
+//				if([layout isKindOfClass:[AbsoluteLayoutContainer class]]){
+//
+//							NSLog(@"layout is absolute ");
+//					AbsoluteLayoutContainer *abso =(AbsoluteLayoutContainer *)layout;
+//					if ([abso.control isKindOfClass:[Toggle class]]) {
+//						Toggle *toggle = (Toggle *)abso.control;
+//						NSLog(@"toggle has %d states", toggle.states.count);
+//						for (ToggleState *st in toggle.states) {
+//							//NSLog(@"command ref = %d" ,st.commandId);
+//							NSLog(@"image = %@", st.image.src);
+//						}
+//					}
+//					
+//				}
+//				
+//			}
+//		}
+//	}
+	NSLog(@"groups count = %d",[groups count]);
+	NSLog(@"screens count = %d",[screens count]);
 	NSLog(@"xml parse done");
 	[data release];
 	[xmlParser release];
@@ -175,7 +209,7 @@ static Definition *myInstance = nil;
 	[self parseXml];
 	[self downloadImages];
 	NSLog(@"images download done");
-		
+	
 	//after parse the xml all the Operation have already added to OperationQuere and addDependency to updateOperation
 	[updateOperationQueue addOperation:updateOperation];
 	NSLog(@"parse xml end element screens and add updateOperation to queue");
@@ -185,12 +219,16 @@ static Definition *myInstance = nil;
 //Delegate method when find a element start
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
 	
-	if ([elementName isEqualToString:@"activity"]) {		
-		//To let Activity to parse the
-		NSLog(@"Start at activity");
-		Activity *activity = [[Activity alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		[activities addObject:activity];
-		[activity release];
+	if ([elementName isEqualToString:@"screen"]) {
+		NSLog(@"start at screen");
+		Screen *screen = [[Screen alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+		[screens addObject:screen];
+		[screen release];
+	} else if ([elementName isEqualToString:@"group"]) {
+		NSLog(@"start at group");
+		Group *group = [[Group alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+		[groups addObject:group];
+		[group release];
 	}
 }
 
@@ -200,32 +238,32 @@ static Definition *myInstance = nil;
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
 	if ([elementName isEqualToString:@"openremote"]) {
 		NSLog(@"End parse openremote");
-//		[parser setDelegate:nil];
-// 		[parser setDelegate:xmlParserParentDelegate];
-
+		//		[parser setDelegate:nil];
+		// 		[parser setDelegate:xmlParserParentDelegate];
+		
 	}
 }
 
 
 - (void)downloadImages {
 	@try {
-		[CheckNetworkStaff checkWhetherNetworkAvailable];
-		for (Activity *myActivity in activities) {
-			if (myActivity.icon) {
-				[self addDownloadImageOperationWithImageName:myActivity.icon];
-			}
-			for (Screen *myScreen in myActivity.screens) {
-				if (myScreen.icon) {
-					[self addDownloadImageOperationWithImageName:myScreen.icon];
-				}				
-				for (Control *myControl in myScreen.controls) {
-					if (myControl.icon) {
-						[self addDownloadImageOperationWithImageName:myControl.icon];
-					}
-				}
-				
-			}
-		}
+		[CheckNetwork checkWhetherNetworkAvailable];
+		//		for (Activity *myActivity in activities) {
+		//			if (myActivity.icon) {
+		//				[self addDownloadImageOperationWithImageName:myActivity.icon];
+		//			}
+		//			for (Screen *myScreen in myActivity.screens) {
+		//				if (myScreen.icon) {
+		//					[self addDownloadImageOperationWithImageName:myScreen.icon];
+		//				}				
+		//				for (Control *myControl in myScreen.controls) {
+		//					if (myControl.icon) {
+		//						[self addDownloadImageOperationWithImageName:myControl.icon];
+		//					}
+		//				}
+		//				
+		//			}
+		//		}
 	}
 	@catch (NSException * e) {
 		[ViewHelper showAlertViewWithTitle:@"Error" Message:@"Can't download image from Server, there is not network."];
@@ -282,5 +320,6 @@ static Definition *myInstance = nil;
 {
 	return self;
 }
+
 
 @end

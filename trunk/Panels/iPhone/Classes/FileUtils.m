@@ -45,7 +45,8 @@ NSFileManager *fileManager;
 + (void)downloadFromURL:(NSString *) url  path:(NSString *)p {
 	[self makeSurePathExists:p];
 	NSError *error = nil;
-	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[[NSURL alloc]initWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:5];
+	NSURL *nsurl = [[NSURL alloc]initWithString:url];
+	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:nsurl cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:5];
 	NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:NULL error:&error];
 	
 	if (error) {
@@ -63,6 +64,7 @@ NSFileManager *fileManager;
 	
 	[fileManager createFileAtPath:filePathToSave contents:data attributes:nil];
 	[request release];
+	[nsurl release];
 }
 
 + (void)makeSurePathExists:(NSString *)path {

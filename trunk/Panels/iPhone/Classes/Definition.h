@@ -21,13 +21,14 @@
 
 
 #import <UIKit/UIKit.h>
-
+#import "Screen.h"
 
 
 @interface Definition : NSObject {		
 	BOOL isUpdating;
 	NSDate *lastUpdateTime;
-	NSMutableArray *activities;
+	NSMutableArray *groups;
+	NSMutableArray *screens;
 	
 	NSInvocationOperation *updateOperation;
 	NSOperationQueue *updateOperationQueue; 
@@ -35,11 +36,13 @@
 
 + (Definition *)sharedDefinition;
 - (void)update;
-- (BOOL) isDataReady;
+- (BOOL)isDataReady;
 - (void)useLocalCacheDirectly;
+
 
 @property (nonatomic,readonly) BOOL isUpdating;
 @property (nonatomic,readonly) NSDate *lastUpdateTime;
-@property (nonatomic,readonly) NSMutableArray *activities;
+@property (nonatomic,readonly) NSMutableArray *groups;
+@property (nonatomic,readonly) NSMutableArray *screens;
 
 @end

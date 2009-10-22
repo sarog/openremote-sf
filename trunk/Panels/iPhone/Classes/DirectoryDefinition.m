@@ -26,7 +26,7 @@
 
 + (NSString *)cacheFolder {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-	return [[paths objectAtIndex:0] retain];
+	return [paths objectAtIndex:0];
 		
 }
 + (NSString *)imageCacheFolder{
