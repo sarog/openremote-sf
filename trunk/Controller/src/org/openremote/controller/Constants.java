@@ -29,7 +29,7 @@ public class Constants {
 
   public final static String LIRCD_CONF = "lircd.conf";
 
-  public final static String CONTROLLER_XSD_PATH = "/controller-1.0-M3.xsd";
+  public final static String CONTROLLER_XSD_PATH = "/controller-1.0.xsd";
 
   public final static String CONTROLLER_XML = "controller.xml";
 
