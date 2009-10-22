@@ -22,14 +22,32 @@ package org.openremote.controller.status_cache;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openremote.controller.spring.SpringContext;
+
 /**
- * Polling Thread is responsiable for listenning the statuses which it care about.
+ * Polling Thread is responsiable for observe the statuses which it care about.
  * 
  * @author Handy.Wang 2009-10-21
  */
 public class PollingThread extends Thread {
    
-   /** It store the controlIDs which a polling request associate with and store the changed statuses*/
+   /**
+    * A boolean flag which indicates whether current thread need to observe the status change persistently.<br /><br />
+    * 
+    * This property will be set to flase by servlet thread when the process of observe status change has time out.
+    */
+   private boolean isTimeToWaitStatusChange = true;
+   
+   /** 
+    * It store the controlIDs which a polling request associate with 
+    *   and store the changed statuses.<br /><br />
+    *   
+    * This pollingData property mainly provide for a polling servlet thread
+    *   whitch associate with current <b>PollingThread</b> instance.<br /><br />
+    *   
+    * This pollingData property is initialized by Constructor which has a parameter of PollingData type
+    *   or setter method.
+    */
    private PollingData pollingData;
    
    public PollingThread() {
@@ -41,28 +59,34 @@ public class PollingThread extends Thread {
    }
    
    /**
-    * It's the implementation of current thread.
+    * It's the mainly implementation of current thread.<br />
     * It's mainly responsible for observe the status change and get the changed statuses.
-    * Currently, it's simulated.
     */
    @Override
    public void run() {
-      Map<String, String> changedStatuses = new HashMap<String, String>();
-      boolean isTimeOut = false;
-      for (String controID : pollingData.getControlIDs()) {
-         if ("4".equals(controID)) {
-            isTimeOut = true;
+      ObservedStatusesSubject observedStatusesSubject = (ObservedStatusesSubject) SpringContext.getInstance().getBean("observedStatusesSubject");
+      StatusesChangedObserver statusChangeObserver = new StatusesChangedObserver(observedStatusesSubject, pollingData.getControlIDs());
+      while(isTimeToWaitStatusChange) {
+         StatusChangedData statusChangeData = statusChangeObserver.getStatusChangeData();
+         if (statusChangeData != null) {
+            Map<String, String> changedStatuses = new HashMap<String, String>();
+            changedStatuses.put(statusChangeData.getStatusChangedControlID(), statusChangeData.getCurrentStatusAfterChanged());
+            pollingData.setChangedStatuses(changedStatuses);
             break;
          }
       }
-      while(isTimeOut) {
-      }
-      synchronized(pollingData) {
-         for (String controID : pollingData.getControlIDs()) {
-            changedStatuses.put(controID, "ON");
-         }
-         pollingData.setChangedStatuses(changedStatuses);
-      }
    }
 
+   public PollingData getPollingData() {
+      return pollingData;
+   }
+
+   public void setPollingData(PollingData pollingData) {
+      this.pollingData = pollingData;
+   }
+
+   public void setTimeToWaitStatusChange(boolean isTimeToWaitStatusChange) {
+      this.isTimeToWaitStatusChange = isTimeToWaitStatusChange;
+   }
+   
 }
