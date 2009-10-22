@@ -38,6 +38,7 @@ import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.control.UIButton;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -80,6 +81,7 @@ public class TreePanelBuilder {
    
    /** The group tree store. */
    private static TreeStore<BeanModel> groupTreeStore = null;
+   private static TreeStore<BeanModel> widgetTreeStore = null;
    
    
    /**
@@ -330,4 +332,39 @@ public class TreePanelBuilder {
 
       return groupTree;
    }
+   
+   /**
+    * Builds the widget tree, it contain all kind's of component.
+    * 
+    * @return the tree panel< bean model>
+    */
+   public static TreePanel<BeanModel> buildWidgetTree() {
+      if (widgetTreeStore == null) {
+         widgetTreeStore = new TreeStore<BeanModel>();
+      }
+      TreePanel<BeanModel> widgetTree = new TreePanel<BeanModel>(widgetTreeStore);
+      widgetTree.setStateful(true);
+      widgetTree.setBorders(false);
+      widgetTree.setHeight("100%");
+      widgetTree.setDisplayProperty("name");
+//      TreeFolderBean folderBean = new TreeFolderBean();
+//      folderBean.setDisplayName("groups");
+      widgetTreeStore.add(new UIButton("Button").getBeanModel(), true);
+      widgetTreeStore.add(new UIButton("Button1").getBeanModel(), true);
+      
+      widgetTree.setIconProvider(new ModelIconProvider<BeanModel>() {
+         public AbstractImagePrototype getIcon(BeanModel thisModel) {
+            if (thisModel.getBean() instanceof UIButton) {
+               return ICON.activityIcon();
+            } else if (thisModel.getBean() instanceof ScreenRef) {
+               return ICON.screenIcon();
+            } else {
+               return ICON.activityIcon();
+            }
+         }
+      });
+      
+      return widgetTree;
+   }
+   
 }

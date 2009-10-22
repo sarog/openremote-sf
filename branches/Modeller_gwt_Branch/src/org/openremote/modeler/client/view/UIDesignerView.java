@@ -23,16 +23,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.TouchPanels;
-import org.openremote.modeler.client.widget.uidesigner.DevicesAndMacrosPanel;
 import org.openremote.modeler.client.widget.uidesigner.GroupPanel;
-import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
+import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
+import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
+import org.openremote.modeler.client.widget.uidesigner.WidgetPanel;
 import org.openremote.modeler.domain.Activity;
+import org.openremote.modeler.domain.Group;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -138,11 +142,11 @@ public class UIDesignerView extends TabItem implements View {
     * Creates the east.
     */
    private void createEast() {
-      BorderLayoutData eastLayout = new BorderLayoutData(LayoutRegion.EAST);
+      BorderLayoutData eastLayout = new BorderLayoutData(LayoutRegion.EAST, 230);
       eastLayout.setSplit(true);
-      eastLayout.setCollapsible(true);
-      eastLayout.setMargins(new Margins(2));      
-      add(new DevicesAndMacrosPanel(), eastLayout);
+      eastLayout.setMargins(new Margins(2));
+      add(createWidgetAndPropertyContainer(), eastLayout);
+//      add(new DevicesAndMacrosPanel(), eastLayout);
    }
 
    /**
@@ -198,5 +202,29 @@ public class UIDesignerView extends TabItem implements View {
     */
    public ScreenTab getScreenTab() {
       return screenTab;
+   }
+   
+   /**
+    * create widget and property container in the view's east.
+    */
+   private ContentPanel createWidgetAndPropertyContainer() {
+      ContentPanel widgetAndPropertyContainer = new ContentPanel(new BorderLayout());
+      widgetAndPropertyContainer.setHeaderVisible(false);
+      
+      WidgetPanel widgetPanel = new WidgetPanel();
+      BorderLayoutData northData = new BorderLayoutData(LayoutRegion.NORTH);
+      northData.setSplit(true);
+      northData.setMargins(new Margins(2));
+      widgetPanel.setSize("100%", "50%");
+      widgetAndPropertyContainer.add(widgetPanel, northData);
+      
+      PropertyPanel propertyPanel = PropertyPanel.getInstance();
+      BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
+      centerData.setSplit(true);
+      centerData.setMargins(new Margins(2));
+      propertyPanel.setSize("100%", "50%");
+      
+      widgetAndPropertyContainer.add(propertyPanel, centerData);
+      return widgetAndPropertyContainer;
    }
 }

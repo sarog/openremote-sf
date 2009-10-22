@@ -134,7 +134,7 @@ public class ScreenWindow extends FormWindow {
       for (String key : panels.keySet()) {
          for (TouchPanelDefinition touchPanel : panels.get(key)) {
             ComboBoxDataModel<TouchPanelDefinition> data = new ComboBoxDataModel<TouchPanelDefinition>(touchPanel.getName(), touchPanel);
-            if ("iphone1".equals(touchPanel.getName())) {
+            if ("iphone".equals(touchPanel.getName())) {
                iphoneData = data;
             }
             store.add(data);

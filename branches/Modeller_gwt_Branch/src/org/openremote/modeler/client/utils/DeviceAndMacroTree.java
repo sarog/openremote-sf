@@ -17,21 +17,27 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.domain.control;
+package org.openremote.modeler.client.utils;
 
-import org.openremote.modeler.domain.BusinessEntity;
+import org.openremote.modeler.client.widget.AutoListenableTreePanelBuilder;
+
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 
 /**
- * UIControl act as all domain component's super class.
+ * For get the same DeviceAndMacroTree, so get it's static instance.
  */
-@SuppressWarnings("serial")
-public class UIControl extends BusinessEntity {
+public class DeviceAndMacroTree {
 
-   public UIControl() {
-      super();
+   private static TreePanel<BeanModel> devicesAndMacrosTree;
+   
+   private DeviceAndMacroTree() {
    }
    
-   public UIControl(long id) {
-      super(id);
+   public static TreePanel<BeanModel> getInstance() {
+      if (devicesAndMacrosTree == null) {
+         devicesAndMacrosTree = AutoListenableTreePanelBuilder.buildDevicesAndMacrosTree();
+      }
+      return devicesAndMacrosTree;
    }
 }

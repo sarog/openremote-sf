@@ -21,17 +21,23 @@ package org.openremote.modeler.domain.control;
 
 import org.openremote.modeler.domain.BusinessEntity;
 
-/**
- * UIControl act as all domain component's super class.
- */
 @SuppressWarnings("serial")
-public class UIControl extends BusinessEntity {
+public class Navigate extends BusinessEntity {
 
-   public UIControl() {
-      super();
+   private long toScreen;
+   private long toGroup;
+   public long getToScreen() {
+      return toScreen;
+   }
+   public long getToGroup() {
+      return toGroup;
+   }
+   public void setToScreen(long toScreen) {
+      this.toScreen = toScreen;
+   }
+   public void setToGroup(long toGroup) {
+      this.toGroup = toGroup;
    }
    
-   public UIControl(long id) {
-      super(id);
-   }
+   
 }
