@@ -20,9 +20,7 @@
 package org.openremote.controller.control.toggle;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.NoStatusCommand;
@@ -42,8 +40,8 @@ public class Toggle extends Control {
     /** The switch states. */
     public static final String[] SWITCH_STATUSES = {"ON", "OFF"};
 
-    /** The states. */
-    private Map<String, List<ExecutableCommand>> states;
+    /** All commands the operation(1 or 2 or 3...) contains. */
+    private List<ExecutableCommand> commands;
 
     /**
      * Instantiates a new toggle.
@@ -51,7 +49,7 @@ public class Toggle extends Control {
     public Toggle() {
         super();
         setStatus(new Status(new NoStatusCommand()));
-        states = new HashMap<String, List<ExecutableCommand>>();
+        commands = new ArrayList<ExecutableCommand>();
     }
     
    /* (non-Javadoc)
@@ -59,70 +57,11 @@ public class Toggle extends Control {
      */
     @Override
     public List<ExecutableCommand> getExecutableCommands() {
-       String currentStatus = getStatus().getStatusCommand().read();
-       String nextStatus = "";
-       if (isContainStatus(currentStatus)) {
-          nextStatus = getNextStatus(currentStatus);
-       }
-       if (states.get(nextStatus) == null) {
-          return new ArrayList<ExecutableCommand>();
-       }
-       return states.get(nextStatus);
-    }
-
-   /**
-    * Checks if is contain state.
-    * 
-    * @param currentStatus the current status
-    * 
-    * @return true, if is contain state
-    */
-   private boolean isContainStatus(String currentStatus) {
-       if (currentStatus == null || "".equals(currentStatus)) {
-          return false;
-       }
-       for (String switchStatus : SWITCH_STATUSES) {
-          if (switchStatus.equalsIgnoreCase(currentStatus)) {
-             return true;
-          }
-       }
-       return false;
+       return commands;
     }
    
-   /**
-    * Gets the next state.
-    * 
-    * @param currentStatus the current status
-    * 
-    * @return the next state
-    */
-   private String getNextStatus(String currentStatus) {
-      int currentStatusIndex = -1;
-      for (int i = 0; i < SWITCH_STATUSES.length; i++) {
-         String status = SWITCH_STATUSES[i];
-         if (status.equalsIgnoreCase(currentStatus)) {
-            currentStatusIndex = i;
-         }
-      }
-      return SWITCH_STATUSES[(currentStatusIndex+1)%SWITCH_STATUSES.length];
-   }
+    public void addExecutableCommand(ExecutableCommand command) {
+       commands.add(command);
+    }
 
-   /**
-    * Gets the states.
-    * 
-    * @return the states
-    */
-   public Map<String, List<ExecutableCommand>> getStates() {
-      return states;
-   }
-
-   /**
-    * Sets the states.
-    * 
-    * @param states the states
-    */
-   public void setStates(Map<String, List<ExecutableCommand>> states) {
-      this.states = states;
-   }
-   
 }
