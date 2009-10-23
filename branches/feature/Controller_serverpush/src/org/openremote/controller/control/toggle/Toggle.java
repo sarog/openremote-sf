@@ -33,9 +33,6 @@ public class Toggle extends Control {
     /** The Constant AVAILABLE_ACTIONS. */
     public static final String[] AVAILABLE_ACTIONS = { "0", "1", "2", "status" };
    
-    /** The switch states. */
-    public static final String[] SWITCH_STATUSES = {"ON", "OFF"};
-
     /**
      * Instantiates a new toggle.
      */
