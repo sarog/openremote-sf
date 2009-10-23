@@ -19,7 +19,6 @@
 */
 package org.openremote.controller.status_cache;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -85,28 +84,6 @@ public class StatusesChangedObserver {
 
    public StatusChangedData getStatusChangeData() {
       return statusChangeData;
-   }
-   /**
-    * Overiride the equals method of Object class in order to judge if two StatusChangeObserver instances are equal. 
-    */
-   @Override
-   public boolean equals(Object obj) {
-      if (obj == null || !(obj instanceof StatusesChangedObserver)) {
-         return false;
-      }
-      StatusesChangedObserver statusChangeObserver = (StatusesChangedObserver)obj;
-      if (statusChangeObserver.getPollingControlIDs() == null || this.pollingControlIDs == null || statusChangeObserver.getPollingControlIDs().size() == 0 || statusChangeObserver.getPollingControlIDs().size() != this.pollingControlIDs.size()) {
-         return false;
-      }
-      
-      Collections.sort(statusChangeObserver.getPollingControlIDs(), new PollingControlIDListComparator());
-      Collections.sort(this.getPollingControlIDs(), new PollingControlIDListComparator());
-      for (int i = 0; i < this.pollingControlIDs.size(); i++) {
-         if (!this.pollingControlIDs.get(i).equals(statusChangeObserver.getPollingControlIDs().get(i))){
-            return false;
-         }
-      }
-      return true;
    }
 
 }
