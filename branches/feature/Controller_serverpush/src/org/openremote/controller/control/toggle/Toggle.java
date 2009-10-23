@@ -19,10 +19,6 @@
 */
 package org.openremote.controller.control.toggle;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.NoStatusCommand;
 import org.openremote.controller.control.Control;
 import org.openremote.controller.control.Status;
@@ -35,13 +31,10 @@ import org.openremote.controller.control.Status;
 public class Toggle extends Control {
     
     /** The Constant AVAILABLE_ACTIONS. */
-    public static final String[] AVAILABLE_ACTIONS = { "next", "status" };
+    public static final String[] AVAILABLE_ACTIONS = { "0", "1", "2", "status" };
    
     /** The switch states. */
     public static final String[] SWITCH_STATUSES = {"ON", "OFF"};
-
-    /** All commands the operation(1 or 2 or 3...) contains. */
-    private List<ExecutableCommand> commands;
 
     /**
      * Instantiates a new toggle.
@@ -49,19 +42,6 @@ public class Toggle extends Control {
     public Toggle() {
         super();
         setStatus(new Status(new NoStatusCommand()));
-        commands = new ArrayList<ExecutableCommand>();
-    }
-    
-   /* (non-Javadoc)
-     * @see org.openremote.controller.control.Control#getExecutableCommands()
-     */
-    @Override
-    public List<ExecutableCommand> getExecutableCommands() {
-       return commands;
-    }
-   
-    public void addExecutableCommand(ExecutableCommand command) {
-       commands.add(command);
     }
 
 }
