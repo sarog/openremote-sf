@@ -88,7 +88,7 @@ public class ToggleBuilder extends ControlBuilder {
     */
    private boolean isContainAction(String commandParam) {
       for (String action : Toggle.AVAILABLE_ACTIONS) {
-         if (action.equals(commandParam)) {
+         if (action.equalsIgnoreCase(commandParam)) {
             return true;
          }
       }
