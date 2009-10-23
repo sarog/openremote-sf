@@ -99,6 +99,7 @@
 		    <props>
 		        <prop key = "button">buttonBuilder</prop>
 		        <prop key = "toggle">toggleBuilder</prop>
+		        <prop key = "switch">switchBuilder</prop>
 		    </props>
 		</property>
   </bean>
@@ -108,6 +109,9 @@
 
   <!-- Toggle Builder -->
   <bean id = "toggleBuilder" class = "org.openremote.controller.control.toggle.ToggleBuilder"/>
+  
+  <!-- Switch Builder -->
+  <bean id = "switchBuilder" class = "org.openremote.controller.control.switchtoggle.SwitchBuilder"/>
   
   <bean id = "observedStatusesSubject" class="org.openremote.controller.status_cache.ObservedStatusesSubject" />
 
