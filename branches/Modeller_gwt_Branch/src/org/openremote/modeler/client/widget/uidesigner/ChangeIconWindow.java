@@ -70,6 +70,7 @@ import com.google.gwt.core.client.GWT;
  */
 public class ChangeIconWindow extends Dialog {
 
+   public static final String UPLOAD_IMAGE = "uploadImage";
    /** The beehive rest icon url. */
    private static String beehiveRestIconUrl = null;
    
@@ -294,7 +295,7 @@ public class ChangeIconWindow extends Dialog {
       uploadPanel.setBorders(false);
       uploadPanel.setBodyBorder(false);
       uploadPanel.add(imageUpload);
-      uploadPanel.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage");
+      uploadPanel.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName="+UPLOAD_IMAGE);
       uploadPanel.setEncoding(Encoding.MULTIPART);
       uploadPanel.setMethod(Method.POST);
       uploadPanel.addListener(Events.Submit, new Listener<FormEvent>() {

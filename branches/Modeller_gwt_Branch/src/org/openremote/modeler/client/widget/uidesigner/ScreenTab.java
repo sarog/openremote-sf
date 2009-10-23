@@ -51,15 +51,15 @@ public class ScreenTab extends TabPanel {
       addListener(Events.Add, new Listener<TabPanelEvent>() {
          public void handleEvent(TabPanelEvent be) {
             final ScreenTabItem screenTabItem = (ScreenTabItem) be.getItem();
-//            BeanModelDataBase.screenTable.addChangeListener(screenTabItem.getScreen().getOid(),
-//                  getScreenChangeListener(screenTabItem));
+            BeanModelDataBase.screenTable.addChangeListener(screenTabItem.getScreen().getOid(),
+                  getScreenChangeListener(screenTabItem));
          }
       });
       addListener(Events.Remove, new Listener<TabPanelEvent>() {                
          public void handleEvent(TabPanelEvent be) {
             final ScreenTabItem screenTabItem = (ScreenTabItem) be.getItem();
-//            BeanModelDataBase.screenTable.removeChangeListener(screenTabItem.getScreen().getOid(),
-//                  getScreenChangeListener(screenTabItem));
+            BeanModelDataBase.screenTable.removeChangeListener(screenTabItem.getScreen().getOid(),
+                  getScreenChangeListener(screenTabItem));
          }
       });
       addInsertListener();
@@ -81,7 +81,7 @@ public class ScreenTab extends TabPanel {
       if (changeListener == null) {
          changeListener = new ChangeListener() {
             public void modelChanged(ChangeEvent event) {
-//               Screen screen = screenTabItem.getScreen();
+               UIScreen screen = screenTabItem.getScreen();
                if (event.getType() == BeanModelTable.REMOVE) {
                   remove(screenTabItem);
                } else if (event.getType() == BeanModelTable.UPDATE) {
@@ -93,10 +93,12 @@ public class ScreenTab extends TabPanel {
 //                     setSelection(newScreenTabItem);
 //                     return;
 //                  }
-//                  if (!screen.getName().equals(screenTabItem.getText())) {
-//                     screenTabItem.setText(screen.getName());
-//                     setSelection(screenTabItem);
-//                  }
+                  if (!screen.getName().equals(screenTabItem.getText())) {
+                     screenTabItem.setText(screen.getName());
+                  }
+                  ScreenCanvas screenCanvas = screenTabItem.getScreenCanvas();
+                  screenCanvas.setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
+                  setSelection(screenTabItem);
                }
             }
          };

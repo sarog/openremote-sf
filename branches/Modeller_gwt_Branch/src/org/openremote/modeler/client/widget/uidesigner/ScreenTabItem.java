@@ -37,6 +37,7 @@ public class ScreenTabItem extends TabItem {
    /** The screen. */
    private UIScreen screen;
 
+   private ScreenCanvas screenCanvas;
    /** The icon. */
    private Icons icon = GWT.create(Icons.class);
    
@@ -65,7 +66,8 @@ public class ScreenTabItem extends TabItem {
       screenContainer.setStyleAttribute("backgroundImage", "url(" + touchPanelDefinition.getBgImage() + ")");
       screenContainer.setStyleAttribute("paddingLeft", String.valueOf(touchPanelDefinition.getPaddingLeft()));
       screenContainer.setStyleAttribute("paddingTop", String.valueOf(touchPanelDefinition.getPaddingTop()));
-      screenContainer.add(new ScreenCanvas(screen));
+      screenCanvas = new ScreenCanvas(screen);
+      screenContainer.add(screenCanvas);
       screenContainer.setBorders(false);
       add(screenContainer);
    }
@@ -77,5 +79,9 @@ public class ScreenTabItem extends TabItem {
     */
    public UIScreen getScreen() {
       return screen;
+   }
+   
+   public ScreenCanvas getScreenCanvas() {
+      return screenCanvas;
    }
 }

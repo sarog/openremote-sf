@@ -71,7 +71,9 @@ public class ScreenCanvas extends LayoutContainer {
       moveBackGround.setStyleAttribute("position", "absolute");
       moveBackGround.hide();
       add(moveBackGround);
-      
+      setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
+      setStyleAttribute("backgroundRepeat", "no-repeat");
+      setStyleAttribute("overflow", "hidden");
    }
    
    /**
