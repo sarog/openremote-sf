@@ -28,6 +28,7 @@ import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.control.Control;
 import org.openremote.controller.control.ControlBuilder;
+import org.openremote.controller.control.Status;
 import org.openremote.controller.exception.NoSuchCommandException;
 
 /**
@@ -58,7 +59,7 @@ public class ToggleBuilder extends ControlBuilder {
             Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(statusCommandID);
             if (statusCommandElement != null) {
                StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
-               toggle.getStatus().setStatusCommand(statusCommand);
+               toggle.setStatus(new Status(statusCommand));
                continue;
             } else {
                throw new NoSuchCommandException("Cannot find that command with id = " + statusCommandID);
