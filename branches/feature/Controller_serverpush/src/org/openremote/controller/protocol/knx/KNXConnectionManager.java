@@ -571,7 +571,13 @@ class KNXConnectionManager
 //            e.printStackTrace();
 //        }
 //        return "unknown";
-        return Control.CURRENT_STATUS;
+        String currentStatus = Control.CURRENT_STATUS;
+        if ("off".equalsIgnoreCase(Control.CURRENT_STATUS)) {
+           Control.CURRENT_STATUS = "on";
+        } else {
+           Control.CURRENT_STATUS = "off";
+        }
+        return currentStatus;
     }
     
     /**
