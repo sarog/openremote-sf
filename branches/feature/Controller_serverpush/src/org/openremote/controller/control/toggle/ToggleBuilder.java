@@ -19,7 +19,6 @@
 */
 package org.openremote.controller.control.toggle;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jdom.Element;
@@ -47,35 +46,47 @@ public class ToggleBuilder extends ControlBuilder {
       if (!isContainAction(commandParam)) {
          return new Toggle();
       }
+      
+      int operation = -1;
+      if (!Control.STATUS_ELEMENT_NAME.equals(commandParam)) {
+         try {
+            operation = Integer.parseInt(commandParam);
+         } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return new Toggle();
+         }
+      }
+      
       Toggle toggle = new Toggle();
       List<Element> subElements = toggleElement.getChildren();
-
       for (int i = 0; i < subElements.size(); i++) {
-         Element element = subElements.get(i);
-         // status element
-         if (Control.STATUS_ELEMENT_NAME.equalsIgnoreCase(element.getName())) {
+         Element element = subElements.get(i);         
+         if (commandParam.equalsIgnoreCase(element.getName()) && Control.STATUS_ELEMENT_NAME.equalsIgnoreCase(element.getName())) {
+            // status element
             Element commandElementRef = (Element) element.getChildren().get(0);
             String statusCommandID = commandElementRef.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
             Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(statusCommandID);
             if (statusCommandElement != null) {
                StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
                toggle.setStatus(new Status(statusCommand));
-               continue;
+               break;
             } else {
                throw new NoSuchCommandException("Cannot find that command with id = " + statusCommandID);
             }
+         } else {
+            // non-status elements
+            if (operation == i && !Control.STATUS_ELEMENT_NAME.equalsIgnoreCase(element.getName())) {
+               List<Element> commandRefElements = element.getChildren();
+               for (Element commandRefElement : commandRefElements) {
+                  String commandID = commandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
+                  Element commandElement = remoteActionXMLParser.queryElementFromXMLById(commandID);
+                  Command command = commandFactory.getCommand(commandElement);
+                  toggle.addExecutableCommand((ExecutableCommand) command);
+               }
+               break;
+            }
+            continue;
          }
-
-         // non-status elements
-         List<Element> commandRefElements = element.getChildren();
-         List<ExecutableCommand> executableCommands = new ArrayList<ExecutableCommand>();
-         for (Element commandRefElement : commandRefElements) {
-            String commandID = commandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-            Element commandElement = remoteActionXMLParser.queryElementFromXMLById(commandID);
-            Command command = commandFactory.getCommand(commandElement);
-            executableCommands.add((ExecutableCommand) command);
-         }
-         toggle.getStates().put(Toggle.SWITCH_STATUSES[i], executableCommands);
       }
       return toggle;
     }
