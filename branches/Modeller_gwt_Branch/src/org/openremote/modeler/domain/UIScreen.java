@@ -51,7 +51,7 @@ public class UIScreen extends BusinessEntity {
    private TouchPanelDefinition touchPanelDefinition;
    
    /** The background. */
-   private String background;
+   private String background = "";
 
    /**
     * Gets the name.
@@ -96,6 +96,10 @@ public class UIScreen extends BusinessEntity {
     */
    public String getBackground() {
       return background;
+   }
+
+   public String getCSSBackground() {
+      return background.replaceAll(" ", "%20");
    }
 
    /**

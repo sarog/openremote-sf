@@ -41,6 +41,7 @@ import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.Field;
@@ -49,8 +50,11 @@ import com.extjs.gxt.ui.client.widget.form.FileUploadField;
 import com.extjs.gxt.ui.client.widget.form.Radio;
 import com.extjs.gxt.ui.client.widget.form.RadioGroup;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
+import com.extjs.gxt.ui.client.widget.form.FormPanel.Method;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
+import com.google.gwt.core.client.GWT;
 
 /**
  * The Class ScreenWindow.
@@ -133,7 +137,8 @@ public class ScreenWindow extends FormWindow {
       ComboBoxDataModel<TouchPanelDefinition> iphoneData = null;
       for (String key : panels.keySet()) {
          for (TouchPanelDefinition touchPanel : panels.get(key)) {
-            ComboBoxDataModel<TouchPanelDefinition> data = new ComboBoxDataModel<TouchPanelDefinition>(touchPanel.getName(), touchPanel);
+            ComboBoxDataModel<TouchPanelDefinition> data = new ComboBoxDataModel<TouchPanelDefinition>(touchPanel
+                  .getName(), touchPanel);
             if ("iphone".equals(touchPanel.getName())) {
                iphoneData = data;
             }
@@ -143,7 +148,7 @@ public class ScreenWindow extends FormWindow {
       panel.setDisplayField(ComboBoxDataModel.getDisplayProperty());
       panel.setEmptyText("Please Select Panel...");
       panel.setValueField(ComboBoxDataModel.getDataProperty());
-      panel.setValue(iphoneData);   //temp select iphone panel.
+      panel.setValue(iphoneData); // temp select iphone panel.
       
       FileUploadField background = new FileUploadField();
       background.setFieldLabel("Background");
@@ -168,11 +173,11 @@ public class ScreenWindow extends FormWindow {
       layoutGroup.setFieldLabel("Layout");
       layoutGroup.add(gridLayout);
       layoutGroup.add(absoluteLayout);
-      layoutGroup.addListener(Events.Change, new Listener<FieldEvent>(){
+      layoutGroup.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
             String value = layoutGroup.getValue().getValueAttribute();
-            if(SCREEN_GRIDRADIO.equals(value)) {
+            if (SCREEN_GRIDRADIO.equals(value)) {
                layout = SCREEN_GRIDRADIO;
                addGridAttrs();
             } else if (SCREEN_ABSOLUTERADIO.equals(value)) {
@@ -193,8 +198,8 @@ public class ScreenWindow extends FormWindow {
       if (screen != null) {
          TouchPanelDefinition touchPanelDefinition = screen.getTouchPanelDefinition();
          screenNameField.setValue(screen.getName());
-         ComboBoxDataModel<TouchPanelDefinition> data = new ComboBoxDataModel<TouchPanelDefinition>(touchPanelDefinition
-               .getName(), touchPanelDefinition);
+         ComboBoxDataModel<TouchPanelDefinition> data = new ComboBoxDataModel<TouchPanelDefinition>(
+               touchPanelDefinition.getName(), touchPanelDefinition);
          panel.setValue(data);
          panel.disable();
          if (screen.getBackground() != null) {
@@ -253,18 +258,32 @@ public class ScreenWindow extends FormWindow {
     * Adds the listeners to form.
     */
    private void addListenersToForm() {
-      form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
+      form.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName="
+            + SCREEN_BACKGROUND);
+      form.setEncoding(Encoding.MULTIPART);
+      form.setMethod(Method.POST);
+
+      form.addListener(Events.Submit, new Listener<FormEvent>() {
          @SuppressWarnings("unchecked")
+         @Override
          public void handleEvent(FormEvent be) {
+            String backgroundImgURL = be.getResultHtml();
+            String uploadFieldValue = "";
+
             List<Field<?>> list = form.getFields();
             ComboBoxDataModel<TouchPanelDefinition> panelData = null;
             for (Field<?> field : list) {
-               if(SCREEN_PANEL.equals(field.getName())){
-                  panelData = (ComboBoxDataModel<TouchPanelDefinition>)field.getValue();
+               if (SCREEN_PANEL.equals(field.getName())) {
+                  panelData = (ComboBoxDataModel<TouchPanelDefinition>) field.getValue();
+               } else if (SCREEN_BACKGROUND.equals(field.getName())
+                     && !(field.getValue() == null || field.getValue().equals(""))) {
+                  uploadFieldValue = field.getValue().toString();
                }
             }
             
             Map<String, String> attrMap = getAttrMap();
+            setBackground(backgroundImgURL, uploadFieldValue, attrMap);
+
             BeanModel screenBeanModel = null;
             if (screen == null) {
                screenBeanModel = ScreenBeanModelProxy.createScreen(attrMap, panelData.getData());
@@ -294,4 +313,32 @@ public class ScreenWindow extends FormWindow {
    }
    
    
+   private void setBackground(String backgroundImgURL, String uploadFieldValue, Map<String, String> attrMap) {
+      boolean uploadSuccessfully = !"".equals(backgroundImgURL);
+      boolean editMode = screen != null;
+      boolean uploadFieldHasValue = uploadFieldValue != null && !uploadFieldValue.equals("");
+
+      if (uploadSuccessfully) {
+         attrMap.put(SCREEN_BACKGROUND, backgroundImgURL);
+         return;
+      }
+      if (!uploadSuccessfully && uploadFieldHasValue) {
+         if (editMode) {
+            boolean wantToChangeBackground = !uploadFieldValue.equals(screen.getBackground());
+            boolean hasHadBackgroundImg = !screen.getBackground().equals("");
+            if (wantToChangeBackground && hasHadBackgroundImg) {
+               MessageBox.alert("Warning", "Update background failed!<br />The background will not be changed!", null);
+               attrMap.put(SCREEN_BACKGROUND, screen.getBackground());
+            } else if (wantToChangeBackground && !hasHadBackgroundImg) {
+               MessageBox.alert("Warning", "Upload background failed<br />The background will not be changed!", null);
+               attrMap.put(SCREEN_BACKGROUND, "");
+            }
+         } else { // new mode
+            MessageBox.alert("Failed", "Invalid image size!<br />Upload background failed",
+                  null);
+            attrMap.put(SCREEN_BACKGROUND, "");
+         }
+
+      }
+   }
 }

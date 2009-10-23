@@ -27,6 +27,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.openremote.modeler.service.ResourceService;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -38,6 +39,8 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
  * @author handy.wang
  */
 public class FileUploadController extends MultiActionController {
+   
+   private static final Logger LOGGER = Logger.getLogger(FileUploadController.class);
    
    /** The resource service. */
    private ResourceService resourceService;
@@ -64,20 +67,6 @@ public class FileUploadController extends MultiActionController {
       }
    }
    
-   /**
-    * Upload image.
-    * 
-    * @param request the request
-    * @param response the response
-    * 
-    * @throws IOException Signals that an I/O exception has occurred.
-    */
-   public void uploadImage(HttpServletRequest request, HttpServletResponse response) throws IOException {
-      String sessionId = request.getSession().getId();
-      MultipartFile multipartFile = resourceService.getMultipartFileFromRequest(request, "uploadImage");
-      File file = resourceService.uploadImage(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), sessionId);
-      response.getWriter().print(resourceService.getRelativeResourcePath(sessionId, file.getName()));
-   }
 
    /**
     * Sets the resource service.
@@ -86,6 +75,34 @@ public class FileUploadController extends MultiActionController {
     */
    public void setResourceService(ResourceService resourceService) {
       this.resourceService = resourceService;
+   }
+   /**
+    * upload an image.<br />
+    * your action should be : fileUploadController.htm?method=uploadImage&uploadFieldName=<b>your
+    * upload Field Name</b> .you can find the image in {os.webapps.root}/../tmp/[user_session_id].<br />
+    * {os.webapps.root} is defined in /config/config.properties.
+    * 
+    * @param request
+    * @param response
+    * @throws IOException
+    */
+   public void uploadImage(HttpServletRequest request, HttpServletResponse response) throws IOException {
+      String sessionId = request.getSession().getId();
+      String uploadFieldName = request.getParameter("uploadFieldName");
+
+      if (uploadFieldName == null || uploadFieldName.trim().length() == 0) {
+         LOGGER.error("The action must have a parameter 'uploadFieldName'");
+         return;
+      }
+
+      long maxImageSize = 1024 * 1024;
+      MultipartFile multipartFile = resourceService.getMultipartFileFromRequest(request, uploadFieldName);
+      if (multipartFile.getSize() == 0 || multipartFile.getSize() > maxImageSize) {
+         return;
+      }
+      File file = resourceService.uploadImage(multipartFile.getInputStream(), multipartFile.getOriginalFilename(),
+            sessionId);
+      response.getWriter().print(resourceService.getRelativeResourcePath(sessionId, file.getName()));
    }
 
 }
