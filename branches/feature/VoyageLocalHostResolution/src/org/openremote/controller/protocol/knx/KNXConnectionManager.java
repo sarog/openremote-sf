@@ -22,9 +22,7 @@ package org.openremote.controller.protocol.knx;
 import java.net.*;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 import tuwien.auto.calimero.knxnetip.Discoverer;
 import tuwien.auto.calimero.knxnetip.KNXnetIPTunnel;
@@ -215,10 +213,12 @@ class KNXConnectionManager
   protected InetAddress resolveLocalHost()
   {
 
+    // TODO : implement explicit IP address binding
+
     /*
      * Resolving localhost address to be included in connection's client HPAI
      *
-     * TODO :
+     * NOTE :
      *   still looking for a fail-safe implementation that would work consistently
      *   across different OS'es and network interface setups. The current implementation
      *   is likely to prove insufficient so feedback here is welcome.
@@ -226,11 +226,19 @@ class KNXConnectionManager
      * NOTE:
      *   InetAddress.getLocalHost() can return a host name that does not resolve to an IP
      *   address that has been configured in the host system lookup service -- this seems
-     *   to be the case with the default Voyage (Debian) Linux, for example.
+     *   to be the case with the default Voyage (Debian) Linux, for example. Therefore in
+     *   the implementation we actually iterate through all the available network interfaces
+     *   trying to find valid candidate NICs and IP addresses
+     *
+     * NOTE:
+     *   Logging in this method is on low threshold as its useful for debugging installation
+     *   and startup issues -- the current implementation assumes we execute this only once
+     *   so verbosity should not be an issue. Logging is directed to a specific KNX logging
+     *   category
      *
      */
 
-    // TODO : implement explicit IP address binding
+    log.info("KNX Connection manager resolving local host IP addresses...");
 
     Enumeration<NetworkInterface> nics = null;
 
@@ -243,10 +251,11 @@ class KNXConnectionManager
       // if an I/O exception occurs -- no additional detail under what circumstances this
       // might occur is provided
 
-      throw new Error(e.getMessage(), e);   // TODO : validate error handling -- use checked exception instead?
+      throw new Error(e.getMessage(), e);
+      // TODO : validate error handling -- use checked exception instead?
     }
 
-    List<NetworkInterface> candidateNics = new ArrayList<NetworkInterface>(5);
+    Set<InetAddress> candidateAddresses = new HashSet<InetAddress>(5);
 
     while (nics.hasMoreElements())
     {
@@ -258,21 +267,22 @@ class KNXConnectionManager
         {
           // not running, not useful
 
-          log.info("DEV: skipping disabled nic " + nic);
+          log.info("Skipping disabled NIC: " + nic);
 
           continue;
         }
       }
       catch (SocketException exception)
       {
-        throw new Error(exception); // TODO - proper error handling
+        throw new Error(exception);
+        // TODO - proper error handling
       }
 
       try
       {
         if (nic.isLoopback())
         {
-          log.info("DEV: skipping loopback interface " + nic);
+          log.info("Skipping loopback interface: " + nic);
 
           continue;
         }
@@ -280,14 +290,15 @@ class KNXConnectionManager
       }
       catch (SocketException exception)
       {
-        throw new Error(exception); // TODO - proper error handling
+        throw new Error(exception);
+        // TODO - proper error handling
       }
 
       try
       {
         if (nic.isPointToPoint())
         {
-          log.info("DEV: skipping point-to-point interface " + nic);
+          log.info("Skipping point-to-point interface: " + nic);
 
           continue;
         }
@@ -295,7 +306,8 @@ class KNXConnectionManager
       }
       catch (SocketException exception)
       {
-        throw new Error(exception); // TODO - proper error handling
+        throw new Error(exception);
+        // TODO - proper error handling
       }
 
 
@@ -303,7 +315,7 @@ class KNXConnectionManager
 
       if (nic.isVirtual())
       {
-        log.info("DEV: skipping virtual interface " + nic);
+        log.info("Skipping virtual interface: " + nic);
 
         // TODO - there could be legit use cases to use virtual interface instead
 
@@ -311,9 +323,28 @@ class KNXConnectionManager
       }
 
 
-      log.info("DEV: added candidate NIC " + nic);
+      log.info("Found candidate NIC: " + nic);
 
-      candidateNics.add(nic);
+      // TODO : doPrivileged
+      List<InterfaceAddress> ipAddresses = nic.getInterfaceAddresses();
+
+      for (InterfaceAddress address : ipAddresses)
+      {
+        InetAddress ipAddress = address.getAddress();
+
+
+        if (ipAddress instanceof Inet6Address)
+        {
+          log.info("Skipped IPv6 address (not supported by KNX) " + ipAddress);
+
+          continue;
+        }
+
+        boolean isNew = candidateAddresses.add(ipAddress);
+
+        if (isNew)
+          log.info("Added candidate IP address to set - " + ipAddress);
+      }
     }
 
     /*
@@ -326,7 +357,7 @@ class KNXConnectionManager
      *  At this point I'll just pick the first candidate, let's hope it works
      */
 
-    return candidateNics.get(0).getInetAddresses().nextElement();
+    return candidateAddresses.iterator().next();  // TODO: do null checks
   }
 
 
