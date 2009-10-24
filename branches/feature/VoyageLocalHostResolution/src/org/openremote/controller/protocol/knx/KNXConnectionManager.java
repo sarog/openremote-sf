@@ -19,11 +19,12 @@
 */
 package org.openremote.controller.protocol.knx;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.ArrayList;
 
 import tuwien.auto.calimero.knxnetip.Discoverer;
 import tuwien.auto.calimero.knxnetip.KNXnetIPTunnel;
@@ -187,32 +188,9 @@ class KNXConnectionManager
     
     try
     {
-      // TODO :
-      //   the localhost resolution is less than ideal -- especially for multi-nic setups should
-      //   have a way to specify bind address
+      InetAddress localhost = resolveLocalHost();
 
-      InetAddress localhost = null;
-
-      /*
-      try
-      {
-        localhost = InetAddress.getLocalHost();
-      }
-      catch (Throwable t)
-      {
-        throw new ConnectionException("Cannot access localhost: " + t.getMessage(), t);
-      }
-
-      log.info(
-          "Starting KNX gateway discovery on " + localhost +
-          " (Using NAT = " + DISCOVERY_USE_NAT +
-          ", Client Listener Port = " + CLIENT_DISCOVERY_LISTENER_PORT +
-          ", Discovery Timeout = " + DISCOVERY_TIMEOUT + " second(s), " +
-          "Blocking Mode = " + BLOCKING_DISCOVERY + ")."
-      );
-      */
-
-      discovery = new Discoverer(CLIENT_DISCOVERY_LISTENER_PORT, DISCOVERY_USE_NAT);
+      discovery = new Discoverer(localhost, CLIENT_DISCOVERY_LISTENER_PORT, DISCOVERY_USE_NAT);
       discovery.startSearch(DISCOVERY_TIMEOUT, BLOCKING_DISCOVERY);
     }
     catch (KNXException exception)
@@ -228,6 +206,129 @@ class KNXConnectionManager
       throw ce;
     }
   }
+
+  /**
+   * TODO
+   *
+   * @return
+   */
+  protected InetAddress resolveLocalHost()
+  {
+
+    /*
+     * Resolving localhost address to be included in connection's client HPAI
+     *
+     * TODO :
+     *   still looking for a fail-safe implementation that would work consistently
+     *   across different OS'es and network interface setups. The current implementation
+     *   is likely to prove insufficient so feedback here is welcome.
+     *
+     * NOTE:
+     *   InetAddress.getLocalHost() can return a host name that does not resolve to an IP
+     *   address that has been configured in the host system lookup service -- this seems
+     *   to be the case with the default Voyage (Debian) Linux, for example.
+     *
+     */
+
+    // TODO : implement explicit IP address binding
+
+    Enumeration<NetworkInterface> nics = null;
+
+    try
+    {
+      nics = NetworkInterface.getNetworkInterfaces();
+    }
+    catch (SocketException e)
+    {
+      // if an I/O exception occurs -- no additional detail under what circumstances this
+      // might occur is provided
+
+      throw new Error(e.getMessage(), e);   // TODO : validate error handling -- use checked exception instead?
+    }
+
+    List<NetworkInterface> candidateNics = new ArrayList<NetworkInterface>(5);
+
+    while (nics.hasMoreElements())
+    {
+      NetworkInterface nic = nics.nextElement();
+
+      try
+      {
+        if (!nic.isUp())
+        {
+          // not running, not useful
+
+          log.info("DEV: skipping disabled nic " + nic);
+
+          continue;
+        }
+      }
+      catch (SocketException exception)
+      {
+        throw new Error(exception); // TODO - proper error handling
+      }
+
+      try
+      {
+        if (nic.isLoopback())
+        {
+          log.info("DEV: skipping loopback interface " + nic);
+
+          continue;
+        }
+
+      }
+      catch (SocketException exception)
+      {
+        throw new Error(exception); // TODO - proper error handling
+      }
+
+      try
+      {
+        if (nic.isPointToPoint())
+        {
+          log.info("DEV: skipping point-to-point interface " + nic);
+
+          continue;
+        }
+
+      }
+      catch (SocketException exception)
+      {
+        throw new Error(exception); // TODO - proper error handling
+      }
+
+
+      // TODO : need to test if virtual ifaces are always included or require getSubs() call
+
+      if (nic.isVirtual())
+      {
+        log.info("DEV: skipping virtual interface " + nic);
+
+        // TODO - there could be legit use cases to use virtual interface instead
+
+        continue;
+      }
+
+
+      log.info("DEV: added candidate NIC " + nic);
+
+      candidateNics.add(nic);
+    }
+
+    /*
+     * TODO:
+     *
+     *  To be completely autonomous and "hands-free" to the user we would blast the discovery
+     *  an all NICs we consider candidates and choose one of them that receives a discovery
+     *  response.
+     *
+     *  At this point I'll just pick the first candidate, let's hope it works
+     */
+
+    return candidateNics.get(0).getInetAddresses().nextElement();
+  }
+
 
 
   /**
