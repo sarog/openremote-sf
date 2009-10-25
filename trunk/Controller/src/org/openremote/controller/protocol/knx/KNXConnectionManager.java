@@ -146,6 +146,7 @@ class KNXConnectionManager
    */
   private Discoverer discovery = null;
 
+
   /**
    * Host Protocol Address Information (HPAI) structure for the KNX IP gateway ("server IP").
    * This will be initialized by a successful gateway discovery, or could be written to
@@ -168,6 +169,7 @@ class KNXConnectionManager
    */
   private HPAI gatewayEndPoint = null;
 
+
   /**
    * The KNX IP tunnel connection. Initialized when a connection is first requested via
    * getConnection() call. Should never be accessed directly but via getConnection() to
@@ -180,6 +182,19 @@ class KNXConnectionManager
    * dealt with since the implementation still lacks reconnect policies.
    */
   private KNXnetIPTunnel connection = null;
+
+  /**
+   * The chosen IPv4 address for KNX discovery and KNX connection client HPAI. <p>
+   *
+   * This address can be determined via {@link #resolveLocalAddresses()} method which returns a set
+   * of IP candidate addresses on this hosting machine. Alternatively the
+   * {@link #KNX_LOCAL_BIND_ADDRESS} system property can be used to set this value.  <p>
+   *
+   * The KNX discovery process can elect one of the candidate IP addresses as the client IP based
+   * on the network interface receiving the KNX discovery response. The subsequent KNX connection
+   * creation should then use this same client IP address as part of the client-side HPAI header.
+   */
+  private InetAddress clientIP = null;
 
 
   // Protected Instance Methods -------------------------------------------------------------------
@@ -215,7 +230,7 @@ class KNXConnectionManager
        *
        *  At this point I'll just pick the first candidate IPv4 address, let's hope it works
        */
-      InetAddress clientIP = resolveLocalAddress().iterator().next();
+      clientIP = resolveLocalAddresses().iterator().next();
 
       discovery = new Discoverer(clientIP, CLIENT_DISCOVERY_LISTENER_PORT, DISCOVERY_USE_NAT);
       discovery.startSearch(DISCOVERY_TIMEOUT, BLOCKING_DISCOVERY);
@@ -246,7 +261,10 @@ class KNXConnectionManager
    * is wanted for other reasons, this implementation can be overriden by setting a system wide
    * {@link #KNX_LOCAL_BIND_ADDRESS} property. The <code>KNX_LOCAL_BIND_ADDRESS</code> property
    * should have as its value a valid IPv4 address in the machine hosting this KNX connection
-   * manager.
+   * manager.  <p>
+   *
+   * In addition, this method can be overridden by subclasses for alternative address resolution
+   * implementations.
    *
    * @throws ConnectionException if there's an I/O error querying the network interfaces on this
    *                             machine or if {@link #KNX_LOCAL_BIND_ADDRESS} was configured but
@@ -255,7 +273,7 @@ class KNXConnectionManager
    * @return  Set of IPv4 addresses on the local machine that could be used for KNX discovery
    *          and as client-side HPAI end-points.
    */
-  protected Set<InetAddress> resolveLocalAddress() throws ConnectionException
+  protected Set<InetAddress> resolveLocalAddresses() throws ConnectionException
   {
     /*
      * NOTE:
@@ -375,8 +393,37 @@ class KNXConnectionManager
    */
   protected synchronized KNXConnection getConnection() throws ConnectionException
   {
+
+    /*
+     * TODO :
+     *   as per the connection management discussion, the KNXConnection interface
+     *   should implement a corresponding close() method (which it may or may not
+     *   react to based on the connection management policy)
+     *
+     * TODO :
+     *   document the thread synchronization wrt connection and gatewayEndpoint field access
+     *
+     * TODO :
+     *   given the synchronization, connection pooling may become relevant
+     */
+
+
+    // if we have an existing connection, return it...
+    //
+    // TODO :
+    //   - possible to check connection validity (maybe by having access to the underlying
+    //     KNX connection hearbeat)?
+    //   - failover if connection broken?
+
     if (connection != null)
       return new CalimeroConnection(connection);
+
+
+    // if we don't have a connection but have found our KNX gateway end-point,
+    // build a connection to it...
+    //
+    // TODO :
+    //   - handle exception from buildConnection (possible to go back to gateway discovery?)
 
     if (gatewayEndPoint != null)
     {
@@ -404,7 +451,7 @@ class KNXConnectionManager
 
 
   /**
-   * A quick helper method to detech if the KNX_LOCAL_BIND_ADDRESS system property has been set.
+   * A quick helper method to detect if the KNX_LOCAL_BIND_ADDRESS system property has been set.
    *
    * @return true if KNX_LOCAL_BIND_ADDRESS has been set; false otherwise
    */
@@ -624,8 +671,6 @@ class KNXConnectionManager
       InetAddress serverIP = gatewayEndPoint.getAddress();
       int serverPort = gatewayEndPoint.getPort();
 
-      InetAddress clientIP = InetAddress.getLocalHost();    // TODO: not the best method for multi-NIC machines
-
       log.info("Creating connection from " + clientIP + " to " + serverIP + ":" + serverPort);
 
       connection = new KNXnetIPTunnel(
@@ -639,10 +684,6 @@ class KNXConnectionManager
           "Connection '" + connection.getName() + "' created " +
           "(Using NAT = " + CONNECTION_USE_NAT + ")."
       );
-    }
-    catch (UnknownHostException uhe)
-    {
-      throw new ConnectionException("Could not access localhost: " + uhe.getMessage(), uhe);
     }
     catch (KNXException knx)
     {
@@ -685,14 +726,6 @@ class KNXConnectionManager
     {
 /*
       log.info("Discovery has ended");    // TODO
-
-      try
-      {
-        HPAI hpai = new HPAI(InetAddress.getByAddress(new byte[] { (byte)192, (byte)168, 1, 33 }), 3671);
-
-        return hpai;
-      }
-      catch (Throwable t){}
 */
       throw new ConnectionException("KNX IP Gateway was not found.");
     }
