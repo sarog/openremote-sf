@@ -564,20 +564,13 @@ class KNXConnectionManager
      * @see org.openremote.controller.protocol.knx.KNXConnection#readDeviceStatus(java.lang.String, java.lang.String)
      */
     public String readDeviceStatus(String groupAddress, String dptTypeID) {
-//        try {
-//            sendReadStatusRequest(connection, null);
-//            return read(groupAddress, dptTypeID);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return "unknown";
-        String currentStatus = Control.CURRENT_STATUS;
-        if ("off".equalsIgnoreCase(Control.CURRENT_STATUS)) {
-           Control.CURRENT_STATUS = "on";
-        } else {
-           Control.CURRENT_STATUS = "off";
+        try {
+            sendReadStatusRequest(connection, null);
+            return read(groupAddress, dptTypeID);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return currentStatus;
+        return "unknown";
     }
     
     /**
