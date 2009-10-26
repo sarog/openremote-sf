@@ -22,7 +22,9 @@ package org.openremote.controller.status_cache;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -44,6 +46,11 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
    
    /** The connection. */
    public static Connection connection;
+   
+   /**
+    * TIME_OUT table instance.
+    */
+   private TimeoutTable timeoutTable = (TimeoutTable) SpringContext.getInstance().getBean("timeoutTable");;
 
    /* (non-Javadoc)
     * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
@@ -72,9 +79,30 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
             System.out.println(">>> " + rs.getString(1) + ", " + rs.getString(2) + ", " + rs.getString(3));
          }*/
          
-         //The followings are simulated for status changed.
-         System.out.println("Starting simulated change status tread at " + new SimpleDateFormat("yy-MM-dd HH:mm:ss").format(new Date()));
-         Thread thread = new Thread(){
+         List<String> pollingControlIDs = new ArrayList<String>();
+         pollingControlIDs.add("1");
+         pollingControlIDs.add("2");
+         pollingControlIDs.add("3");
+         TimeoutRecord timeoutRecord = new TimeoutRecord("96e79218965eb72c92a549dd5a330112", pollingControlIDs);
+         timeoutTable.insert(timeoutRecord);
+         System.out.println("Init TIME_OUT table, device id : " + timeoutTable.query(pollingControlIDs).getDeviceID());
+         
+         //The folling s are simulated for status changed in TIME_OUT table.
+         System.out.println("TIME_OUT table : Starting simulated change status tread at " + new SimpleDateFormat("yy-MM-dd HH:mm:ss").format(new Date()));
+         Thread timeoutTableDataChangeThread = new Thread() {
+            @Override
+            public void run() {
+               List<TimeoutRecord> timeoutRecords = timeoutTable.query("1");
+               for (TimeoutRecord timeoutRecord : timeoutRecords) {
+                  timeoutRecord.addStatusChangedID("1");
+               }
+            }
+         };
+         timeoutTableDataChangeThread.start();
+         
+         //The followings are simulated for status changed in ObservedStatusesSubject.
+         System.out.println("ObservedStatusesSubject : Starting simulated change status tread at " + new SimpleDateFormat("yy-MM-dd HH:mm:ss").format(new Date()));
+         Thread nofityObservedStatusSubjectThread = new Thread(){
             @Override
             public void run() {
                int i = 0;
@@ -93,7 +121,7 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
                }
             }
          };
-         thread.start();
+         nofityObservedStatusSubjectThread.start();
       } catch (Exception e) {
          e.printStackTrace();
       }
@@ -121,6 +149,10 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
          } catch (Exception e) {
          }
       }
+   }
+
+   public void setTimeoutTable(TimeoutTable timeoutTable) {
+      this.timeoutTable = timeoutTable;
    }
 
 }

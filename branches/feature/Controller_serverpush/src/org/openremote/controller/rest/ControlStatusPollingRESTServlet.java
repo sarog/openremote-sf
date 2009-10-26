@@ -33,8 +33,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.openremote.controller.service.ControlStatusPollingService;
 import org.openremote.controller.spring.SpringContext;
-import org.openremote.controller.status_cache.PollingData;
-import org.openremote.controller.status_cache.PollingThread;
 
 /**
  * Status Polling RESTful servlet of control.
@@ -47,18 +45,6 @@ public class ControlStatusPollingRESTServlet extends HttpServlet {
 
    /** This service is responsible for observe statuses change and return the changed statuses(xml-formatted). */
    private ControlStatusPollingService controlStatusPollingService = (ControlStatusPollingService) SpringContext.getInstance().getBean("controlStatusPollingService");
-
-   /** The max length of time of current servlet response. */
-   private static final int MAX_TIME_OUT_SECONDS = 50;
-   
-   /** A second equals how much mili seconds. */
-   private static final int MILLI_SECONDS_A_SECOND = 1000;
-   
-   /** Separator of control ids in the RESTful url. */
-   private static final String CONTROL_ID_SEPARATOR = ",";
-
-   /** This value will be responsed when current servlet couldn't get the changed statuses in the <b>MAX_TIME_OUT_SECONDS</b>. */
-   private static final String SERVER_RESPONSE_TIME_OUT_STATUS_CODE = "503";
 
    /**
     * The Constructor.
@@ -78,38 +64,25 @@ public class ControlStatusPollingRESTServlet extends HttpServlet {
       long startTime = System.currentTimeMillis();
       System.out.println("Started polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 
-      String changedStatuses = "";
       String url = request.getRequestURL().toString();
-      String regexp = "rest\\/polling\\/(.*)";
+      String regexp = "rest\\/polling\\/(\\w+)\\/(.*)";
       Pattern pattern = Pattern.compile(regexp);
       Matcher matcher = pattern.matcher(url);
       String unParsedcontrolIDs = null;
-
+      String deviceID = null;
+      
       if (matcher.find()) {
-         unParsedcontrolIDs = matcher.group(1);
+         deviceID = matcher.group(1);
+         unParsedcontrolIDs = matcher.group(2);
          PrintWriter printWriter = response.getWriter();         
-         String[] controlIDs = (unParsedcontrolIDs == null || "".equals(unParsedcontrolIDs)) ? new String[]{} : unParsedcontrolIDs.split(CONTROL_ID_SEPARATOR);
-         PollingData pollingData = new PollingData(controlIDs);
-         PollingThread pollingThread = new PollingThread(pollingData);
-         pollingThread.start();
          
-         while (true) {
-            if ((System.currentTimeMillis() - startTime) / MILLI_SECONDS_A_SECOND >= MAX_TIME_OUT_SECONDS) {
-               changedStatuses = SERVER_RESPONSE_TIME_OUT_STATUS_CODE;
-               pollingThread.setTimeToWaitStatusChange(false);
-               break;
-            }
-            if (pollingData.getChangedStatuses() == null) {
-               continue;
-            } else {
-               break;
-            }
-         }
-         if (!SERVER_RESPONSE_TIME_OUT_STATUS_CODE.equals(changedStatuses)) {
-            changedStatuses = controlStatusPollingService.parsePollingResult(pollingData);
+         String skipState = controlStatusPollingService.querySkipState(deviceID, unParsedcontrolIDs);
+         if (skipState != null && !"".equals(skipState)) {
+            printWriter.write(skipState);
+         } else {            
+            printWriter.write(controlStatusPollingService.getChangedStatuses(startTime, deviceID, unParsedcontrolIDs));
          }
          System.out.println("Finished polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-         printWriter.write(changedStatuses);
       }
    }
    

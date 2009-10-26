@@ -19,7 +19,6 @@
 */
 package org.openremote.controller.service;
 
-import org.openremote.controller.status_cache.PollingData;
 
 /**
  * It's responsiable for polling changed statuses from cached DB.
@@ -31,11 +30,11 @@ public interface ControlStatusPollingService {
    /**
     * get the changed statuses from cached DB. 
     */
-   public String getChangedStatuses(String unParsedcontrolIDs);
+   public String getChangedStatuses(long startTime, String deviceID, String unParsedcontrolIDs);
 
    /**
-    * conpose the changed statuses into xml-formatted data. 
+    * Query skip states from TIME_OUT table. 
     */
-   public String parsePollingResult(PollingData pollingResult);
+   public String querySkipState(String deviceID, String unParsedcontrolIDs);
    
 }
