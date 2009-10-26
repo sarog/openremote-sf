@@ -30,7 +30,7 @@
 	AsyncSocket *tcpSever; 
 	NSMutableArray *clients;
 	BOOL isReceiveServerUrl;
-	NSTimer	 *tcpTImer;
+	NSTimer	 *tcpTimer;
 }
 - (void)setDelegate:(id)delegate;
 - (void)reTry;

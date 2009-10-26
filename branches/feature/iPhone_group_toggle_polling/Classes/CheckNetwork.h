@@ -22,7 +22,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface CheckNetworkStaff : NSObject {
+@interface CheckNetwork : NSObject {
 
 }
 

@@ -26,7 +26,7 @@
 #import "AppSettingsDefinition.h"
 #import "DirectoryDefinition.h"
 #import "NotificationConstant.h"
-#import "CheckNetworkStaff.h"
+#import "CheckNetwork.h"
 
 
 @interface ServerAutoDiscoveryController (Private)
@@ -39,7 +39,7 @@
 //Setup autodiscovery and start. 
 // Needn't call annother method to send upd and start tcp server.
 - (id)init {			
-	if (self ==[super init]) {
+	if (self = [super init]) {
 		
 		isReceiveServerUrl = NO;
 		//Store the received TcpClient sockets.
@@ -62,8 +62,8 @@
 		tcpSever = [[AsyncSocket alloc] initWithDelegate:self];
 		[tcpSever acceptOnPort:serverPort error:NULL];
 		
-		//Set a timer with 5 interval.
-		tcpTImer = [[NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(checkFindServerFail) userInfo:nil repeats:NO] retain];
+		//Set a timer with 3 interval.
+		tcpTimer = [[NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(checkFindServerFail) userInfo:nil repeats:NO] retain];
 		
 	}
 	return self;
@@ -133,7 +133,7 @@
 	
 	
 	[tcpSever disconnectAfterReading];
-	[tcpTImer invalidate];
+	[tcpTimer invalidate];
 	
 			
 	// Call the delegate method delegate implemented
@@ -145,7 +145,7 @@
 		
 //after find server fail
 - (void)onFindServerFail:(NSString *)errorMessage{
-	[tcpTImer invalidate];
+	[tcpTimer invalidate];
 	// Call the delegate method delegate implemented
 	if (theDelegate && [theDelegate  respondsToSelector:@selector(onFindServerFail:)]) {
 		NSLog(@"performSelector onFindServerFail");
@@ -190,9 +190,9 @@ didNotSendDataWithTag:(long)tag dueToError:(NSError *)error{
 }
 
 - (void)dealloc {
-	if (tcpTImer && [tcpTImer isValid])  {
-		[tcpTImer invalidate];
-		[tcpTImer release];
+	if (tcpTimer && [tcpTimer isValid])  {
+		[tcpTimer invalidate];
+		[tcpTimer release];
 	}
 	NSLog(@"clients count is %d",[clients count]);
 	for(int i = 0; i < [clients count]; i++)

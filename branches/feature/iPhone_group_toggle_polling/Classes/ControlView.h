@@ -19,21 +19,40 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
 #import <UIKit/UIKit.h>
 #import "Control.h"
 #import "URLConnectionHelper.h"
 
-@interface ControlView : UIView <URLConnectionHelperDelegate> {
-
+@interface ControlView : UIView <URLConnectionHelperDelegate>{
+	
 	Control *control;
-	UIButton *button;
-	NSTimer *buttonTimer;
-	BOOL isTouchUp;
-	BOOL shouldSendEnd;
-	BOOL isError;
-	UIImage *icon;
+
 }
 
+//Class methods:
++ (ControlView *)buildWithControl:(Control *)control frame:(CGRect)frame;
+
+//Instance methods:
+- (id)initWithControl:(Control *)c frame:(CGRect)frame;
+
+/* Whether this control has status to do polling.
+ * Returns YES if it has.
+ * NOTE: This is an abstract method, must be implemented in subclass
+ */
+- (BOOL)hasPollingStatus;
+
+
+/* Sets polling status.
+ * Returns YES if success, returns NO if the status is invalid.
+ * NOTE: This is an abstract method, must be implemented in subclass
+ */
+- (BOOL)setPollingStatus:(NSString *)status;
+
+- (int)getControlId;
+
+- (void)sendCommandRequest:(NSString *)commandType;
+- (void)handleServerErrorWithStatusCode:(int) statusCode;
+
 @property (nonatomic,retain) Control *control;
+
 @end

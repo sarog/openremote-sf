@@ -19,19 +19,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+#import "GridCell.h"
 
-#import "CheckNetworkStaffException.h"
 
+@implementation GridCell
 
-@implementation CheckNetworkStaffException
+@synthesize x,y,rowspan,colspan,control;
 
-@synthesize title,message;
-
-+(CheckNetworkStaffException *)exceptionWithTitle:(NSString *)t message:(NSString *)msg {
-	CheckNetworkStaffException *e = [[CheckNetworkStaffException alloc] initWithName:@"checkNetworkStaffException" reason:@"Check Network Fail" userInfo:nil];
-	e.title = t;
-	e.message = msg;
-	[e autorelease];
-	return e;
+- (void)dealloc {
+	[control release];
+	[super dealloc];
 }
+
 @end

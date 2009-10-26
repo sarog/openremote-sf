@@ -22,14 +22,20 @@
 
 #import <UIKit/UIKit.h>
 #import "Screen.h"
+#import "URLConnectionHelper.h"
 
-
-@interface ScreenView : UIView {
+@interface ScreenView : UIView <URLConnectionHelperDelegate> {
 	Screen *screen;
-	NSMutableArray *controlViews;
-	UILabel *screenNameLabel;
+	NSMutableArray *layoutContainerViews;
+	NSMutableDictionary *pollingComponentsMap;
+	NSString *pollingComponentsIds;
+	BOOL isPolling;
 }
 
 @property(nonatomic,retain) Screen *screen;
+@property(nonatomic,readonly) NSMutableArray *layoutContainerViews;
+@property(nonatomic,readonly) NSMutableDictionary *pollingComponentsMap;
+@property(nonatomic,readonly) BOOL isPolling;
+@property(nonatomic,readonly) NSString *pollingComponentsIds;
 
 @end

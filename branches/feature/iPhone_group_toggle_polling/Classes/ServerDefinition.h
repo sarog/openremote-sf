@@ -25,8 +25,10 @@
 	
 }
 
-+ (NSString *)sampleXmlUrl;
++ (NSString *)panelXmlUrl;
 + (NSString *)imageUrl;
-+ (NSString *)eventHandleRESTUrl;
++ (NSString *)controlRESTUrl;
++ (NSString *)statusRESTUrl;
++ (NSString *)pollingRESTUrl;
 + (NSString *)serverUrl;
 @end

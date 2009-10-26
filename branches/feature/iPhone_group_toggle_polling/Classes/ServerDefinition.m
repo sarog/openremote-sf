@@ -30,7 +30,7 @@
 	return  serverUrl;
 }
 
-+ (NSString *)sampleXmlUrl {
++ (NSString *)panelXmlUrl {
 	return [[self serverUrl] stringByAppendingPathComponent:@"resources/iphone.xml"];
 }
 
@@ -38,9 +38,16 @@
 	return [[self serverUrl] stringByAppendingPathComponent:@"resources"];
 }
 
-+ (NSString *)eventHandleRESTUrl {
-	return [[self serverUrl] stringByAppendingPathComponent:@"rest/button"];
++ (NSString *)controlRESTUrl {
+	return [[self serverUrl] stringByAppendingPathComponent:@"rest/control"];
 }
 
++ (NSString *)statusRESTUrl {
+	return [[self serverUrl] stringByAppendingPathComponent:@"rest/status"];	
+}
+
++ (NSString *)pollingRESTUrl {
+	return [[self serverUrl] stringByAppendingPathComponent:@"rest/polling"];
+}
 
 @end

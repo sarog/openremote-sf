@@ -18,111 +18,75 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 #import "ControlView.h"
-#import "Control.h"
-#import "DirectoryDefinition.h"
-#import "ServerDefinition.h"
+#import "Toggle.h"
+#import "ToggleView.h"
+#import "SwitchView.h"
+#import "Switch.h"
 #import "ViewHelper.h"
+#import "ServerDefinition.h"
 
-@interface ControlView (Private) 
-- (void)createButton;
-- (void)controlButtonDown:(id)sender;
-- (void)controlButtonUp:(id)sender;
-- (void)sendRequest;
-- (void)sendBegin;
-- (void)sendEnd;
-- (void)handleServerErrorWithStatusCode:(int) statusCode;
+@interface ControlView (Private)
+
 @end
+
 
 @implementation ControlView
 
 @synthesize control;
 
-
-- (id)initWithFrame:(CGRect)frame {
-    if (self = [super initWithFrame:frame]) {
-        // Initialization code
-	[self setBackgroundColor:[UIColor blackColor]];
-	
-    }
-    return self;
-}
-
-// Set control and add button in this view according to control
-- (void)setControl:(Control *)c {
-	[c retain];
-	[control release];
-	control = c;
-	
-	[self createButton];
-}
-
-//Create button according to control and add tap event
-- (void)createButton {
-	if (button != nil) {
-		[button release];
-		button = nil;
+//NOTE:You should init all these views with initWithFrame and you should pass in valid frame rects.
+//Otherwise, UI widget will not work in nested UIViews
++ (ControlView *)buildWithControl:(Control *)control frame:(CGRect)frame{
+	ControlView *controlView = nil;
+	if ([control isKindOfClass:[Toggle class]]) {
+		controlView = [ToggleView alloc];
+	} else if  ([control isKindOfClass:[Switch class]]) {
+		controlView = [SwitchView alloc];
 	}
-	button = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
-	icon = nil;	
-		
-	[button addTarget:self action:@selector(controlButtonDown:) forControlEvents:UIControlEventTouchDown];
-	[button addTarget:self action:@selector(controlButtonUp:) forControlEvents:UIControlEventTouchUpInside];
-	[button addTarget:self action:@selector(controlButtonUp:) forControlEvents:UIControlEventTouchUpOutside];	
-	[self addSubview:button];
+
 	
+	return [controlView initWithControl:control frame:frame];
 }
 
-//Invoked when the button touch up inside
-- (void)controlButtonDown:(id)sender {
-	isTouchUp =NO;
-	shouldSendEnd = NO;
-	isError = NO;
-
-	buttonTimer = [NSTimer scheduledTimerWithTimeInterval:0.4 target:self selector:@selector(checkClick) userInfo:nil repeats:NO];
-}
-
-- (void)checkClick{
-	[buttonTimer invalidate];
-	if (!isTouchUp) {
-		[self sendBegin];
-		shouldSendEnd = YES;
+- (id)initWithControl:(Control *)c frame:(CGRect)frame{
+	if (self = [super initWithFrame:frame]) {
+		control = c;
+		[self layoutSubviews];
 	}
+	return self;
 }
 
-- (void) controlButtonUp:(id)sender {
+/* Whether this control has status to do polling.
+ * Returns YES if it has.
+ * NOTE: This is an abstract method, must be implemented in subclass
+ */
+- (BOOL)hasPollingStatus {
+	[self doesNotRecognizeSelector:_cmd];
+	return NO;
+}
+
+- (int)getControlId {
+	if (control) {
+		return control.controlId;	
+	}
+	return -1;
+}
+
+/* Sets polling status.
+ * Returns YES if success, returns NO if the status is invalid.
+ * NOTE: This is an abstract method, must be implemented in subclass
+ */
+- (BOOL)setPollingStatus:(NSString *)status {
+	[self doesNotRecognizeSelector:_cmd];
+	return NO;
+}
+
+- (void)sendCommandRequest:(NSString *)commandType{
 	
-	isTouchUp = YES;
-	if (shouldSendEnd) {
-		[self sendEnd];
-	} else {
-		[buttonTimer invalidate];
-		[self	sendRequest];
-	}
-}
-
-- (void)sendRequest {
-	NSLog(@"Send request");
-	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition eventHandleRESTUrl]];
-	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/click",control.eventID]];
-	//assemble put request 
-	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-	[request setURL:url];
-	[request setHTTPMethod:@"POST"];
-
-	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
-										   
-	[location release];
-	[url	 release];
-	[request release];
-	[connection autorelease];	
-}
-
-- (void)sendBegin {
-	NSLog(@"Send Begin.");
-	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition eventHandleRESTUrl]];
-	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/press",control.eventID]];
+	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition controlRESTUrl]];
+	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",control.controlId,commandType]];
+	NSLog([location stringByAppendingFormat:@"/%d/%@",control.controlId,commandType]);
 	//assemble put request 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
 	[request setURL:url];
@@ -134,55 +98,6 @@
 	[url	 release];
 	[request release];
 	[connection autorelease];	
-	
-}
-- (void)sendEnd {
-	NSLog(@"Send End.");
-	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition eventHandleRESTUrl]];
-	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/release",control.eventID]];
-	//assemble put request 
-	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-	[request setURL:url];
-	[request setHTTPMethod:@"POST"];
-	
-	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
-	
-	[location release];
-	[url	 release];
-	[request release];
-	[connection autorelease];	
-	
-}
-
-
-#pragma mark delegate method of NSURLConnection
-- (void) definitionURLConnectionDidFailWithError:(NSError *)error {
-	if (!isError) {
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-		[alert show];
-		[alert release];
-		isError = YES;
-	} 
-}
-
-//Shows alertView when the request successful
-- (void)definitionURLConnectionDidFinishLoading:(NSData *)data {
-//	NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-//	if (YES) {
-//	//if ([result isEqualToString:@"true"]) {
-//		//UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Result" message:[[[NSString alloc] initWithFormat: @"Send Put request with event id: %d success!",control.eventID] autorelease] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-////		[alert show];
-////		[alert release];
-//	}
-//	[result release];
-	NSLog(@"definitionURLConnectionDidFinishLoading");
-}
-
-- (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
-	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
-	NSLog(@"statusCode is %d", [httpResp statusCode]);
-	
-	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
 }
 
 - (void)handleServerErrorWithStatusCode:(int) statusCode {
@@ -219,69 +134,43 @@
 		}
 		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:errorMessage];
 	}
-		
-}
-
-//override layoutSubviews method of UIView 
-- (void)layoutSubviews {	
-	[button setFrame:[self bounds]];
-	if (control.icon && [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:control.icon]]) {
-		icon = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:control.icon]];
-//		if (icon.size.width > self.bounds.size.width || icon.size.height > self.bounds.size.height) {
-//			CGSize size = CGSizeMake(0,0);
-//			if ((icon.size.width -  self.bounds.size.width) > (icon.size.height - self.bounds.size.height)) {
-//				size = CGSizeMake(self.bounds.size.width, icon.size.height * ((icon.size.width -  self.bounds.size.width) /icon.size.width ));
-//			} else {
-//				size = CGSizeMake(icon.size.width * ((icon.size.height -  self.bounds.size.height) /icon.size.height ), self.bounds.size.height);
-//			}
-//			NSLog(@"CGSize width = %d,height = %d",size.width,size.height);
-//			UIGraphicsBeginImageContext(size);
-//			
-//			CGContextRef context = UIGraphicsGetCurrentContext();
-//			CGContextTranslateCTM(context, 0.0, size.height);
-//			CGContextScaleCTM(context, 1.0, -1.0);
-//			
-//			CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), icon.CGImage);
-//			
-//			UIImage* scaledImage = UIGraphicsGetImageFromCurrentImageContext();
-//			
-//			UIGraphicsEndImageContext();
-//			
-//			
-//			[button setImage:scaledImage forState:UIControlStateNormal];
-//		} else {
-			[button setImage:icon forState:UIControlStateNormal];
-//		}
-
-		
-	} else {
-		UIImage *buttonImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
-		[button setBackgroundImage:buttonImage forState:UIControlStateNormal];
-		
-		buttonImage = [[UIImage imageNamed:@"buttonHighlighted.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
-		[button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
-		
-		[button setFont:[UIFont boldSystemFontOfSize:18]];
-		[button setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
-		[button setTitleShadowOffset:CGSizeMake(0, -2)];
-		[button setTitle:control.label forState:UIControlStateNormal];
-	}
 	
 }
 
+#pragma mark delegate method of NSURLConnection
+- (void) definitionURLConnectionDidFailWithError:(NSError *)error {
+	//if (!isError) {
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+		[alert show];
+		[alert release];
+		//isError = YES;
+	//} 
+}
 
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
+//Shows alertView when the request successful
+- (void)definitionURLConnectionDidFinishLoading:(NSData *)data {
+	//	NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+	//	if (YES) {
+	//	//if ([result isEqualToString:@"true"]) {
+	//		//UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Result" message:[[[NSString alloc] initWithFormat: @"Send Put request with event id: %d success!",control.eventID] autorelease] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+	////		[alert show];
+	////		[alert release];
+	//	}
+	//	[result release];
+	NSLog(@"definitionURLConnectionDidFinishLoading");
+}
+
+- (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
+	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
+	NSLog(@"statusCode is %d", [httpResp statusCode]);
+	
+	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
 }
 
 
 - (void)dealloc {
-	[icon release];
-	[buttonTimer release];
-    [control release];
-	[button release];
-	
-    [super dealloc];
+	[control release];
+	[super dealloc];
 }
 
 

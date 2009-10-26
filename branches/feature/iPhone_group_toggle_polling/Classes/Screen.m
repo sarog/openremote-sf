@@ -22,57 +22,65 @@
 
 #import "Screen.h"
 #import "Control.h"
-
+#import "AbsoluteLayoutContainer.h"
+#import "GridLayoutContainer.h"
+#import "Definition.h"
 
 @implementation Screen
  
-@synthesize name,icon,controls,rows,cols;
+@synthesize screenId,name,background,layouts,gestures;
 
 #pragma mark constructor
 //Initialize itself accoding to xml parser
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {
-		
+		screenId = [[attributeDict objectForKey:@"id"] intValue];
 		name = [[attributeDict objectForKey:@"name"] copy];
-		icon = [[attributeDict objectForKey:@"icon"] copy]; 
-		rows = [[attributeDict objectForKey:@"row"] intValue];
-		cols = [[attributeDict objectForKey:@"col"] intValue];
-		
-		controls = [[NSMutableArray alloc] init];
+		background = [[attributeDict objectForKey:@"background"] copy]; 
+		[[Definition sharedDefinition] addImageName:background];
+		layouts = [[NSMutableArray alloc] init];
+		gestures = [[NSMutableArray alloc] init];
 		
 		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];
 	}
+	NSLog(@"screen %@",[attributeDict objectForKey:@"name"]);
 	return self;
 }
 
+// get element name, must be overriden in subclass
+- (NSString *) elementName {
+	return @"screen";
+}
+
 #pragma mark deleget method of NSXMLParser
-//end the screen parse set deleget back to parent
-- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
-	if ([elementName isEqualToString:@"screen"]) {
-		// set back the delegate to original one. In order to  parse "screens" element
- 		[parser setDelegate:xmlParserParentDelegate];
-		[xmlParserParentDelegate release];
-		xmlParserParentDelegate = nil;
+
+//Parse sub element in screen 
+- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
+
+	if ([elementName isEqualToString:@"absolute"]) {
+		// Call AbsoluteLayoutContainer's initialize method to parse xml using NSXMLParser
+		AbsoluteLayoutContainer *absolute = [[AbsoluteLayoutContainer alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+		[layouts addObject:absolute];
+		[absolute release];
+//	} else if ([elementName isEqualToString:@"grid"]) {
+//		// Call GridLayoutContainer's initialize method to parse xml using NSXMLParser
+//		GridLayoutContainer *grid = [[GridLayoutContainer alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+//		[layouts addObject:grid];
+//		[grid release];
+//	} else if ([elementName isEqualToString:@"gesture"]) {
+//		// Call Gesture's initialize method to parse xml using NSXMLParser
 	}
 }
 
-//Parse control element and add it in to controls 
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	if ([elementName isEqualToString:@"button"]) {
-		// Call Control's initialize method to parse xml using NSXMLParser
-		Control *control = [[Control alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		[controls addObject:control];
-		[control release];
-	}
-}
 
 
 - (void)dealloc {
 	[name release];
-	[icon release];
-	[controls release];
-	
+	[background release];
+	[layouts release];
+	[gestures release];
 	[super dealloc];
 }
+
 @end

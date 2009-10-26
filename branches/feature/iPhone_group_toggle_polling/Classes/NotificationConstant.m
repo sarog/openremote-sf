@@ -31,7 +31,7 @@ NSString *const DefinationNeedNotUpdate = @"needNotUpdateNotification";
 NSString *const NotificationShowSettingsView = @"showSettingsViewNotification";
 NSString *const NotificationHideInitView = @"hideInitViewNotification";
 NSString *const NotificationRefreshAcitivitiesView = @"refreshAcitivitiesViewNotification";
-
+NSString *const NotificationRefreshGroupsView = @"refreshGroupsViewNotification";
 
 
 @end
