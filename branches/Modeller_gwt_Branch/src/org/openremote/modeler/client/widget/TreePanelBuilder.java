@@ -355,11 +355,11 @@ public class TreePanelBuilder {
       widgetTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
             if (thisModel.getBean() instanceof UIButton) {
-               return ICON.activityIcon();
+               return ICON.buttonIcon();
             } else if (thisModel.getBean() instanceof ScreenRef) {
                return ICON.screenIcon();
             } else {
-               return ICON.activityIcon();
+               return ICON.buttonIcon();
             }
          }
       });

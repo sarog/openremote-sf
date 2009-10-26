@@ -19,9 +19,6 @@
 */
 package org.openremote.modeler.client.widget.control;
 
-import org.openremote.modeler.client.model.Position;
-import org.openremote.modeler.domain.UIButton;
-
 import com.extjs.gxt.ui.client.widget.Text;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
@@ -45,12 +42,6 @@ public class ScreenButton extends ScreenControl {
 
    /** The image. */
    private Image image = new Image();
-
-   /** The button. */
-   private UIButton button;
-   
-   /** The original name. */
-   private String originalName = "<br />OriginalName: ";
 
    /**
     * Instantiates a new screen button.
@@ -127,120 +118,13 @@ public class ScreenButton extends ScreenControl {
 
       add(btnTable);
    }
-
-   /**
-    * Sets the label.
-    * 
-    * @param label the new label
-    */
-   public void setLabel(String label) {
-      button.setLabel(label);
-      setToolTip(LABEL + label + originalName);
-      adjust();
-   }
-
-   /**
-    * Sets the icon.
-    * 
-    * @param icon the new icon
-    */
-   public void setIcon(String icon) {
-      image.setUrl(icon);
-      button.setIcon(icon);
-      btnTable.removeStyleName("screen-btn-cont");
-      btnTable.setWidget(1, 1, image);
-   }
-
-   /**
-    * Sets the button position.
-    * 
-    * @param position the new button position
-    */
-   public void setButtonPosition(Position position) {
-      button.setPosition(position);
-   }
-
-
-   /**
-    * Fill area.
-    * 
-    * @param btnArea the btn area
-    */
-   public void fillArea(boolean[][] btnArea) {
-      Position position = button.getPosition();
-      for (int i = 0; i < button.getWidth(); i++) {
-         int x = position.getPosX() + i;
-         for (int j = 0; j < button.getHeight(); j++) {
-            int y = position.getPosY() + j;
-            btnArea[x][y] = true;
-         }
-      }
-   }
-
-   /**
-    * Clear area.
-    * 
-    * @param btnArea the button area
-    */
-   public void clearArea(boolean[][] btnArea) {
-      Position position = button.getPosition();
-      for (int i = 0; i < button.getWidth(); i++) {
-         int x = position.getPosX() + i;
-         for (int j = 0; j < button.getHeight(); j++) {
-            int y = position.getPosY() + j;
-            btnArea[x][y] = false;
-         }
-      }
-   }
-
-   /**
-    * Adjust layout.
-    */
-   public void adjust() {
-      if (center.isVisible()) {
-         adjustTextLength(getWidth());
-      }
-   }
-
-   /**
-    * Adjust text length.
-    * 
-    * @param length the length
-    */
-   private void adjustTextLength(int length) {
-      int ajustLength = (length - 8) / 8;
-      if (ajustLength < button.getLabel().length()) {
-         center.setText(button.getLabel().substring(0, ajustLength) + "...");
-      } else {
-         center.setText(button.getLabel());
-      }
+   
+   @Override
+   public void setName(String name) {
+      center.setText(name);
    }
    
-   /**
-    * In IE if the button width is 2 cell width, it can't be resize to 1 cell width.
-    * 
-    * @param width the width
-    */
-   public void adjustCenter(int width) {
-      if (center.isVisible()) {
-         adjustTextLength(width - 2);
-      }
-   }
-   
-   /**
-    * Gets the button's icon.
-    * 
-    * @return the button icon
-    */
-   public String getButtonIcon() {
-      return button.getIcon();
-   }
-   
-   public void setText(String text) {
-      center.setText(text);
-   }
-   
-   public String getText() {
+   public String getName() {
       return center.getText();
    }
 }

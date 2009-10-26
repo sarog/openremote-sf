@@ -21,8 +21,8 @@ package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.widget.control.ScreenButton;
 import org.openremote.modeler.client.widget.control.ScreenControl;
-import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.control.UIButton;
+import org.openremote.modeler.domain.control.UIControl;
 
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -60,34 +60,32 @@ public class PropertyPanel extends ContentPanel {
          if(component instanceof AbsoluteLayoutContainer) {
             AbsoluteLayoutContainer alc = (AbsoluteLayoutContainer) component;
             ScreenControl screenControl = alc.getScreenControl();
-            Absolute absolute = alc.getAbsolute();
-            if(screenControl instanceof ScreenButton) {
-               ButtonPropertyForm buttonPropertyForm = new ButtonPropertyForm((ScreenButton) screenControl, (UIButton)absolute.getUiControl());
-               if(currentPropertyForm != null) {
-                  currentPropertyForm.hide();
-               }
-               currentPropertyForm = buttonPropertyForm;
-               add(buttonPropertyForm);
-               layout();
-            }
+            UIControl uiControl =  alc.getAbsolute().getUiControl();
+            addPropertiesForm(screenControl, uiControl);
+         } else if (component instanceof GridCellContainer) {
+            GridCellContainer gcc = (GridCellContainer) component;
+            ScreenControl screenControl = gcc.getScreenControl();
+            UIControl uiControl = gcc.getCell().getUiControl();
+            addPropertiesForm(screenControl, uiControl);
          }
+         layout();
          currentLayoutContainer = component;
       }
       
-//      if (currentLayoutContainer == null) {
-//         currentLayoutContainer = layoutContainer;
-//      }
-//      final Button btn1 = new Button("button1");
-//      btn1.addSelectionListener(new SelectionListener<ButtonEvent>(){
-//         @Override
-//         public void componentSelected(ButtonEvent ce) {
-//            btn1.hide();
-//            add(new Button("button2"));
-//            layout();
-//         }
-//         
-//      });
-//      add(btn1);
-//      layout();
+   }
+
+   /**
+    * @param screenControl
+    * @param uiControl
+    */
+   private void addPropertiesForm(ScreenControl screenControl, UIControl uiControl) {
+      if(screenControl instanceof ScreenButton) {
+         ButtonPropertyForm buttonPropertyForm = new ButtonPropertyForm((ScreenButton) screenControl, (UIButton)uiControl);
+         if(currentPropertyForm != null) {
+            currentPropertyForm.hide();
+         }
+         currentPropertyForm = buttonPropertyForm;
+         add(buttonPropertyForm);
+      }
    }
 }

@@ -25,5 +25,10 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
  * ScreenControl as the component's super class.
  */
 public class ScreenControl extends LayoutContainer {
-
+   
+   /**
+    * Sets the display name.
+    */
+   public void setName(String name) {
+   }
 }

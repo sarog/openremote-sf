@@ -76,7 +76,7 @@ public class UIButton extends UIControl {
    public void setUiCommand(UICommand uiCommand) {
       this.uiCommand = uiCommand;
    }
-
+   @Override
    public String getName() {
       return name;
    }
