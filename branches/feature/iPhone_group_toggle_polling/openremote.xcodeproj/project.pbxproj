@@ -13,7 +13,6 @@
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
 		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		8C460E54109552EB00C7A686 /* panel_absolute_toggle.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C460E51109552EB00C7A686 /* panel_absolute_toggle.xml */; };
-		8C460E55109552EB00C7A686 /* PanelXMLParsingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E53109552EB00C7A686 /* PanelXMLParsingTests.m */; };
 		8C460E6F109554D600C7A686 /* CheckNetworkException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E6E109554D600C7A686 /* CheckNetworkException.m */; };
 		8C460E70109554D600C7A686 /* CheckNetworkException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E6E109554D600C7A686 /* CheckNetworkException.m */; };
 		8C460E771095555500C7A686 /* AppSettingsDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E721095555500C7A686 /* AppSettingsDefinition.m */; };
@@ -123,6 +122,7 @@
 		8C460FA4109566F900C7A686 /* AsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27D0FBD3782006ED733 /* AsyncSocket.m */; };
 		8C460FA5109566F900C7A686 /* AsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27F0FBD3782006ED733 /* AsyncUdpSocket.m */; };
 		8C460FC3109567E400C7A686 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C460FC2109567E400C7A686 /* SenTestingKit.framework */; };
+		8C460FED1095A30A00C7A686 /* PanelXMLParsingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460FEC1095A30A00C7A686 /* PanelXMLParsingTests.m */; };
 		8C6528480FC0F64F002632BF /* InitViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C6528470FC0F64F002632BF /* InitViewController.xib */; };
 		8C652A490FC125AD002632BF /* loading.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C652A480FC125AD002632BF /* loading.png */; };
 		8C652A4D0FC125FE002632BF /* global.logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C652A4C0FC125FE002632BF /* global.logo.png */; };
@@ -165,7 +165,6 @@
 		8C460E4B109552C800C7A686 /* UnitTest-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "UnitTest-Info.plist"; sourceTree = "<group>"; };
 		8C460E51109552EB00C7A686 /* panel_absolute_toggle.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_absolute_toggle.xml; sourceTree = "<group>"; };
 		8C460E52109552EB00C7A686 /* PanelXMLParsingTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanelXMLParsingTests.h; sourceTree = "<group>"; };
-		8C460E53109552EB00C7A686 /* PanelXMLParsingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PanelXMLParsingTests.m; sourceTree = "<group>"; };
 		8C460E6D109554D600C7A686 /* CheckNetworkException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CheckNetworkException.h; sourceTree = "<group>"; };
 		8C460E6E109554D600C7A686 /* CheckNetworkException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CheckNetworkException.m; sourceTree = "<group>"; };
 		8C460E711095555500C7A686 /* AppSettingsDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppSettingsDefinition.h; sourceTree = "<group>"; };
@@ -260,6 +259,7 @@
 		8C460F5B109564D000C7A686 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		8C460F8D1095666A00C7A686 /* panel_absolute_switch.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_absolute_switch.xml; sourceTree = "<group>"; };
 		8C460FC2109567E400C7A686 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		8C460FEC1095A30A00C7A686 /* PanelXMLParsingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PanelXMLParsingTests.m; sourceTree = "<group>"; };
 		8C6528470FC0F64F002632BF /* InitViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InitViewController.xib; sourceTree = "<group>"; };
 		8C652A480FC125AD002632BF /* loading.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = loading.png; sourceTree = "<group>"; };
 		8C652A4C0FC125FE002632BF /* global.logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = global.logo.png; sourceTree = "<group>"; };
@@ -431,10 +431,10 @@
 		8C460E411095527300C7A686 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				8C460FEC1095A30A00C7A686 /* PanelXMLParsingTests.m */,
 				8C460F8D1095666A00C7A686 /* panel_absolute_switch.xml */,
 				8C460E51109552EB00C7A686 /* panel_absolute_toggle.xml */,
 				8C460E52109552EB00C7A686 /* PanelXMLParsingTests.h */,
-				8C460E53109552EB00C7A686 /* PanelXMLParsingTests.m */,
 			);
 			name = Tests;
 			sourceTree = "<group>";
@@ -814,7 +814,7 @@
 				8C460F2D109562D200C7A686 /* CheckNetwork.m in Sources */,
 				8C460F41109563E100C7A686 /* NotificationConstant.m in Sources */,
 				8C460F5D109564D000C7A686 /* AppDelegate.m in Sources */,
-				8C460E55109552EB00C7A686 /* PanelXMLParsingTests.m in Sources */,
+				8C460FED1095A30A00C7A686 /* PanelXMLParsingTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
