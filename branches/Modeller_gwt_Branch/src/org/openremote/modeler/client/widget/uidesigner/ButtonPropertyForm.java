@@ -41,11 +41,14 @@ import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
+import com.extjs.gxt.ui.client.widget.form.CheckBox;
+import com.extjs.gxt.ui.client.widget.form.CheckBoxGroup;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
@@ -73,11 +76,12 @@ public class ButtonPropertyForm extends FormPanel {
       // initial name field.
       final TextField<String> name = new TextField<String>();
       name.setFieldLabel("Name");
-      name.setValue(screenButton.getText());
+      name.setValue(uiButton.getName());
       name.addListener(Events.Blur, new Listener<BaseEvent>(){
          @Override
          public void handleEvent(BaseEvent be) {
-            screenButton.setText(name.getValue());
+            screenButton.setName(name.getValue());
+            uiButton.setName(name.getValue());
          }
       });
       
@@ -158,8 +162,21 @@ public class ButtonPropertyForm extends FormPanel {
 
       });
       
+      CheckBoxGroup repeat = new CheckBoxGroup();
+      repeat.setFieldLabel("Repeat");
+      final CheckBox check = new CheckBox();
+      check.setValue(uiButton.isRepeate());
+      check.addListener(Events.Blur, new Listener<FieldEvent>(){
+         @Override
+         public void handleEvent(FieldEvent be) {
+            uiButton.setRepeate(check.getValue());
+         }
+      });
+      repeat.add(check); 
+      
       add(name);
       add(adapterCommand);
       add(toGroup);
+      add(repeat);
    }
 }

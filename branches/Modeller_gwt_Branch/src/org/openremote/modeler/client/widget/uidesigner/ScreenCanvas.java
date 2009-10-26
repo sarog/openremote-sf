@@ -50,7 +50,7 @@ public class ScreenCanvas extends LayoutContainer {
    /** The move back ground. */
    private LayoutContainer moveBackGround = new LayoutContainer();
    
-   private LayoutContainer selectedComponet;
+   private LayoutContainer selectedComponent;
    /**
     * Instantiates a new screen canvas.
     * 
@@ -62,6 +62,18 @@ public class ScreenCanvas extends LayoutContainer {
       setBorders(true);
       setStyleAttribute("position", "relative");
       if (screen.isAbsoluteLayout()) {
+         if (screen.getAbsolutes().size() > 0) {
+            List<Absolute> absolutes = screen.getAbsolutes();
+            for (Absolute absolute : absolutes) {
+               AbsoluteLayoutContainer controlContainer = createAbsoluteLayoutContainer(absolute);
+               controlContainer.setSize(absolute.getWidth(), absolute.getHeight());
+               controlContainer.setPosition(absolute.getLeft(), absolute.getTop());
+               controlContainer.setName(absolute.getUiControl().getName());
+               this.add(controlContainer);
+               createDragSource(this, controlContainer);
+            }
+            layout();
+         }
          addDropTargetDNDListener(screen);
       } else {
          LayoutContainer gridLayoutContainer = new GridLayoutContainer(screen);
@@ -118,29 +130,15 @@ public class ScreenCanvas extends LayoutContainer {
                   screen.addAbsolute(absolute);
                   if(dataModel.getBean() instanceof UIButton) {
                      absolute.setUiControl(new UIButton("Button"));
-                     controlContainer = new AbsoluteLayoutContainer(absolute, new ScreenButton()) {
-                        @Override
-                        public void onBrowserEvent(Event event) {
-                           if (event.getTypeInt() == Event.ONMOUSEDOWN) {
-                              this.addStyleName("button-border");
-                              if (selectedComponet != null && (LayoutContainer) this != selectedComponet) {
-                                 selectedComponet.removeStyleName("button-border");
-                              }
-                              selectedComponet = (LayoutContainer) this;
-                              PropertyPanel.getInstance().update(selectedComponet);
-                           }
-                           super.onBrowserEvent(event);
-                        }
-                     
-                     };
+                     controlContainer = createAbsoluteLayoutContainer(absolute);
                      controlContainer.setSize(50, 30);
                      
-                     if (selectedComponet != null) {
-                        selectedComponet.removeStyleName("button-border");
+                     if (selectedComponent != null) {
+                        selectedComponent.removeStyleName("button-border");
                      }
-                     selectedComponet = controlContainer;
-                     selectedComponet.addStyleName("button-border");
-                     PropertyPanel.getInstance().update(selectedComponet);
+                     selectedComponent = controlContainer;
+                     selectedComponent.addStyleName("button-border");
+                     PropertyPanel.getInstance().update(selectedComponent);
                      canvas.add(controlContainer);
                      createDragSource(canvas, controlContainer);
                   }
@@ -194,5 +192,23 @@ public class ScreenCanvas extends LayoutContainer {
       int left = mousePoint.x - distance.x - absolutePosition.x;
       int top = mousePoint.y - distance.y - absolutePosition.y;
       return new Point(left, top);
+   }
+
+   private AbsoluteLayoutContainer createAbsoluteLayoutContainer(Absolute absolute) {
+      AbsoluteLayoutContainer controlContainer = new AbsoluteLayoutContainer(absolute, new ScreenButton()) {
+         @Override
+         public void onBrowserEvent(Event event) {
+            if (event.getTypeInt() == Event.ONMOUSEDOWN) {
+               this.addStyleName("button-border");
+               if (selectedComponent != null && (LayoutContainer) this != selectedComponent) {
+                  selectedComponent.removeStyleName("button-border");
+               }
+               selectedComponent = (LayoutContainer) this;
+               PropertyPanel.getInstance().update(selectedComponent);
+            }
+            super.onBrowserEvent(event);
+         }
+      };
+      return controlContainer;
    }
 }

@@ -275,4 +275,12 @@ public interface Icons extends ImageBundle {
     */
    @Resource("picture_edit.png")
    AbstractImagePrototype changeIcon();
+   
+   /**
+    * Button icon.
+    * 
+    * @return the abstract image prototype
+    */
+   @Resource("button.png")
+   AbstractImagePrototype buttonIcon();
 }

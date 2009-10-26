@@ -27,6 +27,12 @@ import org.openremote.modeler.domain.control.UIControl;
 @SuppressWarnings("serial")
 public class Cell extends BusinessEntity {
 
+   public Cell() {
+   }
+   
+   public Cell(long id) {
+      super(id);
+   }
    /** The pos x. */
    private int posX;
    

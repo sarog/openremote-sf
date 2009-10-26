@@ -34,4 +34,8 @@ public class UIControl extends BusinessEntity {
    public UIControl(long id) {
       super(id);
    }
+   
+   public String getName() {
+      return "UIControl";
+   }
 }
