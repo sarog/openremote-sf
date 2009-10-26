@@ -114,5 +114,7 @@
   <bean id = "switchBuilder" class = "org.openremote.controller.control.switchtoggle.SwitchBuilder"/>
   
   <bean id = "observedStatusesSubject" class="org.openremote.controller.status_cache.ObservedStatusesSubject" />
+  
+  <bean id = "timeoutTable" class="org.openremote.controller.status_cache.TimeoutTable" />
 
 </beans>
