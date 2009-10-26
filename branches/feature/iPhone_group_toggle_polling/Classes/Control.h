@@ -21,29 +21,17 @@
 
 
 #import <UIKit/UIKit.h>
+#import "XMLEntity.h"
 
 
-@interface Control : NSObject {
-	NSString *label;
-	NSString *icon;
-	int x;
-	int y;
-	int width;
-	int height;
-	int eventID;
+@interface Control : XMLEntity {
+
+	int controlId;
 	
-	NSObject *xmlParserParentDelegate;
 }
 
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent;
+@property (nonatomic,readonly) int controlId;
 
-
-@property (nonatomic,readonly) NSString *label;
-@property (nonatomic,readonly) NSString *icon;
-@property (nonatomic,readonly) int x;
-@property (nonatomic,readonly) int y;
-@property (nonatomic,readonly) int width;
-@property (nonatomic,readonly) int height;
-@property (nonatomic,readonly) int eventID;
++ (id)buildWithXMLParser:(NSString *) controlType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent;
 
 @end

@@ -26,8 +26,8 @@
 #import "AppSettingController.h"
 #import "ServerAutoDiscoveryController.h"
 #import "NotificationConstant.h"
-#import "CheckNetworkStaff.h"
-#import "CheckNetworkStaffException.h"
+#import "CheckNetwork.h"
+#import "CheckNetworkException.h"
 
 @interface AppSettingsDefinition (Private)
 

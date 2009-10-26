@@ -20,39 +20,39 @@
  */
 
 
-#import "CheckNetworkStaff.h"
+#import "CheckNetwork.h"
 #import "Reachability.h"
 #import "ServerDefinition.h"
-#import "CheckNetworkStaffException.h"
+#import "CheckNetworkException.h"
 
 
-@implementation CheckNetworkStaff
+@implementation CheckNetwork
 +(void)checkWhetherNetworkAvailable {
 	if ([[Reachability sharedReachability] localWiFiConnectionStatus] == NotReachable) {
-		@throw [CheckNetworkStaffException exceptionWithTitle:@"Check Network Fail" message:@"Please connect your device to network."];
+		@throw [CheckNetworkException exceptionWithTitle:@"Check Network Fail" message:@"Please connect your device to network."];
 	}
 }
 
 + (void)checkIPAddress {
 	@try {
-		[CheckNetworkStaff checkWhetherNetworkAvailable];
+		[CheckNetwork checkWhetherNetworkAvailable];
 	}
-	@catch (CheckNetworkStaffException * e) {
+	@catch (CheckNetworkException * e) {
 		@throw e;
 	}
 	
 	[[Reachability sharedReachability] setHostName:[ServerDefinition serverUrl]];
 	if ([[Reachability sharedReachability] internetConnectionStatus] == NotReachable) {
 		NSLog(@"checkIPAddress status is ",[[Reachability sharedReachability] internetConnectionStatus]);
-		@throw [CheckNetworkStaffException exceptionWithTitle:@"Check controller ip address Fail" message:@"Your server address is wrong, please check your settings"];
+		@throw [CheckNetworkException exceptionWithTitle:@"Check controller ip address Fail" message:@"Your server address is wrong, please check your settings"];
 	}
 }
 
 + (void)checkControllerAvailable {
 	@try {
-		[CheckNetworkStaff checkIPAddress];
+		[CheckNetwork checkIPAddress];
 	}
-	@catch (CheckNetworkStaffException * e) {
+	@catch (CheckNetworkException * e) {
 		@throw e;
 	}
 	
@@ -65,38 +65,38 @@
 	[request release];
 	if (error ) {
 		NSLog(@"checkControllerAvailable occur error %@",[error localizedDescription]);
-		@throw [CheckNetworkStaffException exceptionWithTitle:@"Controller Not Started" 
+		@throw [CheckNetworkException exceptionWithTitle:@"Controller Not Started" 
 													  message:@"Could not find OpenRemote Controller. It may not be running or the connection URL in Settings is invalid."];
 	} else if ([resp statusCode] != 200) {	
 		NSLog(@"checkControllerAvailable statusCode %d",[resp statusCode] );
-		@throw [CheckNetworkStaffException exceptionWithTitle:@"OpenRemote Controller Not Found" 
+		@throw [CheckNetworkException exceptionWithTitle:@"OpenRemote Controller Not Found" 
 													  message:@"OpenRemote Controller not found on the configured URL. See 'Settings' to reconfigure. "];
 	}
 }
 
 + (void)checkXmlExist {
 	@try {
-		[CheckNetworkStaff checkControllerAvailable];
+		[CheckNetwork checkControllerAvailable];
 	}
 	@catch (NSException * e) {
 		@throw e;
 	}
 
 	NSHTTPURLResponse *resp = nil;
-	NSURL *url = [NSURL URLWithString:[ServerDefinition sampleXmlUrl]]; 
+	NSURL *url = [NSURL URLWithString:[ServerDefinition panelXmlUrl]]; 
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:5];
 	[NSURLConnection sendSynchronousRequest:request returningResponse:&resp error:NULL];
 	
 	[request release];
 	if ([resp statusCode] != 200 ){
-		@throw [CheckNetworkStaffException exceptionWithTitle:@"Can't find xml resource" 
+		@throw [CheckNetworkException exceptionWithTitle:@"Can't find xml resource" 
 													  message:@"Please check that the iphone.xml file has been correctly deployed on the controller."];
 	}
 }
 
 + (void)checkAll {
 	@try {
-		[CheckNetworkStaff checkXmlExist];
+		[CheckNetwork checkXmlExist];
 	}
 	@catch (NSException * e) {
 		@throw e;

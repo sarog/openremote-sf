@@ -22,15 +22,25 @@
 
 #import <Foundation/Foundation.h>
 
+/* This is an abstract class for all entities (element) in panel.xml.
+ * Objective-C doesn't have the abstract compiler construct like Java at 
+ * this time.
+ * 
+ * So all you do is define the abstract class as any other normal class 
+ * and implement methods stubs for the abstract methods that report NotRecognize for selector.
+ */
+@interface XMLEntity : NSObject {
+	
+	NSObject *xmlParserParentDelegate;
 
-@interface CheckNetworkStaffException : NSException {
-	NSString *title;
-	NSString *message;
 }
+ 
+// NOTE: This is an abstract method, must be implemented in subclass
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent;
 
-+ (CheckNetworkStaffException *)exceptionWithTitle:(NSString *)t message:(NSString *)msg; 
 
-@property (nonatomic,copy) NSString *title;
-@property (nonatomic,copy) NSString *message;
+// NOTE: This is an abstract method, must be implemented in subclass
+- (NSString *) elementName;
+
 
 @end

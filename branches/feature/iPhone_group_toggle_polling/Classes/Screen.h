@@ -21,26 +21,24 @@
 
 
 #import <UIKit/UIKit.h>
+#import "XMLEntity.h"
 
-
-@interface Screen : NSObject {
+@interface Screen : XMLEntity {
+	
+	int screenId;
 	NSString *name;
-	NSString *icon;
-	NSMutableArray *controls;
-	
-	int rows;
-	int cols;
-	
-	NSObject *xmlParserParentDelegate;
+	NSString *background;
+	NSMutableArray *layouts;
+	NSMutableArray *gestures;
+
 }
 
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent;
 
+
+@property (nonatomic,readonly) int screenId;
 @property (nonatomic,readonly) NSString *name;
-@property (nonatomic,readonly) NSString *icon;
-@property (nonatomic,readonly) NSMutableArray *controls;
-
-@property (nonatomic,readonly) int rows;
-@property (nonatomic,readonly) int cols;
+@property (nonatomic,readonly) NSString *background;
+@property (nonatomic,readonly) NSMutableArray *layouts;
+@property (nonatomic,readonly) NSMutableArray *gestures;
 
 @end

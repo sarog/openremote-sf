@@ -29,8 +29,8 @@
 #import "UpdateController.h"
 #import "ServerAutoDiscoveryController.h"
 #import "AppSettingsDefinition.h"
-#import "CheckNetworkStaff.h"
-#import "CheckNetworkStaffException.h"
+#import "CheckNetwork.h"
+#import "CheckNetworkException.h"
 #import "Definition.h"
 #import "NotificationConstant.h"
 #import "StringUtils.h"
@@ -111,16 +111,16 @@
 
 - (void)checkNetworkAndUpdate {
 	@try {	
-		// this method will throw CheckNetworkStaffException if the check failed.
-		[CheckNetworkStaff checkAll];
+		// this method will throw CheckNetworkException if the check failed.
+		[CheckNetwork checkAll];
 		
 		//Add an Observer to listern Definition's update behavior
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpadted) name:DefinationUpdateDidFinishedNotification object:nil];
 		// If all the check success, it will call Definition's update method to update resouces.
 		[[Definition sharedDefinition] update];
 	}
-	@catch (CheckNetworkStaffException *e) {
-		NSLog(@"CheckNetworkStaffException %@",e.message);
+	@catch (CheckNetworkException *e) {
+		NSLog(@"CheckNetworkException %@",e.message);
 
 		if (retryTimes <= MAX_RETRY_TIMES) {
 			retryTimes = retryTimes + 1;
@@ -133,7 +133,7 @@
 }
 
 - (void)updateFailOrUseLocalCache:(NSString *)errorMessage {
-	NSString *path = [[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition sampleXmlUrl]]];
+	NSString *path = [[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlUrl]]];
 	if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
 		[self didUseLocalCache:errorMessage];
 	} else {
@@ -149,10 +149,10 @@
 		[AppSettingsDefinition setCurrentServerUrl:[customServer valueForKey:@"url"]];
 		[AppSettingsDefinition writeToFile];
 		@try {
-			[CheckNetworkStaff checkAll];
+			[CheckNetwork checkAll];
 			[self checkNetworkAndUpdate];
 		}
-		@catch (CheckNetworkStaffException *e) {
+		@catch (CheckNetworkException *e) {
 			[self didUpdateFail:e.message];
 		}
 	} else {

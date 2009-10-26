@@ -21,25 +21,33 @@
 
 
 #import <UIKit/UIKit.h>
-
+#import "Screen.h"
 
 
 @interface Definition : NSObject {		
 	BOOL isUpdating;
 	NSDate *lastUpdateTime;
-	NSMutableArray *activities;
-	
+	NSMutableArray *groups;
+	NSMutableArray *screens;
+	NSMutableArray *imageNames;
 	NSInvocationOperation *updateOperation;
 	NSOperationQueue *updateOperationQueue; 
+	UILabel *loading;
 }
 
 + (Definition *)sharedDefinition;
 - (void)update;
-- (BOOL) isDataReady;
+- (BOOL)isDataReady;
 - (void)useLocalCacheDirectly;
+- (void)clearPanelXMLData;
+- (void)addImageName:(NSString *)imageName;
+
 
 @property (nonatomic,readonly) BOOL isUpdating;
 @property (nonatomic,readonly) NSDate *lastUpdateTime;
-@property (nonatomic,readonly) NSMutableArray *activities;
+@property (nonatomic,readonly) NSMutableArray *groups;
+@property (nonatomic,readonly) NSMutableArray *screens;
+@property (nonatomic,readonly) NSMutableArray *imageNames;
+@property (nonatomic,retain) UILabel *loading;
 
 @end

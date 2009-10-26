@@ -23,57 +23,64 @@
 #import "ScreenView.h"
 #import "Control.h"
 #import "ControlView.h"
-
+#import "LayoutContainer.h"
+#import "LayoutContainerView.h"
+#import "ServerDefinition.h"
+#import "ViewHelper.h"
 
 @interface ScreenView (Private) 
-- (void)createButtons;
+- (void)createLayout;
+- (void)requestComponentsStatus;
+- (void)doPolling;
+- (void)cancelPolling;
 @end
 
 @implementation ScreenView
 
-@synthesize screen;
+@synthesize screen, layoutContainerViews, pollingComponentsMap, isPolling, pollingComponentsIds;
 
 //override the constractor
 - (id)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
-        controlViews = [[NSMutableArray alloc] init];
+			layoutContainerViews = [[NSMutableArray alloc] init];
+			pollingComponentsMap = [[NSMutableDictionary alloc] init];
+			isPolling = NO;
     }
     return self;
 }
 
-//Set screen and create button on it
+//Set screen *and* render its layout 
 - (void)setScreen:(Screen *)s {
 	[s retain];
 	[screen release];
 	screen = s;
-	screenNameLabel = [[UILabel alloc] init];
-	screenNameLabel.text = s.name;
-	[screenNameLabel setTextColor:[UIColor whiteColor]];
-	[screenNameLabel setFont:[UIFont boldSystemFontOfSize:14]];
-	[screenNameLabel setTextAlignment:UITextAlignmentCenter];
-	[screenNameLabel setShadowColor:[UIColor grayColor]];
-	[screenNameLabel setBackgroundColor:[UIColor clearColor]];
-	[self addSubview:screenNameLabel];
-	[self createButtons];
+	[self createLayout];
 }
 	
-//create buttons for each control in screen
-- (void)createButtons {
-	if (controlViews.count != 0) {
-		[controlViews release];
-		 controlViews = [[NSMutableArray alloc] init];
-	}
-	[self setBackgroundColor:[UIColor blackColor]];
+//create each layout container in screen
+- (void)createLayout {
+//	if (layoutContainerViews.count != 0) {
+//		[layoutContainerViews release];
+//		layoutContainerViews = [[NSMutableArray alloc] init];
+//	}
 
-	for (Control *control in screen.controls) {
+
+	for (LayoutContainer *layout in screen.layouts) { 
+		LayoutContainerView *layoutView = [LayoutContainerView buildWithLayoutContainer:layout];
+
+		[self addSubview:layoutView];
+		[layoutContainerViews addObject:layoutView];
+
+		for (ControlView *controlView in layoutView.pollingComponents) {
+			[pollingComponentsMap setObject:controlView forKey:[NSString stringWithFormat:@"%d",[controlView getControlId]]];
+		}
 		
-		ControlView *controlView = [[ControlView alloc] init];
-		[controlView setControl:control];
-		[self addSubview:controlView];
-		
-		[controlViews addObject:controlView];
-		[controlView release];
+		[layoutView release];
 	}
+
+	pollingComponentsIds = [[pollingComponentsMap allKeys] componentsJoinedByString:@","];
+	
+	[self requestComponentsStatus];
 }
 
 
@@ -82,24 +89,118 @@
 - (void)layoutSubviews {
 	//[screenNameLabel setFrame:CGRectMake(self.bounds.origin.x, self.bounds.origin.y, self.bounds.size.width, 20)];
 
-	int h = self.bounds.size.height/screen.rows;	
-	//int h = (self.bounds.size.height-20)/screen.rows;
-	int w = self.bounds.size.width/screen.cols;
+	//int h = self.bounds.size.height/screen.rows;	
+//	//int h = (self.bounds.size.height-20)/screen.rows;
+//	int w = self.bounds.size.width/screen.cols;
+//	
+//	
+//	for (ControlView *controlView in controlViews) {
+//		Control *control = [controlView control];
+//		[controlView setFrame:CGRectInset(CGRectMake(control.x*w, control.y*h, w*control.width, h*control.height),roundf(w*0.1),  roundf(h*0.1))];
+//		//[controlView setFrame:CGRectInset(CGRectMake(control.x*w, (control.y*h +20), w*control.width, h*control.height),roundf(w*0.1), roundf(h*0.1))];
+//		[controlView layoutSubviews];
+	//}
+}
+
+- (void)requestComponentsStatus {
+	[self cancelPolling];
 	
+	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition statusRESTUrl]];
+	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%@",pollingComponentsIds]];
+	NSLog([location stringByAppendingFormat:@"/%@",pollingComponentsIds]);
+	//assemble put request 
+	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+	[request setURL:url];
+	[request setHTTPMethod:@"POST"];
 	
-	for (ControlView *controlView in controlViews) {
-		Control *control = [controlView control];
-		[controlView setFrame:CGRectInset(CGRectMake(control.x*w, control.y*h, w*control.width, h*control.height),roundf(w*0.1),  roundf(h*0.1))];
-		//[controlView setFrame:CGRectInset(CGRectMake(control.x*w, (control.y*h +20), w*control.width, h*control.height),roundf(w*0.1), roundf(h*0.1))];
-		[controlView layoutSubviews];
+	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
+	
+	[location release];
+	[url	 release];
+	[request release];
+	[connection autorelease];	
+}
+
+- (void)doPolling {
+	isPolling = YES;
+	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition pollingRESTUrl]];
+	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%@",pollingComponentsIds]];
+	NSLog([location stringByAppendingFormat:@"/%@",pollingComponentsIds]);
+	//assemble put request 
+	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+	[request setURL:url];
+	[request setHTTPMethod:@"POST"];
+	
+	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
+	
+	[location release];
+	[url	 release];
+	[request release];
+	[connection autorelease];	
+}
+
+- (void)cancelPolling {
+	isPolling = NO;
+	
+}
+
+
+- (void)handleServerErrorWithStatusCode:(int) statusCode {
+	if (statusCode != 200) {
+		NSString *errorMessage = nil;
+		switch (statusCode) {
+			case 404:
+				errorMessage = [NSString stringWithString:@"The command was sent to an invalid URL."];
+				break;
+			case 500:
+				errorMessage = [NSString stringWithString:@"Error in controller. Please check controller log."];
+				break;
+		}
+		if (!errorMessage) {
+			errorMessage = [NSString stringWithFormat:@"Occured unknown error, satus code is @d",statusCode];
+		}
+		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:errorMessage];
+		isPolling = NO;
+	} 
+
+}
+
+#pragma mark delegate method of NSURLConnection
+- (void) definitionURLConnectionDidFailWithError:(NSError *)error {
+	//if (!isError) {
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+	[alert show];
+	[alert release];
+	//isError = YES;
+	//} 
+}
+
+//Do polling when the request successful
+- (void)definitionURLConnectionDidFinishLoading:(NSData *)data {
+	NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+
+	if (isPolling) {
+		
 	}
+	
+	[self doPolling];
+	[result release];
+	NSLog(@"definitionURLConnectionDidFinishLoading");
+}
+
+- (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
+	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
+	NSLog(@"statusCode is %d", [httpResp statusCode]);
+	
+	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
 }
 
 - (void)dealloc {
 	[screen release];
-	[controlViews release];
-	
-    [super dealloc];
+	[layoutContainerViews release];
+	[pollingComponentsMap release];
+	[pollingComponentsIds release];
+	[super dealloc];
 }
 
 

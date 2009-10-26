@@ -30,4 +30,6 @@
 
 }
 
+@property (nonatomic,readonly)UILabel *label;
+
 @end

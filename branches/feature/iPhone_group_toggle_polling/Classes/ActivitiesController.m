@@ -51,7 +51,7 @@
 
 - (id)init {
 	if (self == [super initWithStyle:UITableViewStyleGrouped]) {
-		activities = [[Definition sharedDefinition] activities];
+		activities = nil;
 		UIBarButtonItem *settingButton = [[UIBarButtonItem alloc] initWithTitle:@"Settings" style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsView)];
 		self.navigationItem.leftBarButtonItem = settingButton;
 		[settingButton release];
@@ -67,7 +67,7 @@
 */
 - (void)refreshView {
 	NSLog(@"reload activity controller.");
-	activities = [[Definition sharedDefinition] activities];
+	activities = nil;
 	[self.tableView  reloadData];
 }
 - (void)clearView {
@@ -108,17 +108,17 @@
 	}
 	
 	[cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
-	if (indexPath.row == activities.count) {
-		cell.text = @"Control The Light(Mockup)";
-		cell.image = [UIImage imageNamed:@"lightIcon.png"];
-	} else if (indexPath.row == activities.count + 1) {
-		cell.text = @"Control the AirConditioner(Mockup)";
-		cell.image = [UIImage imageNamed:@"AirConditionerIcon.png"];
-	} else {
-		Activity *currentActivity = [activities objectAtIndex:indexPath.row ];
-		cell.text = currentActivity.name;
-		cell.image = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:[[activities objectAtIndex:indexPath.row] icon]]] autorelease];
-	}
+	//if (indexPath.row == activities.count) {
+//		cell.text = @"Control The Light(Mockup)";
+//		cell.image = [UIImage imageNamed:@"lightIcon.png"];
+//	} else if (indexPath.row == activities.count + 1) {
+//		cell.text = @"Control the AirConditioner(Mockup)";
+//		cell.image = [UIImage imageNamed:@"AirConditionerIcon.png"];
+//	} else {
+//		Activity *currentActivity = [activities objectAtIndex:indexPath.row ];
+//		cell.text = currentActivity.name;
+//		cell.image = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:[[activities objectAtIndex:indexPath.row] icon]]] autorelease];
+//	}
 	return cell;
 }
 

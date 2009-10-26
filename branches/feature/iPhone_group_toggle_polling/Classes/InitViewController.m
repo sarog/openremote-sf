@@ -31,19 +31,21 @@
 
 @implementation InitViewController
 
+@synthesize label;
+
 - (id)init {
 	if (self = [super  initWithNibName:@"InitViewController" bundle:nil]) {
 		
 		label = [[UILabel alloc] initWithFrame:CGRectMake(0, 430, 320, 20)];
 		[label setText:@"loading ... please wait."];
 		[label setBackgroundColor:[UIColor clearColor]];
-		[label setTextColor:[UIColor whiteColor]];
+		[label setTextColor:[UIColor darkTextColor]];
 		[label setFont:[UIFont boldSystemFontOfSize:14]];
 		[label setTextAlignment:UITextAlignmentCenter];
-		[label setShadowColor:[UIColor grayColor]];
+		//[label setShadowColor:[UIColor blackColor]];
 		//	[label setShadowColor:[UIColor lightGrayColor]];
 		//	[label setShadowOffset:CGSizeMake(1,1)];
-		loadding = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+		loadding = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
 		[loadding sizeToFit];
 		[loadding setFrame:CGRectMake(140,390,30,30)];
 		
@@ -54,7 +56,7 @@
 		[version setTextColor:[UIColor blackColor]];
 		[version setFont:[UIFont boldSystemFontOfSize:14]];
 		[version setTextAlignment:UITextAlignmentCenter];
-		[version setShadowColor:[UIColor grayColor]];
+		//[version setShadowColor:[UIColor grayColor]];
 		
 		
 		[self.view addSubview:loadding];

@@ -25,9 +25,11 @@
   */
 
 #import "AppDelegate.h"
-#import "Activity.h"
+
 #import "ScreenViewController.h"
-#import "ActivitiesController.h"
+#import "GroupController.h"
+#import "Group.h"
+#import "Definition.h"
 #import "InitViewController.h"
 #import "UpdateController.h"
 #import "ViewHelper.h"
@@ -56,7 +58,7 @@
 	//Init the loading view
 	initViewController = [[InitViewController alloc] init];
 	[defaultView addSubview:initViewController.view];
-	
+	[Definition sharedDefinition].loading =[initViewController label];
 	//Init UpdateController and set delegate to this class, it have three delegate methods
     // - (void)didUpadted;
     // - (void)didUseLocalCache:(NSString *)errorMessage;
@@ -70,11 +72,15 @@
 - (void)updateDidFinished {
 	NSLog(@"----------updateDidFinished------");
 	[initViewController.view removeFromSuperview];
-	ActivitiesController *activityController = [[ActivitiesController alloc] init];
-	[activityController setTitle:@"Activities"];
-	navigationController = [[UINavigationController alloc] initWithRootViewController:activityController];
+	NSArray *groups = [[Definition sharedDefinition] groups];
+	Group *defaultGroup = nil;
+	if (groups.count > 0 ) {
+		defaultGroup = [groups objectAtIndex:0];
+	}
+	GroupController *groupController = [[GroupController alloc] initWithGroup:defaultGroup];
+	navigationController = [[UINavigationController alloc] initWithRootViewController:groupController];
 	[window addSubview:navigationController.view];
-	[activityController release];
+	[groupController release];
 }
 
 #pragma mark delegate method of updateController
@@ -97,7 +103,7 @@
 	[defaultView release];
 	[navigationController release];
 	[window release];
-    [super dealloc];
+	[super dealloc];
 	
 }
 
