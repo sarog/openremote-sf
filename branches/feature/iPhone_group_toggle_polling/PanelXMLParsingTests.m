@@ -27,6 +27,8 @@
 #import "AbsoluteLayoutContainer.h"
 #import "Toggle.h"
 #import "ToggleState.h"
+#import "Switch.h"
+
 
 @implementation PanelXMLParsingTests
 
@@ -49,10 +51,76 @@
 	[content release];
 	return data;
 }
+
+// panel_absolute_switch.xml test
+- (void) testParsePanelAbsoluteSwitchXML {
+	[[Definition sharedDefinition] clearPanelXMLData];
+	NSLog(@"testParsePanelAbsoluteSwitchXML ");
+	NSData *xml = [self readFile:@"panel_absolute_switch.xml"];
+	
+	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
+	[xmlParser setDelegate:self];
+	[xmlParser parse];
+	NSMutableArray *groups = [[Definition sharedDefinition] groups];
+	NSMutableArray *screens = [[Definition sharedDefinition] screens];
+	int state_index = 0;
+	int switch_index = 0;
+	for (Group *group in groups) {
+		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
+		for (Screen *screen in group.screens) {			
+			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
+			for (LayoutContainer *layout in screen.layouts) {
+				if([layout isKindOfClass:[AbsoluteLayoutContainer class]]){					
+					NSLog(@"layout is absolute ");
+					AbsoluteLayoutContainer *abso =(AbsoluteLayoutContainer *)layout;
+					NSString *layoutAttrs = [[NSMutableString alloc] initWithFormat:@"%d %d %d %d",abso.left,abso.top,abso.width,abso.height];
+					NSString *expectedAttrs = @"20 320 100 100";
+					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
+					[layoutAttrs release];
+					
+					if ([abso.control isKindOfClass:[Switch class]]) {
+						Switch *theSwitch = (Switch *)abso.control;
+						int expectedId = (59 + switch_index++);
+						STAssertTrue(expectedId == theSwitch.controlId,@"expected %d, but %d",expectedId,theSwitch.controlId);	
+						NSString *expectedOnName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + state_index++];						
+						STAssertTrue([theSwitch.onImage.src isEqualToString:expectedOnName],@"expected %@, but %@",expectedOnName,theSwitch.onImage.src);
+						NSString *expectedOffName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + state_index++];
+						STAssertTrue([theSwitch.offImage.src isEqualToString:expectedOffName],@"expected %@, but %@",expectedOffName,theSwitch.offImage.src);
+						[expectedOnName release];
+						[expectedOffName release];
+					}					
+				}				
+			}
+		}
+	}
+	
+	NSLog(@"groups count = %d",[groups count]);
+	NSLog(@"screens count = %d",[screens count]);
+	NSLog(@"xml parse done");
+	
+	NSMutableArray *screenNames = [NSMutableArray arrayWithObjects:@"basement",@"floor",nil];
+	NSMutableArray *groupNames = [NSMutableArray arrayWithObjects:@"All rooms",@"living room",nil];
+	
+	//check screens
+	for (int i=0;i<screenNames.count;i++) {
+		STAssertTrue([[screenNames objectAtIndex:i] isEqualToString:[[screens objectAtIndex:i] name]],@"expected %@, but %@",[screenNames objectAtIndex:i],[[screens objectAtIndex:i] name]);
+		STAssertTrue(i+5 == [[screens objectAtIndex:i] screenId],@"expected %d, but %d",i+5,[[screens objectAtIndex:i] screenId]);
+	}
+	
+	//check groups
+	for (int i=0;i<groupNames.count;i++) {
+		STAssertTrue([[groupNames objectAtIndex:i] isEqualToString:[[groups objectAtIndex:i] name]],@"expected %@, but %@",[groupNames objectAtIndex:i],[[groups objectAtIndex:i] name]);
+		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
+	}
+	
+	[xmlParser release];
+	[xml release];
+
+}
 // panel_absolute_toggle.xml test
 - (void) testParsePanelAbsoluteToggleXML {
 
-    
+	[[Definition sharedDefinition] clearPanelXMLData];
 	NSData *xml = [self readFile:@"panel_absolute_toggle.xml"];
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
@@ -133,7 +201,7 @@
 }
 
 /**
- * When we find an activity end element, restore the original XML parser delegate.
+ * When we find an openremote end element, restore the original XML parser delegate.
  */
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
 	if ([elementName isEqualToString:@"openremote"]) {
