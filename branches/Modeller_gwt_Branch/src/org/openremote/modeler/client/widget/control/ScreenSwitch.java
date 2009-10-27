@@ -21,66 +21,27 @@ package org.openremote.modeler.client.widget.control;
 
 import com.extjs.gxt.ui.client.widget.Text;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Image;
 
 /**
- * The Class ScreenButton. It display as a style box, can be adjust size.
+ * ScreenSwitch is the switch widget in screen.
  */
-public class ScreenButton extends ScreenControl {
-
-   /** The Constant DATA_BUTTON. */
-   public static final String DATA_BUTTON = "button";
-
-   /** The Constant LABEL. */
-   private static final String LABEL = "Label: ";
-    
-   /** The button table. */
-   protected FlexTable btnTable = new FlexTable();
-
-   /** The center text. */
-   protected Text center = new Text();
-
-   /** The center image. */
-   protected Image image = new Image();
-
+public class ScreenSwitch extends ScreenControl {
+   private FlexTable btnTable = new FlexTable();
+   private Text center = new Text("Switch");
    /**
     * Instantiates a new screen button.
     */
-   public ScreenButton() {
+   public ScreenSwitch() {
       initial();
    }
-   
-   public ScreenButton(String text) {
-      this();
-      center.setText(text);
-   }
-   
-   /**
-    * Instantiates a new screen button.
-    * 
-    * @param width the width
-    * @param height the height
-    */
-   public ScreenButton(int width, int height) {
-      this();
-      setSize(width, height);
-   }
 
 
    /**
-    * Initial.
-    * 
+    * Initial the switch as a style box.
     */
-   protected void initial() {
-//      setData(DATA_BUTTON, button);
-//      UICommand uiCommand = button.getUiCommand();
-//      String displayName = uiCommand.getDisplayName();
-//      originalName = originalName + displayName;
-//      setToolTip(LABEL + button.getLabel() + originalName);
-//      setSize(30, 20);
-      center.setText("Button");
-      
+   private void initial() {
       addStyleName("screen-btn");
+      
       btnTable.addStyleName("screen-btn-cont");
       btnTable.setCellPadding(0);
       btnTable.setCellSpacing(0);
@@ -116,21 +77,7 @@ public class ScreenButton extends ScreenControl {
    }
    
    @Override
-   public void setName(String name) {
-      center.setText(name);
-   }
-   @Override
    public String getName() {
       return center.getText();
-   }
-   
-   /**
-    * Sets the center icon url.
-    * 
-    */
-   public void setIcon(String icon) {
-      image.setUrl(icon);
-      btnTable.removeStyleName("screen-btn-cont");
-      btnTable.setWidget(1, 1, image);
    }
 }

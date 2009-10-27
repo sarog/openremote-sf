@@ -23,13 +23,15 @@ import java.util.List;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.gxtextends.ScreenDropTarget;
-import org.openremote.modeler.client.model.Position;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.control.ScreenButton;
+import org.openremote.modeler.client.widget.control.ScreenControl;
+import org.openremote.modeler.client.widget.control.ScreenSwitch;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.Grid;
 import org.openremote.modeler.domain.UIScreen;
 import org.openremote.modeler.domain.control.UIButton;
+import org.openremote.modeler.domain.control.UISwitch;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -40,6 +42,7 @@ import com.extjs.gxt.ui.client.event.DNDListener;
 import com.extjs.gxt.ui.client.event.ResizeEvent;
 import com.extjs.gxt.ui.client.event.ResizeListener;
 import com.extjs.gxt.ui.client.fx.Resizable;
+import com.extjs.gxt.ui.client.util.Point;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -57,9 +60,6 @@ public class GridLayoutContainer extends LayoutContainer {
    /** The Constant POSITION. */
    private static final String POSITION = "position";
 
-   /** Make resizable in east and south direction. */
-   private static final String RESIZABLE_HANDLES = "e s";
-   
    /** The btn in area. */
    private boolean[][] btnInArea;
    
@@ -118,13 +118,13 @@ public class GridLayoutContainer extends LayoutContainer {
          @SuppressWarnings("unchecked")
          public void dragDrop(DNDEvent e) {
             LayoutContainer targetCell = (LayoutContainer) e.getDropTarget().getComponent();
-            Position targetPosition = (Position) targetCell.getData(POSITION);
+            Point targetPosition = (Point) targetCell.getData(POSITION);
             GridCellContainer cellContainer = new GridCellContainer();
             Object data = e.getData();
             if (data instanceof GridCellContainer) {
                cellContainer = (GridCellContainer) data;
-               if (canDrop(targetPosition.getPosX(), targetPosition.getPosY(), cellContainer.getCell(), grid)) {
-                  cellContainer.setCellPosition(targetPosition.getPosX(), targetPosition.getPosY());
+               if (canDrop(targetPosition.x, targetPosition.y, cellContainer.getCell(), grid)) {
+                  cellContainer.setCellPosition(targetPosition.x, targetPosition.y);
                   cellContainer.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
                } else {
                   cellContainer.setPagePosition(cellContainer.getAbsoluteLeft(), cellContainer.getAbsoluteTop());
@@ -137,15 +137,16 @@ public class GridLayoutContainer extends LayoutContainer {
                   grid.addCell(cell);
                   if(dataModel.getBean() instanceof UIButton) {
                      cell.setUiControl(new UIButton("Button"));
-                     cellContainer = createCellContainer(cell, cellWidth, cellHeight);
-//                     cellContainer.setSize(cellWidth, cellHeight);
-                     cellContainer.setCellSpan(1, 1);
-                     cellContainer.setCellPosition(targetPosition.getPosX(), targetPosition.getPosY());
-                     cellContainer.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
-                     
-                     add(cellContainer);
-                     createDragSource(cellContainer);
+                  } else if(dataModel.getBean() instanceof UISwitch) {
+                     cell.setUiControl(new UISwitch());
                   }
+                  cellContainer = createCellContainer(cell, cellWidth, cellHeight);
+                  cellContainer.setCellSpan(1, 1);
+                  cellContainer.setCellPosition(targetPosition.x, targetPosition.y);
+                  cellContainer.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
+                  
+                  add(cellContainer);
+                  createDragSource(cellContainer);
                }
             }
             cellContainer.fillArea(btnInArea);
@@ -166,7 +167,7 @@ public class GridLayoutContainer extends LayoutContainer {
             LayoutContainer cell = new LayoutContainer();
             cell.setSize(cellWidth, cellHeight);
             screenTable.setWidget(i, j, cell);
-            cell.setData(POSITION, new Position(j, i));
+            cell.setData(POSITION, new Point(j, i));
             ScreenDropTarget dropTarget = new ScreenDropTarget(cell);
             dropTarget.setGroup(Constants.CONTROL_DND_GROUP);
             dropTarget.setOverStyle("background-color");
@@ -200,7 +201,13 @@ public class GridLayoutContainer extends LayoutContainer {
     * 
     */
    private GridCellContainer createCellContainer(Cell cell, int cellWidth, int cellHeight) {
-      GridCellContainer cellContainer =  new GridCellContainer(cell, new ScreenButton()) {
+      ScreenControl screenControl = new ScreenControl();
+      if (cell.getUiControl() instanceof UIButton) {
+         screenControl = new ScreenButton();
+      } else if (cell.getUiControl() instanceof UISwitch) {
+         screenControl = new ScreenSwitch();
+      }
+      GridCellContainer cellContainer =  new GridCellContainer(cell, screenControl) {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
@@ -306,7 +313,7 @@ public class GridLayoutContainer extends LayoutContainer {
     * @param cellContainer the cell container
     */
    private void makeCellContainerResizable(final int cellWidth, final int cellHeight, GridCellContainer cellContainer) {
-      final Resizable resizable = new Resizable(cellContainer, RESIZABLE_HANDLES);
+      final Resizable resizable = new Resizable(cellContainer, Constants.RESIZABLE_HANDLES);
       resizable.addResizeListener(new ResizeListener() {
 
          @Override

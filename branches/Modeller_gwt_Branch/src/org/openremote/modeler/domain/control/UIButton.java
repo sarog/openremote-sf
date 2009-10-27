@@ -110,6 +110,7 @@ public class UIButton extends UIControl {
    }
 
    public void setPressImage(UImage pressImage) {
+      pressImage.setState("onPress");
       this.pressImage = pressImage;
    }
 

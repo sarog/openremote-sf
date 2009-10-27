@@ -53,7 +53,7 @@ public class DeviceSeleniumTestNGTest extends SeleniumTestNGBase {
       type(DebugId.DEVICE_NAME_FIELD, name);
       type(DebugId.DEVICE_VENDOR_FIELD, "ThoughtWorks");
       type(DebugId.DEVICE_MODEL_FIELD, "Selenium RC");
-      click(DebugId.DEVICE_SUBMIT_BTN);
+      click(DebugId.DEVICE_FINISH_BTN);
       pause(PAUSE_MS);
       
       Assert.assertTrue(selenium.isTextPresent(name));
@@ -78,7 +78,7 @@ public class DeviceSeleniumTestNGTest extends SeleniumTestNGBase {
       type(DebugId.DEVICE_NAME_FIELD, name);
       type(DebugId.DEVICE_VENDOR_FIELD, vendor);
       type(DebugId.DEVICE_MODEL_FIELD, model);
-      click(DebugId.DEVICE_SUBMIT_BTN);
+      click(DebugId.COMMON_SUBMIT_BTN);
       pause(PAUSE_MS);
       click(DebugId.DEVICE_EDIT_BTN);
       pause(PAUSE_MS);
@@ -97,7 +97,7 @@ public class DeviceSeleniumTestNGTest extends SeleniumTestNGBase {
    @Test(dependsOnMethods = { "editDevice" })
    public void deleteDevice() throws Exception {
       String lastDeviceName = getValue(DebugId.DEVICE_NAME_FIELD);
-      click(DebugId.DEVICE_SUBMIT_BTN);
+      click(DebugId.COMMON_SUBMIT_BTN);
       pause(PAUSE_MS);
       click(DebugId.DELETE_DEVICE_BUTTON);
       pause(PAUSE_MS);

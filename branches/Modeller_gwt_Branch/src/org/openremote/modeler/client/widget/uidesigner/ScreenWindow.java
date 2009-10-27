@@ -32,6 +32,7 @@ import org.openremote.modeler.client.utils.TouchPanels;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Grid;
 import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.selenium.DebugId;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -123,6 +124,7 @@ public class ScreenWindow extends FormWindow {
    private void createFields() {
       Map<String, List<TouchPanelDefinition>> panels = TouchPanels.getInstance();
       TextField<String> screenNameField = new TextField<String>();
+      screenNameField.ensureDebugId(DebugId.SCREEN_NAME_FIELD);
       screenNameField.setName(SCREEN_NAME);
       screenNameField.setFieldLabel("Name");
       screenNameField.setAllowBlank(false);
@@ -130,6 +132,7 @@ public class ScreenWindow extends FormWindow {
       
       ComboBox<ModelData> panel = new ComboBox<ModelData>();
       ListStore<ModelData> store = new ListStore<ModelData>();
+      panel.ensureDebugId(DebugId.SCREEN_PANEL_FIELD);
       panel.setStore(store);
       panel.setFieldLabel("Panel");
       panel.setName(SCREEN_PANEL);
@@ -151,6 +154,7 @@ public class ScreenWindow extends FormWindow {
       panel.setValue(iphoneData); // temp select iphone panel.
       
       FileUploadField background = new FileUploadField();
+      background.ensureDebugId(DebugId.SCREEN_BG_FIELD);
       background.setFieldLabel("Background");
       background.setName(SCREEN_BACKGROUND);
       background.setRegex(".+?\\.(png|gif|jpg)");
@@ -158,11 +162,13 @@ public class ScreenWindow extends FormWindow {
       background.setStyleAttribute("overflow", "hidden");
       
       Radio gridLayout = new Radio();
+      gridLayout.ensureDebugId(DebugId.SCREEN_GRID_RADIO);
       gridLayout.setName(SCREEN_RADIOLAYOUTGROUP);
       gridLayout.setBoxLabel("Grid");
       gridLayout.setValueAttribute(SCREEN_GRIDRADIO);
 
       Radio absoluteLayout = new Radio();
+      absoluteLayout.ensureDebugId(DebugId.SCREEN_ABSOLUTE_RADIO);
       absoluteLayout.setName(SCREEN_RADIOLAYOUTGROUP);
       absoluteLayout.setBoxLabel("Absolute");
       absoluteLayout.setValueAttribute(SCREEN_ABSOLUTERADIO);
@@ -220,14 +226,18 @@ public class ScreenWindow extends FormWindow {
       gridAttrSet.setHeading("Grid attributes");
 
       TextField<Integer> gridRowCountField = new TextField<Integer>();
+      gridRowCountField.ensureDebugId(DebugId.SCREEN_GRID_ROW_FIELD);
       gridRowCountField.setName("gridRow");
       gridRowCountField.setFieldLabel("Row Count");
       gridRowCountField.setAllowBlank(false);
+      gridRowCountField.setValue(6);   // temp set 6 rows.
       
       TextField<Integer> gridColumnCountField = new TextField<Integer>();
+      gridColumnCountField.ensureDebugId(DebugId.SCREEN_GRID_COLUMN_FIELD);
       gridColumnCountField.setName("gridColumn");
       gridColumnCountField.setFieldLabel("Col Count");
       gridColumnCountField.setAllowBlank(false);
+      gridColumnCountField.setValue(4);   //temp set 4 columns.
       
       if (screen != null) {
          Grid grid = screen.getGrid();
@@ -245,6 +255,7 @@ public class ScreenWindow extends FormWindow {
     */
    private void createButtons() {
       Button submitBtn = new Button("Submit");
+      submitBtn.ensureDebugId(DebugId.SCREEN_SUBMIT_BTN);
       Button resetBtn = new Button("Reset");
 
       submitBtn.addSelectionListener(new FormSubmitListener(form));

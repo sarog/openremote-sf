@@ -67,4 +67,7 @@ public class Constants {
    
    /** The Constant PANEL_DESC_FILE_EXT. */
    public static final String PANEL_DESC_FILE = "import";
+   
+   /** Make resizable in east and south direction. */
+   public static final String RESIZABLE_HANDLES = "e s";
 }

@@ -17,43 +17,22 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.domain.control;
+package org.openremote.modeler.client.widget.uidesigner;
 
-import org.openremote.modeler.domain.BusinessEntity;
+import com.extjs.gxt.ui.client.Style.Scroll;
+import com.extjs.gxt.ui.client.widget.form.FormPanel;
 
 /**
- * The Class UImage.
+ * The PropertyForm initialize the property form display style.
  */
-@SuppressWarnings("serial")
-public class UImage extends BusinessEntity {
-
-   private String src;
-   private String state;
-   private int border;
-   public UImage() {
+public class PropertyForm extends FormPanel {
+   public PropertyForm() {
+      setFrame(true);
+      setHeaderVisible(false);
+      setBorders(false);
+      setBodyBorder(false);
+      setLabelWidth(60);
+      setFieldWidth(80);
+      setScrollMode(Scroll.AUTOY);
    }
-   public UImage(String src) {
-      this.src = src;
-   }
-   
-   public String getSrc() {
-      return src;
-   }
-   public String getState() {
-      return state;
-   }
-   public int getBorder() {
-      return border;
-   }
-   public void setSrc(String src) {
-      this.src = src;
-   }
-   public void setState(String state) {
-      this.state = state;
-   }
-   public void setBorder(int border) {
-      this.border = border;
-   }
-   
-   
 }

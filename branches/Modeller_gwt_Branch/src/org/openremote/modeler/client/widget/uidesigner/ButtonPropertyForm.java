@@ -34,8 +34,8 @@ import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.control.Navigate;
 import org.openremote.modeler.domain.control.UIButton;
+import org.openremote.modeler.domain.control.UImage;
 
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -50,27 +50,16 @@ import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.extjs.gxt.ui.client.widget.form.CheckBoxGroup;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 
 /**
  * A panel for display screen button properties.
  */
-public class ButtonPropertyForm extends FormPanel {
+public class ButtonPropertyForm extends PropertyForm {
 
    public ButtonPropertyForm(ScreenButton screenButton, UIButton uiButton) {
-      init();
+      super();
       addFields(screenButton, uiButton);
-   }
-   
-   private void init() {
-      setFrame(true);
-      setHeaderVisible(false);
-      setBorders(false);
-      setBodyBorder(false);
-      setLabelWidth(60);
-      setFieldWidth(80);
-      setScrollMode(Scroll.AUTOY);
    }
    private void addFields(final ScreenButton screenButton, final UIButton uiButton) {
       // initial name field.
@@ -162,6 +151,51 @@ public class ButtonPropertyForm extends FormPanel {
 
       });
       
+      Button imageBtn = new Button("Select");
+      imageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            final UImage image = uiButton.getImage();
+            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenButton, image);
+            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener(){
+               @Override
+               public void afterSubmit(SubmitEvent be) {
+                  String imageUrl = be.getData();
+                  screenButton.setIcon(imageUrl);
+                  if(image != null) {
+                     image.setSrc(imageUrl);
+                  } else {
+                     uiButton.setImage(new UImage(imageUrl));
+                  }
+               }
+            });
+         }
+      });
+      AdapterField adapterImageBtn = new AdapterField(imageBtn);
+      adapterImageBtn.setFieldLabel("Image");
+      
+      Button onPressImageBtn = new Button("Select");
+      onPressImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            final UImage onPressImage = uiButton.getPressImage();
+            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenButton, onPressImage);
+            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener(){
+               @Override
+               public void afterSubmit(SubmitEvent be) {
+                  String onPressImageUrl = be.getData();
+                  if(onPressImage != null) {
+                     onPressImage.setSrc(onPressImageUrl);
+                  } else {
+                     uiButton.setPressImage(new UImage(onPressImageUrl));
+                  }
+               }
+            });
+         }
+      });
+      AdapterField adapterOnPressImageBtn = new AdapterField(onPressImageBtn);
+      adapterOnPressImageBtn.setFieldLabel("PressImage");
+      
       CheckBoxGroup repeat = new CheckBoxGroup();
       repeat.setFieldLabel("Repeat");
       final CheckBox check = new CheckBox();
@@ -177,6 +211,8 @@ public class ButtonPropertyForm extends FormPanel {
       add(name);
       add(adapterCommand);
       add(toGroup);
+      add(adapterImageBtn);
+      add(adapterOnPressImageBtn);
       add(repeat);
    }
 }
