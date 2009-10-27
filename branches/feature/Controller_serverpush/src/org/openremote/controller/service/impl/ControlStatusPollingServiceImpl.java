@@ -20,6 +20,7 @@
 package org.openremote.controller.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -79,9 +80,9 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
       
       while (true) {
          if ((System.currentTimeMillis() - startTime) / MILLI_SECONDS_A_SECOND >= MAX_TIME_OUT_SECONDS) {
-            changedStatuses = SERVER_RESPONSE_TIME_OUT_STATUS_CODE;
+            changedStatuses = SERVER_RESPONSE_TIME_OUT_STATUS_CODE;//TODO: response.setErrorCode(503);
             saveSkipState(deviceID, controlIDs);
-            pollingThread.setTimeToWaitStatusChange(false);
+            pollingThread.setWaitingStatusChange(false);
             break;
          }
          if (pollingData.getChangedStatuses() == null) {
@@ -109,7 +110,8 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
       }
       
       TimeoutRecord timeoutRecord = timeoutTable.query(deviceID, pollingControlIDs);
-      System.out.println(timeoutRecord == null ? "not found" : "found");
+      String tempInfo = "Found: [device => " + deviceID + ", controlIDs => " + unParsedcontrolIDs + "] in TIME_OUT_TABLE.";
+      System.out.println(timeoutRecord == null ? "Not " + tempInfo : tempInfo);
       // same device
       if (timeoutRecord != null) {
          List<String> statusChangedIDs = timeoutRecord.getStatusChangedIDs();
@@ -136,7 +138,11 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
    
    private String queryChangedStatusesFromCachedStatusTable(List<String> statusChangedIDs) {
       PollingData pollingData = new PollingData(statusChangedIDs);
-//      cachedStatusTable.query(pollingData);
+//      cachedStatusTable.query(pollingData); // TODO: Implementation of  the Cached Status DB will provice this method.
+      //Simulate query from cachedStatusTable.
+      Map<String, String> map = new HashMap<String,String>();
+      map.put("2", "ON");
+      pollingData.setChangedStatuses(map);
       return composePollingResult(pollingData);
    }
    
