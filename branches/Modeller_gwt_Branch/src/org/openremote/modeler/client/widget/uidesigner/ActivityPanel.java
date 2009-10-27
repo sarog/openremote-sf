@@ -239,7 +239,6 @@ public class ActivityPanel extends ContentPanel {
     */
    private MenuItem createNewScreenMenuItem() {
       MenuItem newScreenMenuItem = new MenuItem("New Screen");
-      newScreenMenuItem.ensureDebugId(DebugId.NEW_SCREEN_MENU_ITEM);
       newScreenMenuItem.setIcon(icon.addScreenIcon());
       newScreenMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          @Override

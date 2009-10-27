@@ -19,12 +19,13 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
-import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.UIButton;
+import org.openremote.modeler.client.widget.control.ScreenButton;
+import org.openremote.modeler.client.widget.control.ScreenControl;
+import org.openremote.modeler.domain.control.UImage;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BaseListLoader;
@@ -117,11 +118,11 @@ public class ChangeIconWindow extends Dialog {
     * 
     * @param screenButton the screen button
     */
-   public ChangeIconWindow(ScreenButton screenButton) {
-      cloneScreenButton(screenButton);
+   public ChangeIconWindow(ScreenControl screenControl, UImage uImage) {
+      createScreenControl(screenControl, uImage);
       window = this;
-      if (screenButton.getWidth() > 90) {
-         setMinWidth(400 + screenButton.getWidth() + 16);
+      if (screenControl.getWidth() > 90) {
+         setMinWidth(400 + screenControl.getWidth() + 16);
       } else {
          setMinWidth(500);
       }
@@ -413,20 +414,18 @@ public class ChangeIconWindow extends Dialog {
    }
    
    /**
-    * Clone screen button attributes to the window's ScreenButton.
+    * Creates the screen control as a screen button to preview the image.
     * 
-    * @param screenButton the screen button
+    * @param screenControl the screen control
+    * @param uImage the u image
     */
-   private void cloneScreenButton(ScreenButton screenButton) {
-      UIButton oldUIButton = (UIButton) screenButton.getData(ScreenButton.DATA_BUTTON);
-      UIButton newUIButton = new UIButton(Constants.PREVIEW_SCREENBUTTON_OID);
-      newUIButton.setLabel(oldUIButton.getLabel());
-      newUIButton.setUiCommand(oldUIButton.getUiCommand());
-      this.screenButton = new ScreenButton(newUIButton, screenButton.getWidth(), screenButton.getHeight());
-      imageURL = screenButton.getButtonIcon();
-      if (imageURL != null) {
-         this.screenButton.setIcon(imageURL);
+   private void createScreenControl(ScreenControl screenControl, UImage uImage) {
+      screenButton = new ScreenButton(screenControl.getWidth(), screenControl.getHeight());
+      screenButton.setName(screenControl.getName());
+      if (uImage != null) {
+         imageURL = uImage.getSrc();
+         screenButton.setIcon(imageURL);
       }
-      this.screenButton.addStyleName("button-border");
+      screenButton.addStyleName("button-border");
    }
 }

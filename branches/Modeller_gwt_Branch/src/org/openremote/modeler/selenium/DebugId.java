@@ -59,6 +59,7 @@ public class DebugId {
    
    /** The Constant DEVICE_SUBMIT_BTN. */
    public static final String DEVICE_SUBMIT_BTN = "deviceSubmitBtn";
+   public static final String DEVICE_FINISH_BTN = "deviceFinishBtn";
    
    /** The Constant DEVICE_NAME_FIELD. */
    public static final String DEVICE_NAME_FIELD = "deviceNameField";
@@ -125,32 +126,24 @@ public class DebugId {
    /** The Constant ACTIVITY_IMPORT_BTN. */
    public static final String ACTIVITY_IMPORT_BTN = "activityImportButton";
 
-   /** Screen */
-
-   /** The Constant NEW_SCREEN_MENU_ITEM. */
-   public static final String NEW_SCREEN_MENU_ITEM = "newScreenMenuItem";
+   /* Screen Panel */
+   public static final String SCREEN_NEW_BTN = "screenNewBtn";
+   public static final String SCREEN_EDIT_BTN = "screenEditBtn";
+   public static final String SCREEN_DELETE_BTN = "screenDeleteBtn";
    
-   /** The Constant NEW_SCREEN_WINDOW. */
-   public static final String NEW_SCREEN_WINDOW = "newScreenWindow";
-
-   /** The Constant EDIT_SCREEN_WINDOW. */
-   public static final String EDIT_SCREEN_WINDOW = "editScreenWindow";
-
-   /** The Constant NEW_SCREEN_WINDOW_SUBMIT_BTN. */
-   public static final String NEW_SCREEN_WINDOW_SUBMIT_BTN = "newScreenWindowSubmitBtn";
-
-   /** The Constant NEW_SCREEN_WINDOW_RESET_BTN. */
-   public static final String NEW_SCREEN_WINDOW_RESET_BTN = "newScreenWindowResetBtn";
-
-   /** The Constant SCREEN_NAME_FIELD. */
+   /* Screen Window*/
    public static final String SCREEN_NAME_FIELD = "screenNameField";
+   public static final String SCREEN_PANEL_FIELD = "screenPanelField";
+   public static final String SCREEN_BG_FIELD = "screenBgField";
+   public static final String SCREEN_ABSOLUTE_RADIO= "screenAbsoluteRadio";
+   public static final String SCREEN_GRID_RADIO= "screenGridRadio";
+   public static final String SCREEN_GRID_ROW_FIELD= "screenGridRowField";
+   public static final String SCREEN_GRID_COLUMN_FIELD= "screenGridColumnField";
+   public static final String SCREEN_SUBMIT_BTN= "screenSubmitBtn";
 
-   /** The Constant SCREEN_ROW_COUNT_FIELD. */
-   public static final String SCREEN_ROW_COUNT_FIELD = "screenRowCountField";
-
-   /** The Constant SCREEN_COLUMN_COUNT_FIELD. */
-   public static final String SCREEN_COLUMN_COUNT_FIELD = "screenColumnCountField";
-
+   /* Group Panel*/
+   public static final String GROUP_PANEL_HEADER = "groupPanelHeader";
+   
    /** The Constant APPLICATION_FILE_BTN. */
    public static final String APPLICATION_FILE_BTN = "applicationFileBtn";
 
@@ -177,4 +170,7 @@ public class DebugId {
 
    /** The Constant Save. */
    public static final String SAVE = "save";
+   
+   /* Common window */
+   public static final String COMMON_SUBMIT_BTN = "commonSubmitBtn";
 }

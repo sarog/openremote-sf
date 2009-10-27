@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.openremote.modeler.client.listener.FormResetListener;
 import org.openremote.modeler.client.listener.FormSubmitListener;
+import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -74,6 +75,7 @@ public class CommonForm extends FormPanel {
     */
    protected void addButtons() {
       Button submitBtn = new Button("Submit");
+      submitBtn.ensureDebugId(DebugId.COMMON_SUBMIT_BTN);
       Button resetButton = new Button("Reset");
       submitBtn.addSelectionListener(new FormSubmitListener(this));
       resetButton.addSelectionListener(new FormResetListener(this));

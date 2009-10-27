@@ -32,6 +32,7 @@ import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.ScreenBeanModelProxy;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -122,6 +123,7 @@ public class ScreenPanel extends ContentPanel {
     */
    private Button createNewBtn() {
       Button newButton = new Button("New");
+      newButton.ensureDebugId(DebugId.SCREEN_NEW_BTN);
       newButton.setIcon(icon.add());
       newButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
@@ -158,6 +160,7 @@ public class ScreenPanel extends ContentPanel {
     */
    private Button createEditBtn() {
       Button editBtn = new Button("Edit");
+      editBtn.ensureDebugId(DebugId.SCREEN_EDIT_BTN);
       editBtn.setIcon(icon.edit());
       editBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
@@ -197,6 +200,7 @@ public class ScreenPanel extends ContentPanel {
     */
    private Button createDeleteBtn() {
       Button deleteBtn = new Button("Delete");
+      deleteBtn.ensureDebugId(DebugId.SCREEN_DELETE_BTN);
       deleteBtn.setIcon(icon.delete());
       deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
          @Override
