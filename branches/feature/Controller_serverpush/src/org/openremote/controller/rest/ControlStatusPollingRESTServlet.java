@@ -65,7 +65,7 @@ public class ControlStatusPollingRESTServlet extends HttpServlet {
       System.out.println("Started polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 
       String url = request.getRequestURL().toString();
-      String regexp = "rest\\/polling\\/(\\w+)\\/(.*)";
+      String regexp = "rest\\/polling\\/(.*?)\\/(.*)";
       Pattern pattern = Pattern.compile(regexp);
       Matcher matcher = pattern.matcher(url);
       String unParsedcontrolIDs = null;
