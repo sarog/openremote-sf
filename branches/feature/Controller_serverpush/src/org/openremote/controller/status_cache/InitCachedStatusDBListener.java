@@ -22,7 +22,6 @@ package org.openremote.controller.status_cache;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -58,47 +57,10 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
    @Override
    public void contextInitialized(ServletContextEvent event) {
       try {
-         /*ResourceBundle resourceBundle = ResourceBundle.getBundle("database-hsql");
-         String dbDriver = resourceBundle.getString("hsql.dbDriver");
-         String dbUrl = resourceBundle.getString("hsql.dbUrl");
-         String dbUserName = resourceBundle.getString("hsql.dbUserName");
-         String dbPassWord = resourceBundle.getString("hsql.dbPassWord");
-         
-         Class.forName(dbDriver);
-         connection = DriverManager.getConnection(dbUrl, dbUserName, dbPassWord);
-         Statement stmt = null;
-         ResultSet rs = null;
-         stmt = connection.createStatement();
-         String create_controller_cached_controls_table_sql = resourceBundle.getString("hsql.create_controller_cached_controls_table_sql");
-         String insert_data_sql = "insert into controller_cached_controls(id, control_id, current_status) values(1, 1, 'OFF'); insert into controller_cached_controls(id, control_id, current_status) values(2, 2, 'ON');";
-         String query_data_sql = "select * from controller_cached_controls";
-         stmt.executeUpdate(create_controller_cached_controls_table_sql);
-         stmt.executeUpdate(insert_data_sql);
-         rs = stmt.executeQuery(query_data_sql);
-         while (rs.next()) {
-            System.out.println(">>> " + rs.getString(1) + ", " + rs.getString(2) + ", " + rs.getString(3));
-         }*/
-         
-         List<String> pollingControlIDs = new ArrayList<String>();
-         pollingControlIDs.add("1");
-         pollingControlIDs.add("2");
-         pollingControlIDs.add("3");
-         TimeoutRecord timeoutRecord = new TimeoutRecord("96e79218965eb72c92a549dd5a330112", pollingControlIDs);
-         timeoutTable.insert(timeoutRecord);
-         System.out.println("Init TIME_OUT table, device id : " + timeoutTable.query(pollingControlIDs).getDeviceID());
-         
          //The folling s are simulated for status changed in TIME_OUT table.
          System.out.println("TIME_OUT table : Starting simulated change status tread at " + new SimpleDateFormat("yy-MM-dd HH:mm:ss").format(new Date()));
-         Thread timeoutTableDataChangeThread = new Thread() {
-            @Override
-            public void run() {
-               List<TimeoutRecord> timeoutRecords = timeoutTable.query("1");
-               for (TimeoutRecord timeoutRecord : timeoutRecords) {
-                  timeoutRecord.addStatusChangedID("1");
-               }
-            }
-         };
-         timeoutTableDataChangeThread.start();
+         simulateSkipStateTrackTestCase2();
+         simulateSkipStateTrackTestCase3();
          
          //The followings are simulated for status changed in ObservedStatusesSubject.
          System.out.println("ObservedStatusesSubject : Starting simulated change status tread at " + new SimpleDateFormat("yy-MM-dd HH:mm:ss").format(new Date()));
@@ -125,6 +87,65 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
       } catch (Exception e) {
          e.printStackTrace();
       }
+   }
+   
+   /**
+    * Simulate Test Case 2 in the SkipStateTrackTest.java <br />
+    * 
+    * DESC: First polling request was time out, second polling request can find previous time out record and
+    *   get the changed status during two polling requests.
+    */
+   private void simulateSkipStateTrackTestCase2() {
+      Thread simulateThread = new Thread() {
+         @Override
+         public void run() {
+            while (true) {
+               List<TimeoutRecord> timeoutRecords = timeoutTable.query("2");
+               for (TimeoutRecord timeoutRecord : timeoutRecords) {
+                  timeoutRecord.addStatusChangedID("2");
+               }
+               if (timeoutRecords.size() > 0) {
+                  break;
+               }
+            }
+         }
+      };
+      simulateThread.start();
+   }
+   
+   /**
+    * Simulate Test Case 3 in the SkipStateTrackTest.java <br />
+    * 
+    * DESC: First polling request was time out, second polling request can find previous time out record but
+    *   the status previous polling request care about didn't change. So, second polling should remove
+    *   previous time out record and observe status. At last getting the changed status
+    */
+   private void simulateSkipStateTrackTestCase3() {
+      Thread simulateThread = new Thread() {
+         @Override
+         public void run() {
+            while (true) {
+               List<TimeoutRecord> timeoutRecords = timeoutTable.query("3");
+               if (timeoutRecords != null && timeoutRecords.size() != 0) {
+                  int i = 0;
+                  for(; ; i++) {
+                     try {
+                        ObservedStatusesSubject observedStatusesSubject = (ObservedStatusesSubject) SpringContext.getInstance().getBean("observedStatusesSubject");
+                        if (i % 2 == 0) {
+                           observedStatusesSubject.statusChanged(new StatusChangedData("3", "OFF"));
+                        } else {
+                           observedStatusesSubject.statusChanged(new StatusChangedData("3", "ON"));
+                        }
+                        sleep(10000);
+                     } catch (InterruptedException e) {
+                        e.printStackTrace();
+                     }
+                  }
+               }
+            }
+         }
+      };
+      simulateThread.start();
    }
 
    /* (non-Javadoc)
