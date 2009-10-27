@@ -56,7 +56,7 @@ public class ControlStatusPollingRESTServletTest extends TestCase {
     */
    public void testDoPostWithAppServerNotStartup() throws Exception {
       WebConversation wc = new WebConversation();
-      WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/1,2");
+      WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1,2");
       System.out.println(wr.getText());
    }
    
@@ -71,7 +71,7 @@ public class ControlStatusPollingRESTServletTest extends TestCase {
     */
    public void testDoPostWithTimeOutSingleRequest() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = new GetMethodWebRequest("http://localhost:8080/controller/rest/polling/3,4");
+      WebRequest pollingGetMethodRequest = new GetMethodWebRequest("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3,4");
       WebResponse pollingResponse = wc.getResponse(pollingGetMethodRequest);      
       System.out.println(pollingResponse.getText());
    }
@@ -88,7 +88,7 @@ public class ControlStatusPollingRESTServletTest extends TestCase {
             public void run() {
                try {
                   WebConversation wc = new WebConversation();
-                  WebRequest pollingGetMethodRequest = new GetMethodWebRequest("http://localhost:8080/controller/rest/polling/3,4");
+                  WebRequest pollingGetMethodRequest = new GetMethodWebRequest("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3,4");
                   WebResponse pollingResponse = wc.getResponse(pollingGetMethodRequest);
                   System.out.println(pollingResponse.getText());
                } catch (Exception e) {
@@ -112,7 +112,7 @@ public class ControlStatusPollingRESTServletTest extends TestCase {
     */
    public void testDoPostWithoutTimeOutSingleRequest() throws Exception {
       WebConversation wc = new WebConversation();
-      WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/1,2");
+      WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1,2");
       System.out.println(wr.getText());
    }
    
@@ -128,7 +128,7 @@ public class ControlStatusPollingRESTServletTest extends TestCase {
             public void run() {
                try {
                   WebConversation wc = new WebConversation();
-                  WebRequest pollingGetMethodRequest = new GetMethodWebRequest("http://localhost:8080/controller/rest/polling/1,2");
+                  WebRequest pollingGetMethodRequest = new GetMethodWebRequest("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1,2");
                   WebResponse wr = wc.getResponse(pollingGetMethodRequest);
                   System.out.println(wr.getText());
                } catch (Exception e) {
