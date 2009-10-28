@@ -30,8 +30,6 @@
 
 }
 
--(BOOL) useNativeStyle;																//whether to use native style on specified system
-
 @property (nonatomic,readonly)Image *onImage; 
 @property (nonatomic,readonly)Image *offImage; 
 

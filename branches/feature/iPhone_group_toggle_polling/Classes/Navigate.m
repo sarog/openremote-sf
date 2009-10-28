@@ -24,4 +24,26 @@
 
 @implementation Navigate
 
+@synthesize toScreen, toGroup;
+
+//Initialize itself accoding to xml parser
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+	if (self = [super init]) {
+		toScreen = [[attributeDict objectForKey:@"toScreen"] intValue];
+		toGroup = [[attributeDict objectForKey:@"toGroup"] intValue];
+		
+		xmlParserParentDelegate = [parent retain];
+		[parser setDelegate:self];
+	}
+	return self;
+}
+
+// get element name, must be overriden in subclass
+- (NSString *) elementName {
+	return @"navigate";
+}
+
+
+
+
 @end

@@ -24,11 +24,62 @@
 
 @implementation Button
 
-@synthesize image, imagePressed, repeat, commandId;
+@synthesize image, imagePressed, repeat, hasCommand, name, navigate;
+
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+	if (self = [super init]) {		
+		controlId = [[attributeDict objectForKey:@"id"] intValue];
+		name = [[attributeDict objectForKey:@"name"] copy];
+		hasCommand = NO;
+		repeat = NO;
+		if ([[attributeDict objectForKey:@"repeat"] isEqualToString:@"true"]) {
+			repeat = YES;
+		}
+		
+		xmlParserParentDelegate = [parent retain];
+		[parser setDelegate:self];
+	}
+	return self;
+}
+
+// parse image, pressed image, command, navigate.
+- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
+	if ([elementName isEqualToString:@"image"]) {
+		Image *img = [[Image alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+		if ([[attributeDict objectForKey:@"state"] isEqualToString:@"onPress"]) {
+			imagePressed = img;
+		} else {
+			image = img;
+		}
+
+	} else if ([elementName isEqualToString:@"navigate"]) {
+		navigate = [[Navigate alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+	} else if ([elementName isEqualToString:@"command"]) {
+		hasCommand = YES;
+	} 
+	
+}
+
+
+// get element name, must be overriden in subclass
+- (NSString *) elementName {
+	return @"button";
+}
+
+
+// don't do polling to button
+- (BOOL)hasPollingStatus {
+	return NO;
+}
+
+
 
 - (void)dealloc {
 	[image release];
 	[imagePressed release];
+	[navigate release];
+	[name	 release];
+	
 	[super dealloc];
 }
 

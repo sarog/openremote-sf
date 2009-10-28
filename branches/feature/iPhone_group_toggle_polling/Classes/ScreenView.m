@@ -76,8 +76,11 @@
 		[self addSubview:layoutView];
 	}
 	
-	PollingHelper *polling = [[PollingHelper alloc] initWithComponentIds:[[[screen pollingComponentsIds] componentsJoinedByString:@","] retain]];
-	[polling requestCurrentStatusAndStartPolling];
+	if ([[screen pollingComponentsIds] count] > 0 ) {
+		PollingHelper *polling = [[PollingHelper alloc] initWithComponentIds:[[[screen pollingComponentsIds] componentsJoinedByString:@","] retain]];
+		[polling requestCurrentStatusAndStartPolling];	
+	}
+	
 }
 
 - (void)dealloc {

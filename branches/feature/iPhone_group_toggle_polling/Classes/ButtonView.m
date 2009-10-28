@@ -28,46 +28,28 @@
 @interface ButtonView (Private) 
 - (void)createButton;
 - (void)controlButtonUp:(id)sender;
-- (void)sendRequest;
 
 @end
 
 @implementation ButtonView
 
+@synthesize uiButton, isError, uiImage, uiImagePressed, isTouchUp, buttonTimer;
 
 
-
-- (id)initWithFrame:(CGRect)frame {
-    if (self = [super initWithFrame:frame]) {
-        // Initialization code
-			[self setBackgroundColor:[UIColor blackColor]];
-	
-    }
-    return self;
-}
-
-// Set control and add button in this view according to control
-- (void)setControl:(Control *)c {
-	[c retain];
-	[control release];
-	control = c;
-	
-	[self createButton];
-}
 
 //Create button according to control and add tap event
 - (void)createButton {
-	if (button != nil) {
-		[button release];
-		button = nil;
+	if (uiButton != nil) {
+		[uiButton release];
+		uiButton = nil;
 	}
-	button = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
+	uiButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
 	
 		
 
-	[button addTarget:self action:@selector(controlButtonUp:) forControlEvents:UIControlEventTouchUpInside];
+	[uiButton addTarget:self action:@selector(controlButtonUp:) forControlEvents:UIControlEventTouchUpInside];
 	
-	[self addSubview:button];
+	[self addSubview:uiButton];
 	
 }
 
@@ -75,8 +57,9 @@
 
 - (void) controlButtonUp:(id)sender {
 	
-
-		[self	sendRequest];
+	if (((Button *)control).hasCommand == YES) {
+		[self	sendCommandRequest:@"click"];
+	}
 	
 }
 
@@ -86,48 +69,28 @@
 
 //override layoutSubviews method of UIView 
 - (void)layoutSubviews {	
-	/*[button setFrame:[self bounds]];
-	if (control.icon && [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:control.icon]]) {
-		icon = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:control.icon]];
-//		if (icon.size.width > self.bounds.size.width || icon.size.height > self.bounds.size.height) {
-//			CGSize size = CGSizeMake(0,0);
-//			if ((icon.size.width -  self.bounds.size.width) > (icon.size.height - self.bounds.size.height)) {
-//				size = CGSizeMake(self.bounds.size.width, icon.size.height * ((icon.size.width -  self.bounds.size.width) /icon.size.width ));
-//			} else {
-//				size = CGSizeMake(icon.size.width * ((icon.size.height -  self.bounds.size.height) /icon.size.height ), self.bounds.size.height);
-//			}
-//			NSLog(@"CGSize width = %d,height = %d",size.width,size.height);
-//			UIGraphicsBeginImageContext(size);
-//			
-//			CGContextRef context = UIGraphicsGetCurrentContext();
-//			CGContextTranslateCTM(context, 0.0, size.height);
-//			CGContextScaleCTM(context, 1.0, -1.0);
-//			
-//			CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), icon.CGImage);
-//			
-//			UIImage* scaledImage = UIGraphicsGetImageFromCurrentImageContext();
-//			
-//			UIGraphicsEndImageContext();
-//			
-//			
-//			[button setImage:scaledImage forState:UIControlStateNormal];
-//		} else {
-			[button setImage:icon forState:UIControlStateNormal];
-//		}
-
+	[self createButton];
+	[uiButton setFrame:[self bounds]];
+	Button *button = (Button *)control;
+	if (button.image && [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.image.src]]
+			&& button.imagePressed && [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.imagePressed.src]]) {
+		uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.image.src]];
+		uiImagePressed = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.imagePressed.src]];	
+		[uiButton setImage:uiImage forState:UIControlStateNormal];
+		[uiButton setImage:uiImagePressed forState:UIControlStateHighlighted];
 		
 	} else {
 		UIImage *buttonImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
-		[button setBackgroundImage:buttonImage forState:UIControlStateNormal];
+		[uiButton setBackgroundImage:buttonImage forState:UIControlStateNormal];
 		
 		buttonImage = [[UIImage imageNamed:@"buttonHighlighted.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
-		[button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
+		[uiButton setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
 		
-		[button setFont:[UIFont boldSystemFontOfSize:18]];
-		[button setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
-		[button setTitleShadowOffset:CGSizeMake(0, -2)];
-		[button setTitle:control.label forState:UIControlStateNormal];
-	}*/
+		uiButton.titleLabel.font = [UIFont boldSystemFontOfSize:18];
+		[uiButton setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
+		uiButton.titleLabel.shadowOffset = CGSizeMake(0, -2);
+		[uiButton setTitle:button.name forState:UIControlStateNormal];
+	}
 	
 }
 
@@ -139,7 +102,7 @@
 	[uiImagePressed release];
 	[buttonTimer release];
 
-	[button release];
+	[uiButton release];
 	
   [super dealloc];
 }

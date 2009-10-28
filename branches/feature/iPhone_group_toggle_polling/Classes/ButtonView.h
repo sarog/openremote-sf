@@ -28,7 +28,7 @@
 @interface ButtonView : ControlView {
 
 	
-	UIButton *button;
+	UIButton *uiButton;
 	NSTimer *buttonTimer;
 	BOOL isTouchUp;
 	BOOL isError;
@@ -37,5 +37,11 @@
 	
 }
 
+@property (nonatomic, readonly) UIButton *uiButton;
+@property (nonatomic, readonly) NSTimer *buttonTimer;
+@property (nonatomic, readonly) BOOL isTouchUp;
+@property (nonatomic, readonly) BOOL isError;
+@property (nonatomic, readonly) UIImage *uiImage;
+@property (nonatomic, readonly) UIImage *uiImagePressed;
 
 @end
