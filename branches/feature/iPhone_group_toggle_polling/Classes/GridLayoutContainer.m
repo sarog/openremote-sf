@@ -20,16 +20,61 @@
  */
 
 #import "GridLayoutContainer.h"
-
+#import "GridCell.h"
 
 @implementation GridLayoutContainer
 
 @synthesize cells, rows, cols;
 
 
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+	if (self = [super init]) {		
+		left = [[attributeDict objectForKey:@"left"] intValue];		
+		top = [[attributeDict objectForKey:@"top"] intValue];
+		width = [[attributeDict objectForKey:@"width"] intValue];
+		height = [[attributeDict objectForKey:@"height"] intValue];
+		rows = [[attributeDict objectForKey:@"rows"] intValue];
+		cols = [[attributeDict objectForKey:@"cols"] intValue];
+		
+		cells = [[NSMutableArray alloc] init];
+		xmlParserParentDelegate = [parent retain];
+		[parser setDelegate:self];
+	}
+	NSLog(@"grid");
+	return self;
+}
+
+- (NSArray *)pollingComponentsIds {
+	NSMutableArray *ids = [[NSMutableArray alloc] init];
+	for (GridCell *cell in cells) {
+		if ([cell.control hasPollingStatus]) {
+			[ids addObject:[NSString stringWithFormat:@"%d",cell.control.controlId]];
+		}
+	}
+	return ids;
+}
+
+
+// parse all kinds of controls
+- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
+	if ([elementName isEqualToString:@"cell"]) {
+		[cells addObject:[[GridCell alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self]];
+	}
+}
+
+
+
+- (void)dealloc {
+	[cells release];
+	
+	[super dealloc];
+}
+
 // get element name, must be overriden in subclass
 - (NSString *) elementName {
 	return @"grid";
 }
+
+
 
 @end

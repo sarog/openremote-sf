@@ -19,14 +19,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-#import "LayoutContainerView.h"
-#import "GridCellView.h"
+#import <UIKit/UIKit.h>
+#import "GridCell.h"
+#import "ControlView.h"
 
-@interface GridLayoutContainerView : LayoutContainerView {
-
-	NSMutableArray *cellViews;
+@interface GridCellView : UIView {
+	
+	GridCell *cell;
+	ControlView *controlView;
 }
 
-@property (nonatomic,readonly)NSMutableArray *cellViews;
+- (id)initWithGridCell:(GridCell *)gridCell frame:(CGRect)frame;
+
+@property (nonatomic, readonly)ControlView *controlView;
+@property (nonatomic, readonly)GridCell *cell;
 
 @end
