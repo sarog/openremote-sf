@@ -71,11 +71,11 @@
 		AbsoluteLayoutContainer *absolute = [[AbsoluteLayoutContainer alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 		[layouts addObject:absolute];
 		[absolute release];
-//	} else if ([elementName isEqualToString:@"grid"]) {
-//		// Call GridLayoutContainer's initialize method to parse xml using NSXMLParser
-//		GridLayoutContainer *grid = [[GridLayoutContainer alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-//		[layouts addObject:grid];
-//		[grid release];
+	} else if ([elementName isEqualToString:@"grid"]) {
+		// Call GridLayoutContainer's initialize method to parse xml using NSXMLParser
+		GridLayoutContainer *grid = [[GridLayoutContainer alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+		[layouts addObject:grid];
+		[grid release];
 //	} else if ([elementName isEqualToString:@"gesture"]) {
 //		// Call Gesture's initialize method to parse xml using NSXMLParser
 	}

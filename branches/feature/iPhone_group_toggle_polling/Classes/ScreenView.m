@@ -65,32 +65,19 @@
 		[background release];
 	}
 
-	for (LayoutContainer *layout in screen.layouts) { 
-		LayoutContainerView *layoutView = [LayoutContainerView buildWithLayoutContainer:layout];
-		[self addSubview:layoutView];
-	}
-
-	PollingHelper *polling = [[PollingHelper alloc] initWithComponentIds:[[[screen pollingComponentsIds] componentsJoinedByString:@","] retain]];
-	[polling requestCurrentStatusAndStartPolling];
-
 }
 
 //override layoutSubviews method of UIView, In order to resize the ControlView when add subview
 // Only in this time we can know this view's size
 - (void)layoutSubviews {
-	//[screenNameLabel setFrame:CGRectMake(self.bounds.origin.x, self.bounds.origin.y, self.bounds.size.width, 20)];
-
-	//int h = self.bounds.size.height/screen.rows;	
-//	//int h = (self.bounds.size.height-20)/screen.rows;
-//	int w = self.bounds.size.width/screen.cols;
-//	
-//	
-//	for (ControlView *controlView in controlViews) {
-//		Control *control = [controlView control];
-//		[controlView setFrame:CGRectInset(CGRectMake(control.x*w, control.y*h, w*control.width, h*control.height),roundf(w*0.1),  roundf(h*0.1))];
-//		//[controlView setFrame:CGRectInset(CGRectMake(control.x*w, (control.y*h +20), w*control.width, h*control.height),roundf(w*0.1), roundf(h*0.1))];
-//		[controlView layoutSubviews];
-	//}
+	
+	for (LayoutContainer *layout in screen.layouts) { 
+		LayoutContainerView *layoutView = [LayoutContainerView buildWithLayoutContainer:layout];
+		[self addSubview:layoutView];
+	}
+	
+	PollingHelper *polling = [[PollingHelper alloc] initWithComponentIds:[[[screen pollingComponentsIds] componentsJoinedByString:@","] retain]];
+	[polling requestCurrentStatusAndStartPolling];
 }
 
 - (void)dealloc {

@@ -19,18 +19,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 #import "GridLayoutContainerView.h"
-
+#import "GridLayoutContainer.h"
+#import "GridCellView.h"
 
 @implementation GridLayoutContainerView
 
+@synthesize cellViews;
 
-//NOTE:You should init all nested views with *initWithFrame* and you should pass in valid frame rects.
-//Otherwise, UI widget inside will not work in nested UIViews
-- (id)initWithFrame:(CGRect)frame {
-    if (self = [super initWithFrame:frame]) {
-        // Initialization code
-    }
-    return self;
+- (void)layoutSubviews {
+	
+	GridLayoutContainer *grid = (GridLayoutContainer *)layout;
+	int h = self.bounds.size.height/grid.rows;				
+	int w = self.bounds.size.width/grid.cols;
+	
+	if (grid) {
+		for (GridCell *cell in grid.cells){
+			GridCellView *cellView = [[GridCellView alloc] initWithGridCell:cell frame:CGRectMake(cell.x*w, cell.y*h, w*cell.rowspan, h*cell.colspan)];
+			[cellViews addObject:cellView];
+			[self addSubview:cellView];
+		}
+	}
+	
+	
+	
+	
+
 }
 
 

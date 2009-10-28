@@ -38,6 +38,8 @@
 	return self;
 }
 
+
+
 // get element name, must be overriden in subclass
 - (NSString *) elementName {
 	return @"toggle";
@@ -50,6 +52,13 @@
 		[states addObject:state];
 		[state release];
 	}
+}
+
+/* Whether this control has status to do polling.
+ * Returns YES if it has.
+ */
+- (BOOL)hasPollingStatus {
+	return YES;
 }
 
 - (void)dealloc {

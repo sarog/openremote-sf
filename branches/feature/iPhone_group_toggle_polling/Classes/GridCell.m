@@ -26,6 +26,39 @@
 
 @synthesize x,y,rowspan,colspan,control;
 
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+	if (self = [super init]) {		
+		x = [[attributeDict objectForKey:@"x"] intValue];		
+		y = [[attributeDict objectForKey:@"y"] intValue];
+		
+		// rowspan default value is 1
+		int thatRowspan = [[attributeDict objectForKey:@"rowspan"] intValue];
+		rowspan = thatRowspan < 1 ? 1 : thatRowspan;
+		
+		// colspan default value is 1
+		int thatColspan = [[attributeDict objectForKey:@"colspan"] intValue];
+		colspan = thatColspan < 1 ? 1 : thatColspan;
+		
+		xmlParserParentDelegate = [parent retain];
+		[parser setDelegate:self];
+	}
+	NSLog(@"cell");
+	return self;
+}
+
+// parse all kinds of controls
+- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
+	
+	control = [Control buildWithXMLParser:elementName parser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+	
+}
+
+
+// get element name, must be overriden in subclass
+- (NSString *) elementName {
+	return @"cell";
+}
+
 - (void)dealloc {
 	[control release];
 	[super dealloc];
