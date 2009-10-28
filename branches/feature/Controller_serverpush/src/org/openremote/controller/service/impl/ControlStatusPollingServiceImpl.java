@@ -20,12 +20,13 @@
 package org.openremote.controller.service.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.openremote.controller.service.ControlStatusPollingService;
+import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.status_cache.PollingData;
 import org.openremote.controller.status_cache.PollingThread;
 import org.openremote.controller.status_cache.TimeoutRecord;
@@ -67,6 +68,10 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
     */
    private TimeoutTable timeoutTable;
    
+   private StatusCacheService statusCacheService;
+   
+   private Logger logger = Logger.getLogger(this.getClass().getName());
+   
    /**
     * get the changed statuses from cached DB
     */
@@ -81,7 +86,9 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
       while (true) {
          if ((System.currentTimeMillis() - startTime) / MILLI_SECONDS_A_SECOND >= MAX_TIME_OUT_SECONDS) {
             changedStatuses = SERVER_RESPONSE_TIME_OUT_STATUS_CODE;//TODO: response.setErrorCode(503);
-            saveSkipState(deviceID, controlIDs);
+            logger.info("Observing change of component status was timeout.");
+            saveTimeOutRecord(deviceID, controlIDs);
+            logger.info("Return timeout result of observed.");
             pollingThread.setWaitingStatusChange(false);
             break;
          }
@@ -92,7 +99,9 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
          }
       }
       if (!SERVER_RESPONSE_TIME_OUT_STATUS_CODE.equals(changedStatuses)) {
+         logger.info("Got the change of component status.");
          changedStatuses = composePollingResult(pollingData);
+         logger.info("Return xml-formatted result of observed.");
       }
       return changedStatuses;
    }
@@ -102,24 +111,28 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
     */
    @Override
    public String querySkipState(String deviceID, String unParsedcontrolIDs) {
+      logger.info("Querying skipped state from TIME_OUT table...");
       String skipState = "";
       String[] controlIDs = (unParsedcontrolIDs == null || "".equals(unParsedcontrolIDs)) ? new String[]{} : unParsedcontrolIDs.split(CONTROL_ID_SEPARATOR);
-      List<String> pollingControlIDs = new ArrayList<String>();
+      List<Integer> pollingControlIDs = new ArrayList<Integer>();
       for (String pollingControlID : controlIDs) {
-         pollingControlIDs.add(pollingControlID);
+         pollingControlIDs.add(Integer.parseInt(pollingControlID));
       }
       
       TimeoutRecord timeoutRecord = timeoutTable.query(deviceID, pollingControlIDs);
       String tempInfo = "Found: [device => " + deviceID + ", controlIDs => " + unParsedcontrolIDs + "] in TIME_OUT_TABLE.";
-      System.out.println(timeoutRecord == null ? "Not " + tempInfo : tempInfo);
+      logger.info(timeoutRecord == null ? "Not " + tempInfo : tempInfo);
       // same device
       if (timeoutRecord != null) {
-         List<String> statusChangedIDs = timeoutRecord.getStatusChangedIDs();
+         logger.info("Have queried changed data from TIME_OUT table.");
+         Set<Integer> statusChangedIDs = timeoutRecord.getStatusChangedIDs();
          if (statusChangedIDs != null && statusChangedIDs.size() != 0) {
+            logger.info("The status of found timeout record had changed during current polling and last polling.");
             skipState = queryChangedStatusesFromCachedStatusTable(statusChangedIDs);
             timeoutTable.delete(timeoutRecord);
             return skipState;
          }else {
+            logger.info("The status of found timeout record didn't change during current polling and last polling.");
             timeoutTable.delete(timeoutRecord);
          }
       } 
@@ -136,29 +149,28 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
       return skipState;
    }
    
-   private String queryChangedStatusesFromCachedStatusTable(List<String> statusChangedIDs) {
+   private String queryChangedStatusesFromCachedStatusTable(Set<Integer> statusChangedIDs) {
+      logger.info("Queriy changed data from StatusCache.");
       PollingData pollingData = new PollingData(statusChangedIDs);
-//      cachedStatusTable.query(pollingData); // TODO: Implementation of  the Cached Status DB will provice this method.
-      //Simulate query from cachedStatusTable.
-      Map<String, String> map = new HashMap<String,String>();
-      map.put("2", "ON");
-      pollingData.setChangedStatuses(map);
+      Map<Integer, String> changedStatuses = statusCacheService.queryStatuses(pollingData.getControlIDs());
+      pollingData.setChangedStatuses(changedStatuses);
+      logger.info("Have queried changed data from StatusCache.");
       return composePollingResult(pollingData);
    }
    
    /**
-    * conpose the changed statuses into xml-formatted data.
+    * compose the changed statuses into xml-formatted data.
     */
    private String composePollingResult(PollingData pollingResult) {
       StringBuffer sb = new StringBuffer();
       sb.append(XML_HEADER);
       
-      Map<String, String> changedStatuses = pollingResult.getChangedStatuses();
+      Map<Integer, String> changedStatuses = pollingResult.getChangedStatuses();
       if (changedStatuses == null) {
          return "";
       }
-      Set<String> controlIDs = changedStatuses.keySet();
-      for (String controlID : controlIDs) {
+      Set<Integer> controlIDs = changedStatuses.keySet();
+      for (Integer controlID : controlIDs) {
           sb.append("<" + XML_STATUS_RESULT_ELEMENT_NAME + " " + XML_STATUS_RESULT_ELEMENT_CONTROL_IDENTITY + "=\"" + controlID + "\">");
           sb.append(changedStatuses.get(controlID));
           sb.append("</" + XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
@@ -171,8 +183,9 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
    /**
     * Save skip-state in case of the thread which observe status change was time out.
     */
-   private void saveSkipState(String deviceID, String[] pollingControlIDs) {
+   private void saveTimeOutRecord(String deviceID, String[] pollingControlIDs) {
       timeoutTable.insert(new TimeoutRecord(deviceID, pollingControlIDs));
+      logger.info("Recording the timeout record.");
    }
 
    /**
@@ -180,6 +193,10 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
     */
    public void setTimeoutTable(TimeoutTable timeoutTable) {
       this.timeoutTable = timeoutTable;
+   }
+
+   public void setStatusCacheService(StatusCacheService statusCacheService) {
+      this.statusCacheService = statusCacheService;
    }
    
 }

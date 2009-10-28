@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 /**
  * TIME_OUT table for record skip-state.
  * 
@@ -31,7 +33,9 @@ import java.util.List;
  */
 public class TimeoutTable {
    
-   List<TimeoutRecord> recordList;
+   private List<TimeoutRecord> recordList;
+   
+   private Logger logger = Logger.getLogger(this.getClass().getName());
 
    public TimeoutTable() {
       super();
@@ -41,25 +45,26 @@ public class TimeoutTable {
    /**
     * Insert a timeout record into TIME_OUT table.
     */
-   public void insert(TimeoutRecord record) {
+   public synchronized void insert(TimeoutRecord record) {
       recordList.add(record);
    }
    
    /**
     * Delete a record from TIME_OUT table.
     */
-   public void delete(TimeoutRecord record) {
+   public synchronized void delete(TimeoutRecord record) {
       for (Iterator<TimeoutRecord> iterator = recordList.iterator(); iterator.hasNext(); ) {
          if (record.equals(iterator.next())) {
             iterator.remove();
          }
       }
+      logger.info("Delete the found timeout record.");
    }
    
    /**
     * Query timeout record by deviceID and pollingControlIDs(order-insensitive).
     */
-   public TimeoutRecord query(String deviceID, List<String> pollingControlIDs) {
+   public synchronized TimeoutRecord query(String deviceID, List<Integer> pollingControlIDs) {
       if (pollingControlIDs == null || pollingControlIDs.size() == 0) {
          return null;
       }
@@ -75,14 +80,14 @@ public class TimeoutTable {
    /**
     * Query timeout record by pollingControlIDs(order-insensitive). 
     */
-   public TimeoutRecord query(List<String> pollingControlIDs) {
+   public synchronized TimeoutRecord query(List<Integer> pollingControlIDs) {
       if (pollingControlIDs == null || pollingControlIDs.size() == 0) {
          return null;
       }
       
       Collections.sort(pollingControlIDs, new PollingControlIDListComparator());
       for (TimeoutRecord tempRecord : recordList) {
-         List<String> tempPollingControlIDs = tempRecord.getPollingControlIDs();
+         List<Integer> tempPollingControlIDs = tempRecord.getPollingControlIDs();
          if (tempPollingControlIDs.size() != pollingControlIDs.size()) {
             return null;
          }
@@ -100,7 +105,7 @@ public class TimeoutTable {
    /**
     * Query all timeout records whose pollingControlID column contains statusChangeControlID.
     */
-   public List<TimeoutRecord> query(String statusChangedControlID) {
+   public synchronized List<TimeoutRecord> query(Integer statusChangedControlID) {
       List<TimeoutRecord> statusChangedRecord = new ArrayList<TimeoutRecord>();
       for (TimeoutRecord record : recordList) {
          if (record.getPollingControlIDs().contains(statusChangedControlID)) {
@@ -108,6 +113,20 @@ public class TimeoutTable {
          }
       }
       return statusChangedRecord;
+   }
+   
+   /**
+    * Update status_changed_id column.
+    */
+   public synchronized void updateStatusChangedIDs(Integer statusChangedControlID) {
+      for(TimeoutRecord record : recordList){
+         for(Integer tmpControlId : record.getPollingControlIDs()){
+            if(statusChangedControlID.equals(tmpControlId)){
+               record.getStatusChangedIDs().add(statusChangedControlID);
+               break;
+            }
+         }
+      }
    }
    
 }

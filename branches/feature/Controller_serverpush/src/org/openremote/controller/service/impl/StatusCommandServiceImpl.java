@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusCommandService;
 
 /**
@@ -51,6 +52,8 @@ public class StatusCommandServiceImpl implements StatusCommandService {
     
     /** The Constant XML_TAIL of composed xml-formatted status results. */
     private static final String XML_TAIL = "</openremote>";
+    
+    private StatusCacheService statusCacheService;
 
     /**
      * {@inheritDoc}
@@ -87,4 +90,14 @@ public class StatusCommandServiceImpl implements StatusCommandService {
         this.remoteActionXMLParser = remoteActionXMLParser;
     }
 
+   @Override
+   public String readFromCache(String unParsedcontrolIDs) {
+//      Map<Integer, String> statuses = statusCacheService.queryStatuses(componentIds);
+      return null;
+   }
+
+   public void setStatusCacheService(StatusCacheService statusCacheService) {
+      this.statusCacheService = statusCacheService;
+   }
+   
 }

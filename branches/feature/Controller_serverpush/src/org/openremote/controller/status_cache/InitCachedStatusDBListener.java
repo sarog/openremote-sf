@@ -21,8 +21,6 @@ package org.openremote.controller.status_cache;
 
 import java.sql.Connection;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -30,6 +28,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.spring.SpringContext;
 import org.springframework.context.support.ApplicationObjectSupport;
 
@@ -49,7 +48,8 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
    /**
     * TIME_OUT table instance.
     */
-   private TimeoutTable timeoutTable = (TimeoutTable) SpringContext.getInstance().getBean("timeoutTable");;
+   private TimeoutTable timeoutTable = (TimeoutTable) SpringContext.getInstance().getBean("timeoutTable");
+   private StatusCacheService statusCacheService = (StatusCacheService) SpringContext.getInstance().getBean("statusCacheService");
 
    /* (non-Javadoc)
     * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
@@ -57,89 +57,59 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
    @Override
    public void contextInitialized(ServletContextEvent event) {
       try {
-         //The folling s are simulated for status changed in TIME_OUT table.
-         System.out.println("TIME_OUT table : Starting simulated change status tread at " + new SimpleDateFormat("yy-MM-dd HH:mm:ss").format(new Date()));
-         simulateSkipStateTrackTestCase2();
-         simulateSkipStateTrackTestCase3();
-         
-         //The followings are simulated for status changed in ObservedStatusesSubject.
-         System.out.println("ObservedStatusesSubject : Starting simulated change status tread at " + new SimpleDateFormat("yy-MM-dd HH:mm:ss").format(new Date()));
-         Thread nofityObservedStatusSubjectThread = new Thread(){
-            @Override
-            public void run() {
-               int i = 0;
-               for(; ; i++) {
-                  try {
-                     ObservedStatusesSubject observedStatusesSubject = (ObservedStatusesSubject) SpringContext.getInstance().getBean("observedStatusesSubject");
-                     if (i % 2 == 0) {
-                        observedStatusesSubject.statusChanged(new StatusChangedData("1", "OFF"));
-                     } else {
-                        observedStatusesSubject.statusChanged(new StatusChangedData("1", "ON"));
-                     }
-                     sleep(10000);
-                  } catch (InterruptedException e) {
-                     e.printStackTrace();
-                  }
-               }
-            }
-         };
-         nofityObservedStatusSubjectThread.start();
+         simulateStatusCacheControlID1();
+         simulateStatusCacheControlID2();
+         simulateStatusCacheControlID3();
       } catch (Exception e) {
          e.printStackTrace();
       }
    }
-   
    /**
-    * Simulate Test Case 2 in the SkipStateTrackTest.java <br />
+    * Simulate Case1 of StatusCahe.<br />
     * 
-    * DESC: First polling request was time out, second polling request can find previous time out record and
-    *   get the changed status during two polling requests.
+    * The device of control id is 1 will switch ON/OFF every 10 seconds.
     */
-   private void simulateSkipStateTrackTestCase2() {
-      Thread simulateThread = new Thread() {
+   private void simulateStatusCacheControlID1() {
+      Thread thread = new Thread() {
          @Override
          public void run() {
-            while (true) {
-               List<TimeoutRecord> timeoutRecords = timeoutTable.query("2");
-               for (TimeoutRecord timeoutRecord : timeoutRecords) {
-                  timeoutRecord.addStatusChangedID("2");
+            int i = 0;
+            for(; ; i++) {
+               if (i % 2 == 0) {
+                  statusCacheService.saveOrUpdateStatus(1, "ON");
+               } else {
+                  statusCacheService.saveOrUpdateStatus(1, "OFF");
                }
-               if (timeoutRecords.size() > 0) {
-                  break;
+               try {
+                  sleep(10000);
+               } catch (InterruptedException e) {
+                  e.printStackTrace();
                }
             }
          }
       };
-      simulateThread.start();
+      thread.start();
    }
    
    /**
-    * Simulate Test Case 3 in the SkipStateTrackTest.java <br />
+    * Simulate Case 2 of StatusCache.<br />
     * 
-    * DESC: First polling request was time out, second polling request can find previous time out record but
-    *   the status previous polling request care about didn't change. So, second polling should remove
-    *   previous time out record and observe status. At last getting the changed status
+    * DESC: First polling request was time out, second polling request can find previous time out record and <br />
+    *   get the changed status during two polling requests.<br /> 
+    *   So, the client will get timeout response in odd times and changed statuses in even times.
     */
-   private void simulateSkipStateTrackTestCase3() {
+   private void simulateStatusCacheControlID2() {
       Thread simulateThread = new Thread() {
          @Override
          public void run() {
-            while (true) {
-               List<TimeoutRecord> timeoutRecords = timeoutTable.query("3");
+            int i = 0;
+            for (;; i++) {
+               List<TimeoutRecord> timeoutRecords = timeoutTable.query(2);
                if (timeoutRecords != null && timeoutRecords.size() != 0) {
-                  int i = 0;
-                  for(; ; i++) {
-                     try {
-                        ObservedStatusesSubject observedStatusesSubject = (ObservedStatusesSubject) SpringContext.getInstance().getBean("observedStatusesSubject");
-                        if (i % 2 == 0) {
-                           observedStatusesSubject.statusChanged(new StatusChangedData("3", "OFF"));
-                        } else {
-                           observedStatusesSubject.statusChanged(new StatusChangedData("3", "ON"));
-                        }
-                        sleep(10000);
-                     } catch (InterruptedException e) {
-                        e.printStackTrace();
-                     }
+                  if (i % 2 == 0) {
+                     statusCacheService.saveOrUpdateStatus(2, "ON");
+                  } else {
+                     statusCacheService.saveOrUpdateStatus(2, "OFF");
                   }
                }
             }
@@ -147,6 +117,35 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
       };
       simulateThread.start();
    }
+   
+   private void simulateStatusCacheControlID3() {
+      Thread simulateThread = new Thread() {
+         @Override
+         public void run() {
+            int i = 0;
+            for (;; i++) {
+               try {
+                  Thread.sleep(80000);
+               } catch (InterruptedException e) {
+                  e.printStackTrace();
+               }
+               if (i % 2 == 0) {
+                  statusCacheService.saveOrUpdateStatus(3, "ON");
+               } else {
+                  statusCacheService.saveOrUpdateStatus(3, "OFF");
+               }
+               try {
+                  sleep(10000);
+               } catch (InterruptedException e) {
+                  e.printStackTrace();
+               }
+            }
+         }
+      };
+      simulateThread.start();
+   }
+   
+   //
 
    /* (non-Javadoc)
     * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)

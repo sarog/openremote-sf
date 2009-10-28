@@ -48,9 +48,11 @@
     <!-- service for file system operation : upload, unzip etc. -->
     <bean id="fileService" class="org.openremote.controller.service.impl.FileServiceImpl">
     </bean>
-
-
-
+    
+    <!-- status cache service -->
+    <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
+    	<property name="cache" ref="statusCache"></property>
+    </bean>
 
     <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
 		<property name = "commandBuilders">
@@ -117,4 +119,5 @@
   
   <bean id = "timeoutTable" class="org.openremote.controller.status_cache.TimeoutTable" />
 
+  <bean id = "statusCache" class="org.openremote.controller.status_cache.StatusCache" />
 </beans>
