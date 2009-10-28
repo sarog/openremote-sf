@@ -30,6 +30,7 @@
 #import "Switch.h"
 #import "GridLayoutContainer.h"
 #import "GridCell.h"
+#import "Button.h"
 
 @implementation PanelXMLParsingTests
 
@@ -52,6 +53,105 @@
 	[content release];
 	return data;
 }
+
+// panel_grid_button.xml test
+- (void) testParsePanelGridButtonXML {
+	[[Definition sharedDefinition] clearPanelXMLData];
+	NSLog(@"testParsePanelGridButtonXML ");
+	NSData *xml = [self readFile:@"panel_grid_button.xml"];
+	
+	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
+	[xmlParser setDelegate:self];
+	[xmlParser parse];
+	NSMutableArray *groups = [[Definition sharedDefinition] groups];
+	NSMutableArray *screens = [[Definition sharedDefinition] screens];
+	int image_index = 0;
+	int but_index = 0;
+	NSMutableArray *cells = [[NSMutableArray alloc] init];
+	NSMutableArray *buts = [[NSMutableArray alloc] init];
+	for (Group *group in groups) {
+		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
+		for (Screen *screen in group.screens) {			
+			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
+			for (LayoutContainer *layout in screen.layouts) {
+				if([layout isKindOfClass:[GridLayoutContainer class]]){					
+					NSLog(@"layout is grid ");
+					GridLayoutContainer *grid =(GridLayoutContainer *)layout;
+					NSString *layoutAttrs = [[NSMutableString alloc] initWithFormat:@"%d %d %d %d",grid.left,grid.top,grid.width,grid.height];
+					NSString *expectedAttrs = @"20 20 300 400";
+					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
+					[layoutAttrs release];
+					
+					for (GridCell *cell in grid.cells) {			
+						[cells addObject:cell];
+						if ([cell.control isKindOfClass:[Button class]]) {
+							Button * but = (Button *)cell.control;
+							[buts addObject:but];
+							NSString *expectedName = [[NSMutableString alloc] initWithFormat:@"%c",(char)65 + but_index];						
+							STAssertTrue([but.name isEqualToString:expectedName],@"expected %@, but %@",expectedName,but.name);
+							int expectedId = (59 + but_index++);
+							STAssertTrue(expectedId == but.controlId,@"expected %d, but %d",expectedId,but.controlId);	
+							NSString *expectedOnName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + image_index++];						
+							STAssertTrue([but.image.src isEqualToString:expectedOnName],@"expected %@, but %@",expectedOnName,but.image.src);
+							NSString *expectedOffName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + image_index++];
+							STAssertTrue([but.imagePressed.src isEqualToString:expectedOffName],@"expected %@, but %@",expectedOffName,but.imagePressed.src);
+							[expectedOnName release];
+							[expectedOffName release];
+						}	
+					}
+				}				
+			}
+		}
+	}
+	
+	NSLog(@"groups count = %d",[groups count]);
+	NSLog(@"screens count = %d",[screens count]);
+	NSLog(@"xml parse done");
+	
+	NSMutableArray *screenNames = [NSMutableArray arrayWithObjects:@"basement",@"floor",nil];
+	NSMutableArray *groupNames = [NSMutableArray arrayWithObjects:@"All rooms",@"living room",nil];
+	
+	//check screens
+	for (int i=0;i<screenNames.count;i++) {
+		STAssertTrue([[screenNames objectAtIndex:i] isEqualToString:[[screens objectAtIndex:i] name]],@"expected %@, but %@",[screenNames objectAtIndex:i],[[screens objectAtIndex:i] name]);
+		STAssertTrue(i+5 == [[screens objectAtIndex:i] screenId],@"expected %d, but %d",i+5,[[screens objectAtIndex:i] screenId]);
+	}
+	
+	//check groups
+	for (int i=0;i<groupNames.count;i++) {
+		STAssertTrue([[groupNames objectAtIndex:i] isEqualToString:[[groups objectAtIndex:i] name]],@"expected %@, but %@",[groupNames objectAtIndex:i],[[groups objectAtIndex:i] name]);
+		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
+	}
+	
+	STAssertTrue(cells.count== 5,@"expected %d, but %d",5,cells.count);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:0]).colspan == 1,@"expected %d",1);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:0]).rowspan == 1,@"expected %d",1);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:1]).rowspan == 1,@"expected %d",1);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:2]).colspan == 1,@"expected %d",1);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:3]).colspan == 1,@"expected %d",1);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:4]).colspan == 2,@"expected %d",2);
+	Screen *screen1 = (Screen *)[screens objectAtIndex:0];
+	NSString *ids = [[screen1 pollingComponentsIds] componentsJoinedByString:@","];
+	STAssertTrue([@"" isEqualToString:ids],@"expected '', but %@",ids);
+	
+	
+	STAssertTrue(buts.count== 5,@"expected %d, but %d",5,buts.count);
+	STAssertTrue(((Button *)[buts objectAtIndex:0]).navigate.toScreen == 19,@"expected %d",19);
+	STAssertTrue(((Button *)[buts objectAtIndex:0]).hasCommand == NO,@"expected NO");
+	STAssertTrue(((Button *)[buts objectAtIndex:1]).hasCommand == YES,@"expected YES");
+	STAssertTrue(((Button *)[buts objectAtIndex:1]).navigate == nil,@"expected nil");
+	STAssertTrue(((Button *)[buts objectAtIndex:2]).hasCommand == YES,@"expected YES");
+	STAssertTrue(((Button *)[buts objectAtIndex:2]).navigate.toScreen == 29,@"expected %d",29);
+	STAssertTrue(((Button *)[buts objectAtIndex:3]).hasCommand == NO,@"expected %d",NO);
+	STAssertTrue(((Button *)[buts objectAtIndex:3]).navigate.toGroup == 9,@"expected %d",9);
+	STAssertTrue(((Button *)[buts objectAtIndex:4]).hasCommand == NO,@"expected %d",NO);
+	STAssertTrue(((Button *)[buts objectAtIndex:4]).navigate.toGroup == 9,@"expected %d",9);
+	
+	[xmlParser release];
+	[xml release];
+	[cells release];
+}
+
 
 
 // panel_grid_switch.xml test
@@ -124,7 +224,7 @@
 	STAssertTrue(((GridCell *)[cells objectAtIndex:0]).rowspan == 1,@"expected %d",1);
 	STAssertTrue(((GridCell *)[cells objectAtIndex:1]).rowspan == 1,@"expected %d",1);
 	STAssertTrue(((GridCell *)[cells objectAtIndex:2]).colspan == 1,@"expected %d",1);
-	STAssertTrue(((GridCell *)[cells objectAtIndex:3]).colspan == 0,@"expected %d",0);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:3]).colspan == 1,@"expected %d",1);
 	STAssertTrue(((GridCell *)[cells objectAtIndex:4]).colspan == 2,@"expected %d",2);
 	Screen *screen1 = (Screen *)[screens objectAtIndex:0];
 	NSString *ids = [[screen1 pollingComponentsIds] componentsJoinedByString:@","];

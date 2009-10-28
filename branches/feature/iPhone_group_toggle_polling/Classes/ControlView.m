@@ -25,6 +25,8 @@
 #import "Switch.h"
 #import "ViewHelper.h"
 #import "ServerDefinition.h"
+#import "ButtonView.h"
+#import "Button.h"
 
 @interface ControlView (Private)
 
@@ -43,6 +45,8 @@
 		controlView = [ToggleView alloc];
 	} else if  ([control isKindOfClass:[Switch class]]) {
 		controlView = [SwitchView alloc];
+	} else if  ([control isKindOfClass:[Button class]]) {
+		controlView = [ButtonView alloc];
 	}
 
 	

@@ -192,29 +192,7 @@ static Definition *myInstance = nil;
 	//Calls parse method to start parse xml
 	[xmlParser parse];
 	
-//	for (Group *group in groups) {
-//		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
-//		for (Screen *screen in group.screens) {
-//			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
-//			for (LayoutContainer *layout in screen.layouts) {
-//				if([layout isKindOfClass:[AbsoluteLayoutContainer class]]){
-//
-//							NSLog(@"layout is absolute ");
-//					AbsoluteLayoutContainer *abso =(AbsoluteLayoutContainer *)layout;
-//					if ([abso.control isKindOfClass:[Toggle class]]) {
-//						Toggle *toggle = (Toggle *)abso.control;
-//						NSLog(@"toggle has %d states", toggle.states.count);
-//						for (ToggleState *st in toggle.states) {
-//							//NSLog(@"command ref = %d" ,st.commandId);
-//							NSLog(@"image = %@", st.image.src);
-//						}
-//					}
-//					
-//				}
-//				
-//			}
-//		}
-//	}
+
 	NSLog(@"groups count = %d",[groups count]);
 	NSLog(@"screens count = %d",[screens count]);
 	NSLog(@"xml parse done");

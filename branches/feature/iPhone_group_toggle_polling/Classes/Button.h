@@ -22,20 +22,24 @@
 #import <Foundation/Foundation.h>
 #import "Control.h"
 #import "Image.h"
-
+#import "Navigate.h"
 
 @interface Button : Control {
 	
+	NSString *name;
 	Image	*image;
 	Image *imagePressed;
-	bool repeat;
-	int commandId;
-	
+	BOOL repeat;
+	BOOL hasCommand;
+	Navigate *navigate;
 
 }
+
+@property (nonatomic, readonly) NSString *name;
 @property (nonatomic, readonly) Image *image;
 @property (nonatomic, readonly) Image *imagePressed;
-@property (nonatomic, readonly) bool repeat;
-@property (nonatomic, readonly) int commandId;
+@property (nonatomic, readonly) BOOL repeat;
+@property (nonatomic, readonly) BOOL hasCommand;
+@property (nonatomic, readonly) Navigate *navigate;
 
 @end

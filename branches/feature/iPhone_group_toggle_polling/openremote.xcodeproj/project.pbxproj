@@ -50,7 +50,6 @@
 		8C460ED91095573600C7A686 /* Label.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EBE1095573600C7A686 /* Label.m */; };
 		8C460EDA1095573600C7A686 /* LayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC01095573600C7A686 /* LayoutContainer.m */; };
 		8C460EDB1095573600C7A686 /* Navigate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC21095573600C7A686 /* Navigate.m */; };
-		8C460EDC1095573600C7A686 /* NavigateButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC41095573600C7A686 /* NavigateButton.m */; };
 		8C460EDD1095573600C7A686 /* Screen.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC61095573600C7A686 /* Screen.m */; };
 		8C460EDE1095573600C7A686 /* Switch.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC81095573600C7A686 /* Switch.m */; };
 		8C460EDF1095573600C7A686 /* Toggle.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460ECA1095573600C7A686 /* Toggle.m */; };
@@ -69,7 +68,6 @@
 		8C460EEC1095573600C7A686 /* Label.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EBE1095573600C7A686 /* Label.m */; };
 		8C460EED1095573600C7A686 /* LayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC01095573600C7A686 /* LayoutContainer.m */; };
 		8C460EEE1095573600C7A686 /* Navigate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC21095573600C7A686 /* Navigate.m */; };
-		8C460EEF1095573600C7A686 /* NavigateButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC41095573600C7A686 /* NavigateButton.m */; };
 		8C460EF01095573600C7A686 /* Screen.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC61095573600C7A686 /* Screen.m */; };
 		8C460EF11095573600C7A686 /* Switch.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC81095573600C7A686 /* Switch.m */; };
 		8C460EF21095573600C7A686 /* Toggle.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460ECA1095573600C7A686 /* Toggle.m */; };
@@ -127,6 +125,8 @@
 		8C6502E3109809EC006FC19F /* PollingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6502E1109809EC006FC19F /* PollingHelper.m */; };
 		8C6504731098337F006FC19F /* panel_grid_switch.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C6504721098337F006FC19F /* panel_grid_switch.xml */; };
 		8C650568109870D2006FC19F /* GridCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C650567109870D2006FC19F /* GridCellView.m */; };
+		8C6505F810987E1D006FC19F /* panel_grid_button.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C6505F710987E1D006FC19F /* panel_grid_button.xml */; };
+		8C650624109882F2006FC19F /* GridCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C650567109870D2006FC19F /* GridCellView.m */; };
 		8C6528480FC0F64F002632BF /* InitViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C6528470FC0F64F002632BF /* InitViewController.xib */; };
 		8C652A490FC125AD002632BF /* loading.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C652A480FC125AD002632BF /* loading.png */; };
 		8C652A4D0FC125FE002632BF /* global.logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C652A4C0FC125FE002632BF /* global.logo.png */; };
@@ -221,8 +221,6 @@
 		8C460EC01095573600C7A686 /* LayoutContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayoutContainer.m; sourceTree = "<group>"; };
 		8C460EC11095573600C7A686 /* Navigate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Navigate.h; sourceTree = "<group>"; };
 		8C460EC21095573600C7A686 /* Navigate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Navigate.m; sourceTree = "<group>"; };
-		8C460EC31095573600C7A686 /* NavigateButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigateButton.h; sourceTree = "<group>"; };
-		8C460EC41095573600C7A686 /* NavigateButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigateButton.m; sourceTree = "<group>"; };
 		8C460EC51095573600C7A686 /* Screen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Screen.h; sourceTree = "<group>"; };
 		8C460EC61095573600C7A686 /* Screen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Screen.m; sourceTree = "<group>"; };
 		8C460EC71095573600C7A686 /* Switch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Switch.h; sourceTree = "<group>"; };
@@ -271,6 +269,7 @@
 		8C6504721098337F006FC19F /* panel_grid_switch.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_grid_switch.xml; sourceTree = "<group>"; };
 		8C650566109870D2006FC19F /* GridCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridCellView.h; sourceTree = "<group>"; };
 		8C650567109870D2006FC19F /* GridCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridCellView.m; sourceTree = "<group>"; };
+		8C6505F710987E1D006FC19F /* panel_grid_button.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_grid_button.xml; sourceTree = "<group>"; };
 		8C6528470FC0F64F002632BF /* InitViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InitViewController.xib; sourceTree = "<group>"; };
 		8C652A480FC125AD002632BF /* loading.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = loading.png; sourceTree = "<group>"; };
 		8C652A4C0FC125FE002632BF /* global.logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = global.logo.png; sourceTree = "<group>"; };
@@ -449,6 +448,7 @@
 				8C460E51109552EB00C7A686 /* panel_absolute_toggle.xml */,
 				8C460E52109552EB00C7A686 /* PanelXMLParsingTests.h */,
 				8C6504721098337F006FC19F /* panel_grid_switch.xml */,
+				8C6505F710987E1D006FC19F /* panel_grid_button.xml */,
 			);
 			name = Tests;
 			sourceTree = "<group>";
@@ -516,8 +516,6 @@
 				8C460EC01095573600C7A686 /* LayoutContainer.m */,
 				8C460EC11095573600C7A686 /* Navigate.h */,
 				8C460EC21095573600C7A686 /* Navigate.m */,
-				8C460EC31095573600C7A686 /* NavigateButton.h */,
-				8C460EC41095573600C7A686 /* NavigateButton.m */,
 				8C460EC51095573600C7A686 /* Screen.h */,
 				8C460EC61095573600C7A686 /* Screen.m */,
 				8C460EC71095573600C7A686 /* Switch.h */,
@@ -694,6 +692,7 @@
 				8C460E54109552EB00C7A686 /* panel_absolute_toggle.xml in Resources */,
 				8C460F8E1095666A00C7A686 /* panel_absolute_switch.xml in Resources */,
 				8C6504731098337F006FC19F /* panel_grid_switch.xml in Resources */,
+				8C6505F810987E1D006FC19F /* panel_grid_button.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -753,7 +752,6 @@
 				8C460ED91095573600C7A686 /* Label.m in Sources */,
 				8C460EDA1095573600C7A686 /* LayoutContainer.m in Sources */,
 				8C460EDB1095573600C7A686 /* Navigate.m in Sources */,
-				8C460EDC1095573600C7A686 /* NavigateButton.m in Sources */,
 				8C460EDD1095573600C7A686 /* Screen.m in Sources */,
 				8C460EDE1095573600C7A686 /* Switch.m in Sources */,
 				8C460EDF1095573600C7A686 /* Toggle.m in Sources */,
@@ -784,6 +782,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C650624109882F2006FC19F /* GridCellView.m in Sources */,
 				8C460F9E109566F900C7A686 /* main.m in Sources */,
 				8C460F9F109566F900C7A686 /* URLConnectionHelper.m in Sources */,
 				8C460FA0109566F900C7A686 /* FileUtils.m in Sources */,
@@ -817,7 +816,6 @@
 				8C460EEC1095573600C7A686 /* Label.m in Sources */,
 				8C460EED1095573600C7A686 /* LayoutContainer.m in Sources */,
 				8C460EEE1095573600C7A686 /* Navigate.m in Sources */,
-				8C460EEF1095573600C7A686 /* NavigateButton.m in Sources */,
 				8C460EF01095573600C7A686 /* Screen.m in Sources */,
 				8C460EF11095573600C7A686 /* Switch.m in Sources */,
 				8C460EF21095573600C7A686 /* Toggle.m in Sources */,

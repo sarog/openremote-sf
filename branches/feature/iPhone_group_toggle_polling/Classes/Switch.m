@@ -27,11 +27,6 @@
 
 @synthesize onImage, offImage;
 
-//whether to use native style on specified system, e.g. UISwitch on iPhone.
--(BOOL) useNativeStyle {
-	return (onImage == nil) || (offImage == nil);
-}
-
 
 //get element name, must be overriden in subclass
 - (NSString *) elementName {

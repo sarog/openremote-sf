@@ -23,7 +23,15 @@
 #import "XMLEntity.h"
 
 @interface Navigate : XMLEntity {
+	
+	int toScreen;
+	int toGroup;
+
 
 }
+
+@property (nonatomic, readonly) int toScreen;
+@property (nonatomic, readonly) int toGroup;
+
 
 @end
