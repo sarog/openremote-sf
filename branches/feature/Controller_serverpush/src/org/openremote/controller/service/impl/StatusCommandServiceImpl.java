@@ -20,6 +20,7 @@
 package org.openremote.controller.service.impl;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -92,8 +93,30 @@ public class StatusCommandServiceImpl implements StatusCommandService {
 
    @Override
    public String readFromCache(String unParsedcontrolIDs) {
-//      Map<Integer, String> statuses = statusCacheService.queryStatuses(componentIds);
-      return null;
+      Set<Integer> statusComponentIDs = parseStatusComponentIDStrToSet(unParsedcontrolIDs);
+      Map<Integer, String> latestStatuses = statusCacheService.queryStatuses(statusComponentIDs);
+      
+      StringBuffer sb = new StringBuffer();
+      sb.append(XML_HEADER);
+      Set<Integer> componentIDs = latestStatuses.keySet();
+      for (Integer componentID : componentIDs) {
+          sb.append("<" + XML_STATUS_RESULT_ELEMENT_NAME + " " + XML_STATUS_RESULT_ELEMENT_CONTROL_IDENTITY + "=\"" + componentID + "\">");
+          sb.append(latestStatuses.get(componentID));
+          sb.append("</" + XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
+          sb.append("\n");
+      }
+      sb.append(XML_TAIL); 
+      
+      return sb.toString();
+   }
+   
+   private Set<Integer> parseStatusComponentIDStrToSet(String unParsedcontrolIDs) {
+      String[] parsedControlIDs = unParsedcontrolIDs.split(CONTROL_ID_SEPARATOR);
+      Set<Integer> statusComponentIDs = new HashSet<Integer>();
+      for (String statusConponentID : parsedControlIDs) {
+         statusComponentIDs.add(Integer.parseInt(statusConponentID));
+      }
+      return statusComponentIDs;
    }
 
    public void setStatusCacheService(StatusCacheService statusCacheService) {

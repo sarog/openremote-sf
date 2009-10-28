@@ -86,7 +86,7 @@ public class StatusCommandRESTServlet extends HttpServlet {
             try {
                 if (unParsedcontrolIDs != null && !"".equals(unParsedcontrolIDs)) {
                     PrintWriter printWriter = response.getWriter();
-                    printWriter.write(statusCommandService.trigger(unParsedcontrolIDs));
+                    printWriter.write(statusCommandService.readFromCache(unParsedcontrolIDs));
                 }
             } catch (ButtonCommandException e) {
                 logger.error("CommandException occurs", e);
