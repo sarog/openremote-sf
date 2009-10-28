@@ -30,7 +30,7 @@ package org.openremote.controller.status_cache;
 public class StatusChangedData {
 
    /** The control id of status changed . */
-   private String statusChangedControlID;
+   private Integer statusChangedControlID;
 
    /** The current status of status changed. */
    private String currentStatusAfterChanged;
@@ -42,17 +42,17 @@ public class StatusChangedData {
    /**
     * Initialized by control id and current status of status changed. 
     */
-   public StatusChangedData(String statusChangedControlID, String currentStatusAfterChanged) {
+   public StatusChangedData(Integer statusChangedControlID, String currentStatusAfterChanged) {
       super();
       this.currentStatusAfterChanged = currentStatusAfterChanged;
       this.statusChangedControlID = statusChangedControlID;
    }
 
-   public String getStatusChangedControlID() {
+   public Integer getStatusChangedControlID() {
       return statusChangedControlID;
    }
 
-   public void setStatusChangedControlID(String statusChangedControlID) {
+   public void setStatusChangedControlID(Integer statusChangedControlID) {
       this.statusChangedControlID = statusChangedControlID;
    }
 

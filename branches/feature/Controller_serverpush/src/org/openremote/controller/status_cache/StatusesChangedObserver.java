@@ -19,7 +19,7 @@
 */
 package org.openremote.controller.status_cache;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * This Observer class is responsible for 
@@ -30,7 +30,7 @@ import java.util.List;
 public class StatusesChangedObserver {
 
    /** The control ids which a polling request care about. */
-   private List<String> pollingControlIDs;
+   private Set<Integer> pollingControlIDs;
    
    /**
     * The subject which current observer instance observed.
@@ -51,7 +51,7 @@ public class StatusesChangedObserver {
       super();
    }
    
-   public StatusesChangedObserver(ObservedStatusesSubject observedStatusesSubject, List<String> pollingControlIDs) {
+   public StatusesChangedObserver(ObservedStatusesSubject observedStatusesSubject, Set<Integer> pollingControlIDs) {
       super();
       this.observedStatusesSubject = observedStatusesSubject;
       this.observedStatusesSubject.registerObserver(this);
@@ -66,11 +66,11 @@ public class StatusesChangedObserver {
       this.statusChangeData = statusChangeData;
    }
 
-   public List<String> getPollingControlIDs() {
+   public Set<Integer> getPollingControlIDs() {
       return pollingControlIDs;
    }
 
-   public void setPollingControlIDs(List<String> pollingControlIDs) {
+   public void setPollingControlIDs(Set<Integer> pollingControlIDs) {
       this.pollingControlIDs = pollingControlIDs;
    }
 

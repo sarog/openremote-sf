@@ -22,6 +22,7 @@ package org.openremote.controller.status_cache;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.openremote.controller.spring.SpringContext;
 
 /**
@@ -50,6 +51,8 @@ public class PollingThread extends Thread {
     */
    private PollingData pollingData;
    
+   private Logger logger = Logger.getLogger(this.getClass().getName());
+   
    public PollingThread() {
       super();
    }
@@ -66,10 +69,11 @@ public class PollingThread extends Thread {
    public void run() {
       ObservedStatusesSubject observedStatusesSubject = (ObservedStatusesSubject) SpringContext.getInstance().getBean("observedStatusesSubject");
       StatusesChangedObserver statusChangeObserver = new StatusesChangedObserver(observedStatusesSubject, pollingData.getControlIDs());
+      logger.info("Observing change of component status ...");
       while(isWaitingStatusChange) {
          StatusChangedData statusChangeData = statusChangeObserver.getStatusChangeData();
          if (statusChangeData != null) {
-            Map<String, String> changedStatuses = new HashMap<String, String>();
+            Map<Integer, String> changedStatuses = new HashMap<Integer, String>();
             changedStatuses.put(statusChangeData.getStatusChangedControlID(), statusChangeData.getCurrentStatusAfterChanged());
             pollingData.setChangedStatuses(changedStatuses);
             break;

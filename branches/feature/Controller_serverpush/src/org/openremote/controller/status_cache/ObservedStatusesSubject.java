@@ -75,7 +75,7 @@ public class ObservedStatusesSubject {
     * Judge if the observer contain the changed control id. 
     */
    private boolean containControlID(StatusesChangedObserver statusChangeObserver) {
-      for (String pollingControlID : statusChangeObserver.getPollingControlIDs()) {
+      for (Integer pollingControlID : statusChangeObserver.getPollingControlIDs()) {
          if (this.statusChangeData.getStatusChangedControlID().equals(pollingControlID)) {
             return true;
          }
