@@ -37,10 +37,11 @@
 	}
 
 	[self addSubview:controlView];
-	if ([controlView hasPollingStatus]) {
-		[pollingComponents addObject:controlView];
-	}
+
+	
 }
+
+
 
 
 - (void)drawRect:(CGRect)rect {

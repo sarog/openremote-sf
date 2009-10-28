@@ -25,7 +25,7 @@
 @interface LayoutContainerView : UIView {
 	
 	LayoutContainer *layout;
-	NSMutableArray *pollingComponents;
+
 	
 }
 
@@ -34,7 +34,7 @@
 + (LayoutContainerView *)buildWithLayoutContainer:(LayoutContainer *)layoutContainer;
 
 @property (nonatomic, readonly) LayoutContainer *layout;
-@property (nonatomic, readonly) NSMutableArray *pollingComponents;
+
 
 @end
 

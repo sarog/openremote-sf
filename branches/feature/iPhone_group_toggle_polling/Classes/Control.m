@@ -40,6 +40,15 @@
 	}
 	return [newControl initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
 }
+
+/* Whether this control has status to do polling.
+ * Returns YES if it has.
+ * NOTE: This is an abstract method, must be implemented in subclass
+ */
+- (BOOL)hasPollingStatus {
+	[self doesNotRecognizeSelector:_cmd];
+	return NO;
+}
 	
 	
 @end

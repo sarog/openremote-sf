@@ -40,6 +40,15 @@
 	return self;
 }
 
+- (NSArray *)pollingComponentsIds {
+	NSMutableArray *ids = [[NSMutableArray alloc] init];
+	if ([control hasPollingStatus]) {
+		[ids addObject:[NSString stringWithFormat:@"%d",control.controlId]];
+	}
+
+	return ids;
+}
+
 // get element name, must be overriden in subclass
 - (NSString *) elementName {
 	return @"absolute";

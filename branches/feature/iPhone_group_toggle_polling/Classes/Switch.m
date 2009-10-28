@@ -38,6 +38,10 @@
 	return @"switch";
 }
 
+- (BOOL)hasPollingStatus {
+	return YES;
+}
+
 #pragma mark Delegate methods of NSXMLParser  
 
 

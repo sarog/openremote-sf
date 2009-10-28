@@ -53,6 +53,14 @@
 	return @"screen";
 }
 
+- (NSArray *)pollingComponentsIds {
+	NSMutableArray *ids = [[NSMutableArray alloc] init];
+	for (LayoutContainer *layout in layouts) {		
+		[ids addObjectsFromArray:[layout pollingComponentsIds]];
+	}
+	return ids;
+}
+
 #pragma mark deleget method of NSXMLParser
 
 //Parse sub element in screen 

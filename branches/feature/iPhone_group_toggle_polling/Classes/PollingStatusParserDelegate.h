@@ -19,19 +19,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
 #import <Foundation/Foundation.h>
+#import "ControlView.h"
 
-extern NSString *const DefinationUpdateDidFinishedNotification;
-extern NSString *const DefinationNeedNotUpdate;
-extern NSString *const NotificationShowSettingsView; 
-extern NSString *const NotificationHideInitView; 
-extern NSString *const NotificationRefreshAcitivitiesView;
-extern NSString *const NotificationRefreshGroupsView;
-extern NSString *const NotificationPollingStatusIdFormat;
-
-@interface NotificationConstant : NSObject {
+// Parse the returned status XML from polling REST API
+@interface PollingStatusParserDelegate : NSObject {
+	
+	NSString *lastId;
+	NSMutableDictionary *statusMap;
 
 }
+
+@property (nonatomic,readonly)	NSString *lastId;
+@property (nonatomic,readonly)	NSMutableDictionary *statusMap;
+
 
 @end

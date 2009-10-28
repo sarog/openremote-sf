@@ -63,6 +63,7 @@ NSFileManager *fileManager;
 	
 	[fileManager createFileAtPath:filePathToSave contents:data attributes:nil];
 	[request release];
+	[url release];
 }
 
 + (void)makeSurePathExists:(NSString *)path {

@@ -35,21 +35,12 @@
 //Instance methods:
 - (id)initWithControl:(Control *)c frame:(CGRect)frame;
 
-/* Whether this control has status to do polling.
- * Returns YES if it has.
- * NOTE: This is an abstract method, must be implemented in subclass
- */
-- (BOOL)hasPollingStatus;
-
 
 /* Sets polling status.
  * Returns YES if success, returns NO if the status is invalid.
  * NOTE: This is an abstract method, must be implemented in subclass
  */
-- (BOOL)setPollingStatus:(NSString *)status;
-
-- (int)getControlId;
-
+- (void)setPollingStatus:(NSNotification *)notification;
 - (void)sendCommandRequest:(NSString *)commandType;
 - (void)handleServerErrorWithStatusCode:(int) statusCode;
 

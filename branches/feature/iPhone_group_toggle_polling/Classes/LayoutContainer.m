@@ -27,6 +27,9 @@
 @synthesize left,top,width,height;
 
 
-
+- (NSArray *)pollingComponentsIds {
+	[self doesNotRecognizeSelector:_cmd];
+	return nil;
+}
 
 @end

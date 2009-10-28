@@ -158,6 +158,8 @@ static Definition *myInstance = nil;
 	[self changeLoadingMessage:msg];
 	NSLog(msg);
 	[FileUtils downloadFromURL:[[ServerDefinition imageUrl] stringByAppendingPathComponent:imageName]  path:[DirectoryDefinition imageCacheFolder]];
+	[imageName release];
+	[msg release];
 }
 
 - (void)parseXml {
@@ -249,7 +251,7 @@ static Definition *myInstance = nil;
 }
 
 /**
- * When we find an activity end element, restore the original XML parser delegate.
+ * When we find an openremote end element, restore the original XML parser delegate.
  */
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
 	if ([elementName isEqualToString:@"openremote"]) {

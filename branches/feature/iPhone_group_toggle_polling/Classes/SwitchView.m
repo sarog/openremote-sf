@@ -21,6 +21,9 @@
 
 #import "SwitchView.h"
 #import "DirectoryDefinition.h"
+#import "ViewHelper.h"
+#import "PollingStatusParserDelegate.h"
+#import "NotificationConstant.h"
 
 
 @interface SwitchView (Private)
@@ -35,7 +38,7 @@
 
 @implementation SwitchView
 
-@synthesize timer, button, onUIImage, offUIImage;
+@synthesize button, onUIImage, offUIImage;
 
 - (void)stateChanged:(id)sender {
 	if (isOn) {
@@ -47,17 +50,16 @@
 	} 
 }
 
-- (BOOL)setPollingStatus:(NSString *)status {
-	if ([status isEqualToString:@"ON"]) {
+- (void)setPollingStatus:(NSNotification *)notification {
+	PollingStatusParserDelegate *delegate = (PollingStatusParserDelegate *)[notification object];
+	NSString *newStatus = [delegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",control.controlId]];
+	if ([[newStatus uppercaseString] isEqualToString:@"ON"]) {
 		[self setOn:YES];
-	} else if ([status isEqualToString:@"OFF"]) {
+	} else if ([[newStatus uppercaseString] isEqualToString:@"OFF"]) {
 		[self setOn:NO];
-	} else {
-		return NO;
-	}
-
-	return YES;
+	} 
 }
+
 
 - (void)setOn:(BOOL)on {
 	if (on) {
@@ -84,6 +86,12 @@
 //Create button according to control and add tap event
 - (void)createButton {
 	
+	//avoid overlap the same button by mistake
+	if (button) {
+		[button removeFromSuperview];
+		[button release];
+	}
+	
 	button = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
 	[button addTarget:self action:@selector(stateChanged:) forControlEvents:UIControlEventTouchUpInside];
 	
@@ -93,15 +101,8 @@
 	NSString *offImage = theSwitch.offImage.src;
 	
 	//assign YES if have both on image and off image
-	canUseImage = onImage && [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:onImage]] 
-	&& offImage && [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:offImage]];
-	
+	canUseImage = onImage && offImage;
 }
-
-- (BOOL)hasPollingStatus {
-	return YES;
-}
-
 
 //NOTE:You should init all nested views with *initWithFrame* and you should pass in valid frame rects.
 //Otherwise, UI widget inside will not work in nested UIViews
@@ -114,33 +115,6 @@
 	if (canUseImage) {
 		 onUIImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:onImage]];
 		 offUIImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:offImage]];
-	 		//if (onUIImage.size.width > self.bounds.size.width || onUIImage.size.height > self.bounds.size.height) {
-//	 			CGSize size = CGSizeMake(0,0);
-//	 			if ((onUIImage.size.width -  self.bounds.size.width) > (onUIImage.size.height - self.bounds.size.height)) {
-//	 				size = CGSizeMake(self.bounds.size.width, onUIImage.size.height * ((onUIImage.size.width -  self.bounds.size.width) /onUIImage.size.width ));
-//	 			} else {
-//	 				size = CGSizeMake(onUIImage.size.width * ((onUIImage.size.height -  self.bounds.size.height) /onUIImage.size.height ), self.bounds.size.height);
-//	 			}
-//	 			NSLog(@"CGSize width = %d,height = %d",size.width,size.height);
-//	 			UIGraphicsBeginImageContext(size);
-//	 			
-//	 			CGContextRef context = UIGraphicsGetCurrentContext();
-//				CGContextTranslateCTM(context, 0.0, size.height);
-//	 			CGContextScaleCTM(context, 1.0, -1.0);
-//	 			
-//	 			CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), onUIImage.CGImage);
-//	 			
-//	 			UIImage* scaledImage = UIGraphicsGetImageFromCurrentImageContext();
-//	 			
-//	 			UIGraphicsEndImageContext();
-//	 			
-//	 			
-//	 			[button setImage:scaledImage forState:UIControlStateNormal];
-	 		//} else {
-				//[button setImage:offUIImage forState:UIControlStateNormal];
-	 		//}
-	 
-	 
 	 } else {
 		UIImage *buttonImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
 		[button setBackgroundImage:buttonImage forState:UIControlStateNormal];
@@ -151,16 +125,15 @@
 		button.titleLabel.font = [UIFont boldSystemFontOfSize:18];
 		[button setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
 		button.titleLabel.shadowOffset = CGSizeMake(0, -2);
-		
 	}
 	[self setOn:NO];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,control.controlId] object:nil];
 }
 
 
 
 - (void)dealloc {
 	[button release];
-	[timer release];
 	[onUIImage release];
 	[offUIImage release];
 	[super dealloc];
