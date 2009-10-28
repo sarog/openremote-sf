@@ -57,6 +57,7 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
    @Override
    public void contextInitialized(ServletContextEvent event) {
       try {
+         InitStatusCache();
          simulateStatusCacheControlID1();
          simulateStatusCacheControlID2();
          simulateStatusCacheControlID3();
@@ -64,6 +65,17 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
          e.printStackTrace();
       }
    }
+   
+   /**
+    * Init 4 components initial status.
+    */
+   private void InitStatusCache() {
+      statusCacheService.saveOrUpdateStatus(1, "OFF");
+      statusCacheService.saveOrUpdateStatus(2, "OFF");
+      statusCacheService.saveOrUpdateStatus(3, "OFF");
+      statusCacheService.saveOrUpdateStatus(4, "OFF");
+   }
+   
    /**
     * Simulate Case1 of StatusCahe.<br />
     * 
@@ -110,6 +122,11 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
                      statusCacheService.saveOrUpdateStatus(2, "ON");
                   } else {
                      statusCacheService.saveOrUpdateStatus(2, "OFF");
+                  }
+                  try {
+                     sleep(10000);
+                  } catch (InterruptedException e) {
+                     e.printStackTrace();
                   }
                }
             }

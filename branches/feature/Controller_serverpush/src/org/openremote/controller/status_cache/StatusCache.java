@@ -60,7 +60,11 @@ public class StatusCache {
       }
       Map<Integer,String> statuses = new HashMap<Integer,String>();
       for (Integer controlId :controlIds){
-         statuses.put(controlId, this.controlStatus.get(controlId));
+         if (this.controlStatus.get(controlId) == null || "".equals(this.controlStatus.get(controlId))) {
+            //TODO: throw NoSuchComponentException();
+         } else {
+            statuses.put(controlId, this.controlStatus.get(controlId));
+         }
       }
       return statuses;
    }
