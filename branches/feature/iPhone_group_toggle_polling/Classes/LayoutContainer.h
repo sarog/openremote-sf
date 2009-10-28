@@ -36,5 +36,6 @@
 @property (nonatomic, readonly) int width;
 @property (nonatomic, readonly) int height;
 
+- (NSArray *)pollingComponentsIds;
 
 @end

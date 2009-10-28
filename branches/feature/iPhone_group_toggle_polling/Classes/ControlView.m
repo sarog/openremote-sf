@@ -52,34 +52,17 @@
 - (id)initWithControl:(Control *)c frame:(CGRect)frame{
 	if (self = [super initWithFrame:frame]) {
 		control = c;
-		[self layoutSubviews];
 	}
+
 	return self;
-}
-
-/* Whether this control has status to do polling.
- * Returns YES if it has.
- * NOTE: This is an abstract method, must be implemented in subclass
- */
-- (BOOL)hasPollingStatus {
-	[self doesNotRecognizeSelector:_cmd];
-	return NO;
-}
-
-- (int)getControlId {
-	if (control) {
-		return control.controlId;	
-	}
-	return -1;
 }
 
 /* Sets polling status.
  * Returns YES if success, returns NO if the status is invalid.
  * NOTE: This is an abstract method, must be implemented in subclass
  */
-- (BOOL)setPollingStatus:(NSString *)status {
+- (void)setPollingStatus:(NSNotification *)notification {
 	[self doesNotRecognizeSelector:_cmd];
-	return NO;
 }
 
 - (void)sendCommandRequest:(NSString *)commandType{

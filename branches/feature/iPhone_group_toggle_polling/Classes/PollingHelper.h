@@ -19,19 +19,30 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
 #import <Foundation/Foundation.h>
+#import "URLConnectionHelper.h"
 
-extern NSString *const DefinationUpdateDidFinishedNotification;
-extern NSString *const DefinationNeedNotUpdate;
-extern NSString *const NotificationShowSettingsView; 
-extern NSString *const NotificationHideInitView; 
-extern NSString *const NotificationRefreshAcitivitiesView;
-extern NSString *const NotificationRefreshGroupsView;
-extern NSString *const NotificationPollingStatusIdFormat;
+//Setup a polling connection to detect the component status changes and 
+//notificate the new status to component on screen.
 
-@interface NotificationConstant : NSObject {
+@interface PollingHelper : NSObject <URLConnectionHelperDelegate> {
+	
+	NSString *pollingStatusIds;
+	BOOL isPolling;
+	BOOL isError;
 
 }
+
+- (id) initWithComponentIds:(NSString *)ids;
+
+
+- (void)requestCurrentStatusAndStartPolling;
+
+
+- (void)cancelPolling;
+
+@property(nonatomic,readonly) BOOL isPolling;
+@property(nonatomic,readonly) BOOL isError;
+@property(nonatomic,readonly) NSString *pollingStatusIds;
 
 @end

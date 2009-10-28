@@ -29,7 +29,7 @@
 
 @implementation LayoutContainerView
 
-@synthesize layout, pollingComponents;
+@synthesize layout;
 
 
 + (LayoutContainerView *)buildWithLayoutContainer:(LayoutContainer *)layoutContainer {
@@ -53,7 +53,6 @@
 - (id)initWithLayoutContainer:(LayoutContainer *)layoutContainer frame:(CGRect)frame{
 	if (self = [super initWithFrame:frame]) {
 		layout = layoutContainer;		
-		pollingComponents = [[NSMutableArray alloc] init];
 		//[self setBackgroundColor:[UIColor whiteColor]];
 		
 		/* If you need to create a rectangle that is either larger or smaller than an existing rectangle, 
@@ -63,11 +62,9 @@
 		//[self setFrame:CGRectInset(CGRectMake(layout.left, layout.top, layout.width, layout.height),-2.0f, -2.0f)];		
 		//[self setFrame:CGRectMake(layout.left, layout.top, layout.width, layout.height)];
 		
-		[self layoutSubviews];
 	}
 	return self;
 }
-
 
 
 - (void)dealloc {

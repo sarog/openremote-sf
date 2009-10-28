@@ -33,7 +33,7 @@
 
 }
 
-
+- (NSArray *)pollingComponentsIds;
 
 @property (nonatomic,readonly) int screenId;
 @property (nonatomic,readonly) NSString *name;

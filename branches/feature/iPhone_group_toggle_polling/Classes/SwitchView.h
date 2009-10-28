@@ -25,9 +25,9 @@
 #import "ControlView.h"
 #import "URLConnectionHelper.h"
 
+
 @interface SwitchView : ControlView {
 	UIButton *button;
-	NSTimer *timer;
 	BOOL isOn;
 	BOOL isError;
 	BOOL canUseImage;
@@ -36,7 +36,6 @@
 }
 
 @property (nonatomic,readonly)UIButton *button;
-@property (nonatomic,readonly)NSTimer *timer;
 @property (nonatomic,readonly)UIImage *onUIImage;
 @property (nonatomic,readonly)UIImage *offUIImage;
 

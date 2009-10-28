@@ -34,4 +34,10 @@
 
 + (id)buildWithXMLParser:(NSString *) controlType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent;
 
+/* Whether this control has status to do polling.
+ * Returns YES if it has.
+ * NOTE: This is an abstract method, must be implemented in subclass
+ */
+- (BOOL)hasPollingStatus;
+
 @end
