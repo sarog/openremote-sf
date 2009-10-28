@@ -59,6 +59,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <fileset dir = "${lib.dir}/core" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/calimero"/>
     <fileset dir = "${lib.dir}/x10"/>
+    <fileset dir = "${lib.dir}/rxtx"/>
     <fileset dir = "${lib.dir}/apache/commons-net"/>
     <fileset dir = "${lib.dir}/apache/commons-lang"/>
     <path location = "${classes.dir}"/>
@@ -113,9 +114,6 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
         <include name = "**/*.jar"/>
       </fileset>
       <fileset dir = "${lib.dir}/apache">
-        <include name = "**/*.jar"/>
-      </fileset>
-      <fileset dir = "${lib.dir}/gnu">
         <include name = "**/*.jar"/>
       </fileset>
       <fileset dir = "${lib.dir}/rxtx">
