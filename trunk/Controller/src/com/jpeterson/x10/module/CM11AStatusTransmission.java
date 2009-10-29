@@ -105,17 +105,6 @@ public class CM11AStatusTransmission extends Object
         // send status request
         out.write(STATUS_REQ);
 
-        // wait a second and a half
-        try
-        {
-            // TODO : this needs to be something smarter or configurable delay -- 1.5s is just a guess [JPL]
-            
-            Thread.sleep(1500);
-        }
-        catch (InterruptedException e)
-        {
-            // do nothing
-        }
         if (System.getProperty("DEBUG") != null)
         {
             System.out.println("Bytes available: " + in.available());
