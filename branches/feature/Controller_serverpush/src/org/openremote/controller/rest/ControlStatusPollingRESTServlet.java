@@ -32,6 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.Constants;
+import org.openremote.controller.exception.ControlCommandException;
+import org.openremote.controller.exception.InvalidPollingURLException;
 import org.openremote.controller.service.ControlStatusPollingService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -77,16 +80,26 @@ public class ControlStatusPollingRESTServlet extends HttpServlet {
       if (matcher.find()) {
          deviceID = matcher.group(1);
          unParsedcontrolIDs = matcher.group(2);
-         PrintWriter printWriter = response.getWriter();         
-         
-         String skipState = controlStatusPollingService.querySkipState(deviceID, unParsedcontrolIDs);
-         if (skipState != null && !"".equals(skipState)) {
-            logger.info("Return the skip state which queried from StatusCache.");
-            printWriter.write(skipState);
-         } else {
-            printWriter.write(controlStatusPollingService.getChangedStatuses(startTime, deviceID, unParsedcontrolIDs));
+         PrintWriter printWriter = response.getWriter();
+         try {
+            String skipState = controlStatusPollingService.querySkipState(deviceID, unParsedcontrolIDs);
+            if (skipState != null && !"".equals(skipState)) {
+               logger.info("Return the skip state which queried from StatusCache.");
+               printWriter.write(skipState);
+            } else {
+               String state = controlStatusPollingService.getChangedStatuses(startTime, deviceID, unParsedcontrolIDs);
+               if (Constants.SERVER_RESPONSE_TIME_OUT.equalsIgnoreCase(state)) {
+                  response.sendError(504, "Time out!");
+               } else {
+                  printWriter.write(state);
+               }
+            }
+            logger.info("Finished polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
+         } catch (InvalidPollingURLException e) {
+            response.sendError(e.getErrorCode(), e.getMessage());
          }
-         logger.info("Finished polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
+      } else {
+         response.sendError(ControlCommandException.INVALID_POLLING_URL, "Invalid polling url:"+url);
       }
    }
    
