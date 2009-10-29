@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.Constants;
+import org.openremote.controller.exception.InvalidPollingURLException;
 import org.openremote.controller.service.ControlStatusPollingService;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.status_cache.PollingData;
@@ -49,7 +51,7 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
    private static final String CONTROL_ID_SEPARATOR = ",";
 
    /** This value will be responsed when current servlet couldn't get the changed statuses in the <b>MAX_TIME_OUT_SECONDS</b>. */
-   private static final String SERVER_RESPONSE_TIME_OUT_STATUS_CODE = "503";
+   public static final String SERVER_RESPONSE_TIME_OUT_STATUS_CODE = "TIMEOUT";
    
    /** header of xml-formatted polling result data. */
    private static final String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<openremote xmlns=\"http://www.openremote.org\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"\">\n";
@@ -85,11 +87,12 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
       
       while (true) {
          if ((System.currentTimeMillis() - startTime) / MILLI_SECONDS_A_SECOND >= MAX_TIME_OUT_SECONDS) {
-            changedStatuses = SERVER_RESPONSE_TIME_OUT_STATUS_CODE;//TODO: response.setErrorCode(503);
+            changedStatuses = Constants.SERVER_RESPONSE_TIME_OUT;
             logger.info("Observing change of component status was timeout.");
             saveTimeOutRecord(deviceID, controlIDs);
             logger.info("Return timeout result of observed.");
             pollingThread.setWaitingStatusChange(false);
+            
             break;
          }
          if (pollingData.getChangedStatuses() == null) {
@@ -115,8 +118,12 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
       String skipState = "";
       String[] controlIDs = (unParsedcontrolIDs == null || "".equals(unParsedcontrolIDs)) ? new String[]{} : unParsedcontrolIDs.split(CONTROL_ID_SEPARATOR);
       List<Integer> pollingControlIDs = new ArrayList<Integer>();
-      for (String pollingControlID : controlIDs) {
-         pollingControlIDs.add(Integer.parseInt(pollingControlID));
+      try {
+         for (String pollingControlID : controlIDs) {
+            pollingControlIDs.add(Integer.parseInt(pollingControlID));
+         }
+      } catch (NumberFormatException e) {
+         throw new InvalidPollingURLException("The component id can only be some numbers instead of characters", e);
       }
       
       TimeoutRecord timeoutRecord = timeoutTable.query(deviceID, pollingControlIDs);
