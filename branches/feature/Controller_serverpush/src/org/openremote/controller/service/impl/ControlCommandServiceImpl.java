@@ -21,12 +21,14 @@ package org.openremote.controller.service.impl;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.control.Control;
 import org.openremote.controller.control.ControlFactory;
 import org.openremote.controller.service.ControlCommandService;
+import org.openremote.controller.service.StatusCacheService;
 
 
 /**
@@ -41,6 +43,10 @@ public class ControlCommandServiceImpl implements ControlCommandService {
    
    private ControlFactory controlFactory;
    
+   private StatusCacheService statusCacheService;
+   
+   private Logger logger = Logger.getLogger(this.getClass().getName());
+   
    /**
     * {@inheritDoc}
     */
@@ -51,6 +57,9 @@ public class ControlCommandServiceImpl implements ControlCommandService {
       for (ExecutableCommand executableCommand : executableCommands) {
          executableCommand.send();
       }
+      logger.info("Begin updating statuscache after sending command to device.");
+      statusCacheService.saveOrUpdateStatus(Integer.parseInt(controlID), commandParam.toUpperCase());
+      logger.info("Finish updating statuscache after sending command to device.");
    }
    
    /**
@@ -69,6 +78,10 @@ public class ControlCommandServiceImpl implements ControlCommandService {
     */
    public void setControlFactory(ControlFactory controlFactory) {
       this.controlFactory = controlFactory;
+   }
+
+   public void setStatusCacheService(StatusCacheService statusCacheService) {
+      this.statusCacheService = statusCacheService;
    }
    
 }
