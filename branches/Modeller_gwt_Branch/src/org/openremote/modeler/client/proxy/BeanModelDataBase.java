@@ -27,6 +27,7 @@ import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
+import org.openremote.modeler.client.utils.GroupTable;
 import org.openremote.modeler.client.utils.ScreenTable;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.Device;
@@ -69,7 +70,7 @@ public class BeanModelDataBase {
    public static final BeanModelTable activityTable = new BeanModelTable();
    
    /** The Constant groupTable. */
-   public static final BeanModelTable groupTable = new BeanModelTable();
+   public static final BeanModelTable groupTable = new GroupTable();
 
    /** The Constant screenTable. */
    public static final BeanModelTable screenTable = new ScreenTable();

@@ -19,12 +19,8 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
-import org.openremote.modeler.client.widget.control.ScreenButton;
 import org.openremote.modeler.client.widget.control.ScreenControl;
-import org.openremote.modeler.client.widget.control.ScreenSwitch;
-import org.openremote.modeler.domain.control.UIButton;
 import org.openremote.modeler.domain.control.UIControl;
-import org.openremote.modeler.domain.control.UISwitch;
 
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -82,15 +78,9 @@ public class PropertyPanel extends ContentPanel {
     */
    private void addPropertiesForm(ScreenControl screenControl, UIControl uiControl) {
       if(currentPropertyForm != null) {
-         currentPropertyForm.hide();
+         currentPropertyForm.removeFromParent();
       }
-      if(screenControl instanceof ScreenButton) {
-         ButtonPropertyForm buttonPropertyForm = new ButtonPropertyForm((ScreenButton) screenControl, (UIButton)uiControl);
-         currentPropertyForm = buttonPropertyForm;
-      } else if(screenControl instanceof ScreenSwitch) {
-         SwitchPropertyForm switchPropertyForm = new SwitchPropertyForm((ScreenSwitch) screenControl, (UISwitch)uiControl);
-         currentPropertyForm = switchPropertyForm;
-      }
+      currentPropertyForm = screenControl.buildPropertiesForm();
       add(currentPropertyForm);
    }
 }

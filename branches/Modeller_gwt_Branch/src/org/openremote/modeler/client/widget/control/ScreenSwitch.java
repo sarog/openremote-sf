@@ -19,15 +19,22 @@
 */
 package org.openremote.modeler.client.widget.control;
 
+import org.openremote.modeler.client.widget.uidesigner.SwitchPropertyForm;
+import org.openremote.modeler.domain.control.UISwitch;
+
 import com.extjs.gxt.ui.client.widget.Text;
+import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 
 /**
  * ScreenSwitch is the switch widget in screen.
  */
 public class ScreenSwitch extends ScreenControl {
-   private FlexTable btnTable = new FlexTable();
+   private FlexTable switchTable = new FlexTableBox();
+   
+   /** The switchTable center text. */
    private Text center = new Text("Switch");
+   private UISwitch uiSwitch;
    /**
     * Instantiates a new screen button.
     */
@@ -35,49 +42,31 @@ public class ScreenSwitch extends ScreenControl {
       initial();
    }
 
-
+   public ScreenSwitch(UISwitch uiSwitch) {
+      this();
+      this.uiSwitch = uiSwitch;
+   }
    /**
     * Initial the switch as a style box.
     */
    private void initial() {
       addStyleName("screen-btn");
-      
-      btnTable.addStyleName("screen-btn-cont");
-      btnTable.setCellPadding(0);
-      btnTable.setCellSpacing(0);
-      
-      btnTable.setWidget(0, 0, null);
-      btnTable.setWidget(0, 1, null);
-      btnTable.setWidget(0, 2, null);
-
-      btnTable.setWidget(1, 0, null);
-      btnTable.setWidget(1, 1, center);
-      btnTable.setWidget(1, 2, null);
-
-      btnTable.setWidget(2, 0, null);
-      btnTable.setWidget(2, 1, null);
-      btnTable.setWidget(2, 2, null);
-
-      btnTable.getCellFormatter().addStyleName(0, 0, "tl-c");
-      btnTable.getCellFormatter().addStyleName(0, 1, "top");
-      btnTable.getCellFormatter().addStyleName(0, 2, "tr-c");
-
-      btnTable.getCellFormatter().addStyleName(1, 0, "ml");
-      btnTable.getCellFormatter().addStyleName(1, 1, "middle");
-      btnTable.getCellFormatter().addStyleName(1, 2, "mr");
-
-      btnTable.getCellFormatter().addStyleName(2, 0, "bl-c");
-      btnTable.getCellFormatter().addStyleName(2, 1, "bottom");
-      btnTable.getCellFormatter().addStyleName(2, 2, "br-c");
-
-      btnTable.getRowFormatter().addStyleName(0, "screen-top");
-      btnTable.getRowFormatter().addStyleName(2, "screen-bottom");
-
-      add(btnTable);
+      switchTable.setWidget(1, 1, center);
+      add(switchTable);
    }
    
    @Override
    public String getName() {
       return center.getText();
+   }
+   
+   @Override
+   public FormPanel buildPropertiesForm() {
+      return new SwitchPropertyForm(this, uiSwitch);
+   }
+
+   @Override
+   public void setName(String name) {
+      center.setText(name);
    }
 }

@@ -24,13 +24,12 @@ import java.util.List;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.gxtextends.ScreenDropTarget;
 import org.openremote.modeler.client.utils.IDUtil;
-import org.openremote.modeler.client.widget.control.ScreenButton;
 import org.openremote.modeler.client.widget.control.ScreenControl;
-import org.openremote.modeler.client.widget.control.ScreenSwitch;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.Grid;
 import org.openremote.modeler.domain.UIScreen;
 import org.openremote.modeler.domain.control.UIButton;
+import org.openremote.modeler.domain.control.UIControl;
 import org.openremote.modeler.domain.control.UISwitch;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
@@ -133,14 +132,7 @@ public class GridLayoutContainer extends LayoutContainer {
                List<ModelData> models = (List<ModelData>) e.getData();
                if (models.size() > 0) {
                   BeanModel dataModel = models.get(0).get("model");
-                  Cell cell = new Cell(IDUtil.nextID());
-                  grid.addCell(cell);
-                  if(dataModel.getBean() instanceof UIButton) {
-                     cell.setUiControl(new UIButton("Button"));
-                  } else if(dataModel.getBean() instanceof UISwitch) {
-                     cell.setUiControl(new UISwitch());
-                  }
-                  cellContainer = createCellContainer(cell, cellWidth, cellHeight);
+                  cellContainer = createNewCellContainer((UIControl)dataModel.getBean(), grid, cellWidth, cellHeight);
                   cellContainer.setCellSpan(1, 1);
                   cellContainer.setCellPosition(targetPosition.x, targetPosition.y);
                   cellContainer.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
@@ -201,13 +193,7 @@ public class GridLayoutContainer extends LayoutContainer {
     * 
     */
    private GridCellContainer createCellContainer(Cell cell, int cellWidth, int cellHeight) {
-      ScreenControl screenControl = new ScreenControl();
-      if (cell.getUiControl() instanceof UIButton) {
-         screenControl = new ScreenButton();
-      } else if (cell.getUiControl() instanceof UISwitch) {
-         screenControl = new ScreenSwitch();
-      }
-      GridCellContainer cellContainer =  new GridCellContainer(cell, screenControl) {
+      GridCellContainer cellContainer =  new GridCellContainer(cell, ScreenControl.build(cell.getUiControl())) {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
@@ -343,6 +329,21 @@ public class GridLayoutContainer extends LayoutContainer {
          }
 
       });
+   }
+
+   /**
+    * Creates the new cell container according to uiControl type.
+    * 
+    */
+   private GridCellContainer createNewCellContainer(UIControl uiControl, Grid grid, int cellWidth, int cellHeight) {
+      Cell cell = new Cell(IDUtil.nextID());
+      if(uiControl instanceof UIButton) {
+         cell.setUiControl(new UIButton("Button"));
+      } else if(uiControl instanceof UISwitch) {
+         cell.setUiControl(new UISwitch());
+      }
+      grid.addCell(cell);
+      return createCellContainer(cell, cellWidth, cellHeight);
    }
 
 
