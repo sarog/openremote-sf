@@ -29,6 +29,7 @@ import org.openremote.modeler.client.widget.control.ScreenSwitch;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.UIScreen;
 import org.openremote.modeler.domain.control.UIButton;
+import org.openremote.modeler.domain.control.UIControl;
 import org.openremote.modeler.domain.control.UISwitch;
 import org.openremote.modeler.touchpanel.TouchPanelGridDefinition;
 
@@ -69,7 +70,7 @@ public class ScreenCanvas extends LayoutContainer {
          if (screen.getAbsolutes().size() > 0) {
             List<Absolute> absolutes = screen.getAbsolutes();
             for (Absolute absolute : absolutes) {
-               AbsoluteLayoutContainer controlContainer = createAbsoluteLayoutContainer(absolute);
+               AbsoluteLayoutContainer controlContainer = createAbsoluteLayoutContainer(absolute, ScreenControl.build(absolute.getUiControl()));
                controlContainer.setSize(absolute.getWidth(), absolute.getHeight());
                controlContainer.setPosition(absolute.getLeft(), absolute.getTop());
                controlContainer.setName(absolute.getUiControl().getName());
@@ -123,28 +124,16 @@ public class ScreenCanvas extends LayoutContainer {
             if (absolutePosition == null) {
                absolutePosition = new Point(canvas.getAbsoluteLeft(), canvas.getAbsoluteTop());
             }
-            AbsoluteLayoutContainer controlContainer = null;
             Object data = e.getData();
             if (data instanceof AbsoluteLayoutContainer) {
-               controlContainer = (AbsoluteLayoutContainer) data;
+               AbsoluteLayoutContainer controlContainer = (AbsoluteLayoutContainer) data;
                Point position = getPosition(e);
                controlContainer.setPosition(position.x, position.y);
-            } else if (data instanceof List) {
+            } else if (data instanceof List) {    // dnd from widgets tree.
                List<ModelData> models = (List<ModelData>) data;
                if (models.size() > 0) {
                   BeanModel dataModel = models.get(0).get("model");
-                  Absolute absolute = new Absolute(IDUtil.nextID());
-                  screen.addAbsolute(absolute);
-                  if(dataModel.getBean() instanceof UIButton) {
-                     absolute.setUiControl(new UIButton("Button"));
-                     controlContainer = createAbsoluteLayoutContainer(absolute);
-                     controlContainer.setSize(50, 30);
-                     
-                  } else if(dataModel.getBean() instanceof UISwitch) {
-                     absolute.setUiControl(new UISwitch());
-                     controlContainer = createAbsoluteLayoutContainer(absolute);
-                     controlContainer.setSize(50, 30);
-                  }
+                  AbsoluteLayoutContainer controlContainer = createNewAbsoluteLayoutContainer(screen, (UIControl)dataModel.getBean());
                   if (selectedComponent != null) {
                      selectedComponent.removeStyleName("button-border");
                   }
@@ -165,7 +154,7 @@ public class ScreenCanvas extends LayoutContainer {
       target.setGroup(Constants.CONTROL_DND_GROUP);
       
    }
-
+   
    /**
     * Creates the drag source.
     * 
@@ -206,17 +195,7 @@ public class ScreenCanvas extends LayoutContainer {
       return new Point(left, top);
    }
 
-   private AbsoluteLayoutContainer createAbsoluteLayoutContainer(Absolute absolute) {
-      ScreenControl screenControl = new ScreenControl();
-      if (absolute.getUiControl() instanceof UIButton) {
-         screenControl = new ScreenButton();
-         UIButton uiButton  = (UIButton) absolute.getUiControl();
-         if (uiButton.getImage() != null) {
-            ((ScreenButton)screenControl).setIcon(uiButton.getImage().getSrc());
-         }
-      } else if (absolute.getUiControl() instanceof UISwitch) {
-         screenControl = new ScreenSwitch();
-      }
+   private AbsoluteLayoutContainer createAbsoluteLayoutContainer(Absolute absolute, ScreenControl screenControl) {
       AbsoluteLayoutContainer controlContainer = new AbsoluteLayoutContainer(absolute, screenControl) {
          @Override
          public void onBrowserEvent(Event event) {
@@ -231,6 +210,29 @@ public class ScreenCanvas extends LayoutContainer {
             super.onBrowserEvent(event);
          }
       };
+      return controlContainer;
+   }
+   
+   /**
+    * Creates the new absolute layout container after drag from tree.
+    * 
+    */
+   private AbsoluteLayoutContainer createNewAbsoluteLayoutContainer(UIScreen screen, UIControl uiControl){
+      AbsoluteLayoutContainer controlContainer = null;
+      Absolute absolute = new Absolute(IDUtil.nextID());
+      if(uiControl instanceof UIButton) {
+         UIButton uiButton = new UIButton("Button");
+         absolute.setUiControl(uiButton);
+         controlContainer = createAbsoluteLayoutContainer(absolute, new ScreenButton(uiButton));
+         controlContainer.setSize(50, 30);
+         
+      } else if(uiControl instanceof UISwitch) {
+         UISwitch uiSwitch = new UISwitch();
+         absolute.setUiControl(uiSwitch);
+         controlContainer = createAbsoluteLayoutContainer(absolute, new ScreenSwitch(uiSwitch));
+         controlContainer.setSize(50, 30);
+      }
+      screen.addAbsolute(absolute);
       return controlContainer;
    }
 }

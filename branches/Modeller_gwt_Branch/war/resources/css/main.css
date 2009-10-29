@@ -166,3 +166,11 @@ table.screen-btn-cont td.br-c{
 .cursor-move {
 	cursor: move;
 }
+
+.x-form-item label {
+	font-size: 11px;
+}
+
+.x-form-field {
+	font-size: 11px;
+}
