@@ -20,17 +20,18 @@
 package org.openremote.controller.status_cache;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
- * A timeout record.
+ * A skippedStatus  record.
  * 
  * @author Handy.Wang 2009-10-23
  */
-public class TimeoutRecord {
+public class SkippedStatusRecord {
    
    private String deviceID;
 
@@ -38,21 +39,21 @@ public class TimeoutRecord {
 
    private Set<Integer> statusChangedIDs;
 
-   public TimeoutRecord() {
+   public SkippedStatusRecord() {
       super();
       deviceID = "";
       pollingControlIDs = new ArrayList<Integer>();
       statusChangedIDs = new HashSet<Integer>();
    }
 
-   public TimeoutRecord(String deviceID, List<Integer> pollingControlIDs) {
+   public SkippedStatusRecord(String deviceID, List<Integer> pollingControlIDs) {
       super();
       this.deviceID = deviceID;
       this.pollingControlIDs = pollingControlIDs;
       this.statusChangedIDs = new HashSet<Integer>();
    }
    
-   public TimeoutRecord(String deviceID, Integer[] pollingControlIDs) {
+   public SkippedStatusRecord(String deviceID, Integer[] pollingControlIDs) {
       super();
       this.deviceID = deviceID;
       this.pollingControlIDs = new ArrayList<Integer>();
@@ -60,11 +61,21 @@ public class TimeoutRecord {
       this.statusChangedIDs = new HashSet<Integer>();
    }
 
-   public TimeoutRecord(String deviceID, String[] pollingControlIDs) {
+   public SkippedStatusRecord(String deviceID, String[] pollingControlIDs) {
       super();
       this.pollingControlIDs = new ArrayList<Integer>();
       for(String s:pollingControlIDs){
          this.pollingControlIDs.add(Integer.parseInt(s));
+      }
+      this.deviceID = deviceID;
+      this.statusChangedIDs = new HashSet<Integer>();
+   }
+   
+   public SkippedStatusRecord(String deviceID, Collection<Integer> pollingControlIDs) {
+      super();
+      this.pollingControlIDs = new ArrayList<Integer>();
+      for(Integer i:pollingControlIDs){
+         this.pollingControlIDs.add(i);
       }
       this.deviceID = deviceID;
       this.statusChangedIDs = new HashSet<Integer>();
@@ -94,10 +105,10 @@ public class TimeoutRecord {
 
    @Override
    public boolean equals(Object obj) {
-      if (obj == null || !(obj instanceof TimeoutRecord)) {
+      if (obj == null || !(obj instanceof SkippedStatusRecord)) {
          return false;
       }
-      TimeoutRecord timeoutRecord = (TimeoutRecord)obj;
+      SkippedStatusRecord timeoutRecord = (SkippedStatusRecord)obj;
       if ("".equals(timeoutRecord.getDeviceID()) || !timeoutRecord.getDeviceID().equals(this.deviceID)) {
          return false;
       }
@@ -140,6 +151,14 @@ public class TimeoutRecord {
       this.statusChangedIDs = statusChangedIDs;
    }
    
-   
+   @Override
+   public String toString(){
+      StringBuffer sb = new StringBuffer();
+      
+      sb.append("DEVICEID:"+deviceID);
+      sb.append("\tcomponentID:"+this.pollingControlIDs.toString());
+      sb.append("statusChangedComponentID:"+this.statusChangedIDs);
+      return sb.toString();
+   }
    
 }

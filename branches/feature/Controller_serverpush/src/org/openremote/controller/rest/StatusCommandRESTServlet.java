@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.exception.ButtonCommandException;
+import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.service.StatusCommandService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -88,7 +88,7 @@ public class StatusCommandRESTServlet extends HttpServlet {
                     PrintWriter printWriter = response.getWriter();
                     printWriter.write(statusCommandService.readFromCache(unParsedcontrolIDs));
                 }
-            } catch (ButtonCommandException e) {
+            } catch (ControlCommandException e) {
                 logger.error("CommandException occurs", e);
                 response.sendError(e.getErrorCode(), e.getMessage());
             }

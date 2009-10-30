@@ -30,6 +30,15 @@ import java.util.Set;
  */
 public class PollingData {
    
+   public String getDeviceId() {
+      return deviceId;
+   }
+
+   public void setDeviceId(String deviceId) {
+      this.deviceId = deviceId;
+   }
+
+   private String deviceId ;
    /** The control ids of a polling request. */
    private Set<Integer> controlIDs;
 

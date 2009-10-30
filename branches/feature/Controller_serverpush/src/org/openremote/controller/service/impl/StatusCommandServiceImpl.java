@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusCommandService;
 
@@ -64,7 +65,8 @@ public class StatusCommandServiceImpl implements StatusCommandService {
        String[] parsedControlIDs = unParsedcontrolIDs.split(CONTROL_ID_SEPARATOR);
        Map<String, StatusCommand> statusCommands = new HashMap<String, StatusCommand>();
        for (String controlID : parsedControlIDs) {
-           statusCommands.put(controlID, remoteActionXMLParser.findStatusCommandByControlID(controlID));
+           statusCommands.put(controlID, remoteActionXMLParser.findStatusCommandByControlID(controlID));//TODO replace with statusCache.getStatusByComponentId(controlID);
+          //statusCommands.put(controlID, statusCacheService.getStatusByComponentId(Integer.parseInt(controlID)).toString());
        }
        StringBuffer sb = new StringBuffer();
        sb.append(XML_HEADER);
@@ -113,9 +115,15 @@ public class StatusCommandServiceImpl implements StatusCommandService {
    private Set<Integer> parseStatusComponentIDStrToSet(String unParsedcontrolIDs) {
       String[] parsedControlIDs = unParsedcontrolIDs.split(CONTROL_ID_SEPARATOR);
       Set<Integer> statusComponentIDs = new HashSet<Integer>();
+     
       for (String statusConponentID : parsedControlIDs) {
-         statusComponentIDs.add(Integer.parseInt(statusConponentID));
+         try {
+            statusComponentIDs.add(Integer.parseInt(statusConponentID));
+         } catch (NumberFormatException e) {
+            throw new NoSuchComponentException("No such component whose id is :" + statusConponentID, e);
+         }
       }
+      
       return statusComponentIDs;
    }
 

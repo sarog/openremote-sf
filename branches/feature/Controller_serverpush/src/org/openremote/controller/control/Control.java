@@ -32,7 +32,7 @@ import org.openremote.controller.command.StatusCommand;
  */
 public abstract class Control {
    
-    public static String CURRENT_STATUS = "off";
+    public static String CURRENT_STATUS = "OFF";
 
     /** The Constant CONTROL_COMMAND_REF_ATTRIBUTE_NAME. */
     public static final String CONTROL_COMMAND_REF_ATTRIBUTE_NAME = "ref";
