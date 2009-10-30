@@ -82,6 +82,8 @@ public class ScreenCanvas extends LayoutContainer {
          }
          addDropTargetDNDListener(screen);
       } else {
+         screen.getGrid().setWidth(touchPanelGridDefinition.getWidth());
+         screen.getGrid().setHeight(touchPanelGridDefinition.getHeight());
          LayoutContainer gridLayoutContainer = new GridLayoutContainer(screen);
          add(gridLayoutContainer);
       }
@@ -221,13 +223,13 @@ public class ScreenCanvas extends LayoutContainer {
       AbsoluteLayoutContainer controlContainer = null;
       Absolute absolute = new Absolute(IDUtil.nextID());
       if(uiControl instanceof UIButton) {
-         UIButton uiButton = new UIButton("Button");
+         UIButton uiButton = new UIButton(IDUtil.nextID());
          absolute.setUiControl(uiButton);
          controlContainer = createAbsoluteLayoutContainer(absolute, new ScreenButton(uiButton));
          controlContainer.setSize(50, 30);
          
       } else if(uiControl instanceof UISwitch) {
-         UISwitch uiSwitch = new UISwitch();
+         UISwitch uiSwitch = new UISwitch(IDUtil.nextID());
          absolute.setUiControl(uiSwitch);
          controlContainer = createAbsoluteLayoutContainer(absolute, new ScreenSwitch(uiSwitch));
          controlContainer.setSize(50, 30);

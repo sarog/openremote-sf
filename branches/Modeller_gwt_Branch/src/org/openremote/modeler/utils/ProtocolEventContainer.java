@@ -147,27 +147,35 @@ public class ProtocolEventContainer {
    public String generateUIButtonEventsXml() {
       StringBuffer uiButtonEventXml = new StringBuffer();
       Set<String> protocolDisplayNames = protocolEvents.keySet();
-      uiButtonEventXml.append("  <events>\n");
+      uiButtonEventXml.append("  <commands>\n");
       for (String protocolDisplayName : protocolDisplayNames) {
          String protocolTagName = ProtocolContainer.findTagName(protocolDisplayName);
-         String eventsTagName = protocolTagName + "Events";
-         uiButtonEventXml.append("    <" + eventsTagName + ">\n");
          for (UIButtonEvent uiButtonEvent : protocolEvents.get(protocolDisplayName)) {
-            String eventTagName = protocolTagName + "Event";
-            uiButtonEventXml.append("      <" + eventTagName + " id=\"" + uiButtonEvent.getId() + "\"");
-            // All other protocol events required "label" attribute except Infrared protocol event.
-            if (!Constants.INFRARED_TYPE.equals(protocolDisplayName)) {
-               uiButtonEventXml.append(" label=\"" + uiButtonEvent.getLabel() + "\"");
-            }
+            uiButtonEventXml.append("    <command id=\"" + uiButtonEvent.getId() + "\" protocol=\"" + protocolTagName + "\"");
             Set<String> protocolAttrKeySet = uiButtonEvent.getProtocolAttrs().keySet();
             for (String attrKey : protocolAttrKeySet) {
                uiButtonEventXml.append(" " + attrKey + "=\"" + uiButtonEvent.getProtocolAttrs().get(attrKey) + "\"");
             }
-            uiButtonEventXml.append(" />\n");
+            uiButtonEventXml.append(" >" + uiButtonEvent.getLabel() + "</command>\n");
          }
-         uiButtonEventXml.append("    </" + eventsTagName + ">\n");
+//         String eventsTagName = protocolTagName + "Events";
+//         uiButtonEventXml.append("    <" + eventsTagName + ">\n");
+//         for (UIButtonEvent uiButtonEvent : protocolEvents.get(protocolDisplayName)) {
+//            String eventTagName = protocolTagName + "Event";
+//            uiButtonEventXml.append("      <" + eventTagName + " id=\"" + uiButtonEvent.getId() + "\"");
+//            // All other protocol events required "label" attribute except Infrared protocol event.
+//            if (!Constants.INFRARED_TYPE.equals(protocolDisplayName)) {
+//               uiButtonEventXml.append(" label=\"" + uiButtonEvent.getLabel() + "\"");
+//            }
+//            Set<String> protocolAttrKeySet = uiButtonEvent.getProtocolAttrs().keySet();
+//            for (String attrKey : protocolAttrKeySet) {
+//               uiButtonEventXml.append(" " + attrKey + "=\"" + uiButtonEvent.getProtocolAttrs().get(attrKey) + "\"");
+//            }
+//            uiButtonEventXml.append(" />\n");
+//         }
+//         uiButtonEventXml.append("    </" + eventsTagName + ">\n");
       }
-      uiButtonEventXml.append("</events>\n");
+      uiButtonEventXml.append("  </commands>\n");
       return uiButtonEventXml.toString();
    }
    

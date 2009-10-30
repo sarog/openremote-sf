@@ -25,6 +25,8 @@ import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.rpc.UtilsRPCService;
 import org.openremote.modeler.domain.Activity;
+import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.UIScreen;
 import org.openremote.modeler.service.ResourceService;
 
 /**
@@ -43,14 +45,12 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    
    /** The Constant ACTIVIY_JSON_SESSION_ATTR_KEY. */
    private static final String UI_DESIGNER_LAYOUT_JSON_KEY = "activityJSON";
-   
-
   
    /**
     * {@inheritDoc}
     */
-   public String exportFiles(long maxId, List<Activity> activities) {  
-      return resourceService.downloadZipResource(maxId, this.getThreadLocalRequest().getSession().getId(), activities);
+   public String exportFiles(long maxId, List<Group> groupList, List<UIScreen> screenList) {  
+      return resourceService.downloadZipResource(maxId, this.getThreadLocalRequest().getSession().getId(), groupList, screenList);
    }
    
    /**
@@ -120,4 +120,5 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       }
       return autoSaveResponse;
    }
+
 }

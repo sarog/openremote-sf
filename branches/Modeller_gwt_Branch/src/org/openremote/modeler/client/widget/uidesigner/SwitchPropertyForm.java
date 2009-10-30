@@ -98,7 +98,7 @@ public class SwitchPropertyForm extends PropertyForm {
       }
       commandON.addSelectionListener(createSelectionListener(uiSwitch, commandON, "ON"));
       AdapterField adapterCommandON = new AdapterField(commandON);
-      adapterCommandON.setFieldLabel("Command(ON)");adapterCommandON.setAutoHeight(true);
+      adapterCommandON.setFieldLabel("Cmd(ON)");adapterCommandON.setAutoHeight(true);
       
       final Button commandOFF = new Button("Select");
       if(uiSwitch.getOffCommand() != null) {
@@ -106,7 +106,7 @@ public class SwitchPropertyForm extends PropertyForm {
       }
       commandOFF.addSelectionListener(createSelectionListener(uiSwitch, commandOFF, "OFF"));
       AdapterField adapterCommandOFF = new AdapterField(commandOFF);
-      adapterCommandOFF.setFieldLabel("Command(OFF)");
+      adapterCommandOFF.setFieldLabel("Cmd(OFF)");
       
       Button commandStatus = new Button("Select");
       if(uiSwitch.getStatusCommand() != null) {
@@ -114,7 +114,7 @@ public class SwitchPropertyForm extends PropertyForm {
       }
       commandStatus.addSelectionListener(createSelectionListener(uiSwitch, commandStatus, "STATUS"));
       AdapterField adapterCommandStatus = new AdapterField(commandStatus);
-      adapterCommandStatus.setFieldLabel("Command(Status)");
+      adapterCommandStatus.setFieldLabel("Cmd(Status)");
       
       add(adapterImageON);
       add(adapterImageOFF);

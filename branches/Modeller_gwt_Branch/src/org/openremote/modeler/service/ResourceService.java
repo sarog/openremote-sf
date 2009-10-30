@@ -26,6 +26,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.openremote.modeler.domain.Activity;
+import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.UIScreen;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -45,7 +47,7 @@ public interface ResourceService {
     * 
     * @return the string
     */
-   String downloadZipResource(long maxId, String sessionId, List<Activity> activities);
+   String downloadZipResource(long maxId, String sessionId, List<Group> groups, List<UIScreen> screens);
    
    
    /**

@@ -33,6 +33,8 @@ public class ScreenRef extends BusinessEntity {
    /** The group. */
    private Group group;
    
+   public ScreenRef() {
+   }
    /**
     * Instantiates a new screen ref.
     * 
@@ -90,5 +92,10 @@ public class ScreenRef extends BusinessEntity {
    @Transient
    public String getDisplayName() {
       return screen.getName();
+   }
+   
+   @Transient
+   public long getScreenId() {
+      return screen.getOid();
    }
 }

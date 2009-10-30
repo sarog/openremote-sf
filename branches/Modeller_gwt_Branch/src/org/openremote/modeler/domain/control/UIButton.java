@@ -19,13 +19,16 @@
 */
 package org.openremote.modeler.domain.control;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openremote.modeler.domain.UICommand;
 
 @SuppressWarnings("serial")
 public class UIButton extends UIControl {
 
    /** The label. */
-   private String name;
+   private String name = "Button";
 
    private boolean repeate;
    
@@ -43,11 +46,6 @@ public class UIButton extends UIControl {
     */
    public UIButton() {
       super();
-   }
-   
-   public UIButton(String name) {
-      this();
-      setName(name);
    }
    
    /**
@@ -117,7 +115,54 @@ public class UIButton extends UIControl {
    public void setNavigate(Navigate navigate) {
       this.navigate = navigate;
    }
-   
-   
+
+   @Override
+   public List<UICommand> getCommands() {
+      List<UICommand> commands = new ArrayList<UICommand>();
+      if(uiCommand != null) {
+         commands.add(uiCommand);
+      }
+      return commands;
+   }
+
+   @Override
+   public void transImagePathToRelative(String relativeSessionFolderPath) {
+      if (image != null && image.getSrc() != null) {
+         String imageSrc = image.getSrc();
+         image.setSrc(relativeSessionFolderPath + imageSrc.substring(imageSrc.lastIndexOf("/") + 1));
+      }
+      if (pressImage != null && pressImage.getSrc() != null) {
+         String pressImageSrc = pressImage.getSrc();
+         pressImage.setSrc(relativeSessionFolderPath + pressImageSrc.substring(pressImageSrc.lastIndexOf("/") + 1));
+      }
+   }
+
+   @Override
+   public String getPanelXml() {
+      StringBuffer xmlContent = new StringBuffer();
+      xmlContent.append("        <button id=\"" + getOid() + "\" name=\"" + getName() + "\"");
+      if (repeate) {
+         xmlContent.append(" repeat=\"" + repeate + "\"");
+      }
+      xmlContent.append(">\n");
+      if (image != null && image.getSrc() != null) {
+         xmlContent.append("          <image src=\"" + image.getSrc() + "\" />\n");
+      }
+      if (pressImage != null && pressImage.getSrc() != null) {
+         xmlContent.append("          <image src=\"" + pressImage.getSrc() + "\" state=\"onPress\" />\n");
+      }
+      if (navigate != null) {
+         xmlContent.append("          <navigate");
+         if (navigate.getToGroup() != -1) {
+            xmlContent.append(" toGroup=\"" + navigate.getToGroup() + "\"");
+         }
+         if (navigate.getToScreen() != -1) {
+            xmlContent.append(" toScreen=\"" + navigate.getToScreen() + "\"");
+         }
+         xmlContent.append(" />\n");
+      }
+      xmlContent.append("        </button>\n");
+      return xmlContent.toString();
+   }
 
 }

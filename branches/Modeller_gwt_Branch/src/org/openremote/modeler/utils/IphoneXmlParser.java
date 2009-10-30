@@ -76,26 +76,15 @@ public class IphoneXmlParser {
     */
    @SuppressWarnings("unchecked")
    public static String parserXML(File xsdfile, String xmlString, File folder) {
-      SAXBuilder sb = new SAXBuilder(true);
-      sb.setValidation(true);
+      SAXBuilder sb = new SAXBuilder(false);
+      sb.setValidation(false);
 
-      sb.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
-      sb.setProperty(SCHEMA_SOURCE, xsdfile);
+//      sb.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
+//      sb.setProperty(SCHEMA_SOURCE, xsdfile);
       String iphoneXml = "";
       try {         
           Document doc = sb.build(new InputSource(new StringReader(xmlString)));
-          XPath xpath = XPath.newInstance("//or:button[@icon]");
-          xpath.addNamespace("or", "http://www.openremote.org");
-          List<Element> elements = xpath.selectNodes(doc);
-          for (Element element : elements) {
-             String iconVal = element.getAttributeValue("icon");
-             String iconName = iconVal.substring(iconVal.lastIndexOf("/") + 1);
-             element.setAttribute("icon", iconName);
-             File iphoneIconFile = new File(folder, iconName);
-             if (iconVal.startsWith("http")) {
-                downloadFile(iconVal, iphoneIconFile);
-             }
-         }          
+          xpathParse(folder, doc, "//or:image[@src]");          
          Format format = Format.getPrettyFormat();
          format.setIndent("  ");
          format.setEncoding("UTF-8");
@@ -109,6 +98,22 @@ public class IphoneXmlParser {
          throw new XmlParserException("Parser XML occur IOException", e);
       }
       return iphoneXml;
+   }
+
+   @SuppressWarnings("unchecked")
+   private static void xpathParse(File folder, Document doc, String xpathExpression) throws JDOMException, IOException {
+      XPath xpath = XPath.newInstance(xpathExpression);
+       xpath.addNamespace("or", "http://www.openremote.org");
+       List<Element> elements = xpath.selectNodes(doc);
+       for (Element element : elements) {
+          String iconVal = element.getAttributeValue("src");
+          String iconName = iconVal.substring(iconVal.lastIndexOf("/") + 1);
+          element.setAttribute("src", iconName);
+          File iphoneIconFile = new File(folder, iconName);
+          if (iconVal.startsWith("http")) {
+             downloadFile(iconVal, iphoneIconFile);
+          }
+      }
    }
    
    /**

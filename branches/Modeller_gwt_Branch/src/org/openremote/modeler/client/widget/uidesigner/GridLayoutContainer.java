@@ -338,9 +338,9 @@ public class GridLayoutContainer extends LayoutContainer {
    private GridCellContainer createNewCellContainer(UIControl uiControl, Grid grid, int cellWidth, int cellHeight) {
       Cell cell = new Cell(IDUtil.nextID());
       if(uiControl instanceof UIButton) {
-         cell.setUiControl(new UIButton("Button"));
+         cell.setUiControl(new UIButton(IDUtil.nextID()));
       } else if(uiControl instanceof UISwitch) {
-         cell.setUiControl(new UISwitch());
+         cell.setUiControl(new UISwitch(IDUtil.nextID()));
       }
       grid.addCell(cell);
       return createCellContainer(cell, cellWidth, cellHeight);
