@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openremote.controller.service.StatusCacheService;
-import org.openremote.controller.status_cache.StatusCache;
+import org.openremote.controller.statuscache.StatusCache;
 
 public class StatusCacheServiceImpl implements StatusCacheService{
    
