@@ -43,10 +43,8 @@
 - (void)stateChanged:(id)sender {
 	if (isOn) {
 		[self sendCommandRequest:@"OFF"];
-		[self setOn:NO];
 	} else {		
 		[self sendCommandRequest:@"ON"];
-		[self setOn:YES];
 	} 
 }
 

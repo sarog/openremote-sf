@@ -29,6 +29,8 @@
 - (id)initWithGridCell:(GridCell *)gridCell frame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
 			cell = gridCell;
+			//transparent background 
+			[self setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]]; 
     }
     return self;
 }
