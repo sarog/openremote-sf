@@ -12,7 +12,7 @@ public class StatusCacheServiceImpl implements StatusCacheService{
    
    @Override
    public String getStatusByComponentId(Integer controlId) {
-      return cache.queryStatusByControlId(controlId);
+      return cache.queryStatusByComponentlId(controlId);
    }
 
    @Override

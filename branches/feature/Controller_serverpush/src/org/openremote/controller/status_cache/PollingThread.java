@@ -21,6 +21,7 @@ package org.openremote.controller.status_cache;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.spring.SpringContext;
@@ -38,6 +39,8 @@ public class PollingThread extends Thread {
     * This property will be set to flase by servlet thread when the process of observe status change has time out.
     */
    private boolean isWaitingStatusChange = true;
+   
+   private SkippedStatusTable skippedStatusTable = (SkippedStatusTable) SpringContext.getInstance().getBean("skippedStatusTable"); 
    
    /** 
     * It store the controlIDs which a polling request associate with 
@@ -73,6 +76,11 @@ public class PollingThread extends Thread {
       while(isWaitingStatusChange) {
          StatusChangedData statusChangeData = statusChangeObserver.getStatusChangeData();
          if (statusChangeData != null) {
+            Set<Integer> controlIds = statusChangeObserver.getPollingControlIDs();
+//            Iterator<Integer> idsIterator = controlIds.iterator();
+            if (controlIds.size() > 1 ){
+               skippedStatusTable.insert(new SkippedStatusRecord(pollingData.getDeviceId(),pollingData.getControlIDs()));
+            }
             Map<Integer, String> changedStatuses = new HashMap<Integer, String>();
             changedStatuses.put(statusChangeData.getStatusChangedControlID(), statusChangeData.getCurrentStatusAfterChanged());
             pollingData.setChangedStatuses(changedStatuses);

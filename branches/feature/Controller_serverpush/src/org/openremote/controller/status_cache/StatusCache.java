@@ -23,45 +23,67 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.openremote.controller.exception.NoSuchComponentException;
+
 /**
+ * In the experiment the other day, we found KNX has to read the status one by one, which is very slow if we want to
+ * query 5 devices at one time. Considering quick response, we also add cache interface (dummy thread implementation for
+ * now) for Controller status querying. 
+ * 
+ * 
+ * In the future, there may and will be another asynchronous polling between Controller and
+ * devices, because if user turns on the lamp switch on the wall, not from iPhone, Controller won't know this changed
+ * state, so Controller has to do polling for devices more frequently. Since Controller hardware is more powerful than
+ * iPhone hardware, we assume Controller can ensure it's synchronous with devices by all means.
  * 
  * @author Javen Zhang
- *
+ * 
  */
 public class StatusCache {
-   
-   private TimeoutTable timeoutTable;
 
-   private Map<Integer ,String> controlStatus = null;
-   
+   private SkippedStatusTable skippedStatusTable;
+
+   private Map<Integer, String> controlStatus = null;
+
    private ObservedStatusesSubject observedStatusesSubject = null;
-   
-   public StatusCache(){
-      controlStatus = new HashMap<Integer,String>();
+
+   public StatusCache() {
+      controlStatus = new HashMap<Integer, String>();
    }
-   
-   public StatusCache(TimeoutTable timeoutTable, ObservedStatusesSubject observers){
-      this.timeoutTable = timeoutTable;
+
+   public StatusCache(SkippedStatusTable skippedStatusTable, ObservedStatusesSubject observers) {
+      this.skippedStatusTable = skippedStatusTable;
       this.observedStatusesSubject = observers;
    }
    
-   public synchronized void saveOrUpdateStatus(Integer controlId, String status){
-      String oldStatus = controlStatus.get(controlId);
+   /**
+    * This method is used to let the cache to store the status for all the device.
+    * @param componentID
+    * @param status
+    */
+   public synchronized void saveOrUpdateStatus(Integer componentID, String status) {
+      String oldStatus = controlStatus.get(componentID);
       if (oldStatus == null || "".equals(oldStatus) || !oldStatus.equals(status)) {
-         controlStatus.put(controlId, status);
-         this.updateTimeoutTable(controlId);
-         observedStatusesSubject.statusChanged(new StatusChangedData(controlId, status));
+         controlStatus.put(componentID, status);
+         updateSkippedStatusTable(componentID);
+         observedStatusesSubject.statusChanged(new StatusChangedData(componentID, status));
       }
    }
    
-   public Map<Integer, String> queryStatuses(Set<Integer> controlIds){
-      if(controlIds == null || controlIds.size() == 0){
+   /**
+    * This method is used to query the status whose component id in componentIDs. 
+    * @param componentIDs
+    * @return null if componentIDS is null.
+    * @throws NoSuchComponentException when the component id is not cached. 
+    */
+   public Map<Integer, String> queryStatuses(Set<Integer> componentIDs) {
+      if (componentIDs == null || componentIDs.size() == 0) {
          return null;
       }
-      Map<Integer,String> statuses = new HashMap<Integer,String>();
-      for (Integer controlId :controlIds){
+      Map<Integer, String> statuses = new HashMap<Integer, String>();
+      for (Integer controlId : componentIDs) {
          if (this.controlStatus.get(controlId) == null || "".equals(this.controlStatus.get(controlId))) {
-            //TODO: throw NoSuchComponentException();
+            throw new NoSuchComponentException("No such component in you device !");
          } else {
             statuses.put(controlId, this.controlStatus.get(controlId));
          }
@@ -69,30 +91,34 @@ public class StatusCache {
       return statuses;
    }
    
-   public String queryStatusByControlId(Integer controlId){
-      return this.controlStatus.get(controlId);
+   public String queryStatusByComponentlId(Integer componentId) {
+      String result = this.controlStatus.get(componentId);
+      if (result == null) {
+         throw new NoSuchComponentException("no such a component whose id is :"+componentId);
+      }
+      return result;
    }
-   
 
-   public StatusCache(TimeoutTable timeoutTable) {
+   public StatusCache(SkippedStatusTable skippedStatusTable) {
       super();
-      this.timeoutTable = timeoutTable;
+      this.skippedStatusTable = skippedStatusTable;
    }
+
    
-   public TimeoutTable getTimeoutTable() {
-      return timeoutTable;
+
+   public SkippedStatusTable getSkippedStatusTable() {
+      return skippedStatusTable;
    }
 
-
-   public void setTimeoutTable(TimeoutTable timeoutTable) {
-      this.timeoutTable = timeoutTable;
+   public void setSkippedStatusTable(SkippedStatusTable skippedStatusTable) {
+      this.skippedStatusTable = skippedStatusTable;
    }
 
    public void setObservedStatusesSubject(ObservedStatusesSubject observedStatusesSubject) {
       this.observedStatusesSubject = observedStatusesSubject;
    }
 
-   private void updateTimeoutTable(Integer controlId){
-      timeoutTable.updateStatusChangedIDs(controlId);
+   private void updateSkippedStatusTable(Integer controlId) {
+      skippedStatusTable.updateStatusChangedIDs(controlId);
    }
 }
