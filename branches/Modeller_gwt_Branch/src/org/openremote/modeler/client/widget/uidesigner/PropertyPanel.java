@@ -38,7 +38,6 @@ public class PropertyPanel extends ContentPanel {
    private PropertyPanel() {
       setBodyBorder(false);
       setHeading("Properties");
-//      setStyleAttribute("overflow", "auto");
       setLayout(new FitLayout());
       setFrame(true);
    }

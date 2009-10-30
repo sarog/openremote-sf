@@ -24,8 +24,8 @@ import org.openremote.modeler.domain.BusinessEntity;
 @SuppressWarnings("serial")
 public class Navigate extends BusinessEntity {
 
-   private long toScreen;
-   private long toGroup;
+   private long toScreen = -1L;
+   private long toGroup = -1L;
    public long getToScreen() {
       return toScreen;
    }

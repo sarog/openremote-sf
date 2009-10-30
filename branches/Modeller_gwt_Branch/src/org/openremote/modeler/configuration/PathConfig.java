@@ -80,14 +80,14 @@ public class PathConfig {
 
   
    /**
-    * Gets iphone xml path.
+    * Gets panel xml path.
     * 
     * @param sessionId the session id
     * 
     * @return file absolute path
     */
-   public String iPhoneXmlFilePath(String sessionId) {
-      return userFolder(sessionId) + "iphone.xml";
+   public String panelXmlFilePath(String sessionId) {
+      return userFolder(sessionId) + "panel.xml";
    }
 
    /**
@@ -196,5 +196,9 @@ public class PathConfig {
     */
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
+   }
+   
+   public String getRelativeSessionFolderPath(String sessionId) {
+      return "../" + RESOURCEFOLDER + "/" + sessionId + "/";
    }
 }

@@ -19,6 +19,9 @@
 */
 package org.openremote.modeler.domain.control;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openremote.modeler.domain.UICommand;
 
 @SuppressWarnings("serial")
@@ -29,6 +32,13 @@ public class UISwitch extends UIControl {
    private UICommand onCommand;
    private UICommand offCommand;
    private UICommand statusCommand;
+   public UISwitch() {
+      super();
+   }
+   
+   public UISwitch(long id) {
+      super(id);
+   }
    
    public UImage getOnImage() {
       return onImage;
@@ -67,6 +77,45 @@ public class UISwitch extends UIControl {
    public String getName() {
       return "Switch";
    }
+
+   @Override
+   public List<UICommand> getCommands() {
+      List<UICommand> commands = new ArrayList<UICommand>();
+      if (onCommand != null) {
+         commands.add(onCommand);
+      }
+      if (offCommand != null) {
+         commands.add(offCommand);
+      }
+      if (statusCommand != null) {
+         commands.add(statusCommand);
+      }
+      return commands;
+   }
    
-   
+   @Override
+   public void transImagePathToRelative(String relativeSessionFolderPath) {
+      if (onImage != null && onImage.getSrc() != null) {
+         String onImageSrc = onImage.getSrc();
+         onImage.setSrc(relativeSessionFolderPath + onImageSrc.substring(onImageSrc.lastIndexOf("/") + 1));
+      }
+      if (offImage != null && offImage.getSrc() != null) {
+         String offImageSrc = offImage.getSrc();
+         offImage.setSrc(relativeSessionFolderPath + offImageSrc.substring(offImageSrc.lastIndexOf("/") + 1));
+      }
+   }
+
+   @Override
+   public String getPanelXml() {
+      StringBuffer xmlContent = new StringBuffer();
+      xmlContent.append("        <switch id=\"" + getOid() + "\">\n");
+      if (onImage != null && onImage.getSrc() != null) {
+         xmlContent.append("          <image src=\"" + onImage.getSrc() + "\" state=\"" + onImage.getState() + "\" />\n");
+      }
+      if (offImage != null && offImage.getSrc() != null) {
+         xmlContent.append("          <image src=\"" + offImage.getSrc() + "\" state=\"" + offImage.getState() + "\" />\n");
+      }
+      xmlContent.append("        </switch>\n");
+      return xmlContent.toString();
+   }
 }

@@ -19,13 +19,16 @@
 */
 package org.openremote.modeler.domain.control;
 
+import java.util.List;
+
 import org.openremote.modeler.domain.BusinessEntity;
+import org.openremote.modeler.domain.UICommand;
 
 /**
  * UIControl act as all domain component's super class.
  */
 @SuppressWarnings("serial")
-public class UIControl extends BusinessEntity {
+public abstract class UIControl extends BusinessEntity {
 
    public UIControl() {
       super();
@@ -38,4 +41,10 @@ public class UIControl extends BusinessEntity {
    public String getName() {
       return "UIControl";
    }
+   
+   public abstract List<UICommand> getCommands();
+   
+   public abstract void transImagePathToRelative(String relativeSessionFolderPath);
+   
+   public abstract String getPanelXml();
 }

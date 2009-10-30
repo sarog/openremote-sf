@@ -350,7 +350,7 @@ public class TreePanelBuilder {
       widgetTree.setDisplayProperty("name");
 //      TreeFolderBean folderBean = new TreeFolderBean();
 //      folderBean.setDisplayName("groups");
-      widgetTreeStore.add(new UIButton("Button").getBeanModel(), true);
+      widgetTreeStore.add(new UIButton().getBeanModel(), true);
       widgetTreeStore.add(new UISwitch().getBeanModel(), true);
       
       widgetTree.setIconProvider(new ModelIconProvider<BeanModel>() {

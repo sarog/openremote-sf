@@ -48,17 +48,24 @@ import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.UIButtonEvent;
 import org.openremote.modeler.configuration.PathConfig;
+import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Activity;
+import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
+import org.openremote.modeler.domain.Grid;
+import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.ProtocolAttr;
-import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.UIButton;
+import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.control.UIButton;
+import org.openremote.modeler.domain.control.UIControl;
+import org.openremote.modeler.domain.control.UISwitch;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.XmlParserException;
 import org.openremote.modeler.service.DeviceCommandService;
@@ -99,36 +106,36 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * {@inheritDoc}
     */
-   public String downloadZipResource(long maxId, String sessionId, List<Activity> activities) {
-      String controllerXmlContent = getControllerXmlContent(maxId, activities);
-      String panelXmlContent = getPanelXmlContent(activities);
-      String sectionIds = getSectionIds(activities);
+   public String downloadZipResource(long maxId, String sessionId, List<Group> groups, List<UIScreen> screens) {
+      String controllerXmlContent = getControllerXmlContent(maxId, screens);
+      String panelXmlContent = getPanelXmlContent(groups, screens);
+      String sectionIds = getSectionIds(screens);
 
-      replaceUrl(activities, sessionId);      
-      String activitiesJson = getActivitiesJson(activities);
+      replaceUrl(screens, sessionId);
+//      String activitiesJson = getActivitiesJson(activities);
 
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File sessionFolder = new File(pathConfig.userFolder(sessionId));
       if (!sessionFolder.exists()) {
          sessionFolder.mkdirs();
       }
-      File iphoneXMLFile = new File(pathConfig.iPhoneXmlFilePath(sessionId));
+      File panelXMLFile = new File(pathConfig.panelXmlFilePath(sessionId));
       File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(sessionId));
       File lircdFile = new File(pathConfig.lircFilePath(sessionId));
-      File dotImport = new File(pathConfig.dotImportFilePath(sessionId));
+//      File dotImport = new File(pathConfig.dotImportFilePath(sessionId));
 
       String newIphoneXML = IphoneXmlParser.parserXML(new File(getClass().getResource(configuration.getIphoneXsdPath()).getPath()), 
             panelXmlContent, sessionFolder);
       
       try {
-         FileUtilsExt.deleteQuietly(iphoneXMLFile);
+         FileUtilsExt.deleteQuietly(panelXMLFile);
          FileUtilsExt.deleteQuietly(controllerXMLFile);
          FileUtilsExt.deleteQuietly(lircdFile);
-         FileUtilsExt.deleteQuietly(dotImport);
+//         FileUtilsExt.deleteQuietly(dotImport);
 
-         FileUtilsExt.writeStringToFile(iphoneXMLFile, newIphoneXML);
+         FileUtilsExt.writeStringToFile(panelXMLFile, newIphoneXML);
          FileUtilsExt.writeStringToFile(controllerXMLFile, controllerXmlContent);
-         FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
+//         FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
 
          if (sectionIds != "") {
             FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
@@ -142,6 +149,7 @@ public class ResourceServiceImpl implements ResourceService {
 
       File zipFile = compressFilesToZip(sessionFolder.listFiles(), pathConfig.openremoteZipFilePath(sessionId));
       return pathConfig.getZipUrl(sessionId) + zipFile.getName();
+      
    }
 
    /**
@@ -150,17 +158,18 @@ public class ResourceServiceImpl implements ResourceService {
     * @param activities the activities
     * @param sessionId the user id
     */
-   private void replaceUrl(List<Activity> activities, String sessionId) {
-      for (Activity activity : activities) {
-         for (Screen screen : activity.getScreens()) {
-            for (UIButton uiButton : screen.getButtons()) {
-               if (uiButton.getIcon() != null && !"".equals(uiButton.getIcon())) {
-                  String iconValue = uiButton.getIcon();
-                  String iconName = iconValue.substring(iconValue.lastIndexOf("/") + 1);
-                  uiButton.setIcon(PathConfig.getInstance(configuration).getRelativeResourcePath(iconName, sessionId));
+   private void replaceUrl(List<UIScreen> screens, String sessionId) {
+      String rerlativeSessionFolderPath = PathConfig.getInstance(configuration).getRelativeSessionFolderPath(sessionId);
+         for (UIScreen screen : screens) {
+            if (screen.isAbsoluteLayout()) {
+               for (Absolute absolute : screen.getAbsolutes()) {
+                  absolute.getUiControl().transImagePathToRelative(rerlativeSessionFolderPath);
+               }
+            } else {
+               for (Cell cell : screen.getGrid().getCells()) {
+                  cell.getUiControl().transImagePathToRelative(rerlativeSessionFolderPath);
                }
             }
-         }
       }
    }
 
@@ -378,11 +387,11 @@ public class ResourceServiceImpl implements ResourceService {
     * Gets the controller xml content.
     * 
     * @param maxId the max id
-    * @param activityList the activity list
+    * @param screenList the activity list
     * 
     * @return the controller xml content
     */
-   private String getControllerXmlContent(long maxId, List<Activity> activityList) {
+   private String getControllerXmlContent(long maxId, List<UIScreen> screenList) {
       this.eventId = maxId + 1;
       ProtocolEventContainer protocolEventContainer = new ProtocolEventContainer();
       StringBuffer controllerXml = new StringBuffer();
@@ -391,7 +400,7 @@ public class ResourceServiceImpl implements ResourceService {
             + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " 
             + "xsi:schemaLocation=\"http://www.openremote.org " 
             + "http://www.openremote.org/schemas/controller.xsd\">\n");
-      controllerXml.append(getButtonsXmlContent(activityList, protocolEventContainer));
+      controllerXml.append(getControlsXmlContent(screenList, protocolEventContainer));
       controllerXml.append(protocolEventContainer.generateUIButtonEventsXml());
       controllerXml.append("</openremote>");
       return controllerXml.toString();
@@ -405,18 +414,22 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the buttons xml content
     */
-   private String getButtonsXmlContent(List<Activity> activityList, ProtocolEventContainer protocolEventContainer) {
-      StringBuffer uiButtonsXml = new StringBuffer();
-      uiButtonsXml.append("  <buttons>\n");
-      for (Activity activity : activityList) {
-         for (Screen screen : activity.getScreens()) {
-            for (UIButton btn : screen.getButtons()) {
-               uiButtonsXml.append(getButtonXmlContent(btn, protocolEventContainer));
+   private String getControlsXmlContent(List<UIScreen> screenList, ProtocolEventContainer protocolEventContainer) {
+      StringBuffer uiControlsXml = new StringBuffer();
+      uiControlsXml.append("  <controls>\n");
+      for (UIScreen screen : screenList) {
+         if (screen.isAbsoluteLayout()) {
+            for (Absolute absolute : screen.getAbsolutes()) {
+               uiControlsXml.append(getControlXmlContent(absolute.getUiControl(), protocolEventContainer));
+            }
+         } else {
+            for (Cell cell : screen.getGrid().getCells()) {
+               uiControlsXml.append(getControlXmlContent(cell.getUiControl(), protocolEventContainer));
             }
          }
       }
-      uiButtonsXml.append("  </buttons>\n");
-      return uiButtonsXml.toString();
+      uiControlsXml.append("  </controls>\n");
+      return uiControlsXml.toString();
    }
 
    /**
@@ -427,13 +440,40 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the events from button
     */
-   private String getButtonXmlContent(UIButton uiButton, ProtocolEventContainer protocolEventContainer) {
-      UICommand uiCommand = uiButton.getUiCommand();
+   private String getControlXmlContent(UIControl uiControl, ProtocolEventContainer protocolEventContainer) {
+      StringBuffer uiControlXml = new StringBuffer();
+      if (uiControl instanceof UIButton) {
+         uiControlXml.append("    <button id=\"" + uiControl.getOid() + "\">\n");
+         UICommand uiCommand = ((UIButton)uiControl).getUiCommand();
+         generateCommandXmlString(protocolEventContainer, uiControlXml, uiCommand);
+         uiControlXml.append("    </button>\n");
+      } else if (uiControl instanceof UISwitch) {
+         uiControlXml.append("    <switch id=\"" + uiControl.getOid() + "\">\n");
+         UISwitch uiSwitch = (UISwitch)uiControl;
+         uiControlXml.append("     <on>\n");
+         generateCommandXmlString(protocolEventContainer, uiControlXml, uiSwitch.getOnCommand());
+         uiControlXml.append("     </on>\n");
+         uiControlXml.append("     <off>\n");
+         generateCommandXmlString(protocolEventContainer, uiControlXml, uiSwitch.getOffCommand());
+         uiControlXml.append("     </off>\n");
+         uiControlXml.append("     <status>\n");
+         generateCommandXmlString(protocolEventContainer, uiControlXml, uiSwitch.getStatusCommand());
+         uiControlXml.append("     </status>\n");
+         uiControlXml.append("    <switch>\n");
+      }
+      return uiControlXml.toString();
+   }
+
+   /**
+    * @param protocolEventContainer
+    * @param uiControlXml
+    * @param uiCommand
+    */
+   private void generateCommandXmlString(ProtocolEventContainer protocolEventContainer, StringBuffer uiControlXml,
+         UICommand uiCommand) {
       if (uiCommand instanceof DeviceMacroItem) {
          List<UIButtonEvent> uiButtonEventList = getEventsOfDeviceMacroItem((DeviceMacroItem) uiCommand, protocolEventContainer);
-         return generateButtonXmlString(uiButton.getOid(), uiButtonEventList);
-      } else {
-         return "";
+         uiControlXml.append(generateButtonXmlString(uiButtonEventList));
       }
    }
 
@@ -485,32 +525,17 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the string
     */
-   private String generateButtonXmlString(long uiButtonId, List<UIButtonEvent> uiButtonEventList) {
+   private String generateButtonXmlString(List<UIButtonEvent> uiButtonEventList) {
       StringBuffer buttonXml = new StringBuffer();
-      buttonXml.append("    <button id=\"" + uiButtonId + "\">\n");
-//      for (UIButtonEvent uiButtonEvent : uiButtonEventList) {
-//         buttonXml.append("      <event>");
-//         buttonXml.append(uiButtonEvent.getId());
-//         buttonXml.append("</event>\n");
-//      }
-      for (int i = 0; i < uiButtonEventList.size(); i++) {
-         UIButtonEvent uiButtonEvent = uiButtonEventList.get(i);
-         if("".equals(uiButtonEvent.getDelay())){
-            if(uiButtonEventList.size() > (i+1)){
-               UIButtonEvent nextButtonEvent = uiButtonEventList.get(i+1);
-               if("".equals(nextButtonEvent.getDelay())){
-                  buttonXml.append("      <event>");
-               } else {
-                  buttonXml.append("      <event delay=\"" + nextButtonEvent.getDelay() + "\">");
-               }
-            } else {
-               buttonXml.append("      <event>");
-            }
-            buttonXml.append(uiButtonEvent.getId());
-            buttonXml.append("</event>\n");
+      for (UIButtonEvent uiButtonEvent : uiButtonEventList) {
+         if ("".equals(uiButtonEvent.getDelay())) {
+            buttonXml.append("      <command ref=\"" + uiButtonEvent.getId() + "\">\n");
+         } else {
+            buttonXml.append("      <delay>");
+            buttonXml.append(uiButtonEvent.getDelay());
+            buttonXml.append("</delay>\n");
          }
       }
-      buttonXml.append("    </button>\n");
       return buttonXml.toString();
    }
 
@@ -522,32 +547,54 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the panel xml content
     */
-   private String getPanelXmlContent(List<Activity> activityList) {
+   private String getPanelXmlContent(List<Group> groups, List<UIScreen> screens) {
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
       xmlContent.append("<openremote xmlns=\"http://www.openremote.org\" " 
             + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " 
             + "xsi:schemaLocation=\"http://www.openremote.org " 
             + "http://www.openremote.org/schemas/controller.xsd\">\n");
-      for (Activity activity : activityList) {
-         xmlContent.append("  <activity id=\"" + activity.getOid() + "\" name=\"" + activity.getName() + "\">\n");
-         for (Screen screen : activity.getScreens()) {
-            xmlContent.append("    <screen id=\"" + screen.getOid() + "\" name=\"" + screen.getName() + "\" row=\""
-                  + screen.getRowCount() + "\" col=\"" + screen.getColumnCount() + "\">\n");
-            xmlContent.append("      <buttons>\n");
-            for (UIButton btn : screen.getButtons()) {
-               xmlContent.append("        <button id=\"" + btn.getOid() + "\" label=\"" + btn.getLabel() + "\" x=\""
-                     + btn.getPosition().getPosX() + "\" y=\"" + btn.getPosition().getPosY() + "\" width=\""
-                     + btn.getWidth() + "\" height=\"" + btn.getHeight() + "\"");
-               if (btn.getIcon() != null) {
-                  xmlContent.append(" icon=\"" + btn.getIcon() + "\"");
-               }
-               xmlContent.append(" />\n");
-            }
-            xmlContent.append("      </buttons>\n");
-            xmlContent.append("    </screen>\n");
+      xmlContent.append("  <screens>\n");
+      for (UIScreen screen : screens) {
+         xmlContent.append("    <screen id=\"" + screen.getOid() + "\" name=\"" + screen.getName() + "\"");
+         if (!"".equals(screen.getBackground())) {
+            xmlContent.append(" background=\"" + screen.getBackground() + "\"");
          }
-         xmlContent.append("  </activity>\n");
+         xmlContent.append(">\n");
+         if (screen.isAbsoluteLayout()) {
+            for (Absolute absolute : screen.getAbsolutes()) {
+               xmlContent.append("      <absolute left=\"" + absolute.getLeft() + "\" top=\"" + absolute.getTop()
+                     + "\" width=\"" + absolute.getWidth() + "\" height=\"" + absolute.getHeight() + "\">\n");
+               xmlContent.append(absolute.getUiControl().getPanelXml());
+               xmlContent.append("      </absolute>\n");
+            }
+         } else {
+            Grid grid = screen.getGrid();
+            xmlContent.append("      <grid left=\"" + grid.getLeft() + "\" top=\"" + grid.getTop() + "\" width=\""
+                  + grid.getWidth() + "\" height=\"" + grid.getHeight() + "\" rows=\"" + grid.getRowCount()
+                  + "\" cols=\"" + grid.getColumnCount() + "\">\n");
+            for (Cell cell : grid.getCells()) {
+               xmlContent.append("       <cell x=\"" + cell.getPosX() + "\" y=\"" + cell.getPosY() + "\" rowspan=\""
+                     + cell.getRowspan() + "\" colspan=\"" + cell.getColspan() + "\">\n");
+               xmlContent.append(cell.getUiControl().getPanelXml());
+               xmlContent.append("       </cell>\n");
+            }
+            xmlContent.append("      </grid>\n");
+         }
+         xmlContent.append("    </screen>\n");
+      }
+      xmlContent.append("  </screens>\n");
+      if (groups.size() > 0) {
+         xmlContent.append("  <groups>\n");
+         for (Group group : groups) {
+            xmlContent.append("    <group id=\"" + group.getOid() + "\" name=\"" + group.getName() + "\">\n");
+            for (ScreenRef screenRef : group.getScreenRefs()) {
+               xmlContent.append("      <screenRef id=\"" + screenRef.getScreenId() + "\" />\n");
+            }
+            xmlContent.append("    </group>\n");
+            
+         }
+         xmlContent.append("  </groups>\n");
       }
       xmlContent.append("</openremote>");
       return xmlContent.toString();
@@ -561,20 +608,27 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Gets the section ids.
     * 
-    * @param activityList the activity list
+    * @param screenList the activity list
     * 
     * @return the section ids
     */
-   private String getSectionIds(List<Activity> activityList) {
+   private String getSectionIds(List<UIScreen> screenList) {
       Set<String> sectionIds = new HashSet<String>();
-      for (Activity activity : activityList) {
-         for (Screen screen : activity.getScreens()) {
-            List<UIButton> screenButtons = screen.getButtons();
-            for (int i = 0; i < screenButtons.size(); i++) {
-               UIButton btn = screenButtons.get(i);
-               if (btn.getUiCommand() instanceof DeviceMacroItem) {
-                  DeviceMacroItem deviceMacroItem = (DeviceMacroItem) btn.getUiCommand();
-                  sectionIds.addAll(getDevcieMacroItemSectionIds(deviceMacroItem));
+      for (UIScreen screen : screenList) {
+         if (screen.isAbsoluteLayout()) {
+            for (Absolute absolute : screen.getAbsolutes()) {
+               for (UICommand command : absolute.getUiControl().getCommands()) {
+                  if (command instanceof DeviceMacroItem) {
+                     sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem)command));
+                  }
+               }
+            }
+         } else {
+            for (Cell cell : screen.getGrid().getCells()) {
+               for (UICommand command : cell.getUiControl().getCommands()) {
+                  if (command instanceof DeviceMacroItem) {
+                     sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem)command));
+                  }
                }
             }
          }

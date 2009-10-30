@@ -26,6 +26,8 @@ import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Activity;
+import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.UIScreen;
 
 
 /**
@@ -48,8 +50,8 @@ public class UtilsProxy {
     * @param maxId the max id
     * @param activityList the activity list
     */
-   public static void exportFiles(long maxId, List<Activity> activityList, final AsyncSuccessCallback<String> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().exportFiles(maxId, activityList, new AsyncSuccessCallback<String>() {
+   public static void exportFiles(long maxId, List<Group> groupList, List<UIScreen> screenList, final AsyncSuccessCallback<String> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().exportFiles(maxId, groupList, screenList, new AsyncSuccessCallback<String>() {
          @Override
          public void onSuccess(String exportURL) {
             callback.onSuccess(exportURL);
