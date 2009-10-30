@@ -48,7 +48,7 @@
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {
 	NSString *status = [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 	if (lastId && ![@"" isEqualToString:status]) {
-		NSLog(@"change to %@  !!!", status);
+		NSLog(@"change %@ to %@  !!!", lastId, status);
 		[statusMap setObject:status forKey:lastId];
 		[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:NotificationPollingStatusIdFormat,[lastId intValue]] object:self];
 	}

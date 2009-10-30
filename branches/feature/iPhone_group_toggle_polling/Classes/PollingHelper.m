@@ -60,8 +60,8 @@
 
 - (void)doPolling {
 	isPolling = YES;
-	//NSString *deviceId = [[UIDevice currentDevice] uniqueIdentifier];
-	NSString *deviceId = @"96e79218965eb72c92a549dd5a330112";
+	NSString *deviceId = [[UIDevice currentDevice] uniqueIdentifier];
+	//NSString *deviceId = @"96e79218965eb72c92a549dd5a330112";
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition pollingRESTUrl]];
 	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%@/%@",deviceId,pollingStatusIds]];
 	NSLog([location stringByAppendingFormat:@"/%@/%@",deviceId,pollingStatusIds]);
@@ -98,10 +98,17 @@
 			case 503:
 				errorMessage = [NSString stringWithString:@"Controller is not currently available."];
 				break;
+			case 504://polling timeout, need to refresh
+				isError = NO;
+				isPolling = YES;
+				
+				[self doPolling];
+				
+				return;
 		} 
 		
 		if (!errorMessage) {
-			errorMessage = [NSString stringWithFormat:@"Occured unknown error, satus code is @d",statusCode];
+			errorMessage = [NSString stringWithFormat:@"Unknown error occured , satus code is %d",statusCode];
 		}
 		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:errorMessage];
 		isPolling = NO;

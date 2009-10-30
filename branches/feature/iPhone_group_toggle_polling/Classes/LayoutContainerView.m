@@ -52,7 +52,9 @@
 //Otherwise, UI widget inside will not work in nested UIViews
 - (id)initWithLayoutContainer:(LayoutContainer *)layoutContainer frame:(CGRect)frame{
 	if (self = [super initWithFrame:frame]) {
-		layout = layoutContainer;		
+		layout = layoutContainer;	
+		//transparent background 
+		[self setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]]; 
 		//[self setBackgroundColor:[UIColor whiteColor]];
 		
 		/* If you need to create a rectangle that is either larger or smaller than an existing rectangle, 

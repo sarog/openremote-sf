@@ -56,6 +56,8 @@
 - (id)initWithControl:(Control *)c frame:(CGRect)frame{
 	if (self = [super initWithFrame:frame]) {
 		control = c;
+		//transparent background 
+		[self setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
 	}
 
 	return self;
@@ -144,7 +146,7 @@
 	////		[alert release];
 	//	}
 	//	[result release];
-	NSLog(@"definitionURLConnectionDidFinishLoading");
+	//NSLog(@"definitionURLConnectionDidFinishLoading");
 }
 
 - (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
