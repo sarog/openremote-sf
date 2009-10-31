@@ -1146,8 +1146,7 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Start the serial link between the computer and the actual CM11A
-     * module.
+     * Start the serial link between the computer and the actual CM11A module.
      *
      * @throws GatewayException if the serial port name has been misconfigured, or if the requested
      *                          serial port is already in use, or there are already too many
@@ -1185,110 +1184,118 @@ public class CM11A extends SerialGateway implements
 
         try
         {
-            boolean retry = true;
-            int retryDelay = 0;
-            final int delay = 500;
-
-            // try to open a serial port in a loop, retrying if we don't succeed at first,
-            // unless RETRY_ON_INUSE_COM_PORT has been set to false...
-
-            while (retry)
-            {
-                try
-                {
-                    portId = CommPortIdentifier.getPortIdentifier(portName);
-                    serialPort = (SerialPort) portId.open("CM11A", 2000);
-                    serialPort.setSerialPortParams(baudRate,
-                                                   dataBits,
-                                                   stopBits,
-                                                   parity);
-                    inputStream = serialPort.getInputStream();
-                    outputStream = serialPort.getOutputStream();
-                    serialPort.addEventListener(this);
-                    serialPort.notifyOnRingIndicator(true);
-                    serialPort.notifyOnDataAvailable(true);
-
-                    // We got the port, we can stop trying...
-
-                    retry = false;
-                }
-                catch (PortInUseException piue)
-                {
-                    // Do we want to retry opening the serial port...?
-
-                    if (RETRY_ON_INUSE_COM_PORT)
-                    {
-                        // Let's not retry forever, keep track of time and stop eventually...
-
-                        if (retryDelay < COM_PORT_RETRY_ALLOCATE_DELAY)
-                        {
-                            retryDelay += delay;
-
-                            try
-                            {
-                                Thread.sleep(delay);
-                            }
-                            catch (InterruptedException ie)
-                            {
-                                // Restore the interrupted status...
-
-                                Thread.currentThread().interrupt();
-
-                                setGatewayState(Gateway.DEALLOCATED);
-
-                                // Throw a declared exception type...
-
-                                GatewayException ge = new GatewayException(
-                                    "Thread was interrupted while retrying to open a serial port " +
-                                    "already in use (had waited ~" + retryDelay + "ms): " +
-                                    ie.getMessage()
-                                );
-
-                                ge.initCause(ie);
-
-                                throw ge;
-                            }
-                        }
-
-                        // We've retried too many times, it ain't working, time to bail out...
-
-                        else
-                        {
-                            setGatewayState(Gateway.DEALLOCATED);
-
-                            GatewayException ge = new GatewayException(
-                                "Request com port " + portName + " in use (" +
-                                piue.getMessage() + ")."
-                            );
-
-                            ge.initCause(piue);
-
-                            throw ge;
-                        }
-                    }
-
-                    // Retry turned off, port in use, just throw the exception...
-
-                    else
-                    {
-                      setGatewayState(Gateway.DEALLOCATED);
-
-                      GatewayException ge = new GatewayException(
-                          "Request com port " + portName + " in use (" + piue.getMessage() + ")."
-                      );
-
-                      ge.initCause(piue);
-
-                      throw ge;
-                    }
-                }
-            }
+          portId = CommPortIdentifier.getPortIdentifier(portName);
         }
         catch (NoSuchPortException e)
         {
             setGatewayState(Gateway.DEALLOCATED);
             throw new GatewayException("Requested com port " + portName +
                                        " does not exist.");
+        }
+
+        boolean retry = true;
+        int retryDelay = 0;
+        final int delay = 500;
+
+        // try to open a serial port in a loop, retrying if we don't succeed at first,
+        // unless RETRY_ON_INUSE_COM_PORT has been set to false...
+
+        while (retry)
+        {
+            try
+            {
+                serialPort = (SerialPort) portId.open("CM11A", 500);
+
+                // We got the port, we can stop trying...
+
+                retry = false;
+            }
+            catch (PortInUseException piue)
+            {
+                // Do we want to retry opening the serial port...?
+
+                if (RETRY_ON_INUSE_COM_PORT)
+                {
+                    // Let's not retry forever, keep track of time and stop eventually...
+
+                    if (retryDelay < COM_PORT_RETRY_ALLOCATE_DELAY)
+                    {
+                        retryDelay += delay;
+
+                        try
+                        {
+                            Thread.sleep(delay);
+                        }
+                        catch (InterruptedException ie)
+                        {
+                            // Restore the interrupted status...
+
+                            Thread.currentThread().interrupt();
+
+                            setGatewayState(Gateway.DEALLOCATED);
+
+                            // Throw a declared exception type...
+
+                            GatewayException ge = new GatewayException(
+                                "Thread was interrupted while retrying to open a serial port " +
+                                "already in use (had waited ~" + retryDelay + "ms): " +
+                                ie.getMessage()
+                            );
+
+                            // TODO : implement cause constructor in GatewayException
+                          
+                            ge.initCause(ie);
+
+                            throw ge;
+                        }
+                    }
+
+                    // We've retried too many times, it ain't working, time to bail out...
+
+                    else
+                    {
+                        setGatewayState(Gateway.DEALLOCATED);
+
+                        GatewayException ge = new GatewayException(
+                            "Request com port " + portName + " in use (" +
+                            piue.getMessage() + ")."
+                        );
+
+                        ge.initCause(piue);
+
+                        throw ge;
+                    }
+                }
+
+                // Retry turned off, port in use, just throw the exception...
+
+                else
+                {
+                  setGatewayState(Gateway.DEALLOCATED);
+
+                  GatewayException ge = new GatewayException(
+                      "Request com port " + portName + " in use (" + piue.getMessage() + ")."
+                  );
+
+                  ge.initCause(piue);
+
+                  throw ge;
+                }
+            }
+        }
+
+        try
+        {
+          serialPort.setSerialPortParams(baudRate,
+                                         dataBits,
+                                         stopBits,
+                                         parity);
+          inputStream = serialPort.getInputStream();
+          outputStream = serialPort.getOutputStream();
+          serialPort.addEventListener(this);
+          serialPort.notifyOnRingIndicator(true);
+          serialPort.notifyOnDataAvailable(true);
+
         }
         catch (TooManyListenersException e)
         {
