@@ -107,10 +107,6 @@ public class CM11AStatusTransmission implements CM11ATransmissionEvent
      * @param parent    The CM11A device to retrieve the status of.
      * @param listener  CM11AStatusListener to notify when status retrieved.
      *                  May be null.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
-     * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
-     *
      */
     public CM11AStatusTransmission(CM11A parent, CM11AStatusListener listener)
     {
@@ -132,9 +128,6 @@ public class CM11AStatusTransmission implements CM11ATransmissionEvent
      * @throws InterruptedTransmissionException if an unsolicited interrupt has been received
      *         during the transmission.
      * @throws IOException if some sort of I/O or I/O protocol error has occurred
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
-     * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
      */
     public void transmit(InputStream in, OutputStream out)
         throws TooManyAttemptsException, InterruptedTransmissionException,
@@ -335,8 +328,6 @@ public class CM11AStatusTransmission implements CM11ATransmissionEvent
      * Retrieve the number of transmission attempts.
      *
      * @return the number of transmission attempts
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     public int getNumAttempts()
     {
@@ -347,8 +338,6 @@ public class CM11AStatusTransmission implements CM11ATransmissionEvent
      * Set the number of transmission attempts
      *
      * @param maxAttempts the maximum number of transmission attempts
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     public void setMaxAttempts(int maxAttempts)
     {
@@ -359,14 +348,10 @@ public class CM11AStatusTransmission implements CM11ATransmissionEvent
      * Create a string representation of the transmission.
      *
      * @return String representation of the transmission.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     @Override public String toString()
     {
         StringBuffer buffer = new StringBuffer();
-//        HexFormat hexFormat = new HexFormat();
-//        String prefix = "";
 
         buffer.append("CM11AStatusTransmission");
         return(buffer.toString());
