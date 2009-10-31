@@ -203,6 +203,10 @@ public class CM11AStatusTransmission implements CM11ATransmissionEvent
               );
             }
           }
+          else
+          {
+            currentBlockingDelay = Integer.MAX_VALUE;
+          }
         }
 
 
