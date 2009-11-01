@@ -109,9 +109,6 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
       <fileset dir = "${lib.dir}/calimero">
         <include name = "**/*.jar"/>
       </fileset>
-      <fileset dir = "${lib.dir}/x10">
-        <include name = "**/*.jar"/>
-      </fileset>
       <fileset dir = "${lib.dir}/apache">
         <include name = "**/*.jar"/>
       </fileset>
