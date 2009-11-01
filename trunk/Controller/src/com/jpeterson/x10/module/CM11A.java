@@ -190,9 +190,8 @@ public class CM11A extends SerialGateway implements
     private static Hashtable<Integer, String> value2day;
 
 
-    // maximum number of days in a month. The index into the array is the
-    // month, zero based. e.g., 0 for January, 1 for February, 11 for
-    // December.
+    // maximum number of days in a month. The index into the array is the month, zero based.
+    // e.g., 0 for January, 1 for February, 11 for December.
     private static final int[] daysInMonth = {31, 29, 31, 30, 31, 30, 31, 31,
                                             30, 31, 30, 31};
 
@@ -202,13 +201,13 @@ public class CM11A extends SerialGateway implements
     static
     {
         value2day = new Hashtable<Integer, String>();
-        value2day.put(new Integer(1), "Sunday");
-        value2day.put(new Integer(2), "Monday");
-        value2day.put(new Integer(4), "Tuesday");
-        value2day.put(new Integer(8), "Wednesday");
-        value2day.put(new Integer(16), "Thursday");
-        value2day.put(new Integer(32), "Friday");
-        value2day.put(new Integer(64), "Saturday");
+        value2day.put(1, "Sunday");
+        value2day.put(2, "Monday");
+        value2day.put(4, "Tuesday");
+        value2day.put(8, "Wednesday");
+        value2day.put(16, "Thursday");
+        value2day.put(32, "Friday");
+        value2day.put(64, "Saturday");
     }
 
 
