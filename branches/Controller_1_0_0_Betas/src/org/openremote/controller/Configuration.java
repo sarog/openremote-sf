@@ -24,6 +24,7 @@ package org.openremote.controller;
  * This class provides the Java bindings from config.properties file found in
  * <tt>WEB-INF/classes</tt> directory of the web archive.
  *
+ * <p>
  * The actual value injection is currently configured via Spring frameworks'
  * <tt>applicationContext.xml</tt> configuration file also found in the web archive.
  * Each additional configuration property must be added to the XML definition
@@ -34,6 +35,9 @@ package org.openremote.controller;
  * @author Jerome Velociter
  */
 public class Configuration {
+
+  // Private Instance Variables -------------------------------------------------------------------
+
 
   private String irsendPath;
 
@@ -68,6 +72,10 @@ public class Configuration {
   private String x10transmitter;
 
 
+
+  // Public Methods -------------------------------------------------------------------------------
+
+
   /**
    * Returns a string containing an operating system specific filesystem path to
    * a executable LIRC 'irsend' command.
@@ -97,7 +105,7 @@ public class Configuration {
     // TODO :
     //  should be explicit about (how-to) the use of relative paths
 
-    this.irsendPath = irsendPath;
+    this.irsendPath = irsendPath.trim();
   }
 
   /**
@@ -129,7 +137,7 @@ public class Configuration {
     // TODO :
     //  should be explicit about (how-to) the use of relative paths
 
-    this.lircdconfPath = lircdconfPath;
+    this.lircdconfPath = lircdconfPath.trim();
   }
 
   /**
@@ -190,7 +198,7 @@ public class Configuration {
    * @param webappPort  the HTTP listening port of the web container (e.g. Tomcat 8080)
    */
   public void setWebappPort(String webappPort) {
-    this.webappPort = webappPort;
+    this.webappPort = webappPort.trim();
   }
 
   /**
@@ -215,7 +223,7 @@ public class Configuration {
 
     // TODO : actually validate a correctly configured IP address
 
-    this.multicastAddress = multicastAddress;
+    this.multicastAddress = multicastAddress.trim();
   }
 
   /**
@@ -268,7 +276,7 @@ public class Configuration {
     // TODO :
     //  should be explicit about (how-to) the use of relative paths
 
-    this.resourcePath = resourcePath;
+    this.resourcePath = resourcePath.trim();
   }
 
   /**
@@ -335,7 +343,7 @@ public class Configuration {
    * @param comPort the name of the COM (serial) port or device
    */
   public void setComPort(String comPort) {
-    this.comPort = comPort;
+    this.comPort = comPort.trim();
   }
 
   /**
@@ -357,7 +365,7 @@ public class Configuration {
    * @param x10transmitter
    */
   public void setX10transmitter(String x10transmitter) {
-    this.x10transmitter = x10transmitter;
+    this.x10transmitter = x10transmitter.trim();
   }
 
 }

@@ -1,5 +1,7 @@
 /*
  * Copyright (C) 1999  Jesse E. Peterson
+ * Copyright (C) 2007  Manish Pandya
+ * Copyright (C) 2009  OpenRemote Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,13 +21,13 @@
 
 package com.jpeterson.x10.module;
 
-import java.io.*;
-import java.util.*;
-import gnu.io.*;
-import com.jpeterson.x10.event.*;
+import com.jpeterson.util.BinaryFormat;
+import com.jpeterson.util.Condition;
+import com.jpeterson.util.HexFormat;
+import com.jpeterson.util.Unsigned;
 import com.jpeterson.x10.ControlEvent;
-import com.jpeterson.x10.GatewayException;
 import com.jpeterson.x10.Gateway;
+import com.jpeterson.x10.GatewayException;
 import com.jpeterson.x10.GatewayListener;
 import com.jpeterson.x10.GatewayStateError;
 import com.jpeterson.x10.InterruptedTransmissionException;
@@ -35,60 +37,68 @@ import com.jpeterson.x10.Transmitter;
 import com.jpeterson.x10.TransmitterEvent;
 import com.jpeterson.x10.TransmitterListener;
 import com.jpeterson.x10.X10Util;
+import com.jpeterson.x10.event.AddressEvent;
+import com.jpeterson.x10.event.AddressListener;
+import com.jpeterson.x10.event.AllLightsOffEvent;
+import com.jpeterson.x10.event.AllLightsOnEvent;
+import com.jpeterson.x10.event.AllUnitsOffEvent;
+import com.jpeterson.x10.event.BrightEvent;
+import com.jpeterson.x10.event.DimEvent;
+import com.jpeterson.x10.event.ExtendedCodeEvent;
+import com.jpeterson.x10.event.ExtendedDataTransferEvent;
+import com.jpeterson.x10.event.FunctionEvent;
+import com.jpeterson.x10.event.FunctionListener;
+import com.jpeterson.x10.event.HailAcknowledgeEvent;
+import com.jpeterson.x10.event.HailRequestEvent;
+import com.jpeterson.x10.event.OffEvent;
+import com.jpeterson.x10.event.OnEvent;
+import com.jpeterson.x10.event.PresetDim1Event;
+import com.jpeterson.x10.event.PresetDim2Event;
+import com.jpeterson.x10.event.StatusOffEvent;
+import com.jpeterson.x10.event.StatusOnEvent;
+import com.jpeterson.x10.event.StatusRequestEvent;
+import com.jpeterson.x10.event.X10Event;
 import com.jpeterson.x10.module.event.CM11AEvent;
 import com.jpeterson.x10.module.event.CM11AListener;
 import com.jpeterson.x10.module.event.CM11AStatusEvent;
 import com.jpeterson.x10.module.event.CM11AStatusListener;
-import com.jpeterson.util.Condition;
-import com.jpeterson.util.Unsigned;
-import com.jpeterson.util.BinaryFormat; // DEBUG
-import com.jpeterson.util.HexFormat;    // DEBUG
+import gnu.io.CommPortIdentifier;
+import gnu.io.NoSuchPortException;
+import gnu.io.PortInUseException;
+import gnu.io.SerialPort;
+import gnu.io.SerialPortEvent;
+import gnu.io.SerialPortEventListener;
+import gnu.io.UnsupportedCommOperationException;
+
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.BitSet;
+import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.TooManyListenersException;
+import java.util.Vector;    // DEBUG
 
 /**
- * Gateway to X10 CM11A serial interface unit. The CM11A is both a
- * producer and consumer of X10Events. It receives X10Events from other
- * software components and transmits the event through the X10 protocol.
- * It sends X10Events that it receives on the power line.
+ * Gateway to X10 CM11A serial interface unit. The CM11A is both a producer and consumer of
+ * X10Events. It receives X10Events from other software components and transmits the event
+ * through the X10 protocol. It sends X10Events that it receives on the power line.
  *
  * @author Jesse Peterson <jesse@jpeterson.com>
+ * @author Manish Pandya
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class CM11A extends SerialGateway implements
     Transmitter, Runnable, SerialPortEventListener, Serializable
 {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-    private transient Vector<CM11AListener> eventListeners = null;
-    private transient Vector<CM11AStatusListener> statusListeners = null;
-    private transient Vector<AddressListener> addressListeners = null;
-    private transient Vector<FunctionListener> functionListeners = null;
 
-    private transient CommPortIdentifier portId;
-    private transient SerialPort serialPort;
-    private transient OutputStream outputStream;
-    private transient InputStream inputStream;
+    // Constants ----------------------------------------------------------------------------------
 
-    private transient Thread processThread;
-    private boolean shouldExit = false;
-    private transient Vector<CM11ATransmissionEvent> transmissionQueue;
-    private transient Condition shouldProcess;
-    private char monitoredHouseCode;
-    private BitSet onOffStatus;
-    private BitSet dimStatus;
-    private BitSet lastAddressedDevice;
-    private int currentDay;
-    private int julianDay;
-    private int hours, minutes, seconds;
-    private int batteryUsage;
-    private boolean powerFailureAutoRecover;
-
-    private Hashtable<Macro, Integer> macroOffsets;
-    private Hashtable<Integer, Macro> offset2macro;
-    private Vector<TimerInitiator> timerInitiators;
-    private Vector<MacroInitiator> macroInitiators;
-
-    private byte[] eeprom;
     private static final int EEPROM_SIZE = 1024;  // 1k, 1024 bytes max
     private static final int PAGE = 16;
     private static final int SIZEOF_INITIAL_OFFSET = 2;
@@ -100,27 +110,48 @@ public class CM11A extends SerialGateway implements
     public static final byte CM11_MACRO_INITIATED = (byte)0x5b;
     private static final byte CM11_RECEIVE_EVENT_RSP = (byte)0xc3;
     private static final byte CM11_RING_ENABLE = (byte)0xeb;
-//    private static final byte CM11_RING_DISABLE = (byte)0xdb;
+    // private static final byte CM11_RING_DISABLE = (byte)0xdb;
     private static final byte CM11_CLOCK_DOWNLOAD = (byte)0x9b;
     private static final byte CM11_MACRO_DOWNLOAD_INITIATOR = (byte)0xfb;
 
-//    private static final int[] code2value = {-1,  // invalid
-//                         6,   // Device 1
-//                         14,  // Device 2
-//                         2,   // Device 3
-//                         10,  // Device 4
-//                         1,   // Device 5
-//                         9,   // Device 6
-//                         5,   // Device 7
-//                         13,  // Device 8
-//                         7,   // Device 9
-//                         15,  // Device 10
-//                         3,   // Device 11
-//                         11,  // Device 12
-//                         0,   // Device 13
-//                         8,   // Device 14
-//                         4,   // Device 15
-//                         12}; // Device 16
+    /**
+     * Indicates whether we should try allocating again the serial port if it is in use, or
+     * fail straight away.
+     */
+    private final static boolean RETRY_ON_INUSE_COM_PORT = true;
+
+    /**
+     * If we get serial port in use exception, how long should we keep trying to get it, until
+     * giving up.
+     */
+    private final static int COM_PORT_RETRY_ALLOCATE_DELAY = 3000;
+
+
+
+    // Serialization ------------------------------------------------------------------------------
+
+    private static final long serialVersionUID = 1L;
+
+
+    // Class Fields -------------------------------------------------------------------------------
+
+    //private static final int[] code2value = {-1,  // invalid
+    //                     6,   // Device 1
+    //                     14,  // Device 2
+    //                     2,   // Device 3
+    //                     10,  // Device 4
+    //                     1,   // Device 5
+    //                     9,   // Device 6
+    //                     5,   // Device 7
+    //                     13,  // Device 8
+    //                     7,   // Device 9
+    //                     15,  // Device 10
+    //                     3,   // Device 11
+    //                     11,  // Device 12
+    //                     0,   // Device 13
+    //                     8,   // Device 14
+    //                     4,   // Device 15
+    //                     12}; // Device 16
 
     private static final int[] value2deviceCode = {13,  // position 0
                            5,   // position 1
@@ -158,28 +189,69 @@ public class CM11A extends SerialGateway implements
 
     private static Hashtable<Integer, String> value2day;
 
+
+    // maximum number of days in a month. The index into the array is the month, zero based.
+    // e.g., 0 for January, 1 for February, 11 for December.
+    private static final int[] daysInMonth = {31, 29, 31, 30, 31, 30, 31, 31,
+                                            30, 31, 30, 31};
+
+
+    // Class Initializer --------------------------------------------------------------------------
+
     static
     {
         value2day = new Hashtable<Integer, String>();
-        value2day.put(new Integer(1), "Sunday");
-        value2day.put(new Integer(2), "Monday");
-        value2day.put(new Integer(4), "Tuesday");
-        value2day.put(new Integer(8), "Wednesday");
-        value2day.put(new Integer(16), "Thursday");
-        value2day.put(new Integer(32), "Friday");
-        value2day.put(new Integer(64), "Saturday");
+        value2day.put(1, "Sunday");
+        value2day.put(2, "Monday");
+        value2day.put(4, "Tuesday");
+        value2day.put(8, "Wednesday");
+        value2day.put(16, "Thursday");
+        value2day.put(32, "Friday");
+        value2day.put(64, "Saturday");
     }
 
-    // maximum number of days in a month. The index into the array is the
-    // month, zero based. e.g., 0 for January, 1 for February, 11 for
-    // December.
-    private static final int[] daysInMonth = {31, 29, 31, 30, 31, 30, 31, 31,
-                                              30, 31, 30, 31};
+
+    // Instance Fields ----------------------------------------------------------------------------
+
+    private transient Vector<CM11AListener> eventListeners = null;
+    private transient Vector<CM11AStatusListener> statusListeners = null;
+    private transient Vector<AddressListener> addressListeners = null;
+    private transient Vector<FunctionListener> functionListeners = null;
+
+    private transient CommPortIdentifier portId;
+    private transient SerialPort serialPort;
+    private transient OutputStream outputStream;
+    private transient InputStream inputStream;
+
+    private transient Thread processThread;
+    private boolean shouldExit = false;
+    private transient Vector<CM11ATransmissionEvent> transmissionQueue;
+    private transient Condition shouldProcess;
+    private char monitoredHouseCode;
+    private BitSet onOffStatus;
+    private BitSet dimStatus;
+    private BitSet lastAddressedDevice;
+    private int currentDay;
+    private int julianDay;
+    private int hours, minutes, seconds;
+    private int batteryUsage;
+    private boolean powerFailureAutoRecover;
+
+    private Hashtable<Macro, Integer> macroOffsets;
+    private Hashtable<Integer, Macro> offset2macro;
+    private Vector<TimerInitiator> timerInitiators;
+    private Vector<MacroInitiator> macroInitiators;
+
+    private byte[] eeprom;
+
+
+
+
+
+    // Constructors -------------------------------------------------------------------------------
 
     /**
      * Construct a new CM11A object.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     public CM11A()
     {
@@ -204,22 +276,24 @@ public class CM11A extends SerialGateway implements
         setGatewayState(Transmitter.QUEUE_EMPTY);
     }
 
+
+
+    // Public Methods -----------------------------------------------------------------------------
+
+
     /**
-     * Indicate if you want the CM11A object to autorecover upon detecting
-     * a power failure. If set to true, when the CM11A object detects a
-     * power failure signal from the CM11A device, the command to set the
-     * clock will be sent. If set to false, it is up to another device to
-     * set the clock via a call to <code>setClock</code> before the CM11A
-     * can be used.
+     * Indicate if you want the CM11A object to autorecover upon detecting a power failure. If set
+     * to true, when the CM11A object detects a power failure signal from the CM11A device, the
+     * command to set the clock will be sent. If set to false, it is up to another device to set
+     * the clock via a call to <code>setClock</code> before the CM11A can be used.
      * <p>
      * By default, auto recover is turned on.
      *
-     * @param autoRecover True if the object should automatically recover
-     *        upon detecting a power failure of the CM11A device.
-     * @see getPowerFailureAutoRecover
-     * @see setClock
+     * @param autoRecover   True if the object should automatically recover upon detecting a power
+     *                      failure of the CM11A device.
      *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
+     * @see #getPowerFailureAutoRecover()
+     * @see #setClock
      */
     public void setPowerFailureAutoRecover(boolean autoRecover)
     {
@@ -227,15 +301,14 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Determine if this CM11A object has been configured to auto recover
-     * upon sensing a power failure at the CM11A device.
+     * Determine if this CM11A object has been configured to auto recover upon sensing a power
+     * failure at the CM11A device.
      * <p>
      * By default, auto recover is turned on.
      *
-     * @return True if auto recover is turned on, false otherwise.
-     * @see setPowerFailureAutoRecover
+     * @see #setPowerFailureAutoRecover
      *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
+     * @return True if auto recover is turned on, false otherwise.
      */
     public boolean getPowerFailureAutoRecover()
     {
@@ -243,11 +316,8 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Encapsulates state transition rules.  Only implements Transmitter
-     * specific states.  Lets parent's stateTransition handle the generic
-     * gateway states.
-     *
-     * @author Jesse Peterson <6/29/99>
+     * Encapsulates state transition rules.  Only implements Transmitter specific states.  Lets
+     * parent's stateTransition handle the generic gateway states.
      */
     public void stateTransition(long state)
     {
@@ -287,15 +357,13 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Implementation of Transmitter. Other software components
-     * can send X10 events to the CM11A to have sent through the X10
-     * protocol to X10 devices on the power line network.
+     * Implementation of Transmitter. Other software components can send X10 events to the CM11A
+     * to have sent through the X10 protocol to X10 devices on the power line network.
      *
-     * @param evt X10 event to transmit
-     * @exception GatewayStateError if called for a transmitter in the
-     *            DEALLOCATED or DEALLOCATING_RESOURCES states
+     * @param   evt   X10 event to transmit
      *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @throws  GatewayStateError if called for a transmitter in the DEALLOCATED or
+     *          DEALLOCATING_RESOURCES states
      */
     public void transmit(X10Event evt) throws GatewayStateError
     {
@@ -327,8 +395,6 @@ public class CM11A extends SerialGateway implements
 
     /**
      * Request the status from the CM11A interface.
-     *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
      */
     public void updateStatus()
     {
@@ -339,9 +405,6 @@ public class CM11A extends SerialGateway implements
      * Request the status from the CM11A interface.
      *
      * @param statusListener Notification is sent to the listener
-     *        
-     *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
      */
     public void updateStatus(CM11AStatusListener statusListener)
     {
@@ -371,18 +434,15 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Get the house code that the CM11A is configured to monitor. The
-     * CM11A device will record changes to devices on the monitored house
-     * code. It record the on/off status and if a device is dimmed or not.
-     * The data can be retrieved from the methods getOnOffStatus,
-     * getDimStatus, get last addressed device. Use
-     * <code>setClock</code> to change the monitored house code.
+     * Get the house code that the CM11A is configured to monitor. The CM11A device will record
+     * changes to devices on the monitored house code. It record the on/off status and if a device
+     * is dimmed or not. The data can be retrieved from the methods getOnOffStatus, getDimStatus,
+     * get last addressed device. Use <code>setClock</code> to change the monitored house code.
+     *
+     * @see #setClock
      *
      * @return The character from 'A' through 'P' that indicates the
      *         house code that is being monitored.
-     * @see setClock
-     *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
      */
     public char getMonitoredHouseCode()
     {
@@ -390,17 +450,14 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Indication of the On/Off status as the CM11A sees it for the
-     * monitored house code. The value is set after a call to
-     * <code>updateStatus</code>.
+     * Indication of the On/Off status as the CM11A sees it for the monitored house code. The value
+     * is set after a call to <code>updateStatus</code>.
      *
-     * @return The bit is set (true) if the device is on, not set (false)
-     *         if the device is off. The bit index indicates the device:
-     *         bit index 0 = device 1, bit index 1 = device 2, ...,
-     *         bit index 15 = device 16.
-     * @see updateStatus
+     * @see #updateStatus
      *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
+     * @return The bit is set (true) if the device is on, not set (false) if the device is off.
+     *         The bit index indicates the device: bit index 0 = device 1,
+     *         bit index 1 = device 2, ..., bit index 15 = device 16.
      */
     public BitSet getOnOffStatus()
     {
@@ -408,17 +465,14 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Indication of the dim status as the CM11A sees it for the
-     * monitored house code. The value is set after a call to
-     * <code>updateStatus</code>.
+     * Indication of the dim status as the CM11A sees it for the monitored house code. The value is
+     * set after a call to <code>updateStatus</code>.
      *
-     * @return The bit is set (true) if the device is dimmed, not set (false)
-     *         if the device is not dimmed. The bit index indicates the device:
-     *         bit index 0 = device 1, bit index 1 = device 2, ...,
-     *         bit index 15 = device 16.
-     * @see updateStatus
+     * @see #updateStatus
      *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
+     * @return The bit is set (true) if the device is dimmed, not set (false) if the device is not
+     *         dimmed. The bit index indicates the device: bit index 0 = device 1,
+     *         bit index 1 = device 2, ..., bit index 15 = device 16.
      */
     public BitSet getDimStatus()
     {
@@ -426,18 +480,15 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Indication of the last addressed device as the CM11A sees it for the
-     * monitored house code. The value is set after a call to
-     * <code>updateStatus</code>.
+     * Indication of the last addressed device as the CM11A sees it for the monitored house code.
+     * The value is set after a call to <code>updateStatus</code>.
      *
-     * @return The bit is set (true) if the device was addressed, not set (false)
-     *         if the device was not addressed. The bit index indicates the device:
-     *         bit index 0 = device 1, bit index 1 = device 2, ...,
-     *         bit index 15 = device 16.
-     * @see updateStatus
-     * @see setClock
+     * @see #updateStatus
+     * @see #setClock
      *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
+     * @return The bit is set (true) if the device was addressed, not set (false) if the device was
+     *         not addressed. The bit index indicates the device: bit index 0 = device 1,
+     *         bit index 1 = device 2, ..., bit index 15 = device 16.
      */
     public BitSet getLastAddressedDevice()
     {
@@ -445,17 +496,15 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Retrieve the CM11A's idea of what the current day is. The value is
-     * initialized after a call to <code>updateStatus()</code>.
+     * Retrieve the CM11A's idea of what the current day is. The value is initialized after a call
+     * to <code>updateStatus()</code>.
      *
-     * @return The CM11A's idea of what the current day is. Will be one of
-     *         Calendar.SUNDAY, Calendar.MONDAY, Calendar.TUESDAY,
-     *         Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY,
-     *         Calendar.SATURDAY.
-     * @see updateStatus
-     * @see setClock
+     * @see #updateStatus
+     * @see #setClock
      *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
+     * @return The CM11A's idea of what the current day is. Will be one of Calendar.SUNDAY,
+     *         Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY,
+     *         Calendar.FRIDAY, Calendar.SATURDAY.
      */
     public int getCurrentDay()
     {
@@ -463,24 +512,21 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Retrieve the CM11A's idea of the current day of the year. The value
-     * is zero based; 0 for January 1, 31 for February 1, ... The value is
-     * initialized after a call to <code>updateStatus()</code>.
+     * Retrieve the CM11A's idea of the current day of the year. The value is zero based;
+     * 0 for January 1, 31 for February 1, ... The value is initialized after a call to
+     * <code>updateStatus()</code>.
      * <p>
-     * The utility methods <code>CM11A.extractMonth()</code> and
-     * <code>CM11A.extractDay()</code> have been provided to convert this
-     * value into month and day representations.
+     * The utility methods <code>CM11A.extractMonth()</code> and <code>CM11A.extractDay()</code>
+     * have been provided to convert this value into month and day representations.
      * <p>
-     * As far as I can tell, the CM11A has no way of determining
-     * leap years. It therefore always uses 366 days in a year. The
-     * caller is responsible for determining if the current day
+     * As far as I can tell, the CM11A has no way of determining leap years. It therefore always
+     * uses 366 days in a year. The caller is responsible for determining if the current day
      * has been corrected for a non-leap year.
      *
-     * @return Day of year.
-     * @see extractMonth
-     * @see extractDay
+     * @see #extractMonth
+     * @see #extractDay
      *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
+     * @return Day of year.
      */
     public int getJulianDay()
     {
@@ -488,15 +534,13 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Retrieve the CM11A's idea of what the current hour is. The value is
-     * initialized after a call to <code>updateStatus()</code>.
+     * Retrieve the CM11A's idea of what the current hour is. The value is initialized after a call
+     * to <code>updateStatus()</code>.
      *
-     * @return The CM11A's idea of what the current hour is. Expressed
-     *         as 24 hour value.
-     * @see updateStatus
-     * @see setClock
+     * @see #updateStatus
+     * @see #setClock
      *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
+     * @return The CM11A's idea of what the current hour is. Expressed as 24 hour value.
      */
     public int getHours()
     {
@@ -504,14 +548,13 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Retrieve the CM11A's idea of what the current minute is. The value is
-     * initialized after a call to <code>updateStatus()</code>.
+     * Retrieve the CM11A's idea of what the current minute is. The value is initialized after a
+     * call to <code>updateStatus()</code>.
+     *
+     * @see #updateStatus
+     * @see #setClock
      *
      * @return The CM11A's idea of what the current minute is.
-     * @see updateStatus
-     * @see setClock
-     *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
      */
     public int getMinutes()
     {
@@ -519,14 +562,13 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Retrieve the CM11A's idea of what the current second is. The value is
-     * initialized after a call to <code>updateStatus()</code>.
+     * Retrieve the CM11A's idea of what the current second is. The value is initialized after a
+     * call to <code>updateStatus()</code>.
+     *
+     * @see #updateStatus
+     * @see #setClock
      *
      * @return The CM11A's idea of what the current second is.
-     * @see updateStatus
-     * @see setClock
-     *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
      */
     public int getSeconds()
     {
@@ -534,15 +576,14 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Retrieve the CM11A's idea of what the current battery usage is.
-     * The value is initialized after a call to <code>updateStatus()</code>.
+     * Retrieve the CM11A's idea of what the current battery usage is. The value is initialized
+     * after a call to <code>updateStatus()</code>.
+     *
+     * @see #updateStatus
+     * @see #setClock
      *
      * @return The CM11A's idea of what the current battery usage is. Expressed
      *         in minutes.
-     * @see updateStatus
-     * @see setClock
-     *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
      */
     public int getBatteryUsage()
     {
@@ -550,31 +591,25 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Update the CM11A interface's internal clock, set the monitored house
-     * code, reset battery timer, clear monitored statuses, and purge timer.
+     * Update the CM11A interface's internal clock, set the monitored house code, reset battery
+     * timer, clear monitored statuses, and purge timer.
      *
-     * @param hour Current time, hours. 0 - 23.
-     * @param minute Current time, minutes. 0 - 59.
-     * @param second Current time, seconds. 0 - 59.
-     * @param month Current month, zero based. e.g., 0 for January
-     *        (Calendar.JANUARY), 1 for February (Calendar.FEBRUARY).
-     * @parma day Current day. 1 - 31. (Maximum day depends on month)
-     * @param dayOfWeek A day of the week constant from the class
-     *        <CODE>java.util.Calendar</CODE>. Should be one of the following:
-     *        <CODE>Calendar.SUNDAY</CODE>, <CODE>Calendar.MONDAY</CODE>,
-     *        <CODE>Calendar.TUESDAY</CODE>, <CODE>Calendar.WEDNESDAY</CODE>,
-     *        <CODE>Calendar.THURSDAY</CODE>, <CODE>Calendar.FRIDAY</CODE>,
-     *        or <CODE>Calendar.SATURDAY</CODE>.
-     * @param houseCode the house code of the event. Valid codes are 'A'
-     *        through 'P', uppercase.
-     * @param clearBatteryTimer If true, the interface's battery timer will be
-     *        cleared.
-     * @param clearMonitoredStatus If true, the interface's monitored statuses
-     *        will be cleared.
-     * @param purgeTimer If true, this will purge the interfaces timer, but I
-     *        don't know what that means???
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @param hour      Current time, hours. 0 - 23.
+     * @param minute    Current time, minutes. 0 - 59.
+     * @param second    Current time, seconds. 0 - 59.
+     * @param month     Current month, zero based. e.g., 0 for January (Calendar.JANUARY),
+     *                  1 for February (Calendar.FEBRUARY).
+     * @param day       Current day. 1 - 31. (Maximum day depends on month)
+     * @param dayOfWeek A day of the week constant from the class <CODE>java.util.Calendar</CODE>.
+     *                  Should be one of the following: <CODE>Calendar.SUNDAY</CODE>,
+     *                  <CODE>Calendar.MONDAY</CODE>, <CODE>Calendar.TUESDAY</CODE>,
+     *                  <CODE>Calendar.WEDNESDAY</CODE>, <CODE>Calendar.THURSDAY</CODE>,
+     *                  <CODE>Calendar.FRIDAY</CODE>, or <CODE>Calendar.SATURDAY</CODE>.
+     * @param houseCode the house code of the event. Valid codes are 'A' through 'P', uppercase.
+     * @param clearBatteryTimer     If true, the interface's battery timer will be cleared.
+     * @param clearMonitoredStatus  If true, the interface's monitored statuses will be cleared.
+     * @param purgeTimer            If true, this will purge the interfaces timer, but I don't know
+     *                              what that means???
      */
     public void setClock(int hour, int minute, int second, int month, int day,
                          int dayOfWeek, char houseCode, boolean clearBatteryTimer,
@@ -685,8 +720,6 @@ public class CM11A extends SerialGateway implements
 
     /**
      * Enable the serial Ring Indicator signal.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     public void ringEnable()
     {
@@ -720,8 +753,6 @@ public class CM11A extends SerialGateway implements
 
     /**
      * Disable the serial Ring Indicator signal.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     public void ringDisable()
     {
@@ -756,10 +787,9 @@ public class CM11A extends SerialGateway implements
     /**
      * Add a CM11A event listener.
      *
-     * @param l CM11AListener to add.
-     * @see removeCM11AListener
+     * @see #removeCM11AListener
      *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
+     * @param l CM11AListener to add.
      */
     public synchronized void addCM11AListener(CM11AListener l)
     {
@@ -778,10 +808,9 @@ public class CM11A extends SerialGateway implements
     /**
      * Remove a CM11A event listener.
      *
-     * @param l CM11AListener to remove.
-     * @see addCM11AListener
+     * @see #addCM11AListener
      *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
+     * @param l CM11AListener to remove.
      */
     public synchronized void removeCM11AListener(CM11AListener l)
     {
@@ -796,8 +825,6 @@ public class CM11A extends SerialGateway implements
      * Fire a CM11A event.
      *
      * @param evt The event to send to listeners.
-     *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
      */
     @SuppressWarnings("unchecked")
     protected void fireCM11AEvent(CM11AEvent evt)
@@ -840,10 +867,9 @@ public class CM11A extends SerialGateway implements
     /**
      * Add a CM11A status listener.
      *
-     * @param l CM11AStatusListener to add.
-     * @see removeCM11AStatusListener
+     * @see #removeCM11AStatusListener
      *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
+     * @param l CM11AStatusListener to add.
      */
     public synchronized void addCM11AStatusListener(CM11AStatusListener l)
     {
@@ -862,10 +888,9 @@ public class CM11A extends SerialGateway implements
     /**
      * Remove a CM11A status listener.
      *
-     * @param l CM11AStatusListener to remove.
-     * @see addCM11AStatusListener
+     * @see #addCM11AStatusListener
      *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
+     * @param l CM11AStatusListener to remove.
      */
     public synchronized void removeCM11AStatusListener(CM11AStatusListener l)
     {
@@ -880,10 +905,7 @@ public class CM11A extends SerialGateway implements
      * Fire a CM11A status event.
      *
      * @param evt The event to send to listeners.
-     *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
      */
-    @SuppressWarnings("unchecked")
     protected void fireCM11AStatusEvent(CM11AStatusEvent evt)
     {
         Vector<CM11AStatusListener> v = null;
@@ -904,7 +926,7 @@ public class CM11A extends SerialGateway implements
             int cnt = v.size();
             for (int i = 0; i < cnt; i++)
             {
-                CM11AStatusListener client = (CM11AStatusListener)v.elementAt(i);
+                CM11AStatusListener client = v.elementAt(i);
                 client.status(evt);
             }
         }
@@ -915,10 +937,9 @@ public class CM11A extends SerialGateway implements
      * events that it intercepts on the power line to all registered
      * address listeners.
      *
-     * @param l X10 AddressListener to add.
-     * @see removeAddressListener
+     * @see #removeAddressListener
      *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @param l X10 AddressListener to add.
      */
     public synchronized void addAddressListener(AddressListener l)
     {
@@ -937,10 +958,9 @@ public class CM11A extends SerialGateway implements
     /**
      * Remove an Address listener.
      *
-     * @param l AddressListener to remove.
-     * @see addAddressListener
+     * @see #addAddressListener
      *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @param l AddressListener to remove.
      */
     public synchronized void removeAddressListener(AddressListener l)
     {
@@ -952,14 +972,12 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Add an X10 Function listener.  The CM11A will send any X10 function
-     * events that it intercepts on the power line to all registered
-     * function listeners.
+     * Add an X10 Function listener.  The CM11A will send any X10 function events that it
+     * intercepts on the power line to all registered function listeners.
      *
-     * @param l X10 FunctionListener to add.
-     * @see removeFunctionListener
+     * @see #removeFunctionListener
      *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @param l   X10 FunctionListener to add.
      */
     public synchronized void addFunctionListener(FunctionListener l)
     {
@@ -978,10 +996,9 @@ public class CM11A extends SerialGateway implements
     /**
      * Remove a Function listener.
      *
-     * @param l FunctionListener to remove.
-     * @see addFunctionListener
+     * @see #addFunctionListener
      *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @param l FunctionListener to remove.
      */
     public synchronized void removeFunctionListener(FunctionListener l)
     {
@@ -993,18 +1010,15 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Fire an X10 Transmission. When an X10 event is received from the
-     * power line, this method is called with the X10 event to send to all
-     * registered X10 transmission listeners.
+     * Fire an X10 Transmission. When an X10 event is received from the power line, this method is
+     * called with the X10 event to send to all registered X10 transmission listeners.
      *
      * @param evt The event to send to X10Transmission listeners.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
-    @SuppressWarnings("unchecked")
     protected void fireX10Event(X10Event evt)
     {
-        // TODO: Implement Extended function features ExtendedCodeEvent and
+        // TODO:
+        //       Implement Extended function features ExtendedCodeEvent and
         //       ExtendedDataTransferEvent.
         Vector<AddressListener> v = null;
 
@@ -1026,7 +1040,7 @@ public class CM11A extends SerialGateway implements
                 int cnt = v.size();
                 for (int i = 0; i < cnt; i++)
                 {
-                    AddressListener client = (AddressListener)v.elementAt(i);
+                    AddressListener client = v.elementAt(i);
                     client.address((AddressEvent)evt);
                 }
             }
@@ -1120,10 +1134,7 @@ public class CM11A extends SerialGateway implements
     /**
      * Indicates if the the interface to the CM11A is up.
      *
-     * @return Returns true if the interface is up, false if the interface
-     *         connection is down.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @return Returns true if the interface is up, false if the interface connection is down.
      */
     public boolean isRunning()
     {
@@ -1131,10 +1142,13 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Start the serial link between the computer and the actual CM11A
-     * module.
+     * Start the serial link between the computer and the actual CM11A module.
      *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @throws GatewayException if the serial port name has been misconfigured, or if the requested
+     *                          serial port is already in use, or there are already too many
+     *                          listeners on the serial port, or the serial communication operation
+     *                          is not supported, or our thread was interrupted while waiting to
+     *                          open the serial port, or any other I/O error occurs
      */
     public void allocate() throws GatewayException, GatewayStateError
     {
@@ -1163,17 +1177,7 @@ public class CM11A extends SerialGateway implements
 
         try
         {
-            portId = CommPortIdentifier.getPortIdentifier(portName);
-            serialPort = (SerialPort) portId.open("CM11A", 2000);
-            serialPort.setSerialPortParams(baudRate,
-                                           dataBits,
-                                           stopBits,
-                                           parity);
-            inputStream = serialPort.getInputStream();
-            outputStream = serialPort.getOutputStream();
-            serialPort.addEventListener(this);
-            serialPort.notifyOnRingIndicator(true);
-            serialPort.notifyOnDataAvailable(true);
+          portId = CommPortIdentifier.getPortIdentifier(portName);
         }
         catch (NoSuchPortException e)
         {
@@ -1181,11 +1185,110 @@ public class CM11A extends SerialGateway implements
             throw new GatewayException("Requested com port " + portName +
                                        " does not exist.");
         }
-        catch (PortInUseException e)
+
+        boolean retry = true;
+        int retryDelay = 0;
+        final int delay = 500;
+
+        // try to open a serial port in a loop, retrying if we don't succeed at first,
+        // unless RETRY_ON_INUSE_COM_PORT has been set to false...
+
+        while (retry)
         {
-            setGatewayState(Gateway.DEALLOCATED);
-            throw new GatewayException("Request com port " + portName +
-                                       " in use.");
+            try
+            {
+                serialPort = (SerialPort) portId.open("CM11A", 500);
+
+                // We got the port, we can stop trying...
+
+                retry = false;
+            }
+            catch (PortInUseException piue)
+            {
+                // Do we want to retry opening the serial port...?
+
+                if (RETRY_ON_INUSE_COM_PORT)
+                {
+                    // Let's not retry forever, keep track of time and stop eventually...
+
+                    if (retryDelay < COM_PORT_RETRY_ALLOCATE_DELAY)
+                    {
+                        retryDelay += delay;
+
+                        try
+                        {
+                            Thread.sleep(delay);
+                        }
+                        catch (InterruptedException ie)
+                        {
+                            // Restore the interrupted status...
+
+                            Thread.currentThread().interrupt();
+
+                            setGatewayState(Gateway.DEALLOCATED);
+
+                            // Throw a declared exception type...
+
+                            GatewayException ge = new GatewayException(
+                                "Thread was interrupted while retrying to open a serial port " +
+                                "already in use (had waited ~" + retryDelay + "ms): " +
+                                ie.getMessage()
+                            );
+
+                            // TODO : implement cause constructor in GatewayException
+
+                            ge.initCause(ie);
+
+                            throw ge;
+                        }
+                    }
+
+                    // We've retried too many times, it ain't working, time to bail out...
+
+                    else
+                    {
+                        setGatewayState(Gateway.DEALLOCATED);
+
+                        GatewayException ge = new GatewayException(
+                            "Request com port " + portName + " in use (" +
+                            piue.getMessage() + ")."
+                        );
+
+                        ge.initCause(piue);
+
+                        throw ge;
+                    }
+                }
+
+                // Retry turned off, port in use, just throw the exception...
+
+                else
+                {
+                  setGatewayState(Gateway.DEALLOCATED);
+
+                  GatewayException ge = new GatewayException(
+                      "Request com port " + portName + " in use (" + piue.getMessage() + ")."
+                  );
+
+                  ge.initCause(piue);
+
+                  throw ge;
+                }
+            }
+        }
+
+        try
+        {
+          serialPort.setSerialPortParams(baudRate,
+                                         dataBits,
+                                         stopBits,
+                                         parity);
+          inputStream = serialPort.getInputStream();
+          outputStream = serialPort.getOutputStream();
+          serialPort.addEventListener(this);
+          serialPort.notifyOnRingIndicator(true);
+          serialPort.notifyOnDataAvailable(true);
+
         }
         catch (TooManyListenersException e)
         {
@@ -1203,14 +1306,14 @@ public class CM11A extends SerialGateway implements
             setGatewayState(Gateway.DEALLOCATED);
             throw new GatewayException("Unable to get input/output stream");
         }
-    
+
         processThread = new Thread(this);
         processThread.setDaemon(true);
         processThread.start();
 
         setGatewayState(Gateway.RESUMED);
         stateTransition(Gateway.ALLOCATED);
-    
+
         // prime the link between the computer and the CM11A with
         // a status request.
         updateStatus();
@@ -1222,10 +1325,7 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Stop the serial link between the computer and the actual CM11A
-     * module.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * Stop the serial link between the computer and the actual CM11A module.
      */
     public synchronized void deallocate()
     {
@@ -1306,12 +1406,9 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Calls TransmitterListener methods.  Lets parent's dispatchControlEvent
-     * call the GatewayListener methods.
-     *
-     * @author Jesse Peterson <6/29/99>
+     * Calls TransmitterListener methods.  Lets parent's dispatchControlEvent call the
+     * GatewayListener methods.
      */
-    @SuppressWarnings("unchecked")
     public void dispatchControlEvent(ControlEvent event)
     {
         if (event instanceof TransmitterEvent)
@@ -1333,7 +1430,7 @@ public class CM11A extends SerialGateway implements
                 switch (event.getId())
                 {
                 case TransmitterEvent.QUEUE_EMPTIED:
-                    listener = (GatewayListener)v.elementAt(i);
+                    listener = v.elementAt(i);
                     if (listener instanceof TransmitterListener)
                     {
                         ((TransmitterListener)listener).queueEmptied((TransmitterEvent)event);
@@ -1341,7 +1438,7 @@ public class CM11A extends SerialGateway implements
                     break;
 
                 case TransmitterEvent.QUEUE_UPDATED:
-                    listener = (GatewayListener)v.elementAt(i);
+                    listener = v.elementAt(i);
                     if (listener instanceof TransmitterListener)
                     {
                         ((TransmitterListener)listener).queueUpdated((TransmitterEvent)event);
@@ -1358,8 +1455,6 @@ public class CM11A extends SerialGateway implements
 
     /**
      * Process CM11A events.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     public void run()
     {
@@ -1395,8 +1490,6 @@ public class CM11A extends SerialGateway implements
 
     /**
      * Process the queue of events to be processed by the CM11A.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     public void processTransmissionQueue()
     {
@@ -1524,10 +1617,8 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Process the input stream, handling unsolicited events. This method
-     * will drain the input stream of all available bytes.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * Process the input stream, handling unsolicited events. This method will drain the
+     * input stream of all available bytes.
      */
     public void processPendingRequests()
     {
@@ -1576,15 +1667,12 @@ public class CM11A extends SerialGateway implements
         {
             System.err.println("IOException while trying to process pending requests.");
             e.printStackTrace();
-            return;
         }
     }
 
     /**
-     * Process a request by the interface to download data. The request
-     * is identified by a byte value of 0x5a.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * Process a request by the interface to download data. The request is identified by a
+     * byte value of 0x5a.
      */
     private void receiveEvent()
     {
@@ -1656,8 +1744,6 @@ public class CM11A extends SerialGateway implements
 
     /**
      * Process notification of a power failure.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     private void powerFailure()
     {
@@ -1686,8 +1772,6 @@ public class CM11A extends SerialGateway implements
 
     /**
      * Process notification of a macro being initiated.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     private void macroInitiated()
     {
@@ -1734,12 +1818,12 @@ public class CM11A extends SerialGateway implements
         // send resultant events to listeners
         // mask high bit, the device always sets it.
         index = (short)(((buffer[0] & (byte)0x7F) << 8) | buffer[1]);
-        macro = (Macro)offset2macro.get(new Integer(index));
+        macro = offset2macro.get(new Integer(index));
         if (macro != null)
         {
             for (Enumeration<MacroElement> e = macro.elements(); e.hasMoreElements(); )
             {
-                element = (MacroElement)e.nextElement();
+                element = e.nextElement();
 
                 function = element.getFunction();
                 houseCode = function.getHouseCode();
@@ -1795,15 +1879,14 @@ public class CM11A extends SerialGateway implements
     /**
      * Create a copy of a FunctionEvent but with the specified source.
      *
-     * @param functionEvent FunctionEvent to copy with the new source.
+     * @param function  FunctionEvent to copy with the new source.
      * @param newSource The new source to use in the copied FunctionEvent.
+     *
      * @return A new FunctionEvent subclass based on the function in the
      *         provided function event. The event source will be set to the
      *         provided source.
-     * @exception IllegalArgumentException Thrown if the functionEvent
-     *            parameters function is unknown.
      *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @throws IllegalArgumentException Thrown if the functionEvent parameters function is unknown.
      */
     protected FunctionEvent createEvent(FunctionEvent function,
                                         Object newSource)
@@ -1871,8 +1954,6 @@ public class CM11A extends SerialGateway implements
 
     /**
      * Receive serial events from the CM11A module.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     public void serialEvent(SerialPortEvent event)
     {
@@ -1954,18 +2035,13 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Decode the event buffer uploaded from the CM11A module to the
-     * computer. The event buffer contains X10 events that the CM11A
-     * module has detected on the power line.  This bean will fire
-     * events to all registered X10 Transmission Listeners for each
-     * event in the event buffer.
+     * Decode the event buffer uploaded from the CM11A module to the computer. The event buffer
+     * contains X10 events that the CM11A module has detected on the power line.  This bean will
+     * fire events to all registered X10 Transmission Listeners for each event in the event buffer.
      *
-     * @param buffer the event buffer uploaded from the CM11A. The buffer
-     *        is 2 to 9 bytes in size.  With respect to the Interface
-     *        communication protocol, the 'Upload Buffer Size' is not
-     *        part of the buffer.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @param buffer  the event buffer uploaded from the CM11A. The buffer is 2 to 9 bytes in size.
+     *                With respect to the Interface communication protocol, the 'Upload Buffer Size'
+     *                is not part of the buffer.
      */
     private void decodeX10Events(byte[] buffer)
     {
@@ -2113,8 +2189,6 @@ public class CM11A extends SerialGateway implements
      * Decode a status buffer. Also notifies CM11AStatusListeners.
      *
      * @return Returns the CM11AStatusEvent decoded from the bytes.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     public CM11AStatusEvent decodeStatus(byte[] bytes, int off, int len)
     {
@@ -2271,8 +2345,6 @@ public class CM11A extends SerialGateway implements
 
     /**
      * Serialize the object.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     @SuppressWarnings("unchecked")
     private void writeObject(ObjectOutputStream stream)
@@ -2348,8 +2420,6 @@ public class CM11A extends SerialGateway implements
 
     /**
      * Deserialize the object.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     private void readObject(ObjectInputStream stream)
         throws IOException, ClassNotFoundException
@@ -2375,18 +2445,13 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Transmit the CM11A macro initiators to the X10 CM11A device. This
-     * method stores the macro in memory on the CM11A device. The macros
-     * can be executed from the device with the controlling computer turned
-     * off or event disconnected.
+     * Transmit the CM11A macro initiators to the X10 CM11A device. This method stores the macro in
+     * memory on the CM11A device. The macros can be executed from the device with the controlling
+     * computer turned off or event disconnected.
      *
-     * @exception OutOfMacroMemoryException There are too many timer
-     *            timer initiators, macro initiators, and their associated
-     *            macros to be downloaded. Some of the initiators and/or
-     *            macros must be removed in order to successfully download
-     *            to the CM11A device.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @throws OutOfMacroMemoryException if there are too many timer initiators, macro initiators,
+     *         and their associated macros to be downloaded. Some of the initiators and/or macros
+     *         must be removed in order to successfully download to the CM11A device.
      */
     public synchronized void downloadInitiators() throws OutOfMacroMemoryException
     {
@@ -2442,13 +2507,12 @@ public class CM11A extends SerialGateway implements
     /**
      * Convert an integer value to a byte array.
      *
-     * @param value Integer value to convert.
-     * @param len Number of bytes to use.
-     * @param bigEndian If true, most significant byte is byte 0. If false,
-     *        least significant byte is byte 0.
-     * @return Byte array set to integer value.
+     * @param value     Integer value to convert.
+     * @param len       Number of bytes to use.
+     * @param bigEndian If true, most significant byte is byte 0. If false, least significant
+     *                  byte is byte 0.
      *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @return Byte array set to integer value.
      */
     protected static byte[] toBytes(int value, int len, boolean bigEndian)
     {
@@ -2472,10 +2536,9 @@ public class CM11A extends SerialGateway implements
      * Encode the EEPROM array.
      *
      * @return Total number of bytes to be transmitted to the device.
-     * @exception OutOfMacroMemoryException Throw if there are too many macros to
-     *            fit into the devices EEPROM memory.
      *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @throws OutOfMacroMemoryException if there are too many macros to fit into the devices
+     *         EEPROM memory.
      */
     protected int encodeEEPROM() throws OutOfMacroMemoryException
     {
@@ -2506,7 +2569,7 @@ public class CM11A extends SerialGateway implements
             // encode the macros
             for (Enumeration<TimerInitiator> e = timerInitiators.elements(); e.hasMoreElements(); )
             {
-                timerInitiator = (TimerInitiator)e.nextElement();
+                timerInitiator = e.nextElement();
 
                 macro = timerInitiator.getStartMacro();
                 if (macro != null)
@@ -2522,7 +2585,7 @@ public class CM11A extends SerialGateway implements
             }
             for (Enumeration<MacroInitiator> e = macroInitiators.elements(); e.hasMoreElements(); )
             {
-                macroInitiator = (MacroInitiator)e.nextElement();
+                macroInitiator = e.nextElement();
 
                 macro = macroInitiator.getMacro();
                 if (macro != null)
@@ -2541,15 +2604,15 @@ public class CM11A extends SerialGateway implements
             // encode the timer initiators
             for (Enumeration<TimerInitiator> e = timerInitiators.elements(); e.hasMoreElements(); )
             {
-                timerInitiator = (TimerInitiator)e.nextElement();
+                timerInitiator = e.nextElement();
 
                 macro = timerInitiator.getStartMacro();
                 if (macro != null)
                 {
-                    integer = (Integer)macroOffsets.get(macro);
+                    integer = macroOffsets.get(macro);
                     if (integer != null)
                     {
-                        startMacroOffset = integer.intValue();
+                        startMacroOffset = integer;
                     }
                     else
                     {
@@ -2564,10 +2627,10 @@ public class CM11A extends SerialGateway implements
                 macro = timerInitiator.getStopMacro();
                 if (macro != null)
                 {
-                    integer = (Integer)macroOffsets.get(macro);
+                    integer = macroOffsets.get(macro);
                     if (integer != null)
                     {
-                        stopMacroOffset = integer.intValue();
+                        stopMacroOffset = integer;
                     }
                     else
                     {
@@ -2593,15 +2656,15 @@ public class CM11A extends SerialGateway implements
             // encode the macro initiators
             for (Enumeration<MacroInitiator> e = macroInitiators.elements(); e.hasMoreElements(); )
             {
-                macroInitiator = (MacroInitiator)e.nextElement();
+                macroInitiator = e.nextElement();
 
                 macro = macroInitiator.getMacro();
                 if (macro != null)
                 {
-                    integer = (Integer)macroOffsets.get(macro);
+                    integer = macroOffsets.get(macro);
                     if (integer != null)
                     {
-                        startMacroOffset = integer.intValue();
+                        startMacroOffset = integer;
                     }
                     else
                     {
@@ -2640,15 +2703,13 @@ public class CM11A extends SerialGateway implements
     /**
      * Encode a macro into the EEPROM array.
      *
-     * @param macro Macro to encode.
+     * @param macro       Macro to encode.
      * @param macroOffset Index in EEPROM to copy macro to.
-     * @exception ArrayIndexOutOfBoundsException if copying would cause
-     *            access of data outside array bounds.
-     * @exception ArrayStoreException if an element in the <CODE>src</CODE>
-     *            array could not be stored into the <CODE>dest</CODE> array
-     *            because of a type mismatch.
      *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @throws ArrayIndexOutOfBoundsException if copying would cause access of data outside
+     *         array bounds.
+     * @throws ArrayStoreException if an element in the <CODE>src</CODE> array could not be stored
+     *         into the <CODE>dest</CODE> array because of a type mismatch.
      */
     protected int encodeMacro(Macro macro, int macroOffset)
     {
@@ -2665,20 +2726,17 @@ public class CM11A extends SerialGateway implements
         System.arraycopy(component, 0, eeprom, macroOffset, component.length);
 
         // store the macro offset
-        macroOffsets.put(macro, new Integer(macroOffset));
+        macroOffsets.put(macro, macroOffset);
 
         // return the number of bytes use to store the macro
         return(component.length);
     }
 
     /**
-     * Add a timer initiator. The initiator will not be triggered until it is
-     * downloaded to the CM11A device with a call to
-     * <CODE>downloadInitiators()</CODE>
+     * Add a timer initiator. The initiator will not be triggered until it is downloaded to the
+     * CM11A device with a call to <CODE>downloadInitiators()</CODE>
      *
-     * @param timerInitiator A timer initiator to add to the CM11A.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @param timerInitiator  A timer initiator to add to the CM11A.
      */
     public synchronized void addTimerInitiator(TimerInitiator timerInitiator)
     {
@@ -2686,14 +2744,12 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Remove a timer initiator. The initiator will still be active until a
-     * call to <CODE>downloadInitiators()</CODE>
+     * Remove a timer initiator. The initiator will still be active until a call to
+     * <CODE>downloadInitiators()</CODE>
      *
-     * @param timerInitiator The timer initiator to remove.
-     * @return <CODE>true</CODE> if the timer initiator was found,
-     *         <CODE>false</CODE> otherwise.
+     * @param timerInitiator  The timer initiator to remove.
      *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @return <CODE>true</CODE> if the timer initiator was found, <CODE>false</CODE> otherwise.
      */
     public synchronized boolean removeTimerInitiator(TimerInitiator timerInitiator)
     {
@@ -2702,8 +2758,6 @@ public class CM11A extends SerialGateway implements
 
     /**
      * Clear all timer initiators.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     public synchronized void clearTimerInitiators()
     {
@@ -2712,8 +2766,6 @@ public class CM11A extends SerialGateway implements
 
     /**
      * Retrieve an <CODE>Enumeration</CODE> of all timer initiators.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     public synchronized Enumeration<TimerInitiator> timerInitiators()
     {
@@ -2726,8 +2778,6 @@ public class CM11A extends SerialGateway implements
      * <CODE>downloadInitiators()</CODE>
      *
      * @param macroInitiator A macro initiator to add to the CM11A.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     public synchronized void addMacroInitiator(MacroInitiator macroInitiator)
     {
@@ -2735,14 +2785,12 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Remove a macro initiator. The initiator will still be active until a
-     * call to <CODE>downloadInitiators()</CODE>
+     * Remove a macro initiator. The initiator will still be active until a call to
+     * <CODE>downloadInitiators()</CODE>
      *
-     * @param macroInitiator The macro initiator to remove.
-     * @return <CODE>true</CODE> if the macro initiator was found,
-     *         <CODE>false</CODE> otherwise.
+     * @param macroInitiator  The macro initiator to remove.
      *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @return <CODE>true</CODE> if the macro initiator was found, <CODE>false</CODE> otherwise.
      */
     public synchronized boolean removeMacroInitiator(MacroInitiator macroInitiator)
     {
@@ -2751,8 +2799,6 @@ public class CM11A extends SerialGateway implements
 
     /**
      * Clear all macro initiators.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     public synchronized void clearMacroInitiators()
     {
@@ -2761,8 +2807,6 @@ public class CM11A extends SerialGateway implements
 
     /**
      * Retrieve an <CODE>Enumeration</CODE> of all timer initiators.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     public synchronized Enumeration<MacroInitiator> macroInitiators()
     {
@@ -2770,14 +2814,12 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Make sure that the month is valid.  If it is greater than December(11),
-     * set the month to December.  If the month is less than January(0), set
-     * the month to January.
+     * Make sure that the month is valid.  If it is greater than December(11), set the month to
+     * December.  If the month is less than January(0), set the month to January.
      *
-     * @param month Month, zero based. e.g., 0 for January, 1 for February.
+     * @param month   Month, zero based. e.g., 0 for January, 1 for February.
+     *
      * @return Normalized month.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     protected static int normalizeMonth(int month)
     {
@@ -2793,16 +2835,14 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Make sure that the day is valid.  If it greater than the maximum day
-     * for the specified month, set the day to the maximum day.  If it is
-     * less than the minimum day for the specified month, set the day to the
-     * minimum day.
+     * Make sure that the day is valid.  If it greater than the maximum day for the specified month,
+     * set the day to the maximum day.  If it is less than the minimum day for the specified month,
+     * set the day to the minimum day.
      *
-     * @param day Day to normalize.
-     * @param month Month, zero based. e.g., 0 for January, 1 for February.
-     * @reutrn Normalized day.
+     * @param day     Day to normalize.
+     * @param month   Month, zero based. e.g., 0 for January, 1 for February.
      *
-     * @author Jesse Peterson <jesse@jpeterson.com>
+     * @return Normalized day.
      */
     protected static int normalizeDay(int month, int day)
     {
@@ -2842,15 +2882,13 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Convert a date in the format of month and day to day of year format.
-     * The algorythm uses 366 days in a year, where 0 is January 1 and 365 is
-     * December 31.
+     * Convert a date in the format of month and day to day of year format. The algorithm uses
+     * 366 days in a year, where 0 is January 1 and 365 is December 31.
      *
-     * @param month Month, zero based. e.g., 0 for January, 1 for February.
-     * @param day Day of month
+     * @param month   Month, zero based. e.g., 0 for January, 1 for February.
+     * @param day     Day of month
+     *
      * @return Day of year.
-     *
-     * @author Jesse Peterson <jesse@jpeterson.com>
      */
     protected static int dayOfYear(int month, int day)
     {
@@ -2869,21 +2907,16 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Utility method to convert the Julian day returned in
-     * <code>getJulianDay</code> to the month the day represents.
-     * The month is zero based, i.e. 0 for January, 1 for February, ...,
+     * Utility method to convert the Julian day returned in <code>getJulianDay</code> to the month
+     * the day represents. The month is zero based, i.e. 0 for January, 1 for February, ...,
      * 11 for December.
      * <P>
-     * As far as I can tell, the CM11A has no way of determining
-     * leap years. It therefore always uses 366 days in a year. The
-     * caller is responsible for determininging if the current day
+     * As far as I can tell, the CM11A has no way of determining leap years. It therefore always
+     * uses 366 days in a year. The caller is responsible for determininging if the current day
      * has been corrected for a non-leap year.
      *
-     * @return Month represented by the julian day value. The month is
-     *         zero based, i.e. 0 for January, 1 for February, ..., 11
-     *         for December.
-     *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
+     * @return Month represented by the julian day value. The month is zero based,
+     *         i.e. 0 for January, 1 for February, ..., 11 for December.
      */
     public static int extractMonth(int julianDay)
     {
@@ -2903,19 +2936,17 @@ public class CM11A extends SerialGateway implements
     }
 
     /**
-     * Utility method to convert the Julian day returned in
-     * <code>getJulianDay</code> to a the day of the month represented.
+     * Utility method to convert the Julian day returned in <code>getJulianDay</code> to a the day
+     * of the month represented.
      * <P>
-     * As far as I can tell, the CM11A has no way of determining
-     * leap years. It therefore always uses 366 days in a year. The
-     * caller is responsible for determininging if the current day
+     * As far as I can tell, the CM11A has no way of determining leap years. It therefore always
+     * uses 366 days in a year. The caller is responsible for determininging if the current day
      * has been corrected for a non-leap year.
      *
-     * @return Day of the month represented by the Julian day
-     * @see extractMonth
-     * @see getJulianDay
+     * @see #extractMonth
+     * @see #getJulianDay
      *
-     * @author <a href="mailto:jesse@jpeterson.com">Jesse Peterson</a>
+     * @return Day of the month represented by the Julian day
      */
     public static int extractDay(int julianDay)
     {
