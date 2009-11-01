@@ -41,12 +41,13 @@ import com.jpeterson.x10.module.CM11A;
 import com.jpeterson.x10.module.CM17A;
 
 /**
- * As the {@link KNXConnectionManager} does, the X10ControllerManager provides isolation between the
- * generic OR event system and X10 implementing libraries as well as a higher level X10 API. This
- * allow to change one of the underlying library or to add support for new devices in a more
- * transparent manner.
+ * As the {@link org.openremote.controller.protocol.knx.KNXConnectionManager} does,
+ * the X10ControllerManager provides isolation between the generic OR event system and X10
+ * implementing libraries as well as a higher level X10 API. This allow to change one of the
+ * underlying library or to add support for new devices in a more transparent manner.
  *
  * @author Jerome Velociter
+ * @author <a href = "mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class X10ControllerManager {
 
@@ -122,7 +123,7 @@ public class X10ControllerManager {
       public void send(String address, X10Command command) {
 
          final char houseCodeChar = address.charAt(0);
-         final int deviceCodeInt = Integer.valueOf(address.substring(1)).intValue();
+         final int deviceCodeInt = Integer.valueOf(address.substring(1));
 
          com.jpeterson.x10.event.X10Event[] events;
          com.jpeterson.x10.event.X10Event commandEvent;
@@ -159,18 +160,36 @@ public class X10ControllerManager {
 
          }
 
-         // In case we cannot allocate the transmitter, it's useless to continue
-         // and try to send the events over the wire, thus we throw a runtime exception.
-         // TODO throw a custom exception instead.
+         // In case we cannot allocate the transmitter, it's useless to continue and try to send
+         // the events over the wire...
+
          catch (GatewayException e) {
+
             log.error(e);
-            throw new RuntimeException(e);
+
+            // TODO :
+            //        The Gateway Exception should carry the type information of the underlying
+            //        exception. In this case we don't necessarily want to bother the client
+            //        with an error if the serial port is just busy at the moment, on the other
+            //        hand some more severe I/O exceptions might make sense to propagate back to
+            //        give a clear indication that the controller is not working...
+            //
+            //        For now, the most common case for GatewayException seems to be an underlying
+            //        gnu.io.PortInUseException, so I'm logging it but not propagating it any
+            //        further.
+            //                                                                  [JPL]
+
+            // Can't continue, so get out...
+
+            return;
+
          } catch (GatewayStateError e1) {
             log.error(e1);
             throw new RuntimeException(e1);
          }
 
          // transmit the event queue over the physical layer
+
          for (int j = 0; j < events.length; j++) {
             try {
                transmitter.transmit(events[j]);
