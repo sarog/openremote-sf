@@ -72,7 +72,7 @@ public class FileServiceImpl implements FileService {
          if(lircdconfDir.exists() && lircdConfFile.exists()){
             //this needs root user to put lircd.conf into /etc.
             //because it's readonly, or it won't be modified.
-            if (Constants.TRUE.equalsIgnoreCase(configuration.getCopyLircdconf())) {
+            if (configuration.isCopyLircdconf()) {
                FileUtils.copyFileToDirectory(lircdConfFile, lircdconfDir);
             }
          }

@@ -32,8 +32,8 @@ public class Configuration {
    /** The lircdconf path. */
    private String lircdconfPath;
    
-   /** Whether copy lircd.conf for user. */
-   private String copyLircdconf;
+   /** The copy lircdconf. */
+   private boolean copyLircdconf;
    
    /** The webapp port. */
    private String webappPort;
@@ -47,8 +47,8 @@ public class Configuration {
    /** The resource path. */
    private String resourcePath;
    
-   /** The resource upload switch. */
-   private String resourceUpload;
+   /** The resource upload. */
+   private boolean resourceUpload;
 
    /**
     * Gets the irsend path.
@@ -87,11 +87,11 @@ public class Configuration {
    }
 
    /**
-    * Gets the copy lircdconf.
+    * Checks if is copy lircdconf.
     * 
-    * @return the copy lircdconf
+    * @return true, if is copy lircdconf
     */
-   public String getCopyLircdconf() {
+   public boolean isCopyLircdconf() {
       return copyLircdconf;
    }
 
@@ -100,7 +100,7 @@ public class Configuration {
     * 
     * @param copyLircdconf the new copy lircdconf
     */
-   public void setCopyLircdconf(String copyLircdconf) {
+   public void setCopyLircdconf(boolean copyLircdconf) {
       this.copyLircdconf = copyLircdconf;
    }
 
@@ -177,11 +177,11 @@ public class Configuration {
    }
 
    /**
-    * Gets the resource upload.
+    * Checks if is resource upload.
     * 
-    * @return the resource upload
+    * @return true, if is resource upload
     */
-   public String getResourceUpload() {
+   public boolean isResourceUpload() {
       return resourceUpload;
    }
 
@@ -190,8 +190,8 @@ public class Configuration {
     * 
     * @param resourceUpload the new resource upload
     */
-   public void setResourceUpload(String resourceUpload) {
+   public void setResourceUpload(boolean resourceUpload) {
       this.resourceUpload = resourceUpload;
    }
-   
+
 }

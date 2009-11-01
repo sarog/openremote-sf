@@ -17,6 +17,8 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
+
 package org.openremote.controller.utils;
 
 /**
@@ -26,16 +28,6 @@ package org.openremote.controller.utils;
  */
 public class PathUtil {
 
-   
-
-   /**
-    * Webapp root path.
-    * 
-    * @return the root path of webapp
-    */
-   public static String webappRootPath(){
-      return System.getProperty("controller.root");
-   }
    
    /**
     * Append file separator.
@@ -48,6 +40,13 @@ public class PathUtil {
       return src.endsWith("/") ? src : src + "/";
    }
    
+   /**
+    * Removes the slash suffix.
+    * 
+    * @param src the src
+    * 
+    * @return the string
+    */
    public static String removeSlashSuffix(String src) {
       return src.endsWith("/") ? src.substring(0, src.lastIndexOf("/")) : src ;
    }

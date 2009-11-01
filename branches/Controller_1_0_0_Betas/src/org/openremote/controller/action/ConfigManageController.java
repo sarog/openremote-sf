@@ -59,7 +59,7 @@ public class ConfigManageController extends MultiActionController {
     */
    public ModelAndView uploadZip(HttpServletRequest request, HttpServletResponse response) throws IOException,
          ServletRequestBindingException {
-      if (Constants.TRUE.equalsIgnoreCase(configuration.getResourceUpload())) {
+      if (configuration.isResourceUpload()) {
          MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
          boolean success = fileService.uploadConfigZip(multipartRequest.getFile("zip_file").getInputStream());
          response.getWriter().print(success ? Constants.OK : null);
