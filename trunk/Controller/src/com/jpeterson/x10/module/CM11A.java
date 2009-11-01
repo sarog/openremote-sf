@@ -906,7 +906,6 @@ public class CM11A extends SerialGateway implements
      *
      * @param evt The event to send to listeners.
      */
-    @SuppressWarnings("unchecked")
     protected void fireCM11AStatusEvent(CM11AStatusEvent evt)
     {
         Vector<CM11AStatusListener> v = null;
@@ -927,7 +926,7 @@ public class CM11A extends SerialGateway implements
             int cnt = v.size();
             for (int i = 0; i < cnt; i++)
             {
-                CM11AStatusListener client = (CM11AStatusListener)v.elementAt(i);
+                CM11AStatusListener client = v.elementAt(i);
                 client.status(evt);
             }
         }
@@ -1016,10 +1015,10 @@ public class CM11A extends SerialGateway implements
      *
      * @param evt The event to send to X10Transmission listeners.
      */
-    @SuppressWarnings("unchecked")
     protected void fireX10Event(X10Event evt)
     {
-        // TODO: Implement Extended function features ExtendedCodeEvent and
+        // TODO:
+        //       Implement Extended function features ExtendedCodeEvent and
         //       ExtendedDataTransferEvent.
         Vector<AddressListener> v = null;
 
@@ -1041,7 +1040,7 @@ public class CM11A extends SerialGateway implements
                 int cnt = v.size();
                 for (int i = 0; i < cnt; i++)
                 {
-                    AddressListener client = (AddressListener)v.elementAt(i);
+                    AddressListener client = v.elementAt(i);
                     client.address((AddressEvent)evt);
                 }
             }
@@ -1410,7 +1409,6 @@ public class CM11A extends SerialGateway implements
      * Calls TransmitterListener methods.  Lets parent's dispatchControlEvent call the
      * GatewayListener methods.
      */
-    @SuppressWarnings("unchecked")
     public void dispatchControlEvent(ControlEvent event)
     {
         if (event instanceof TransmitterEvent)
@@ -1432,7 +1430,7 @@ public class CM11A extends SerialGateway implements
                 switch (event.getId())
                 {
                 case TransmitterEvent.QUEUE_EMPTIED:
-                    listener = (GatewayListener)v.elementAt(i);
+                    listener = v.elementAt(i);
                     if (listener instanceof TransmitterListener)
                     {
                         ((TransmitterListener)listener).queueEmptied((TransmitterEvent)event);
@@ -1440,7 +1438,7 @@ public class CM11A extends SerialGateway implements
                     break;
 
                 case TransmitterEvent.QUEUE_UPDATED:
-                    listener = (GatewayListener)v.elementAt(i);
+                    listener = v.elementAt(i);
                     if (listener instanceof TransmitterListener)
                     {
                         ((TransmitterListener)listener).queueUpdated((TransmitterEvent)event);
@@ -1669,7 +1667,6 @@ public class CM11A extends SerialGateway implements
         {
             System.err.println("IOException while trying to process pending requests.");
             e.printStackTrace();
-            return;
         }
     }
 
@@ -1821,12 +1818,12 @@ public class CM11A extends SerialGateway implements
         // send resultant events to listeners
         // mask high bit, the device always sets it.
         index = (short)(((buffer[0] & (byte)0x7F) << 8) | buffer[1]);
-        macro = (Macro)offset2macro.get(new Integer(index));
+        macro = offset2macro.get(new Integer(index));
         if (macro != null)
         {
             for (Enumeration<MacroElement> e = macro.elements(); e.hasMoreElements(); )
             {
-                element = (MacroElement)e.nextElement();
+                element = e.nextElement();
 
                 function = element.getFunction();
                 houseCode = function.getHouseCode();
@@ -2572,7 +2569,7 @@ public class CM11A extends SerialGateway implements
             // encode the macros
             for (Enumeration<TimerInitiator> e = timerInitiators.elements(); e.hasMoreElements(); )
             {
-                timerInitiator = (TimerInitiator)e.nextElement();
+                timerInitiator = e.nextElement();
 
                 macro = timerInitiator.getStartMacro();
                 if (macro != null)
@@ -2588,7 +2585,7 @@ public class CM11A extends SerialGateway implements
             }
             for (Enumeration<MacroInitiator> e = macroInitiators.elements(); e.hasMoreElements(); )
             {
-                macroInitiator = (MacroInitiator)e.nextElement();
+                macroInitiator = e.nextElement();
 
                 macro = macroInitiator.getMacro();
                 if (macro != null)
@@ -2607,15 +2604,15 @@ public class CM11A extends SerialGateway implements
             // encode the timer initiators
             for (Enumeration<TimerInitiator> e = timerInitiators.elements(); e.hasMoreElements(); )
             {
-                timerInitiator = (TimerInitiator)e.nextElement();
+                timerInitiator = e.nextElement();
 
                 macro = timerInitiator.getStartMacro();
                 if (macro != null)
                 {
-                    integer = (Integer)macroOffsets.get(macro);
+                    integer = macroOffsets.get(macro);
                     if (integer != null)
                     {
-                        startMacroOffset = integer.intValue();
+                        startMacroOffset = integer;
                     }
                     else
                     {
@@ -2630,10 +2627,10 @@ public class CM11A extends SerialGateway implements
                 macro = timerInitiator.getStopMacro();
                 if (macro != null)
                 {
-                    integer = (Integer)macroOffsets.get(macro);
+                    integer = macroOffsets.get(macro);
                     if (integer != null)
                     {
-                        stopMacroOffset = integer.intValue();
+                        stopMacroOffset = integer;
                     }
                     else
                     {
@@ -2659,15 +2656,15 @@ public class CM11A extends SerialGateway implements
             // encode the macro initiators
             for (Enumeration<MacroInitiator> e = macroInitiators.elements(); e.hasMoreElements(); )
             {
-                macroInitiator = (MacroInitiator)e.nextElement();
+                macroInitiator = e.nextElement();
 
                 macro = macroInitiator.getMacro();
                 if (macro != null)
                 {
-                    integer = (Integer)macroOffsets.get(macro);
+                    integer = macroOffsets.get(macro);
                     if (integer != null)
                     {
-                        startMacroOffset = integer.intValue();
+                        startMacroOffset = integer;
                     }
                     else
                     {
@@ -2729,7 +2726,7 @@ public class CM11A extends SerialGateway implements
         System.arraycopy(component, 0, eeprom, macroOffset, component.length);
 
         // store the macro offset
-        macroOffsets.put(macro, new Integer(macroOffset));
+        macroOffsets.put(macro, macroOffset);
 
         // return the number of bytes use to store the macro
         return(component.length);
