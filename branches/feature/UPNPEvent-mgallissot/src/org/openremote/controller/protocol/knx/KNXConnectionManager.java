@@ -1,39 +1,46 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2009, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.controller.protocol.knx;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
+import org.apache.log4j.Logger;
+import tuwien.auto.calimero.cemi.CEMILData;
+import tuwien.auto.calimero.exception.KNXException;
 import tuwien.auto.calimero.knxnetip.Discoverer;
 import tuwien.auto.calimero.knxnetip.KNXnetIPTunnel;
 import tuwien.auto.calimero.knxnetip.servicetype.SearchResponse;
 import tuwien.auto.calimero.knxnetip.util.HPAI;
-import tuwien.auto.calimero.exception.KNXException;
-import tuwien.auto.calimero.GroupAddress;
-import tuwien.auto.calimero.IndividualAddress;
-import tuwien.auto.calimero.cemi.CEMILData;
-import org.apache.log4j.Logger;
+
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The goal of the KNXConnectionManager is to:
@@ -103,6 +110,18 @@ class KNXConnectionManager
 
   // Constants ------------------------------------------------------------------------------------
 
+  /**
+   * A system property name ("knx.bind.address") that can be set to a specific IPv4 address on the
+   * system to force KNX related IP communication to a specific network interface. <p>
+   *
+   * The value of the property should be a valid IPv4 address. IPv6 is not yet supported by KNX. <p>
+   *
+   * NOTE: use of "any" local interface address (0.0.0.0) is not supported at the moment.
+   */
+
+  // - The last note on disallowing "0.0.0.0" address is mandated by the underlying Calimero impl.
+  public final static String KNX_LOCAL_BIND_ADDRESS = "knx.bind.address";
+
   private final static int CLIENT_DISCOVERY_LISTENER_PORT = 0;  // zero = any free port TODO : this setting needs to be externalized
   private final static int CLIENT_CONNECTION_PORT = 0;          // zero = any free port TODO : this setting needs to be externalized
   private final static boolean DISCOVERY_USE_NAT = false;       // TODO : this setting needs to be externalized
@@ -127,6 +146,7 @@ class KNXConnectionManager
    */
   private Discoverer discovery = null;
 
+
   /**
    * Host Protocol Address Information (HPAI) structure for the KNX IP gateway ("server IP").
    * This will be initialized by a successful gateway discovery, or could be written to
@@ -149,18 +169,32 @@ class KNXConnectionManager
    */
   private HPAI gatewayEndPoint = null;
 
+
   /**
    * The KNX IP tunnel connection. Initialized when a connection is first requested via
    * getConnection() call. Should never be accessed directly but via getConnection() to
    * ensure proper synchronization semantics.
    *
-   * The current implementaiton is "aggressive" in attempting to maintain one persistent
+   * The current implementation is "aggressive" in attempting to maintain one persistent
    * connection to the KNX IP gateway. Therefore this reference should be non-null after the
    * first connection has been established (assuming it completes without exceptions). However,
    * the internal state of the connection can become CLOSED at anytime. This is not currently
    * dealt with since the implementation still lacks reconnect policies.
    */
   private KNXnetIPTunnel connection = null;
+
+  /**
+   * The chosen IPv4 address for KNX discovery and KNX connection client HPAI. <p>
+   *
+   * This address can be determined via {@link #resolveLocalAddresses()} method which returns a set
+   * of IP candidate addresses on this hosting machine. Alternatively the
+   * {@link #KNX_LOCAL_BIND_ADDRESS} system property can be used to set this value.  <p>
+   *
+   * The KNX discovery process can elect one of the candidate IP addresses as the client IP based
+   * on the network interface receiving the KNX discovery response. The subsequent KNX connection
+   * creation should then use this same client IP address as part of the client-side HPAI header.
+   */
+  private InetAddress clientIP = null;
 
 
   // Protected Instance Methods -------------------------------------------------------------------
@@ -172,7 +206,7 @@ class KNXConnectionManager
    * subnet. By default, the discovery process is asynchronous so the start method will return
    * quickly without waiting for the responses to arrive.
    *
-   * @throws ConnectionException TODO
+   * @throws ConnectionException if there was an I/O or configuration error
    */
   protected void start() throws ConnectionException
   {
@@ -187,30 +221,18 @@ class KNXConnectionManager
     
     try
     {
-      // TODO :
-      //   the localhost resolution is less than ideal -- especially for multi-nic setups should
-      //   have a way to specify bind address
+      /*
+       * TODO:
+       *
+       *  To be completely autonomous and "hands-free" to the user we would blast the discovery
+       *  an all NICs we consider candidates and choose one of them that receives a discovery
+       *  response.
+       *
+       *  At this point I'll just pick the first candidate IPv4 address, let's hope it works
+       */
+      clientIP = resolveLocalAddresses().iterator().next();
 
-      InetAddress localhost = null;
-
-      try
-      {
-        localhost = InetAddress.getLocalHost();
-      }
-      catch (Throwable t)
-      {
-        throw new ConnectionException("Cannot access localhost: " + t.getMessage(), t);
-      }
-
-      log.info(
-          "Starting KNX gateway discovery on " + localhost +
-          " (Using NAT = " + DISCOVERY_USE_NAT +
-          ", Client Listener Port = " + CLIENT_DISCOVERY_LISTENER_PORT +
-          ", Discovery Timeout = " + DISCOVERY_TIMEOUT + " second(s), " +
-          "Blocking Mode = " + BLOCKING_DISCOVERY + ")."
-      );
-
-      discovery = new Discoverer(CLIENT_DISCOVERY_LISTENER_PORT, DISCOVERY_USE_NAT);
+      discovery = new Discoverer(clientIP, CLIENT_DISCOVERY_LISTENER_PORT, DISCOVERY_USE_NAT);
       discovery.startSearch(DISCOVERY_TIMEOUT, BLOCKING_DISCOVERY);
     }
     catch (KNXException exception)
@@ -227,6 +249,140 @@ class KNXConnectionManager
     }
   }
 
+  /**
+   * Attempts to resolve local IPv4 addresses to use for KNX discovery and client-side HPAI
+   * for a KNX connection.  <p>
+   *
+   * Note that operating system and hardware configurations and behavior varies wildly so the
+   * implementation provided here is not guaranteed to be fool-proof. Additional feedback and
+   * improvements are welcome.  <p>
+   *
+   * In case the resolution in this method is not working, or an explicit client-side IP address
+   * is wanted for other reasons, this implementation can be overriden by setting a system wide
+   * {@link #KNX_LOCAL_BIND_ADDRESS} property. The <code>KNX_LOCAL_BIND_ADDRESS</code> property
+   * should have as its value a valid IPv4 address in the machine hosting this KNX connection
+   * manager.  <p>
+   *
+   * In addition, this method can be overridden by subclasses for alternative address resolution
+   * implementations.
+   *
+   * @throws ConnectionException if there's an I/O error querying the network interfaces on this
+   *                             machine or if {@link #KNX_LOCAL_BIND_ADDRESS} was configured but
+   *                             could not be resolved to a valid address and connected to
+   *
+   * @return  Set of IPv4 addresses on the local machine that could be used for KNX discovery
+   *          and as client-side HPAI end-points.
+   */
+  protected Set<InetAddress> resolveLocalAddresses() throws ConnectionException
+  {
+    /*
+     * NOTE:
+     *   InetAddress.getLocalHost() can return a host name that does not resolve to an IP
+     *   address that has been configured in the host system lookup service -- this seems
+     *   to be the case with the default Voyage (Debian) Linux, for example. Therefore in
+     *   the implementation we actually iterate through all the available network interfaces
+     *   trying to find valid candidate NICs and IP addresses
+     *
+     * NOTE:
+     *   Logging in this method is on low threshold as its useful for debugging installation
+     *   and startup issues -- the current implementation assumes we execute this only once
+     *   so verbosity should not be an issue. Logging is directed to a specific KNX logging
+     *   category
+     */
+
+
+    // First check if an explicit IP address binding has been configured...
+
+    if (hasExplicitAddressBinding())
+    {
+      InetAddress explicitBinding = getConfiguredLocalAddress();
+
+      if (explicitBinding != null)
+      {
+        Set<InetAddress> set = new HashSet<InetAddress>();
+        set.add(explicitBinding);
+        return set;
+      }
+
+      else
+      {
+        throw new ConnectionException(
+            "Property '" + KNX_LOCAL_BIND_ADDRESS + "' was configured but could not be resolved " +
+            "to a valid IPv4 address or could not be connected to. Check the KNX logs for " +
+            "additional details.");
+      }
+    }
+
+
+    // Will iterate through all network interfaces in this machine...
+
+    log.info("KNX Connection manager resolving local host IP addresses...");
+
+    Enumeration<NetworkInterface> nics = null;
+
+    try
+    {
+      nics = NetworkInterface.getNetworkInterfaces();
+    }
+    catch (SocketException e)
+    {
+      // if an I/O exception occurs -- no additional detail under what circumstances this
+      // might occur is provided
+
+      throw new ConnectionException(
+          "Cannot query network interfaces (" + e.getMessage() + "). " +
+          "KNX discovery failed.", e);
+    }
+
+
+    // Collect candidate IPv4 addresses from all network interfaces here...
+
+    Set<InetAddress> candidateAddresses = new HashSet<InetAddress>(5);
+
+
+    // Iterate through the nics...
+
+    while (nics.hasMoreElements())
+    {
+      NetworkInterface nic = nics.nextElement();
+
+      // candidate nics are not loopbacks, disabled or point-to-point (such as modem PPP) ifaces...
+
+      if (!isCandidate(nic))
+        continue;
+
+      log.info("Found candidate NIC: " + nic);
+
+
+      // Iterate through each address assigned to the candidate nic...
+
+      List<InterfaceAddress> ipAddresses = nic.getInterfaceAddresses();
+
+      for (InterfaceAddress address : ipAddresses)
+      {
+        InetAddress ipAddress = address.getAddress();
+
+
+        // KNX doesn't support IPv6 so we will simply drop any IPv6 addresses....
+
+        if (ipAddress instanceof Inet6Address)
+        {
+          log.info("Skipped IPv6 address (not supported by KNX) " + ipAddress);
+
+          continue;
+        }
+
+        // Add to candidate IPv4 address set (duplicates are ignored)...
+
+        if (candidateAddresses.add(ipAddress))
+          log.info("Added candidate IP address to set - " + ipAddress);
+      }
+    }
+
+    return candidateAddresses;
+  }
+
+
 
   /**
    * TODO
@@ -237,8 +393,37 @@ class KNXConnectionManager
    */
   protected synchronized KNXConnection getConnection() throws ConnectionException
   {
+
+    /*
+     * TODO :
+     *   as per the connection management discussion, the KNXConnection interface
+     *   should implement a corresponding close() method (which it may or may not
+     *   react to based on the connection management policy)
+     *
+     * TODO :
+     *   document the thread synchronization wrt connection and gatewayEndpoint field access
+     *
+     * TODO :
+     *   given the synchronization, connection pooling may become relevant
+     */
+
+
+    // if we have an existing connection, return it...
+    //
+    // TODO :
+    //   - possible to check connection validity (maybe by having access to the underlying
+    //     KNX connection hearbeat)?
+    //   - failover if connection broken?
+
     if (connection != null)
       return new CalimeroConnection(connection);
+
+
+    // if we don't have a connection but have found our KNX gateway end-point,
+    // build a connection to it...
+    //
+    // TODO :
+    //   - handle exception from buildConnection (possible to go back to gateway discovery?)
 
     if (gatewayEndPoint != null)
     {
@@ -264,8 +449,172 @@ class KNXConnectionManager
 
   // Private Instance Methods ---------------------------------------------------------------------
 
+
   /**
-   * TODO
+   * A quick helper method to detect if the KNX_LOCAL_BIND_ADDRESS system property has been set.
+   *
+   * @return true if KNX_LOCAL_BIND_ADDRESS has been set; false otherwise
+   */
+  private boolean hasExplicitAddressBinding()
+  {
+    return getKNXLocalBindAddressValue() != null;
+  }
+
+  /**
+   * Utility method to retrieve the value of KNX_LOCAL_BIND_ADDRESS system property.
+   *
+   * Executed in a privileged code block, so as long as the calling code has sufficient permissions
+   * we don't require any extra privileges.
+   *
+   * @return the value of KNX_LOCAL_BIND_ADDRESS if set, or null
+   */
+  private String getKNXLocalBindAddressValue()
+  {
+
+    // START PRIVILEGED CODE BLOCK ----------------------------------------------------------------
+    return AccessController.doPrivileged(
+        new PrivilegedAction<String>()
+        {
+          public String run()
+          {
+            try
+            {
+              return System.getProperty(KNX_LOCAL_BIND_ADDRESS);
+            }
+            catch (SecurityException exception)
+            {
+              log.error("Security manager has denied access to '" + KNX_LOCAL_BIND_ADDRESS +
+                        "' propery (" + exception.getMessage() + ").", exception);
+
+              // Can't get the property, so act as if it was not set...
+
+              return null;
+            }
+          }
+        }
+    );
+    // END PRIVILEGED CODE BLOCK ------------------------------------------------------------------
+  }
+
+  /**
+   * Attempts to resolve a configured KNX_LOCAL_BIND_ADDRESS system property into a valid
+   * InetAddress
+   *
+   * @return  an <code>InetAddress</code> resolved from {@link #KNX_LOCAL_BIND_ADDRESS} system
+   *          property or <code>null</code> if the property was not set or could not be resolved
+   *          or connected to.
+   */
+  private InetAddress getConfiguredLocalAddress()
+  {
+    final String localBindAddress = getKNXLocalBindAddressValue();
+
+    if (localBindAddress == null)
+      return null;
+
+    else
+    {
+      // START PRIVILEGED CODEBLOCK ---------------------------------------------------------------
+      return AccessController.doPrivileged(
+          new PrivilegedAction<InetAddress>()
+          {
+            public InetAddress run()
+            {
+              try
+              {
+                return InetAddress.getByName(localBindAddress);
+              }
+              catch (UnknownHostException exception)
+              {
+                log.error("Could not resolve explicit KNX address binding '" + localBindAddress +
+                          "': " + exception.getMessage(), exception);
+
+                return null;
+              }
+              catch (SecurityException e)
+              {
+                log.error("Security manager denied access to address '" + localBindAddress + "': " +
+                          e.getMessage(), e);
+
+                return null;
+              }
+            }
+          }
+      );
+      // END PRIVILEGED CODEBLOCK -----------------------------------------------------------------
+    }
+  }
+
+
+  /**
+   * Utility method attempting to validate if a given network interface is useful as a client side
+   * KNX HPAI end-point. It currently skips NICs that have not been enabled, loopback interfaces
+   * and point-to-point (e.g. PPP to modem) interfaces.
+   *
+   * NOTE :
+   *   still looking for a fool-proof implementation that would work consistently across different
+   *   OS'es and network interface setups. The current implementation is still likely to prove
+   *   insufficient so feedback here is welcome.
+   *
+   * @param nic   the network interface to validate
+   *
+   * @return true if the network interface is considered as a candidate NIC to be used as the
+   *         client side KNX discovery end-point and as KNX connection client-side HPAI; false
+   *         otherwise
+   */
+  private boolean isCandidate(NetworkInterface nic)
+  {
+    try
+    {
+      if (!nic.isUp())
+      {
+        // not running, not useful
+
+        log.info("Skipping disabled NIC: " + nic);
+
+        return false;
+      }
+      if (nic.isLoopback())
+      {
+        log.info("Skipping loopback interface: " + nic);
+
+        return false;
+      }
+      if (nic.isPointToPoint())
+      {
+        log.info("Skipping point-to-point interface: " + nic);
+
+        return false;
+      }
+    }
+    catch (SocketException exception)
+    {
+      // log warning and move on
+      log.warn("Error retrieving NIC info: " + exception.getMessage(), exception);
+
+      return false;
+    }
+
+
+    // TODO : need to test if virtual ifaces are always included or require getSubs() call
+
+    if (nic.isVirtual())
+    {
+      log.info("Skipping virtual interface: " + nic);
+
+      // TODO - there could be legit use cases to use virtual interface instead
+
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Registers a shutdown hook in the JVM to attempt to close any open KNX connections when
+   * JVM process is killed.
+   *
+   * Adding shutdown hook in a privileged code block -- as long as calling code has sufficient
+   * security permissions, we don't require additional permissions for this operation.
    */
   private void addShutdownHook()
   {
@@ -273,6 +622,8 @@ class KNXConnectionManager
     {
       final Thread shutdown = new Thread(new Shutdown());
 
+
+      // BEGIN PRIVILEGED CODE BLOCK --------------------------------------------------------------
       AccessController.doPrivileged(new PrivilegedAction<Void>()
       {
         public Void run()
@@ -282,6 +633,9 @@ class KNXConnectionManager
           return null;
         }
       });
+      // END PRIVILEGED CODE BLOCK ----------------------------------------------------------------
+
+
     }
     catch (SecurityException exception)
     {
@@ -316,7 +670,6 @@ class KNXConnectionManager
     {
       InetAddress serverIP = gatewayEndPoint.getAddress();
       int serverPort = gatewayEndPoint.getPort();
-      InetAddress clientIP = InetAddress.getLocalHost();    // TODO: not the best method for multi-NIC machines
 
       log.info("Creating connection from " + clientIP + " to " + serverIP + ":" + serverPort);
 
@@ -331,10 +684,6 @@ class KNXConnectionManager
           "Connection '" + connection.getName() + "' created " +
           "(Using NAT = " + CONNECTION_USE_NAT + ")."
       );
-    }
-    catch (UnknownHostException uhe)
-    {
-      throw new ConnectionException("Could not access localhost: " + uhe.getMessage(), uhe);
     }
     catch (KNXException knx)
     {
@@ -377,14 +726,6 @@ class KNXConnectionManager
     {
 /*
       log.info("Discovery has ended");    // TODO
-
-      try
-      {
-        HPAI hpai = new HPAI(InetAddress.getByAddress(new byte[] { (byte)192, (byte)168, 1, 33 }), 3671);
-
-        return hpai;
-      }
-      catch (Throwable t){}
 */
       throw new ConnectionException("KNX IP Gateway was not found.");
     }
@@ -539,6 +880,8 @@ class KNXConnectionManager
     {
       try
       {
+        log.debug("Executing JVM shutdown hook to close KNX connections...");
+
         if (connection != null)
         {
           String connectionName      = connection.getName();
@@ -562,7 +905,7 @@ class KNXConnectionManager
       }
       catch (Throwable t)
       {
-        log.error("Closing connection failed: " + t);
+        log.error("Closing connection failed: " + t.getMessage(), t);
       }
     }
   }
