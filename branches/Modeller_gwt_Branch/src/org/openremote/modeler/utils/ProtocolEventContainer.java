@@ -153,10 +153,16 @@ public class ProtocolEventContainer {
          for (UIButtonEvent uiButtonEvent : protocolEvents.get(protocolDisplayName)) {
             uiButtonEventXml.append("    <command id=\"" + uiButtonEvent.getId() + "\" protocol=\"" + protocolTagName + "\"");
             Set<String> protocolAttrKeySet = uiButtonEvent.getProtocolAttrs().keySet();
-            for (String attrKey : protocolAttrKeySet) {
-               uiButtonEventXml.append(" " + attrKey + "=\"" + uiButtonEvent.getProtocolAttrs().get(attrKey) + "\"");
+            String command = uiButtonEvent.getProtocolAttrs().get("command");
+            if (command == null) {
+               command = "";
             }
-            uiButtonEventXml.append(" >" + uiButtonEvent.getLabel() + "</command>\n");
+            for (String attrKey : protocolAttrKeySet) {
+               if(!"command".equals(attrKey)) {
+                  uiButtonEventXml.append(" " + attrKey + "=\"" + uiButtonEvent.getProtocolAttrs().get(attrKey) + "\"");
+               }
+            }
+            uiButtonEventXml.append(" >" + command + "</command>\n");
          }
 //         String eventsTagName = protocolTagName + "Events";
 //         uiButtonEventXml.append("    <" + eventsTagName + ">\n");
