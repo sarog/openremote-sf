@@ -29,7 +29,6 @@
 @interface SwitchView : ControlView {
 	UIButton *button;
 	BOOL isOn;
-	BOOL isError;
 	BOOL canUseImage;
 	UIImage *onUIImage;
 	UIImage *offUIImage;
