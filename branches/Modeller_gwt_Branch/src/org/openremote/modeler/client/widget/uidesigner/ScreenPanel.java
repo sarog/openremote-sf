@@ -22,6 +22,7 @@ package org.openremote.modeler.client.widget.uidesigner;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
 import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
@@ -29,13 +30,20 @@ import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.SubmitListener;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.ScreenBeanModelProxy;
+import org.openremote.modeler.client.proxy.UtilsProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.UIScreen;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.ChangeEvent;
+import com.extjs.gxt.ui.client.data.ChangeListener;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
@@ -109,11 +117,41 @@ public class ScreenPanel extends ContentPanel {
             add(screenTree);
          }
       };
-//      initTreeWithAutoSavedJson(screenTab);
+      initTreeWithAutoSavedScreens(screenTab);
       treeContainer.setScrollMode(Scroll.AUTO);
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
       add(treeContainer);
+   }
+   
+   private void initTreeWithAutoSavedScreens(final ScreenTab screenTab) {
+      UtilsProxy.loadScreensFromSession(new AsyncSuccessCallback<List<UIScreen>>(){
+         @Override
+         public void onSuccess(List<UIScreen> screens) {
+            if(screens.size() > 0) {
+               screenTree.getStore().removeAll();
+               BeanModelDataBase.screenTable.clear();
+               for (UIScreen screen : screens) {
+                  BeanModel screenBeanModel = screen.getBeanModel();
+                  screenTree.getStore().add(screenBeanModel, false);
+                  BeanModelDataBase.screenTable.insert(screenBeanModel);
+               }
+               BeanModelDataBase.screenTable.addInsertListener(Constants.SCREEN_TABLE_OID, new ChangeListener() {
+                  public void modelChanged(ChangeEvent event) {
+                     if (event.getType() == BeanModelTable.ADD) {
+                        BeanModel beanModel = (BeanModel) event.getItem();
+                        if (beanModel.getBean() instanceof Screen) {
+                           ScreenTabItem screenTabItem = new ScreenTabItem((UIScreen) beanModel.getBean());
+                           screenTab.add(screenTabItem);
+                        }
+                     }
+                  }
+
+               });
+            }
+         }
+         
+      });
    }
    
    /**

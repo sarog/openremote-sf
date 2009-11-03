@@ -111,4 +111,8 @@ public class Group extends BusinessEntity {
    public static String getNewDefaultName() {
       return "group" + defaultNameIndex++;
    }
+   
+   public void clearScreenRefs() {
+      screenRefs.clear();
+   }
 }

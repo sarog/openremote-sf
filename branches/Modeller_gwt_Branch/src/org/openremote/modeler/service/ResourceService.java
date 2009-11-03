@@ -99,4 +99,9 @@ public interface ResourceService {
     * @return the activities json
     */
    String getActivitiesJson(List<Activity> activities);
+   
+   String getGroupsJson(List<Group> groups);
+   
+   String getScreensJson(List<UIScreen> screens);
+   
 }

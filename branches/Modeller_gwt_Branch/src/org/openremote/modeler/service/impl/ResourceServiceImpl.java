@@ -718,4 +718,30 @@ public class ResourceServiceImpl implements ResourceService {
    public String getRelativeResourcePath(String sessionId, String fileName) {
       return PathConfig.getInstance(configuration).getRelativeResourcePath(fileName, sessionId);
    }
+
+   @Override
+   public String getGroupsJson(List<Group> groups) {
+      try {
+         String [] includedPropertyNames = {"screenRefs"};
+         String [] excludePropertyNames = {};
+         String groupsJson = JsonGenerator.serializerObjectInclude(groups, includedPropertyNames, excludePropertyNames);
+         return groupsJson;
+      } catch (Exception e) {
+         e.printStackTrace();
+         return "";
+      }
+   }
+
+   @Override
+   public String getScreensJson(List<UIScreen> screens) {
+      try {
+         String [] includedPropertyNames = {"absolutes", "absolutes.uiCommand", "grid", "grid.cells", "grid.cells.uiCommand"};
+         String [] excludePropertyNames = {"absolutes.uiControl.panelXml", "grid.cells.uiControl.panelXml"};
+         String groupsJson = JsonGenerator.serializerObjectInclude(screens, includedPropertyNames, excludePropertyNames);
+         return groupsJson;
+      } catch (Exception e) {
+         e.printStackTrace();
+         return "";
+      }
+   }
 }

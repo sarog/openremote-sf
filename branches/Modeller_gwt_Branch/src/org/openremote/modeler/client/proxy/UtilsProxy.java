@@ -77,11 +77,11 @@ public class UtilsProxy {
    /**
     * Auto save ui designer layout json.
     * 
-    * @param activities the activities
+    * @param groups the activities
     * @param callback the callback
     */
-   public static void autoSaveUiDesignerLayoutJSON(List<Activity> activities, final AsyncSuccessCallback<AutoSaveResponse> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().autoSaveUiDesignerLayoutJSON(activities, new AsyncSuccessCallback<AutoSaveResponse>() {
+   public static void autoSaveUiDesignerLayout(List<Group> groups, List<UIScreen> screens, final AsyncSuccessCallback<AutoSaveResponse> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().autoSaveUiDesignerLayout(groups, screens, new AsyncSuccessCallback<AutoSaveResponse>() {
          @Override
          public void onSuccess(AutoSaveResponse result) {
             callback.onSuccess(result);
@@ -108,6 +108,24 @@ public class UtilsProxy {
             callback.onSuccess(result);
          }
          
+      });
+   }
+   
+   public static void loadGroupsFromSession(final AsyncSuccessCallback<List<Group>> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().loadGroupsFromSession(new AsyncSuccessCallback<List<Group>>() {
+         @Override
+         public void onSuccess(List<Group> groups) {
+            callback.onSuccess(groups);
+         }
+      });
+   }
+   
+   public static void loadScreensFromSession(final AsyncSuccessCallback<List<UIScreen>> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().loadScreensFromSession(new AsyncSuccessCallback<List<UIScreen>>() {
+         @Override
+         public void onSuccess(List<UIScreen> Screens) {
+            callback.onSuccess(Screens);
+         }
       });
    }
 }

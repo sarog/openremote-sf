@@ -22,6 +22,8 @@ package org.openremote.modeler.domain.control;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Transient;
+
 import org.openremote.modeler.domain.UICommand;
 
 @SuppressWarnings("serial")
@@ -105,6 +107,7 @@ public class UISwitch extends UIControl {
       }
    }
 
+   @Transient
    @Override
    public String getPanelXml() {
       StringBuffer xmlContent = new StringBuffer();
