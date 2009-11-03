@@ -35,7 +35,7 @@
 
 @implementation ControlView
 
-@synthesize control;
+@synthesize control, controlTimer;
 
 //NOTE:You should init all these views with initWithFrame and you should pass in valid frame rects.
 //Otherwise, UI widget will not work in nested UIViews
@@ -56,8 +56,10 @@
 - (id)initWithControl:(Control *)c frame:(CGRect)frame{
 	if (self = [super initWithFrame:frame]) {
 		control = c;
+		isError = NO;
 		//transparent background 
 		[self setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
+		//[self setContentMode:UIViewContentModeTopLeft];
 	}
 
 	return self;
@@ -119,16 +121,26 @@
 				break;
 		}
 		if (!errorMessage) {
-			errorMessage = [NSString stringWithFormat:@"Occured unknown error, satus code is @d",statusCode];
+			errorMessage = [NSString stringWithFormat:@"Occured unknown error, satus code is %d",statusCode];
 		}
+		[self cancelTimer];
+		isError = YES;
 		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:errorMessage];
 	}
 	
 }
 
+- (void)cancelTimer {
+	if (controlTimer) {
+		[controlTimer invalidate];
+	}
+	controlTimer = nil;
+}
+
 #pragma mark delegate method of NSURLConnection
 - (void) definitionURLConnectionDidFailWithError:(NSError *)error {
 	//if (!isError) {
+	[self cancelTimer];
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 		[alert show];
 		[alert release];
@@ -158,6 +170,7 @@
 
 
 - (void)dealloc {
+	[controlTimer release];
 	[control release];
 	[super dealloc];
 }

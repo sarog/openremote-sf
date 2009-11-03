@@ -26,7 +26,8 @@
 @interface ControlView : UIView <URLConnectionHelperDelegate>{
 	
 	Control *control;
-
+	NSTimer *controlTimer;
+	BOOL isError;
 }
 
 //Class methods:
@@ -43,7 +44,10 @@
 - (void)setPollingStatus:(NSNotification *)notification;
 - (void)sendCommandRequest:(NSString *)commandType;
 - (void)handleServerErrorWithStatusCode:(int) statusCode;
+- (void)cancelTimer;
 
-@property (nonatomic,retain) Control *control;
+@property (nonatomic,readonly)Control *control;
+@property (nonatomic,readonly)NSTimer *controlTimer;
+
 
 @end

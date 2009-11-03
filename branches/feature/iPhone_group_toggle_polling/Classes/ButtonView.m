@@ -25,15 +25,20 @@
 #import "ServerDefinition.h"
 #import "ViewHelper.h"
 
+//defines the interval (seconds) of command when pressing a repeat button
+#define REPEAT_CMD_INTERVAL 0.3
+
 @interface ButtonView (Private) 
 - (void)createButton;
 - (void)controlButtonUp:(id)sender;
+- (void)controlButtonDown:(id)sender;
+- (void)sendCommand:(id)sender;
 
 @end
 
 @implementation ButtonView
 
-@synthesize uiButton, isError, uiImage, uiImagePressed, isTouchUp, buttonTimer;
+@synthesize uiButton, uiImage, uiImagePressed;
 
 
 
@@ -45,46 +50,59 @@
 	}
 	uiButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
 	
-		
-
+	[uiButton addTarget:self action:@selector(controlButtonDown:) forControlEvents:UIControlEventTouchDown];	
+	[uiButton addTarget:self action:@selector(controlButtonUp:) forControlEvents:UIControlEventTouchUpOutside];	
 	[uiButton addTarget:self action:@selector(controlButtonUp:) forControlEvents:UIControlEventTouchUpInside];
+
 	
 	[self addSubview:uiButton];
 	
 }
 
-
-
 - (void) controlButtonUp:(id)sender {
+	[self cancelTimer];
 	
-	if (((Button *)control).hasCommand == YES) {
-		[self	sendCommandRequest:@"click"];
+}
+
+- (void) controlButtonDown:(id)sender {
+	
+	[self cancelTimer];
+	
+	Button *button = (Button *)control;
+	if (button.hasCommand == YES) {
+		[self sendCommand:nil];
+	 	if (button.repeat == YES ) {			
+			controlTimer = [NSTimer scheduledTimerWithTimeInterval:REPEAT_CMD_INTERVAL	target:self selector:@selector(sendCommand:) userInfo:nil repeats:YES];			
+		} 
+	
 	}
 	
 }
 
-
-
+- (void) sendCommand:(id)sender {
+	[self	sendCommandRequest:@"click"];
+}
 
 
 //override layoutSubviews method of UIView 
 - (void)layoutSubviews {	
 	[self createButton];
-	[uiButton setFrame:[self bounds]];
+	
 	Button *button = (Button *)control;
-	if (button.image && [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.image.src]]
-			&& button.imagePressed && [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.imagePressed.src]]) {
+	if (button.image) {
+		
 		uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.image.src]];
 		uiImagePressed = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.imagePressed.src]];	
 		[uiButton setImage:uiImage forState:UIControlStateNormal];
 		[uiButton setImage:uiImagePressed forState:UIControlStateHighlighted];
-		
+		[uiButton setFrame:CGRectMake(0, 0, uiImage.size.width, uiImage.size.height)];
 	} else {
+		[uiButton setFrame:[self bounds]];
 		UIImage *buttonImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
 		[uiButton setBackgroundImage:buttonImage forState:UIControlStateNormal];
 		
-		buttonImage = [[UIImage imageNamed:@"buttonHighlighted.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
-		[uiButton setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
+		//buttonImage = [[UIImage imageNamed:@"buttonHighlighted.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
+		//[uiButton setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
 		
 		uiButton.titleLabel.font = [UIFont boldSystemFontOfSize:18];
 		[uiButton setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
@@ -100,8 +118,6 @@
 - (void)dealloc {
 	[uiImage  release];
 	[uiImagePressed release];
-	[buttonTimer release];
-
 	[uiButton release];
 	
   [super dealloc];
