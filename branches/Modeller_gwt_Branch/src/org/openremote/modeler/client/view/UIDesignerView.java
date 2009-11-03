@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
@@ -35,8 +33,7 @@ import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.client.widget.uidesigner.WidgetPanel;
-import org.openremote.modeler.domain.Activity;
-import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.UIScreen;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -67,6 +64,7 @@ public class UIDesignerView extends TabItem implements View {
    private static final int AUTO_SAVE_INTERVAL_MS = 30000;
    
    private Timer timer;
+   private GroupPanel groupPanel;
    /**
     * Instantiates a new uI designer view.
     */
@@ -82,7 +80,7 @@ public class UIDesignerView extends TabItem implements View {
       timer = new Timer() {
          @Override
          public void run() {
-//            autoSaveUiDesignerLayoutJSON();
+            autoSaveUiDesignerLayout();
          }
         };
         timer.scheduleRepeating(AUTO_SAVE_INTERVAL_MS);
@@ -91,8 +89,8 @@ public class UIDesignerView extends TabItem implements View {
    /**
     * Auto save ui designer layout json.
     */
-   public void autoSaveUiDesignerLayoutJSON() {
-      UtilsProxy.autoSaveUiDesignerLayoutJSON(getAllActivities(), new AsyncSuccessCallback<AutoSaveResponse>() {
+   public void autoSaveUiDesignerLayout() {
+      UtilsProxy.autoSaveUiDesignerLayout(groupPanel.getAllGroups(), getAllScreens(), new AsyncSuccessCallback<AutoSaveResponse>() {
          @Override
          public void onSuccess(AutoSaveResponse result) {
             if (result != null && result.isUpdated()) {
@@ -108,20 +106,6 @@ public class UIDesignerView extends TabItem implements View {
       });
    }
    
-   /**
-    * Gets the all activities.
-    * 
-    * @return the all activities
-    */
-   protected List<Activity> getAllActivities() {
-      List<Activity> activityList = new ArrayList<Activity>();
-      for (BeanModel activityBeanModel : BeanModelDataBase.activityTable.loadAll()) {
-         activityList.add((Activity) activityBeanModel.getBean());
-      }
-      return activityList;
-   }
-
-
    /**
     * Initialize.
     * 
@@ -165,7 +149,9 @@ public class UIDesignerView extends TabItem implements View {
 //      applicationView.setActivityPanel(activityPanel);
       
       west.add(new ScreenPanel(screenTab));
-      west.add(new GroupPanel());
+      groupPanel = new GroupPanel();
+      west.add(groupPanel);
+      applicationView.setGroupPanel(groupPanel);
       westData.setMargins(new Margins(2));
       add(west, westData);
    }
@@ -226,5 +212,13 @@ public class UIDesignerView extends TabItem implements View {
       
       widgetAndPropertyContainer.add(propertyPanel, centerData);
       return widgetAndPropertyContainer;
+   }
+   
+   List<UIScreen> getAllScreens() {
+      List<UIScreen> screenList = new ArrayList<UIScreen>();
+      for (BeanModel screenBeanModel : BeanModelDataBase.screenTable.loadAll()) {
+         screenList.add((UIScreen)screenBeanModel.getBean());
+      }
+      return screenList;
    }
 }

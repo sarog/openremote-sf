@@ -46,5 +46,8 @@ public abstract class UIControl extends BusinessEntity {
    
    public abstract void transImagePathToRelative(String relativeSessionFolderPath);
    
+   /**
+    * Generate the xml content which used in panel.xml
+    */
    public abstract String getPanelXml();
 }

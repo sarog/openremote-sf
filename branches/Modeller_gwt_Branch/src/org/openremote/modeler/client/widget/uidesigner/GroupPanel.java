@@ -32,6 +32,8 @@ import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.proxy.UtilsProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.ScreenRef;
@@ -142,7 +144,7 @@ public class GroupPanel extends ContentPanel {
             add(groupTree);
          }
       };
-      // initTreeWithAutoSavedJson(screenTab);
+      initTreeWithAutoSavedGroups();
       treeContainer.setScrollMode(Scroll.AUTO);
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
@@ -150,6 +152,27 @@ public class GroupPanel extends ContentPanel {
 
    }
 
+   private void initTreeWithAutoSavedGroups() {
+      UtilsProxy.loadGroupsFromSession(new AsyncSuccessCallback<List<Group>>(){
+         @Override
+         public void onSuccess(List<Group> groups) {
+            if(groups.size() > 0) {
+               BeanModel root = groupTree.getStore().getRootItems().get(0);
+               groupTree.getStore().removeAll(root);
+               BeanModelDataBase.groupTable.clear();
+               for (Group group : groups) {
+                  BeanModel groupBeanModel = group.getBeanModel();
+                  groupTree.getStore().add(root, groupBeanModel, false);
+                  for (ScreenRef screenRef : group.getScreenRefs()) {
+                     groupTree.getStore().add(groupBeanModel, screenRef.getBeanModel(), false);
+                  }
+                  BeanModelDataBase.groupTable.insert(groupBeanModel);
+               }
+            }
+         }
+         
+      });
+   }
    /**
     * Creates the new btn.
     * 
@@ -443,4 +466,25 @@ public class GroupPanel extends ContentPanel {
       };
    }
 
+   public List<Group> getAllGroups() {
+      List<Group> groups = new ArrayList<Group>();
+      if (groupTree != null) {
+         BeanModel root = groupTree.getStore().getRootItems().get(0);
+         List<BeanModel> groupBeans = groupTree.getStore().getChildren(root);
+         if (groupBeans.size() > 0 ) {
+//            BeanModelDataBase.groupTable.clear();
+         }
+         for (BeanModel groupBeanModel : groupBeans) {
+            List<BeanModel> screenRefBeans = groupTree.getStore().getChildren(groupBeanModel);
+            Group group = groupBeanModel.getBean();
+            group.clearScreenRefs();
+            for (BeanModel screenRefBeanModel : screenRefBeans) {
+               group.addScreenRef((ScreenRef)screenRefBeanModel.getBean());
+            }
+            groups.add(group);
+//            BeanModelDataBase.groupTable.insert(group.getBeanModel());
+         }
+      }
+      return groups;
+   }
 }

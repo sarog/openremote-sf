@@ -23,7 +23,6 @@ package org.openremote.modeler.client.rpc;
 import java.util.List;
 
 import org.openremote.modeler.client.model.AutoSaveResponse;
-import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.UIScreen;
 
@@ -71,5 +70,9 @@ public interface UtilsRPCService extends RemoteService {
     * 
     * @return the auto save response
     */
-   AutoSaveResponse autoSaveUiDesignerLayoutJSON(List<Activity> activities);
+   AutoSaveResponse autoSaveUiDesignerLayout(List<Group> groups, List<UIScreen> screens);
+   
+   List<Group> loadGroupsFromSession();
+   
+   List<UIScreen> loadScreensFromSession();
 }

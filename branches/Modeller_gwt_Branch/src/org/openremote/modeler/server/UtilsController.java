@@ -19,12 +19,12 @@
 */
 package org.openremote.modeler.server;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.rpc.UtilsRPCService;
-import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.UIScreen;
 import org.openremote.modeler.service.ResourceService;
@@ -43,8 +43,11 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    /** The configuration. */
    private Configuration configuration;
    
-   /** The Constant ACTIVIY_JSON_SESSION_ATTR_KEY. */
-   private static final String UI_DESIGNER_LAYOUT_JSON_KEY = "activityJSON";
+   /** The Constant for store group list in session. */
+   private static final String UI_DESIGNER_LAYOUT_GROUP_KEY = "groupList";
+   
+   /** The Constant for store screen list in session. */
+   private static final String UI_DESIGNER_LAYOUT_SCREEN_KEY = "screenList";
   
    /**
     * {@inheritDoc}
@@ -100,25 +103,52 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
     * {@inheritDoc}
     */
    public String loadJsonStringFromSession() {
-      Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_JSON_KEY);
+      Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_GROUP_KEY);
       return (obj == null) ? "" : obj.toString();
    }
 
    /**
     * {@inheritDoc}
     */
-   public AutoSaveResponse autoSaveUiDesignerLayoutJSON(List<Activity> activities) {
-      String jsonString = resourceService.getActivitiesJson(activities);
+   @SuppressWarnings("unchecked")
+   public AutoSaveResponse autoSaveUiDesignerLayout(List<Group> groups, List<UIScreen> screens) {
       AutoSaveResponse autoSaveResponse = new AutoSaveResponse();
-      String oldJsonString = null;
-      if(getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_JSON_KEY) != null){
-         oldJsonString = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_JSON_KEY).toString();
+      List<Group> oldGroups = new ArrayList<Group>();
+      if(getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_GROUP_KEY) != null){
+         oldGroups = (List<Group>)getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_GROUP_KEY);
       }
-      if (!"".equals(jsonString) && !jsonString.equals(oldJsonString)) {
-         getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_JSON_KEY, jsonString);
-         autoSaveResponse.setUpdated(true);
+      if (groups.size() > 0) {
+         if (!resourceService.getGroupsJson(groups).equals(resourceService.getGroupsJson(oldGroups))) {
+            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_GROUP_KEY, groups);
+            autoSaveResponse.setUpdated(true);
+         }
+      }
+      
+      List<UIScreen> oldScreens = new ArrayList<UIScreen>();
+      if(getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_SCREEN_KEY) != null){
+         oldScreens = (List<UIScreen>)getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_SCREEN_KEY);
+      }
+      if (screens.size() > 0) {
+         if (!resourceService.getScreensJson(screens).equals(resourceService.getScreensJson(oldScreens))) {
+            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_SCREEN_KEY, screens);
+            autoSaveResponse.setUpdated(true);
+         }
       }
       return autoSaveResponse;
+   }
+
+   @SuppressWarnings("unchecked")
+   @Override
+   public List<Group> loadGroupsFromSession() {
+      Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_GROUP_KEY);
+      return (obj == null) ? new ArrayList<Group>() : (List<Group>)obj;
+   }
+
+   @SuppressWarnings("unchecked")
+   @Override
+   public List<UIScreen> loadScreensFromSession() {
+      Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_SCREEN_KEY);
+      return (obj == null) ? new ArrayList<UIScreen>() : (List<UIScreen>)obj;
    }
 
 }

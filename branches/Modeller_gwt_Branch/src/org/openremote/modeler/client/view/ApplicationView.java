@@ -19,7 +19,6 @@
 */
 package org.openremote.modeler.client.view;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.auth.Authority;
@@ -34,11 +33,9 @@ import org.openremote.modeler.client.rpc.AuthorityRPCServiceAsync;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.Protocols;
 import org.openremote.modeler.client.widget.uidesigner.ActivityPanel;
+import org.openremote.modeler.client.widget.uidesigner.GroupPanel;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
-import org.openremote.modeler.domain.Activity;
-import org.openremote.modeler.domain.Group;
-import org.openremote.modeler.domain.UIScreen;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style;
@@ -87,6 +84,8 @@ public class ApplicationView implements View {
    
    /** The screen tab. */
    private ScreenTab screenTab;
+   
+   private GroupPanel groupPanel;
    
    /**
     * Initialize.
@@ -205,7 +204,7 @@ public class ApplicationView implements View {
       saveMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          @Override
          public void componentSelected(MenuEvent ce) {
-            uiDesignerView.autoSaveUiDesignerLayoutJSON();
+            uiDesignerView.autoSaveUiDesignerLayout();
          }
       });
       return saveMenuItem;
@@ -249,12 +248,12 @@ public class ApplicationView implements View {
       exportMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          @Override
          public void componentSelected(MenuEvent ce) {
-//            if (!isExportedDataValid()) {
-//               MessageBox.info("Info", "Sorry, the data you want to export is invalid.", null);
-//               return;
-//            }
+            if (!isExportedDataValid()) {
+               MessageBox.info("Info", "Sorry, the data you want to export is invalid.", null);
+               return;
+            }
             viewport.mask("Exporting, please wait.");
-            UtilsProxy.exportFiles(IDUtil.currentID(), getAllGroups(), getAllScreens(), new AsyncSuccessCallback<String>() {
+            UtilsProxy.exportFiles(IDUtil.currentID(), groupPanel.getAllGroups(), uiDesignerView.getAllScreens(), new AsyncSuccessCallback<String>() {
                @Override
                public void onSuccess(String exportURL) {
                   viewport.unmask();
@@ -272,30 +271,11 @@ public class ApplicationView implements View {
     * @return true, if is exported data valid
     */
    protected boolean isExportedDataValid() {   
-      List<BeanModel> activityBeanModels = BeanModelDataBase.activityTable.loadAll();
-      if (activityBeanModels == null || activityBeanModels.size() == 0) {
+      List<BeanModel> screenBeanModels = BeanModelDataBase.screenTable.loadAll();
+      if (screenBeanModels == null || screenBeanModels.size() == 0) {
          return false;
       }
-      for (BeanModel beanModel : activityBeanModels) {
-         Activity activity = (Activity) beanModel.getBean();
-         if (activity.getScreens() == null || activity.getScreens().size() == 0) {
-            return false;
-         }
-      }
       return true;
-   }
-   
-   /**
-    * Gets the all activity bean.
-    * 
-    * @return the all activity bean
-    */
-   protected List<Activity> getAllActivities() {
-      List<Activity> activityList = new ArrayList<Activity>();
-      for (BeanModel activityBeanModel : BeanModelDataBase.activityTable.loadAll()) {
-         activityList.add((Activity) activityBeanModel.getBean());
-      }
-      return activityList;
    }
    
    /**
@@ -365,19 +345,9 @@ public class ApplicationView implements View {
       this.activityPanel = activityPanel;
    }
    
-   private List<Group> getAllGroups() {
-      List<Group> groupList = new ArrayList<Group>();
-      for (BeanModel groupBeanModel : BeanModelDataBase.groupTable.loadAll()) {
-         groupList.add((Group)groupBeanModel.getBean());
-      }
-      return groupList;
+   public void setGroupPanel(GroupPanel groupPanel) {
+      this.groupPanel = groupPanel;
    }
    
-   private List<UIScreen> getAllScreens() {
-      List<UIScreen> screenList = new ArrayList<UIScreen>();
-      for (BeanModel screenBeanModel : BeanModelDataBase.screenTable.loadAll()) {
-         screenList.add((UIScreen)screenBeanModel.getBean());
-      }
-      return screenList;
-   }
+   
 }
