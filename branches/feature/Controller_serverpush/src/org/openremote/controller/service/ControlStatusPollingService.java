@@ -50,17 +50,10 @@ public interface ControlStatusPollingService {
    
    /** tail of xml-formatted polling result data. */
     static final String XML_TAIL = "</openremote>";
-   
-   /**
-    * get the changed statuses from cached DB. 
-    */
-   public String waitForChangedStatuses(long startTime, String deviceID, String unParsedcontrolIDs);
 
    /**
     * Query skip states from TIME_OUT table. 
     */
    public String querySkippedState(String deviceID, String unParsedcontrolIDs);
-   
-   public void saveOrUpdateSkippedStateRecord(String deviceId,String unParsedcontrolIDs);
    
 }
