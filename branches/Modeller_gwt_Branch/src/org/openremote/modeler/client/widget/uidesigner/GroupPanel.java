@@ -46,6 +46,7 @@ import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeEventSupport;
 import com.extjs.gxt.ui.client.data.ChangeListener;
 import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.data.TreeModel;
 import com.extjs.gxt.ui.client.dnd.TreePanelDragSource;
 import com.extjs.gxt.ui.client.dnd.TreePanelDropTarget;
 import com.extjs.gxt.ui.client.dnd.DND.Feedback;
@@ -418,36 +419,65 @@ public class GroupPanel extends ContentPanel {
          @Override
          protected void onDragDrop(DNDEvent event) {
             boolean successed = false;
-            
+
             if (activeItem == null || event.getData() == null) {
                event.setCancelled(true);
                return;
             }
 
-            BeanModel targetNode = (BeanModel) activeItem.getModel(); 
-            BeanModel sourceNode = ((List<ModelData>) event.getData()).get(0).get("model"); 
-            ModelData targetParentNode = tree.getStore().getParent(targetNode); 
-            ModelData sourceParentNode = tree.getStore().getParent(sourceNode); 
-            //append operation
-            if (status == -1) { 
+            BeanModel targetNode = (BeanModel) activeItem.getModel();
+            BeanModel sourceNode = ((List<ModelData>) event.getData()).get(0).get("model");
+            BeanModel targetParentNode = (BeanModel) tree.getStore().getParent(targetNode);
+            BeanModel sourceParentNode = (BeanModel) tree.getStore().getParent(sourceNode);
+
+            if (status == -1) {                                         // append operation
                tree.getView().onDropChange(activeItem, false);
-               /*
-                * only allow to append a group into "groups" or append a screen
-                * to the group it belongs to.
-                */
-               if (sourceParentNode == targetNode) { 
+               if (sourceParentNode == targetNode) {
                   tree.getStore().remove(sourceNode);
                   handleAppendDrop(event, activeItem);
                   successed = true;
+               } else if (sourceNode.getBean() instanceof ScreenRef && targetNode.getBean() instanceof Group
+                     && canMove(tree, sourceNode, targetNode)) {
+                  tree.getStore().remove(sourceNode);
+                  handleAppendDrop(event, activeItem);
+                  moveScreen(sourceParentNode, sourceNode, targetNode);
+                  successed = true;
                }
-            } else if (targetParentNode == sourceParentNode) { // insert operation
+            } else if (targetParentNode == sourceParentNode) {          // insert operation
                tree.getStore().remove(sourceNode);
                handleInsertDrop(event, activeItem, status);
+               successed = true;
+            } else if (sourceNode.getBean() instanceof ScreenRef && targetParentNode.getBean() instanceof Group
+                  && canMove(tree, sourceNode, targetParentNode)) {
+               tree.getStore().remove(sourceNode);
+               handleInsertDrop(event, activeItem, status);
+               moveScreen(sourceParentNode, sourceNode, targetParentNode);
                successed = true;
             }
             if (!successed) {
                event.setCancelled(true);
             }
+         }
+
+         private boolean canMove(TreePanel<ModelData> tree, BeanModel scrRef, BeanModel group) {
+            List<ModelData> srcRefs = tree.getStore().getChildren(group);
+            ScreenRef screenRef = scrRef.getBean();
+            for (ModelData data : srcRefs) {
+               BeanModel model = (BeanModel) data;
+               ScreenRef tmpSrceenRef = model.getBean();
+               if (screenRef.getScreen().equals(tmpSrceenRef.getScreen())) {
+                  return false;
+               }
+            }
+            return true;
+         }
+
+         private void moveScreen(BeanModel sourceGroupBeanModel, BeanModel sourceScreenRefBeanModel,
+               BeanModel targetGroupBeanModel) {
+            Group targetGroup = targetGroupBeanModel.getBean();
+            targetGroup.addScreenRef((ScreenRef) sourceScreenRefBeanModel.getBean());
+            Group sourceGroup = sourceGroupBeanModel.getBean();
+            sourceGroup.deleteScreenRef((ScreenRef) sourceScreenRefBeanModel.getBean());
          }
       };
 
@@ -455,17 +485,30 @@ public class GroupPanel extends ContentPanel {
       target.setOperation(Operation.MOVE);
       target.setAutoExpand(false);
       target.setFeedback(Feedback.BOTH);
+      target.setAllowDropOnLeaf(true);
    }
 
    private void createDragSource() {
       new TreePanelDragSource(groupTree) {
+         
+         @Override
+         protected void onDragStart(DNDEvent e) {
+            if (groupTree.getSelectionModel().getSelectedItems().size() >1) {
+               e.setCancelled(true);
+               return;
+            }
+            super.onDragStart(e);
+         }
+
          @Override
          protected void onDragDrop(DNDEvent event) {
             return;
          }
+         
       };
    }
-
+   
+   
    public List<Group> getAllGroups() {
       List<Group> groups = new ArrayList<Group>();
       if (groupTree != null) {
