@@ -31,7 +31,7 @@
 }
 
 + (NSString *)panelXmlUrl {
-	return [[self serverUrl] stringByAppendingPathComponent:@"resources/iphone.xml"];
+	return [[self serverUrl] stringByAppendingPathComponent:@"resources/panel.xml"];
 }
 
 + (NSString *)imageUrl {
