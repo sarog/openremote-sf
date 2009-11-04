@@ -25,7 +25,6 @@ import java.util.List;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.log4j.Logger;
 import org.openremote.controller.Configuration;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.spring.SpringContext;
@@ -41,7 +40,7 @@ import org.springframework.context.support.ApplicationObjectSupport;
 public class InitCachedStatusDBListener extends ApplicationObjectSupport implements ServletContextListener {
 
    /** The logger. */
-   private Logger logger = Logger.getLogger(InitCachedStatusDBListener.class.getName());
+//   private Logger logger = Logger.getLogger(InitCachedStatusDBListener.class.getName());
    
    /** The connection. */
    public static Connection connection;

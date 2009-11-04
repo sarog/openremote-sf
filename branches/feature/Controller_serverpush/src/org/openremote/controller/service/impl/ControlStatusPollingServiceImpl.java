@@ -30,7 +30,6 @@ import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.ControlStatusPollingService;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.statuscache.PollingData;
-import org.openremote.controller.statuscache.PollingThread;
 import org.openremote.controller.statuscache.SkippedStatusRecord;
 import org.openremote.controller.statuscache.SkippedStatusTable;
 
@@ -41,11 +40,6 @@ import org.openremote.controller.statuscache.SkippedStatusTable;
  */
 public class ControlStatusPollingServiceImpl implements ControlStatusPollingService {
    
-
-   
-   /**
-    * TIME_OUT table instance.
-    */
    private SkippedStatusTable skippedStatusTable;
    
    private StatusCacheService statusCacheService;
@@ -56,50 +50,6 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
 
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
-   /**
-    * get the changed statuses from cached DB
-    */
-   @Override
-   public String waitForChangedStatuses(long startTime, String deviceID, String unParsedcontrolIDs) {
-      String changedStatuses = "";
-      String[] controlIDs = (unParsedcontrolIDs == null || "".equals(unParsedcontrolIDs)) ? new String[]{} : unParsedcontrolIDs.split(CONTROL_ID_SEPARATOR);
-      PollingData pollingData = new PollingData(controlIDs);
-      pollingData.setDeviceId(deviceID);
-      PollingThread pollingThread = new PollingThread(pollingData);
-      pollingThread.start();
-      
-      //begin 
-      //Avoid skipping state when adding observer to subject.
-      String skipState = querySkippedState(deviceID, unParsedcontrolIDs);
-      if (skipState != null && !"".equals(skipState)) {
-         return skipState;
-      }
-      //end
-      
-      while (true) {
-         if ((System.currentTimeMillis() - startTime) / MILLI_SECONDS_A_SECOND >= MAX_TIME_OUT_SECONDS) {
-            changedStatuses = Constants.SERVER_RESPONSE_TIME_OUT;
-            logger.info("Observing change of component status was timeout.");
-            saveSkippedRecord(deviceID, controlIDs);
-            logger.info("Return timeout result of observed.");
-            pollingThread.setWaitingStatusChange(false);
-
-            break;
-         }
-         if (pollingData.getChangedStatuses() == null) {
-            continue;
-         } else {
-            break;
-         }
-      }
-      if (!SERVER_RESPONSE_TIME_OUT_STATUS_CODE.equals(changedStatuses)) {
-         logger.info("Got the change of component status.");
-         changedStatuses = composePollingResult(pollingData);
-         logger.info("Return xml-formatted result of observed.");
-      }
-      return changedStatuses;
-   }
-
    /* (non-Javadoc)
     * @see org.openremote.controller.service.ControlStatusPollingService#querySkipState(java.lang.String)
     */
@@ -108,8 +58,8 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
       logger.info("Querying skipped state from TIME_OUT table...");
       String skipState = "";
       String[] controlIDs = (unParsedcontrolIDs == null || "".equals(unParsedcontrolIDs)) ? new String[]{} : unParsedcontrolIDs.split(CONTROL_ID_SEPARATOR);
+      
       List<Integer> pollingControlIDs = new ArrayList<Integer>();
-
       for (String pollingControlID : controlIDs) {
          try {
             pollingControlIDs.add(Integer.parseInt(pollingControlID));
@@ -118,33 +68,34 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
          }
       }
 
-      SkippedStatusRecord timeoutRecord = skippedStatusTable.query(deviceID, pollingControlIDs);
+      SkippedStatusRecord skipStateRecord = skippedStatusTable.query(deviceID, pollingControlIDs);
       String tempInfo = "Found: [device => " + deviceID + ", controlIDs => " + unParsedcontrolIDs + "] in TIME_OUT_TABLE.";
-      logger.info(timeoutRecord == null ? "Not " + tempInfo : tempInfo);
-      // same device
-      if (timeoutRecord != null) {
-         logger.info("Have queried changed data from TIME_OUT table.");
-         Set<Integer> statusChangedIDs = timeoutRecord.getStatusChangedIDs();
-         if (statusChangedIDs != null && statusChangedIDs.size() != 0) {
-            logger.info("The status of found timeout record had changed during current polling and last polling.");
-            skipState = queryChangedStatusesFromCachedStatusTable(statusChangedIDs);
-//            timeoutTable.delete(timeoutRecord);
-            return skipState;
-         }else {
-            logger.info("The status of found timeout record didn't change during current polling and last polling.");
-//           timeoutTable.delete(timeoutRecord);
-         }
-      } 
+      logger.info(skipStateRecord == null ? "Not " + tempInfo : tempInfo);
       
-      /*//not same device, but same polling control ids. 
-      //In this case, can't remote the timeoutRecord, because this timeout record is other device's.
-      timeoutRecord = timeoutTable.query(pollingControlIDs);
-      if (timeoutRecord != null) {
-         List<String> statusChangedIDs = timeoutRecord.getStatusChangedIDs();
-         if (statusChangedIDs != null && statusChangedIDs.size() != 0) {
-            return queryChangedStatusesFromCachedStatusTable(statusChangedIDs);
+      if (skipStateRecord == null) {
+         skipStateRecord = new SkippedStatusRecord(deviceID, pollingControlIDs);
+         skippedStatusTable.insert(skipStateRecord);
+      }
+      synchronized (skipStateRecord) {
+         boolean willTimeout = false;
+         while (skipStateRecord.getStatusChangedIDs() == null || skipStateRecord.getStatusChangedIDs().size() == 0) {
+            if (willTimeout) {
+               return Constants.SERVER_RESPONSE_TIME_OUT;
+            }
+            try {
+               logger.info(skipStateRecord + "Waiting...");
+               skipStateRecord.wait(50000);
+               willTimeout = true;
+            } catch (InterruptedException e) {
+               e.printStackTrace();
+               return Constants.SERVER_RESPONSE_TIME_OUT;
+            }
          }
-      }*/
+         logger.info(skipStateRecord + "got the waited data");
+         skipState = queryChangedStatusesFromCachedStatusTable(skipStateRecord.getStatusChangedIDs());
+         skippedStatusTable.resetChangedStatusIDs(deviceID, pollingControlIDs);
+      }
+      
       return skipState;
    }
    
@@ -178,58 +129,9 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
       sb.append(XML_TAIL);
       return sb.toString();
    }
-   
-   /**
-    * Save skip-state in case of the thread which observe status change was time out.
-    */
-   private void saveSkippedRecord(String deviceID, String[] pollingControlIDs) {
-      skippedStatusTable.insert(new SkippedStatusRecord(deviceID, pollingControlIDs));
-      logger.info("Recording the timeout record.");
-   }
-
-   /**
-    * Inject the timeout table. 
-    */
-   public SkippedStatusTable getSkippedStatusTable() {
-      return skippedStatusTable;
-   }
 
    public void setSkippedStatusTable(SkippedStatusTable skippedStatusTable) {
       this.skippedStatusTable = skippedStatusTable;
-   }
-   
-   @Override
-   public void saveOrUpdateSkippedStateRecord(String deviceId, String unParsedcontrolIDs) {
-      String[] controlIDs = (unParsedcontrolIDs == null || "".equals(unParsedcontrolIDs)) ? new String[]{} : unParsedcontrolIDs.split(CONTROL_ID_SEPARATOR);
-      if (controlIDs.length == 0){
-         logger.debug("component ID is empty!");
-         return ;
-      }
-      
-      List<Integer> pollingControlIDs = new ArrayList<Integer>();
-      String tmpStr = null;
-      
-      try {
-         for (String s : controlIDs) {
-            tmpStr = s;
-            pollingControlIDs.add(Integer.parseInt(s));
-         }
-      } catch (NumberFormatException e) {
-         throw new NoSuchComponentException("No such component whose id is :"+tmpStr,e);
-      }
-      
-      SkippedStatusRecord oldRecord = skippedStatusTable.queryRecordByDeviceId(deviceId);
-      SkippedStatusRecord newRecord = new SkippedStatusRecord(deviceId,pollingControlIDs);
-      
-      if(oldRecord == null){
-         logger.debug("insert a timeout record into the table");
-         skippedStatusTable.insert(newRecord);
-      } else {
-         skippedStatusTable.delete(oldRecord);
-         skippedStatusTable.insert(newRecord);
-         
-         logger.debug("The old record :"+oldRecord +"\nhas been removed and \nThe new record :"+newRecord+" is inserted");
-      } 
    }
    
 }
