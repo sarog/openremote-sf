@@ -25,6 +25,7 @@ import org.openremote.modeler.domain.control.UISwitch;
 import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Image;
 
 /**
  * ScreenSwitch is the switch widget in screen.
@@ -35,6 +36,7 @@ public class ScreenSwitch extends ScreenControl {
    /** The switchTable center text. */
    private Text center = new Text("Switch");
    private UISwitch uiSwitch;
+   protected Image image = new Image();
    /**
     * Instantiates a new screen button.
     */
@@ -45,6 +47,9 @@ public class ScreenSwitch extends ScreenControl {
    public ScreenSwitch(UISwitch uiSwitch) {
       this();
       this.uiSwitch = uiSwitch;
+      if (uiSwitch.getOnImage() != null) {
+         setIcon(uiSwitch.getOnImage().getSrc());
+      }
    }
    /**
     * Initial the switch as a style box.
@@ -68,5 +73,11 @@ public class ScreenSwitch extends ScreenControl {
    @Override
    public void setName(String name) {
       center.setText(name);
+   }
+   
+   public void setIcon(String icon) {
+      image.setUrl(icon);
+      switchTable.removeStyleName("screen-btn-cont");
+      switchTable.setWidget(1, 1, image);
    }
 }

@@ -84,7 +84,8 @@ public class IphoneXmlParser {
       String iphoneXml = "";
       try {         
           Document doc = sb.build(new InputSource(new StringReader(xmlString)));
-          xpathParse(folder, doc, "//or:image[@src]");          
+          xpathParseImage(folder, doc, "//or:screen[@background]", "background");          
+          xpathParseImage(folder, doc, "//or:image[@src]", "src");          
          Format format = Format.getPrettyFormat();
          format.setIndent("  ");
          format.setEncoding("UTF-8");
@@ -101,14 +102,14 @@ public class IphoneXmlParser {
    }
 
    @SuppressWarnings("unchecked")
-   private static void xpathParse(File folder, Document doc, String xpathExpression) throws JDOMException, IOException {
+   private static void xpathParseImage(File folder, Document doc, String xpathExpression, String attrName) throws JDOMException, IOException {
       XPath xpath = XPath.newInstance(xpathExpression);
        xpath.addNamespace("or", "http://www.openremote.org");
        List<Element> elements = xpath.selectNodes(doc);
        for (Element element : elements) {
-          String iconVal = element.getAttributeValue("src");
+          String iconVal = element.getAttributeValue(attrName);
           String iconName = iconVal.substring(iconVal.lastIndexOf("/") + 1);
-          element.setAttribute("src", iconName);
+          element.setAttribute(attrName, iconName);
           File iphoneIconFile = new File(folder, iconName);
           if (iconVal.startsWith("http")) {
              downloadFile(iconVal, iphoneIconFile);

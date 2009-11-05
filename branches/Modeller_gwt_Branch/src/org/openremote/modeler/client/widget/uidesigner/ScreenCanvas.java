@@ -143,6 +143,7 @@ public class ScreenCanvas extends LayoutContainer {
                   selectedComponent.addStyleName("button-border");
                   PropertyPanel.getInstance().update(selectedComponent);
                   canvas.add(controlContainer);
+                  controlContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY() - absolutePosition.y);
                   new Resizable(controlContainer, Constants.RESIZABLE_HANDLES);
                   createDragSource(canvas, controlContainer);
                }
