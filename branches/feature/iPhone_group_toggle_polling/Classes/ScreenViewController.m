@@ -62,6 +62,13 @@
 }
 */
 
+- (void)startPolling {
+	[((ScreenView *)[self view]) startPolling];
+}
+- (void)stopPolling {
+	[((ScreenView *)[self view]) stopPolling];
+}
+
 
 
 @end

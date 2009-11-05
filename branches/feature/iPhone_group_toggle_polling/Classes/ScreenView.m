@@ -28,7 +28,7 @@
 #import "ServerDefinition.h"
 #import "ViewHelper.h"
 #import "DirectoryDefinition.h"
-#import "PollingHelper.h"
+
 
 @interface ScreenView (Private) 
 - (void)createLayout;
@@ -37,7 +37,7 @@
 
 @implementation ScreenView
 
-@synthesize screen;
+@synthesize screen, polling;
 
 //override the constractor
 - (id)initWithFrame:(CGRect)frame {
@@ -61,8 +61,20 @@
 	
 	if (screen.background && [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:screen.background]]) {
 		UIImage *background = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:screen.background]];
-		[self setBackgroundColor:[[UIColor alloc] initWithPatternImage:background]];
+		UIColor *color = [[UIColor alloc] initWithPatternImage:background];
+		[self setBackgroundColor:color];
+		[color release];
 		[background release];
+	}
+	
+	for (LayoutContainer *layout in screen.layouts) { 
+		LayoutContainerView *layoutView = [LayoutContainerView buildWithLayoutContainer:layout];
+		[self addSubview:layoutView];
+	}
+	
+	if ([[screen pollingComponentsIds] count] > 0 ) {
+		polling = [[PollingHelper alloc] initWithComponentIds:[[[screen pollingComponentsIds] componentsJoinedByString:@","] retain]];
+		//[polling requestCurrentStatusAndStartPolling];	
 	}
 
 }
@@ -71,20 +83,20 @@
 // Only in this time we can know this view's size
 - (void)layoutSubviews {
 	
-	for (LayoutContainer *layout in screen.layouts) { 
-		LayoutContainerView *layoutView = [LayoutContainerView buildWithLayoutContainer:layout];
-		[self addSubview:layoutView];
-	}
 	
-	if ([[screen pollingComponentsIds] count] > 0 ) {
-		PollingHelper *polling = [[PollingHelper alloc] initWithComponentIds:[[[screen pollingComponentsIds] componentsJoinedByString:@","] retain]];
-		[polling requestCurrentStatusAndStartPolling];	
-	}
 	
+}
+
+- (void)startPolling {
+	[polling requestCurrentStatusAndStartPolling];
+}
+- (void)stopPolling {
+	[polling cancelPolling];
 }
 
 - (void)dealloc {
 	[screen release];
+	[polling release];
 	[super dealloc];
 }
 

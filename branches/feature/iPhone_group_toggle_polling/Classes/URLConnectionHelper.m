@@ -24,7 +24,7 @@
 
 @implementation URLConnectionHelper 
 
-@synthesize delegate;
+@synthesize delegate, connection;
 
 #pragma mark constructor
 - (id)initWithURL:(NSURL *)url delegate:(id <URLConnectionHelperDelegate>)d  {
@@ -35,7 +35,7 @@
 		NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:15];
 		
 		//the initWithRequest constractor will invoke the request
-		[[[NSURLConnection alloc] initWithRequest:request delegate:self] autorelease];
+		connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
 		[request release];
 	}
 	return self;
@@ -46,9 +46,15 @@
 		[self setDelegate:d];
 		receivedData = [[NSMutableData alloc] init];
 		
-		[[[NSURLConnection alloc] initWithRequest:request delegate:self] autorelease];
+		connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
 	}
 	return self;
+}
+
+- (void)cancelConnection {
+	if (connection) {
+		[connection cancel];
+	}
 }
 
 
@@ -87,7 +93,7 @@
 
 - (void)dealloc {
 	[receivedData release];
-	
+	[connection release];
 	[super dealloc];
 }
 
