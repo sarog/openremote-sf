@@ -27,6 +27,7 @@ import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.TouchPanels;
 import org.openremote.modeler.client.widget.uidesigner.GroupPanel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
@@ -90,7 +91,7 @@ public class UIDesignerView extends TabItem implements View {
     * Auto save ui designer layout json.
     */
    public void autoSaveUiDesignerLayout() {
-      UtilsProxy.autoSaveUiDesignerLayout(groupPanel.getAllGroups(), getAllScreens(), new AsyncSuccessCallback<AutoSaveResponse>() {
+      UtilsProxy.autoSaveUiDesignerLayout(groupPanel.getAllGroups(), getAllScreens(), IDUtil.currentID(), new AsyncSuccessCallback<AutoSaveResponse>() {
          @Override
          public void onSuccess(AutoSaveResponse result) {
             if (result != null && result.isUpdated()) {

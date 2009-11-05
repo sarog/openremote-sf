@@ -80,8 +80,8 @@ public class UtilsProxy {
     * @param groups the activities
     * @param callback the callback
     */
-   public static void autoSaveUiDesignerLayout(List<Group> groups, List<UIScreen> screens, final AsyncSuccessCallback<AutoSaveResponse> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().autoSaveUiDesignerLayout(groups, screens, new AsyncSuccessCallback<AutoSaveResponse>() {
+   public static void autoSaveUiDesignerLayout(List<Group> groups, List<UIScreen> screens, long maxID, final AsyncSuccessCallback<AutoSaveResponse> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().autoSaveUiDesignerLayout(groups, screens, maxID, new AsyncSuccessCallback<AutoSaveResponse>() {
          @Override
          public void onSuccess(AutoSaveResponse result) {
             callback.onSuccess(result);
@@ -125,6 +125,19 @@ public class UtilsProxy {
          @Override
          public void onSuccess(List<UIScreen> Screens) {
             callback.onSuccess(Screens);
+         }
+      });
+   }
+   
+   /**
+    * Load layout component's max id from session.
+    * 
+    */
+   public static void loadMaxID(final AsyncSuccessCallback<Long> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().loadMaxID(new AsyncSuccessCallback<Long>() {
+         @Override
+         public void onSuccess(Long maxID) {
+            callback.onSuccess(maxID);
          }
       });
    }

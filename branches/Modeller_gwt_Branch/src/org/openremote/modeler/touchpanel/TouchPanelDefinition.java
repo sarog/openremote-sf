@@ -50,8 +50,8 @@ public class TouchPanelDefinition implements Serializable {
    /** The padding top. */
    private int paddingTop;
    
-   /** The grid. */
-   private TouchPanelGridDefinition grid;
+   /** The canvas define the area's width and height that user can operate. */
+   private TouchPanelCanvasDefinition canvas;
    
    /**
     * Instantiates a new panel definition.
@@ -167,13 +167,8 @@ public class TouchPanelDefinition implements Serializable {
       return paddingTop;
    }
    
-   /**
-    * Gets the grid.
-    * 
-    * @return the grid
-    */
-   public TouchPanelGridDefinition getGrid() {
-      return grid;
+   public TouchPanelCanvasDefinition getCanvas() {
+      return canvas;
    }
    
    /**
@@ -194,13 +189,8 @@ public class TouchPanelDefinition implements Serializable {
       this.paddingTop = paddingTop;
    }
    
-   /**
-    * Sets the grid.
-    * 
-    * @param grid the new grid
-    */
-   public void setGrid(TouchPanelGridDefinition grid) {
-      this.grid = grid;
+   public void setCanvas(TouchPanelCanvasDefinition canvas) {
+      this.canvas = canvas;
    }
    
    /* (non-Javadoc)
@@ -236,16 +226,16 @@ public class TouchPanelDefinition implements Serializable {
       if (bgImage != null ? !bgImage.equals(that.bgImage) : that.bgImage != null) {
          return false;
       }
-      if (grid == null && that.grid == null) {
+      if (canvas == null && that.canvas == null) {
          return true;
       }
-      if (grid == null || that.grid == null) {
+      if (canvas == null || that.canvas == null) {
          return false;
       }
-      if (grid.getWidth() != that.grid.getWidth()) {
+      if (canvas.getWidth() != that.canvas.getWidth()) {
          return false;
       }
-      if (grid.getHeight() != that.grid.getHeight()) {
+      if (canvas.getHeight() != that.canvas.getHeight()) {
          return false;
       }
       return true;
@@ -259,7 +249,7 @@ public class TouchPanelDefinition implements Serializable {
       int result = type != null ? type.hashCode() : 0;
       result = 31 * result + (name != null ? name.hashCode() : 0);
       result = 31 * result + (bgImage != null ? bgImage.hashCode() : 0);
-      result = 31 * result + (grid != null ? grid.hashCode() : 0);
+      result = 31 * result + (canvas != null ? canvas.hashCode() : 0);
       return result;
    }
 }

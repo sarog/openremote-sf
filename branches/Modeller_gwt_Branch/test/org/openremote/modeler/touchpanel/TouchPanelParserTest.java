@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openremote.modeler.service.TouchPanelParser;
-import org.openremote.modeler.touchpanel.TouchPanelGridDefinition;
+import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -61,7 +61,7 @@ public class TouchPanelParserTest {
     */
    private TouchPanelDefinition getCorrectPanelDefinition() {
       TouchPanelDefinition panelDefinition = new TouchPanelDefinition();
-      TouchPanelGridDefinition grid = new TouchPanelGridDefinition(196, 294);
+      TouchPanelCanvasDefinition grid = new TouchPanelCanvasDefinition(196, 294);
       panelDefinition.setType("iphone");
       panelDefinition.setName("iphone1");
       panelDefinition.setBgImage("iphone_background.jpg");
@@ -69,7 +69,7 @@ public class TouchPanelParserTest {
       panelDefinition.setHeight(500);
       panelDefinition.setPaddingLeft(35);
       panelDefinition.setPaddingTop(105);
-      panelDefinition.setGrid(grid);
+      panelDefinition.setCanvas(grid);
       return panelDefinition;
    }
 }

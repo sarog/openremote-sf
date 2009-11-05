@@ -48,6 +48,8 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    
    /** The Constant for store screen list in session. */
    private static final String UI_DESIGNER_LAYOUT_SCREEN_KEY = "screenList";
+   
+   private static final String UI_DESIGNER_LAYOUT_MAXID = "maxID";
   
    /**
     * {@inheritDoc}
@@ -111,7 +113,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
     * {@inheritDoc}
     */
    @SuppressWarnings("unchecked")
-   public AutoSaveResponse autoSaveUiDesignerLayout(List<Group> groups, List<UIScreen> screens) {
+   public AutoSaveResponse autoSaveUiDesignerLayout(List<Group> groups, List<UIScreen> screens, long maxID) {
       AutoSaveResponse autoSaveResponse = new AutoSaveResponse();
       List<Group> oldGroups = new ArrayList<Group>();
       if(getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_GROUP_KEY) != null){
@@ -120,6 +122,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       if (groups.size() > 0) {
          if (!resourceService.getGroupsJson(groups).equals(resourceService.getGroupsJson(oldGroups))) {
             getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_GROUP_KEY, groups);
+            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
             autoSaveResponse.setUpdated(true);
          }
       }
@@ -131,6 +134,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       if (screens.size() > 0) {
          if (!resourceService.getScreensJson(screens).equals(resourceService.getScreensJson(oldScreens))) {
             getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_SCREEN_KEY, screens);
+            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
             autoSaveResponse.setUpdated(true);
          }
       }
@@ -149,6 +153,12 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    public List<UIScreen> loadScreensFromSession() {
       Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_SCREEN_KEY);
       return (obj == null) ? new ArrayList<UIScreen>() : (List<UIScreen>)obj;
+   }
+
+   @Override
+   public Long loadMaxID() {
+      Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_MAXID);
+      return (obj == null) ? 0 : (Long)obj;
    }
 
 }

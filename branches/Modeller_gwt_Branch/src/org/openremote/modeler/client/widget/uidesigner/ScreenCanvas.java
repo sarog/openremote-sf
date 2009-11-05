@@ -31,7 +31,7 @@ import org.openremote.modeler.domain.UIScreen;
 import org.openremote.modeler.domain.control.UIButton;
 import org.openremote.modeler.domain.control.UIControl;
 import org.openremote.modeler.domain.control.UISwitch;
-import org.openremote.modeler.touchpanel.TouchPanelGridDefinition;
+import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -62,8 +62,8 @@ public class ScreenCanvas extends LayoutContainer {
     * @param screen the screen
     */
    public ScreenCanvas(UIScreen screen) {
-      TouchPanelGridDefinition touchPanelGridDefinition = screen.getTouchPanelDefinition().getGrid();
-      setSize(touchPanelGridDefinition.getWidth(), touchPanelGridDefinition.getHeight());
+      TouchPanelCanvasDefinition canvas = screen.getTouchPanelDefinition().getCanvas();
+      setSize(canvas.getWidth(), canvas.getHeight());
       setBorders(true);
       setStyleAttribute("position", "relative");
       if (screen.isAbsoluteLayout()) {
@@ -82,8 +82,6 @@ public class ScreenCanvas extends LayoutContainer {
          }
          addDropTargetDNDListener(screen);
       } else {
-         screen.getGrid().setWidth(touchPanelGridDefinition.getWidth());
-         screen.getGrid().setHeight(touchPanelGridDefinition.getHeight());
          LayoutContainer gridLayoutContainer = new GridLayoutContainer(screen);
          add(gridLayoutContainer);
       }
@@ -227,13 +225,13 @@ public class ScreenCanvas extends LayoutContainer {
          UIButton uiButton = new UIButton(IDUtil.nextID());
          absolute.setUiControl(uiButton);
          controlContainer = createAbsoluteLayoutContainer(absolute, new ScreenButton(uiButton));
-         controlContainer.setSize(50, 30);
+         controlContainer.setSize(50, 50);   // set the button's default size after drag from widget tree.
          
       } else if(uiControl instanceof UISwitch) {
          UISwitch uiSwitch = new UISwitch(IDUtil.nextID());
          absolute.setUiControl(uiSwitch);
          controlContainer = createAbsoluteLayoutContainer(absolute, new ScreenSwitch(uiSwitch));
-         controlContainer.setSize(50, 30);
+         controlContainer.setSize(50, 50);   // set the switch's default size after drag from widget tree.
       }
       screen.addAbsolute(absolute);
       return controlContainer;

@@ -65,9 +65,15 @@ public interface UtilsRPCServiceAsync {
     * @param groups the activities
     * @param asyncSuccessCallback the async success callback
     */
-   void autoSaveUiDesignerLayout(List<Group> groups, List<UIScreen> screens, AsyncCallback<AutoSaveResponse> asyncSuccessCallback);
+   void autoSaveUiDesignerLayout(List<Group> groups, List<UIScreen> screens, long maxID, AsyncCallback<AutoSaveResponse> asyncSuccessCallback);
 
    void loadGroupsFromSession(AsyncCallback<List<Group>> callback);
    
    void loadScreensFromSession(AsyncCallback<List<UIScreen>> callback);
+
+   /**
+    * Load layout component's max id from session.
+    * 
+    */
+   void loadMaxID(AsyncCallback<Long> callback);
 }
