@@ -19,10 +19,13 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import java.util.List;
+
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.domain.UIScreen;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
+import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
@@ -52,6 +55,7 @@ public class ScreenTabItem extends TabItem {
       setText(screen.getName());
       setClosable(true);
       setLayout(new FlowLayout());
+      setStyleAttribute("overflowY", "auto");
       addScreenContainer();
    }
 

@@ -62,6 +62,7 @@ public class SwitchPropertyForm extends PropertyForm {
                   } else {
                      uiSwitch.setOnImage(new UImage(imageOnUrl));
                   }
+                  screenSwitch.setIcon(imageOnUrl);
                }
             });
          }
