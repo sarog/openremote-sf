@@ -51,4 +51,11 @@ public class IDUtil {
    public static long currentID() {
       return id;
    }
+   
+   /**
+    * Set the current id after refresh page.
+    */
+   public static void setCurrentID(long maxID) {
+      id = maxID;
+   }
 }

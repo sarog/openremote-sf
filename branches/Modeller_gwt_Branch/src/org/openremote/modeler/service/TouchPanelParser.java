@@ -43,7 +43,7 @@ import org.dom4j.io.SAXValidator;
 import org.dom4j.io.XMLWriter;
 import org.dom4j.util.XMLErrorHandler;
 import org.openremote.modeler.exception.XmlParserException;
-import org.openremote.modeler.touchpanel.TouchPanelGridDefinition;
+import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 import org.xml.sax.SAXException;
 
@@ -86,8 +86,7 @@ public class TouchPanelParser {
    /** The Constant PADDINGTOP_ATTR_NAME. */
    private static final String PADDINGTOP_ATTR_NAME = "paddingTop";
    
-   /** The Constant GRID_ELEMENT_NAME. */
-   private static final String GRID_ELEMENT_NAME = "grid";
+   private static final String CANVAS_ELEMENT_NAME = "canvas";
    
    /** The xml path. */
    private String xmlPath;
@@ -141,7 +140,7 @@ public class TouchPanelParser {
          panelDefinition.setPaddingLeft(Integer.valueOf(panelElement.attributeValue(PADDINGLEFT_ATTR_NAME)));
          panelDefinition.setPaddingTop(Integer.valueOf(panelElement.attributeValue(PADDINGTOP_ATTR_NAME)));
          
-         panelDefinition.setGrid(parseGrid(panelElement));
+         panelDefinition.setCanvas(parseGrid(panelElement));
          panelList.add(panelDefinition);
          
          panelMap.put(type, panelList);
@@ -155,9 +154,9 @@ public class TouchPanelParser {
     * 
     * @return the grid definition
     */
-   private TouchPanelGridDefinition parseGrid(Element panelElement) {
-      Element gridElement = panelElement.element(GRID_ELEMENT_NAME);
-      TouchPanelGridDefinition grid = new TouchPanelGridDefinition(Integer.valueOf(gridElement.attributeValue(WIDTH_ATTR_NAME)), 
+   private TouchPanelCanvasDefinition parseGrid(Element panelElement) {
+      Element gridElement = panelElement.element(CANVAS_ELEMENT_NAME);
+      TouchPanelCanvasDefinition grid = new TouchPanelCanvasDefinition(Integer.valueOf(gridElement.attributeValue(WIDTH_ATTR_NAME)), 
             Integer.valueOf(gridElement.attributeValue(HEIGHT_ATTR_NAME)));
       return grid;
    }

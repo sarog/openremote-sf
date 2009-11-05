@@ -98,12 +98,10 @@ public class GridLayoutContainer extends LayoutContainer {
     * @param grid the grid
     */
    private void createGrid(final Grid grid) {
-//      int gridWidth = grid.getWidth();
-//      int gridHeight = grid.getHeight();
-      int gridWidth = panelDefinition.getGrid().getWidth(); // temp use.
-      int gridHeight = panelDefinition.getGrid().getHeight();
+      int gridWidth = grid.getWidth();
+      int gridHeight = grid.getHeight();
       setSize(gridWidth, gridHeight);
-      setPosition(0, 0);
+      setPosition(grid.getLeft(), grid.getTop());
       setBorders(false);
       FlexTable screenTable = new FlexTable();
       screenTable.setCellPadding(0);
@@ -175,9 +173,6 @@ public class GridLayoutContainer extends LayoutContainer {
             cellContainer.setPosition(cellWidth * cell.getPosX() + cell.getPosX() + 1, cellHeight * cell.getPosY()
                   + cell.getPosY() + 1);
             cellContainer.setName(cell.getUiControl().getName());
-//            if (button.getIcon() != null && !"".equals(button.getIcon())) {
-//               screenBtn.setIcon(button.getIcon());
-//            }
             add(cellContainer);
             cellContainer.fillArea(btnInArea);
             createDragSource(cellContainer);

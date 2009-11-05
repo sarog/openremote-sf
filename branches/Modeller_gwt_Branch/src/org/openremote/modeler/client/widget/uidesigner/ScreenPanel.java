@@ -35,8 +35,8 @@ import org.openremote.modeler.client.proxy.ScreenBeanModelProxy;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.BeanModelTable;
+import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
-import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.UIScreen;
 import org.openremote.modeler.selenium.DebugId;
 
@@ -125,6 +125,15 @@ public class ScreenPanel extends ContentPanel {
    }
    
    private void initTreeWithAutoSavedScreens(final ScreenTab screenTab) {
+      UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>(){
+         @Override
+         public void onSuccess(Long maxID) {
+            if (maxID > 0) {              // set the layout component's max id after refresh page.
+               IDUtil.setCurrentID(maxID.longValue());
+            }
+         }
+         
+      });
       UtilsProxy.loadScreensFromSession(new AsyncSuccessCallback<List<UIScreen>>(){
          @Override
          public void onSuccess(List<UIScreen> screens) {
@@ -140,7 +149,7 @@ public class ScreenPanel extends ContentPanel {
                   public void modelChanged(ChangeEvent event) {
                      if (event.getType() == BeanModelTable.ADD) {
                         BeanModel beanModel = (BeanModel) event.getItem();
-                        if (beanModel.getBean() instanceof Screen) {
+                        if (beanModel.getBean() instanceof UIScreen) {
                            ScreenTabItem screenTabItem = new ScreenTabItem((UIScreen) beanModel.getBean());
                            screenTab.add(screenTabItem);
                         }

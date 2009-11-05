@@ -92,6 +92,10 @@ public class ScreenBeanModelProxy {
       if(ScreenWindow.SCREEN_GRIDRADIO.equals(layout)) {
          screen.setAbsoluteLayout(false);
          Grid grid = new Grid(Integer.valueOf(map.get("gridRow")), Integer.valueOf(map.get("gridColumn")));
+         grid.setLeft(Integer.valueOf(map.get("posLeft")));
+         grid.setTop(Integer.valueOf(map.get("posTop")));
+         grid.setWidth(Integer.valueOf(map.get("width")));
+         grid.setHeight(Integer.valueOf(map.get("height")));
          screen.setGrid(grid);
       } else if(ScreenWindow.SCREEN_ABSOLUTERADIO.equals(layout)) {
          screen.setAbsoluteLayout(true);

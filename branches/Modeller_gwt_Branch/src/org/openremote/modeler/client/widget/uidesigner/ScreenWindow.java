@@ -34,6 +34,7 @@ import org.openremote.modeler.domain.Grid;
 import org.openremote.modeler.domain.UIScreen;
 import org.openremote.modeler.selenium.DebugId;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
+import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -133,6 +134,7 @@ public class ScreenWindow extends FormWindow {
       ComboBox<ModelData> panel = new ComboBox<ModelData>();
       ListStore<ModelData> store = new ListStore<ModelData>();
       panel.ensureDebugId(DebugId.SCREEN_PANEL_FIELD);
+      panel.setId(SCREEN_PANEL);
       panel.setStore(store);
       panel.setFieldLabel("Panel");
       panel.setName(SCREEN_PANEL);
@@ -218,34 +220,83 @@ public class ScreenWindow extends FormWindow {
       }
    }
 
+   @SuppressWarnings("unchecked")
    private void addGridAttrs() {
       FieldSet gridAttrSet = new FieldSet();
       FormLayout layout = new FormLayout();
       layout.setLabelWidth(80);
       gridAttrSet.setLayout(layout);
       gridAttrSet.setHeading("Grid attributes");
-
+      
+      /*
+       * temp for set the width and height of gird.
+       */
+      ComboBoxDataModel<TouchPanelDefinition> panelData = (ComboBoxDataModel<TouchPanelDefinition>) ((ComboBox<ModelData>)form.getItemByItemId(SCREEN_PANEL)).getValue();
+      TouchPanelCanvasDefinition canvas = panelData.getData().getCanvas();
+      
       TextField<Integer> gridRowCountField = new TextField<Integer>();
       gridRowCountField.ensureDebugId(DebugId.SCREEN_GRID_ROW_FIELD);
       gridRowCountField.setName("gridRow");
       gridRowCountField.setFieldLabel("Row Count");
       gridRowCountField.setAllowBlank(false);
-      gridRowCountField.setValue(6);   // temp set 6 rows.
+      gridRowCountField.setRegex("^\\d+$");
+      gridRowCountField.setValue(6);              // temp set 6 rows.
       
       TextField<Integer> gridColumnCountField = new TextField<Integer>();
       gridColumnCountField.ensureDebugId(DebugId.SCREEN_GRID_COLUMN_FIELD);
       gridColumnCountField.setName("gridColumn");
       gridColumnCountField.setFieldLabel("Col Count");
       gridColumnCountField.setAllowBlank(false);
-      gridColumnCountField.setValue(4);   //temp set 4 columns.
+      gridColumnCountField.setRegex("^\\d+$");
+      gridColumnCountField.setValue(4);           //temp set 4 columns.
+      
+      TextField<Integer> posLeftField = new TextField<Integer>();
+      posLeftField.setName("posLeft");
+      posLeftField.setFieldLabel("Left");
+      posLeftField.setAllowBlank(false);
+      posLeftField.setRegex("^\\d+$");
+      posLeftField.getMessages().setRegexText("The left must be a positive integer");
+      posLeftField.setValue(0);                    // temp set left 0
+      
+      TextField<Integer> posTopField = new TextField<Integer>();
+      posTopField.setName("posTop");
+      posTopField.setFieldLabel("Top");
+      posTopField.setAllowBlank(false);
+      posTopField.setRegex("^\\d+$");
+      posTopField.getMessages().setRegexText("The top must be a positive integer");
+      posTopField.setValue(0);                     // temp set top 0
+      
+      TextField<Integer> widthField = new TextField<Integer>();
+      widthField.setName("width");
+      widthField.setFieldLabel("Width");
+      widthField.setAllowBlank(false);
+      widthField.setRegex("^\\d+$");
+      widthField.getMessages().setRegexText("The width must be a positive integer");
+      widthField.setValue(canvas.getWidth());       // temp set width full fill the canvas
+      
+      TextField<Integer> heightField = new TextField<Integer>();
+      heightField.setName("height");
+      heightField.setFieldLabel("Height");
+      heightField.setAllowBlank(false);
+      heightField.setRegex("^\\d+$");
+      heightField.getMessages().setRegexText("The height must be a positive integer");
+      heightField.setValue(canvas.getHeight());      // temp set height full fill the canvas
       
       if (screen != null) {
          Grid grid = screen.getGrid();
          gridRowCountField.setValue(grid.getRowCount());
          gridColumnCountField.setValue(grid.getColumnCount());
+         posLeftField.setValue(grid.getLeft());
+         posTopField.setValue(grid.getTop());
+         widthField.setValue(grid.getWidth());
+         heightField.setValue(grid.getHeight());
       }
       gridAttrSet.add(gridRowCountField);
       gridAttrSet.add(gridColumnCountField);
+      gridAttrSet.add(posLeftField);
+      gridAttrSet.add(posTopField);
+      gridAttrSet.add(widthField);
+      gridAttrSet.add(heightField);
       form.add(gridAttrSet);
       form.layout();
    }

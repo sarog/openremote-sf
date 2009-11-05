@@ -24,7 +24,7 @@ import java.io.Serializable;
 /**
  * The Class GridDefinition defined the touch panel inner grid.
  */
-public class TouchPanelGridDefinition implements Serializable {
+public class TouchPanelCanvasDefinition implements Serializable {
 
    /** The Constant serialVersionUID. */
    private static final long serialVersionUID = -1549498650675835443L;
@@ -38,7 +38,7 @@ public class TouchPanelGridDefinition implements Serializable {
    /**
     * Instantiates a new touch panel grid definition.
     */
-   public TouchPanelGridDefinition() {
+   public TouchPanelCanvasDefinition() {
    }
    /**
     * Instantiates a new grid definition.
@@ -46,7 +46,7 @@ public class TouchPanelGridDefinition implements Serializable {
     * @param width the width
     * @param height the height
     */
-   public TouchPanelGridDefinition(int width, int height) {
+   public TouchPanelCanvasDefinition(int width, int height) {
       this.width = width;
       this.height = height;
    }
@@ -69,24 +69,6 @@ public class TouchPanelGridDefinition implements Serializable {
       return height;
    }
 
-   /**
-    * Sets the width.
-    * 
-    * @param width the new width
-    */
-   public void setWidth(int width) {
-      this.width = width;
-   }
-
-   /**
-    * Sets the height.
-    * 
-    * @param height the new height
-    */
-   public void setHeight(int height) {
-      this.height = height;
-   }
-   
    @Override
    public boolean equals(Object o) {
       if (this == o) {
@@ -95,7 +77,7 @@ public class TouchPanelGridDefinition implements Serializable {
       if (o == null || getClass() != o.getClass()) {
          return false;
       }
-      TouchPanelGridDefinition that = (TouchPanelGridDefinition) o;
+      TouchPanelCanvasDefinition that = (TouchPanelCanvasDefinition) o;
       if (width != that.width) {
          return false;
       }

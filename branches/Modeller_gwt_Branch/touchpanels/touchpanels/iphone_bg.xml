@@ -2,6 +2,6 @@
 <openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://www.openremote.org touchpanel_bg.xsd">
    <panel name="iphone" type="iphone" bgImage="resources/images/iphone_background.png" width="414" height="770" paddingLeft="47" paddingTop="159">
-      <grid width="320" height="460" />
+      <canvas width="320" height="460" />
    </panel>
 </openremote>
