@@ -30,7 +30,7 @@
 	NSString *pollingStatusIds;
 	BOOL isPolling;
 	BOOL isError;
-
+	URLConnectionHelper *connection;
 }
 
 - (id) initWithComponentIds:(NSString *)ids;
@@ -44,5 +44,7 @@
 @property(nonatomic,readonly) BOOL isPolling;
 @property(nonatomic,readonly) BOOL isError;
 @property(nonatomic,readonly) NSString *pollingStatusIds;
+@property(nonatomic,readonly) URLConnectionHelper *connection;
+
 
 @end

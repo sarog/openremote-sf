@@ -26,7 +26,7 @@
 
 @implementation PollingHelper
 
-@synthesize isPolling, pollingStatusIds, isError;
+@synthesize isPolling, pollingStatusIds, isError, connection;
 
 - (id) initWithComponentIds:(NSString *)ids {
 	if (self = [super init]) {
@@ -41,7 +41,7 @@
 
 
 - (void)requestCurrentStatusAndStartPolling {
-	[self cancelPolling];
+	isPolling = YES;
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition statusRESTUrl]];
 	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%@",pollingStatusIds]];
 	NSLog([location stringByAppendingFormat:@"/%@",pollingStatusIds]);
@@ -50,16 +50,15 @@
 	[request setURL:url];
 	[request setHTTPMethod:@"POST"];
 	
-	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
+	connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
 	
 	[location release];
 	[url	 release];
 	[request release];
-	[connection autorelease];	
+	//[connection autorelease];	
 }
 
 - (void)doPolling {
-	isPolling = YES;
 	NSString *deviceId = [[UIDevice currentDevice] uniqueIdentifier];
 	//NSString *deviceId = @"96e79218965eb72c92a549dd5a330112";
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition pollingRESTUrl]];
@@ -70,17 +69,19 @@
 	[request setURL:url];
 	[request setHTTPMethod:@"POST"];
 	
-	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
+	connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
 	
 	[location release];
 	[url	 release];
 	[request release];
-	[connection autorelease];	
+	//[connection autorelease];	
 }
 
 - (void)cancelPolling {
 	isPolling = NO;
-	
+	if (connection) {
+		[connection cancelConnection];
+	}
 }
 
 
@@ -100,9 +101,11 @@
 				break;
 			case 504://polling timeout, need to refresh
 				isError = NO;
-				isPolling = YES;
+
 				
-				[self doPolling];
+				if (isPolling == YES) {
+					[self doPolling];
+				}
 				
 				return;
 		} 
@@ -114,9 +117,10 @@
 		isPolling = NO;
 	} else {
 		isError = NO;
-		isPolling = YES;
-
-		[self doPolling];
+		if (isPolling == YES) {
+			[self doPolling];
+		}
+		
 
 	} 
 	
@@ -154,6 +158,7 @@
 }
 
 - (void)dealloc {
+	[connection release];
 	[pollingStatusIds release];
 	[super dealloc];
 }

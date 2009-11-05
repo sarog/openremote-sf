@@ -24,12 +24,18 @@
 #import "Screen.h"
 #import "URLConnectionHelper.h"
 #import "ControlView.h"
+#import "PollingHelper.h"
 
 @interface ScreenView : UIView {
-	Screen *screen;	
+	Screen *screen;
+	PollingHelper *polling;
 }
 
+- (void)startPolling;
+- (void)stopPolling;
+
 @property(nonatomic,retain) Screen *screen;
+@property(nonatomic,retain) PollingHelper *polling;
 
 
 @end

@@ -21,6 +21,7 @@
 
 
 #import "PaginationController.h"
+#import "ScreenViewController.h"
 
 @interface PaginationController (Private)
 
@@ -50,7 +51,7 @@
 	
 	selectedIndex = 0;
 	
-	[self updateView];
+	//[self updateView];
 }
 
 - (void)updateView {
@@ -80,6 +81,16 @@
 	CGRect frame = scrollView.bounds;
 	frame.origin.x = frame.size.width * page;
 	[controller.view setFrame:frame];
+	
+	if (page == selectedIndex) {
+		[((ScreenViewController *)controller) startPolling];
+		NSLog(@"start polling %d",page);
+	} else {
+		[((ScreenViewController *)controller) stopPolling];
+		NSLog(@"stop polling %d",page);
+	}
+
+	
 }
 
 - (void)loadView {

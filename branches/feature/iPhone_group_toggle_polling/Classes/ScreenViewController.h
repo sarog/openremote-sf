@@ -27,6 +27,9 @@
 	Screen *screen;
 }
 
+- (void)startPolling;
+- (void)stopPolling;
+
 @property(nonatomic,retain) Screen *screen;
 
 @end
