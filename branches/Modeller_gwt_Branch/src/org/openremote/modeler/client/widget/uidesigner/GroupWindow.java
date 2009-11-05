@@ -103,6 +103,7 @@ public class GroupWindow extends Dialog {
                   group.setOid(IDUtil.nextID());
                } else {
                   group = groupModel.getBean();
+                  Group.increaseDefaultNameIndex();
                }
                updateGroupAttrs(group);
                groupModel = group.getBeanModel();

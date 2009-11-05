@@ -236,38 +236,6 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * {@inheritDoc}
     */
-   @SuppressWarnings("unchecked")
-   public MultipartFile getMultipartFileFromRequest(HttpServletRequest request, String fileFieldName) {
-      MultipartFile multipartFile = null;
-      FileItemFactory factory = new DiskFileItemFactory();
-      ServletFileUpload upload = new ServletFileUpload(factory);
-      List items = null;
-      try {
-         items = upload.parseRequest(request);
-      } catch (FileUploadException e) {
-         LOGGER.error("get InputStream from httpServletRequest error.", e);
-         e.printStackTrace();
-      }
-      if (items == null) {
-         return null;
-      }
-      Iterator it = items.iterator();
-      FileItem fileItem = null;
-      while (it.hasNext()) {
-         fileItem = (FileItem) it.next();
-         if (!fileItem.isFormField() && fileFieldName != null && fileFieldName.equals(fileItem.getFieldName())) {
-            break;
-         }
-      }
-      if (fileItem != null) {
-         multipartFile = new CommonsMultipartFile(fileItem);
-      }
-      return multipartFile;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
    public String getDotImportFileForRender(String sessionId, InputStream inputStream) {
       File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
       if (tmpDir.exists() && tmpDir.isDirectory()) {

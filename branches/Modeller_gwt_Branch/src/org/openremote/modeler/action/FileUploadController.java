@@ -29,7 +29,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.openremote.modeler.service.ResourceService;
+import org.openremote.modeler.utils.MultipartFileUtil;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -57,7 +59,7 @@ public class FileUploadController extends MultiActionController {
    public ModelAndView importFile(HttpServletRequest request, HttpServletResponse response) {
       try {     
          String importJson = resourceService.getDotImportFileForRender(request.getSession().getId(), 
-               resourceService.getMultipartFileFromRequest(request, "file").getInputStream());
+               MultipartFileUtil.getMultipartFileFromRequest(request, "file").getInputStream());
          response.getWriter().write(importJson);
       } catch (Exception e) {
          e.printStackTrace();
@@ -96,7 +98,7 @@ public class FileUploadController extends MultiActionController {
       }
 
       long maxImageSize = 1024 * 1024;
-      MultipartFile multipartFile = resourceService.getMultipartFileFromRequest(request, uploadFieldName);
+      MultipartFile multipartFile = MultipartFileUtil.getMultipartFileFromRequest(request, uploadFieldName);
       if (multipartFile.getSize() == 0 || multipartFile.getSize() > maxImageSize) {
          return;
       }

@@ -40,7 +40,7 @@ public class ScreenButton extends ScreenControl {
    /** The btnTable center image. */
    protected Image image = new Image();
 
-   private UIButton uiButton;
+   private UIButton uiButton = new UIButton();
    /**
     * Instantiates a new screen button.
     */
@@ -84,11 +84,12 @@ public class ScreenButton extends ScreenControl {
    
    @Override
    public void setName(String name) {
-      center.setText(name);
+      uiButton.setName(name);
+      adjustTextLength();
    }
    @Override
    public String getName() {
-      return center.getText();
+      return uiButton.getName();
    }
    
    /**
@@ -104,5 +105,27 @@ public class ScreenButton extends ScreenControl {
    @Override
    public FormPanel buildPropertiesForm() {
       return new ButtonPropertyForm(this, uiButton);
+   }
+   
+   @Override
+   public void setSize(int width, int height) {
+      super.setSize(width, height);
+      adjustTextLength();
+   }
+
+   /**
+    * Adjust text length.
+    * 
+    * @param length the length
+    */
+   private void adjustTextLength() {
+      if (center.isVisible()) {
+         int ajustLength = (getWidth() - 8) / 8;
+         if (ajustLength < uiButton.getName().length()) {
+            center.setText(uiButton.getName().substring(0, ajustLength) + "...");
+         } else {
+            center.setText(uiButton.getName());
+         }
+      }
    }
 }

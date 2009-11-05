@@ -109,10 +109,15 @@ public class Group extends BusinessEntity {
     */
    @Transient
    public static String getNewDefaultName() {
-      return "group" + defaultNameIndex++;
+      return "group" + defaultNameIndex;
    }
    
    public void clearScreenRefs() {
       screenRefs.clear();
+   }
+   
+   @Transient
+   public static void increaseDefaultNameIndex() {
+      defaultNameIndex++;
    }
 }

@@ -21,12 +21,10 @@ package org.openremote.modeler.client.widget.uidesigner;
 
 import java.util.List;
 
-import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.widget.control.ScreenButton;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
@@ -39,8 +37,6 @@ import org.openremote.modeler.domain.control.UIButton;
 import org.openremote.modeler.domain.control.UImage;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.data.ChangeEvent;
-import com.extjs.gxt.ui.client.data.ChangeListener;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -74,7 +70,6 @@ public class ButtonPropertyForm extends PropertyForm {
          @Override
          public void handleEvent(BaseEvent be) {
             screenButton.setName(name.getValue());
-            uiButton.setName(name.getValue());
          }
       });
       

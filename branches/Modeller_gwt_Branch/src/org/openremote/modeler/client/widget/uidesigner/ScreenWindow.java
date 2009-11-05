@@ -157,7 +157,7 @@ public class ScreenWindow extends FormWindow {
       background.ensureDebugId(DebugId.SCREEN_BG_FIELD);
       background.setFieldLabel("Background");
       background.setName(SCREEN_BACKGROUND);
-      background.setRegex(".+?\\.(png|gif|jpg)");
+      background.setRegex(".+?\\.(png|gif|jpg|PNG|GIF|JPG)");
       background.getMessages().setRegexText("Please select a gif, jpg or png type image.");
       background.setStyleAttribute("overflow", "hidden");
       
@@ -298,6 +298,7 @@ public class ScreenWindow extends FormWindow {
             BeanModel screenBeanModel = null;
             if (screen == null) {
                screenBeanModel = ScreenBeanModelProxy.createScreen(attrMap, panelData.getData());
+               UIScreen.increaseDefaultNameIndex();
             } else {
                screenBeanModel = ScreenBeanModelProxy.updateScreen(screen, attrMap);
             }

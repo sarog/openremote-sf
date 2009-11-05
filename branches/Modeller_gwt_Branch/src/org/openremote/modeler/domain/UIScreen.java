@@ -196,6 +196,11 @@ public class UIScreen extends BusinessEntity {
     */
    @Transient
    public static String getNewDefaultName() {
-      return "screen" + defaultNameIndex++;
+      return "screen" + defaultNameIndex;
+   }
+   
+   @Transient
+   public static void increaseDefaultNameIndex() {
+      defaultNameIndex++;
    }
 }
