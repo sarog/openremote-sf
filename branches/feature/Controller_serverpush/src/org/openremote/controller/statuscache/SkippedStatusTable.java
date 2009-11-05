@@ -97,7 +97,7 @@ public class SkippedStatusTable {
                for (Integer tmpControlId : record.getPollingControlIDs()) {
                   if (statusChangedControlID.equals(tmpControlId)) {
                      record.getStatusChangedIDs().add(statusChangedControlID);
-                     record.notify();
+                     record.notifyAll();
                      break;
                   }
                }
