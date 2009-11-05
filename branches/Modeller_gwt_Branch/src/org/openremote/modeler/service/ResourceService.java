@@ -49,17 +49,6 @@ public interface ResourceService {
     */
    String downloadZipResource(long maxId, String sessionId, List<Group> groups, List<UIScreen> screens);
    
-   
-   /**
-    * Gets the multipart file from request.
-    * 
-    * @param request the request
-    * @param fileFieldName the file field name
-    * 
-    * @return the multipart file from request
-    */
-   MultipartFile getMultipartFileFromRequest(HttpServletRequest request, String fileFieldName);
-
    /**
     * Gets the irb file from zip.
     * 
