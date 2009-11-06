@@ -62,8 +62,4 @@ public class AbsoluteLayoutContainer extends LayoutContainer {
       super.setPosition(left, top);
       absolute.setPosition(left, top);
    }
-   
-   public void setName(String name) {
-      screenControl.setName(name);
-   }
 }
