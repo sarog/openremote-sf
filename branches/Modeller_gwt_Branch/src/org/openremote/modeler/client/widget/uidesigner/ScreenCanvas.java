@@ -73,7 +73,6 @@ public class ScreenCanvas extends LayoutContainer {
                AbsoluteLayoutContainer controlContainer = createAbsoluteLayoutContainer(absolute, ScreenControl.build(absolute.getUiControl()));
                controlContainer.setSize(absolute.getWidth(), absolute.getHeight());
                controlContainer.setPosition(absolute.getLeft(), absolute.getTop());
-               controlContainer.setName(absolute.getUiControl().getName());
                this.add(controlContainer);
                new Resizable(controlContainer, Constants.RESIZABLE_HANDLES);
                createDragSource(this, controlContainer);

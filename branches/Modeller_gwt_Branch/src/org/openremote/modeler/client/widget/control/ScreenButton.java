@@ -67,6 +67,8 @@ public class ScreenButton extends ScreenControl {
    public ScreenButton(UIButton uiButton) {
       this();
       this.uiButton = uiButton;
+      center.setText(uiButton.getName());
+      adjustTextLength();
       if (uiButton.getImage() != null) {
          setIcon(uiButton.getImage().getSrc());
       }
@@ -120,9 +122,9 @@ public class ScreenButton extends ScreenControl {
     */
    private void adjustTextLength() {
       if (center.isVisible()) {
-         int ajustLength = (getWidth() - 8) / 8;
+         int ajustLength = (getWidth() - 6) / 7;
          if (ajustLength < uiButton.getName().length()) {
-            center.setText(uiButton.getName().substring(0, ajustLength) + "...");
+            center.setText(uiButton.getName().substring(0, ajustLength) + "..");
          } else {
             center.setText(uiButton.getName());
          }
