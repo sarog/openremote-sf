@@ -45,9 +45,6 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
    /** The connection. */
    public static Connection connection;
    
-   /**
-    * TIME_OUT table instance.
-    */
    private SkippedStatusTable skippedStatusTable = (SkippedStatusTable) SpringContext.getInstance().getBean("skippedStatusTable");
    private StatusCacheService statusCacheService = (StatusCacheService) SpringContext.getInstance().getBean("statusCacheService");
 
