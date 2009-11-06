@@ -152,6 +152,7 @@ public class ScreenPanel extends ContentPanel {
                         if (beanModel.getBean() instanceof UIScreen) {
                            ScreenTabItem screenTabItem = new ScreenTabItem((UIScreen) beanModel.getBean());
                            screenTab.add(screenTabItem);
+                           screenTab.setSelection(screenTabItem);
                         }
                      }
                   }
