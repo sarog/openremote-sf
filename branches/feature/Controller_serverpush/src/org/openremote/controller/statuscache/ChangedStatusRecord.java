@@ -31,7 +31,7 @@ import java.util.Set;
  * 
  * @author Handy.Wang 2009-10-23
  */
-public class SkippedStatusRecord {
+public class ChangedStatusRecord {
    
    private String deviceID;
 
@@ -39,21 +39,21 @@ public class SkippedStatusRecord {
 
    private Set<Integer> statusChangedIDs;
 
-   public SkippedStatusRecord() {
+   public ChangedStatusRecord() {
       super();
       deviceID = "";
       pollingControlIDs = new ArrayList<Integer>();
       statusChangedIDs = new HashSet<Integer>();
    }
 
-   public SkippedStatusRecord(String deviceID, List<Integer> pollingControlIDs) {
+   public ChangedStatusRecord(String deviceID, List<Integer> pollingControlIDs) {
       super();
       this.deviceID = deviceID;
       this.pollingControlIDs = pollingControlIDs;
       this.statusChangedIDs = new HashSet<Integer>();
    }
    
-   public SkippedStatusRecord(String deviceID, Integer[] pollingControlIDs) {
+   public ChangedStatusRecord(String deviceID, Integer[] pollingControlIDs) {
       super();
       this.deviceID = deviceID;
       this.pollingControlIDs = new ArrayList<Integer>();
@@ -61,7 +61,7 @@ public class SkippedStatusRecord {
       this.statusChangedIDs = new HashSet<Integer>();
    }
 
-   public SkippedStatusRecord(String deviceID, String[] pollingControlIDs) {
+   public ChangedStatusRecord(String deviceID, String[] pollingControlIDs) {
       super();
       this.pollingControlIDs = new ArrayList<Integer>();
       for(String s:pollingControlIDs){
@@ -71,7 +71,7 @@ public class SkippedStatusRecord {
       this.statusChangedIDs = new HashSet<Integer>();
    }
    
-   public SkippedStatusRecord(String deviceID, Collection<Integer> pollingControlIDs) {
+   public ChangedStatusRecord(String deviceID, Collection<Integer> pollingControlIDs) {
       super();
       this.pollingControlIDs = new ArrayList<Integer>();
       for(Integer i:pollingControlIDs){
@@ -105,10 +105,10 @@ public class SkippedStatusRecord {
 
    @Override
    public boolean equals(Object obj) {
-      if (obj == null || !(obj instanceof SkippedStatusRecord)) {
+      if (obj == null || !(obj instanceof ChangedStatusRecord)) {
          return false;
       }
-      SkippedStatusRecord timeoutRecord = (SkippedStatusRecord)obj;
+      ChangedStatusRecord timeoutRecord = (ChangedStatusRecord)obj;
       if ("".equals(timeoutRecord.getDeviceID()) || !timeoutRecord.getDeviceID().equals(this.deviceID)) {
          return false;
       }

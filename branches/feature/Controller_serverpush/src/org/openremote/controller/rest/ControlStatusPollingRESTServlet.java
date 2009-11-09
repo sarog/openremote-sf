@@ -90,7 +90,7 @@ public class ControlStatusPollingRESTServlet extends HttpServlet {
          PrintWriter printWriter = response.getWriter();
          try {
             checkComponentId(unParsedComponentIDs);
-            String stateFromPolling = controlStatusPollingService.querySkippedState(deviceID, unParsedComponentIDs);
+            String stateFromPolling = controlStatusPollingService.queryChangedState(deviceID, unParsedComponentIDs);
             if (stateFromPolling != null && !"".equals(stateFromPolling)) {
                if (Constants.SERVER_RESPONSE_TIME_OUT.equalsIgnoreCase(stateFromPolling)) {
                   response.sendError(504, "Time out!");
