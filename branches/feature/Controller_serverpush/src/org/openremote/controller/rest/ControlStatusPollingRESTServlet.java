@@ -41,7 +41,7 @@ import org.openremote.controller.spring.SpringContext;
 
 /**
  * Status Polling RESTful servlet of control.
- * It's responsiable for response corresponding result with the RESTful url.
+ * It's responsiable for response corresponding result with the RESTful polling url.
  * 
  * @author Handy.Wang 2009-10-19
  */

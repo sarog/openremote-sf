@@ -24,14 +24,18 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * We use subject-listener pattern to do polling. During the process of iPhone is refreshing the polling connection or
+ * Use wait, notify, synchronize mechanism to do polling.<br /><br /> 
+ * This table is used to record the skipped changed statuses and waited changed statuses .<br />
+ * <b>Use Case1:</b>&nbsp;During the process of iPhone refreshing the polling connection or
  * dealing with the response of changed state, a later (very soon, before iPhone reestablishes the next polling,
- * although it's kind of probability stuff) change won't be detected by iPhone , in other word, this listener has left
- * the subject and subject won't notify it at that time. the result is when iPhone comes back to continue polling, it
+ * although it's kind of probability stuff) change won't be detected by iPhone , in other word, this polling request has left
+ * the changed status. the result is when iPhone comes back to continue polling, it
  * knows nothing about what has happened just now, and iPhone will keep the old view and waiting for the next change
- * which is not synchronous any more.
+ * which is not synchronous any more.<br />
  * 
- * This table is used to record the skipped status .
+ * <b>Use Case2:</b>If no statuses changed, polling request will <b>WAIT</b><br /> the Corresponded ChangedStatusRecord until<br />
+ * the waited polling control ids' statuses changed. So, the polling request will be notified and get the change statuses.<br />
+ * 
  * @author Handy.Wang 2009-10-23
  */
 public class ChangedStatusTable {
@@ -46,7 +50,7 @@ public class ChangedStatusTable {
    }
 
    /**
-    * Insert a timeout record into TIME_OUT table.
+    * Insert a changed status record.
     */
    public synchronized void insert(ChangedStatusRecord record) {
       if (this.query(record.getDeviceID(), record.getPollingControlIDs()) == null) { 
@@ -55,7 +59,7 @@ public class ChangedStatusTable {
    }
    
    /**
-    * Query timeout record by deviceID and pollingControlIDs(order-insensitive).
+    * Query changed status record by deviceID and pollingControlIDs(pollingControlIDs is not order-insensitive).
     */
    public synchronized ChangedStatusRecord query(String deviceID, List<Integer> pollingControlIDs) {
       if (recordList.size() == 0 || pollingControlIDs == null || pollingControlIDs.size() == 0) {
@@ -72,7 +76,7 @@ public class ChangedStatusTable {
    }
    
    /**
-    * Query all timeout records whose pollingControlID column contains statusChangeControlID.
+    * Query all changed status records whose pollingControlID column contains statusChangeControlID.
     */
    public synchronized List<ChangedStatusRecord> query(Integer statusChangedControlID) {
       List<ChangedStatusRecord> statusChangedRecord = new ArrayList<ChangedStatusRecord>();

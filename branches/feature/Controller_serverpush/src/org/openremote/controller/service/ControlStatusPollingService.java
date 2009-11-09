@@ -21,7 +21,7 @@ package org.openremote.controller.service;
 
 
 /**
- * It's responsiable for polling changed statuses from cached DB.
+ * It's responsiable for polling changed statuses from changed status table.
  * 
  * @author Handy.Wang 2009-10-21
  */
