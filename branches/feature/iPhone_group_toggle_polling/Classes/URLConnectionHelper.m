@@ -53,7 +53,13 @@
 
 - (void)cancelConnection {
 	if (connection) {
+		NSLog(@"cancel url connection");
 		[connection cancel];
+		if (connection) {
+			[connection release];
+			connection = nil;
+		}
+		
 	}
 }
 

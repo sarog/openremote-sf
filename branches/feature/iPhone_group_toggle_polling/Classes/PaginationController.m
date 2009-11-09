@@ -84,10 +84,8 @@
 	
 	if (page == selectedIndex) {
 		[((ScreenViewController *)controller) startPolling];
-		NSLog(@"start polling %d",page);
 	} else {
 		[((ScreenViewController *)controller) stopPolling];
-		NSLog(@"stop polling %d",page);
 	}
 
 	
@@ -95,8 +93,8 @@
 
 - (void)loadView {
 	[super loadView];
-	[self.view setFrame:CGRectMake(0, 0, 320, 416)];
-
+	//[self.view setFrame:CGRectMake(0, 0, 320, 416)];
+	[self.view setFrame:CGRectMake(0, 0, 320, 460)];
 	scrollView = [[UIScrollView alloc] init];
 	[scrollView setDelegate:self];
 	[scrollView setPagingEnabled:YES];
@@ -106,13 +104,15 @@
 	[scrollView setBackgroundColor:[UIColor blackColor]];
 	[scrollView setOpaque:YES];
 	[scrollView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
-	[scrollView setFrame:CGRectMake(0, 0, 320, 396)];
+	//[scrollView setFrame:CGRectMake(0, 0, 320, 396)];
+	[scrollView setFrame:CGRectMake(0, 0, 320, 440)];
 	[self.view addSubview:scrollView];
 	[scrollView release];
 	
 	pageControl = [[UIPageControl alloc] init];
 	[pageControl setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth];
-	[pageControl setFrame:CGRectMake(0, 396, 320, 20)];
+	//[pageControl setFrame:CGRectMake(0, 396, 320, 20)];
+	[pageControl setFrame:CGRectMake(0, 440, 320, 20)];
 	[pageControl setBackgroundColor:[UIColor blackColor]];
 	[pageControl setOpaque:YES];
 	[pageControl addTarget:self action:@selector(pageControlValueDidChange) forControlEvents:UIControlEventValueChanged];

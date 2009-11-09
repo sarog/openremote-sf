@@ -80,6 +80,15 @@ static Definition *myInstance = nil;
 	return myInstance;
 }
 
+- (Group *)findGroupById:(int)groupId {
+	for (Group *g in groups) {
+		if (g.groupId == groupId) {
+			return [g retain];			
+		}
+	}
+	return nil;
+}
+
 - (BOOL)isDataReady {
 	//need to implement
 	return YES;

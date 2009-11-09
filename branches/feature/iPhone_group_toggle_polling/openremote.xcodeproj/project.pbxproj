@@ -11,7 +11,6 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
-		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		8C460E54109552EB00C7A686 /* panel_absolute_toggle.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C460E51109552EB00C7A686 /* panel_absolute_toggle.xml */; };
 		8C460E6F109554D600C7A686 /* CheckNetworkException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E6E109554D600C7A686 /* CheckNetworkException.m */; };
 		8C460E70109554D600C7A686 /* CheckNetworkException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E6E109554D600C7A686 /* CheckNetworkException.m */; };
@@ -127,35 +126,35 @@
 		8C650568109870D2006FC19F /* GridCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C650567109870D2006FC19F /* GridCellView.m */; };
 		8C6505F810987E1D006FC19F /* panel_grid_button.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C6505F710987E1D006FC19F /* panel_grid_button.xml */; };
 		8C650624109882F2006FC19F /* GridCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C650567109870D2006FC19F /* GridCellView.m */; };
-		8C6528480FC0F64F002632BF /* InitViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C6528470FC0F64F002632BF /* InitViewController.xib */; };
-		8C652A490FC125AD002632BF /* loading.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C652A480FC125AD002632BF /* loading.png */; };
-		8C652A4D0FC125FE002632BF /* global.logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C652A4C0FC125FE002632BF /* global.logo.png */; };
-		8C652ADA0FC12B0D002632BF /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C652AD90FC12B0D002632BF /* Default.png */; };
 		8C65FDF51096F33C006FC19F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
 		8C65FDF61096F33C006FC19F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
 		8C6682490F53FFF5007C45D4 /* FileUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6682480F53FFF5007C45D4 /* FileUtils.m */; };
 		8C72E7160F541FAB006CC0DF /* StringUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C72E7150F541FAB006CC0DF /* StringUtils.m */; };
-		8C79DF2F0F5685EB0002E5EE /* LightsController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C79DF2E0F5685EB0002E5EE /* LightsController.xib */; };
 		8C7BE4230FA0395F00F18AA1 /* ViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C7BE4220FA0395F00F18AA1 /* ViewHelper.m */; };
 		8C7BE48B0FA0431700F18AA1 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C7BE48A0FA0431700F18AA1 /* Reachability.m */; };
 		8C7BE4F60FA0471F00F18AA1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C7BE4F50FA0471F00F18AA1 /* SystemConfiguration.framework */; };
-		8CA75D4D0F5779F100ADF0C0 /* lightbulb_off.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA75D4B0F5779F100ADF0C0 /* lightbulb_off.png */; };
-		8CA75D4E0F5779F100ADF0C0 /* lightbulb.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA75D4C0F5779F100ADF0C0 /* lightbulb.png */; };
-		8CA75DD30F57820E00ADF0C0 /* AccelerometerController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8CA75DD20F57820E00ADF0C0 /* AccelerometerController.xib */; };
-		8CA75E5C0F57920900ADF0C0 /* lights.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA75E5A0F57920900ADF0C0 /* lights.png */; };
-		8CA75E800F57944100ADF0C0 /* livingroom.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA75E7F0F57944100ADF0C0 /* livingroom.png */; };
-		8CA75F0E0F57BED100ADF0C0 /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA75F0D0F57BED100ADF0C0 /* button.png */; };
-		8CA7603F0F57E57300ADF0C0 /* AirConditionerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA7603E0F57E57300ADF0C0 /* AirConditionerIcon.png */; };
-		8CA7605C0F57E64E00ADF0C0 /* lightIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA7605B0F57E64E00ADF0C0 /* lightIcon.png */; };
-		8CA7607B0F57EA7100ADF0C0 /* buttonHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA7607A0F57EA7100ADF0C0 /* buttonHighlighted.png */; };
 		8CB33E4E0FCA4AE400B010DF /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */; };
 		8CF6A2800FBD3782006ED733 /* AsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27D0FBD3782006ED733 /* AsyncSocket.m */; };
 		8CF6A2810FBD3782006ED733 /* AsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27F0FBD3782006ED733 /* AsyncUdpSocket.m */; };
 		8CF6A2B10FBD784C006ED733 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CF6A2B00FBD784C006ED733 /* CFNetwork.framework */; };
-		8CFDB2770FBBBF4500D204CB /* appSettings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CFDB2760FBBBF4500D204CB /* appSettings.plist */; };
+		8CFB079F109E8D0E006DE362 /* AccelerometerController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8CFB071C109E8D0D006DE362 /* AccelerometerController.xib */; };
+		8CFB07A0109E8D0E006DE362 /* AirConditionerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CFB071D109E8D0D006DE362 /* AirConditionerIcon.png */; };
+		8CFB07A1109E8D0E006DE362 /* appSettings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CFB071E109E8D0D006DE362 /* appSettings.plist */; };
+		8CFB07A2109E8D0E006DE362 /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CFB071F109E8D0E006DE362 /* button.png */; };
+		8CFB07DD109E8D0E006DE362 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CFB0792109E8D0E006DE362 /* Default.png */; };
+		8CFB07DE109E8D0E006DE362 /* global.logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CFB0793109E8D0E006DE362 /* global.logo.png */; };
+		8CFB07DF109E8D0E006DE362 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CFB0794109E8D0E006DE362 /* Icon.png */; };
+		8CFB07E0109E8D0E006DE362 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CFB0795109E8D0E006DE362 /* Info.plist */; };
+		8CFB07E1109E8D0E006DE362 /* InitViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8CFB0796109E8D0E006DE362 /* InitViewController.xib */; };
+		8CFB07E2109E8D0E006DE362 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 8CFB0797109E8D0E006DE362 /* iTunesArtwork */; };
+		8CFB07E3109E8D0E006DE362 /* lightbulb.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CFB0798109E8D0E006DE362 /* lightbulb.png */; };
+		8CFB07E4109E8D0E006DE362 /* lightbulb_off.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CFB0799109E8D0E006DE362 /* lightbulb_off.png */; };
+		8CFB07E5109E8D0E006DE362 /* lightIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CFB079A109E8D0E006DE362 /* lightIcon.png */; };
+		8CFB07E6109E8D0E006DE362 /* lights.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CFB079B109E8D0E006DE362 /* lights.png */; };
+		8CFB07E7109E8D0E006DE362 /* LightsController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8CFB079C109E8D0E006DE362 /* LightsController.xib */; };
+		8CFB07E8109E8D0E006DE362 /* livingroom.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CFB079D109E8D0E006DE362 /* livingroom.png */; };
+		8CFB07E9109E8D0E006DE362 /* loading.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CFB079E109E8D0E006DE362 /* loading.png */; };
 		974DAC881063ADEF00B1B04B /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 974DAC871063ADEF00B1B04B /* Entitlements.plist */; };
-		974DAC991063B2E300B1B04B /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 974DAC981063B2E300B1B04B /* Icon.png */; };
-		97B00120106127AF00C31E4A /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 97B0011F106127AF00C31E4A /* iTunesArtwork */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -166,7 +165,6 @@
 		32CA4F630368D1EE00C91783 /* openremote_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = openremote_Prefix.pch; sourceTree = "<group>"; };
 		799CC3CC0F4D4EEA006195BD /* URLConnectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLConnectionHelper.h; sourceTree = "<group>"; };
 		799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLConnectionHelper.m; sourceTree = "<group>"; };
-		8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		8C460E4A109552C800C7A686 /* UnitTest.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UnitTest.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C460E4B109552C800C7A686 /* UnitTest-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "UnitTest-Info.plist"; sourceTree = "<group>"; };
 		8C460E51109552EB00C7A686 /* panel_absolute_toggle.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_absolute_toggle.xml; sourceTree = "<group>"; };
@@ -270,43 +268,42 @@
 		8C650566109870D2006FC19F /* GridCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridCellView.h; sourceTree = "<group>"; };
 		8C650567109870D2006FC19F /* GridCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridCellView.m; sourceTree = "<group>"; };
 		8C6505F710987E1D006FC19F /* panel_grid_button.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_grid_button.xml; sourceTree = "<group>"; };
-		8C6528470FC0F64F002632BF /* InitViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InitViewController.xib; sourceTree = "<group>"; };
-		8C652A480FC125AD002632BF /* loading.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = loading.png; sourceTree = "<group>"; };
-		8C652A4C0FC125FE002632BF /* global.logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = global.logo.png; sourceTree = "<group>"; };
-		8C652AD90FC12B0D002632BF /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		8C65FDF31096F33C006FC19F /* PollingStatusParserDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PollingStatusParserDelegate.h; sourceTree = "<group>"; };
 		8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PollingStatusParserDelegate.m; sourceTree = "<group>"; };
 		8C6682470F53FFF5007C45D4 /* FileUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileUtils.h; sourceTree = "<group>"; };
 		8C6682480F53FFF5007C45D4 /* FileUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileUtils.m; sourceTree = "<group>"; };
 		8C72E7140F541FAB006CC0DF /* StringUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringUtils.h; sourceTree = "<group>"; };
 		8C72E7150F541FAB006CC0DF /* StringUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StringUtils.m; sourceTree = "<group>"; };
-		8C79DF2E0F5685EB0002E5EE /* LightsController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LightsController.xib; sourceTree = "<group>"; };
 		8C7BE4210FA0395F00F18AA1 /* ViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewHelper.h; sourceTree = "<group>"; };
 		8C7BE4220FA0395F00F18AA1 /* ViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewHelper.m; sourceTree = "<group>"; };
 		8C7BE4890FA0431700F18AA1 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		8C7BE48A0FA0431700F18AA1 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		8C7BE4F50FA0471F00F18AA1 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		8CA75D4B0F5779F100ADF0C0 /* lightbulb_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lightbulb_off.png; sourceTree = "<group>"; };
-		8CA75D4C0F5779F100ADF0C0 /* lightbulb.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lightbulb.png; sourceTree = "<group>"; };
-		8CA75DD20F57820E00ADF0C0 /* AccelerometerController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccelerometerController.xib; sourceTree = "<group>"; };
-		8CA75E5A0F57920900ADF0C0 /* lights.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lights.png; sourceTree = "<group>"; };
-		8CA75E7F0F57944100ADF0C0 /* livingroom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = livingroom.png; sourceTree = "<group>"; };
 		8CA75EC40F579B4C00ADF0C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		8CA75F0D0F57BED100ADF0C0 /* button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = button.png; sourceTree = "<group>"; };
-		8CA7603E0F57E57300ADF0C0 /* AirConditionerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AirConditionerIcon.png; sourceTree = "<group>"; };
-		8CA7605B0F57E64E00ADF0C0 /* lightIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lightIcon.png; sourceTree = "<group>"; };
-		8CA7607A0F57EA7100ADF0C0 /* buttonHighlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = buttonHighlighted.png; sourceTree = "<group>"; };
 		8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		8CF6A27C0FBD3782006ED733 /* AsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsyncSocket.h; sourceTree = "<group>"; };
 		8CF6A27D0FBD3782006ED733 /* AsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AsyncSocket.m; sourceTree = "<group>"; };
 		8CF6A27E0FBD3782006ED733 /* AsyncUdpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsyncUdpSocket.h; sourceTree = "<group>"; };
 		8CF6A27F0FBD3782006ED733 /* AsyncUdpSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AsyncUdpSocket.m; sourceTree = "<group>"; };
 		8CF6A2B00FBD784C006ED733 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
-		8CFDB2760FBBBF4500D204CB /* appSettings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = appSettings.plist; sourceTree = "<group>"; };
-		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8CFB071C109E8D0D006DE362 /* AccelerometerController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccelerometerController.xib; sourceTree = "<group>"; };
+		8CFB071D109E8D0D006DE362 /* AirConditionerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AirConditionerIcon.png; sourceTree = "<group>"; };
+		8CFB071E109E8D0D006DE362 /* appSettings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = appSettings.plist; sourceTree = "<group>"; };
+		8CFB071F109E8D0E006DE362 /* button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = button.png; sourceTree = "<group>"; };
+		8CFB0792109E8D0E006DE362 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		8CFB0793109E8D0E006DE362 /* global.logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = global.logo.png; sourceTree = "<group>"; };
+		8CFB0794109E8D0E006DE362 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		8CFB0795109E8D0E006DE362 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8CFB0796109E8D0E006DE362 /* InitViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InitViewController.xib; sourceTree = "<group>"; };
+		8CFB0797109E8D0E006DE362 /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
+		8CFB0798109E8D0E006DE362 /* lightbulb.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lightbulb.png; sourceTree = "<group>"; };
+		8CFB0799109E8D0E006DE362 /* lightbulb_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lightbulb_off.png; sourceTree = "<group>"; };
+		8CFB079A109E8D0E006DE362 /* lightIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lightIcon.png; sourceTree = "<group>"; };
+		8CFB079B109E8D0E006DE362 /* lights.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lights.png; sourceTree = "<group>"; };
+		8CFB079C109E8D0E006DE362 /* LightsController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LightsController.xib; sourceTree = "<group>"; };
+		8CFB079D109E8D0E006DE362 /* livingroom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = livingroom.png; sourceTree = "<group>"; };
+		8CFB079E109E8D0E006DE362 /* loading.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = loading.png; sourceTree = "<group>"; };
 		974DAC871063ADEF00B1B04B /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
-		974DAC981063B2E300B1B04B /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
-		97B0011F106127AF00C31E4A /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -372,8 +369,8 @@
 			children = (
 				8C460E411095527300C7A686 /* Tests */,
 				080E96DDFE201D6D7F000001 /* Classes */,
+				8CFB071B109E8CD5006DE362 /* Resources */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
-				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				974DAC871063ADEF00B1B04B /* Entitlements.plist */,
@@ -389,32 +386,6 @@
 				29B97316FDCFA39411CA2CEA /* main.m */,
 			);
 			name = "Other Sources";
-			sourceTree = "<group>";
-		};
-		29B97317FDCFA39411CA2CEA /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				974DAC981063B2E300B1B04B /* Icon.png */,
-				97B0011F106127AF00C31E4A /* iTunesArtwork */,
-				8C6528470FC0F64F002632BF /* InitViewController.xib */,
-				8C652A4C0FC125FE002632BF /* global.logo.png */,
-				8C652A480FC125AD002632BF /* loading.png */,
-				8CA7607A0F57EA7100ADF0C0 /* buttonHighlighted.png */,
-				8CA7605B0F57E64E00ADF0C0 /* lightIcon.png */,
-				8CA7603E0F57E57300ADF0C0 /* AirConditionerIcon.png */,
-				8CA75F0D0F57BED100ADF0C0 /* button.png */,
-				8CA75E7F0F57944100ADF0C0 /* livingroom.png */,
-				8CA75E5A0F57920900ADF0C0 /* lights.png */,
-				8CA75DD20F57820E00ADF0C0 /* AccelerometerController.xib */,
-				8CA75D4B0F5779F100ADF0C0 /* lightbulb_off.png */,
-				8CA75D4C0F5779F100ADF0C0 /* lightbulb.png */,
-				8D1107310486CEB800E47090 /* Info.plist */,
-				8C79DF2E0F5685EB0002E5EE /* LightsController.xib */,
-				8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */,
-				8CFDB2760FBBBF4500D204CB /* appSettings.plist */,
-				8C652AD90FC12B0D002632BF /* Default.png */,
-			);
-			name = Resources;
 			sourceTree = "<group>";
 		};
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
@@ -485,6 +456,30 @@
 				8C7BE48A0FA0431700F18AA1 /* Reachability.m */,
 			);
 			name = lib;
+			sourceTree = "<group>";
+		};
+		8CFB071B109E8CD5006DE362 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8CFB071C109E8D0D006DE362 /* AccelerometerController.xib */,
+				8CFB071D109E8D0D006DE362 /* AirConditionerIcon.png */,
+				8CFB071E109E8D0D006DE362 /* appSettings.plist */,
+				8CFB071F109E8D0E006DE362 /* button.png */,
+				8CFB0792109E8D0E006DE362 /* Default.png */,
+				8CFB0793109E8D0E006DE362 /* global.logo.png */,
+				8CFB0794109E8D0E006DE362 /* Icon.png */,
+				8CFB0795109E8D0E006DE362 /* Info.plist */,
+				8CFB0796109E8D0E006DE362 /* InitViewController.xib */,
+				8CFB0797109E8D0E006DE362 /* iTunesArtwork */,
+				8CFB0798109E8D0E006DE362 /* lightbulb.png */,
+				8CFB0799109E8D0E006DE362 /* lightbulb_off.png */,
+				8CFB079A109E8D0E006DE362 /* lightIcon.png */,
+				8CFB079B109E8D0E006DE362 /* lights.png */,
+				8CFB079C109E8D0E006DE362 /* LightsController.xib */,
+				8CFB079D109E8D0E006DE362 /* livingroom.png */,
+				8CFB079E109E8D0E006DE362 /* loading.png */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 		8CFEE27F0F558C2900DF8759 /* model */ = {
@@ -663,25 +658,24 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8C79DF2F0F5685EB0002E5EE /* LightsController.xib in Resources */,
-				8CA75D4D0F5779F100ADF0C0 /* lightbulb_off.png in Resources */,
-				8CA75D4E0F5779F100ADF0C0 /* lightbulb.png in Resources */,
-				8CA75DD30F57820E00ADF0C0 /* AccelerometerController.xib in Resources */,
-				8CA75E5C0F57920900ADF0C0 /* lights.png in Resources */,
-				8CA75E800F57944100ADF0C0 /* livingroom.png in Resources */,
-				8CA75F0E0F57BED100ADF0C0 /* button.png in Resources */,
-				8CA7603F0F57E57300ADF0C0 /* AirConditionerIcon.png in Resources */,
-				8CA7605C0F57E64E00ADF0C0 /* lightIcon.png in Resources */,
-				8CA7607B0F57EA7100ADF0C0 /* buttonHighlighted.png in Resources */,
-				8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */,
-				8CFDB2770FBBBF4500D204CB /* appSettings.plist in Resources */,
-				8C6528480FC0F64F002632BF /* InitViewController.xib in Resources */,
-				8C652A490FC125AD002632BF /* loading.png in Resources */,
-				8C652A4D0FC125FE002632BF /* global.logo.png in Resources */,
-				8C652ADA0FC12B0D002632BF /* Default.png in Resources */,
-				97B00120106127AF00C31E4A /* iTunesArtwork in Resources */,
 				974DAC881063ADEF00B1B04B /* Entitlements.plist in Resources */,
-				974DAC991063B2E300B1B04B /* Icon.png in Resources */,
+				8CFB079F109E8D0E006DE362 /* AccelerometerController.xib in Resources */,
+				8CFB07A0109E8D0E006DE362 /* AirConditionerIcon.png in Resources */,
+				8CFB07A1109E8D0E006DE362 /* appSettings.plist in Resources */,
+				8CFB07A2109E8D0E006DE362 /* button.png in Resources */,
+				8CFB07DD109E8D0E006DE362 /* Default.png in Resources */,
+				8CFB07DE109E8D0E006DE362 /* global.logo.png in Resources */,
+				8CFB07DF109E8D0E006DE362 /* Icon.png in Resources */,
+				8CFB07E0109E8D0E006DE362 /* Info.plist in Resources */,
+				8CFB07E1109E8D0E006DE362 /* InitViewController.xib in Resources */,
+				8CFB07E2109E8D0E006DE362 /* iTunesArtwork in Resources */,
+				8CFB07E3109E8D0E006DE362 /* lightbulb.png in Resources */,
+				8CFB07E4109E8D0E006DE362 /* lightbulb_off.png in Resources */,
+				8CFB07E5109E8D0E006DE362 /* lightIcon.png in Resources */,
+				8CFB07E6109E8D0E006DE362 /* lights.png in Resources */,
+				8CFB07E7109E8D0E006DE362 /* LightsController.xib in Resources */,
+				8CFB07E8109E8D0E006DE362 /* livingroom.png in Resources */,
+				8CFB07E9109E8D0E006DE362 /* loading.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

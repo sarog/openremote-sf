@@ -163,7 +163,7 @@
 
 - (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
 	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
-	NSLog(@"statusCode is %d", [httpResp statusCode]);
+	NSLog(@"control[%d]statusCode is %d",control.controlId, [httpResp statusCode]);
 	
 	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
 }
