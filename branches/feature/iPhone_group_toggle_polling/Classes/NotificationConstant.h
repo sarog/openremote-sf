@@ -29,6 +29,7 @@ extern NSString *const NotificationHideInitView;
 extern NSString *const NotificationRefreshAcitivitiesView;
 extern NSString *const NotificationRefreshGroupsView;
 extern NSString *const NotificationPollingStatusIdFormat;
+extern NSString *const NotificationNavigateToGroup;
 
 @interface NotificationConstant : NSObject {
 

@@ -33,5 +33,6 @@ NSString *const NotificationHideInitView = @"hideInitViewNotification";
 NSString *const NotificationRefreshAcitivitiesView = @"refreshAcitivitiesViewNotification";
 NSString *const NotificationRefreshGroupsView = @"refreshGroupsViewNotification";
 NSString *const NotificationPollingStatusIdFormat = @"polling_status_%d";
+NSString *const NotificationNavigateToGroup = @"navigateToGroupNotification";
 
 @end

@@ -22,6 +22,7 @@
 
 #import <UIKit/UIKit.h>
 #import "Screen.h"
+#import "Group.h"
 
 
 @interface Definition : NSObject {		
@@ -41,7 +42,7 @@
 - (void)useLocalCacheDirectly;
 - (void)clearPanelXMLData;
 - (void)addImageName:(NSString *)imageName;
-
+- (Group *)findGroupById:(int)groupId;
 
 @property (nonatomic,readonly) BOOL isUpdating;
 @property (nonatomic,readonly) NSDate *lastUpdateTime;

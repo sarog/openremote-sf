@@ -37,7 +37,7 @@
 
 @implementation ScreenView
 
-@synthesize screen, polling;
+@synthesize screen;
 
 //override the constractor
 - (id)initWithFrame:(CGRect)frame {
@@ -72,10 +72,6 @@
 		[self addSubview:layoutView];
 	}
 	
-	if ([[screen pollingComponentsIds] count] > 0 ) {
-		polling = [[PollingHelper alloc] initWithComponentIds:[[[screen pollingComponentsIds] componentsJoinedByString:@","] retain]];
-		//[polling requestCurrentStatusAndStartPolling];	
-	}
 
 }
 
@@ -87,16 +83,10 @@
 	
 }
 
-- (void)startPolling {
-	[polling requestCurrentStatusAndStartPolling];
-}
-- (void)stopPolling {
-	[polling cancelPolling];
-}
 
 - (void)dealloc {
 	[screen release];
-	[polling release];
+
 	[super dealloc];
 }
 

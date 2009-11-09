@@ -21,15 +21,20 @@
 
 #import <UIKit/UIKit.h>
 #import "Group.h"
+#import "PaginationController.h"
 
 @interface GroupController : UIViewController {
 
 	Group *group;
+	PaginationController *paginationController;
 	
 }
 
 - (id)initWithGroup:(Group *)newGroup;
+- (void)startPolling;
+- (void)stopPolling;
 
 @property (nonatomic, retain) Group *group;
+@property (nonatomic, readonly) PaginationController *paginationController;
 
 @end

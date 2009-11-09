@@ -33,6 +33,8 @@
 #import "InitViewController.h"
 #import "UpdateController.h"
 #import "ViewHelper.h"
+#import "Navigate.h"
+#import "NotificationConstant.h"
 
 //Private method declare
 @interface AppDelegate (Private)
@@ -40,6 +42,7 @@
 - (void)didUpadted;
 - (void)didUseLocalCache:(NSString *)errorMessage;
 - (void)didUpdateFail:(NSString *)errorMessage;
+- (void)navigateToGroup:(NSNotification *)notification;
 @end
 
 @implementation AppDelegate
@@ -65,6 +68,8 @@
     // - (void)didUpdateFail:(NSString *)errorMessage;
 	updateController = [[UpdateController alloc] initWithDelegate:self];
 	[updateController checkConfigAndUpdate];
+	groupControllers = [[NSMutableArray alloc] init]; 
+	groupViewMap = [[NSMutableDictionary alloc] init];
 }
 
 
@@ -73,14 +78,64 @@
 	NSLog(@"----------updateDidFinished------");
 	[initViewController.view removeFromSuperview];
 	NSArray *groups = [[Definition sharedDefinition] groups];
-	Group *defaultGroup = nil;
-	if (groups.count > 0 ) {
-		defaultGroup = [groups objectAtIndex:0];
+	
+	if (groups.count > 0) {
+		GroupController *gc = [[GroupController alloc] initWithGroup:((Group *)[groups objectAtIndex:0])];
+		[groupControllers addObject:gc];
+		[groupViewMap setObject:gc.view forKey:[NSString stringWithFormat:@"%d", gc.group.groupId]];
 	}
-	GroupController *groupController = [[GroupController alloc] initWithGroup:defaultGroup];
-	navigationController = [[UINavigationController alloc] initWithRootViewController:groupController];
-	[window addSubview:navigationController.view];
-	[groupController release];
+	
+	GroupController *defaultGroupController = nil;
+	if (groupControllers.count > 0 ) {
+		defaultGroupController = [groupControllers objectAtIndex:0];		
+	}
+	//navigationController = [[UINavigationController alloc] initWithRootViewController:defaultGroupController];
+	//[window addSubview:navigationController.view];
+	currentGroupController = defaultGroupController;
+	[window addSubview:defaultGroupController.view];
+	//[defaultGroupController release];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateToGroup:) name:NotificationNavigateToGroup object:nil];
+}
+
+- (void)navigateToGroup:(NSNotification *)notification {
+	Navigate *navi = (Navigate *)[notification object];
+	GroupController *targetGroupController = nil;	
+	BOOL notItSelf = navi.toGroup != currentGroupController.group.groupId;
+	if (navi.toGroup > 0 && notItSelf) {
+		for (GroupController *gc in groupControllers) {
+			if (gc.group.groupId == navi.toGroup) {
+				targetGroupController = gc;
+			}
+		}
+		
+		if (targetGroupController == nil) {
+			Group *group = [[Definition sharedDefinition] findGroupById:navi.toGroup];			 
+			targetGroupController = [[GroupController alloc] initWithGroup:group];
+			[groupControllers addObject:targetGroupController];
+			[groupViewMap setObject:targetGroupController.view forKey:[NSString stringWithFormat:@"%d", group.groupId]];
+		}
+		
+		[currentGroupController stopPolling];
+		[targetGroupController startPolling];
+		
+		[UIView beginAnimations:nil context:nil];
+		[UIView setAnimationDuration:1];
+		[UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:window cache:YES];
+		
+		//[navigationController.view removeFromSuperview];
+		//navigationController = [[UINavigationController alloc] initWithRootViewController:targetGroupController];
+		UIView *view = [groupViewMap objectForKey:[NSString stringWithFormat:@"%d", navi.toGroup]];
+		
+
+		[currentGroupController.view removeFromSuperview];
+		[window addSubview:view];
+
+		[UIView commitAnimations];
+		
+		currentGroupController = targetGroupController;
+		
+		//[targetGroupController release];
+	}
 }
 
 #pragma mark delegate method of updateController
@@ -102,9 +157,11 @@
 	[updateController release];
 	[defaultView release];
 	[navigationController release];
+	[groupControllers release];
 	[window release];
-	[super dealloc];
+	[groupViewMap release];
 	
+	[super dealloc];
 }
 
 

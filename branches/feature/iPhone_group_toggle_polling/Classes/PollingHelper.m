@@ -41,6 +41,9 @@
 
 
 - (void)requestCurrentStatusAndStartPolling {
+	if (isPolling) {
+		return;
+	}
 	isPolling = YES;
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition statusRESTUrl]];
 	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%@",pollingStatusIds]];
@@ -152,7 +155,7 @@
 
 - (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
 	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
-	NSLog(@"statusCode is %d", [httpResp statusCode]);
+	NSLog(@"polling[%@]statusCode is %d",pollingStatusIds, [httpResp statusCode]);
 	
 	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
 }
