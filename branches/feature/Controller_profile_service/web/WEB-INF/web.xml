@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
 	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-    <display-name>controller_controller_serverpush</display-name>
+    <display-name>controller_profile_service</display-name>
 
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
@@ -136,8 +136,61 @@
         </listener-class>
     </listener>
     
+    <!-- 
+    <listener>
+        <listener-class>
+            org.openremote.controller.listener.HSQLDBListener
+        </listener-class>
+    </listener>
+     -->
+    
     <listener>
 		<listener-class>org.openremote.controller.statuscache.InitCachedStatusDBListener</listener-class>
 	</listener>
+	
+	<!-- Constraint resource: /rest/control/* -->
+	<security-constraint>
+	  <web-resource-collection>
+	    <web-resource-name>Control command RESTful service of Openremote Controller</web-resource-name>
+	    <description>Control command RESTful service of Openremote Controller</description>
+	    <url-pattern>/rest/control/*</url-pattern>
+	    <http-method>GET</http-method>
+	    <http-method>POST</http-method>
+	  </web-resource-collection>
+	  <auth-constraint>
+	    <role-name>openremote</role-name>
+	  </auth-constraint>
+	</security-constraint>
+	<security-constraint>
+	  <web-resource-collection>
+	    <web-resource-name>Status command RESTful service of Openremote Controller</web-resource-name>
+	    <description>Status command RESTful service of Openremote Controller</description>
+	    <url-pattern>/rest/status/*</url-pattern>
+	    <http-method>GET</http-method>
+	    <http-method>POST</http-method>
+	  </web-resource-collection>
+	  <auth-constraint>
+	    <role-name>openremote</role-name>
+	  </auth-constraint>
+	</security-constraint>
+	<security-constraint>
+	  <web-resource-collection>
+	    <web-resource-name>Polling command RESTful service of Openremote Controller</web-resource-name>
+	    <description>Polling command RESTful service of Openremote Controller</description>
+	    <url-pattern>/rest/polling/*</url-pattern>
+	    <http-method>GET</http-method>
+	    <http-method>POST</http-method>
+	  </web-resource-collection>
+	  <auth-constraint>
+	    <role-name>openremote</role-name>
+	  </auth-constraint>
+	</security-constraint>
+	<login-config>
+	  <auth-method>BASIC</auth-method>
+	  <realm-name>OPENREMOTE_Controller</realm-name>
+	</login-config>
+	<security-role>
+	  <role-name>openremote</role-name>
+	</security-role> 
 
 </web-app>
