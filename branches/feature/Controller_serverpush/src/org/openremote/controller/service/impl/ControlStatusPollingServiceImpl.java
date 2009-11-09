@@ -53,6 +53,14 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
    /* (non-Javadoc)
     * @see org.openremote.controller.service.ControlStatusPollingService#querySkipState(java.lang.String)
     */
+   /**
+    * This operation is :<br />
+    * 1) Query changed status record from changedStatusTable. if not found insert a new record with polling request, <br /> 
+    * if found check whether the statuses of polling ids had changed.
+    * 2) Check whether the statuses of polling ids had changed. if changed return the changed statuses, if not wait the changeStatusRecord.
+    * 3) Waiting the status change until status changed or timeout. if had waited the chanted status then return changed status and <br />
+    * changedControlIds column of ChangedStatusRecord. if timeout throws 504 exception.
+    */
    @Override
    public String queryChangedState(String deviceID, String unParsedcontrolIDs) {
       logger.info("Querying changed state from ChangedStatus table...");
@@ -106,6 +114,9 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
       return skipState;
    }
    
+   /**
+    * Query the changed statuses from CachedStatusTable with changedControlIDs of ChangedStatusRecord. 
+    */
    private String queryChangedStatusesFromCachedStatusTable(Set<Integer> statusChangedIDs) {
       logger.info("Querying changed data from StatusCache...");
       PollingData pollingData = new PollingData(statusChangedIDs);

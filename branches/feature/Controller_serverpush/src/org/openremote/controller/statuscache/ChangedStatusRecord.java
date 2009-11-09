@@ -27,18 +27,23 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * A skippedStatus  record.
+ * A changed status record.<br />
+ * This Record is used to record the skipped changed statuses and waited changed statuses .<br />
  * 
  * @author Handy.Wang 2009-10-23
  */
 public class ChangedStatusRecord {
    
+   /** A logical identity of panel */
    private String deviceID;
 
+   /** The ids a polling request contains */
    private List<Integer> pollingControlIDs;
 
+   /** The ids whose status had changed in the pollingControlIDs */
    private Set<Integer> statusChangedIDs;
 
+   /** Default constructor */
    public ChangedStatusRecord() {
       super();
       deviceID = "";
