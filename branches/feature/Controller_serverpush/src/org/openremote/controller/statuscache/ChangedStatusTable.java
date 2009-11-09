@@ -34,21 +34,21 @@ import java.util.List;
  * This table is used to record the skipped status .
  * @author Handy.Wang 2009-10-23
  */
-public class SkippedStatusTable {
+public class ChangedStatusTable {
    
-   private List<SkippedStatusRecord> recordList;
+   private List<ChangedStatusRecord> recordList;
    
 //   private Logger logger = Logger.getLogger(this.getClass().getName());
 
-   public SkippedStatusTable() {
+   public ChangedStatusTable() {
       super();
-      recordList = new ArrayList<SkippedStatusRecord>();
+      recordList = new ArrayList<ChangedStatusRecord>();
    }
 
    /**
     * Insert a timeout record into TIME_OUT table.
     */
-   public synchronized void insert(SkippedStatusRecord record) {
+   public synchronized void insert(ChangedStatusRecord record) {
       if (this.query(record.getDeviceID(), record.getPollingControlIDs()) == null) { 
          recordList.add(record);
       }
@@ -57,13 +57,13 @@ public class SkippedStatusTable {
    /**
     * Query timeout record by deviceID and pollingControlIDs(order-insensitive).
     */
-   public synchronized SkippedStatusRecord query(String deviceID, List<Integer> pollingControlIDs) {
+   public synchronized ChangedStatusRecord query(String deviceID, List<Integer> pollingControlIDs) {
       if (recordList.size() == 0 || pollingControlIDs == null || pollingControlIDs.size() == 0) {
          return null;
       }
-      SkippedStatusRecord record = new SkippedStatusRecord(deviceID, pollingControlIDs);
+      ChangedStatusRecord record = new ChangedStatusRecord(deviceID, pollingControlIDs);
       
-      for (SkippedStatusRecord tempRecord : recordList) {
+      for (ChangedStatusRecord tempRecord : recordList) {
          if (tempRecord.equals(record)) {
             return tempRecord;
          }
@@ -74,12 +74,12 @@ public class SkippedStatusTable {
    /**
     * Query all timeout records whose pollingControlID column contains statusChangeControlID.
     */
-   public synchronized List<SkippedStatusRecord> query(Integer statusChangedControlID) {
-      List<SkippedStatusRecord> statusChangedRecord = new ArrayList<SkippedStatusRecord>();
+   public synchronized List<ChangedStatusRecord> query(Integer statusChangedControlID) {
+      List<ChangedStatusRecord> statusChangedRecord = new ArrayList<ChangedStatusRecord>();
       if(recordList==null||recordList.size()==0){
          return null;
       }
-      for (SkippedStatusRecord record : recordList) {
+      for (ChangedStatusRecord record : recordList) {
          if (record.getPollingControlIDs().contains(statusChangedControlID)) {
             statusChangedRecord.add(record);
          }
@@ -91,7 +91,7 @@ public class SkippedStatusTable {
     * Update status_changed_id column.
     */
    public void updateStatusChangedIDs(Integer statusChangedControlID) {
-      for(SkippedStatusRecord record : recordList){
+      for(ChangedStatusRecord record : recordList){
          synchronized (record) {
             if (record.getPollingControlIDs() != null && record.getPollingControlIDs().size() != 0) {
                for (Integer tmpControlId : record.getPollingControlIDs()) {
@@ -107,10 +107,10 @@ public class SkippedStatusTable {
    }
    
    /**
-    * Reset changed status of panel in {@link SkippedStatusTable}. 
+    * Reset changed status of panel in {@link ChangedStatusTable}. 
     */
    public synchronized void resetChangedStatusIDs(String deviceID, List<Integer> pollingControlIDs) {
-      SkippedStatusRecord skippedStatusRecord = this.query(deviceID, pollingControlIDs);
+      ChangedStatusRecord skippedStatusRecord = this.query(deviceID, pollingControlIDs);
       skippedStatusRecord.setStatusChangedIDs(new HashSet<Integer>());
    }
 

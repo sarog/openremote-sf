@@ -52,8 +52,8 @@ public interface ControlStatusPollingService {
     static final String XML_TAIL = "</openremote>";
 
    /**
-    * Query skip states from TIME_OUT table. 
+    * Query changed states from ChangedStatus table. 
     */
-   public String querySkippedState(String deviceID, String unParsedcontrolIDs);
+   public String queryChangedState(String deviceID, String unParsedcontrolIDs);
    
 }

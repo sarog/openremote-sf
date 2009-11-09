@@ -30,8 +30,8 @@ import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.ControlStatusPollingService;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.statuscache.PollingData;
-import org.openremote.controller.statuscache.SkippedStatusRecord;
-import org.openremote.controller.statuscache.SkippedStatusTable;
+import org.openremote.controller.statuscache.ChangedStatusRecord;
+import org.openremote.controller.statuscache.ChangedStatusTable;
 
 /**
  * Implementation of controlStatusPollingService.
@@ -40,7 +40,7 @@ import org.openremote.controller.statuscache.SkippedStatusTable;
  */
 public class ControlStatusPollingServiceImpl implements ControlStatusPollingService {
    
-   private SkippedStatusTable skippedStatusTable;
+   private ChangedStatusTable changedStatusTable;
    
    private StatusCacheService statusCacheService;
    
@@ -54,8 +54,8 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
     * @see org.openremote.controller.service.ControlStatusPollingService#querySkipState(java.lang.String)
     */
    @Override
-   public String querySkippedState(String deviceID, String unParsedcontrolIDs) {
-      logger.info("Querying skipped state from TIME_OUT table...");
+   public String queryChangedState(String deviceID, String unParsedcontrolIDs) {
+      logger.info("Querying changed state from ChangedStatus table...");
       String skipState = "";
       String[] controlIDs = (unParsedcontrolIDs == null || "".equals(unParsedcontrolIDs)) ? new String[]{} : unParsedcontrolIDs.split(CONTROL_ID_SEPARATOR);
       
@@ -68,39 +68,46 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
          }
       }
 
-      SkippedStatusRecord skipStateRecord = skippedStatusTable.query(deviceID, pollingControlIDs);
-      String tempInfo = "Found: [device => " + deviceID + ", controlIDs => " + unParsedcontrolIDs + "] in TIME_OUT_TABLE.";
-      logger.info(skipStateRecord == null ? "Not " + tempInfo : tempInfo);
+      ChangedStatusRecord changedStateRecord = changedStatusTable.query(deviceID, pollingControlIDs);
+      String tempInfo = "Found: [device => " + deviceID + ", controlIDs => " + unParsedcontrolIDs + "] in ChangedStatus table.";
+      logger.info(changedStateRecord == null ? "Not " + tempInfo : tempInfo);
       
-      if (skipStateRecord == null) {
-         skipStateRecord = new SkippedStatusRecord(deviceID, pollingControlIDs);
-         skippedStatusTable.insert(skipStateRecord);
+      if (changedStateRecord == null) {
+         changedStateRecord = new ChangedStatusRecord(deviceID, pollingControlIDs);
+         changedStatusTable.insert(changedStateRecord);
       }
-      synchronized (skipStateRecord) {
+      if (changedStateRecord.getStatusChangedIDs() != null && changedStateRecord.getStatusChangedIDs().size() > 0) {
+         logger.info("Got the skipped control ids of statuses in " + changedStateRecord);
+      }
+      
+      synchronized (changedStateRecord) {
          boolean willTimeout = false;
-         while (skipStateRecord.getStatusChangedIDs() == null || skipStateRecord.getStatusChangedIDs().size() == 0) {
+         while (changedStateRecord.getStatusChangedIDs() == null || changedStateRecord.getStatusChangedIDs().size() == 0) {
             if (willTimeout) {
+               logger.info("Had timeout for waiting status change.");
                return Constants.SERVER_RESPONSE_TIME_OUT;
             }
             try {
-               logger.info(skipStateRecord + "Waiting...");
-               skipStateRecord.wait(50000);
+               logger.info(changedStateRecord + "Waiting...");
+               changedStateRecord.wait(50000);
                willTimeout = true;
             } catch (InterruptedException e) {
                e.printStackTrace();
                return Constants.SERVER_RESPONSE_TIME_OUT;
             }
          }
-         logger.info(skipStateRecord + "got the waited data");
-         skipState = queryChangedStatusesFromCachedStatusTable(skipStateRecord.getStatusChangedIDs());
-         skippedStatusTable.resetChangedStatusIDs(deviceID, pollingControlIDs);
+         if (willTimeout) {
+            logger.info("Had waited the skipped control ids of statuses in " + changedStateRecord);
+         }
+         skipState = queryChangedStatusesFromCachedStatusTable(changedStateRecord.getStatusChangedIDs());
+         changedStatusTable.resetChangedStatusIDs(deviceID, pollingControlIDs);
       }
       
       return skipState;
    }
    
    private String queryChangedStatusesFromCachedStatusTable(Set<Integer> statusChangedIDs) {
-      logger.info("Queriy changed data from StatusCache.");
+      logger.info("Querying changed data from StatusCache...");
       PollingData pollingData = new PollingData(statusChangedIDs);
       Map<Integer, String> changedStatuses = statusCacheService.queryStatuses(pollingData.getControlIDs());
       pollingData.setChangedStatuses(changedStatuses);
@@ -130,8 +137,8 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
       return sb.toString();
    }
 
-   public void setSkippedStatusTable(SkippedStatusTable skippedStatusTable) {
-      this.skippedStatusTable = skippedStatusTable;
+   public void setChangedStatusTable(ChangedStatusTable changedStatusTable) {
+      this.changedStatusTable = changedStatusTable;
    }
-   
+
 }
