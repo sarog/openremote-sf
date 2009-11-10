@@ -181,7 +181,6 @@
 	</listener>
 	
 	<!-- Constraint resource: /rest/control/* -->
-	<!-- 
 	<security-constraint>
 	  <web-resource-collection>
 	    <web-resource-name>Control command RESTful service of Openremote Controller</web-resource-name>
@@ -225,6 +224,5 @@
 	<security-role>
 	  <role-name>openremote</role-name>
 	</security-role>
-	 --> 
 
 </web-app>
