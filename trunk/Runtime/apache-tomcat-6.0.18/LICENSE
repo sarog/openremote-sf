@@ -1443,6 +1443,9 @@ which is open source software.  The orginal software and
 related infomation is available at
 http://www.eclipse.org.
 
+The Catalina scripts were modified to fit OpenRemote Boss runtime
+requirements. These changes are Copyright 2009, OpenRemote Inc.
+
 
 Apache Commons Lang NOTICE:
 
