@@ -155,6 +155,15 @@ if [ -r "$CATALINA_BASE"/conf/logging.properties ]; then
   LOGGING_CONFIG="-Djava.util.logging.config.file=$CATALINA_BASE/conf/logging.properties"
 fi
 
+# ----- Setup Default OpenRemote Boss Environment -----------------------------
+
+OR_BOSS_NATIVE_LIBRARY_PATH=$CATALINA_BASE/webapps/controller/WEB-INF/lib/native
+JAVA_OPTS="$JAVA_OPTS -Djava.library.path=$OR_BOSS_NATIVE_LIBRARY_PATH"
+
+# For Linux
+LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$OR_BOSS_NATIVE_LIBRARY_PATH"
+
+
 # ----- Execute The Requested Command -----------------------------------------
 
 # Bugzilla 37848: only output this if we have a TTY
@@ -300,23 +309,18 @@ elif [ "$1" = "version" ] ; then
 
 else
 
-  echo "Usage: catalina.sh ( commands ... )"
+  echo "Usage: openremote.sh ( commands ... )"
   echo "commands:"
-  if $os400; then
-    echo "  debug             Start Catalina in a debugger (not available on OS400)"
-    echo "  debug -security   Debug Catalina with a security manager (not available on OS400)"
-  else
-    echo "  debug             Start Catalina in a debugger"
-    echo "  debug -security   Debug Catalina with a security manager"
-  fi
-  echo "  jpda start        Start Catalina under JPDA debugger"
-  echo "  run               Start Catalina in the current window"
-  echo "  run -security     Start in the current window with security manager"
-  echo "  start             Start Catalina in a separate window"
-  echo "  start -security   Start in a separate window with security manager"
-  echo "  stop              Stop Catalina"
-  echo "  stop -force       Stop Catalina (followed by kill -KILL)"
-  echo "  version           What version of tomcat are you running?"
+#  echo "  debug             Start Catalina in a debugger"
+#  echo "  debug -security   Debug Catalina with a security manager"
+#  echo "  jpda start        Start Catalina under JPDA debugger"
+  echo "  run               Start OpenRemote Controller in the current window"
+#  echo "  run -security     Start in the current window with security manager"
+  echo "  start             Start OpenRemote Controller as a background process"
+#  echo "  start -security   Start in a separate window with security manager"
+  echo "  stop              Stop OpenRemote Controller"
+  echo "  stop -force       Stop OpenRemote Controller (followed by kill -KILL)"
+  echo "  version           Runtime server information"
   exit 1
 
 fi
