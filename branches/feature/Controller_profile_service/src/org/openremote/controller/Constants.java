@@ -57,5 +57,7 @@ public class Constants {
    public final static String OK = "OK";
    
    public static final String SERVER_RESPONSE_TIME_OUT = "TIMEOUT";
+   
+   public static final String PANEL_XML = "panel.xml";
 
 }

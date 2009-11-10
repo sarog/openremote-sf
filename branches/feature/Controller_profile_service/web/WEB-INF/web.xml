@@ -90,10 +90,42 @@
         <servlet-name>resourceServlet</servlet-name>
         <servlet-class>org.openremote.controller.servlet.ResourceServlet</servlet-class>
     </servlet>
+    <servlet>
+    	<description>
+    	display all the panels.</description>
+    	<display-name>
+    	ShowPanelsRestServlet</display-name>
+    	<servlet-name>ShowPanelsRestServlet</servlet-name>
+    	<servlet-class>
+    	org.openremote.controller.rest.ShowPanelsRestServlet</servlet-class>
+    </servlet>
+    <servlet>
+    	<description>
+    	get the profile information by panel name</description>
+    	<display-name>
+    	GetProfileRestServlet</display-name>
+    	<servlet-name>GetProfileRestServlet</servlet-name>
+    	<servlet-class>
+    	org.openremote.controller.rest.GetProfileRestServlet</servlet-class>
+    </servlet>
     
     <servlet-mapping>
         <servlet-name>resourceServlet</servlet-name>
         <url-pattern>/resources/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>ShowPanelsRestServlet</servlet-name>
+    	<url-pattern>/rest/panels</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+    	<servlet-name>ShowPanelsRestServlet</servlet-name>
+    	<url-pattern>/rest/panels/</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+    	<servlet-name>GetProfileRestServlet</servlet-name>
+    	<url-pattern>/rest/panel/*</url-pattern>
     </servlet-mapping>
 
 
@@ -149,6 +181,7 @@
 	</listener>
 	
 	<!-- Constraint resource: /rest/control/* -->
+	<!-- 
 	<security-constraint>
 	  <web-resource-collection>
 	    <web-resource-name>Control command RESTful service of Openremote Controller</web-resource-name>
@@ -191,6 +224,7 @@
 	</login-config>
 	<security-role>
 	  <role-name>openremote</role-name>
-	</security-role> 
+	</security-role>
+	 --> 
 
 </web-app>
