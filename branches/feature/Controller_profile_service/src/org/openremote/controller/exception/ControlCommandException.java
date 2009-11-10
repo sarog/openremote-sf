@@ -56,6 +56,8 @@ public class ControlCommandException extends RuntimeException {
    
    public final static int NO_SUCH_PANEL = 428;
    
+   public final static int INVALID_ELEMENT = 429;
+   
    /** The error code. */
    private int errorCode;
 
