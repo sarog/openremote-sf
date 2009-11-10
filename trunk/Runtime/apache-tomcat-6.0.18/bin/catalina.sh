@@ -111,7 +111,7 @@ if [ -r "$CATALINA_HOME"/bin/tomcat/setclasspath.sh ]; then
   BASEDIR="$CATALINA_HOME"
   . "$CATALINA_HOME"/bin/tomcat/setclasspath.sh
 else
-  echo "Cannot find $CATALINA_HOME/bin/setclasspath.sh"
+  echo "Cannot find $CATALINA_HOME/bin/tomcat/setclasspath.sh"
   echo "This file is needed to run this program"
   exit 1
 fi
@@ -120,7 +120,7 @@ fi
 if [ -n "$JSSE_HOME" ]; then
   CLASSPATH="$CLASSPATH":"$JSSE_HOME"/lib/jcert.jar:"$JSSE_HOME"/lib/jnet.jar:"$JSSE_HOME"/lib/jsse.jar
 fi
-CLASSPATH="$CLASSPATH":"$CATALINA_HOME"/bin/bootstrap.jar
+CLASSPATH="$CLASSPATH":"$CATALINA_HOME"/bin/tomcat/bootstrap.jar
 
 if [ -z "$CATALINA_BASE" ] ; then
   CATALINA_BASE="$CATALINA_HOME"
