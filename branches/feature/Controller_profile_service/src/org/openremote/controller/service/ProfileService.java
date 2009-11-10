@@ -48,7 +48,7 @@ public interface ProfileService {
     * @param panelName The name of panel. 
     * @return a xml string which contains all the information a panel has. 
     */
-   String getProfilByName(String panelName);
+   String getProfilByPanelName(String panelName);
    /**
     * This method is used to get a xml string which represents an profile by the name of an panel.
     * @param xmlPath The path of file panel.xml.  
@@ -61,7 +61,7 @@ public interface ProfileService {
     * attention : This method will read panel.xml by your configuration, you should put panel.xml into your ${resource.path} 
     * @return A xml string that contains all the panels. 
     */
-   String getPanelsXML();
+   String getAllPanels();
    /**
     * This method is used to get a xml string which include all the panels in panel.xml. 
     * @param xmlPath The path of file panel.xml. 

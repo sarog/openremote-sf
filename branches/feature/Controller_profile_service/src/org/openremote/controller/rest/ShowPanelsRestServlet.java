@@ -36,7 +36,7 @@ public class ShowPanelsRestServlet extends HttpServlet {
       
       if(matcher.find()){
          try{
-            String panlesXML = profileService.getPanelsXML();
+            String panlesXML = profileService.getAllPanels();
             out.print(panlesXML);
             out.flush();
             out.close();

@@ -38,7 +38,7 @@ public class GetProfileRestServlet extends HttpServlet {
          try{
             String panelName = matcher.group(1);
             panelName =  URLDecoder.decode(panelName,"UTF-8");
-            String panleXML = profileService.getProfilByName(panelName);
+            String panleXML = profileService.getProfilByPanelName(panelName);
             out.print(panleXML);
             out.flush();
             out.close();
