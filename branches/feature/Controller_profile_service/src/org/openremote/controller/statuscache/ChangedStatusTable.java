@@ -24,46 +24,50 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * We use subject-listener pattern to do polling. During the process of iPhone is refreshing the polling connection or
+ * Use wait, notify, synchronize mechanism to do polling.<br /><br /> 
+ * This table is used to record the skipped changed statuses and waited changed statuses .<br />
+ * <b>Use Case1:</b>&nbsp;During the process of iPhone refreshing the polling connection or
  * dealing with the response of changed state, a later (very soon, before iPhone reestablishes the next polling,
- * although it's kind of probability stuff) change won't be detected by iPhone , in other word, this listener has left
- * the subject and subject won't notify it at that time. the result is when iPhone comes back to continue polling, it
+ * although it's kind of probability stuff) change won't be detected by iPhone , in other word, this polling request has left
+ * the changed status. the result is when iPhone comes back to continue polling, it
  * knows nothing about what has happened just now, and iPhone will keep the old view and waiting for the next change
- * which is not synchronous any more.
+ * which is not synchronous any more.<br />
  * 
- * This table is used to record the skipped status .
+ * <b>Use Case2:</b>If no statuses changed, polling request will <b>WAIT</b><br /> the Corresponded ChangedStatusRecord until<br />
+ * the waited polling control ids' statuses changed. So, the polling request will be notified and get the change statuses.<br />
+ * 
  * @author Handy.Wang 2009-10-23
  */
-public class SkippedStatusTable {
+public class ChangedStatusTable {
    
-   private List<SkippedStatusRecord> recordList;
+   private List<ChangedStatusRecord> recordList;
    
 //   private Logger logger = Logger.getLogger(this.getClass().getName());
 
-   public SkippedStatusTable() {
+   public ChangedStatusTable() {
       super();
-      recordList = new ArrayList<SkippedStatusRecord>();
+      recordList = new ArrayList<ChangedStatusRecord>();
    }
 
    /**
-    * Insert a timeout record into TIME_OUT table.
+    * Insert a changed status record.
     */
-   public synchronized void insert(SkippedStatusRecord record) {
+   public synchronized void insert(ChangedStatusRecord record) {
       if (this.query(record.getDeviceID(), record.getPollingControlIDs()) == null) { 
          recordList.add(record);
       }
    }
    
    /**
-    * Query timeout record by deviceID and pollingControlIDs(order-insensitive).
+    * Query changed status record by deviceID and pollingControlIDs(pollingControlIDs is not order-insensitive).
     */
-   public synchronized SkippedStatusRecord query(String deviceID, List<Integer> pollingControlIDs) {
+   public synchronized ChangedStatusRecord query(String deviceID, List<Integer> pollingControlIDs) {
       if (recordList.size() == 0 || pollingControlIDs == null || pollingControlIDs.size() == 0) {
          return null;
       }
-      SkippedStatusRecord record = new SkippedStatusRecord(deviceID, pollingControlIDs);
+      ChangedStatusRecord record = new ChangedStatusRecord(deviceID, pollingControlIDs);
       
-      for (SkippedStatusRecord tempRecord : recordList) {
+      for (ChangedStatusRecord tempRecord : recordList) {
          if (tempRecord.equals(record)) {
             return tempRecord;
          }
@@ -72,14 +76,14 @@ public class SkippedStatusTable {
    }
    
    /**
-    * Query all timeout records whose pollingControlID column contains statusChangeControlID.
+    * Query all changed status records whose pollingControlID column contains statusChangeControlID.
     */
-   public synchronized List<SkippedStatusRecord> query(Integer statusChangedControlID) {
-      List<SkippedStatusRecord> statusChangedRecord = new ArrayList<SkippedStatusRecord>();
+   public synchronized List<ChangedStatusRecord> query(Integer statusChangedControlID) {
+      List<ChangedStatusRecord> statusChangedRecord = new ArrayList<ChangedStatusRecord>();
       if(recordList==null||recordList.size()==0){
          return null;
       }
-      for (SkippedStatusRecord record : recordList) {
+      for (ChangedStatusRecord record : recordList) {
          if (record.getPollingControlIDs().contains(statusChangedControlID)) {
             statusChangedRecord.add(record);
          }
@@ -91,13 +95,13 @@ public class SkippedStatusTable {
     * Update status_changed_id column.
     */
    public void updateStatusChangedIDs(Integer statusChangedControlID) {
-      for(SkippedStatusRecord record : recordList){
+      for(ChangedStatusRecord record : recordList){
          synchronized (record) {
             if (record.getPollingControlIDs() != null && record.getPollingControlIDs().size() != 0) {
                for (Integer tmpControlId : record.getPollingControlIDs()) {
                   if (statusChangedControlID.equals(tmpControlId)) {
                      record.getStatusChangedIDs().add(statusChangedControlID);
-                     record.notify();
+                     record.notifyAll();
                      break;
                   }
                }
@@ -107,10 +111,10 @@ public class SkippedStatusTable {
    }
    
    /**
-    * Reset changed status of panel in {@link SkippedStatusTable}. 
+    * Reset changed status of panel in {@link ChangedStatusTable}. 
     */
    public synchronized void resetChangedStatusIDs(String deviceID, List<Integer> pollingControlIDs) {
-      SkippedStatusRecord skippedStatusRecord = this.query(deviceID, pollingControlIDs);
+      ChangedStatusRecord skippedStatusRecord = this.query(deviceID, pollingControlIDs);
       skippedStatusRecord.setStatusChangedIDs(new HashSet<Integer>());
    }
 

@@ -41,7 +41,7 @@ import org.openremote.controller.exception.NoSuchComponentException;
  */
 public class StatusCache {
 
-   private SkippedStatusTable skippedStatusTable;
+   private ChangedStatusTable changedStatusTable;
 
    private Map<Integer, String> controlStatus = null;
 
@@ -49,9 +49,9 @@ public class StatusCache {
       controlStatus = new HashMap<Integer, String>();
    }
 
-   public StatusCache(SkippedStatusTable skippedStatusTable) {
+   public StatusCache(ChangedStatusTable changedStatusTable) {
       super();
-      this.skippedStatusTable = skippedStatusTable;
+      this.changedStatusTable = changedStatusTable;
    }
    
    /**
@@ -72,7 +72,7 @@ public class StatusCache {
       }
       
       if (needNotify) {
-         updateSkippedStatusTable(componentID);
+         updateChangedStatusTable(componentID);
       }
    }
    
@@ -105,15 +105,15 @@ public class StatusCache {
       return result;
    }
 
-   public SkippedStatusTable getSkippedStatusTable() {
-      return skippedStatusTable;
+   public ChangedStatusTable getChangedStatusTable() {
+      return changedStatusTable;
    }
 
-   public void setSkippedStatusTable(SkippedStatusTable skippedStatusTable) {
-      this.skippedStatusTable = skippedStatusTable;
+   public void setChangedStatusTable(ChangedStatusTable changedStatusTable) {
+      this.changedStatusTable = changedStatusTable;
    }
 
-   private void updateSkippedStatusTable(Integer controlId) {
-      skippedStatusTable.updateStatusChangedIDs(controlId);
+   private void updateChangedStatusTable(Integer controlId) {
+      changedStatusTable.updateStatusChangedIDs(controlId);
    }
 }
