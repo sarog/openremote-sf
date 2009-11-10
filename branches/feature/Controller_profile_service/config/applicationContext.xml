@@ -120,7 +120,7 @@
   <!-- Switch Builder -->
   <bean id = "switchBuilder" class = "org.openremote.controller.control.switchtoggle.SwitchBuilder"/>
   
-  <bean id = "skippedStatusTable" class="org.openremote.controller.statuscache.SkippedStatusTable" />
+  <bean id = "changedStatusTable" class="org.openremote.controller.statuscache.ChangedStatusTable" />
 
   <bean id = "statusCache" class="org.openremote.controller.statuscache.StatusCache" />
   <!-- Monitor Builder -->

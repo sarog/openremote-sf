@@ -45,7 +45,10 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
    /** The connection. */
    public static Connection connection;
    
-   private SkippedStatusTable skippedStatusTable = (SkippedStatusTable) SpringContext.getInstance().getBean("skippedStatusTable");
+   /**
+    * TIME_OUT table instance.
+    */
+   private ChangedStatusTable changedStatusTable = (ChangedStatusTable) SpringContext.getInstance().getBean("changedStatusTable");
    private StatusCacheService statusCacheService = (StatusCacheService) SpringContext.getInstance().getBean("statusCacheService");
 
    private static Configuration configuration = ConfigFactory.getConfig();
@@ -121,8 +124,8 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
          public void run() {
             int i = 0;
             for (;; i++) {
-               List<SkippedStatusRecord> skippedStatusRecord = skippedStatusTable.query(2);
-               if (skippedStatusRecord != null && skippedStatusRecord.size() != 0) {
+               List<ChangedStatusRecord> changedStatusRecord = changedStatusTable.query(2);
+               if (changedStatusRecord != null && changedStatusRecord.size() != 0) {
                   if (i % 2 == 0) {
                      statusCacheService.saveOrUpdateStatus(2, "ON");
                   } else {
