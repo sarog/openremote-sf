@@ -19,8 +19,6 @@
 */
 package org.openremote.controller.service.impl;
 
-import java.util.List;
-
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandType;
 import org.openremote.controller.command.DelayCommand;

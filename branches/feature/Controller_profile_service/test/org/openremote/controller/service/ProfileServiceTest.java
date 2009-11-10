@@ -26,7 +26,7 @@ public class ProfileServiceTest extends TestCase {
    }
    
    public String testGenerateXMLToShowAllPanels(){
-      return service.getPanelsXML();
+      return service.getAllPanels();
    }
    /*=========================ID:===================*/
    public void testMyIphone(){

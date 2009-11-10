@@ -62,7 +62,7 @@ public class ProfileServiceImpl implements ProfileService {
    }
 
    @Override
-   public String getPanelsXML() {
+   public String getAllPanels() {
       String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.PANEL_XML;
       Document doc = getPanelDocument(xmlPath);
       return output(doc);
@@ -75,7 +75,7 @@ public class ProfileServiceImpl implements ProfileService {
    }
 
    @Override
-   public String getProfilByName(String panelName) {
+   public String getProfilByPanelName(String panelName) {
       String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.PANEL_XML;
       Document doc = getProfileDocumentByPanelName(xmlPath, panelName);
       return output(doc);
