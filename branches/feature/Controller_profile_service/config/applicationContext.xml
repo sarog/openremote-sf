@@ -30,7 +30,7 @@
     <!-- service for button command from iPhone -->
     <!-- bean id="buttonCommandService" class="org.openremote.controller.service.impl.ButtonCommandServiceImpl">
         <property name="macroCmdExecutionDelay" value="${Macro.Execution.Delay}" />
-    </bean> -->
+    </bean>-->
     
     <!-- service for status command from iPhone -->
     <bean id="statusCommandService" class="org.openremote.controller.service.impl.StatusCommandServiceImpl" />
@@ -53,7 +53,10 @@
     <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
     	<property name="cache" ref="statusCache"></property>
     </bean>
-
+	<!-- status cache service -->
+    <bean id="profileService" class="org.openremote.controller.service.impl.ProfileServiceImpl" >
+    	<property name="configuration" ref="configuration"></property>
+    </bean>
     <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
 		<property name = "commandBuilders">
 		    <props>
@@ -107,6 +110,7 @@
 		        <prop key = "toggle">toggleBuilder</prop>
 		        <prop key = "switch">switchBuilder</prop>
 		        <prop key = "monitor">monitorBuilder</prop>
+		        <prop key = "label">labelBuilder</prop>
 		    </props>
 		</property>
   </bean>
@@ -120,9 +124,14 @@
   <!-- Switch Builder -->
   <bean id = "switchBuilder" class = "org.openremote.controller.control.switchtoggle.SwitchBuilder"/>
   
+  <!-- Monitor Builder -->
+  <bean id= "monitorBuilder" class="org.openremote.controller.control.monitor.MonitorBuilder" />
+  
+  <!-- Label Builder -->
+  <bean id= "labelBuilder" class="org.openremote.controller.control.label.LabelBuilder" />
+  
   <bean id = "changedStatusTable" class="org.openremote.controller.statuscache.ChangedStatusTable" />
 
   <bean id = "statusCache" class="org.openremote.controller.statuscache.StatusCache" />
-  <!-- Monitor Builder -->
-  <bean id= "monitorBuilder " class="org.openremote.controller.control.monitor.MonitorBuilder" />
+
 </beans>

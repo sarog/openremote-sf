@@ -46,7 +46,7 @@ public class MonitorBuilder extends ControlBuilder {
       Monitor monitor = new Monitor();
       List<Element> statuses = monitorElement.getChildren();
       for (Element status : statuses) {
-         if (status.getName().equalsIgnoreCase("status")) {
+         if (status.getName().equalsIgnoreCase(Control.STATUS_ELEMENT_NAME)) {
             List<Element> commands = status.getChildren();
             if (commands != null && commands.size() != 0) {
                for (Element command : commands) {
