@@ -72,11 +72,9 @@
 
 # OS specific support.  $var _must_ be set to either true or false.
 cygwin=false
-os400=false
 darwin=false
 case "`uname`" in
 CYGWIN*) cygwin=true;;
-OS400*) os400=true;;
 Darwin*) darwin=true;;
 esac
 
@@ -99,12 +97,6 @@ PRGDIR=`dirname "$PRG"`
 # Only set CATALINA_HOME if not already set
 [ -z "$CATALINA_HOME" ] && CATALINA_HOME=`cd "$PRGDIR/.." ; pwd`
 
-if [ -r "$CATALINA_BASE"/bin/setenv.sh ]; then
-  . "$CATALINA_BASE"/bin/setenv.sh
-elif [ -r "$CATALINA_HOME"/bin/setenv.sh ]; then
-  . "$CATALINA_HOME"/bin/setenv.sh
-fi
-
 # For Cygwin, ensure paths are in UNIX format before anything is touched
 if $cygwin; then
   [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
@@ -115,35 +107,13 @@ if $cygwin; then
   [ -n "$JSSE_HOME" ] && JSSE_HOME=`cygpath --absolute --unix "$JSSE_HOME"`
 fi
 
-# For OS400
-if $os400; then
-  # Set job priority to standard for interactive (interactive - 6) by using
-  # the interactive priority - 6, the helper threads that respond to requests
-  # will be running at the same priority as interactive jobs.
-  COMMAND='chgjob job('$JOBNAME') runpty(6)'
-  system $COMMAND
-
-  # Enable multi threading
-  export QIBM_MULTI_THREADED=Y
-fi
-
-# Get standard Java environment variables
-if $os400; then
-  # -r will Only work on the os400 if the files are:
-  # 1. owned by the user
-  # 2. owned by the PRIMARY group of the user
-  # this will not work if the user belongs in secondary groups
+if [ -r "$CATALINA_HOME"/bin/tomcat/setclasspath.sh ]; then
   BASEDIR="$CATALINA_HOME"
-  . "$CATALINA_HOME"/bin/setclasspath.sh 
+  . "$CATALINA_HOME"/bin/tomcat/setclasspath.sh
 else
-  if [ -r "$CATALINA_HOME"/bin/setclasspath.sh ]; then
-    BASEDIR="$CATALINA_HOME"
-    . "$CATALINA_HOME"/bin/setclasspath.sh
-  else
-    echo "Cannot find $CATALINA_HOME/bin/setclasspath.sh"
-    echo "This file is needed to run this program"
-    exit 1
-  fi
+  echo "Cannot find $CATALINA_HOME/bin/setclasspath.sh"
+  echo "This file is needed to run this program"
+  exit 1
 fi
 
 # Add on extra jar files to CLASSPATH
@@ -217,32 +187,27 @@ if [ "$1" = "jpda" ] ; then
 fi
 
 if [ "$1" = "debug" ] ; then
-  if $os400; then
-    echo "Debug command not available on OS400"
-    exit 1
-  else
+  shift
+  if [ "$1" = "-security" ] ; then
+    echo "Using Security Manager"
     shift
-    if [ "$1" = "-security" ] ; then
-      echo "Using Security Manager"
-      shift
-      exec "$_RUNJDB" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
-        -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
-        -sourcepath "$CATALINA_HOME"/../../java \
-        -Djava.security.manager \
-        -Djava.security.policy=="$CATALINA_BASE"/conf/catalina.policy \
-        -Dcatalina.base="$CATALINA_BASE" \
-        -Dcatalina.home="$CATALINA_HOME" \
-        -Djava.io.tmpdir="$CATALINA_TMPDIR" \
-        org.apache.catalina.startup.Bootstrap "$@" start
-    else
-      exec "$_RUNJDB" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
-        -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
-        -sourcepath "$CATALINA_HOME"/../../java \
-        -Dcatalina.base="$CATALINA_BASE" \
-        -Dcatalina.home="$CATALINA_HOME" \
-        -Djava.io.tmpdir="$CATALINA_TMPDIR" \
-        org.apache.catalina.startup.Bootstrap "$@" start
-    fi
+    exec "$_RUNJDB" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
+      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
+      -sourcepath "$CATALINA_HOME"/../../java \
+      -Djava.security.manager \
+      -Djava.security.policy=="$CATALINA_BASE"/conf/catalina.policy \
+      -Dcatalina.base="$CATALINA_BASE" \
+      -Dcatalina.home="$CATALINA_HOME" \
+      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
+      org.apache.catalina.startup.Bootstrap "$@" start
+  else
+    exec "$_RUNJDB" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
+      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
+      -sourcepath "$CATALINA_HOME"/../../java \
+      -Dcatalina.base="$CATALINA_BASE" \
+      -Dcatalina.home="$CATALINA_HOME" \
+      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
+      org.apache.catalina.startup.Bootstrap "$@" start
   fi
 
 elif [ "$1" = "run" ]; then
