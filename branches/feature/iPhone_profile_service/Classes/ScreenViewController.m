@@ -26,7 +26,7 @@
 
 @implementation ScreenViewController
 
-@synthesize screen;
+@synthesize screen, polling;
 
 //- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 //    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
@@ -39,7 +39,10 @@
 	[s retain];
 	[screen release];
 	screen = s;
-	
+	if ([[screen pollingComponentsIds] count] > 0 ) {
+		polling = [[PollingHelper alloc] initWithComponentIds:[[[screen pollingComponentsIds] componentsJoinedByString:@","] retain]];
+		//[polling requestCurrentStatusAndStartPolling];	
+	}
 	//[self setTitle:screen.name];
 	
 }
@@ -62,6 +65,23 @@
 }
 */
 
+//- (void)startPolling {
+//	[((ScreenView *)[self view]) startPolling];
+//}
+//- (void)stopPolling {
+//	[((ScreenView *)[self view]) stopPolling];
+//}
+
+- (void)startPolling {
+	[polling requestCurrentStatusAndStartPolling];
+}
+- (void)stopPolling {
+	[polling cancelPolling];
+}
 
 
+- (void)dealoc {
+	[polling release];
+	[super dealloc];
+}
 @end

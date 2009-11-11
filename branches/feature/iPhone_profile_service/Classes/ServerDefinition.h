@@ -31,4 +31,6 @@
 + (NSString *)statusRESTUrl;
 + (NSString *)pollingRESTUrl;
 + (NSString *)serverUrl;
++ (NSString *)securedServerUrl;
++ (NSString *)securedControlRESTUrl;
 @end

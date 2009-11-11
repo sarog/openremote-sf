@@ -24,6 +24,7 @@
 #import "DirectoryDefinition.h"
 #import "ServerDefinition.h"
 #import "ViewHelper.h"
+#import "NotificationConstant.h"
 
 //defines the interval (seconds) of command when pressing a repeat button
 #define REPEAT_CMD_INTERVAL 0.3
@@ -74,7 +75,13 @@
 	 	if (button.repeat == YES ) {			
 			controlTimer = [NSTimer scheduledTimerWithTimeInterval:REPEAT_CMD_INTERVAL	target:self selector:@selector(sendCommand:) userInfo:nil repeats:YES];			
 		} 
-	
+	}
+	if (button.navigate) {
+		Navigate *navi = button.navigate;
+		if (navi.toGroup > 0) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateToGroup object:navi];
+		}
+		
 	}
 	
 }
@@ -90,11 +97,11 @@
 	
 	Button *button = (Button *)control;
 	if (button.image) {
-		
 		uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.image.src]];
 		uiImagePressed = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.imagePressed.src]];	
 		[uiButton setImage:uiImage forState:UIControlStateNormal];
 		[uiButton setImage:uiImagePressed forState:UIControlStateHighlighted];
+		//use top-left alignment
 		[uiButton setFrame:CGRectMake(0, 0, uiImage.size.width, uiImage.size.height)];
 	} else {
 		[uiButton setFrame:[self bounds]];

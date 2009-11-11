@@ -22,11 +22,17 @@
 
 #import <UIKit/UIKit.h>
 #import "Screen.h"
+#import "PollingHelper.h"
 
 @interface ScreenViewController : UIViewController {
 	Screen *screen;
+	PollingHelper *polling;
 }
 
+- (void)startPolling;
+- (void)stopPolling;
+
 @property(nonatomic,retain) Screen *screen;
+@property(nonatomic,retain) PollingHelper *polling;
 
 @end

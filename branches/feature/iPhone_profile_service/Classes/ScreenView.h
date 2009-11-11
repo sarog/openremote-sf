@@ -25,9 +25,11 @@
 #import "URLConnectionHelper.h"
 #import "ControlView.h"
 
+
 @interface ScreenView : UIView {
-	Screen *screen;	
+	Screen *screen;
 }
+
 
 @property(nonatomic,retain) Screen *screen;
 

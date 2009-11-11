@@ -32,11 +32,12 @@
 			textField.contentVerticalAlignment = UIControlContentHorizontalAlignmentCenter;
 			textField.font = [UIFont systemFontOfSize:22];
 			textField.keyboardType = UIKeyboardTypeURL;
-			textField.adjustsFontSizeToFitWidth = YES;
+			//textField.adjustsFontSizeToFitWidth = YES;
 			textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
 			textField.autocorrectionType = UITextAutocorrectionTypeNo;
 			textField.textColor = [UIColor darkGrayColor];
 			textField.returnKeyType = UIReturnKeyDone;
+			self.textLabel.text = @"111";
 			[self addSubview:textField];
     }
     return self;

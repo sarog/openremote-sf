@@ -11,6 +11,8 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
+		8C1F31C310AA9B3D0081A3D4 /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C1F31C210AA9B3D0081A3D4 /* btn_green.png */; };
+		8C1F31C410AA9B3D0081A3D4 /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C1F31C210AA9B3D0081A3D4 /* btn_green.png */; };
 		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		8C460E54109552EB00C7A686 /* panel_absolute_toggle.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C460E51109552EB00C7A686 /* panel_absolute_toggle.xml */; };
 		8C460E6F109554D600C7A686 /* CheckNetworkException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E6E109554D600C7A686 /* CheckNetworkException.m */; };
@@ -147,7 +149,8 @@
 		8CA75F0E0F57BED100ADF0C0 /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA75F0D0F57BED100ADF0C0 /* button.png */; };
 		8CA7603F0F57E57300ADF0C0 /* AirConditionerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA7603E0F57E57300ADF0C0 /* AirConditionerIcon.png */; };
 		8CA7605C0F57E64E00ADF0C0 /* lightIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA7605B0F57E64E00ADF0C0 /* lightIcon.png */; };
-		8CA7607B0F57EA7100ADF0C0 /* buttonHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA7607A0F57EA7100ADF0C0 /* buttonHighlighted.png */; };
+		8CAEB81B10A6B25B0051C827 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CAEB81A10A6B25B0051C827 /* LoginViewController.m */; };
+		8CAEB81C10A6B25B0051C827 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CAEB81A10A6B25B0051C827 /* LoginViewController.m */; };
 		8CB33E4E0FCA4AE400B010DF /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */; };
 		8CF6A2800FBD3782006ED733 /* AsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27D0FBD3782006ED733 /* AsyncSocket.m */; };
 		8CF6A2810FBD3782006ED733 /* AsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27F0FBD3782006ED733 /* AsyncUdpSocket.m */; };
@@ -166,6 +169,7 @@
 		32CA4F630368D1EE00C91783 /* openremote_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = openremote_Prefix.pch; sourceTree = "<group>"; };
 		799CC3CC0F4D4EEA006195BD /* URLConnectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLConnectionHelper.h; sourceTree = "<group>"; };
 		799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLConnectionHelper.m; sourceTree = "<group>"; };
+		8C1F31C210AA9B3D0081A3D4 /* btn_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = btn_green.png; sourceTree = "<group>"; };
 		8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		8C460E4A109552C800C7A686 /* UnitTest.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UnitTest.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C460E4B109552C800C7A686 /* UnitTest-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "UnitTest-Info.plist"; sourceTree = "<group>"; };
@@ -295,7 +299,8 @@
 		8CA75F0D0F57BED100ADF0C0 /* button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = button.png; sourceTree = "<group>"; };
 		8CA7603E0F57E57300ADF0C0 /* AirConditionerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AirConditionerIcon.png; sourceTree = "<group>"; };
 		8CA7605B0F57E64E00ADF0C0 /* lightIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lightIcon.png; sourceTree = "<group>"; };
-		8CA7607A0F57EA7100ADF0C0 /* buttonHighlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = buttonHighlighted.png; sourceTree = "<group>"; };
+		8CAEB81910A6B25B0051C827 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
+		8CAEB81A10A6B25B0051C827 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		8CF6A27C0FBD3782006ED733 /* AsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsyncSocket.h; sourceTree = "<group>"; };
 		8CF6A27D0FBD3782006ED733 /* AsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AsyncSocket.m; sourceTree = "<group>"; };
@@ -394,12 +399,12 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				8C1F31C210AA9B3D0081A3D4 /* btn_green.png */,
 				974DAC981063B2E300B1B04B /* Icon.png */,
 				97B0011F106127AF00C31E4A /* iTunesArtwork */,
 				8C6528470FC0F64F002632BF /* InitViewController.xib */,
 				8C652A4C0FC125FE002632BF /* global.logo.png */,
 				8C652A480FC125AD002632BF /* loading.png */,
-				8CA7607A0F57EA7100ADF0C0 /* buttonHighlighted.png */,
 				8CA7605B0F57E64E00ADF0C0 /* lightIcon.png */,
 				8CA7603E0F57E57300ADF0C0 /* AirConditionerIcon.png */,
 				8CA75F0D0F57BED100ADF0C0 /* button.png */,
@@ -533,6 +538,8 @@
 		8CFEE2860F558C3D00DF8759 /* view */ = {
 			isa = PBXGroup;
 			children = (
+				8C460F0E1095628C00C7A686 /* TextFieldCell.h */,
+				8C460F0F1095628C00C7A686 /* TextFieldCell.m */,
 				8C460E891095563A00C7A686 /* AbsoluteLayoutContainerView.h */,
 				8C460E8A1095563A00C7A686 /* AbsoluteLayoutContainerView.m */,
 				8C460E8B1095563A00C7A686 /* ButtonView.h */,
@@ -578,10 +585,10 @@
 				8C460F0B1095628C00C7A686 /* ScreenViewController.m */,
 				8C460F0C1095628C00C7A686 /* ServerAutoDiscoveryController.h */,
 				8C460F0D1095628C00C7A686 /* ServerAutoDiscoveryController.m */,
-				8C460F0E1095628C00C7A686 /* TextFieldCell.h */,
-				8C460F0F1095628C00C7A686 /* TextFieldCell.m */,
 				8C460F101095628C00C7A686 /* UpdateController.h */,
 				8C460F111095628C00C7A686 /* UpdateController.m */,
+				8CAEB81910A6B25B0051C827 /* LoginViewController.h */,
+				8CAEB81A10A6B25B0051C827 /* LoginViewController.m */,
 			);
 			name = controller;
 			sourceTree = "<group>";
@@ -672,7 +679,6 @@
 				8CA75F0E0F57BED100ADF0C0 /* button.png in Resources */,
 				8CA7603F0F57E57300ADF0C0 /* AirConditionerIcon.png in Resources */,
 				8CA7605C0F57E64E00ADF0C0 /* lightIcon.png in Resources */,
-				8CA7607B0F57EA7100ADF0C0 /* buttonHighlighted.png in Resources */,
 				8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */,
 				8CFDB2770FBBBF4500D204CB /* appSettings.plist in Resources */,
 				8C6528480FC0F64F002632BF /* InitViewController.xib in Resources */,
@@ -682,6 +688,7 @@
 				97B00120106127AF00C31E4A /* iTunesArtwork in Resources */,
 				974DAC881063ADEF00B1B04B /* Entitlements.plist in Resources */,
 				974DAC991063B2E300B1B04B /* Icon.png in Resources */,
+				8C1F31C310AA9B3D0081A3D4 /* btn_green.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -693,6 +700,7 @@
 				8C460F8E1095666A00C7A686 /* panel_absolute_switch.xml in Resources */,
 				8C6504731098337F006FC19F /* panel_grid_switch.xml in Resources */,
 				8C6505F810987E1D006FC19F /* panel_grid_button.xml in Resources */,
+				8C1F31C410AA9B3D0081A3D4 /* btn_green.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -775,6 +783,7 @@
 				8C65FDF51096F33C006FC19F /* PollingStatusParserDelegate.m in Sources */,
 				8C6502E2109809EC006FC19F /* PollingHelper.m in Sources */,
 				8C650568109870D2006FC19F /* GridCellView.m in Sources */,
+				8CAEB81B10A6B25B0051C827 /* LoginViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -839,6 +848,7 @@
 				8C460FED1095A30A00C7A686 /* PanelXMLParsingTests.m in Sources */,
 				8C65FDF61096F33C006FC19F /* PollingStatusParserDelegate.m in Sources */,
 				8C6502E3109809EC006FC19F /* PollingHelper.m in Sources */,
+				8CAEB81C10A6B25B0051C827 /* LoginViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

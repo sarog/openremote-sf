@@ -20,21 +20,16 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "Group.h"
-#import "PaginationController.h"
 
-@interface GroupController : UIViewController {
 
-	Group *group;
-	PaginationController *paginationController;
+@interface LoginViewController : UITableViewController <UITextFieldDelegate> {
 	
+	UITextField *usernameField;
+	UITextField *passwordField;
+
 }
 
-- (id)initWithGroup:(Group *)newGroup;
-- (void)startPolling;
-- (void)stopPolling;
-
-@property (nonatomic, retain) Group *group;
-@property (nonatomic, readonly) PaginationController *paginationController;
+@property (nonatomic, readonly)	UITextField *usernameField;
+@property (nonatomic, readonly)	UITextField *passwordField;
 
 @end

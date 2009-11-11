@@ -90,7 +90,7 @@
 	[request release];
 	if ([resp statusCode] != 200 ){
 		@throw [CheckNetworkException exceptionWithTitle:@"Can't find xml resource" 
-													  message:@"Please check that the iphone.xml file has been correctly deployed on the controller."];
+													  message:@"Please check that the panel.xml file has been correctly deployed on the controller."];
 	}
 }
 
