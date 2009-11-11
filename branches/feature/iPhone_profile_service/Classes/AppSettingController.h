@@ -32,6 +32,7 @@
 	ServerAutoDiscoveryController *autoDiscoverController;
 	UIBarButtonItem *done;
 	UIBarButtonItem *edit;
+	UIBarButtonItem *cancel;
 	BOOL isEditing;
 	UIActivityIndicatorView *loadingView;
 	UpdateController *updateController;

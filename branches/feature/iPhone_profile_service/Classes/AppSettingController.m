@@ -41,6 +41,7 @@
 - (BOOL)isAutoServerSection:(NSIndexPath *)indexPath;
 - (BOOL)isCustomServerSection:(NSIndexPath *)indexPath;
 - (BOOL)isAddCustomServerRow:(NSIndexPath *)indexPath;
+- (void)cancelView:(id)sender;
 @end
 
 
@@ -68,7 +69,11 @@
 		if (!edit) {
 			edit = [[UIBarButtonItem alloc]initWithTitle:@"Edit" style:UIBarButtonItemStyleDone target:self action:@selector(editSettings)];
 			[edit setStyle:UIButtonTypeRoundedRect];
-		}		
+		}
+		if (cancel == nil) {
+			cancel = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelView:)];
+		}
+			
 	}
 	return self;
 }
@@ -120,6 +125,7 @@
 			autoDiscoverController = nil;
 		}
 		autoDiscoverController = [[ServerAutoDiscoveryController alloc]initWithDelegate:self];
+		self.navigationItem.leftBarButtonItem = cancel;
 	} else {
 		if (autoDiscoverController) {
 			[autoDiscoverController setDelegate:nil];
@@ -179,6 +185,10 @@
 	[insertIndexPaths release];
 }
 
+
+- (void)cancelView:(id)sender {
+	[self dismissModalViewControllerAnimated:YES];
+}
 
 /*
 - (void)viewDidLoad {
@@ -284,6 +294,7 @@
 	if (!autoDiscovery) {
 		self.navigationItem.leftBarButtonItem = edit;
 	}
+	self.navigationItem.leftBarButtonItem = cancel;
 	
 	if (serverArray) {
 		[serverArray release];
@@ -507,6 +518,7 @@
 	[updateController release];
 	[edit release];
 	[done release];
+	[cancel release];
 	[serverArray release];
 	[super dealloc];
 }

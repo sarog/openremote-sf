@@ -21,6 +21,7 @@
 
 
 #import "ViewHelper.h"
+#import "NotificationConstant.h"
 
 
 @implementation ViewHelper
@@ -30,4 +31,20 @@
 	[alert show];
 	[alert autorelease];
 }
+
+-(void) showAlertViewWithTitleAndSettingNavigation:(NSString *)title Message:(NSString *)message  {
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+	[alert addButtonWithTitle:@"Settings"];
+	[alert show];
+	[alert setDelegate:self];
+	[alert autorelease];
+}
+
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (buttonIndex == 1) {//setting button
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateSettingsView object:nil];
+	}
+}
+
+
 @end

@@ -36,6 +36,7 @@
 #import "Navigate.h"
 #import "NotificationConstant.h"
 #import	"LoginViewController.h"
+#import "AppSettingController.h"
 
 //Private method declare
 @interface AppDelegate (Private)
@@ -45,6 +46,8 @@
 - (void)didUpdateFail:(NSString *)errorMessage;
 - (void)navigateToGroup:(NSNotification *)notification;
 - (void)populateLoginView:(id)sender;
+- (void)populateSettingsView:(id)sender;
+- (void)refreshView:(id)sender;
 @end
 
 @implementation AppDelegate
@@ -81,16 +84,14 @@
 	[initViewController.view removeFromSuperview];
 	NSArray *groups = [[Definition sharedDefinition] groups];
 	
+	GroupController *defaultGroupController = nil;
 	if (groups.count > 0) {
 		GroupController *gc = [[GroupController alloc] initWithGroup:((Group *)[groups objectAtIndex:0])];
 		[groupControllers addObject:gc];
 		[groupViewMap setObject:gc.view forKey:[NSString stringWithFormat:@"%d", gc.group.groupId]];
+		defaultGroupController = gc;	
 	}
-	
-	GroupController *defaultGroupController = nil;
-	if (groupControllers.count > 0 ) {
-		defaultGroupController = [groupControllers objectAtIndex:0];		
-	}
+
 	//navigationController = [[UINavigationController alloc] initWithRootViewController:defaultGroupController];
 	//[window addSubview:navigationController.view];
 	currentGroupController = defaultGroupController;
@@ -98,6 +99,8 @@
 	//[defaultGroupController release];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateToGroup:) name:NotificationNavigateToGroup object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateSettingsView:) name:NotificationPopulateSettingsView object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView:) name:NotificationRefreshGroupsView object:nil];	
 }
 
 - (void)navigateToGroup:(NSNotification *)notification {
@@ -148,16 +151,50 @@
 	[currentGroupController presentModalViewController:loginNavController animated:YES];
 	[loginController release];
 	[loginNavController release];
-}	
+}
+
+
+- (void)populateSettingsView:(id)sender {
+	AppSettingController *settingController = [[AppSettingController alloc]init];
+	UINavigationController *settingNavController = [[UINavigationController alloc] initWithRootViewController:settingController];
+	[currentGroupController presentModalViewController:settingNavController animated:YES];
+	[settingController release];
+	[settingNavController release];
+
+}
+
+- (void)refreshView:(id)sender {
+	for (UIView *view in window.subviews) {
+		[view removeFromSuperview];
+	}
+	[groupControllers removeAllObjects];
+	[groupViewMap removeAllObjects];
+	[currentGroupController stopPolling];
+	currentGroupController = nil;
+	
+	GroupController *defaultGroupController = nil;
+	NSArray *groups = [[Definition sharedDefinition] groups];
+	if (groups.count > 0) {
+		GroupController *gc = [[GroupController alloc] initWithGroup:((Group *)[groups objectAtIndex:0])];
+		[groupControllers addObject:gc];
+		[groupViewMap setObject:gc.view forKey:[NSString stringWithFormat:@"%d", gc.group.groupId]];
+		defaultGroupController = gc;	
+	}
+	
+	currentGroupController = defaultGroupController;
+	[window addSubview:defaultGroupController.view];
+	
+}
+
 
 #pragma mark delegate method of updateController
 - (void)didUpadted {
 	[self updateDidFinished];
 }
 
-- (void)didUseLocalCache:(NSString *)errorMessage {
-	[ViewHelper showAlertViewWithTitle:@"Warning" Message:[errorMessage stringByAppendingString:@" Using cached content."]];
+- (void)didUseLocalCache:(NSString *)errorMessage {	
 	[self updateDidFinished];
+	[[ViewHelper alloc] showAlertViewWithTitleAndSettingNavigation:@"Warning" Message:[errorMessage stringByAppendingString:@" Using cached content."]];
 }
 
 - (void)didUpdateFail:(NSString *)errorMessage {

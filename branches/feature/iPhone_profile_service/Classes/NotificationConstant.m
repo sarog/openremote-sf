@@ -35,5 +35,7 @@ NSString *const NotificationRefreshGroupsView = @"refreshGroupsViewNotification"
 NSString *const NotificationPollingStatusIdFormat = @"polling_status_%d";
 NSString *const NotificationNavigateToGroup = @"navigateToGroupNotification";
 NSString *const NotificationPopulateCredentialView = @"NotificationPopulateCredentialView";
+NSString *const NotificationPopulateSettingsView = @"NotificationPopulateSettingsView";
+
 
 @end

@@ -24,7 +24,6 @@
 #import "PaginationController.h"
 #import "Screen.h"
 #import "ScreenViewController.h"
-#import "AppSettingController.h"
 
 
 
@@ -37,15 +36,10 @@
 		if (newGroup) {
 			group = newGroup;
 			[self setTitle:group.name];
-		}		
-		UIBarButtonItem *settingButton = [[UIBarButtonItem alloc] initWithTitle:@"Settings" style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsView)];
-		self.navigationItem.rightBarButtonItem = settingButton;
-		
-		[settingButton release];
+		}
 		
 		paginationController = [[PaginationController alloc] init];
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:NotificationRefreshGroupsView object:nil];	
+				
 	}
 	return self;
 }
@@ -107,20 +101,6 @@
 		NSLog(@"stop polling %d",svc.screen.screenId);
 		[svc stopPolling];
 	}
-}
-
-- (void)showSettingsView {
-	AppSettingController *settingController = [[AppSettingController alloc]init];
-	UINavigationController *settingNavController = [[UINavigationController alloc] initWithRootViewController:settingController];
-	[self presentModalViewController:settingNavController animated:YES];
-	[settingController release];
-	[settingNavController release];
-}	
-
-- (void)refreshView {
-	NSLog(@"reload group controller.");
-	//activities = nil;
-
 }
 
 

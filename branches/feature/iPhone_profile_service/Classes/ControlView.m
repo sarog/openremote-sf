@@ -80,7 +80,7 @@
 
 - (void)sendCommandRequest:(NSString *)commandType{
 	
-	if ([[Definition sharedDefinition] username] == nil) {
+	if ([[Definition sharedDefinition] password] == nil) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
 		return;
 	}
@@ -140,6 +140,7 @@
 				break;
 			case 401://HTTP Basic Auth
 				errorMessage = [NSString stringWithString:@"You can't execute a protected command without authentication."];
+				[Definition sharedDefinition].password = nil;
 				break;
 		}
 		if (!errorMessage) {
@@ -161,13 +162,10 @@
 
 #pragma mark delegate method of NSURLConnection
 - (void) definitionURLConnectionDidFailWithError:(NSError *)error {
-	//if (!isError) {
+
 	[self cancelTimer];
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-		[alert show];
-		[alert release];
-		//isError = YES;
-	//} 
+	[[ViewHelper alloc] showAlertViewWithTitleAndSettingNavigation:@"Command failed" Message:[error localizedDescription]];
+
 }
 
 //Shows alertView when the request successful
