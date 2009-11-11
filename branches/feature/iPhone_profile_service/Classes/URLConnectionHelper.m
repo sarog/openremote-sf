@@ -22,9 +22,22 @@
 
 #import "URLConnectionHelper.h"
 
+
+//allows self-signed cert
+@interface NSURLRequest(HTTPSCertificate) 
++ (BOOL)allowsAnyHTTPSCertificateForHost:(NSString *)host;
+@end
+
+
+@implementation NSURLRequest(HTTPSCertificate)
++ (BOOL)allowsAnyHTTPSCertificateForHost:(NSString *)host {
+	return YES; // Should probably return YES only for a specific host
+}
+@end
+
 @implementation URLConnectionHelper 
 
-@synthesize delegate;
+@synthesize delegate, connection;
 
 #pragma mark constructor
 - (id)initWithURL:(NSURL *)url delegate:(id <URLConnectionHelperDelegate>)d  {
@@ -35,7 +48,7 @@
 		NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:15];
 		
 		//the initWithRequest constractor will invoke the request
-		[[[NSURLConnection alloc] initWithRequest:request delegate:self] autorelease];
+		connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
 		[request release];
 	}
 	return self;
@@ -46,9 +59,21 @@
 		[self setDelegate:d];
 		receivedData = [[NSMutableData alloc] init];
 		
-		[[[NSURLConnection alloc] initWithRequest:request delegate:self] autorelease];
+		connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
 	}
 	return self;
+}
+
+- (void)cancelConnection {
+	if (connection) {
+		NSLog(@"cancel url connection");
+		[connection cancel];
+		if (connection) {
+			[connection release];
+			connection = nil;
+		}
+		
+	}
 }
 
 
@@ -87,7 +112,7 @@
 
 - (void)dealloc {
 	[receivedData release];
-	
+	[connection release];
 	[super dealloc];
 }
 

@@ -27,6 +27,9 @@
 #import "ServerDefinition.h"
 #import "ButtonView.h"
 #import "Button.h"
+#import "CFNetwork/CFHTTPMessage.h"
+#import "Definition.h"
+#import "NotificationConstant.h"
 
 @interface ControlView (Private)
 
@@ -73,15 +76,30 @@
 	[self doesNotRecognizeSelector:_cmd];
 }
 
+
+
 - (void)sendCommandRequest:(NSString *)commandType{
 	
-	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition controlRESTUrl]];
+	if ([[Definition sharedDefinition] username] == nil) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+	}
+
+	
+	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition securedControlRESTUrl]];
 	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",control.controlId,commandType]];
 	NSLog([location stringByAppendingFormat:@"/%d/%@",control.controlId,commandType]);
+
+
 	//assemble put request 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
 	[request setURL:url];
 	[request setHTTPMethod:@"POST"];
+	
+	CFHTTPMessageRef dummyRequest = CFHTTPMessageCreateRequest(kCFAllocatorDefault, CFSTR("GET"), (CFURLRef)[request URL], kCFHTTPVersion1_1);
+	CFHTTPMessageAddAuthentication(dummyRequest, nil, (CFStringRef)@"dan", (CFStringRef)@"dan", kCFHTTPAuthenticationSchemeBasic, FALSE);
+	NSString *authString = (NSString *)CFHTTPMessageCopyHeaderFieldValue(dummyRequest, CFSTR("Authorization"));
+	CFRelease(dummyRequest);
+	[request setValue:authString forHTTPHeaderField:@"Authorization"];
 	
 	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
 	
@@ -118,6 +136,9 @@
 				break;
 			case 500:
 				errorMessage = [NSString stringWithString:@"Error in controller. Please check controller log."];
+				break;
+			case 401://HTTP Basic Auth
+				errorMessage = [NSString stringWithString:@"You can't execute a protected command without authentication."];
 				break;
 		}
 		if (!errorMessage) {
@@ -163,7 +184,7 @@
 
 - (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
 	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
-	NSLog(@"statusCode is %d", [httpResp statusCode]);
+	NSLog(@"control[%d]statusCode is %d",control.controlId, [httpResp statusCode]);
 	
 	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
 }

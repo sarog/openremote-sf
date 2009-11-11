@@ -30,8 +30,17 @@
 	return  serverUrl;
 }
 
+//HTTPS
++ (NSString *)securedServerUrl {
+	static NSString *serverUrl;
+	serverUrl = [AppSettingsDefinition getCurrentServerUrl];
+	serverUrl = [serverUrl stringByReplacingOccurrencesOfString:@"http" withString:@"https"];
+	serverUrl = [serverUrl stringByReplacingOccurrencesOfString:@"8080" withString:@"8443"];
+	return  serverUrl;
+}
+
 + (NSString *)panelXmlUrl {
-	return [[self serverUrl] stringByAppendingPathComponent:@"resources/iphone.xml"];
+	return [[self serverUrl] stringByAppendingPathComponent:@"resources/panel.xml"];
 }
 
 + (NSString *)imageUrl {
@@ -40,6 +49,10 @@
 
 + (NSString *)controlRESTUrl {
 	return [[self serverUrl] stringByAppendingPathComponent:@"rest/control"];
+}
+
++ (NSString *)securedControlRESTUrl {
+	return [[self securedServerUrl] stringByAppendingPathComponent:@"rest/control"];
 }
 
 + (NSString *)statusRESTUrl {

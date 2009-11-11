@@ -33,11 +33,14 @@
 	//this object must implement this protocal like a interface in java.So we can ensure to call the mehod in deleget instance.
 	id <URLConnectionHelperDelegate> delegate;
 	NSMutableData *receivedData;
+	NSURLConnection *connection;
 }
 
 - (id)initWithURL:(NSURL *)url delegate:(id <URLConnectionHelperDelegate>)delegate;
 - (id)initWithRequest:(NSURLRequest *)request delegate:(id <URLConnectionHelperDelegate>)d ;
+- (void)cancelConnection;
 
 @property(nonatomic,retain) id <URLConnectionHelperDelegate> delegate;
+@property(nonatomic,retain) NSURLConnection *connection;
 
 @end

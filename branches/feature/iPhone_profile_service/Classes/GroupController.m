@@ -30,7 +30,7 @@
 
 @implementation GroupController
 
-@synthesize group;
+@synthesize group, paginationController;
 
 - (id)initWithGroup:(Group *)newGroup {
 	if (self = [super init]) {
@@ -40,7 +40,11 @@
 		}		
 		UIBarButtonItem *settingButton = [[UIBarButtonItem alloc] initWithTitle:@"Settings" style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsView)];
 		self.navigationItem.rightBarButtonItem = settingButton;
+		
 		[settingButton release];
+		
+		paginationController = [[PaginationController alloc] init];
+		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView) name:NotificationRefreshGroupsView object:nil];	
 	}
 	return self;
@@ -66,7 +70,8 @@
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	PaginationController *paginationController = [[PaginationController alloc] init];
+	[self.navigationController setNavigationBarHidden:YES];
+	
 	
 	// Get array of screens
 	// Build array of UIViewControllers for each screen
@@ -81,13 +86,27 @@
 		[viewController release];
 	}
 	[paginationController setViewControllers:viewControllers];
-	[paginationController setTitle:[group name]];
+	//[paginationController setTitle:[group name]];
 	[self setView:paginationController.view];
 	[viewControllers release];
 	
 	
 	//[paginationController release];	
 	
+}
+
+- (void)startPolling {
+	if (paginationController.viewControllers.count > 0) {
+		ScreenViewController *svc = (ScreenViewController *)[paginationController.viewControllers objectAtIndex:0];
+		[svc startPolling];
+	}
+}
+
+- (void)stopPolling {
+	for (ScreenViewController *svc in paginationController.viewControllers) {
+		NSLog(@"stop polling %d",svc.screen.screenId);
+		[svc stopPolling];
+	}
 }
 
 - (void)showSettingsView {
@@ -127,7 +146,8 @@
 
 
 - (void)dealloc {
-    [super dealloc];
+	[paginationController release];
+	[super dealloc];
 }
 
 

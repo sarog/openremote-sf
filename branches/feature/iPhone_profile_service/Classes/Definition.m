@@ -54,7 +54,7 @@ static Definition *myInstance = nil;
 @implementation Definition
 
 
-@synthesize isUpdating, lastUpdateTime, groups, screens, imageNames, loading;
+@synthesize isUpdating, lastUpdateTime, groups, screens, imageNames, loading, username, password;
 
 - (id)init {			
 	if (myInstance != nil) {
@@ -78,6 +78,15 @@ static Definition *myInstance = nil;
 		}
 	}
 	return myInstance;
+}
+
+- (Group *)findGroupById:(int)groupId {
+	for (Group *g in groups) {
+		if (g.groupId == groupId) {
+			return [g retain];			
+		}
+	}
+	return nil;
 }
 
 - (BOOL)isDataReady {

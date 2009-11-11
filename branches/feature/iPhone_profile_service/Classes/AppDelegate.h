@@ -23,6 +23,7 @@
 #import <UIKit/UIKit.h>
 #import "InitViewController.h"
 #import "UpdateController.h"
+#import "GroupController.h"
 
 @interface AppDelegate : NSObject <UIApplicationDelegate> {
 	UIWindow *window;
@@ -33,7 +34,13 @@
 		
 	UINavigationController *navigationController;
 	
+	NSMutableArray *groupControllers;
+	
+	GroupController *currentGroupController;
+	
 	UpdateController *updateController;
+	
+	NSMutableDictionary *groupViewMap;
 }
 
 

@@ -22,6 +22,7 @@
 
 #import <UIKit/UIKit.h>
 #import "Screen.h"
+#import "Group.h"
 
 
 @interface Definition : NSObject {		
@@ -33,6 +34,8 @@
 	NSInvocationOperation *updateOperation;
 	NSOperationQueue *updateOperationQueue; 
 	UILabel *loading;
+	NSString *username;
+	NSString *password;
 }
 
 + (Definition *)sharedDefinition;
@@ -41,7 +44,7 @@
 - (void)useLocalCacheDirectly;
 - (void)clearPanelXMLData;
 - (void)addImageName:(NSString *)imageName;
-
+- (Group *)findGroupById:(int)groupId;
 
 @property (nonatomic,readonly) BOOL isUpdating;
 @property (nonatomic,readonly) NSDate *lastUpdateTime;
@@ -49,5 +52,7 @@
 @property (nonatomic,readonly) NSMutableArray *screens;
 @property (nonatomic,readonly) NSMutableArray *imageNames;
 @property (nonatomic,retain) UILabel *loading;
+@property	(nonatomic,readonly) NSString *username;
+@property	(nonatomic,readonly) NSString *password;
 
 @end
