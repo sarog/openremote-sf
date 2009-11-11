@@ -52,7 +52,7 @@
 @property (nonatomic,readonly) NSMutableArray *screens;
 @property (nonatomic,readonly) NSMutableArray *imageNames;
 @property (nonatomic,retain) UILabel *loading;
-@property	(nonatomic,readonly) NSString *username;
-@property	(nonatomic,readonly) NSString *password;
+@property	(nonatomic,copy) NSString *username;
+@property	(nonatomic,copy) NSString *password;
 
 @end
