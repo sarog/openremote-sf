@@ -21,6 +21,7 @@
 
 #import "LoginViewController.h"
 #import "Definition.h"
+#import "ViewHelper.h"
 
 @interface LoginViewController (Private)
 
@@ -64,10 +65,13 @@
 
 - (void)cancelView:(id)sender {
 	[self dismissModalViewControllerAnimated:YES];
-	//[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
 }
 
 - (void)signin:(id)sender {
+	if (usernameField.text == nil || passwordField.text == nil || [@"" isEqualToString:usernameField.text] || [@"" isEqualToString:passwordField.text]) {
+		[ViewHelper showAlertViewWithTitle:@"" Message:@"No username or password entered."];
+		return;
+	}
 	[Definition sharedDefinition].username = usernameField.text;
 	[Definition sharedDefinition].password = passwordField.text;
 	[self dismissModalViewControllerAnimated:YES];
@@ -126,8 +130,9 @@
     
 		if (indexPath.row == 0) {
 			loginCell.textLabel.text = @"Username";
-			[textField becomeFirstResponder];
+			//[textField becomeFirstResponder];
 			usernameField = textField;
+			usernameField.text = [Definition sharedDefinition].username; 
 		} else if (indexPath.row == 1) {
 			loginCell.textLabel.text = @"Password";
 			[textField setSecureTextEntry:YES];
@@ -181,6 +186,12 @@
 	return nil;
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
+	if (section == 1) {
+		return @"Control commands and component value updates from Controller are secured. This requires user authentication.";
+	}
+	return nil;
+}
 
 
 - (void)dealloc {

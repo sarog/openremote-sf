@@ -132,9 +132,7 @@
 #pragma mark delegate method of NSURLConnection
 - (void) definitionURLConnectionDidFailWithError:(NSError *)error {
 	if (!isError) {
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-		[alert show];
-		[alert release];
+		NSLog(@"Polling failed, %@",[error localizedDescription]);
 		isError = YES;
 	} 
 }

@@ -29,5 +29,6 @@
 }
 
 +(void) showAlertViewWithTitle:(NSString *)title Message:(NSString *)message;
+-(void) showAlertViewWithTitleAndSettingNavigation:(NSString *)title Message:(NSString *)message;
 
 @end
