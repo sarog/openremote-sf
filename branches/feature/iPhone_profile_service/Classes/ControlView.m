@@ -82,6 +82,7 @@
 	
 	if ([[Definition sharedDefinition] username] == nil) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+		return;
 	}
 
 	
@@ -96,7 +97,7 @@
 	[request setHTTPMethod:@"POST"];
 	
 	CFHTTPMessageRef dummyRequest = CFHTTPMessageCreateRequest(kCFAllocatorDefault, CFSTR("GET"), (CFURLRef)[request URL], kCFHTTPVersion1_1);
-	CFHTTPMessageAddAuthentication(dummyRequest, nil, (CFStringRef)@"dan", (CFStringRef)@"dan", kCFHTTPAuthenticationSchemeBasic, FALSE);
+	CFHTTPMessageAddAuthentication(dummyRequest, nil, (CFStringRef)[[Definition sharedDefinition] username], (CFStringRef)[[Definition sharedDefinition] password], kCFHTTPAuthenticationSchemeBasic, FALSE);
 	NSString *authString = (NSString *)CFHTTPMessageCopyHeaderFieldValue(dummyRequest, CFSTR("Authorization"));
 	CFRelease(dummyRequest);
 	[request setValue:authString forHTTPHeaderField:@"Authorization"];

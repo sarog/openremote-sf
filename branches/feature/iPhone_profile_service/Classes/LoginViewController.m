@@ -20,6 +20,7 @@
  */
 
 #import "LoginViewController.h"
+#import "Definition.h"
 
 @interface LoginViewController (Private)
 
@@ -67,6 +68,8 @@
 }
 
 - (void)signin:(id)sender {
+	[Definition sharedDefinition].username = usernameField.text;
+	[Definition sharedDefinition].password = passwordField.text;
 	[self dismissModalViewControllerAnimated:YES];
 }
 
@@ -123,7 +126,7 @@
     
 		if (indexPath.row == 0) {
 			loginCell.textLabel.text = @"Username";
-			//[textField becomeFirstResponder];
+			[textField becomeFirstResponder];
 			usernameField = textField;
 		} else if (indexPath.row == 1) {
 			loginCell.textLabel.text = @"Password";
@@ -152,19 +155,21 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 	
 	if ([@"" isEqualToString:usernameField.text]) {
-		[passwordField resignFirstResponder];
 		[usernameField becomeFirstResponder];
-		NSLog(@"username is nil");
-	} 
-	if ([@"" isEqualToString:passwordField.text]) {
-		[usernameField resignFirstResponder];
-		[passwordField becomeFirstResponder];
-		NSLog(@"passwordField is nil");
-	} 
-
-
-
+		return YES;
+	} else {
+		[passwordField becomeFirstResponder];		
+	}
 	
+	if ([@"" isEqualToString:passwordField.text]) {
+		[passwordField becomeFirstResponder];
+		return YES;
+	} else {
+		[usernameField becomeFirstResponder];		
+	}
+	
+	[self signin:nil];
+
 	return YES;
 }
 
