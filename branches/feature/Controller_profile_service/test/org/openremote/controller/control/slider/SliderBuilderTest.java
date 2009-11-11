@@ -31,6 +31,7 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 import org.openremote.controller.Constants;
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.exception.InvalidElementException;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.spring.SpringContext;
 
@@ -59,8 +60,11 @@ public class SliderBuilderTest extends TestCase {
    
    /** Get invalid slider with control id from controller.xml. */
    public void testGetInvalidSlider() throws JDOMException{
-      Slider slider = getSliderByID("1");
-      Assert.assertNotNull(slider);
+      try {
+         getSliderByID("1");
+         fail("Valid slider");
+      } catch (InvalidElementException e) {
+      }
    }
    
    /** Get a non-null slider and it's valid. */
