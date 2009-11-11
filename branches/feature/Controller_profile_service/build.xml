@@ -63,6 +63,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		<fileset dir="${lib.dir}/compile" />
 		<fileset dir="${lib.dir}/core" includes="**/*.jar"/>
 		<fileset dir="${lib.dir}/cobertura" includes="*.jar"/>
+		<fileset dir="${lib.dir}/calimero" includes="*.jar"/>
 		<path location="${classes.dir}"/>
 		<fileset dir="${lib.dir}/test" includes="**/*.jar"/>
 		<path location="${config.dir}"/>
