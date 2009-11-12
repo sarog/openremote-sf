@@ -71,40 +71,32 @@ rem Guess CATALINA_HOME if not defined
 set CURRENT_DIR=%cd%
 if not "%CATALINA_HOME%" == "" goto gotHome
 set CATALINA_HOME=%CURRENT_DIR%
-if exist "%CATALINA_HOME%\bin\catalina.bat" goto okHome
+if exist "%CATALINA_HOME%\bin\openremote.bat" goto okHome
 cd ..
 set CATALINA_HOME=%cd%
 cd %CURRENT_DIR%
 :gotHome
-if exist "%CATALINA_HOME%\bin\catalina.bat" goto okHome
+if exist "%CATALINA_HOME%\bin\openremote.bat" goto okHome
 echo The CATALINA_HOME environment variable is not defined correctly
 echo This environment variable is needed to run this program
 goto end
 :okHome
 
-rem Get standard environment variables
-if "%CATALINA_BASE%" == "" goto gotSetenvHome
-if exist "%CATALINA_BASE%\bin\setenv.bat" call "%CATALINA_BASE%\bin\setenv.bat"
-goto gotSetenvBase
-:gotSetenvHome
-if exist "%CATALINA_HOME%\bin\setenv.bat" call "%CATALINA_HOME%\bin\setenv.bat"
-:gotSetenvBase
-
 rem Get standard Java environment variables
-if exist "%CATALINA_HOME%\bin\setclasspath.bat" goto okSetclasspath
-echo Cannot find %CATALINA_HOME%\bin\setclasspath.bat
+if exist "%CATALINA_HOME%\bin\tomcat\setclasspath.bat" goto okSetclasspath
+echo Cannot find %CATALINA_HOME%\bin\tomcat\setclasspath.bat
 echo This file is needed to run this program
 goto end
 :okSetclasspath
 set BASEDIR=%CATALINA_HOME%
-call "%CATALINA_HOME%\bin\setclasspath.bat" %1
+call "%CATALINA_HOME%\bin\tomcat\setclasspath.bat" %1
 if errorlevel 1 goto end
 
 rem Add on extra jar files to CLASSPATH
 if "%JSSE_HOME%" == "" goto noJsse
 set CLASSPATH=%CLASSPATH%;%JSSE_HOME%\lib\jcert.jar;%JSSE_HOME%\lib\jnet.jar;%JSSE_HOME%\lib\jsse.jar
 :noJsse
-set CLASSPATH=%CLASSPATH%;%CATALINA_HOME%\bin\bootstrap.jar
+set CLASSPATH=%CLASSPATH%;%CATALINA_HOME%\bin\tomcat\bootstrap.jar
 
 if not "%CATALINA_BASE%" == "" goto gotBase
 set CATALINA_BASE=%CATALINA_HOME%
@@ -117,6 +109,11 @@ set CATALINA_TMPDIR=%CATALINA_BASE%\temp
 if not exist "%CATALINA_BASE%\conf\logging.properties" goto noJuli
 set JAVA_OPTS=%JAVA_OPTS% -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.util.logging.config.file="%CATALINA_BASE%\conf\logging.properties"
 :noJuli
+
+rem ----- Setup Default OpenRemote Boss Environment ---------------------------
+
+set JAVA_OPTS=%JAVA_OPTS% -Djava.library.path="%CATALINA_BASE%\webapps\controller\WEB-INF\lib\native"
+
 
 rem ----- Execute The Requested Command ---------------------------------------
 
@@ -162,13 +159,13 @@ if ""%1"" == ""version"" goto doVersion
 
 echo Usage:  catalina ( commands ... )
 echo commands:
-echo   debug             Start Catalina in a debugger
-echo   debug -security   Debug Catalina with a security manager
-echo   jpda start        Start Catalina under JPDA debugger
+rem echo   debug             Start Catalina in a debugger
+rem echo   debug -security   Debug Catalina with a security manager
+rem echo   jpda start        Start Catalina under JPDA debugger
 echo   run               Start Catalina in the current window
-echo   run -security     Start in the current window with security manager
+rem echo   run -security     Start in the current window with security manager
 echo   start             Start Catalina in a separate window
-echo   start -security   Start in a separate window with security manager
+rem echo   start -security   Start in a separate window with security manager
 echo   stop              Stop Catalina
 echo   version           What version of tomcat are you running?
 goto end
