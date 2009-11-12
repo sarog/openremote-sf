@@ -26,6 +26,12 @@ public class Navigate extends BusinessEntity {
 
    private long toScreen = -1L;
    private long toGroup = -1L;
+   private boolean toSetting;
+   private boolean back;
+   private boolean login;
+   private boolean next;
+   private boolean previous;
+   
    public long getToScreen() {
       return toScreen;
    }
@@ -38,6 +44,40 @@ public class Navigate extends BusinessEntity {
    public void setToGroup(long toGroup) {
       this.toGroup = toGroup;
    }
-   
-   
+   public boolean isToSetting() {
+      return toSetting;
+   }
+   public boolean isBack() {
+      return back;
+   }
+   public boolean isLogin() {
+      return login;
+   }
+   public boolean isNext() {
+      return next;
+   }
+   public boolean isPrevious() {
+      return previous;
+   }
+   public void setToSetting(boolean toSetting) {
+      this.toSetting = toSetting;
+   }
+   public void setBack(boolean back) {
+      this.back = back;
+   }
+   public void setLogin(boolean login) {
+      this.login = login;
+   }
+   public void setNext(boolean next) {
+      this.next = next;
+   }
+   public void setPrevious(boolean previous) {
+      this.previous = previous;
+   }
+   public boolean isSet() {
+      if (toGroup != -1) {
+         return true;
+      }
+      return toSetting || back || login || next || previous;
+   }
 }
