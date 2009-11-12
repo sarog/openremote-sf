@@ -43,7 +43,6 @@ public class UIButton extends UIControl {
    /** The ui command. */
    private UICommand uiCommand;
 
-   private boolean hasNavigate = false;
    /**
     * Instantiates a new uI button.
     */
@@ -119,14 +118,6 @@ public class UIButton extends UIControl {
       this.navigate = navigate;
    }
 
-   public boolean isHasNavigate() {
-      return hasNavigate;
-   }
-
-   public void setHasNavigate(boolean hasNavigate) {
-      this.hasNavigate = hasNavigate;
-   }
-
    @Override
    public List<UICommand> getCommands() {
       List<UICommand> commands = new ArrayList<UICommand>();
@@ -163,13 +154,23 @@ public class UIButton extends UIControl {
       if (pressImage != null && pressImage.getSrc() != null) {
          xmlContent.append("          <image src=\"" + pressImage.getSrc() + "\" state=\"onPress\" />\n");
       }
-      if (hasNavigate) {
+      if (navigate.isSet()) {
          xmlContent.append("          <navigate");
          if (navigate.getToGroup() != -1) {
             xmlContent.append(" toGroup=\"" + navigate.getToGroup() + "\"");
-         }
-         if (navigate.getToScreen() != -1) {
-            xmlContent.append(" toScreen=\"" + navigate.getToScreen() + "\"");
+            if (navigate.getToScreen() != -1) {
+               xmlContent.append(" toScreen=\"" + navigate.getToScreen() + "\"");
+            }
+         } else if (navigate.isBack()) {
+            xmlContent.append(" back=\"true\"");
+         } else if (navigate.isToSetting()) {
+            xmlContent.append(" toSetting=\"true\"");
+         } else if (navigate.isLogin()) {
+            xmlContent.append(" login=\"true\"");
+         } else if (navigate.isPrevious()) {
+            xmlContent.append(" previous=\"true\"");
+         } else if (navigate.isNext()) {
+            xmlContent.append(" next=\"true\"");
          }
          xmlContent.append(" />\n");
       }

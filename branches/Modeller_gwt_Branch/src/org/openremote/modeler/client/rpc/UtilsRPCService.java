@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.UIScreen;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -47,7 +48,7 @@ public interface UtilsRPCService extends RemoteService {
     * 
     * @return the string
     */
-   String exportFiles(long maxId, List<Group> groupList, List<UIScreen> screenList);
+   String exportFiles(long maxId, List<Panel> panelList, List<Group> groupList, List<UIScreen> screenList);
    
    /**
     * Beehive rest icon url.

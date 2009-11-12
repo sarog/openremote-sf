@@ -1,22 +1,19 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.modeler.service.impl;
 
 import java.io.File;
@@ -27,19 +24,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -59,6 +48,8 @@ import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Grid;
 import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.GroupRef;
+import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.UICommand;
@@ -77,8 +68,6 @@ import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ProtocolEventContainer;
 import org.openremote.modeler.utils.StringUtils;
 import org.openremote.modeler.utils.ZipUtils;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 /**
  * The Class ResourceServiceImpl.
@@ -102,17 +91,17 @@ public class ResourceServiceImpl implements ResourceService {
    /** The device macro service. */
    private DeviceMacroService deviceMacroService;
 
-
    /**
     * {@inheritDoc}
     */
-   public String downloadZipResource(long maxId, String sessionId, List<Group> groups, List<UIScreen> screens) {
+   public String downloadZipResource(long maxId, String sessionId, List<Panel> panels, List<Group> groups,
+         List<UIScreen> screens) {
       String controllerXmlContent = getControllerXmlContent(maxId, screens);
-      String panelXmlContent = getPanelXmlContent(groups, screens);
+      String panelXmlContent = getPanelXmlContent(panels, groups, screens);
       String sectionIds = getSectionIds(screens);
 
       replaceUrl(screens, sessionId);
-//      String activitiesJson = getActivitiesJson(activities);
+      // String activitiesJson = getActivitiesJson(activities);
 
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File sessionFolder = new File(pathConfig.userFolder(sessionId));
@@ -122,23 +111,24 @@ public class ResourceServiceImpl implements ResourceService {
       File panelXMLFile = new File(pathConfig.panelXmlFilePath(sessionId));
       File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(sessionId));
       File lircdFile = new File(pathConfig.lircFilePath(sessionId));
-//      File dotImport = new File(pathConfig.dotImportFilePath(sessionId));
+      // File dotImport = new File(pathConfig.dotImportFilePath(sessionId));
 
-      String newIphoneXML = IphoneXmlParser.parserXML(new File(getClass().getResource(configuration.getIphoneXsdPath()).getPath()), 
-            panelXmlContent, sessionFolder);
-      
+      String newIphoneXML = IphoneXmlParser.parserXML(new File(getClass().getResource(configuration.getIphoneXsdPath())
+            .getPath()), panelXmlContent, sessionFolder);
+
       try {
          FileUtilsExt.deleteQuietly(panelXMLFile);
          FileUtilsExt.deleteQuietly(controllerXMLFile);
          FileUtilsExt.deleteQuietly(lircdFile);
-//         FileUtilsExt.deleteQuietly(dotImport);
+         // FileUtilsExt.deleteQuietly(dotImport);
 
          FileUtilsExt.writeStringToFile(panelXMLFile, newIphoneXML);
          FileUtilsExt.writeStringToFile(controllerXMLFile, controllerXmlContent);
-//         FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
+         // FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
 
          if (sectionIds != "") {
-            FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
+            FileUtils
+                  .copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
          } else {
             FileUtilsExt.writeStringToFile(lircdFile, "");
          }
@@ -149,42 +139,46 @@ public class ResourceServiceImpl implements ResourceService {
 
       File zipFile = compressFilesToZip(sessionFolder.listFiles(), pathConfig.openremoteZipFilePath(sessionId));
       return pathConfig.getZipUrl(sessionId) + zipFile.getName();
-      
+
    }
 
    /**
     * Replace url.
     * 
-    * @param activities the activities
-    * @param sessionId the user id
+    * @param activities
+    *           the activities
+    * @param sessionId
+    *           the user id
     */
    private void replaceUrl(List<UIScreen> screens, String sessionId) {
       String rerlativeSessionFolderPath = PathConfig.getInstance(configuration).getRelativeSessionFolderPath(sessionId);
-         for (UIScreen screen : screens) {
-            if (screen.isAbsoluteLayout()) {
-               for (Absolute absolute : screen.getAbsolutes()) {
-                  absolute.getUiControl().transImagePathToRelative(rerlativeSessionFolderPath);
-               }
-            } else {
-               for (Cell cell : screen.getGrid().getCells()) {
-                  cell.getUiControl().transImagePathToRelative(rerlativeSessionFolderPath);
-               }
+      for (UIScreen screen : screens) {
+         if (screen.isAbsoluteLayout()) {
+            for (Absolute absolute : screen.getAbsolutes()) {
+               absolute.getUiControl().transImagePathToRelative(rerlativeSessionFolderPath);
             }
+         } else {
+            for (Cell cell : screen.getGrid().getCells()) {
+               cell.getUiControl().transImagePathToRelative(rerlativeSessionFolderPath);
+            }
+         }
       }
    }
 
    /**
     * Gets the activities json.
     * 
-    * @param activities the activities
+    * @param activities
+    *           the activities
     * 
     * @return the activities json
     */
    public String getActivitiesJson(List<Activity> activities) {
       try {
-         String [] includedPropertyNames = {"screens", "screens.buttons", "screens.buttons.uiCommand"};
-         String [] excludePropertyNames = {};
-         String activitiesJson = JsonGenerator.serializerObjectInclude(activities, includedPropertyNames, excludePropertyNames);
+         String[] includedPropertyNames = { "screens", "screens.buttons", "screens.buttons.uiCommand" };
+         String[] excludePropertyNames = {};
+         String activitiesJson = JsonGenerator.serializerObjectInclude(activities, includedPropertyNames,
+               excludePropertyNames);
          return activitiesJson;
       } catch (Exception e) {
          e.printStackTrace();
@@ -195,8 +189,10 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Compress files to zip.
     * 
-    * @param files the files
-    * @param zipFilePath the zip file path
+    * @param files
+    *           the files
+    * @param zipFilePath
+    *           the zip file path
     * 
     * @return the file
     */
@@ -217,8 +213,10 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Builds the lirc rest url.
     * 
-    * @param restAPIUrl the rESTAPI url
-    * @param ids the ids
+    * @param restAPIUrl
+    *           the rESTAPI url
+    * @param ids
+    *           the ids
     * 
     * @return the uRL
     */
@@ -232,7 +230,7 @@ public class ResourceServiceImpl implements ResourceService {
       }
       return lircUrl;
    }
-   
+
    /**
     * {@inheritDoc}
     */
@@ -262,7 +260,7 @@ public class ResourceServiceImpl implements ResourceService {
                } else if (!checkXML(zipInputStream, zipEntry, "controller")) {
                   throw new XmlParserException("The controller.xml schema validation fail, please check it");
                }
-               
+
                if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|import|conf)")) {
                   File file = new File(PathConfig.getInstance(configuration).userFolder(sessionId) + zipEntry.getName());
                   FileUtils.touch(file);
@@ -297,17 +295,22 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Check xml.
     * 
-    * @param zipInputStream the zip input stream
-    * @param zipEntry the zip entry
-    * @param xmlName the xml name
+    * @param zipInputStream
+    *           the zip input stream
+    * @param zipEntry
+    *           the zip entry
+    * @param xmlName
+    *           the xml name
     * 
     * @return true, if successful
     * 
-    * @throws IOException Signals that an I/O exception has occurred.
+    * @throws IOException
+    *            Signals that an I/O exception has occurred.
     */
    private boolean checkXML(ZipInputStream zipInputStream, ZipEntry zipEntry, String xmlName) throws IOException {
       if (zipEntry.getName().equals(xmlName + ".xml")) {
-         String xsdRelativePath = "iphone".equals(xmlName) ? configuration.getIphoneXsdPath() : configuration.getControllerXsdPath();
+         String xsdRelativePath = "iphone".equals(xmlName) ? configuration.getIphoneXsdPath() : configuration
+               .getControllerXsdPath();
          String xsdPath = getClass().getResource(xsdRelativePath).getPath();
          if (!IphoneXmlParser.checkXmlSchema(xsdPath, IOUtils.toString(zipInputStream))) {
             return false;
@@ -354,8 +357,10 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Gets the controller xml content.
     * 
-    * @param maxId the max id
-    * @param screenList the activity list
+    * @param maxId
+    *           the max id
+    * @param screenList
+    *           the activity list
     * 
     * @return the controller xml content
     */
@@ -364,9 +369,9 @@ public class ResourceServiceImpl implements ResourceService {
       ProtocolEventContainer protocolEventContainer = new ProtocolEventContainer();
       StringBuffer controllerXml = new StringBuffer();
       controllerXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-      controllerXml.append("<openremote xmlns=\"http://www.openremote.org\" " 
-            + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " 
-            + "xsi:schemaLocation=\"http://www.openremote.org " 
+      controllerXml.append("<openremote xmlns=\"http://www.openremote.org\" "
+            + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+            + "xsi:schemaLocation=\"http://www.openremote.org "
             + "http://www.openremote.org/schemas/controller.xsd\">\n");
       controllerXml.append(getControlsXmlContent(screenList, protocolEventContainer));
       controllerXml.append(protocolEventContainer.generateUIButtonEventsXml());
@@ -377,8 +382,10 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Gets the buttons xml content.
     * 
-    * @param activityList the activity list
-    * @param protocolEventContainer the protocol event container
+    * @param activityList
+    *           the activity list
+    * @param protocolEventContainer
+    *           the protocol event container
     * 
     * @return the buttons xml content
     */
@@ -403,8 +410,10 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Gets the events from button.
     * 
-    * @param uiButton the ui button
-    * @param protocolEventContainer the protocol event container
+    * @param uiButton
+    *           the ui button
+    * @param protocolEventContainer
+    *           the protocol event container
     * 
     * @return the events from button
     */
@@ -412,12 +421,12 @@ public class ResourceServiceImpl implements ResourceService {
       StringBuffer uiControlXml = new StringBuffer();
       if (uiControl instanceof UIButton) {
          uiControlXml.append("    <button id=\"" + uiControl.getOid() + "\">\n");
-         UICommand uiCommand = ((UIButton)uiControl).getUiCommand();
+         UICommand uiCommand = ((UIButton) uiControl).getUiCommand();
          generateCommandXmlString(protocolEventContainer, uiControlXml, uiCommand);
          uiControlXml.append("    </button>\n");
       } else if (uiControl instanceof UISwitch) {
          uiControlXml.append("    <switch id=\"" + uiControl.getOid() + "\">\n");
-         UISwitch uiSwitch = (UISwitch)uiControl;
+         UISwitch uiSwitch = (UISwitch) uiControl;
          uiControlXml.append("     <on>\n");
          generateCommandXmlString(protocolEventContainer, uiControlXml, uiSwitch.getOnCommand());
          uiControlXml.append("     </on>\n");
@@ -440,7 +449,8 @@ public class ResourceServiceImpl implements ResourceService {
    private void generateCommandXmlString(ProtocolEventContainer protocolEventContainer, StringBuffer uiControlXml,
          UICommand uiCommand) {
       if (uiCommand instanceof DeviceMacroItem) {
-         List<UIButtonEvent> uiButtonEventList = getEventsOfDeviceMacroItem((DeviceMacroItem) uiCommand, protocolEventContainer);
+         List<UIButtonEvent> uiButtonEventList = getEventsOfDeviceMacroItem((DeviceMacroItem) uiCommand,
+               protocolEventContainer);
          uiControlXml.append(generateButtonXmlString(uiButtonEventList));
       }
    }
@@ -448,15 +458,19 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Gets the controller xml segment content.
     * 
-    * @param deviceMacroItem the device command item
-    * @param protocolEventContainer the protocol event container
+    * @param deviceMacroItem
+    *           the device command item
+    * @param protocolEventContainer
+    *           the protocol event container
     * 
     * @return the controller xml segment content
     */
-   private List<UIButtonEvent> getEventsOfDeviceMacroItem(DeviceMacroItem deviceMacroItem, ProtocolEventContainer protocolEventContainer) {
+   private List<UIButtonEvent> getEventsOfDeviceMacroItem(DeviceMacroItem deviceMacroItem,
+         ProtocolEventContainer protocolEventContainer) {
       List<UIButtonEvent> oneUIButtonEventList = new ArrayList<UIButtonEvent>();
       if (deviceMacroItem instanceof DeviceCommandRef) {
-         DeviceCommand deviceCommand = deviceCommandService.loadById(((DeviceCommandRef) deviceMacroItem).getDeviceCommand().getOid());
+         DeviceCommand deviceCommand = deviceCommandService.loadById(((DeviceCommandRef) deviceMacroItem)
+               .getDeviceCommand().getOid());
          String protocolType = deviceCommand.getProtocol().getType();
          List<ProtocolAttr> protocolAttrs = deviceCommand.getProtocol().getAttributes();
 
@@ -475,8 +489,8 @@ public class ResourceServiceImpl implements ResourceService {
          for (DeviceMacroItem tempDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
             oneUIButtonEventList.addAll(getEventsOfDeviceMacroItem(tempDeviceMacroItem, protocolEventContainer));
          }
-      } else if(deviceMacroItem instanceof CommandDelay){
-         CommandDelay delay = (CommandDelay)deviceMacroItem;
+      } else if (deviceMacroItem instanceof CommandDelay) {
+         CommandDelay delay = (CommandDelay) deviceMacroItem;
          UIButtonEvent uiButtonEvent = new UIButtonEvent();
          uiButtonEvent.setId(this.eventId++);
          uiButtonEvent.setDelay(delay.getDelaySecond());
@@ -488,8 +502,10 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Generate button xml string.
     * 
-    * @param uiButtonId the ui button id
-    * @param uiButtonEventList the ui button event list
+    * @param uiButtonId
+    *           the ui button id
+    * @param uiButtonEventList
+    *           the ui button event list
     * 
     * @return the string
     */
@@ -507,21 +523,31 @@ public class ResourceServiceImpl implements ResourceService {
       return buttonXml.toString();
    }
 
-
    /**
     * Gets the panel xml content.
     * 
-    * @param activityList the activity list
+    * @param activityList
+    *           the activity list
     * 
     * @return the panel xml content
     */
-   private String getPanelXmlContent(List<Group> groups, List<UIScreen> screens) {
+   private String getPanelXmlContent(List<Panel> panels, List<Group> groups, List<UIScreen> screens) {
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-      xmlContent.append("<openremote xmlns=\"http://www.openremote.org\" " 
-            + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " 
-            + "xsi:schemaLocation=\"http://www.openremote.org " 
+      xmlContent.append("<openremote xmlns=\"http://www.openremote.org\" "
+            + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+            + "xsi:schemaLocation=\"http://www.openremote.org "
             + "http://www.openremote.org/schemas/controller.xsd\">\n");
+      xmlContent.append("  <panels>\n");
+      for (Panel panel : panels) {
+         xmlContent.append("    <panel id=\"" + panel.getOid() + "\" name=\"" + panel.getName() + "\">");
+         for (GroupRef groupRef : panel.getGroupRefs()) {
+            xmlContent.append("      <include type=\"group\" ref=\"" + groupRef.getGroupId() + "\" />\n");
+         }
+         xmlContent.append("    </panel>");
+      }
+      xmlContent.append("  </panels>\n");
+
       xmlContent.append("  <screens>\n");
       for (UIScreen screen : screens) {
          xmlContent.append("    <screen id=\"" + screen.getOid() + "\" name=\"" + screen.getName() + "\"");
@@ -557,10 +583,10 @@ public class ResourceServiceImpl implements ResourceService {
          for (Group group : groups) {
             xmlContent.append("    <group id=\"" + group.getOid() + "\" name=\"" + group.getName() + "\">\n");
             for (ScreenRef screenRef : group.getScreenRefs()) {
-               xmlContent.append("      <screenRef id=\"" + screenRef.getScreenId() + "\" />\n");
+               xmlContent.append("      <include type=\"screen\" ref=\"" + screenRef.getScreenId() + "\" />\n");
             }
             xmlContent.append("    </group>\n");
-            
+
          }
          xmlContent.append("  </groups>\n");
       }
@@ -576,7 +602,8 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Gets the section ids.
     * 
-    * @param screenList the activity list
+    * @param screenList
+    *           the activity list
     * 
     * @return the section ids
     */
@@ -587,7 +614,7 @@ public class ResourceServiceImpl implements ResourceService {
             for (Absolute absolute : screen.getAbsolutes()) {
                for (UICommand command : absolute.getUiControl().getCommands()) {
                   if (command instanceof DeviceMacroItem) {
-                     sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem)command));
+                     sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem) command));
                   }
                }
             }
@@ -595,7 +622,7 @@ public class ResourceServiceImpl implements ResourceService {
             for (Cell cell : screen.getGrid().getCells()) {
                for (UICommand command : cell.getUiControl().getCommands()) {
                   if (command instanceof DeviceMacroItem) {
-                     sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem)command));
+                     sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem) command));
                   }
                }
             }
@@ -617,7 +644,8 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Gets the devcie macro item section ids.
     * 
-    * @param deviceMacroItem the device macro item
+    * @param deviceMacroItem
+    *           the device macro item
     * 
     * @return the devcie macro item section ids
     */
@@ -647,7 +675,8 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Sets the configuration.
     * 
-    * @param configuration the new configuration
+    * @param configuration
+    *           the new configuration
     */
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
@@ -665,7 +694,8 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Sets the device command service.
     * 
-    * @param deviceCommandService the new device command service
+    * @param deviceCommandService
+    *           the new device command service
     */
    public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
       this.deviceCommandService = deviceCommandService;
@@ -674,7 +704,8 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Sets the device macro service.
     * 
-    * @param deviceMacroService the new device macro service
+    * @param deviceMacroService
+    *           the new device macro service
     */
    public void setDeviceMacroService(DeviceMacroService deviceMacroService) {
       this.deviceMacroService = deviceMacroService;
@@ -690,8 +721,8 @@ public class ResourceServiceImpl implements ResourceService {
    @Override
    public String getGroupsJson(List<Group> groups) {
       try {
-         String [] includedPropertyNames = {"screenRefs"};
-         String [] excludePropertyNames = {};
+         String[] includedPropertyNames = { "screenRefs" };
+         String[] excludePropertyNames = {};
          String groupsJson = JsonGenerator.serializerObjectInclude(groups, includedPropertyNames, excludePropertyNames);
          return groupsJson;
       } catch (Exception e) {
@@ -703,9 +734,11 @@ public class ResourceServiceImpl implements ResourceService {
    @Override
    public String getScreensJson(List<UIScreen> screens) {
       try {
-         String [] includedPropertyNames = {"absolutes", "absolutes.uiCommand", "grid", "grid.cells", "grid.cells.uiCommand"};
-         String [] excludePropertyNames = {"absolutes.uiControl.panelXml", "grid.cells.uiControl.panelXml"};
-         String groupsJson = JsonGenerator.serializerObjectInclude(screens, includedPropertyNames, excludePropertyNames);
+         String[] includedPropertyNames = { "absolutes", "absolutes.uiCommand", "grid", "grid.cells",
+               "grid.cells.uiCommand" };
+         String[] excludePropertyNames = { "absolutes.uiControl.panelXml", "grid.cells.uiControl.panelXml" };
+         String groupsJson = JsonGenerator
+               .serializerObjectInclude(screens, includedPropertyNames, excludePropertyNames);
          return groupsJson;
       } catch (Exception e) {
          e.printStackTrace();

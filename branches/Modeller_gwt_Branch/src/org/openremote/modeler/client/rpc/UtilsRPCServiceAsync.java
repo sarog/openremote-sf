@@ -24,6 +24,7 @@ import java.util.List;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.UIScreen;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -43,7 +44,7 @@ public interface UtilsRPCServiceAsync {
     * @param maxId the max id
     * @param activityList the activity list
     */
-   void exportFiles(long maxId, List<Group> groupList, List<UIScreen> screenList, AsyncCallback<String> callback);
+   void exportFiles(long maxId, List<Panel> panelList, List<Group> groupList, List<UIScreen> screenList, AsyncCallback<String> callback);
 
    /**
     * Beehive rest icon url.
