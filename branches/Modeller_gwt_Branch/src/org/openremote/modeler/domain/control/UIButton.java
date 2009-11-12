@@ -38,11 +38,12 @@ public class UIButton extends UIControl {
    
    private UImage pressImage;
    
-   private Navigate navigate;
+   private Navigate navigate = new Navigate();
 
    /** The ui command. */
    private UICommand uiCommand;
 
+   private boolean hasNavigate = false;
    /**
     * Instantiates a new uI button.
     */
@@ -118,6 +119,14 @@ public class UIButton extends UIControl {
       this.navigate = navigate;
    }
 
+   public boolean isHasNavigate() {
+      return hasNavigate;
+   }
+
+   public void setHasNavigate(boolean hasNavigate) {
+      this.hasNavigate = hasNavigate;
+   }
+
    @Override
    public List<UICommand> getCommands() {
       List<UICommand> commands = new ArrayList<UICommand>();
@@ -154,7 +163,7 @@ public class UIButton extends UIControl {
       if (pressImage != null && pressImage.getSrc() != null) {
          xmlContent.append("          <image src=\"" + pressImage.getSrc() + "\" state=\"onPress\" />\n");
       }
-      if (navigate != null) {
+      if (hasNavigate) {
          xmlContent.append("          <navigate");
          if (navigate.getToGroup() != -1) {
             xmlContent.append(" toGroup=\"" + navigate.getToGroup() + "\"");

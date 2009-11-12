@@ -30,6 +30,7 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.TouchPanels;
 import org.openremote.modeler.client.widget.uidesigner.GroupPanel;
+import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
@@ -127,7 +128,7 @@ public class UIDesignerView extends TabItem implements View {
     * Creates the east.
     */
    private void createEast() {
-      BorderLayoutData eastLayout = new BorderLayoutData(LayoutRegion.EAST, 230);
+      BorderLayoutData eastLayout = new BorderLayoutData(LayoutRegion.EAST, 270);
       eastLayout.setSplit(true);
       eastLayout.setMargins(new Margins(2));
       add(createWidgetAndPropertyContainer(), eastLayout);
@@ -152,6 +153,7 @@ public class UIDesignerView extends TabItem implements View {
       west.add(new ScreenPanel(screenTab));
       groupPanel = new GroupPanel();
       west.add(groupPanel);
+      west.add(new ProfilePanel());
       applicationView.setGroupPanel(groupPanel);
       westData.setMargins(new Margins(2));
       add(west, westData);
