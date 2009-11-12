@@ -58,11 +58,11 @@ public class FileServiceImpl implements FileService {
     */
    public boolean uploadConfigZip(InputStream inputStream) {
       String resourcePath = configuration.getResourcePath();
-      try {
-         FileUtils.forceDeleteOnExit(new File(resourcePath));
-      } catch (IOException e1) {
-         logger.error("Can't delete" + resourcePath, e1);
-      }
+//      try {
+//         FileUtils.forceDeleteOnExit(new File(resourcePath));
+//      } catch (IOException e1) {
+//         logger.error("Can't delete" + resourcePath, e1);
+//      }
       if (!unzip(inputStream, resourcePath)){
          return false; 
       }
