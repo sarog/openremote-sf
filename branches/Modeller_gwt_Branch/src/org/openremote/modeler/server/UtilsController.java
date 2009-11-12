@@ -26,6 +26,7 @@ import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.rpc.UtilsRPCService;
 import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.UIScreen;
 import org.openremote.modeler.service.ResourceService;
 
@@ -54,8 +55,8 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    /**
     * {@inheritDoc}
     */
-   public String exportFiles(long maxId, List<Group> groupList, List<UIScreen> screenList) {  
-      return resourceService.downloadZipResource(maxId, this.getThreadLocalRequest().getSession().getId(), groupList, screenList);
+   public String exportFiles(long maxId, List<Panel> panelList, List<Group> groupList, List<UIScreen> screenList) {  
+      return resourceService.downloadZipResource(maxId, this.getThreadLocalRequest().getSession().getId(), panelList, groupList, screenList);
    }
    
    /**

@@ -35,6 +35,7 @@ import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.client.widget.uidesigner.WidgetPanel;
+import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.UIScreen;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
@@ -224,4 +225,13 @@ public class UIDesignerView extends TabItem implements View {
       }
       return screenList;
    }
+   
+   List<Panel> getAllPanels() {
+      List<Panel> panelList = new ArrayList<Panel>();
+      for (BeanModel panelBeanModel : BeanModelDataBase.panelTable.loadAll()) {
+         panelList.add((Panel)panelBeanModel.getBean());
+      }
+      return panelList;
+   }
+   
 }

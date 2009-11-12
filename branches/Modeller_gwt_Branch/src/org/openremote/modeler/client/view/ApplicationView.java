@@ -162,7 +162,7 @@ public class ApplicationView implements View {
       exportMenuItem.setEnabled(false);
       
       fileMenu.add(saveMenuItem);
-      fileMenu.add(createImportMenuItem());
+//      fileMenu.add(createImportMenuItem());
       fileMenu.add(exportMenuItem);
       fileMenu.add(createLogoutMenuItem());
       fileMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
@@ -253,7 +253,7 @@ public class ApplicationView implements View {
                return;
             }
             viewport.mask("Exporting, please wait.");
-            UtilsProxy.exportFiles(IDUtil.currentID(), groupPanel.getAllGroups(), uiDesignerView.getAllScreens(), new AsyncSuccessCallback<String>() {
+            UtilsProxy.exportFiles(IDUtil.currentID(), uiDesignerView.getAllPanels(), groupPanel.getAllGroups(), uiDesignerView.getAllScreens(), new AsyncSuccessCallback<String>() {
                @Override
                public void onSuccess(String exportURL) {
                   viewport.unmask();

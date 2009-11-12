@@ -113,12 +113,13 @@ public class ButtonPropertyForm extends PropertyForm {
       AdapterField adapterCommand = new AdapterField(command);
       adapterCommand.setFieldLabel("Command");
       
+      // initial navigate properties
       final Navigate navigate = uiButton.getNavigate();
       FieldSet navigateSet = new FieldSet();
       navigateSet.setLayout(new ColumnLayout());
       navigateSet.setHeading("Navigate");
       navigateSet.setCheckboxToggle(true);
-      if (!uiButton.isHasNavigate()) {
+      if (!navigate.isSet()) {
          navigateSet.collapse();
       }
       
@@ -159,7 +160,6 @@ public class ButtonPropertyForm extends PropertyForm {
          public void selectionChanged(SelectionChangedEvent<ModelData> se) {
             Group selectedGroup = ((ComboBoxDataModel<Group>)se.getSelectedItem()).getData();
             navigate.setToGroup(selectedGroup.getOid());
-//            navigate.setToScreen(-1);
             screenList.clearSelections();
             screenList.getStore().removeAll();
             for (ScreenRef screenRef : selectedGroup.getScreenRefs()) {
@@ -276,7 +276,6 @@ public class ButtonPropertyForm extends PropertyForm {
       navigateSet.addListener(Events.BeforeExpand, new Listener<FieldSetEvent>() {
          @Override
          public void handleEvent(FieldSetEvent be) {
-            uiButton.setHasNavigate(true);
             back.setValue(!navigate.isSet());
          }
          
@@ -284,61 +283,12 @@ public class ButtonPropertyForm extends PropertyForm {
       navigateSet.addListener(Events.BeforeCollapse, new Listener<FieldSetEvent>() {
          @Override
          public void handleEvent(FieldSetEvent be) {
-            uiButton.setHasNavigate(false);
             if (navigateGroup.getValue() != null) {
                navigateGroup.getValue().setValue(false);
             }
          }
          
       });
-   // initial toGroup field.
-//      final ComboBox<ModelData> toGroup = new ComboBox<ModelData>();
-//      ListStore<ModelData> store = new ListStore<ModelData>();
-//      toGroup.setStore(store);
-//      toGroup.setFieldLabel("To Group");
-//      toGroup.setName("toGroup");
-//      toGroup.setAllowBlank(false);
-//      Group blankGroup = new Group();
-//      blankGroup.setName("--no--");
-//      ComboBoxDataModel<Group> toGroupValue = new ComboBoxDataModel<Group>(blankGroup.getName(), blankGroup);
-//      store.add(toGroupValue);
-//      List<BeanModel> groupModels = BeanModelDataBase.groupTable.loadAll();
-//      long groupId = -1L;  // select none is -1, it's temp used.
-//      if (uiButton.getNavigate() != null) {
-//         groupId = uiButton.getNavigate().getToGroup();
-//      }
-//      for (BeanModel groupModel : groupModels) {
-//         ComboBoxDataModel<Group> data = new ComboBoxDataModel<Group>(groupModel.get("name").toString(), (Group) groupModel.getBean());
-//         if(groupId == ((Group) groupModel.getBean()).getOid()) {
-//            toGroupValue = data;
-//         }
-//         store.add(data);
-//      }
-//      toGroup.setValue(toGroupValue);
-//      toGroup.setDisplayField(ComboBoxDataModel.getDisplayProperty());
-//      toGroup.setEmptyText("Please Select group...");
-//      toGroup.setValueField(ComboBoxDataModel.getDataProperty());
-//      toGroup.addListener(Events.Blur, new Listener<BaseEvent>() {
-//         @SuppressWarnings("unchecked")
-//         @Override
-//         public void handleEvent(BaseEvent be) {
-//            ComboBoxDataModel<Group> groupData = (ComboBoxDataModel<Group>) toGroup.getValue();
-//            if (groupData != null) {
-//               long groupId = -1L;
-//               if (!"--no--".equals(groupData.getData().getName())) {
-//                  groupId = groupData.getData().getOid();
-//               }
-//               if (uiButton.getNavigate() != null) {
-//                  uiButton.getNavigate().setToGroup(groupId);
-//               } else {
-//                  Navigate navigate = new Navigate();
-//                  navigate.setToGroup(groupId);
-//                  uiButton.setNavigate(navigate);
-//               }
-//            }
-//         }
-//
-//      });
       
       Button imageBtn = new Button("Select");
       imageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -398,7 +348,6 @@ public class ButtonPropertyForm extends PropertyForm {
       repeat.add(check); 
       add(name);
       add(adapterCommand);
-//      add(toGroup);
       add(adapterImageBtn);
       add(adapterOnPressImageBtn);
       add(repeat);
