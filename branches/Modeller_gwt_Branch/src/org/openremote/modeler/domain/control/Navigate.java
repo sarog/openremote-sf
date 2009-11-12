@@ -29,6 +29,7 @@ public class Navigate extends BusinessEntity {
    private boolean toSetting;
    private boolean back;
    private boolean login;
+   private boolean logout;
    private boolean next;
    private boolean previous;
    
@@ -74,10 +75,16 @@ public class Navigate extends BusinessEntity {
    public void setPrevious(boolean previous) {
       this.previous = previous;
    }
+   public boolean isLogout() {
+      return logout;
+   }
+   public void setLogout(boolean logout) {
+      this.logout = logout;
+   }
    public boolean isSet() {
       if (toGroup != -1) {
          return true;
       }
-      return toSetting || back || login || next || previous;
+      return toSetting || back || login || logout || next || previous;
    }
 }

@@ -93,7 +93,7 @@ public class GroupPanel extends ContentPanel {
       setIcon(icon.activityIcon());
       setLayout(new FitLayout());
       createMenu();
-      createScreenTree();
+      creategroupTree();
       getHeader().ensureDebugId(DebugId.GROUP_PANEL_HEADER);
    }
 
@@ -131,7 +131,7 @@ public class GroupPanel extends ContentPanel {
    /**
     * Creates the screen tree.
     */
-   private void createScreenTree() {
+   private void creategroupTree() {
       groupTree = TreePanelBuilder.buildGroupTree();
       createDragSource();
       createDropTarget();

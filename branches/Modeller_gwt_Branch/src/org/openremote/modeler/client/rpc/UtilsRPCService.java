@@ -71,7 +71,9 @@ public interface UtilsRPCService extends RemoteService {
     * 
     * @return the auto save response
     */
-   AutoSaveResponse autoSaveUiDesignerLayout(List<Group> groups, List<UIScreen> screens, long maxID);
+   AutoSaveResponse autoSaveUiDesignerLayout(List<Panel> panels, List<Group> groups, List<UIScreen> screens, long maxID);
+   
+   List<Panel> loadPanelsFromSession();
    
    List<Group> loadGroupsFromSession();
    
@@ -82,4 +84,5 @@ public interface UtilsRPCService extends RemoteService {
     * 
     */
    Long loadMaxID();
+
 }

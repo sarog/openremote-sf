@@ -243,6 +243,16 @@ public class ButtonPropertyForm extends PropertyForm {
          }
       });
       
+      Radio logout = new Radio();
+      logout.setBoxLabel("Logout");
+      logout.setValue(navigate.isLogout());
+      logout.addListener(Events.Change, new Listener<FieldEvent>() {
+         @Override
+         public void handleEvent(FieldEvent be) {
+            navigate.setLogout((Boolean)be.getValue());
+         }
+      });
+      
       Radio previous = new Radio();
       previous.setBoxLabel("Previous");
       previous.setValue(navigate.isPrevious());
@@ -268,6 +278,7 @@ public class ButtonPropertyForm extends PropertyForm {
       navigateGroup.add(toSetting);
       navigateGroup.add(back);
       navigateGroup.add(login);
+      navigateGroup.add(logout);
       navigateGroup.add(previous);
       navigateGroup.add(next);
       
