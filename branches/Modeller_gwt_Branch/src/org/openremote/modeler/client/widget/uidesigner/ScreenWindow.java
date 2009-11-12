@@ -239,7 +239,8 @@ public class ScreenWindow extends FormWindow {
       gridRowCountField.setName("gridRow");
       gridRowCountField.setFieldLabel("Row Count");
       gridRowCountField.setAllowBlank(false);
-      gridRowCountField.setRegex("^\\d+$");
+      gridRowCountField.setRegex("[1-9]");
+      gridRowCountField.getMessages().setRegexText("The row must between [1-9]");
       gridRowCountField.setValue(6);              // temp set 6 rows.
       
       TextField<Integer> gridColumnCountField = new TextField<Integer>();
@@ -247,7 +248,8 @@ public class ScreenWindow extends FormWindow {
       gridColumnCountField.setName("gridColumn");
       gridColumnCountField.setFieldLabel("Col Count");
       gridColumnCountField.setAllowBlank(false);
-      gridColumnCountField.setRegex("^\\d+$");
+      gridColumnCountField.setRegex("[1-9]");
+      gridColumnCountField.getMessages().setRegexText("The column must between [1-9]");
       gridColumnCountField.setValue(4);           //temp set 4 columns.
       
       TextField<Integer> posLeftField = new TextField<Integer>();
@@ -255,7 +257,7 @@ public class ScreenWindow extends FormWindow {
       posLeftField.setFieldLabel("Left");
       posLeftField.setAllowBlank(false);
       posLeftField.setRegex("^\\d+$");
-      posLeftField.getMessages().setRegexText("The left must be a positive integer");
+      posLeftField.getMessages().setRegexText("The left must be a nonnegative integer");
       posLeftField.setValue(0);                    // temp set left 0
       
       TextField<Integer> posTopField = new TextField<Integer>();
@@ -263,14 +265,14 @@ public class ScreenWindow extends FormWindow {
       posTopField.setFieldLabel("Top");
       posTopField.setAllowBlank(false);
       posTopField.setRegex("^\\d+$");
-      posTopField.getMessages().setRegexText("The top must be a positive integer");
+      posTopField.getMessages().setRegexText("The top must be a nonnegative integer");
       posTopField.setValue(0);                     // temp set top 0
       
       TextField<Integer> widthField = new TextField<Integer>();
       widthField.setName("width");
       widthField.setFieldLabel("Width");
       widthField.setAllowBlank(false);
-      widthField.setRegex("^\\d+$");
+      widthField.setRegex("^[1-9][0-9]*$");
       widthField.getMessages().setRegexText("The width must be a positive integer");
       widthField.setValue(canvas.getWidth());       // temp set width full fill the canvas
       
@@ -278,7 +280,7 @@ public class ScreenWindow extends FormWindow {
       heightField.setName("height");
       heightField.setFieldLabel("Height");
       heightField.setAllowBlank(false);
-      heightField.setRegex("^\\d+$");
+      heightField.setRegex("^[1-9][0-9]*$");
       heightField.getMessages().setRegexText("The height must be a positive integer");
       heightField.setValue(canvas.getHeight());      // temp set height full fill the canvas
       

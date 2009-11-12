@@ -32,10 +32,13 @@ import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.proxy.UtilsProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
+import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -78,7 +81,7 @@ public class ProfilePanel extends ContentPanel {
       setIcon(icon.activityIcon());
       setLayout(new FitLayout());
       createMenu();
-      createScreenTree();
+      createPanelTree();
       getHeader().ensureDebugId(DebugId.PROFILE_PANEL_HEADER);
    }
 
@@ -116,7 +119,7 @@ public class ProfilePanel extends ContentPanel {
    /**
     * Creates the screen tree.
     */
-   private void createScreenTree() {
+   private void createPanelTree() {
       panelTree = TreePanelBuilder.buildPanelTree();
       selectionService.addListener(new SourceSelectionChangeListenerExt(panelTree.getSelectionModel()));
       selectionService.register(panelTree.getSelectionModel());
@@ -128,6 +131,7 @@ public class ProfilePanel extends ContentPanel {
             add(panelTree);
          }
       };
+      initTreeWithAutoSavedPanels();
       treeContainer.setScrollMode(Scroll.AUTO);
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
@@ -135,6 +139,28 @@ public class ProfilePanel extends ContentPanel {
 
    }
 
+   private void initTreeWithAutoSavedPanels() {
+      UtilsProxy.loadPanelsFromSession(new AsyncSuccessCallback<List<Panel>>(){
+         @Override
+         public void onSuccess(List<Panel> panels) {
+            if(panels.size() > 0) {
+               panelTree.getStore().removeAll();
+               BeanModelDataBase.panelTable.clear();
+               for (Panel panel : panels) {
+                  BeanModel panelBeanModel = panel.getBeanModel();
+                  panelTree.getStore().add(panelBeanModel, false);
+                  for (GroupRef groupRef : panel.getGroupRefs()) {
+                     panelTree.getStore().add(panelBeanModel, groupRef.getBeanModel(), false);
+                  }
+                  BeanModelDataBase.panelTable.insert(panelBeanModel);
+               }
+               panelTree.expandAll();
+            }
+         }
+         
+      });
+   }
+   
    /**
     * Creates the new btn.
     * 

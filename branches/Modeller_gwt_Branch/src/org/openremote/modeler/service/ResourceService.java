@@ -90,6 +90,8 @@ public interface ResourceService {
     */
    String getActivitiesJson(List<Activity> activities);
    
+   String getPanelsJson(List<Panel> panels);
+   
    String getGroupsJson(List<Group> groups);
    
    String getScreensJson(List<UIScreen> screens);

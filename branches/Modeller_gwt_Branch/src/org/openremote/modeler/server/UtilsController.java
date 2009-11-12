@@ -44,6 +44,8 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    /** The configuration. */
    private Configuration configuration;
    
+   private static final String UI_DESIGNER_LAYOUT_PANEL_KEY = "panelList";
+
    /** The Constant for store group list in session. */
    private static final String UI_DESIGNER_LAYOUT_GROUP_KEY = "groupList";
    
@@ -114,8 +116,21 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
     * {@inheritDoc}
     */
    @SuppressWarnings("unchecked")
-   public AutoSaveResponse autoSaveUiDesignerLayout(List<Group> groups, List<UIScreen> screens, long maxID) {
+   public AutoSaveResponse autoSaveUiDesignerLayout(List<Panel> panels, List<Group> groups, List<UIScreen> screens, long maxID) {
       AutoSaveResponse autoSaveResponse = new AutoSaveResponse();
+      
+      List<Panel> oldPanels = new ArrayList<Panel>();
+      if(getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY) != null){
+         oldPanels = (List<Panel>)getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
+      }
+      if (panels.size() > 0) {
+         if (!resourceService.getPanelsJson(panels).equals(resourceService.getPanelsJson(oldPanels))) {
+            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
+            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
+            autoSaveResponse.setUpdated(true);
+         }
+      }
+      
       List<Group> oldGroups = new ArrayList<Group>();
       if(getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_GROUP_KEY) != null){
          oldGroups = (List<Group>)getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_GROUP_KEY);
@@ -144,6 +159,13 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
 
    @SuppressWarnings("unchecked")
    @Override
+   public List<Panel> loadPanelsFromSession() {
+      Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
+      return (obj == null) ? new ArrayList<Panel>() : (List<Panel>)obj;
+   }
+   
+   @SuppressWarnings("unchecked")
+   @Override
    public List<Group> loadGroupsFromSession() {
       Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_GROUP_KEY);
       return (obj == null) ? new ArrayList<Group>() : (List<Group>)obj;
@@ -161,5 +183,6 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_MAXID);
       return (obj == null) ? 0 : (Long)obj;
    }
+
 
 }

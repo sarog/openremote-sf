@@ -745,4 +745,17 @@ public class ResourceServiceImpl implements ResourceService {
          return "";
       }
    }
+
+   @Override
+   public String getPanelsJson(List<Panel> panels) {
+      try {
+         String[] includedPropertyNames = { "groupRefs" };
+         String[] excludePropertyNames = {};
+         String panelsJson = JsonGenerator.serializerObjectInclude(panels, includedPropertyNames, excludePropertyNames);
+         return panelsJson;
+      } catch (Exception e) {
+         e.printStackTrace();
+         return "";
+      }
+   }
 }

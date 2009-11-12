@@ -80,8 +80,8 @@ public class UtilsProxy {
     * @param groups the activities
     * @param callback the callback
     */
-   public static void autoSaveUiDesignerLayout(List<Group> groups, List<UIScreen> screens, long maxID, final AsyncSuccessCallback<AutoSaveResponse> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().autoSaveUiDesignerLayout(groups, screens, maxID, new AsyncSuccessCallback<AutoSaveResponse>() {
+   public static void autoSaveUiDesignerLayout(List<Panel> panels, List<Group> groups, List<UIScreen> screens, long maxID, final AsyncSuccessCallback<AutoSaveResponse> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().autoSaveUiDesignerLayout(panels, groups, screens, maxID, new AsyncSuccessCallback<AutoSaveResponse>() {
          @Override
          public void onSuccess(AutoSaveResponse result) {
             callback.onSuccess(result);
@@ -108,6 +108,15 @@ public class UtilsProxy {
             callback.onSuccess(result);
          }
          
+      });
+   }
+   
+   public static void loadPanelsFromSession(final AsyncSuccessCallback<List<Panel>> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().loadPanelsFromSession(new AsyncSuccessCallback<List<Panel>>() {
+         @Override
+         public void onSuccess(List<Panel> groups) {
+            callback.onSuccess(groups);
+         }
       });
    }
    
