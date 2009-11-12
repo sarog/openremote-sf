@@ -55,7 +55,7 @@ echo The BASEDIR environment variable is not defined
 echo This environment variable is needed to run this program
 goto exit
 :gotBasedir
-if exist "%BASEDIR%\bin\setclasspath.bat" goto okBasedir
+if exist "%BASEDIR%\bin\tomcat\setclasspath.bat" goto okBasedir
 echo The BASEDIR environment variable is not defined correctly
 echo This environment variable is needed to run this program
 goto exit
