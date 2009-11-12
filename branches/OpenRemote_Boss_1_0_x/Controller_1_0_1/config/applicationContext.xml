@@ -84,6 +84,7 @@
         <prop key = "irEvent">irEventBuilder</prop>
         <prop key = "knxEvent">knxEventBuilder</prop>
         <prop key = "x10Event">x10EventBuilder</prop>
+        <prop key = "upnpEvent">upnpEventBuilder</prop>
         <prop key = "tcpSocketEvent">tcpSocketEventBuilder</prop>
         <prop key = "telnetEvent">telnetEventBuilder</prop>
         <prop key = "httpGetEvent">httpGetEventBuilder</prop>
@@ -118,6 +119,10 @@
   <bean id = "telnetEventBuilder"
         class = "org.openremote.controller.protocol.telnet.TelnetEventBuilder"
         scope = "prototype"/>
+
+  <!-- Universal Plug'n'Play Event Builder -->
+  <bean id = "upnpEventBuilder" class = "org.openremote.controller.protocol.upnp.UPnPEventBuilder"
+        scope = "singleton" />
 
   <bean id = "httpGetEventBuilder"
         class = "org.openremote.controller.protocol.http.HttpGetEventBuilder"

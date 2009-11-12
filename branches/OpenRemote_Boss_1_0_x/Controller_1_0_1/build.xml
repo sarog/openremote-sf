@@ -61,6 +61,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <fileset dir = "${lib.dir}/rxtx"/>
     <fileset dir = "${lib.dir}/apache/commons-net"/>
     <fileset dir = "${lib.dir}/apache/commons-lang"/>
+    <fileset dir = "${lib.dir}/clink"/>
     <path location = "${classes.dir}"/>
   </path>
   <path id = "test.path.id">
@@ -202,6 +203,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
         <include name = "readme.txt"/>
       </fileset>
       <lib dir = "${build.dir}/lib"/>
+      <lib dir = "${lib.dir}/clink"/>
       <classes dir = "${classes.dir}"/>
     </war>
   </target>
