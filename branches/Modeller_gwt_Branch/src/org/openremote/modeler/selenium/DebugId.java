@@ -144,6 +144,9 @@ public class DebugId {
    /* Group Panel*/
    public static final String GROUP_PANEL_HEADER = "groupPanelHeader";
    
+   /* Profile Panel */
+   public static final String PROFILE_PANEL_HEADER = "profilePanelHeader";
+   
    /** The Constant APPLICATION_FILE_BTN. */
    public static final String APPLICATION_FILE_BTN = "applicationFileBtn";
 

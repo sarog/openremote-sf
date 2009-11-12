@@ -35,6 +35,8 @@ import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.GroupRef;
+import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.UIScreen;
@@ -83,6 +85,7 @@ public class TreePanelBuilder {
    /** The group tree store. */
    private static TreeStore<BeanModel> groupTreeStore = null;
    private static TreeStore<BeanModel> widgetTreeStore = null;
+   private static TreeStore<BeanModel> panelTreeStore = null;
    
    
    /**
@@ -366,6 +369,34 @@ public class TreePanelBuilder {
       });
       
       return widgetTree;
+   }
+   
+   public static TreePanel<BeanModel> buildPanelTree() {
+      if (panelTreeStore == null) {
+         panelTreeStore = new TreeStore<BeanModel>();
+      }
+      TreePanel<BeanModel> panelTree = new TreePanel<BeanModel>(panelTreeStore);
+      panelTree.setStateful(true);
+      panelTree.setBorders(false);
+      panelTree.setHeight("100%");
+      panelTree.setDisplayProperty("displayName");
+//      TreeFolderBean folderBean = new TreeFolderBean();
+//      folderBean.setDisplayName("groups");
+//      groupTreeStore.add(folderBean.getBeanModel(), true);
+
+      panelTree.setIconProvider(new ModelIconProvider<BeanModel>() {
+         public AbstractImagePrototype getIcon(BeanModel thisModel) {
+            if (thisModel.getBean() instanceof Panel) {
+               return ICON.activityIcon();
+            } else if (thisModel.getBean() instanceof GroupRef) {
+               return ICON.screenIcon();
+            } else {
+               return ICON.activityIcon();
+            }
+         }
+      });
+
+      return panelTree;
    }
    
 }

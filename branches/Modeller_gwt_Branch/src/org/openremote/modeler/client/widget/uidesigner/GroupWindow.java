@@ -102,12 +102,13 @@ public class GroupWindow extends Dialog {
                if (groupModel == null) {
                   group.setOid(IDUtil.nextID());
                   Group.increaseDefaultNameIndex();
+                  updateGroupAttrs(group);
+                  BeanModelDataBase.groupTable.insert(group.getBeanModel());
                } else {
                   group = groupModel.getBean();
+                  updateGroupAttrs(group);
+                  BeanModelDataBase.groupTable.update(group.getBeanModel());
                }
-               updateGroupAttrs(group);
-               groupModel = group.getBeanModel();
-               BeanModelDataBase.groupTable.insert(groupModel);
                fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(group));
             }
          }

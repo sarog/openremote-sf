@@ -349,7 +349,7 @@ public class GroupPanel extends ContentPanel {
       for (BeanModel beanModel : models) {
          if (beanModel.getBean() instanceof ScreenRef) {
             BeanModelDataBase.screenTable.addChangeListener(BeanModelDataBase
-                  .getOriginalScreenRefBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
+                  .getOriginalDesignerRefBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
          }
       }
    }
@@ -367,7 +367,7 @@ public class GroupPanel extends ContentPanel {
       for (BeanModel beanModel : models) {
          if (beanModel.getBean() instanceof ScreenRef) {
             BeanModelDataBase.screenTable.removeChangeListener(BeanModelDataBase
-                  .getOriginalScreenRefBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
+                  .getOriginalDesignerRefBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
          }
          changeListenerMap.remove(beanModel);
       }
