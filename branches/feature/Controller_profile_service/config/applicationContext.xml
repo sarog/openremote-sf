@@ -25,12 +25,14 @@
         <property name="multicastPort" value="${multicast.port}" />
         <property name="resourcePath" value="${resource.path}" />
         <property name="resourceUpload" value="${resource.upload.enable}" />
+        <property name="macroIRExecutionDelay" value="${Macro.IR.Execution.Delay}" />
     </bean>
     
     <!-- service for button command from iPhone -->
     <!-- bean id="buttonCommandService" class="org.openremote.controller.service.impl.ButtonCommandServiceImpl">
         <property name="macroCmdExecutionDelay" value="${Macro.Execution.Delay}" />
-    </bean>-->
+    </bean>
+-->
     
     <!-- service for status command from iPhone -->
     <bean id="statusCommandService" class="org.openremote.controller.service.impl.StatusCommandServiceImpl" />
