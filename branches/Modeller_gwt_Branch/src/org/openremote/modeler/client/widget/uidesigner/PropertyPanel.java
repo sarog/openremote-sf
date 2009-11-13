@@ -19,6 +19,9 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import org.openremote.modeler.client.event.WidgetSelectChangeEvent;
+import org.openremote.modeler.client.listener.WidgetSelectChangeListener;
+import org.openremote.modeler.client.utils.SelectedWidgetContainer;
 import org.openremote.modeler.client.widget.control.ScreenControl;
 import org.openremote.modeler.domain.control.UIControl;
 
@@ -34,25 +37,37 @@ public class PropertyPanel extends ContentPanel {
 
    private LayoutContainer currentLayoutContainer;
    private FormPanel currentPropertyForm;
-   private static PropertyPanel propertyPanel;
-   private PropertyPanel() {
+//   private static PropertyPanel propertyPanel;
+   public PropertyPanel() {
       setBodyBorder(false);
       setHeading("Properties");
       setLayout(new FitLayout());
       setFrame(true);
+      SelectedWidgetContainer.setChangeListener(new WidgetSelectChangeListener(){
+         @Override
+         public void changeSelect(WidgetSelectChangeEvent be) {
+            update(be.getSelectWidget());
+         }
+         
+      });
    }
    
-   public static PropertyPanel getInstance() {
-      if (propertyPanel == null) {
-         propertyPanel = new PropertyPanel();
-      }
-      return propertyPanel;
-   }
+//   public static PropertyPanel getInstance() {
+//      if (propertyPanel == null) {
+//         propertyPanel = new PropertyPanel();
+//      }
+//      return propertyPanel;
+//   }
    
    /**
     * Update the panel's content follow with different component.
     */
    public void update(LayoutContainer component) {
+      if (component == null) {
+         removePropertiesForm();
+         layout();
+         return;
+      }
       if (!component.equals(currentLayoutContainer)) {
          if(component instanceof AbsoluteLayoutContainer) {
             AbsoluteLayoutContainer alc = (AbsoluteLayoutContainer) component;
@@ -81,5 +96,13 @@ public class PropertyPanel extends ContentPanel {
       }
       currentPropertyForm = screenControl.buildPropertiesForm();
       add(currentPropertyForm);
+   }
+   
+   public void removePropertiesForm() {
+      if(currentPropertyForm != null) {
+         currentPropertyForm.removeFromParent();
+         currentLayoutContainer = null;
+         currentPropertyForm = null;
+      }
    }
 }

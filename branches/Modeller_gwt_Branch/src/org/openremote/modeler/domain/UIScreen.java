@@ -203,4 +203,10 @@ public class UIScreen extends BusinessEntity {
    public static void increaseDefaultNameIndex() {
       defaultNameIndex++;
    }
+   
+   public void removeAbsolute(Absolute absolute) {
+      if (absoluteLayout && this.absolutes.size() > 0) {
+         this.absolutes.remove(absolute);
+      }
+   }
 }

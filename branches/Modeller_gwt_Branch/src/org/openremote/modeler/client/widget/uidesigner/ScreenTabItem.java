@@ -19,17 +19,12 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
-import java.util.List;
-
-import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.domain.UIScreen;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
-import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
-import com.google.gwt.core.client.GWT;
 
 /**
  * The Class ScreenTabItem contain a screenPanel.
@@ -41,8 +36,6 @@ public class ScreenTabItem extends TabItem {
    private UIScreen screen;
 
    private ScreenCanvas screenCanvas;
-   /** The icon. */
-   private Icons icon = GWT.create(Icons.class);
    
    /**
     * Instantiates a new screen panel.
@@ -88,4 +81,5 @@ public class ScreenTabItem extends TabItem {
    public ScreenCanvas getScreenCanvas() {
       return screenCanvas;
    }
+
 }
