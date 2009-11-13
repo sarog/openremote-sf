@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ **
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2009, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ **
+-->
+
+<!--
+ | JavaBean Bindings
+ |
+ | Author: Dan Cong
+ | Author: Juha Lindfors
+ +-->
+<beans xmlns = "http://www.springframework.org/schema/beans"
+       xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop = "http://www.springframework.org/schema/aop"
+       xmlns:tx = "http://www.springframework.org/schema/tx"
+       xsi:schemaLocation = "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
+       default-autowire = "byName">
+
+  <bean id = "propertyConfigurer"
+        class = "org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name = "location">
+      <value>classpath:config.properties</value>
+    </property>
+  </bean>
+
+  <!--
+  | Configuration variable mapping from controller config.properties file
+  | to org.openremote.controller.Configuration class.
+  |
+  | Property names must match to valid accessor methods in the Configuration class.
+  | Property values contain the expected property name in config.properties file.
+  +-->
+  <bean id = "configuration" class = "org.openremote.controller.Configuration">
+    <property name = "irsendPath" value = "${irsend.path}"/>
+    <property name = "lircdconfPath" value = "${lircd.conf.path}"/>
+    <property name = "copyLircdconf" value = "${copy.lircd.conf.on}"/>
+    <property name = "webappPort" value = "${webapp.port}"/>
+    <property name = "multicastAddress" value = "${multicast.address}"/>
+    <property name = "multicastPort" value = "${multicast.port}"/>
+    <property name = "resourcePath" value = "${resource.path}"/>
+    <property name = "resourceUpload" value = "${resource.upload.enable}"/>
+    <property name = "comPort" value = "${com.port}"/>
+  </bean>
+
+  <!-- service for button command from iPhone -->
+  <bean id = "buttonCommandService"
+        class = "org.openremote.controller.service.impl.ButtonCommandServiceImpl">
+    <property name = "macroCmdExecutionDelay" value = "${Macro.Execution.Delay}"/>
+  </bean>
+
+  <!-- controller.xml parser -->
+  <bean id = "remoteActionXMLParser"
+        class = "org.openremote.controller.event.RemoteActionXMLParser">
+  </bean>
+
+  <!-- service for file system operation : upload, unzip etc. -->
+  <bean id = "fileService" class = "org.openremote.controller.service.impl.FileServiceImpl">
+  </bean>
+
+
+  <bean id = "eventFactory" class = "org.openremote.controller.event.EventFactory">
+    <property name = "eventBuilders">
+      <props>
+        <prop key = "irEvent">irEventBuilder</prop>
+        <prop key = "knxEvent">knxEventBuilder</prop>
+        <prop key = "x10Event">x10EventBuilder</prop>
+        <prop key = "tcpSocketEvent">tcpSocketEventBuilder</prop>
+        <prop key = "telnetEvent">telnetEventBuilder</prop>
+        <prop key = "httpGetEvent">httpGetEventBuilder</prop>
+      </props>
+    </property>
+  </bean>
+
+
+  <!-- EVENT BUILDERS ============================================================================
+    |
+    | Implementation specific builders for the Event Factory bean. In short, each distinct event
+    | type, as they appear in controller.xml, will need a corresponding builder implementation.
+    |
+    | See the org.openremote.controller.event.EventBuilder interface for details if you seek to
+    | extend the implementation with additional event types.
+    +-->
+
+  <!-- Infrared Event Builder -->
+  <bean id = "irEventBuilder" class = "org.openremote.controller.protocol.infrared.IREventBuilder"/>
+
+  <!-- KNX Event Builder -->
+  <bean id = "knxEventBuilder" class = "org.openremote.controller.protocol.knx.KNXEventBuilder"/>
+
+  <!-- TCP Socket Event Builder for IP enabled devices -->
+  <bean id = "tcpSocketEventBuilder"
+        class = "org.openremote.controller.protocol.socket.TCPSocketEventBuilder"
+        scope = "prototype"/>
+
+  <!-- X10 Event Builder -->
+  <bean id = "x10EventBuilder" class = "org.openremote.controller.protocol.x10.X10EventBuilder"/>
+
+  <bean id = "telnetEventBuilder"
+        class = "org.openremote.controller.protocol.telnet.TelnetEventBuilder"
+        scope = "prototype"/>
+
+  <bean id = "httpGetEventBuilder"
+        class = "org.openremote.controller.protocol.http.HttpGetEventBuilder"
+        scope = "prototype"/>
+
+</beans>
