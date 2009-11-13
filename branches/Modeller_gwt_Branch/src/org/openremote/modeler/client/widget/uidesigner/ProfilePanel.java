@@ -78,7 +78,7 @@ public class ProfilePanel extends ContentPanel {
    public ProfilePanel() {
       selectionService = new SelectionServiceExt<BeanModel>();
       setHeading("Panel");
-      setIcon(icon.activityIcon());
+      setIcon(icon.panelIcon());
       setLayout(new FitLayout());
       createMenu();
       createPanelTree();
