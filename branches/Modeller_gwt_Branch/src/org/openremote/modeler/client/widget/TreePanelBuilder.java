@@ -387,11 +387,11 @@ public class TreePanelBuilder {
       panelTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
             if (thisModel.getBean() instanceof Panel) {
-               return ICON.activityIcon();
+               return ICON.panelIcon();
             } else if (thisModel.getBean() instanceof GroupRef) {
-               return ICON.screenIcon();
-            } else {
                return ICON.activityIcon();
+            } else {
+               return ICON.panelIcon();
             }
          }
       });

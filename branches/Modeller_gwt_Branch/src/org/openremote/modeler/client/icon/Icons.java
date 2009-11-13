@@ -289,6 +289,9 @@ public interface Icons extends ImageBundle {
     * 
     * @return the abstract image prototype
     */
-   @Resource("switch.gif")
+   @Resource("switch.png")
    AbstractImagePrototype switchIcon();
+   
+   @Resource("panel.png")
+   AbstractImagePrototype panelIcon();
 }
