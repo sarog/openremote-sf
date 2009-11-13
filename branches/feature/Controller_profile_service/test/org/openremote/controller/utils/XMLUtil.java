@@ -37,7 +37,7 @@ public class XMLUtil {
          if (elements.size() > 1) {
             throw new RuntimeException("duplicated id :" + id);
          } else if (elements.size() == 0) {
-            throw new NoSuchComponentException();
+            throw new NoSuchComponentException("No such component id " + id);
          }
          return elements.get(0);
       } catch (JDOMException e) {
