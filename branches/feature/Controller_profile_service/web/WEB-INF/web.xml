@@ -108,6 +108,15 @@
     	<servlet-class>
     	org.openremote.controller.rest.GetProfileRestServlet</servlet-class>
     </servlet>
+    <servlet>
+    	<description>
+    	used to send 401 http error code. </description>
+    	<display-name>
+    	LogoutServlet</display-name>
+    	<servlet-name>LogoutServlet</servlet-name>
+    	<servlet-class>
+    	org.openremote.controller.servlet.LogoutServlet</servlet-class>
+    </servlet>
     
     <servlet-mapping>
         <servlet-name>resourceServlet</servlet-name>
@@ -126,6 +135,14 @@
     <servlet-mapping>
     	<servlet-name>GetProfileRestServlet</servlet-name>
     	<url-pattern>/rest/panel/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>LogoutServlet</servlet-name>
+    	<url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>LogoutServlet</servlet-name>
+    	<url-pattern>/logout/</url-pattern>
     </servlet-mapping>
 
 
@@ -173,6 +190,7 @@
 	</listener>
 	
 	<!-- Constraint resource: /rest/control/* -->
+	<!-- 
 	<security-constraint>
 	  <web-resource-collection>
 	    <web-resource-name>Control command RESTful service of Openremote Controller</web-resource-name>
@@ -216,5 +234,5 @@
 	<security-role>
 	  <role-name>openremote</role-name>
 	</security-role>
-
+ -->
 </web-app>
