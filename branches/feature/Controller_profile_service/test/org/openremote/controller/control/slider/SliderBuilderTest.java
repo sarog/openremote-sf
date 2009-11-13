@@ -32,6 +32,7 @@ import org.jdom.xpath.XPath;
 import org.openremote.controller.Constants;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.exception.InvalidElementException;
+import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.spring.SpringContext;
 
 /**
