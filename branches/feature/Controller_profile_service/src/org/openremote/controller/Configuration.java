@@ -49,7 +49,8 @@ public class Configuration {
    
    /** The resource upload switch. */
    private boolean resourceUpload;
-
+   
+   private long macroIRExecutionDelay = 500;
    /**
     * Gets the irsend path.
     * 
@@ -194,4 +195,13 @@ public class Configuration {
       this.resourceUpload = resourceUpload;
    }
 
+   public long getMacroIRExecutionDelay() {
+      return macroIRExecutionDelay;
+   }
+
+   public void setMacroIRExecutionDelay(long macroIRExecutionDelay) {
+      this.macroIRExecutionDelay = macroIRExecutionDelay;
+   }
+   
+   
 }
