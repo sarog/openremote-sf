@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.IDUtil;
+import org.openremote.modeler.client.utils.SelectedWidgetContainer;
 import org.openremote.modeler.client.widget.control.ScreenButton;
 import org.openremote.modeler.client.widget.control.ScreenControl;
 import org.openremote.modeler.client.widget.control.ScreenSwitch;
@@ -37,11 +38,17 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.dnd.DragSource;
 import com.extjs.gxt.ui.client.dnd.DropTarget;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.event.DNDListener;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.fx.Resizable;
+import com.extjs.gxt.ui.client.util.KeyNav;
 import com.extjs.gxt.ui.client.util.Point;
+import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.user.client.Event;
 
 /**
@@ -55,7 +62,6 @@ public class ScreenCanvas extends LayoutContainer {
    /** The move back ground. */
    private LayoutContainer moveBackGround = new LayoutContainer();
    
-   private LayoutContainer selectedComponent;
    /**
     * Instantiates a new screen canvas.
     * 
@@ -70,7 +76,7 @@ public class ScreenCanvas extends LayoutContainer {
          if (screen.getAbsolutes().size() > 0) {
             List<Absolute> absolutes = screen.getAbsolutes();
             for (Absolute absolute : absolutes) {
-               AbsoluteLayoutContainer controlContainer = createAbsoluteLayoutContainer(absolute, ScreenControl.build(absolute.getUiControl()));
+               AbsoluteLayoutContainer controlContainer = createAbsoluteLayoutContainer(screen, absolute, ScreenControl.build(absolute.getUiControl()));
                controlContainer.setSize(absolute.getWidth(), absolute.getHeight());
                controlContainer.setPosition(absolute.getLeft(), absolute.getTop());
                this.add(controlContainer);
@@ -133,12 +139,7 @@ public class ScreenCanvas extends LayoutContainer {
                if (models.size() > 0) {
                   BeanModel dataModel = models.get(0).get("model");
                   AbsoluteLayoutContainer controlContainer = createNewAbsoluteLayoutContainer(screen, (UIControl)dataModel.getBean());
-                  if (selectedComponent != null) {
-                     selectedComponent.removeStyleName("button-border");
-                  }
-                  selectedComponent = controlContainer;
-                  selectedComponent.addStyleName("button-border");
-                  PropertyPanel.getInstance().update(selectedComponent);
+                  SelectedWidgetContainer.setSelectWidget(controlContainer);
                   canvas.add(controlContainer);
                   controlContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY() - absolutePosition.y);
                   new Resizable(controlContainer, Constants.RESIZABLE_HANDLES);
@@ -195,21 +196,39 @@ public class ScreenCanvas extends LayoutContainer {
       return new Point(left, top);
    }
 
-   private AbsoluteLayoutContainer createAbsoluteLayoutContainer(Absolute absolute, ScreenControl screenControl) {
-      AbsoluteLayoutContainer controlContainer = new AbsoluteLayoutContainer(absolute, screenControl) {
+   private AbsoluteLayoutContainer createAbsoluteLayoutContainer(final UIScreen screen, Absolute absolute, ScreenControl screenControl) {
+      final AbsoluteLayoutContainer controlContainer = new AbsoluteLayoutContainer(absolute, screenControl) {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
-               this.addStyleName("button-border");
-               if (selectedComponent != null && (LayoutContainer) this != selectedComponent) {
-                  selectedComponent.removeStyleName("button-border");
-               }
-               selectedComponent = (LayoutContainer) this;
-               PropertyPanel.getInstance().update(selectedComponent);
+               SelectedWidgetContainer.setSelectWidget((LayoutContainer) this);
             }
             super.onBrowserEvent(event);
          }
+         
       };
+      new KeyNav<ComponentEvent>(){
+         @Override
+         public void onDelete(ComponentEvent ce) {
+            super.onDelete(ce);
+            MessageBox box = new MessageBox();
+            box.setButtons(MessageBox.YESNO);
+            box.setIcon(MessageBox.QUESTION);
+            box.setTitle("Delete");
+            box.setMessage("Are you sure you want to delete?");
+            box.addCallback(new Listener<MessageBoxEvent>() {
+                public void handleEvent(MessageBoxEvent be) {
+                    if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
+                       screen.removeAbsolute(controlContainer.getAbsolute());
+                       controlContainer.removeFromParent();
+                       SelectedWidgetContainer.setSelectWidget(null);
+                    }
+                }
+            });
+            box.show();
+         }
+         
+      }.bind(controlContainer);
       return controlContainer;
    }
    
@@ -223,16 +242,17 @@ public class ScreenCanvas extends LayoutContainer {
       if(uiControl instanceof UIButton) {
          UIButton uiButton = new UIButton(IDUtil.nextID());
          absolute.setUiControl(uiButton);
-         controlContainer = createAbsoluteLayoutContainer(absolute, new ScreenButton(uiButton));
+         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenButton(uiButton));
          controlContainer.setSize(50, 50);   // set the button's default size after drag from widget tree.
          
       } else if(uiControl instanceof UISwitch) {
          UISwitch uiSwitch = new UISwitch(IDUtil.nextID());
          absolute.setUiControl(uiSwitch);
-         controlContainer = createAbsoluteLayoutContainer(absolute, new ScreenSwitch(uiSwitch));
+         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenSwitch(uiSwitch));
          controlContainer.setSize(50, 50);   // set the switch's default size after drag from widget tree.
       }
       screen.addAbsolute(absolute);
       return controlContainer;
    }
+
 }

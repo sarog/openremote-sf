@@ -25,6 +25,7 @@ import java.util.Map;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.BeanModelTable;
+import org.openremote.modeler.client.utils.SelectedWidgetContainer;
 import org.openremote.modeler.domain.UIScreen;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -48,6 +49,24 @@ public class ScreenTab extends TabPanel {
    public ScreenTab() {
       setTabScroll(true);
       setAnimScroll(true);
+      addListener(Events.BeforeAdd, new Listener<TabPanelEvent>() {
+         @Override
+         public void handleEvent(TabPanelEvent be) {
+            SelectedWidgetContainer.setSelectWidget(null);
+         }
+      });
+      addListener(Events.BeforeRemove, new Listener<TabPanelEvent>() {
+         @Override
+         public void handleEvent(TabPanelEvent be) {
+            SelectedWidgetContainer.setSelectWidget(null);
+         }
+      });
+      addListener(Events.Select, new Listener<TabPanelEvent>() {
+         @Override
+         public void handleEvent(TabPanelEvent be) {
+            SelectedWidgetContainer.setSelectWidget(null);
+         }
+      });
       addListener(Events.Add, new Listener<TabPanelEvent>() {
          public void handleEvent(TabPanelEvent be) {
             final ScreenTabItem screenTabItem = (ScreenTabItem) be.getItem();

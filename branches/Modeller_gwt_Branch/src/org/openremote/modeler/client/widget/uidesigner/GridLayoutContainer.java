@@ -24,6 +24,7 @@ import java.util.List;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.gxtextends.ScreenDropTarget;
 import org.openremote.modeler.client.utils.IDUtil;
+import org.openremote.modeler.client.utils.SelectedWidgetContainer;
 import org.openremote.modeler.client.widget.control.ScreenControl;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.Grid;
@@ -31,18 +32,23 @@ import org.openremote.modeler.domain.UIScreen;
 import org.openremote.modeler.domain.control.UIButton;
 import org.openremote.modeler.domain.control.UIControl;
 import org.openremote.modeler.domain.control.UISwitch;
-import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.dnd.DragSource;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.event.DNDListener;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.ResizeEvent;
 import com.extjs.gxt.ui.client.event.ResizeListener;
 import com.extjs.gxt.ui.client.fx.Resizable;
+import com.extjs.gxt.ui.client.util.KeyNav;
 import com.extjs.gxt.ui.client.util.Point;
+import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 
@@ -54,17 +60,12 @@ public class GridLayoutContainer extends LayoutContainer {
    /** The screen. */
    private UIScreen screen;
 
-   private GridCellContainer selectedComponent;
-   
    /** The Constant POSITION. */
    private static final String POSITION = "position";
 
    /** The btn in area. */
    private boolean[][] btnInArea;
    
-   /** The panel definition. */
-   private TouchPanelDefinition panelDefinition;
-
    /**
     * Instantiates a new grid layout container.
     * 
@@ -72,7 +73,6 @@ public class GridLayoutContainer extends LayoutContainer {
     */
    public GridLayoutContainer(UIScreen screen) {
       this.screen = screen;
-      this.panelDefinition = screen.getTouchPanelDefinition();
       Grid grid = screen.getGrid();
       btnInArea = new boolean[grid.getColumnCount()][grid.getRowCount()];
       addStyleName("screen-background");
@@ -140,12 +140,7 @@ public class GridLayoutContainer extends LayoutContainer {
                }
             }
             cellContainer.fillArea(btnInArea);
-            if (selectedComponent != null) {
-               selectedComponent.removeStyleName("button-border");
-            }
-            selectedComponent = cellContainer;
-            selectedComponent.addStyleName("button-border");
-            PropertyPanel.getInstance().update(selectedComponent);
+            SelectedWidgetContainer.setSelectWidget(cellContainer);
             makeCellContainerResizable(cellWidth, cellHeight, cellContainer);
             layout();
             super.dragDrop(e);
@@ -167,7 +162,7 @@ public class GridLayoutContainer extends LayoutContainer {
       if (grid.getCells().size() > 0) {  // If the Panel has closed, there may have some buttons on screen to be rendered. 
          List<Cell> cells= grid.getCells();
          for (Cell cell : cells) {
-            GridCellContainer cellContainer = createCellContainer(cell, (cellWidth + 1) * cell.getColspan() - 1,
+            GridCellContainer cellContainer = createCellContainer(grid, cell, (cellWidth + 1) * cell.getColspan() - 1,
                   (cellHeight + 1) * cell.getRowspan() - 1);
             makeCellContainerResizable(cellWidth, cellHeight, cellContainer);
             cellContainer.setPosition(cellWidth * cell.getPosX() + cell.getPosX() + 1, cellHeight * cell.getPosY()
@@ -187,21 +182,38 @@ public class GridLayoutContainer extends LayoutContainer {
     * init a cell with it's width and height.
     * 
     */
-   private GridCellContainer createCellContainer(Cell cell, int cellWidth, int cellHeight) {
-      GridCellContainer cellContainer =  new GridCellContainer(cell, ScreenControl.build(cell.getUiControl())) {
+   private GridCellContainer createCellContainer(final Grid grid, Cell cell, int cellWidth, int cellHeight) {
+      final GridCellContainer cellContainer =  new GridCellContainer(cell, ScreenControl.build(cell.getUiControl())) {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
-               this.addStyleName("button-border");
-               if (selectedComponent != null && (LayoutContainer) this != selectedComponent) {
-                  selectedComponent.removeStyleName("button-border");
-               }
-               selectedComponent = (GridCellContainer) this;
-               PropertyPanel.getInstance().update(selectedComponent);
+               SelectedWidgetContainer.setSelectWidget((GridCellContainer) this);
             }
             super.onBrowserEvent(event);
          }
       };
+      new KeyNav<ComponentEvent>(){
+         @Override
+         public void onDelete(ComponentEvent ce) {
+            super.onDelete(ce);
+            MessageBox box = new MessageBox();
+            box.setButtons(MessageBox.YESNO);
+            box.setIcon(MessageBox.QUESTION);
+            box.setTitle("Delete");
+            box.setMessage("Are you sure you want to delete?");
+            box.addCallback(new Listener<MessageBoxEvent>() {
+                public void handleEvent(MessageBoxEvent be) {
+                    if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
+                       grid.removeCell(cellContainer.getCell());
+                       cellContainer.removeFromParent();
+                       SelectedWidgetContainer.setSelectWidget(null);
+                    }
+                }
+            });
+            box.show();
+         }
+         
+      }.bind(cellContainer);
       cellContainer.setSize(cellWidth, cellHeight);
       return cellContainer;
    }
@@ -306,7 +318,6 @@ public class GridLayoutContainer extends LayoutContainer {
             resizedCellContainer.setHeight(vSize * cellHeight + vSize - 1);
             resizedCellContainer.setWidth(hSize * cellWidth + hSize - 1);
             resizedCellContainer.setCellSpan(hSize, vSize);
-//            resizedCellContainer.adjust(); // Adjust the button's display.
             resizedCellContainer.fillArea(btnInArea);
          }
 
@@ -338,7 +349,7 @@ public class GridLayoutContainer extends LayoutContainer {
          cell.setUiControl(new UISwitch(IDUtil.nextID()));
       }
       grid.addCell(cell);
-      return createCellContainer(cell, cellWidth, cellHeight);
+      return createCellContainer(grid, cell, cellWidth, cellHeight);
    }
 
 

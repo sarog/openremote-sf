@@ -208,7 +208,7 @@ public class UIDesignerView extends TabItem implements View {
       widgetPanel.setSize("100%", "50%");
       widgetAndPropertyContainer.add(widgetPanel, northData);
       
-      PropertyPanel propertyPanel = PropertyPanel.getInstance();
+      PropertyPanel propertyPanel = new PropertyPanel();
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setSplit(true);
       centerData.setMargins(new Margins(2));
