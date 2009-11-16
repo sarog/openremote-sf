@@ -7,13 +7,13 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.openremote.controller.exception.NoSuchComponentException;
-import org.openremote.controller.spring.SpringContext;
+import org.openremote.controller.utils.SpringContextForTest;
 import org.openremote.controller.utils.XMLUtil;
 
 public class GestureBuilderTest extends TestCase {
    private String controllerXMLPath = null;
    private Document doc = null;
-   private GestureBuilder builder = (GestureBuilder) SpringContext.getInstance().getBean("gestureBuilder");
+   private GestureBuilder builder = (GestureBuilder) SpringContextForTest.getInstance().getBean("gestureBuilder");
    
    protected void setUp() throws Exception {
       controllerXMLPath = this.getClass().getClassLoader().getResource("./fixture/controller.xml").getFile();

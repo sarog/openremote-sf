@@ -22,7 +22,6 @@ package org.openremote.controller.utils;
 import junit.framework.TestCase;
 
 import org.openremote.controller.command.RemoteActionXMLParser;
-import org.openremote.controller.spring.SpringContext;
 
 
 /**
@@ -33,7 +32,7 @@ import org.openremote.controller.spring.SpringContext;
 public class RemoteActionXMLParserTest extends TestCase {
    
    /** The remote action xml parser. */
-   private RemoteActionXMLParser remoteActionXMLParser = (RemoteActionXMLParser) SpringContext.getInstance().getBean(
+   private RemoteActionXMLParser remoteActionXMLParser = (RemoteActionXMLParser) SpringContextForTest.getInstance().getBean(
          "remoteActionXMLParser");
 
    /**

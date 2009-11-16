@@ -24,8 +24,6 @@ import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
-import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.protocol.knx.KNXCommandBuilder;
 import org.openremote.controller.utils.SpringContextForTest;
 
 /**
@@ -36,22 +34,22 @@ import org.openremote.controller.utils.SpringContextForTest;
 public class PollingTest extends TestCase {
 
    /** The status command service. */
-   private KNXCommandBuilder knxCommandBuilder = (KNXCommandBuilder) SpringContextForTest.getInstance().getBean("knxCommandBuilder");;
+//   private KNXCommandBuilder knxCommandBuilder = (KNXCommandBuilder) SpringContextForTest.getInstance().getBean("knxCommandBuilder");;
    private StatusCommandService statusCommandService = (StatusCommandService) SpringContextForTest.getInstance().getBean("statusCommandService");
    /**
     * Test trigger.
     */
    public void testExec(){
 //       statusCommandService.trigger("1,2,3");
-       String xml = ((StatusCommand)knxCommandBuilder.build(null)).read();
-       System.out.println(xml);
-       xml = ((StatusCommand)knxCommandBuilder.build(null)).read();
-       System.out.println(xml);
-       try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//       String xml = ((StatusCommand)knxCommandBuilder.build(null)).read();
+//       System.out.println(xml);
+//       xml = ((StatusCommand)knxCommandBuilder.build(null)).read();
+//       System.out.println(xml);
+//       try {
+//            Thread.sleep(10000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
    }
    
    public void testRegex() {
