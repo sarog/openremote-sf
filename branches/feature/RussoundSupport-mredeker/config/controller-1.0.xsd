@@ -88,7 +88,8 @@
           <xsd:element ref="httpEvents"/>
           <xsd:element ref="socketEvents"/>
           <xsd:element ref="telnetEvents"/>
-          <xsd:element ref="upnpEvents"/>          
+          <xsd:element ref="upnpEvents"/>  
+          <xsd:element ref="russoundEvents"/>          
 				</xsd:choice>
 			</xsd:sequence>
 		</xsd:complexType>		
@@ -114,6 +115,31 @@
 		<xsd:complexType>
 			<xsd:attributeGroup ref="idAttr"/>
 			<xsd:attribute name="name" type="xsd:string" use="required"/>
+			<xsd:attribute name="command" type="xsd:string" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="russoundEvents">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The parent element of <irEvent> tags.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="russoundEvent" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="russoundEvent">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The event to control a russound device with RNET protocol.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attributeGroup ref="idAttr"/>
+			<xsd:attribute name = "label" type = "xsd:string" use = "required"/>
 			<xsd:attribute name="command" type="xsd:string" use="required"/>
 		</xsd:complexType>
 	</xsd:element>
