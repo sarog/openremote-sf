@@ -42,6 +42,12 @@
       <value>classpath:config.properties</value>
     </property>
   </bean>
+  
+  <bean id="russoundConfig" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+	<property name="location">
+		<value>classpath:russound.properties</value>
+	</property>
+  </bean>
 
   <!--
   | Configuration variable mapping from controller config.properties file
@@ -88,6 +94,7 @@
         <prop key = "tcpSocketEvent">tcpSocketEventBuilder</prop>
         <prop key = "telnetEvent">telnetEventBuilder</prop>
         <prop key = "httpGetEvent">httpGetEventBuilder</prop>
+        <prop key = "russoundEvent">russoundEventBuilder</prop>
       </props>
     </property>
   </bean>
@@ -123,9 +130,13 @@
   <!-- Universal Plug'n'Play Event Builder -->
   <bean id = "upnpEventBuilder" class = "org.openremote.controller.protocol.upnp.UPnPEventBuilder"
         scope = "singleton" />
-
+        
   <bean id = "httpGetEventBuilder"
         class = "org.openremote.controller.protocol.http.HttpGetEventBuilder"
+        scope = "prototype"/>
+        
+  <bean id = "russoundEventBuilder"
+        class = "org.openremote.controller.protocol.russound.RussoundEventBuilder"
         scope = "prototype"/>
 
 </beans>
