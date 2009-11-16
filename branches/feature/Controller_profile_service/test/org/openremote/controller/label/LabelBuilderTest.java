@@ -14,12 +14,12 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.control.label.Label;
 import org.openremote.controller.control.label.LabelBuilder;
 import org.openremote.controller.exception.NoSuchComponentException;
-import org.openremote.controller.utils.SpringContextForTest;
+import org.openremote.controller.utils.SpringTestContext;
 
 public class LabelBuilderTest extends TestCase {
    private String controllerXMLPath = null;
    private Document doc = null;
-   private LabelBuilder builder = (LabelBuilder) SpringContextForTest.getInstance().getBean("labelBuilder");
+   private LabelBuilder builder = (LabelBuilder) SpringTestContext.getInstance().getBean("labelBuilder");
    
    protected void setUp() throws Exception {
       controllerXMLPath = this.getClass().getClassLoader().getResource("./fixture/controller.xml").getFile();
