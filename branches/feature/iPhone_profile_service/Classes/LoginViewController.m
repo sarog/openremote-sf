@@ -130,7 +130,7 @@
     
 		if (indexPath.row == 0) {
 			loginCell.textLabel.text = @"Username";
-			//[textField becomeFirstResponder];
+			[textField becomeFirstResponder];
 			usernameField = textField;
 			usernameField.text = [Definition sharedDefinition].username; 
 		} else if (indexPath.row == 1) {

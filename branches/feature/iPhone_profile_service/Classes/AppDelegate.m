@@ -37,6 +37,8 @@
 #import "NotificationConstant.h"
 #import	"LoginViewController.h"
 #import "AppSettingController.h"
+#import "DataBaseService.h"
+#import "User.h"
 
 //Private method declare
 @interface AppDelegate (Private)
@@ -79,6 +81,12 @@
 	[updateController checkConfigAndUpdate];
 	groupControllers = [[NSMutableArray alloc] init]; 
 	groupViewMap = [[NSMutableDictionary alloc] init];
+	
+	// Load logined iphone user last time.
+	DataBaseService *dbService = [DataBaseService sharedDataBaseService];
+	User *user = [dbService findLastLoginUser];
+	[Definition sharedDefinition].username = user.username;
+	[Definition sharedDefinition].password = user.password;
 }
 
 
