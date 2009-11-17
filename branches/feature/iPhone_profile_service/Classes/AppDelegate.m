@@ -39,6 +39,7 @@
 #import "AppSettingController.h"
 #import "DataBaseService.h"
 #import "User.h"
+#import "LogoutHelper.h"
 
 //Private method declare
 @interface AppDelegate (Private)
@@ -54,6 +55,7 @@
 - (void)navigateToScreen:(int)to;
 - (void)navigateToPreviousScreen;
 - (void)navigateToNextScreen;
+- (void)logout;
 @end
 
 @implementation AppDelegate
@@ -149,7 +151,7 @@
 	} 
 	
 	else if (navi.isLogout) {									//toLogout TODO
-		//[self navigateToScreen:navi.isLogout];
+		[self logout];
 	}
 	
 }
@@ -193,6 +195,14 @@
 		
 		//[targetGroupController release];
 	}
+}
+
+- (void)logout {
+	if ([Definition sharedDefinition].password) {
+		LogoutHelper *logout = [[LogoutHelper alloc] init];
+		[logout requestLogout];
+		[logout release];
+	}	
 }
 
 - (void)navigateToScreen:(int)to {

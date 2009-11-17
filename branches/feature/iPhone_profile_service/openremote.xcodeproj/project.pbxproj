@@ -163,6 +163,8 @@
 		8CAEB81B10A6B25B0051C827 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CAEB81A10A6B25B0051C827 /* LoginViewController.m */; };
 		8CAEB81C10A6B25B0051C827 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CAEB81A10A6B25B0051C827 /* LoginViewController.m */; };
 		8CB33E4E0FCA4AE400B010DF /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */; };
+		8CEB4E7F10B2827200A67721 /* LogoutHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEB4E7E10B2827200A67721 /* LogoutHelper.m */; };
+		8CEB4E8010B2827200A67721 /* LogoutHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEB4E7E10B2827200A67721 /* LogoutHelper.m */; };
 		8CF6A2800FBD3782006ED733 /* AsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27D0FBD3782006ED733 /* AsyncSocket.m */; };
 		8CF6A2810FBD3782006ED733 /* AsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27F0FBD3782006ED733 /* AsyncUdpSocket.m */; };
 		8CF6A2B10FBD784C006ED733 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CF6A2B00FBD784C006ED733 /* CFNetwork.framework */; };
@@ -321,6 +323,8 @@
 		8CAEB81910A6B25B0051C827 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		8CAEB81A10A6B25B0051C827 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		8CEB4E7D10B2827200A67721 /* LogoutHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogoutHelper.h; sourceTree = "<group>"; };
+		8CEB4E7E10B2827200A67721 /* LogoutHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogoutHelper.m; sourceTree = "<group>"; };
 		8CF6A27C0FBD3782006ED733 /* AsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsyncSocket.h; sourceTree = "<group>"; };
 		8CF6A27D0FBD3782006ED733 /* AsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AsyncSocket.m; sourceTree = "<group>"; };
 		8CF6A27E0FBD3782006ED733 /* AsyncUdpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsyncUdpSocket.h; sourceTree = "<group>"; };
@@ -491,13 +495,8 @@
 		8C460E411095527300C7A686 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				8CEB4E7810B27F3700A67721 /* panelxml */,
 				331A58E410AD6A22001AB869 /* db */,
-				8C460FEC1095A30A00C7A686 /* PanelXMLParsingTests.m */,
-				8C460F8D1095666A00C7A686 /* panel_absolute_switch.xml */,
-				8C460E51109552EB00C7A686 /* panel_absolute_toggle.xml */,
-				8C460E52109552EB00C7A686 /* PanelXMLParsingTests.h */,
-				8C6504721098337F006FC19F /* panel_grid_switch.xml */,
-				8C6505F710987E1D006FC19F /* panel_grid_button.xml */,
 			);
 			name = Tests;
 			sourceTree = "<group>";
@@ -519,8 +518,23 @@
 				8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */,
 				8C6502E0109809EC006FC19F /* PollingHelper.h */,
 				8C6502E1109809EC006FC19F /* PollingHelper.m */,
+				8CEB4E7D10B2827200A67721 /* LogoutHelper.h */,
+				8CEB4E7E10B2827200A67721 /* LogoutHelper.m */,
 			);
 			name = utils;
+			sourceTree = "<group>";
+		};
+		8CEB4E7810B27F3700A67721 /* panelxml */ = {
+			isa = PBXGroup;
+			children = (
+				8C460FEC1095A30A00C7A686 /* PanelXMLParsingTests.m */,
+				8C460F8D1095666A00C7A686 /* panel_absolute_switch.xml */,
+				8C460E51109552EB00C7A686 /* panel_absolute_toggle.xml */,
+				8C460E52109552EB00C7A686 /* PanelXMLParsingTests.h */,
+				8C6504721098337F006FC19F /* panel_grid_switch.xml */,
+				8C6505F710987E1D006FC19F /* panel_grid_button.xml */,
+			);
+			name = panelxml;
 			sourceTree = "<group>";
 		};
 		8CF6A27B0FBD3751006ED733 /* lib */ = {
@@ -835,6 +849,7 @@
 				331A58E710AD6A79001AB869 /* DataBaseServiceTest.m in Sources */,
 				33981B1110B103260076DB59 /* DataBaseService.m in Sources */,
 				33981B1A10B108C30076DB59 /* User.m in Sources */,
+				8CEB4E7F10B2827200A67721 /* LogoutHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -903,6 +918,7 @@
 				331A58E810AD6A79001AB869 /* DataBaseServiceTest.m in Sources */,
 				33981B1210B103260076DB59 /* DataBaseService.m in Sources */,
 				33981B1B10B108C30076DB59 /* User.m in Sources */,
+				8CEB4E8010B2827200A67721 /* LogoutHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
