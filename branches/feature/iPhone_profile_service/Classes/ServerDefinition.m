@@ -63,4 +63,9 @@
 	return [[self serverUrl] stringByAppendingPathComponent:@"rest/polling"];
 }
 
++ (NSString *)logoutUrl {
+	return [[self serverUrl] stringByAppendingPathComponent:@"logout"];
+}
+
+
 @end
