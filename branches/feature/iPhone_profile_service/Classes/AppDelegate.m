@@ -44,10 +44,14 @@
 - (void)didUpadted;
 - (void)didUseLocalCache:(NSString *)errorMessage;
 - (void)didUpdateFail:(NSString *)errorMessage;
-- (void)navigateToGroup:(NSNotification *)notification;
+- (void)navigateTo:(NSNotification *)notification;
 - (void)populateLoginView:(id)sender;
 - (void)populateSettingsView:(id)sender;
 - (void)refreshView:(id)sender;
+- (void)navigateToGroup:(int)to;
+- (void)navigateToScreen:(int)to;
+- (void)navigateToPreviousScreen;
+- (void)navigateToNextScreen;
 @end
 
 @implementation AppDelegate
@@ -97,25 +101,64 @@
 	currentGroupController = defaultGroupController;
 	[window addSubview:defaultGroupController.view];
 	//[defaultGroupController release];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateToGroup:) name:NotificationNavigateToGroup object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateTo:) name:NotificationNavigateTo object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateSettingsView:) name:NotificationPopulateSettingsView object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView:) name:NotificationRefreshGroupsView object:nil];	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateToScreen:) name:NotificationRefreshGroupsView object:nil];	
+	
 }
 
-- (void)navigateToGroup:(NSNotification *)notification {
+- (void)navigateTo:(NSNotification *)notification {
 	Navigate *navi = (Navigate *)[notification object];
+
+	if (navi.toGroup > 0 ) {									//toGroup
+		[self navigateToGroup:navi.toGroup];
+	} 
+	
+	else if (navi.toScreen > 0) {							//toScreen
+		[self navigateToScreen:navi.toScreen];
+	} 
+	
+	else if (navi.isSetting) {								//toSetting
+		[self populateSettingsView:nil];
+	} 
+	
+	else if (navi.isPreviousScreen) {					//toPreviousScreen
+		[self navigateToPreviousScreen];
+	}
+	
+	else if (navi.isNextScreen) {							//toNextScreen
+		[self navigateToNextScreen];
+	}
+	
+	else if (navi.isBack) {										//toBack TODO
+		//[self navigateToBack]; 
+	} 
+	
+	else if (navi.isLogin) {									//toLogin
+		[self populateLoginView:nil];
+	} 
+	
+	else if (navi.isLogout) {									//toLogout TODO
+		//[self navigateToScreen:navi.isLogout];
+	}
+	
+}
+
+- (void)navigateToGroup:(int)to {
+	
 	GroupController *targetGroupController = nil;	
-	BOOL notItSelf = navi.toGroup != currentGroupController.group.groupId;
-	if (navi.toGroup > 0 && notItSelf) {
+	BOOL notItSelf = to != currentGroupController.group.groupId;
+	if (to > 0 && notItSelf) {
 		for (GroupController *gc in groupControllers) {
-			if (gc.group.groupId == navi.toGroup) {
+			if (gc.group.groupId == to) {
 				targetGroupController = gc;
 			}
 		}
 		
 		if (targetGroupController == nil) {
-			Group *group = [[Definition sharedDefinition] findGroupById:navi.toGroup];			 
+			Group *group = [[Definition sharedDefinition] findGroupById:to];			 
 			targetGroupController = [[GroupController alloc] initWithGroup:group];
 			[groupControllers addObject:targetGroupController];
 			[groupViewMap setObject:targetGroupController.view forKey:[NSString stringWithFormat:@"%d", group.groupId]];
@@ -130,7 +173,7 @@
 		
 		//[navigationController.view removeFromSuperview];
 		//navigationController = [[UINavigationController alloc] initWithRootViewController:targetGroupController];
-		UIView *view = [groupViewMap objectForKey:[NSString stringWithFormat:@"%d", navi.toGroup]];
+		UIView *view = [groupViewMap objectForKey:[NSString stringWithFormat:@"%d", to]];
 		
 
 		[currentGroupController.view removeFromSuperview];
@@ -143,6 +186,21 @@
 		//[targetGroupController release];
 	}
 }
+
+- (void)navigateToScreen:(int)to {
+	if (to > 0) {
+		[currentGroupController switchToScreen:to];
+	}
+}
+
+- (void)navigateToPreviousScreen {
+		[currentGroupController previousScreen];
+}
+
+- (void)navigateToNextScreen {
+		[currentGroupController nextScreen];
+}
+
 
 //prompts the user to enter a valid user name and password
 - (void)populateLoginView:(id)sender {

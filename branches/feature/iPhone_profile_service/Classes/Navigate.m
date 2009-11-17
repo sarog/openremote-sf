@@ -24,13 +24,19 @@
 
 @implementation Navigate
 
-@synthesize toScreen, toGroup;
+@synthesize toScreen, toGroup, isPreviousScreen, isNextScreen, isSetting, isBack, isLogin, isLogout;
 
 //Initialize itself accoding to xml parser
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {
 		toScreen = [[attributeDict objectForKey:@"toScreen"] intValue];
 		toGroup = [[attributeDict objectForKey:@"toGroup"] intValue];
+		isPreviousScreen = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"toPreviousScreen"] uppercaseString]] ? YES : NO;
+		isNextScreen = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"toNextScreen"] uppercaseString]] ? YES : NO;
+		isSetting = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"toSetting"] uppercaseString]] ? YES : NO;
+		isBack = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"toBack"] uppercaseString]] ? YES : NO;
+		isLogin = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"toLogin"] uppercaseString]] ? YES : NO;
+		isLogout = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"toLogout"] uppercaseString]] ? YES : NO;
 		
 		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];

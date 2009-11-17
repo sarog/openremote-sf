@@ -90,13 +90,20 @@
 							NSString *expectedName = [[NSMutableString alloc] initWithFormat:@"%c",(char)65 + but_index];						
 							STAssertTrue([but.name isEqualToString:expectedName],@"expected %@, but %@",expectedName,but.name);
 							int expectedId = (59 + but_index++);
-							STAssertTrue(expectedId == but.controlId,@"expected %d, but %d",expectedId,but.controlId);	
-							NSString *expectedOnName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + image_index++];						
-							STAssertTrue([but.image.src isEqualToString:expectedOnName],@"expected %@, but %@",expectedOnName,but.image.src);
-							NSString *expectedOffName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + image_index++];
-							STAssertTrue([but.imagePressed.src isEqualToString:expectedOffName],@"expected %@, but %@",expectedOffName,but.imagePressed.src);
-							[expectedOnName release];
-							[expectedOffName release];
+							STAssertTrue(expectedId == but.controlId,@"expected %d, but %d",expectedId,but.controlId);
+							NSString *expectedNormalImageName = nil;
+							if (but.image) {
+								expectedNormalImageName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + image_index++];						
+								STAssertTrue([but.image.src isEqualToString:expectedNormalImageName],@"expected %@, but %@",expectedNormalImageName,but.image.src);
+							}
+							NSString *expectedPressedImageName = nil;
+							if (but.imagePressed) {
+								expectedPressedImageName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + image_index++];
+								STAssertTrue([but.imagePressed.src isEqualToString:expectedPressedImageName],@"expected %@, but %@",expectedPressedImageName,but.imagePressed.src);
+							}
+							
+							[expectedNormalImageName release];
+							[expectedPressedImageName release];
 						}	
 					}
 				}				
@@ -123,7 +130,7 @@
 		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
 	}
 	
-	STAssertTrue(cells.count== 5,@"expected %d, but %d",5,cells.count);
+	STAssertTrue(cells.count== 11,@"expected %d, but %d",11,cells.count);
 	STAssertTrue(((GridCell *)[cells objectAtIndex:0]).colspan == 1,@"expected %d",1);
 	STAssertTrue(((GridCell *)[cells objectAtIndex:0]).rowspan == 1,@"expected %d",1);
 	STAssertTrue(((GridCell *)[cells objectAtIndex:1]).rowspan == 1,@"expected %d",1);
@@ -135,7 +142,7 @@
 	STAssertTrue([@"" isEqualToString:ids],@"expected '', but %@",ids);
 	
 	
-	STAssertTrue(buts.count== 5,@"expected %d, but %d",5,buts.count);
+	STAssertTrue(buts.count== 11,@"expected %d, but %d",11,buts.count);
 	STAssertTrue(((Button *)[buts objectAtIndex:0]).navigate.toScreen == 19,@"expected %d",19);
 	STAssertTrue(((Button *)[buts objectAtIndex:0]).hasCommand == NO,@"expected NO");
 	STAssertTrue(((Button *)[buts objectAtIndex:1]).hasCommand == YES,@"expected YES");
@@ -146,6 +153,14 @@
 	STAssertTrue(((Button *)[buts objectAtIndex:3]).navigate.toGroup == 9,@"expected %d",9);
 	STAssertTrue(((Button *)[buts objectAtIndex:4]).hasCommand == NO,@"expected %d",NO);
 	STAssertTrue(((Button *)[buts objectAtIndex:4]).navigate.toGroup == 9,@"expected %d",9);
+	STAssertTrue(((Button *)[buts objectAtIndex:5]).hasCommand == NO,@"expected %d",NO);
+	STAssertTrue(((Button *)[buts objectAtIndex:5]).navigate.isPreviousScreen == YES,@"expected %d",YES);
+	STAssertTrue(((Button *)[buts objectAtIndex:6]).hasCommand == NO,@"expected %d",NO);
+	STAssertTrue(((Button *)[buts objectAtIndex:6]).navigate.isNextScreen == YES,@"expected %d",YES);
+	STAssertTrue(((Button *)[buts objectAtIndex:7]).navigate.isSetting == YES,@"expected %d",YES);
+	STAssertTrue(((Button *)[buts objectAtIndex:8]).navigate.isBack == YES,@"expected %d",YES);
+	STAssertTrue(((Button *)[buts objectAtIndex:9]).navigate.isLogin == YES,@"expected %d",YES);
+	STAssertTrue(((Button *)[buts objectAtIndex:10]).navigate.isLogout == YES,@"expected %d",YES);
 	
 	[xmlParser release];
 	[xml release];

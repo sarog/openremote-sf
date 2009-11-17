@@ -26,12 +26,22 @@
 	
 	int toScreen;
 	int toGroup;
-
-
+	BOOL isPreviousScreen;
+	BOOL isNextScreen;
+	BOOL isBack;
+	BOOL isSetting;
+	BOOL isLogin;
+	BOOL isLogout;
+	
 }
 
 @property (nonatomic, readonly) int toScreen;
 @property (nonatomic, readonly) int toGroup;
-
+@property (nonatomic, readonly) BOOL isPreviousScreen;
+@property (nonatomic, readonly) BOOL isNextScreen;
+@property (nonatomic, readonly) BOOL isBack;
+@property (nonatomic, readonly) BOOL isSetting;
+@property (nonatomic, readonly) BOOL isLogin;
+@property (nonatomic, readonly) BOOL isLogout;
 
 @end
