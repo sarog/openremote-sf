@@ -30,6 +30,8 @@
 #import "CFNetwork/CFHTTPMessage.h"
 #import "Definition.h"
 #import "NotificationConstant.h"
+#import "DataBaseService.h"
+#import "User.h"
 
 @interface ControlView (Private)
 
@@ -149,6 +151,11 @@
 		[self cancelTimer];
 		isError = YES;
 		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:errorMessage];
+	} else {  // 200 
+		DataBaseService *dbService = [DataBaseService sharedDataBaseService];
+		User *user = [[User alloc] initWithUsernameAndPassword:[Definition sharedDefinition].username password:[Definition sharedDefinition].password];
+		[dbService deleteAllUsers];
+		[dbService insertUser:user];
 	}
 	
 }

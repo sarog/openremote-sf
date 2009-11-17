@@ -170,7 +170,7 @@
 	}
 	
 	[cell setAccessoryView:switcher];
-	cell.text =[lights objectAtIndex:indexPath.row];
+	cell.textLabel.text =[lights objectAtIndex:indexPath.row];
 	[cell setImage:[UIImage imageNamed:@"lights.png"]];
 
 	return cell;
