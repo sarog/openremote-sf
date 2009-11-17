@@ -77,11 +77,7 @@
 		} 
 	}
 	if (button.navigate) {
-		Navigate *navi = button.navigate;
-		if (navi.toGroup > 0) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateToGroup object:navi];
-		}
-		
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:button.navigate];
 	}
 	
 }

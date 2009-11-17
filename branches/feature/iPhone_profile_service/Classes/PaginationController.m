@@ -26,8 +26,10 @@
 @interface PaginationController (Private)
 
 - (void)updateView;
-- (void)updateViewForCurrentPage;
 - (void)updateViewForPage:(NSUInteger)page;
+- (void)updateViewForCurrentPageAndBothSides;
+- (void)pageControlValueDidChange:(id)sender;
+- (void)scrollToSelectedView;
 
 @end
 
@@ -38,7 +40,7 @@
 - (void)dealloc {
 	[viewControllers release];
 	
-    [super dealloc];
+	[super dealloc];
 }
 
 - (void)setViewControllers:(NSArray *)newViewControllers {
@@ -58,10 +60,46 @@
 	[scrollView setContentSize:CGSizeMake(scrollView.bounds.size.width * [viewControllers count], scrollView.bounds.size.height)];
 	[pageControl setNumberOfPages:[viewControllers count]];
 	
-	[self updateViewForCurrentPage];
+	[self updateViewForCurrentPageAndBothSides];
 }
 
-- (void)updateViewForCurrentPage {
+
+- (void)switchToScreen:(int)screenId {
+	int index = -1;
+	for (int i = 0; i<viewControllers.count; i++) {
+		ScreenViewController *svc = (ScreenViewController *)[viewControllers objectAtIndex:i];
+		if (svc.screen.screenId == screenId) {
+			index = i;
+			break;
+		}
+	}
+	if (index != -1) {
+		selectedIndex = index;
+		[pageControl setCurrentPage:selectedIndex];
+		[self scrollToSelectedView];
+	}
+	
+}
+
+- (void)previousScreen {
+	if (selectedIndex == 0) {
+		return;
+	}
+	selectedIndex--;
+	[pageControl setCurrentPage:selectedIndex];
+	[self scrollToSelectedView];
+}
+
+- (void)nextScreen {
+	if (selectedIndex == pageControl.numberOfPages - 1) {
+		return;
+	}
+	selectedIndex++;
+	[pageControl setCurrentPage:selectedIndex];
+	[self scrollToSelectedView];
+}
+
+- (void)updateViewForCurrentPageAndBothSides {
 	[self updateViewForPage:selectedIndex - 1];
 	[self updateViewForPage:selectedIndex];
 	[self updateViewForPage:selectedIndex + 1];
@@ -91,6 +129,14 @@
 	
 }
 
+//if you have changed *selectedIndex* then calling this method will scroll to that seleted view immediately
+- (void)scrollToSelectedView {
+	CGRect frame = scrollView.bounds;
+	frame.origin.x = frame.size.width * selectedIndex;
+	frame.origin.y = 0;
+	[scrollView scrollRectToVisible:frame animated:YES];
+}
+
 - (void)loadView {
 	[super loadView];
 	//[self.view setFrame:CGRectMake(0, 0, 320, 416)];
@@ -115,7 +161,7 @@
 	[pageControl setFrame:CGRectMake(0, 440, 320, 20)];
 	[pageControl setBackgroundColor:[UIColor blackColor]];
 	[pageControl setOpaque:YES];
-	[pageControl addTarget:self action:@selector(pageControlValueDidChange) forControlEvents:UIControlEventValueChanged];
+	[pageControl addTarget:self action:@selector(pageControlValueDidChange:) forControlEvents:UIControlEventValueChanged];
 	[self.view addSubview:pageControl];
 	[pageControl release];
 	
@@ -133,30 +179,30 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
-    if (pageControlUsed) return;
-	
-    // Switch the indicator when more than 50% of the previous/next page is visible
-    CGFloat pageWidth = scrollView.bounds.size.width;
-    selectedIndex = floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
-	[self updateViewForCurrentPage];
+	if (pageControlUsed) return;
+
+	// Switch the indicator when more than 50% of the previous/next page is visible
+	CGFloat pageWidth = scrollView.bounds.size.width;
+	selectedIndex = floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
+	[self updateViewForCurrentPageAndBothSides];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)s {
 	pageControlUsed = NO;
 }
 
-- (void)pageControlValueDidChange {
+- (void)pageControlValueDidChange:(id)sender {
 	selectedIndex = pageControl.currentPage;
-	[self updateViewForCurrentPage];
+	[self updateViewForCurrentPageAndBothSides];
 	
-    CGRect frame = scrollView.bounds;
-    frame.origin.x = frame.size.width * selectedIndex;
-    frame.origin.y = 0;
-    [scrollView scrollRectToVisible:frame animated:YES];
+	CGRect frame = scrollView.bounds;
+	frame.origin.x = frame.size.width * selectedIndex;
+	frame.origin.y = 0;
+	[scrollView scrollRectToVisible:frame animated:YES];
 
 	// DENNIS: Maybe you want to make sure that the user can't interact with the scroll view while it is animating.
-    //[scrollView setUserInteractionEnabled:NO];
-    pageControlUsed = YES;
+	//[scrollView setUserInteractionEnabled:NO];
+	pageControlUsed = YES;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

@@ -29,7 +29,7 @@ extern NSString *const NotificationHideInitView;
 extern NSString *const NotificationRefreshAcitivitiesView;
 extern NSString *const NotificationRefreshGroupsView;
 extern NSString *const NotificationPollingStatusIdFormat;
-extern NSString *const NotificationNavigateToGroup;
+extern NSString *const NotificationNavigateTo;
 extern NSString *const NotificationPopulateCredentialView;
 extern NSString *const NotificationPopulateSettingsView;
 

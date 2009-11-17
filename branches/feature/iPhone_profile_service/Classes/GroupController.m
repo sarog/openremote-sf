@@ -66,7 +66,6 @@
 	[super viewDidLoad];
 	[self.navigationController setNavigationBarHidden:YES];
 	
-	
 	// Get array of screens
 	// Build array of UIViewControllers for each screen
 	NSMutableArray  *viewControllers = [[NSMutableArray alloc] init];
@@ -103,6 +102,17 @@
 	}
 }
 
+- (void)switchToScreen:(int)screenId {
+	[paginationController switchToScreen:screenId];
+}
+
+- (void)previousScreen {
+	[paginationController previousScreen];
+}
+
+- (void)nextScreen {
+	[paginationController nextScreen];
+}
 
 /*
 // Override to allow orientations other than the default portrait orientation.
