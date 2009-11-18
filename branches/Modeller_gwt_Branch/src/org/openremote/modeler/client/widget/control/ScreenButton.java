@@ -112,7 +112,11 @@ public class ScreenButton extends ScreenControl {
    @Override
    public void setSize(int width, int height) {
       super.setSize(width, height);
-      adjustTextLength();
+      if(getWidth()==0){
+         adjustTextLength(width);
+      }else{
+         adjustTextLength();
+      }
    }
 
    /**
@@ -121,8 +125,12 @@ public class ScreenButton extends ScreenControl {
     * @param length the length
     */
    private void adjustTextLength() {
+      adjustTextLength(getWidth());
+   }
+   
+   private void adjustTextLength(int width) {
       if (center.isVisible()) {
-         int ajustLength = (getWidth() - 6) / 7;
+         int ajustLength = (width - 6) / 7;
          if (ajustLength < uiButton.getName().length()) {
             center.setText(uiButton.getName().substring(0, ajustLength) + "..");
          } else {
