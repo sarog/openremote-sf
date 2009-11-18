@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.UIButtonEvent;
 import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.service.ProtocolParser;
