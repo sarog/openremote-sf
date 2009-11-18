@@ -235,7 +235,7 @@ public class ProfilePanel extends ContentPanel {
          public void onDelete(ButtonEvent ce) {
             List<BeanModel> selectedModels = panelTree.getSelectionModel().getSelectedItems();
             for (BeanModel selectedModel : selectedModels) {
-               if (selectedModel != null && selectedModel.getBean() instanceof Group) {
+               if (selectedModel != null && selectedModel.getBean() instanceof Panel) {
                   BeanModelDataBase.panelTable.delete(selectedModel);
                   panelTree.getStore().remove(selectedModel);
                   Info.display("Info", "Delete panel " + selectedModel.get("name") + " success.");
