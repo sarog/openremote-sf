@@ -436,7 +436,7 @@ public class ResourceServiceImpl implements ResourceService {
          uiControlXml.append("     <status>\n");
          generateCommandXmlString(protocolEventContainer, uiControlXml, uiSwitch.getStatusCommand());
          uiControlXml.append("     </status>\n");
-         uiControlXml.append("    <switch>\n");
+         uiControlXml.append("    </switch>\n");
       }
       return uiControlXml.toString();
    }
@@ -513,7 +513,7 @@ public class ResourceServiceImpl implements ResourceService {
       StringBuffer buttonXml = new StringBuffer();
       for (UIButtonEvent uiButtonEvent : uiButtonEventList) {
          if ("".equals(uiButtonEvent.getDelay())) {
-            buttonXml.append("      <command ref=\"" + uiButtonEvent.getId() + "\">\n");
+            buttonXml.append("      <include type=\"command" + "\" ref=\""+ uiButtonEvent.getId() + "\"/>\n");
          } else {
             buttonXml.append("      <delay>");
             buttonXml.append(uiButtonEvent.getDelay());
