@@ -63,7 +63,7 @@ import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.utils.FileUtilsExt;
-import org.openremote.modeler.utils.IphoneXmlParser;
+import org.openremote.modeler.utils.XmlParser;
 import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ProtocolEventContainer;
 import org.openremote.modeler.utils.StringUtils;
@@ -112,10 +112,16 @@ public class ResourceServiceImpl implements ResourceService {
       File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(sessionId));
       File lircdFile = new File(pathConfig.lircFilePath(sessionId));
       // File dotImport = new File(pathConfig.dotImportFilePath(sessionId));
-
-      String newIphoneXML = IphoneXmlParser.parserXML(new File(getClass().getResource(configuration.getIphoneXsdPath())
+      
+      /*
+       * validate and output panel.xml. 
+       */
+      String newIphoneXML = XmlParser.validateAndOutputXML(new File(getClass().getResource(configuration.getIphoneXsdPath())
             .getPath()), panelXmlContent, sessionFolder);
-
+      controllerXmlContent = XmlParser.validateAndOutputXML(new File(getClass().getResource(configuration.getControllerXsdPath()).getPath()), controllerXmlContent);
+      /*
+       * validate and output controller.xml
+       */
       try {
          FileUtilsExt.deleteQuietly(panelXMLFile);
          FileUtilsExt.deleteQuietly(controllerXMLFile);
@@ -312,7 +318,7 @@ public class ResourceServiceImpl implements ResourceService {
          String xsdRelativePath = "iphone".equals(xmlName) ? configuration.getIphoneXsdPath() : configuration
                .getControllerXsdPath();
          String xsdPath = getClass().getResource(xsdRelativePath).getPath();
-         if (!IphoneXmlParser.checkXmlSchema(xsdPath, IOUtils.toString(zipInputStream))) {
+         if (!XmlParser.checkXmlSchema(xsdPath, IOUtils.toString(zipInputStream))) {
             return false;
          }
       }

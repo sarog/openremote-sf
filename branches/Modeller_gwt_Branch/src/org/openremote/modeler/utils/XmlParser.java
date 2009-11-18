@@ -45,10 +45,10 @@ import org.xml.sax.InputSource;
  * 
  * @author Tomsky, Handy
  */
-public class IphoneXmlParser {
+public class XmlParser {
    
    /** The Constant LOGGER. */
-   private static final Logger LOGGER = Logger.getLogger(IphoneXmlParser.class);
+   private static final Logger LOGGER = Logger.getLogger(XmlParser.class);
    
    /** The Constant SCHEMA_LANGUAGE. */
    public static final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
@@ -62,7 +62,7 @@ public class IphoneXmlParser {
    /**
     * Instantiates a new iphone xml parser.
     */
-   private IphoneXmlParser() {      
+   private XmlParser() {      
    }
    
    /**
@@ -74,14 +74,13 @@ public class IphoneXmlParser {
     * 
     * @return modified iphoneXML
     */
-   @SuppressWarnings("unchecked")
-   public static String parserXML(File xsdfile, String xmlString, File folder) {
-      SAXBuilder sb = new SAXBuilder(false);
-      sb.setValidation(false);
+   public static String validateAndOutputXML(File xsdfile, String xmlString, File folder) {
+      SAXBuilder sb = new SAXBuilder(true);
+      sb.setValidation(true);
 
-//      sb.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
-//      sb.setProperty(SCHEMA_SOURCE, xsdfile);
-      String iphoneXml = "";
+      sb.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
+      sb.setProperty(SCHEMA_SOURCE, xsdfile);
+      String result = "";
       try {         
           Document doc = sb.build(new InputSource(new StringReader(xmlString)));
           xpathParseImage(folder, doc, "//or:screen[@background]", "background");          
@@ -90,7 +89,7 @@ public class IphoneXmlParser {
          format.setIndent("  ");
          format.setEncoding("UTF-8");
          XMLOutputter outp = new XMLOutputter(format);
-         iphoneXml = outp.outputString(doc);
+         result = outp.outputString(doc);
       } catch (JDOMException e) {
           LOGGER.error("Parser XML occur JDOMException", e);
           throw new XmlParserException("Parser XML occur JDOMException", e);
@@ -98,9 +97,32 @@ public class IphoneXmlParser {
          LOGGER.error("Parser XML occur IOException", e);
          throw new XmlParserException("Parser XML occur IOException", e);
       }
-      return iphoneXml;
+      return result;
    }
+   
+   public static String validateAndOutputXML(File xsdfile, String xmlString) {
+      SAXBuilder sb = new SAXBuilder(true);
+      sb.setValidation(true);
 
+      sb.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
+      sb.setProperty(SCHEMA_SOURCE, xsdfile);
+      String result = "";
+      try {         
+          Document doc = sb.build(new InputSource(new StringReader(xmlString)));
+         Format format = Format.getPrettyFormat();
+         format.setIndent("  ");
+         format.setEncoding("UTF-8");
+         XMLOutputter outp = new XMLOutputter(format);
+         result = outp.outputString(doc);
+      } catch (JDOMException e) {
+          LOGGER.error("Parser XML occur JDOMException", e);
+          throw new XmlParserException("Parser XML occur JDOMException", e);
+      } catch (IOException e) {
+         LOGGER.error("Parser XML occur IOException", e);
+         throw new XmlParserException("Parser XML occur IOException", e);
+      }
+      return result;
+   }
    @SuppressWarnings("unchecked")
    private static void xpathParseImage(File folder, Document doc, String xpathExpression, String attrName) throws JDOMException, IOException {
       XPath xpath = XPath.newInstance(xpathExpression);
