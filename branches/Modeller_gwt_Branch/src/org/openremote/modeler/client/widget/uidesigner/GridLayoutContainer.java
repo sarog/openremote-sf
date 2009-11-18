@@ -69,7 +69,7 @@ public class GridLayoutContainer extends LayoutContainer {
    private boolean[][] btnInArea;
    
    
-   private BoundsRecorder borderRecorder = null;
+   private BoundsRecorder boundsRecorder = null;
    
    /**
     * Instantiates a new grid layout container.
@@ -128,7 +128,7 @@ public class GridLayoutContainer extends LayoutContainer {
             if (data instanceof GridCellContainer) {
                GridCellContainer container = (GridCellContainer) data;
                cellContainer = cloneCellContainer(container);
-               cellContainer.setBounds(borderRecorder.getBounds());
+               cellContainer.setBounds(boundsRecorder.getBounds());
                //cellContainer.add
                if (canDrop(targetPosition.x, targetPosition.y, cellContainer.getCell(), grid)) {
                   cellContainer.setCellPosition(targetPosition.x, targetPosition.y);
@@ -343,7 +343,7 @@ public class GridLayoutContainer extends LayoutContainer {
 
          @Override
          protected void onDragStart(DNDEvent event) {
-            borderRecorder = new BoundsRecorder(cellContainer);
+            boundsRecorder = new BoundsRecorder(cellContainer);
             cellContainer.clearArea(btnInArea);
             event.setData(cellContainer);
             cellContainer.removeFromParent();
@@ -369,7 +369,7 @@ public class GridLayoutContainer extends LayoutContainer {
             if (data instanceof GridCellContainer) {
                GridCellContainer container = (GridCellContainer) data;
                cellContainer = cloneCellContainer(container);
-               cellContainer.setBounds(borderRecorder.getBounds());
+               cellContainer.setBounds(boundsRecorder.getBounds());
                add(cellContainer);
                createDragSource(cellContainer);
                layout();
