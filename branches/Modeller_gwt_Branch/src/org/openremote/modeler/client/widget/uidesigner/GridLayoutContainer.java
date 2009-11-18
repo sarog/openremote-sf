@@ -36,6 +36,7 @@ import org.openremote.modeler.domain.control.UISwitch;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.dnd.DragSource;
+import com.extjs.gxt.ui.client.dnd.DropTarget;
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.event.DNDListener;
@@ -46,6 +47,7 @@ import com.extjs.gxt.ui.client.event.ResizeListener;
 import com.extjs.gxt.ui.client.fx.Resizable;
 import com.extjs.gxt.ui.client.util.KeyNav;
 import com.extjs.gxt.ui.client.util.Point;
+import com.extjs.gxt.ui.client.util.Rectangle;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
@@ -66,6 +68,9 @@ public class GridLayoutContainer extends LayoutContainer {
    /** The btn in area. */
    private boolean[][] btnInArea;
    
+   
+   private BoundsRecorder borderRecorder = null;
+   
    /**
     * Instantiates a new grid layout container.
     * 
@@ -78,7 +83,8 @@ public class GridLayoutContainer extends LayoutContainer {
       addStyleName("screen-background");
       initCellInArea(grid);
       createGrid(grid);
-
+      
+      addTempDropTarget(this);
    }
 
    /**
@@ -109,9 +115,10 @@ public class GridLayoutContainer extends LayoutContainer {
       screenTable.addStyleName("panel-table");
       screenTable.setPixelSize(gridWidth, gridHeight);
       add(screenTable);
-      final int cellWidth =  (gridWidth - (grid.getColumnCount() + 1)) / grid.getColumnCount();
+      final int cellWidth = (gridWidth - (grid.getColumnCount() + 1)) / grid.getColumnCount();
       final int cellHeight = (gridHeight - (grid.getRowCount() + 1)) / grid.getRowCount();
       DNDListener dndListener = new DNDListener() {
+
          @SuppressWarnings("unchecked")
          public void dragDrop(DNDEvent e) {
             LayoutContainer targetCell = (LayoutContainer) e.getDropTarget().getComponent();
@@ -119,22 +126,25 @@ public class GridLayoutContainer extends LayoutContainer {
             GridCellContainer cellContainer = new GridCellContainer();
             Object data = e.getData();
             if (data instanceof GridCellContainer) {
-               cellContainer = (GridCellContainer) data;
+               GridCellContainer container = (GridCellContainer) data;
+               cellContainer = cloneCellContainer(container);
+               cellContainer.setBounds(borderRecorder.getBounds());
+               //cellContainer.add
                if (canDrop(targetPosition.x, targetPosition.y, cellContainer.getCell(), grid)) {
                   cellContainer.setCellPosition(targetPosition.x, targetPosition.y);
                   cellContainer.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
-               } else {
-                  cellContainer.setPagePosition(cellContainer.getAbsoluteLeft(), cellContainer.getAbsoluteTop());
                }
+               add(cellContainer);
+               createDragSource(cellContainer);
             } else if (data instanceof List) {
                List<ModelData> models = (List<ModelData>) e.getData();
                if (models.size() > 0) {
                   BeanModel dataModel = models.get(0).get("model");
-                  cellContainer = createNewCellContainer((UIControl)dataModel.getBean(), grid, cellWidth, cellHeight);
+                  cellContainer = createNewCellContainer((UIControl) dataModel.getBean(), grid, cellWidth, cellHeight);
                   cellContainer.setCellSpan(1, 1);
                   cellContainer.setCellPosition(targetPosition.x, targetPosition.y);
                   cellContainer.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
-                  
+
                   add(cellContainer);
                   createDragSource(cellContainer);
                }
@@ -143,11 +153,12 @@ public class GridLayoutContainer extends LayoutContainer {
             SelectedWidgetContainer.setSelectWidget(cellContainer);
             makeCellContainerResizable(cellWidth, cellHeight, cellContainer);
             layout();
+
             super.dragDrop(e);
          }
 
       };
-      for (int i = 0; i < grid.getRowCount(); i++) {  // Initial the screen table, make it can be drop buttons.  
+      for (int i = 0; i < grid.getRowCount(); i++) { // Initial the screen table, make it can be drop buttons.
          for (int j = 0; j < grid.getColumnCount(); j++) {
             LayoutContainer cell = new LayoutContainer();
             cell.setSize(cellWidth, cellHeight);
@@ -159,8 +170,9 @@ public class GridLayoutContainer extends LayoutContainer {
             dropTarget.addDNDListener(dndListener);
          }
       }
-      if (grid.getCells().size() > 0) {  // If the Panel has closed, there may have some buttons on screen to be rendered. 
-         List<Cell> cells= grid.getCells();
+      if (grid.getCells().size() > 0) { // If the Panel has closed, there may have some buttons on screen to be
+                                        // rendered.
+         List<Cell> cells = grid.getCells();
          for (Cell cell : cells) {
             GridCellContainer cellContainer = createCellContainer(grid, cell, (cellWidth + 1) * cell.getColspan() - 1,
                   (cellHeight + 1) * cell.getRowspan() - 1);
@@ -169,6 +181,7 @@ public class GridLayoutContainer extends LayoutContainer {
                   + cell.getPosY() + 1);
             cellContainer.setName(cell.getUiControl().getName());
             add(cellContainer);
+            cellContainer.setBorders(true);
             cellContainer.fillArea(btnInArea);
             createDragSource(cellContainer);
             layout();
@@ -218,6 +231,41 @@ public class GridLayoutContainer extends LayoutContainer {
       return cellContainer;
    }
    
+   private GridCellContainer cloneCellContainer(GridCellContainer container) {
+      Cell cell = container.getCell();
+      final GridCellContainer cellContainer =  new GridCellContainer(cell, container.getScreenControl()) {
+         @Override
+         public void onBrowserEvent(Event event) {
+            if (event.getTypeInt() == Event.ONMOUSEDOWN) {
+               SelectedWidgetContainer.setSelectWidget((GridCellContainer) this);
+            }
+            super.onBrowserEvent(event);
+         }
+      };
+      new KeyNav<ComponentEvent>(){
+         @Override
+         public void onDelete(ComponentEvent ce) {
+            super.onDelete(ce);
+            MessageBox box = new MessageBox();
+            box.setButtons(MessageBox.YESNO);
+            box.setIcon(MessageBox.QUESTION);
+            box.setTitle("Delete");
+            box.setMessage("Are you sure you want to delete?");
+            box.addCallback(new Listener<MessageBoxEvent>() {
+                public void handleEvent(MessageBoxEvent be) {
+                    if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
+                       screen.getGrid().removeCell(cellContainer.getCell());
+                       cellContainer.removeFromParent();
+                       SelectedWidgetContainer.setSelectWidget(null);
+                    }
+                }
+            });
+            box.show();
+         }
+         
+      }.bind(cellContainer);
+      return cellContainer;
+   }
    /**
     * Find max x direction in grid when resize the cell container.
     * 
@@ -287,15 +335,48 @@ public class GridLayoutContainer extends LayoutContainer {
     */
    private void createDragSource(final GridCellContainer cellContainer) {
       DragSource source = new DragSource(cellContainer) {
+
+         @Override
+         protected void onDragDrop(DNDEvent event) {
+            super.onDragDrop(event);
+         }
+
          @Override
          protected void onDragStart(DNDEvent event) {
+            borderRecorder = new BoundsRecorder(cellContainer);
             cellContainer.clearArea(btnInArea);
             event.setData(cellContainer);
+            cellContainer.removeFromParent();
             event.getStatus().setStatus(true);
             event.getStatus().update("1 item selected");
          }
       };
       source.setGroup(Constants.CONTROL_DND_GROUP);
+      source.enable();
+
+      addTempDropTarget(cellContainer);
+   }
+
+   private void addTempDropTarget(final LayoutContainer container) {
+      DropTarget target = new DropTarget(container);
+      target.setGroup(Constants.CONTROL_DND_GROUP);
+      target.addDNDListener(new DNDListener() {
+
+         @Override
+         public void dragDrop(DNDEvent e) {
+            GridCellContainer cellContainer = new GridCellContainer();
+            Object data = e.getData();
+            if (data instanceof GridCellContainer) {
+               GridCellContainer container = (GridCellContainer) data;
+               cellContainer = cloneCellContainer(container);
+               cellContainer.setBounds(borderRecorder.getBounds());
+               add(cellContainer);
+               createDragSource(cellContainer);
+               layout();
+            }
+         }
+
+      });
    }
 
    /**
@@ -351,6 +432,26 @@ public class GridLayoutContainer extends LayoutContainer {
       grid.addCell(cell);
       return createCellContainer(grid, cell, cellWidth, cellHeight);
    }
-
-
+   
+   private class BoundsRecorder{
+      int left = 0;
+      int top = 0;
+      int width = 0;
+      int height = 0;
+      
+      BoundsRecorder(GridCellContainer container){
+         Grid screenGrid = screen.getGrid();
+         int cellWidth = screenGrid.getWidth()/screenGrid.getColumnCount();
+         int cellHeight = screenGrid.getHeight()/screenGrid.getRowCount();
+         this.left = container.getAbsoluteLeft();
+         this.top = container.getAbsoluteTop();
+         Cell cell = container.getCell();
+         this.width = cell.getColspan()*cellWidth+1;
+         this.height= cell.getRowspan()*cellHeight+1;
+      }
+      
+      public Rectangle getBounds(){
+         return new Rectangle(left,top,width,height);
+      }
+   }
 }
