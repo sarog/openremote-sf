@@ -26,7 +26,7 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.utils.SelectedWidgetContainer;
-import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.Screen;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
@@ -100,7 +100,7 @@ public class ScreenTab extends TabPanel {
       if (changeListener == null) {
          changeListener = new ChangeListener() {
             public void modelChanged(ChangeEvent event) {
-               UIScreen screen = screenTabItem.getScreen();
+               Screen screen = screenTabItem.getScreen();
                if (event.getType() == BeanModelTable.REMOVE) {
                   remove(screenTabItem);
                } else if (event.getType() == BeanModelTable.UPDATE) {
@@ -134,8 +134,8 @@ public class ScreenTab extends TabPanel {
          public void modelChanged(ChangeEvent event) {
             if (event.getType() == BeanModelTable.ADD) {
                BeanModel beanModel = (BeanModel) event.getItem();
-               if (beanModel.getBean() instanceof UIScreen) {
-                  ScreenTabItem screenTabItem = new ScreenTabItem((UIScreen) beanModel.getBean());
+               if (beanModel.getBean() instanceof Screen) {
+                  ScreenTabItem screenTabItem = new ScreenTabItem((Screen) beanModel.getBean());
                   add(screenTabItem);
                   setSelection(screenTabItem);
                }

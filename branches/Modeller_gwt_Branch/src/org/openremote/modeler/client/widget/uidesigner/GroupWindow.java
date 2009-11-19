@@ -26,7 +26,7 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.ScreenRef;
-import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.Screen;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
@@ -187,7 +187,7 @@ public class GroupWindow extends Dialog {
       group.getScreenRefs().clear();
       if (screenModels.size() > 0) {
          for (BeanModel screenModel : screenModels) {
-            ScreenRef screenRef = new ScreenRef((UIScreen)screenModel.getBean());
+            ScreenRef screenRef = new ScreenRef((Screen)screenModel.getBean());
             screenRef.setGroup(group);
             group.addScreenRef(screenRef);
          }

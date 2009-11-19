@@ -23,13 +23,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
-import org.openremote.modeler.domain.UIScreen;
-import org.springframework.web.multipart.MultipartFile;
+import org.openremote.modeler.domain.Screen;
 
 /**
  * The Interface ResourceService.
@@ -48,7 +44,7 @@ public interface ResourceService {
     * 
     * @return the string
     */
-   String downloadZipResource(long maxId, String sessionId, List<Panel> panels, List<Group> groups, List<UIScreen> screens);
+   String downloadZipResource(long maxId, String sessionId, List<Panel> panels, List<Group> groups, List<Screen> screens);
    
    /**
     * Gets the irb file from zip.
@@ -81,19 +77,10 @@ public interface ResourceService {
     */
    String getRelativeResourcePath(String sessionId, String fileName);
    
-   /**
-    * Gets the activities json.
-    * 
-    * @param activities the activities
-    * 
-    * @return the activities json
-    */
-   String getActivitiesJson(List<Activity> activities);
-   
    String getPanelsJson(List<Panel> panels);
    
    String getGroupsJson(List<Group> groups);
    
-   String getScreensJson(List<UIScreen> screens);
+   String getScreensJson(List<Screen> screens);
    
 }

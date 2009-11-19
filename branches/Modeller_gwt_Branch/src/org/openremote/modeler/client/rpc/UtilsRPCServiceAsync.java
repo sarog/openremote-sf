@@ -24,7 +24,7 @@ import java.util.List;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
-import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.Screen;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -43,7 +43,7 @@ public interface UtilsRPCServiceAsync {
     * @param maxId the max id
     * @param activityList the activity list
     */
-   void exportFiles(long maxId, List<Panel> panelList, List<Group> groupList, List<UIScreen> screenList, AsyncCallback<String> callback);
+   void exportFiles(long maxId, List<Panel> panelList, List<Group> groupList, List<Screen> screenList, AsyncCallback<String> callback);
 
    /**
     * Beehive rest icon url.
@@ -53,25 +53,18 @@ public interface UtilsRPCServiceAsync {
    void beehiveRestIconUrl(AsyncCallback<String> callback);
 
    /**
-    * Load json string from session.
-    * 
-    * @param asyncSuccessCallback the async success callback
-    */
-   void loadJsonStringFromSession(AsyncCallback<String> asyncSuccessCallback);
-
-   /**
     * Auto save ui designer layout json.
     * 
     * @param groups the activities
     * @param asyncSuccessCallback the async success callback
     */
-   void autoSaveUiDesignerLayout(List<Panel> panels, List<Group> groups, List<UIScreen> screens, long maxID, AsyncCallback<AutoSaveResponse> asyncSuccessCallback);
+   void autoSaveUiDesignerLayout(List<Panel> panels, List<Group> groups, List<Screen> screens, long maxID, AsyncCallback<AutoSaveResponse> asyncSuccessCallback);
 
    void loadPanelsFromSession(AsyncCallback<List<Panel>> callback);
    
    void loadGroupsFromSession(AsyncCallback<List<Group>> callback);
    
-   void loadScreensFromSession(AsyncCallback<List<UIScreen>> callback);
+   void loadScreensFromSession(AsyncCallback<List<Screen>> callback);
 
    /**
     * Load layout component's max id from session.

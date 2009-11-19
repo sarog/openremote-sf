@@ -27,7 +27,7 @@ import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.rpc.UtilsRPCService;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
-import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.service.ResourceService;
 
 /**
@@ -57,7 +57,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    /**
     * {@inheritDoc}
     */
-   public String exportFiles(long maxId, List<Panel> panelList, List<Group> groupList, List<UIScreen> screenList) {  
+   public String exportFiles(long maxId, List<Panel> panelList, List<Group> groupList, List<Screen> screenList) {  
       return resourceService.downloadZipResource(maxId, this.getThreadLocalRequest().getSession().getId(), panelList, groupList, screenList);
    }
    
@@ -107,16 +107,8 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    /**
     * {@inheritDoc}
     */
-   public String loadJsonStringFromSession() {
-      Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_GROUP_KEY);
-      return (obj == null) ? "" : obj.toString();
-   }
-
-   /**
-    * {@inheritDoc}
-    */
    @SuppressWarnings("unchecked")
-   public AutoSaveResponse autoSaveUiDesignerLayout(List<Panel> panels, List<Group> groups, List<UIScreen> screens, long maxID) {
+   public AutoSaveResponse autoSaveUiDesignerLayout(List<Panel> panels, List<Group> groups, List<Screen> screens, long maxID) {
       AutoSaveResponse autoSaveResponse = new AutoSaveResponse();
       
       List<Panel> oldPanels = new ArrayList<Panel>();
@@ -143,9 +135,9 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
          }
       }
       
-      List<UIScreen> oldScreens = new ArrayList<UIScreen>();
+      List<Screen> oldScreens = new ArrayList<Screen>();
       if(getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_SCREEN_KEY) != null){
-         oldScreens = (List<UIScreen>)getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_SCREEN_KEY);
+         oldScreens = (List<Screen>)getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_SCREEN_KEY);
       }
       if (screens.size() > 0) {
          if (!resourceService.getScreensJson(screens).equals(resourceService.getScreensJson(oldScreens))) {
@@ -173,9 +165,9 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
 
    @SuppressWarnings("unchecked")
    @Override
-   public List<UIScreen> loadScreensFromSession() {
+   public List<Screen> loadScreensFromSession() {
       Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_SCREEN_KEY);
-      return (obj == null) ? new ArrayList<UIScreen>() : (List<UIScreen>)obj;
+      return (obj == null) ? new ArrayList<Screen>() : (List<Screen>)obj;
    }
 
    @Override

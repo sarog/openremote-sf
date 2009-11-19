@@ -24,7 +24,7 @@ import java.util.Map;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.uidesigner.ScreenWindow;
 import org.openremote.modeler.domain.Grid;
-import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -49,7 +49,7 @@ public class ScreenBeanModelProxy {
     * @return the bean model
     */
    public static BeanModel createScreen(Map<String, String> map, TouchPanelDefinition touchPanelDefinition) {
-      UIScreen screen = new UIScreen();
+      Screen screen = new Screen();
       screen.setOid(IDUtil.nextID());
       screen.setTouchPanelDefinition(touchPanelDefinition);
       setAttrsToScreen(map, screen);
@@ -65,7 +65,7 @@ public class ScreenBeanModelProxy {
     * 
     * @return the bean model
     */
-   public static BeanModel updateScreen(UIScreen screen, Map<String, String> map) {
+   public static BeanModel updateScreen(Screen screen, Map<String, String> map) {
       setAttrsToScreen(map, screen);
       BeanModelDataBase.screenTable.update(screen.getBeanModel());
       return screen.getBeanModel();
@@ -86,7 +86,7 @@ public class ScreenBeanModelProxy {
     * @param map the map
     * @param screen the screen
     */
-   private static void setAttrsToScreen(Map<String, String> map, UIScreen screen) {
+   private static void setAttrsToScreen(Map<String, String> map, Screen screen) {
       screen.setName(map.get(ScreenWindow.SCREEN_NAME));
       String layout = map.get(ScreenWindow.SCREEN_RADIOLAYOUTGROUP);
       if(ScreenWindow.SCREEN_GRIDRADIO.equals(layout)) {

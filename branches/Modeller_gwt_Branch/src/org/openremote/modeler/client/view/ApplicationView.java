@@ -32,7 +32,6 @@ import org.openremote.modeler.client.rpc.AuthorityRPCService;
 import org.openremote.modeler.client.rpc.AuthorityRPCServiceAsync;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.Protocols;
-import org.openremote.modeler.client.widget.uidesigner.ActivityPanel;
 import org.openremote.modeler.client.widget.uidesigner.GroupPanel;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
@@ -75,9 +74,6 @@ public class ApplicationView implements View {
    
    /** The authority. */
    private Authority authority;
-   
-   /** The activity panel. */
-   private ActivityPanel activityPanel;
    
    /** The ui designer view. */
    private UIDesignerView uiDesignerView;
@@ -227,7 +223,7 @@ public class ApplicationView implements View {
             importWindow.addListener(ResponseJSONEvent.RESPONSEJSON, new ResponseJSONListener() {
                @Override
                public void afterSubmit(ResponseJSONEvent be) {
-                  that.activityPanel.reRenderTree(be.getData().toString(), screenTab);
+//                  that.activityPanel.reRenderTree(be.getData().toString(), screenTab);
                   importWindow.hide();
                }
             });
@@ -336,15 +332,6 @@ public class ApplicationView implements View {
       // viewport.add(status, data);
    }
 
-   /**
-    * Sets the activity panel.
-    * 
-    * @param activityPanel the new activity panel
-    */
-   public void setActivityPanel(ActivityPanel activityPanel) {
-      this.activityPanel = activityPanel;
-   }
-   
    public void setGroupPanel(GroupPanel groupPanel) {
       this.groupPanel = groupPanel;
    }
