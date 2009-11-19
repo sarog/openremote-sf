@@ -41,6 +41,8 @@
 	UpdateController *updateController;
 	
 	NSMutableDictionary *groupViewMap;
+	
+	NSMutableArray *navigationHistory;
 }
 
 

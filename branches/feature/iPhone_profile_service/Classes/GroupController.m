@@ -102,16 +102,20 @@
 	}
 }
 
-- (void)switchToScreen:(int)screenId {
-	[paginationController switchToScreen:screenId];
+- (BOOL)switchToScreen:(int)screenId {
+	return [paginationController switchToScreen:screenId];
 }
 
-- (void)previousScreen {
-	[paginationController previousScreen];
+- (BOOL)previousScreen {
+	return [paginationController previousScreen];
 }
 
-- (void)nextScreen {
-	[paginationController nextScreen];
+- (BOOL)nextScreen {
+	return [paginationController nextScreen];
+}
+
+- (int)currentScreenId {
+	return ((ScreenViewController *)[paginationController.viewControllers objectAtIndex:paginationController.selectedIndex]).screen.screenId;
 }
 
 /*

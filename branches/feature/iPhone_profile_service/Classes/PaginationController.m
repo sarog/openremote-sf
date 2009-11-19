@@ -63,8 +63,8 @@
 	[self updateViewForCurrentPageAndBothSides];
 }
 
-
-- (void)switchToScreen:(int)screenId {
+//Return YES if succuess
+- (BOOL)switchToScreen:(int)screenId {
 	int index = -1;
 	for (int i = 0; i<viewControllers.count; i++) {
 		ScreenViewController *svc = (ScreenViewController *)[viewControllers objectAtIndex:i];
@@ -77,26 +77,33 @@
 		selectedIndex = index;
 		[pageControl setCurrentPage:selectedIndex];
 		[self scrollToSelectedView];
+	} else {
+		return NO;
 	}
-	
+
+	return YES;
 }
 
-- (void)previousScreen {
+//Return YES if succuess
+- (BOOL)previousScreen {
 	if (selectedIndex == 0) {
-		return;
+		return NO;
 	}
 	selectedIndex--;
 	[pageControl setCurrentPage:selectedIndex];
 	[self scrollToSelectedView];
+	return YES;
 }
 
-- (void)nextScreen {
+//Return YES if succuess
+- (BOOL)nextScreen {
 	if (selectedIndex == pageControl.numberOfPages - 1) {
-		return;
+		return NO;
 	}
 	selectedIndex++;
 	[pageControl setCurrentPage:selectedIndex];
 	[self scrollToSelectedView];
+	return YES;
 }
 
 - (void)updateViewForCurrentPageAndBothSides {

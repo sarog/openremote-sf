@@ -24,7 +24,7 @@
 
 @implementation Navigate
 
-@synthesize toScreen, toGroup, isPreviousScreen, isNextScreen, isSetting, isBack, isLogin, isLogout;
+@synthesize toScreen, toGroup, isPreviousScreen, isNextScreen, isSetting, isBack, isLogin, isLogout, fromGroup, fromScreen;
 
 //Initialize itself accoding to xml parser
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
