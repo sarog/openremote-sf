@@ -35,8 +35,8 @@
 @property(nonatomic,copy) NSArray *viewControllers;
 @property(nonatomic,readonly) NSUInteger selectedIndex;
 
-- (void)switchToScreen:(int)screenId;
-- (void)previousScreen;
-- (void)nextScreen;
+- (BOOL)switchToScreen:(int)screenId;
+- (BOOL)previousScreen;
+- (BOOL)nextScreen;
 
 @end

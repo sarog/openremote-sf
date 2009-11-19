@@ -47,15 +47,18 @@
 - (void)didUpadted;
 - (void)didUseLocalCache:(NSString *)errorMessage;
 - (void)didUpdateFail:(NSString *)errorMessage;
-- (void)navigateTo:(NSNotification *)notification;
+- (void)navigateFromNotification:(NSNotification *)notification;
 - (void)populateLoginView:(id)sender;
 - (void)populateSettingsView:(id)sender;
 - (void)refreshView:(id)sender;
-- (void)navigateToGroup:(int)to;
-- (void)navigateToScreen:(int)to;
-- (void)navigateToPreviousScreen;
-- (void)navigateToNextScreen;
+- (BOOL)navigateToGroup:(int)groupId toScreen:(int)screenId;
+- (BOOL)navigateToScreen:(int)to;
+- (BOOL)navigateToPreviousScreen;
+- (BOOL)navigateToNextScreen;
 - (void)logout;
+- (void)navigateBackwardInHistory;
+- (BOOL)navigateTo:(Navigate *)navi;
+- (void)navigateToWithHistory:(Navigate *)navi;
 @end
 
 @implementation AppDelegate
@@ -83,6 +86,7 @@
 	[updateController checkConfigAndUpdate];
 	groupControllers = [[NSMutableArray alloc] init]; 
 	groupViewMap = [[NSMutableDictionary alloc] init];
+	navigationHistory = [[NSMutableArray alloc] init];
 	
 	// Load logined iphone user last time.
 	DataBaseService *dbService = [DataBaseService sharedDataBaseService];
@@ -111,7 +115,7 @@
 	currentGroupController = defaultGroupController;
 	[window addSubview:defaultGroupController.view];
 	//[defaultGroupController release];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateTo:) name:NotificationNavigateTo object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateFromNotification:) name:NotificationNavigateTo object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateSettingsView:) name:NotificationPopulateSettingsView object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView:) name:NotificationRefreshGroupsView object:nil];	
@@ -119,59 +123,89 @@
 	
 }
 
-- (void)navigateTo:(NSNotification *)notification {
+- (void)navigateFromNotification:(NSNotification *)notification {
+	
 	Navigate *navi = (Navigate *)[notification object];
+	[self navigateToWithHistory:navi];
+	
+}
 
-	if (navi.toGroup > 0 ) {									//toGroup
-		[self navigateToGroup:navi.toGroup];
+- (void)navigateToWithHistory:(Navigate *)navi {	
+	navi.fromGroup = currentGroupController.group.groupId;
+	navi.fromScreen = [currentGroupController currentScreenId];
+	
+	if ([self navigateTo:navi]) {
+		[navigationHistory addObject:navi];
+	}
+	
+	NSLog(@"navi history count = %d", navigationHistory.count);
+}
+
+// Returned BOOL value is whether to save history
+// if YES, save history
+// if NO, don't save history
+- (BOOL)navigateTo:(Navigate *)navi {
+	
+	if (navi.toGroup > 0 ) {	                //toGroup & toScreen
+		return [self navigateToGroup:navi.toGroup toScreen:navi.toScreen];
 	} 
 	
-	else if (navi.toScreen > 0) {							//toScreen
-		[self navigateToScreen:navi.toScreen];
+	else if (navi.toScreen > 0) {             //toScreen in current group
+		return [self navigateToScreen:navi.toScreen];
 	} 
 	
 	else if (navi.isSetting) {								//toSetting
 		[self populateSettingsView:nil];
+		return NO;
 	} 
 	
 	else if (navi.isPreviousScreen) {					//toPreviousScreen
-		[self navigateToPreviousScreen];
+		return [self navigateToPreviousScreen];
 	}
 	
 	else if (navi.isNextScreen) {							//toNextScreen
-		[self navigateToNextScreen];
+		return [self navigateToNextScreen];
 	}
 	
-	else if (navi.isBack) {										//toBack TODO
-		//[self navigateToBack]; 
+	else if (navi.isBack) {										//toBack
+		[self navigateBackwardInHistory]; 
+		return NO;
 	} 
 	
 	else if (navi.isLogin) {									//toLogin
 		[self populateLoginView:nil];
+		return NO;
 	} 
 	
-	else if (navi.isLogout) {									//toLogout TODO
+	else if (navi.isLogout) {									//toLogout
 		[self logout];
+		return NO;
 	}
-	
+	return NO;
 }
 
-- (void)navigateToGroup:(int)to {
-	
+- (BOOL)navigateToGroup:(int)groupId toScreen:(int)screenId {
 	GroupController *targetGroupController = nil;	
-	BOOL notItSelf = to != currentGroupController.group.groupId;
-	if (to > 0 && notItSelf) {
+	BOOL notItSelf = groupId != currentGroupController.group.groupId;
+	
+	//if screenId is specified, and is not current group, jump to that group
+	if (groupId > 0 && notItSelf) {
+		//find in cache first
 		for (GroupController *gc in groupControllers) {
-			if (gc.group.groupId == to) {
+			if (gc.group.groupId == groupId) {
 				targetGroupController = gc;
 			}
 		}
-		
+		//if not found in cache, create one
 		if (targetGroupController == nil) {
-			Group *group = [[Definition sharedDefinition] findGroupById:to];			 
-			targetGroupController = [[GroupController alloc] initWithGroup:group];
-			[groupControllers addObject:targetGroupController];
-			[groupViewMap setObject:targetGroupController.view forKey:[NSString stringWithFormat:@"%d", group.groupId]];
+			Group *group = [[Definition sharedDefinition] findGroupById:groupId];
+			if (group) {
+				targetGroupController = [[GroupController alloc] initWithGroup:group];
+				[groupControllers addObject:targetGroupController];
+				[groupViewMap setObject:targetGroupController.view forKey:[NSString stringWithFormat:@"%d", group.groupId]];
+			} else {
+				return NO;
+			}
 		}
 		
 		[currentGroupController stopPolling];
@@ -179,11 +213,30 @@
 		
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:1];
-		[UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:window cache:YES];
 		
+		// calculate animation curl up or down
+		int currentIndex = 0;
+		int targetIndex = 0;
+		for (int i = 0; i<groupControllers.count; i++) {
+			GroupController *gc = (GroupController *)[groupControllers objectAtIndex:i];
+			if (gc.group.groupId == currentGroupController.group.groupId) {
+				currentIndex = i;
+			}
+			if (gc.group.groupId == targetGroupController.group.groupId) {
+				targetIndex = i;
+			}			
+		}
+		BOOL forward = targetIndex > currentIndex;
+		
+		if (forward) {
+			[UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:window cache:YES];
+		} else {
+			[UIView setAnimationTransition:UIViewAnimationTransitionCurlDown forView:window cache:YES];
+		}
+
 		//[navigationController.view removeFromSuperview];
 		//navigationController = [[UINavigationController alloc] initWithRootViewController:targetGroupController];
-		UIView *view = [groupViewMap objectForKey:[NSString stringWithFormat:@"%d", to]];
+		UIView *view = [groupViewMap objectForKey:[NSString stringWithFormat:@"%d", groupId]];
 		
 
 		[currentGroupController.view removeFromSuperview];
@@ -192,9 +245,14 @@
 		[UIView commitAnimations];
 		
 		currentGroupController = targetGroupController;
-		
-		//[targetGroupController release];
 	}
+	
+	//if screenId is specified, jump to that screen
+	if (screenId > 0) {
+		return [currentGroupController switchToScreen:screenId];
+	}
+	
+	return YES;
 }
 
 - (void)logout {
@@ -205,18 +263,29 @@
 	}	
 }
 
-- (void)navigateToScreen:(int)to {
-	if (to > 0) {
-		[currentGroupController switchToScreen:to];
+- (void)navigateBackwardInHistory {
+	if (navigationHistory.count > 0) {		
+		Navigate *backward = (Navigate *)[navigationHistory lastObject];
+		if (backward.toGroup > 0|| backward.toScreen > 0 || backward.isPreviousScreen || backward.isNextScreen) {
+			[self navigateToGroup:backward.fromGroup toScreen:backward.fromScreen];
+		} else {
+			[self navigateTo:backward];
+		}
+		//remove current navigation, navigate backward
+		[navigationHistory removeLastObject];
 	}
 }
 
-- (void)navigateToPreviousScreen {
-		[currentGroupController previousScreen];
+- (BOOL)navigateToScreen:(int)to {
+		return [currentGroupController switchToScreen:to];
 }
 
-- (void)navigateToNextScreen {
-		[currentGroupController nextScreen];
+- (BOOL)navigateToPreviousScreen {
+		return [currentGroupController previousScreen];
+}
+
+- (BOOL)navigateToNextScreen {
+		return [currentGroupController nextScreen];
 }
 
 
@@ -285,6 +354,7 @@
 	[groupControllers release];
 	[window release];
 	[groupViewMap release];
+	[navigationHistory release];
 	
 	[super dealloc];
 }

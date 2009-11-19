@@ -33,9 +33,10 @@
 - (id)initWithGroup:(Group *)newGroup;
 - (void)startPolling;
 - (void)stopPolling;
-- (void)switchToScreen:(int)screenId;
-- (void)previousScreen;
-- (void)nextScreen;
+- (BOOL)switchToScreen:(int)screenId;
+- (BOOL)previousScreen;
+- (BOOL)nextScreen;
+- (int)currentScreenId;
 
 @property (nonatomic, retain) Group *group;
 @property (nonatomic, readonly) PaginationController *paginationController;

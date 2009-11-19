@@ -374,7 +374,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				33981AFD10B0F1240076DB59 /* services */,
+				33981AFD10B0F1240076DB59 /* service */,
 				8C267AB10FD27DE20054743E /* exception */,
 				8CF6A27B0FBD3751006ED733 /* lib */,
 				8CFEE2880F558C6700DF8759 /* config */,
@@ -474,13 +474,13 @@
 			name = db;
 			sourceTree = "<group>";
 		};
-		33981AFD10B0F1240076DB59 /* services */ = {
+		33981AFD10B0F1240076DB59 /* service */ = {
 			isa = PBXGroup;
 			children = (
 				33981B0F10B103260076DB59 /* DataBaseService.h */,
 				33981B1010B103260076DB59 /* DataBaseService.m */,
 			);
-			name = services;
+			name = service;
 			sourceTree = "<group>";
 		};
 		8C267AB10FD27DE20054743E /* exception */ = {
