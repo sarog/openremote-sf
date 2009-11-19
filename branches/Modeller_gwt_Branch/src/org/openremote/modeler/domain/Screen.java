@@ -24,67 +24,34 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
-import flexjson.JSON;
+import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 /**
- * The Class Screen.
+ * The Class UIScreen.
  */
 @SuppressWarnings("serial")
 public class Screen extends BusinessEntity {
-   
+
    /** The default name index. */
    private static int defaultNameIndex = 1;
-
+   
    /** The name. */
    private String name;
-
-   /** The activity. */
-   private Activity activity;
    
-   /** The row count. */
-   private Integer rowCount;
-
-   /** The column count. */
-   private Integer columnCount;
-
-   /** The buttons. */
-   private List<UIButton> buttons = new ArrayList<UIButton>();
+   /** The absolute. */
+   private boolean absoluteLayout;
    
-   /**
-    * Gets the row count.
-    * 
-    * @return the row count
-    */
-   public Integer getRowCount() {
-      return rowCount;
-   }
-
-   /**
-    * Sets the row count.
-    * 
-    * @param rowCount the new row count
-    */
-   public void setRowCount(Integer rowCount) {
-      this.rowCount = rowCount;
-   }
-
-   /**
-    * Gets the column count.
-    * 
-    * @return the column count
-    */
-   public Integer getColumnCount() {
-      return columnCount;
-   }
-
-   /**
-    * Sets the column count.
-    * 
-    * @param columnCount the new column count
-    */
-   public void setColumnCount(Integer columnCount) {
-      this.columnCount = columnCount;
-   }
+   /** The grid. */
+   private Grid grid;
+   
+   /** The absolutes. */
+   private List<Absolute> absolutes = new ArrayList<Absolute>();
+   
+   /** The touch panel definition. */
+   private TouchPanelDefinition touchPanelDefinition;
+   
+   /** The background. */
+   private String background = "";
 
    /**
     * Gets the name.
@@ -93,6 +60,46 @@ public class Screen extends BusinessEntity {
     */
    public String getName() {
       return name;
+   }
+
+   /**
+    * Gets the grid.
+    * 
+    * @return the grid
+    */
+   public Grid getGrid() {
+      return grid;
+   }
+
+   /**
+    * Gets the absolutes.
+    * 
+    * @return the absolutes
+    */
+   public List<Absolute> getAbsolutes() {
+      return absolutes;
+   }
+
+   /**
+    * Gets the touch panel definition.
+    * 
+    * @return the touch panel definition
+    */
+   public TouchPanelDefinition getTouchPanelDefinition() {
+      return touchPanelDefinition;
+   }
+
+   /**
+    * Gets the background.
+    * 
+    * @return the background
+    */
+   public String getBackground() {
+      return background;
+   }
+
+   public String getCSSBackground() {
+      return background.replaceAll(" ", "%20");
    }
 
    /**
@@ -105,63 +112,73 @@ public class Screen extends BusinessEntity {
    }
 
    /**
-    * Gets the buttons.
+    * Sets the grid.
     * 
-    * @return the buttons
+    * @param grid the new grid
     */
-   public List<UIButton> getButtons() {
-      return buttons;
-   }
-
-   /**
-    * Sets the buttons.
-    * 
-    * @param buttons the new buttons
-    */
-   public void setButtons(List<UIButton> buttons) {
-      this.buttons = buttons;
-   }
-   
-   /**
-    * Adds the button.
-    * 
-    * @param button the button
-    */
-   public void addButton(UIButton button) {
-      this.buttons.add(button);
-   }
-   
-   /**
-    * Delete button.
-    * 
-    * @param button the button
-    */
-   public void deleteButton(UIButton button) {
-      if (this.buttons.contains(button)) {
-         this.buttons.remove(button);
+   public void setGrid(Grid grid) {
+      if (!absoluteLayout) {
+         this.grid = grid;
       }
    }
 
    /**
-    * Gets the activity.
+    * Sets the absolutes.
     * 
-    * @return the activity
+    * @param absolutes the new absolutes
     */
-   @JSON(include = false)
-   public Activity getActivity() {
-      return activity;
+   public void setAbsolutes(List<Absolute> absolutes) {
+      if (absoluteLayout) {
+         this.absolutes = absolutes;
+      }
    }
 
    /**
-    * Sets the activity.
+    * Adds the absolute.
     * 
-    * @param activity the new activity
+    * @param absolute the absolute
     */
-   public void setActivity(Activity activity) {
-      this.activity = activity;
+   public void addAbsolute(Absolute absolute) {
+      if (absoluteLayout) {
+         this.absolutes.add(absolute);
+      }
    }
    
-   
+   /**
+    * Sets the touch panel definition.
+    * 
+    * @param touchPanelDefinition the new touch panel definition
+    */
+   public void setTouchPanelDefinition(TouchPanelDefinition touchPanelDefinition) {
+      this.touchPanelDefinition = touchPanelDefinition;
+   }
+
+   /**
+    * Sets the background.
+    * 
+    * @param background the new background
+    */
+   public void setBackground(String background) {
+      this.background = background;
+   }
+
+   /**
+    * Checks if is absolute layout.
+    * 
+    * @return true, if is absolute layout
+    */
+   public boolean isAbsoluteLayout() {
+      return absoluteLayout;
+   }
+
+   /**
+    * Sets the absolute layout.
+    * 
+    * @param absoluteLayout the new absolute layout
+    */
+   public void setAbsoluteLayout(boolean absoluteLayout) {
+      this.absoluteLayout = absoluteLayout;
+   }
    
    /**
     * {@inheritDoc}
@@ -179,6 +196,17 @@ public class Screen extends BusinessEntity {
     */
    @Transient
    public static String getNewDefaultName() {
-      return "screen" + defaultNameIndex++;
+      return "screen" + defaultNameIndex;
+   }
+   
+   @Transient
+   public static void increaseDefaultNameIndex() {
+      defaultNameIndex++;
+   }
+   
+   public void removeAbsolute(Absolute absolute) {
+      if (absoluteLayout && this.absolutes.size() > 0) {
+         this.absolutes.remove(absolute);
+      }
    }
 }

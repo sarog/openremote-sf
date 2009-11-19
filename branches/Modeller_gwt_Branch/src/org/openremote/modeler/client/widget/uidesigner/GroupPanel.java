@@ -37,7 +37,7 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.ScreenRef;
-import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -398,8 +398,8 @@ public class GroupPanel extends ContentPanel {
                }
                if (changeEvent.getType() == ChangeEventSupport.Update) {
                   BeanModel source = (BeanModel) changeEvent.getItem();
-                  if (source.getBean() instanceof UIScreen) {
-                     UIScreen screen = (UIScreen) source.getBean();
+                  if (source.getBean() instanceof Screen) {
+                     Screen screen = (Screen) source.getBean();
                      ScreenRef screenRef = (ScreenRef) target.getBean();
                      screenRef.setScreen(screen);
                   }

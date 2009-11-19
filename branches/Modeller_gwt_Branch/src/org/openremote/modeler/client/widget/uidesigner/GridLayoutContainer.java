@@ -28,7 +28,7 @@ import org.openremote.modeler.client.utils.SelectedWidgetContainer;
 import org.openremote.modeler.client.widget.control.ScreenControl;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.Grid;
-import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.control.UIButton;
 import org.openremote.modeler.domain.control.UIControl;
 import org.openremote.modeler.domain.control.UISwitch;
@@ -60,7 +60,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 public class GridLayoutContainer extends LayoutContainer {
 
    /** The screen. */
-   private UIScreen screen;
+   private Screen screen;
 
    /** The Constant POSITION. */
    private static final String POSITION = "position";
@@ -76,7 +76,7 @@ public class GridLayoutContainer extends LayoutContainer {
     * 
     * @param screen the screen
     */
-   public GridLayoutContainer(UIScreen screen) {
+   public GridLayoutContainer(Screen screen) {
       this.screen = screen;
       Grid grid = screen.getGrid();
       btnInArea = new boolean[grid.getColumnCount()][grid.getRowCount()];

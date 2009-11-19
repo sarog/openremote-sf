@@ -28,7 +28,6 @@ import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTabItem;
-import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -37,9 +36,8 @@ import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
-import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
-import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.control.UIButton;
 import org.openremote.modeler.domain.control.UISwitch;
 
@@ -75,9 +73,6 @@ public class TreePanelBuilder {
 
    /** The macro tree store. */
    private static TreeStore<BeanModel> macroTreeStore = null;
-   
-   /** The activity tree store. */
-   private static TreeStore<BeanModel> activityTreeStore = null;
    
    /** The screen tree store. */
    private static TreeStore<BeanModel> screenTreeStore = null;
@@ -191,67 +186,6 @@ public class TreePanelBuilder {
    }
    
    /**
-    * Builds the activity tree.
-    * 
-    * @param screenTab the screen tab
-    * 
-    * @return the tree panel< bean model>
-    */
-   public static TreePanel<BeanModel> buildActivityTree(final ScreenTab screenTab) {
-      if (activityTreeStore == null) {
-         activityTreeStore = new TreeStore<BeanModel>();
-      }
-      final TreePanel<BeanModel> activityTree = new TreePanel<BeanModel>(activityTreeStore) {
-
-         @Override
-         public void onBrowserEvent(Event event) {
-            if (event.getTypeInt() == Event.ONDBLCLICK) {
-               BeanModel beanModel = this.getSelectionModel().getSelectedItem();
-               if (beanModel.getBean() instanceof Screen) {
-                  UIScreen screen = beanModel.getBean();
-                  ScreenTabItem screenTabItem = null;
-                  for (TabItem tabPanel : screenTab.getItems()) {
-                     screenTabItem = (ScreenTabItem) tabPanel;
-//                     if (screen == screenTabItem.getScreen()) {
-//                        screenTab.setSelection(screenTabItem);
-//                        return;
-//                     } else {
-//                        screenTabItem = null;
-//                     }
-                  }
-                  if (screenTabItem == null) {
-                     screenTabItem = new ScreenTabItem(screen);
-                     screenTab.add(screenTabItem);
-                     screenTab.setSelection(screenTabItem);
-                  }
-               }
-            }
-            
-            super.onBrowserEvent(event);
-         }
-         
-      };
-      activityTree.setStateful(true);
-      activityTree.setBorders(false);
-      activityTree.setHeight("100%");      
-      activityTree.setDisplayProperty("displayName");
-      
-      activityTree.setIconProvider(new ModelIconProvider<BeanModel>() {
-         public AbstractImagePrototype getIcon(BeanModel thisModel) {
-            if (thisModel.getBean() instanceof Activity) {
-               return ICON.activityIcon();
-            } else if (thisModel.getBean() instanceof Screen) {
-               return ICON.screenIcon();
-            } else {
-               return ICON.activityIcon();
-            }
-         }
-      });
-      
-      return activityTree;
-   }
-   
-   /**
     * Builds the screen tree.
     * 
     * @return the tree panel< bean model>
@@ -265,8 +199,8 @@ public class TreePanelBuilder {
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONDBLCLICK) {
                BeanModel beanModel = this.getSelectionModel().getSelectedItem();
-               if (beanModel.getBean() instanceof UIScreen) {
-                  UIScreen screen = beanModel.getBean();
+               if (beanModel.getBean() instanceof Screen) {
+                  Screen screen = beanModel.getBean();
                   ScreenTabItem screenTabItem = null;
                   for (TabItem tabPanel : screenTab.getItems()) {
                      screenTabItem = (ScreenTabItem) tabPanel;

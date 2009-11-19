@@ -27,7 +27,7 @@ import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
-import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.Screen;
 
 
 /**
@@ -50,7 +50,7 @@ public class UtilsProxy {
     * @param maxId the max id
     * @param activityList the activity list
     */
-   public static void exportFiles(long maxId, List<Panel> panelList, List<Group> groupList, List<UIScreen> screenList, final AsyncSuccessCallback<String> callback) {
+   public static void exportFiles(long maxId, List<Panel> panelList, List<Group> groupList, List<Screen> screenList, final AsyncSuccessCallback<String> callback) {
       AsyncServiceFactory.getUtilsRPCServiceAsync().exportFiles(maxId, panelList, groupList, screenList, new AsyncSuccessCallback<String>() {
          @Override
          public void onSuccess(String exportURL) {
@@ -61,26 +61,12 @@ public class UtilsProxy {
    }
 
    /**
-    * Load json string from session.
-    * 
-    * @param callback the callback
-    */
-   public static void loadJsonStringFromSession(final AsyncSuccessCallback<String> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().loadJsonStringFromSession(new AsyncSuccessCallback<String>() {
-         @Override
-         public void onSuccess(String activityJSON) {
-            callback.onSuccess(activityJSON);
-         }
-      });
-   }
-
-   /**
     * Auto save ui designer layout json.
     * 
     * @param groups the activities
     * @param callback the callback
     */
-   public static void autoSaveUiDesignerLayout(List<Panel> panels, List<Group> groups, List<UIScreen> screens, long maxID, final AsyncSuccessCallback<AutoSaveResponse> callback) {
+   public static void autoSaveUiDesignerLayout(List<Panel> panels, List<Group> groups, List<Screen> screens, long maxID, final AsyncSuccessCallback<AutoSaveResponse> callback) {
       AsyncServiceFactory.getUtilsRPCServiceAsync().autoSaveUiDesignerLayout(panels, groups, screens, maxID, new AsyncSuccessCallback<AutoSaveResponse>() {
          @Override
          public void onSuccess(AutoSaveResponse result) {
@@ -129,10 +115,10 @@ public class UtilsProxy {
       });
    }
    
-   public static void loadScreensFromSession(final AsyncSuccessCallback<List<UIScreen>> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().loadScreensFromSession(new AsyncSuccessCallback<List<UIScreen>>() {
+   public static void loadScreensFromSession(final AsyncSuccessCallback<List<Screen>> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().loadScreensFromSession(new AsyncSuccessCallback<List<Screen>>() {
          @Override
-         public void onSuccess(List<UIScreen> Screens) {
+         public void onSuccess(List<Screen> Screens) {
             callback.onSuccess(Screens);
          }
       });

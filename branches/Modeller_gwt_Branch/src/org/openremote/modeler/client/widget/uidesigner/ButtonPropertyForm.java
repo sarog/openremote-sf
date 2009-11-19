@@ -33,7 +33,7 @@ import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.UICommand;
-import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.control.Navigate;
 import org.openremote.modeler.domain.control.UIButton;
 import org.openremote.modeler.domain.control.UImage;
@@ -141,7 +141,7 @@ public class ButtonPropertyForm extends PropertyForm {
          @SuppressWarnings("unchecked")
          @Override
          public void selectionChanged(SelectionChangedEvent<ModelData> se) {
-            UIScreen selectedScreen = ((ComboBoxDataModel<UIScreen>)se.getSelectedItem()).getData();
+            Screen selectedScreen = ((ComboBoxDataModel<Screen>)se.getSelectedItem()).getData();
             navigate.setToScreen(selectedScreen.getOid());
          }
          
@@ -163,7 +163,7 @@ public class ButtonPropertyForm extends PropertyForm {
             screenList.clearSelections();
             screenList.getStore().removeAll();
             for (ScreenRef screenRef : selectedGroup.getScreenRefs()) {
-               ComboBoxDataModel<UIScreen> data = new ComboBoxDataModel<UIScreen>(screenRef.getDisplayName(), screenRef.getScreen());
+               ComboBoxDataModel<Screen> data = new ComboBoxDataModel<Screen>(screenRef.getDisplayName(), screenRef.getScreen());
                screenList.getStore().add(data);
                if (navigate.getToScreen() == screenRef.getScreenId()) {
                   screenList.setValue(data);

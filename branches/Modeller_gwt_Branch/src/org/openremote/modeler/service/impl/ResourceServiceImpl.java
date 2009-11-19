@@ -38,7 +38,6 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.UIButtonEvent;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Absolute;
-import org.openremote.modeler.domain.Activity;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -53,7 +52,7 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.UICommand;
-import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.control.UIButton;
 import org.openremote.modeler.domain.control.UIControl;
 import org.openremote.modeler.domain.control.UISwitch;
@@ -63,10 +62,10 @@ import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.utils.FileUtilsExt;
-import org.openremote.modeler.utils.XmlParser;
 import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ProtocolEventContainer;
 import org.openremote.modeler.utils.StringUtils;
+import org.openremote.modeler.utils.XmlParser;
 import org.openremote.modeler.utils.ZipUtils;
 
 /**
@@ -95,7 +94,7 @@ public class ResourceServiceImpl implements ResourceService {
     * {@inheritDoc}
     */
    public String downloadZipResource(long maxId, String sessionId, List<Panel> panels, List<Group> groups,
-         List<UIScreen> screens) {
+         List<Screen> screens) {
       String controllerXmlContent = getControllerXmlContent(maxId, screens);
       String panelXmlContent = getPanelXmlContent(panels, groups, screens);
       String sectionIds = getSectionIds(screens);
@@ -156,9 +155,9 @@ public class ResourceServiceImpl implements ResourceService {
     * @param sessionId
     *           the user id
     */
-   private void replaceUrl(List<UIScreen> screens, String sessionId) {
+   private void replaceUrl(List<Screen> screens, String sessionId) {
       String rerlativeSessionFolderPath = PathConfig.getInstance(configuration).getRelativeSessionFolderPath(sessionId);
-      for (UIScreen screen : screens) {
+      for (Screen screen : screens) {
          if (screen.isAbsoluteLayout()) {
             for (Absolute absolute : screen.getAbsolutes()) {
                absolute.getUiControl().transImagePathToRelative(rerlativeSessionFolderPath);
@@ -168,27 +167,6 @@ public class ResourceServiceImpl implements ResourceService {
                cell.getUiControl().transImagePathToRelative(rerlativeSessionFolderPath);
             }
          }
-      }
-   }
-
-   /**
-    * Gets the activities json.
-    * 
-    * @param activities
-    *           the activities
-    * 
-    * @return the activities json
-    */
-   public String getActivitiesJson(List<Activity> activities) {
-      try {
-         String[] includedPropertyNames = { "screens", "screens.buttons", "screens.buttons.uiCommand" };
-         String[] excludePropertyNames = {};
-         String activitiesJson = JsonGenerator.serializerObjectInclude(activities, includedPropertyNames,
-               excludePropertyNames);
-         return activitiesJson;
-      } catch (Exception e) {
-         e.printStackTrace();
-         return "";
       }
    }
 
@@ -370,7 +348,7 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the controller xml content
     */
-   private String getControllerXmlContent(long maxId, List<UIScreen> screenList) {
+   private String getControllerXmlContent(long maxId, List<Screen> screenList) {
       this.eventId = maxId + 1;
       ProtocolEventContainer protocolEventContainer = new ProtocolEventContainer();
       StringBuffer controllerXml = new StringBuffer();
@@ -395,10 +373,10 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the buttons xml content
     */
-   private String getControlsXmlContent(List<UIScreen> screenList, ProtocolEventContainer protocolEventContainer) {
+   private String getControlsXmlContent(List<Screen> screenList, ProtocolEventContainer protocolEventContainer) {
       StringBuffer uiControlsXml = new StringBuffer();
       uiControlsXml.append("  <controls>\n");
-      for (UIScreen screen : screenList) {
+      for (Screen screen : screenList) {
          if (screen.isAbsoluteLayout()) {
             for (Absolute absolute : screen.getAbsolutes()) {
                uiControlsXml.append(getControlXmlContent(absolute.getUiControl(), protocolEventContainer));
@@ -537,7 +515,7 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the panel xml content
     */
-   private String getPanelXmlContent(List<Panel> panels, List<Group> groups, List<UIScreen> screens) {
+   private String getPanelXmlContent(List<Panel> panels, List<Group> groups, List<Screen> screens) {
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
       xmlContent.append("<openremote xmlns=\"http://www.openremote.org\" "
@@ -555,7 +533,7 @@ public class ResourceServiceImpl implements ResourceService {
       xmlContent.append("  </panels>\n");
 
       xmlContent.append("  <screens>\n");
-      for (UIScreen screen : screens) {
+      for (Screen screen : screens) {
          xmlContent.append("    <screen id=\"" + screen.getOid() + "\" name=\"" + screen.getName() + "\"");
          if (!"".equals(screen.getBackground())) {
             xmlContent.append(" background=\"" + screen.getBackground() + "\"");
@@ -613,9 +591,9 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the section ids
     */
-   private String getSectionIds(List<UIScreen> screenList) {
+   private String getSectionIds(List<Screen> screenList) {
       Set<String> sectionIds = new HashSet<String>();
-      for (UIScreen screen : screenList) {
+      for (Screen screen : screenList) {
          if (screen.isAbsoluteLayout()) {
             for (Absolute absolute : screen.getAbsolutes()) {
                for (UICommand command : absolute.getUiControl().getCommands()) {
@@ -738,7 +716,7 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    @Override
-   public String getScreensJson(List<UIScreen> screens) {
+   public String getScreensJson(List<Screen> screens) {
       try {
          String[] includedPropertyNames = { "absolutes", "absolutes.uiCommand", "grid", "grid.cells",
                "grid.cells.uiCommand" };

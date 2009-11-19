@@ -28,7 +28,7 @@ import javax.persistence.Transient;
 public class ScreenRef extends BusinessEntity {
 
    /** The screen. */
-   private UIScreen screen;
+   private Screen screen;
    
    /** The group. */
    private Group group;
@@ -40,7 +40,7 @@ public class ScreenRef extends BusinessEntity {
     * 
     * @param screen the screen
     */
-   public ScreenRef(UIScreen screen) {
+   public ScreenRef(Screen screen) {
       super();
       this.screen = screen;
    }
@@ -51,7 +51,7 @@ public class ScreenRef extends BusinessEntity {
     * 
     * @return the screen
     */
-   public UIScreen getScreen() {
+   public Screen getScreen() {
       return screen;
    }
 
@@ -60,7 +60,7 @@ public class ScreenRef extends BusinessEntity {
     * 
     * @param screen the new screen
     */
-   public void setScreen(UIScreen screen) {
+   public void setScreen(Screen screen) {
       this.screen = screen;
    }
 

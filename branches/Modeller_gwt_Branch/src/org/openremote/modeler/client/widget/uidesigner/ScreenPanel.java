@@ -37,7 +37,7 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
-import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -134,13 +134,13 @@ public class ScreenPanel extends ContentPanel {
          }
          
       });
-      UtilsProxy.loadScreensFromSession(new AsyncSuccessCallback<List<UIScreen>>(){
+      UtilsProxy.loadScreensFromSession(new AsyncSuccessCallback<List<Screen>>(){
          @Override
-         public void onSuccess(List<UIScreen> screens) {
+         public void onSuccess(List<Screen> screens) {
             if(screens.size() > 0) {
                screenTree.getStore().removeAll();
                BeanModelDataBase.screenTable.clear();
-               for (UIScreen screen : screens) {
+               for (Screen screen : screens) {
                   BeanModel screenBeanModel = screen.getBeanModel();
                   screenTree.getStore().add(screenBeanModel, false);
                   BeanModelDataBase.screenTable.insert(screenBeanModel);
@@ -149,8 +149,8 @@ public class ScreenPanel extends ContentPanel {
                   public void modelChanged(ChangeEvent event) {
                      if (event.getType() == BeanModelTable.ADD) {
                         BeanModel beanModel = (BeanModel) event.getItem();
-                        if (beanModel.getBean() instanceof UIScreen) {
-                           ScreenTabItem screenTabItem = new ScreenTabItem((UIScreen) beanModel.getBean());
+                        if (beanModel.getBean() instanceof Screen) {
+                           ScreenTabItem screenTabItem = new ScreenTabItem((Screen) beanModel.getBean());
                            screenTab.add(screenTabItem);
                            screenTab.setSelection(screenTabItem);
                         }
@@ -214,7 +214,7 @@ public class ScreenPanel extends ContentPanel {
          @Override
          public void componentSelected(ButtonEvent ce) {
             BeanModel screenModel = screenTree.getSelectionModel().getSelectedItem();
-            if (screenModel != null && (screenModel.getBean() instanceof UIScreen)) {
+            if (screenModel != null && (screenModel.getBean() instanceof Screen)) {
                editScreen(screenModel);
             }
          }
@@ -228,7 +228,7 @@ public class ScreenPanel extends ContentPanel {
     * @param selectedModel the selected model
     */
    private void editScreen(BeanModel selectedModel) {
-      final ScreenWindow screenWindow = new ScreenWindow((UIScreen) selectedModel.getBean());
+      final ScreenWindow screenWindow = new ScreenWindow((Screen) selectedModel.getBean());
       screenWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener(){
          @Override
          public void afterSubmit(SubmitEvent be) {

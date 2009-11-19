@@ -31,7 +31,7 @@ import org.openremote.modeler.client.proxy.ScreenBeanModelProxy;
 import org.openremote.modeler.client.utils.TouchPanels;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Grid;
-import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.selenium.DebugId;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
@@ -79,7 +79,7 @@ public class ScreenWindow extends FormWindow {
    private String layout = SCREEN_ABSOLUTERADIO;
    
    /** The screen model. */
-   private UIScreen screen = null;
+   private Screen screen = null;
    
    /**
     * Instantiates a new screen window.
@@ -97,7 +97,7 @@ public class ScreenWindow extends FormWindow {
     * 
     * @param screen the screen
     */
-   public ScreenWindow(UIScreen screen) {
+   public ScreenWindow(Screen screen) {
       super();
       this.screen = screen;
       initial("Edit Screen");
@@ -129,7 +129,7 @@ public class ScreenWindow extends FormWindow {
       screenNameField.setName(SCREEN_NAME);
       screenNameField.setFieldLabel("Name");
       screenNameField.setAllowBlank(false);
-      screenNameField.setValue(UIScreen.getNewDefaultName());
+      screenNameField.setValue(Screen.getNewDefaultName());
       
       ComboBox<ModelData> panel = new ComboBox<ModelData>();
       ListStore<ModelData> store = new ListStore<ModelData>();
@@ -351,7 +351,7 @@ public class ScreenWindow extends FormWindow {
             BeanModel screenBeanModel = null;
             if (screen == null) {
                screenBeanModel = ScreenBeanModelProxy.createScreen(attrMap, panelData.getData());
-               UIScreen.increaseDefaultNameIndex();
+               Screen.increaseDefaultNameIndex();
             } else {
                screenBeanModel = ScreenBeanModelProxy.updateScreen(screen, attrMap);
             }

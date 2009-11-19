@@ -25,7 +25,7 @@ import java.util.List;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
-import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.Screen;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -48,7 +48,7 @@ public interface UtilsRPCService extends RemoteService {
     * 
     * @return the string
     */
-   String exportFiles(long maxId, List<Panel> panelList, List<Group> groupList, List<UIScreen> screenList);
+   String exportFiles(long maxId, List<Panel> panelList, List<Group> groupList, List<Screen> screenList);
    
    /**
     * Beehive rest icon url.
@@ -58,26 +58,19 @@ public interface UtilsRPCService extends RemoteService {
    String beehiveRestIconUrl();
 
    /**
-    * Load json string from session.
-    * 
-    * @return the string
-    */
-   String loadJsonStringFromSession();
-
-   /**
     * Auto save activity json.
     * 
     * @param activities the activities
     * 
     * @return the auto save response
     */
-   AutoSaveResponse autoSaveUiDesignerLayout(List<Panel> panels, List<Group> groups, List<UIScreen> screens, long maxID);
+   AutoSaveResponse autoSaveUiDesignerLayout(List<Panel> panels, List<Group> groups, List<Screen> screens, long maxID);
    
    List<Panel> loadPanelsFromSession();
    
    List<Group> loadGroupsFromSession();
    
-   List<UIScreen> loadScreensFromSession();
+   List<Screen> loadScreensFromSession();
    
    /**
     * Load layout component's max id from session.

@@ -28,7 +28,7 @@ import org.openremote.modeler.client.widget.control.ScreenButton;
 import org.openremote.modeler.client.widget.control.ScreenControl;
 import org.openremote.modeler.client.widget.control.ScreenSwitch;
 import org.openremote.modeler.domain.Absolute;
-import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.control.UIButton;
 import org.openremote.modeler.domain.control.UIControl;
 import org.openremote.modeler.domain.control.UISwitch;
@@ -67,7 +67,7 @@ public class ScreenCanvas extends LayoutContainer {
     * 
     * @param screen the screen
     */
-   public ScreenCanvas(UIScreen screen) {
+   public ScreenCanvas(Screen screen) {
       TouchPanelCanvasDefinition canvas = screen.getTouchPanelDefinition().getCanvas();
       setSize(canvas.getWidth(), canvas.getHeight());
       setBorders(true);
@@ -104,7 +104,7 @@ public class ScreenCanvas extends LayoutContainer {
     * 
     * @param screen the screen
     */
-   private void addDropTargetDNDListener(final UIScreen screen) {
+   private void addDropTargetDNDListener(final Screen screen) {
       final ScreenCanvas canvas = this;
       DropTarget target = new DropTarget(canvas);
       target.addDNDListener(new DNDListener() {
@@ -196,7 +196,7 @@ public class ScreenCanvas extends LayoutContainer {
       return new Point(left, top);
    }
 
-   private AbsoluteLayoutContainer createAbsoluteLayoutContainer(final UIScreen screen, Absolute absolute, ScreenControl screenControl) {
+   private AbsoluteLayoutContainer createAbsoluteLayoutContainer(final Screen screen, Absolute absolute, ScreenControl screenControl) {
       final AbsoluteLayoutContainer controlContainer = new AbsoluteLayoutContainer(absolute, screenControl) {
          @Override
          public void onBrowserEvent(Event event) {
@@ -236,7 +236,7 @@ public class ScreenCanvas extends LayoutContainer {
     * Creates the new absolute layout container after drag from tree.
     * 
     */
-   private AbsoluteLayoutContainer createNewAbsoluteLayoutContainer(UIScreen screen, UIControl uiControl){
+   private AbsoluteLayoutContainer createNewAbsoluteLayoutContainer(Screen screen, UIControl uiControl){
       AbsoluteLayoutContainer controlContainer = null;
       Absolute absolute = new Absolute(IDUtil.nextID());
       if(uiControl instanceof UIButton) {

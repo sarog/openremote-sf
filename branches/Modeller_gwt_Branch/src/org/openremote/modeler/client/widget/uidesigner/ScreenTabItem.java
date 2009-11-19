@@ -19,7 +19,7 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
-import org.openremote.modeler.domain.UIScreen;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -33,7 +33,7 @@ public class ScreenTabItem extends TabItem {
 
 
    /** The screen. */
-   private UIScreen screen;
+   private Screen screen;
 
    private ScreenCanvas screenCanvas;
    
@@ -43,7 +43,7 @@ public class ScreenTabItem extends TabItem {
     * @param screen
     *           the s
     */
-   public ScreenTabItem(UIScreen screen) {
+   public ScreenTabItem(Screen screen) {
       this.screen = screen;
       setText(screen.getName());
       setClosable(true);
@@ -74,7 +74,7 @@ public class ScreenTabItem extends TabItem {
     * 
     * @return the screen
     */
-   public UIScreen getScreen() {
+   public Screen getScreen() {
       return screen;
    }
    

@@ -31,7 +31,6 @@ import org.apache.log4j.Logger;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.utils.MultipartFileUtil;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
