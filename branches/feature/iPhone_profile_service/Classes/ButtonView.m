@@ -62,7 +62,10 @@
 
 - (void) controlButtonUp:(id)sender {
 	[self cancelTimer];
-	
+	Button *button = (Button *)control;
+	if (button.navigate) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:button.navigate];
+	}
 }
 
 - (void) controlButtonDown:(id)sender {
@@ -76,10 +79,7 @@
 			controlTimer = [NSTimer scheduledTimerWithTimeInterval:REPEAT_CMD_INTERVAL	target:self selector:@selector(sendCommand:) userInfo:nil repeats:YES];			
 		} 
 	}
-	if (button.navigate) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:button.navigate];
-	}
-	
+
 }
 
 - (void) sendCommand:(id)sender {

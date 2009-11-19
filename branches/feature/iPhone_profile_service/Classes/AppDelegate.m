@@ -69,15 +69,16 @@
 	window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	[window makeKeyAndVisible];
 	
-	// Create a default view with window size.
-	defaultView = [[UIView alloc] initWithFrame:CGRectMake(window.bounds.origin.x, window.bounds.origin.y+20, window.bounds.size.height, window.bounds.size.width) ];
-	//add the default view to window
+	// Create a default view that won't be overlapped by status bar.
+	// status bar is 20px high and on the top of window.
+	// all the visible view contents will be shown inside this container.
+	defaultView = [[UIView alloc] initWithFrame:CGRectMake(0, 20, 320, 460) ];
 	[window addSubview:defaultView];
 	
 	//Init the loading view
 	initViewController = [[InitViewController alloc] init];
 	[defaultView addSubview:initViewController.view];
-	[Definition sharedDefinition].loading =[initViewController label];
+	[Definition sharedDefinition].loading = [initViewController label];
 	//Init UpdateController and set delegate to this class, it have three delegate methods
     // - (void)didUpadted;
     // - (void)didUseLocalCache:(NSString *)errorMessage;
@@ -113,7 +114,7 @@
 	//navigationController = [[UINavigationController alloc] initWithRootViewController:defaultGroupController];
 	//[window addSubview:navigationController.view];
 	currentGroupController = defaultGroupController;
-	[window addSubview:defaultGroupController.view];
+	[defaultView addSubview:defaultGroupController.view];
 	//[defaultGroupController release];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateFromNotification:) name:NotificationNavigateTo object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];
@@ -229,9 +230,9 @@
 		BOOL forward = targetIndex > currentIndex;
 		
 		if (forward) {
-			[UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:window cache:YES];
+			[UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:defaultView cache:YES];
 		} else {
-			[UIView setAnimationTransition:UIViewAnimationTransitionCurlDown forView:window cache:YES];
+			[UIView setAnimationTransition:UIViewAnimationTransitionCurlDown forView:defaultView cache:YES];
 		}
 
 		//[navigationController.view removeFromSuperview];
@@ -240,7 +241,7 @@
 		
 
 		[currentGroupController.view removeFromSuperview];
-		[window addSubview:view];
+		[defaultView addSubview:view];
 
 		[UIView commitAnimations];
 		
@@ -266,7 +267,7 @@
 - (void)navigateBackwardInHistory {
 	if (navigationHistory.count > 0) {		
 		Navigate *backward = (Navigate *)[navigationHistory lastObject];
-		if (backward.toGroup > 0|| backward.toScreen > 0 || backward.isPreviousScreen || backward.isNextScreen) {
+		if (backward.toGroup > 0 || backward.toScreen > 0 || backward.isPreviousScreen || backward.isNextScreen) {
 			[self navigateToGroup:backward.fromGroup toScreen:backward.fromScreen];
 		} else {
 			[self navigateTo:backward];
@@ -309,7 +310,7 @@
 }
 
 - (void)refreshView:(id)sender {
-	for (UIView *view in window.subviews) {
+	for (UIView *view in defaultView.subviews) {
 		[view removeFromSuperview];
 	}
 	[groupControllers removeAllObjects];
@@ -327,7 +328,7 @@
 	}
 	
 	currentGroupController = defaultGroupController;
-	[window addSubview:defaultGroupController.view];
+	[defaultView addSubview:defaultGroupController.view];
 	
 }
 
