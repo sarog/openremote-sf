@@ -19,23 +19,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
-#import <UIKit/UIKit.h>
-#import "ServerAutoDiscoveryController.h"
+#import <Foundation/Foundation.h>
 #import "UpdateController.h"
 
-@interface AppSettingController : UITableViewController {
-	NSString *pathToUserCopyOfPlist;
-	BOOL autoDiscovery;
-	NSMutableArray *serverArray;
-	NSIndexPath *currentSelectedServerIndex;
-	ServerAutoDiscoveryController *autoDiscoverController;
-	UIBarButtonItem *done;
-	UIBarButtonItem *edit;
-	UIBarButtonItem *cancel;
-	BOOL isEditing;
-	UIActivityIndicatorView *loadingView;
+
+@interface SwitchServerAlertHelper : UITableViewController {
 	UpdateController *updateController;
-	NSTimer *getAutoServersTimer;
 }
+
+-(void) showAlertViewWithTitleAndSettingNavigation:(NSString *)title Message:(NSString *)message;
+
+@property(nonatomic, retain) UpdateController *updateController;
+
 @end

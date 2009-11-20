@@ -35,6 +35,9 @@
 + (NSMutableDictionary *)getAutoDiscoveryDic;
 + (BOOL)isAutoDiscoveryEnable;
 + (void)setAutoDiscovery:(BOOL)on;
++ (NSMutableDictionary *)getAutoSwithToAvailableAutoServerDic;
++ (BOOL)isAutoSwitchToAutoServerEnable;
++ (void)setAutoSwitchToAvailableAutoServer:(BOOL)on;
 + (NSMutableArray *)getAutoServers;
 + (NSMutableArray *)getCustomServers;
 + (NSString *)getCurrentServerUrl;

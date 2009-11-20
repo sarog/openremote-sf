@@ -21,6 +21,7 @@
 
 
 #import "URLConnectionHelper.h"
+#import "AppSettingsDefinition.h"
 
 
 //allows self-signed cert
@@ -37,12 +38,15 @@
 
 @implementation URLConnectionHelper 
 
-@synthesize delegate, connection;
+@synthesize delegate, connection, errorMsg, switchServerAlertHelper, viewHelper, autoDiscoverController, getAutoServersTimer;
 
 #pragma mark constructor
 - (id)initWithURL:(NSURL *)url delegate:(id <URLConnectionHelperDelegate>)d  {
 	if (self = [super init]) {
 		[self setDelegate:d];
+		viewHelper = [[ViewHelper alloc] init];
+		switchServerAlertHelper = [[SwitchServerAlertHelper alloc] init];
+		
 		receivedData = [[NSMutableData alloc] init];
 		
 		NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:15];
@@ -57,6 +61,9 @@
 - (id)initWithRequest:(NSURLRequest *)request delegate:(id <URLConnectionHelperDelegate>)d  {
 	if (self = [super init]) {
 		[self setDelegate:d];
+		viewHelper = [[ViewHelper alloc] init];
+		switchServerAlertHelper = [[SwitchServerAlertHelper alloc] init];
+		
 		receivedData = [[NSMutableData alloc] init];
 		
 		connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
@@ -76,6 +83,23 @@
 	}
 }
 
+#pragma mark instance method
+/**
+ * Switch to a autoServer depends on whether there are available autoServers.
+ */
+- (void)switchToAvailableAutoServer {
+	NSString *alertInfo = [errorMsg localizedDescription];
+	NSMutableArray *availableAutoServers = [AppSettingsDefinition getAutoServers];
+	NSString *availableAutoServerURL;
+	NSLog(@"Found %d autoServer(s) before switch to a available autoServer.", availableAutoServers.count);
+	if (availableAutoServers.count > 0) {
+		availableAutoServerURL = [[availableAutoServers objectAtIndex:0] objectForKey:@"url"];
+		NSString *customAlertInfo = [[[@"! \nSwitch to available server: [" stringByAppendingString:availableAutoServerURL] stringByAppendingString:@"]"] stringByAppendingString:@"automatically or setting?"];
+		alertInfo = [alertInfo stringByAppendingString: customAlertInfo];
+	}
+	[switchServerAlertHelper showAlertViewWithTitleAndSettingNavigation:@"Command failed" Message:alertInfo];
+}
+
 
 #pragma mark delegate method of NSURLConnection
 //Called we connection receive data
@@ -92,8 +116,25 @@
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+	
 	if ([delegate respondsToSelector:@selector(definitionURLConnectionDidFailWithError:)]) {
 		[delegate definitionURLConnectionDidFailWithError:error];
+		//[AppSettingsDefinition isAutoDiscoveryEnable]
+		if (YES) {
+			self.errorMsg = error;
+			[AppSettingsDefinition removeAllAutoServer];
+			[AppSettingsDefinition writeToFile];
+			if (autoDiscoverController) {
+				[autoDiscoverController setDelegate:nil];
+				[autoDiscoverController release];
+				autoDiscoverController = nil;
+			}
+			autoDiscoverController = [[ServerAutoDiscoveryController alloc]initWithDelegate:nil];
+			getAutoServersTimer = [[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(switchToAvailableAutoServer) userInfo:nil repeats:NO] retain];
+		} else {
+			NSLog(@"viewhelperviewhelperviewhelperviewhelperviewhelperviewhelper");
+			[viewHelper showAlertViewWithTitleAndSettingNavigation:@"Command failed" Message:[error localizedDescription]];
+		}
 	} else {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 		[alert show];
@@ -113,6 +154,10 @@
 - (void)dealloc {
 	[receivedData release];
 	[connection release];
+	[viewHelper release];
+	[switchServerAlertHelper release];
+	[autoDiscoverController release];
+	[getAutoServersTimer release];
 	[super dealloc];
 }
 

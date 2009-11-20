@@ -118,6 +118,8 @@
 	[self deleteAllRow];
 	
 	if (autoDiscovery) {
+		[AppSettingsDefinition removeAllAutoServer];
+		[AppSettingsDefinition writeToFile];
 		self.navigationItem.leftBarButtonItem = nil;
 		if (autoDiscoverController) {
 			[autoDiscoverController setDelegate:nil];
@@ -125,8 +127,13 @@
 			autoDiscoverController = nil;
 		}
 		autoDiscoverController = [[ServerAutoDiscoveryController alloc]initWithDelegate:self];
+		getAutoServersTimer = [[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(updateTableView) userInfo:nil repeats:NO] retain];
 		self.navigationItem.leftBarButtonItem = cancel;
 	} else {
+		if(getAutoServersTimer && [getAutoServersTimer isValid]){
+			[getAutoServersTimer invalidate];
+		}
+		
 		if (autoDiscoverController) {
 			[autoDiscoverController setDelegate:nil];
 			[autoDiscoverController release];
@@ -176,8 +183,9 @@
 	for (int j=0;j < newArray.count;j++){
 		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:j inSection:1]];
 	}
-
+	NSLog(@"serverArray count is _____________%d", serverArray.count);
 	[serverArray addObjectsFromArray:newArray];
+	NSLog(@"++++++serverArray count is _____________%d", serverArray.count);
 		NSLog(@"Insert paths %d",[insertIndexPaths count]);
 	[tv insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationBottom];
 	[tv endUpdates];
