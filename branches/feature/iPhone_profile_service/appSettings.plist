@@ -32,9 +32,22 @@
 				<key>choose</key>
 				<true/>
 				<key>url</key>
-				<string>http://controller.openremote.org/1.0/controller</string>
+				<string>http://localhost:8080/controller</string>
 			</dict>
 		</array>
+		<key>footer</key>
+		<string></string>
+	</dict>
+	<dict>
+		<key>header</key>
+		<string></string>
+		<key>autoSwitchToAvailableAutoServer</key>
+		<dict>
+			<key>memo</key>
+			<string>Auto switch to avialable autoServer</string>
+			<key>value</key>
+			<true/>
+		</dict>
 		<key>footer</key>
 		<string></string>
 	</dict>

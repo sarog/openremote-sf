@@ -107,15 +107,15 @@
 - (void)onFindServer:(NSString *)serverUrl {
 	isReceiveServerUrl = YES;
 	NSMutableDictionary *server = [NSMutableDictionary dictionaryWithObject:serverUrl forKey:@"url"];
-	[server setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
-	//Remove all the auto discovery server url 
-	[AppSettingsDefinition removeAllAutoServer];
+	if([AppSettingsDefinition getAutoServers].count ==0) {
+		[server setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
+	} else {
+		[server setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];
+	}
 	// Add finded auto server url 
 	[AppSettingsDefinition addAutoServer:server];
 	// Write the result into plist file
 	[AppSettingsDefinition writeToFile];
-	//Set AppSettingsDefinition currentServerUrl attribute
-	[AppSettingsDefinition setCurrentServerUrl:serverUrl];
 	
 	NSLog(@"current url at receive socket %@",[AppSettingsDefinition getCurrentServerUrl]);
 
@@ -137,10 +137,10 @@
 	
 			
 	// Call the delegate method delegate implemented
-	if (theDelegate && [theDelegate  respondsToSelector:@selector(onFindServer:)]) {
-		NSLog(@"performSelector onFindServer");
-		[theDelegate performSelector:@selector(onFindServer:) withObject:serverUrl];
-	}
+//	if (theDelegate && [theDelegate  respondsToSelector:@selector(onFindServer:)]) {
+//		NSLog(@"performSelector onFindServer");
+//		[theDelegate performSelector:@selector(onFindServer:) withObject:serverUrl];
+//	}
 }
 		
 //after find server fail

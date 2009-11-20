@@ -171,7 +171,6 @@
 - (void) definitionURLConnectionDidFailWithError:(NSError *)error {
 
 	[self cancelTimer];
-	[[ViewHelper alloc] showAlertViewWithTitleAndSettingNavigation:@"Command failed" Message:[error localizedDescription]];
 
 }
 

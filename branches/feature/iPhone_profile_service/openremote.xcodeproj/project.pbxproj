@@ -14,6 +14,8 @@
 		331A58E810AD6A79001AB869 /* DataBaseServiceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 331A58E610AD6A79001AB869 /* DataBaseServiceTest.m */; };
 		331A591610AD6D21001AB869 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 331A591510AD6D21001AB869 /* SenTestingKit.framework */; };
 		331A591710AD6D21001AB869 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 331A591510AD6D21001AB869 /* SenTestingKit.framework */; };
+		3397F88410B52AB3008052AF /* SwitchServerAlertHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3397F88310B52AB3008052AF /* SwitchServerAlertHelper.m */; };
+		3397F88510B52AB3008052AF /* SwitchServerAlertHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3397F88310B52AB3008052AF /* SwitchServerAlertHelper.m */; };
 		33981B1110B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
 		33981B1210B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
 		33981B1A10B108C30076DB59 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1910B108C30076DB59 /* User.m */; };
@@ -183,6 +185,8 @@
 		331A58E510AD6A79001AB869 /* DataBaseServiceTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataBaseServiceTest.h; sourceTree = "<group>"; };
 		331A58E610AD6A79001AB869 /* DataBaseServiceTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataBaseServiceTest.m; sourceTree = "<group>"; };
 		331A591510AD6D21001AB869 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		3397F88210B52AB3008052AF /* SwitchServerAlertHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchServerAlertHelper.h; sourceTree = "<group>"; };
+		3397F88310B52AB3008052AF /* SwitchServerAlertHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwitchServerAlertHelper.m; sourceTree = "<group>"; };
 		33981B0F10B103260076DB59 /* DataBaseService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataBaseService.h; sourceTree = "<group>"; };
 		33981B1010B103260076DB59 /* DataBaseService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataBaseService.m; sourceTree = "<group>"; };
 		33981B1810B108C30076DB59 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
@@ -520,6 +524,8 @@
 				8C6502E1109809EC006FC19F /* PollingHelper.m */,
 				8CEB4E7D10B2827200A67721 /* LogoutHelper.h */,
 				8CEB4E7E10B2827200A67721 /* LogoutHelper.m */,
+				3397F88210B52AB3008052AF /* SwitchServerAlertHelper.h */,
+				3397F88310B52AB3008052AF /* SwitchServerAlertHelper.m */,
 			);
 			name = utils;
 			sourceTree = "<group>";
@@ -850,6 +856,7 @@
 				33981B1110B103260076DB59 /* DataBaseService.m in Sources */,
 				33981B1A10B108C30076DB59 /* User.m in Sources */,
 				8CEB4E7F10B2827200A67721 /* LogoutHelper.m in Sources */,
+				3397F88410B52AB3008052AF /* SwitchServerAlertHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -919,6 +926,7 @@
 				33981B1210B103260076DB59 /* DataBaseService.m in Sources */,
 				33981B1B10B108C30076DB59 /* User.m in Sources */,
 				8CEB4E8010B2827200A67721 /* LogoutHelper.m in Sources */,
+				3397F88510B52AB3008052AF /* SwitchServerAlertHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

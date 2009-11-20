@@ -25,8 +25,6 @@
 @interface DataBaseService (Private)
 // Init DatabaseService with database file path.
 - (id) initWithDatabasePath:(NSString *)databasePath;
-- (NSString *) getDatabasePath;
-- (void) copyDatabaseIfNeed;
 @end
 
 static DataBaseService *myInstance = nil;

@@ -74,6 +74,28 @@ static NSMutableArray *settingsData = nil;
 	[[self getAutoDiscoveryDic] setValue:[NSNumber numberWithBool:on] forKey:@"value"];
 }
 
+/**
+ * Get the dictionary of autoSwitchToAvailableAutoServer from plist file.
+ */
++ (NSMutableDictionary *)getAutoSwithToAvailableAutoServerDic {
+	return (NSMutableDictionary *)[[self getSectionWithIndex:3] objectForKey:@"autoSwitchToAvailableAutoServer"];
+}
+
+/**
+ * Get the bool value of autoSwitchToAvailableAutoServer.
+ */
++ (BOOL)isAutoSwitchToAutoServerEnable {
+	return [[[self getAutoSwithToAvailableAutoServerDic] objectForKey:@"value"] boolValue];
+}
+
+/** 
+ * Enable the function of swith to available autoServer automatically
+ * when current server isn't available.
+ */
++ (void)setAutoSwitchToAvailableAutoServer:(BOOL)on {
+	[[self getAutoSwithToAvailableAutoServerDic] setValue:[NSNumber numberWithBool:on] forKey:@"value"];
+}
+
 + (NSMutableArray *)getAutoServers {
 	return (NSMutableArray *)[[self getSectionWithIndex:1] objectForKey:@"servers"];
 }
