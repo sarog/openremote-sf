@@ -22,7 +22,10 @@
 #import <Foundation/Foundation.h>
 #import "ServerAutoDiscoveryController.h"
 
-
+#define AUTO_DISCOVERY_SWITCH_INDEX 0
+#define AUTO_DISCOVERY_URLS_INDEX 1
+#define CUSOMIZED_URLS_INDEX 2
+#define PANEL_IDENTITY_INDEX 3
 
 @interface AppSettingsDefinition : NSObject {
 
@@ -35,9 +38,6 @@
 + (NSMutableDictionary *)getAutoDiscoveryDic;
 + (BOOL)isAutoDiscoveryEnable;
 + (void)setAutoDiscovery:(BOOL)on;
-+ (NSMutableDictionary *)getAutoSwithToAvailableAutoServerDic;
-+ (BOOL)isAutoSwitchToAutoServerEnable;
-+ (void)setAutoSwitchToAvailableAutoServer:(BOOL)on;
 + (NSMutableArray *)getAutoServers;
 + (NSMutableArray *)getCustomServers;
 + (NSString *)getCurrentServerUrl;
@@ -47,5 +47,7 @@
 + (void)writeToFile;
 + (void)removeAllAutoServer;
 + (void)writeToFile;
+
++ (NSMutableDictionary *)getPanelIdentityDic;
 
 @end

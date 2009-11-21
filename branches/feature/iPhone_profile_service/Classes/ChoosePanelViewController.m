@@ -19,27 +19,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+#import "ChoosePanelViewController.h"
 
-#import <UIKit/UIKit.h>
+
+@implementation ChoosePanelViewController
 
 
-@interface AccelerometerController : UIViewController <UIAccelerometerDelegate>{
-	IBOutlet UILabel *volume;
-	IBOutlet UISlider *speedThreshold;
-	IBOutlet UISlider *accelerationThreshold;
-	IBOutlet UIButton *settingsBtn;
-	IBOutlet UIView *settingView;
-	IBOutlet UIView *normalView;
-	
-	double lastY;
-	double highValue;
-	double highTime;
-	double lowValue;
-	double lowTime;
-	
-	int count;
+- (id)init {
+	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
+		
+	}
+	return self;
 }
-- (void)updateLabel;
-- (IBAction)showSettings;
-- (IBAction)backToNormal;
+
+
+
+
+- (void)dealloc {
+    [super dealloc];
+}
+
+
 @end
+
