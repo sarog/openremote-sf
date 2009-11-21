@@ -64,7 +64,7 @@
  */
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
 	NSLog(@"start at screen ref");
-	if ([elementName isEqualToString:@"screen"]) {
+	if ([elementName isEqualToString:@"include"] && [@"screen" isEqualToString:[attributeDict objectForKey:@"type"]]) {
 		int screenRefId = [[attributeDict objectForKey:@"ref"] intValue];
 		NSMutableArray *allScreens = [[Definition sharedDefinition] screens];	
 		for (Screen *screen in allScreens) {		

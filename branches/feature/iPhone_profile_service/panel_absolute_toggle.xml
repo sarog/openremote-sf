@@ -41,10 +41,10 @@
 	<screens>
 	<groups>
 	  <group id="1" name="All rooms">
-	    <screen ref="5" />
+	    <include type="screen" ref="5" />
 	  </group>
 	  <group id="2" name="living room">
-	    <screen ref="6" />
+	    <include type="screen" ref="6" />
 	  </group>
 	</groups>
 </openremote>
