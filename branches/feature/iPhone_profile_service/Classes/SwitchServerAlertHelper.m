@@ -60,14 +60,12 @@
 #pragma mark Delegate method of UpdateController
 - (void)didUpadted {
 	NSLog(@"----------------------DidUpdated in switchServerAlertHelper.m");
-	[self dismissModalViewControllerAnimated:YES];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
 }
 
 - (void)didUseLocalCache:(NSString *)errorMessage {
 	NSLog(@"======================DidUpdated in switchServerAlertHelper.m");
 	[ViewHelper showAlertViewWithTitle:@"Warning" Message:errorMessage];
-	[self dismissModalViewControllerAnimated:YES];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
 }
 
