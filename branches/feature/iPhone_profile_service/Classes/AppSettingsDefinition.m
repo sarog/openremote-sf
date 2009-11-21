@@ -29,6 +29,7 @@
 #import "CheckNetwork.h"
 #import "CheckNetworkException.h"
 
+
 @interface AppSettingsDefinition (Private)
 
 @end
@@ -64,7 +65,7 @@ static NSMutableArray *settingsData = nil;
 	return [[[self getAppSettings] objectAtIndex:index] valueForKey:@"footer"];
 }
 + (NSMutableDictionary *)getAutoDiscoveryDic {
-	return (NSMutableDictionary *)[[self getSectionWithIndex:0] objectForKey:@"item"];
+	return (NSMutableDictionary *)[[self getSectionWithIndex:AUTO_DISCOVERY_SWITCH_INDEX] objectForKey:@"item"];
 }
 + (BOOL)isAutoDiscoveryEnable {
 	return [[[self getAutoDiscoveryDic] objectForKey:@"value"] boolValue];
@@ -74,34 +75,12 @@ static NSMutableArray *settingsData = nil;
 	[[self getAutoDiscoveryDic] setValue:[NSNumber numberWithBool:on] forKey:@"value"];
 }
 
-/**
- * Get the dictionary of autoSwitchToAvailableAutoServer from plist file.
- */
-+ (NSMutableDictionary *)getAutoSwithToAvailableAutoServerDic {
-	return (NSMutableDictionary *)[[self getSectionWithIndex:3] objectForKey:@"autoSwitchToAvailableAutoServer"];
-}
-
-/**
- * Get the bool value of autoSwitchToAvailableAutoServer.
- */
-+ (BOOL)isAutoSwitchToAutoServerEnable {
-	return [[[self getAutoSwithToAvailableAutoServerDic] objectForKey:@"value"] boolValue];
-}
-
-/** 
- * Enable the function of swith to available autoServer automatically
- * when current server isn't available.
- */
-+ (void)setAutoSwitchToAvailableAutoServer:(BOOL)on {
-	[[self getAutoSwithToAvailableAutoServerDic] setValue:[NSNumber numberWithBool:on] forKey:@"value"];
-}
-
 + (NSMutableArray *)getAutoServers {
-	return (NSMutableArray *)[[self getSectionWithIndex:1] objectForKey:@"servers"];
+	return (NSMutableArray *)[[self getSectionWithIndex:AUTO_DISCOVERY_URLS_INDEX] objectForKey:@"servers"];
 }
 
 + (NSMutableArray *)getCustomServers {
-	return (NSMutableArray *)[[self getSectionWithIndex:2] objectForKey:@"servers"];
+	return (NSMutableArray *)[[self getSectionWithIndex:CUSOMIZED_URLS_INDEX] objectForKey:@"servers"];
 }
 
 + (void)addAutoServer:(NSDictionary *)server {
@@ -113,6 +92,12 @@ static NSMutableArray *settingsData = nil;
 	[self writeToFile];
 	NSLog(@"remove all auto server ,now auto server count is %d",[self getAutoServers].count);
 }
+
+// chosen panel identity
++ (NSMutableDictionary *)getPanelIdentityDic {
+	return (NSMutableDictionary *)[[self getSectionWithIndex:PANEL_IDENTITY_INDEX] objectForKey:@"item"];
+}
+
 + (void)writeToFile {
 	if ([settingsData writeToFile:[DirectoryDefinition appSettingsFilePath] atomically:NO]) {	
 		[self readServerUrlFromFile];

@@ -27,8 +27,8 @@
 #import "AppSettingsDefinition.h"
 #import "ViewHelper.h"
 #import "UpdateController.h"
-#import "ActivitiesController.h"
 #import "NotificationConstant.h"
+#import "ChoosePanelViewController.h"
 
 
 @interface AppSettingController (Private)
@@ -44,18 +44,15 @@
 - (void)cancelView:(id)sender;
 @end
 
+#define AUTO_DISCOVERY_SWITCH_SECTION 0
+
+//auto discovery & customized controller server url are treat as one section
+#define CONTROLLER_URLS_SECTION 1
+
+#define PANEL_IDENTITY_SECTION 2
 
 @implementation AppSettingController
 
-
-/*
-- (id)initWithStyle:(UITableViewStyle)style {
-    // Override initWithStyle: if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
-    if (self = [super initWithStyle:style]) {
-    }
-    return self;
-}
-*/
 
 - (id)init {
 	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
@@ -87,16 +84,16 @@
 }
 
 - (BOOL)isAutoDiscoverySection:(NSIndexPath *)indexPath {
-	return indexPath.section == 0;
+	return indexPath.section == AUTO_DISCOVERY_SWITCH_SECTION;
 }
 - (BOOL)isAutoServerSection:(NSIndexPath *)indexPath {
-	if (autoDiscovery && indexPath.section == 1) {
+	if (autoDiscovery && indexPath.section == CONTROLLER_URLS_SECTION) {
 		return YES;
 	}
 	return NO;
 }
 - (BOOL)isCustomServerSection:(NSIndexPath *)indexPath {
-	if (!autoDiscovery && indexPath.row < [serverArray count] && indexPath.section == 1) {
+	if (!autoDiscovery && indexPath.row < [serverArray count] && indexPath.section == CONTROLLER_URLS_SECTION) {
 		if (indexPath.row == 0) {
 			return NO;
 		}
@@ -105,7 +102,7 @@
 	return NO;
 }
 - (BOOL)isAddCustomServerRow:(NSIndexPath *)indexPath {
-	if (!autoDiscovery && indexPath.row >= [serverArray count] && indexPath.section == 1) {
+	if (!autoDiscovery && indexPath.row >= [serverArray count] && indexPath.section == CONTROLLER_URLS_SECTION) {
 		return YES;
 	}
 	return NO;
@@ -152,10 +149,10 @@
 	[tv beginUpdates];
 	NSMutableArray *deleteIndexPaths = [[NSMutableArray alloc] init];
 	for (int i=0;i <serverArray.count;i++){
-		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:i inSection:1]];
+		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:i inSection:CONTROLLER_URLS_SECTION]];
 	}
 	if (autoDiscovery) {
-		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:[serverArray count] inSection:1]];
+		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:[serverArray count] inSection:CONTROLLER_URLS_SECTION]];
 	}
 	[serverArray removeAllObjects];
 	[tv deleteRowsAtIndexPaths:deleteIndexPaths withRowAnimation:UITableViewRowAnimationTop];
@@ -163,7 +160,7 @@
 	NSMutableArray *insertIndexPaths = [[NSMutableArray alloc] init];
 	
 	if (!autoDiscovery) {
-		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:0 inSection:1]];
+		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:0 inSection:CONTROLLER_URLS_SECTION]];
 		[tv insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationBottom];
 	}
 	[tv endUpdates];
@@ -181,7 +178,7 @@
 	
 	NSMutableArray *insertIndexPaths = [[NSMutableArray alloc] init];
 	for (int j=0;j < newArray.count;j++){
-		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:j inSection:1]];
+		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:j inSection:CONTROLLER_URLS_SECTION]];
 	}
 	NSLog(@"serverArray count is _____________%d", serverArray.count);
 	[serverArray addObjectsFromArray:newArray];
@@ -197,46 +194,6 @@
 - (void)cancelView:(id)sender {
 	[self dismissModalViewControllerAnimated:YES];
 }
-
-/*
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-}
-*/
-
-/*
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-}
-*/
-/*
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-}
-*/
-/*
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-}
-*/
-/*
-- (void)viewDidDisappear:(BOOL)animated {
-	[super viewDidDisappear:animated];
-}
-*/
-
-/*
-// Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
-}
-*/
-
-
 		
 - (void)saveSettings {
 	if (serverArray.count == 0) {
@@ -318,23 +275,16 @@
 	
 }
 
-//- (void)viewWillDisappear:(BOOL)animated {
-//	
-//}
-//- (void)didReceiveMemoryWarning {
-//	[super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
-//	// Release anything that's not essential, such as cached data
-//}
 #pragma mark Table view methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return 2;
+	return [AppSettingsDefinition getAppSettings].count - 1;
 }
 
 
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	if (section == 0) {
+	if (section == AUTO_DISCOVERY_SWITCH_SECTION || section == PANEL_IDENTITY_SECTION) {
 		return 1;
 	} else {
 		if (!autoDiscovery) {
@@ -345,13 +295,16 @@
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
-	if (section == 1) {
+	if (section == [self numberOfSectionsInTableView:tableView] - 1) {
 		return [NSString stringWithFormat:@"version:v%@",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
-	}
+	} 
 	return [AppSettingsDefinition getSectionFooterWithIndex:section];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+	if (section == PANEL_IDENTITY_SECTION) {
+		return [AppSettingsDefinition getSectionHeaderWithIndex:PANEL_IDENTITY_INDEX];
+	}
 	return [AppSettingsDefinition getSectionHeaderWithIndex:section];
 }
 
@@ -360,15 +313,20 @@
 	
 	static NSString *autoCellIdentifier = @"autoCell";
 	static NSString *serverCellIdentifier = @"serverCell";
+	static NSString *panelCellIdentifier = @"panelCell";
 	
 	UITableViewCell *autoCell = [tableView dequeueReusableCellWithIdentifier:autoCellIdentifier];
 	UITableViewCell *serverCell = [tableView dequeueReusableCellWithIdentifier:serverCellIdentifier];
+	UITableViewCell *panelCell = [tableView dequeueReusableCellWithIdentifier:panelCellIdentifier];
 	
 	if (autoCell == nil) {
 		autoCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:autoCellIdentifier] autorelease];
 	}
 	if (serverCell == nil) {
 		serverCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:serverCellIdentifier] autorelease];
+	}
+	if (panelCell == nil) {
+		panelCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:panelCellIdentifier] autorelease];
 	}
 	
 	if ([self isAutoDiscoverySection:indexPath]) {
@@ -380,7 +338,7 @@
 		autoCell.accessoryView = switchView;
 		[switchView release];
 		return autoCell;
-	} else {
+	} else if (indexPath.section == CONTROLLER_URLS_SECTION) {
 		if ([self isAddCustomServerRow:indexPath]) {
 			serverCell.textLabel.text = @"Add New Controller...";
 			serverCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -397,7 +355,13 @@
 			}
 		}
 		return serverCell;
-	}
+	} else if (indexPath.section == PANEL_IDENTITY_SECTION) {
+		panelCell.textLabel.text = [[AppSettingsDefinition getPanelIdentityDic] objectForKey:@"name"];
+		panelCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+		panelCell.selectionStyle = UITableViewCellSelectionStyleBlue;
+		return panelCell;
+	} 
+	return nil;
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -431,31 +395,28 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	//if (isEditing) {
-	//		if ([self isCustomServerSection:indexPath]) {
-	//			AddServerViewController *addServerViewController = [[AddServerViewController alloc]init];
-	//			addServerViewController.editingItem = [[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:indexPath.row];
-	//			[self.navigationController pushViewController:addServerViewController animated:YES];
-	//			[addServerViewController release];
-	//			return;
-	//		}
-	//		return;
-	//	} 
 	
-	
-	
-	if (indexPath.section == 0) {
+	if (indexPath.section == AUTO_DISCOVERY_SWITCH_SECTION) {
 		return;
 	}
 	
-	if([self isAddCustomServerRow:indexPath]) {
+	if ([self isAddCustomServerRow:indexPath]) {
 		AddServerViewController *addServerViewController = [[AddServerViewController alloc]init];
 		addServerViewController.editingItem = nil;
 		addServerViewController.servers = [self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery];
 		[[self navigationController] pushViewController:addServerViewController animated:YES];
 		[addServerViewController release];
 		return;
+	} else if (indexPath.section == PANEL_IDENTITY_SECTION) {
+		NSLog(@"select section %d", indexPath.section);
+		ChoosePanelViewController *choosePanelViewController = [[ChoosePanelViewController alloc]init];
+		//choosePanelViewController.editingItem = nil;
+//		choosePanelViewController.servers = [self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery];
+		[[self navigationController] pushViewController:choosePanelViewController animated:YES];
+		[choosePanelViewController release];
+		return;
 	}
+	
 	
 	
 	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
@@ -476,46 +437,6 @@
 	
 	currentSelectedServerIndex = indexPath;
 }
-
-
-/*
- // Override to support conditional editing of the table view.
- - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
- // Return NO if you do not want the specified item to be editable.
- return YES;
- }
- */
-
-
-/*
- // Override to support editing the table view.
- - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
- 
- if (editingStyle == UITableViewCellEditingStyleDelete) {
- // Delete the row from the data source
- [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:YES];
- }   
- else if (editingStyle == UITableViewCellEditingStyleInsert) {
- // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
- }   
- }
- */
-
-
-/*
- // Override to support rearranging the table view.
- - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
- }
- */
-
-
-/*
- // Override to support conditional rearranging of the table view.
- - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
- // Return NO if you do not want the item to be re-orderable.
- return YES;
- }
- */
 
 
 

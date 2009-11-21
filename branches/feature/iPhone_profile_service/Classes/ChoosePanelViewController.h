@@ -19,11 +19,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
 #import <UIKit/UIKit.h>
 
-@interface ActivitiesController : UITableViewController {
-	NSArray *activities;
+
+@interface ChoosePanelViewController : UITableViewController {
+
 }
 
 @end
