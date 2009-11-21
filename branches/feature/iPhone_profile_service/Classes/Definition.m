@@ -25,7 +25,6 @@
 #import "ServerDefinition.h"
 #import "DirectoryDefinition.h"
 #import "StringUtils.h"
-#import "Activity.h"
 #import "Group.h"
 #import "Screen.h"
 #import "Control.h"
