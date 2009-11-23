@@ -19,8 +19,10 @@
 */
 package org.openremote.controller.exception;
 
+import org.openremote.controller.Constants;
+
 /**
- * The exception class when controller.xml Not Found.
+ * The exception class when panel.xml Not Found.
  * 
  * @author Dan 2009-5-22
  */
@@ -31,8 +33,8 @@ public class PanelXMLNotFoundException extends ControlCommandException {
     * Instantiates a new controller xml not found exception.
     */
    public PanelXMLNotFoundException() {
-      super("*controller.xml* not found.");
-      setErrorCode(ControlCommandException.CONTROLLER_XML_NOT_FOUND);
+      super("*" + Constants.PANEL_XML + "* not found.");
+      setErrorCode(ControlCommandException.PANEL_XML_NOT_FOUND);
    }
 
    /**
@@ -42,8 +44,8 @@ public class PanelXMLNotFoundException extends ControlCommandException {
     * @param cause the cause
     */
    public PanelXMLNotFoundException(String message, Throwable cause) {
-      super("*controller.xml* not found." + message, cause);
-      setErrorCode(ControlCommandException.CONTROLLER_XML_NOT_FOUND);
+      super("*" + Constants.PANEL_XML + "* not found." + message, cause);
+      setErrorCode(ControlCommandException.PANEL_XML_NOT_FOUND);
    }
 
    /**
@@ -52,8 +54,8 @@ public class PanelXMLNotFoundException extends ControlCommandException {
     * @param message the message
     */
    public PanelXMLNotFoundException(String message) {
-      super("*controller.xml* not found." + message);
-      setErrorCode(ControlCommandException.CONTROLLER_XML_NOT_FOUND);
+      super("*" + Constants.PANEL_XML + "* not found." + message);
+      setErrorCode(ControlCommandException.PANEL_XML_NOT_FOUND);
    }
    
 
