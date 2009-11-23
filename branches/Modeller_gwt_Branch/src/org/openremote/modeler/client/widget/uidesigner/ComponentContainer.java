@@ -17,37 +17,34 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.client.widget.control;
-
-import org.openremote.modeler.domain.control.UIButton;
-import org.openremote.modeler.domain.control.UIControl;
-import org.openremote.modeler.domain.control.UISwitch;
+package org.openremote.modeler.client.widget.uidesigner;
 
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
 
 /**
- * ScreenControl as the component's super class.
+ * The parent of GridLayoutContainer and AbsoluteLayout. 
+ * A ComponentContainer is a container for screen canvas to store component. 
+ * @author Javen
+ *
  */
-public abstract class ScreenControl extends LayoutContainer {
+public class ComponentContainer extends LayoutContainer {
+   private ScreenCanvas screenCanvas = null;
+   public ComponentContainer(ScreenCanvas screenCanvas){
+      this.screenCanvas = screenCanvas;
+   }
+
+   public ScreenCanvas getScreenCanvas() {
+      return screenCanvas;
+   }
+
+   public void setScreenCanvas(ScreenCanvas screenCanvas) {
+      this.screenCanvas = screenCanvas;
+   }
    /**
-    * Sets the display name.
+    * hide the background for moving component. 
     */
-   public abstract void setName(String name);
-   
-   public abstract String getName();
-   
-   /**
-    * Builds the ScreenControl according to uiControl type.
-    */
-   public static ScreenControl build(UIControl uiControl) {
-      if (uiControl instanceof UIButton) {
-         return new ScreenButton((UIButton)uiControl);
-      } else if(uiControl instanceof UISwitch) {
-         return new ScreenSwitch((UISwitch)uiControl);
-      }
-      return null;
+   public void hideBackground(){
+      screenCanvas.hideBackground();
    }
    
-   public abstract FormPanel buildPropertiesForm();
 }

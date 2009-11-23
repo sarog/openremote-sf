@@ -294,4 +294,7 @@ public interface Icons extends ImageBundle {
    
    @Resource("panel.png")
    AbstractImagePrototype panelIcon();
+   
+   @Resource("panel.png")
+   AbstractImagePrototype gridIcon();
 }

@@ -19,22 +19,21 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
-import org.openremote.modeler.client.widget.control.ScreenControl;
+import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.domain.Absolute;
-
-import com.extjs.gxt.ui.client.widget.LayoutContainer;
 
 /**
  * A layout container act as absolute position in screen canvas.
  */
-public class AbsoluteLayoutContainer extends LayoutContainer {
-
+public class AbsoluteLayoutContainer extends ComponentContainer {
+   public static final String ABSOLUTE_DISTANCE_NAME = "distance";
    private Absolute absolute;
-   private ScreenControl screenControl;
+   private ScreenComponent screenControl;
    /**
     * Instantiates a new absolute layout container.
     */
-   public AbsoluteLayoutContainer(Absolute absolute, ScreenControl screenControl) {
+   public AbsoluteLayoutContainer(ScreenCanvas screenCanvas ,Absolute absolute, ScreenComponent screenControl) {
+      super(screenCanvas);
       addStyleName("cursor-move");
       setStyleAttribute("position", "absolute");
       this.absolute = absolute;
@@ -46,7 +45,7 @@ public class AbsoluteLayoutContainer extends LayoutContainer {
       return absolute;
    }
 
-   public ScreenControl getScreenControl() {
+   public ScreenComponent getScreenControl() {
       return screenControl;
    }
 
@@ -62,4 +61,5 @@ public class AbsoluteLayoutContainer extends LayoutContainer {
       super.setPosition(left, top);
       absolute.setPosition(left, top);
    }
+
 }

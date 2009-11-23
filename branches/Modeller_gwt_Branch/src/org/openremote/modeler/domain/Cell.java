@@ -19,7 +19,7 @@
 */
 package org.openremote.modeler.domain;
 
-import org.openremote.modeler.domain.control.UIControl;
+import org.openremote.modeler.domain.component.UIComponent;
 
 /**
  * The Class Cell.
@@ -46,7 +46,7 @@ public class Cell extends BusinessEntity {
    private int colspan;
    
    /** The ui control. */
-   private UIControl uiControl;
+   private UIComponent uiComponent;
    
    /**
     * Gets the pos x.
@@ -125,17 +125,17 @@ public class Cell extends BusinessEntity {
     * 
     * @return the ui control
     */
-   public UIControl getUiControl() {
-      return uiControl;
+   public UIComponent getUiComponent() {
+      return uiComponent;
    }
 
    /**
     * Sets the ui control.
     * 
-    * @param uiControl the new ui control
+    * @param uiComponent the new ui control
     */
-   public void setUiControl(UIControl uiControl) {
-      this.uiControl = uiControl;
+   public void setUiComponent(UIComponent uiComponent) {
+      this.uiComponent = uiComponent;
    }
 
 }

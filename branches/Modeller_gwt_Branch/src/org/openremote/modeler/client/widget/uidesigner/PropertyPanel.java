@@ -22,8 +22,7 @@ package org.openremote.modeler.client.widget.uidesigner;
 import org.openremote.modeler.client.event.WidgetSelectChangeEvent;
 import org.openremote.modeler.client.listener.WidgetSelectChangeListener;
 import org.openremote.modeler.client.utils.SelectedWidgetContainer;
-import org.openremote.modeler.client.widget.control.ScreenControl;
-import org.openremote.modeler.domain.control.UIControl;
+import org.openremote.modeler.client.widget.component.ScreenComponent;
 
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -71,14 +70,14 @@ public class PropertyPanel extends ContentPanel {
       if (!component.equals(currentLayoutContainer)) {
          if(component instanceof AbsoluteLayoutContainer) {
             AbsoluteLayoutContainer alc = (AbsoluteLayoutContainer) component;
-            ScreenControl screenControl = alc.getScreenControl();
-            UIControl uiControl =  alc.getAbsolute().getUiControl();
-            addPropertiesForm(screenControl, uiControl);
+            ScreenComponent screenControl = alc.getScreenControl();
+//            UIComponent uiComponent =  alc.getAbsolute().getUIComponent();
+            addPropertiesForm(screenControl);
          } else if (component instanceof GridCellContainer) {
             GridCellContainer gcc = (GridCellContainer) component;
-            ScreenControl screenControl = gcc.getScreenControl();
-            UIControl uiControl = gcc.getCell().getUiControl();
-            addPropertiesForm(screenControl, uiControl);
+            ScreenComponent screenControl = gcc.getScreenControl();
+//            UIControl uiControl = gcc.getCell().getUiControl();
+            addPropertiesForm(screenControl);
          }
          layout();
          currentLayoutContainer = component;
@@ -88,9 +87,9 @@ public class PropertyPanel extends ContentPanel {
 
    /**
     * @param screenControl
-    * @param uiControl
+    * @param uiComponent
     */
-   private void addPropertiesForm(ScreenControl screenControl, UIControl uiControl) {
+   private void addPropertiesForm(ScreenComponent screenControl) {
       if(currentPropertyForm != null) {
          currentPropertyForm.removeFromParent();
       }

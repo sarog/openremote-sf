@@ -23,9 +23,9 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.widget.control.ScreenButton;
-import org.openremote.modeler.client.widget.control.ScreenControl;
-import org.openremote.modeler.domain.control.UImage;
+import org.openremote.modeler.client.widget.component.ScreenButton;
+import org.openremote.modeler.client.widget.component.ScreenComponent;
+import org.openremote.modeler.domain.component.UImage;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BaseListLoader;
@@ -118,7 +118,7 @@ public class ChangeIconWindow extends Dialog {
     * 
     * @param screenButton the screen button
     */
-   public ChangeIconWindow(ScreenControl screenControl, UImage uImage) {
+   public ChangeIconWindow(ScreenComponent screenControl, UImage uImage) {
       createScreenControl(screenControl, uImage);
       window = this;
       if (screenControl.getWidth() > 90) {
@@ -419,7 +419,7 @@ public class ChangeIconWindow extends Dialog {
     * @param screenControl the screen control
     * @param uImage the u image
     */
-   private void createScreenControl(ScreenControl screenControl, UImage uImage) {
+   private void createScreenControl(ScreenComponent screenControl, UImage uImage) {
       screenButton = new ScreenButton(screenControl.getWidth(), screenControl.getHeight());
       screenButton.setName(screenControl.getName());
       if (uImage != null) {
