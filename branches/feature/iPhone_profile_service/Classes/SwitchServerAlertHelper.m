@@ -73,7 +73,7 @@
 -(void) switchToDiscoveredServer {
 	NSMutableArray *availableAutoServers = [AppSettingsDefinition getAutoServers];
 	[AppSettingsDefinition setAutoDiscovery:YES];
-	[[availableAutoServers objectAtIndex:0] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
+	[[[AppSettingsDefinition getAutoServers] objectAtIndex:0] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
 	[AppSettingsDefinition writeToFile];
 	NSString *availableAutoServerURL = [[availableAutoServers objectAtIndex:0] objectForKey:@"url"];
 	NSLog(@"Switching to %@ best autoServer, please wait.", availableAutoServerURL);
@@ -88,10 +88,14 @@
 -(void) switchToCustomizedServer {
 	NSMutableArray *availableCustomizedServers = [AppSettingsDefinition getCustomServers];
 	[AppSettingsDefinition setAutoDiscovery:NO];
-	[[availableCustomizedServers objectAtIndex:0] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
 	[AppSettingsDefinition writeToFile];
-	NSString *availableCustomizedServerURL = [[availableCustomizedServers objectAtIndex:0] objectForKey:@"url"];
-	NSLog(@"Switching to %@ best customizedServer, please wait.", availableCustomizedServerURL);
+	for(int i=0; i<availableCustomizedServers.count; i++) {
+		if([[[availableCustomizedServers objectAtIndex:i] objectForKey:@"choose"] boolValue]) {
+			NSString *availableCustomizedServerURL = [[availableCustomizedServers objectAtIndex:i] objectForKey:@"url"];
+			NSLog(@"Switching to %@ best customizedServer, please wait.", availableCustomizedServerURL);
+			break;
+		}
+	}	
 	if (updateController) {
 		[updateController release];
 		updateController = nil;
@@ -102,7 +106,7 @@
 
 #pragma mark Delegate method of UIAlertView
 
--(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {	
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (buttonIndex == 0 && [[alertView title] isEqualToString:@"switch to discovered server"]) {
 		[self switchToDiscoveredServer];
 	} else if (buttonIndex == 0 && [[alertView title] isEqualToString:@"switch to customized server"]) {
