@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 /**
@@ -46,6 +47,8 @@ public class Screen extends BusinessEntity {
    
    /** The absolutes. */
    private List<Absolute> absolutes = new ArrayList<Absolute>();
+   
+   private List<UIGrid> grids = new ArrayList<UIGrid>();
    
    /** The touch panel definition. */
    private TouchPanelDefinition touchPanelDefinition;
@@ -70,7 +73,10 @@ public class Screen extends BusinessEntity {
    public Grid getGrid() {
       return grid;
    }
-
+   
+   public UIGrid getGrid(int index){
+      return grids.size()>0?grids.get(index):null;
+   }
    /**
     * Gets the absolutes.
     * 
@@ -205,8 +211,26 @@ public class Screen extends BusinessEntity {
    }
    
    public void removeAbsolute(Absolute absolute) {
-      if (absoluteLayout && this.absolutes.size() > 0) {
+      if (this.absolutes.size() > 0) {
          this.absolutes.remove(absolute);
+      }
+   }
+
+   public List<UIGrid> getGrids() {
+      return grids;
+   }
+
+   public void setGrids(List<UIGrid> grids) {
+      this.grids = grids;
+   }
+   
+   public void addGrid(UIGrid grid){
+      grids.add(grid);
+   }
+   
+   public void removeGrid(UIGrid grid) {
+      if (grids.size() > 0) {
+         this.grids.remove(grid);
       }
    }
 }

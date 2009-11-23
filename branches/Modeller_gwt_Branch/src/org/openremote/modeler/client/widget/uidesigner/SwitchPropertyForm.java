@@ -21,14 +21,14 @@ package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
-import org.openremote.modeler.client.widget.control.ScreenSwitch;
+import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.UICommand;
-import org.openremote.modeler.domain.control.UISwitch;
-import org.openremote.modeler.domain.control.UImage;
+import org.openremote.modeler.domain.component.UISwitch;
+import org.openremote.modeler.domain.component.UImage;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;

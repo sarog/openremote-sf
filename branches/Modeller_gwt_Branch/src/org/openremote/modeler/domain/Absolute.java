@@ -19,7 +19,7 @@
 */
 package org.openremote.modeler.domain;
 
-import org.openremote.modeler.domain.control.UIControl;
+import org.openremote.modeler.domain.component.UIComponent;
 
 /**
  * The Class Absolute.
@@ -40,7 +40,7 @@ public class Absolute extends BusinessEntity {
    private int height;
    
    /** The ui control. */
-   private UIControl uiControl;
+   private UIComponent uiComponent;
    
    public Absolute() {
       super();
@@ -127,8 +127,8 @@ public class Absolute extends BusinessEntity {
     * 
     * @return the ui control
     */
-   public UIControl getUiControl() {
-      return uiControl;
+   public UIComponent getUIComponent() {
+      return uiComponent;
    }
 
    /**
@@ -136,8 +136,8 @@ public class Absolute extends BusinessEntity {
     * 
     * @param uiControl the new ui control
     */
-   public void setUiControl(UIControl uiControl) {
-      this.uiControl = uiControl;
+   public void setUIComponent(UIComponent uiComponent) {
+      this.uiComponent = uiComponent;
    }
 
    public void setSize(int width, int height) {

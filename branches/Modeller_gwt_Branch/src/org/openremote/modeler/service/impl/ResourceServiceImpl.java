@@ -50,12 +50,13 @@ import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ProtocolAttr;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.UICommand;
-import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.control.UIButton;
-import org.openremote.modeler.domain.control.UIControl;
-import org.openremote.modeler.domain.control.UISwitch;
+import org.openremote.modeler.domain.component.UIButton;
+import org.openremote.modeler.domain.component.UIComponent;
+import org.openremote.modeler.domain.component.UIControl;
+import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.XmlParserException;
 import org.openremote.modeler.service.DeviceCommandService;
@@ -160,11 +161,11 @@ public class ResourceServiceImpl implements ResourceService {
       for (Screen screen : screens) {
          if (screen.isAbsoluteLayout()) {
             for (Absolute absolute : screen.getAbsolutes()) {
-               absolute.getUiControl().transImagePathToRelative(rerlativeSessionFolderPath);
+               absolute.getUIComponent().transImagePathToRelative(rerlativeSessionFolderPath);
             }
          } else {
             for (Cell cell : screen.getGrid().getCells()) {
-               cell.getUiControl().transImagePathToRelative(rerlativeSessionFolderPath);
+               cell.getUiComponent().transImagePathToRelative(rerlativeSessionFolderPath);
             }
          }
       }
@@ -379,11 +380,11 @@ public class ResourceServiceImpl implements ResourceService {
       for (Screen screen : screenList) {
          if (screen.isAbsoluteLayout()) {
             for (Absolute absolute : screen.getAbsolutes()) {
-               uiControlsXml.append(getControlXmlContent(absolute.getUiControl(), protocolEventContainer));
+               uiControlsXml.append(getControlXmlContent(absolute.getUIComponent(), protocolEventContainer));
             }
          } else {
             for (Cell cell : screen.getGrid().getCells()) {
-               uiControlsXml.append(getControlXmlContent(cell.getUiControl(), protocolEventContainer));
+               uiControlsXml.append(getControlXmlContent(cell.getUiComponent(), protocolEventContainer));
             }
          }
       }
@@ -401,16 +402,16 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the events from button
     */
-   private String getControlXmlContent(UIControl uiControl, ProtocolEventContainer protocolEventContainer) {
+   private String getControlXmlContent(UIComponent uiComponent, ProtocolEventContainer protocolEventContainer) {
       StringBuffer uiControlXml = new StringBuffer();
-      if (uiControl instanceof UIButton) {
-         uiControlXml.append("    <button id=\"" + uiControl.getOid() + "\">\n");
-         UICommand uiCommand = ((UIButton) uiControl).getUiCommand();
+      if (uiComponent instanceof UIButton) {
+         uiControlXml.append("    <button id=\"" + uiComponent.getOid() + "\">\n");
+         UICommand uiCommand = ((UIButton) uiComponent).getUiCommand();
          generateCommandXmlString(protocolEventContainer, uiControlXml, uiCommand);
          uiControlXml.append("    </button>\n");
-      } else if (uiControl instanceof UISwitch) {
-         uiControlXml.append("    <switch id=\"" + uiControl.getOid() + "\">\n");
-         UISwitch uiSwitch = (UISwitch) uiControl;
+      } else if (uiComponent instanceof UISwitch) {
+         uiControlXml.append("    <switch id=\"" + uiComponent.getOid() + "\">\n");
+         UISwitch uiSwitch = (UISwitch) uiComponent;
          uiControlXml.append("     <on>\n");
          generateCommandXmlString(protocolEventContainer, uiControlXml, uiSwitch.getOnCommand());
          uiControlXml.append("     </on>\n");
@@ -543,7 +544,7 @@ public class ResourceServiceImpl implements ResourceService {
             for (Absolute absolute : screen.getAbsolutes()) {
                xmlContent.append("      <absolute left=\"" + absolute.getLeft() + "\" top=\"" + absolute.getTop()
                      + "\" width=\"" + absolute.getWidth() + "\" height=\"" + absolute.getHeight() + "\">\n");
-               xmlContent.append(absolute.getUiControl().getPanelXml());
+               xmlContent.append(absolute.getUIComponent().getPanelXml());
                xmlContent.append("      </absolute>\n");
             }
          } else {
@@ -554,7 +555,7 @@ public class ResourceServiceImpl implements ResourceService {
             for (Cell cell : grid.getCells()) {
                xmlContent.append("       <cell x=\"" + cell.getPosX() + "\" y=\"" + cell.getPosY() + "\" rowspan=\""
                      + cell.getRowspan() + "\" colspan=\"" + cell.getColspan() + "\">\n");
-               xmlContent.append(cell.getUiControl().getPanelXml());
+               xmlContent.append(cell.getUiComponent().getPanelXml());
                xmlContent.append("       </cell>\n");
             }
             xmlContent.append("      </grid>\n");
@@ -596,17 +597,21 @@ public class ResourceServiceImpl implements ResourceService {
       for (Screen screen : screenList) {
          if (screen.isAbsoluteLayout()) {
             for (Absolute absolute : screen.getAbsolutes()) {
-               for (UICommand command : absolute.getUiControl().getCommands()) {
-                  if (command instanceof DeviceMacroItem) {
-                     sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem) command));
+               if(absolute.getUIComponent() instanceof UIControl){
+                  for (UICommand command : ((UIControl)absolute.getUIComponent()).getCommands()) {
+                     if (command instanceof DeviceMacroItem) {
+                        sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem) command));
+                     }
                   }
                }
             }
          } else {
             for (Cell cell : screen.getGrid().getCells()) {
-               for (UICommand command : cell.getUiControl().getCommands()) {
-                  if (command instanceof DeviceMacroItem) {
-                     sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem) command));
+               if(cell.getUiComponent() instanceof UIControl ){
+                  for (UICommand command : ((UIControl)cell.getUiComponent()).getCommands()) {
+                     if (command instanceof DeviceMacroItem) {
+                        sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem) command));
+                     }
                   }
                }
             }

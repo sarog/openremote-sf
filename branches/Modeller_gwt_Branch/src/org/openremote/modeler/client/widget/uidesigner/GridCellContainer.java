@@ -19,22 +19,22 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
-import org.openremote.modeler.client.widget.control.ScreenControl;
+import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.domain.Cell;
-
-import com.extjs.gxt.ui.client.widget.LayoutContainer;
 
 /**
  * The Class GridCellContainer.
  */
-public class GridCellContainer extends LayoutContainer {
+public class GridCellContainer extends ComponentContainer {
 
    private Cell cell;
-   private ScreenControl screenControl;
+   private ScreenComponent screenControl;
    
-   public GridCellContainer() {
+   public GridCellContainer(ScreenCanvas canvas) {
+      super(canvas);
    }
-   public GridCellContainer(Cell cell, ScreenControl screenControl) {
+   public GridCellContainer(ScreenCanvas canvas,Cell cell, ScreenComponent screenControl) {
+      super(canvas);
       this.cell = cell;
       this.screenControl = screenControl;
       addStyleName("cursor-move");
@@ -46,7 +46,7 @@ public class GridCellContainer extends LayoutContainer {
       return cell;
    }
 
-   public ScreenControl getScreenControl() {
+   public ScreenComponent getScreenControl() {
       return screenControl;
    }
    
