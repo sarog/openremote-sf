@@ -20,35 +20,23 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "ServerAutoDiscoveryController.h"
 
-#define AUTO_DISCOVERY_SWITCH_INDEX 0
-#define AUTO_DISCOVERY_URLS_INDEX 1
-#define CUSOMIZED_URLS_INDEX 2
-#define PANEL_IDENTITY_INDEX 3
+#define CMD_BUILDER_ERROR         418
+#define NO_SUCH_BUTTON            419
+#define NO_SUCH_CMD_BUILDER       420
+#define INVALID_COMMAND_TYPE      421
+#define CONTROLLER_XML_NOT_FOUND  422
+#define NO_SUCH_CMD               423
+#define INVALID_CONTROLLER_XML    424
+#define INVALID_POLLING_URL       425
+#define PANEL_XML_NOT_FOUND       426
+#define INVALID_PANEL_XML         427
+#define NO_SUCH_PANEL             428
+#define INVALID_ELEMENT           429
 
-@interface AppSettingsDefinition : NSObject {
+
+@interface ControllerException : NSObject {
 
 }
-+ (void)reloadData;
-+ (NSMutableArray *)getAppSettings;
-+(NSMutableDictionary *)getSectionWithIndex:(int)index;
-+ (NSString *)getSectionHeaderWithIndex:(int)index;
-+ (NSString *)getSectionFooterWithIndex:(int)index;
-+ (NSMutableDictionary *)getAutoDiscoveryDic;
-+ (BOOL)isAutoDiscoveryEnable;
-+ (void)setAutoDiscovery:(BOOL)on;
-+ (NSMutableArray *)getAutoServers;
-+ (NSMutableArray *)getCustomServers;
-+ (NSString *)getCurrentServerUrl;
-+ (BOOL)readServerUrlFromFile;
-+ (void)setCurrentServerUrl:(NSString *)url;
-+ (void)addAutoServer:(NSDictionary *)server;
-+ (void)writeToFile;
-+ (void)removeAllAutoServer;
-+ (void)writeToFile;
-
-+ (NSMutableDictionary *)getPanelIdentityDic;
-+ (NSString *)getCurrentPanelIdentity;
 
 @end

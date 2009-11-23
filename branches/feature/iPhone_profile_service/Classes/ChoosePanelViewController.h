@@ -23,7 +23,10 @@
 
 
 @interface ChoosePanelViewController : UITableViewController {
-
+	
+	NSMutableArray *panels;
+	NSIndexPath *currentSelectedPanelIndex;
+	NSString *chosenPanel;
 }
 
 @end

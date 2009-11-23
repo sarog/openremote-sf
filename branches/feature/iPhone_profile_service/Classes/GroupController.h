@@ -22,11 +22,13 @@
 #import <UIKit/UIKit.h>
 #import "Group.h"
 #import "PaginationController.h"
+#import "ErrorViewController.h"
 
 @interface GroupController : UIViewController {
 
 	Group *group;
 	PaginationController *paginationController;
+	ErrorViewController *errorViewController;
 	
 }
 
@@ -39,6 +41,5 @@
 - (int)currentScreenId;
 
 @property (nonatomic, retain) Group *group;
-@property (nonatomic, readonly) PaginationController *paginationController;
 
 @end

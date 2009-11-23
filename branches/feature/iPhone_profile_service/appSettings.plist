@@ -46,7 +46,7 @@
 			<key>name</key>
 			<string>Panel</string>
 			<key>identity</key>
-			<string>No Panel</string>
+			<string>None</string>
 		</dict>
 		<key>footer</key>
 		<string></string>

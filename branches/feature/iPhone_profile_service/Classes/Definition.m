@@ -172,20 +172,8 @@ static Definition *myInstance = nil;
 
 - (void)parseXml {
 	NSLog(@"start parse xml");
-	if (groups) {
-		[groups release];
-	}
-	groups = [[NSMutableArray alloc] init];
 	
-	if (screens) {
-		[screens release];
-	}
-	screens = [[NSMutableArray alloc] init];
-
-	if (imageNames) {
-		[imageNames release];
-	}
-	imageNames = [[NSMutableArray alloc] init];
+	[self clearPanelXMLData];
 	
 	NSData *data = [[NSData alloc] initWithContentsOfFile:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlUrl]]]];
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
@@ -226,7 +214,7 @@ static Definition *myInstance = nil;
 	if ([elementName isEqualToString:@"screen"]) {
 		NSLog(@"start at screen");
 		Screen *screen = [[Screen alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		[screens addObject:screen];
+		[screens addObject:[screen retain]];
 		[screen release];
 	} else if ([elementName isEqualToString:@"group"]) {
 		NSLog(@"start at group");

@@ -29,6 +29,6 @@
 + (void)checkWhetherNetworkAvailable;
 + (void)checkIPAddress;
 + (void)checkControllerAvailable;
-+ (void)checkXmlExist;
++ (void)checkPanelXml;
 + (void)checkAll;
 @end

@@ -24,7 +24,8 @@
 #import "Reachability.h"
 #import "ServerDefinition.h"
 #import "CheckNetworkException.h"
-
+#import "ControllerException.h"
+#import "AppSettingsDefinition.h"
 
 @implementation CheckNetwork
 +(void)checkWhetherNetworkAvailable {
@@ -74,7 +75,7 @@
 	}
 }
 
-+ (void)checkXmlExist {
++ (void)checkPanelXml {
 	@try {
 		[CheckNetwork checkControllerAvailable];
 	}
@@ -88,15 +89,23 @@
 	[NSURLConnection sendSynchronousRequest:request returningResponse:&resp error:NULL];
 	
 	[request release];
+
 	if ([resp statusCode] != 200 ){
-		@throw [CheckNetworkException exceptionWithTitle:@"Can't find xml resource" 
-													  message:@"Please check that the panel.xml file has been correctly deployed on the controller."];
+		if ([resp statusCode] == PANEL_XML_NOT_FOUND) {
+			@throw [CheckNetworkException exceptionWithTitle:@"" message:@"panel.xml not found in Controller."];
+		} else if ([resp statusCode] == INVALID_PANEL_XML) {
+			@throw [CheckNetworkException exceptionWithTitle:@"" message:@"Invalid panel.xml."];
+		} else if ([resp statusCode] == NO_SUCH_PANEL) {
+			NSString *msg = [NSString stringWithFormat:@"No such panel identity : %@", [AppSettingsDefinition getCurrentPanelIdentity]];
+			@throw [CheckNetworkException exceptionWithTitle:@"" message:msg];
+		} 
+		
 	}
 }
 
 + (void)checkAll {
 	@try {
-		[CheckNetwork checkXmlExist];
+		[CheckNetwork checkPanelXml];
 	}
 	@catch (NSException * e) {
 		@throw e;

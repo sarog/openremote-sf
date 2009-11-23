@@ -36,6 +36,7 @@ NSString *const NotificationPollingStatusIdFormat = @"polling_status_%d";
 NSString *const NotificationNavigateTo = @"navigateToNotification";
 NSString *const NotificationPopulateCredentialView = @"NotificationPopulateCredentialView";
 NSString *const NotificationPopulateSettingsView = @"NotificationPopulateSettingsView";
+NSString *const NotificationNavigateBack = @"NotificationNavigateBack";
 
 
 @end

@@ -32,7 +32,6 @@
 #import "Definition.h"
 #import "InitViewController.h"
 #import "UpdateController.h"
-#import "ViewHelper.h"
 #import "Navigate.h"
 #import "NotificationConstant.h"
 #import	"LoginViewController.h"
@@ -40,6 +39,7 @@
 #import "DataBaseService.h"
 #import "User.h"
 #import "LogoutHelper.h"
+#import "ErrorViewController.h"
 
 //Private method declare
 @interface AppDelegate (Private)
@@ -56,9 +56,10 @@
 - (BOOL)navigateToPreviousScreen;
 - (BOOL)navigateToNextScreen;
 - (void)logout;
-- (void)navigateBackwardInHistory;
+- (void)navigateBackwardInHistory:(id)sender;
 - (BOOL)navigateTo:(Navigate *)navi;
 - (void)navigateToWithHistory:(Navigate *)navi;
+- (void)initGroups;
 @end
 
 @implementation AppDelegate
@@ -69,10 +70,12 @@
 	window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	[window makeKeyAndVisible];
 	
+	defaultViewController = [[UIViewController alloc] init];
 	// Create a default view that won't be overlapped by status bar.
 	// status bar is 20px high and on the top of window.
 	// all the visible view contents will be shown inside this container.
 	defaultView = [[UIView alloc] initWithFrame:CGRectMake(0, 20, 320, 460) ];
+	[defaultViewController setView:defaultView];
 	[window addSubview:defaultView];
 	
 	//Init the loading view
@@ -88,6 +91,7 @@
 	groupControllers = [[NSMutableArray alloc] init]; 
 	groupViewMap = [[NSMutableDictionary alloc] init];
 	navigationHistory = [[NSMutableArray alloc] init];
+	alert = [[ViewHelper alloc] init];
 	
 	// Load logined iphone user last time.
 	DataBaseService *dbService = [DataBaseService sharedDataBaseService];
@@ -100,40 +104,51 @@
 // this method will be called after UpdateController give a callback.
 - (void)updateDidFinished {
 	NSLog(@"----------updateDidFinished------");
-	[initViewController.view removeFromSuperview];
-	NSArray *groups = [[Definition sharedDefinition] groups];
 	
-	GroupController *defaultGroupController = nil;
-	if (groups.count > 0) {
-		GroupController *gc = [[GroupController alloc] initWithGroup:((Group *)[groups objectAtIndex:0])];
-		[groupControllers addObject:gc];
-		[groupViewMap setObject:gc.view forKey:[NSString stringWithFormat:@"%d", gc.group.groupId]];
-		defaultGroupController = gc;	
-	}
-
-	//navigationController = [[UINavigationController alloc] initWithRootViewController:defaultGroupController];
-	//[window addSubview:navigationController.view];
-	currentGroupController = defaultGroupController;
-	[defaultView addSubview:defaultGroupController.view];
-	//[defaultGroupController release];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateFromNotification:) name:NotificationNavigateTo object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateSettingsView:) name:NotificationPopulateSettingsView object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView:) name:NotificationRefreshGroupsView object:nil];	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateToScreen:) name:NotificationRefreshGroupsView object:nil];	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateBackwardInHistory:) name:NotificationNavigateBack object:nil];	
+	
+	
+	[initViewController.view removeFromSuperview];
+	
+	[self initGroups];
+
+}
+
+- (void)initGroups {
+	NSArray *groups = [[Definition sharedDefinition] groups];
+	
+	if (groups.count > 0) {
+		GroupController *gc = [[GroupController alloc] initWithGroup:((Group *)[groups objectAtIndex:0])];
+		[groupControllers addObject:gc];
+		[groupViewMap setObject:gc.view forKey:[NSString stringWithFormat:@"%d", gc.group.groupId]];	
+		currentGroupController = gc;
+		[defaultView addSubview:currentGroupController.view];
+	} else {		
+		errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" message:@"Please associate screens with group or reset setting."];
+		[defaultView addSubview:errorViewController.view];		
+	}
 	
 }
 
 - (void)navigateFromNotification:(NSNotification *)notification {
-	
-	Navigate *navi = (Navigate *)[notification object];
-	[self navigateToWithHistory:navi];
-	
+	if (notification) {
+		Navigate *navi = (Navigate *)[notification object];
+		[self navigateToWithHistory:navi];
+	}
 }
 
-- (void)navigateToWithHistory:(Navigate *)navi {	
-	navi.fromGroup = currentGroupController.group.groupId;
-	navi.fromScreen = [currentGroupController currentScreenId];
+- (void)navigateToWithHistory:(Navigate *)navi {
+	if (currentGroupController.group) {
+		navi.fromGroup = currentGroupController.group.groupId;
+		navi.fromScreen = [currentGroupController currentScreenId];
+	} else {
+		return;
+	}
 	
 	if ([self navigateTo:navi]) {
 		[navigationHistory addObject:navi];
@@ -169,7 +184,7 @@
 	}
 	
 	else if (navi.isBack) {										//toBack
-		[self navigateBackwardInHistory]; 
+		[self navigateBackwardInHistory:nil]; 
 		return NO;
 	} 
 	
@@ -264,7 +279,7 @@
 	}	
 }
 
-- (void)navigateBackwardInHistory {
+- (void)navigateBackwardInHistory:(id)sender {
 	if (navigationHistory.count > 0) {		
 		Navigate *backward = (Navigate *)[navigationHistory lastObject];
 		if (backward.toGroup > 0 || backward.toScreen > 0 || backward.isPreviousScreen || backward.isNextScreen) {
@@ -294,7 +309,7 @@
 - (void)populateLoginView:(id)sender {
 	LoginViewController *loginController = [[LoginViewController alloc]init];
 	UINavigationController *loginNavController = [[UINavigationController alloc] initWithRootViewController:loginController];
-	[currentGroupController presentModalViewController:loginNavController animated:YES];
+	[defaultViewController presentModalViewController:loginNavController animated:YES];
 	[loginController release];
 	[loginNavController release];
 }
@@ -303,10 +318,9 @@
 - (void)populateSettingsView:(id)sender {
 	AppSettingController *settingController = [[AppSettingController alloc]init];
 	UINavigationController *settingNavController = [[UINavigationController alloc] initWithRootViewController:settingController];
-	[currentGroupController presentModalViewController:settingNavController animated:YES];
+	[defaultViewController presentModalViewController:settingNavController animated:YES];
 	[settingController release];
 	[settingNavController release];
-
 }
 
 - (void)refreshView:(id)sender {
@@ -315,20 +329,12 @@
 	}
 	[groupControllers removeAllObjects];
 	[groupViewMap removeAllObjects];
-	[currentGroupController stopPolling];
+	if (currentGroupController) {
+		[currentGroupController stopPolling];
+	}
 	currentGroupController = nil;
 	
-	GroupController *defaultGroupController = nil;
-	NSArray *groups = [[Definition sharedDefinition] groups];
-	if (groups.count > 0) {
-		GroupController *gc = [[GroupController alloc] initWithGroup:((Group *)[groups objectAtIndex:0])];
-		[groupControllers addObject:gc];
-		[groupViewMap setObject:gc.view forKey:[NSString stringWithFormat:@"%d", gc.group.groupId]];
-		defaultGroupController = gc;	
-	}
-	
-	currentGroupController = defaultGroupController;
-	[defaultView addSubview:defaultGroupController.view];
+	[self initGroups];
 	
 }
 
@@ -340,22 +346,24 @@
 
 - (void)didUseLocalCache:(NSString *)errorMessage {	
 	[self updateDidFinished];
-	[[ViewHelper alloc] showAlertViewWithTitleAndSettingNavigation:@"Warning" Message:[errorMessage stringByAppendingString:@" Using cached content."]];
+	[alert showAlertViewWithTitleAndSettingNavigation:@"Warning" Message:[errorMessage stringByAppendingString:@" Using cached content."]];
 }
 
 - (void)didUpdateFail:(NSString *)errorMessage {
-	[ViewHelper showAlertViewWithTitle:@"Warning" Message:errorMessage];
 	[self updateDidFinished];
+	[alert showAlertViewWithTitleAndSettingNavigation:@"Warning" Message:errorMessage];
 }
 
 - (void)dealloc {
 	[updateController release];
 	[defaultView release];
-	[navigationController release];
+	[defaultViewController release];
 	[groupControllers release];
 	[window release];
 	[groupViewMap release];
 	[navigationHistory release];
+	[errorViewController release];
+	[alert release];
 	
 	[super dealloc];
 }
