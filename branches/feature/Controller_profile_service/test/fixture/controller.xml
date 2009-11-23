@@ -3,68 +3,68 @@
 	<controls>
 		<switch id="1">
 			<on>
-			    <command ref="100" />
+			    <include type="command" ref="100" />
 			</on>
 			<off>
-			    <command ref="99" />
+			    <include type="command" ref="99" />
 			</off>
 			<status>
-			    <command ref="98" />
+			    <include type="command" ref="98" />
 			</status>
 		</switch>
 		<switch id="2">
 			<on>
-			    <command ref="100" />
+			    <include type="command" ref="100" />
 			</on>
 			<off>
-			    <command ref="99" />
+			    <include type="command" ref="99" />
 			</off>
 			<status>
-			    <command ref="98" />
+			    <include type="command" ref="98" />
 			</status>
 		</switch>
 		<switch id="3">
 			<on>
-			    <command ref="100" />
+			    <include type="command" ref="100" />
 			</on>
 			<off>
-			    <command ref="99" />
+			    <include type="command" ref="99" />
 			</off>
 			<status>
-			    <command ref="98" />
+			    <include type="command" ref="98" />
 			</status>
 		</switch>
 		<switch id="4">
 			<on>
-			    <command ref="100" />
+			    <include type="command" ref="100" />
 			</on>
 			<off>
-			    <command ref="99" />
+			    <include type="command" ref="99" />
 			</off>
 			<status>
-			    <command ref="98" />
+			    <include type="command" ref="98" />
 			</status>
 		</switch>
 		<monitor id="5">
 			<status>
-				<command ref="10"/>
+				<include type="command" ref="10"/>
 			</status>
 		</monitor>
 		<label id="6">
 			<status>
-				<command ref="10"/>
+				<include type="command" ref="10"/>
 			</status>
 		</label>
 		<gesture id="7" type = "swipe-bottom-to-top">
-			<command ref= "100"/>
-			<command ref= "99"/>
+			<include type="command" ref= "100"/>
+			<include type="command" ref= "99"/>
 		</gesture>
 		<slider id="8">
 			<exe>
-			    <command ref="97" />
+			    <include type="command" ref="97" />
 			</exe>
 			<status>
-			    <command ref="96" />
+			    <include type="command" ref="96" />
 			</status>
 		</slider>
 	</controls>

@@ -58,7 +58,7 @@ public class SliderBuilder extends ControlBuilder {
          if (commandParam.equalsIgnoreCase(operationElement.getName()) && Control.STATUS_ELEMENT_NAME.equals(operationElement.getName())) {
             Element statusCommandRefElement = (Element) operationElement.getChildren().get(0);
             String statusCommandID = statusCommandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-            Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(statusCommandID);
+            Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(controlElement.getDocument(),statusCommandID);
             if (statusCommandElement != null) {
                StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
                slider.setStatus(new Status(statusCommand));
@@ -72,7 +72,7 @@ public class SliderBuilder extends ControlBuilder {
          if (Slider.EXE_CONTENT_ELEMENT_NAME.equalsIgnoreCase(operationElement.getName())) {
             Element commandRefElement = (Element) operationElement.getChildren().get(0);
             String commandID = commandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-            Element commandElement = remoteActionXMLParser.queryElementFromXMLById(commandID);
+            Element commandElement = remoteActionXMLParser.queryElementFromXMLById(controlElement.getDocument(),commandID);
             commandElement.setText(commandParam);
             Command command = commandFactory.getCommand(commandElement);
             slider.addExecutableCommand((ExecutableCommand) command);

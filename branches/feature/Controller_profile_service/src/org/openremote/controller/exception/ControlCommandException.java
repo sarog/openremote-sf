@@ -28,7 +28,7 @@ package org.openremote.controller.exception;
 public class ControlCommandException extends RuntimeException {
    
    /** The Constant EVENT_BUILDER_ERROR. */
-   public final static int EVENT_BUILDER_ERROR = 418;
+   public final static int COMMAND_BUILDER_ERROR = 418;
    
    /** The Constant NO_SUCH_BUTTON. */
    public final static int NO_SUCH_BUTTON = 419;
@@ -43,7 +43,7 @@ public class ControlCommandException extends RuntimeException {
    public final static int CONTROLLER_XML_NOT_FOUND = 422;
    
    /** The Constant NO_SUCH_EVENT. */
-   public final static int NO_SUCH_EVENT = 423;
+   public final static int NO_SUCH_COMMAND = 423;
    
    /** The Constant INVALID_CONTROLLER_XML. */
    public final static int INVALID_CONTROLLER_XML = 424;

@@ -32,7 +32,7 @@ public class NoSuchCommandException extends ControlCommandException {
     */
    public NoSuchCommandException() {
       super();
-      setErrorCode(ControlCommandException.NO_SUCH_EVENT);
+      setErrorCode(ControlCommandException.NO_SUCH_COMMAND);
    }
 
    /**
@@ -43,7 +43,7 @@ public class NoSuchCommandException extends ControlCommandException {
     */
    public NoSuchCommandException(String message, Throwable cause) {
       super(message, cause);
-      setErrorCode(ControlCommandException.NO_SUCH_EVENT);
+      setErrorCode(ControlCommandException.NO_SUCH_COMMAND);
    }
 
    /**
@@ -53,7 +53,7 @@ public class NoSuchCommandException extends ControlCommandException {
     */
    public NoSuchCommandException(String message) {
       super(message);
-      setErrorCode(ControlCommandException.NO_SUCH_EVENT);
+      setErrorCode(ControlCommandException.NO_SUCH_COMMAND);
    }
 
 }

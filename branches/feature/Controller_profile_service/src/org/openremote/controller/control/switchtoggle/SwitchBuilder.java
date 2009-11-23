@@ -52,7 +52,7 @@ public class SwitchBuilder extends ControlBuilder {
          if (commandParam.equalsIgnoreCase(operationElement.getName()) && Control.STATUS_ELEMENT_NAME.equals(operationElement.getName())) {
             Element statusCommandRefElement = (Element) operationElement.getChildren().get(0);
             String statusCommandID = statusCommandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-            Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(statusCommandID);
+            Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(controlElement.getDocument(),statusCommandID);
             if (statusCommandElement != null) {
                StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
                switchToggle.setStatus(new Status(statusCommand));
@@ -65,7 +65,7 @@ public class SwitchBuilder extends ControlBuilder {
             List<Element> commandRefElements = operationElement.getChildren();
             for (Element commandRefElement : commandRefElements) {
                String commandID = commandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-               Element commandElement = remoteActionXMLParser.queryElementFromXMLById(commandID);
+               Element commandElement = remoteActionXMLParser.queryElementFromXMLById(controlElement.getDocument(),commandID);
                Command command = commandFactory.getCommand(commandElement);
                switchToggle.addExecutableCommand((ExecutableCommand) command);
             }      
