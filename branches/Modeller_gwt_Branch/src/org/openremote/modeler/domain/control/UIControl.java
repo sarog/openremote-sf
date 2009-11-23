@@ -17,18 +17,17 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.domain.control;
+package org.openremote.modeler.domain.component;
 
 import java.util.List;
 
-import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.UICommand;
 
 /**
  * UIControl act as all domain component's super class.
  */
 @SuppressWarnings("serial")
-public abstract class UIControl extends BusinessEntity {
+public abstract class UIControl extends UIComponent {
 
    public UIControl() {
       super();
@@ -44,10 +43,5 @@ public abstract class UIControl extends BusinessEntity {
    
    public abstract List<UICommand> getCommands();
    
-   public abstract void transImagePathToRelative(String relativeSessionFolderPath);
-   
-   /**
-    * Generate the xml content which used in panel.xml
-    */
-   public abstract String getPanelXml();
+  
 }

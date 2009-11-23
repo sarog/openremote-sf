@@ -19,50 +19,30 @@
 */
 package org.openremote.modeler.domain.component;
 
+import org.openremote.modeler.domain.BusinessEntity;
 
 /**
- * The Class UImage.
+ * parent for UIButton,UISwich,UIGrid... 
+ * @author Javen
+ *
  */
 @SuppressWarnings("serial")
-public class UImage extends UIComponent {
+public abstract class UIComponent extends BusinessEntity {
+   public UIComponent() {
+   }
 
-   private String src;
-   private String state;
-   private int border;
-   public UImage() {
+   public UIComponent(long id) {
+      super(id);
    }
-   public UImage(String src) {
-      this.src = src;
+
+   public String getName() {
+      return "UIComponent";
    }
-   
-   public String getSrc() {
-      return src;
-   }
-   public String getState() {
-      return state;
-   }
-   public int getBorder() {
-      return border;
-   }
-   public void setSrc(String src) {
-      this.src = src;
-   }
-   public void setState(String state) {
-      this.state = state;
-   }
-   public void setBorder(int border) {
-      this.border = border;
-   }
-   @Override
-   public String getPanelXml() {
-      // TODO 
-      return null;
-   }
-   @Override
-   public void transImagePathToRelative(String relativeSessionFolderPath) {
-      // TODO
-      
-   }
-   
-   
+   public abstract void transImagePathToRelative(String relativeSessionFolderPath);
+
+   /**
+    * Generate the xml content which used in panel.xml
+    */
+   public abstract String getPanelXml();
+
 }
