@@ -65,7 +65,7 @@ public class ToggleBuilder extends ControlBuilder {
             // status element
             Element commandElementRef = (Element) element.getChildren().get(0);
             String statusCommandID = commandElementRef.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-            Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(statusCommandID);
+            Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(toggleElement.getDocument(),statusCommandID);
             if (statusCommandElement != null) {
                StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
                toggle.setStatus(new Status(statusCommand));
@@ -79,7 +79,7 @@ public class ToggleBuilder extends ControlBuilder {
                List<Element> commandRefElements = element.getChildren();
                for (Element commandRefElement : commandRefElements) {
                   String commandID = commandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-                  Element commandElement = remoteActionXMLParser.queryElementFromXMLById(commandID);
+                  Element commandElement = remoteActionXMLParser.queryElementFromXMLById(toggleElement.getDocument(),commandID);
                   Command command = commandFactory.getCommand(commandElement);
                   toggle.addExecutableCommand((ExecutableCommand) command);
                }

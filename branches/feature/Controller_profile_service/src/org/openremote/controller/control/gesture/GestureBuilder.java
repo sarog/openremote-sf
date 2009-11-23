@@ -41,7 +41,7 @@ public class GestureBuilder extends ControlBuilder {
             .getNamespace());
       for (Element commandRefElement : commandRefElements) {
          String commandID = commandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-         Element commandElement = remoteActionXMLParser.queryElementFromXMLById(commandID);
+         Element commandElement = remoteActionXMLParser.queryElementFromXMLById(gestureElement.getDocument(),commandID);
          ExecutableCommand command = (ExecutableCommand) commandFactory.getCommand(commandElement);
          gesture.addExecutableCommand(command);
       }
