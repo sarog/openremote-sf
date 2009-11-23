@@ -24,12 +24,33 @@
 #import "AppSettingsDefinition.h"
 #import "ViewHelper.h"
 
+@interface SwitchServerAlertHelper(Private)
+-(void) switchToDiscoveredServer;
+-(void) switchToCustomizedServer;
+@end
+
+
+
+
 @implementation SwitchServerAlertHelper
 
 @synthesize updateController;
 
--(void) showAlertViewWithTitleAndSettingNavigation:(NSString *)title Message:(NSString *)message  {
+#pragma mark Instance method
+
+-(void) showAlertViewWithTitleDiscorveredServerAndSettingNavigation:(NSString *)title Message:(NSString *)message  {
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:nil otherButtonTitles:nil];
+	[alert setTitle:@"switch to discovered server"];
+	[alert addButtonWithTitle:@"Refresh"];
+	[alert addButtonWithTitle:@"Settings"];
+	[alert show];
+	[alert setDelegate:self];
+	[alert autorelease];
+}
+
+-(void) showAlertViewWithTitleCustomizedServerAndSettingNavigation:(NSString *)title Message:(NSString *)message  {
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:nil otherButtonTitles:nil];
+	[alert setTitle:@"switch to customized server"];
 	[alert addButtonWithTitle:@"OK"];
 	[alert addButtonWithTitle:@"Settings"];
 	[alert show];
@@ -37,20 +58,57 @@
 	[alert autorelease];
 }
 
+-(void) showAlertViewWithTitleOnlyNoAndSettingNavigation:(NSString *)title Message:(NSString *)message  {
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:nil otherButtonTitles:nil];
+	[alert setTitle:@"no available server"];
+	[alert addButtonWithTitle:@"NO"];
+	[alert addButtonWithTitle:@"Settings"];
+	[alert show];
+	[alert setDelegate:self];
+	[alert autorelease];
+}
+
+#pragma mark Private method
+
+-(void) switchToDiscoveredServer {
+	NSMutableArray *availableAutoServers = [AppSettingsDefinition getAutoServers];
+	[AppSettingsDefinition setAutoDiscovery:YES];
+	[[availableAutoServers objectAtIndex:0] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
+	[AppSettingsDefinition writeToFile];
+	NSString *availableAutoServerURL = [[availableAutoServers objectAtIndex:0] objectForKey:@"url"];
+	NSLog(@"Switching to %@ best autoServer, please wait.", availableAutoServerURL);
+	if (updateController) {
+		[updateController release];
+		updateController = nil;
+	}
+	updateController = [[UpdateController alloc] initWithDelegate:self];
+	[updateController checkConfigAndUpdate];
+}
+
+-(void) switchToCustomizedServer {
+	NSMutableArray *availableCustomizedServers = [AppSettingsDefinition getCustomServers];
+	[AppSettingsDefinition setAutoDiscovery:NO];
+	[[availableCustomizedServers objectAtIndex:0] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
+	[AppSettingsDefinition writeToFile];
+	NSString *availableCustomizedServerURL = [[availableCustomizedServers objectAtIndex:0] objectForKey:@"url"];
+	NSLog(@"Switching to %@ best customizedServer, please wait.", availableCustomizedServerURL);
+	if (updateController) {
+		[updateController release];
+		updateController = nil;
+	}
+	updateController = [[UpdateController alloc] initWithDelegate:self];
+	[updateController checkConfigAndUpdate];
+}
+
+#pragma mark Delegate method of UIAlertView
+
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {	
-	if (buttonIndex == 0) {
-		NSMutableArray *availableAutoServers = [AppSettingsDefinition getAutoServers];
-		[AppSettingsDefinition setAutoDiscovery:YES];
-		[[[AppSettingsDefinition getAutoServers] objectAtIndex:0] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
-		[AppSettingsDefinition writeToFile];
-		NSString *availableAutoServerURL = [[availableAutoServers objectAtIndex:0] objectForKey:@"url"];
-		NSLog(@"Switching to %@ best autoServer, please wait.", availableAutoServerURL);
-		if (updateController) {
-			[updateController release];
-			updateController = nil;
-		}
-		updateController = [[UpdateController alloc] initWithDelegate:self];
-		[updateController checkConfigAndUpdate];
+	if (buttonIndex == 0 && [[alertView title] isEqualToString:@"switch to discovered server"]) {
+		[self switchToDiscoveredServer];
+	} else if (buttonIndex == 0 && [[alertView title] isEqualToString:@"switch to customized server"]) {
+		[self switchToCustomizedServer];
+	} else if (buttonIndex == 0 && [[alertView title] isEqualToString:@"no available server"]) {
+		//do nothing
 	}
 	if (buttonIndex == 1) {//setting button
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateSettingsView object:nil];
@@ -58,13 +116,14 @@
 }
 
 #pragma mark Delegate method of UpdateController
+
 - (void)didUpadted {
-	NSLog(@"----------------------DidUpdated in switchServerAlertHelper.m");
+	NSLog(@"----------DidUpdated in switchServerAlertHelper------------");
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
 }
 
 - (void)didUseLocalCache:(NSString *)errorMessage {
-	NSLog(@"======================DidUpdated in switchServerAlertHelper.m");
+	NSLog(@"------------didUseLocalCache in switchServerAlertHelper------------");
 	[ViewHelper showAlertViewWithTitle:@"Warning" Message:errorMessage];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
 }

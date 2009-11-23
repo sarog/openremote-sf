@@ -27,7 +27,9 @@
 	UpdateController *updateController;
 }
 
--(void) showAlertViewWithTitleAndSettingNavigation:(NSString *)title Message:(NSString *)message;
+-(void) showAlertViewWithTitleDiscorveredServerAndSettingNavigation:(NSString *)title Message:(NSString *)message;
+-(void) showAlertViewWithTitleCustomizedServerAndSettingNavigation:(NSString *)title Message:(NSString *)message;
+-(void) showAlertViewWithTitleOnlyNoAndSettingNavigation:(NSString *)title Message:(NSString *)message;
 
 @property(nonatomic, retain) UpdateController *updateController;
 

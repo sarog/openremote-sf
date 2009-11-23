@@ -22,7 +22,9 @@
 
 #import "URLConnectionHelper.h"
 #import "AppSettingsDefinition.h"
-
+#import "SwitchServerAlertHelper.h"
+#import "CheckNetwork.h"
+#import "CheckNetworkException.h"
 
 //allows self-signed cert
 @interface NSURLRequest(HTTPSCertificate) 
@@ -38,14 +40,12 @@
 
 @implementation URLConnectionHelper 
 
-@synthesize delegate, connection, errorMsg, switchServerAlertHelper, viewHelper, autoDiscoverController, getAutoServersTimer;
+@synthesize delegate, connection, errorMsg, autoDiscoverController, getAutoServersTimer;
 
 #pragma mark constructor
 - (id)initWithURL:(NSURL *)url delegate:(id <URLConnectionHelperDelegate>)d  {
 	if (self = [super init]) {
 		[self setDelegate:d];
-		viewHelper = [[ViewHelper alloc] init];
-		switchServerAlertHelper = [[SwitchServerAlertHelper alloc] init];
 		
 		receivedData = [[NSMutableData alloc] init];
 		
@@ -61,8 +61,6 @@
 - (id)initWithRequest:(NSURLRequest *)request delegate:(id <URLConnectionHelperDelegate>)d  {
 	if (self = [super init]) {
 		[self setDelegate:d];
-		viewHelper = [[ViewHelper alloc] init];
-		switchServerAlertHelper = [[SwitchServerAlertHelper alloc] init];
 		
 		receivedData = [[NSMutableData alloc] init];
 		
@@ -84,8 +82,11 @@
 }
 
 #pragma mark instance method
+
 /**
  * Switch to a autoServer depends on whether there are available autoServers.
+ * If there are, then alert user switching to a server whose index is 0 in autoServers array.
+ * If there aren't, then alert user adding server manually.
  */
 - (void)switchToAvailableAutoServer {
 	NSString *alertInfo = [errorMsg localizedDescription];
@@ -94,14 +95,18 @@
 	NSLog(@"Found %d autoServer(s) before switch to a available autoServer.", availableAutoServers.count);
 	if (availableAutoServers.count > 0) {
 		availableAutoServerURL = [[availableAutoServers objectAtIndex:0] objectForKey:@"url"];
-		NSString *customAlertInfo = [[[@"! \nSwitch to available server: [" stringByAppendingString:availableAutoServerURL] stringByAppendingString:@"]"] stringByAppendingString:@"automatically or setting?"];
-		alertInfo = [alertInfo stringByAppendingString: customAlertInfo];
+		NSString *tempAlertInfo = [[[@"! \nSwitch to another server: [" stringByAppendingString:availableAutoServerURL] stringByAppendingString:@"]"] stringByAppendingString:@" or setting?"];
+		alertInfo = [alertInfo stringByAppendingString: tempAlertInfo];
+		[[[SwitchServerAlertHelper alloc] init] showAlertViewWithTitleDiscorveredServerAndSettingNavigation:@"Command failed" Message:alertInfo];
+	} else {
+		NSLog(@"No auto servers found, then alert uesr adding server manually.");
+		alertInfo = [alertInfo stringByAppendingString:@"\n There's no autodiscovered server available. Add a server manually?"];
+		[[[SwitchServerAlertHelper alloc] init] showAlertViewWithTitleOnlyNoAndSettingNavigation:@"Command failed" Message:alertInfo];
 	}
-	[switchServerAlertHelper showAlertViewWithTitleAndSettingNavigation:@"Command failed" Message:alertInfo];
 }
 
-
 #pragma mark delegate method of NSURLConnection
+
 //Called we connection receive data
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
 	// Append data
@@ -119,8 +124,10 @@
 	
 	if ([delegate respondsToSelector:@selector(definitionURLConnectionDidFailWithError:)]) {
 		[delegate definitionURLConnectionDidFailWithError:error];
-		//[AppSettingsDefinition isAutoDiscoveryEnable]
-		if (YES) {
+		
+		if ([AppSettingsDefinition isAutoDiscoveryEnable]) {
+			// AutoDiscovery was enabled.
+			NSLog(@"Switch to a available server in automatical mode when connection fail.");
 			self.errorMsg = error;
 			[AppSettingsDefinition removeAllAutoServer];
 			[AppSettingsDefinition writeToFile];
@@ -129,11 +136,54 @@
 				[autoDiscoverController release];
 				autoDiscoverController = nil;
 			}
-			autoDiscoverController = [[ServerAutoDiscoveryController alloc]initWithDelegate:nil];
+			autoDiscoverController = [[ServerAutoDiscoveryController alloc]initWithDelegate:self];
 			getAutoServersTimer = [[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(switchToAvailableAutoServer) userInfo:nil repeats:NO] retain];
 		} else {
-			NSLog(@"viewhelperviewhelperviewhelperviewhelperviewhelperviewhelper");
-			[viewHelper showAlertViewWithTitleAndSettingNavigation:@"Command failed" Message:[error localizedDescription]];
+			// AutoDiscovery wasn't enabled.
+			NSLog(@"Switch to a available server in manual mode when connection fail.");			
+			NSMutableArray *availableCustomServers = [AppSettingsDefinition getCustomServers];
+			NSString *alertInfo = [error localizedDescription];
+			
+			if (availableCustomServers.count > 0) {
+			// If there are customized servers then alert user switching to a available one.
+				NSString *oldCurrentServerUrl = [AppSettingsDefinition getCurrentServerUrl];
+				NSString *availableCustomServerURL = @"";
+				// check if there a customizedURL is available. 
+				for(int i=0; i < availableCustomServers.count; i++) {
+					NSString *toBeCheckedCustomizedURL = [[availableCustomServers objectAtIndex:i] objectForKey:@"url"];
+					NSLog(@"toBeCheckedCustomizedURL is : %@", toBeCheckedCustomizedURL);
+					@try {
+						[AppSettingsDefinition setCurrentServerUrl:toBeCheckedCustomizedURL];
+						// this method will throw CheckNetworkException if the check failed.
+						[CheckNetwork checkAll];
+					}
+					@catch (CheckNetworkException *e) {
+						NSLog(@"-------CheckNetworkException------- %@",e.message);
+						[AppSettingsDefinition setCurrentServerUrl:oldCurrentServerUrl];
+						continue;
+					}
+					availableCustomServerURL = toBeCheckedCustomizedURL;
+					[[availableCustomServers objectAtIndex:i] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
+					[AppSettingsDefinition writeToFile];
+					break;
+				}
+				if(![availableCustomServerURL isEqualToString:@""]) {
+					NSLog(@"After checking customized serverURL, a availableCustomServerURL is %@", availableCustomServerURL);
+					// Temporarily, I just select the first customized url, even if it isn't available.
+					//*availableCustomServerURL = [[availableCustomServers objectAtIndex:0] objectForKey:@"url"];
+					NSString *tempAlertInfo = [[[@"! \nSwitch to available customized server: [" stringByAppendingString:availableCustomServerURL] stringByAppendingString:@"]"] stringByAppendingString:@" or setting?"];
+					alertInfo = [alertInfo stringByAppendingString:tempAlertInfo];
+					[[[SwitchServerAlertHelper alloc] init] showAlertViewWithTitleCustomizedServerAndSettingNavigation:@"Command failed" Message:alertInfo];
+				} else {
+				// If there aren't any customized servers available then alert user customizing a new server.
+					alertInfo = [alertInfo stringByAppendingString:@"\n There's no cumtomized server available. Add a server manually?"];
+					[[[SwitchServerAlertHelper alloc] init] showAlertViewWithTitleOnlyNoAndSettingNavigation:@"Command failed" Message:alertInfo];
+				}
+			} else {
+			// If there aren't any customized servers then alert user customizing a new server.
+				alertInfo = [alertInfo stringByAppendingString:@"\n There's no cumtomized server available. Add a server manually?"];
+				[[[SwitchServerAlertHelper alloc] init] showAlertViewWithTitleOnlyNoAndSettingNavigation:@"Command failed" Message:alertInfo];
+			}
 		}
 	} else {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
@@ -147,15 +197,20 @@
 		[delegate definitionURLConnectionDidReceiveResponse:response];
 	}
 }
-			
 
+#pragma mark Delegate method of ServerAutoDiscoveryController
+- (void)onFindServer:(NSString *)serverUrl {
+	//TODO: donothing
+}
 
+- (void)onFindServerFail:(NSString *)errorMessage {
+	NSLog(@"Find Server Error in class URLConnectionHelper. %@", errorMessage);
+	[ViewHelper showAlertViewWithTitle:@"Find Server Error" Message:errorMessage];
+}
 
 - (void)dealloc {
 	[receivedData release];
 	[connection release];
-	[viewHelper release];
-	[switchServerAlertHelper release];
 	[autoDiscoverController release];
 	[getAutoServersTimer release];
 	[super dealloc];
