@@ -37,6 +37,7 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.InvalidControllerXMLException;
 import org.openremote.controller.exception.InvalidPanelXMLException;
+import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.exception.NoSuchPanelException;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.utils.PathUtil;
@@ -169,7 +170,13 @@ public class ProfileServiceImpl implements ProfileService {
       List<Element> refGroups = panel.getChildren("include", root.getNamespace());
       for (Element groupRef : refGroups) {
          String groupID = groupRef.getAttributeValue("ref");
-         Element group = (Element) queryElementFromXMLById(xmlPath, groupID).clone();
+         Element includeGroup = queryElementFromXMLById(xmlPath, groupID);
+         if (null == includeGroup) {
+            throw new NoSuchComponentException("No such group ID=" + groupID + " is included by a panel PaneName: "
+                  + name);
+         }
+         Element group = (Element) includeGroup.clone();
+
          groupsEle.addContent(group);
       }
 
