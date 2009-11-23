@@ -180,10 +180,8 @@
 	for (int j=0;j < newArray.count;j++){
 		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:j inSection:CONTROLLER_URLS_SECTION]];
 	}
-	NSLog(@"serverArray count is _____________%d", serverArray.count);
 	[serverArray addObjectsFromArray:newArray];
-	NSLog(@"++++++serverArray count is _____________%d", serverArray.count);
-		NSLog(@"Insert paths %d",[insertIndexPaths count]);
+	
 	[tv insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationBottom];
 	[tv endUpdates];
 	
@@ -356,7 +354,7 @@
 		}
 		return serverCell;
 	} else if (indexPath.section == PANEL_IDENTITY_SECTION) {
-		panelCell.textLabel.text = [[AppSettingsDefinition getPanelIdentityDic] objectForKey:@"name"];
+		panelCell.textLabel.text = [[AppSettingsDefinition getPanelIdentityDic] objectForKey:@"identity"];
 		panelCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		panelCell.selectionStyle = UITableViewCellSelectionStyleBlue;
 		return panelCell;
@@ -408,10 +406,7 @@
 		[addServerViewController release];
 		return;
 	} else if (indexPath.section == PANEL_IDENTITY_SECTION) {
-		NSLog(@"select section %d", indexPath.section);
 		ChoosePanelViewController *choosePanelViewController = [[ChoosePanelViewController alloc]init];
-		//choosePanelViewController.editingItem = nil;
-//		choosePanelViewController.servers = [self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery];
 		[[self navigationController] pushViewController:choosePanelViewController animated:YES];
 		[choosePanelViewController release];
 		return;

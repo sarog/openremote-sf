@@ -21,20 +21,17 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ServerDefinition : NSObject {
+
+@interface ErrorViewController : UIViewController {
 	
+	UILabel *titleLabel;
+	UILabel *msgLabel;
+	NSMutableArray *items;
+
 }
 
-+ (NSString *)panelXmlUrl;
-+ (NSString *)imageUrl;
-+ (NSString *)controlRESTUrl;
-+ (NSString *)statusRESTUrl;
-+ (NSString *)pollingRESTUrl;
-+ (NSString *)serverUrl;
-+ (NSString *)securedServerUrl;
-+ (NSString *)securedControlRESTUrl;
-+ (NSString *)logoutUrl;
-+ (NSString *)panelsRESTUrl;
-+ (NSString *)panelXmlRESTUrl;
+- (id)initWithErrorTitle:(NSString *)title message:(NSString *)message;
+
+- (void)setTitle:(NSString *)title message:(NSString *)message;
 
 @end

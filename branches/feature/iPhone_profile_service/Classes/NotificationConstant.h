@@ -32,6 +32,7 @@ extern NSString *const NotificationPollingStatusIdFormat;
 extern NSString *const NotificationNavigateTo;
 extern NSString *const NotificationPopulateCredentialView;
 extern NSString *const NotificationPopulateSettingsView;
+extern NSString *const NotificationNavigateBack;
 
 @interface NotificationConstant : NSObject {
 

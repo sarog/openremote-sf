@@ -39,8 +39,16 @@
 	return  serverUrl;
 }
 
++ (NSString *)panelXmlRESTUrl {
+	NSString *panelUrl = [NSString stringWithFormat:@"rest/panel/%@",[AppSettingsDefinition getCurrentPanelIdentity]];
+	NSString *panelXmlUrl = [[self serverUrl] stringByAppendingPathComponent:panelUrl];
+	return panelXmlUrl;
+}
+
 + (NSString *)panelXmlUrl {
-	return [[self serverUrl] stringByAppendingPathComponent:@"resources/panel.xml"];
+	NSString *panelUrl = @"resources/panel.xml";
+	NSString *panelXmlUrl = [[self serverUrl] stringByAppendingPathComponent:panelUrl];
+	return panelXmlUrl;
 }
 
 + (NSString *)imageUrl {
@@ -65,6 +73,10 @@
 
 + (NSString *)logoutUrl {
 	return [[self serverUrl] stringByAppendingPathComponent:@"logout"];
+}
+
++ (NSString *)panelsRESTUrl {
+	return [[self serverUrl] stringByAppendingPathComponent:@"rest/panels"];
 }
 
 

@@ -29,7 +29,7 @@
 
 @implementation GroupController
 
-@synthesize group, paginationController;
+@synthesize group;
 
 - (id)initWithGroup:(Group *)newGroup {
 	if (self = [super init]) {
@@ -44,46 +44,34 @@
 	return self;
 }
 
-/*
- // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
-        // Custom initialization
-    }
-    return self;
-}
-*/
-
-/*
-// Implement loadView to create a view hierarchy programmatically, without using a nib.
-- (void)loadView {
-}
-*/
-
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	[self.navigationController setNavigationBarHidden:YES];
 	
-	// Get array of screens
-	// Build array of UIViewControllers for each screen
-	NSMutableArray  *viewControllers = [[NSMutableArray alloc] init];
-
 	NSArray *screens = [group screens];
-	for (Screen *screen in screens) {
-		NSLog(@"screen = %@", screen.name);
-		ScreenViewController *viewController = [[ScreenViewController alloc]init];
-		[viewController setScreen:screen];
-		[viewControllers addObject:viewController];
-		[viewController release];
+	if (screens.count > 0) {
+		// Get array of screens
+		// Build array of UIViewControllers for each screen
+		NSMutableArray  *viewControllers = [[NSMutableArray alloc] init];
+		
+		for (Screen *screen in screens) {
+			NSLog(@"screen = %@", screen.name);
+			ScreenViewController *viewController = [[ScreenViewController alloc]init];
+			[viewController setScreen:screen];
+			[viewControllers addObject:viewController];
+			[viewController release];
+		}
+		[paginationController setViewControllers:viewControllers];
+		//[paginationController setTitle:[group name]];
+		[self setView:paginationController.view];
+		[viewControllers release];
+	
+	} else {
+		errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Screen Found" message:@"Please associate screens with group or reset setting."];
+		[self setView:errorViewController.view];	
 	}
-	[paginationController setViewControllers:viewControllers];
-	//[paginationController setTitle:[group name]];
-	[self setView:paginationController.view];
-	[viewControllers release];
-	
-	
 	//[paginationController release];	
 	
 }
@@ -141,6 +129,8 @@
 
 - (void)dealloc {
 	[paginationController release];
+	[errorViewController release];
+	
 	[super dealloc];
 }
 

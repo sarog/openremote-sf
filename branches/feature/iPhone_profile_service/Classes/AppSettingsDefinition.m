@@ -165,4 +165,8 @@ static NSMutableArray *settingsData = nil;
 	currentServerUrl = url;
 }
 
++ (NSString *)getCurrentPanelIdentity {
+	return [[self getPanelIdentityDic] objectForKey:@"identity"];
+}
+
 @end

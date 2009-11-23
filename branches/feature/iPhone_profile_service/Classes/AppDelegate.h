@@ -24,25 +24,24 @@
 #import "InitViewController.h"
 #import "UpdateController.h"
 #import "GroupController.h"
+#import "ErrorViewController.h"
+#import "ViewHelper.h"
+
 
 @interface AppDelegate : NSObject <UIApplicationDelegate> {
+	
 	UIWindow *window;
-	
 	UIView *defaultView;
-	
 	InitViewController *initViewController;
-		
-	UINavigationController *navigationController;
-	
+	UIViewController *defaultViewController;
 	NSMutableArray *groupControllers;
-	
 	GroupController *currentGroupController;
-	
 	UpdateController *updateController;
-	
 	NSMutableDictionary *groupViewMap;
-	
 	NSMutableArray *navigationHistory;
+	ErrorViewController* errorViewController;
+	ViewHelper *alert;
+	
 }
 
 
