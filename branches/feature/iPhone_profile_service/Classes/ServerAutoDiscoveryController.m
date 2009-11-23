@@ -77,10 +77,11 @@
 }
 
 - (id)initWithDelegate:(id)d {
-	[d retain];
+	if(d) {
+		[d retain];
+	}
 	theDelegate = d;
 	return [self init];
-	
 }
 
 

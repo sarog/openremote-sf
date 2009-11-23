@@ -22,7 +22,7 @@
 
 #import <UIKit/UIKit.h>
 #import "ViewHelper.h"
-#import "SwitchServerAlertHelper.h"
+#import "ServerAutoDiscoveryController.h"
 
 //Define a protocol 
 @protocol URLConnectionHelperDelegate <NSObject>
@@ -37,8 +37,6 @@
 	NSMutableData *receivedData;
 	NSURLConnection *connection;
 	NSError *errorMsg;
-	SwitchServerAlertHelper *switchServerAlertHelper;
-	ViewHelper *viewHelper;
 	ServerAutoDiscoveryController *autoDiscoverController;
 	NSTimer *getAutoServersTimer;
 }
@@ -51,8 +49,6 @@
 @property(nonatomic,retain) id <URLConnectionHelperDelegate> delegate;
 @property(nonatomic,retain) NSURLConnection *connection;
 @property(nonatomic,retain) NSError *errorMsg;
-@property(nonatomic,retain) SwitchServerAlertHelper *switchServerAlertHelper;
-@property(nonatomic,retain) ViewHelper *viewHelper;
 @property(nonatomic,retain) ServerAutoDiscoveryController *autoDiscoverController;
 @property(nonatomic,retain) NSTimer *getAutoServersTimer;
 
