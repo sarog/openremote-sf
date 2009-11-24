@@ -42,6 +42,7 @@
 - (BOOL)isCustomServerSection:(NSIndexPath *)indexPath;
 - (BOOL)isAddCustomServerRow:(NSIndexPath *)indexPath;
 - (void)cancelView:(id)sender;
+-(NSString *)getUnsavedChosenServerUrl;
 @end
 
 #define AUTO_DISCOVERY_SWITCH_SECTION 0
@@ -81,6 +82,17 @@
 	} else {
 		return [AppSettingsDefinition getCustomServers];
 	}
+}
+
+-(NSString *)getUnsavedChosenServerUrl {
+	NSArray *shownServers = [self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery];
+	NSString *url = nil;
+	for (int i=0; i < shownServers.count; i++) {
+		if ([[[shownServers objectAtIndex:i] valueForKey:@"choose"] boolValue]) {
+			url = [[shownServers objectAtIndex:i] valueForKey:@"url"];
+		} 
+	}
+	return url;
 }
 
 - (BOOL)isAutoDiscoverySection:(NSIndexPath *)indexPath {
@@ -414,6 +426,9 @@
 		[addServerViewController release];
 		return;
 	} else if (indexPath.section == PANEL_IDENTITY_SECTION) {
+		
+		[AppSettingsDefinition setUnsavedChosenServerUrl:[self getUnsavedChosenServerUrl]];
+
 		ChoosePanelViewController *choosePanelViewController = [[ChoosePanelViewController alloc]init];
 		[[self navigationController] pushViewController:choosePanelViewController animated:YES];
 		[choosePanelViewController release];

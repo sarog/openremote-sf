@@ -76,7 +76,8 @@
 }
 
 + (NSString *)panelsRESTUrl {
-	return [[self serverUrl] stringByAppendingPathComponent:@"rest/panels"];
+	NSLog([AppSettingsDefinition getUnsavedChosenServerUrl]);
+	return [[AppSettingsDefinition getUnsavedChosenServerUrl] stringByAppendingPathComponent:@"rest/panels"];
 }
 
 

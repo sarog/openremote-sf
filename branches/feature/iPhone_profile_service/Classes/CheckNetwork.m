@@ -98,7 +98,7 @@
 		} else if ([resp statusCode] == INVALID_PANEL_XML) {
 			@throw [CheckNetworkException exceptionWithTitle:@"" message:[NSString stringWithFormat:@"[%d]Invalid panel.xml. Please ensure it's depolyed correctly in Controller", [resp statusCode]]];
 		} else if ([resp statusCode] == NO_SUCH_PANEL) {
-			NSString *msg = [NSString stringWithFormat:@"Please choose your panel identity in Settings", [AppSettingsDefinition getCurrentPanelIdentity]];
+			NSString *msg = [NSString stringWithFormat:@"Current panel identity ‘%@’ isn't available. Please rechoose in Settings.", [AppSettingsDefinition getCurrentPanelIdentity]];
 			@throw [CheckNetworkException exceptionWithTitle:@"" message:msg];
 		} else {
 			@throw [CheckNetworkException exceptionWithTitle:@"" message:[NSString stringWithFormat:@"[%d]Invalid panel.xml. Please ensure it's depolyed correctly in Controller", [resp statusCode]]];

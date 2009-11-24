@@ -38,6 +38,8 @@
 
 static NSString *currentServerUrl = nil;
 static NSMutableArray *settingsData = nil;
+static NSString *unsavedChosenServerUrl = nil;
+
 
 + (NSMutableArray *)getAppSettings {
 	if (!settingsData) {
@@ -167,6 +169,19 @@ static NSMutableArray *settingsData = nil;
 
 + (NSString *)getCurrentPanelIdentity {
 	return [[self getPanelIdentityDic] objectForKey:@"identity"];
+}
+
++ (NSString *)getUnsavedChosenServerUrl {
+	if (!unsavedChosenServerUrl) {
+		unsavedChosenServerUrl = [currentServerUrl copy];
+	}
+	return unsavedChosenServerUrl;
+}
+
++ (void)setUnsavedChosenServerUrl:(NSString *)url {
+	[url retain];
+	[unsavedChosenServerUrl release];
+	unsavedChosenServerUrl = url;
 }
 
 @end
