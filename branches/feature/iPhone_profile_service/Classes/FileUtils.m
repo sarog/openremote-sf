@@ -45,11 +45,12 @@ NSFileManager *fileManager;
 + (void)downloadFromURL:(NSString *) url  path:(NSString *)p {
 	[self makeSurePathExists:p];
 	NSError *error = nil;
+	url = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)url, NULL, (CFStringRef)@"", kCFStringEncodingUTF8);
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[[NSURL alloc]initWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:5];
 	NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:NULL error:&error];
 	
 	if (error) {
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[error localizedDescription] message:url delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 		[alert show];
 		[alert release];
 		return;
