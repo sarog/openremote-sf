@@ -31,7 +31,7 @@ public class ControlCommandException extends RuntimeException {
    public final static int COMMAND_BUILDER_ERROR = 418;
    
    /** The Constant NO_SUCH_BUTTON. */
-   public final static int NO_SUCH_BUTTON = 419;
+   public final static int NO_SUCH_COMPONENT = 419;
    
    /** The Constant NO_SUCH_EVENT_BUILDER. */
    public final static int NO_SUCH_EVENT_BUILDER = 420;

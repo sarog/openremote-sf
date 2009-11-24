@@ -35,12 +35,12 @@ import org.jdom.xpath.XPath;
 import org.openremote.controller.Configuration;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.InvalidPanelXMLException;
-import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.exception.NoSuchPanelException;
 import org.openremote.controller.exception.PanelXMLNotFoundException;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.utils.PathUtil;
 /**
+ * Used to get panel.xml content according to panel identity.
  * 
  * @author Javen
  *
@@ -171,8 +171,8 @@ public class ProfileServiceImpl implements ProfileService {
          String groupID = groupRef.getAttributeValue("ref");
          Element includeGroup = queryElementFromXMLById(xmlPath, groupID);
          if (null == includeGroup) {
-            throw new NoSuchComponentException("No such group ID=" + groupID + " is included by a panel PaneName: "
-                  + name);
+            throw new InvalidPanelXMLException("Group reference ID = " + groupID + 
+                  " not found in panel: " + name);
          }
          Element group = (Element) includeGroup.clone();
 

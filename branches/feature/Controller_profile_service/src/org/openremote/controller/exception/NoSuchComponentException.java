@@ -33,7 +33,7 @@ public class NoSuchComponentException extends ControlCommandException {
     */
    public NoSuchComponentException() {
       super();
-      setErrorCode(ControlCommandException.NO_SUCH_BUTTON);
+      setErrorCode(ControlCommandException.NO_SUCH_COMPONENT);
    }
 
    /**
@@ -43,7 +43,7 @@ public class NoSuchComponentException extends ControlCommandException {
     */
    public NoSuchComponentException(String message) {
       super(message);
-      setErrorCode(ControlCommandException.NO_SUCH_BUTTON);
+      setErrorCode(ControlCommandException.NO_SUCH_COMPONENT);
    }
 
    /**
@@ -53,7 +53,7 @@ public class NoSuchComponentException extends ControlCommandException {
     */
    public NoSuchComponentException(Throwable cause) {
       super(cause);
-      setErrorCode(ControlCommandException.NO_SUCH_BUTTON);
+      setErrorCode(ControlCommandException.NO_SUCH_COMPONENT);
    }
 
    /**
@@ -64,7 +64,7 @@ public class NoSuchComponentException extends ControlCommandException {
     */
    public NoSuchComponentException(String message, Throwable cause) {
       super(message, cause);
-      setErrorCode(ControlCommandException.NO_SUCH_BUTTON);
+      setErrorCode(ControlCommandException.NO_SUCH_COMPONENT);
    }
 
 }
