@@ -94,7 +94,7 @@ static Definition *myInstance = nil;
 }
 
 - (BOOL)canUseLocalCache {
-	return [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlUrl]]]];
+	return [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlRESTUrl]]]];
 }
 
 
@@ -157,7 +157,7 @@ static Definition *myInstance = nil;
 - (void)downloadXml {
 	NSLog(@"start download xml");
 	[self changeLoadingMessage:@"download panel.xml ..."];
-	[FileUtils downloadFromURL:[ServerDefinition panelXmlUrl]  path:[DirectoryDefinition xmlCacheFolder]];
+	[FileUtils downloadFromURL:[ServerDefinition panelXmlRESTUrl]  path:[DirectoryDefinition xmlCacheFolder]];
 	NSLog(@"xml file downloaded.");
 }
 
@@ -175,7 +175,7 @@ static Definition *myInstance = nil;
 	
 	[self clearPanelXMLData];
 	
-	NSData *data = [[NSData alloc] initWithContentsOfFile:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlUrl]]]];
+	NSData *data = [[NSData alloc] initWithContentsOfFile:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlRESTUrl]]]];
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
 	NSString *dataStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 	NSLog(@"%@",dataStr);
