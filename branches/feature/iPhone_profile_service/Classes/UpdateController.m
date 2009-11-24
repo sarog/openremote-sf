@@ -149,6 +149,11 @@
 	NSLog(@"useCustomDefaultUrl");
 	if ([[AppSettingsDefinition getCustomServers] count] > 0) {
 		[AppSettingsDefinition setAutoDiscovery:NO];
+		// Begin: Reset all customized server to unchoose
+		for(NSMutableDictionary *toBeResetCustomServer in [AppSettingsDefinition getCustomServers]) {
+			[toBeResetCustomServer setValue:[NSNumber numberWithBool:NO] forKey:@"choose"]; 
+		}
+		// End
 		NSMutableDictionary *customServer = [[AppSettingsDefinition getCustomServers] objectAtIndex:0];
 		[customServer setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
 		[AppSettingsDefinition setCurrentServerUrl:[customServer valueForKey:@"url"]];
