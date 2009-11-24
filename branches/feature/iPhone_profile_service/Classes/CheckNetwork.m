@@ -27,6 +27,8 @@
 #import "ControllerException.h"
 #import "AppSettingsDefinition.h"
 
+#define TIMEOUT_INTERVAL 2
+
 @implementation CheckNetwork
 +(void)checkWhetherNetworkAvailable {
 	if ([[Reachability sharedReachability] localWiFiConnectionStatus] == NotReachable) {
@@ -60,7 +62,7 @@
 	NSError *error = nil;
 	NSHTTPURLResponse *resp = nil;
 	NSURL *url = [NSURL URLWithString:[ServerDefinition serverUrl]]; 
-	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:5];
+	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
 	[NSURLConnection sendSynchronousRequest:request returningResponse:&resp error:&error];
 	NSLog([ServerDefinition serverUrl]);
 	[request release];
@@ -85,7 +87,7 @@
 
 	NSHTTPURLResponse *resp = nil;
 	NSURL *url = [NSURL URLWithString:[ServerDefinition panelXmlRESTUrl]]; 
-	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:5];
+	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
 	[NSURLConnection sendSynchronousRequest:request returningResponse:&resp error:NULL];
 	
 	[request release];
@@ -94,12 +96,12 @@
 		if ([resp statusCode] == PANEL_XML_NOT_FOUND) {
 			@throw [CheckNetworkException exceptionWithTitle:@"" message:@"panel.xml not found in Controller."];
 		} else if ([resp statusCode] == INVALID_PANEL_XML) {
-			@throw [CheckNetworkException exceptionWithTitle:@"" message:@"Invalid panel.xml."];
+			@throw [CheckNetworkException exceptionWithTitle:@"" message:[NSString stringWithFormat:@"[%d]Invalid panel.xml. Please ensure it's depolyed correctly in Controller", [resp statusCode]]];
 		} else if ([resp statusCode] == NO_SUCH_PANEL) {
-			NSString *msg = [NSString stringWithFormat:@"No such panel identity : %@", [AppSettingsDefinition getCurrentPanelIdentity]];
+			NSString *msg = [NSString stringWithFormat:@"Please choose your panel identity in Settings", [AppSettingsDefinition getCurrentPanelIdentity]];
 			@throw [CheckNetworkException exceptionWithTitle:@"" message:msg];
 		} else {
-			@throw [CheckNetworkException exceptionWithTitle:@"" message:@"Invalid panel.xml."];
+			@throw [CheckNetworkException exceptionWithTitle:@"" message:[NSString stringWithFormat:@"[%d]Invalid panel.xml. Please ensure it's depolyed correctly in Controller", [resp statusCode]]];
 		} 
 		
 	}

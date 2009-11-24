@@ -38,13 +38,13 @@
 #import "DirectoryDefinition.h"
 
 //Define the default max retry times. It should be set by user in later version.
-#define MAX_RETRY_TIMES 1
+#define MAX_RETRY_TIMES 0
 
 @interface UpdateController (private)
 - (void)checkNetworkAndUpdate;
 - (void)findServer;
 - (void)updateFailOrUseLocalCache:(NSString *)errorMessage;
-- (void)useDefaultUrl;
+- (void)useCustomDefaultUrl;
 @end
 
 
@@ -59,7 +59,7 @@
 }
 
 - (id)initWithDelegate:(id)delegate {
-	if (self = [super init]) {
+	if (self = [self init]) {
 		[self setDelegate:delegate];
 	}
 	return self;
@@ -94,7 +94,9 @@
 
 // Try to find a server using auto discovery mechanism. 
 - (void)findServer {
-	if (retryTimes <= MAX_RETRY_TIMES) {
+	NSLog(@"findServer");
+	NSLog(@"retry time %d <= %d", retryTimes, MAX_RETRY_TIMES);
+	if (retryTimes <= MAX_RETRY_TIMES) {		
 		retryTimes++;
 		if (serverAutoDiscoveryController) {
 			[serverAutoDiscoveryController release];
@@ -110,6 +112,7 @@
 }
 
 - (void)checkNetworkAndUpdate {
+	NSLog(@"checkNetworkAndUpdate");
 	@try {	
 		// this method will throw CheckNetworkException if the check failed.
 		[CheckNetwork checkAll];
@@ -121,9 +124,9 @@
 	}
 	@catch (CheckNetworkException *e) {
 		NSLog(@"CheckNetworkException occured %@",e.message);
-
 		if (retryTimes <= MAX_RETRY_TIMES) {
-			retryTimes++;
+			NSLog(@"retry time %d <= %d", retryTimes, MAX_RETRY_TIMES);
+			retryTimes++;			
 			[self checkNetworkAndUpdate];
 		} else {
 			[self updateFailOrUseLocalCache:e.message];
@@ -138,12 +141,12 @@
 	if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
 		[self didUseLocalCache:errorMessage];
 	} else {
-		[self useDefaultUrl];
+		[self useCustomDefaultUrl];
 	}
 }
 
-- (void)useDefaultUrl {
-	NSLog(@"useDefaultUrl");
+- (void)useCustomDefaultUrl {
+	NSLog(@"useCustomDefaultUrl");
 	if ([[AppSettingsDefinition getCustomServers] count] > 0) {
 		[AppSettingsDefinition setAutoDiscovery:NO];
 		NSMutableDictionary *customServer = [[AppSettingsDefinition getCustomServers] objectAtIndex:0];
