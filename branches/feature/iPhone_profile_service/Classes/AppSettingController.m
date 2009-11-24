@@ -64,10 +64,10 @@
 		if (!done) {
 			done = [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(saveSettings)];		
 		}
-		if (!edit) {
-			edit = [[UIBarButtonItem alloc]initWithTitle:@"Edit" style:UIBarButtonItemStyleDone target:self action:@selector(editSettings)];
-			[edit setStyle:UIButtonTypeRoundedRect];
-		}
+		//if (!edit) {
+//			edit = [[UIBarButtonItem alloc]initWithTitle:@"Edit" style:UIBarButtonItemStyleDone target:self action:@selector(editSettings)];
+//			[edit setStyle:UIButtonTypeRoundedRect];
+//		}
 		if (cancel == nil) {
 			cancel = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelView:)];
 		}
@@ -107,7 +107,7 @@
 - (BOOL)isCustomServerSection:(NSIndexPath *)indexPath {
 	if (!autoDiscovery && indexPath.row < [serverArray count] && indexPath.section == CONTROLLER_URLS_SECTION) {
 		if (indexPath.row == 0) {
-			return NO;
+			return YES;
 		}
 		return YES;
 	}
@@ -148,7 +148,7 @@
 			[autoDiscoverController release];
 			autoDiscoverController = nil;
 		}
-		self.navigationItem.leftBarButtonItem = edit;
+		//self.navigationItem.leftBarButtonItem = edit;
 		[self updateTableView];
 	}
 		
@@ -208,7 +208,7 @@
 - (void)saveSettings {
 	if (serverArray.count == 0) {
 		[ViewHelper showAlertViewWithTitle:@"Warning" 
-								   Message:@"Controller autodiscovery failed. Please configure controller URL manually."];
+								   Message:@"No Controller. Please configure controller URL manually."];
 	} else {
 		[[AppSettingsDefinition getAutoDiscoveryDic] setValue:[NSNumber numberWithBool:autoDiscovery] forKey:@"value"];
 		[AppSettingsDefinition writeToFile];
@@ -275,7 +275,7 @@
 	
 	self.navigationItem.rightBarButtonItem = done;
 	if (!autoDiscovery) {
-		self.navigationItem.leftBarButtonItem = edit;
+		//self.navigationItem.leftBarButtonItem = edit;
 	}
 	self.navigationItem.leftBarButtonItem = cancel;
 	
