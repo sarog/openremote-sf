@@ -50,5 +50,8 @@
 
 + (NSMutableDictionary *)getPanelIdentityDic;
 + (NSString *)getCurrentPanelIdentity;
++ (NSString *)getUnsavedChosenServerUrl;
++ (void)setUnsavedChosenServerUrl:(NSString *)url;
+
 
 @end
