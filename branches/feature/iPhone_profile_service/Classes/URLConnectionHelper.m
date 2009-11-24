@@ -231,7 +231,7 @@
 
 - (void)onFindServerFail:(NSString *)errorMessage {
 	NSLog(@"Find Server Error in class URLConnectionHelper. %@", errorMessage);
-	[ViewHelper showAlertViewWithTitle:@"Find Server Error" Message:errorMessage];
+	[ViewHelper showAlertViewWithTitle:@"Auto Discovery" Message:errorMessage];
 }
 
 - (void)dealloc {

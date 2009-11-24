@@ -37,5 +37,6 @@
 	UIActivityIndicatorView *loadingView;
 	UpdateController *updateController;
 	NSTimer *getAutoServersTimer;
+	UIActivityIndicatorView *spinner;
 }
 @end
