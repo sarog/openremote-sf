@@ -52,6 +52,8 @@
 
 #define PANEL_IDENTITY_SECTION 2
 
+#define AUTO_DISCOVERY_TIMER_INTERVAL 1
+
 @implementation AppSettingController
 
 
@@ -61,19 +63,29 @@
 		isEditing = NO;
 		autoDiscovery = [AppSettingsDefinition isAutoDiscoveryEnable];
 		
-		if (!done) {
-			done = [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(saveSettings)];		
-		}
-		//if (!edit) {
-//			edit = [[UIBarButtonItem alloc]initWithTitle:@"Edit" style:UIBarButtonItemStyleDone target:self action:@selector(editSettings)];
-//			[edit setStyle:UIButtonTypeRoundedRect];
-//		}
-		if (cancel == nil) {
-			cancel = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelView:)];
-		}
-			
+		done = [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(saveSettings)];		
+		cancel = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelView:)];
+
 	}
 	return self;
+}
+
+- (void)showSpinner {
+	spinner = [[[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(180, 117, 44, 44)] autorelease];
+	[spinner startAnimating];
+	spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+	spinner.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
+															UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
+	[spinner sizeToFit];
+	
+	[self.view addSubview:spinner];
+}
+
+- (void)forceHideSpinner:(BOOL)force {
+	if (spinner && serverArray.count > 0 || force) {
+		[spinner removeFromSuperview];
+		spinner = nil;
+	}	
 }
 
 -(NSMutableArray *)getCurrentServersWithAutoDiscoveryEnable:(BOOL)b {
@@ -127,6 +139,7 @@
 	[self deleteAllRow];
 	
 	if (autoDiscovery) {
+		[self showSpinner];
 		[AppSettingsDefinition removeAllAutoServer];
 		[AppSettingsDefinition writeToFile];
 		self.navigationItem.leftBarButtonItem = nil;
@@ -136,7 +149,7 @@
 			autoDiscoverController = nil;
 		}
 		autoDiscoverController = [[ServerAutoDiscoveryController alloc]initWithDelegate:self];
-		getAutoServersTimer = [[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(updateTableView) userInfo:nil repeats:NO] retain];
+		getAutoServersTimer = [[NSTimer scheduledTimerWithTimeInterval:AUTO_DISCOVERY_TIMER_INTERVAL target:self selector:@selector(updateTableView) userInfo:nil repeats:NO] retain];
 		self.navigationItem.leftBarButtonItem = cancel;
 	} else {
 		if(getAutoServersTimer && [getAutoServersTimer isValid]){
@@ -198,6 +211,7 @@
 	[tv endUpdates];
 	
 	[insertIndexPaths release];
+	[self forceHideSpinner:NO];
 }
 
 
@@ -208,7 +222,7 @@
 - (void)saveSettings {
 	if (serverArray.count == 0) {
 		[ViewHelper showAlertViewWithTitle:@"Warning" 
-								   Message:@"No Controller. Please configure controller URL manually."];
+								   Message:@"No Controller. Please configure Controller URL manually."];
 	} else {
 		[[AppSettingsDefinition getAutoDiscoveryDic] setValue:[NSNumber numberWithBool:autoDiscovery] forKey:@"value"];
 		[AppSettingsDefinition writeToFile];
@@ -244,9 +258,8 @@
 }
 
 - (void)onFindServerFail:(NSString *)errorMessage {
-	
-	[ViewHelper showAlertViewWithTitle:@"Find Server Error" Message:errorMessage];
-	
+	[self forceHideSpinner:YES];
+	[ViewHelper showAlertViewWithTitle:@"Auto Discovery" Message:errorMessage];	
 }
 
 
@@ -467,6 +480,7 @@
 	[done release];
 	[cancel release];
 	[serverArray release];
+	
 	[super dealloc];
 }
 

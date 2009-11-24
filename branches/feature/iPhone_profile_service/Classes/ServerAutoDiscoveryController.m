@@ -99,7 +99,7 @@
 //check where find server time out.
 - (void)checkFindServerFail {
 	if (!isReceiveServerUrl) {
-		[self onFindServerFail:@"Auto-discovery timed out."];
+		[self onFindServerFail:@"No Controller detected."];
 	}
 	isReceiveServerUrl = NO;	
 }
