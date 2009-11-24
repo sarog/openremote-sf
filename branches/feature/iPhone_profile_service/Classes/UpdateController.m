@@ -141,7 +141,8 @@
 	if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
 		[self didUseLocalCache:errorMessage];
 	} else {
-		[self useCustomDefaultUrl];
+		//[self useCustomDefaultUrl];
+		[self didUpdateFail:errorMessage];
 	}
 }
 
@@ -166,7 +167,7 @@
 			[self didUpdateFail:e.message];
 		}
 	} else {
-		[self didUpdateFail:@"There is no default url.Application init error."];
+		[self didUpdateFail:@"There is no customized default Controller server."];
 	}
 }
 
