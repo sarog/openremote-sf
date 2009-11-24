@@ -52,8 +52,8 @@
 
 - (id)init {
 	if (self = [super init]) {
-		// Set retryTime to 0
-		retryTimes = 0;
+		// Set retryTime to 1
+		retryTimes = 1;
 	}
 	return self;
 }
@@ -95,7 +95,7 @@
 // Try to find a server using auto discovery mechanism. 
 - (void)findServer {
 	if (retryTimes <= MAX_RETRY_TIMES) {
-		retryTimes = retryTimes + 1;
+		retryTimes++;
 		if (serverAutoDiscoveryController) {
 			[serverAutoDiscoveryController release];
 			serverAutoDiscoveryController = nil;
@@ -120,10 +120,10 @@
 		[[Definition sharedDefinition] update];
 	}
 	@catch (CheckNetworkException *e) {
-		NSLog(@"CheckNetworkException %@",e.message);
+		NSLog(@"CheckNetworkException occured %@",e.message);
 
 		if (retryTimes <= MAX_RETRY_TIMES) {
-			retryTimes = retryTimes + 1;
+			retryTimes++;
 			[self checkNetworkAndUpdate];
 		} else {
 			[self updateFailOrUseLocalCache:e.message];
@@ -133,7 +133,8 @@
 }
 
 - (void)updateFailOrUseLocalCache:(NSString *)errorMessage {
-	NSString *path = [[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlUrl]]];
+	NSLog(@"updateFailOrUseLocalCache");
+	NSString *path = [[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlRESTUrl]]];
 	if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
 		[self didUseLocalCache:errorMessage];
 	} else {
@@ -142,6 +143,7 @@
 }
 
 - (void)useDefaultUrl {
+	NSLog(@"useDefaultUrl");
 	if ([[AppSettingsDefinition getCustomServers] count] > 0) {
 		[AppSettingsDefinition setAutoDiscovery:NO];
 		NSMutableDictionary *customServer = [[AppSettingsDefinition getCustomServers] objectAtIndex:0];
@@ -149,7 +151,7 @@
 		[AppSettingsDefinition setCurrentServerUrl:[customServer valueForKey:@"url"]];
 		[AppSettingsDefinition writeToFile];
 		@try {
-			[CheckNetwork checkAll];
+			[CheckNetwork checkAll];			
 			[self checkNetworkAndUpdate];
 		}
 		@catch (CheckNetworkException *e) {
@@ -176,6 +178,7 @@
 }
 
 - (void)didUpdateFail:(NSString *)errorMessage {
+	NSLog(@"didUpdateFail");
 	if (theDelegate && [theDelegate respondsToSelector:@selector(didUpdateFail:)]) {
 		[theDelegate performSelector:@selector(didUpdateFail:) withObject:errorMessage];
 	}

@@ -91,7 +91,6 @@
 	groupControllers = [[NSMutableArray alloc] init]; 
 	groupViewMap = [[NSMutableDictionary alloc] init];
 	navigationHistory = [[NSMutableArray alloc] init];
-	alert = [[ViewHelper alloc] init];
 	
 	// Load logined iphone user last time.
 	DataBaseService *dbService = [DataBaseService sharedDataBaseService];
@@ -346,12 +345,12 @@
 
 - (void)didUseLocalCache:(NSString *)errorMessage {	
 	[self updateDidFinished];
-	[alert showAlertViewWithTitleAndSettingNavigation:@"Warning" Message:[errorMessage stringByAppendingString:@" Using cached content."]];
+	[[ViewHelper alloc] showAlertViewWithTitleAndSettingNavigation:@"Warning" Message:[errorMessage stringByAppendingString:@" Using cached content."]];
 }
 
 - (void)didUpdateFail:(NSString *)errorMessage {
 	[self updateDidFinished];
-	[alert showAlertViewWithTitleAndSettingNavigation:@"Warning" Message:errorMessage];
+	[[ViewHelper alloc] showAlertViewWithTitleAndSettingNavigation:@"Warning" Message:errorMessage];
 }
 
 - (void)dealloc {
@@ -363,7 +362,6 @@
 	[groupViewMap release];
 	[navigationHistory release];
 	[errorViewController release];
-	[alert release];
 	
 	[super dealloc];
 }

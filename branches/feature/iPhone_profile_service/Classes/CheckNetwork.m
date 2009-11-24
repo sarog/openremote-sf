@@ -65,7 +65,7 @@
 	NSLog([ServerDefinition serverUrl]);
 	[request release];
 	if (error ) {
-		NSLog(@"checkControllerAvailable occur error %@",[error localizedDescription]);
+		NSLog(@"checkControllerAvailable failed %@",[error localizedDescription]);
 		@throw [CheckNetworkException exceptionWithTitle:@"Controller Not Started" 
 													  message:@"Could not find OpenRemote Controller. It may not be running or the connection URL in Settings is invalid."];
 	} else if ([resp statusCode] != 200) {	
@@ -84,7 +84,7 @@
 	}
 
 	NSHTTPURLResponse *resp = nil;
-	NSURL *url = [NSURL URLWithString:[ServerDefinition panelXmlUrl]]; 
+	NSURL *url = [NSURL URLWithString:[ServerDefinition panelXmlRESTUrl]]; 
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:5];
 	[NSURLConnection sendSynchronousRequest:request returningResponse:&resp error:NULL];
 	
@@ -98,6 +98,8 @@
 		} else if ([resp statusCode] == NO_SUCH_PANEL) {
 			NSString *msg = [NSString stringWithFormat:@"No such panel identity : %@", [AppSettingsDefinition getCurrentPanelIdentity]];
 			@throw [CheckNetworkException exceptionWithTitle:@"" message:msg];
+		} else {
+			@throw [CheckNetworkException exceptionWithTitle:@"" message:@"Invalid panel.xml."];
 		} 
 		
 	}

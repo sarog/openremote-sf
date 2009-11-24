@@ -40,7 +40,6 @@
 	NSMutableDictionary *groupViewMap;
 	NSMutableArray *navigationHistory;
 	ErrorViewController* errorViewController;
-	ViewHelper *alert;
 	
 }
 

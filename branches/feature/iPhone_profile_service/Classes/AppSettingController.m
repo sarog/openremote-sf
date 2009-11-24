@@ -250,6 +250,14 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
 }
 
+- (void)didUpdateFail:(NSString *)errorMessage {
+	[ViewHelper showAlertViewWithTitle:@"Warning" Message:errorMessage];
+	[self dismissModalViewControllerAnimated:YES];
+	//[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
+}
+
+
+
 
 - (void)viewWillAppear:(BOOL)animated {
 	
