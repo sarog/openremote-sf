@@ -50,24 +50,26 @@ import com.extjs.gxt.ui.client.util.Point;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 
 /**
  * A layout container to display as grid, the inner is relative position.
  */
-public class GridLayoutContainer extends ComponentContainer {
+public class GridLayoutContainer extends ScreenComponent {
    public static final String BOUNDS_RECORD_NAME = "boundsRecord";
    /** The screen. */
 
    /** The Constant POSITION. */
-   private static final String POSITION = "position";
+   public static final String POSITION = "position";
 
    /** The btn in area. */
    private boolean[][] btnInArea;
    
    private UIGrid grid = null;
 
+   private FlexTable screenTable = new FlexTable();
    
    public GridLayoutContainer(ScreenCanvas screenCanvas,UIGrid grid) {
       super(screenCanvas);
@@ -98,18 +100,21 @@ public class GridLayoutContainer extends ComponentContainer {
     * 
     * @param grid the grid
     */
-   private void createGrid(final UIGrid grid) {
-      int gridWidth = grid.getWidth();
-      int gridHeight = grid.getHeight();
-      setSize(gridWidth, gridHeight);
-      setPosition(grid.getLeft(), grid.getTop());
-      setBorders(false);
-      FlexTable screenTable = new FlexTable();
+   public void createGrid(final UIGrid grid) {
+      screenTable = new FlexTable();
       screenTable.setCellPadding(0);
       screenTable.setCellSpacing(0);
       screenTable.addStyleName("panel-table");
-      screenTable.setPixelSize(gridWidth, gridHeight);
       add(screenTable);
+      int gridWidth = grid.getWidth();
+      int gridHeight = grid.getHeight();
+      screenTable.setPixelSize(gridWidth, gridHeight);
+      refreshGrid(grid);
+   }
+
+   public void refreshGrid(final UIGrid grid) {
+      int gridWidth = grid.getWidth();
+      int gridHeight = grid.getHeight();
       final int cellWidth = (gridWidth - (grid.getColumnCount() + 1)) / grid.getColumnCount();
       final int cellHeight = (gridHeight - (grid.getRowCount() + 1)) / grid.getRowCount();
       DNDListener dndListener = new DNDListener() {
@@ -123,7 +128,8 @@ public class GridLayoutContainer extends ComponentContainer {
             super.dragEnter(e);
          }
 
-         public void dragDrop(DNDEvent e) {
+         @SuppressWarnings("unchecked")
+		public void dragDrop(DNDEvent e) {
             LayoutContainer targetCell = (LayoutContainer) e.getDropTarget().getComponent();
             Point targetPosition = (Point) targetCell.getData(POSITION);
             GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas());
@@ -177,7 +183,10 @@ public class GridLayoutContainer extends ComponentContainer {
 
          }
       }
-
+      setSize(gridWidth, gridHeight);
+      setPosition(grid.getLeft(), grid.getTop());
+      setBorders(false);
+      layout();
    }
 
    /**
@@ -185,7 +194,7 @@ public class GridLayoutContainer extends ComponentContainer {
     * 
     */
    private GridCellContainer createCellContainer(final UIGrid grid, Cell cell, int cellWidth, int cellHeight) {
-      final GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(), cell, ScreenComponent.build(cell
+      final GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(), cell, ScreenComponent.build(this.getScreenCanvas(),cell
             .getUiComponent())) {
          @Override
          public void onBrowserEvent(Event event) {
@@ -479,4 +488,37 @@ public class GridLayoutContainer extends ComponentContainer {
       createDragSource(cellContainer);
       return cellContainer;
    }
+
+	@Override
+	public FormPanel buildPropertiesForm() {
+		return new GridPropertyForm(this,grid);
+	}
+	
+	@Override
+	public String getName() {
+		return "grid";
+	}
+	
+	@Override
+	public void setName(String name) {
+		return;
+	}
+
+	public UIGrid getGrid() {
+		return grid;
+	}
+
+	public void setGrid(UIGrid grid) {
+		this.grid = grid;
+	}
+
+   public FlexTable getScreenTable() {
+      return screenTable;
+   }
+
+   public void setScreenTable(FlexTable screenTable) {
+      this.screenTable = screenTable;
+   }
+
+	
 }

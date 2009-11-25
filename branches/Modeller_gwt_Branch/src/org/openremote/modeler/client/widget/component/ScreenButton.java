@@ -20,6 +20,7 @@
 package org.openremote.modeler.client.widget.component;
 
 import org.openremote.modeler.client.widget.uidesigner.ButtonPropertyForm;
+import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.component.UIButton;
 
 import com.extjs.gxt.ui.client.widget.Text;
@@ -44,12 +45,13 @@ public class ScreenButton extends ScreenComponent {
    /**
     * Instantiates a new screen button.
     */
-   public ScreenButton() {
+   public ScreenButton(ScreenCanvas canvas) {
+      super(canvas);
       initial();
    }
    
-   public ScreenButton(String text) {
-      this();
+   public ScreenButton(ScreenCanvas canvas, String text) {
+      super(canvas);
       center.setText(text);
    }
    
@@ -59,13 +61,13 @@ public class ScreenButton extends ScreenComponent {
     * @param width the width
     * @param height the height
     */
-   public ScreenButton(int width, int height) {
-      this();
+   public ScreenButton(ScreenCanvas canvas, int width, int height) {
+      this(canvas);
       setSize(width, height);
    }
    
-   public ScreenButton(UIButton uiButton) {
-      this();
+   public ScreenButton(ScreenCanvas canvas, UIButton uiButton) {
+      this(canvas);
       this.uiButton = uiButton;
       center.setText(uiButton.getName());
       adjustTextLength();
@@ -112,9 +114,9 @@ public class ScreenButton extends ScreenComponent {
    @Override
    public void setSize(int width, int height) {
       super.setSize(width, height);
-      if(getWidth()==0){
+      if (getWidth() == 0) {
          adjustTextLength(width);
-      }else{
+      } else {
          adjustTextLength();
       }
    }

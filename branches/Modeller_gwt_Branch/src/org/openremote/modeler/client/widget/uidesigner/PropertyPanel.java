@@ -78,6 +78,9 @@ public class PropertyPanel extends ContentPanel {
             ScreenComponent screenControl = gcc.getScreenControl();
 //            UIControl uiControl = gcc.getCell().getUiControl();
             addPropertiesForm(screenControl);
+         } else if(component instanceof GridLayoutContainer){
+        	 GridLayoutContainer gridContainer = (GridLayoutContainer) component;
+        	 addPropertiesForm(gridContainer);
          }
          layout();
          currentLayoutContainer = component;
