@@ -1,22 +1,19 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.modeler.client.widget.uidesigner;
 
 import java.util.List;
@@ -60,16 +57,17 @@ public class ScreenCanvas extends LayoutContainer {
 
    /** The absolute position. */
    private Point absolutePosition = null;
-   
+
    /** The move back ground. */
    private LayoutContainer moveBackGround = new LayoutContainer();
-   
+
    private Screen screen = null;
-   
+
    /**
     * Instantiates a new screen canvas.
     * 
-    * @param screen the screen
+    * @param screen
+    *           the screen
     */
    public ScreenCanvas(Screen screen) {
       this.screen = screen;
@@ -93,8 +91,8 @@ public class ScreenCanvas extends LayoutContainer {
          if (screen.getGrids().size() > 0) {
             List<UIGrid> grids = screen.getGrids();
             for (UIGrid grid : grids) {
-               GridLayoutContainer gridContainer = createGridLayoutContainer(grid);
-               this.add(gridContainer);
+               // GridLayoutContainer gridContainer = createGridLayoutContainer(grid);
+               // this.add(gridContainer);
             }
          }
          layout();
@@ -113,14 +111,16 @@ public class ScreenCanvas extends LayoutContainer {
       setStyleAttribute("backgroundRepeat", "no-repeat");
       setStyleAttribute("overflow", "hidden");
    }
-   
-   public void hideBackground(){
+
+   public void hideBackground() {
       moveBackGround.hide();
    }
+
    /**
     * Adds the drop target dnd listener.
     * 
-    * @param screen the screen
+    * @param screen
+    *           the screen
     */
    private void addDropTargetDNDListener(final Screen screen) {
       final ScreenCanvas canvas = this;
@@ -138,6 +138,10 @@ public class ScreenCanvas extends LayoutContainer {
                GridCellContainer container = (GridCellContainer) data;
                Point position = getGridCellContainerPostiono(e);
                moveBackGround.setPosition(position.x + container.getWidth(), position.y + container.getHeight());
+               moveBackGround.show();
+            } else if (data instanceof GridContainer) {
+               moveBackGround.setPosition(e.getClientX() - absolutePosition.x - 15, e.getClientY()
+                     - absolutePosition.y - 15);
                moveBackGround.show();
             }
             super.dragMove(e);
@@ -168,9 +172,15 @@ public class ScreenCanvas extends LayoutContainer {
                componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY() - absolutePosition.y);
                new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
             } else if (data instanceof LayoutContainer) {
-               Point position = getPosition(e);
-               LayoutContainer controlContainer = (LayoutContainer) data;
-               controlContainer.setPosition(position.x, position.y);
+               if(data instanceof GridContainer) {
+                  GridContainer gridContainer = (GridContainer) data;
+                  gridContainer.setPosition(e.getClientX() - absolutePosition.x - 15, e.getClientY()
+                        - absolutePosition.y - 15);
+               } else {
+                  Point position = getPosition(e);
+                  LayoutContainer controlContainer = (LayoutContainer) data;
+                  controlContainer.setPosition(position.x, position.y);
+               }
             } else if (data instanceof List) { // dnd from widgets tree.
                List<ModelData> models = (List<ModelData>) data;
                if (models.size() > 0) {
@@ -180,16 +190,16 @@ public class ScreenCanvas extends LayoutContainer {
                      UIGrid grid = new UIGrid(e.getXY().x - 200, e.getXY().y - 200, 200, 200, 4, 4);
                      screen.addGrid(grid);
                      componentContainer = createGridLayoutContainer(grid);
+                     createGridDragSource(componentContainer);
                   } else {
                      componentContainer = createNewAbsoluteLayoutContainer(screen, (UIComponent) dataModel.getBean());
                      createDragSource(canvas, componentContainer);
+                     new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
                   }
                   SelectedWidgetContainer.setSelectWidget(componentContainer);
                   canvas.add(componentContainer);
                   componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
                         - absolutePosition.y);
-                  new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
-
                }
             }
 
@@ -201,15 +211,17 @@ public class ScreenCanvas extends LayoutContainer {
       target.setGroup(Constants.CONTROL_DND_GROUP);
 
    }
-   
+
    /**
     * Creates the drag source.
     * 
-    * @param canvas the canvas
-    * @param layoutContainer the layout container
+    * @param canvas
+    *           the canvas
+    * @param layoutContainer
+    *           the layout container
     */
    private void createDragSource(final ScreenCanvas canvas, final LayoutContainer layoutContainer) {
-      DragSource source = new DragSource(layoutContainer){
+      DragSource source = new DragSource(layoutContainer) {
          @Override
          protected void onDragStart(DNDEvent event) {
             if (absolutePosition == null) {
@@ -217,7 +229,8 @@ public class ScreenCanvas extends LayoutContainer {
             }
             moveBackGround.setSize(layoutContainer.getWidth(), layoutContainer.getHeight());
             Point mousePoint = event.getXY();
-            Point distance = new Point(mousePoint.x - layoutContainer.getAbsoluteLeft(), mousePoint.y - layoutContainer.getAbsoluteTop());
+            Point distance = new Point(mousePoint.x - layoutContainer.getAbsoluteLeft(), mousePoint.y
+                  - layoutContainer.getAbsoluteTop());
             layoutContainer.setData(AbsoluteLayoutContainer.ABSOLUTE_DISTANCE_NAME, distance);
             event.setData(layoutContainer);
             event.getStatus().setStatus(true);
@@ -225,36 +238,38 @@ public class ScreenCanvas extends LayoutContainer {
          }
       };
       source.setGroup(Constants.CONTROL_DND_GROUP);
-      System.out.println("");
       source.setFiresEvents(false);
    }
-   
+
    /**
     * Gets the position.
     * 
-    * @param event the event
+    * @param event
+    *           the event
     * 
     * @return the position
     */
    private Point getPosition(DNDEvent event) {
       Point mousePoint = event.getXY();
-      Point distance = ((LayoutContainer)event.getData()).getData(AbsoluteLayoutContainer.ABSOLUTE_DISTANCE_NAME);
+      Point distance = ((LayoutContainer) event.getData()).getData(AbsoluteLayoutContainer.ABSOLUTE_DISTANCE_NAME);
       int left = mousePoint.x - distance.x - absolutePosition.x;
       int top = mousePoint.y - distance.y - absolutePosition.y;
       return new Point(left, top);
    }
-   
-   private Point getGridCellContainerPostiono(DNDEvent event){
+
+   private Point getGridCellContainerPostiono(DNDEvent event) {
       GridCellContainer container = event.getData();
       Point mousePoint = event.getXY();
-      Point distance = ((LayoutContainer)event.getData()).getData(AbsoluteLayoutContainer.ABSOLUTE_DISTANCE_NAME);
-      BoundsRecorder recorder =container.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
-      int left = mousePoint.x - distance.x - absolutePosition.x+recorder.getWidth();
-      int top = mousePoint.y - distance.y - absolutePosition.y+recorder.getHeight();
+      Point distance = ((LayoutContainer) event.getData()).getData(AbsoluteLayoutContainer.ABSOLUTE_DISTANCE_NAME);
+      BoundsRecorder recorder = container.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
+      int left = mousePoint.x - distance.x - absolutePosition.x + recorder.getWidth();
+      int top = mousePoint.y - distance.y - absolutePosition.y + recorder.getHeight();
       return new Point(left, top);
    }
-   private AbsoluteLayoutContainer createAbsoluteLayoutContainer(final Screen screen, Absolute absolute, ScreenComponent screenControl) {
-      final AbsoluteLayoutContainer controlContainer = new AbsoluteLayoutContainer(this,absolute, screenControl) {
+
+   private AbsoluteLayoutContainer createAbsoluteLayoutContainer(final Screen screen, Absolute absolute,
+         ScreenComponent screenControl) {
+      final AbsoluteLayoutContainer controlContainer = new AbsoluteLayoutContainer(this, absolute, screenControl) {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
@@ -262,9 +277,9 @@ public class ScreenCanvas extends LayoutContainer {
             }
             super.onBrowserEvent(event);
          }
-         
+
       };
-      new KeyNav<ComponentEvent>(){
+      new KeyNav<ComponentEvent>() {
          @Override
          public void onDelete(ComponentEvent ce) {
             super.onDelete(ce);
@@ -274,21 +289,21 @@ public class ScreenCanvas extends LayoutContainer {
             box.setTitle("Delete");
             box.setMessage("Are you sure you want to delete?");
             box.addCallback(new Listener<MessageBoxEvent>() {
-                public void handleEvent(MessageBoxEvent be) {
-                    if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                       screen.removeAbsolute(controlContainer.getAbsolute());
-                       controlContainer.removeFromParent();
-                       SelectedWidgetContainer.setSelectWidget(null);
-                    }
-                }
+               public void handleEvent(MessageBoxEvent be) {
+                  if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
+                     screen.removeAbsolute(controlContainer.getAbsolute());
+                     controlContainer.removeFromParent();
+                     SelectedWidgetContainer.setSelectWidget(null);
+                  }
+               }
             });
             box.show();
          }
-         
+
       }.bind(controlContainer);
       return controlContainer;
    }
-   
+
    /**
     * Creates the new absolute layout container after drag from tree.
     * 
@@ -299,31 +314,23 @@ public class ScreenCanvas extends LayoutContainer {
       if (uiComponent instanceof UIButton) {
          UIButton uiButton = new UIButton(IDUtil.nextID());
          absolute.setUIComponent(uiButton);
-         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenButton(this,uiButton));
+         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenButton(this, uiButton));
          controlContainer.setSize(50, 50); // set the button's default size after drag from widget tree.
 
       } else if (uiComponent instanceof UISwitch) {
          UISwitch uiSwitch = new UISwitch(IDUtil.nextID());
          absolute.setUIComponent(uiSwitch);
-         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenSwitch(this,uiSwitch));
+         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenSwitch(this, uiSwitch));
          controlContainer.setSize(50, 50); // set the switch's default size after drag from widget tree.
       }
       screen.addAbsolute(absolute);
       return controlContainer;
    }
-   
-   private GridLayoutContainer createGridLayoutContainer(final UIGrid grid) {
-      final GridLayoutContainer gridContainer = new GridLayoutContainer(this, grid) {
-         @Override
-         public void onBrowserEvent(Event event) {
-            if (event.getTypeInt() == Event.ONMOUSEDOWN) {
-               SelectedWidgetContainer.setSelectWidget((GridLayoutContainer) this);
-            }
-            super.onBrowserEvent(event);
-         }
-      };
-      new DropTarget(gridContainer);
-      new KeyNav<ComponentEvent>(gridContainer) {
+
+   private GridContainer createGridLayoutContainer(final UIGrid grid) {
+      final GridLayoutContainer gridlayoutContainer = new GridLayoutContainer(this, grid);
+      new DropTarget(gridlayoutContainer);
+      new KeyNav<ComponentEvent>(gridlayoutContainer) {
          @Override
          public void onDelete(ComponentEvent ce) {
             super.onDelete(ce);
@@ -336,7 +343,7 @@ public class ScreenCanvas extends LayoutContainer {
                public void handleEvent(MessageBoxEvent be) {
                   if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
                      ScreenCanvas.this.getScreen().removeGrid(grid);
-                     gridContainer.removeFromParent();
+                     gridlayoutContainer.removeFromParent();
                      SelectedWidgetContainer.setSelectWidget(null);
                   }
                }
@@ -344,12 +351,40 @@ public class ScreenCanvas extends LayoutContainer {
             box.show();
          }
 
-      }.bind(gridContainer);
-      return gridContainer;
+      }.bind(gridlayoutContainer);
+
+      return new GridContainer(gridlayoutContainer){
+         @Override
+         public void onBrowserEvent(Event event) {
+            if (event.getTypeInt() == Event.ONMOUSEDOWN) {
+               SelectedWidgetContainer.setSelectWidget((LayoutContainer) this);
+            }
+            super.onBrowserEvent(event);
+         }
+      };
    }
 
    public Screen getScreen() {
       return screen;
    }
-   
+
+   /**
+    * @param componentContainer
+    */
+   private void createGridDragSource(final LayoutContainer componentContainer) {
+      DragSource gridSource = new DragSource(componentContainer) {
+         @Override
+         protected void onDragStart(DNDEvent event) {
+            GridContainer gridContainer = (GridContainer) componentContainer;
+            UIGrid grid = gridContainer.getGridlayoutContainer().getGrid();
+            moveBackGround.setSize(grid.getWidth(), grid.getHeight());
+            event.setData(componentContainer);
+            event.getStatus().setStatus(true);
+            event.getStatus().update("drag and drop");
+         }
+      };
+      gridSource.setGroup(Constants.CONTROL_DND_GROUP);
+      gridSource.setFiresEvents(false);
+   }
+
 }

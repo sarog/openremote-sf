@@ -75,7 +75,6 @@ public class GridLayoutContainer extends ScreenComponent {
       super(screenCanvas);
       this.grid = grid;
       btnInArea = new boolean[grid.getColumnCount()][grid.getRowCount()];
-      addStyleName("cursor-move");
       addStyleName("absolute");
 //      addStyleName("screen-background");
       
@@ -201,6 +200,7 @@ public class GridLayoutContainer extends ScreenComponent {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
                SelectedWidgetContainer.setSelectWidget((GridCellContainer) this);
             }
+            event.stopPropagation();
             super.onBrowserEvent(event);
          }
       };
@@ -238,6 +238,7 @@ public class GridLayoutContainer extends ScreenComponent {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
                SelectedWidgetContainer.setSelectWidget((GridCellContainer) this);
             }
+            event.stopPropagation();
             super.onBrowserEvent(event);
          }
       };
@@ -354,6 +355,7 @@ public class GridLayoutContainer extends ScreenComponent {
             cellContainer.removeFromParent();
             event.getStatus().setStatus(true);
             event.getStatus().update("1 item selected");
+            event.cancelBubble();
          }
       };
       source.setGroup(Constants.CONTROL_DND_GROUP);
