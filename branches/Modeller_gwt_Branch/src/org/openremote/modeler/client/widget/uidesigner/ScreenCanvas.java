@@ -81,19 +81,29 @@ public class ScreenCanvas extends LayoutContainer {
          if (screen.getAbsolutes().size() > 0) {
             List<Absolute> absolutes = screen.getAbsolutes();
             for (Absolute absolute : absolutes) {
-               AbsoluteLayoutContainer controlContainer = createAbsoluteLayoutContainer(screen, absolute, ScreenComponent.build(absolute.getUIComponent()));
+               AbsoluteLayoutContainer controlContainer = createAbsoluteLayoutContainer(screen, absolute,
+                     ScreenComponent.build(this, absolute.getUIComponent()));
                controlContainer.setSize(absolute.getWidth(), absolute.getHeight());
                controlContainer.setPosition(absolute.getLeft(), absolute.getTop());
                this.add(controlContainer);
                new Resizable(controlContainer, Constants.RESIZABLE_HANDLES);
                createDragSource(this, controlContainer);
             }
-            layout();
          }
+         if (screen.getGrids().size() > 0) {
+            List<UIGrid> grids = screen.getGrids();
+            for (UIGrid grid : grids) {
+               GridLayoutContainer gridContainer = createGridLayoutContainer(grid);
+               this.add(gridContainer);
+            }
+         }
+         layout();
+
          addDropTargetDNDListener(screen);
       } else {
-         LayoutContainer gridLayoutContainer = createNewGridLayoutContainer();
-         add(gridLayoutContainer);
+         /*
+          * LayoutContainer gridLayoutContainer = createGridLayoutContainer(); add(gridLayoutContainer);
+          */
       }
       moveBackGround.setStyleAttribute("background-color", "yellow");
       moveBackGround.setStyleAttribute("position", "absolute");
@@ -116,27 +126,29 @@ public class ScreenCanvas extends LayoutContainer {
       final ScreenCanvas canvas = this;
       DropTarget target = new DropTarget(canvas);
       target.addDNDListener(new DNDListener() {
-         
+
          @Override
          public void dragMove(DNDEvent e) {
             Object data = e.getData();
-            if(e.getData() instanceof AbsoluteLayoutContainer) {
+            if (e.getData() instanceof AbsoluteLayoutContainer) {
                Point position = getPosition(e);
                moveBackGround.setPosition(position.x, position.y);
                moveBackGround.show();
-            } else if(data instanceof GridCellContainer){
+            } else if (data instanceof GridCellContainer) {
                GridCellContainer container = (GridCellContainer) data;
                Point position = getGridCellContainerPostiono(e);
-               moveBackGround.setPosition(position.x+container.getWidth(), position.y+container.getHeight());
+               moveBackGround.setPosition(position.x + container.getWidth(), position.y + container.getHeight());
                moveBackGround.show();
             }
             super.dragMove(e);
          }
+
          @Override
          public void dragLeave(DNDEvent e) {
             moveBackGround.hide();
             super.dragLeave(e);
          }
+
          @SuppressWarnings("unchecked")
          @Override
          public void dragDrop(DNDEvent e) {
@@ -144,46 +156,50 @@ public class ScreenCanvas extends LayoutContainer {
                absolutePosition = new Point(canvas.getAbsoluteLeft(), canvas.getAbsoluteTop());
             }
             Object data = e.getData();
-            if(data instanceof GridCellContainer){
-               GridCellContainer controlContainer = (GridCellContainer) data;
+            if (data instanceof GridCellContainer) {
                Point position = getPosition(e);
+               GridCellContainer controlContainer = (GridCellContainer) data;
                controlContainer.setPosition(position.x, position.y);
                LayoutContainer componentContainer = new LayoutContainer();
-               componentContainer = createNewAbsoluteLayoutContainer(screen, controlContainer.getCell().getUiComponent());
+               componentContainer = createNewAbsoluteLayoutContainer(screen, controlContainer.getCell()
+                     .getUiComponent());
                createDragSource(canvas, componentContainer);
                canvas.add(componentContainer);
                componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY() - absolutePosition.y);
                new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
-            }else  if (data instanceof LayoutContainer) {
-               LayoutContainer controlContainer = (LayoutContainer) data;
+            } else if (data instanceof LayoutContainer) {
                Point position = getPosition(e);
+               LayoutContainer controlContainer = (LayoutContainer) data;
                controlContainer.setPosition(position.x, position.y);
-            } else if (data instanceof List) {    // dnd from widgets tree.
+            } else if (data instanceof List) { // dnd from widgets tree.
                List<ModelData> models = (List<ModelData>) data;
                if (models.size() > 0) {
                   BeanModel dataModel = models.get(0).get("model");
                   LayoutContainer componentContainer = new LayoutContainer();
-                  if(dataModel.getBean() instanceof UIGrid){
-                     componentContainer = createNewGridLayoutContainer();
+                  if (dataModel.getBean() instanceof UIGrid) {
+                     UIGrid grid = new UIGrid(e.getXY().x - 200, e.getXY().y - 200, 200, 200, 4, 4);
+                     screen.addGrid(grid);
+                     componentContainer = createGridLayoutContainer(grid);
                   } else {
-                     componentContainer = createNewAbsoluteLayoutContainer(screen, (UIComponent)dataModel.getBean());
+                     componentContainer = createNewAbsoluteLayoutContainer(screen, (UIComponent) dataModel.getBean());
                      createDragSource(canvas, componentContainer);
                   }
                   SelectedWidgetContainer.setSelectWidget(componentContainer);
                   canvas.add(componentContainer);
-                  componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY() - absolutePosition.y);
+                  componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
+                        - absolutePosition.y);
                   new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
-                  
+
                }
             }
-            
+
             moveBackGround.hide();
             layout();
             super.dragDrop(e);
          }
       });
       target.setGroup(Constants.CONTROL_DND_GROUP);
-      
+
    }
    
    /**
@@ -283,26 +299,57 @@ public class ScreenCanvas extends LayoutContainer {
       if (uiComponent instanceof UIButton) {
          UIButton uiButton = new UIButton(IDUtil.nextID());
          absolute.setUIComponent(uiButton);
-         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenButton(uiButton));
+         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenButton(this,uiButton));
          controlContainer.setSize(50, 50); // set the button's default size after drag from widget tree.
 
       } else if (uiComponent instanceof UISwitch) {
          UISwitch uiSwitch = new UISwitch(IDUtil.nextID());
          absolute.setUIComponent(uiSwitch);
-         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenSwitch(uiSwitch));
+         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenSwitch(this,uiSwitch));
          controlContainer.setSize(50, 50); // set the switch's default size after drag from widget tree.
       }
       screen.addAbsolute(absolute);
       return controlContainer;
    }
-   /*
-    * default: create a 4x4 grid. 
-    * @return
-    */
-   private GridLayoutContainer createNewGridLayoutContainer() {
-      UIGrid grid = new UIGrid(10, 10, 200, 200, 4, 4);
-      screen.addGrid(grid);
-      return new GridLayoutContainer(this, grid);
+   
+   private GridLayoutContainer createGridLayoutContainer(final UIGrid grid) {
+      final GridLayoutContainer gridContainer = new GridLayoutContainer(this, grid) {
+         @Override
+         public void onBrowserEvent(Event event) {
+            if (event.getTypeInt() == Event.ONMOUSEDOWN) {
+               SelectedWidgetContainer.setSelectWidget((GridLayoutContainer) this);
+            }
+            super.onBrowserEvent(event);
+         }
+      };
+      new DropTarget(gridContainer);
+      new KeyNav<ComponentEvent>(gridContainer) {
+         @Override
+         public void onDelete(ComponentEvent ce) {
+            super.onDelete(ce);
+            MessageBox box = new MessageBox();
+            box.setButtons(MessageBox.YESNO);
+            box.setIcon(MessageBox.QUESTION);
+            box.setTitle("Delete");
+            box.setMessage("Are you sure you want to delete?");
+            box.addCallback(new Listener<MessageBoxEvent>() {
+               public void handleEvent(MessageBoxEvent be) {
+                  if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
+                     ScreenCanvas.this.getScreen().removeGrid(grid);
+                     gridContainer.removeFromParent();
+                     SelectedWidgetContainer.setSelectWidget(null);
+                  }
+               }
+            });
+            box.show();
+         }
 
+      }.bind(gridContainer);
+      return gridContainer;
    }
+
+   public Screen getScreen() {
+      return screen;
+   }
+   
 }

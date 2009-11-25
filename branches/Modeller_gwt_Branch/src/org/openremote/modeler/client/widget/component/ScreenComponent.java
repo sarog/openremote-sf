@@ -19,18 +19,22 @@
 */
 package org.openremote.modeler.client.widget.component;
 
+import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
+import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UISwitch;
 
-import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 
 /**
  * ScreenControl as the component's super class.
  */
-public abstract class ScreenComponent extends LayoutContainer {
-   /**
+public abstract class ScreenComponent extends ComponentContainer {
+   public ScreenComponent(ScreenCanvas screenCanvas){
+	   super(screenCanvas);
+   }
+	/**
     * Sets the display name.
     */
    public abstract void setName(String name);
@@ -40,12 +44,12 @@ public abstract class ScreenComponent extends LayoutContainer {
    /**
     * Builds the ScreenControl according to uiControl type.
     */
-   public static ScreenComponent build(UIComponent uiComponent) {
+   public static ScreenComponent build(ScreenCanvas canvas,UIComponent uiComponent) {
       if (uiComponent instanceof UIButton) {
-         return new ScreenButton((UIButton)uiComponent);
+         return new ScreenButton(canvas,(UIButton)uiComponent);
       } else if(uiComponent instanceof UISwitch) {
-         return new ScreenSwitch((UISwitch)uiComponent);
-      }
+         return new ScreenSwitch(canvas,(UISwitch)uiComponent);
+      } 
       return null;
    }
    
