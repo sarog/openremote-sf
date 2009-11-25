@@ -68,24 +68,24 @@ public class PropertyPanel extends ContentPanel {
          return;
       }
       if (!component.equals(currentLayoutContainer)) {
-         if(component instanceof AbsoluteLayoutContainer) {
+         if (component instanceof AbsoluteLayoutContainer) {
             AbsoluteLayoutContainer alc = (AbsoluteLayoutContainer) component;
             ScreenComponent screenControl = alc.getScreenControl();
-//            UIComponent uiComponent =  alc.getAbsolute().getUIComponent();
+            // UIComponent uiComponent = alc.getAbsolute().getUIComponent();
             addPropertiesForm(screenControl);
          } else if (component instanceof GridCellContainer) {
             GridCellContainer gcc = (GridCellContainer) component;
             ScreenComponent screenControl = gcc.getScreenControl();
-//            UIControl uiControl = gcc.getCell().getUiControl();
+            // UIControl uiControl = gcc.getCell().getUiControl();
             addPropertiesForm(screenControl);
-         } else if(component instanceof GridLayoutContainer){
-        	 GridLayoutContainer gridContainer = (GridLayoutContainer) component;
-        	 addPropertiesForm(gridContainer);
+         } else if (component instanceof GridLayoutContainer) {
+            GridLayoutContainer gridContainer = (GridLayoutContainer) component;
+            addPropertiesForm(gridContainer);
          }
          layout();
          currentLayoutContainer = component;
       }
-      
+
    }
 
    /**
