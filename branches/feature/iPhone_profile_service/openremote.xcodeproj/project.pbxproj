@@ -149,6 +149,16 @@
 		8CAEB81B10A6B25B0051C827 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CAEB81A10A6B25B0051C827 /* LoginViewController.m */; };
 		8CAEB81C10A6B25B0051C827 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CAEB81A10A6B25B0051C827 /* LoginViewController.m */; };
 		8CB33E4E0FCA4AE400B010DF /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */; };
+		8CC6364E10BD37D8009C25C9 /* CredentialUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC6364D10BD37D8009C25C9 /* CredentialUtil.m */; };
+		8CC6364F10BD37D8009C25C9 /* CredentialUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC6364D10BD37D8009C25C9 /* CredentialUtil.m */; };
+		8CC636D010BD4DCC009C25C9 /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC636CF10BD4DCC009C25C9 /* NSStringAdditions.m */; };
+		8CC636D110BD4DCC009C25C9 /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC636CF10BD4DCC009C25C9 /* NSStringAdditions.m */; };
+		8CE7EBE410BE773600E15487 /* ControllerException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7EBE310BE773600E15487 /* ControllerException.m */; };
+		8CE7EBE510BE773600E15487 /* ControllerException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7EBE310BE773600E15487 /* ControllerException.m */; };
+		8CE7ED0310BE987800E15487 /* MonitorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7ED0210BE987800E15487 /* MonitorView.m */; };
+		8CE7ED0410BE987800E15487 /* MonitorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7ED0210BE987800E15487 /* MonitorView.m */; };
+		8CE7ED0710BE988600E15487 /* Monitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7ED0610BE988600E15487 /* Monitor.m */; };
+		8CE7ED0810BE988600E15487 /* Monitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7ED0610BE988600E15487 /* Monitor.m */; };
 		8CEB4E7F10B2827200A67721 /* LogoutHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEB4E7E10B2827200A67721 /* LogoutHelper.m */; };
 		8CEB4E8010B2827200A67721 /* LogoutHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEB4E7E10B2827200A67721 /* LogoutHelper.m */; };
 		8CF5341F10B64C1900C52FB0 /* ChoosePanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF5341E10B64C1900C52FB0 /* ChoosePanelViewController.m */; };
@@ -302,6 +312,15 @@
 		8CAEB81910A6B25B0051C827 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		8CAEB81A10A6B25B0051C827 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		8CC6364C10BD37D8009C25C9 /* CredentialUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CredentialUtil.h; sourceTree = "<group>"; };
+		8CC6364D10BD37D8009C25C9 /* CredentialUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CredentialUtil.m; sourceTree = "<group>"; };
+		8CC636CE10BD4DCC009C25C9 /* NSStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringAdditions.h; sourceTree = "<group>"; };
+		8CC636CF10BD4DCC009C25C9 /* NSStringAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringAdditions.m; sourceTree = "<group>"; };
+		8CE7EBE310BE773600E15487 /* ControllerException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerException.m; sourceTree = "<group>"; };
+		8CE7ED0110BE987800E15487 /* MonitorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MonitorView.h; sourceTree = "<group>"; };
+		8CE7ED0210BE987800E15487 /* MonitorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MonitorView.m; sourceTree = "<group>"; };
+		8CE7ED0510BE988600E15487 /* Monitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Monitor.h; sourceTree = "<group>"; };
+		8CE7ED0610BE988600E15487 /* Monitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Monitor.m; sourceTree = "<group>"; };
 		8CEB4E7D10B2827200A67721 /* LogoutHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogoutHelper.h; sourceTree = "<group>"; };
 		8CEB4E7E10B2827200A67721 /* LogoutHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogoutHelper.m; sourceTree = "<group>"; };
 		8CF5341D10B64C1900C52FB0 /* ChoosePanelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChoosePanelViewController.h; sourceTree = "<group>"; };
@@ -358,6 +377,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				8CC6364210BD35E2009C25C9 /* delegate */,
 				33981AFD10B0F1240076DB59 /* service */,
 				8C267AB10FD27DE20054743E /* exception */,
 				8CF6A27B0FBD3751006ED733 /* lib */,
@@ -366,6 +386,7 @@
 				8CFEE2860F558C3D00DF8759 /* view */,
 				8CFEE27F0F558C2900DF8759 /* model */,
 				8C72E7130F541F8C006CC0DF /* utils */,
+				8CC6364B10BD3774009C25C9 /* helper */,
 				8C460F3E109563E100C7A686 /* NotificationConstant.h */,
 				8C460F3F109563E100C7A686 /* NotificationConstant.m */,
 				8C460F5A109564D000C7A686 /* AppDelegate.h */,
@@ -466,6 +487,7 @@
 				8C460E6D109554D600C7A686 /* CheckNetworkException.h */,
 				8C460E6E109554D600C7A686 /* CheckNetworkException.m */,
 				8C09E76210BA838800A475D8 /* ControllerException.h */,
+				8CE7EBE310BE773600E15487 /* ControllerException.m */,
 			);
 			name = exception;
 			sourceTree = "<group>";
@@ -482,18 +504,36 @@
 		8C72E7130F541F8C006CC0DF /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				8CC636CE10BD4DCC009C25C9 /* NSStringAdditions.h */,
+				8CC636CF10BD4DCC009C25C9 /* NSStringAdditions.m */,
 				8C460F2A109562D200C7A686 /* CheckNetwork.h */,
 				8C460F2B109562D200C7A686 /* CheckNetwork.m */,
-				799CC3CC0F4D4EEA006195BD /* URLConnectionHelper.h */,
-				799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */,
 				8C6682470F53FFF5007C45D4 /* FileUtils.h */,
 				8C6682480F53FFF5007C45D4 /* FileUtils.m */,
 				8C72E7140F541FAB006CC0DF /* StringUtils.h */,
 				8C72E7150F541FAB006CC0DF /* StringUtils.m */,
-				8C7BE4210FA0395F00F18AA1 /* ViewHelper.h */,
-				8C7BE4220FA0395F00F18AA1 /* ViewHelper.m */,
+				8CC6364C10BD37D8009C25C9 /* CredentialUtil.h */,
+				8CC6364D10BD37D8009C25C9 /* CredentialUtil.m */,
+			);
+			name = utils;
+			sourceTree = "<group>";
+		};
+		8CC6364210BD35E2009C25C9 /* delegate */ = {
+			isa = PBXGroup;
+			children = (
 				8C65FDF31096F33C006FC19F /* PollingStatusParserDelegate.h */,
 				8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */,
+			);
+			name = delegate;
+			sourceTree = "<group>";
+		};
+		8CC6364B10BD3774009C25C9 /* helper */ = {
+			isa = PBXGroup;
+			children = (
+				799CC3CC0F4D4EEA006195BD /* URLConnectionHelper.h */,
+				799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */,
+				8C7BE4210FA0395F00F18AA1 /* ViewHelper.h */,
+				8C7BE4220FA0395F00F18AA1 /* ViewHelper.m */,
 				8C6502E0109809EC006FC19F /* PollingHelper.h */,
 				8C6502E1109809EC006FC19F /* PollingHelper.m */,
 				8CEB4E7D10B2827200A67721 /* LogoutHelper.h */,
@@ -501,7 +541,7 @@
 				3397F88210B52AB3008052AF /* SwitchServerAlertHelper.h */,
 				3397F88310B52AB3008052AF /* SwitchServerAlertHelper.m */,
 			);
-			name = utils;
+			name = helper;
 			sourceTree = "<group>";
 		};
 		8CEB4E7810B27F3700A67721 /* panelxml */ = {
@@ -533,6 +573,8 @@
 		8CFEE27F0F558C2900DF8759 /* model */ = {
 			isa = PBXGroup;
 			children = (
+				8CE7ED0510BE988600E15487 /* Monitor.h */,
+				8CE7ED0610BE988600E15487 /* Monitor.m */,
 				33981B1810B108C30076DB59 /* User.h */,
 				33981B1910B108C30076DB59 /* User.m */,
 				8C460EA91095573600C7A686 /* AbsoluteLayoutContainer.h */,
@@ -576,6 +618,8 @@
 		8CFEE2860F558C3D00DF8759 /* view */ = {
 			isa = PBXGroup;
 			children = (
+				8CE7ED0110BE987800E15487 /* MonitorView.h */,
+				8CE7ED0210BE987800E15487 /* MonitorView.m */,
 				8C460F0E1095628C00C7A686 /* TextFieldCell.h */,
 				8C460F0F1095628C00C7A686 /* TextFieldCell.m */,
 				8C460E891095563A00C7A686 /* AbsoluteLayoutContainerView.h */,
@@ -819,6 +863,11 @@
 				3397F88410B52AB3008052AF /* SwitchServerAlertHelper.m in Sources */,
 				8CF5341F10B64C1900C52FB0 /* ChoosePanelViewController.m in Sources */,
 				8CF539AC10B9359F00C52FB0 /* ErrorViewController.m in Sources */,
+				8CC6364E10BD37D8009C25C9 /* CredentialUtil.m in Sources */,
+				8CC636D010BD4DCC009C25C9 /* NSStringAdditions.m in Sources */,
+				8CE7EBE510BE773600E15487 /* ControllerException.m in Sources */,
+				8CE7ED0410BE987800E15487 /* MonitorView.m in Sources */,
+				8CE7ED0810BE988600E15487 /* Monitor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -887,6 +936,11 @@
 				3397F88510B52AB3008052AF /* SwitchServerAlertHelper.m in Sources */,
 				8CF5342010B64C1900C52FB0 /* ChoosePanelViewController.m in Sources */,
 				8CF539AB10B9359F00C52FB0 /* ErrorViewController.m in Sources */,
+				8CC6364F10BD37D8009C25C9 /* CredentialUtil.m in Sources */,
+				8CC636D110BD4DCC009C25C9 /* NSStringAdditions.m in Sources */,
+				8CE7EBE410BE773600E15487 /* ControllerException.m in Sources */,
+				8CE7ED0310BE987800E15487 /* MonitorView.m in Sources */,
+				8CE7ED0710BE988600E15487 /* Monitor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

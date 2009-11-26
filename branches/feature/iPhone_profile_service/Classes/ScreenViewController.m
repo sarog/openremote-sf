@@ -28,12 +28,6 @@
 
 @synthesize screen, polling;
 
-//- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-//    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
-//        // Custom initialization
-//    }
-//    return self;
-//}
 
 - (void)setScreen:(Screen *)s {
 	[s retain];
@@ -41,9 +35,7 @@
 	screen = s;
 	if ([[screen pollingComponentsIds] count] > 0 ) {
 		polling = [[PollingHelper alloc] initWithComponentIds:[[[screen pollingComponentsIds] componentsJoinedByString:@","] retain]];
-		//[polling requestCurrentStatusAndStartPolling];	
 	}
-	//[self setTitle:screen.name];
 	
 }
 
@@ -57,21 +49,6 @@
 	[view release];
 }
 
-
-/*
-// Implement viewDidLoad to do additional setup after loading the view.
-- (void)viewDidLoad {
-    [super viewDidLoad];
-}
-*/
-
-//- (void)startPolling {
-//	[((ScreenView *)[self view]) startPolling];
-//}
-//- (void)stopPolling {
-//	[((ScreenView *)[self view]) stopPolling];
-//}
-
 - (void)startPolling {
 	[polling requestCurrentStatusAndStartPolling];
 }
@@ -82,6 +59,9 @@
 
 - (void)dealoc {
 	[polling release];
+	[screen release];
+	
 	[super dealloc];
 }
+
 @end

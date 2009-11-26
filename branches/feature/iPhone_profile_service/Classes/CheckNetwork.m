@@ -26,6 +26,8 @@
 #import "CheckNetworkException.h"
 #import "ControllerException.h"
 #import "AppSettingsDefinition.h"
+#import "CredentialUtil.h"
+#import "ControllerException.h"
 
 #define TIMEOUT_INTERVAL 2
 
@@ -86,22 +88,22 @@
 	}
 
 	NSHTTPURLResponse *resp = nil;
+	NSError *error = nil;
 	NSURL *url = [NSURL URLWithString:[ServerDefinition panelXmlRESTUrl]]; 
-	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
-	[NSURLConnection sendSynchronousRequest:request returningResponse:&resp error:NULL];
-	
+	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
+	[CredentialUtil addCredentialToNSMutableURLRequest:request];
+
+	[NSURLConnection sendSynchronousRequest:request returningResponse:&resp error:&error];
+
 	[request release];
 
 	if ([resp statusCode] != 200 ){
-		if ([resp statusCode] == PANEL_XML_NOT_FOUND) {
-			@throw [CheckNetworkException exceptionWithTitle:@"" message:@"panel.xml not found in Controller."];
-		} else if ([resp statusCode] == INVALID_PANEL_XML) {
-			@throw [CheckNetworkException exceptionWithTitle:@"" message:[NSString stringWithFormat:@"[%d]Invalid panel.xml. Please ensure it's depolyed correctly in Controller", [resp statusCode]]];
-		} else if ([resp statusCode] == NO_SUCH_PANEL) {
-			NSString *msg = [NSString stringWithFormat:@"Current panel identity ‘%@’ isn't available. Please rechoose in Settings.", [AppSettingsDefinition getCurrentPanelIdentity]];
-			@throw [CheckNetworkException exceptionWithTitle:@"" message:msg];
+		NSLog(@"CheckNetworkException %d %@, %@", [resp statusCode], url,[error localizedDescription]);
+		
+		if ([resp statusCode] == 0 && [error code] == -1012) {			
+			@throw [CheckNetworkException exceptionWithTitle:@"" message:@"401"];
 		} else {
-			@throw [CheckNetworkException exceptionWithTitle:@"" message:[NSString stringWithFormat:@"[%d]Invalid panel.xml. Please ensure it's depolyed correctly in Controller", [resp statusCode]]];
+			@throw [CheckNetworkException exceptionWithTitle:@"" message:[ControllerException exceptionMessageOfCode:[resp statusCode]]];
 		} 
 		
 	}

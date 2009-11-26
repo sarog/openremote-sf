@@ -124,6 +124,7 @@ static NSString *unsavedChosenServerUrl = nil;
 		for (int i=0; i < [self getAutoServers].count; i++) {
 			if ([[[[self getAutoServers] objectAtIndex:i] valueForKey:@"choose"] boolValue]) {
 				serverUrl =  [[[self getAutoServers] objectAtIndex:i] valueForKey:@"url"];
+				break;
 			} 
 		}		
 		serverUrl = (serverUrl?serverUrl: [[[self getAutoServers] objectAtIndex:0] valueForKey:@"url"]);
@@ -135,6 +136,7 @@ static NSString *unsavedChosenServerUrl = nil;
 		for (int i=0; i < [self getCustomServers].count; i++) {
 			if ([[[[self getCustomServers] objectAtIndex:i] valueForKey:@"choose"] boolValue]) {
 				serverUrl =  [[[self getCustomServers] objectAtIndex:i] valueForKey:@"url"];
+				break;
 			}
 		}
 		serverUrl = (serverUrl?serverUrl: [[[self getCustomServers] objectAtIndex:0] valueForKey:@"url"]);

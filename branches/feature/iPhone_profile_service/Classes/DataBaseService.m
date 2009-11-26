@@ -21,6 +21,7 @@
 
 #import "DataBaseService.h"
 #import "ViewHelper.h"
+#import "Definition.h"
 
 @interface DataBaseService (Private)
 // Init DatabaseService with database file path.
@@ -159,6 +160,18 @@ static DataBaseService *myInstance = nil;
 	}
 	sqlite3_reset(compiledStatement);
 	sqlite3_finalize(compiledStatement);
+}
+
+- (void) saveCurrentUser{
+	User *user = [[User alloc] initWithUsernameAndPassword:[Definition sharedDefinition].username password:[Definition sharedDefinition].password];
+	[self deleteAllUsers];
+	[self insertUser:user];
+}
+
+- (void) initLastLoginUser {
+	User *user = [self findLastLoginUser];
+	[Definition sharedDefinition].username = user.username;
+	[Definition sharedDefinition].password = user.password;
 }
 
 - (void) dealloc {

@@ -21,31 +21,11 @@
 
 #import <Foundation/Foundation.h>
 
-#define UNAUTHORIZED              401
-#define REQUEST_ERROR             404
 
-#define SERVER_ERROR              500
-#define NA_SERVICE                503
-#define GATEWAY_TIMEOUT           504
-
-#define CMD_BUILDER_ERROR         418
-#define NO_SUCH_COMPONENT         419
-#define NO_SUCH_CMD_BUILDER       420
-#define INVALID_COMMAND_TYPE      421
-#define CONTROLLER_XML_NOT_FOUND  422
-#define NO_SUCH_CMD               423
-#define INVALID_CONTROLLER_XML    424
-#define INVALID_POLLING_URL       425
-#define PANEL_XML_NOT_FOUND       426
-#define INVALID_PANEL_XML         427
-#define NO_SUCH_PANEL             428
-#define INVALID_ELEMENT           429
-
-
-@interface ControllerException : NSObject {
+@interface CredentialUtil : NSObject {
 
 }
 
-+ (NSString *)exceptionMessageOfCode:(int)code;
++ (void)addCredentialToNSMutableURLRequest:(NSMutableURLRequest *)request;
 
 @end

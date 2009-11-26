@@ -47,7 +47,6 @@
 - (void)cancelTimer;
 
 @property (nonatomic,readonly)Control *control;
-@property (nonatomic,readonly)NSTimer *controlTimer;
 
 
 @end
