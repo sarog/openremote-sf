@@ -174,6 +174,18 @@ didNotSendDataWithTag:(long)tag dueToError:(NSError *)error{
 	NSLog(@"receive data from server");
 	NSString *serverUrl = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 	NSLog(@"read server url from controller %@",serverUrl);
+	
+	NSLog(@"Controller server ip is : %@", [sock connectedHost]);
+	NSString *connectedHost = [sock connectedHost];
+	NSRange protocolStrRange = [serverUrl rangeOfString:@"/"];
+	NSRange colonStrRange = [serverUrl rangeOfString:@":" options:NSBackwardsSearch];
+	NSString *protocolStr = [serverUrl substringToIndex:protocolStrRange.location+2];
+	NSString *appnameAndPortStr = [serverUrl substringFromIndex:colonStrRange.location]; 
+	NSLog(@"protocolStr is : %@", protocolStr);
+	NSLog(@"appnameAndPortStr is %@", appnameAndPortStr);
+	serverUrl = [[protocolStr stringByAppendingString:connectedHost] stringByAppendingString:appnameAndPortStr];
+	NSLog(@"Recomposed server url is : %@", serverUrl);
+	
 	[serverUrl autorelease];
 	[self onFindServer:serverUrl];
 	
