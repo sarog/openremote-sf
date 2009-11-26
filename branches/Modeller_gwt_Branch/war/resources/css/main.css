@@ -178,3 +178,14 @@ table.screen-btn-cont td.br-c{
 .x-form-cb-label {
    font-size: 11px;
 }
+
+.move-cursor {
+   background-image: url('../../resources/images/move_cursor.png');
+   background-repeat: no-repeat;
+   cursor: move;
+}
+
+.table-background {
+   background-image: url('../../resources/images/table.png');
+   background-repeat: no-repeat;
+}
