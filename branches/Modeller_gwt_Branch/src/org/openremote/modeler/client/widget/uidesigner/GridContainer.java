@@ -19,24 +19,30 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.domain.component.UIGrid;
 
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.form.FormPanel;
 
-public class GridContainer extends LayoutContainer {
-
+public class GridContainer extends ScreenComponent {
+   
+   public static final int DEFALUT_HANDLE_WIDTH = 16;
+   public static final int DEFAULT_HANDLE_HEIGHT = 16;
+   
    private GridLayoutContainer gridlayoutContainer = null;
 
-   public GridContainer(GridLayoutContainer gridlayoutContainer) {
+   public GridContainer(ScreenCanvas canvas,GridLayoutContainer gridlayoutContainer) {
+      super(canvas);
       this.gridlayoutContainer = gridlayoutContainer;
-      setSize(16, 16);
+      setSize(DEFALUT_HANDLE_WIDTH, DEFAULT_HANDLE_HEIGHT);
       setStyleAttribute("position", "absolute");
       LayoutContainer handle = new LayoutContainer();
-      handle.setSize(16, 16);
+      handle.setSize(16, DEFAULT_HANDLE_HEIGHT);
 //      handle.setStyleAttribute("background-color", "red");
       handle.addStyleName("move-cursor");
       add(handle);
-      gridlayoutContainer.setPosition(16, 16);
+      gridlayoutContainer.setPosition(DEFALUT_HANDLE_WIDTH, DEFAULT_HANDLE_HEIGHT);
       add(gridlayoutContainer);
    }
 
@@ -48,12 +54,55 @@ public class GridContainer extends LayoutContainer {
    public void setPosition(int left, int top) {
       if(gridlayoutContainer != null) {
          UIGrid grid = gridlayoutContainer.getGrid();
-         grid.setLeft(left + 16);
-         grid.setTop(top + 16);
+         grid.setLeft(left + DEFALUT_HANDLE_WIDTH);
+         grid.setTop(top + DEFAULT_HANDLE_HEIGHT);
       }
       super.setPosition(left, top);
    }
-   
-   
 
+   @Override
+   public FormPanel buildPropertiesForm() {
+      return new GridPropertyForm(this);
+   }
+
+   @Override
+   public String getName() {
+      return "gridContainer";
+   }
+
+   @Override
+   public void setName(String name) {
+      // TODO Auto-generated method stub
+      
+   }
+   
+   public void update(){
+      UIGrid grid = gridlayoutContainer.getGrid();
+      gridlayoutContainer.refreshGrid();
+      setPosition(grid.getLeft()-DEFALUT_HANDLE_WIDTH, grid.getTop()-DEFAULT_HANDLE_HEIGHT);
+      layout();
+   }
+   
+   /*@Override
+   public boolean equals(Object o) {
+      if (o instanceof GridContainer && o.getClass() == this.getClass()) {
+         GridContainer container = (GridContainer) o;
+         boolean hasSameGridLayoutContainer = container.getGridlayoutContainer() == gridlayoutContainer;
+         boolean positionChanged = getGridlayoutContainer().getGrid().getLeft() == container.getGridlayoutContainer()
+               .getGrid().getLeft()
+               && getGridlayoutContainer().getGrid().getTop() == container.getGridlayoutContainer().getGrid().getTop();
+         
+         return hasSameGridLayoutContainer && positionChanged;
+      }
+      return false;
+   }
+   
+   @Override 
+   public Object clone(){
+      GridLayoutContainer container = this.getGridlayoutContainer();
+      GridContainer result = new GridContainer(gridlayoutContainer.getScreenCanvas(),container);
+      UIGrid grid = gridlayoutContainer.getGrid();
+      result.setPosition(grid.getLeft()-DEFALUT_WIDTH, grid.getTop()-DEFAULT_HEIGHT);
+      return result;
+   }*/
 }

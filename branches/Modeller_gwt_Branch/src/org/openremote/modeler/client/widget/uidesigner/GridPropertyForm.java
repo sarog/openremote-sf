@@ -13,22 +13,22 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.google.gwt.user.client.ui.FlexTable;
 
 public class GridPropertyForm extends PropertyForm {
-   private GridLayoutContainer gridContainer = null;
-   private UIGrid grid = null;
+   private GridContainer gridContainer = null;
 
-   public GridPropertyForm(GridLayoutContainer gridContainer, UIGrid grid) {
+   public GridPropertyForm(GridContainer gridContainer) {
       super();
       this.gridContainer = gridContainer;
-      this.grid = grid;
       initForm();
    }
 
    protected void initForm() {
       this.setFieldWidth(5);
+      final UIGrid grid = gridContainer.getGridlayoutContainer().getGrid();
       Screen screen = gridContainer.getScreenCanvas().getScreen();
       FieldSet gridAttrSet = new FieldSet();
       FormLayout layout = new FormLayout();
       layout.setLabelWidth(80);
+      layout.setDefaultWidth(80);
       gridAttrSet.setLayout(layout);
       gridAttrSet.setHeading("Grid Attributes");
 
@@ -140,12 +140,12 @@ public class GridPropertyForm extends PropertyForm {
    }
    
    private void updateGrid(){
-      FlexTable screenTable = gridContainer.getScreenTable();
+      FlexTable screenTable = gridContainer.getGridlayoutContainer().getScreenTable();
       int rowNums = screenTable.getRowCount();
       for(int i = rowNums-1;i>=0;i--){
          screenTable.removeRow(i);
       }
       
-      gridContainer.refreshGrid(grid);
+      gridContainer.update();
    }
 }
