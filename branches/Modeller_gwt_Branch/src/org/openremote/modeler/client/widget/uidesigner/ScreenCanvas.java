@@ -161,8 +161,8 @@ public class ScreenCanvas extends LayoutContainer {
                GridCellContainer controlContainer = (GridCellContainer) data;
                controlContainer.setPosition(position.x, position.y);
                LayoutContainer componentContainer = new LayoutContainer();
-               componentContainer = createNewAbsoluteLayoutContainer(screen, controlContainer.getCell()
-                     .getUiComponent());
+               BoundsRecorder recorder = controlContainer.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
+               componentContainer = dragComponentFromGrid(screen, controlContainer,recorder);
                createDragSource(canvas, componentContainer);
                canvas.add(componentContainer);
                componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY() - absolutePosition.y);
@@ -325,7 +325,26 @@ public class ScreenCanvas extends LayoutContainer {
       screen.addAbsolute(absolute);
       return controlContainer;
    }
+   private AbsoluteLayoutContainer dragComponentFromGrid(Screen screen, GridCellContainer cellContainer,BoundsRecorder recorder) {
+      UIComponent uiComponent = cellContainer.getCell().getUiComponent();
+      AbsoluteLayoutContainer controlContainer = null;
+      Absolute absolute = new Absolute(IDUtil.nextID());
+      if (uiComponent instanceof UIButton) {
+         UIButton uiButton = new UIButton((UIButton)uiComponent);
+         absolute.setUIComponent(uiButton);
+         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenButton(this, uiButton));
+//         controlContainer.setSize(50, 50); // set the button's default size after drag from widget tree.
 
+      } else if (uiComponent instanceof UISwitch) {
+         UISwitch uiSwitch = new UISwitch((UISwitch)uiComponent);
+         absolute.setUIComponent(uiSwitch);
+         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenSwitch(this, uiSwitch));
+//         controlContainer.setSize(50, 50); // set the switch's default size after drag from widget tree.
+      }
+      controlContainer.setSize(recorder.getWidth(),recorder.getHeight());
+      screen.addAbsolute(absolute);
+      return controlContainer;
+   } 
    private GridContainer createGridLayoutContainer(final UIGrid grid) {
       GridLayoutContainer gridlayoutContainer = new GridLayoutContainer(this, grid);
       new DropTarget(gridlayoutContainer);
@@ -387,7 +406,4 @@ public class ScreenCanvas extends LayoutContainer {
       gridSource.setFiresEvents(false);
    }
 
-   public LayoutContainer getMoveBackGround() {
-      return moveBackGround;
-   }
 }

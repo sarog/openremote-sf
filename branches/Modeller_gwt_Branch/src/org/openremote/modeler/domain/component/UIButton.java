@@ -49,7 +49,13 @@ public class UIButton extends UIControl {
    public UIButton() {
       super();
    }
-   
+   public UIButton(UIButton btn){
+      this.name = btn.name;
+      this.repeate = btn.repeate;
+      this.image = btn.image;
+      this.navigate = btn.navigate;
+      this.pressImage = btn.pressImage;
+   }
    /**
     * Instantiates a new uI button.
     * 

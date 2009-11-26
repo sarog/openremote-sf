@@ -2,7 +2,6 @@ package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.component.UIGrid;
-import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -36,7 +35,6 @@ public class GridPropertyForm extends PropertyForm {
        * temp for set the width and height of gird.
        */
       final TextField<String> gridRowCountField = new TextField<String>();
-      gridRowCountField.ensureDebugId(DebugId.SCREEN_GRID_ROW_FIELD);
       gridRowCountField.setName("gridRow");
       gridRowCountField.setFieldLabel("Row Count");
       gridRowCountField.setAllowBlank(false);
@@ -52,7 +50,6 @@ public class GridPropertyForm extends PropertyForm {
       });
 
       final TextField<String> gridColumnCountField = new TextField<String>();
-      gridColumnCountField.ensureDebugId(DebugId.SCREEN_GRID_COLUMN_FIELD);
       gridColumnCountField.setName("gridColumn");
       gridColumnCountField.setFieldLabel("Col Count");
       gridColumnCountField.setAllowBlank(false);

@@ -122,10 +122,12 @@ public class GridLayoutContainer extends ComponentContainer {
             if (data instanceof AbsoluteLayoutContainer) {
                AbsoluteLayoutContainer container = (AbsoluteLayoutContainer) data;
                container.hideBackground();
+            } else if(data instanceof GridCellContainer ){
+               GridCellContainer container = (GridCellContainer) data;
+               container.hideBackground();
             }
             super.dragEnter(e);
          }
-
          @SuppressWarnings("unchecked")
 		public void dragDrop(DNDEvent e) {
             LayoutContainer targetCell = (LayoutContainer) e.getDropTarget().getComponent();
@@ -136,6 +138,7 @@ public class GridLayoutContainer extends ComponentContainer {
                AbsoluteLayoutContainer container = (AbsoluteLayoutContainer) data;
                cellContainer = addAbsoluteWidgetToGrid(grid, cellWidth + 1, cellHeight + 1, targetCell, targetPosition,
                      container);
+               container.hideBackground();
             } else if (data instanceof GridCellContainer) {
                cellContainer = moveCellInGrid(grid, targetCell, targetPosition, data);
             } else if (data instanceof List) {
@@ -147,7 +150,7 @@ public class GridLayoutContainer extends ComponentContainer {
                cellContainer = addNewWidget(grid, cellWidth + 1, cellHeight + 1, e, targetCell, targetPosition,
                      cellContainer);
             } else if (data instanceof GridContainer) {
-               getScreenCanvas().getMoveBackGround().hide();
+               ((ComponentContainer)data).hideBackground();
                e.setCancelled(true);
                return;
             }
@@ -450,12 +453,23 @@ public class GridLayoutContainer extends ComponentContainer {
       grid.addCell(cell);
       return createCellContainer(grid, cell, cellWidth, cellHeight);
    }
+   
+   private GridCellContainer AbsoluteToCell(UIComponent uiComponent, UIGrid grid, int cellWidth, int cellHeight) {
+      Cell cell = new Cell(IDUtil.nextID());
+      if(uiComponent instanceof UIButton) {
+         cell.setUiComponent(new UIButton((UIButton)uiComponent));
+      } else if(uiComponent instanceof UISwitch) {
+         cell.setUiComponent(new UISwitch((UISwitch)uiComponent));
+      }
+      grid.addCell(cell);
+      return createCellContainer(grid, cell, cellWidth, cellHeight);
+   }
    private GridCellContainer addAbsoluteWidgetToGrid(UIGrid grid, int cellWidth,
-         final int cellHeight, LayoutContainer targetCell, Point targetPosition, AbsoluteLayoutContainer container) {
+        int cellHeight, LayoutContainer targetCell, Point targetPosition, AbsoluteLayoutContainer container) {
       GridCellContainer cellContainer;
       container.removeFromParent();
       container.hideBackground();
-      cellContainer = createNewCellContainer( container.getAbsolute().getUIComponent(), grid, cellWidth, cellHeight);
+      cellContainer = AbsoluteToCell( container.getAbsolute().getUIComponent(), grid, cellWidth, cellHeight);
       cellContainer.getClass();
       cellContainer.setCellSpan(1, 1);
       cellContainer.setCellPosition(targetPosition.x, targetPosition.y);
