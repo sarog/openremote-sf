@@ -24,6 +24,7 @@
 #import "Toggle.h"
 #import "Button.h"
 #import "Switch.h"
+#import "Monitor.h"
 
 @implementation Control
 
@@ -37,6 +38,8 @@
 		newControl = [Button alloc];
 	} else if ([controlType isEqualToString:@"switch"]) {
 		newControl = [Switch alloc];
+	} else if ([controlType isEqualToString:@"monitor"]) {
+		newControl = [Monitor alloc];
 	}
 	return [newControl initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
 }

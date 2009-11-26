@@ -27,6 +27,8 @@
 #import "ServerDefinition.h"
 #import "ButtonView.h"
 #import "Button.h"
+#import "MonitorView.h"
+#import "Monitor.h"
 #import "CFNetwork/CFHTTPMessage.h"
 #import "Definition.h"
 #import "NotificationConstant.h"
@@ -52,6 +54,8 @@
 		controlView = [SwitchView alloc];
 	} else if  ([control isKindOfClass:[Button class]]) {
 		controlView = [ButtonView alloc];
+	} else if([control isKindOfClass:[Monitor class]]) {
+		controlView = [MonitorView alloc];
 	}
 
 	
