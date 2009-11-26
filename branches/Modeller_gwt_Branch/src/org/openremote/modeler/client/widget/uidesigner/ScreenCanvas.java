@@ -91,8 +91,10 @@ public class ScreenCanvas extends LayoutContainer {
          if (screen.getGrids().size() > 0) {
             List<UIGrid> grids = screen.getGrids();
             for (UIGrid grid : grids) {
-               // GridLayoutContainer gridContainer = createGridLayoutContainer(grid);
-               // this.add(gridContainer);
+                GridContainer gridContainer = createGridLayoutContainer(grid);
+                this.add(gridContainer);
+                gridContainer.setPosition(grid.getLeft()-GridContainer.DEFALUT_HANDLE_WIDTH, grid.getTop()-GridContainer.DEFAULT_HANDLE_HEIGHT);
+                createDragSource(this, gridContainer);
             }
          }
          layout();
@@ -136,12 +138,12 @@ public class ScreenCanvas extends LayoutContainer {
                moveBackGround.show();
             } else if (data instanceof GridCellContainer) {
                GridCellContainer container = (GridCellContainer) data;
-               Point position = getGridCellContainerPostiono(e);
+               Point position = getGridCellContainerPosition(e);
                moveBackGround.setPosition(position.x + container.getWidth(), position.y + container.getHeight());
                moveBackGround.show();
             } else if (data instanceof GridContainer) {
-               moveBackGround.setPosition(e.getClientX() - absolutePosition.x - 16, e.getClientY()
-                     - absolutePosition.y - 16);
+               moveBackGround.setPosition(e.getClientX() - absolutePosition.x - GridContainer.DEFALUT_HANDLE_WIDTH, e.getClientY()
+                     - absolutePosition.y - GridContainer.DEFAULT_HANDLE_HEIGHT);
                moveBackGround.show();
             }
             super.dragMove(e);
@@ -174,9 +176,10 @@ public class ScreenCanvas extends LayoutContainer {
             } else if (data instanceof LayoutContainer) {
                if(data instanceof GridContainer) {
                   GridContainer gridContainer = (GridContainer) data;
-                  gridContainer.setPosition(e.getClientX() - absolutePosition.x - 16, e.getClientY()
-                        - absolutePosition.y - 16);
+                  gridContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
+                        - absolutePosition.y);
                   moveBackGround.removeStyleName("table-background");
+                  SelectedWidgetContainer.setSelectWidget(gridContainer);
                } else {
                   Point position = getPosition(e);
                   LayoutContainer controlContainer = (LayoutContainer) data;
@@ -186,9 +189,11 @@ public class ScreenCanvas extends LayoutContainer {
                List<ModelData> models = (List<ModelData>) data;
                if (models.size() > 0) {
                   BeanModel dataModel = models.get(0).get("model");
-                  LayoutContainer componentContainer = new LayoutContainer();
+                  ComponentContainer componentContainer = new ComponentContainer(ScreenCanvas.this);
                   if (dataModel.getBean() instanceof UIGrid) {
-                     UIGrid grid = new UIGrid(e.getXY().x - 200, e.getXY().y - 200, 200, 200, 4, 4);
+                     UIGrid grid = new UIGrid(e.getXY().x - getAbsoluteLeft()+GridContainer.DEFALUT_HANDLE_WIDTH, e.getXY().y - getAbsoluteTop()+GridContainer.DEFAULT_HANDLE_HEIGHT,
+                           UIGrid.DEFALUT_WIDTH, UIGrid.DEFAULT_HEIGHT, UIGrid.DEFALUT_ROW_COUNT,
+                           UIGrid.DEFAULT_COL_COUNT);
                      screen.addGrid(grid);
                      componentContainer = createGridLayoutContainer(grid);
                      createGridDragSource(componentContainer);
@@ -257,8 +262,8 @@ public class ScreenCanvas extends LayoutContainer {
       int top = mousePoint.y - distance.y - absolutePosition.y;
       return new Point(left, top);
    }
-
-   private Point getGridCellContainerPostiono(DNDEvent event) {
+   
+   private Point getGridCellContainerPosition(DNDEvent event){
       GridCellContainer container = event.getData();
       Point mousePoint = event.getXY();
       Point distance = ((LayoutContainer) event.getData()).getData(AbsoluteLayoutContainer.ABSOLUTE_DISTANCE_NAME);
@@ -274,7 +279,7 @@ public class ScreenCanvas extends LayoutContainer {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
-               SelectedWidgetContainer.setSelectWidget((LayoutContainer) this);
+               SelectedWidgetContainer.setSelectWidget((ComponentContainer) this);
             }
             super.onBrowserEvent(event);
          }
@@ -332,12 +337,12 @@ public class ScreenCanvas extends LayoutContainer {
       GridLayoutContainer gridlayoutContainer = new GridLayoutContainer(this, grid);
       new DropTarget(gridlayoutContainer);
       
-      final GridContainer gridContainer = new GridContainer(gridlayoutContainer){
+      final GridContainer gridContainer = new GridContainer(ScreenCanvas.this,gridlayoutContainer){
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
-               SelectedWidgetContainer.setSelectWidget((LayoutContainer) this);
-            }
+               SelectedWidgetContainer.setSelectWidget((ComponentContainer) this);
+            } 
             super.onBrowserEvent(event);
          }
       };

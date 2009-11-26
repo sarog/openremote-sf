@@ -50,14 +50,13 @@ import com.extjs.gxt.ui.client.util.Point;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 
 /**
  * A layout container to display as grid, the inner is relative position.
  */
-public class GridLayoutContainer extends ScreenComponent {
+public class GridLayoutContainer extends ComponentContainer {
    public static final String BOUNDS_RECORD_NAME = "boundsRecord";
    /** The screen. */
 
@@ -79,7 +78,7 @@ public class GridLayoutContainer extends ScreenComponent {
 //      addStyleName("screen-background");
       
       initCellInArea(grid);
-      createGrid(grid);
+      createGrid();
       addTempDropTarget(this);
    }
 
@@ -99,7 +98,7 @@ public class GridLayoutContainer extends ScreenComponent {
     * 
     * @param grid the grid
     */
-   public void createGrid(final UIGrid grid) {
+   public void createGrid() {
       screenTable = new FlexTable();
       screenTable.setCellPadding(0);
       screenTable.setCellSpacing(0);
@@ -108,10 +107,10 @@ public class GridLayoutContainer extends ScreenComponent {
       int gridWidth = grid.getWidth();
       int gridHeight = grid.getHeight();
       screenTable.setPixelSize(gridWidth, gridHeight);
-      refreshGrid(grid);
+      refreshGrid();
    }
 
-   public void refreshGrid(final UIGrid grid) {
+   public void refreshGrid() {
       int gridWidth = grid.getWidth();
       int gridHeight = grid.getHeight();
       final int cellWidth = (gridWidth - (grid.getColumnCount() + 1)) / grid.getColumnCount();
@@ -183,7 +182,7 @@ public class GridLayoutContainer extends ScreenComponent {
          }
       }
       setSize(gridWidth, gridHeight);
-      setPosition(grid.getLeft(), grid.getTop());
+      //setPosition(grid.getLeft(), grid.getTop());
       setBorders(false);
       layout();
    }
@@ -491,20 +490,6 @@ public class GridLayoutContainer extends ScreenComponent {
       return cellContainer;
    }
 
-	@Override
-	public FormPanel buildPropertiesForm() {
-		return new GridPropertyForm(this,grid);
-	}
-	
-	@Override
-	public String getName() {
-		return "grid";
-	}
-	
-	@Override
-	public void setName(String name) {
-		return;
-	}
 
 	public UIGrid getGrid() {
 		return grid;

@@ -2,6 +2,7 @@ package org.openremote.modeler.client.utils;
 
 import org.openremote.modeler.client.event.WidgetSelectChangeEvent;
 import org.openremote.modeler.client.listener.WidgetSelectChangeListener;
+import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
 
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 
@@ -14,7 +15,7 @@ public class SelectedWidgetContainer {
       SelectedWidgetContainer.widgetSelectChangeListener = widgetSelectChangeListener;
    }
    
-   public static void setSelectWidget(LayoutContainer selectedWidget) {
+   public static void setSelectWidget(ComponentContainer selectedWidget) {
       if (SelectedWidgetContainer.selectedWidget != null) {
          SelectedWidgetContainer.selectedWidget.removeStyleName("button-border");
       }

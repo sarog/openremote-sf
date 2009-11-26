@@ -25,7 +25,6 @@ import org.openremote.modeler.client.utils.SelectedWidgetContainer;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
 
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 
@@ -34,7 +33,7 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
  */
 public class PropertyPanel extends ContentPanel {
 
-   private LayoutContainer currentLayoutContainer;
+   private ComponentContainer currentLayoutContainer;
    private FormPanel currentPropertyForm;
 //   private static PropertyPanel propertyPanel;
    public PropertyPanel() {
@@ -61,7 +60,7 @@ public class PropertyPanel extends ContentPanel {
    /**
     * Update the panel's content follow with different component.
     */
-   public void update(LayoutContainer component) {
+   public void update(ComponentContainer component) {
       if (component == null) {
          removePropertiesForm();
          layout();
@@ -73,17 +72,18 @@ public class PropertyPanel extends ContentPanel {
             ScreenComponent screenControl = alc.getScreenControl();
             // UIComponent uiComponent = alc.getAbsolute().getUIComponent();
             addPropertiesForm(screenControl);
+            currentLayoutContainer =  component;
          } else if (component instanceof GridCellContainer) {
             GridCellContainer gcc = (GridCellContainer) component;
             ScreenComponent screenControl = gcc.getScreenControl();
             // UIControl uiControl = gcc.getCell().getUiControl();
             addPropertiesForm(screenControl);
-         } else if (component instanceof GridLayoutContainer) {
-            GridLayoutContainer gridContainer = (GridLayoutContainer) component;
+            currentLayoutContainer =  component;
+         } else if (component instanceof GridContainer) {
+            GridContainer gridContainer = (GridContainer) component;
             addPropertiesForm(gridContainer);
          }
          layout();
-         currentLayoutContainer = component;
       }
 
    }

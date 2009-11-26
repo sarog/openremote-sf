@@ -30,23 +30,43 @@ import org.openremote.modeler.domain.Cell;
  */
 @SuppressWarnings("serial")
 public class UIGrid extends UIComponent {
-
+   public static final int DEFAULT_LEFT = 1;
+   public static final int DEFALUT_TOP = 1;
+   public static final int DEFALUT_WIDTH= 200;
+   public static final int DEFAULT_HEIGHT = 200;
+   public static final int DEFALUT_ROW_COUNT = 4;
+   public static final int DEFAULT_COL_COUNT = 4;
+   
    private int left;
    private int top;
    private int width;
-   private int Height;
+   private int height;
    private int rowCount;
    private int columnCount;
    private List<Cell> cells = new ArrayList<Cell>();
    
-   
+   public UIGrid(UIGrid grid){
+      this.left = grid.left;
+      this.top = grid.top;
+      this.width = grid.width;
+      this.height = grid.height;
+      this.rowCount = grid.rowCount;
+      this.columnCount = grid.columnCount;
+      this.cells = grid.cells;
+   }
    public UIGrid() {
       super();
+      this.left = DEFAULT_LEFT;
+      this.top = DEFALUT_TOP;
+      this.width = DEFALUT_WIDTH;
+      this.height = DEFAULT_HEIGHT;
+      this.columnCount = DEFAULT_COL_COUNT;
+      this.rowCount = DEFALUT_ROW_COUNT;
    }
 
    public UIGrid(int left, int top, int width, int height, int rowCount, int columnCount) {
       super();
-      Height = height;
+      this.height = height;
       this.columnCount = columnCount;
       this.left = left;
       this.rowCount = rowCount;
@@ -79,11 +99,11 @@ public class UIGrid extends UIComponent {
    }
 
    public int getHeight() {
-      return Height;
+      return height;
    }
 
    public void setHeight(int height) {
-      Height = height;
+      this.height = height;
    }
 
    public int getRowCount() {
