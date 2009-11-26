@@ -94,19 +94,14 @@ public class ScreenCanvas extends LayoutContainer {
                 GridContainer gridContainer = createGridLayoutContainer(grid);
                 this.add(gridContainer);
                 gridContainer.setPosition(grid.getLeft()-GridContainer.DEFALUT_HANDLE_WIDTH, grid.getTop()-GridContainer.DEFAULT_HANDLE_HEIGHT);
-                createDragSource(this, gridContainer);
+                createGridDragSource(gridContainer);
             }
          }
          layout();
 
          addDropTargetDNDListener(screen);
-      } else {
-         /*
-          * LayoutContainer gridLayoutContainer = createGridLayoutContainer(); add(gridLayoutContainer);
-          */
       }
-      moveBackGround.setStyleAttribute("background-color", "yellow");
-      moveBackGround.setStyleAttribute("position", "absolute");
+      moveBackGround.addStyleName("move-background");
       moveBackGround.hide();
       add(moveBackGround);
       setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
@@ -142,8 +137,7 @@ public class ScreenCanvas extends LayoutContainer {
                moveBackGround.setPosition(position.x + container.getWidth(), position.y + container.getHeight());
                moveBackGround.show();
             } else if (data instanceof GridContainer) {
-               moveBackGround.setPosition(e.getClientX() - absolutePosition.x - GridContainer.DEFALUT_HANDLE_WIDTH, e.getClientY()
-                     - absolutePosition.y - GridContainer.DEFAULT_HANDLE_HEIGHT);
+               moveBackGround.setPosition(e.getClientX() - absolutePosition.x, e.getClientY() - absolutePosition.y);
                moveBackGround.show();
             }
             super.dragMove(e);
@@ -178,7 +172,6 @@ public class ScreenCanvas extends LayoutContainer {
                   GridContainer gridContainer = (GridContainer) data;
                   gridContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
                         - absolutePosition.y);
-                  moveBackGround.removeStyleName("table-background");
                   SelectedWidgetContainer.setSelectWidget(gridContainer);
                } else {
                   Point position = getPosition(e);
@@ -383,8 +376,8 @@ public class ScreenCanvas extends LayoutContainer {
       DragSource gridSource = new DragSource(componentContainer) {
          @Override
          protected void onDragStart(DNDEvent event) {
-            moveBackGround.setSize(16, 16);
-            moveBackGround.addStyleName("table-background");
+            UIGrid grid = ((GridLayoutContainer)((GridContainer)componentContainer).getGridlayoutContainer()).getGrid();
+            moveBackGround.setSize(grid.getWidth(), grid.getHeight());
             event.setData(componentContainer);
             event.getStatus().setStatus(true);
             event.getStatus().update("drop here");
@@ -394,4 +387,7 @@ public class ScreenCanvas extends LayoutContainer {
       gridSource.setFiresEvents(false);
    }
 
+   public LayoutContainer getMoveBackGround() {
+      return moveBackGround;
+   }
 }

@@ -83,7 +83,7 @@ public class UIDesignerView extends TabItem implements View {
       timer = new Timer() {
          @Override
          public void run() {
-            autoSaveUiDesignerLayout();
+//            autoSaveUiDesignerLayout();
          }
         };
         timer.scheduleRepeating(AUTO_SAVE_INTERVAL_MS);
