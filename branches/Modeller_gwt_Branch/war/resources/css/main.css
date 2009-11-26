@@ -185,7 +185,7 @@ table.screen-btn-cont td.br-c{
    cursor: move;
 }
 
-.table-background {
-   background-image: url('../../resources/images/table.png');
-   background-repeat: no-repeat;
+.move-background{
+   position: absolute;
+   border: 1px dashed yellow;
 }

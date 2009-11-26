@@ -38,7 +38,7 @@ public class GridContainer extends ScreenComponent {
       setSize(DEFALUT_HANDLE_WIDTH, DEFAULT_HANDLE_HEIGHT);
       setStyleAttribute("position", "absolute");
       LayoutContainer handle = new LayoutContainer();
-      handle.setSize(16, DEFAULT_HANDLE_HEIGHT);
+      handle.setSize(DEFALUT_HANDLE_WIDTH, DEFAULT_HANDLE_HEIGHT);
 //      handle.setStyleAttribute("background-color", "red");
       handle.addStyleName("move-cursor");
       add(handle);

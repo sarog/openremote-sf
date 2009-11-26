@@ -82,6 +82,7 @@ public class PropertyPanel extends ContentPanel {
          } else if (component instanceof GridContainer) {
             GridContainer gridContainer = (GridContainer) component;
             addPropertiesForm(gridContainer);
+            currentLayoutContainer = null;
          }
          layout();
       }

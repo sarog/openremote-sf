@@ -139,8 +139,17 @@ public class GridLayoutContainer extends ComponentContainer {
             } else if (data instanceof GridCellContainer) {
                cellContainer = moveCellInGrid(grid, targetCell, targetPosition, data);
             } else if (data instanceof List) {
+               List<ModelData> models = (List<ModelData>)data;
+               if (models.size() > 0 && ((BeanModel) models.get(0).get("model")).getBean() instanceof UIGrid) {
+                  e.setCancelled(true);
+                  return;
+               }
                cellContainer = addNewWidget(grid, cellWidth + 1, cellHeight + 1, e, targetCell, targetPosition,
                      cellContainer);
+            } else if (data instanceof GridContainer) {
+               getScreenCanvas().getMoveBackGround().hide();
+               e.setCancelled(true);
+               return;
             }
             cellContainer.fillArea(btnInArea);
             SelectedWidgetContainer.setSelectWidget(cellContainer);
