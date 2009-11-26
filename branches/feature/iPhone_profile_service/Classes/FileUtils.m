@@ -23,6 +23,9 @@
 #import "FileUtils.h"
 #import "DirectoryDefinition.h"
 #import "StringUtils.h"
+#import "CredentialUtil.h"
+
+#define DOWNLOAD_TIMEOUT_INTERVAL 20
 
 @interface FileUtils (Private)
 	
@@ -45,12 +48,15 @@ NSFileManager *fileManager;
 + (void)downloadFromURL:(NSString *) url  path:(NSString *)p {
 	[self makeSurePathExists:p];
 	NSError *error = nil;
+	NSURLResponse *response = nil;
 	url = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)url, NULL, (CFStringRef)@"", kCFStringEncodingUTF8);
-	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[[NSURL alloc]initWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:5];
-	NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:NULL error:&error];
+	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc]initWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:DOWNLOAD_TIMEOUT_INTERVAL];
+	[CredentialUtil addCredentialToNSMutableURLRequest:request];
+	NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
 	
 	if (error) {
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[error localizedDescription] message:url delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+		NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"[%d]%@",[httpResp statusCode], [error localizedDescription]] message:url delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 		[alert show];
 		[alert release];
 		return;

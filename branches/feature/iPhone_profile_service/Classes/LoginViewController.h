@@ -26,10 +26,8 @@
 	
 	UITextField *usernameField;
 	UITextField *passwordField;
+	id theDelegate;
 
 }
-
-@property (nonatomic, readonly)	UITextField *usernameField;
-@property (nonatomic, readonly)	UITextField *passwordField;
 
 @end

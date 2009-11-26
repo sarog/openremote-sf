@@ -40,7 +40,10 @@
 		newControl = [Switch alloc];
 	} else if ([controlType isEqualToString:@"monitor"]) {
 		newControl = [Monitor alloc];
+	} else {
+		return nil;
 	}
+
 	return [newControl initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
 }
 

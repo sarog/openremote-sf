@@ -25,25 +25,26 @@
 
 @interface LoginViewController (Private)
 
-- (void)cancelView:(id)sender;
+- (void)goBack:(id)sender;
+- (void)cancelInput:(id)sender;
 @end
 
 
 @implementation LoginViewController
 
-@synthesize usernameField, passwordField;
 
-
-- (id)init {
+- (id)initWithDelegate:(id)delegate  {
 	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
 		[self	setTitle:@"Sign in"];
+		theDelegate = delegate;
 	}
 	return self;
 }
 
 - (void)viewDidLoad {
 	
-	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelView:)];
+	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(goBack:)];
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelInput:)];
 	[super viewDidLoad];
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
@@ -63,8 +64,16 @@
 	// e.g. self.myOutlet = nil;
 }
 
-- (void)cancelView:(id)sender {
+- (void)goBack:(id)sender {
 	[self dismissModalViewControllerAnimated:YES];
+	if ([theDelegate respondsToSelector:@selector(onBackFromLogin)]) {
+		[theDelegate performSelector:@selector(onBackFromLogin)];
+	}
+}
+
+- (void)cancelInput:(id)sender {
+	[usernameField resignFirstResponder];
+	[passwordField resignFirstResponder];
 }
 
 - (void)signin:(id)sender {
@@ -74,7 +83,11 @@
 	}
 	[Definition sharedDefinition].username = usernameField.text;
 	[Definition sharedDefinition].password = passwordField.text;
-	[self dismissModalViewControllerAnimated:YES];
+	[self dismissModalViewControllerAnimated:NO];
+	if ([theDelegate respondsToSelector:@selector(onSignin)]) {
+		[theDelegate performSelector:@selector(onSignin)];
+	}
+		
 }
 
 
@@ -188,7 +201,7 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
 	if (section == 1) {
-		return @"Control commands and component value updates from Controller are secured. This requires user authentication.";
+		return @"Commands and updates from Controller are secured. This requires user authentication.";
 	}
 	return nil;
 }

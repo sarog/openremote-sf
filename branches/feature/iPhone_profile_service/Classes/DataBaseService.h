@@ -46,6 +46,10 @@
 // Clean the Users table data.
 - (void) deleteAllUsers;
 
+- (void) saveCurrentUser;
+
+- (void) initLastLoginUser;
+
 @property (nonatomic, readwrite) sqlite3 *openDatabase;
 
 @end

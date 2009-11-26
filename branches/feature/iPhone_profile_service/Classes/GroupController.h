@@ -39,6 +39,7 @@
 - (BOOL)previousScreen;
 - (BOOL)nextScreen;
 - (int)currentScreenId;
+- (int)groupId;
 
 @property (nonatomic, retain) Group *group;
 

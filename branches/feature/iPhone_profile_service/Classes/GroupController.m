@@ -34,7 +34,7 @@
 - (id)initWithGroup:(Group *)newGroup {
 	if (self = [super init]) {
 		if (newGroup) {
-			group = newGroup;
+			group = [newGroup retain];// must retain newGroup here!!!
 			[self setTitle:group.name];
 		}
 		
@@ -44,6 +44,9 @@
 	return self;
 }
 
+- (int)groupId {
+	return group.groupId;
+}
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
@@ -130,6 +133,7 @@
 - (void)dealloc {
 	[paginationController release];
 	[errorViewController release];
+	[group release];
 	
 	[super dealloc];
 }

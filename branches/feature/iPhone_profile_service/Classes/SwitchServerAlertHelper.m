@@ -23,6 +23,7 @@
 #import "NotificationConstant.h"
 #import "AppSettingsDefinition.h"
 #import "ViewHelper.h"
+#import "DataBaseService.h"
 
 @interface SwitchServerAlertHelper(Private)
 -(void) switchToDiscoveredServer;
@@ -122,14 +123,19 @@
 #pragma mark Delegate method of UpdateController
 
 - (void)didUpadted {
+	[[DataBaseService sharedDataBaseService] saveCurrentUser];
 	NSLog(@"----------DidUpdated in switchServerAlertHelper------------");
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
 }
 
 - (void)didUseLocalCache:(NSString *)errorMessage {
 	NSLog(@"------------didUseLocalCache in switchServerAlertHelper------------");
-	[ViewHelper showAlertViewWithTitle:@"Warning" Message:errorMessage];
-	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
+	
+	if ([errorMessage isEqualToString:@"401"]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+	} else {
+		[ViewHelper showAlertViewWithTitle:@"Use Local Cache" Message:errorMessage];
+	}
 }
 
 - (void)dealloc {

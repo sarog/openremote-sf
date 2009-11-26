@@ -37,9 +37,7 @@
 #import	"LoginViewController.h"
 #import "AppSettingController.h"
 #import "DataBaseService.h"
-#import "User.h"
 #import "LogoutHelper.h"
-#import "ErrorViewController.h"
 
 //Private method declare
 @interface AppDelegate (Private)
@@ -70,6 +68,9 @@
 	window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	[window makeKeyAndVisible];
 	
+	// Load logined iphone user last time.
+	[[DataBaseService sharedDataBaseService] initLastLoginUser];
+	
 	defaultViewController = [[UIViewController alloc] init];
 	// Create a default view that won't be overlapped by status bar.
 	// status bar is 20px high and on the top of window.
@@ -92,25 +93,18 @@
 	groupViewMap = [[NSMutableDictionary alloc] init];
 	navigationHistory = [[NSMutableArray alloc] init];
 	
-	// Load logined iphone user last time.
-	DataBaseService *dbService = [DataBaseService sharedDataBaseService];
-	User *user = [dbService findLastLoginUser];
-	[Definition sharedDefinition].username = user.username;
-	[Definition sharedDefinition].password = user.password;
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateFromNotification:) name:NotificationNavigateTo object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateSettingsView:) name:NotificationPopulateSettingsView object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView:) name:NotificationRefreshGroupsView object:nil];	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateBackwardInHistory:) name:NotificationNavigateBack object:nil];	
+	
 }
 
 
 // this method will be called after UpdateController give a callback.
 - (void)updateDidFinished {
 	NSLog(@"----------updateDidFinished------");
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateFromNotification:) name:NotificationNavigateTo object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateSettingsView:) name:NotificationPopulateSettingsView object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView:) name:NotificationRefreshGroupsView object:nil];	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateToScreen:) name:NotificationRefreshGroupsView object:nil];	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateBackwardInHistory:) name:NotificationNavigateBack object:nil];	
-	
 	
 	[initViewController.view removeFromSuperview];
 	
@@ -125,7 +119,7 @@
 		GroupController *gc = [[GroupController alloc] initWithGroup:((Group *)[groups objectAtIndex:0])];
 		[groupControllers addObject:gc];
 		[groupViewMap setObject:gc.view forKey:[NSString stringWithFormat:@"%d", gc.group.groupId]];	
-		currentGroupController = gc;
+		currentGroupController = [gc retain];
 		[defaultView addSubview:currentGroupController.view];
 	} else {		
 		errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" message:@"Please associate screens with group or reset setting."];
@@ -201,14 +195,16 @@
 
 - (BOOL)navigateToGroup:(int)groupId toScreen:(int)screenId {
 	GroupController *targetGroupController = nil;	
-	BOOL notItSelf = groupId != currentGroupController.group.groupId;
+	BOOL notItSelf = groupId != [currentGroupController groupId];
 	
 	//if screenId is specified, and is not current group, jump to that group
 	if (groupId > 0 && notItSelf) {
 		//find in cache first
+		NSLog(@"groupControllers size = %d",groupControllers.count);
 		for (GroupController *gc in groupControllers) {
-			if (gc.group.groupId == groupId) {
+			if ([gc groupId] == groupId) {
 				targetGroupController = gc;
+				break;
 			}
 		}
 		//if not found in cache, create one
@@ -234,10 +230,10 @@
 		int targetIndex = 0;
 		for (int i = 0; i<groupControllers.count; i++) {
 			GroupController *gc = (GroupController *)[groupControllers objectAtIndex:i];
-			if (gc.group.groupId == currentGroupController.group.groupId) {
+			if ([gc groupId] == [currentGroupController groupId]) {
 				currentIndex = i;
 			}
-			if (gc.group.groupId == targetGroupController.group.groupId) {
+			if ([gc groupId] == [targetGroupController groupId]) {
 				targetIndex = i;
 			}			
 		}
@@ -306,9 +302,9 @@
 
 //prompts the user to enter a valid user name and password
 - (void)populateLoginView:(id)sender {
-	LoginViewController *loginController = [[LoginViewController alloc]init];
+	LoginViewController *loginController = [[LoginViewController alloc] initWithDelegate:self];
 	UINavigationController *loginNavController = [[UINavigationController alloc] initWithRootViewController:loginController];
-	[defaultViewController presentModalViewController:loginNavController animated:YES];
+	[defaultViewController presentModalViewController:loginNavController animated:NO];
 	[loginController release];
 	[loginNavController release];
 }
@@ -340,18 +336,41 @@
 
 #pragma mark delegate method of updateController
 - (void)didUpadted {
+	[[DataBaseService sharedDataBaseService] saveCurrentUser];
 	[self updateDidFinished];
 }
 
-- (void)didUseLocalCache:(NSString *)errorMessage {	
-	[self updateDidFinished];
-	[[ViewHelper alloc] showAlertViewWithTitleAndSettingNavigation:@"Warning" Message:[errorMessage stringByAppendingString:@" Using cached content."]];
+- (void)didUseLocalCache:(NSString *)errorMessage {
+	if ([errorMessage isEqualToString:@"401"]) {
+		[self populateLoginView:nil];
+	} else {
+		[[[ViewHelper alloc] init] showAlertViewWithTitleAndSettingNavigation:@"Warning" Message:[errorMessage stringByAppendingString:@" Using cached content."]];		
+		[self updateDidFinished];
+	}
+	
 }
 
 - (void)didUpdateFail:(NSString *)errorMessage {
-	[self updateDidFinished];
-	[[ViewHelper alloc] showAlertViewWithTitleAndSettingNavigation:@"Warning" Message:errorMessage];
+	if ([errorMessage isEqualToString:@"401"]) {
+		[self populateLoginView:nil];
+	} else {
+		[[[ViewHelper alloc] init] showAlertViewWithTitleAndSettingNavigation:@"Update Failed" Message:errorMessage];		
+		[self updateDidFinished];
+	}
+	
 }
+
+#pragma mark delegate method of LoginViewController
+
+- (void)onSignin {
+	[currentGroupController stopPolling];
+	[updateController checkConfigAndUpdate];
+}
+
+- (void)onBackFromLogin {
+	[self updateDidFinished];
+}
+
 
 - (void)dealloc {
 	[updateController release];

@@ -34,6 +34,8 @@
 #import "NotificationConstant.h"
 #import "DataBaseService.h"
 #import "User.h"
+#import "CredentialUtil.h"
+#import "ControllerException.h"
 
 @interface ControlView (Private)
 
@@ -42,7 +44,7 @@
 
 @implementation ControlView
 
-@synthesize control, controlTimer;
+@synthesize control;
 
 //NOTE:You should init all these views with initWithFrame and you should pass in valid frame rects.
 //Otherwise, UI widget will not work in nested UIViews
@@ -102,11 +104,7 @@
 	[request setURL:url];
 	[request setHTTPMethod:@"POST"];
 	
-	CFHTTPMessageRef dummyRequest = CFHTTPMessageCreateRequest(kCFAllocatorDefault, CFSTR("GET"), (CFURLRef)[request URL], kCFHTTPVersion1_1);
-	CFHTTPMessageAddAuthentication(dummyRequest, nil, (CFStringRef)[[Definition sharedDefinition] username], (CFStringRef)[[Definition sharedDefinition] password], kCFHTTPAuthenticationSchemeBasic, FALSE);
-	NSString *authString = (NSString *)CFHTTPMessageCopyHeaderFieldValue(dummyRequest, CFSTR("Authorization"));
-	CFRelease(dummyRequest);
-	[request setValue:authString forHTTPHeaderField:@"Authorization"];
+	[CredentialUtil addCredentialToNSMutableURLRequest:request];
 	
 	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
 	
@@ -118,50 +116,19 @@
 
 - (void)handleServerErrorWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
-		NSString *errorMessage = nil;
-		switch (statusCode) {
-			case 404:
-				errorMessage = [NSString stringWithString:@"The command was sent to an invalid URL."];
-				break;
-			case 418:
-				errorMessage = [NSString stringWithString:@"Controller failed to construct an event for this command. Please check the controller log."];
-				break;
-			case 419:
-				errorMessage = [NSString stringWithString:@"Controller did not recognize the sent command id."];
-				break;
-			case 420:
-				errorMessage = [NSString stringWithString:@"Controller failed to create an event for the command. Please check controller configuration and log."];
-				break;
-			case 422:
-				errorMessage = [NSString stringWithString:@"Error in controller - controller.xml is not correctly deployed."];
-				break;
-			case 423:
-				errorMessage = [NSString stringWithString:@"Controller did not locate a mapped event correctly. Please check the controller.xml configuration."];
-				break;
-			case 424:
-				errorMessage = [NSString stringWithString:@"Error in controller - invalid controller.xml. Please check controller log for errors."];
-				break;
-			case 500:
-				errorMessage = [NSString stringWithString:@"Error in controller. Please check controller log."];
-				break;
-			case 401://HTTP Basic Auth
-				errorMessage = [NSString stringWithString:@"You can't execute a protected command without authentication."];
-				[Definition sharedDefinition].password = nil;
-				break;
+		if (statusCode != 401) {
+			DataBaseService *dbService = [DataBaseService sharedDataBaseService];
+			User *user = [[User alloc] initWithUsernameAndPassword:[Definition sharedDefinition].username password:[Definition sharedDefinition].password];
+			[dbService deleteAllUsers];
+			[dbService insertUser:user];
+		} else {
+			[Definition sharedDefinition].password = nil;
 		}
-		if (!errorMessage) {
-			errorMessage = [NSString stringWithFormat:@"Occured unknown error, satus code is %d",statusCode];
-		}
+
 		[self cancelTimer];
 		isError = YES;
-		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:errorMessage];
-	} else {  // 200 
-		DataBaseService *dbService = [DataBaseService sharedDataBaseService];
-		User *user = [[User alloc] initWithUsernameAndPassword:[Definition sharedDefinition].username password:[Definition sharedDefinition].password];
-		[dbService deleteAllUsers];
-		[dbService insertUser:user];
+		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
 	}
-	
 }
 
 - (void)cancelTimer {
@@ -178,17 +145,8 @@
 
 }
 
-//Shows alertView when the request successful
+
 - (void)definitionURLConnectionDidFinishLoading:(NSData *)data {
-	//	NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-	//	if (YES) {
-	//	//if ([result isEqualToString:@"true"]) {
-	//		//UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Result" message:[[[NSString alloc] initWithFormat: @"Send Put request with event id: %d success!",control.eventID] autorelease] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-	////		[alert show];
-	////		[alert release];
-	//	}
-	//	[result release];
-	//NSLog(@"definitionURLConnectionDidFinishLoading");
 }
 
 - (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {

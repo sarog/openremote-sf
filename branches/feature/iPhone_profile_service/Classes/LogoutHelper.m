@@ -25,6 +25,7 @@
 #import "ServerDefinition.h"
 #import "ViewHelper.h"
 #import "DataBaseService.h"
+#import "ViewHelper.h"
 
 @interface LogoutHelper (Private)
 
@@ -69,6 +70,7 @@
 				break;
 			case 401://logout succuessful 
 				NSLog(@"%@ logged out successfully", [Definition sharedDefinition].username);
+				[ViewHelper showAlertViewWithTitle:@"" Message:[NSString stringWithFormat:@"%@ logged out successfully", [Definition sharedDefinition].username]];
 				[Definition sharedDefinition].password = nil;
 				DataBaseService *dbService = [DataBaseService sharedDataBaseService];			
 				[dbService deleteAllUsers];

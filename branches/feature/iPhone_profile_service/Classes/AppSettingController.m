@@ -29,6 +29,7 @@
 #import "UpdateController.h"
 #import "NotificationConstant.h"
 #import "ChoosePanelViewController.h"
+#import "DataBaseService.h"
 
 
 @interface AppSettingController (Private)
@@ -71,7 +72,7 @@
 }
 
 - (void)showSpinner {
-	spinner = [[[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(180, 117, 44, 44)] autorelease];
+	spinner = [[[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(180, 113, 44, 44)] autorelease];
 	[spinner startAnimating];
 	spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
 	spinner.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
@@ -102,6 +103,7 @@
 	for (int i=0; i < shownServers.count; i++) {
 		if ([[[shownServers objectAtIndex:i] valueForKey:@"choose"] boolValue]) {
 			url = [[shownServers objectAtIndex:i] valueForKey:@"url"];
+			break;
 		} 
 	}
 	return url;
@@ -265,24 +267,28 @@
 
 #pragma mark Delegate method of UpdateController
 - (void)didUpadted {
+	[[DataBaseService sharedDataBaseService] saveCurrentUser];
 	[self dismissModalViewControllerAnimated:YES];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
 }
 
 - (void)didUseLocalCache:(NSString *)errorMessage {
-	[ViewHelper showAlertViewWithTitle:@"Warning" Message:errorMessage];
-	[self dismissModalViewControllerAnimated:YES];
-	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
+	[self dismissModalViewControllerAnimated:NO];
+	if ([errorMessage isEqualToString:@"401"]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+	} else {
+		[ViewHelper showAlertViewWithTitle:@"Use Local Cache" Message:errorMessage];
+	}
 }
 
 - (void)didUpdateFail:(NSString *)errorMessage {
-	[ViewHelper showAlertViewWithTitle:@"Warning" Message:errorMessage];
-	[self dismissModalViewControllerAnimated:YES];
-	//[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
+	[self dismissModalViewControllerAnimated:NO];
+	if ([errorMessage isEqualToString:@"401"]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+	} else {
+		[ViewHelper showAlertViewWithTitle:@"Update Failed" Message:errorMessage];
+	}
 }
-
-
-
 
 - (void)viewWillAppear:(BOOL)animated {
 	
