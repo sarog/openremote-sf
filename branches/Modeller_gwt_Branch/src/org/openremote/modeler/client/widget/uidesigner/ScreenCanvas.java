@@ -140,8 +140,8 @@ public class ScreenCanvas extends LayoutContainer {
                moveBackGround.setPosition(position.x + container.getWidth(), position.y + container.getHeight());
                moveBackGround.show();
             } else if (data instanceof GridContainer) {
-               moveBackGround.setPosition(e.getClientX() - absolutePosition.x - 15, e.getClientY()
-                     - absolutePosition.y - 15);
+               moveBackGround.setPosition(e.getClientX() - absolutePosition.x - 16, e.getClientY()
+                     - absolutePosition.y - 16);
                moveBackGround.show();
             }
             super.dragMove(e);
@@ -174,8 +174,9 @@ public class ScreenCanvas extends LayoutContainer {
             } else if (data instanceof LayoutContainer) {
                if(data instanceof GridContainer) {
                   GridContainer gridContainer = (GridContainer) data;
-                  gridContainer.setPosition(e.getClientX() - absolutePosition.x - 15, e.getClientY()
-                        - absolutePosition.y - 15);
+                  gridContainer.setPosition(e.getClientX() - absolutePosition.x - 16, e.getClientY()
+                        - absolutePosition.y - 16);
+                  moveBackGround.removeStyleName("table-background");
                } else {
                   Point position = getPosition(e);
                   LayoutContainer controlContainer = (LayoutContainer) data;
@@ -328,9 +329,19 @@ public class ScreenCanvas extends LayoutContainer {
    }
 
    private GridContainer createGridLayoutContainer(final UIGrid grid) {
-      final GridLayoutContainer gridlayoutContainer = new GridLayoutContainer(this, grid);
+      GridLayoutContainer gridlayoutContainer = new GridLayoutContainer(this, grid);
       new DropTarget(gridlayoutContainer);
-      new KeyNav<ComponentEvent>(gridlayoutContainer) {
+      
+      final GridContainer gridContainer = new GridContainer(gridlayoutContainer){
+         @Override
+         public void onBrowserEvent(Event event) {
+            if (event.getTypeInt() == Event.ONMOUSEDOWN) {
+               SelectedWidgetContainer.setSelectWidget((LayoutContainer) this);
+            }
+            super.onBrowserEvent(event);
+         }
+      };
+      new KeyNav<ComponentEvent>(gridContainer) {
          @Override
          public void onDelete(ComponentEvent ce) {
             super.onDelete(ce);
@@ -343,25 +354,17 @@ public class ScreenCanvas extends LayoutContainer {
                public void handleEvent(MessageBoxEvent be) {
                   if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
                      ScreenCanvas.this.getScreen().removeGrid(grid);
-                     gridlayoutContainer.removeFromParent();
+                     gridContainer.removeFromParent();
                      SelectedWidgetContainer.setSelectWidget(null);
                   }
                }
             });
             box.show();
          }
-
-      }.bind(gridlayoutContainer);
-
-      return new GridContainer(gridlayoutContainer){
-         @Override
-         public void onBrowserEvent(Event event) {
-            if (event.getTypeInt() == Event.ONMOUSEDOWN) {
-               SelectedWidgetContainer.setSelectWidget((LayoutContainer) this);
-            }
-            super.onBrowserEvent(event);
-         }
-      };
+         
+      }.bind(gridContainer);
+      
+      return gridContainer;
    }
 
    public Screen getScreen() {
@@ -375,12 +378,11 @@ public class ScreenCanvas extends LayoutContainer {
       DragSource gridSource = new DragSource(componentContainer) {
          @Override
          protected void onDragStart(DNDEvent event) {
-            GridContainer gridContainer = (GridContainer) componentContainer;
-            UIGrid grid = gridContainer.getGridlayoutContainer().getGrid();
-            moveBackGround.setSize(grid.getWidth(), grid.getHeight());
+            moveBackGround.setSize(16, 16);
+            moveBackGround.addStyleName("table-background");
             event.setData(componentContainer);
             event.getStatus().setStatus(true);
-            event.getStatus().update("drag and drop");
+            event.getStatus().update("drop here");
          }
       };
       gridSource.setGroup(Constants.CONTROL_DND_GROUP);

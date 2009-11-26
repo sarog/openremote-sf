@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import org.openremote.modeler.domain.component.UIGrid;
+
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 
 public class GridContainer extends LayoutContainer {
@@ -27,19 +29,31 @@ public class GridContainer extends LayoutContainer {
 
    public GridContainer(GridLayoutContainer gridlayoutContainer) {
       this.gridlayoutContainer = gridlayoutContainer;
-      setSize(15, 15);
+      setSize(16, 16);
       setStyleAttribute("position", "absolute");
       LayoutContainer handle = new LayoutContainer();
-      handle.setSize(15, 15);
-      handle.setStyleAttribute("background-color", "red");
-      handle.addStyleName("cursor-move");
+      handle.setSize(16, 16);
+//      handle.setStyleAttribute("background-color", "red");
+      handle.addStyleName("move-cursor");
       add(handle);
-      gridlayoutContainer.setPosition(15, 15);
+      gridlayoutContainer.setPosition(16, 16);
       add(gridlayoutContainer);
    }
 
    public GridLayoutContainer getGridlayoutContainer() {
       return gridlayoutContainer;
    }
+
+   @Override
+   public void setPosition(int left, int top) {
+      if(gridlayoutContainer != null) {
+         UIGrid grid = gridlayoutContainer.getGrid();
+         grid.setLeft(left + 16);
+         grid.setTop(top + 16);
+      }
+      super.setPosition(left, top);
+   }
+   
+   
 
 }
