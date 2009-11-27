@@ -25,6 +25,7 @@
 #import "Button.h"
 #import "Switch.h"
 #import "Monitor.h"
+#import "Slider.h"
 
 @implementation Control
 
@@ -40,7 +41,9 @@
 		newControl = [Switch alloc];
 	} else if ([controlType isEqualToString:@"monitor"]) {
 		newControl = [Monitor alloc];
-	} else {
+	} else if ([controlType isEqualToString:@"slider"]) {
+		newControl = [Slider alloc];
+	}else {
 		return nil;
 	}
 

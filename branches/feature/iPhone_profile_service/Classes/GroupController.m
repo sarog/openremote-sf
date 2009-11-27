@@ -133,7 +133,7 @@
 - (void)dealloc {
 	[paginationController release];
 	[errorViewController release];
-	[group release];
+	//[group release];
 	
 	[super dealloc];
 }
