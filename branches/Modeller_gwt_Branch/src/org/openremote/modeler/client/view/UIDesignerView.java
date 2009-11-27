@@ -151,11 +151,11 @@ public class UIDesignerView extends TabItem implements View {
 //      west.add(activityPanel);
 //      applicationView.setActivityPanel(activityPanel);
       
-      west.add(new ScreenPanel(screenTab));
-      groupPanel = new GroupPanel();
-      west.add(groupPanel);
-      west.add(new ProfilePanel());
-      applicationView.setGroupPanel(groupPanel);
+//      west.add(new ScreenPanel(screenTab));
+//      groupPanel = new GroupPanel();
+//      west.add(groupPanel);
+      west.add(new ProfilePanel(screenTab));
+//      applicationView.setGroupPanel(groupPanel);
       westData.setMargins(new Margins(2));
       add(west, westData);
    }

@@ -75,32 +75,31 @@ public class ScreenCanvas extends LayoutContainer {
       setSize(canvas.getWidth(), canvas.getHeight());
       setBorders(true);
       setStyleAttribute("position", "relative");
-      if (screen.isAbsoluteLayout()) {
-         if (screen.getAbsolutes().size() > 0) {
-            List<Absolute> absolutes = screen.getAbsolutes();
-            for (Absolute absolute : absolutes) {
-               AbsoluteLayoutContainer controlContainer = createAbsoluteLayoutContainer(screen, absolute,
-                     ScreenComponent.build(this, absolute.getUIComponent()));
-               controlContainer.setSize(absolute.getWidth(), absolute.getHeight());
-               controlContainer.setPosition(absolute.getLeft(), absolute.getTop());
-               this.add(controlContainer);
-               new Resizable(controlContainer, Constants.RESIZABLE_HANDLES);
-               createDragSource(this, controlContainer);
-            }
+      if (screen.getAbsolutes().size() > 0) {
+         List<Absolute> absolutes = screen.getAbsolutes();
+         for (Absolute absolute : absolutes) {
+            AbsoluteLayoutContainer controlContainer = createAbsoluteLayoutContainer(screen, absolute, ScreenComponent
+                  .build(this, absolute.getUIComponent()));
+            controlContainer.setSize(absolute.getWidth(), absolute.getHeight());
+            controlContainer.setPosition(absolute.getLeft(), absolute.getTop());
+            this.add(controlContainer);
+            new Resizable(controlContainer, Constants.RESIZABLE_HANDLES);
+            createDragSource(this, controlContainer);
          }
-         if (screen.getGrids().size() > 0) {
-            List<UIGrid> grids = screen.getGrids();
-            for (UIGrid grid : grids) {
-                GridContainer gridContainer = createGridLayoutContainer(grid);
-                this.add(gridContainer);
-                gridContainer.setPosition(grid.getLeft()-GridContainer.DEFALUT_HANDLE_WIDTH, grid.getTop()-GridContainer.DEFAULT_HANDLE_HEIGHT);
-                createGridDragSource(gridContainer);
-            }
-         }
-         layout();
-
-         addDropTargetDNDListener(screen);
       }
+      if (screen.getGrids().size() > 0) {
+         List<UIGrid> grids = screen.getGrids();
+         for (UIGrid grid : grids) {
+            GridContainer gridContainer = createGridLayoutContainer(grid);
+            this.add(gridContainer);
+            gridContainer.setPosition(grid.getLeft() - GridContainer.DEFALUT_HANDLE_WIDTH, grid.getTop()
+                  - GridContainer.DEFAULT_HANDLE_HEIGHT);
+            createGridDragSource(gridContainer);
+         }
+      }
+      layout();
+
+      addDropTargetDNDListener(screen);
       moveBackGround.addStyleName("move-background");
       moveBackGround.hide();
       add(moveBackGround);

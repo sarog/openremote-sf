@@ -31,7 +31,7 @@ import org.openremote.modeler.touchpanel.TouchPanelDefinition;
  * The Class UIScreen.
  */
 @SuppressWarnings("serial")
-public class Screen extends BusinessEntity {
+public class Screen extends RefedEntity {
 
    /** The default name index. */
    private static int defaultNameIndex = 1;
@@ -134,9 +134,7 @@ public class Screen extends BusinessEntity {
     * @param absolutes the new absolutes
     */
    public void setAbsolutes(List<Absolute> absolutes) {
-      if (absoluteLayout) {
-         this.absolutes = absolutes;
-      }
+      this.absolutes = absolutes;
    }
 
    /**
@@ -145,9 +143,7 @@ public class Screen extends BusinessEntity {
     * @param absolute the absolute
     */
    public void addAbsolute(Absolute absolute) {
-      if (absoluteLayout) {
-         this.absolutes.add(absolute);
-      }
+      this.absolutes.add(absolute);
    }
    
    /**

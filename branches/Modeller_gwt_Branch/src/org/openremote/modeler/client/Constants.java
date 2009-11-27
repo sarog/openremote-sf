@@ -72,4 +72,8 @@ public class Constants {
    
    /** Make resizable in east and south direction. */
    public static final String RESIZABLE_HANDLES = "e s";
+   
+   public static final String CUSTOM_PANEL = "customPanel";
+   public static final String DEFAULT_GROUP = "firstGroup";
+   public static final String DEFAULT_SCREEN = "firstScreen";
 }

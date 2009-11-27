@@ -309,18 +309,42 @@ public class TreePanelBuilder {
       return widgetTree;
    }
    
-   public static TreePanel<BeanModel> buildPanelTree() {
+   public static TreePanel<BeanModel> buildPanelTree(final ScreenTab screenTab) {
       if (panelTreeStore == null) {
          panelTreeStore = new TreeStore<BeanModel>();
       }
-      TreePanel<BeanModel> panelTree = new TreePanel<BeanModel>(panelTreeStore);
+      TreePanel<BeanModel> panelTree = new TreePanel<BeanModel>(panelTreeStore) {
+         @Override
+         public void onBrowserEvent(Event event) {
+            if (event.getTypeInt() == Event.ONDBLCLICK) {
+               BeanModel beanModel = this.getSelectionModel().getSelectedItem();
+               if (beanModel.getBean() instanceof ScreenRef) {
+                  Screen screen = ((ScreenRef)beanModel.getBean()).getScreen();
+                  ScreenTabItem screenTabItem = null;
+                  for (TabItem tabPanel : screenTab.getItems()) {
+                     screenTabItem = (ScreenTabItem) tabPanel;
+                     if (screen == screenTabItem.getScreen()) {
+                        screenTab.setSelection(screenTabItem);
+                        return;
+                     } else {
+                        screenTabItem = null;
+                     }
+                  }
+                  if (screenTabItem == null) {
+                     screenTabItem = new ScreenTabItem(screen);
+                     screenTab.add(screenTabItem);
+                     screenTab.setSelection(screenTabItem);
+                  }
+               }
+            }
+            
+            super.onBrowserEvent(event);
+         }
+      };
       panelTree.setStateful(true);
       panelTree.setBorders(false);
       panelTree.setHeight("100%");
       panelTree.setDisplayProperty("displayName");
-//      TreeFolderBean folderBean = new TreeFolderBean();
-//      folderBean.setDisplayName("groups");
-//      groupTreeStore.add(folderBean.getBeanModel(), true);
 
       panelTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
@@ -328,6 +352,8 @@ public class TreePanelBuilder {
                return ICON.panelIcon();
             } else if (thisModel.getBean() instanceof GroupRef) {
                return ICON.activityIcon();
+            } else if (thisModel.getBean() instanceof ScreenRef) {
+               return ICON.screenIcon();
             } else {
                return ICON.panelIcon();
             }
