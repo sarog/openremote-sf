@@ -26,12 +26,12 @@
 
 @interface SliderView(Private)
 - (void) initSlider;
-- (void) afterDrag:(UISlider *)sender;
+- (void) afterSlide:(UISlider *)sender;
 @end
 
 @implementation SliderView
 
-@synthesize slider;
+@synthesize slider, currentValue;
 
 #pragma mark Overridden methods
 
@@ -41,6 +41,7 @@
 	PollingStatusParserDelegate *delegate = (PollingStatusParserDelegate *)[notification object];
 	float newStatus = [[delegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",control.controlId]] floatValue];
 	slider.value = newStatus;
+	currentValue = (int)newStatus;
 }
 
 // This method is abstract method of indirect superclass UIView's.
@@ -58,20 +59,26 @@
 		[slider removeFromSuperview];
 		[slider release];
 	}
-	slider = [[UISlider alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+	slider = [[UISlider alloc] initWithFrame:[self bounds]];
 	Slider *theSlider = (Slider *)control;
 	slider.minimumValue = theSlider.minValue;
 	slider.maximumValue = theSlider.maxValue;
-	slider.continuous = NO;
+	//slider.continuous = NO;
 	slider.value = 0;
-	[slider addTarget:self action:@selector(afterDrag:) forControlEvents:UIControlEventValueChanged];
+	currentValue = 0;
+	[slider addTarget:self action:@selector(afterSlide:) forControlEvents:UIControlEventValueChanged];
 	[self addSubview:slider];
 }
 
 // This method will be executed after slide action finished.
-- (void) afterDrag:(UISlider *)sender {
-	NSLog(@"The current value is : %f", [sender value]);
-	[self sendCommandRequest: [NSString stringWithFormat:@"%f", [sender value]]];
+- (void) afterSlide:(UISlider *)sender {
+	int afterSlideValue = (int)[sender value];
+	if (currentValue >= 0 && abs(currentValue-afterSlideValue) > MIN_SLIDE_VARIANT) {
+		NSLog(@"The value sent is : %d", afterSlideValue);
+		[self sendCommandRequest: [NSString stringWithFormat:@"%d", afterSlideValue]];
+	} else {
+		NSLog(@"The min slide variant value less than %d", MIN_SLIDE_VARIANT);
+	}
 }
 
 -(void) dealloc{
