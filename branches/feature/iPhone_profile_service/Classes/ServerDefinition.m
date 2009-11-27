@@ -21,6 +21,9 @@
 
 #import "ServerDefinition.h"
 #import "AppSettingsDefinition.h"
+#import "StringUtils.h"
+
+#define SECURITY_PORT 8443
 
 @implementation ServerDefinition
 
@@ -35,7 +38,10 @@
 	static NSString *serverUrl;
 	serverUrl = [AppSettingsDefinition getCurrentServerUrl];
 	serverUrl = [serverUrl stringByReplacingOccurrencesOfString:@"http" withString:@"https"];
-	serverUrl = [serverUrl stringByReplacingOccurrencesOfString:@"8080" withString:@"8443"];
+	
+	NSString *port = [StringUtils parsePortFromServerUrl:serverUrl];
+	serverUrl = [serverUrl stringByReplacingOccurrencesOfString:port withString:[NSString stringWithFormat:@"%d", SECURITY_PORT]];
+	
 	return  serverUrl;
 }
 
@@ -80,5 +86,8 @@
 	return [[AppSettingsDefinition getUnsavedChosenServerUrl] stringByAppendingPathComponent:@"rest/panels"];
 }
 
++ (NSString *)hostName {
+	return [StringUtils parseHostNameFromServerUrl:[self serverUrl]];
+}
 
 @end

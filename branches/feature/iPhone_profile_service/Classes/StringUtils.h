@@ -30,4 +30,8 @@
 
 + (NSString *)parsefileNameFromString:(NSString *)str ;
 
++ (NSString *)parsePortFromServerUrl:(NSString *)serverUrl;
+
++ (NSString *)parseHostNameFromServerUrl:(NSString *)serverUrl;
+
 @end

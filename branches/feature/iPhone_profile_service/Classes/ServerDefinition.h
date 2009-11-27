@@ -36,5 +36,6 @@
 + (NSString *)logoutUrl;
 + (NSString *)panelsRESTUrl;
 + (NSString *)panelXmlRESTUrl;
++ (NSString *)hostName;
 
 @end
