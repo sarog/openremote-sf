@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.uidesigner.ScreenWindow;
+import org.openremote.modeler.domain.Background;
 import org.openremote.modeler.domain.Grid;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
@@ -101,7 +102,7 @@ public class ScreenBeanModelProxy {
          screen.setAbsoluteLayout(true);
       } 
       if (map.get(ScreenWindow.SCREEN_BACKGROUND) != null) {
-         screen.setBackground(map.get(ScreenWindow.SCREEN_BACKGROUND));
+         screen.setBackground(new Background(map.get(ScreenWindow.SCREEN_BACKGROUND)));
       }
 //      Integer row = Integer.parseInt(map.get(ScreenWindow.SCREEN_ROW_COUNT));
 //      Integer column = Integer.parseInt(map.get(ScreenWindow.SCREEN_COLUMN_COUNT));

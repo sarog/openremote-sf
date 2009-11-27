@@ -33,7 +33,7 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
  */
 public class PropertyPanel extends ContentPanel {
 
-   private ComponentContainer currentLayoutContainer;
+   private PropertyPanelBuilder currentLayoutContainer;
    private FormPanel currentPropertyForm;
 //   private static PropertyPanel propertyPanel;
    public PropertyPanel() {
@@ -60,7 +60,7 @@ public class PropertyPanel extends ContentPanel {
    /**
     * Update the panel's content follow with different component.
     */
-   public void update(ComponentContainer component) {
+   public void update(PropertyPanelBuilder component) {
       if (component == null) {
          removePropertiesForm();
          layout();
@@ -83,6 +83,10 @@ public class PropertyPanel extends ContentPanel {
             GridContainer gridContainer = (GridContainer) component;
             addPropertiesForm(gridContainer);
             currentLayoutContainer = null;
+         } else if (component instanceof ScreenCanvas){
+            ScreenCanvas canvas = (ScreenCanvas) component;
+            addPropertiesForm(canvas);
+            currentLayoutContainer =  component;
          }
          layout();
       }
@@ -93,7 +97,7 @@ public class PropertyPanel extends ContentPanel {
     * @param screenControl
     * @param uiComponent
     */
-   private void addPropertiesForm(ScreenComponent screenControl) {
+   private void addPropertiesForm(PropertyPanelBuilder screenControl) {
       if(currentPropertyForm != null) {
          currentPropertyForm.removeFromParent();
       }

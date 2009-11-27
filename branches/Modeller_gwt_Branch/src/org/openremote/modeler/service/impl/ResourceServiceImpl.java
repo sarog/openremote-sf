@@ -536,8 +536,8 @@ public class ResourceServiceImpl implements ResourceService {
       xmlContent.append("  <screens>\n");
       for (Screen screen : screens) {
          xmlContent.append("    <screen id=\"" + screen.getOid() + "\" name=\"" + screen.getName() + "\"");
-         if (!"".equals(screen.getBackground())) {
-            xmlContent.append(" background=\"" + screen.getBackground() + "\"");
+         if (!"".equals(screen.getBackground().getSrc())) {
+            xmlContent.append(" background=\"" + screen.getBackground().getSrc() + "\"");
          }
          xmlContent.append(">\n");
          if (screen.isAbsoluteLayout()) {

@@ -18,8 +18,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package org.openremote.modeler.domain;
-
 import java.util.ArrayList;
+
 import java.util.List;
 
 import javax.persistence.Transient;
@@ -54,8 +54,11 @@ public class Screen extends RefedEntity {
    private TouchPanelDefinition touchPanelDefinition;
    
    /** The background. */
-   private String background = "";
+   private Background background = new Background("");
 
+   public Screen (){
+      this.background = new Background("");
+   }
    /**
     * Gets the name.
     * 
@@ -95,17 +98,8 @@ public class Screen extends RefedEntity {
       return touchPanelDefinition;
    }
 
-   /**
-    * Gets the background.
-    * 
-    * @return the background
-    */
-   public String getBackground() {
-      return background;
-   }
-
    public String getCSSBackground() {
-      return background.replaceAll(" ", "%20");
+      return background.getSrc().replaceAll(" ", "%20");
    }
 
    /**
@@ -160,7 +154,7 @@ public class Screen extends RefedEntity {
     * 
     * @param background the new background
     */
-   public void setBackground(String background) {
+   public void setBackground(Background background) {
       this.background = background;
    }
 
@@ -229,4 +223,10 @@ public class Screen extends RefedEntity {
          this.grids.remove(grid);
       }
    }
+
+   public Background getBackground() {
+      return background;
+   }
+   
+   
 }
