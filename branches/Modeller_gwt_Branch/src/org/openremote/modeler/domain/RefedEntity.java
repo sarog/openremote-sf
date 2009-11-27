@@ -19,50 +19,23 @@
 */
 package org.openremote.modeler.domain;
 
-import javax.persistence.Transient;
-
+/**
+ * The Class RefedEntity defined refCount.
+ */
 @SuppressWarnings("serial")
-public class GroupRef extends BusinessEntity {
+public class RefedEntity extends BusinessEntity {
 
-   private Group group;
-   private Panel panel;
+   private int refCount = 0;
    
-   public GroupRef() {
-   }
-   public GroupRef(Group group) {
-      super();
-      group.ref();
-      this.group = group;
-   }
-   public Group getGroup() {
-      return group;
-   }
-   public Panel getPanel() {
-      return panel;
-   }
-   public void setGroup(Group group) {
-      if (this.group != null) {
-         this.group.releaseRef();
-      }
-      group.ref();
-      this.group = group;
-   }
-   public void setPanel(Panel panel) {
-      this.panel = panel;
+   public void ref() {
+      refCount++;
    }
    
-   /**
-    * {@inheritDoc}
-    * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()
-    */
-   @Override
-   @Transient
-   public String getDisplayName() {
-      return group.getName();
+   public void releaseRef() {
+      refCount--;
    }
    
-   @Transient
-   public long getGroupId() {
-      return group.getOid();
+   public int getRefCount() {
+      return refCount;
    }
 }

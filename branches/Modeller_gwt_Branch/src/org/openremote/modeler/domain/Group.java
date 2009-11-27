@@ -28,7 +28,7 @@ import javax.persistence.Transient;
  * The Class Group.
  */
 @SuppressWarnings("serial")
-public class Group extends BusinessEntity {
+public class Group extends RefedEntity {
 
    /** The default name index. */
    private static int defaultNameIndex = 1;

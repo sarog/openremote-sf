@@ -185,7 +185,7 @@ table.screen-btn-cont td.br-c{
    cursor: move;
 }
 
-.move-background{
+.move-background {
    position: absolute;
    border: 1px solid yellow;
 }

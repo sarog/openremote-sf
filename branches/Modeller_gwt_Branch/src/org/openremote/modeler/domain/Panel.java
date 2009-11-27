@@ -24,6 +24,9 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
+import org.openremote.modeler.touchpanel.TouchPanelDefinition;
+
 /**
  * The Panel define the different device touch panel, such as iPhone panel, wall panel etc.
  */
@@ -33,6 +36,7 @@ public class Panel extends BusinessEntity {
    private static int defaultNameIndex = 1;
    private String name;
    private List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+   private TouchPanelDefinition touchPanelDefinition;
    
    public String getName() {
       return name;
@@ -52,12 +56,19 @@ public class Panel extends BusinessEntity {
    public void removeGroupRef(GroupRef groupRef) {
       groupRefs.remove(groupRef);
    }
+   public TouchPanelDefinition getTouchPanelDefinition() {
+      return touchPanelDefinition;
+   }
+   public void setTouchPanelDefinition(TouchPanelDefinition touchPanelDefinition) {
+      this.touchPanelDefinition = touchPanelDefinition;
+   }
    /* (non-Javadoc)
     * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()
     */
    @Transient
    public String getDisplayName() {
-      return name;
+      TouchPanelCanvasDefinition canvas = touchPanelDefinition.getCanvas();
+      return name + "(" + touchPanelDefinition.getName() + "," + canvas.getWidth() + "X" + canvas.getHeight() + ")";
    }
    
    @Transient

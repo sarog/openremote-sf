@@ -42,6 +42,7 @@ public class ScreenRef extends BusinessEntity {
     */
    public ScreenRef(Screen screen) {
       super();
+      screen.ref();
       this.screen = screen;
    }
    
@@ -61,6 +62,10 @@ public class ScreenRef extends BusinessEntity {
     * @param screen the new screen
     */
    public void setScreen(Screen screen) {
+      if (this.screen != null) {
+         this.screen.releaseRef();
+      }
+      screen.ref();
       this.screen = screen;
    }
 
