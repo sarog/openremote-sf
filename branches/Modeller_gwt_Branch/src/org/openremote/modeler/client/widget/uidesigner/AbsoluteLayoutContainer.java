@@ -22,10 +22,12 @@ package org.openremote.modeler.client.widget.uidesigner;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.domain.Absolute;
 
+import com.extjs.gxt.ui.client.widget.form.FormPanel;
+
 /**
  * A layout container act as absolute position in screen canvas.
  */
-public class AbsoluteLayoutContainer extends ComponentContainer {
+public class AbsoluteLayoutContainer extends ComponentContainer implements PropertyPanelBuilder{
    public static final String ABSOLUTE_DISTANCE_NAME = "distance";
    private Absolute absolute;
    private ScreenComponent screenControl;
@@ -60,6 +62,11 @@ public class AbsoluteLayoutContainer extends ComponentContainer {
    public void setPosition(int left, int top) {
       super.setPosition(left, top);
       absolute.setPosition(left, top);
+   }
+
+   @Override
+   public FormPanel buildPropertiesForm() {
+     return this.screenControl.buildPropertiesForm();
    }
 
 }

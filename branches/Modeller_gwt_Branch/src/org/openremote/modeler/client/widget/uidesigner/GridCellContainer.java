@@ -22,10 +22,12 @@ package org.openremote.modeler.client.widget.uidesigner;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.domain.Cell;
 
+import com.extjs.gxt.ui.client.widget.form.FormPanel;
+
 /**
  * The Class GridCellContainer.
  */
-public class GridCellContainer extends ComponentContainer {
+public class GridCellContainer extends ComponentContainer implements PropertyPanelBuilder{
 
    private Cell cell;
    private ScreenComponent screenControl;
@@ -93,5 +95,9 @@ public class GridCellContainer extends ComponentContainer {
    
    public void setName(String name) {
       screenControl.setName(name);
+   }
+   @Override
+   public FormPanel buildPropertiesForm() {
+     return this.screenControl.buildPropertiesForm();
    }
 }

@@ -178,7 +178,7 @@ public class ScreenWindow extends FormWindow {
       
       final RadioGroup layoutGroup = new RadioGroup();
       layoutGroup.setId(SCREEN_RADIOLAYOUTGROUP);
-      layoutGroup.setFieldLabel("Layout");
+      layoutGroup.setFieldLabel(SCREEN_RADIOLAYOUTGROUP);
       layoutGroup.add(gridLayout);
       layoutGroup.add(absoluteLayout);
       layoutGroup.addListener(Events.Change, new Listener<FieldEvent>() {
@@ -211,7 +211,7 @@ public class ScreenWindow extends FormWindow {
          panel.setValue(data);
          panel.disable();
          if (screen.getBackground() != null) {
-            background.setValue(screen.getBackground());
+            background.setValue(screen.getBackground().getSrc());
          }
          if (!screen.isAbsoluteLayout()) {
             gridLayout.setValue(true);
@@ -389,11 +389,11 @@ public class ScreenWindow extends FormWindow {
       }
       if (!uploadSuccessfully && uploadFieldHasValue) {
          if (editMode) {
-            boolean wantToChangeBackground = !uploadFieldValue.equals(screen.getBackground());
+            boolean wantToChangeBackground = !uploadFieldValue.equals(screen.getBackground().getSrc());
             boolean hasHadBackgroundImg = !screen.getBackground().equals("");
             if (wantToChangeBackground && hasHadBackgroundImg) {
                MessageBox.alert("Warning", "Update background failed!<br />The background will not be changed!", null);
-               attrMap.put(SCREEN_BACKGROUND, screen.getBackground());
+               attrMap.put(SCREEN_BACKGROUND, screen.getBackground().getSrc());
             } else if (wantToChangeBackground && !hasHadBackgroundImg) {
                MessageBox.alert("Warning", "Upload background failed<br />The background will not be changed!", null);
                attrMap.put(SCREEN_BACKGROUND, "");

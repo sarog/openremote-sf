@@ -17,30 +17,18 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.client.event;
+package org.openremote.modeler.client.widget.uidesigner;
 
-import org.openremote.modeler.client.widget.uidesigner.PropertyPanelBuilder;
-
-import com.extjs.gxt.ui.client.event.BaseEvent;
-import com.extjs.gxt.ui.client.event.EventType;
-
-public class WidgetSelectChangeEvent extends BaseEvent {
-
-   public static final EventType WIDGETSELECTCHANGEED = new EventType();
-   
-   private PropertyPanelBuilder selectWidget;
-   
-   public WidgetSelectChangeEvent() {
-      super(WIDGETSELECTCHANGEED);
-   }
-   
-   public WidgetSelectChangeEvent(PropertyPanelBuilder data) {
-      this();
-      selectWidget = data;
-   }
-   
-   public PropertyPanelBuilder getSelectWidget() {
-      return selectWidget;
-   }
-  
+import com.extjs.gxt.ui.client.widget.form.FormPanel;
+/**
+ * This interface is used to build a property panel for a component. 
+ * @author Javen
+ *
+ */
+public interface PropertyPanelBuilder {
+   /**
+    * build a proprety panel for a screen component. 
+    * @return a form panel for a screen component. 
+    */
+   public FormPanel buildPropertiesForm(); 
 }

@@ -21,10 +21,12 @@ import java.util.List;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.SelectedWidgetContainer;
+import org.openremote.modeler.client.widget.ScreenPropertyForm;
 import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.domain.Absolute;
+import org.openremote.modeler.domain.Background;
 import org.openremote.modeler.domain.BoundsRecorder;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.component.UIButton;
@@ -48,12 +50,13 @@ import com.extjs.gxt.ui.client.util.Point;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.google.gwt.user.client.Event;
 
 /**
  * A layout container for create and dnd components.
  */
-public class ScreenCanvas extends LayoutContainer {
+public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuilder{
 
    /** The absolute position. */
    private Point absolutePosition = null;
@@ -106,8 +109,52 @@ public class ScreenCanvas extends LayoutContainer {
       setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
       setStyleAttribute("backgroundRepeat", "no-repeat");
       setStyleAttribute("overflow", "hidden");
+
+      new DragSource(this);
    }
 
+   public void updateGround(){
+      Background bgd = screen.getBackground();
+      setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
+      setStyleAttribute("backgroundRepeat", "no-repeat");
+      if(bgd.isFillScreen()){
+         return;
+      } else if(bgd.isAbsolute()){
+//         setStyleAttribute("position", "absolute");
+         setStyleAttribute("backgroundPosition",bgd.getLeft()+" "+bgd.getTop());
+      } else {
+         switch(bgd.getRelatedType()){
+         case LEFT :
+            setStyleAttribute("backgroundPosition","center left");
+            break;
+         case RIGHT :
+            setStyleAttribute("backgroundPosition","center right");
+            break;
+         case TOP :
+            setStyleAttribute("backgroundPosition","top center");
+            break;
+         case BOTTOM :
+            setStyleAttribute("backgroundPosition","bottom center");
+            break;
+         case TOP_LEFT :
+            setStyleAttribute("backgroundPosition","top left");
+            break;
+         case BOTTOM_LEFT :
+            setStyleAttribute("backgroundPosition","bottom left");
+            break;
+         case TOP_RIGHT :
+            setStyleAttribute("backgroundPosition","top right");
+            break;
+         case BOTTOM_RIGHT :
+            setStyleAttribute("backgroundPosition","bottom right");
+            break;
+         case CENTER :
+            setStyleAttribute("backgroundPosition","center center");
+            break;
+         }
+      }
+      
+   }
    public void hideBackground() {
       moveBackGround.hide();
    }
@@ -194,7 +241,7 @@ public class ScreenCanvas extends LayoutContainer {
                      createDragSource(canvas, componentContainer);
                      new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
                   }
-                  SelectedWidgetContainer.setSelectWidget(componentContainer);
+                  SelectedWidgetContainer.setSelectWidget((PropertyPanelBuilder)componentContainer);
                   canvas.add(componentContainer);
                   componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
                         - absolutePosition.y);
@@ -271,7 +318,7 @@ public class ScreenCanvas extends LayoutContainer {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
-               SelectedWidgetContainer.setSelectWidget((ComponentContainer) this);
+               SelectedWidgetContainer.setSelectWidget(this);
             }
             super.onBrowserEvent(event);
          }
@@ -352,7 +399,7 @@ public class ScreenCanvas extends LayoutContainer {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
-               SelectedWidgetContainer.setSelectWidget((ComponentContainer) this);
+               SelectedWidgetContainer.setSelectWidget(this);
             } 
             super.onBrowserEvent(event);
          }
@@ -405,4 +452,19 @@ public class ScreenCanvas extends LayoutContainer {
       gridSource.setFiresEvents(false);
    }
 
+   @Override
+   public void onBrowserEvent(Event event) {
+      if(event.getTypeInt() == Event.ONMOUSEDOWN){
+         SelectedWidgetContainer.setSelectWidget(this);
+      }
+      event.stopPropagation();
+      super.onBrowserEvent(event);
+   }
+
+   @Override
+   public FormPanel buildPropertiesForm() {
+      return new ScreenPropertyForm(this);
+   }
+   
+   
 }

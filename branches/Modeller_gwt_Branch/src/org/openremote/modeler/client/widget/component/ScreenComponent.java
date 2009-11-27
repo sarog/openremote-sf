@@ -20,17 +20,16 @@
 package org.openremote.modeler.client.widget.component;
 
 import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
+import org.openremote.modeler.client.widget.uidesigner.PropertyPanelBuilder;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UISwitch;
 
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
-
 /**
  * ScreenControl as the component's super class.
  */
-public abstract class ScreenComponent extends ComponentContainer {
+public abstract class ScreenComponent extends ComponentContainer implements PropertyPanelBuilder{
    public ScreenComponent(ScreenCanvas screenCanvas){
 	   super(screenCanvas);
    }
@@ -53,5 +52,4 @@ public abstract class ScreenComponent extends ComponentContainer {
       return null;
    }
    
-   public abstract FormPanel buildPropertiesForm();
 }
