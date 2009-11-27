@@ -36,6 +36,8 @@
 #import "User.h"
 #import "CredentialUtil.h"
 #import "ControllerException.h"
+#import "Slider.h"
+#import "SliderView.h"
 
 @interface ControlView (Private)
 
@@ -56,8 +58,10 @@
 		controlView = [SwitchView alloc];
 	} else if  ([control isKindOfClass:[Button class]]) {
 		controlView = [ButtonView alloc];
-	} else if([control isKindOfClass:[Monitor class]]) {
+	} else if ([control isKindOfClass:[Monitor class]]) {
 		controlView = [MonitorView alloc];
+	} else if ([control isKindOfClass:[Slider class]]) {
+		controlView = [SliderView alloc];
 	}
 
 	

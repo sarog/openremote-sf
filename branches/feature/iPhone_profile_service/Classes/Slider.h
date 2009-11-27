@@ -19,49 +19,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
-#import "ScreenViewController.h"
-#import "ScreenView.h"
-
-
-@implementation ScreenViewController
-
-@synthesize screen, polling;
+#import <Foundation/Foundation.h>
+#import "Control.h"
 
 
-- (void)setScreen:(Screen *)s {
-	[s retain];
-	[screen release];
-	screen = s;
-	if ([[screen pollingComponentsIds] count] > 0 ) {
-		polling = [[PollingHelper alloc] initWithComponentIds:[[[screen pollingComponentsIds] componentsJoinedByString:@","] retain]];
-	}
-	
+@interface Slider : Control {
+	float minValue;
+	float maxValue;
 }
 
-// Implement loadView to create a view hierarchy programmatically.
-- (void)loadView {
-	ScreenView *view = [[ScreenView alloc] init];
-
-	//set Screen in ScreenView
-	[view setScreen:screen];
-	[self setView:view];
-	[view release];
-}
-
-- (void)startPolling {
-	[polling requestCurrentStatusAndStartPolling];
-}
-- (void)stopPolling {
-	[polling cancelPolling];
-}
-
-
-- (void)dealoc {
-	[polling release];
-	//[screen release];
-	
-	[super dealloc];
-}
+@property(nonatomic, readwrite) float minValue;
+@property(nonatomic, readwrite) float maxValue;
 
 @end

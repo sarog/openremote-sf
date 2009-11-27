@@ -14,6 +14,18 @@
 		331A58E810AD6A79001AB869 /* DataBaseServiceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 331A58E610AD6A79001AB869 /* DataBaseServiceTest.m */; };
 		331A591610AD6D21001AB869 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 331A591510AD6D21001AB869 /* SenTestingKit.framework */; };
 		331A591710AD6D21001AB869 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 331A591510AD6D21001AB869 /* SenTestingKit.framework */; };
+		3322875510BFB09B00D94163 /* panel_absolute_monitor.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322875410BFB09B00D94163 /* panel_absolute_monitor.xml */; };
+		3322875610BFB09B00D94163 /* panel_absolute_monitor.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322875410BFB09B00D94163 /* panel_absolute_monitor.xml */; };
+		3322875810BFB0A600D94163 /* panel_grid_monitor.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322875710BFB0A600D94163 /* panel_grid_monitor.xml */; };
+		3322875910BFB0A600D94163 /* panel_grid_monitor.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322875710BFB0A600D94163 /* panel_grid_monitor.xml */; };
+		3322878C10BFB18800D94163 /* panel_grid_slider.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322878B10BFB18800D94163 /* panel_grid_slider.xml */; };
+		3322878D10BFB18800D94163 /* panel_grid_slider.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322878B10BFB18800D94163 /* panel_grid_slider.xml */; };
+		3322878F10BFB19E00D94163 /* panel_absolute_slider.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322878E10BFB19E00D94163 /* panel_absolute_slider.xml */; };
+		3322879010BFB19E00D94163 /* panel_absolute_slider.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322878E10BFB19E00D94163 /* panel_absolute_slider.xml */; };
+		3322879710BFB55A00D94163 /* Slider.m in Sources */ = {isa = PBXBuildFile; fileRef = 3322879610BFB55A00D94163 /* Slider.m */; };
+		3322879810BFB55A00D94163 /* Slider.m in Sources */ = {isa = PBXBuildFile; fileRef = 3322879610BFB55A00D94163 /* Slider.m */; };
+		3322883110BFC03F00D94163 /* SliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3322883010BFC03F00D94163 /* SliderView.m */; };
+		3322883210BFC03F00D94163 /* SliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3322883010BFC03F00D94163 /* SliderView.m */; };
 		3397F88410B52AB3008052AF /* SwitchServerAlertHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3397F88310B52AB3008052AF /* SwitchServerAlertHelper.m */; };
 		3397F88510B52AB3008052AF /* SwitchServerAlertHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3397F88310B52AB3008052AF /* SwitchServerAlertHelper.m */; };
 		33981B1110B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
@@ -185,6 +197,14 @@
 		331A58E510AD6A79001AB869 /* DataBaseServiceTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataBaseServiceTest.h; sourceTree = "<group>"; };
 		331A58E610AD6A79001AB869 /* DataBaseServiceTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataBaseServiceTest.m; sourceTree = "<group>"; };
 		331A591510AD6D21001AB869 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		3322875410BFB09B00D94163 /* panel_absolute_monitor.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_absolute_monitor.xml; sourceTree = "<group>"; };
+		3322875710BFB0A600D94163 /* panel_grid_monitor.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_grid_monitor.xml; sourceTree = "<group>"; };
+		3322878B10BFB18800D94163 /* panel_grid_slider.xml */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.xml; path = panel_grid_slider.xml; sourceTree = "<group>"; };
+		3322878E10BFB19E00D94163 /* panel_absolute_slider.xml */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.xml; path = panel_absolute_slider.xml; sourceTree = "<group>"; };
+		3322879510BFB55A00D94163 /* Slider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Slider.h; sourceTree = "<group>"; };
+		3322879610BFB55A00D94163 /* Slider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Slider.m; sourceTree = "<group>"; };
+		3322882F10BFC03F00D94163 /* SliderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SliderView.h; sourceTree = "<group>"; };
+		3322883010BFC03F00D94163 /* SliderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SliderView.m; sourceTree = "<group>"; };
 		3397F88210B52AB3008052AF /* SwitchServerAlertHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchServerAlertHelper.h; sourceTree = "<group>"; };
 		3397F88310B52AB3008052AF /* SwitchServerAlertHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwitchServerAlertHelper.m; sourceTree = "<group>"; };
 		33981B0F10B103260076DB59 /* DataBaseService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataBaseService.h; sourceTree = "<group>"; };
@@ -547,12 +567,16 @@
 		8CEB4E7810B27F3700A67721 /* panelxml */ = {
 			isa = PBXGroup;
 			children = (
+				8C460E52109552EB00C7A686 /* PanelXMLParsingTests.h */,
 				8C460FEC1095A30A00C7A686 /* PanelXMLParsingTests.m */,
+				3322878B10BFB18800D94163 /* panel_grid_slider.xml */,
+				3322878E10BFB19E00D94163 /* panel_absolute_slider.xml */,
+				8C6504721098337F006FC19F /* panel_grid_switch.xml */,
 				8C460F8D1095666A00C7A686 /* panel_absolute_switch.xml */,
 				8C460E51109552EB00C7A686 /* panel_absolute_toggle.xml */,
-				8C460E52109552EB00C7A686 /* PanelXMLParsingTests.h */,
-				8C6504721098337F006FC19F /* panel_grid_switch.xml */,
 				8C6505F710987E1D006FC19F /* panel_grid_button.xml */,
+				3322875710BFB0A600D94163 /* panel_grid_monitor.xml */,
+				3322875410BFB09B00D94163 /* panel_absolute_monitor.xml */,
 			);
 			name = panelxml;
 			sourceTree = "<group>";
@@ -573,8 +597,12 @@
 		8CFEE27F0F558C2900DF8759 /* model */ = {
 			isa = PBXGroup;
 			children = (
+				3322879510BFB55A00D94163 /* Slider.h */,
+				3322879610BFB55A00D94163 /* Slider.m */,
 				8CE7ED0510BE988600E15487 /* Monitor.h */,
 				8CE7ED0610BE988600E15487 /* Monitor.m */,
+				8C460EC71095573600C7A686 /* Switch.h */,
+				8C460EC81095573600C7A686 /* Switch.m */,
 				33981B1810B108C30076DB59 /* User.h */,
 				33981B1910B108C30076DB59 /* User.m */,
 				8C460EA91095573600C7A686 /* AbsoluteLayoutContainer.h */,
@@ -603,8 +631,6 @@
 				8C460EC21095573600C7A686 /* Navigate.m */,
 				8C460EC51095573600C7A686 /* Screen.h */,
 				8C460EC61095573600C7A686 /* Screen.m */,
-				8C460EC71095573600C7A686 /* Switch.h */,
-				8C460EC81095573600C7A686 /* Switch.m */,
 				8C460EC91095573600C7A686 /* Toggle.h */,
 				8C460ECA1095573600C7A686 /* Toggle.m */,
 				8C460ECB1095573600C7A686 /* ToggleState.h */,
@@ -618,6 +644,8 @@
 		8CFEE2860F558C3D00DF8759 /* view */ = {
 			isa = PBXGroup;
 			children = (
+				3322882F10BFC03F00D94163 /* SliderView.h */,
+				3322883010BFC03F00D94163 /* SliderView.m */,
 				8CE7ED0110BE987800E15487 /* MonitorView.h */,
 				8CE7ED0210BE987800E15487 /* MonitorView.m */,
 				8C460F0E1095628C00C7A686 /* TextFieldCell.h */,
@@ -763,6 +791,10 @@
 				8C1F31C310AA9B3D0081A3D4 /* btn_green.png in Resources */,
 				33981C8710B1378F0076DB59 /* database.db in Resources */,
 				8CF539A710B9356700C52FB0 /* repair.png in Resources */,
+				3322875510BFB09B00D94163 /* panel_absolute_monitor.xml in Resources */,
+				3322875810BFB0A600D94163 /* panel_grid_monitor.xml in Resources */,
+				3322878D10BFB18800D94163 /* panel_grid_slider.xml in Resources */,
+				3322879010BFB19E00D94163 /* panel_absolute_slider.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -777,6 +809,10 @@
 				8C1F31C410AA9B3D0081A3D4 /* btn_green.png in Resources */,
 				33981C8810B1378F0076DB59 /* database.db in Resources */,
 				8CF539A810B9356800C52FB0 /* repair.png in Resources */,
+				3322875610BFB09B00D94163 /* panel_absolute_monitor.xml in Resources */,
+				3322875910BFB0A600D94163 /* panel_grid_monitor.xml in Resources */,
+				3322878C10BFB18800D94163 /* panel_grid_slider.xml in Resources */,
+				3322878F10BFB19E00D94163 /* panel_absolute_slider.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -868,6 +904,8 @@
 				8CE7EBE510BE773600E15487 /* ControllerException.m in Sources */,
 				8CE7ED0410BE987800E15487 /* MonitorView.m in Sources */,
 				8CE7ED0810BE988600E15487 /* Monitor.m in Sources */,
+				3322879810BFB55A00D94163 /* Slider.m in Sources */,
+				3322883210BFC03F00D94163 /* SliderView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -941,6 +979,8 @@
 				8CE7EBE410BE773600E15487 /* ControllerException.m in Sources */,
 				8CE7ED0310BE987800E15487 /* MonitorView.m in Sources */,
 				8CE7ED0710BE988600E15487 /* Monitor.m in Sources */,
+				3322879710BFB55A00D94163 /* Slider.m in Sources */,
+				3322883110BFC03F00D94163 /* SliderView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
