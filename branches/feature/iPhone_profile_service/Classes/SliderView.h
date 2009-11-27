@@ -22,10 +22,14 @@
 #import <Foundation/Foundation.h>
 #import "ControlView.h"
 
+#define MIN_SLIDE_VARIANT 1
+
 @interface SliderView : ControlView {
 	UISlider *slider;
+	int currentValue;
 }
 
 @property(nonatomic, retain)UISlider *slider;
+@property(nonatomic, readwrite)int currentValue;
 
 @end
