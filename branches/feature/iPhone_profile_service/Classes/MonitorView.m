@@ -29,7 +29,9 @@
 
 @interface MonitorView(Private)
 - (void) setImage:(NSString *)urlString;
+- (void) setNormalStringStatus:(NSString *)normalString;
 - (void) initImageButton;
+- (void) clearImageButton;
 @end
 
 @implementation MonitorView
@@ -51,13 +53,13 @@
 		[self setImage:newStatus];
 	} else {
 		NSLog(@"Got normal status string for Monitor.");
+		[self setNormalStringStatus:newStatus];
 	}
 }
 
 // This method is abstract method of indirect superclass UIView's.
 - (void)layoutSubviews {
 	[self initImageButton];
-	//[self setBackgroundColor:[UIColor whiteColor]];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,control.controlId] object:nil];
 	
 }
@@ -70,13 +72,18 @@
 		[imageButton release];
 	}
 	imageButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
-	//[imageButton setTitle:@"NoStatus" forState:UIControlStateNormal];
-//	[imageButton setFrame:[self bounds]];
-//	UIImage *buttonImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
-//	[imageButton setBackgroundImage:buttonImage forState:UIControlStateNormal];
 	[imageButton setFrame:[self bounds]];
 	[self addSubview:imageButton];
 
+}
+
+- (void) clearImageButton {
+	if (imageButton) {
+		[imageButton setTitle:@"" forState:UIControlStateNormal];
+		[imageButton setBackgroundImage:nil forState:UIControlStateNormal];
+		[imageButton setBackgroundColor:nil];
+		[imageButton setImage:nil forState:UIControlStateNormal];
+	}
 }
 
 - (void) setImage:(NSString *)urlString {
@@ -88,21 +95,22 @@
 	NSLog(@"new StateImage is : %@", newStateImage);
 	NSLog(@"new stateimage width is : %d", newStateImage.size.width);
 	NSLog(@"new stateimage height is : %d", newStateImage.size.height);
-	
+	[self clearImageButton];
 	if (newStateImage) {
-		[imageButton setTitle:@"" forState:UIControlStateNormal];
 		[imageButton setImage:newStateImage forState:UIControlStateNormal];
-		[imageButton setBackgroundImage:nil forState:UIControlStateNormal];
-		[self setBackgroundColor:nil];
 	} else {
-		[imageButton setImage:nil forState:UIControlStateNormal];
-		//UIImage *noStatusImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
-		//[imageButton setBackgroundImage:noStatusImage forState:UIControlStateNormal];
-		//[imageButton setTitle:@"Image not found" forState:UIControlStateNormal];
-		[self setBackgroundColor:[UIColor blackColor]];
+		[imageButton setBackgroundColor:[UIColor blackColor]];
 	}
 	NSLog(@"End: Update image with updated status for Monitor.");
 	
+}
+
+- (void) setNormalStringStatus:(NSString *)normalString {
+	NSLog(@"Begin: Update string status for Monitor.");
+	[self clearImageButton];
+	[imageButton setBackgroundColor:[UIColor blackColor]];
+	[imageButton setTitle:[NSString stringWithUTF8String:[normalString UTF8String]] forState:UIControlStateNormal];
+	NSLog(@"End: Update string status for Monitor.");
 }
 
 #pragma mark Dealloc method
