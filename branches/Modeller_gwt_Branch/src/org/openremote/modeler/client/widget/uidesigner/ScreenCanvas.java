@@ -280,6 +280,7 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
             event.setData(layoutContainer);
             event.getStatus().setStatus(true);
             event.getStatus().update("drop here");
+            event.cancelBubble();
          }
       };
       source.setGroup(Constants.CONTROL_DND_GROUP);
@@ -320,6 +321,7 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
                SelectedWidgetContainer.setSelectWidget(this);
             }
+            event.stopPropagation();
             super.onBrowserEvent(event);
          }
 
@@ -401,6 +403,7 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
                SelectedWidgetContainer.setSelectWidget(this);
             } 
+            event.stopPropagation();
             super.onBrowserEvent(event);
          }
       };
@@ -446,6 +449,7 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
             event.setData(componentContainer);
             event.getStatus().setStatus(true);
             event.getStatus().update("drop here");
+            event.cancelBubble();
          }
       };
       gridSource.setGroup(Constants.CONTROL_DND_GROUP);
