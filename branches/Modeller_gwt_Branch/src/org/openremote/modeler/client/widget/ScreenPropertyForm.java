@@ -19,8 +19,6 @@
 */
 package org.openremote.modeler.client.widget;
 
-import java.util.List;
-
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyForm;
@@ -42,7 +40,6 @@ import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
-import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.FileUploadField;
 import com.extjs.gxt.ui.client.widget.form.Radio;
@@ -75,9 +72,7 @@ public class ScreenPropertyForm extends PropertyForm {
       super();
       this.canvas = canvas;
       createFields();
-      addListenersToForm();
    }
-   
    @SuppressWarnings("unchecked")
    private void createFields() {
       
@@ -90,11 +85,11 @@ public class ScreenPropertyForm extends PropertyForm {
 
       setFieldWidth(165);
       setLabelWidth(80);
-      TextField<String> screenNameField = createNameField();
+     // TextField<String> screenNameField = createNameField();
       
       FileUploadField background = createBackgroundField();
       
-      RadioGroup whetherFieldGroup = createScreenFillerField(positionSet);
+      RadioGroup whetherFillScreen = createScreenFillerField(positionSet);
       
       
       
@@ -108,13 +103,14 @@ public class ScreenPropertyForm extends PropertyForm {
       positionSet.add(posTopField);
       positionSet.add(widthField);
       positionSet.add(heightField);
-      
-      
       positionSet.hide();
-      this.add(screenNameField);
+//      whetherFillScreen.hide();
+//      this.add(screenNameField);
       this.add(background);
-      this.add(whetherFieldGroup);
+      this.add(whetherFillScreen);
       this.add(positionSet);
+      
+      addListenersToForm(whetherFillScreen);
    }
 
    private TextField<String> createHeightSetField() {
@@ -248,7 +244,7 @@ public class ScreenPropertyForm extends PropertyForm {
      
       positionSet.add(relative);
       positionSet.add(absolute);
-      
+      enableTextField(false, fields);
      
       relative.setDisplayField(ComboBoxDataModel.getDisplayProperty());
       relative.setEmptyText("Please select one... ");
@@ -285,6 +281,11 @@ public class ScreenPropertyForm extends PropertyForm {
          }
          
       });
+      whetherFieldGroup.hide();
+      String backgroundSrc = canvas.getScreen().getBackground().getSrc();
+      if(backgroundSrc!=null && !backgroundSrc.equals("") ){
+         whetherFieldGroup.show();
+      }
       return whetherFieldGroup;
    }
 
@@ -300,6 +301,7 @@ public class ScreenPropertyForm extends PropertyForm {
             canvas.mask("Uploading image...");
          }
       };
+      background.setValue(canvas.getScreen().getBackground().getSrc());
       background.setFieldLabel("Background");
       background.setName(SCREEN_BACKGROUND);
       background.setRegex(".+?\\.(png|gif|jpg|PNG|GIF|JPG)");
@@ -307,17 +309,17 @@ public class ScreenPropertyForm extends PropertyForm {
       background.setStyleAttribute("overflow", "hidden");
       return background;
    }
-
-   private TextField<String> createNameField() {
+   
+   /*private TextField<String> createNameField() {
       TextField<String> screenNameField = new TextField<String>();
       screenNameField.setName("name");
       screenNameField.setFieldLabel("Name");
       screenNameField.setAllowBlank(false);
       screenNameField.setValue(Screen.getNewDefaultName());
       return screenNameField;
-   }
+   }*/
    
-   private void addListenersToForm() {
+   private void addListenersToForm(final RadioGroup whetherFillScreen) {
       setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName="
             + SCREEN_BACKGROUND);
       setEncoding(Encoding.MULTIPART);
@@ -327,31 +329,32 @@ public class ScreenPropertyForm extends PropertyForm {
          @Override
          public void handleEvent(FormEvent be) {
             String backgroundImgURL = be.getResultHtml();
-            String uploadFieldValue = "";
-
-            List<Field<?>> list = getFields();
+            //String uploadFieldValue = "";
+            /*List<Field<?>> list = getFields();
             for (Field<?> field : list) {
               if (SCREEN_BACKGROUND.equals(field.getName())
                      && !(field.getValue() == null || field.getValue().equals(""))) {
                   uploadFieldValue = field.getValue().toString();
                }
-            }
+            }*/
             
-            setBackground(backgroundImgURL, uploadFieldValue);
+            boolean success = !"".equals(backgroundImgURL);
+            if(success){
+               setBackground(backgroundImgURL);
+               whetherFillScreen.show();
+            }
             BeanModel screenBeanModel = null;
             fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenBeanModel));
          }
       });
    }
 
-   private void setBackground(String backgroundImgURL, String uploadFieldValue) {
-      boolean uploadSuccessfully = !"".equals(backgroundImgURL);
+   private void setBackground(String backgroundImgURL) {
       Screen screen = canvas.getScreen();
-      if (uploadSuccessfully) {
-         screen.setBackground(new Background(backgroundImgURL));
-         canvas.setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
-         canvas.unmask();
-      }
+      screen.setBackground(new Background(backgroundImgURL));
+      canvas.setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
+      canvas.unmask();
+
    }
    private void enableTextField(boolean enable,TextField<?> ...fields ){
       for(TextField<?> field :fields){
