@@ -81,7 +81,7 @@ public class ScreenPropertyForm extends PropertyForm {
       layout.setLabelWidth(80);
       layout.setDefaultWidth(110);
       positionSet.setLayout(layout);
-      positionSet.setHeading("Postion");
+      positionSet.setHeading("Position");
 
       setFieldWidth(165);
       setLabelWidth(80);
@@ -95,14 +95,15 @@ public class ScreenPropertyForm extends PropertyForm {
       
       TextField<String> posLeftField = createLeftSetField();
       TextField<String> posTopField = createTopSetField();
-      TextField<String> widthField = createWidthSetField();
-      TextField<String> heightField = createHeightSetField();
+//      TextField<String> widthField = createWidthSetField();
+//      TextField<String> heightField = createHeightSetField();
       
-      createPositionField(positionSet,posLeftField,posTopField,widthField,heightField);
+//      createPositionField(positionSet,posLeftField,posTopField,widthField,heightField);
+      createPositionField(positionSet,posLeftField,posTopField);
       positionSet.add(posLeftField);
       positionSet.add(posTopField);
-      positionSet.add(widthField);
-      positionSet.add(heightField);
+//      positionSet.add(widthField);
+//      positionSet.add(heightField);
       positionSet.hide();
 //      whetherFillScreen.hide();
 //      this.add(screenNameField);
@@ -113,7 +114,7 @@ public class ScreenPropertyForm extends PropertyForm {
       addListenersToForm(whetherFillScreen);
    }
 
-   private TextField<String> createHeightSetField() {
+  /* private TextField<String> createHeightSetField() {
       final TextField<String> heightField = new TextField<String>();
       heightField.setName("height");
       heightField.setFieldLabel("Height");
@@ -151,7 +152,7 @@ public class ScreenPropertyForm extends PropertyForm {
       });
       widthField.setLabelStyle("text-align:right;");
       return widthField;
-   }
+   }*/
 
    private TextField<String> createTopSetField() {
       final TextField<String> posTopField = new TextField<String>();
