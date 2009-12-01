@@ -32,10 +32,11 @@ import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
+import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
-import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -181,9 +182,13 @@ public class ProfilePanel extends ContentPanel {
       editBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            BeanModel panelModel = panelTree.getSelectionModel().getSelectedItem();
-            if (panelModel != null && (panelModel.getBean() instanceof Panel)) {
-               editPanel(panelModel);
+            BeanModel selectedModel = panelTree.getSelectionModel().getSelectedItem();
+            if (selectedModel != null) {
+               if (selectedModel.getBean() instanceof Panel) {
+                  editPanel(selectedModel);
+               } else if (selectedModel.getBean() instanceof GroupRef) {
+                  editGroup(selectedModel);
+               }
             }
          }
       });
@@ -210,6 +215,26 @@ public class ProfilePanel extends ContentPanel {
       });
    }
 
+   private void editGroup(final BeanModel groupRefBeanModel) {
+      final GroupWizardWindow groupWindow = new GroupWizardWindow(groupRefBeanModel);
+      groupWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+         @Override
+         public void afterSubmit(SubmitEvent be) {
+            groupWindow.hide();
+            BeanModel groupRefModel = be.getData();
+            GroupRef groupRef = groupRefModel.getBean();
+            panelTree.getStore().removeAll(groupRefModel);
+            for (ScreenRef screenRef : groupRef.getGroup().getScreenRefs()) {
+               panelTree.getStore().add(groupRefModel, screenRef.getBeanModel(), false);
+            }
+            panelTree.getStore().update(groupRefModel);
+            BeanModelDataBase.groupTable.update(groupRef.getGroup().getBeanModel());
+            panelTree.setExpanded(groupRefModel, true);
+            panelTree.getSelectionModel().select(groupRefModel, false);
+            Info.display("Info", "Add Group " + groupRef.getGroup().getName() + " success.");
+         }
+      });
+   }
    /**
     * Creates the delete btn.
     * 
@@ -240,6 +265,19 @@ public class ProfilePanel extends ContentPanel {
                      }
                   }
                   Info.display("Info", "Delete panel " + selectedModel.get("name") + " success.");
+               } else if(selectedModel != null && selectedModel.getBean() instanceof GroupRef) {
+                  panelTree.getStore().remove(selectedModel);
+                  GroupRef groupRef = selectedModel.getBean();
+                  groupRef.getGroup().releaseRef();
+                  if (groupRef.getGroup().getRefCount() == 0) {
+                     BeanModelDataBase.groupTable.delete(groupRef.getGroupId());
+                  }
+                  for (ScreenRef screenRef : groupRef.getGroup().getScreenRefs()) {
+                     screenRef.getScreen().releaseRef();
+                     if (screenRef.getScreen().getRefCount() == 0) {
+                        BeanModelDataBase.screenTable.delete(screenRef.getScreenId());
+                     }
+                  }
                }
             }
          }
@@ -284,6 +322,37 @@ public class ProfilePanel extends ContentPanel {
    private MenuItem createNewGroupMenuItem() {
       MenuItem newGroupItem = new MenuItem("New Group");
       newGroupItem.setIcon(icon.activityIcon());
+      newGroupItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+         @Override
+         public void componentSelected(MenuEvent ce) {
+            Group group = new Group();
+            group.setOid(IDUtil.nextID());
+            GroupRef groupRef = new GroupRef(group);
+            BeanModel selectedBeanModel = panelTree.getSelectionModel().getSelectedItem();
+            if (selectedBeanModel != null && selectedBeanModel.getBean() instanceof Panel) {
+               groupRef.setPanel((Panel)selectedBeanModel.getBean());
+            }
+            final GroupWizardWindow  groupWizardWindow = new GroupWizardWindow(groupRef.getBeanModel());
+            groupWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+               @Override
+               public void afterSubmit(SubmitEvent be) {
+                  groupWizardWindow.hide();
+                  BeanModel groupRefModel = be.getData();
+                  GroupRef groupRef = groupRefModel.getBean();
+                  panelTree.getStore().add(groupRef.getPanel().getBeanModel(), groupRefModel, false);
+                  for (ScreenRef screenRef : groupRef.getGroup().getScreenRefs()) {
+                     panelTree.getStore().add(groupRefModel, screenRef.getBeanModel(), false);
+                  }
+                  BeanModelDataBase.groupTable.insert(groupRef.getGroup().getBeanModel());
+                  panelTree.setExpanded(groupRefModel, true);
+                  panelTree.getSelectionModel().select(groupRefModel, false);
+                  Info.display("Info", "Add Group " + groupRef.getGroup().getName() + " success.");
+                  
+               }
+            });
+         }
+         
+      });
       return newGroupItem;
    }
    

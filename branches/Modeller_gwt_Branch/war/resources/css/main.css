@@ -189,3 +189,9 @@ table.screen-btn-cont td.br-c{
    position: absolute;
    border: 1px solid yellow;
 }
+
+.screen-view-item-sel {
+  background: #F0FFF0 none repeat scroll 0%;
+  border: 1px dotted #A3BAE9 !important;
+  cursor: pointer;
+}

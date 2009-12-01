@@ -124,7 +124,7 @@ public class WizardWindow extends CommonWindow {
       addButton(nextBtn);
 
       finishBtn = new Button("Finish");
-      finishBtn.ensureDebugId(DebugId.DEVICE_FINISH_BTN);
+//      finishBtn.ensureDebugId(DebugId.DEVICE_FINISH_BTN);
       finishBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {

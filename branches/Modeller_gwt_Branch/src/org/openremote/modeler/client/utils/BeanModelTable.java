@@ -135,11 +135,13 @@ public class BeanModelTable {
    public void notify(ChangeEvent evt) {
       BeanModel beanModel = (BeanModel) evt.getItem();
       if (changeListeners.get(getIdFromBeanModel(beanModel)) != null) {
-         for (ChangeListener changeListener : changeListeners.get(getIdFromBeanModel(beanModel))) {
-            changeListener.modelChanged(evt);
+         List<ChangeListener> chgListeners = changeListeners.get(getIdFromBeanModel(beanModel));
+         if (chgListeners != null && chgListeners.size() > 0) {
+            for (int i = chgListeners.size()-1; i >= 0; i--) {
+               chgListeners.get(i).modelChanged(evt);
+            }
          }
       }
-
    }
 
    /**

@@ -359,7 +359,6 @@ public class TreePanelBuilder {
             }
          }
       });
-
       return panelTree;
    }
    
