@@ -20,12 +20,11 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "Control.h"
+#import "ControlView.h"
 
-@interface Label : Control {
-	NSString *value;
+
+@interface LabelView : ControlView {
+
 }
-
-@property(nonatomic, retain) NSString *value;
 
 @end

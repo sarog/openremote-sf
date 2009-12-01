@@ -20,16 +20,13 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "XMLEntity.h"
+#import "Control.h"
 
-@interface Image : XMLEntity {
-	
+@interface Image : Control {
 	NSString *src;
-	NSString *border;
 
 }
 
 @property (nonatomic, readonly) NSString *src;
-@property (nonatomic, readonly) NSString *border;
 
 @end

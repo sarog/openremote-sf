@@ -24,4 +24,41 @@
 
 @implementation Label
 
+@synthesize value;
+
+// This method is abstract method of indirectclass XMLEntity.
+// So, this method must be overridden in subclass.
+- (NSString *) elementName {
+	return @"label";
+}
+
+// This method is abstract method of direct superclass Control.
+// So, this method must be overridden in subclass.
+- (BOOL)hasPollingStatus {
+	return NO;
+}
+
+#pragma mark Delegate methods of NSXMLParser  
+
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+	if (self = [super init]) {
+		controlId = [[attributeDict objectForKey:@"id"] intValue];
+		value = [[attributeDict objectForKey:@"value"] copy];
+		xmlParserParentDelegate = [parent retain];
+		[parser setDelegate:self];
+	}
+	return self;
+}
+
+/**
+ * Parse the label sub elements .
+ */
+- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
+}
+
+- (void)dealloc {
+	[value release];
+	[super dealloc];
+}
+
 @end

@@ -33,6 +33,8 @@
 #import "Button.h"
 #import "Monitor.h"
 #import "Slider.h"
+#import "Label.h"
+#import "Image.h"
 #import "Gesture.h"
 
 @implementation PanelXMLParsingTests
@@ -605,6 +607,280 @@
 	NSLog(@"End testParsePanelAbsoluteSliderXML");
 }
 
+// panel_grid_label.xml test
+- (void) testParsePanelGridLabelXML {
+	NSLog(@"Begin testParsePanelGridLabelXML");
+	[[Definition sharedDefinition] clearPanelXMLData];
+	NSData *xml = [self readFile:@"panel_grid_label.xml"];
+	
+	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
+	[xmlParser setDelegate:self];
+	[xmlParser parse];
+	NSMutableArray *groups = [[Definition sharedDefinition] groups];
+	NSMutableArray *screens = [[Definition sharedDefinition] screens];
+	int label_index = 0;
+	int state_index = 0;
+	NSMutableArray *cells = [[NSMutableArray alloc] init];
+	for (Group *group in groups) {
+		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
+		for (Screen *screen in group.screens) {			
+			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
+			for (LayoutContainer *layout in screen.layouts) {
+				if([layout isKindOfClass:[GridLayoutContainer class]]){					
+					NSLog(@"layout is grid ");
+					GridLayoutContainer *grid =(GridLayoutContainer *)layout;
+					NSString *layoutAttrs = [[NSMutableString alloc] initWithFormat:@"%d %d %d %d",grid.left,grid.top,grid.width,grid.height];
+					NSString *expectedAttrs = @"20 20 300 400";
+					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
+					[layoutAttrs release];
+					
+					for (GridCell *cell in grid.cells) {			
+						[cells addObject:cell];
+						if ([cell.control isKindOfClass:[Label class]]) {
+							Label *theLabel = (Label *)cell.control;
+							int expectedId = (59 + label_index++);
+							STAssertTrue(expectedId == theLabel.controlId,@"expected %d, but %d",expectedId,theLabel.controlId);
+							NSString *labelValue = [[NSString alloc] initWithFormat:@"%c", (char)65 + state_index++];					
+							STAssertTrue([theLabel.value isEqualToString:labelValue],@"expected %@, but %@", labelValue, theLabel.value);
+						}	
+					}
+				}				
+			}
+		}
+	}
+	
+	NSLog(@"groups count = %d",[groups count]);
+	NSLog(@"screens count = %d",[screens count]);
+	NSLog(@"xml parse done");
+	
+	NSMutableArray *screenNames = [NSMutableArray arrayWithObjects:@"basement",@"floor",nil];
+	NSMutableArray *groupNames = [NSMutableArray arrayWithObjects:@"All rooms",@"living room",nil];
+	
+	//check screens
+	for (int i=0;i<screenNames.count;i++) {
+		STAssertTrue([[screenNames objectAtIndex:i] isEqualToString:[[screens objectAtIndex:i] name]],@"expected %@, but %@",[screenNames objectAtIndex:i],[[screens objectAtIndex:i] name]);
+		STAssertTrue(i+5 == [[screens objectAtIndex:i] screenId],@"expected %d, but %d",i+5,[[screens objectAtIndex:i] screenId]);
+	}
+	
+	//check groups
+	for (int i=0;i<groupNames.count;i++) {
+		STAssertTrue([[groupNames objectAtIndex:i] isEqualToString:[[groups objectAtIndex:i] name]],@"expected %@, but %@",[groupNames objectAtIndex:i],[[groups objectAtIndex:i] name]);
+		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
+	}
+	
+	STAssertTrue(cells.count== 5,@"expected %d, but %d",5,cells.count);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:0]).colspan == 1,@"expected %d",1);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:0]).rowspan == 1,@"expected %d",1);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:1]).rowspan == 1,@"expected %d",1);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:2]).colspan == 1,@"expected %d",1);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:3]).colspan == 1,@"expected %d",1);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:4]).colspan == 2,@"expected %d",2);
+	
+	[xmlParser release];
+	[xml release];
+	[cells release];
+	NSLog(@"End testParsePanelGridLabelXML");
+}
+
+// panel_absolute_label.xml test
+- (void) testParsePanelAbsoluteLabelXML {
+	NSLog(@"Begin testParsePanelAbsoluteLabelXML");
+	[[Definition sharedDefinition] clearPanelXMLData];
+	NSData *xml = [self readFile:@"panel_absolute_label.xml"];
+	
+	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
+	[xmlParser setDelegate:self];
+	[xmlParser parse];
+	NSMutableArray *groups = [[Definition sharedDefinition] groups];
+	NSMutableArray *screens = [[Definition sharedDefinition] screens];
+	int label_index = 0;
+	int state_index = 0;
+	for (Group *group in groups) {
+		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
+		for (Screen *screen in group.screens) {			
+			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
+			for (LayoutContainer *layout in screen.layouts) {
+				if([layout isKindOfClass:[AbsoluteLayoutContainer class]]){					
+					NSLog(@"layout is absolute ");
+					AbsoluteLayoutContainer *abso =(AbsoluteLayoutContainer *)layout;
+					NSString *layoutAttrs = [[NSMutableString alloc] initWithFormat:@"%d %d %d %d",abso.left,abso.top,abso.width,abso.height];
+					NSString *expectedAttrs = @"20 320 100 100";
+					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
+					[layoutAttrs release];
+					
+					if ([abso.control isKindOfClass:[Label class]]) {
+						Label *theLabel= (Label *)abso.control;
+						int expectedId = (59 + label_index++);
+						STAssertTrue(expectedId == theLabel.controlId,@"expected %d, but %d",expectedId,theLabel.controlId);
+						NSString *labelValue = [[NSString alloc] initWithFormat:@"%c", (char)65 + state_index++];
+						STAssertTrue([theLabel.value isEqualToString:labelValue],@"expected %@, but %@", labelValue, theLabel.value);
+					}					
+				}				
+			}
+		}
+	}
+	
+	NSLog(@"groups count = %d",[groups count]);
+	NSLog(@"screens count = %d",[screens count]);
+	NSLog(@"xml parse done");
+	
+	NSMutableArray *screenNames = [NSMutableArray arrayWithObjects:@"basement",@"floor",nil];
+	NSMutableArray *groupNames = [NSMutableArray arrayWithObjects:@"All rooms",@"living room",nil];
+	
+	//check screens
+	for (int i=0;i<screenNames.count;i++) {
+		STAssertTrue([[screenNames objectAtIndex:i] isEqualToString:[[screens objectAtIndex:i] name]],@"expected %@, but %@",[screenNames objectAtIndex:i],[[screens objectAtIndex:i] name]);
+		STAssertTrue(i+5 == [[screens objectAtIndex:i] screenId],@"expected %d, but %d",i+5,[[screens objectAtIndex:i] screenId]);
+	}
+	
+	//check groups
+	for (int i=0;i<groupNames.count;i++) {
+		STAssertTrue([[groupNames objectAtIndex:i] isEqualToString:[[groups objectAtIndex:i] name]],@"expected %@, but %@",[groupNames objectAtIndex:i],[[groups objectAtIndex:i] name]);
+		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
+	}
+	
+	[xmlParser release];
+	[xml release];
+	NSLog(@"End testParsePanelAbsoluteLabelXML");
+}
+
+// panel_grid_image.xml test
+- (void) testParsePanelGridImageXML {
+	NSLog(@"Begin testParsePanelGridImageXML");
+	[[Definition sharedDefinition] clearPanelXMLData];
+	NSData *xml = [self readFile:@"panel_grid_image.xml"];
+	
+	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
+	[xmlParser setDelegate:self];
+	[xmlParser parse];
+	NSMutableArray *groups = [[Definition sharedDefinition] groups];
+	NSMutableArray *screens = [[Definition sharedDefinition] screens];
+	int image_index = 0;
+	int state_index = 0;
+	NSMutableArray *cells = [[NSMutableArray alloc] init];
+	for (Group *group in groups) {
+		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
+		for (Screen *screen in group.screens) {			
+			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
+			for (LayoutContainer *layout in screen.layouts) {
+				if([layout isKindOfClass:[GridLayoutContainer class]]){					
+					NSLog(@"layout is grid ");
+					GridLayoutContainer *grid =(GridLayoutContainer *)layout;
+					NSString *layoutAttrs = [[NSMutableString alloc] initWithFormat:@"%d %d %d %d",grid.left,grid.top,grid.width,grid.height];
+					NSString *expectedAttrs = @"20 20 300 400";
+					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
+					[layoutAttrs release];
+					
+					for (GridCell *cell in grid.cells) {			
+						[cells addObject:cell];
+						if ([cell.control isKindOfClass:[Image class]]) {
+							Image *theImage = (Image *)cell.control;
+							int expectedId = (59 + image_index++);
+							STAssertTrue(expectedId == theImage.controlId,@"expected %d, but %d",expectedId,theImage.controlId);
+							NSString *imageSrc = [[NSString alloc] initWithFormat:@"%c.png", (char)97 + state_index++];					
+							STAssertTrue([theImage.src isEqualToString:imageSrc],@"expected %@, but %@", imageSrc, theImage.src);
+						}	
+					}
+				}				
+			}
+		}
+	}
+	
+	NSLog(@"groups count = %d",[groups count]);
+	NSLog(@"screens count = %d",[screens count]);
+	NSLog(@"xml parse done");
+	
+	NSMutableArray *screenNames = [NSMutableArray arrayWithObjects:@"basement",@"floor",nil];
+	NSMutableArray *groupNames = [NSMutableArray arrayWithObjects:@"All rooms",@"living room",nil];
+	
+	//check screens
+	for (int i=0;i<screenNames.count;i++) {
+		STAssertTrue([[screenNames objectAtIndex:i] isEqualToString:[[screens objectAtIndex:i] name]],@"expected %@, but %@",[screenNames objectAtIndex:i],[[screens objectAtIndex:i] name]);
+		STAssertTrue(i+5 == [[screens objectAtIndex:i] screenId],@"expected %d, but %d",i+5,[[screens objectAtIndex:i] screenId]);
+	}
+	
+	//check groups
+	for (int i=0;i<groupNames.count;i++) {
+		STAssertTrue([[groupNames objectAtIndex:i] isEqualToString:[[groups objectAtIndex:i] name]],@"expected %@, but %@",[groupNames objectAtIndex:i],[[groups objectAtIndex:i] name]);
+		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
+	}
+	
+	STAssertTrue(cells.count== 5,@"expected %d, but %d",5,cells.count);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:0]).colspan == 1,@"expected %d",1);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:0]).rowspan == 1,@"expected %d",1);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:1]).rowspan == 1,@"expected %d",1);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:2]).colspan == 1,@"expected %d",1);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:3]).colspan == 1,@"expected %d",1);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:4]).colspan == 2,@"expected %d",2);
+	
+	[xmlParser release];
+	[xml release];
+	[cells release];
+	NSLog(@"End testParsePanelGridImageXML");
+}
+
+// panel_absolute_image.xml test
+- (void) testParsePanelAbsoluteImageXML {
+	NSLog(@"Begin testParsePanelAbsoluteImageXML");
+	[[Definition sharedDefinition] clearPanelXMLData];
+	NSData *xml = [self readFile:@"panel_absolute_image.xml"];
+	
+	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
+	[xmlParser setDelegate:self];
+	[xmlParser parse];
+	NSMutableArray *groups = [[Definition sharedDefinition] groups];
+	NSMutableArray *screens = [[Definition sharedDefinition] screens];
+	int image_index = 0;
+	int state_index = 0;
+	for (Group *group in groups) {
+		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
+		for (Screen *screen in group.screens) {			
+			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
+			for (LayoutContainer *layout in screen.layouts) {
+				if([layout isKindOfClass:[AbsoluteLayoutContainer class]]){					
+					NSLog(@"layout is absolute ");
+					AbsoluteLayoutContainer *abso =(AbsoluteLayoutContainer *)layout;
+					NSString *layoutAttrs = [[NSMutableString alloc] initWithFormat:@"%d %d %d %d",abso.left,abso.top,abso.width,abso.height];
+					NSString *expectedAttrs = @"20 320 100 100";
+					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
+					[layoutAttrs release];
+					
+					if ([abso.control isKindOfClass:[Image class]]) {
+						Image *theImage= (Image *)abso.control;
+						int expectedId = (59 + image_index++);
+						STAssertTrue(expectedId == theImage.controlId,@"expected %d, but %d",expectedId,theImage.controlId);
+						NSString *imageSrc = [[NSString alloc] initWithFormat:@"%c.png", (char)97 + state_index++];
+						STAssertTrue([theImage.src isEqualToString:imageSrc],@"expected %@, but %@", theImage.src, imageSrc);
+					}					
+				}				
+			}
+		}
+	}
+	
+	NSLog(@"groups count = %d",[groups count]);
+	NSLog(@"screens count = %d",[screens count]);
+	NSLog(@"xml parse done");
+	
+	NSMutableArray *screenNames = [NSMutableArray arrayWithObjects:@"basement",@"floor",nil];
+	NSMutableArray *groupNames = [NSMutableArray arrayWithObjects:@"All rooms",@"living room",nil];
+	
+	//check screens
+	for (int i=0;i<screenNames.count;i++) {
+		STAssertTrue([[screenNames objectAtIndex:i] isEqualToString:[[screens objectAtIndex:i] name]],@"expected %@, but %@",[screenNames objectAtIndex:i],[[screens objectAtIndex:i] name]);
+		STAssertTrue(i+5 == [[screens objectAtIndex:i] screenId],@"expected %d, but %d",i+5,[[screens objectAtIndex:i] screenId]);
+	}
+	
+	//check groups
+	for (int i=0;i<groupNames.count;i++) {
+		STAssertTrue([[groupNames objectAtIndex:i] isEqualToString:[[groups objectAtIndex:i] name]],@"expected %@, but %@",[groupNames objectAtIndex:i],[[groups objectAtIndex:i] name]);
+		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
+	}
+	
+	[xmlParser release];
+	[xml release];
+	NSLog(@"End testParsePanelAbsoluteImageXML");
+}
+
 // panel_absolute_toggle.xml test
 - (void) testParsePanelAbsoluteToggleXML {
 
@@ -674,7 +950,6 @@
 	[xmlParser release];
 	[xml release];
 }
-
 
 // panel_absolute_slider_gesture.xml test
 - (void) testParsePanelAbsoluteSliderGestureXML {

@@ -24,19 +24,25 @@
 
 @implementation Image
 
-@synthesize src, border;
+@synthesize src;
 
 // get element name, must be overriden in subclass
 - (NSString *) elementName {
 	return @"image";
 }
 
+// This method is abstract method of direct superclass Control.
+// So, this method must be overridden in subclass.
+- (BOOL)hasPollingStatus {
+	return NO;
+}
+
 // init a xml entity with NSXMLParser and remember its xmlparser parent delegate 
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {
+		controlId = [[attributeDict objectForKey:@"id"] intValue];
 		src = [[attributeDict objectForKey:@"src"] copy];
 		[[Definition sharedDefinition] addImageName:src];
-		border = [[attributeDict objectForKey:@"border"] copy];
 		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];
 	}
@@ -49,7 +55,6 @@
 
 - (void)dealloc {
 	[src release];
-	[border release];
 	[super dealloc];
 }
 

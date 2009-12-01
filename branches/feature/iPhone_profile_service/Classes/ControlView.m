@@ -37,6 +37,10 @@
 #import "ControllerException.h"
 #import "Slider.h"
 #import "SliderView.h"
+#import "Label.h"
+#import "LabelView.h"
+#import "Image.h"
+#import "ImageView.h"
 
 @interface ControlView (Private)
 
@@ -61,6 +65,10 @@
 		controlView = [MonitorView alloc];
 	} else if ([control isKindOfClass:[Slider class]]) {
 		controlView = [SliderView alloc];
+	} else if ([control isKindOfClass:[Label class]]) {
+		controlView = [LabelView alloc];
+	} else if ([control isKindOfClass:[Image class]]) {
+		controlView	= [ImageView alloc];
 	} else {
 		return nil;
 	}
