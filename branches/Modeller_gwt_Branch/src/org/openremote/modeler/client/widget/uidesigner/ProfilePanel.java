@@ -65,11 +65,13 @@ public class ProfilePanel extends ContentPanel {
    private TreePanel<BeanModel> panelTree;
    private Icons icon = GWT.create(Icons.class);
    private SelectionServiceExt<BeanModel> selectionService;
+   private ScreenTab screenTab = null;
 
    /**
     * Instantiates a new profile panel.
     */
    public ProfilePanel(ScreenTab screenTab) {
+      this.screenTab = screenTab;
       selectionService = new SelectionServiceExt<BeanModel>();
       setHeading("Panel");
       setIcon(icon.panelIcon());
@@ -188,6 +190,8 @@ public class ProfilePanel extends ContentPanel {
                   editPanel(selectedModel);
                } else if (selectedModel.getBean() instanceof GroupRef) {
                   editGroup(selectedModel);
+               } else if(selectedModel.getBean() instanceof ScreenRef){
+                  editScreen(selectedModel);
                }
             }
          }
@@ -214,7 +218,6 @@ public class ProfilePanel extends ContentPanel {
          
       });
    }
-
    private void editGroup(final BeanModel groupRefBeanModel) {
       final GroupWizardWindow groupWindow = new GroupWizardWindow(groupRefBeanModel);
       groupWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
@@ -233,6 +236,24 @@ public class ProfilePanel extends ContentPanel {
             panelTree.getSelectionModel().select(groupRefModel, false);
             Info.display("Info", "Add Group " + groupRef.getGroup().getName() + " success.");
          }
+      });
+   }
+   private void editScreen(final BeanModel panelBeanModel) {
+      final ScreenWizard screenWizard = new ScreenWizard(screenTab,panelBeanModel,true);
+      screenWizard.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+         @Override
+         public void afterSubmit(SubmitEvent be) {
+            ScreenRef screenRef = be.<ScreenRef> getData();
+           /* BeanModel oldGroupBeanModel = screenWizard.getSelectedGroupRefModel();
+            BeanModel newGroupBeanModel = panelTree.getStore().getParent(screenWizard.getSelectItem());
+            if(!oldGroupBeanModel.equals(newGroupBeanModel)){
+               panelTree.getStore().remove(screenRef.getBeanModel());
+               panelTree.getStore().add(newGroupBeanModel, screenRef.getBeanModel(),false);
+            }*/
+            panelTree.getStore().update(screenRef.getBeanModel());
+            Info.display("Info", "Edit screen " + screenRef.getScreen().getName() + " success.");
+         }
+         
       });
    }
    /**
@@ -277,6 +298,13 @@ public class ProfilePanel extends ContentPanel {
                      if (screenRef.getScreen().getRefCount() == 0) {
                         BeanModelDataBase.screenTable.delete(screenRef.getScreenId());
                      }
+                  }
+               }else if(selectedModel != null && selectedModel.getBean() instanceof ScreenRef){
+                  ScreenRef screenRef = (ScreenRef) selectedModel.getBean();
+                  panelTree.getStore().remove(selectedModel);
+                  screenRef.getScreen().releaseRef();
+                  if (screenRef.getScreen().getRefCount() == 0) {
+                     BeanModelDataBase.screenTable.delete(screenRef.getScreenId());
                   }
                }
             }
@@ -359,6 +387,38 @@ public class ProfilePanel extends ContentPanel {
    private MenuItem createNewScreenMenuItem() {
       MenuItem newScreenItem = new MenuItem("New Screen");
       newScreenItem.setIcon(icon.screenIcon());
+      newScreenItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+         public void componentSelected(MenuEvent ce) {
+            BeanModel selectItem = panelTree.getSelectionModel().getSelectedItem();
+            final ScreenWizard screenWindow = new ScreenWizard(screenTab, selectItem);
+            screenWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+               @Override
+               public void afterSubmit(SubmitEvent be) {
+                  ScreenRef screenRef = be.<ScreenRef>getData();
+                  panelTree.getStore().add(screenWindow.getSelectedGroupRefModel(), screenRef.getBeanModel(), false);
+               }
+
+            });
+
+         }
+      });
       return newScreenItem;
    }
+
+   public TreePanel<BeanModel> getPanelTree() {
+      return panelTree;
+   }
+
+   public void setPanelTree(TreePanel<BeanModel> panelTree) {
+      this.panelTree = panelTree;
+   }
+
+   public ScreenTab getScreenTab() {
+      return screenTab;
+   }
+
+   public void setScreenTab(ScreenTab screenTab) {
+      this.screenTab = screenTab;
+   }
+   
 }

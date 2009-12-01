@@ -362,4 +362,28 @@ public class TreePanelBuilder {
       return panelTree;
    }
    
+   public static TreePanel<BeanModel> buildPanelTree(TreeStore<BeanModel> store) {
+      TreePanel<BeanModel> panelTree = new TreePanel<BeanModel>(store);
+         
+      panelTree.setStateful(true);
+      panelTree.setBorders(false);
+      panelTree.setHeight("100%");
+      panelTree.setDisplayProperty("displayName");
+
+      panelTree.setIconProvider(new ModelIconProvider<BeanModel>() {
+         public AbstractImagePrototype getIcon(BeanModel thisModel) {
+            if (thisModel.getBean() instanceof Panel) {
+               return ICON.panelIcon();
+            } else if (thisModel.getBean() instanceof GroupRef) {
+               return ICON.activityIcon();
+            } else if (thisModel.getBean() instanceof ScreenRef) {
+               return ICON.screenIcon();
+            } else {
+               return ICON.panelIcon();
+            }
+         }
+      });
+
+      return panelTree;
+   }
 }
