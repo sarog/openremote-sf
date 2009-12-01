@@ -25,6 +25,7 @@
 #import "AbsoluteLayoutContainer.h"
 #import "GridLayoutContainer.h"
 #import "Definition.h"
+#import "Gesture.h"
 
 @implementation Screen
  
@@ -76,12 +77,23 @@
 		GridLayoutContainer *grid = [[GridLayoutContainer alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 		[layouts addObject:grid];
 		[grid release];
-//	} else if ([elementName isEqualToString:@"gesture"]) {
-//		// Call Gesture's initialize method to parse xml using NSXMLParser
+	} else if ([elementName isEqualToString:@"gesture"]) {
+		NSLog(@"start gesture");
+		// Call Gesture's initialize method to parse xml using NSXMLParser
+		Gesture *gesture = [[Gesture alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+		[gestures addObject:gesture];
+		[gesture release];
 	}
 }
 
-
+- (Gesture *)getGestureIdByGestureSwipeType:(GestureSwipeType)type {
+	for (Gesture *g in gestures) {
+		if (g.swipeType == type) {
+			return g;
+		}
+	}
+	return nil;
+}
 
 - (void)dealloc {
 	[name release];

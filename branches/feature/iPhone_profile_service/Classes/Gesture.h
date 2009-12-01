@@ -21,10 +21,25 @@
 
 
 #import <Foundation/Foundation.h>
-#import "XMLEntity.h"
+#import "Control.h"
 
-@interface Gesture : XMLEntity {
+typedef enum {
+	GestureSwipeTypeTopToBottom  = 0,
+	GestureSwipeTypeBottomToTop  = 1,
+	GestureSwipeTypeLeftToRight  = 2,
+	GestureSwipeTypeRightToLeft  = 3
+} GestureSwipeType;
+
+@interface Gesture : Control {
+	
+	GestureSwipeType swipeType;
+	BOOL hasControlCommnad;
 
 }
+
+@property (nonatomic, readonly)GestureSwipeType swipeType;
+@property (nonatomic, readonly)BOOL hasControlCommnad;
+
+- (id)initWithGestureSwipeType:(GestureSwipeType)type;
 
 @end

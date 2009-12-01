@@ -33,7 +33,6 @@
 #import "Definition.h"
 #import "NotificationConstant.h"
 #import "DataBaseService.h"
-#import "User.h"
 #import "CredentialUtil.h"
 #import "ControllerException.h"
 #import "Slider.h"
@@ -62,7 +61,10 @@
 		controlView = [MonitorView alloc];
 	} else if ([control isKindOfClass:[Slider class]]) {
 		controlView = [SliderView alloc];
+	} else {
+		return nil;
 	}
+
 
 	
 	return [controlView initWithControl:control frame:frame];
@@ -121,10 +123,7 @@
 - (void)handleServerErrorWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
 		if (statusCode != 401) {
-			DataBaseService *dbService = [DataBaseService sharedDataBaseService];
-			User *user = [[User alloc] initWithUsernameAndPassword:[Definition sharedDefinition].username password:[Definition sharedDefinition].password];
-			[dbService deleteAllUsers];
-			[dbService insertUser:user];
+			[[DataBaseService sharedDataBaseService] saveCurrentUser];
 		} else {
 			[Definition sharedDefinition].password = nil;
 		}

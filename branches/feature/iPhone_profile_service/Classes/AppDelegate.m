@@ -38,6 +38,7 @@
 #import "AppSettingController.h"
 #import "DataBaseService.h"
 #import "LogoutHelper.h"
+#import "Gesture.h"
 
 //Private method declare
 @interface AppDelegate (Private)
@@ -58,6 +59,7 @@
 - (BOOL)navigateTo:(Navigate *)navi;
 - (void)navigateToWithHistory:(Navigate *)navi;
 - (void)initGroups;
+- (void)performGesture:(Gesture *)gesture;
 @end
 
 @implementation AppDelegate
@@ -65,7 +67,7 @@
 //Entry point method
 - (void)applicationDidFinishLaunching:(UIApplication *)application {    
 	// Default window for the app
-	window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	window = [[GestureWindow alloc] initWithDelegate:self];
 	[window makeKeyAndVisible];
 	
 	// Load logined iphone user last time.
@@ -369,6 +371,11 @@
 
 - (void)onBackFromLogin {
 	[self updateDidFinished];
+}
+
+#pragma mark delegate method of GestureWindow
+- (void)performGesture:(Gesture *)gesture {
+	[currentGroupController performGesture:gesture];
 }
 
 

@@ -22,6 +22,9 @@
 
 #import <UIKit/UIKit.h>
 
+#define kMinimumGestureLength       25
+#define kMaximumVariance            5
+
 @interface PaginationController : UIViewController <UIScrollViewDelegate> {
 	NSArray *viewControllers;
 	NSUInteger selectedIndex;
@@ -30,6 +33,9 @@
 	UIPageControl *pageControl;
 	
 	BOOL pageControlUsed;
+	
+	
+	CGPoint    gestureStartPoint;
 }
 
 @property(nonatomic,copy) NSArray *viewControllers;

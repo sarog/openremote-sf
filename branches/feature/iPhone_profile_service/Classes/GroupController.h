@@ -23,6 +23,7 @@
 #import "Group.h"
 #import "PaginationController.h"
 #import "ErrorViewController.h"
+#import "Screen.h"
 
 @interface GroupController : UIViewController {
 
@@ -40,6 +41,7 @@
 - (BOOL)nextScreen;
 - (int)currentScreenId;
 - (int)groupId;
+- (void)performGesture:(Gesture *)gesture;
 
 @property (nonatomic, retain) Group *group;
 

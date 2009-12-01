@@ -228,4 +228,32 @@
 	[self updateView];
 }
 
+#pragma mark -
+#pragma mark swipe event delegate method
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+	NSLog(@"touch begin");
+	
+	UITouch *touch = [touches anyObject];
+	gestureStartPoint = [touch locationInView:self.view];
+	
+}
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+	
+	UITouch *touch = [touches anyObject];
+	CGPoint currentPosition = [touch locationInView:self.view];
+	
+	CGFloat deltaX = fabsf(gestureStartPoint.x - currentPosition.x);
+	CGFloat deltaY = fabsf(gestureStartPoint.y - currentPosition.y);
+	
+	if (deltaX >= kMinimumGestureLength && deltaY <= kMaximumVariance) {
+		NSLog(@"Horizontal swipe detected");;
+	}
+	else if (deltaY >= kMinimumGestureLength &&
+					 deltaX <= kMaximumVariance){
+		NSLog(@"Vertical swipe detected");;		
+	}
+	
+}
+
 @end
