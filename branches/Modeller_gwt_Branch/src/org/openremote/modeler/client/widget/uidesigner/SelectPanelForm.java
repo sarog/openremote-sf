@@ -65,7 +65,16 @@ public class SelectPanelForm extends CommonForm {
       nameField.setFieldLabel("Name");
       nameField.setAllowBlank(false);
       
-      AdapterField panelField = new AdapterField(createPanelList(groupRef));
+      AdapterField panelField = new AdapterField(createPanelList(groupRef)) {
+         @Override
+         public boolean isValid(boolean silent) {
+            if (panelListView.getSelectionModel().getSelectedItem() == null) {
+               MessageBox.alert("ERROR", "Please select a panel to create group", null);
+               return false;
+            }
+            return super.isValid(silent);
+         }
+      };
       panelField.setFieldLabel("Panel");
       add(nameField);
       add(panelField);
