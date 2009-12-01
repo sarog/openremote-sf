@@ -26,11 +26,11 @@
 #import "GroupController.h"
 #import "ErrorViewController.h"
 #import "ViewHelper.h"
-
+#import "GestureWindow.h"
 
 @interface AppDelegate : NSObject <UIApplicationDelegate> {
 	
-	UIWindow *window;
+	GestureWindow *window;
 	UIView *defaultView;
 	InitViewController *initViewController;
 	UIViewController *defaultViewController;

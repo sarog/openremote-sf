@@ -140,6 +140,28 @@
 		8C460FA4109566F900C7A686 /* AsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27D0FBD3782006ED733 /* AsyncSocket.m */; };
 		8C460FA5109566F900C7A686 /* AsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27F0FBD3782006ED733 /* AsyncUdpSocket.m */; };
 		8C460FED1095A30A00C7A686 /* PanelXMLParsingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460FEC1095A30A00C7A686 /* PanelXMLParsingTests.m */; };
+		8C5E9AA410BFD38C00CD87AD /* panel_absolute_slider_gesture.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C5E9AA310BFD38C00CD87AD /* panel_absolute_slider_gesture.xml */; };
+		8C5E9AA510BFD38C00CD87AD /* panel_absolute_slider_gesture.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C5E9AA310BFD38C00CD87AD /* panel_absolute_slider_gesture.xml */; };
+		8C5E9B6E10BFF29900CD87AD /* Slider.h in Sources */ = {isa = PBXBuildFile; fileRef = 3322879510BFB55A00D94163 /* Slider.h */; };
+		8C5E9B6F10BFF29900CD87AD /* Monitor.h in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7ED0510BE988600E15487 /* Monitor.h */; };
+		8C5E9B7010BFF29900CD87AD /* Switch.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC71095573600C7A686 /* Switch.h */; };
+		8C5E9B7110BFF29900CD87AD /* User.h in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1810B108C30076DB59 /* User.h */; };
+		8C5E9B7210BFF29900CD87AD /* AbsoluteLayoutContainer.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EA91095573600C7A686 /* AbsoluteLayoutContainer.h */; };
+		8C5E9B7310BFF29900CD87AD /* Button.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EAD1095573600C7A686 /* Button.h */; };
+		8C5E9B7410BFF29900CD87AD /* Control.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EAF1095573600C7A686 /* Control.h */; };
+		8C5E9B7510BFF29900CD87AD /* Definition.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB11095573600C7A686 /* Definition.h */; };
+		8C5E9B7610BFF29900CD87AD /* Gesture.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB31095573600C7A686 /* Gesture.h */; };
+		8C5E9B7710BFF29900CD87AD /* GridCell.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB51095573600C7A686 /* GridCell.h */; };
+		8C5E9B7810BFF29900CD87AD /* GridLayoutContainer.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB71095573600C7A686 /* GridLayoutContainer.h */; };
+		8C5E9B7910BFF29900CD87AD /* Group.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB91095573600C7A686 /* Group.h */; };
+		8C5E9B7A10BFF29900CD87AD /* Image.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EBB1095573600C7A686 /* Image.h */; };
+		8C5E9B7B10BFF29900CD87AD /* Label.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EBD1095573600C7A686 /* Label.h */; };
+		8C5E9B7C10BFF29900CD87AD /* LayoutContainer.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EBF1095573600C7A686 /* LayoutContainer.h */; };
+		8C5E9B7D10BFF29900CD87AD /* Navigate.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC11095573600C7A686 /* Navigate.h */; };
+		8C5E9B7E10BFF29900CD87AD /* Screen.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC51095573600C7A686 /* Screen.h */; };
+		8C5E9B7F10BFF29900CD87AD /* Toggle.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC91095573600C7A686 /* Toggle.h */; };
+		8C5E9B8010BFF29900CD87AD /* ToggleState.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460ECB1095573600C7A686 /* ToggleState.h */; };
+		8C5E9B8110BFF29900CD87AD /* XMLEntity.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460ECD1095573600C7A686 /* XMLEntity.h */; };
 		8C6502E2109809EC006FC19F /* PollingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6502E1109809EC006FC19F /* PollingHelper.m */; };
 		8C6502E3109809EC006FC19F /* PollingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6502E1109809EC006FC19F /* PollingHelper.m */; };
 		8C6504731098337F006FC19F /* panel_grid_switch.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C6504721098337F006FC19F /* panel_grid_switch.xml */; };
@@ -165,6 +187,8 @@
 		8CC6364F10BD37D8009C25C9 /* CredentialUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC6364D10BD37D8009C25C9 /* CredentialUtil.m */; };
 		8CC636D010BD4DCC009C25C9 /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC636CF10BD4DCC009C25C9 /* NSStringAdditions.m */; };
 		8CC636D110BD4DCC009C25C9 /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC636CF10BD4DCC009C25C9 /* NSStringAdditions.m */; };
+		8CDE3FF810C39D1F0096CAC9 /* GestureWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CDE3FF710C39D1F0096CAC9 /* GestureWindow.m */; };
+		8CDE3FF910C39D1F0096CAC9 /* GestureWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CDE3FF710C39D1F0096CAC9 /* GestureWindow.m */; };
 		8CE7EBE410BE773600E15487 /* ControllerException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7EBE310BE773600E15487 /* ControllerException.m */; };
 		8CE7EBE510BE773600E15487 /* ControllerException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7EBE310BE773600E15487 /* ControllerException.m */; };
 		8CE7ED0310BE987800E15487 /* MonitorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7ED0210BE987800E15487 /* MonitorView.m */; };
@@ -306,6 +330,7 @@
 		8C460F5B109564D000C7A686 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		8C460F8D1095666A00C7A686 /* panel_absolute_switch.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_absolute_switch.xml; sourceTree = "<group>"; };
 		8C460FEC1095A30A00C7A686 /* PanelXMLParsingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PanelXMLParsingTests.m; sourceTree = "<group>"; };
+		8C5E9AA310BFD38C00CD87AD /* panel_absolute_slider_gesture.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_absolute_slider_gesture.xml; sourceTree = "<group>"; };
 		8C6502E0109809EC006FC19F /* PollingHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PollingHelper.h; sourceTree = "<group>"; };
 		8C6502E1109809EC006FC19F /* PollingHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PollingHelper.m; sourceTree = "<group>"; };
 		8C6504721098337F006FC19F /* panel_grid_switch.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_grid_switch.xml; sourceTree = "<group>"; };
@@ -336,6 +361,8 @@
 		8CC6364D10BD37D8009C25C9 /* CredentialUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CredentialUtil.m; sourceTree = "<group>"; };
 		8CC636CE10BD4DCC009C25C9 /* NSStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringAdditions.h; sourceTree = "<group>"; };
 		8CC636CF10BD4DCC009C25C9 /* NSStringAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringAdditions.m; sourceTree = "<group>"; };
+		8CDE3FF610C39D1F0096CAC9 /* GestureWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GestureWindow.h; sourceTree = "<group>"; };
+		8CDE3FF710C39D1F0096CAC9 /* GestureWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GestureWindow.m; sourceTree = "<group>"; };
 		8CE7EBE310BE773600E15487 /* ControllerException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerException.m; sourceTree = "<group>"; };
 		8CE7ED0110BE987800E15487 /* MonitorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MonitorView.h; sourceTree = "<group>"; };
 		8CE7ED0210BE987800E15487 /* MonitorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MonitorView.m; sourceTree = "<group>"; };
@@ -567,6 +594,7 @@
 		8CEB4E7810B27F3700A67721 /* panelxml */ = {
 			isa = PBXGroup;
 			children = (
+				8C5E9AA310BFD38C00CD87AD /* panel_absolute_slider_gesture.xml */,
 				8C460E52109552EB00C7A686 /* PanelXMLParsingTests.h */,
 				8C460FEC1095A30A00C7A686 /* PanelXMLParsingTests.m */,
 				3322878B10BFB18800D94163 /* panel_grid_slider.xml */,
@@ -668,6 +696,8 @@
 				8C460E981095563A00C7A686 /* ToggleView.m */,
 				8C650566109870D2006FC19F /* GridCellView.h */,
 				8C650567109870D2006FC19F /* GridCellView.m */,
+				8CDE3FF610C39D1F0096CAC9 /* GestureWindow.h */,
+				8CDE3FF710C39D1F0096CAC9 /* GestureWindow.m */,
 			);
 			name = view;
 			sourceTree = "<group>";
@@ -795,6 +825,7 @@
 				3322875810BFB0A600D94163 /* panel_grid_monitor.xml in Resources */,
 				3322878D10BFB18800D94163 /* panel_grid_slider.xml in Resources */,
 				3322879010BFB19E00D94163 /* panel_absolute_slider.xml in Resources */,
+				8C5E9AA410BFD38C00CD87AD /* panel_absolute_slider_gesture.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -813,6 +844,7 @@
 				3322875910BFB0A600D94163 /* panel_grid_monitor.xml in Resources */,
 				3322878C10BFB18800D94163 /* panel_grid_slider.xml in Resources */,
 				3322878F10BFB19E00D94163 /* panel_absolute_slider.xml in Resources */,
+				8C5E9AA510BFD38C00CD87AD /* panel_absolute_slider_gesture.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -906,6 +938,7 @@
 				8CE7ED0810BE988600E15487 /* Monitor.m in Sources */,
 				3322879810BFB55A00D94163 /* Slider.m in Sources */,
 				3322883210BFC03F00D94163 /* SliderView.m in Sources */,
+				8CDE3FF910C39D1F0096CAC9 /* GestureWindow.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -913,6 +946,46 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C5E9B6E10BFF29900CD87AD /* Slider.h in Sources */,
+				3322879710BFB55A00D94163 /* Slider.m in Sources */,
+				8C5E9B6F10BFF29900CD87AD /* Monitor.h in Sources */,
+				8CE7ED0710BE988600E15487 /* Monitor.m in Sources */,
+				8C5E9B7010BFF29900CD87AD /* Switch.h in Sources */,
+				8C460EF11095573600C7A686 /* Switch.m in Sources */,
+				8C5E9B7110BFF29900CD87AD /* User.h in Sources */,
+				33981B1B10B108C30076DB59 /* User.m in Sources */,
+				8C5E9B7210BFF29900CD87AD /* AbsoluteLayoutContainer.h in Sources */,
+				8C460EE21095573600C7A686 /* AbsoluteLayoutContainer.m in Sources */,
+				8C5E9B7310BFF29900CD87AD /* Button.h in Sources */,
+				8C460EE41095573600C7A686 /* Button.m in Sources */,
+				8C5E9B7410BFF29900CD87AD /* Control.h in Sources */,
+				8C460EE51095573600C7A686 /* Control.m in Sources */,
+				8C5E9B7510BFF29900CD87AD /* Definition.h in Sources */,
+				8C460EE61095573600C7A686 /* Definition.m in Sources */,
+				8C5E9B7610BFF29900CD87AD /* Gesture.h in Sources */,
+				8C460EE71095573600C7A686 /* Gesture.m in Sources */,
+				8C5E9B7710BFF29900CD87AD /* GridCell.h in Sources */,
+				8C460EE81095573600C7A686 /* GridCell.m in Sources */,
+				8C5E9B7810BFF29900CD87AD /* GridLayoutContainer.h in Sources */,
+				8C460EE91095573600C7A686 /* GridLayoutContainer.m in Sources */,
+				8C5E9B7910BFF29900CD87AD /* Group.h in Sources */,
+				8C460EEA1095573600C7A686 /* Group.m in Sources */,
+				8C5E9B7A10BFF29900CD87AD /* Image.h in Sources */,
+				8C460EEB1095573600C7A686 /* Image.m in Sources */,
+				8C5E9B7B10BFF29900CD87AD /* Label.h in Sources */,
+				8C460EEC1095573600C7A686 /* Label.m in Sources */,
+				8C5E9B7C10BFF29900CD87AD /* LayoutContainer.h in Sources */,
+				8C460EED1095573600C7A686 /* LayoutContainer.m in Sources */,
+				8C5E9B7D10BFF29900CD87AD /* Navigate.h in Sources */,
+				8C460EEE1095573600C7A686 /* Navigate.m in Sources */,
+				8C5E9B7E10BFF29900CD87AD /* Screen.h in Sources */,
+				8C460EF01095573600C7A686 /* Screen.m in Sources */,
+				8C5E9B7F10BFF29900CD87AD /* Toggle.h in Sources */,
+				8C460EF21095573600C7A686 /* Toggle.m in Sources */,
+				8C5E9B8010BFF29900CD87AD /* ToggleState.h in Sources */,
+				8C460EF31095573600C7A686 /* ToggleState.m in Sources */,
+				8C5E9B8110BFF29900CD87AD /* XMLEntity.h in Sources */,
+				8C460EF41095573600C7A686 /* XMLEntity.m in Sources */,
 				8C650624109882F2006FC19F /* GridCellView.m in Sources */,
 				8C460F9E109566F900C7A686 /* main.m in Sources */,
 				8C460F9F109566F900C7A686 /* URLConnectionHelper.m in Sources */,
@@ -934,23 +1007,6 @@
 				8C460EA61095563A00C7A686 /* ScreenView.m in Sources */,
 				8C460EA71095563A00C7A686 /* SwitchView.m in Sources */,
 				8C460EA81095563A00C7A686 /* ToggleView.m in Sources */,
-				8C460EE21095573600C7A686 /* AbsoluteLayoutContainer.m in Sources */,
-				8C460EE41095573600C7A686 /* Button.m in Sources */,
-				8C460EE51095573600C7A686 /* Control.m in Sources */,
-				8C460EE61095573600C7A686 /* Definition.m in Sources */,
-				8C460EE71095573600C7A686 /* Gesture.m in Sources */,
-				8C460EE81095573600C7A686 /* GridCell.m in Sources */,
-				8C460EE91095573600C7A686 /* GridLayoutContainer.m in Sources */,
-				8C460EEA1095573600C7A686 /* Group.m in Sources */,
-				8C460EEB1095573600C7A686 /* Image.m in Sources */,
-				8C460EEC1095573600C7A686 /* Label.m in Sources */,
-				8C460EED1095573600C7A686 /* LayoutContainer.m in Sources */,
-				8C460EEE1095573600C7A686 /* Navigate.m in Sources */,
-				8C460EF01095573600C7A686 /* Screen.m in Sources */,
-				8C460EF11095573600C7A686 /* Switch.m in Sources */,
-				8C460EF21095573600C7A686 /* Toggle.m in Sources */,
-				8C460EF31095573600C7A686 /* ToggleState.m in Sources */,
-				8C460EF41095573600C7A686 /* XMLEntity.m in Sources */,
 				8C460F201095628C00C7A686 /* AddServerViewController.m in Sources */,
 				8C460F211095628C00C7A686 /* AppSettingController.m in Sources */,
 				8C460F221095628C00C7A686 /* GroupController.m in Sources */,
@@ -969,7 +1025,6 @@
 				8CAEB81C10A6B25B0051C827 /* LoginViewController.m in Sources */,
 				331A58E810AD6A79001AB869 /* DataBaseServiceTest.m in Sources */,
 				33981B1210B103260076DB59 /* DataBaseService.m in Sources */,
-				33981B1B10B108C30076DB59 /* User.m in Sources */,
 				8CEB4E8010B2827200A67721 /* LogoutHelper.m in Sources */,
 				3397F88510B52AB3008052AF /* SwitchServerAlertHelper.m in Sources */,
 				8CF5342010B64C1900C52FB0 /* ChoosePanelViewController.m in Sources */,
@@ -978,9 +1033,8 @@
 				8CC636D110BD4DCC009C25C9 /* NSStringAdditions.m in Sources */,
 				8CE7EBE410BE773600E15487 /* ControllerException.m in Sources */,
 				8CE7ED0310BE987800E15487 /* MonitorView.m in Sources */,
-				8CE7ED0710BE988600E15487 /* Monitor.m in Sources */,
-				3322879710BFB55A00D94163 /* Slider.m in Sources */,
 				3322883110BFC03F00D94163 /* SliderView.m in Sources */,
+				8CDE3FF810C39D1F0096CAC9 /* GestureWindow.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1038,6 +1092,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
@@ -1058,6 +1114,8 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = UnitTest;
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
@@ -1066,6 +1124,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
@@ -1083,6 +1143,8 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = UnitTest;
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Distribution;
@@ -1091,6 +1153,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1110,6 +1174,8 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = UnitTest;
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				WRAPPER_EXTENSION = octest;
 				ZERO_LINK = NO;
 			};

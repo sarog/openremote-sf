@@ -25,4 +25,57 @@
 
 @implementation Gesture
 
+@synthesize swipeType, hasControlCommnad;
+
+// This method is abstract method of indirectclass XMLEntity.
+// So, this method must be overridden in subclass.
+- (NSString *) elementName {
+	return @"gesture";
+}
+
+// This method is abstract method of direct superclass Control.
+// So, this method must be overridden in subclass.
+- (BOOL)hasPollingStatus {
+	return NO;
+}
+
+- (id)initWithGestureSwipeType:(GestureSwipeType)type {
+	if (self = [super init]) {
+		swipeType = type;
+	}
+	return self;
+}
+
+#pragma mark Delegate methods of NSXMLParser
+
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+	if (self = [super init]) {
+		controlId = [[attributeDict objectForKey:@"id"] intValue];
+		NSString *type = [attributeDict objectForKey:@"type"];
+		NSLog(@"gestrue %@", elementName);
+		if ([type isEqualToString:@"swipe-top-to-bottom"]) {
+			swipeType = GestureSwipeTypeTopToBottom;
+		} else if ([type isEqualToString:@"swipe-bottom-to-top"]) {
+			swipeType = GestureSwipeTypeBottomToTop;
+		} else if ([type isEqualToString:@"swipe-left-to-right"]) {
+			swipeType = GestureSwipeTypeLeftToRight;
+		} else if ([type isEqualToString:@"swipe-right-to-left"]) {
+			swipeType = GestureSwipeTypeRightToLeft;
+		}
+		hasControlCommnad = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"hasControlCommnad"] uppercaseString]] ? YES : NO;
+
+		xmlParserParentDelegate = [parent retain];
+		[parser setDelegate:self];
+	}
+	return self;
+}
+
+/**
+ * Parse the gesture's sub elements .
+ */
+- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
+	// Because there is no sub elements in monitor, so do nothing.
+}
+
+
 @end

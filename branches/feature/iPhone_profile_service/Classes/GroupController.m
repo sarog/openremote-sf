@@ -109,6 +109,10 @@
 	return ((ScreenViewController *)[paginationController.viewControllers objectAtIndex:paginationController.selectedIndex]).screen.screenId;
 }
 
+- (void)performGesture:(Gesture *)gesture {
+	return [(ScreenViewController *)[paginationController.viewControllers objectAtIndex:paginationController.selectedIndex] performGesture:gesture];
+}
+
 /*
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

@@ -19,28 +19,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
 #import <UIKit/UIKit.h>
-#import "XMLEntity.h"
-#import "Gesture.h"
 
-@interface Screen : XMLEntity {
-	
-	int screenId;
-	NSString *name;
-	NSString *background;
-	NSMutableArray *layouts;
-	NSMutableArray *gestures;
 
+#define MINIMUM_GESTURE_LENGTH      80
+#define MAXIMUM_VARIANCE            40
+
+
+
+@interface GestureWindow : UIWindow {
+	CGPoint previousTouchLocation;
+	id theDelegate;
 }
 
-- (NSArray *)pollingComponentsIds;
-- (Gesture *)getGestureIdByGestureSwipeType:(GestureSwipeType)type;
-
-@property (nonatomic,readonly) int screenId;
-@property (nonatomic,readonly) NSString *name;
-@property (nonatomic,readonly) NSString *background;
-@property (nonatomic,readonly) NSMutableArray *layouts;
-@property (nonatomic,readonly) NSMutableArray *gestures;
+- (id)initWithDelegate:(id)delegate;
 
 @end

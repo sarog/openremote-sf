@@ -33,6 +33,7 @@
 #import "Button.h"
 #import "Monitor.h"
 #import "Slider.h"
+#import "Gesture.h"
 
 @implementation PanelXMLParsingTests
 
@@ -673,6 +674,81 @@
 	[xmlParser release];
 	[xml release];
 }
+
+
+// panel_absolute_slider_gesture.xml test
+- (void) testParsePanelAbsoluteSliderGestureXML {
+	NSLog(@"Begin testParsePanelAbsoluteSliderGestureXML ");
+	[[Definition sharedDefinition] clearPanelXMLData];	
+	NSData *xml = [self readFile:@"panel_absolute_slider_gesture.xml"];
+	
+	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
+	[xmlParser setDelegate:self];
+	[xmlParser parse];
+	NSMutableArray *groups = [[Definition sharedDefinition] groups];
+	NSMutableArray *screens = [[Definition sharedDefinition] screens];
+	int slider_index = 0;
+	int gesture_index = 0;
+	for (Group *group in groups) {
+		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
+		for (Screen *screen in group.screens) {
+			int count = screen.gestures.count;
+			STAssertTrue(4 == count, @"expected 4, but %d",count);
+			for (Gesture *gesture in screen.gestures) {
+				STAssertEquals(gesture.swipeType, gesture_index % 4, @"expected %d, but %d",gesture_index % 4,gesture.swipeType);
+				STAssertEquals(gesture.hasControlCommnad, YES, @"expected yes, but %d",gesture.hasControlCommnad);
+				gesture_index++;
+			}
+			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
+			for (LayoutContainer *layout in screen.layouts) {
+				if([layout isKindOfClass:[AbsoluteLayoutContainer class]]){					
+					NSLog(@"layout is absolute ");
+					AbsoluteLayoutContainer *abso =(AbsoluteLayoutContainer *)layout;
+					NSString *layoutAttrs = [[NSMutableString alloc] initWithFormat:@"%d %d %d %d",abso.left,abso.top,abso.width,abso.height];
+					NSString *expectedAttrs = @"20 320 100 100";
+					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
+					[layoutAttrs release];
+					
+					if ([abso.control isKindOfClass:[Switch class]]) {
+						Slider *theSlider = (Slider *)abso.control;
+						int expectedId = (59 + slider_index++);
+						STAssertTrue(expectedId == theSlider.controlId,@"expected %d, but %d",expectedId,theSlider.controlId);
+						float maxValue = 100.0f;						
+						STAssertTrue(theSlider.maxValue == maxValue,@"expected %f, but %f", maxValue, theSlider.maxValue);
+						float minValue = 0.0f;
+						STAssertTrue(theSlider.minValue == minValue,@"expected %f, but %f", minValue, theSlider.minValue);
+					}					
+				}				
+			}
+		}
+	}
+	
+	NSLog(@"groups count = %d",[groups count]);
+	NSLog(@"screens count = %d",[screens count]);
+	NSLog(@"xml parse done");
+	
+	NSMutableArray *screenNames = [NSMutableArray arrayWithObjects:@"basement",@"floor",nil];
+	NSMutableArray *groupNames = [NSMutableArray arrayWithObjects:@"All rooms",@"living room",nil];
+	
+	//check screens
+	for (int i=0;i<screenNames.count;i++) {
+		STAssertTrue([[screenNames objectAtIndex:i] isEqualToString:[[screens objectAtIndex:i] name]],@"expected %@, but %@",[screenNames objectAtIndex:i],[[screens objectAtIndex:i] name]);
+		STAssertTrue(i+5 == [[screens objectAtIndex:i] screenId],@"expected %d, but %d",i+5,[[screens objectAtIndex:i] screenId]);
+	}
+	
+	//check groups
+	for (int i=0;i<groupNames.count;i++) {
+		STAssertTrue([[groupNames objectAtIndex:i] isEqualToString:[[groups objectAtIndex:i] name]],@"expected %@, but %@",[groupNames objectAtIndex:i],[[groups objectAtIndex:i] name]);
+		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
+	}
+	Screen *screen1 = (Screen *)[screens objectAtIndex:0];
+	NSString *ids = [[screen1 pollingComponentsIds] componentsJoinedByString:@","];
+	STAssertTrue([@"59,60" isEqualToString:ids],@"expected 59,60 but %@",ids);
+	
+	[xmlParser release];
+	[xml release];
+}
+
 
 #pragma mark delegate method of NSXMLParser
 //Delegate method when find a element start

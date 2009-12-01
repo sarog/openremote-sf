@@ -22,6 +22,19 @@
 
 #import "ScreenViewController.h"
 #import "ScreenView.h"
+#import "ViewHelper.h"
+#import "Definition.h"
+#import "NotificationConstant.h"
+#import "ServerDefinition.h"
+#import "CredentialUtil.h"
+#import "ControllerException.h"
+#import "DataBaseService.h"
+
+@interface ScreenViewController (Private)
+
+- (void)sendCommandRequest:(int)controlId;
+@end
+
 
 
 @implementation ScreenViewController
@@ -37,6 +50,13 @@
 		polling = [[PollingHelper alloc] initWithComponentIds:[[[screen pollingComponentsIds] componentsJoinedByString:@","] retain]];
 	}
 	
+}
+
+- (void)performGesture:(Gesture *)gesture {
+	Gesture * g = [screen getGestureIdByGestureSwipeType:gesture.swipeType];
+	if (g && g.hasControlCommnad) {
+		[self sendCommandRequest:g.controlId];
+	}
 }
 
 // Implement loadView to create a view hierarchy programmatically.
@@ -55,6 +75,61 @@
 - (void)stopPolling {
 	[polling cancelPolling];
 }
+
+- (void)sendCommandRequest:(int)controlId {
+	
+	if ([[Definition sharedDefinition] password] == nil) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+		return;
+	}
+	
+	
+	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition securedControlRESTUrl]];
+	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",controlId,@"swipe"]];
+	NSLog([location stringByAppendingFormat:@"/%d/%@",controlId,@"swipe"]);
+	
+	
+	//assemble put request 
+	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+	[request setURL:url];
+	[request setHTTPMethod:@"POST"];
+	
+	[CredentialUtil addCredentialToNSMutableURLRequest:request];
+	
+	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
+	
+	[location release];
+	[url	 release];
+	[request release];
+	[connection autorelease];	
+}
+
+- (void)handleServerErrorWithStatusCode:(int) statusCode {
+	if (statusCode != 200) {
+		if (statusCode != 401) {
+			[[DataBaseService sharedDataBaseService] saveCurrentUser];
+		} else {
+			[Definition sharedDefinition].password = nil;
+		}
+		
+		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
+	}
+}
+
+#pragma mark delegate method of NSURLConnection
+- (void) definitionURLConnectionDidFailWithError:(NSError *)error {
+}
+
+
+- (void)definitionURLConnectionDidFinishLoading:(NSData *)data {
+}
+
+- (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
+	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
+	
+	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
+}
+
 
 
 - (void)dealoc {
