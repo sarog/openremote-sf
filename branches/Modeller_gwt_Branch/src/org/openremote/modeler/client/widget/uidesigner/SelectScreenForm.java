@@ -116,28 +116,26 @@ public class SelectScreenForm extends CommonForm {
    }
    
    public void update(Panel panel) {
-      if(panel != null) {
-         TouchPanelDefinition touchPanel = panel.getTouchPanelDefinition();
-         ListStore<BeanModel> store = screenListView.getStore();
-         store.removeAll();
-         otherModels.clear();
-         List<BeanModel> screenModels = BeanModelDataBase.screenTable.loadAll();
-         Group group = ((GroupRef)groupRefBeanModel.getBean()).getGroup();
-         for (BeanModel screenModel : screenModels) {
-            if (((Screen)screenModel.getBean()).getTouchPanelDefinition().equals(touchPanel)) {
-               store.add(screenModel);
-               screenListView.getSelectionModel().select(screenModel, true);
-               for (ScreenRef screenRef: group.getScreenRefs()) {
-                  if (((Screen)screenModel.getBean()).getOid() == screenRef.getScreenId()) {
-                     screenListView.setChecked(screenModel, true);
-                  }
+      TouchPanelDefinition touchPanel = panel.getTouchPanelDefinition();
+      ListStore<BeanModel> store = screenListView.getStore();
+      store.removeAll();
+      otherModels.clear();
+      List<BeanModel> screenModels = BeanModelDataBase.screenTable.loadAll();
+      Group group = ((GroupRef) groupRefBeanModel.getBean()).getGroup();
+      for (BeanModel screenModel : screenModels) {
+         if (((Screen) screenModel.getBean()).getTouchPanelDefinition().equals(touchPanel)) {
+            store.add(screenModel);
+            screenListView.getSelectionModel().select(screenModel, true);
+            for (ScreenRef screenRef : group.getScreenRefs()) {
+               if (((Screen) screenModel.getBean()).getOid() == screenRef.getScreenId()) {
+                  screenListView.setChecked(screenModel, true);
                }
-            } else {
-               otherModels.add(screenModel);
             }
+         } else {
+            otherModels.add(screenModel);
          }
-         
       }
+         
    }
    
    private void addBeforeSubmitListener() {

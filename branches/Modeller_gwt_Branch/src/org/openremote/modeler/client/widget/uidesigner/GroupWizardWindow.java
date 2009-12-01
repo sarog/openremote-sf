@@ -52,14 +52,8 @@ public class GroupWizardWindow extends WizardWindow {
       switch (step) {
       case SELECT_PANEL_STEP:
          SelectPanelForm selectPanelForm = (SelectPanelForm)currentForm;
-         if (selectPanelForm.getSelectedItem() == null) {
-            MessageBox.alert("ERROR", "Please select a panel to create group", null);
-            this.hide();
-            return;
-         } else {
-            SelectScreenForm selectScreenForm = (SelectScreenForm)forms[SELECT_SCREEN_STEP];
-            selectScreenForm.update((Panel)selectPanelForm.getSelectedItem().getBean());
-         }
+         SelectScreenForm selectScreenForm = (SelectScreenForm) forms[SELECT_SCREEN_STEP];
+         selectScreenForm.update((Panel) selectPanelForm.getSelectedItem().getBean());
          break;
       case SELECT_SCREEN_STEP:
          
