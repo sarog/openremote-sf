@@ -25,6 +25,7 @@ import java.util.List;
 import javax.persistence.Transient;
 
 import org.openremote.modeler.domain.component.UIGrid;
+import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 /**
@@ -183,6 +184,12 @@ public class Screen extends RefedEntity {
    @Transient
    public String getDisplayName() {
       return name;
+   }
+   
+   @Transient
+   public String getPanelName() {
+      TouchPanelCanvasDefinition canvas = touchPanelDefinition.getCanvas();
+      return name + "(" + touchPanelDefinition.getName() + "," + canvas.getWidth() + "X" + canvas.getHeight() + ")";
    }
    
    /**
