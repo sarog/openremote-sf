@@ -250,6 +250,7 @@ public class ProfilePanel extends ContentPanel {
                panelTree.getStore().remove(screenRef.getBeanModel());
                panelTree.getStore().add(newGroupBeanModel, screenRef.getBeanModel(),false);
             }*/
+            screenWizard.hide();
             panelTree.getStore().update(screenRef.getBeanModel());
             Info.display("Info", "Edit screen " + screenRef.getScreen().getName() + " success.");
          }
@@ -394,6 +395,7 @@ public class ProfilePanel extends ContentPanel {
             screenWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
+                  screenWindow.hide();
                   ScreenRef screenRef = be.<ScreenRef>getData();
                   panelTree.getStore().add(screenWindow.getSelectedGroupRefModel(), screenRef.getBeanModel(), false);
                }
