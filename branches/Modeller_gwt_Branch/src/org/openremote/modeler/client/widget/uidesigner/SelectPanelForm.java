@@ -120,6 +120,7 @@ public class SelectPanelForm extends CommonForm {
                return;
             } else {
                groupRef.setPanel((Panel)panelListView.getSelectionModel().getSelectedItem().getBean());
+               ((Panel)panelListView.getSelectionModel().getSelectedItem().getBean()).addGroupRef(groupRef);
             }
             wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(groupRefBeanModel));
          }
