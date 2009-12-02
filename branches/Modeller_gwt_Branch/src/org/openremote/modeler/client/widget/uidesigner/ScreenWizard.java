@@ -1,10 +1,32 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.client.widget.uidesigner;
 
 import java.util.List;
 
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.listener.FormResetListener;
+import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.IDUtil;
+import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
@@ -14,30 +36,30 @@ import org.openremote.modeler.domain.ScreenRef;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.WindowEvent;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FillLayout;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
-
-public class ScreenWizard extends Dialog {
-   
-   public static final String SCREEN_NAME_FIELD = "name";
-   
+/**
+ * A wizard for creating a new screen from existed groups. 
+ * @author Javen
+ *
+ */
+public class ScreenWizard extends FormWindow {
    
    
    private TextField<String> nameField = null;
    private BeanModel selectItem = null;
-   private FormPanel form = new FormPanel();
    private boolean editMode = false;
    private TreePanel<BeanModel> groupSelectTree = null;
+   
    public ScreenWizard(ScreenTab screenTab,BeanModel selectItem,boolean editMode){
       super();
       this.editMode = editMode;
@@ -46,9 +68,8 @@ public class ScreenWizard extends Dialog {
       setHeading("New Screen");
       setLayout(new FillLayout());
       setModal(true);
+      createButtons();
       createFields(screenTab);
-      setButtons(Dialog.OKCANCEL);
-      setHideOnButtonClick(true);
       setBodyBorder(false);
       add(form);
       show();
@@ -61,14 +82,16 @@ public class ScreenWizard extends Dialog {
    public void createFields(final ScreenTab screenTab) {
       form.setHeaderVisible(false);
       form.setBorders(false);
+      form.setBodyBorder(true);
       form.setLabelWidth(60);
       nameField = new TextField<String>();
       nameField.setAllowBlank(false);
       nameField.setFieldLabel("Name");
-      nameField.setName(SCREEN_NAME_FIELD);
+      nameField.setName("name");
       
       AdapterField adapterField = new AdapterField(createGroupTreeView(screenTab));
       adapterField.setFieldLabel("Group");
+      adapterField.setBorders(true);
       
       form.add(nameField);
       form.add(adapterField);
@@ -76,47 +99,47 @@ public class ScreenWizard extends Dialog {
       addBeforHideListener(screenTab);
    }
    
+   private void createButtons() {
+      Button submitBtn = new Button("Submit");
+      Button resetBtn = new Button("Reset");
+
+      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      resetBtn.addSelectionListener(new FormResetListener(form));
+
+      form.addButton(submitBtn);
+      form.addButton(resetBtn);
+   }
    private void addBeforHideListener(final ScreenTab screenTab) {
-      addListener(Events.BeforeHide, new Listener<WindowEvent>() {
+      form.addListener(Events.BeforeSubmit,new Listener<FormEvent>(){
+
          @Override
-         public void handleEvent(WindowEvent be) {
-            if (be.getButtonClicked() == getButtonById("ok")) {
-                  BeanModel groupModel = groupSelectTree.getSelectionModel().getSelectedItem();
-                  if (groupModel == null || !(groupModel.getBean() instanceof GroupRef)||nameField.getValue()==null||nameField.getValue().trim().equals("")) {
-                     if(editMode){
-                        MessageBox.alert("New Screen Error", "Please input screen name.", null);
-                     } else {
-                        MessageBox.alert("New Screen Error", "Please input screen name and select a group.", null);
-                     }
-                     be.cancelBubble();
-                     return;
-                  }
-                  Object bean = groupModel.getBean();
-                  if (bean != null && bean instanceof GroupRef) {
-                     GroupRef groupRef = (GroupRef) bean;
-                     if (!editMode) {                                                           // new a screen.
-                        createScreen(groupSelectTree, groupModel, groupRef);
-                        
-                     } else {                                                                   // update a screen.
-                        ScreenRef screenRef = (ScreenRef) selectItem.getBean();
-                        screenRef.getScreen().setName(nameField.getValue());
-                        screenRef.setGroup(groupRef.getGroup());
-                        fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));
-                     }
-                  }
+         public void handleEvent(FormEvent be) {
+            BeanModel groupModel = groupSelectTree.getSelectionModel().getSelectedItem();
+            if (groupModel == null || !(groupModel.getBean() instanceof GroupRef)) {
+               MessageBox.alert("New Screen Error", "Please select a group.", null);
+               be.cancelBubble();
+               return;
             }
-
+            Object bean = groupModel.getBean();
+            if (bean != null && bean instanceof GroupRef) {
+               GroupRef groupRef = (GroupRef) bean;
+               if (!editMode) {                                                           // new a screen.
+                  createScreen(groupSelectTree, groupModel, groupRef);
+               } else {                                                                   // update a screen.
+                  ScreenRef screenRef = (ScreenRef) selectItem.getBean();
+                  screenRef.getScreen().setName(nameField.getValue());
+                  screenRef.setGroup(groupRef.getGroup());
+                  fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));
+               }
+            }
          }
-
+         
       });
    }
 
-   private void createScreen(final TreePanel<BeanModel> groupSelectTree,
-         BeanModel groupModel, GroupRef selectedGroup) {
+   private void createScreen(final TreePanel<BeanModel> groupSelectTree, BeanModel groupModel, GroupRef selectedGroup) {
       Screen screen = new Screen();
       screen.setOid(IDUtil.nextID());
-//      String screenName = nameField.getValue() == null?"untitled":nameField.getValue().trim().equals("")?"untitled":nameField.getValue();
-//      screen.setName(screenName);
       screen.setName(nameField.getValue());
       screen.setTouchPanelDefinition(selectedGroup.getPanel().getTouchPanelDefinition());
       BeanModelDataBase.screenTable.insert(screen.getBeanModel());
@@ -136,11 +159,12 @@ public class ScreenWizard extends Dialog {
       groupSelectTree = buildGroupSelectTree(panels);
       groupTreeContainer.add(groupSelectTree);
       groupTreeContainer.setEnabled(!editMode);
-      
+      groupTreeContainer.setStyleAttribute("backgroundColor", "white");
+
       if (null != this.selectItem) {
          if (this.selectItem.getBean() instanceof GroupRef && !editMode) {
             groupSelectTree.getSelectionModel().select(selectItem, false);
-         } else if(selectItem.getBean() instanceof ScreenRef && editMode){
+         } else if (selectItem.getBean() instanceof ScreenRef && editMode) {
             ScreenRef screenRef = (ScreenRef) selectItem.getBean();
             nameField.setValue(screenRef.getScreen().getName());
             BeanModel selectedGroup = TreePanelBuilder.buildPanelTree(screenTab).getStore().getParent(selectItem);
