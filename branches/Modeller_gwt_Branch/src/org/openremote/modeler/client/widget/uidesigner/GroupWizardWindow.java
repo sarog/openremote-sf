@@ -25,7 +25,6 @@ import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 
 public class GroupWizardWindow extends WizardWindow {
@@ -74,6 +73,7 @@ public class GroupWizardWindow extends WizardWindow {
          GroupRef groupRef = (GroupRef)beanModel.getBean();
          groupRef.getGroup().setName(selectPanelForm.getFields().get(0).getValue().toString());
          groupRef.setPanel((Panel)selectPanelForm.getSelectedItem().getBean());
+         ((Panel)selectPanelForm.getSelectedItem().getBean()).addGroupRef(groupRef);
          break;
       default:
          break;
