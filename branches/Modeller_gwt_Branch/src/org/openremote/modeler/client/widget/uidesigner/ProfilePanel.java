@@ -41,7 +41,13 @@ import org.openremote.modeler.domain.ScreenRef;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.dnd.TreePanelDragSource;
+import com.extjs.gxt.ui.client.dnd.TreePanelDropTarget;
+import com.extjs.gxt.ui.client.dnd.DND.Feedback;
+import com.extjs.gxt.ui.client.dnd.DND.Operation;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
@@ -78,6 +84,8 @@ public class ProfilePanel extends ContentPanel {
       setLayout(new FitLayout());
       createMenu();
       createPanelTree(screenTab);
+      createDragSource4PanelTree();
+      createDropTarget4PanelTree();
    }
 
    /**
@@ -423,4 +431,110 @@ public class ProfilePanel extends ContentPanel {
       this.screenTab = screenTab;
    }
    
+   private void createDragSource4PanelTree(){
+      new TreePanelDragSource(this.panelTree){
+
+         @Override
+         protected void onDragStart(DNDEvent e) {
+            if (panelTree.getSelectionModel().getSelectedItems().size() >1) {
+               e.setCancelled(true);
+               return;
+            }
+            super.onDragStart(e);
+         }
+         @Override
+         protected void onDragDrop(DNDEvent event) {
+            return;
+         }
+         @Override
+         public void setGroup(String group){
+            super.setGroup("REORDER_PANEL");
+         }
+      };
+   }
+   
+   private void createDropTarget4PanelTree(){
+      final TreePanelDropTarget target = new TreePanelDropTarget(panelTree) {
+         @SuppressWarnings("unchecked")
+         @Override
+         protected void onDragDrop(DNDEvent event) {
+            boolean successed = false;
+
+            if (activeItem == null || event.getData() == null) {
+               event.setCancelled(true);
+               return;
+            }
+
+            BeanModel targetNode = (BeanModel) activeItem.getModel();
+            BeanModel sourceNode = ((List<ModelData>) event.getData()).get(0).get("model");
+            BeanModel sourceParentNode = (BeanModel) tree.getStore().getParent(sourceNode);
+            BeanModel targetParentNode = (BeanModel) tree.getStore().getParent(targetNode);
+            
+            
+            if (status == -1) {                                         // append operation
+               tree.getView().onDropChange(activeItem, false);
+               if (sourceParentNode == targetNode) {
+                  tree.getStore().remove(sourceNode);
+                  handleAppendDrop(event, activeItem);
+                  successed = true;
+               } else if (sourceNode.getBean() instanceof ScreenRef && targetNode.getBean() instanceof GroupRef
+                     &&inSamePanel(sourceParentNode,targetNode)&& canMove(tree, sourceNode, targetNode)) {
+                  tree.getStore().remove(sourceNode);
+                  handleAppendDrop(event, activeItem);
+                  moveScreen(sourceParentNode, sourceNode, targetNode);
+                  successed = true;
+               }
+            } else if (targetParentNode == sourceParentNode) {          // insert operation
+               tree.getStore().remove(sourceNode);
+               handleInsertDrop(event, activeItem, status);
+               successed = true;
+            } else if (sourceNode.getBean() instanceof ScreenRef && targetParentNode.getBean() instanceof GroupRef
+                  &&inSamePanel(sourceParentNode,targetParentNode)&& canMove(tree, sourceNode, targetParentNode)) {
+               tree.getStore().remove(sourceNode);
+               handleInsertDrop(event, activeItem, status);
+               moveScreen(sourceParentNode, sourceNode, targetParentNode);
+               successed = true;
+            }
+            if (!successed) {
+               event.setCancelled(true);
+            }
+         }
+         
+         @Override
+         public void setGroup(String group){
+            super.setGroup("REORDER_PANEL");
+         }
+         private boolean canMove(TreePanel<ModelData> tree, BeanModel scrRef, BeanModel group) {
+            List<ModelData> srcRefs = tree.getStore().getChildren(group);
+            ScreenRef screenRef = scrRef.getBean();
+            for (ModelData data : srcRefs) {
+               BeanModel model = (BeanModel) data;
+               ScreenRef tmpSrceenRef = model.getBean();
+               if (screenRef.getScreen().equals(tmpSrceenRef.getScreen())) {
+                  return false;
+               }
+            }
+            return true;
+         }
+         private boolean inSamePanel(BeanModel sourceGroupRef,BeanModel targetGroupRef){
+            BeanModel sourceGrandFatherNode = (BeanModel) tree.getStore().getParent(sourceGroupRef);
+            BeanModel targetGrandFatherNode = (BeanModel) tree.getStore().getParent(targetGroupRef);
+            return sourceGrandFatherNode.equals(targetGrandFatherNode);
+         }
+         private void moveScreen(BeanModel sourceGroupRefBeanModel, BeanModel sourceScreenRefBeanModel,
+               BeanModel targetGroupRefBeanModel) {
+            ScreenRef sourceScreenRef = sourceScreenRefBeanModel.getBean();
+            GroupRef targetGroupRef = targetGroupRefBeanModel.getBean();
+            targetGroupRef.getGroup().addScreenRef(sourceScreenRef);
+            GroupRef sourceGroupRef = sourceGroupRefBeanModel.getBean();
+            sourceGroupRef.getGroup().deleteScreenRef(sourceScreenRef);
+         }
+      };
+
+      target.setAllowSelfAsSource(true);
+      target.setOperation(Operation.MOVE);
+      target.setAutoExpand(false);
+      target.setFeedback(Feedback.BOTH);
+      target.setAllowDropOnLeaf(true);
+   }
 }
