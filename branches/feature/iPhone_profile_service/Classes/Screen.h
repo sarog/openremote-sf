@@ -23,12 +23,13 @@
 #import <UIKit/UIKit.h>
 #import "XMLEntity.h"
 #import "Gesture.h"
+#import "Background.h"
 
 @interface Screen : XMLEntity {
 	
 	int screenId;
 	NSString *name;
-	NSString *background;
+	Background *background;
 	NSMutableArray *layouts;
 	NSMutableArray *gestures;
 
@@ -39,7 +40,7 @@
 
 @property (nonatomic,readonly) int screenId;
 @property (nonatomic,readonly) NSString *name;
-@property (nonatomic,readonly) NSString *background;
+@property (nonatomic,readonly) Background *background;
 @property (nonatomic,readonly) NSMutableArray *layouts;
 @property (nonatomic,readonly) NSMutableArray *gestures;
 

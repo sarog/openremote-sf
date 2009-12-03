@@ -37,8 +37,6 @@
 	if (self = [super init]) {
 		screenId = [[attributeDict objectForKey:@"id"] intValue];
 		name = [[attributeDict objectForKey:@"name"] copy];
-		background = [[attributeDict objectForKey:@"background"] copy]; 
-		[[Definition sharedDefinition] addImageName:background];
 		layouts = [[NSMutableArray alloc] init];
 		gestures = [[NSMutableArray alloc] init];
 		
@@ -83,6 +81,11 @@
 		Gesture *gesture = [[Gesture alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 		[gestures addObject:gesture];
 		[gesture release];
+	} else if ([elementName isEqualToString:@"background"]) {
+		NSLog(@"start background in screen");
+		// Call Background's initialize method to parse xml using NSXMLParser
+		background = [[Background alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+		NSLog(@"end background in screen");
 	}
 }
 

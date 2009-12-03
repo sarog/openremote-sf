@@ -19,23 +19,29 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+#import <Foundation/Foundation.h>
+#import "XMLEntity.h"
+#import "Image.h"
 
-#import <UIKit/UIKit.h>
-#import "Screen.h"
-#import "URLConnectionHelper.h"
-#import "ControlView.h"
+//typedef struct {
+//	int left;
+//	int top;
+//} BackgroundImageAbsolutePosition;
 
-#define IPHONE_SCREEN_WIDTH 320
-#define IPHONE_SCREEN_HEIGHT 480
-#define IPHONE_SCREEN_STATUS_BAR_HEIGHT 20
-#define IPHONE_SCREEN_BOTTOM_PAGE_SWITCH_CONTROL_HEIGHT 20
-
-@interface ScreenView : UIView {
-	Screen *screen;
+@interface Background : XMLEntity {
+	int backgroundImageAbsolutePositionLeft;
+	int backgroundImageAbsolutePositionTop;
+	BOOL isBackgroundImageAbsolutePosition;
+	NSString *backgroundImageRelativePosition;
+	BOOL fullScreen;
+	Image *backgroundImage;
 }
 
-
-@property(nonatomic,retain) Screen *screen;
-
+@property(nonatomic, readwrite) int backgroundImageAbsolutePositionLeft;
+@property(nonatomic, readwrite) int backgroundImageAbsolutePositionTop;
+@property(nonatomic, readwrite) BOOL isBackgroundImageAbsolutePosition;
+@property(nonatomic, retain) NSString *backgroundImageRelativePosition;
+@property(nonatomic, readwrite) BOOL fullScreen;
+@property(nonatomic, retain) Image *backgroundImage;
 
 @end

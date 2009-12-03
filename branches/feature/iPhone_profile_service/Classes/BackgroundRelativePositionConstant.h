@@ -19,23 +19,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+#import <Foundation/Foundation.h>
 
-#import <UIKit/UIKit.h>
-#import "Screen.h"
-#import "URLConnectionHelper.h"
-#import "ControlView.h"
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_LEFT;
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_RIGHT;
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_TOP;
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_BOTTOM;
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_TOP_LEFT;
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_BOTTOM_LEFT;
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_TOP_RIGHT;
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_BOTTOM_RIGHT;
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_CENTER;
 
-#define IPHONE_SCREEN_WIDTH 320
-#define IPHONE_SCREEN_HEIGHT 480
-#define IPHONE_SCREEN_STATUS_BAR_HEIGHT 20
-#define IPHONE_SCREEN_BOTTOM_PAGE_SWITCH_CONTROL_HEIGHT 20
-
-@interface ScreenView : UIView {
-	Screen *screen;
+@interface BackgroundRelativePositionConstant : NSObject {
 }
-
-
-@property(nonatomic,retain) Screen *screen;
-
 
 @end

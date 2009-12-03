@@ -50,7 +50,7 @@
 	[uiLabel setTextAlignment:UITextAlignmentCenter];
 	Label *labelModel = (Label *)control;
 	uiLabel.text = labelModel.value;
-	uiLabel.textColor = [UIColor whiteColor];
+	uiLabel.textColor = [UIColor grayColor];
 	[self addSubview:uiLabel];
 }
 
