@@ -35,7 +35,11 @@ public class GroupWizardWindow extends WizardWindow {
    public GroupWizardWindow(BeanModel groupRefBeanModel, boolean editMode) {
       super(groupRefBeanModel);
       this.editMode = editMode;
-      setHeading("New Panel");
+      if (editMode) {
+         setHeading("Edit Group");
+      } else {
+         setHeading("New Group");
+      }
       show();
    }
 
