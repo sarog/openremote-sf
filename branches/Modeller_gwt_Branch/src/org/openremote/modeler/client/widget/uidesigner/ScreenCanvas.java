@@ -216,8 +216,8 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
             } else if (data instanceof LayoutContainer) {
                if(data instanceof GridContainer) {
                   GridContainer gridContainer = (GridContainer) data;
-                  gridContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
-                        - absolutePosition.y);
+                  gridContainer.setPosition(e.getClientX() - absolutePosition.x - GridContainer.DEFALUT_HANDLE_WIDTH, e.getClientY()
+                        - absolutePosition.y - GridContainer.DEFAULT_HANDLE_HEIGHT);
                   SelectedWidgetContainer.setSelectWidget(gridContainer);
                } else {
                   Point position = getPosition(e);
@@ -230,7 +230,7 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
                   BeanModel dataModel = models.get(0).get("model");
                   ComponentContainer componentContainer = new ComponentContainer(ScreenCanvas.this);
                   if (dataModel.getBean() instanceof UIGrid) {
-                     UIGrid grid = new UIGrid(e.getXY().x - getAbsoluteLeft()+GridContainer.DEFALUT_HANDLE_WIDTH, e.getXY().y - getAbsoluteTop()+GridContainer.DEFAULT_HANDLE_HEIGHT,
+                     UIGrid grid = new UIGrid(e.getXY().x - getAbsoluteLeft(), e.getXY().y - getAbsoluteTop(),
                            UIGrid.DEFALUT_WIDTH, UIGrid.DEFAULT_HEIGHT, UIGrid.DEFALUT_ROW_COUNT,
                            UIGrid.DEFAULT_COL_COUNT);
                      screen.addGrid(grid);

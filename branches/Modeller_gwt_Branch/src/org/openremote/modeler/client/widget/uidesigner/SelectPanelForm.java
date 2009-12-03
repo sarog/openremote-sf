@@ -46,6 +46,7 @@ public class SelectPanelForm extends CommonForm {
 
    private TextField<String> nameField = null;
    private ListView<BeanModel> panelListView = null;
+   private boolean editMode = false;
    protected BeanModel groupRefBeanModel = null;
    protected Component wrapper;
    
@@ -115,10 +116,7 @@ public class SelectPanelForm extends CommonForm {
          public void handleEvent(FormEvent be) {
             GroupRef groupRef = (GroupRef)groupRefBeanModel.getBean();
             groupRef.getGroup().setName(nameField.getValue());
-            if (panelListView.getSelectionModel().getSelectedItem() == null) {
-               MessageBox.alert("ERROR", "Please select a panel to create group", null);
-               return;
-            } else {
+            if (!editMode) {
                groupRef.setPanel((Panel)panelListView.getSelectionModel().getSelectedItem().getBean());
                ((Panel)panelListView.getSelectionModel().getSelectedItem().getBean()).addGroupRef(groupRef);
             }
@@ -140,5 +138,8 @@ public class SelectPanelForm extends CommonForm {
    
    public BeanModel getSelectedItem() {
       return panelListView.getSelectionModel().getSelectedItem();
+   }
+   public void setEditMode(boolean editMode) {
+      this.editMode = editMode;
    }
 }
