@@ -20,9 +20,12 @@
 package org.openremote.modeler.client.widget.uidesigner;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
@@ -36,7 +39,6 @@ import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
-import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
@@ -146,7 +148,7 @@ public class ProfilePanel extends ContentPanel {
             add(panelTree);
          }
       };
-//      initTreeWithAutoSavedPanels();
+      initTreeWithAutoSavedPanels();
       treeContainer.setScrollMode(Scroll.AUTO);
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
@@ -159,20 +161,47 @@ public class ProfilePanel extends ContentPanel {
          @Override
          public void onSuccess(List<Panel> panels) {
             if(panels.size() > 0) {
+               initModelDataBase(panels);
                panelTree.getStore().removeAll();
-               BeanModelDataBase.panelTable.clear();
                for (Panel panel : panels) {
                   BeanModel panelBeanModel = panel.getBeanModel();
                   panelTree.getStore().add(panelBeanModel, false);
                   for (GroupRef groupRef : panel.getGroupRefs()) {
                      panelTree.getStore().add(panelBeanModel, groupRef.getBeanModel(), false);
+                     for(ScreenRef screenRef : groupRef.getGroup().getScreenRefs()){
+                        panelTree.getStore().add(groupRef.getBeanModel(), screenRef.getBeanModel(), false);
+                     }
                   }
-                  BeanModelDataBase.panelTable.insert(panelBeanModel);
                }
                panelTree.expandAll();
             }
          }
          
+         private void initModelDataBase(Collection<Panel> panels){
+            BeanModelDataBase.panelTable.clear();
+            BeanModelDataBase.groupTable.clear();
+            BeanModelDataBase.screenTable.clear();
+            Set<Group> groups = new LinkedHashSet<Group>();
+            Set<Screen> screens = new LinkedHashSet<Screen>();
+            for(Panel panel :panels){
+               List<GroupRef> groupRefs = panel.getGroupRefs();
+               for(GroupRef groupRef : groupRefs){
+                  groups.add(groupRef.getGroup());
+               }
+               BeanModelDataBase.panelTable.insert(panel.getBeanModel());
+            }
+            
+            for(Group group:groups){
+               List<ScreenRef> screenRefs = group.getScreenRefs();
+               for(ScreenRef screenRef : screenRefs){
+                  screens.add(screenRef.getScreen());
+                  BeanModelDataBase.screenTable.insert(screenRef.getScreen().getBeanModel());
+               }
+               BeanModelDataBase.groupTable.insert(group.getBeanModel());
+            }
+            
+            
+         }
       });
    }
    
@@ -540,23 +569,25 @@ public class ProfilePanel extends ContentPanel {
                if (sourceParentNode == targetNode) {
                   tree.getStore().remove(sourceNode);
                   handleAppendDrop(event, activeItem);
+                  doAppend(sourceParentNode,sourceNode,targetNode);
                   successed = true;
                } else if (sourceNode.getBean() instanceof ScreenRef && targetNode.getBean() instanceof GroupRef
-                     &&inSamePanel(sourceParentNode,targetNode)&& canMove(tree, sourceNode, targetNode)) {
+                     &&inSamePanel(sourceParentNode,targetNode)&& canMove(sourceNode, targetNode)) {
                   tree.getStore().remove(sourceNode);
                   handleAppendDrop(event, activeItem);
-                  moveScreen(sourceParentNode, sourceNode, targetNode);
+                  appendScreen(sourceParentNode, sourceNode, targetNode);
                   successed = true;
                }
             } else if (targetParentNode == sourceParentNode) {          // insert operation
                tree.getStore().remove(sourceNode);
                handleInsertDrop(event, activeItem, status);
+               doInsert(sourceParentNode,sourceNode,targetNode);
                successed = true;
             } else if (sourceNode.getBean() instanceof ScreenRef && targetParentNode.getBean() instanceof GroupRef
-                  &&inSamePanel(sourceParentNode,targetParentNode)&& canMove(tree, sourceNode, targetParentNode)) {
+                  &&inSamePanel(sourceParentNode,targetParentNode)&& canMove(sourceNode, targetParentNode)) {
                tree.getStore().remove(sourceNode);
                handleInsertDrop(event, activeItem, status);
-               moveScreen(sourceParentNode, sourceNode, targetParentNode);
+               reorderScreen(sourceParentNode, sourceNode, targetNode);
                successed = true;
             }
             if (!successed) {
@@ -568,7 +599,12 @@ public class ProfilePanel extends ContentPanel {
          public void setGroup(String group){
             super.setGroup("REORDER_PANEL");
          }
-         private boolean canMove(TreePanel<ModelData> tree, BeanModel scrRef, BeanModel group) {
+         private boolean canMove(BeanModel scrRefBean,BeanModel groupRefBean){
+            GroupRef groupRef = groupRefBean.getBean();
+            ScreenRef scrRef = scrRefBean.getBean();
+            return -1 == groupRef.getGroup().getScreenRefs().indexOf(scrRef);
+         }
+         /*private boolean canMove(TreePanel<ModelData> tree, BeanModel scrRef, BeanModel group) {
             List<ModelData> srcRefs = tree.getStore().getChildren(group);
             ScreenRef screenRef = scrRef.getBean();
             for (ModelData data : srcRefs) {
@@ -579,19 +615,58 @@ public class ProfilePanel extends ContentPanel {
                }
             }
             return true;
-         }
+         }*/
          private boolean inSamePanel(BeanModel sourceGroupRef,BeanModel targetGroupRef){
             BeanModel sourceGrandFatherNode = (BeanModel) tree.getStore().getParent(sourceGroupRef);
             BeanModel targetGrandFatherNode = (BeanModel) tree.getStore().getParent(targetGroupRef);
             return sourceGrandFatherNode.equals(targetGrandFatherNode);
          }
-         private void moveScreen(BeanModel sourceGroupRefBeanModel, BeanModel sourceScreenRefBeanModel,
+         private void appendScreen(BeanModel sourceGroupRefBeanModel, BeanModel sourceScreenRefBeanModel,
                BeanModel targetGroupRefBeanModel) {
             ScreenRef sourceScreenRef = sourceScreenRefBeanModel.getBean();
             GroupRef targetGroupRef = targetGroupRefBeanModel.getBean();
             targetGroupRef.getGroup().addScreenRef(sourceScreenRef);
             GroupRef sourceGroupRef = sourceGroupRefBeanModel.getBean();
-            sourceGroupRef.getGroup().deleteScreenRef(sourceScreenRef);
+            sourceGroupRef.getGroup().removeScreenRef(sourceScreenRef);
+         }
+         private void reorderScreen(BeanModel sourceGroupRefBean,BeanModel fromBean,BeanModel toBean){
+            Group sourceGroup = ((GroupRef)sourceGroupRefBean.getBean()).getGroup();
+            Group targetGroup = sourceGroup;
+            ScreenRef from = fromBean.getBean();
+            ScreenRef to = toBean.getBean();
+            if(!sourceGroup.equals(to.getGroup())){
+               targetGroup = to.getGroup();
+            }
+            sourceGroup.removeScreenRef(from);
+            targetGroup.insertScreenRef(to, from);
+         }
+         private void doAppend(BeanModel sourceParent,BeanModel source,BeanModel target){
+            if(sourceParent.getBean() instanceof GroupRef && source.getBean() instanceof ScreenRef && target.getBean() instanceof GroupRef){
+               appendScreen(sourceParent,source,target);
+            } else if(sourceParent.getBean() instanceof Panel && source.getBean() instanceof GroupRef && target.getBean() instanceof Panel){
+               appendGroup(sourceParent,source,target);
+            }
+         }
+         private void doInsert(BeanModel sourceParent,BeanModel source,BeanModel insertTo){
+            if(sourceParent.getBean() instanceof GroupRef && source.getBean() instanceof ScreenRef && insertTo.getBean() instanceof ScreenRef){
+               reorderScreen(sourceParent,source,insertTo);
+            } else if(sourceParent.getBean() instanceof Panel && source.getBean() instanceof GroupRef && insertTo.getBean() instanceof GroupRef){
+               reorderGroup(sourceParent,source,insertTo);
+            }
+         }
+         private void appendGroup(BeanModel sourcePanelBean,BeanModel groupRefBean,BeanModel targetPanelBean){
+            Panel sourcePanel = sourcePanelBean.getBean();
+            Panel targetpanel = targetPanelBean.getBean();
+            GroupRef  groupRef = groupRefBean.getBean();
+            sourcePanel.removeGroupRef(groupRef);
+            targetpanel.addGroupRef(groupRef);
+         }
+         private void reorderGroup(BeanModel sourcePanelBean,BeanModel fromBean,BeanModel toBean){
+            Panel panel = sourcePanelBean.getBean();
+            GroupRef from = fromBean.getBean();
+            panel.removeGroupRef(from);
+            GroupRef to = toBean.getBean();
+            panel.insertGroupRef(to, from);
          }
       };
 
@@ -685,7 +760,7 @@ public class ProfilePanel extends ContentPanel {
                   if (target.getBean() instanceof ScreenRef) {
                      ScreenRef screenRef = (ScreenRef) target.getBean();
                      Group group = screenRef.getGroup();
-                     group.deleteScreenRef(screenRef);
+                     group.removeScreenRef(screenRef);
                   }
                   panelTree.getStore().remove(target);
                }

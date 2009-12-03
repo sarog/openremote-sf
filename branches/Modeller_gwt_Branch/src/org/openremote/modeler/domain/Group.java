@@ -93,15 +93,10 @@ public class Group extends RefedEntity {
       screenRefs.remove(screenRef);
    }
    
-   /**
-    * Delete screen ref.
-    * 
-    * @param screen the screen
-    */
-   public void deleteScreenRef(ScreenRef screen) {
-      screenRefs.remove(screen);
+   public void insertScreenRef(ScreenRef before,ScreenRef target){
+      int index = screenRefs.indexOf(before);
+      screenRefs.add(index, target);
    }
-   
    public List<UITabbarItem> getTabbarItems() {
       return tabbarItems;
    }

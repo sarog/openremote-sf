@@ -392,7 +392,7 @@ public class GroupPanel extends ContentPanel {
                   if (target.getBean() instanceof ScreenRef) {
                      ScreenRef screenRef = (ScreenRef) target.getBean();
                      Group group = screenRef.getGroup();
-                     group.deleteScreenRef(screenRef);
+                     group.removeScreenRef(screenRef);
                   }
                   groupTree.getStore().remove(target);
                }
@@ -476,7 +476,7 @@ public class GroupPanel extends ContentPanel {
             Group targetGroup = targetGroupBeanModel.getBean();
             targetGroup.addScreenRef((ScreenRef) sourceScreenRefBeanModel.getBean());
             Group sourceGroup = sourceGroupBeanModel.getBean();
-            sourceGroup.deleteScreenRef((ScreenRef) sourceScreenRefBeanModel.getBean());
+            sourceGroup.removeScreenRef((ScreenRef) sourceScreenRefBeanModel.getBean());
          }
       };
 

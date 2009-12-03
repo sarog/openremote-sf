@@ -249,7 +249,7 @@ public class ApplicationView implements View {
                return;
             }
             viewport.mask("Exporting, please wait.");
-            UtilsProxy.exportFiles(IDUtil.currentID(), uiDesignerView.getAllPanels(), groupPanel.getAllGroups(), uiDesignerView.getAllScreens(), new AsyncSuccessCallback<String>() {
+            UtilsProxy.exportFiles(IDUtil.currentID(), uiDesignerView.getAllPanels(), new AsyncSuccessCallback<String>() {
                @Override
                public void onSuccess(String exportURL) {
                   viewport.unmask();
