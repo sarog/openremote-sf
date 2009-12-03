@@ -36,6 +36,7 @@
 #import "Label.h"
 #import "Image.h"
 #import "Gesture.h"
+#import "BackgroundRelativePositionConstant.h"
 
 @implementation PanelXMLParsingTests
 
@@ -879,6 +880,202 @@
 	[xmlParser release];
 	[xml release];
 	NSLog(@"End testParsePanelAbsoluteImageXML");
+}
+
+// panel_absolute_screen_backgroundimage.xml test
+- (void) testParsePanelAbsoluteScreenBackgroundimageXML {
+	NSLog(@"Begin testParsePanelAbsoluteScreenBackgroundimageXML");
+	[[Definition sharedDefinition] clearPanelXMLData];
+	NSData *xml = [self readFile:@"panel_absolute_screen_backgroundimage.xml"];
+	
+	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
+	[xmlParser setDelegate:self];
+	[xmlParser parse];
+	NSMutableArray *groups = [[Definition sharedDefinition] groups];
+	NSMutableArray *screens = [[Definition sharedDefinition] screens];
+	int background_index = 1;
+	int image_index = 0;
+	int state_index = 0;
+	for (Group *group in groups) {
+		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
+		for (Screen *screen in group.screens) {
+			
+			NSLog(@"Begin test background of screen %@", [screen name]);
+			// absolute position
+			STAssertTrue([[screen background] isBackgroundImageAbsolutePosition], @"expected %d, but %d", YES, [[screen background] isBackgroundImageAbsolutePosition]);
+			NSLog(@"isBackgroundImageAbsolutePosition of screen background is %d", [[screen background] isBackgroundImageAbsolutePosition]);
+			
+			int backgroundImageLeft = [[screen background] backgroundImageAbsolutePositionLeft];
+			int backgroundImageTop = [[screen background] backgroundImageAbsolutePositionTop];
+			int expectedBackgroundImageLeft = 100*background_index;
+			int expectedBackgroundImageTop = 100*background_index;
+			STAssertTrue(backgroundImageLeft == expectedBackgroundImageLeft, @"expected %d, but %d", expectedBackgroundImageLeft, backgroundImageLeft);
+			STAssertTrue(backgroundImageTop == expectedBackgroundImageTop, @"expected %d, but %d", expectedBackgroundImageTop, backgroundImageTop);
+			NSLog(@"absolute position of background image is: %d,%d", backgroundImageLeft, backgroundImageTop);
+			
+			// fullscreen
+			BOOL fullScreen = [[screen background] fullScreen];
+			BOOL expectedFullScreen;
+			if (background_index%2 != 0) {
+				expectedFullScreen = YES;
+			} else {
+				expectedFullScreen = NO;
+			}
+			STAssertTrue(fullScreen == expectedFullScreen, @"expected %d, but %d", expectedFullScreen, fullScreen);
+			NSLog(@"fullScreen of background image is %d", fullScreen);
+			
+			// background image src
+			NSString *backgroundImageSrc = [[[screen background] backgroundImage] src];
+			NSString *expectedBackgroundImageSrc = [[NSString alloc] initWithFormat:@"basement%d.png", background_index];
+			STAssertTrue([expectedBackgroundImageSrc isEqualToString:backgroundImageSrc], @"expected %@, but %@", expectedBackgroundImageSrc, backgroundImageSrc);
+			NSLog(@"background image src of background is %@", backgroundImageSrc);
+			
+			NSLog(@"End test background of screen %@", [screen name]);			
+			background_index++;
+			
+			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
+			for (LayoutContainer *layout in screen.layouts) {
+				if([layout isKindOfClass:[AbsoluteLayoutContainer class]]){					
+					NSLog(@"layout is absolute ");
+					AbsoluteLayoutContainer *abso =(AbsoluteLayoutContainer *)layout;
+					NSString *layoutAttrs = [[NSMutableString alloc] initWithFormat:@"%d %d %d %d",abso.left,abso.top,abso.width,abso.height];
+					NSString *expectedAttrs = @"20 320 100 100";
+					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
+					[layoutAttrs release];
+					
+					if ([abso.control isKindOfClass:[Image class]]) {
+						Image *theImage= (Image *)abso.control;
+						int expectedId = (59 + image_index++);
+						STAssertTrue(expectedId == theImage.controlId,@"expected %d, but %d",expectedId,theImage.controlId);
+						NSString *imageSrc = [[NSString alloc] initWithFormat:@"%c.png", (char)97 + state_index++];
+						STAssertTrue([theImage.src isEqualToString:imageSrc],@"expected %@, but %@", theImage.src, imageSrc);
+					}					
+				}				
+			}
+		}
+	}
+	
+	NSLog(@"groups count = %d",[groups count]);
+	NSLog(@"screens count = %d",[screens count]);
+	NSLog(@"xml parse done");
+	
+	NSMutableArray *screenNames = [NSMutableArray arrayWithObjects:@"basement",@"floor",nil];
+	NSMutableArray *groupNames = [NSMutableArray arrayWithObjects:@"All rooms",@"living room",nil];
+	
+	//check screens
+	for (int i=0;i<screenNames.count;i++) {
+		STAssertTrue([[screenNames objectAtIndex:i] isEqualToString:[[screens objectAtIndex:i] name]],@"expected %@, but %@",[screenNames objectAtIndex:i],[[screens objectAtIndex:i] name]);
+		STAssertTrue(i+5 == [[screens objectAtIndex:i] screenId],@"expected %d, but %d",i+5,[[screens objectAtIndex:i] screenId]);
+	}
+	
+	//check groups
+	for (int i=0;i<groupNames.count;i++) {
+		STAssertTrue([[groupNames objectAtIndex:i] isEqualToString:[[groups objectAtIndex:i] name]],@"expected %@, but %@",[groupNames objectAtIndex:i],[[groups objectAtIndex:i] name]);
+		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
+	}
+	
+	[xmlParser release];
+	[xml release];
+	NSLog(@"End testParsePanelAbsoluteScreenBackgroundimageXML");
+}
+
+// panel_relative_screen_backgroundimage.xml test
+- (void) testParsePanelRelativeScreenBackgroundimageXML {
+	NSLog(@"Begin testParsePanelRelativeScreenBackgroundimageXML");
+	[[Definition sharedDefinition] clearPanelXMLData];
+	NSData *xml = [self readFile:@"panel_relative_screen_backgroundimage.xml"];
+	
+	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
+	[xmlParser setDelegate:self];
+	[xmlParser parse];
+	NSMutableArray *groups = [[Definition sharedDefinition] groups];
+	NSMutableArray *screens = [[Definition sharedDefinition] screens];
+	int background_index = 1;
+	int image_index = 0;
+	int state_index = 0;
+	for (Group *group in groups) {
+		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
+		for (Screen *screen in group.screens) {
+			
+			NSLog(@"Begin test background of screen %@", [screen name]);
+			// relative position
+			STAssertTrue(![[screen background] isBackgroundImageAbsolutePosition], @"expected %d, but %d", NO, [[screen background] isBackgroundImageAbsolutePosition]);
+			NSLog(@"isBackgroundImageAbsolutePosition of screen background is %d", [[screen background] isBackgroundImageAbsolutePosition]);
+			
+			NSString *backgroundImageRelativePosition = [[screen background] backgroundImageRelativePosition];
+			NSString *expectedBackgroundImageRelativePosition;
+			if (background_index%2 != 0) {
+				expectedBackgroundImageRelativePosition = BG_IMAGE_RELATIVE_POSITION_LEFT;
+			} else {
+				expectedBackgroundImageRelativePosition = BG_IMAGE_RELATIVE_POSITION_RIGHT;
+			}
+			STAssertTrue([backgroundImageRelativePosition isEqualToString:expectedBackgroundImageRelativePosition], @"expected %@, but %@", expectedBackgroundImageRelativePosition, backgroundImageRelativePosition);
+			NSLog(@"relative position of background image is %@", backgroundImageRelativePosition);
+			
+			// fullscreen
+			BOOL fullScreen = [[screen background] fullScreen];
+			BOOL expectedFullScreen;
+			if (background_index%2 != 0) {
+				expectedFullScreen = YES;
+			} else {
+				expectedFullScreen = NO;
+			}
+			STAssertTrue(fullScreen == expectedFullScreen, @"expected %d, but %d", expectedFullScreen, fullScreen);
+			NSLog(@"fullScreen of background image is %d", fullScreen);
+			
+			// background image src
+			NSString *backgroundImageSrc = [[[screen background] backgroundImage] src];
+			NSString *expectedBackgroundImageSrc = [[NSString alloc] initWithFormat:@"basement%d.png", background_index];
+			STAssertTrue([expectedBackgroundImageSrc isEqualToString:backgroundImageSrc], @"expected %@, but %@", expectedBackgroundImageSrc, backgroundImageSrc);
+			NSLog(@"background image src of background is %@", backgroundImageSrc);
+			
+			NSLog(@"End test background of screen %@", [screen name]);			
+			background_index++;
+			
+			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
+			for (LayoutContainer *layout in screen.layouts) {
+				if([layout isKindOfClass:[AbsoluteLayoutContainer class]]){					
+					NSLog(@"layout is absolute ");
+					AbsoluteLayoutContainer *abso =(AbsoluteLayoutContainer *)layout;
+					NSString *layoutAttrs = [[NSMutableString alloc] initWithFormat:@"%d %d %d %d",abso.left,abso.top,abso.width,abso.height];
+					NSString *expectedAttrs = @"20 320 100 100";
+					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
+					[layoutAttrs release];
+					
+					if ([abso.control isKindOfClass:[Image class]]) {
+						Image *theImage= (Image *)abso.control;
+						int expectedId = (59 + image_index++);
+						STAssertTrue(expectedId == theImage.controlId,@"expected %d, but %d",expectedId,theImage.controlId);
+						NSString *imageSrc = [[NSString alloc] initWithFormat:@"%c.png", (char)97 + state_index++];
+						STAssertTrue([theImage.src isEqualToString:imageSrc],@"expected %@, but %@", theImage.src, imageSrc);
+					}					
+				}				
+			}
+		}
+	}
+	
+	NSLog(@"groups count = %d",[groups count]);
+	NSLog(@"screens count = %d",[screens count]);
+	NSLog(@"xml parse done");
+	
+	NSMutableArray *screenNames = [NSMutableArray arrayWithObjects:@"basement",@"floor",nil];
+	NSMutableArray *groupNames = [NSMutableArray arrayWithObjects:@"All rooms",@"living room",nil];
+	
+	//check screens
+	for (int i=0;i<screenNames.count;i++) {
+		STAssertTrue([[screenNames objectAtIndex:i] isEqualToString:[[screens objectAtIndex:i] name]],@"expected %@, but %@",[screenNames objectAtIndex:i],[[screens objectAtIndex:i] name]);
+		STAssertTrue(i+5 == [[screens objectAtIndex:i] screenId],@"expected %d, but %d",i+5,[[screens objectAtIndex:i] screenId]);
+	}
+	
+	//check groups
+	for (int i=0;i<groupNames.count;i++) {
+		STAssertTrue([[groupNames objectAtIndex:i] isEqualToString:[[groups objectAtIndex:i] name]],@"expected %@, but %@",[groupNames objectAtIndex:i],[[groups objectAtIndex:i] name]);
+		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
+	}
+	
+	[xmlParser release];
+	[xml release];
+	NSLog(@"End testParsePanelRelativeScreenBackgroundimageXML");
 }
 
 // panel_absolute_toggle.xml test

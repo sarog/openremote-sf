@@ -59,18 +59,33 @@
 //create each layout container in screen
 - (void)createLayout {
 	
-	if (screen.background && [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:screen.background]]) {
-		UIImage *background = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:screen.background]];
+	if ([[[screen background] backgroundImage] src] && [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:[[[screen background] backgroundImage] src]]]) {
+		UIImage *background = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:[[[screen background] backgroundImage] src]]];
 		UIColor *color = [[UIColor alloc] initWithPatternImage:background];
-		[self setBackgroundColor:color];
+		int screenBackgroundImageViewWidth = IPHONE_SCREEN_WIDTH;
+		int screenBackgroundImageViewHeight = IPHONE_SCREEN_HEIGHT - IPHONE_SCREEN_STATUS_BAR_HEIGHT - IPHONE_SCREEN_BOTTOM_PAGE_SWITCH_CONTROL_HEIGHT;
+		UIView *backgroundImageView = [[UIView alloc] init];
+		[backgroundImageView setContentMode:UIViewContentModeScaleAspectFill];
+		if ([[screen background] isBackgroundImageAbsolutePosition]) {
+			int x = [[screen background] backgroundImageAbsolutePositionLeft];
+			int y = [[screen background] backgroundImageAbsolutePositionTop];
+			NSLog(@"x is %d, y is %d", x, y);
+			[backgroundImageView setFrame:CGRectMake(x, y, screenBackgroundImageViewWidth, screenBackgroundImageViewHeight)];
+			[backgroundImageView setContentStretch:CGRectMake(0, 0, screenBackgroundImageViewWidth, screenBackgroundImageViewHeight)];
+			[backgroundImageView setBackgroundColor:color];
+		} else {
+			
+		}		
+		NSLog(@"Added width: %d, height: %d backgroundImageView", screenBackgroundImageViewWidth, screenBackgroundImageViewHeight);
+		[self addSubview:backgroundImageView];
 		[color release];
 		[background release];
 	}
 	
-	for (LayoutContainer *layout in screen.layouts) { 
-		LayoutContainerView *layoutView = [LayoutContainerView buildWithLayoutContainer:layout];
-		[self addSubview:layoutView];
-	}
+//	for (LayoutContainer *layout in screen.layouts) { 
+//		LayoutContainerView *layoutView = [LayoutContainerView buildWithLayoutContainer:layout];
+//		[self addSubview:layoutView];
+//	}
 	
 
 }
