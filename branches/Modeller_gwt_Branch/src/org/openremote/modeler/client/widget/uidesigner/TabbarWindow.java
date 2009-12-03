@@ -446,22 +446,6 @@ public class TabbarWindow extends CommonWindow {
       
       navigateSet.add(navigateGroup);
       navigateSet.add(rightComboBoxes);
-//      navigateSet.addListener(Events.BeforeExpand, new Listener<FieldSetEvent>() {
-//         @Override
-//         public void handleEvent(FieldSetEvent be) {
-//            back.setValue(!navigate.isSet());
-//         }
-//         
-//      });
-//      navigateSet.addListener(Events.BeforeCollapse, new Listener<FieldSetEvent>() {
-//         @Override
-//         public void handleEvent(FieldSetEvent be) {
-//            if (navigateGroup.getValue() != null) {
-//               navigateGroup.getValue().setValue(false);
-//            }
-//         }
-//         
-//      });
       
       tabbarItemForm.add(nameField);
       tabbarItemForm.add(imageField);
