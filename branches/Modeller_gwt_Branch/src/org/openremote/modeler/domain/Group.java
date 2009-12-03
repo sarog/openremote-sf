@@ -24,6 +24,8 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.domain.component.UITabbarItem;
+
 /**
  * The Class Group.
  */
@@ -39,6 +41,8 @@ public class Group extends RefedEntity {
    /** The screen refs. */
    private List<ScreenRef> screenRefs = new ArrayList<ScreenRef>();
 
+   private List<UITabbarItem> tabbarItems = new ArrayList<UITabbarItem>();
+   
    /**
     * Gets the name.
     * 
@@ -94,6 +98,14 @@ public class Group extends RefedEntity {
       screenRefs.remove(screen);
    }
    
+   public List<UITabbarItem> getTabbarItems() {
+      return tabbarItems;
+   }
+
+   public void setTabbarItems(List<UITabbarItem> tabbarItems) {
+      this.tabbarItems = tabbarItems;
+   }
+
    /* (non-Javadoc)
     * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()
     */

@@ -297,4 +297,7 @@ public interface Icons extends ImageBundle {
    
    @Resource("grid.png")
    AbstractImagePrototype gridIcon();
+   
+   @Resource("tabbar_config.png")
+   AbstractImagePrototype tabbarConfigIcon();
 }
