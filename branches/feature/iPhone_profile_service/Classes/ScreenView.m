@@ -72,6 +72,7 @@
 			NSLog(@"x is %d, y is %d", x, y);
 			[backgroundImageView setFrame:CGRectMake(x, y, screenBackgroundImageViewWidth, screenBackgroundImageViewHeight)];
 			[backgroundImageView setContentStretch:CGRectMake(0, 0, screenBackgroundImageViewWidth, screenBackgroundImageViewHeight)];
+			[backgroundImageView 
 			[backgroundImageView setBackgroundColor:color];
 		} else {
 			
@@ -82,10 +83,10 @@
 		[background release];
 	}
 	
-//	for (LayoutContainer *layout in screen.layouts) { 
-//		LayoutContainerView *layoutView = [LayoutContainerView buildWithLayoutContainer:layout];
-//		[self addSubview:layoutView];
-//	}
+	for (LayoutContainer *layout in screen.layouts) { 
+		LayoutContainerView *layoutView = [LayoutContainerView buildWithLayoutContainer:layout];
+		[self addSubview:layoutView];
+	}
 	
 
 }
