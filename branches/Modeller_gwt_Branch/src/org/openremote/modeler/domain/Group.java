@@ -85,8 +85,12 @@ public class Group extends RefedEntity {
     * 
     * @param screen the screen
     */
-   public void addScreenRef(ScreenRef screen) {
-      screenRefs.add(screen);
+   public void addScreenRef(ScreenRef screenRef) {
+      screenRefs.add(screenRef);
+   }
+   
+   public void removeScreenRef(ScreenRef screenRef) {
+      screenRefs.remove(screenRef);
    }
    
    /**

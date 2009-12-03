@@ -57,6 +57,7 @@ import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.ListView;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
@@ -100,7 +101,7 @@ public class TabbarWindow extends CommonWindow {
       } else {
          setHeading("Local tabbar");
       }
-      setWidth(380);
+      setWidth(385);
       setAutoHeight(true);
       setLayout(new FlowLayout());
       form.setLabelAlign(LabelAlign.TOP);
@@ -108,7 +109,8 @@ public class TabbarWindow extends CommonWindow {
       form.setHeaderVisible(false);
       form.setBorders(false);
       form.setLabelWidth(200);
-      form.setFieldWidth(340);
+      form.setFieldWidth(350);
+      form.setPadding(5);
       createFields();
       createButtons();
       add(form);
@@ -520,7 +522,12 @@ public class TabbarWindow extends CommonWindow {
             tabbarItems.clear();
             
             for (BeanModel tabbarItemModel: tabbarItemListView.getStore().getModels()) {
-               tabbarItems.add((UITabbarItem)tabbarItemModel.getBean());
+               UITabbarItem tabbarItem = (UITabbarItem)tabbarItemModel.getBean();
+               if(!tabbarItem.getNavigate().isSet()) {
+                  MessageBox.alert("ERROR", "Tabbar item \"" + tabbarItem.getName() + "\" is required to set navigate.", null);
+                  return;
+               }
+               tabbarItems.add(tabbarItem);
             }
             fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(tabbarItems));
          }

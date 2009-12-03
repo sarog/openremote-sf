@@ -20,7 +20,9 @@
 package org.openremote.modeler.client.widget.uidesigner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
@@ -34,14 +36,19 @@ import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.component.UITabbarItem;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.ChangeEvent;
+import com.extjs.gxt.ui.client.data.ChangeEventSupport;
+import com.extjs.gxt.ui.client.data.ChangeListener;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.dnd.TreePanelDragSource;
 import com.extjs.gxt.ui.client.dnd.TreePanelDropTarget;
@@ -49,8 +56,12 @@ import com.extjs.gxt.ui.client.dnd.DND.Feedback;
 import com.extjs.gxt.ui.client.dnd.DND.Operation;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.DNDEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.store.Store;
+import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -73,7 +84,7 @@ public class ProfilePanel extends ContentPanel {
    private Icons icon = GWT.create(Icons.class);
    private SelectionServiceExt<BeanModel> selectionService;
    private ScreenTab screenTab = null;
-
+   private Map<BeanModel, ChangeListener> changeListenerMap = null;
    /**
     * Instantiates a new profile panel.
     */
@@ -131,6 +142,7 @@ public class ProfilePanel extends ContentPanel {
          @Override
          protected void onRender(Element parent, int index) {
             super.onRender(parent, index);
+            addTreeStoreEventListener();
             add(panelTree);
          }
       };
@@ -176,7 +188,20 @@ public class ProfilePanel extends ContentPanel {
       newMenu.add(createNewPanelMenuItem());
       newMenu.add(createNewGroupMenuItem());
       newMenu.add(createNewScreenMenuItem());
-      newMenu.add(createConfigTabbarMenuItem());
+      final MenuItem configTabbarItem = createConfigTabbarMenuItem();
+      newMenu.add(configTabbarItem);
+      newMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
+         @Override
+         public void handleEvent(MenuEvent be) {
+            boolean enabled = false;
+            BeanModel selectedBeanModel = panelTree.getSelectionModel().getSelectedItem();
+            if (selectedBeanModel != null && !(selectedBeanModel.getBean() instanceof ScreenRef)) {
+               enabled = true;
+            }
+            configTabbarItem.setEnabled(enabled);
+         }
+         
+      });
       newButton.setMenu(newMenu);
       return newButton;
    }
@@ -227,7 +252,7 @@ public class ProfilePanel extends ContentPanel {
       });
    }
    private void editGroup(final BeanModel groupRefBeanModel) {
-      final GroupWizardWindow groupWindow = new GroupWizardWindow(groupRefBeanModel);
+      final GroupWizardWindow groupWindow = new GroupWizardWindow(groupRefBeanModel, true);
       groupWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
@@ -260,6 +285,7 @@ public class ProfilePanel extends ContentPanel {
             }*/
             screenWizard.hide();
             panelTree.getStore().update(screenRef.getBeanModel());
+            BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
             Info.display("Info", "Edit screen " + screenRef.getScreen().getName() + " success.");
          }
          
@@ -298,6 +324,7 @@ public class ProfilePanel extends ContentPanel {
                } else if(selectedModel != null && selectedModel.getBean() instanceof GroupRef) {
                   panelTree.getStore().remove(selectedModel);
                   GroupRef groupRef = selectedModel.getBean();
+                  groupRef.getPanel().removeGroupRef(groupRef);
                   groupRef.getGroup().releaseRef();
                   if (groupRef.getGroup().getRefCount() == 0) {
                      BeanModelDataBase.groupTable.delete(groupRef.getGroupId());
@@ -310,6 +337,7 @@ public class ProfilePanel extends ContentPanel {
                   }
                }else if(selectedModel != null && selectedModel.getBean() instanceof ScreenRef){
                   ScreenRef screenRef = (ScreenRef) selectedModel.getBean();
+                  screenRef.getGroup().removeScreenRef(screenRef);
                   panelTree.getStore().remove(selectedModel);
                   screenRef.getScreen().releaseRef();
                   if (screenRef.getScreen().getRefCount() == 0) {
@@ -369,7 +397,7 @@ public class ProfilePanel extends ContentPanel {
             if (selectedBeanModel != null && selectedBeanModel.getBean() instanceof Panel) {
                groupRef.setPanel((Panel)selectedBeanModel.getBean());
             }
-            final GroupWizardWindow  groupWizardWindow = new GroupWizardWindow(groupRef.getBeanModel());
+            final GroupWizardWindow  groupWizardWindow = new GroupWizardWindow(groupRef.getBeanModel(), false);
             groupWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -406,6 +434,8 @@ public class ProfilePanel extends ContentPanel {
                   screenWindow.hide();
                   ScreenRef screenRef = be.<ScreenRef>getData();
                   panelTree.getStore().add(screenWindow.getSelectedGroupRefModel(), screenRef.getBeanModel(), false);
+                  panelTree.setExpanded(screenWindow.getSelectedGroupRefModel(), true);
+                  panelTree.getSelectionModel().select(screenRef.getBeanModel(), false);
                }
 
             });
@@ -570,5 +600,108 @@ public class ProfilePanel extends ContentPanel {
       target.setAutoExpand(false);
       target.setFeedback(Feedback.BOTH);
       target.setAllowDropOnLeaf(true);
+   }
+   
+   /**
+    * Adds the tree store event listener.
+    */
+   private void addTreeStoreEventListener() {
+      panelTree.getStore().addListener(Store.Add, new Listener<TreeStoreEvent<BeanModel>>() {
+         public void handleEvent(TreeStoreEvent<BeanModel> be) {
+            addChangeListenerToDragSource(be.getChildren());
+         }
+      });
+      panelTree.getStore().addListener(Store.DataChanged, new Listener<TreeStoreEvent<BeanModel>>() {
+         public void handleEvent(TreeStoreEvent<BeanModel> be) {
+            addChangeListenerToDragSource(be.getChildren());
+         }
+      });
+      panelTree.getStore().addListener(Store.Clear, new Listener<TreeStoreEvent<BeanModel>>() {
+         public void handleEvent(TreeStoreEvent<BeanModel> be) {
+            removeChangeListenerToDragSource(be.getChildren());
+         }
+      });
+      panelTree.getStore().addListener(Store.Remove, new Listener<TreeStoreEvent<BeanModel>>() {
+         public void handleEvent(TreeStoreEvent<BeanModel> be) {
+            removeChangeListenerToDragSource(be.getChildren());
+         }
+      });
+   }
+
+   /**
+    * Adds the change listener to drag source.
+    * 
+    * @param models
+    *           the models
+    */
+   private void addChangeListenerToDragSource(List<BeanModel> models) {
+      if (models == null) {
+         return;
+      }
+      for (BeanModel beanModel : models) {
+         if (beanModel.getBean() instanceof ScreenRef) {
+            BeanModelDataBase.screenTable.addChangeListener(BeanModelDataBase
+                  .getOriginalDesignerRefBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
+         }
+      }
+   }
+
+   /**
+    * Removes the change listener to drag source.
+    * 
+    * @param models
+    *           the models
+    */
+   private void removeChangeListenerToDragSource(List<BeanModel> models) {
+      if (models == null) {
+         return;
+      }
+      for (BeanModel beanModel : models) {
+         if (beanModel.getBean() instanceof ScreenRef) {
+            BeanModelDataBase.screenTable.removeChangeListener(BeanModelDataBase
+                  .getOriginalDesignerRefBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
+         }
+         changeListenerMap.remove(beanModel);
+      }
+   }
+
+   /**
+    * Gets the drag source bean model change listener.
+    * 
+    * @param target
+    *           the target
+    * 
+    * @return the drag source bean model change listener
+    */
+   private ChangeListener getDragSourceBeanModelChangeListener(final BeanModel target) {
+      if (changeListenerMap == null) {
+         changeListenerMap = new HashMap<BeanModel, ChangeListener>();
+      }
+      ChangeListener changeListener = changeListenerMap.get(target);
+      if (changeListener == null) {
+         changeListener = new ChangeListener() {
+            public void modelChanged(ChangeEvent changeEvent) {
+               if (changeEvent.getType() == ChangeEventSupport.Remove) {
+                  if (target.getBean() instanceof ScreenRef) {
+                     ScreenRef screenRef = (ScreenRef) target.getBean();
+                     Group group = screenRef.getGroup();
+                     group.deleteScreenRef(screenRef);
+                  }
+                  panelTree.getStore().remove(target);
+               }
+               if (changeEvent.getType() == ChangeEventSupport.Update) {
+                  BeanModel source = (BeanModel) changeEvent.getItem();
+                  if (source.getBean() instanceof Screen) {
+                     Screen screen = (Screen) source.getBean();
+                     ScreenRef screenRef = (ScreenRef) target.getBean();
+                     screenRef.setScreen(screen);
+                  }
+                  panelTree.getStore().update(target);
+               }
+            }
+         };
+         changeListenerMap.put(target, changeListener);
+      }
+      return changeListener;
    }
 }
