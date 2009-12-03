@@ -21,6 +21,7 @@ package org.openremote.modeler.service;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 
 import org.openremote.modeler.domain.Group;
@@ -44,7 +45,7 @@ public interface ResourceService {
     * 
     * @return the string
     */
-   String downloadZipResource(long maxId, String sessionId, List<Panel> panels, List<Group> groups, List<Screen> screens);
+   String downloadZipResource(long maxId, String sessionId, List<Panel> panels/*, List<Group> groups, List<Screen> screens*/);
    
    /**
     * Gets the irb file from zip.
@@ -77,10 +78,10 @@ public interface ResourceService {
     */
    String getRelativeResourcePath(String sessionId, String fileName);
    
-   String getPanelsJson(List<Panel> panels);
+   String getPanelsJson(Collection<Panel> panels);
    
-   String getGroupsJson(List<Group> groups);
+   String getGroupsJson(Collection<Group> groups);
    
-   String getScreensJson(List<Screen> screens);
+   String getScreensJson(Collection<Screen> screens);
    
 }

@@ -48,7 +48,7 @@ public interface UtilsRPCService extends RemoteService {
     * 
     * @return the string
     */
-   String exportFiles(long maxId, List<Panel> panelList, List<Group> groupList, List<Screen> screenList);
+   String exportFiles(long maxId, List<Panel> panelList);
    
    /**
     * Beehive rest icon url.
@@ -64,7 +64,7 @@ public interface UtilsRPCService extends RemoteService {
     * 
     * @return the auto save response
     */
-   AutoSaveResponse autoSaveUiDesignerLayout(List<Panel> panels, List<Group> groups, List<Screen> screens, long maxID);
+   AutoSaveResponse autoSaveUiDesignerLayout(List<Panel> panels, long maxID);
    
    List<Panel> loadPanelsFromSession();
    

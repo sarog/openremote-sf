@@ -43,7 +43,7 @@ public interface UtilsRPCServiceAsync {
     * @param maxId the max id
     * @param activityList the activity list
     */
-   void exportFiles(long maxId, List<Panel> panelList, List<Group> groupList, List<Screen> screenList, AsyncCallback<String> callback);
+   void exportFiles(long maxId, List<Panel> panelList, AsyncCallback<String> callback);
 
    /**
     * Beehive rest icon url.
@@ -58,7 +58,7 @@ public interface UtilsRPCServiceAsync {
     * @param groups the activities
     * @param asyncSuccessCallback the async success callback
     */
-   void autoSaveUiDesignerLayout(List<Panel> panels, List<Group> groups, List<Screen> screens, long maxID, AsyncCallback<AutoSaveResponse> asyncSuccessCallback);
+   void autoSaveUiDesignerLayout(List<Panel> panels, long maxID, AsyncCallback<AutoSaveResponse> asyncSuccessCallback);
 
    void loadPanelsFromSession(AsyncCallback<List<Panel>> callback);
    

@@ -23,7 +23,9 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -45,7 +47,6 @@ import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
-import org.openremote.modeler.domain.Grid;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
@@ -56,6 +57,7 @@ import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIControl;
+import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.XmlParserException;
@@ -94,8 +96,22 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * {@inheritDoc}
     */
-   public String downloadZipResource(long maxId, String sessionId, List<Panel> panels, List<Group> groups,
-         List<Screen> screens) {
+   public String downloadZipResource(long maxId, String sessionId, List<Panel> panels) {
+      Set<Group> groups = new LinkedHashSet<Group>();
+      Set<Screen> screens = new LinkedHashSet<Screen>();
+      for(Panel panel :panels){
+         List<GroupRef> groupRefs = panel.getGroupRefs();
+         for(GroupRef groupRef : groupRefs){
+            groups.add(groupRef.getGroup());
+         }
+      }
+      
+      for(Group group:groups){
+         List<ScreenRef> screenRefs = group.getScreenRefs();
+         for(ScreenRef screenRef : screenRefs){
+            screens.add(screenRef.getScreen());
+         }
+      }
       String controllerXmlContent = getControllerXmlContent(maxId, screens);
       String panelXmlContent = getPanelXmlContent(panels, groups, screens);
       String sectionIds = getSectionIds(screens);
@@ -135,8 +151,9 @@ public class ResourceServiceImpl implements ResourceService {
          if (sectionIds != "") {
             FileUtils
                   .copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
-         } else {
-            FileUtilsExt.writeStringToFile(lircdFile, "");
+         }
+         if(lircdFile.exists() && lircdFile.length()==0){
+            lircdFile.delete();
          }
       } catch (IOException e) {
          LOGGER.error("Compress zip file occur IOException", e);
@@ -156,16 +173,15 @@ public class ResourceServiceImpl implements ResourceService {
     * @param sessionId
     *           the user id
     */
-   private void replaceUrl(List<Screen> screens, String sessionId) {
+   private void replaceUrl(Collection<Screen> screens, String sessionId) {
       String rerlativeSessionFolderPath = PathConfig.getInstance(configuration).getRelativeSessionFolderPath(sessionId);
       for (Screen screen : screens) {
-         if (screen.isAbsoluteLayout()) {
-            for (Absolute absolute : screen.getAbsolutes()) {
-               absolute.getUIComponent().transImagePathToRelative(rerlativeSessionFolderPath);
-            }
-         } else {
-            for (Cell cell : screen.getGrid().getCells()) {
-               cell.getUiComponent().transImagePathToRelative(rerlativeSessionFolderPath);
+         for (Absolute absolute : screen.getAbsolutes()) {
+            absolute.getUIComponent().transImagePathToRelative(rerlativeSessionFolderPath);
+         }
+         for(UIGrid grid : screen.getGrids()){
+            for (Cell cell : grid.getCells()) {
+              cell.getUiComponent().transImagePathToRelative(rerlativeSessionFolderPath);
             }
          }
       }
@@ -344,12 +360,12 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @param maxId
     *           the max id
-    * @param screenList
+    * @param screens
     *           the activity list
     * 
     * @return the controller xml content
     */
-   private String getControllerXmlContent(long maxId, List<Screen> screenList) {
+   private String getControllerXmlContent(long maxId, Collection<Screen> screens) {
       this.eventId = maxId + 1;
       ProtocolEventContainer protocolEventContainer = new ProtocolEventContainer();
       StringBuffer controllerXml = new StringBuffer();
@@ -358,7 +374,7 @@ public class ResourceServiceImpl implements ResourceService {
             + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
             + "xsi:schemaLocation=\"http://www.openremote.org "
             + "http://www.openremote.org/schemas/controller.xsd\">\n");
-      controllerXml.append(getControlsXmlContent(screenList, protocolEventContainer));
+      controllerXml.append(getControlsXmlContent(screens, protocolEventContainer));
       controllerXml.append(protocolEventContainer.generateUIButtonEventsXml());
       controllerXml.append("</openremote>");
       return controllerXml.toString();
@@ -374,10 +390,20 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the buttons xml content
     */
-   private String getControlsXmlContent(List<Screen> screenList, ProtocolEventContainer protocolEventContainer) {
+   private String getControlsXmlContent(Collection<Screen> screens, ProtocolEventContainer protocolEventContainer) {
       StringBuffer uiControlsXml = new StringBuffer();
       uiControlsXml.append("  <controls>\n");
-      for (Screen screen : screenList) {
+      for(Screen screen : screens){
+         for(Absolute absolute : screen.getAbsolutes()){
+            uiControlsXml.append(getControlXmlContent(absolute.getUIComponent(), protocolEventContainer));
+         }
+         for(UIGrid grid : screen.getGrids()){
+            for (Cell cell : grid.getCells()) {
+               uiControlsXml.append(getControlXmlContent(cell.getUiComponent(), protocolEventContainer));
+            }
+         }
+      }
+      /*for (Screen screen : screens) {
          if (screen.isAbsoluteLayout()) {
             for (Absolute absolute : screen.getAbsolutes()) {
                uiControlsXml.append(getControlXmlContent(absolute.getUIComponent(), protocolEventContainer));
@@ -387,7 +413,7 @@ public class ResourceServiceImpl implements ResourceService {
                uiControlsXml.append(getControlXmlContent(cell.getUiComponent(), protocolEventContainer));
             }
          }
-      }
+      }*/
       uiControlsXml.append("  </controls>\n");
       return uiControlsXml.toString();
    }
@@ -516,7 +542,7 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the panel xml content
     */
-   private String getPanelXmlContent(List<Panel> panels, List<Group> groups, List<Screen> screens) {
+   private String getPanelXmlContent(List<Panel> panels, Collection<Group> groups, Collection<Screen> screens) {
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
       xmlContent.append("<openremote xmlns=\"http://www.openremote.org\" "
@@ -534,24 +560,37 @@ public class ResourceServiceImpl implements ResourceService {
       xmlContent.append("  </panels>\n");
 
       xmlContent.append("  <screens>\n");
+      /*
+       * screens 
+       */
       for (Screen screen : screens) {
          xmlContent.append("    <screen id=\"" + screen.getOid() + "\" name=\"" + screen.getName() + "\"");
-         if (!"".equals(screen.getBackground().getSrc())) {
-            xmlContent.append(" background=\"" + screen.getBackground().getSrc() + "\"");
-         }
          xmlContent.append(">\n");
-         if (screen.isAbsoluteLayout()) {
-            for (Absolute absolute : screen.getAbsolutes()) {
-               xmlContent.append("      <absolute left=\"" + absolute.getLeft() + "\" top=\"" + absolute.getTop()
-                     + "\" width=\"" + absolute.getWidth() + "\" height=\"" + absolute.getHeight() + "\">\n");
-               xmlContent.append(absolute.getUIComponent().getPanelXml());
-               xmlContent.append("      </absolute>\n");
+         if (!"".equals(screen.getBackground().getSrc())) {
+            xmlContent.append("<background src=\"" + screen.getBackground().getSrc() + "\"");
+            xmlContent.append(" fillScreen=\"" + screen.getBackground().isFillScreen() + "\">");
+            if (!screen.getBackground().isFillScreen()) {
+               xmlContent.append("<property name=\"absolute\" value=\"" + screen.getBackground().isAbsolute() + "\"/>");
+               if (screen.getBackground().isAbsolute()) {
+                  xmlContent.append("<property name=\"left\" value=\"" + screen.getBackground().getLeft() + "\"/>");
+                  xmlContent.append("<property name=\"top\" value=\"" + screen.getBackground().getTop() + "\"/>");
+               } else {
+                  xmlContent.append("<property name=\"relative\" value=\"" + screen.getBackground().getRelatedType().toString().replace("_", " ")
+                        + "\"/>");
+               }
             }
-         } else {
-            Grid grid = screen.getGrid();
+            xmlContent.append("</background>");
+         }
+         for (Absolute absolute : screen.getAbsolutes()) {
+            xmlContent.append("      <absolute left=\"" + absolute.getLeft() + "\" top=\"" + absolute.getTop()
+                  + "\" width=\"" + absolute.getWidth() + "\" height=\"" + absolute.getHeight() + "\">\n");
+            xmlContent.append(absolute.getUIComponent().getPanelXml());
+            xmlContent.append("      </absolute>\n");
+         }
+         for(UIGrid grid :screen.getGrids()){
             xmlContent.append("      <grid left=\"" + grid.getLeft() + "\" top=\"" + grid.getTop() + "\" width=\""
-                  + grid.getWidth() + "\" height=\"" + grid.getHeight() + "\" rows=\"" + grid.getRowCount()
-                  + "\" cols=\"" + grid.getColumnCount() + "\">\n");
+                  + grid.getWidth() + "\" height=\"" + grid.getHeight() + "\" rows=\"" + grid.getRowCount() + "\" cols=\""
+                  + grid.getColumnCount() + "\">\n");
             for (Cell cell : grid.getCells()) {
                xmlContent.append("       <cell x=\"" + cell.getPosX() + "\" y=\"" + cell.getPosY() + "\" rowspan=\""
                      + cell.getRowspan() + "\" colspan=\"" + cell.getColspan() + "\">\n");
@@ -560,6 +599,7 @@ public class ResourceServiceImpl implements ResourceService {
             }
             xmlContent.append("      </grid>\n");
          }
+         
          xmlContent.append("    </screen>\n");
       }
       xmlContent.append("  </screens>\n");
@@ -592,23 +632,22 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the section ids
     */
-   private String getSectionIds(List<Screen> screenList) {
+   private String getSectionIds(Collection<Screen> screenList) {
       Set<String> sectionIds = new HashSet<String>();
       for (Screen screen : screenList) {
-         if (screen.isAbsoluteLayout()) {
-            for (Absolute absolute : screen.getAbsolutes()) {
-               if(absolute.getUIComponent() instanceof UIControl){
-                  for (UICommand command : ((UIControl)absolute.getUIComponent()).getCommands()) {
-                     if (command instanceof DeviceMacroItem) {
-                        sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem) command));
-                     }
+         for (Absolute absolute : screen.getAbsolutes()) {
+            if (absolute.getUIComponent() instanceof UIControl) {
+               for (UICommand command : ((UIControl) absolute.getUIComponent()).getCommands()) {
+                  if (command instanceof DeviceMacroItem) {
+                     sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem) command));
                   }
                }
             }
-         } else {
-            for (Cell cell : screen.getGrid().getCells()) {
-               if(cell.getUiComponent() instanceof UIControl ){
-                  for (UICommand command : ((UIControl)cell.getUiComponent()).getCommands()) {
+         }
+         for(UIGrid grid :screen.getGrids()){
+            for (Cell cell :grid.getCells()) {
+               if (cell.getUiComponent() instanceof UIControl) {
+                  for (UICommand command : ((UIControl) cell.getUiComponent()).getCommands()) {
                      if (command instanceof DeviceMacroItem) {
                         sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem) command));
                      }
@@ -708,7 +747,7 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    @Override
-   public String getGroupsJson(List<Group> groups) {
+   public String getGroupsJson(Collection<Group> groups) {
       try {
          String[] includedPropertyNames = { "screenRefs" };
          String[] excludePropertyNames = {};
@@ -721,7 +760,7 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    @Override
-   public String getScreensJson(List<Screen> screens) {
+   public String getScreensJson(Collection<Screen> screens) {
       try {
          String[] includedPropertyNames = { "absolutes", "absolutes.uiCommand", "grid", "grid.cells",
                "grid.cells.uiCommand" };
@@ -736,9 +775,11 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    @Override
-   public String getPanelsJson(List<Panel> panels) {
+   public String getPanelsJson(Collection<Panel> panels) {
       try {
-         String[] includedPropertyNames = { "groupRefs" };
+         String[] includedPropertyNames = { "groupRefs", "groupRefs.group.screenRefs",
+               "groupRefs.group.screenRefs.screen.absolutes.uiComponent",
+               "groupRefs.group.screenRefs.screen.grids.cells.uiComponent"};
          String[] excludePropertyNames = {};
          String panelsJson = JsonGenerator.serializerObjectInclude(panels, includedPropertyNames, excludePropertyNames);
          return panelsJson;

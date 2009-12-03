@@ -23,7 +23,8 @@ package org.openremote.modeler.domain;
  * @author Javen
  *
  */
-public class Background {
+@SuppressWarnings("serial")
+public class Background extends BusinessEntity{
    
    private String src = "";
    private boolean fillScreen = true;
@@ -34,6 +35,9 @@ public class Background {
    private int height = 0;
    private RelativeType relatedType = RelativeType.CENTER;
    
+   public Background() {
+      this.src="";
+   }
    public Background(String src){
       this.src = src;
    }

@@ -50,8 +50,8 @@ public class UtilsProxy {
     * @param maxId the max id
     * @param activityList the activity list
     */
-   public static void exportFiles(long maxId, List<Panel> panelList, List<Group> groupList, List<Screen> screenList, final AsyncSuccessCallback<String> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().exportFiles(maxId, panelList, groupList, screenList, new AsyncSuccessCallback<String>() {
+   public static void exportFiles(long maxId, List<Panel> panelList, final AsyncSuccessCallback<String> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().exportFiles(maxId, panelList, new AsyncSuccessCallback<String>() {
          @Override
          public void onSuccess(String exportURL) {
             callback.onSuccess(exportURL);
@@ -66,8 +66,8 @@ public class UtilsProxy {
     * @param groups the activities
     * @param callback the callback
     */
-   public static void autoSaveUiDesignerLayout(List<Panel> panels, List<Group> groups, List<Screen> screens, long maxID, final AsyncSuccessCallback<AutoSaveResponse> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().autoSaveUiDesignerLayout(panels, groups, screens, maxID, new AsyncSuccessCallback<AutoSaveResponse>() {
+   public static void autoSaveUiDesignerLayout(List<Panel> panels, long maxID, final AsyncSuccessCallback<AutoSaveResponse> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().autoSaveUiDesignerLayout(panels,  maxID, new AsyncSuccessCallback<AutoSaveResponse>() {
          @Override
          public void onSuccess(AutoSaveResponse result) {
             callback.onSuccess(result);
@@ -100,8 +100,8 @@ public class UtilsProxy {
    public static void loadPanelsFromSession(final AsyncSuccessCallback<List<Panel>> callback) {
       AsyncServiceFactory.getUtilsRPCServiceAsync().loadPanelsFromSession(new AsyncSuccessCallback<List<Panel>>() {
          @Override
-         public void onSuccess(List<Panel> groups) {
-            callback.onSuccess(groups);
+         public void onSuccess(List<Panel> panels) {
+            callback.onSuccess(panels);
          }
       });
    }

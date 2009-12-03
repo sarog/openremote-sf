@@ -82,7 +82,7 @@ public class UIDesignerView extends TabItem implements View {
       timer = new Timer() {
          @Override
          public void run() {
-//            autoSaveUiDesignerLayout();
+            autoSaveUiDesignerLayout();
          }
         };
         timer.scheduleRepeating(AUTO_SAVE_INTERVAL_MS);
@@ -92,7 +92,7 @@ public class UIDesignerView extends TabItem implements View {
     * Auto save ui designer layout json.
     */
    public void autoSaveUiDesignerLayout() {
-      UtilsProxy.autoSaveUiDesignerLayout(getAllPanels(), groupPanel.getAllGroups(), getAllScreens(), IDUtil.currentID(), new AsyncSuccessCallback<AutoSaveResponse>() {
+      UtilsProxy.autoSaveUiDesignerLayout(getAllPanels(),/* groupPanel.getAllGroups(), getAllScreens(),*/ IDUtil.currentID(), new AsyncSuccessCallback<AutoSaveResponse>() {
          @Override
          public void onSuccess(AutoSaveResponse result) {
             if (result != null && result.isUpdated()) {

@@ -20,14 +20,18 @@
 package org.openremote.modeler.server;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.rpc.UtilsRPCService;
 import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.service.ResourceService;
 
 /**
@@ -57,8 +61,8 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    /**
     * {@inheritDoc}
     */
-   public String exportFiles(long maxId, List<Panel> panelList, List<Group> groupList, List<Screen> screenList) {  
-      return resourceService.downloadZipResource(maxId, this.getThreadLocalRequest().getSession().getId(), panelList, groupList, screenList);
+   public String exportFiles(long maxId, List<Panel> panelList) {  
+      return resourceService.downloadZipResource(maxId, this.getThreadLocalRequest().getSession().getId(), panelList);
    }
    
    /**
@@ -108,40 +112,34 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
     * {@inheritDoc}
     */
    @SuppressWarnings("unchecked")
-   public AutoSaveResponse autoSaveUiDesignerLayout(List<Panel> panels, List<Group> groups, List<Screen> screens, long maxID) {
+   public AutoSaveResponse autoSaveUiDesignerLayout(List<Panel> panels, long maxID) {
       AutoSaveResponse autoSaveResponse = new AutoSaveResponse();
       
       List<Panel> oldPanels = new ArrayList<Panel>();
+      /*
+       * init the groups & screens information for the panels.  
+       */
+      /*Set<Group> groups = new LinkedHashSet<Group>();
+      Set<Screen> screens = new LinkedHashSet<Screen>();
+      for(Panel panel :panels){
+         List<GroupRef> groupRefs = panel.getGroupRefs();
+         for(GroupRef groupRef : groupRefs){
+            groups.add(groupRef.getGroup());
+         }
+      }
+      
+      for(Group group:groups){
+         List<ScreenRef> screenRefs = group.getScreenRefs();
+         for(ScreenRef screenRef : screenRefs){
+            screens.add(screenRef.getScreen());
+         }
+      }*/
       if(getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY) != null){
          oldPanels = (List<Panel>)getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
       }
       if (panels.size() > 0) {
          if (!resourceService.getPanelsJson(panels).equals(resourceService.getPanelsJson(oldPanels))) {
             getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
-            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
-            autoSaveResponse.setUpdated(true);
-         }
-      }
-      
-      List<Group> oldGroups = new ArrayList<Group>();
-      if(getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_GROUP_KEY) != null){
-         oldGroups = (List<Group>)getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_GROUP_KEY);
-      }
-      if (groups.size() > 0) {
-         if (!resourceService.getGroupsJson(groups).equals(resourceService.getGroupsJson(oldGroups))) {
-            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_GROUP_KEY, groups);
-            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
-            autoSaveResponse.setUpdated(true);
-         }
-      }
-      
-      List<Screen> oldScreens = new ArrayList<Screen>();
-      if(getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_SCREEN_KEY) != null){
-         oldScreens = (List<Screen>)getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_SCREEN_KEY);
-      }
-      if (screens.size() > 0) {
-         if (!resourceService.getScreensJson(screens).equals(resourceService.getScreensJson(oldScreens))) {
-            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_SCREEN_KEY, screens);
             getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
             autoSaveResponse.setUpdated(true);
          }
