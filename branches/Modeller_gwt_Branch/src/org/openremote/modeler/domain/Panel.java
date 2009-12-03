@@ -24,8 +24,11 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
+
+import com.extjs.gxt.ui.client.widget.TabItem;
 
 /**
  * The Panel define the different device touch panel, such as iPhone panel, wall panel etc.
@@ -36,6 +39,7 @@ public class Panel extends BusinessEntity {
    private static int defaultNameIndex = 1;
    private String name;
    private List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+   private List<UITabbarItem> tabbarItems = new ArrayList<UITabbarItem>();
    private TouchPanelDefinition touchPanelDefinition;
    
    public String getName() {
@@ -61,6 +65,12 @@ public class Panel extends BusinessEntity {
    }
    public void setTouchPanelDefinition(TouchPanelDefinition touchPanelDefinition) {
       this.touchPanelDefinition = touchPanelDefinition;
+   }
+   public List<UITabbarItem> getTabbarItems() {
+      return tabbarItems;
+   }
+   public void setTabbarItems(List<UITabbarItem> tabbarItems) {
+      this.tabbarItems = tabbarItems;
    }
    /* (non-Javadoc)
     * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()

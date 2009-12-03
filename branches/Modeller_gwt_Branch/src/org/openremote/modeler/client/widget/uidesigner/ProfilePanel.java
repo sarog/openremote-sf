@@ -38,6 +38,7 @@ import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.component.UITabbarItem;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -173,10 +174,9 @@ public class ProfilePanel extends ContentPanel {
       newButton.setIcon(icon.add());
       Menu newMenu = new Menu();
       newMenu.add(createNewPanelMenuItem());
-      final MenuItem newCommandMemuItem = createNewGroupMenuItem();
-      final MenuItem importCommandMemuItem = createNewScreenMenuItem();
-      newMenu.add(newCommandMemuItem);
-      newMenu.add(importCommandMemuItem);
+      newMenu.add(createNewGroupMenuItem());
+      newMenu.add(createNewScreenMenuItem());
+      newMenu.add(createConfigTabbarMenuItem());
       newButton.setMenu(newMenu);
       return newButton;
    }
@@ -415,6 +415,40 @@ public class ProfilePanel extends ContentPanel {
       return newScreenItem;
    }
 
+   private MenuItem createConfigTabbarMenuItem() {
+      MenuItem configTabbarItem = new MenuItem("Config tabbar");
+      configTabbarItem.setIcon(icon.tabbarConfigIcon());
+      configTabbarItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+         @Override
+         public void componentSelected(MenuEvent ce) {
+            final BeanModel selectItem = panelTree.getSelectionModel().getSelectedItem();
+            if (selectItem != null) {
+               if (selectItem.getBean() instanceof Panel) {
+                  final TabbarWindow tabbarWindow = new TabbarWindow(true, ((Panel)selectItem.getBean()).getTabbarItems());
+                  tabbarWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+                     @Override
+                     public void afterSubmit(SubmitEvent be) {
+                        ((Panel)selectItem.getBean()).setTabbarItems(be.<List<UITabbarItem>>getData());
+                        tabbarWindow.hide();
+                     }
+                  });
+               } else if (selectItem.getBean() instanceof GroupRef) {
+                  final Group group = ((GroupRef)selectItem.getBean()).getGroup();
+                  final TabbarWindow tabbarWindow = new TabbarWindow(false, group.getTabbarItems());
+                  tabbarWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+                     @Override
+                     public void afterSubmit(SubmitEvent be) {
+                        group.setTabbarItems(be.<List<UITabbarItem>>getData());
+                        tabbarWindow.hide();
+                     }
+                  });
+               }
+               panelTree.getStore().update(selectItem);
+            }
+         }
+      });
+      return configTabbarItem;
+   }
    public TreePanel<BeanModel> getPanelTree() {
       return panelTree;
    }
