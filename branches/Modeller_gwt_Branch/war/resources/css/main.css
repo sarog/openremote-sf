@@ -195,3 +195,8 @@ table.screen-btn-cont td.br-c{
   border: 1px dotted #A3BAE9 !important;
   cursor: pointer;
 }
+
+.padding-top-left-10px {
+   padding-left: 10px;
+   padding-top: 10px;
+}
