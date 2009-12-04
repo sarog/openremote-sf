@@ -821,7 +821,7 @@ public class ResourceServiceImpl implements ResourceService {
    @Override
    public String getPanelsJson(Collection<Panel> panels) {
       try {
-         String[] includedPropertyNames = { "groupRefs", "groupRefs.group.screenRefs",
+         String[] includedPropertyNames = { "groupRefs", "tabbarItems","groupRefs.group.tabbarItems","groupRefs.group.screenRefs",
                "groupRefs.group.screenRefs.screen.absolutes.uiComponent",
                "groupRefs.group.screenRefs.screen.grids.cells.uiComponent"};
          String[] excludePropertyNames = {};

@@ -20,18 +20,14 @@
 package org.openremote.modeler.server;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.rpc.UtilsRPCService;
 import org.openremote.modeler.domain.Group;
-import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.service.ResourceService;
 
 /**
