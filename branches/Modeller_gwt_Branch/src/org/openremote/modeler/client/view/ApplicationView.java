@@ -32,9 +32,7 @@ import org.openremote.modeler.client.rpc.AuthorityRPCService;
 import org.openremote.modeler.client.rpc.AuthorityRPCServiceAsync;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.Protocols;
-import org.openremote.modeler.client.widget.uidesigner.GroupPanel;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
-import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style;
@@ -77,11 +75,6 @@ public class ApplicationView implements View {
    
    /** The ui designer view. */
    private UIDesignerView uiDesignerView;
-   
-   /** The screen tab. */
-   private ScreenTab screenTab;
-   
-   private GroupPanel groupPanel;
    
    /**
     * Initialize.
@@ -308,12 +301,10 @@ public class ApplicationView implements View {
       }
       if (roles.contains("ROLE_DESIGNER")) {
          UIDesignerView uiDesignerItem = new UIDesignerView();
-         uiDesignerItem.setApplicationView(this);
          uiDesignerItem.initialize();
          modelerTabPanel.add(uiDesignerItem);
          modelerTabPanel.setSelection(uiDesignerItem); // Temp to show uiDesigner. It will remove after development.
          this.uiDesignerView = uiDesignerItem;
-         this.screenTab = uiDesignerItem.getScreenTab();
       }
       modelerTabPanel.setAutoSelect(true);
       BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.CENTER);
@@ -332,9 +323,4 @@ public class ApplicationView implements View {
       // viewport.add(status, data);
    }
 
-   public void setGroupPanel(GroupPanel groupPanel) {
-      this.groupPanel = groupPanel;
-   }
-   
-   
 }

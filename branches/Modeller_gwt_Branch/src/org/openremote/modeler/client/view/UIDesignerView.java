@@ -29,7 +29,6 @@ import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.TouchPanels;
-import org.openremote.modeler.client.widget.uidesigner.GroupPanel;
 import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
@@ -59,14 +58,10 @@ public class UIDesignerView extends TabItem implements View {
    /** The screen tab. */
    private ScreenTab screenTab = new ScreenTab();
    
-   /** The application view. */
-   private ApplicationView applicationView;
-   
    /** The auto_save_interval millisecond. */
    private static final int AUTO_SAVE_INTERVAL_MS = 30000;
    
    private Timer timer;
-   private GroupPanel groupPanel;
    /**
     * Instantiates a new uI designer view.
     */
@@ -166,15 +161,6 @@ public class UIDesignerView extends TabItem implements View {
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setMargins(new Margins(2));
       add(screenTab, centerData);
-   }
-
-   /**
-    * Sets the application view.
-    * 
-    * @param applicationView the new application view
-    */
-   public void setApplicationView(ApplicationView applicationView) {
-      this.applicationView = applicationView;
    }
 
    /**
