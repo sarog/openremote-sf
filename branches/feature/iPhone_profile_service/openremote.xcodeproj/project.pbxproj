@@ -42,8 +42,8 @@
 		3389A2D610C5FF86009E074A /* panel_relative_screen_backgroundimage.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3389A2D410C5FF86009E074A /* panel_relative_screen_backgroundimage.xml */; };
 		3389A32010C60472009E074A /* Background.m in Sources */ = {isa = PBXBuildFile; fileRef = 3389A31F10C60472009E074A /* Background.m */; };
 		3389A32110C60472009E074A /* Background.m in Sources */ = {isa = PBXBuildFile; fileRef = 3389A31F10C60472009E074A /* Background.m */; };
-		3389A32410C60E5B009E074A /* BackgroundRelativePositionConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = 3389A32310C60E5B009E074A /* BackgroundRelativePositionConstant.m */; };
-		3389A32510C60E5B009E074A /* BackgroundRelativePositionConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = 3389A32310C60E5B009E074A /* BackgroundRelativePositionConstant.m */; };
+		3389A32410C60E5B009E074A /* BackgroundImageRelativePositionConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = 3389A32310C60E5B009E074A /* BackgroundImageRelativePositionConstant.m */; };
+		3389A32510C60E5B009E074A /* BackgroundImageRelativePositionConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = 3389A32310C60E5B009E074A /* BackgroundImageRelativePositionConstant.m */; };
 		3397F88410B52AB3008052AF /* SwitchServerAlertHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3397F88310B52AB3008052AF /* SwitchServerAlertHelper.m */; };
 		3397F88510B52AB3008052AF /* SwitchServerAlertHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3397F88310B52AB3008052AF /* SwitchServerAlertHelper.m */; };
 		33981B1110B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
@@ -260,8 +260,8 @@
 		3389A2D410C5FF86009E074A /* panel_relative_screen_backgroundimage.xml */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.xml; path = panel_relative_screen_backgroundimage.xml; sourceTree = "<group>"; };
 		3389A31E10C60472009E074A /* Background.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Background.h; sourceTree = "<group>"; };
 		3389A31F10C60472009E074A /* Background.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Background.m; sourceTree = "<group>"; };
-		3389A32210C60E5B009E074A /* BackgroundRelativePositionConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackgroundRelativePositionConstant.h; sourceTree = "<group>"; };
-		3389A32310C60E5B009E074A /* BackgroundRelativePositionConstant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackgroundRelativePositionConstant.m; sourceTree = "<group>"; };
+		3389A32210C60E5B009E074A /* BackgroundImageRelativePositionConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackgroundImageRelativePositionConstant.h; sourceTree = "<group>"; };
+		3389A32310C60E5B009E074A /* BackgroundImageRelativePositionConstant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackgroundImageRelativePositionConstant.m; sourceTree = "<group>"; };
 		3397F88210B52AB3008052AF /* SwitchServerAlertHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchServerAlertHelper.h; sourceTree = "<group>"; };
 		3397F88310B52AB3008052AF /* SwitchServerAlertHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwitchServerAlertHelper.m; sourceTree = "<group>"; };
 		33981B0F10B103260076DB59 /* DataBaseService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataBaseService.h; sourceTree = "<group>"; };
@@ -472,8 +472,8 @@
 				8C460F3F109563E100C7A686 /* NotificationConstant.m */,
 				8C460F5A109564D000C7A686 /* AppDelegate.h */,
 				8C460F5B109564D000C7A686 /* AppDelegate.m */,
-				3389A32210C60E5B009E074A /* BackgroundRelativePositionConstant.h */,
-				3389A32310C60E5B009E074A /* BackgroundRelativePositionConstant.m */,
+				3389A32210C60E5B009E074A /* BackgroundImageRelativePositionConstant.h */,
+				3389A32310C60E5B009E074A /* BackgroundImageRelativePositionConstant.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1002,7 +1002,7 @@
 				3338CDB710C5036C0067C94D /* ImageView.m in Sources */,
 				3338CDB810C5036C0067C94D /* LabelView.m in Sources */,
 				3389A32110C60472009E074A /* Background.m in Sources */,
-				3389A32510C60E5B009E074A /* BackgroundRelativePositionConstant.m in Sources */,
+				3389A32510C60E5B009E074A /* BackgroundImageRelativePositionConstant.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1102,7 +1102,7 @@
 				3338CDB910C5036C0067C94D /* ImageView.m in Sources */,
 				3338CDBA10C5036C0067C94D /* LabelView.m in Sources */,
 				3389A32010C60472009E074A /* Background.m in Sources */,
-				3389A32410C60E5B009E074A /* BackgroundRelativePositionConstant.m in Sources */,
+				3389A32410C60E5B009E074A /* BackgroundImageRelativePositionConstant.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

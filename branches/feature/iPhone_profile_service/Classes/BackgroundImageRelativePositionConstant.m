@@ -19,10 +19,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-#import "BackgroundRelativePositionConstant.h"
+#import "BackgroundImageRelativePositionConstant.h"
 
 
-@implementation BackgroundRelativePositionConstant
+@implementation BackgroundImageRelativePositionConstant
 
 NSString *const BG_IMAGE_RELATIVE_POSITION_LEFT = @"LEFT";
 NSString *const BG_IMAGE_RELATIVE_POSITION_RIGHT = @"RIGHT";
