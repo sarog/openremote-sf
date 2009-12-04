@@ -279,6 +279,7 @@ public class ScreenPropertyForm extends PropertyForm {
                positionSet.show();
                bkGrd.setFillScreen(false);
             }
+            canvas.updateGround();
          }
          
       });
