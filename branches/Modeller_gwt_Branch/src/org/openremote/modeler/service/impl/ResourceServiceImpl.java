@@ -54,11 +54,13 @@ import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIControl;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.domain.component.UISwitch;
+import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.XmlParserException;
 import org.openremote.modeler.service.DeviceCommandService;
@@ -552,6 +554,8 @@ public class ResourceServiceImpl implements ResourceService {
       xmlContent.append("  <panels>\n");
       for (Panel panel : panels) {
          xmlContent.append("    <panel id=\"" + panel.getOid() + "\" name=\"" + panel.getName() + "\">");
+         Collection<UITabbarItem> tabbars = panel.getTabbarItems();
+         parseTabbarsToXML(xmlContent, tabbars);
          for (GroupRef groupRef : panel.getGroupRefs()) {
             xmlContent.append("      <include type=\"group\" ref=\"" + groupRef.getGroupId() + "\" />\n");
          }
@@ -607,6 +611,11 @@ public class ResourceServiceImpl implements ResourceService {
          xmlContent.append("  <groups>\n");
          for (Group group : groups) {
             xmlContent.append("    <group id=\"" + group.getOid() + "\" name=\"" + group.getName() + "\">\n");
+            Collection<UITabbarItem> tabbars = group.getTabbarItems();
+            if(tabbars.size()>0){
+               xmlContent.append("<tab>");
+               parseTabbarsToXML(xmlContent, tabbars);
+            }
             for (ScreenRef screenRef : group.getScreenRefs()) {
                xmlContent.append("      <include type=\"screen\" ref=\"" + screenRef.getScreenId() + "\" />\n");
             }
@@ -617,6 +626,41 @@ public class ResourceServiceImpl implements ResourceService {
       }
       xmlContent.append("</openremote>");
       return xmlContent.toString();
+   }
+
+   private void parseTabbarsToXML(StringBuffer xmlContent, Collection<UITabbarItem> tabbars) {
+      if(tabbars.size()>0){
+         xmlContent.append("<tab>");
+         for(UITabbarItem item : tabbars){
+            xmlContent.append("<item name=\""+item.getName()+"\">");
+            Navigate navigate = item.getNavigate();
+            xmlContent.append("<navigate");
+            if(navigate.getToGroup()!=-1L){
+               xmlContent.append(" toGroup= \""+navigate.getToGroup()+"\"");
+               if(navigate.getToScreen()!=-1L){
+                  xmlContent.append(" toScreen= \""+navigate.getToScreen()+"\"");
+               }
+            } else if(navigate.isToSetting()){
+               xmlContent.append(" toSetting= \""+navigate.isToSetting()+"\"");
+            } else if(navigate.isBack()){
+               xmlContent.append(" back= \""+navigate.isBack()+"\"");
+            } else if(navigate.isLogin()){
+               xmlContent.append(" login= \""+navigate.isLogin()+"\"");
+            } else if(navigate.isLogout()){
+               xmlContent.append(" logout= \""+navigate.isLogout()+"\"");
+            } else if(navigate.isPrevious()){
+               xmlContent.append(" previous= \""+navigate.isPrevious()+"\"");
+            } else if(navigate.isNext()){
+               xmlContent.append(" next= \""+navigate.isNext()+"\"");
+            }
+            xmlContent.append("/>");
+            if(item.getImage()!=null){
+               xmlContent.append("<image src=\""+ item.getImage().getSrc()+"\" border=\""+item.getImage().getBorder()+"\"/>");
+            }
+            xmlContent.append("</item>");
+         }
+         xmlContent.append("</tab>");
+      }
    }
 
    /*
