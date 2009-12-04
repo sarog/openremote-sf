@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.Constants;
@@ -70,6 +71,8 @@ public class GridLayoutContainer extends ComponentContainer {
 
    private FlexTable screenTable = new FlexTable();
    
+   private List<GridCellContainer> cellContainers = new ArrayList<GridCellContainer>();
+   
    public GridLayoutContainer(ScreenCanvas screenCanvas,UIGrid grid) {
       super(screenCanvas);
       this.grid = grid;
@@ -111,6 +114,10 @@ public class GridLayoutContainer extends ComponentContainer {
    }
 
    public void refreshGrid() {
+      for(int i =cellContainers.size()-1 ;i>=0;i--){
+         cellContainers.get(i).removeFromParent();
+         cellContainers.remove(i);
+      }
       int gridWidth = grid.getWidth();
       int gridHeight = grid.getHeight();
       final int cellWidth = (gridWidth - (grid.getColumnCount() + 1)) / grid.getColumnCount();
@@ -158,7 +165,7 @@ public class GridLayoutContainer extends ComponentContainer {
             SelectedWidgetContainer.setSelectWidget(cellContainer);
             makeCellContainerResizable(cellWidth, cellHeight, cellContainer);
             layout();
-
+            cellContainers.add(cellContainer);
             super.dragDrop(e);
          }
 
@@ -238,6 +245,7 @@ public class GridLayoutContainer extends ComponentContainer {
 
       }.bind(cellContainer);
       cellContainer.setSize(cellWidth + 1, cellHeight + 1);
+      cellContainers.add(cellContainer);
       return cellContainer;
    }
    
@@ -275,6 +283,7 @@ public class GridLayoutContainer extends ComponentContainer {
          }
          
       }.bind(cellContainer);
+      cellContainers.add(cellContainer);
       return cellContainer;
    }
    /**
@@ -419,6 +428,7 @@ public class GridLayoutContainer extends ComponentContainer {
             resizedCellContainer.setWidth(hSize * cellWidth + hSize - 1);
             resizedCellContainer.setCellSpan(hSize, vSize);
             resizedCellContainer.fillArea(btnInArea);
+            cellContainers.add(resizedCellContainer);
          }
 
          @Override
@@ -492,6 +502,7 @@ public class GridLayoutContainer extends ComponentContainer {
          cellContainer.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
 
          add(cellContainer);
+         cellContainers.add(cellContainer);
          createDragSource(cellContainer);
       }
       return cellContainer;

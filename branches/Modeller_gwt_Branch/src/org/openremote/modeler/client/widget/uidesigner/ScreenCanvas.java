@@ -115,9 +115,10 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
 
    public void updateGround(){
       Background bgd = screen.getBackground();
-      setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
-      setStyleAttribute("backgroundRepeat", "no-repeat");
       if(bgd.isFillScreen()){
+         setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
+         setStyleAttribute("backgroundRepeat", "no-repeat");
+         setStyleAttribute("backgroundPosition","top left");
          return;
       } else if(bgd.isAbsolute()){
 //         setStyleAttribute("position", "absolute");
