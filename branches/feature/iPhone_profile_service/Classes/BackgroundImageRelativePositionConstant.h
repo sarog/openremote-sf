@@ -31,7 +31,7 @@ extern NSString *const BG_IMAGE_RELATIVE_POSITION_TOP_RIGHT;
 extern NSString *const BG_IMAGE_RELATIVE_POSITION_BOTTOM_RIGHT;
 extern NSString *const BG_IMAGE_RELATIVE_POSITION_CENTER;
 
-@interface BackgroundRelativePositionConstant : NSObject {
+@interface BackgroundImageRelativePositionConstant : NSObject {
 }
 
 @end
