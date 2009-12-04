@@ -20,8 +20,14 @@ public class SelectedWidgetContainer {
          ((LayoutContainer)SelectedWidgetContainer.selectedWidget).removeStyleName("button-border");
       }
       if (selectedWidget != null) {
-         ((LayoutContainer)selectedWidget).addStyleName("button-border");
-         ((LayoutContainer)selectedWidget).focus();
+         LayoutContainer selectComponent = (LayoutContainer)selectedWidget;
+         selectComponent.addStyleName("button-border");
+         
+         // add tab index and focus it, for catch keyboard "delete" event in Firefox.
+         if (selectComponent.isRendered()) {
+            selectComponent.el().dom.setPropertyInt("tabIndex", 0);
+         }
+         selectComponent.focus();
       }
       SelectedWidgetContainer.selectedWidget = selectedWidget;
       widgetSelectChangeListener.handleEvent(new WidgetSelectChangeEvent(selectedWidget));

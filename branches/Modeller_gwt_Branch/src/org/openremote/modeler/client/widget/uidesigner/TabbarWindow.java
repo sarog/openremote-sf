@@ -24,8 +24,6 @@ import java.util.List;
 
 import org.openremote.modeler.client.event.SelectEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.listener.FormResetListener;
-import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.listener.SelectListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
@@ -72,7 +70,6 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel.LabelAlign;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Method;
 import com.extjs.gxt.ui.client.widget.layout.ColumnLayout;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
-import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
@@ -84,10 +81,8 @@ public class TabbarWindow extends CommonWindow {
 
    public static final String TABBAR_ITEM_IMAGE = "tabbarItemImage";
    private List<UITabbarItem> tabbarItems = null;
-   private FormPanel form = new FormPanel();
    private ListView<BeanModel> tabbarItemListView;
    private UITabbarItem selectTabbarItem = new UITabbarItem();
-   private FormPanel imageForm = new FormPanel();
    public TabbarWindow(boolean isGlobal, List<UITabbarItem> tabbarItems) {
       super();
       this.tabbarItems = tabbarItems;
@@ -103,18 +98,14 @@ public class TabbarWindow extends CommonWindow {
       }
       setWidth(385);
       setAutoHeight(true);
-      setLayout(new FlowLayout());
-      form.setLabelAlign(LabelAlign.TOP);
-      form.setFrame(true);
-      form.setHeaderVisible(false);
-      form.setBorders(false);
-      form.setLabelWidth(200);
-      form.setFieldWidth(350);
-      form.setPadding(5);
+      FormLayout formLayout = new FormLayout();
+      formLayout.setLabelAlign(LabelAlign.TOP);
+      formLayout.setLabelWidth(200);
+      formLayout.setDefaultWidth(350);
+      setLayout(formLayout);
       createFields();
       createButtons();
-      add(form);
-      addBeforeSubmitListener();
+      setBodyStyleName("padding-top-left-10px");
    }
    private void createFields() {
       AdapterField tabbarField = new AdapterField(createTabbarContainer(tabbarItems));
@@ -123,17 +114,20 @@ public class TabbarWindow extends CommonWindow {
       AdapterField tabbarItemPropertyField = new AdapterField(createTabbarItemPropertyForm());
       tabbarItemPropertyField.setFieldLabel("Selected tabbar item properties");
       
-      form.add(tabbarField);
-      form.add(tabbarItemPropertyField);
+      add(tabbarField);
+      add(tabbarItemPropertyField);
    }
    private LayoutContainer createTabbarContainer(List<UITabbarItem> tabbarItems) {
       LayoutContainer tabbarContainer = new LayoutContainer();
+      tabbarContainer.setBorders(false);
       tabbarContainer.setSize(340, 140);
       HBoxLayout tabbarContainerLayout = new HBoxLayout();
       tabbarContainerLayout.setHBoxLayoutAlign(HBoxLayoutAlign.TOP);
       tabbarContainer.setLayout(tabbarContainerLayout);
       
       ContentPanel tabbarItemsContainer = new ContentPanel();
+      tabbarItemsContainer.setBorders(false);
+      tabbarItemsContainer.setBodyBorder(false);
       tabbarItemsContainer.setHeaderVisible(false);
       tabbarItemsContainer.setWidth(260);
       tabbarItemsContainer.setHeight(130);
@@ -150,9 +144,9 @@ public class TabbarWindow extends CommonWindow {
       tabbarItemListView.setDisplayProperty("displayName");
       tabbarItemsContainer.add(tabbarItemListView);
       
-      ContentPanel buttonsContainer = new ContentPanel();
+      LayoutContainer buttonsContainer = new LayoutContainer();
       buttonsContainer.setSize(80, 130);
-      buttonsContainer.setHeaderVisible(false);
+      buttonsContainer.setBorders(false);
       buttonsContainer.setLayout(new RowLayout(Orientation.VERTICAL));
       
       Button addItemBtn = new Button("Add");
@@ -247,7 +241,11 @@ public class TabbarWindow extends CommonWindow {
             tabbarItemListView.getStore().update(selectTabbarItem.getBeanModel());
          }
       });
-      
+      final FormPanel imageForm = new FormPanel();
+      imageForm.setHeaderVisible(false);
+      imageForm.setBorders(false);imageForm.setBodyBorder(false);
+      imageForm.setPadding(0);
+      imageForm.setLabelAlign(LabelAlign.TOP);
       final FileUploadField imageField = new FileUploadField() {
 
          @Override
@@ -272,10 +270,11 @@ public class TabbarWindow extends CommonWindow {
       imageForm.addListener(Events.Submit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             UImage image = selectTabbarItem.getImage();
+            String imageSrc =  be.getResultHtml();
             if (image == null) {
-               image = new UImage(be.getResultHtml());
+               image = new UImage(imageSrc);
             } else {
-               image.setSrc(be.getResultHtml());
+               image.setSrc(imageSrc);
             }
             selectTabbarItem.setImage(image);
             be.cancelBubble();
@@ -342,9 +341,6 @@ public class TabbarWindow extends CommonWindow {
       for (BeanModel groupModel : groupModels) {
          ComboBoxDataModel<Group> data = new ComboBoxDataModel<Group>(groupModel.get("name").toString(), (Group) groupModel.getBean());
          groupStore.add(data);
-//         if(selectTabbarItem.getNavigate().getToGroup() == ((Group) groupModel.getBean()).getOid()) {
-//            groupList.setValue(data);
-//         }
       }
          
       rightComboBoxes.add(groupList);
@@ -370,9 +366,6 @@ public class TabbarWindow extends CommonWindow {
          }
          
       });
-//      if (navigate.getToGroup() != -1) {
-//         toGroup.setValue(true);
-//      }
       
       Radio toScreen = new Radio();
       toScreen.setBoxLabel("ToScreen");
@@ -407,7 +400,6 @@ public class TabbarWindow extends CommonWindow {
       
       final Radio logout = new Radio();
       logout.setBoxLabel("Logout");
-//      logout.setValue(navigate.isLogout());
       logout.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
@@ -417,7 +409,6 @@ public class TabbarWindow extends CommonWindow {
       
       final Radio previous = new Radio();
       previous.setBoxLabel("Previous");
-//      previous.setValue(navigate.isPrevious());
       previous.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
@@ -427,7 +418,6 @@ public class TabbarWindow extends CommonWindow {
       
       final Radio next = new Radio();
       next.setBoxLabel("Next");
-//      next.setValue(navigate.isNext());
       next.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
@@ -448,7 +438,7 @@ public class TabbarWindow extends CommonWindow {
       navigateSet.add(rightComboBoxes);
       
       tabbarItemForm.add(nameField);
-      tabbarItemForm.add(imageField);
+      tabbarItemForm.add(imageForm);
       tabbarItemForm.add(navigateSet);
       
       addListener(SelectEvent.SELECT, new SelectListener() {
@@ -457,7 +447,10 @@ public class TabbarWindow extends CommonWindow {
             UITabbarItem tabbarItem = be.getData();
             nameField.setValue(tabbarItem.getName());
             if (tabbarItem.getImage() != null) {
-               imageField.setValue(tabbarItem.getImage().getSrc());
+               String imageSrc = tabbarItem.getImage().getSrc();
+               imageField.setValue(imageSrc.substring(imageSrc.lastIndexOf("/") + 1));
+            } else {
+               imageField.setValue("");
             }
             Navigate navigate = tabbarItem.getNavigate();
             if (navigate.getToGroup() != -1) {
@@ -486,20 +479,9 @@ public class TabbarWindow extends CommonWindow {
       Button okBtn = new Button("OK");
       Button cancelBtn = new Button("Cancel");
 
-      okBtn.addSelectionListener(new FormSubmitListener(form));
-      cancelBtn.addSelectionListener(new FormResetListener(form) {
+      okBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            TabbarWindow.this.hide();
-         }
-      });
-
-      form.addButton(okBtn);
-      form.addButton(cancelBtn);
-   }
-   private void addBeforeSubmitListener() {
-      form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
-         public void handleEvent(FormEvent be) {
             if (tabbarItems == null) {
                tabbarItems = new ArrayList<UITabbarItem>();
             }
@@ -515,7 +497,16 @@ public class TabbarWindow extends CommonWindow {
             }
             fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(tabbarItems));
          }
-
+         
       });
+      cancelBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            TabbarWindow.this.hide();
+         }
+      });
+
+      addButton(okBtn);
+      addButton(cancelBtn);
    }
 }
