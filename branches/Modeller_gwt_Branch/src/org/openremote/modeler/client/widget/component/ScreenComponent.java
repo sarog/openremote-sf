@@ -27,7 +27,6 @@ import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UISwitch;
 
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
-import com.google.gwt.user.client.Element;
 
 /**
  * ScreenControl as the component's super class.

@@ -612,10 +612,7 @@ public class ResourceServiceImpl implements ResourceService {
          for (Group group : groups) {
             xmlContent.append("    <group id=\"" + group.getOid() + "\" name=\"" + group.getName() + "\">\n");
             Collection<UITabbarItem> tabbars = group.getTabbarItems();
-            if(tabbars.size()>0){
-               xmlContent.append("<tab>");
-               parseTabbarsToXML(xmlContent, tabbars);
-            }
+            parseTabbarsToXML(xmlContent, tabbars);
             for (ScreenRef screenRef : group.getScreenRefs()) {
                xmlContent.append("      <include type=\"screen\" ref=\"" + screenRef.getScreenId() + "\" />\n");
             }
