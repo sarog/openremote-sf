@@ -97,7 +97,6 @@ public class XmlParser {
          LOGGER.error("Parser XML occur IOException", e);
          throw new XmlParserException("Parser XML occur IOException", e);
       }
-      System.out.println(result);
       return result;
    }
    
