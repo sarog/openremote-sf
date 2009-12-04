@@ -33,7 +33,7 @@ public class Background extends BusinessEntity{
    private int top = 0;
    private int width = 0;
    private int height = 0;
-   private RelativeType relatedType = RelativeType.CENTER;
+   private RelativeType relatedType = RelativeType.TOP_LEFT;
    
    public Background() {
       this.src="";
