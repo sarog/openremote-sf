@@ -152,7 +152,7 @@ public class PanelWindow extends FormWindow {
          for (TouchPanelDefinition touchPanel : predefinedPanels.get(key)) {
             ComboBoxDataModel<TouchPanelDefinition> data = new ComboBoxDataModel<TouchPanelDefinition>(touchPanel
                   .getName(), touchPanel);
-            if ("iphone".equals(touchPanel.getName())) {
+            if ("iPhone".equals(touchPanel.getName())) {
                iphoneData = data;
             }
             store.add(data);

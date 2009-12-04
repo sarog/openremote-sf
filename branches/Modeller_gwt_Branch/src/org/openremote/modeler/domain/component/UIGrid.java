@@ -152,7 +152,7 @@ public class UIGrid extends UIComponent {
 
    @Override
    public String getName() {
-     return "grid";
+     return "Grid";
    }
    
 }

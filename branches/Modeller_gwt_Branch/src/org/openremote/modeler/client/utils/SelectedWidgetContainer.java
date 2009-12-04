@@ -21,6 +21,7 @@ public class SelectedWidgetContainer {
       }
       if (selectedWidget != null) {
          ((LayoutContainer)selectedWidget).addStyleName("button-border");
+         ((LayoutContainer)selectedWidget).focus();
       }
       SelectedWidgetContainer.selectedWidget = selectedWidget;
       widgetSelectChangeListener.handleEvent(new WidgetSelectChangeEvent(selectedWidget));

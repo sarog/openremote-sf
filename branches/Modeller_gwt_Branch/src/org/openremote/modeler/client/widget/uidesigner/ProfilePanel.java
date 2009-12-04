@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
 import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
@@ -37,6 +38,7 @@ import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.Group;
@@ -157,6 +159,16 @@ public class ProfilePanel extends ContentPanel {
    }
 
    private void initTreeWithAutoSavedPanels() {
+      UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>(){
+         @Override
+         public void onSuccess(Long maxID) {
+            if (maxID > 0) {              // set the layout component's max id after refresh page.
+               IDUtil.setCurrentID(maxID.longValue());
+            }
+         }
+         
+      });
+      
       UtilsProxy.loadPanelsFromSession(new AsyncSuccessCallback<List<Panel>>(){
          @Override
          public void onSuccess(List<Panel> panels) {
@@ -174,6 +186,19 @@ public class ProfilePanel extends ContentPanel {
                   }
                }
                panelTree.expandAll();
+               BeanModelDataBase.screenTable.addInsertListener(Constants.SCREEN_TABLE_OID, new ChangeListener() {
+                  public void modelChanged(ChangeEvent event) {
+                     if (event.getType() == BeanModelTable.ADD) {
+                        BeanModel beanModel = (BeanModel) event.getItem();
+                        if (beanModel.getBean() instanceof Screen) {
+                           ScreenTabItem screenTabItem = new ScreenTabItem((Screen) beanModel.getBean());
+                           screenTab.add(screenTabItem);
+                           screenTab.setSelection(screenTabItem);
+                        }
+                     }
+                  }
+
+               });
             }
          }
          
