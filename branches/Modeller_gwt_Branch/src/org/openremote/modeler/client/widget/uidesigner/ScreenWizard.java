@@ -60,7 +60,7 @@ public class ScreenWizard extends FormWindow {
    private boolean editMode = false;
    private TreePanel<BeanModel> groupSelectTree = null;
    
-   public ScreenWizard(ScreenTab screenTab,BeanModel selectItem,boolean editMode){
+   public ScreenWizard(ScreenTab screenTab, BeanModel selectItem, boolean editMode) {
       super();
       this.editMode = editMode;
       this.selectItem = selectItem;
@@ -74,8 +74,9 @@ public class ScreenWizard extends FormWindow {
       add(form);
       show();
    }
-   public ScreenWizard(ScreenTab screenTab,BeanModel selectItem){
-      this(screenTab,selectItem,false);
+
+   public ScreenWizard(ScreenTab screenTab, BeanModel selectItem) {
+      this(screenTab, selectItem, false);
    }
    
    
@@ -110,7 +111,7 @@ public class ScreenWizard extends FormWindow {
       form.addButton(resetBtn);
    }
    private void addBeforHideListener(final ScreenTab screenTab) {
-      form.addListener(Events.BeforeSubmit,new Listener<FormEvent>(){
+      form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
 
          @Override
          public void handleEvent(FormEvent be) {
@@ -123,9 +124,9 @@ public class ScreenWizard extends FormWindow {
             Object bean = groupModel.getBean();
             if (bean != null && bean instanceof GroupRef) {
                GroupRef groupRef = (GroupRef) bean;
-               if (!editMode) {                                                           // new a screen.
+               if (!editMode) { // new a screen.
                   createScreen(groupSelectTree, groupModel, groupRef);
-               } else {                                                                   // update a screen.
+               } else { // update a screen.
                   ScreenRef screenRef = (ScreenRef) selectItem.getBean();
                   screenRef.getScreen().setName(nameField.getValue());
                   screenRef.setGroup(groupRef.getGroup());
@@ -133,7 +134,7 @@ public class ScreenWizard extends FormWindow {
                }
             }
          }
-         
+
       });
    }
 
@@ -205,7 +206,7 @@ public class ScreenWizard extends FormWindow {
    }
 
    public BeanModel getSelectedGroupRefModel() {
-      return (BeanModel)groupSelectTree.getSelectionModel().getSelectedItem();
+      return (BeanModel) groupSelectTree.getSelectionModel().getSelectedItem();
    }
    public TreePanel<BeanModel> getGroupSelectTree() {
       return groupSelectTree;

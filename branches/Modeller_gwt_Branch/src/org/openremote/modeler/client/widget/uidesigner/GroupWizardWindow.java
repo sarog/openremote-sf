@@ -55,7 +55,7 @@ public class GroupWizardWindow extends WizardWindow {
    protected void postProcess(int step, FormPanel currentForm) {
       switch (step) {
       case SELECT_PANEL_STEP:
-         SelectPanelForm selectPanelForm = (SelectPanelForm)currentForm;
+         SelectPanelForm selectPanelForm = (SelectPanelForm) currentForm;
          SelectScreenForm selectScreenForm = (SelectScreenForm) forms[SELECT_SCREEN_STEP];
          selectScreenForm.update((Panel) selectPanelForm.getSelectedItem().getBean());
          break;
@@ -69,17 +69,17 @@ public class GroupWizardWindow extends WizardWindow {
 
    @Override
    protected void finish(int step, FormPanel currentForm) {
-      SelectPanelForm selectPanelForm = (SelectPanelForm)forms[SELECT_PANEL_STEP];
+      SelectPanelForm selectPanelForm = (SelectPanelForm) forms[SELECT_PANEL_STEP];
       switch (step) {
       case SELECT_PANEL_STEP:
          selectPanelForm.setEditMode(editMode);
          break;
       case SELECT_SCREEN_STEP:
-         GroupRef groupRef = (GroupRef)beanModel.getBean();
+         GroupRef groupRef = (GroupRef) beanModel.getBean();
          groupRef.getGroup().setName(selectPanelForm.getFields().get(0).getValue().toString());
          if (!editMode) {
-            groupRef.setPanel((Panel)selectPanelForm.getSelectedItem().getBean());
-            ((Panel)selectPanelForm.getSelectedItem().getBean()).addGroupRef(groupRef);
+            groupRef.setPanel((Panel) selectPanelForm.getSelectedItem().getBean());
+            ((Panel) selectPanelForm.getSelectedItem().getBean()).addGroupRef(groupRef);
          }
          break;
       default:

@@ -101,16 +101,16 @@ public class ResourceServiceImpl implements ResourceService {
    public String downloadZipResource(long maxId, String sessionId, List<Panel> panels) {
       Set<Group> groups = new LinkedHashSet<Group>();
       Set<Screen> screens = new LinkedHashSet<Screen>();
-      for(Panel panel :panels){
+      for (Panel panel : panels) {
          List<GroupRef> groupRefs = panel.getGroupRefs();
-         for(GroupRef groupRef : groupRefs){
+         for (GroupRef groupRef : groupRefs) {
             groups.add(groupRef.getGroup());
          }
       }
-      
-      for(Group group:groups){
+
+      for (Group group : groups) {
          List<ScreenRef> screenRefs = group.getScreenRefs();
-         for(ScreenRef screenRef : screenRefs){
+         for (ScreenRef screenRef : screenRefs) {
             screens.add(screenRef.getScreen());
          }
       }
@@ -130,13 +130,14 @@ public class ResourceServiceImpl implements ResourceService {
       File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(sessionId));
       File lircdFile = new File(pathConfig.lircFilePath(sessionId));
       // File dotImport = new File(pathConfig.dotImportFilePath(sessionId));
-      
+
       /*
-       * validate and output panel.xml. 
+       * validate and output panel.xml.
        */
-      String newIphoneXML = XmlParser.validateAndOutputXML(new File(getClass().getResource(configuration.getIphoneXsdPath())
-            .getPath()), panelXmlContent, sessionFolder);
-      controllerXmlContent = XmlParser.validateAndOutputXML(new File(getClass().getResource(configuration.getControllerXsdPath()).getPath()), controllerXmlContent);
+      String newIphoneXML = XmlParser.validateAndOutputXML(new File(getClass().getResource(
+            configuration.getIphoneXsdPath()).getPath()), panelXmlContent, sessionFolder);
+      controllerXmlContent = XmlParser.validateAndOutputXML(new File(getClass().getResource(
+            configuration.getControllerXsdPath()).getPath()), controllerXmlContent);
       /*
        * validate and output controller.xml
        */
@@ -154,7 +155,7 @@ public class ResourceServiceImpl implements ResourceService {
             FileUtils
                   .copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
          }
-         if(lircdFile.exists() && lircdFile.length()==0){
+         if (lircdFile.exists() && lircdFile.length() == 0) {
             lircdFile.delete();
          }
       } catch (IOException e) {
@@ -181,9 +182,9 @@ public class ResourceServiceImpl implements ResourceService {
          for (Absolute absolute : screen.getAbsolutes()) {
             absolute.getUIComponent().transImagePathToRelative(rerlativeSessionFolderPath);
          }
-         for(UIGrid grid : screen.getGrids()){
+         for (UIGrid grid : screen.getGrids()) {
             for (Cell cell : grid.getCells()) {
-              cell.getUiComponent().transImagePathToRelative(rerlativeSessionFolderPath);
+               cell.getUiComponent().transImagePathToRelative(rerlativeSessionFolderPath);
             }
          }
       }
@@ -395,11 +396,11 @@ public class ResourceServiceImpl implements ResourceService {
    private String getControlsXmlContent(Collection<Screen> screens, ProtocolEventContainer protocolEventContainer) {
       StringBuffer uiControlsXml = new StringBuffer();
       uiControlsXml.append("  <controls>\n");
-      for(Screen screen : screens){
-         for(Absolute absolute : screen.getAbsolutes()){
+      for (Screen screen : screens) {
+         for (Absolute absolute : screen.getAbsolutes()) {
             uiControlsXml.append(getControlXmlContent(absolute.getUIComponent(), protocolEventContainer));
          }
-         for(UIGrid grid : screen.getGrids()){
+         for (UIGrid grid : screen.getGrids()) {
             for (Cell cell : grid.getCells()) {
                uiControlsXml.append(getControlXmlContent(cell.getUiComponent(), protocolEventContainer));
             }
@@ -526,7 +527,7 @@ public class ResourceServiceImpl implements ResourceService {
       StringBuffer buttonXml = new StringBuffer();
       for (UIButtonEvent uiButtonEvent : uiButtonEventList) {
          if ("".equals(uiButtonEvent.getDelay())) {
-            buttonXml.append("      <include type=\"command" + "\" ref=\""+ uiButtonEvent.getId() + "\"/>\n");
+            buttonXml.append("      <include type=\"command" + "\" ref=\"" + uiButtonEvent.getId() + "\"/>\n");
          } else {
             buttonXml.append("      <delay>");
             buttonXml.append(uiButtonEvent.getDelay());
@@ -591,7 +592,7 @@ public class ResourceServiceImpl implements ResourceService {
             xmlContent.append(absolute.getUIComponent().getPanelXml());
             xmlContent.append("      </absolute>\n");
          }
-         for(UIGrid grid :screen.getGrids()){
+         for (UIGrid grid : screen.getGrids()) {
             xmlContent.append("      <grid left=\"" + grid.getLeft() + "\" top=\"" + grid.getTop() + "\" width=\""
                   + grid.getWidth() + "\" height=\"" + grid.getHeight() + "\" rows=\"" + grid.getRowCount() + "\" cols=\""
                   + grid.getColumnCount() + "\">\n");
@@ -626,33 +627,34 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    private void parseTabbarsToXML(StringBuffer xmlContent, Collection<UITabbarItem> tabbars) {
-      if(tabbars.size()>0){
+      if (tabbars.size() > 0) {
          xmlContent.append("<tab>");
-         for(UITabbarItem item : tabbars){
-            xmlContent.append("<item name=\""+item.getName()+"\">");
+         for (UITabbarItem item : tabbars) {
+            xmlContent.append("<item name=\"" + item.getName() + "\">");
             Navigate navigate = item.getNavigate();
             xmlContent.append("<navigate");
-            if(navigate.getToGroup()!=-1L){
-               xmlContent.append(" toGroup= \""+navigate.getToGroup()+"\"");
-               if(navigate.getToScreen()!=-1L){
-                  xmlContent.append(" toScreen= \""+navigate.getToScreen()+"\"");
+            if (navigate.getToGroup() != -1L) {
+               xmlContent.append(" toGroup= \"" + navigate.getToGroup() + "\"");
+               if (navigate.getToScreen() != -1L) {
+                  xmlContent.append(" toScreen= \"" + navigate.getToScreen() + "\"");
                }
-            } else if(navigate.isToSetting()){
-               xmlContent.append(" toSetting= \""+navigate.isToSetting()+"\"");
-            } else if(navigate.isBack()){
-               xmlContent.append(" back= \""+navigate.isBack()+"\"");
-            } else if(navigate.isLogin()){
-               xmlContent.append(" login= \""+navigate.isLogin()+"\"");
-            } else if(navigate.isLogout()){
-               xmlContent.append(" logout= \""+navigate.isLogout()+"\"");
-            } else if(navigate.isPrevious()){
-               xmlContent.append(" previous= \""+navigate.isPrevious()+"\"");
-            } else if(navigate.isNext()){
-               xmlContent.append(" next= \""+navigate.isNext()+"\"");
+            } else if (navigate.isToSetting()) {
+               xmlContent.append(" toSetting= \"" + navigate.isToSetting() + "\"");
+            } else if (navigate.isBack()) {
+               xmlContent.append(" back= \"" + navigate.isBack() + "\"");
+            } else if (navigate.isLogin()) {
+               xmlContent.append(" login= \"" + navigate.isLogin() + "\"");
+            } else if (navigate.isLogout()) {
+               xmlContent.append(" logout= \"" + navigate.isLogout() + "\"");
+            } else if (navigate.isPrevious()) {
+               xmlContent.append(" previous= \"" + navigate.isPrevious() + "\"");
+            } else if (navigate.isNext()) {
+               xmlContent.append(" next= \"" + navigate.isNext() + "\"");
             }
             xmlContent.append("/>");
-            if(item.getImage()!=null){
-               xmlContent.append("<image src=\""+ item.getImage().getSrc()+"\" border=\""+item.getImage().getBorder()+"\"/>");
+            if (item.getImage() != null) {
+               xmlContent.append("<image src=\"" + item.getImage().getSrc() + "\" border=\""
+                     + item.getImage().getBorder() + "\"/>");
             }
             xmlContent.append("</item>");
          }
@@ -685,8 +687,8 @@ public class ResourceServiceImpl implements ResourceService {
                }
             }
          }
-         for(UIGrid grid :screen.getGrids()){
-            for (Cell cell :grid.getCells()) {
+         for (UIGrid grid : screen.getGrids()) {
+            for (Cell cell : grid.getCells()) {
                if (cell.getUiComponent() instanceof UIControl) {
                   for (UICommand command : ((UIControl) cell.getUiComponent()).getCommands()) {
                      if (command instanceof DeviceMacroItem) {
@@ -790,7 +792,7 @@ public class ResourceServiceImpl implements ResourceService {
    @Override
    public String getGroupsJson(Collection<Group> groups) {
       try {
-         String[] includedPropertyNames = { "screenRefs" };
+         String[] includedPropertyNames = {"screenRefs"};
          String[] excludePropertyNames = {};
          String groupsJson = JsonGenerator.serializerObjectInclude(groups, includedPropertyNames, excludePropertyNames);
          return groupsJson;
@@ -803,9 +805,9 @@ public class ResourceServiceImpl implements ResourceService {
    @Override
    public String getScreensJson(Collection<Screen> screens) {
       try {
-         String[] includedPropertyNames = { "absolutes", "absolutes.uiCommand", "grid", "grid.cells",
-               "grid.cells.uiCommand" };
-         String[] excludePropertyNames = { "absolutes.uiControl.panelXml", "grid.cells.uiControl.panelXml" };
+         String[] includedPropertyNames = {"absolutes", "absolutes.uiCommand", "grid", "grid.cells",
+               "grid.cells.uiCommand"};
+         String[] excludePropertyNames = {"absolutes.uiControl.panelXml", "grid.cells.uiControl.panelXml"};
          String groupsJson = JsonGenerator
                .serializerObjectInclude(screens, includedPropertyNames, excludePropertyNames);
          return groupsJson;
@@ -818,9 +820,9 @@ public class ResourceServiceImpl implements ResourceService {
    @Override
    public String getPanelsJson(Collection<Panel> panels) {
       try {
-         String[] includedPropertyNames = { "groupRefs", "tabbarItems","groupRefs.group.tabbarItems","groupRefs.group.screenRefs",
-               "groupRefs.group.screenRefs.screen.absolutes.uiComponent",
-               "groupRefs.group.screenRefs.screen.grids.cells.uiComponent"};
+         String[] includedPropertyNames = {"groupRefs", "tabbarItems", "groupRefs.group.tabbarItems",
+               "groupRefs.group.screenRefs", "groupRefs.group.screenRefs.screen.absolutes.uiComponent",
+               "groupRefs.group.screenRefs.screen.grids.cells.uiComponent" };
          String[] excludePropertyNames = {};
          String panelsJson = JsonGenerator.serializerObjectInclude(panels, includedPropertyNames, excludePropertyNames);
          return panelsJson;

@@ -27,18 +27,19 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel;
 /**
  * The Class GridCellContainer.
  */
-public class GridCellContainer extends ComponentContainer implements PropertyPanelBuilder{
+public class GridCellContainer extends ComponentContainer implements PropertyPanelBuilder { 
 
    private Cell cell;
    private GridLayoutContainer gridContainer = null;
    
    private ScreenComponent screenControl;
    
-   public GridCellContainer(ScreenCanvas canvas,GridLayoutContainer gridContainer) {
+   public GridCellContainer(ScreenCanvas canvas, GridLayoutContainer gridContainer) {
       super(canvas);
       this.gridContainer = gridContainer;
    }
-   public GridCellContainer(ScreenCanvas canvas,Cell cell, ScreenComponent screenControl,GridLayoutContainer gridContainer) {
+   public GridCellContainer(ScreenCanvas canvas, Cell cell, ScreenComponent screenControl,
+         GridLayoutContainer gridContainer) {
       super(canvas);
       this.cell = cell;
       this.screenControl = screenControl;

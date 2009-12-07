@@ -87,7 +87,7 @@ public class UIDesignerView extends TabItem implements View {
     * Auto save ui designer layout json.
     */
    public void autoSaveUiDesignerLayout() {
-      UtilsProxy.autoSaveUiDesignerLayout(getAllPanels(),/* groupPanel.getAllGroups(), getAllScreens(),*/ IDUtil.currentID(), new AsyncSuccessCallback<AutoSaveResponse>() {
+      UtilsProxy.autoSaveUiDesignerLayout(getAllPanels(), IDUtil.currentID(), new AsyncSuccessCallback<AutoSaveResponse>() {
          @Override
          public void onSuccess(AutoSaveResponse result) {
             if (result != null && result.isUpdated()) {
@@ -197,7 +197,7 @@ public class UIDesignerView extends TabItem implements View {
    List<Screen> getAllScreens() {
       List<Screen> screenList = new ArrayList<Screen>();
       for (BeanModel screenBeanModel : BeanModelDataBase.screenTable.loadAll()) {
-         screenList.add((Screen)screenBeanModel.getBean());
+         screenList.add((Screen) screenBeanModel.getBean());
       }
       return screenList;
    }
@@ -205,7 +205,7 @@ public class UIDesignerView extends TabItem implements View {
    List<Panel> getAllPanels() {
       List<Panel> panelList = new ArrayList<Panel>();
       for (BeanModel panelBeanModel : BeanModelDataBase.panelTable.loadAll()) {
-         panelList.add((Panel)panelBeanModel.getBean());
+         panelList.add((Panel) panelBeanModel.getBean());
       }
       return panelList;
    }

@@ -78,7 +78,7 @@ public class ButtonPropertyForm extends PropertyForm {
       final TextField<String> name = new TextField<String>();
       name.setFieldLabel("Name");
       name.setValue(uiButton.getName());
-      name.addListener(Events.Blur, new Listener<BaseEvent>(){
+      name.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
             screenButton.setName(name.getValue());
@@ -107,7 +107,7 @@ public class ButtonPropertyForm extends PropertyForm {
             });
          }
       });
-      if(uiButton.getUiCommand() != null) {
+      if (uiButton.getUiCommand() != null) {
          command.setText(uiButton.getUiCommand().getDisplayName());
       }
       AdapterField adapterCommand = new AdapterField(command);
@@ -141,7 +141,7 @@ public class ButtonPropertyForm extends PropertyForm {
          @SuppressWarnings("unchecked")
          @Override
          public void selectionChanged(SelectionChangedEvent<ModelData> se) {
-            Screen selectedScreen = ((ComboBoxDataModel<Screen>)se.getSelectedItem()).getData();
+            Screen selectedScreen = ((ComboBoxDataModel<Screen>) se.getSelectedItem()).getData();
             navigate.setToScreen(selectedScreen.getOid());
          }
          
@@ -158,7 +158,7 @@ public class ButtonPropertyForm extends PropertyForm {
          @SuppressWarnings("unchecked")
          @Override
          public void selectionChanged(SelectionChangedEvent<ModelData> se) {
-            Group selectedGroup = ((ComboBoxDataModel<Group>)se.getSelectedItem()).getData();
+            Group selectedGroup = ((ComboBoxDataModel<Group>) se.getSelectedItem()).getData();
             navigate.setToGroup(selectedGroup.getOid());
             screenList.clearSelections();
             screenList.getStore().removeAll();
@@ -177,7 +177,7 @@ public class ButtonPropertyForm extends PropertyForm {
       for (BeanModel groupModel : groupModels) {
          ComboBoxDataModel<Group> data = new ComboBoxDataModel<Group>(groupModel.get("name").toString(), (Group) groupModel.getBean());
          groupStore.add(data);
-         if(navigate.getToGroup() == ((Group) groupModel.getBean()).getOid()) {
+         if (navigate.getToGroup() == ((Group) groupModel.getBean()).getOid()) {
             groupList.setValue(data);
        }
       }
@@ -192,8 +192,8 @@ public class ButtonPropertyForm extends PropertyForm {
       toGroup.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
-            Boolean value = (Boolean)be.getValue();
-            if(value) {
+            Boolean value = (Boolean) be.getValue();
+            if (value) {
                rightComboBoxes.enable();
             } else {
                navigate.setToGroup(-1);
@@ -219,7 +219,7 @@ public class ButtonPropertyForm extends PropertyForm {
       toSetting.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
-            navigate.setToSetting((Boolean)be.getValue());
+            navigate.setToSetting((Boolean) be.getValue());
          }
       });
       
@@ -229,7 +229,7 @@ public class ButtonPropertyForm extends PropertyForm {
       back.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
-            navigate.setBack((Boolean)be.getValue());
+            navigate.setBack((Boolean) be.getValue());
          }
       });
       
@@ -239,7 +239,7 @@ public class ButtonPropertyForm extends PropertyForm {
       login.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
-            navigate.setLogin((Boolean)be.getValue());
+            navigate.setLogin((Boolean) be.getValue());
          }
       });
       
@@ -249,7 +249,7 @@ public class ButtonPropertyForm extends PropertyForm {
       logout.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
-            navigate.setLogout((Boolean)be.getValue());
+            navigate.setLogout((Boolean) be.getValue());
          }
       });
       
@@ -259,7 +259,7 @@ public class ButtonPropertyForm extends PropertyForm {
       previous.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
-            navigate.setPrevious((Boolean)be.getValue());
+            navigate.setPrevious((Boolean) be.getValue());
          }
       });
       
@@ -269,7 +269,7 @@ public class ButtonPropertyForm extends PropertyForm {
       next.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
-            navigate.setNext((Boolean)be.getValue());
+            navigate.setNext((Boolean) be.getValue());
          }
       });
       
@@ -307,12 +307,12 @@ public class ButtonPropertyForm extends PropertyForm {
          public void componentSelected(ButtonEvent ce) {
             final UImage image = uiButton.getImage();
             ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenButton, image);
-            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener(){
+            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   String imageUrl = be.getData();
                   screenButton.setIcon(imageUrl);
-                  if(image != null) {
+                  if (image != null) {
                      image.setSrc(imageUrl);
                   } else {
                      uiButton.setImage(new UImage(imageUrl));
@@ -330,11 +330,11 @@ public class ButtonPropertyForm extends PropertyForm {
          public void componentSelected(ButtonEvent ce) {
             final UImage onPressImage = uiButton.getPressImage();
             ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenButton, onPressImage);
-            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener(){
+            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   String onPressImageUrl = be.getData();
-                  if(onPressImage != null) {
+                  if (onPressImage != null) {
                      onPressImage.setSrc(onPressImageUrl);
                   } else {
                      uiButton.setPressImage(new UImage(onPressImageUrl));
@@ -350,7 +350,7 @@ public class ButtonPropertyForm extends PropertyForm {
       repeat.setFieldLabel("Repeat");
       final CheckBox check = new CheckBox();
       check.setValue(uiButton.isRepeate());
-      check.addListener(Events.Blur, new Listener<FieldEvent>(){
+      check.addListener(Events.Blur, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
             uiButton.setRepeate(check.getValue());

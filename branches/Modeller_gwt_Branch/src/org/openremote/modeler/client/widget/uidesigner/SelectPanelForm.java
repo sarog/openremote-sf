@@ -59,7 +59,7 @@ public class SelectPanelForm extends CommonForm {
    }
    
    private void createFields() {
-      GroupRef groupRef = (GroupRef)groupRefBeanModel.getBean();
+      GroupRef groupRef = (GroupRef) groupRefBeanModel.getBean();
       
       nameField = new TextField<String>();
       nameField.setName("name");
@@ -114,11 +114,11 @@ public class SelectPanelForm extends CommonForm {
    private void addBeforeSubmitListener() {
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
-            GroupRef groupRef = (GroupRef)groupRefBeanModel.getBean();
+            GroupRef groupRef = (GroupRef) groupRefBeanModel.getBean();
             groupRef.getGroup().setName(nameField.getValue());
             if (!editMode) {
-               groupRef.setPanel((Panel)panelListView.getSelectionModel().getSelectedItem().getBean());
-               ((Panel)panelListView.getSelectionModel().getSelectedItem().getBean()).addGroupRef(groupRef);
+               groupRef.setPanel((Panel) panelListView.getSelectionModel().getSelectedItem().getBean());
+               ((Panel) panelListView.getSelectionModel().getSelectedItem().getBean()).addGroupRef(groupRef);
             }
             wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(groupRefBeanModel));
          }

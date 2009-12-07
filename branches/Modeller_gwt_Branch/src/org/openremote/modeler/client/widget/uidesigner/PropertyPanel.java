@@ -41,7 +41,7 @@ public class PropertyPanel extends ContentPanel {
       setHeading("Properties");
       setLayout(new FitLayout());
       setFrame(true);
-      SelectedWidgetContainer.setChangeListener(new WidgetSelectChangeListener(){
+      SelectedWidgetContainer.setChangeListener(new WidgetSelectChangeListener() {
          @Override
          public void changeSelect(WidgetSelectChangeEvent be) {
             update(be.getSelectWidget());
@@ -83,7 +83,7 @@ public class PropertyPanel extends ContentPanel {
             GridContainer gridContainer = (GridContainer) component;
             addPropertiesForm(gridContainer);
             currentLayoutContainer = null;
-         } else if (component instanceof ScreenCanvas){
+         } else if (component instanceof ScreenCanvas) {
             ScreenCanvas canvas = (ScreenCanvas) component;
             addPropertiesForm(canvas);
             currentLayoutContainer =  component;
@@ -98,7 +98,7 @@ public class PropertyPanel extends ContentPanel {
     * @param uiComponent
     */
    private void addPropertiesForm(PropertyPanelBuilder screenControl) {
-      if(currentPropertyForm != null) {
+      if (currentPropertyForm != null) {
          currentPropertyForm.removeFromParent();
       }
       currentPropertyForm = screenControl.buildPropertiesForm();
@@ -106,7 +106,7 @@ public class PropertyPanel extends ContentPanel {
    }
    
    public void removePropertiesForm() {
-      if(currentPropertyForm != null) {
+      if (currentPropertyForm != null) {
          currentPropertyForm.removeFromParent();
          currentLayoutContainer = null;
          currentPropertyForm = null;

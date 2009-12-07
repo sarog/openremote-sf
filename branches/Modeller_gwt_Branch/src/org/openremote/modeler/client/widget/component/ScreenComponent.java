@@ -31,31 +31,33 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel;
 /**
  * ScreenControl as the component's super class.
  */
-public abstract class ScreenComponent extends ComponentContainer implements PropertyPanelBuilder{
-   public ScreenComponent(ScreenCanvas screenCanvas){
-	   super(screenCanvas);
+public abstract class ScreenComponent extends ComponentContainer implements PropertyPanelBuilder {
+   public ScreenComponent(ScreenCanvas screenCanvas) {
+      super(screenCanvas);
    }
-	/**
+
+   /**
     * Sets the display name.
     */
    public abstract void setName(String name);
-   
+
    public abstract String getName();
-   
+
    /**
     * Builds the ScreenControl according to uiControl type.
     */
-   public static ScreenComponent build(ScreenCanvas canvas,UIComponent uiComponent) {
+   public static ScreenComponent build(ScreenCanvas canvas, UIComponent uiComponent) {
       if (uiComponent instanceof UIButton) {
-         return new ScreenButton(canvas,(UIButton)uiComponent);
-      } else if(uiComponent instanceof UISwitch) {
-         return new ScreenSwitch(canvas,(UISwitch)uiComponent);
-      } 
+         return new ScreenButton(canvas, (UIButton) uiComponent);
+      } else if (uiComponent instanceof UISwitch) {
+         return new ScreenSwitch(canvas, (UISwitch) uiComponent);
+      }
       return null;
    }
+
    @Override
    public FormPanel buildPropertiesForm() {
       return null;
    }
-   
+
 }

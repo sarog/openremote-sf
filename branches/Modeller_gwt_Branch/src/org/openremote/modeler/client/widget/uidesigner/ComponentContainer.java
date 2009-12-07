@@ -29,7 +29,7 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
  */
 public class ComponentContainer extends LayoutContainer {
    private ScreenCanvas screenCanvas = null;
-   public ComponentContainer(ScreenCanvas screenCanvas){
+   public ComponentContainer(ScreenCanvas screenCanvas) {
       this.screenCanvas = screenCanvas;
    }
 
@@ -43,7 +43,7 @@ public class ComponentContainer extends LayoutContainer {
    /**
     * hide the background for moving component. 
     */
-   public void hideBackground(){
+   public void hideBackground() {
       screenCanvas.hideBackground();
    }
    

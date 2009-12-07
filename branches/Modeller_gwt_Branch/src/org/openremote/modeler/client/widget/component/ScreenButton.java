@@ -34,7 +34,7 @@ import com.google.gwt.user.client.ui.Image;
 public class ScreenButton extends ScreenComponent {
 
    private FlexTable btnTable = new FlexTableBox();
-   
+
    /** The btnTable center text. */
    protected Text center = new Text("Button");
 
@@ -42,6 +42,7 @@ public class ScreenButton extends ScreenComponent {
    protected Image image = new Image();
 
    private UIButton uiButton = new UIButton();
+
    /**
     * Instantiates a new screen button.
     */
@@ -49,23 +50,25 @@ public class ScreenButton extends ScreenComponent {
       super(canvas);
       initial();
    }
-   
+
    public ScreenButton(ScreenCanvas canvas, String text) {
       super(canvas);
       center.setText(text);
    }
-   
+
    /**
     * Instantiates a new screen button.
     * 
-    * @param width the width
-    * @param height the height
+    * @param width
+    *           the width
+    * @param height
+    *           the height
     */
    public ScreenButton(ScreenCanvas canvas, int width, int height) {
       this(canvas);
       setSize(width, height);
    }
-   
+
    public ScreenButton(ScreenCanvas canvas, UIButton uiButton) {
       this(canvas);
       this.uiButton = uiButton;
@@ -85,17 +88,18 @@ public class ScreenButton extends ScreenComponent {
       btnTable.setWidget(1, 1, center);
       add(btnTable);
    }
-   
+
    @Override
    public void setName(String name) {
       uiButton.setName(name);
       adjustTextLength();
    }
+
    @Override
    public String getName() {
       return uiButton.getName();
    }
-   
+
    /**
     * Sets the center icon url.
     * 
@@ -105,12 +109,12 @@ public class ScreenButton extends ScreenComponent {
       btnTable.removeStyleName("screen-btn-cont");
       btnTable.setWidget(1, 1, image);
    }
-   
+
    @Override
    public FormPanel buildPropertiesForm() {
       return new ButtonPropertyForm(this, uiButton);
    }
-   
+
    @Override
    public void setSize(int width, int height) {
       super.setSize(width, height);
@@ -124,12 +128,13 @@ public class ScreenButton extends ScreenComponent {
    /**
     * Adjust text length.
     * 
-    * @param length the length
+    * @param length
+    *           the length
     */
    private void adjustTextLength() {
       adjustTextLength(getWidth());
    }
-   
+
    private void adjustTextLength(int width) {
       if (center.isVisible()) {
          int ajustLength = (width - 6) / 7;

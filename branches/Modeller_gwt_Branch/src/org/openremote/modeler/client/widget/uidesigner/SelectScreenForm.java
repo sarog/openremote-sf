@@ -141,7 +141,7 @@ public class SelectScreenForm extends CommonForm {
    private void addBeforeSubmitListener() {
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
-            Group group = ((GroupRef)groupRefBeanModel.getBean()).getGroup();
+            Group group = ((GroupRef) groupRefBeanModel.getBean()).getGroup();
             for (ScreenRef screenRef : group.getScreenRefs()) {
                screenRef.getScreen().releaseRef();
             }
@@ -149,7 +149,7 @@ public class SelectScreenForm extends CommonForm {
             List<BeanModel> screenModels = screenListView.getChecked();
             if (screenModels.size() > 0) {
                for (BeanModel screenModel : screenModels) {
-                  ScreenRef screenRef = new ScreenRef((Screen)screenModel.getBean());
+                  ScreenRef screenRef = new ScreenRef((Screen) screenModel.getBean());
                   screenRef.setGroup(group);
                   group.addScreenRef(screenRef);
                }

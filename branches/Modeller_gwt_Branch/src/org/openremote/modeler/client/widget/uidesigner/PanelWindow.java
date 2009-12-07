@@ -230,7 +230,7 @@ public class PanelWindow extends FormWindow {
       screenHeightField.setRegex("^[1-9][0-9]*$");
       screenHeightField.getMessages().setRegexText("The screen height must be a positive integer");
       
-      customType.addListener(Events.Change, new Listener<FieldEvent>(){
+      customType.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
             if ("true".equals(be.getValue().toString())) {
@@ -242,7 +242,7 @@ public class PanelWindow extends FormWindow {
                panelImage.enable();
                screenWidthField.enable();
                screenHeightField.enable();
-            } else if("false".equals(be.getValue().toString())){
+            } else if ("false".equals(be.getValue().toString())) {
                predefinedPanel.enable();
                panelWidthField.disable();
                panelHeightField.disable();
@@ -296,7 +296,8 @@ public class PanelWindow extends FormWindow {
                if (customType.getValue()) {
                   String panelImageURL = be.getResultHtml();
                   TouchPanelDefinition customPanel = new TouchPanelDefinition();
-                  customPanel.setCanvas(new TouchPanelCanvasDefinition(Integer.valueOf(screenWidthField.getRawValue()), Integer.valueOf(screenHeightField.getRawValue())));
+                  customPanel.setCanvas(new TouchPanelCanvasDefinition(Integer.valueOf(screenWidthField.getRawValue()),
+                        Integer.valueOf(screenHeightField.getRawValue())));
                   customPanel.setType(Constants.CUSTOM_PANEL);
                   customPanel.setName(Constants.CUSTOM_PANEL);
                   customPanel.setBgImage(panelImageURL);
@@ -306,7 +307,8 @@ public class PanelWindow extends FormWindow {
                   customPanel.setPaddingTop(Integer.valueOf(panelPaddingTopField.getRawValue()));
                   panel.setTouchPanelDefinition(customPanel);
                } else {
-                  ComboBoxDataModel<TouchPanelDefinition> prededinedPanel = (ComboBoxDataModel<TouchPanelDefinition>)predefinedPanel.getValue();
+                  ComboBoxDataModel<TouchPanelDefinition> prededinedPanel = (ComboBoxDataModel<TouchPanelDefinition>) predefinedPanel
+                        .getValue();
                   panel.setTouchPanelDefinition(prededinedPanel.getData());
                }
                Group defaultGroup = new Group();
