@@ -54,7 +54,6 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
  */
 public class ScreenWizard extends FormWindow {
    
-   
    private TextField<String> nameField = null;
    private BeanModel selectItem = null;
    private boolean editMode = false;
@@ -64,7 +63,7 @@ public class ScreenWizard extends FormWindow {
       super();
       this.editMode = editMode;
       this.selectItem = selectItem;
-      setSize(330, 270);
+      setSize(350, 270);
       setHeading("New Screen");
       setLayout(new FillLayout());
       setModal(true);
