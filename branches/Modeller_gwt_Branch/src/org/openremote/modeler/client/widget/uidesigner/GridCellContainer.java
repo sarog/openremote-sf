@@ -30,15 +30,19 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel;
 public class GridCellContainer extends ComponentContainer implements PropertyPanelBuilder{
 
    private Cell cell;
+   private GridLayoutContainer gridContainer = null;
+   
    private ScreenComponent screenControl;
    
-   public GridCellContainer(ScreenCanvas canvas) {
+   public GridCellContainer(ScreenCanvas canvas,GridLayoutContainer gridContainer) {
       super(canvas);
+      this.gridContainer = gridContainer;
    }
-   public GridCellContainer(ScreenCanvas canvas,Cell cell, ScreenComponent screenControl) {
+   public GridCellContainer(ScreenCanvas canvas,Cell cell, ScreenComponent screenControl,GridLayoutContainer gridContainer) {
       super(canvas);
       this.cell = cell;
       this.screenControl = screenControl;
+      this.gridContainer = gridContainer;
       addStyleName("cursor-move");
       setStyleAttribute("position", "absolute");
       add(screenControl);
@@ -60,6 +64,10 @@ public class GridCellContainer extends ComponentContainer implements PropertyPan
    public void setCellSpan(int colspan, int rowspan) {
       cell.setColspan(colspan);
       cell.setRowspan(rowspan);
+   }
+   
+   public GridLayoutContainer getGridContainer() {
+      return gridContainer;
    }
    @Override
    public void setSize(int width, int height) {

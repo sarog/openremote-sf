@@ -375,6 +375,8 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
       return controlContainer;
    }
    private AbsoluteLayoutContainer dragComponentFromGrid(Screen screen, GridCellContainer cellContainer,BoundsRecorder recorder) {
+      cellContainer.getGridContainer().getGrid().removeCell(cellContainer.getCell());                    //remove the old cell from grid.
+      
       UIComponent uiComponent = cellContainer.getCell().getUiComponent();
       AbsoluteLayoutContainer controlContainer = null;
       Absolute absolute = new Absolute(IDUtil.nextID());
