@@ -28,7 +28,7 @@ public class ProfileServiceTest {
 
    @Test
    public void testGenerateXMLToShowAllPanels() {
-      System.out.println(service.getAllPanels());
+      System.out.println(service.getAllPanels(xmlPath));
    }
 
    /* =========================ID:=================== */

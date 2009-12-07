@@ -108,7 +108,7 @@ public class ControlStatusPollingRESTServletTest {
     */
    @Test
    public void testDoPostWithTimeOutMultiRequests() throws Exception {
-      for (int i = 1; i <=2; i++) {
+      for (int i = 1; i <=1; i++) {
          Thread t = new Thread() {
             @Override
             public void run() {
@@ -162,7 +162,7 @@ public class ControlStatusPollingRESTServletTest {
     */
    @Test
    public void testDoPostWithoutTimeOutMultiRequests() throws Exception {
-      for (int i = 1; i <= 2; i++) {
+      for (int i = 1; i <= 1; i++) {
          Thread t = new Thread() {
             @Override
             public void run() {
