@@ -40,7 +40,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<property name="output.dir" value="output"/>
 	<property name="javadoc.dir" value="doc"/>
 	<property name="javadoc.locale" value="en_US"/>
-	<property name="build-config.dir" value="build-config"/>
+	<property name="build-config.dir" value="build_config"/>
 	<property name="config.dir" value="config"/>
 	<property name="classes.dir" value="build/classes"/>
 	<property name="webapp.classes.dir" value="web/WEB-INF/classes"/>
@@ -80,6 +80,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
 	<!-- defind task for checkstyle -->
 	<taskdef resource="checkstyletask.properties" classpathref="test.path.id"/>
+	<property name="checkstyle.report.style" value="${build-config.dir}/checkstyle-noframes-sorted.xsl"/>
 
 	<!--
 	 | CLEAN:
@@ -138,7 +139,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 				<include name="**.*" />
 			</fileset>
 		</copy>
-		<javac destdir="${classes.dir}" classpathref="compile.path.id" debug="${build.debug}">
+		<javac destdir="${classes.dir}" classpathref="compile.path.id" debug="${build.debug}" >
 			<src path="${src.dir}"/>
 		</javac>
 	</target>
@@ -172,7 +173,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 				<include name="**/*.xml"/>
 			</fileset>
 		</copy>
-		<javac srcdir="${test.dir}" destdir="${classes.dir}" classpathref="test.path.id"/>
+		<javac srcdir="${test.dir}" destdir="${classes.dir}" classpathref="test.path.id" debug="true"/>
 	</target>
 
 	<!--
@@ -214,7 +215,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		      defaultexcludes  = "yes"
 		      use              = "yes"
 		      header           = "OpenRemote Controller API"
-		      doctitle         = "OpenRemote Controller API Specification V1.0"
+		      doctitle         = "OpenRemote Controller API Specification V2.0"
 		      nodeprecatedlist = "yes"
 			  classpathref     = "compile.path.id" 
 		      sourcepath       = "./${src.dir}"
@@ -230,6 +231,28 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	 | Run the test.
 	 +-->
 	<target name="run-test" depends="compile-test" description="--> run the test cases.">
+		<echo message="--------------------------------------------------------------------" />
+		<echo message=" Running test..." />
+		<echo message="--------------------------------------------------------------------" />
+		<echo message="" />
+		<property name="test.targetclasspath" value="${classes.dir}" />
+		<parallel>
+			<java classname="org.openremote.controller.jetty.Start" classpathref="test.path.id" fork="true" />
+			<sequential>
+				<waitfor>
+					<socket server="127.0.0.1" port="8090" />
+				</waitfor>
+				<antcall target="testsuite" />
+				<java classname="org.openremote.controller.jetty.Stop" classpathref="test.path.id" />
+			</sequential>
+		</parallel>
+	</target>
+	<!--
+	 | TEST-COVERAGE:
+	 |
+	 | Run the test with cobertura.
+	 +-->
+	<target name="test-cov"  description="--> run the test cases.">
 		<echo message="--------------------------------------------------------------------" />
 		<echo message=" Running test..." />
 		<echo message="--------------------------------------------------------------------" />
@@ -297,7 +320,6 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 			<sysproperty key="ant.home" value="${ant.home}" />
 			<formatter type="xml" />
 			<batchtest fork="yes" todir="${junit.reports.dir}">
-
 				<fileset dir="${classes.dir}" includes="**/AllTests.class" />
 			</batchtest>
 		</junit>
@@ -349,11 +371,10 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<target name="report-cobertura" depends="cobertura_instrument"
             description="--> generate the coverage report.">
 		<property name="test.targetclasspath" value="${instrumented.dir}"/>
-		<antcall target="test"/>
+		<antcall target="test-cov"/>
 		<delete includeemptydirs="true" dir="${cobertura.report.dir}"/>
-		<cobertura-report format="html" destdir="${cobertura.report.dir}" srcdir="${src.dir}"
-                          datafile="${cobertura.datafile}"/>
-		<cobertura-report format="xml" destdir="${build.dir}" srcdir="${src.dir}" datafile="${cobertura.datafile}"/>
+		<cobertura-report format="html" destdir="${cobertura.report.dir}" srcdir="${src.dir}" datafile="${cobertura.datafile}" />
+		<cobertura-report format="xml" destdir="${cobertura.report.dir}" srcdir="${src.dir}" datafile="${cobertura.datafile}" />
 		<delete file="operation.log" failonerror="false"/>
 		<delete file="exception.log" failonerror="false"/>
 	</target>
@@ -364,15 +385,13 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	 +-->
 	<target name="report-checkstyle" description="--> generates a report of code convention violations.">
 		<mkdir dir="${checkstyle.reports.dir}"/>
-		<checkstyle config="${build-config.dir}/checkstyle-finalist.xml" failureProperty="checkstyle.failure"
+		<checkstyle config="${build-config.dir}/openremote_checks.xml" failureProperty="checkstyle.failure"
                     failOnViolation="false">
 			<formatter type="xml" tofile="${checkstyle.reports.dir}/checkstyle_report.xml"/>
 			<fileset dir="${src.dir}" includes="**/*.java"/>
 			<fileset dir="${test.dir}" includes="**/*.java"/>
 		</checkstyle>
-		<style in="${checkstyle.reports.dir}/checkstyle_report.xml"
-               out="${checkstyle.reports.dir}/checkstyle_report.html"
-               style="${build-config.dir}/checkstyle-noframes-sorted.xsl"/>
+		<xslt in="${checkstyle.reports.dir}/checkstyle_report.xml" out="${checkstyle.reports.dir}/checkstyle.report.html" style="${checkstyle.report.style}" />
 	</target>
 
 </project>
