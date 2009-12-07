@@ -127,7 +127,6 @@ public class UIDesignerView extends TabItem implements View {
       eastLayout.setSplit(true);
       eastLayout.setMargins(new Margins(2));
       add(createWidgetAndPropertyContainer(), eastLayout);
-//      add(new DevicesAndMacrosPanel(), eastLayout);
    }
 
    /**
@@ -141,15 +140,7 @@ public class UIDesignerView extends TabItem implements View {
       west.setLayout(new AccordionLayout());
       west.setBodyBorder(false);
       west.setHeading("Browser");
-//      ActivityPanel activityPanel = new ActivityPanel(screenTab);
-//      west.add(activityPanel);
-//      applicationView.setActivityPanel(activityPanel);
-      
-//      west.add(new ScreenPanel(screenTab));
-//      groupPanel = new GroupPanel();
-//      west.add(groupPanel);
       west.add(new ProfilePanel(screenTab));
-//      applicationView.setGroupPanel(groupPanel);
       westData.setMargins(new Margins(2));
       add(west, westData);
    }

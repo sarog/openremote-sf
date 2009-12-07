@@ -508,7 +508,7 @@ public class ProfilePanel extends ContentPanel {
             final BeanModel selectItem = panelTree.getSelectionModel().getSelectedItem();
             if (selectItem != null) {
                if (selectItem.getBean() instanceof Panel) {
-                  final TabbarWindow tabbarWindow = new TabbarWindow(true, ((Panel)selectItem.getBean()).getTabbarItems());
+                  final TabbarWindow tabbarWindow = new TabbarWindow(true, ((Panel)selectItem.getBean()).getTabbarItems(), (Panel)selectItem.getBean());
                   tabbarWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                      @Override
                      public void afterSubmit(SubmitEvent be) {
@@ -518,7 +518,7 @@ public class ProfilePanel extends ContentPanel {
                   });
                } else if (selectItem.getBean() instanceof GroupRef) {
                   final Group group = ((GroupRef)selectItem.getBean()).getGroup();
-                  final TabbarWindow tabbarWindow = new TabbarWindow(false, group.getTabbarItems());
+                  final TabbarWindow tabbarWindow = new TabbarWindow(false, group.getTabbarItems(), ((GroupRef)selectItem.getBean()).getPanel());
                   tabbarWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                      @Override
                      public void afterSubmit(SubmitEvent be) {

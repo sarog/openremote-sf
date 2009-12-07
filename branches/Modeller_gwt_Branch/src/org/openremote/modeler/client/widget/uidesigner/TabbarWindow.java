@@ -26,9 +26,10 @@ import org.openremote.modeler.client.event.SelectEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SelectListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.widget.CommonWindow;
 import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.GroupRef;
+import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.component.Navigate;
@@ -83,14 +84,14 @@ public class TabbarWindow extends CommonWindow {
    private List<UITabbarItem> tabbarItems = null;
    private ListView<BeanModel> tabbarItemListView;
    private UITabbarItem selectTabbarItem = new UITabbarItem();
-   public TabbarWindow(boolean isGlobal, List<UITabbarItem> tabbarItems) {
+   public TabbarWindow(boolean isGlobal, List<UITabbarItem> tabbarItems, Panel panel) {
       super();
       this.tabbarItems = tabbarItems;
-      init(isGlobal);
+      init(isGlobal, panel);
       show();
    }
    
-   private void init(boolean isGlobal) {
+   private void init(boolean isGlobal, Panel panel) {
       if (isGlobal) {
          setHeading("Global tabbar");
       } else {
@@ -103,15 +104,15 @@ public class TabbarWindow extends CommonWindow {
       formLayout.setLabelWidth(200);
       formLayout.setDefaultWidth(350);
       setLayout(formLayout);
-      createFields();
+      createFields(panel);
       createButtons();
       setBodyStyleName("padding-top-left-10px");
    }
-   private void createFields() {
+   private void createFields(Panel panel) {
       AdapterField tabbarField = new AdapterField(createTabbarContainer(tabbarItems));
       tabbarField.setFieldLabel("Tabbar item list");
       
-      AdapterField tabbarItemPropertyField = new AdapterField(createTabbarItemPropertyForm());
+      AdapterField tabbarItemPropertyField = new AdapterField(createTabbarItemPropertyForm(panel));
       tabbarItemPropertyField.setFieldLabel("Selected tabbar item properties");
       
       add(tabbarField);
@@ -219,7 +220,7 @@ public class TabbarWindow extends CommonWindow {
       return tabbarContainer;
    }
    
-   private FieldSet createTabbarItemPropertyForm() {
+   private FieldSet createTabbarItemPropertyForm(Panel panel) {
       FieldSet tabbarItemForm = new FieldSet();
       tabbarItemForm.setBorders(true);
       tabbarItemForm.setWidth(340);
@@ -317,7 +318,10 @@ public class TabbarWindow extends CommonWindow {
       groupList.setValueField(ComboBoxDataModel.getDataProperty());
       ListStore<ModelData> groupStore = new ListStore<ModelData>();
       groupList.setStore(groupStore);
-      final List<BeanModel> groupModels = BeanModelDataBase.groupTable.loadAll();
+      final List<BeanModel> groupModels = new ArrayList<BeanModel>();
+      for (GroupRef groupRef: panel.getGroupRefs()) {
+         groupModels.add(groupRef.getGroup().getBeanModel());
+      }
       groupList.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
          @SuppressWarnings("unchecked")
          @Override
