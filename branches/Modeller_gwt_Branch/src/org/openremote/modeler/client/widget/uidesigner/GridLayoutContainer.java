@@ -139,7 +139,7 @@ public class GridLayoutContainer extends ComponentContainer {
 		public void dragDrop(DNDEvent e) {
             LayoutContainer targetCell = (LayoutContainer) e.getDropTarget().getComponent();
             Point targetPosition = (Point) targetCell.getData(POSITION);
-            GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas());
+            GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(),GridLayoutContainer.this);
             Object data = e.getData();
             if (data instanceof AbsoluteLayoutContainer) {
                AbsoluteLayoutContainer container = (AbsoluteLayoutContainer) data;
@@ -212,7 +212,7 @@ public class GridLayoutContainer extends ComponentContainer {
     */
    private GridCellContainer createCellContainer(final UIGrid grid, Cell cell, int cellWidth, int cellHeight) {
       final GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(), cell, ScreenComponent.build(this.getScreenCanvas(),cell
-            .getUiComponent())) {
+            .getUiComponent()),this) {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
@@ -251,7 +251,7 @@ public class GridLayoutContainer extends ComponentContainer {
    
    private GridCellContainer cloneCellContainer(GridCellContainer container) {
       Cell cell = container.getCell();
-      final GridCellContainer cellContainer =  new GridCellContainer(getScreenCanvas(),cell, container.getScreenControl()) {
+      final GridCellContainer cellContainer =  new GridCellContainer(getScreenCanvas(),cell, container.getScreenControl(),this) {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
@@ -391,7 +391,7 @@ public class GridLayoutContainer extends ComponentContainer {
 
          @Override
          public void dragDrop(DNDEvent e) {
-            GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas());
+            GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(),GridLayoutContainer.this);
             Object data = e.getData();
             if (data instanceof GridCellContainer) {
                GridCellContainer container = (GridCellContainer) data;
@@ -476,6 +476,7 @@ public class GridLayoutContainer extends ComponentContainer {
    }
    private GridCellContainer addAbsoluteWidgetToGrid(UIGrid grid, int cellWidth,
         int cellHeight, LayoutContainer targetCell, Point targetPosition, AbsoluteLayoutContainer container) {
+      getScreenCanvas().getScreen().removeAbsolute(container.getAbsolute());                                   //remove it from screen. 
       GridCellContainer cellContainer;
       container.removeFromParent();
       container.hideBackground();
