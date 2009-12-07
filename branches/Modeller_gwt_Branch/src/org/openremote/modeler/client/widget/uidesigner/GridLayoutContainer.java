@@ -371,6 +371,10 @@ public class GridLayoutContainer extends ComponentContainer {
              * record the location information for a GridCellContainer before being removing. 
              */
             cellContainer.setData(GridLayoutContainer.BOUNDS_RECORD_NAME, boundsRecorder);
+            /*
+             * set the background size for the cell.
+             */
+            getScreenCanvas().getMoveBackGround().setSize(boundsRecorder.getWidth(),boundsRecorder.getHeight());
             event.setData(cellContainer);
             cellContainer.removeFromParent();
             event.getStatus().setStatus(true);

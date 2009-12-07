@@ -442,6 +442,15 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
    public Screen getScreen() {
       return screen;
    }
+   
+   
+   public LayoutContainer getMoveBackGround() {
+      return moveBackGround;
+   }
+
+   public void setMoveBackGround(LayoutContainer moveBackGround) {
+      this.moveBackGround = moveBackGround;
+   }
 
    /**
     * @param componentContainer
