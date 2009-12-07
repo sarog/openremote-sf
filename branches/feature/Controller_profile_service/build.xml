@@ -43,6 +43,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<property name="build-config.dir" value="build-config"/>
 	<property name="config.dir" value="config"/>
 	<property name="classes.dir" value="build/classes"/>
+	<property name="webapp.classes.dir" value="web/WEB-INF/classes"/>
 	<property name="instrumented.dir" value="build/instrumented"/>
 	<property name="junit.reports.dir" location="build/junit_report"/>
 	<property name="checkstyle.reports.dir" location="build/checkstyle_report"/>
@@ -88,6 +89,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<target name="clean" description="delete folder">
 		<delete dir="${build.dir}" />
 		<delete dir="${output.dir}" />
+		<delete dir="${webapp.classes.dir}" />
 	</target>
 
 	<!--
@@ -131,7 +133,11 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 				<include name="**/*.xml"/>
 			</fileset>
 		</copy>
-
+		<copy todir="${webapp.classes.dir}">
+			<fileset dir="${classes.dir}">
+				<include name="**.*" />
+			</fileset>
+		</copy>
 		<javac destdir="${classes.dir}" classpathref="compile.path.id" debug="${build.debug}">
 			<src path="${src.dir}"/>
 		</javac>
