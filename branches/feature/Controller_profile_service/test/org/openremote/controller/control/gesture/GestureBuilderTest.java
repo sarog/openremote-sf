@@ -1,24 +1,27 @@
 package org.openremote.controller.control.gesture;
 
+import static org.junit.Assert.fail;
 import junit.framework.Assert;
-import junit.framework.TestCase;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.junit.Before;
+import org.junit.Test;
+import org.openremote.controller.TestConstraint;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.utils.SpringTestContext;
 import org.openremote.controller.utils.XMLUtil;
 
-public class GestureBuilderTest extends TestCase {
+public class GestureBuilderTest {
    private String controllerXMLPath = null;
    private Document doc = null;
    private GestureBuilder builder = (GestureBuilder) SpringTestContext.getInstance().getBean("gestureBuilder");
    
-   protected void setUp() throws Exception {
-      controllerXMLPath = this.getClass().getClassLoader().getResource("./fixture/controller.xml").getFile();
+   @Before
+   public void setUp() throws Exception {
+      controllerXMLPath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR + "controller.xml").getFile();
       doc = XMLUtil.getControllerDocument(controllerXMLPath);
-      super.setUp();
    }
 
    protected Element getElementByID(String id) throws JDOMException {
@@ -32,12 +35,12 @@ public class GestureBuilderTest extends TestCase {
       }
       return (Gesture) builder.build(controlElement, "test");
    }
-   
+   @Test
    public void testGetLabelforRealID() throws JDOMException{
       Gesture gesture = getGestureByID("7");
       Assert.assertNotNull(gesture);
    }
-   
+   @Test
    public void testGetLabelforInvalidGesture() throws JDOMException{
       try{
          getGestureByID("8");
@@ -45,7 +48,7 @@ public class GestureBuilderTest extends TestCase {
       } catch (NoSuchComponentException e){
       }
    }
-   
+   @Test
    public void testGetLabelforNoSuchID() throws JDOMException{
       try{
          getGestureByID("200");

@@ -19,9 +19,11 @@
 */
 package org.openremote.controller.rest;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.fail;
 
 import org.apache.log4j.Logger;
+import org.junit.Test;
+import org.openremote.controller.TestConstraint;
 import org.openremote.controller.utils.SecurityUtil;
 
 import com.meterware.httpunit.HttpException;
@@ -40,7 +42,7 @@ import com.meterware.httpunit.WebResponse;
  * 
  * @author Handy.Wang 2009-10-26
  */
-public class SkipStateTrackTest extends TestCase {
+public class SkipStateTrackTest {
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -50,9 +52,10 @@ public class SkipStateTrackTest extends TestCase {
     *  Not found time out record in TIME_OUT_TABLE during polling operation,<br />
     *  not timeout while observing and Getting the changed status at last.
     */
+   @Test
    public void testCase1() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1");
+      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1");
       try {
          WebResponse wr = wc.getResponse(request);
          System.out.println("The result is : \n" + wr.getText());
@@ -77,9 +80,10 @@ public class SkipStateTrackTest extends TestCase {
     * <b>NOTE:</b> This situation must work with method <b>simulateSkipStateTrackTestCase2</b> which was called<br />
     * while <b>InitCachedStatusDBListener</b> starting.
     */
+   @Test
    public void testCase2() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/2");
+      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/2");
       WebResponse wr;
       try {
          wr = wc.getResponse(request);
@@ -113,9 +117,10 @@ public class SkipStateTrackTest extends TestCase {
     * <b>NOTE:</b> This situation must work with method <b>simulateSkipStateTrackTestCase3</b> which was called<br />
     * while <b>InitCachedStatusDBListener</b> starting.
     */
+   @Test
    public void testCase3() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3");
+      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3");
       WebResponse wr;
       try {
          wr = wc.getResponse(request);
@@ -148,9 +153,10 @@ public class SkipStateTrackTest extends TestCase {
     * So, current polling request observes the change of statuses but timeout,<br />
     * client gets 503 error at last.<br /><br />
     */
+   @Test
    public void testCase4() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/4");
+      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/4");
       WebResponse wr;
       try {
          wr = wc.getResponse(request);
