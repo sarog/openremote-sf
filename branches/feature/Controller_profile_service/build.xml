@@ -55,9 +55,9 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<path id="compile.path.id">
 		<fileset dir="${lib.dir}/compile" />
 		<fileset dir="${lib.dir}/core" includes="**/*.jar"/>
-        <fileset dir="${lib.dir}/calimero"/>
-        <fileset dir="${lib.dir}/apache/commons-net"/>
-        <path location="${classes.dir}"/>
+		<fileset dir="${lib.dir}/calimero"/>
+		<fileset dir="${lib.dir}/apache/commons-net"/>
+		<path location="${classes.dir}"/>
 	</path>
 	<path id="test.path.id">
 		<fileset dir="${lib.dir}/compile" />
@@ -100,16 +100,16 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		<mkdir dir="${build.dir}" />
 		<mkdir dir="${output.dir}" />
 		<copy todir="${build.dir}/lib" flatten="true">
-            <fileset dir="${lib.dir}/core">
-                <include name="**/*.jar" />
-            </fileset>
+			<fileset dir="${lib.dir}/core">
+				<include name="**/*.jar" />
+			</fileset>
 			<fileset dir="${lib.dir}/calimero">
-                <include name="**/*.jar" />
-            </fileset>
+				<include name="**/*.jar" />
+			</fileset>
 			<fileset dir="${lib.dir}/apache">
-                <include name="**/*.jar" />
-            </fileset>
-        </copy>
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
 	</target>
 
 	<!--
@@ -168,7 +168,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		</copy>
 		<javac srcdir="${test.dir}" destdir="${classes.dir}" classpathref="test.path.id"/>
 	</target>
-	
+
 	<!--
 	 | WAR:
 	 |
@@ -228,9 +228,20 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		<echo message=" Running test..." />
 		<echo message="--------------------------------------------------------------------" />
 		<echo message="" />
-		<property name="test.targetclasspath" value="${classes.dir}"/>
-		<antcall target="test"/>
+		<property name="test.targetclasspath" value="${classes.dir}" />
+		<parallel>
+			<java classname="org.openremote.controller.jetty.Start" classpathref="test.path.id" fork="true" />
+			<sequential>
+				<waitfor>
+					<socket server="127.0.0.1" port="8090" />
+				</waitfor>
+				<antcall target="testsuite" />
+				<java classname="org.openremote.controller.jetty.Stop" classpathref="test.path.id" />
+			</sequential>
+		</parallel>
 	</target>
+
+
 
 	<!--
 	 | TEST:
@@ -263,6 +274,37 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	</target>
 
 	<!--
+	 | TEST:
+	 |
+	 | JUnit test suite.
+	 +-->
+
+	<target name="testsuite" description="Running Test Suite">
+		<delete includeemptydirs="true" dir="${junit.reports.dir}" />
+		<mkdir dir="${junit.reports.dir}" />
+		<junit printsummary="yes" haltonfailure="no" fork="yes" maxmemory="512m">
+			<sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.datafile}" />
+			<classpath location="${test.targetclasspath}" />
+			<classpath location="${classes.dir}" />
+			<classpath refid="test.path.id">
+			</classpath>
+			<sysproperty key="ant.home" value="${ant.home}" />
+			<formatter type="xml" />
+			<batchtest fork="yes" todir="${junit.reports.dir}">
+
+				<fileset dir="${classes.dir}" includes="**/AllTests.class" />
+			</batchtest>
+		</junit>
+		<junitreport todir="${junit.reports.dir}">
+			<fileset dir="${junit.reports.dir}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${junit.reports.dir}" />
+		</junitreport>
+		<fail if="tests.failed" />
+	</target>
+
+	<!--
 	 | DEPLOY:
 	 |
 	 | Deploy the project to a directory.
@@ -281,7 +323,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	 | COBERTURA_INSTRUMENT:
 	 |
 	 | Make instrument for cobertura.
-	 +-->	
+	 +-->
 	<target name="cobertura_instrument" depends="compile-test" description="add log info in class files">
 		<delete file="${cobertura.datafile}"/>
 		<cobertura-instrument todir="${instrumented.dir}" datafile="${cobertura.datafile}">
@@ -297,7 +339,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	 | REPORT-COBERTURA:
 	 |
 	 | Generate the cobertura report.
-	 +-->	
+	 +-->
 	<target name="report-cobertura" depends="cobertura_instrument"
             description="--> generate the coverage report.">
 		<property name="test.targetclasspath" value="${instrumented.dir}"/>
@@ -313,7 +355,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	 | REPORT-CHECKSTYLE:
 	 |
 	 | Generate the checkstyle report.
-	 +-->	
+	 +-->
 	<target name="report-checkstyle" description="--> generates a report of code convention violations.">
 		<mkdir dir="${checkstyle.reports.dir}"/>
 		<checkstyle config="${build-config.dir}/checkstyle-finalist.xml" failureProperty="checkstyle.failure"

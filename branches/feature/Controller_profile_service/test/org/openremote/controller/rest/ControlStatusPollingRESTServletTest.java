@@ -21,9 +21,9 @@ package org.openremote.controller.rest;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.apache.log4j.Logger;
+import org.junit.Test;
+import org.openremote.controller.TestConstraint;
 import org.openremote.controller.utils.SecurityUtil;
 import org.xml.sax.SAXException;
 
@@ -50,7 +50,7 @@ import com.meterware.httpunit.WebResponse;
  * 
  * @author Handy.Wang 2009-10-20
  */
-public class ControlStatusPollingRESTServletTest extends TestCase {
+public class ControlStatusPollingRESTServletTest {
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -62,9 +62,10 @@ public class ControlStatusPollingRESTServletTest extends TestCase {
     * 
     * @throws Exception the exception
     */
+   @Test
    public void testDoPostWithAppServerNotStartup() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1,2");
+      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1,2");
       try {
          WebResponse wr = wc.getResponse(request);
          System.out.println(wr.getText());
@@ -84,11 +85,12 @@ public class ControlStatusPollingRESTServletTest extends TestCase {
     * <b>And also</b>, if you want simulate: 
     *     some polling requests will time out, some won't, You can run this method at the same time running the method named testDoPostWithoutTimeOutSingleRequest.
     */
+   @Test
    public void testDoPostWithTimeOutSingleRequest() throws Exception {
       WebConversation wc = new WebConversation();
       WebResponse pollingResponse;
       WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc,
-            "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3,4");
+            "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3,4");
       try {
          pollingResponse = wc.getResponse(pollingGetMethodRequest);
          System.out.println(pollingResponse.getText());
@@ -104,13 +106,14 @@ public class ControlStatusPollingRESTServletTest extends TestCase {
     * 
     * This method simulate multi polling requests and the requests will time out.<br />
     */
+   @Test
    public void testDoPostWithTimeOutMultiRequests() throws Exception {
-      for (int i = 1; i <=3; i++) {
+      for (int i = 1; i <=2; i++) {
          Thread t = new Thread() {
             @Override
             public void run() {
                   WebConversation wc = new WebConversation();
-                  WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3,4");
+                  WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3,4");
                try {
                   WebResponse pollingResponse = wc.getResponse(pollingGetMethodRequest);
                   System.out.println(pollingResponse.getText());
@@ -138,9 +141,10 @@ public class ControlStatusPollingRESTServletTest extends TestCase {
     * <b>And also</b>, if you want simulate: 
     *     some polling requests will time out, some won't, You can run this method at the same time running the previous test method named testDoPostWithTimeOutSingleRequest.
     */
+   @Test
    public void testDoPostWithoutTimeOutSingleRequest() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1,2");
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1,2");
       try {
          WebResponse wr = wc.getResponse(pollingGetMethodRequest);
          System.out.println(wr.getText());
@@ -156,13 +160,14 @@ public class ControlStatusPollingRESTServletTest extends TestCase {
     * 
     * This method simulate multi polling requests and response the corresponding result.<br />
     */
+   @Test
    public void testDoPostWithoutTimeOutMultiRequests() throws Exception {
-      for (int i = 1; i <= 3; i++) {
+      for (int i = 1; i <= 2; i++) {
          Thread t = new Thread() {
             @Override
             public void run() {
                   WebConversation wc = new WebConversation();
-                  WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1,2");
+                  WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1,2");
                try {
                   WebResponse wr = wc.getResponse(pollingGetMethodRequest);
                   System.out.println(wr.getText());

@@ -28,6 +28,7 @@ import java.util.Enumeration;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openremote.controller.Configuration;
 
 /**
  * This class is used to provide utility method about network. 
@@ -36,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class NetworkUtil {
    public static final Log logger = LogFactory.getLog(NetworkUtil.class);
+   private static Configuration configuration = ConfigFactory.getConfig();
    
    private NetworkUtil(){}
    
@@ -55,6 +57,10 @@ public class NetworkUtil {
    }
    
    private static String getLocalHostFromWindows(){
+      String ip = configuration.getWebappIp();
+      if ((ip != null) && (!ip.isEmpty())) {
+          return ip;
+      }
       InetAddress addr = null;
       try {
          addr = InetAddress.getLocalHost();
@@ -73,10 +79,12 @@ public class NetworkUtil {
    }
    
    private static String getLocalHostFromLinux(){
-      String ip = "";
-      Enumeration<?> interfaces;
+      String ip = configuration.getWebappIp();
+      if ((ip != null) && (!ip.isEmpty())) {
+          return ip;
+      }
       try {
-         interfaces = (Enumeration<?>) NetworkInterface.getNetworkInterfaces();
+         Enumeration<?> interfaces = (Enumeration<?>) NetworkInterface.getNetworkInterfaces();
          while (interfaces.hasMoreElements()) {
             NetworkInterface ni = (NetworkInterface) interfaces.nextElement();
             if (ni.isUp() && ni.supportsMulticast() && !ni.isLoopback()) {
@@ -88,7 +96,7 @@ public class NetworkUtil {
                   }
                   ip = ia.getHostAddress();
                }
-               if (!ip.isEmpty()) {
+               if(!ip.isEmpty()){
                   break;
                }
             }
@@ -96,6 +104,6 @@ public class NetworkUtil {
       } catch (SocketException e) {
          logger.error("Can't get Network Interfaces", e);
       }
-      return ip;
+      return ip; 
    }
 }

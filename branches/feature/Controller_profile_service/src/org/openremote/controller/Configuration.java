@@ -51,6 +51,8 @@ public class Configuration {
    private boolean resourceUpload;
    
    private long macroIRExecutionDelay = 500;
+   
+   private String webappIp;
    /**
     * Gets the irsend path.
     * 
@@ -201,6 +203,14 @@ public class Configuration {
 
    public void setMacroIRExecutionDelay(long macroIRExecutionDelay) {
       this.macroIRExecutionDelay = macroIRExecutionDelay;
+   }
+
+   public String getWebappIp() {      
+      return webappIp;
+   }
+
+   public void setWebappIp(String webappIp) {
+      this.webappIp = webappIp;
    }
    
    
