@@ -164,7 +164,7 @@ public class TabbarWindow extends CommonWindow {
          @Override
          public void componentSelected(ButtonEvent ce) {
             BeanModel selectedItem = tabbarItemListView.getSelectionModel().getSelectedItem();
-            if(selectedItem != null) {
+            if (selectedItem != null) {
                store.remove(selectedItem);
             }
          }
@@ -175,9 +175,9 @@ public class TabbarWindow extends CommonWindow {
          @Override
          public void componentSelected(ButtonEvent ce) {
             BeanModel selectedItem = tabbarItemListView.getSelectionModel().getSelectedItem();
-            if(selectedItem != null) {
+            if (selectedItem != null) {
                int index = store.indexOf(selectedItem);
-               if(index > 0) {
+               if (index > 0) {
                   store.remove(selectedItem);
                   store.insert(selectedItem, index - 1);
                   tabbarItemListView.getSelectionModel().select(selectedItem, false);
@@ -191,7 +191,7 @@ public class TabbarWindow extends CommonWindow {
          @Override
          public void componentSelected(ButtonEvent ce) {
             BeanModel selectedItem = tabbarItemListView.getSelectionModel().getSelectedItem();
-            if(selectedItem != null) {
+            if (selectedItem != null) {
                int index = store.indexOf(selectedItem);
                if (index < store.getCount() - 1) {
                   store.remove(selectedItem);
@@ -210,7 +210,7 @@ public class TabbarWindow extends CommonWindow {
       tabbarItemListView.addListener(Events.Select, new Listener<ListViewEvent<BeanModel>>() {
          @Override
          public void handleEvent(ListViewEvent<BeanModel> be) {
-            selectTabbarItem = (UITabbarItem)be.getModel().getBean();
+            selectTabbarItem = (UITabbarItem) be.getModel().getBean();
             fireEvent(SelectEvent.SELECT, new SelectEvent(selectTabbarItem));
          }
          
@@ -235,16 +235,18 @@ public class TabbarWindow extends CommonWindow {
       // initial name field.
       final TextField<String> nameField = new TextField<String>();
       nameField.setFieldLabel("Name");
-      nameField.addListener(Events.Blur, new Listener<BaseEvent>(){
+      nameField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
             selectTabbarItem.setName(nameField.getValue());
             tabbarItemListView.getStore().update(selectTabbarItem.getBeanModel());
          }
       });
+      
       final FormPanel imageForm = new FormPanel();
       imageForm.setHeaderVisible(false);
-      imageForm.setBorders(false);imageForm.setBodyBorder(false);
+      imageForm.setBorders(false);
+      imageForm.setBodyBorder(false);
       imageForm.setPadding(0);
       imageForm.setLabelAlign(LabelAlign.TOP);
       final FileUploadField imageField = new FileUploadField() {
@@ -265,7 +267,7 @@ public class TabbarWindow extends CommonWindow {
       imageField.getMessages().setRegexText("Please select a gif, jpg or png type image.");
       imageField.setStyleAttribute("overflow", "hidden");
       imageForm.add(imageField);
-      imageForm.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName="+TABBAR_ITEM_IMAGE);
+      imageForm.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName=" + TABBAR_ITEM_IMAGE);
       imageForm.setEncoding(Encoding.MULTIPART);
       imageForm.setMethod(Method.POST);
       imageForm.addListener(Events.Submit, new Listener<FormEvent>() {
@@ -306,7 +308,7 @@ public class TabbarWindow extends CommonWindow {
          @SuppressWarnings("unchecked")
          @Override
          public void selectionChanged(SelectionChangedEvent<ModelData> se) {
-            Screen selectedScreen = ((ComboBoxDataModel<Screen>)se.getSelectedItem()).getData();
+            Screen selectedScreen = ((ComboBoxDataModel<Screen>) se.getSelectedItem()).getData();
             selectTabbarItem.getNavigate().setToScreen(selectedScreen.getOid());
          }
          
@@ -319,14 +321,14 @@ public class TabbarWindow extends CommonWindow {
       ListStore<ModelData> groupStore = new ListStore<ModelData>();
       groupList.setStore(groupStore);
       final List<BeanModel> groupModels = new ArrayList<BeanModel>();
-      for (GroupRef groupRef: panel.getGroupRefs()) {
+      for (GroupRef groupRef : panel.getGroupRefs()) {
          groupModels.add(groupRef.getGroup().getBeanModel());
       }
       groupList.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
          @SuppressWarnings("unchecked")
          @Override
          public void selectionChanged(SelectionChangedEvent<ModelData> se) {
-            Group selectedGroup = ((ComboBoxDataModel<Group>)se.getSelectedItem()).getData();
+            Group selectedGroup = ((ComboBoxDataModel<Group>) se.getSelectedItem()).getData();
             selectTabbarItem.getNavigate().setToGroup(selectedGroup.getOid());
             screenList.clearSelections();
             screenList.getStore().removeAll();
@@ -357,8 +359,8 @@ public class TabbarWindow extends CommonWindow {
       toGroup.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
-            Boolean value = (Boolean)be.getValue();
-            if(value) {
+            Boolean value = (Boolean) be.getValue();
+            if (value) {
                rightComboBoxes.enable();
             } else {
                selectTabbarItem.getNavigate().setToGroup(-1);
@@ -380,7 +382,7 @@ public class TabbarWindow extends CommonWindow {
       toSetting.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
-            selectTabbarItem.getNavigate().setToSetting((Boolean)be.getValue());
+            selectTabbarItem.getNavigate().setToSetting((Boolean) be.getValue());
          }
       });
       
@@ -389,7 +391,7 @@ public class TabbarWindow extends CommonWindow {
       back.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
-            selectTabbarItem.getNavigate().setBack((Boolean)be.getValue());
+            selectTabbarItem.getNavigate().setBack((Boolean) be.getValue());
          }
       });
       
@@ -398,7 +400,7 @@ public class TabbarWindow extends CommonWindow {
       login.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
-            selectTabbarItem.getNavigate().setLogin((Boolean)be.getValue());
+            selectTabbarItem.getNavigate().setLogin((Boolean) be.getValue());
          }
       });
       
@@ -407,7 +409,7 @@ public class TabbarWindow extends CommonWindow {
       logout.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
-            selectTabbarItem.getNavigate().setLogout((Boolean)be.getValue());
+            selectTabbarItem.getNavigate().setLogout((Boolean) be.getValue());
          }
       });
       
@@ -416,7 +418,7 @@ public class TabbarWindow extends CommonWindow {
       previous.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
-            selectTabbarItem.getNavigate().setPrevious((Boolean)be.getValue());
+            selectTabbarItem.getNavigate().setPrevious((Boolean) be.getValue());
          }
       });
       
@@ -425,7 +427,7 @@ public class TabbarWindow extends CommonWindow {
       next.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
-            selectTabbarItem.getNavigate().setNext((Boolean)be.getValue());
+            selectTabbarItem.getNavigate().setNext((Boolean) be.getValue());
          }
       });
       
@@ -461,11 +463,11 @@ public class TabbarWindow extends CommonWindow {
                toGroup.setValue(true);
                for (BeanModel groupModel : groupModels) {
                   ComboBoxDataModel<Group> data = new ComboBoxDataModel<Group>(groupModel.get("name").toString(), (Group) groupModel.getBean());
-                  if(navigate.getToGroup() == ((Group) groupModel.getBean()).getOid()) {
+                  if (navigate.getToGroup() == ((Group) groupModel.getBean()).getOid()) {
                      groupList.setValue(data);
                 }
                }
-            } else if(navigate.getToGroup() == -1) {
+            } else if (navigate.getToGroup() == -1) {
                toGroup.setValue(false);
             }
             toSetting.setValue(navigate.isToSetting());
@@ -491,9 +493,9 @@ public class TabbarWindow extends CommonWindow {
             }
             tabbarItems.clear();
             
-            for (BeanModel tabbarItemModel: tabbarItemListView.getStore().getModels()) {
-               UITabbarItem tabbarItem = (UITabbarItem)tabbarItemModel.getBean();
-               if(!tabbarItem.getNavigate().isSet()) {
+            for (BeanModel tabbarItemModel : tabbarItemListView.getStore().getModels()) {
+               UITabbarItem tabbarItem = (UITabbarItem) tabbarItemModel.getBean();
+               if (!tabbarItem.getNavigate().isSet()) {
                   MessageBox.alert("ERROR", "Tabbar item \"" + tabbarItem.getName() + "\" is required to set navigate.", null);
                   return;
                }

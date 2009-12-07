@@ -73,7 +73,7 @@ public class GridLayoutContainer extends ComponentContainer {
    
    private List<GridCellContainer> cellContainers = new ArrayList<GridCellContainer>();
    
-   public GridLayoutContainer(ScreenCanvas screenCanvas,UIGrid grid) {
+   public GridLayoutContainer(ScreenCanvas screenCanvas, UIGrid grid) {
       super(screenCanvas);
       this.grid = grid;
       btnInArea = new boolean[grid.getColumnCount()][grid.getRowCount()];
@@ -114,7 +114,7 @@ public class GridLayoutContainer extends ComponentContainer {
    }
 
    public void refreshGrid() {
-      for(int i =cellContainers.size()-1 ;i>=0;i--){
+      for (int i = cellContainers.size() - 1; i >= 0; i--) {
          cellContainers.get(i).removeFromParent();
          cellContainers.remove(i);
       }
@@ -129,17 +129,17 @@ public class GridLayoutContainer extends ComponentContainer {
             if (data instanceof AbsoluteLayoutContainer) {
                AbsoluteLayoutContainer container = (AbsoluteLayoutContainer) data;
                container.hideBackground();
-            } else if(data instanceof GridCellContainer ){
+            } else if (data instanceof GridCellContainer) {
                GridCellContainer container = (GridCellContainer) data;
                container.hideBackground();
             }
             super.dragEnter(e);
          }
          @SuppressWarnings("unchecked")
-		public void dragDrop(DNDEvent e) {
+         public void dragDrop(DNDEvent e) {
             LayoutContainer targetCell = (LayoutContainer) e.getDropTarget().getComponent();
             Point targetPosition = (Point) targetCell.getData(POSITION);
-            GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(),GridLayoutContainer.this);
+            GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(), GridLayoutContainer.this);
             Object data = e.getData();
             if (data instanceof AbsoluteLayoutContainer) {
                AbsoluteLayoutContainer container = (AbsoluteLayoutContainer) data;
@@ -149,7 +149,7 @@ public class GridLayoutContainer extends ComponentContainer {
             } else if (data instanceof GridCellContainer) {
                cellContainer = moveCellInGrid(grid, targetCell, targetPosition, data);
             } else if (data instanceof List) {
-               List<ModelData> models = (List<ModelData>)data;
+               List<ModelData> models = (List<ModelData>) data;
                if (models.size() > 0 && ((BeanModel) models.get(0).get("model")).getBean() instanceof UIGrid) {
                   e.setCancelled(true);
                   return;
@@ -157,7 +157,7 @@ public class GridLayoutContainer extends ComponentContainer {
                cellContainer = addNewWidget(grid, cellWidth + 1, cellHeight + 1, e, targetCell, targetPosition,
                      cellContainer);
             } else if (data instanceof GridContainer) {
-               ((ComponentContainer)data).hideBackground();
+               ((ComponentContainer) data).hideBackground();
                e.setCancelled(true);
                return;
             }
@@ -211,8 +211,8 @@ public class GridLayoutContainer extends ComponentContainer {
     * 
     */
    private GridCellContainer createCellContainer(final UIGrid grid, Cell cell, int cellWidth, int cellHeight) {
-      final GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(), cell, ScreenComponent.build(this.getScreenCanvas(),cell
-            .getUiComponent()),this) {
+      final GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(), cell, ScreenComponent.build(this.getScreenCanvas(), cell
+            .getUiComponent()), this) {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
@@ -243,7 +243,7 @@ public class GridLayoutContainer extends ComponentContainer {
             box.show();
          }
 
-      }.bind(cellContainer);
+      } .bind(cellContainer);
       cellContainer.setSize(cellWidth + 1, cellHeight + 1);
       cellContainers.add(cellContainer);
       return cellContainer;
@@ -251,7 +251,7 @@ public class GridLayoutContainer extends ComponentContainer {
    
    private GridCellContainer cloneCellContainer(GridCellContainer container) {
       Cell cell = container.getCell();
-      final GridCellContainer cellContainer =  new GridCellContainer(getScreenCanvas(),cell, container.getScreenControl(),this) {
+      final GridCellContainer cellContainer =  new GridCellContainer(getScreenCanvas(), cell, container.getScreenControl(), this) {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
@@ -261,7 +261,7 @@ public class GridLayoutContainer extends ComponentContainer {
             super.onBrowserEvent(event);
          }
       };
-      new KeyNav<ComponentEvent>(){
+      new KeyNav<ComponentEvent>() {
          @Override
          public void onDelete(ComponentEvent ce) {
             super.onDelete(ce);
@@ -282,7 +282,7 @@ public class GridLayoutContainer extends ComponentContainer {
             box.show();
          }
          
-      }.bind(cellContainer);
+      } .bind(cellContainer);
       cellContainers.add(cellContainer);
       return cellContainer;
    }
@@ -363,9 +363,9 @@ public class GridLayoutContainer extends ComponentContainer {
 
          @Override
          protected void onDragStart(DNDEvent event) {
-            BoundsRecorder boundsRecorder = new BoundsRecorder(cellContainer,grid);
+            BoundsRecorder boundsRecorder = new BoundsRecorder(cellContainer, grid);
             cellContainer.clearArea(btnInArea);
-            Point distance = new Point(boundsRecorder.getWidth(),boundsRecorder.getHeight());
+            Point distance = new Point(boundsRecorder.getWidth(), boundsRecorder.getHeight());
             cellContainer.setData(AbsoluteLayoutContainer.ABSOLUTE_DISTANCE_NAME, distance);
             /*
              * record the location information for a GridCellContainer before being removing. 
@@ -391,7 +391,7 @@ public class GridLayoutContainer extends ComponentContainer {
 
          @Override
          public void dragDrop(DNDEvent e) {
-            GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(),GridLayoutContainer.this);
+            GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(), GridLayoutContainer.this);
             Object data = e.getData();
             if (data instanceof GridCellContainer) {
                GridCellContainer container = (GridCellContainer) data;
@@ -455,9 +455,9 @@ public class GridLayoutContainer extends ComponentContainer {
     */
    private GridCellContainer createNewCellContainer(UIComponent uiComponent, UIGrid grid, int cellWidth, int cellHeight) {
       Cell cell = new Cell(IDUtil.nextID());
-      if(uiComponent instanceof UIButton) {
+      if (uiComponent instanceof UIButton) {
          cell.setUiComponent(new UIButton(IDUtil.nextID()));
-      } else if(uiComponent instanceof UISwitch) {
+      } else if (uiComponent instanceof UISwitch) {
          cell.setUiComponent(new UISwitch(IDUtil.nextID()));
       }
       grid.addCell(cell);
@@ -466,10 +466,10 @@ public class GridLayoutContainer extends ComponentContainer {
    
    private GridCellContainer AbsoluteToCell(UIComponent uiComponent, UIGrid grid, int cellWidth, int cellHeight) {
       Cell cell = new Cell(IDUtil.nextID());
-      if(uiComponent instanceof UIButton) {
-         cell.setUiComponent(new UIButton((UIButton)uiComponent));
-      } else if(uiComponent instanceof UISwitch) {
-         cell.setUiComponent(new UISwitch((UISwitch)uiComponent));
+      if (uiComponent instanceof UIButton) {
+         cell.setUiComponent(new UIButton((UIButton) uiComponent));
+      } else if (uiComponent instanceof UISwitch) {
+         cell.setUiComponent(new UISwitch((UISwitch) uiComponent));
       }
       grid.addCell(cell);
       return createCellContainer(grid, cell, cellWidth, cellHeight);
@@ -480,7 +480,7 @@ public class GridLayoutContainer extends ComponentContainer {
       GridCellContainer cellContainer;
       container.removeFromParent();
       container.hideBackground();
-      cellContainer = AbsoluteToCell( container.getAbsolute().getUIComponent(), grid, cellWidth, cellHeight);
+      cellContainer = AbsoluteToCell(container.getAbsolute().getUIComponent(), grid, cellWidth, cellHeight);
       cellContainer.getClass();
       cellContainer.setCellSpan(1, 1);
       cellContainer.setCellPosition(targetPosition.x, targetPosition.y);
@@ -526,13 +526,13 @@ public class GridLayoutContainer extends ComponentContainer {
    }
 
 
-	public UIGrid getGrid() {
-		return grid;
-	}
+   public UIGrid getGrid() {
+      return grid;
+   }
 
-	public void setGrid(UIGrid grid) {
-		this.grid = grid;
-	}
+   public void setGrid(UIGrid grid) {
+      this.grid = grid;
+   }
 
    public FlexTable getScreenTable() {
       return screenTable;
@@ -542,5 +542,4 @@ public class GridLayoutContainer extends ComponentContainer {
       this.screenTable = screenTable;
    }
 
-	
 }

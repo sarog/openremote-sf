@@ -27,14 +27,14 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel;
 /**
  * A layout container act as absolute position in screen canvas.
  */
-public class AbsoluteLayoutContainer extends ComponentContainer implements PropertyPanelBuilder{
+public class AbsoluteLayoutContainer extends ComponentContainer implements PropertyPanelBuilder {
    public static final String ABSOLUTE_DISTANCE_NAME = "distance";
    private Absolute absolute;
    private ScreenComponent screenControl;
    /**
     * Instantiates a new absolute layout container.
     */
-   public AbsoluteLayoutContainer(ScreenCanvas screenCanvas ,Absolute absolute, ScreenComponent screenControl) {
+   public AbsoluteLayoutContainer(ScreenCanvas screenCanvas, Absolute absolute, ScreenComponent screenControl) {
       super(screenCanvas);
       addStyleName("cursor-move");
       setStyleAttribute("position", "absolute");
@@ -55,7 +55,7 @@ public class AbsoluteLayoutContainer extends ComponentContainer implements Prope
    public void setSize(int width, int height) {
       super.setSize(width, height);
       absolute.setSize(width, height);
-      screenControl.setSize(width-2, height-2);
+      screenControl.setSize(width - 2, height - 2);
    }
 
    @Override

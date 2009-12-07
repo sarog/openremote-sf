@@ -53,11 +53,11 @@ public class SwitchPropertyForm extends PropertyForm {
          public void componentSelected(ButtonEvent ce) {
             final UImage onImage = uiSwitch.getOnImage();
             ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenSwitch, onImage);
-            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener(){
+            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   String imageOnUrl = be.getData();
-                  if(onImage != null) {
+                  if (onImage != null) {
                      onImage.setSrc(imageOnUrl);
                   } else {
                      uiSwitch.setOnImage(new UImage(imageOnUrl));
@@ -69,54 +69,55 @@ public class SwitchPropertyForm extends PropertyForm {
       });
       AdapterField adapterImageON = new AdapterField(imageON);
       adapterImageON.setFieldLabel("Image(ON)");
-      
+
       Button imageOFF = new Button("Select");
       imageOFF.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             final UImage offImage = uiSwitch.getOffImage();
             ChangeIconWindow selectImageOFFWindow = new ChangeIconWindow(screenSwitch, offImage);
-            selectImageOFFWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener(){
+            selectImageOFFWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   String imageOffUrl = be.getData();
-                  if(offImage != null) {
+                  if (offImage != null) {
                      offImage.setSrc(imageOffUrl);
                   } else {
                      uiSwitch.setOffImage(new UImage(imageOffUrl));
                   }
                }
             });
-         
+
          }
       });
       AdapterField adapterImageOFF = new AdapterField(imageOFF);
       adapterImageOFF.setFieldLabel("Image(OFF)");
-      
+
       Button commandON = new Button("Select");
-      if(uiSwitch.getOnCommand() != null) {
+      if (uiSwitch.getOnCommand() != null) {
          commandON.setText(uiSwitch.getOnCommand().getDisplayName());
       }
       commandON.addSelectionListener(createSelectionListener(uiSwitch, commandON, "ON"));
       AdapterField adapterCommandON = new AdapterField(commandON);
-      adapterCommandON.setFieldLabel("Cmd(ON)");adapterCommandON.setAutoHeight(true);
-      
+      adapterCommandON.setFieldLabel("Cmd(ON)");
+      adapterCommandON.setAutoHeight(true);
+
       final Button commandOFF = new Button("Select");
-      if(uiSwitch.getOffCommand() != null) {
+      if (uiSwitch.getOffCommand() != null) {
          commandOFF.setText(uiSwitch.getOffCommand().getDisplayName());
       }
       commandOFF.addSelectionListener(createSelectionListener(uiSwitch, commandOFF, "OFF"));
       AdapterField adapterCommandOFF = new AdapterField(commandOFF);
       adapterCommandOFF.setFieldLabel("Cmd(OFF)");
-      
+
       Button commandStatus = new Button("Select");
-      if(uiSwitch.getStatusCommand() != null) {
+      if (uiSwitch.getStatusCommand() != null) {
          commandStatus.setText(uiSwitch.getStatusCommand().getDisplayName());
       }
       commandStatus.addSelectionListener(createSelectionListener(uiSwitch, commandStatus, "STATUS"));
       AdapterField adapterCommandStatus = new AdapterField(commandStatus);
       adapterCommandStatus.setFieldLabel("Cmd(Status)");
-      
+
       add(adapterImageON);
       add(adapterImageOFF);
       add(adapterCommandON);
@@ -147,9 +148,9 @@ public class SwitchPropertyForm extends PropertyForm {
                   command.setText(uiCommand.getDisplayName());
                   if ("ON".equals(type)) {
                      uiSwitch.setOnCommand(uiCommand);
-                  } else if("OFF".equals(type)) {
+                  } else if ("OFF".equals(type)) {
                      uiSwitch.setOffCommand(uiCommand);
-                  } else if("STATUS".equals(type)) {
+                  } else if ("STATUS".equals(type)) {
                      uiSwitch.setStatusCommand(uiCommand);
                   }
                }

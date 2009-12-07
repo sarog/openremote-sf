@@ -159,7 +159,7 @@ public class ProfilePanel extends ContentPanel {
    }
 
    private void initTreeWithAutoSavedPanels() {
-      UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>(){
+      UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>() {
          @Override
          public void onSuccess(Long maxID) {
             if (maxID > 0) {              // set the layout component's max id after refresh page.
@@ -169,10 +169,10 @@ public class ProfilePanel extends ContentPanel {
          
       });
       
-      UtilsProxy.loadPanelsFromSession(new AsyncSuccessCallback<List<Panel>>(){
+      UtilsProxy.loadPanelsFromSession(new AsyncSuccessCallback<List<Panel>>() {
          @Override
          public void onSuccess(List<Panel> panels) {
-            if(panels.size() > 0) {
+            if (panels.size() > 0) {
                initModelDataBase(panels);
                panelTree.getStore().removeAll();
                for (Panel panel : panels) {
@@ -180,7 +180,7 @@ public class ProfilePanel extends ContentPanel {
                   panelTree.getStore().add(panelBeanModel, false);
                   for (GroupRef groupRef : panel.getGroupRefs()) {
                      panelTree.getStore().add(panelBeanModel, groupRef.getBeanModel(), false);
-                     for(ScreenRef screenRef : groupRef.getGroup().getScreenRefs()){
+                     for (ScreenRef screenRef : groupRef.getGroup().getScreenRefs()) {
                         panelTree.getStore().add(groupRef.getBeanModel(), screenRef.getBeanModel(), false);
                      }
                   }
@@ -202,29 +202,28 @@ public class ProfilePanel extends ContentPanel {
             }
          }
          
-         private void initModelDataBase(Collection<Panel> panels){
+         private void initModelDataBase(Collection<Panel> panels) {
             BeanModelDataBase.panelTable.clear();
             BeanModelDataBase.groupTable.clear();
             BeanModelDataBase.screenTable.clear();
             Set<Group> groups = new LinkedHashSet<Group>();
             Set<Screen> screens = new LinkedHashSet<Screen>();
-            for(Panel panel :panels){
+            for (Panel panel : panels) {
                List<GroupRef> groupRefs = panel.getGroupRefs();
-               for(GroupRef groupRef : groupRefs){
+               for (GroupRef groupRef : groupRefs) {
                   groups.add(groupRef.getGroup());
                }
                BeanModelDataBase.panelTable.insert(panel.getBeanModel());
             }
-            
-            for(Group group:groups){
+
+            for (Group group : groups) {
                List<ScreenRef> screenRefs = group.getScreenRefs();
-               for(ScreenRef screenRef : screenRefs){
+               for (ScreenRef screenRef : screenRefs) {
                   screens.add(screenRef.getScreen());
                   BeanModelDataBase.screenTable.insert(screenRef.getScreen().getBeanModel());
                }
                BeanModelDataBase.groupTable.insert(group.getBeanModel());
             }
-            
             
          }
       });
@@ -277,7 +276,7 @@ public class ProfilePanel extends ContentPanel {
                   editPanel(selectedModel);
                } else if (selectedModel.getBean() instanceof GroupRef) {
                   editGroup(selectedModel);
-               } else if(selectedModel.getBean() instanceof ScreenRef){
+               } else if (selectedModel.getBean() instanceof ScreenRef) {
                   editScreen(selectedModel);
                }
             }
@@ -326,7 +325,7 @@ public class ProfilePanel extends ContentPanel {
       });
    }
    private void editScreen(final BeanModel panelBeanModel) {
-      final ScreenWizard screenWizard = new ScreenWizard(screenTab,panelBeanModel,true);
+      final ScreenWizard screenWizard = new ScreenWizard(screenTab, panelBeanModel, true);
       screenWizard.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
@@ -375,7 +374,7 @@ public class ProfilePanel extends ContentPanel {
                      }
                   }
                   Info.display("Info", "Delete panel " + selectedModel.get("name") + " success.");
-               } else if(selectedModel != null && selectedModel.getBean() instanceof GroupRef) {
+               } else if (selectedModel != null && selectedModel.getBean() instanceof GroupRef) {
                   panelTree.getStore().remove(selectedModel);
                   GroupRef groupRef = selectedModel.getBean();
                   groupRef.getPanel().removeGroupRef(groupRef);
@@ -389,7 +388,7 @@ public class ProfilePanel extends ContentPanel {
                         BeanModelDataBase.screenTable.delete(screenRef.getScreenId());
                      }
                   }
-               }else if(selectedModel != null && selectedModel.getBean() instanceof ScreenRef){
+               } else if (selectedModel != null && selectedModel.getBean() instanceof ScreenRef) {
                   ScreenRef screenRef = (ScreenRef) selectedModel.getBean();
                   screenRef.getGroup().removeScreenRef(screenRef);
                   panelTree.getStore().remove(selectedModel);
@@ -449,7 +448,7 @@ public class ProfilePanel extends ContentPanel {
             GroupRef groupRef = new GroupRef(group);
             BeanModel selectedBeanModel = panelTree.getSelectionModel().getSelectedItem();
             if (selectedBeanModel != null && selectedBeanModel.getBean() instanceof Panel) {
-               groupRef.setPanel((Panel)selectedBeanModel.getBean());
+               groupRef.setPanel((Panel) selectedBeanModel.getBean());
             }
             final GroupWizardWindow  groupWizardWindow = new GroupWizardWindow(groupRef.getBeanModel(), false);
             groupWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
@@ -508,17 +507,19 @@ public class ProfilePanel extends ContentPanel {
             final BeanModel selectItem = panelTree.getSelectionModel().getSelectedItem();
             if (selectItem != null) {
                if (selectItem.getBean() instanceof Panel) {
-                  final TabbarWindow tabbarWindow = new TabbarWindow(true, ((Panel)selectItem.getBean()).getTabbarItems(), (Panel)selectItem.getBean());
+                  final TabbarWindow tabbarWindow = new TabbarWindow(true, ((Panel) selectItem.getBean())
+                        .getTabbarItems(), (Panel) selectItem.getBean());
                   tabbarWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                      @Override
                      public void afterSubmit(SubmitEvent be) {
-                        ((Panel)selectItem.getBean()).setTabbarItems(be.<List<UITabbarItem>>getData());
+                        ((Panel) selectItem.getBean()).setTabbarItems(be.<List<UITabbarItem>> getData());
                         tabbarWindow.hide();
                      }
                   });
                } else if (selectItem.getBean() instanceof GroupRef) {
-                  final Group group = ((GroupRef)selectItem.getBean()).getGroup();
-                  final TabbarWindow tabbarWindow = new TabbarWindow(false, group.getTabbarItems(), ((GroupRef)selectItem.getBean()).getPanel());
+                  final Group group = ((GroupRef) selectItem.getBean()).getGroup();
+                  final TabbarWindow tabbarWindow = new TabbarWindow(false, group.getTabbarItems(),
+                        ((GroupRef) selectItem.getBean()).getPanel());
                   tabbarWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                      @Override
                      public void afterSubmit(SubmitEvent be) {
@@ -549,29 +550,31 @@ public class ProfilePanel extends ContentPanel {
       this.screenTab = screenTab;
    }
    
-   private void createDragSource4PanelTree(){
-      new TreePanelDragSource(this.panelTree){
+   private void createDragSource4PanelTree() {
+      new TreePanelDragSource(this.panelTree) {
 
          @Override
          protected void onDragStart(DNDEvent e) {
-            if (panelTree.getSelectionModel().getSelectedItems().size() >1) {
+            if (panelTree.getSelectionModel().getSelectedItems().size() > 1) {
                e.setCancelled(true);
                return;
             }
             super.onDragStart(e);
          }
+
          @Override
          protected void onDragDrop(DNDEvent event) {
             return;
          }
+
          @Override
-         public void setGroup(String group){
+         public void setGroup(String group) {
             super.setGroup("REORDER_PANEL");
          }
       };
    }
    
-   private void createDropTarget4PanelTree(){
+   private void createDropTarget4PanelTree() {
       final TreePanelDropTarget target = new TreePanelDropTarget(panelTree) {
          @SuppressWarnings("unchecked")
          @Override
@@ -587,29 +590,28 @@ public class ProfilePanel extends ContentPanel {
             BeanModel sourceNode = ((List<ModelData>) event.getData()).get(0).get("model");
             BeanModel sourceParentNode = (BeanModel) tree.getStore().getParent(sourceNode);
             BeanModel targetParentNode = (BeanModel) tree.getStore().getParent(targetNode);
-            
-            
-            if (status == -1) {                                         // append operation
+
+            if (status == -1) { // append operation
                tree.getView().onDropChange(activeItem, false);
                if (sourceParentNode == targetNode) {
                   tree.getStore().remove(sourceNode);
                   handleAppendDrop(event, activeItem);
-                  doAppend(sourceParentNode,sourceNode,targetNode);
+                  doAppend(sourceParentNode, sourceNode, targetNode);
                   successed = true;
                } else if (sourceNode.getBean() instanceof ScreenRef && targetNode.getBean() instanceof GroupRef
-                     &&inSamePanel(sourceParentNode,targetNode)&& canMove(sourceNode, targetNode)) {
+                     && inSamePanel(sourceParentNode, targetNode) && canMove(sourceNode, targetNode)) {
                   tree.getStore().remove(sourceNode);
                   handleAppendDrop(event, activeItem);
                   appendScreen(sourceParentNode, sourceNode, targetNode);
                   successed = true;
                }
-            } else if (targetParentNode == sourceParentNode) {          // insert operation
+            } else if (targetParentNode == sourceParentNode) { // insert operation
                tree.getStore().remove(sourceNode);
                handleInsertDrop(event, activeItem, status);
-               doInsert(sourceParentNode,sourceNode,targetNode);
+               doInsert(sourceParentNode, sourceNode, targetNode);
                successed = true;
             } else if (sourceNode.getBean() instanceof ScreenRef && targetParentNode.getBean() instanceof GroupRef
-                  &&inSamePanel(sourceParentNode,targetParentNode)&& canMove(sourceNode, targetParentNode)) {
+                  && inSamePanel(sourceParentNode, targetParentNode) && canMove(sourceNode, targetParentNode)) {
                tree.getStore().remove(sourceNode);
                handleInsertDrop(event, activeItem, status);
                reorderScreen(sourceParentNode, sourceNode, targetNode);
@@ -621,27 +623,15 @@ public class ProfilePanel extends ContentPanel {
          }
          
          @Override
-         public void setGroup(String group){
+         public void setGroup(String group) {
             super.setGroup("REORDER_PANEL");
          }
-         private boolean canMove(BeanModel scrRefBean,BeanModel groupRefBean){
+         private boolean canMove(BeanModel scrRefBean, BeanModel groupRefBean) {
             GroupRef groupRef = groupRefBean.getBean();
             ScreenRef scrRef = scrRefBean.getBean();
             return -1 == groupRef.getGroup().getScreenRefs().indexOf(scrRef);
          }
-         /*private boolean canMove(TreePanel<ModelData> tree, BeanModel scrRef, BeanModel group) {
-            List<ModelData> srcRefs = tree.getStore().getChildren(group);
-            ScreenRef screenRef = scrRef.getBean();
-            for (ModelData data : srcRefs) {
-               BeanModel model = (BeanModel) data;
-               ScreenRef tmpSrceenRef = model.getBean();
-               if (screenRef.getScreen().equals(tmpSrceenRef.getScreen())) {
-                  return false;
-               }
-            }
-            return true;
-         }*/
-         private boolean inSamePanel(BeanModel sourceGroupRef,BeanModel targetGroupRef){
+         private boolean inSamePanel(BeanModel sourceGroupRef, BeanModel targetGroupRef) {
             BeanModel sourceGrandFatherNode = (BeanModel) tree.getStore().getParent(sourceGroupRef);
             BeanModel targetGrandFatherNode = (BeanModel) tree.getStore().getParent(targetGroupRef);
             return sourceGrandFatherNode.equals(targetGrandFatherNode);
@@ -654,39 +644,46 @@ public class ProfilePanel extends ContentPanel {
             GroupRef sourceGroupRef = sourceGroupRefBeanModel.getBean();
             sourceGroupRef.getGroup().removeScreenRef(sourceScreenRef);
          }
-         private void reorderScreen(BeanModel sourceGroupRefBean,BeanModel fromBean,BeanModel toBean){
-            Group sourceGroup = ((GroupRef)sourceGroupRefBean.getBean()).getGroup();
+         private void reorderScreen(BeanModel sourceGroupRefBean, BeanModel fromBean, BeanModel toBean) {
+            Group sourceGroup = ((GroupRef) sourceGroupRefBean.getBean()).getGroup();
             Group targetGroup = sourceGroup;
             ScreenRef from = fromBean.getBean();
             ScreenRef to = toBean.getBean();
-            if(!sourceGroup.equals(to.getGroup())){
+            if (!sourceGroup.equals(to.getGroup())) {
                targetGroup = to.getGroup();
             }
             sourceGroup.removeScreenRef(from);
             targetGroup.insertScreenRef(to, from);
          }
-         private void doAppend(BeanModel sourceParent,BeanModel source,BeanModel target){
-            if(sourceParent.getBean() instanceof GroupRef && source.getBean() instanceof ScreenRef && target.getBean() instanceof GroupRef){
-               appendScreen(sourceParent,source,target);
-            } else if(sourceParent.getBean() instanceof Panel && source.getBean() instanceof GroupRef && target.getBean() instanceof Panel){
-               appendGroup(sourceParent,source,target);
+
+         private void doAppend(BeanModel sourceParent, BeanModel source, BeanModel target) {
+            if (sourceParent.getBean() instanceof GroupRef && source.getBean() instanceof ScreenRef
+                  && target.getBean() instanceof GroupRef) {
+               appendScreen(sourceParent, source, target);
+            } else if (sourceParent.getBean() instanceof Panel && source.getBean() instanceof GroupRef
+                  && target.getBean() instanceof Panel) {
+               appendGroup(sourceParent, source, target);
             }
          }
-         private void doInsert(BeanModel sourceParent,BeanModel source,BeanModel insertTo){
-            if(sourceParent.getBean() instanceof GroupRef && source.getBean() instanceof ScreenRef && insertTo.getBean() instanceof ScreenRef){
-               reorderScreen(sourceParent,source,insertTo);
-            } else if(sourceParent.getBean() instanceof Panel && source.getBean() instanceof GroupRef && insertTo.getBean() instanceof GroupRef){
-               reorderGroup(sourceParent,source,insertTo);
+
+         private void doInsert(BeanModel sourceParent, BeanModel source, BeanModel insertTo) {
+            if (sourceParent.getBean() instanceof GroupRef && source.getBean() instanceof ScreenRef
+                  && insertTo.getBean() instanceof ScreenRef) {
+               reorderScreen(sourceParent, source, insertTo);
+            } else if (sourceParent.getBean() instanceof Panel && source.getBean() instanceof GroupRef
+                  && insertTo.getBean() instanceof GroupRef) {
+               reorderGroup(sourceParent, source, insertTo);
             }
          }
-         private void appendGroup(BeanModel sourcePanelBean,BeanModel groupRefBean,BeanModel targetPanelBean){
+
+         private void appendGroup(BeanModel sourcePanelBean, BeanModel groupRefBean, BeanModel targetPanelBean) {
             Panel sourcePanel = sourcePanelBean.getBean();
             Panel targetpanel = targetPanelBean.getBean();
-            GroupRef  groupRef = groupRefBean.getBean();
+            GroupRef groupRef = groupRefBean.getBean();
             sourcePanel.removeGroupRef(groupRef);
             targetpanel.addGroupRef(groupRef);
          }
-         private void reorderGroup(BeanModel sourcePanelBean,BeanModel fromBean,BeanModel toBean){
+         private void reorderGroup(BeanModel sourcePanelBean, BeanModel fromBean, BeanModel toBean) {
             Panel panel = sourcePanelBean.getBean();
             GroupRef from = fromBean.getBean();
             panel.removeGroupRef(from);

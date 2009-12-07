@@ -30,5 +30,5 @@ public interface PropertyPanelBuilder {
     * build a proprety panel for a screen component. 
     * @return a form panel for a screen component. 
     */
-   public FormPanel buildPropertiesForm(); 
+   FormPanel buildPropertiesForm(); 
 }

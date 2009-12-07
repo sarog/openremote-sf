@@ -32,7 +32,7 @@ public class GridContainer extends ScreenComponent {
    
    private GridLayoutContainer gridlayoutContainer = null;
 
-   public GridContainer(ScreenCanvas canvas,GridLayoutContainer gridlayoutContainer) {
+   public GridContainer(ScreenCanvas canvas, GridLayoutContainer gridlayoutContainer) {
       super(canvas);
       this.gridlayoutContainer = gridlayoutContainer;
       setSize(DEFALUT_HANDLE_WIDTH, DEFAULT_HANDLE_HEIGHT);
@@ -52,7 +52,7 @@ public class GridContainer extends ScreenComponent {
 
    @Override
    public void setPosition(int left, int top) {
-      if(gridlayoutContainer != null) {
+      if (gridlayoutContainer != null) {
          UIGrid grid = gridlayoutContainer.getGrid();
          grid.setLeft(left + DEFALUT_HANDLE_WIDTH);
          grid.setTop(top + DEFAULT_HANDLE_HEIGHT);
@@ -76,10 +76,10 @@ public class GridContainer extends ScreenComponent {
       
    }
    
-   public void update(){
+   public void update() {
       UIGrid grid = gridlayoutContainer.getGrid();
       gridlayoutContainer.refreshGrid();
-      setPosition(grid.getLeft()-DEFALUT_HANDLE_WIDTH, grid.getTop()-DEFAULT_HANDLE_HEIGHT);
+      setPosition(grid.getLeft() - DEFALUT_HANDLE_WIDTH, grid.getTop() - DEFAULT_HANDLE_HEIGHT);
       layout();
    }
    

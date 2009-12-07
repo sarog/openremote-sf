@@ -56,7 +56,7 @@ import com.google.gwt.user.client.Event;
 /**
  * A layout container for create and dnd components.
  */
-public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuilder{
+public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuilder {
 
    /** The absolute position. */
    private Point absolutePosition = null;
@@ -113,48 +113,48 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
       new DragSource(this);
    }
 
-   public void updateGround(){
+   public void updateGround() {
       Background bgd = screen.getBackground();
-      if(bgd.isFillScreen()){
+      if (bgd.isFillScreen()) {
          setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
          setStyleAttribute("backgroundRepeat", "no-repeat");
-         setStyleAttribute("backgroundPosition","top left");
+         setStyleAttribute("backgroundPosition", "top left");
          return;
-      } else if(bgd.isAbsolute()){
-//         setStyleAttribute("position", "absolute");
-         setStyleAttribute("backgroundPosition",bgd.getLeft()+" "+bgd.getTop());
+      } else if (bgd.isAbsolute()) {
+         // setStyleAttribute("position", "absolute");
+         setStyleAttribute("backgroundPosition", bgd.getLeft() + " " + bgd.getTop());
       } else {
-         switch(bgd.getRelatedType()){
-         case LEFT :
-            setStyleAttribute("backgroundPosition","center left");
+         switch (bgd.getRelatedType()) {
+         case LEFT:
+            setStyleAttribute("backgroundPosition", "center left");
             break;
-         case RIGHT :
-            setStyleAttribute("backgroundPosition","center right");
+         case RIGHT:
+            setStyleAttribute("backgroundPosition", "center right");
             break;
-         case TOP :
-            setStyleAttribute("backgroundPosition","top center");
+         case TOP:
+            setStyleAttribute("backgroundPosition", "top center");
             break;
-         case BOTTOM :
-            setStyleAttribute("backgroundPosition","bottom center");
+         case BOTTOM:
+            setStyleAttribute("backgroundPosition", "bottom center");
             break;
-         case TOP_LEFT :
-            setStyleAttribute("backgroundPosition","top left");
+         case TOP_LEFT:
+            setStyleAttribute("backgroundPosition", "top left");
             break;
-         case BOTTOM_LEFT :
-            setStyleAttribute("backgroundPosition","bottom left");
+         case BOTTOM_LEFT:
+            setStyleAttribute("backgroundPosition", "bottom left");
             break;
-         case TOP_RIGHT :
-            setStyleAttribute("backgroundPosition","top right");
+         case TOP_RIGHT:
+            setStyleAttribute("backgroundPosition", "top right");
             break;
-         case BOTTOM_RIGHT :
-            setStyleAttribute("backgroundPosition","bottom right");
+         case BOTTOM_RIGHT:
+            setStyleAttribute("backgroundPosition", "bottom right");
             break;
-         case CENTER :
-            setStyleAttribute("backgroundPosition","center center");
+         case CENTER:
+            setStyleAttribute("backgroundPosition", "center center");
             break;
          }
       }
-      
+
    }
    public void hideBackground() {
       moveBackGround.hide();
@@ -209,15 +209,16 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
                controlContainer.setPosition(position.x, position.y);
                LayoutContainer componentContainer = new LayoutContainer();
                BoundsRecorder recorder = controlContainer.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
-               componentContainer = dragComponentFromGrid(screen, controlContainer,recorder);
+               componentContainer = dragComponentFromGrid(screen, controlContainer, recorder);
                createDragSource(canvas, componentContainer);
                canvas.add(componentContainer);
                componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY() - absolutePosition.y);
                new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
             } else if (data instanceof LayoutContainer) {
-               if(data instanceof GridContainer) {
+               if (data instanceof GridContainer) {
                   GridContainer gridContainer = (GridContainer) data;
-                  gridContainer.setPosition(e.getClientX() - absolutePosition.x - GridContainer.DEFALUT_HANDLE_WIDTH, e.getClientY()
+                  gridContainer.setPosition(e.getClientX() - absolutePosition.x - GridContainer.DEFALUT_HANDLE_WIDTH, e
+                        .getClientY()
                         - absolutePosition.y - GridContainer.DEFAULT_HANDLE_HEIGHT);
                   SelectedWidgetContainer.setSelectWidget(gridContainer);
                } else {
@@ -231,9 +232,10 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
                   BeanModel dataModel = models.get(0).get("model");
                   ComponentContainer componentContainer = new ComponentContainer(ScreenCanvas.this);
                   if (dataModel.getBean() instanceof UIGrid) {
-                     UIGrid grid = new UIGrid(e.getXY().x - getAbsoluteLeft() + GridContainer.DEFALUT_HANDLE_WIDTH, e.getXY().y - getAbsoluteTop() + GridContainer.DEFAULT_HANDLE_HEIGHT,
-                           UIGrid.DEFALUT_WIDTH, UIGrid.DEFAULT_HEIGHT, UIGrid.DEFALUT_ROW_COUNT,
-                           UIGrid.DEFAULT_COL_COUNT);
+                     UIGrid grid = new UIGrid(e.getXY().x - getAbsoluteLeft() + GridContainer.DEFALUT_HANDLE_WIDTH, e
+                           .getXY().y
+                           - getAbsoluteTop() + GridContainer.DEFAULT_HANDLE_HEIGHT, UIGrid.DEFALUT_WIDTH,
+                           UIGrid.DEFAULT_HEIGHT, UIGrid.DEFALUT_ROW_COUNT, UIGrid.DEFAULT_COL_COUNT);
                      screen.addGrid(grid);
                      componentContainer = createGridLayoutContainer(grid);
                      createGridDragSource(componentContainer);
@@ -242,7 +244,7 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
                      createDragSource(canvas, componentContainer);
                      new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
                   }
-                  SelectedWidgetContainer.setSelectWidget((PropertyPanelBuilder)componentContainer);
+                  SelectedWidgetContainer.setSelectWidget((PropertyPanelBuilder) componentContainer);
                   canvas.add(componentContainer);
                   componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
                         - absolutePosition.y);
@@ -304,7 +306,7 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
       return new Point(left, top);
    }
    
-   private Point getGridCellContainerPosition(DNDEvent event){
+   private Point getGridCellContainerPosition(DNDEvent event) {
       GridCellContainer container = event.getData();
       Point mousePoint = event.getXY();
       Point distance = ((LayoutContainer) event.getData()).getData(AbsoluteLayoutContainer.ABSOLUTE_DISTANCE_NAME);
@@ -348,7 +350,7 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
             box.show();
          }
 
-      }.bind(controlContainer);
+      } .bind(controlContainer);
       return controlContainer;
    }
 
@@ -374,25 +376,26 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
       screen.addAbsolute(absolute);
       return controlContainer;
    }
-   private AbsoluteLayoutContainer dragComponentFromGrid(Screen screen, GridCellContainer cellContainer,BoundsRecorder recorder) {
-      cellContainer.getGridContainer().getGrid().removeCell(cellContainer.getCell());                    //remove the old cell from grid.
-      
+   private AbsoluteLayoutContainer dragComponentFromGrid(Screen screen, GridCellContainer cellContainer,
+         BoundsRecorder recorder) {
+      cellContainer.getGridContainer().getGrid().removeCell(cellContainer.getCell()); // remove the old cell from grid.
+
       UIComponent uiComponent = cellContainer.getCell().getUiComponent();
       AbsoluteLayoutContainer controlContainer = null;
       Absolute absolute = new Absolute(IDUtil.nextID());
       if (uiComponent instanceof UIButton) {
-         UIButton uiButton = new UIButton((UIButton)uiComponent);
+         UIButton uiButton = new UIButton((UIButton) uiComponent);
          absolute.setUIComponent(uiButton);
          controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenButton(this, uiButton));
-//         controlContainer.setSize(50, 50); // set the button's default size after drag from widget tree.
+         // controlContainer.setSize(50, 50); // set the button's default size after drag from widget tree.
 
       } else if (uiComponent instanceof UISwitch) {
-         UISwitch uiSwitch = new UISwitch((UISwitch)uiComponent);
+         UISwitch uiSwitch = new UISwitch((UISwitch) uiComponent);
          absolute.setUIComponent(uiSwitch);
          controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenSwitch(this, uiSwitch));
-//         controlContainer.setSize(50, 50); // set the switch's default size after drag from widget tree.
+         // controlContainer.setSize(50, 50); // set the switch's default size after drag from widget tree.
       }
-      controlContainer.setSize(recorder.getWidth(),recorder.getHeight());
+      controlContainer.setSize(recorder.getWidth(), recorder.getHeight());
       screen.addAbsolute(absolute);
       return controlContainer;
    } 
@@ -400,7 +403,7 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
       GridLayoutContainer gridlayoutContainer = new GridLayoutContainer(this, grid);
       new DropTarget(gridlayoutContainer);
       
-      final GridContainer gridContainer = new GridContainer(ScreenCanvas.this,gridlayoutContainer){
+      final GridContainer gridContainer = new GridContainer(ScreenCanvas.this, gridlayoutContainer) {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
@@ -431,7 +434,7 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
             box.show();
          }
          
-      }.bind(gridContainer);
+      } .bind(gridContainer);
       
       return gridContainer;
    }
@@ -447,7 +450,8 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
       DragSource gridSource = new DragSource(componentContainer) {
          @Override
          protected void onDragStart(DNDEvent event) {
-            UIGrid grid = ((GridLayoutContainer)((GridContainer)componentContainer).getGridlayoutContainer()).getGrid();
+            UIGrid grid = ((GridLayoutContainer) ((GridContainer) componentContainer).getGridlayoutContainer())
+                  .getGrid();
             moveBackGround.setSize(grid.getWidth(), grid.getHeight());
             event.setData(componentContainer);
             event.getStatus().setStatus(true);
@@ -461,7 +465,7 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
 
    @Override
    public void onBrowserEvent(Event event) {
-      if(event.getTypeInt() == Event.ONMOUSEDOWN){
+      if (event.getTypeInt() == Event.ONMOUSEDOWN) {
          SelectedWidgetContainer.setSelectWidget(this);
       }
       event.stopPropagation();

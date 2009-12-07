@@ -33,26 +33,28 @@ import com.google.gwt.user.client.ui.Image;
  */
 public class ScreenSwitch extends ScreenComponent {
    private FlexTable switchTable = new FlexTableBox();
-   
+
    /** The switchTable center text. */
    private Text center = new Text("Switch");
    private UISwitch uiSwitch;
    protected Image image = new Image();
+
    /**
     * Instantiates a new screen button.
     */
    public ScreenSwitch(ScreenCanvas canvas) {
-	   super(canvas);
+      super(canvas);
       initial();
    }
 
-   public ScreenSwitch(ScreenCanvas canvas,UISwitch uiSwitch) {
+   public ScreenSwitch(ScreenCanvas canvas, UISwitch uiSwitch) {
       this(canvas);
       this.uiSwitch = uiSwitch;
       if (uiSwitch.getOnImage() != null) {
          setIcon(uiSwitch.getOnImage().getSrc());
       }
    }
+
    /**
     * Initial the switch as a style box.
     */
@@ -61,12 +63,12 @@ public class ScreenSwitch extends ScreenComponent {
       switchTable.setWidget(1, 1, center);
       add(switchTable);
    }
-   
+
    @Override
    public String getName() {
       return center.getText();
    }
-   
+
    @Override
    public FormPanel buildPropertiesForm() {
       return new SwitchPropertyForm(this, uiSwitch);
@@ -76,7 +78,7 @@ public class ScreenSwitch extends ScreenComponent {
    public void setName(String name) {
       center.setText(name);
    }
-   
+
    public void setIcon(String icon) {
       image.setUrl(icon);
       switchTable.removeStyleName("screen-btn-cont");

@@ -119,8 +119,8 @@ public class ChangeIconWindow extends Dialog {
     * @param screenButton the screen button
     */
    public ChangeIconWindow(ScreenComponent screenControl, UImage uImage) {
-	  ScreenCanvas canvas = screenControl.getScreenCanvas();
-      createScreenControl(canvas,screenControl, uImage);
+      ScreenCanvas canvas = screenControl.getScreenCanvas();
+      createScreenControl(canvas, screenControl, uImage);
       window = this;
       if (screenControl.getWidth() > 90) {
          setMinWidth(400 + screenControl.getWidth() + 16);
@@ -420,8 +420,8 @@ public class ChangeIconWindow extends Dialog {
     * @param screenControl the screen control
     * @param uImage the u image
     */
-   private void createScreenControl(ScreenCanvas canvas,ScreenComponent screenControl, UImage uImage) {
-      screenButton = new ScreenButton(canvas,screenControl.getWidth(), screenControl.getHeight());
+   private void createScreenControl(ScreenCanvas canvas, ScreenComponent screenControl, UImage uImage) {
+      screenButton = new ScreenButton(canvas, screenControl.getWidth(), screenControl.getHeight());
       screenButton.setName(screenControl.getName());
       if (uImage != null) {
          imageURL = uImage.getSrc();
