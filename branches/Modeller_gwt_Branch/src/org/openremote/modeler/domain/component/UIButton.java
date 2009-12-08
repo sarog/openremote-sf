@@ -168,15 +168,15 @@ public class UIButton extends UIControl {
                xmlContent.append(" toScreen=\"" + navigate.getToScreen() + "\"");
             }
          } else if (navigate.isBack()) {
-            xmlContent.append(" back=\"true\"");
+            xmlContent.append(" toBack=\"true\"");
          } else if (navigate.isToSetting()) {
             xmlContent.append(" toSetting=\"true\"");
          } else if (navigate.isLogin()) {
-            xmlContent.append(" login=\"true\"");
+            xmlContent.append(" toLogin=\"true\"");
          } else if (navigate.isPrevious()) {
-            xmlContent.append(" previous=\"true\"");
+            xmlContent.append(" toPreviousScreen=\"true\"");
          } else if (navigate.isNext()) {
-            xmlContent.append(" next=\"true\"");
+            xmlContent.append(" toNextScreen=\"true\"");
          }
          xmlContent.append(" />\n");
       }
