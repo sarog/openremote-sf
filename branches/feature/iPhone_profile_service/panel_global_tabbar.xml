@@ -16,7 +16,7 @@
 	</tabbar>
 	<screens>
 		<screen id="5" name="basement">
-			<background relative="LEFT" fullScreen="true">
+			<background relative="LEFT">
 				<image src="basement1.png" />
 			</background>	  	
 			<grid left="20" top="20" width="300" height="400" rows="2" cols="2">
@@ -35,7 +35,7 @@
 			</grid>
 		</screen>
 		<screen id="6" name="floor">
-			<background relative="RIGHT" fullScreen="false">
+			<background relative="RIGHT">
 				<image src="basement2.png" />
 			</background>		  	
 		  	<grid left="20" top="20" width="300" height="400" rows="4" cols="4">

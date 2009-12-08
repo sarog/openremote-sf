@@ -86,9 +86,9 @@
 		int screenBackgroundImageViewHeight = IPHONE_SCREEN_HEIGHT - IPHONE_SCREEN_STATUS_BAR_HEIGHT - IPHONE_SCREEN_BOTTOM_PAGE_SWITCH_CONTROL_HEIGHT;
 		
 		UIImageView *backgroundImageView = [[UIImageView alloc] init];
-		// fullscreen is false
-		if (![[screen background] fullScreen]) {
-			NSLog(@"BackgroundImage isn't fullScreen");
+		// fillscreen is false
+		if (![[screen background] fillScreen]) {
+			NSLog(@"BackgroundImage isn't fillScreen");
 			NSLog(@"BackgroundImage's original width:%f, height:%f", backgroundImage.size.width, backgroundImage.size.height);
 			
 			// ablosute position of screen background.
@@ -111,7 +111,7 @@
 				[self backgroundImageRelativeAlign:backgroundImageRelativePosition withUIImage:backgroundImage withUIView:backgroundImageView];
 			}
 		}
-		// fullscreen is true
+		// fillscreen is true
 		else {
 			[backgroundImageView setFrame:CGRectMake(0, 0, screenBackgroundImageViewWidth, screenBackgroundImageViewHeight)];
 			backgroundImage = [self clipUIImage:backgroundImage dependingOnUIView:backgroundImageView];

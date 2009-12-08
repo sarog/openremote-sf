@@ -23,17 +23,12 @@
 #import "XMLEntity.h"
 #import "Image.h"
 
-//typedef struct {
-//	int left;
-//	int top;
-//} BackgroundImageAbsolutePosition;
-
 @interface Background : XMLEntity {
 	int backgroundImageAbsolutePositionLeft;
 	int backgroundImageAbsolutePositionTop;
 	BOOL isBackgroundImageAbsolutePosition;
 	NSString *backgroundImageRelativePosition;
-	BOOL fullScreen;
+	BOOL fillScreen;
 	Image *backgroundImage;
 }
 
@@ -41,7 +36,7 @@
 @property(nonatomic, readwrite) int backgroundImageAbsolutePositionTop;
 @property(nonatomic, readwrite) BOOL isBackgroundImageAbsolutePosition;
 @property(nonatomic, retain) NSString *backgroundImageRelativePosition;
-@property(nonatomic, readwrite) BOOL fullScreen;
+@property(nonatomic, readwrite) BOOL fillScreen;
 @property(nonatomic, retain) Image *backgroundImage;
 
 @end
