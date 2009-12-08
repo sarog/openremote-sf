@@ -374,7 +374,7 @@ public class GridLayoutContainer extends ComponentContainer {
             /*
              * set the background size for the cell.
              */
-            getScreenCanvas().getMoveBackGround().setSize(boundsRecorder.getWidth(),boundsRecorder.getHeight());
+            getScreenCanvas().getMoveBackGround().setSize(boundsRecorder.getWidth(), boundsRecorder.getHeight());
             event.setData(cellContainer);
             cellContainer.removeFromParent();
             event.getStatus().setStatus(true);

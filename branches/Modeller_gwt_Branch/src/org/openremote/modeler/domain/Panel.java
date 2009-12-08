@@ -64,7 +64,7 @@ public class Panel extends BusinessEntity {
    public void setTouchPanelDefinition(TouchPanelDefinition touchPanelDefinition) {
       this.touchPanelDefinition = touchPanelDefinition;
    }
-   public void insertGroupRef(GroupRef before,GroupRef target){
+   public void insertGroupRef(GroupRef before, GroupRef target) {
       int index = groupRefs.indexOf(before);
       groupRefs.add(index, target);
    }

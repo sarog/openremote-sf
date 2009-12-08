@@ -130,8 +130,8 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
             screens.add(screenRef.getScreen());
          }
       }*/
-      if(getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY) != null){
-         oldPanels = (List<Panel>)getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
+      if (getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY) != null) {
+         oldPanels = (List<Panel>) getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
       }
       if (panels.size() > 0) {
          if (!resourceService.getPanelsJson(panels).equals(resourceService.getPanelsJson(oldPanels))) {

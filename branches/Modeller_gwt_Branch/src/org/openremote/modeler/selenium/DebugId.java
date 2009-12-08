@@ -135,11 +135,11 @@ public class DebugId {
    public static final String SCREEN_NAME_FIELD = "screenNameField";
    public static final String SCREEN_PANEL_FIELD = "screenPanelField";
    public static final String SCREEN_BG_FIELD = "screenBgField";
-   public static final String SCREEN_ABSOLUTE_RADIO= "screenAbsoluteRadio";
-   public static final String SCREEN_GRID_RADIO= "screenGridRadio";
-   public static final String SCREEN_GRID_ROW_FIELD= "screenGridRowField";
-   public static final String SCREEN_GRID_COLUMN_FIELD= "screenGridColumnField";
-   public static final String SCREEN_SUBMIT_BTN= "screenSubmitBtn";
+   public static final String SCREEN_ABSOLUTE_RADIO = "screenAbsoluteRadio";
+   public static final String SCREEN_GRID_RADIO = "screenGridRadio";
+   public static final String SCREEN_GRID_ROW_FIELD = "screenGridRowField";
+   public static final String SCREEN_GRID_COLUMN_FIELD = "screenGridColumnField";
+   public static final String SCREEN_SUBMIT_BTN = "screenSubmitBtn";
 
    /* Group Panel*/
    public static final String GROUP_PANEL_HEADER = "groupPanelHeader";

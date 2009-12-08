@@ -300,7 +300,7 @@ public class TreePanelBuilder {
                return ICON.switchIcon();
             } else if (thisModel.getBean() instanceof UIGrid) {
                return ICON.gridIcon();
-            } else{
+            } else {
                return ICON.buttonIcon();
             }
          }
@@ -319,7 +319,7 @@ public class TreePanelBuilder {
             if (event.getTypeInt() == Event.ONDBLCLICK) {
                BeanModel beanModel = this.getSelectionModel().getSelectedItem();
                if (beanModel.getBean() instanceof ScreenRef) {
-                  Screen screen = ((ScreenRef)beanModel.getBean()).getScreen();
+                  Screen screen = ((ScreenRef) beanModel.getBean()).getScreen();
                   ScreenTabItem screenTabItem = null;
                   for (TabItem tabPanel : screenTab.getItems()) {
                      screenTabItem = (ScreenTabItem) tabPanel;

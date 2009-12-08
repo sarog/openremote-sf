@@ -38,7 +38,7 @@ public class Grid extends BusinessEntity {
    private int width;
    
    /** The Height. */
-   private int Height;
+   private int height;
    
    /** The row count. */
    private int rowCount;
@@ -135,7 +135,7 @@ public class Grid extends BusinessEntity {
     * @return the height
     */
    public int getHeight() {
-      return Height;
+      return height;
    }
 
    /**
@@ -171,7 +171,7 @@ public class Grid extends BusinessEntity {
     * @param height the new height
     */
    public void setHeight(int height) {
-      Height = height;
+      this.height = height;
    }
 
    /**
