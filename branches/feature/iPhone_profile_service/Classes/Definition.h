@@ -23,6 +23,7 @@
 #import <UIKit/UIKit.h>
 #import "Screen.h"
 #import "Group.h"
+#import "Tabbar.h"
 
 
 @interface Definition : NSObject {		
@@ -30,6 +31,7 @@
 	NSDate *lastUpdateTime;
 	NSMutableArray *groups;
 	NSMutableArray *screens;
+	TabBar *tabBar;
 	NSMutableArray *imageNames;
 	NSInvocationOperation *updateOperation;
 	NSOperationQueue *updateOperationQueue; 
@@ -50,6 +52,7 @@
 @property (nonatomic,readonly) NSDate *lastUpdateTime;
 @property (nonatomic,readonly) NSMutableArray *groups;
 @property (nonatomic,readonly) NSMutableArray *screens;
+@property (nonatomic,retain) TabBar *tabBar;
 @property (nonatomic,readonly) NSMutableArray *imageNames;
 @property (nonatomic,retain) UILabel *loading;
 @property	(nonatomic,copy) NSString *username;

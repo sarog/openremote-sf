@@ -39,6 +39,7 @@
 #import "DataBaseService.h"
 #import "LogoutHelper.h"
 #import "Gesture.h"
+#import "TabBarItem.h"
 
 //Private method declare
 @interface AppDelegate (Private)
@@ -122,7 +123,15 @@
 		[groupControllers addObject:gc];
 		[groupViewMap setObject:gc.view forKey:[NSString stringWithFormat:@"%d", gc.group.groupId]];	
 		currentGroupController = [gc retain];
-		[defaultView addSubview:currentGroupController.view];
+		
+		// global tabBar
+		if ([[Definition sharedDefinition] tabBar]) {
+			globalTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController];
+			[defaultView setFrame:CGRectMake(0, 0, 320, 460)];
+			[defaultView addSubview:globalTabBarController.view];
+		} else {
+			[defaultView addSubview:currentGroupController.view];
+		}
 	} else {		
 		errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" message:@"Please associate screens with group or reset setting."];
 		[defaultView addSubview:errorViewController.view];		
@@ -335,7 +344,6 @@
 	
 }
 
-
 #pragma mark delegate method of updateController
 - (void)didUpadted {
 	[[DataBaseService sharedDataBaseService] saveCurrentUser];
@@ -388,6 +396,7 @@
 	[groupViewMap release];
 	[navigationHistory release];
 	[errorViewController release];
+	[globalTabBarController release];
 	
 	[super dealloc];
 }

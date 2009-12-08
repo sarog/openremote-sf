@@ -53,7 +53,7 @@ static Definition *myInstance = nil;
 @implementation Definition
 
 
-@synthesize isUpdating, lastUpdateTime, groups, screens, imageNames, loading, username, password;
+@synthesize isUpdating, lastUpdateTime, groups, screens, tabBar, imageNames, loading, username, password;
 
 - (id)init {			
 	if (myInstance != nil) {
@@ -221,6 +221,9 @@ static Definition *myInstance = nil;
 		Group *group = [[Group alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 		[groups addObject:group];
 		[group release];
+	} else if ([elementName isEqualToString:@"tabbar"]) {
+		NSLog(@"start at tabbar");
+		tabBar = [[TabBar alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 	}
 }
 
