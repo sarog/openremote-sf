@@ -24,7 +24,7 @@ package org.openremote.modeler.domain;
  *
  */
 @SuppressWarnings("serial")
-public class Background extends BusinessEntity{
+public class Background extends BusinessEntity {
    
    private String src = "";
    private boolean fillScreen = true;
@@ -36,9 +36,9 @@ public class Background extends BusinessEntity{
    private RelativeType relatedType = RelativeType.TOP_LEFT;
    
    public Background() {
-      this.src="";
+      this.src = "";
    }
-   public Background(String src){
+   public Background(String src) {
       this.src = src;
    }
 
@@ -102,7 +102,7 @@ public class Background extends BusinessEntity{
     *
     */
    public static enum RelativeType {
-      LEFT,RIGHT,TOP,BOTTOM,TOP_LEFT,BOTTOM_LEFT,TOP_RIGHT,BOTTOM_RIGHT,CENTER;
+      LEFT, RIGHT, TOP, BOTTOM, TOP_LEFT, BOTTOM_LEFT, TOP_RIGHT, BOTTOM_RIGHT, CENTER;
 
       @Override
       public String toString() {

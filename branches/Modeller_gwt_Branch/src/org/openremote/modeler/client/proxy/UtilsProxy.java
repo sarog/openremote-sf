@@ -118,8 +118,8 @@ public class UtilsProxy {
    public static void loadScreensFromSession(final AsyncSuccessCallback<List<Screen>> callback) {
       AsyncServiceFactory.getUtilsRPCServiceAsync().loadScreensFromSession(new AsyncSuccessCallback<List<Screen>>() {
          @Override
-         public void onSuccess(List<Screen> Screens) {
-            callback.onSuccess(Screens);
+         public void onSuccess(List<Screen> screens) {
+            callback.onSuccess(screens);
          }
       });
    }

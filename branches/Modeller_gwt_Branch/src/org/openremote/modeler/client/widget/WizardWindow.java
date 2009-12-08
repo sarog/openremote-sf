@@ -22,8 +22,6 @@ package org.openremote.modeler.client.widget;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openremote.modeler.selenium.DebugId;
-
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;

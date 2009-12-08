@@ -49,7 +49,7 @@ public class UIButton extends UIControl {
    public UIButton() {
       super();
    }
-   public UIButton(UIButton btn){
+   public UIButton(UIButton btn) {
       this.name = btn.name;
       this.repeate = btn.repeate;
       this.image = btn.image;
@@ -127,7 +127,7 @@ public class UIButton extends UIControl {
    @Override
    public List<UICommand> getCommands() {
       List<UICommand> commands = new ArrayList<UICommand>();
-      if(uiCommand != null) {
+      if (uiCommand != null) {
          commands.add(uiCommand);
       }
       return commands;

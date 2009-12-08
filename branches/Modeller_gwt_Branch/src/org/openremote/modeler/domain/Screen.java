@@ -57,7 +57,7 @@ public class Screen extends RefedEntity {
    /** The background. */
    private Background background = new Background("");
 
-   public Screen (){
+   public Screen() {
       this.background = new Background("");
    }
    /**
@@ -78,8 +78,8 @@ public class Screen extends RefedEntity {
       return grid;
    }
    
-   public UIGrid getGrid(int index){
-      return grids.size()>0?grids.get(index):null;
+   public UIGrid getGrid(int index) {
+      return grids.size() > 0 ? grids.get(index) : null;
    }
    /**
     * Gets the absolutes.
@@ -221,7 +221,7 @@ public class Screen extends RefedEntity {
       this.grids = grids;
    }
    
-   public void addGrid(UIGrid grid){
+   public void addGrid(UIGrid grid) {
       grids.add(grid);
    }
    

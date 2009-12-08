@@ -32,7 +32,7 @@ import org.openremote.modeler.domain.Cell;
 public class UIGrid extends UIComponent {
    public static final int DEFAULT_LEFT = 1;
    public static final int DEFALUT_TOP = 1;
-   public static final int DEFALUT_WIDTH= 200;
+   public static final int DEFALUT_WIDTH = 200;
    public static final int DEFAULT_HEIGHT = 200;
    public static final int DEFALUT_ROW_COUNT = 4;
    public static final int DEFAULT_COL_COUNT = 4;
@@ -45,7 +45,7 @@ public class UIGrid extends UIComponent {
    private int columnCount;
    private List<Cell> cells = new ArrayList<Cell>();
    
-   public UIGrid(UIGrid grid){
+   public UIGrid(UIGrid grid) {
       this.left = grid.left;
       this.top = grid.top;
       this.width = grid.width;

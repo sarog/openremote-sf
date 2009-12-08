@@ -28,24 +28,24 @@ import com.extjs.gxt.ui.client.util.Rectangle;
  * @author Javen
  *
  */
-public class BoundsRecorder{
-   int left = 0;
-   int top = 0;
-   int width = 0;
-   int height = 0;
+public class BoundsRecorder {
+   private int left = 0;
+   private int top = 0;
+   private int width = 0;
+   private int height = 0;
    
-   public BoundsRecorder(GridCellContainer container,UIGrid grid){
-      int cellWidth = grid.getWidth()/grid.getColumnCount();
-      int cellHeight = grid.getHeight()/grid.getRowCount();
+   public BoundsRecorder(GridCellContainer container, UIGrid grid) {
+      int cellWidth = grid.getWidth() / grid.getColumnCount();
+      int cellHeight = grid.getHeight() / grid.getRowCount();
       this.left = container.getAbsoluteLeft();
       this.top = container.getAbsoluteTop();
       Cell cell = container.getCell();
-      this.width = cell.getColspan()*cellWidth;
-      this.height= cell.getRowspan()*cellHeight;
+      this.width = cell.getColspan() * cellWidth;
+      this.height = cell.getRowspan() * cellHeight;
    }
-   
-   public Rectangle getBounds(){
-      return new Rectangle(left,top,width,height);
+
+   public Rectangle getBounds() {
+      return new Rectangle(left, top, width, height);
    }
 
    public int getLeft() {

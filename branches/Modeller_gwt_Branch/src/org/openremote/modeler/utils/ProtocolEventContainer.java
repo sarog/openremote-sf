@@ -157,7 +157,7 @@ public class ProtocolEventContainer {
                command = "";
             }
             for (String attrKey : protocolAttrKeySet) {
-               if(!"command".equals(attrKey)) {
+               if (!"command".equals(attrKey)) {
                   uiButtonEventXml.append(" " + attrKey + "=\"" + uiButtonEvent.getProtocolAttrs().get(attrKey) + "\"");
                }
             }

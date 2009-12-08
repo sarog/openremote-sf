@@ -28,7 +28,7 @@ import com.extjs.gxt.ui.client.event.Listener;
  * The class that is interested in processing a widgetSelectChange
  * event implements this interface, and the object created
  * with that class is registered with a component using the
- * component's <code>addWidgetSelectChangeListener<code> method. When
+ * component's <code>addWidgetSelectChangeListener</code> method. When
  * the widgetSelectChange event occurs, that object's appropriate
  * method is invoked.
  * 

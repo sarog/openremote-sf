@@ -80,7 +80,7 @@ public class EditDelBtnSelectionListener extends SelectionChangedListener<BeanMo
     * 
     * @return true, if is editable and deletable
     */
-   protected boolean isEditableAndDeletable(List<BeanModel> sels){
+   protected boolean isEditableAndDeletable(List<BeanModel> sels) {
       return true;
    }
    

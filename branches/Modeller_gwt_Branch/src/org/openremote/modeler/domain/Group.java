@@ -93,7 +93,7 @@ public class Group extends RefedEntity {
       screenRefs.remove(screenRef);
    }
    
-   public void insertScreenRef(ScreenRef before,ScreenRef target){
+   public void insertScreenRef(ScreenRef before, ScreenRef target) {
       int index = screenRefs.indexOf(before);
       screenRefs.add(index, target);
    }

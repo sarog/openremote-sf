@@ -181,7 +181,7 @@ public class BeanModelDataBase {
       if (beanModel.getBean() instanceof ScreenRef) {
          ScreenRef screenRef = (ScreenRef) beanModel.getBean();
          return screenRef.getScreenId();
-      } else if(beanModel.getBean() instanceof GroupRef) {
+      } else if (beanModel.getBean() instanceof GroupRef) {
          GroupRef groupRef = (GroupRef) beanModel.getBean();
          return groupRef.getGroupId();
       }

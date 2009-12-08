@@ -137,7 +137,7 @@ public class BeanModelTable {
       if (changeListeners.get(getIdFromBeanModel(beanModel)) != null) {
          List<ChangeListener> chgListeners = changeListeners.get(getIdFromBeanModel(beanModel));
          if (chgListeners != null && chgListeners.size() > 0) {
-            for (int i = chgListeners.size()-1; i >= 0; i--) {
+            for (int i = chgListeners.size() - 1; i >= 0; i--) {
                chgListeners.get(i).modelChanged(evt);
             }
          }

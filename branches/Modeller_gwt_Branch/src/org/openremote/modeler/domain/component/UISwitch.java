@@ -37,7 +37,7 @@ public class UISwitch extends UIControl {
    public UISwitch() {
       super();
    }
-   public UISwitch(UISwitch swh){
+   public UISwitch(UISwitch swh) {
       this.onImage = swh.offImage;
       this.offCommand = swh.offCommand;
       this.offImage = swh.offImage;

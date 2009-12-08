@@ -68,7 +68,7 @@ public class ScreenPropertyForm extends PropertyForm {
   
    private ScreenCanvas canvas = null;
   
-   public ScreenPropertyForm(ScreenCanvas canvas){
+   public ScreenPropertyForm(ScreenCanvas canvas) {
       super();
       this.canvas = canvas;
       createFields();
@@ -194,7 +194,7 @@ public class ScreenPropertyForm extends PropertyForm {
       return posLeftField;
    }
 
-   private void  createPositionField(FieldSet positionSet,final TextField<? extends Object> ...fields) {
+   private void createPositionField(FieldSet positionSet, final TextField<? extends Object>... fields) {
       CheckBox absolute = new CheckBox();
       absolute.setHideLabel(true);
       absolute.setBoxLabel("absolute");
@@ -202,8 +202,9 @@ public class ScreenPropertyForm extends PropertyForm {
       final ComboBox<ModelData> relative = new ComboBox<ModelData>();
       ListStore<ModelData> store = new ListStore<ModelData>();
       RelativeType[] relatedTypes  = RelativeType.values();
-      for( int i =0 ;i<relatedTypes.length;i++) {
-         ComboBoxDataModel<RelativeType> relativeItem = new ComboBoxDataModel<RelativeType>(relatedTypes[i].toString(),relatedTypes[i]);
+      for (int i = 0; i < relatedTypes.length; i++) {
+         ComboBoxDataModel<RelativeType> relativeItem = new ComboBoxDataModel<RelativeType>(relatedTypes[i].toString(),
+               relatedTypes[i]);
          store.add(relativeItem);
       }
       
@@ -211,7 +212,7 @@ public class ScreenPropertyForm extends PropertyForm {
       relative.setFieldLabel("relative");
       relative.setName(SCREEN_RELETIVE);
       relative.setAllowBlank(false);
-      relative.addSelectionChangedListener(new SelectionChangedListener<ModelData>(){
+      relative.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
 
          @SuppressWarnings("unchecked")
          @Override
@@ -225,11 +226,11 @@ public class ScreenPropertyForm extends PropertyForm {
          }
          
       });
-      absolute.addListener(Events.Change, new Listener<FieldEvent>(){
+      absolute.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
             Background bkGrd = canvas.getScreen().getBackground();
-            if("true".equals(be.getValue().toString())){
+            if ("true".equals(be.getValue().toString())) {
                bkGrd.setAbsolute(true);
                relative.setEnabled(false);
                enableTextField(true, fields);
@@ -285,14 +286,14 @@ public class ScreenPropertyForm extends PropertyForm {
       });
       whetherFieldGroup.hide();
       String backgroundSrc = canvas.getScreen().getBackground().getSrc();
-      if(backgroundSrc!=null && !backgroundSrc.equals("") ){
+      if (backgroundSrc != null && !backgroundSrc.equals("")) {
          whetherFieldGroup.show();
       }
       return whetherFieldGroup;
    }
 
    private FileUploadField createBackgroundField() {
-      FileUploadField background = new FileUploadField(){
+      FileUploadField background = new FileUploadField() {
          @Override
          protected void onChange(ComponentEvent ce) {
             super.onChange(ce);
@@ -341,7 +342,7 @@ public class ScreenPropertyForm extends PropertyForm {
             }*/
             
             boolean success = !"".equals(backgroundImgURL);
-            if(success){
+            if (success) {
                setBackground(backgroundImgURL);
                whetherFillScreen.show();
             }
@@ -358,8 +359,8 @@ public class ScreenPropertyForm extends PropertyForm {
       canvas.unmask();
 
    }
-   private void enableTextField(boolean enable,TextField<?> ...fields ){
-      for(TextField<?> field :fields){
+   private void enableTextField(boolean enable, TextField<?>... fields) {
+      for (TextField<?> field : fields) {
          field.setEnabled(enable);
       }
    }
