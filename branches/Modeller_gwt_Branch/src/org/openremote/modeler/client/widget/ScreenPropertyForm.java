@@ -104,7 +104,9 @@ public class ScreenPropertyForm extends PropertyForm {
       positionSet.add(posTopField);
 //      positionSet.add(widthField);
 //      positionSet.add(heightField);
-      positionSet.hide();
+      if(canvas.getScreen().getBackground().isFillScreen()){
+         positionSet.hide();
+      }
 //      whetherFillScreen.hide();
 //      this.add(screenNameField);
       this.add(background);
@@ -198,7 +200,7 @@ public class ScreenPropertyForm extends PropertyForm {
       CheckBox absolute = new CheckBox();
       absolute.setHideLabel(true);
       absolute.setBoxLabel("absolute");
-      absolute.setValue(false);
+      absolute.setValue(canvas.getScreen().getBackground().isAbsolute());
       final ComboBox<ModelData> relative = new ComboBox<ModelData>();
       ListStore<ModelData> store = new ListStore<ModelData>();
       RelativeType[] relatedTypes  = RelativeType.values();
@@ -246,7 +248,8 @@ public class ScreenPropertyForm extends PropertyForm {
      
       positionSet.add(relative);
       positionSet.add(absolute);
-      enableTextField(false, fields);
+      relative.setEnabled(!canvas.getScreen().getBackground().isAbsolute());
+      enableTextField(canvas.getScreen().getBackground().isAbsolute(), fields);
      
       relative.setDisplayField(ComboBoxDataModel.getDisplayProperty());
       relative.setEmptyText("Please select one... ");
@@ -285,6 +288,7 @@ public class ScreenPropertyForm extends PropertyForm {
          
       });
       whetherFieldGroup.hide();
+      whetherFieldGroup.setValue(canvas.getScreen().getBackground().isFillScreen()?fillScreen:notFillScreen);
       String backgroundSrc = canvas.getScreen().getBackground().getSrc();
       if (backgroundSrc != null && !backgroundSrc.equals("")) {
          whetherFieldGroup.show();
