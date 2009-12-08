@@ -20,7 +20,7 @@
  */
 
 #import "Background.h"
-#import "BackgroundRelativePositionConstant.h"
+#import "BackgroundImageRelativePositionConstant.h"
 
 
 @implementation Background

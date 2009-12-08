@@ -19,33 +19,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+#import <Foundation/Foundation.h>
+#import "XMLEntity.h"
+#import "Navigate.h"
+#import "Image.h"
 
-#import <UIKit/UIKit.h>
-#import "InitViewController.h"
-#import "UpdateController.h"
-#import "GroupController.h"
-#import "ErrorViewController.h"
-#import "ViewHelper.h"
-#import "GestureWindow.h"
-#import "TabBarController.h"
-
-@interface AppDelegate : NSObject <UIApplicationDelegate> {
-	
-	GestureWindow *window;
-	UIView *defaultView;
-	InitViewController *initViewController;
-	UIViewController *defaultViewController;
-	NSMutableArray *groupControllers;
-	GroupController *currentGroupController;
-	UpdateController *updateController;
-	NSMutableDictionary *groupViewMap;
-	NSMutableArray *navigationHistory;
-	ErrorViewController* errorViewController;
-	TabBarController *globalTabBarController;
-	
+@interface TabBarItem : XMLEntity {
+	NSString *tabBarItemName;
+	Navigate *navigate;
+	Image *tabBarItemImage;
 }
 
-
+@property (nonatomic, retain) NSString *tabBarItemName;
+@property (nonatomic, retain) Navigate *navigate;
+@property (nonatomic, retain) Image *tabBarItemImage;
 
 @end
-

@@ -36,7 +36,9 @@
 #import "Label.h"
 #import "Image.h"
 #import "Gesture.h"
-#import "BackgroundRelativePositionConstant.h"
+#import "BackgroundImageRelativePositionConstant.h"
+#import "Tabbar.h"
+#import "TabbarItem.h"
 
 @implementation PanelXMLParsingTests
 
@@ -819,7 +821,6 @@
 	[cells release];
 	NSLog(@"End testParsePanelGridImageXML");
 }
-
 // panel_absolute_image.xml test
 - (void) testParsePanelAbsoluteImageXML {
 	NSLog(@"Begin testParsePanelAbsoluteImageXML");
@@ -1027,9 +1028,8 @@
 			NSString *backgroundImageSrc = [[[screen background] backgroundImage] src];
 			NSString *expectedBackgroundImageSrc = [[NSString alloc] initWithFormat:@"basement%d.png", background_index];
 			STAssertTrue([expectedBackgroundImageSrc isEqualToString:backgroundImageSrc], @"expected %@, but %@", expectedBackgroundImageSrc, backgroundImageSrc);
-			NSLog(@"background image src of background is %@", backgroundImageSrc);
+			NSLog(@"background image src is ", backgroundImageSrc);
 			
-			NSLog(@"End test background of screen %@", [screen name]);			
 			background_index++;
 			
 			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
@@ -1174,7 +1174,7 @@
 			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
 			for (LayoutContainer *layout in screen.layouts) {
 				if([layout isKindOfClass:[AbsoluteLayoutContainer class]]){					
-					NSLog(@"layout is absolute ");
+					NSLog(@"laylongt is absolute ");
 					AbsoluteLayoutContainer *abso =(AbsoluteLayoutContainer *)layout;
 					NSString *layoutAttrs = [[NSMutableString alloc] initWithFormat:@"%d %d %d %d",abso.left,abso.top,abso.width,abso.height];
 					NSString *expectedAttrs = @"20 320 100 100";
@@ -1221,6 +1221,155 @@
 	[xml release];
 }
 
+// panel_tabbar.xml test
+- (void) testParsePanelTabbarXML {
+	NSLog(@"Begin testParsePanelTabbarXML");
+	[[Definition sharedDefinition] clearPanelXMLData];
+	NSData *xml = [self readFile:@"panel_tabbar.xml"];
+	
+	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
+	[xmlParser setDelegate:self];
+	[xmlParser parse];
+	
+	// Begin assert tabbar.
+	TabBar *tabBar = [[Definition sharedDefinition] tabBar];
+	NSLog(@"Tabbar is : %@", tabBar);
+	NSMutableArray *expectedTabBarItemsName = [NSMutableArray arrayWithObjects:@"previous", @"next", @"setting", nil];
+	NSMutableArray *expectedTabBarItemsImageSrc = [NSMutableArray arrayWithObjects:@"previous.png", @"next.png", @"setting.png", nil];
+	NSMutableArray *tabBarItems = tabBar.tabBarItems;
+	NSLog(@"TabBar items count is : %d", tabBarItems.count);
+	for (int i=0; i<tabBarItems.count; i++) {
+		TabBarItem *tabBarItem = [tabBarItems objectAtIndex:i];
+		
+		// assert tabbar item name.
+		NSString *expectedTabBarItemName = [expectedTabBarItemsName objectAtIndex:i];
+		STAssertTrue([tabBarItem.tabBarItemName isEqualToString:expectedTabBarItemName], @"expected %@, but %@", expectedTabBarItemName, tabBarItem.tabBarItemName);
+		NSLog(@"tabbarItemName is %@", [tabBarItem tabBarItemName]);
+		NSLog(@"expectedTabbarItemName is %@", expectedTabBarItemName);
+		
+		// assert tabbar item navigate
+		Navigate *navigate = tabBarItem.navigate;
+		BOOL expectedIsPreviousScreen = YES;
+		BOOL expectedIsNextScreen = YES;
+		BOOL expectedIsSetting = YES;
+		
+		BOOL isPreviousScreen = navigate.isPreviousScreen;
+		BOOL isNextScreen = navigate.isNextScreen;
+		BOOL isSetting = navigate.isSetting;
+		if (i % 3 == 0) {
+			STAssertTrue(isPreviousScreen == expectedIsPreviousScreen, @"expected %d, but %d", expectedIsPreviousScreen, isPreviousScreen);
+		} else if (i % 3 == 1) {
+			STAssertTrue(isNextScreen == expectedIsNextScreen, @"expected %d, but %d", expectedIsNextScreen, isNextScreen);
+		} else if (i % 3 == 2) {
+			STAssertTrue(isSetting == expectedIsSetting, @"expected %d, but %d", expectedIsSetting, isSetting);
+		}
+		NSLog(@"IsPreviousScreen is %d", isPreviousScreen);
+		NSLog(@"isNextScreen is %d", isNextScreen);
+		NSLog(@"isSetting is %d", isSetting);
+		
+		// assert tabbar item image
+		NSString *expectedTabBarItemImageSrc = [expectedTabBarItemsImageSrc objectAtIndex:i];
+		STAssertTrue([[tabBarItem.tabBarItemImage imageNamed] isEqualToString:expectedTabBarItemImageSrc], @"expected %@, but %@", expectedTabBarItemImageSrc, tabBarItem.tabBarItemImage.src);
+		NSLog(@"tabBarItemImage src is %@", [[tabBarItem tabBarItemImage] src]);
+		NSLog(@"expectedTabBarItemsImage src is %@", expectedTabBarItemImageSrc);
+	}
+	// End assert tabbar.
+	
+	NSMutableArray *groups = [[Definition sharedDefinition] groups];
+	NSMutableArray *screens = [[Definition sharedDefinition] screens];
+	NSLog(@"Has %d grounp(s).", [groups count]);
+	int background_index = 1;
+	int image_index = 0;
+	int state_index = 0;
+	NSMutableArray *cells = [[NSMutableArray alloc] init];
+	for (Group *group in groups) {
+		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
+		for (Screen *screen in group.screens) {
+			
+			NSLog(@"Begin test background of screen %@", [screen name]);
+			// relative position
+			STAssertTrue(![[screen background] isBackgroundImageAbsolutePosition], @"expected %d, but %d", NO, [[screen background] isBackgroundImageAbsolutePosition]);
+			NSLog(@"isBackgroundImageAbsolutePosition of screen background is %d", [[screen background] isBackgroundImageAbsolutePosition]);
+			
+			NSString *backgroundImageRelativePosition = [[screen background] backgroundImageRelativePosition];
+			NSString *expectedBackgroundImageRelativePosition;
+			if (background_index%2 != 0) {
+				expectedBackgroundImageRelativePosition = BG_IMAGE_RELATIVE_POSITION_LEFT;
+			} else {
+				expectedBackgroundImageRelativePosition = BG_IMAGE_RELATIVE_POSITION_RIGHT;
+			}
+			STAssertTrue([backgroundImageRelativePosition isEqualToString:expectedBackgroundImageRelativePosition], @"expected %@, but %@", expectedBackgroundImageRelativePosition, backgroundImageRelativePosition);
+			NSLog(@"relative position of background image is %@", backgroundImageRelativePosition);
+			
+			// fullscreen
+			BOOL fullScreen = [[screen background] fullScreen];
+			BOOL expectedFullScreen;
+			if (background_index%2 != 0) {
+				expectedFullScreen = YES;
+			} else {
+				expectedFullScreen = NO;
+			}
+			STAssertTrue(fullScreen == expectedFullScreen, @"expected %d, but %d", expectedFullScreen, fullScreen);
+			NSLog(@"fullScreen of background image is %d", fullScreen);
+			
+			// background image src
+			NSString *backgroundImageSrc = [[[screen background] backgroundImage] src];
+			NSString *expectedBackgroundImageSrc = [[NSString alloc] initWithFormat:@"basement%d.png", background_index];
+			STAssertTrue([expectedBackgroundImageSrc isEqualToString:backgroundImageSrc], @"expected %@, but %@", expectedBackgroundImageSrc, backgroundImageSrc);
+			NSLog(@"background image src of background is %@", backgroundImageSrc);
+			
+			NSLog(@"End test background of screen %@", [screen name]);			
+			background_index++;
+			
+			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
+			for (LayoutContainer *layout in screen.layouts) {
+				if([layout isKindOfClass:[GridLayoutContainer class]]){					
+					NSLog(@"layout is grid ");
+					GridLayoutContainer *grid =(GridLayoutContainer *)layout;
+					NSString *layoutAttrs = [[NSMutableString alloc] initWithFormat:@"%d %d %d %d",grid.left,grid.top,grid.width,grid.height];
+					NSString *expectedAttrs = @"20 20 300 400";
+					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
+					[layoutAttrs release];
+					
+					for (GridCell *cell in grid.cells) {			
+						[cells addObject:cell];
+						if ([cell.control isKindOfClass:[Image class]]) {
+							Image *theImage = (Image *)cell.control;
+							int expectedId = (59 + image_index++);
+							STAssertTrue(expectedId == theImage.controlId,@"expected %d, but %d",expectedId,theImage.controlId);
+							NSString *imageSrc = [[NSString alloc] initWithFormat:@"%c.png", (char)97 + state_index++];					
+							STAssertTrue([theImage.src isEqualToString:imageSrc],@"expected %@, but %@", imageSrc, theImage.src);
+						}	
+					}
+				}				
+			}
+		}
+	}
+	
+	NSLog(@"groups count = %d",[groups count]);
+	NSLog(@"screens count = %d",[screens count]);
+	NSLog(@"xml parse done");
+	
+	NSMutableArray *screenNames = [NSMutableArray arrayWithObjects:@"basement",@"floor",nil];
+	NSMutableArray *groupNames = [NSMutableArray arrayWithObjects:@"All rooms",@"living room",nil];
+	
+	//check screens
+	for (int i=0;i<screenNames.count;i++) {
+		STAssertTrue([[screenNames objectAtIndex:i] isEqualToString:[[screens objectAtIndex:i] name]],@"expected %@, but %@",[screenNames objectAtIndex:i],[[screens objectAtIndex:i] name]);
+		STAssertTrue(i+5 == [[screens objectAtIndex:i] screenId],@"expected %d, but %d",i+5,[[screens objectAtIndex:i] screenId]);
+	}
+	
+	//check groups
+	for (int i=0;i<groupNames.count;i++) {
+		STAssertTrue([[groupNames objectAtIndex:i] isEqualToString:[[groups objectAtIndex:i] name]],@"expected %@, but %@",[groupNames objectAtIndex:i],[[groups objectAtIndex:i] name]);
+		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
+	}
+	
+	[xmlParser release];
+	[xml release];
+	NSLog(@"End testParsePanelTabbarXML");
+}
+
 
 #pragma mark delegate method of NSXMLParser
 //Delegate method when find a element start
@@ -1236,6 +1385,11 @@
 		Group *group = [[Group alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 		[[[Definition sharedDefinition] groups] addObject:group];
 		[group release];
+	} else if ([elementName isEqualToString:@"tab"]) {
+		NSLog(@"start at tab");
+		TabBar *tabBar = [[TabBar alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+		[Definition sharedDefinition].tabBar = tabBar;
+		[tabBar release];
 	}
 }
 

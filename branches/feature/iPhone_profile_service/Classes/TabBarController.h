@@ -19,33 +19,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
 #import <UIKit/UIKit.h>
-#import "InitViewController.h"
-#import "UpdateController.h"
+#import "TabBar.h"
 #import "GroupController.h"
-#import "ErrorViewController.h"
-#import "ViewHelper.h"
-#import "GestureWindow.h"
-#import "TabBarController.h"
 
-@interface AppDelegate : NSObject <UIApplicationDelegate> {
-	
-	GestureWindow *window;
-	UIView *defaultView;
-	InitViewController *initViewController;
-	UIViewController *defaultViewController;
-	NSMutableArray *groupControllers;
-	GroupController *currentGroupController;
-	UpdateController *updateController;
-	NSMutableDictionary *groupViewMap;
-	NSMutableArray *navigationHistory;
-	ErrorViewController* errorViewController;
-	TabBarController *globalTabBarController;
-	
+@interface TabBarController : UITabBarController <UITabBarControllerDelegate> {
+	TabBar *customziedTabBar;
+	GroupController *groupController;
 }
 
+- (id) initWithGroupController:(GroupController *)groupControllerParam;
 
+@property (nonatomic, retain) TabBar *customziedTabBar;
+@property (nonatomic, retain) GroupController *groupController;
 
 @end
-

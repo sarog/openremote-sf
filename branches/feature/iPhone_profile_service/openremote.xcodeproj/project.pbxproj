@@ -14,6 +14,8 @@
 		331A58E810AD6A79001AB869 /* DataBaseServiceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 331A58E610AD6A79001AB869 /* DataBaseServiceTest.m */; };
 		331A591610AD6D21001AB869 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 331A591510AD6D21001AB869 /* SenTestingKit.framework */; };
 		331A591710AD6D21001AB869 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 331A591510AD6D21001AB869 /* SenTestingKit.framework */; };
+		331CB89C10CCDBD100906A28 /* PanelXMLParsingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 331CB89B10CCDBD100906A28 /* PanelXMLParsingTests.m */; };
+		331CB89D10CCDBD100906A28 /* PanelXMLParsingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 331CB89B10CCDBD100906A28 /* PanelXMLParsingTests.m */; };
 		3322875510BFB09B00D94163 /* panel_absolute_monitor.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322875410BFB09B00D94163 /* panel_absolute_monitor.xml */; };
 		3322875610BFB09B00D94163 /* panel_absolute_monitor.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322875410BFB09B00D94163 /* panel_absolute_monitor.xml */; };
 		3322875810BFB0A600D94163 /* panel_grid_monitor.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322875710BFB0A600D94163 /* panel_grid_monitor.xml */; };
@@ -56,6 +58,14 @@
 		33981C8810B1378F0076DB59 /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 33981C8610B1378F0076DB59 /* database.db */; };
 		339C75EB10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml in Resources */ = {isa = PBXBuildFile; fileRef = 339C75EA10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml */; };
 		339C75EC10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml in Resources */ = {isa = PBXBuildFile; fileRef = 339C75EA10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml */; };
+		33DF2E0710CCC90D0038DA82 /* panel_tabbar.xml in Resources */ = {isa = PBXBuildFile; fileRef = 33DF2E0610CCC90D0038DA82 /* panel_tabbar.xml */; };
+		33DF2E0810CCC90D0038DA82 /* panel_tabbar.xml in Resources */ = {isa = PBXBuildFile; fileRef = 33DF2E0610CCC90D0038DA82 /* panel_tabbar.xml */; };
+		33DF2E1610CCCB8C0038DA82 /* TabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF2E1510CCCB8C0038DA82 /* TabBar.m */; };
+		33DF2E1710CCCB8C0038DA82 /* TabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF2E1510CCCB8C0038DA82 /* TabBar.m */; };
+		33DF2E6210CCD3BD0038DA82 /* TabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF2E6110CCD3BD0038DA82 /* TabBarItem.m */; };
+		33DF2E6310CCD3BD0038DA82 /* TabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF2E6110CCD3BD0038DA82 /* TabBarItem.m */; };
+		33DF56CE10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
+		33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
 		8C1F31C310AA9B3D0081A3D4 /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C1F31C210AA9B3D0081A3D4 /* btn_green.png */; };
 		8C1F31C410AA9B3D0081A3D4 /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C1F31C210AA9B3D0081A3D4 /* btn_green.png */; };
@@ -159,7 +169,6 @@
 		8C460FA3109566F900C7A686 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C7BE48A0FA0431700F18AA1 /* Reachability.m */; };
 		8C460FA4109566F900C7A686 /* AsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27D0FBD3782006ED733 /* AsyncSocket.m */; };
 		8C460FA5109566F900C7A686 /* AsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27F0FBD3782006ED733 /* AsyncUdpSocket.m */; };
-		8C460FED1095A30A00C7A686 /* PanelXMLParsingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460FEC1095A30A00C7A686 /* PanelXMLParsingTests.m */; };
 		8C5E9AA410BFD38C00CD87AD /* panel_absolute_slider_gesture.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C5E9AA310BFD38C00CD87AD /* panel_absolute_slider_gesture.xml */; };
 		8C5E9AA510BFD38C00CD87AD /* panel_absolute_slider_gesture.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C5E9AA310BFD38C00CD87AD /* panel_absolute_slider_gesture.xml */; };
 		8C5E9B6E10BFF29900CD87AD /* Slider.h in Sources */ = {isa = PBXBuildFile; fileRef = 3322879510BFB55A00D94163 /* Slider.h */; };
@@ -241,6 +250,7 @@
 		331A58E510AD6A79001AB869 /* DataBaseServiceTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataBaseServiceTest.h; sourceTree = "<group>"; };
 		331A58E610AD6A79001AB869 /* DataBaseServiceTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataBaseServiceTest.m; sourceTree = "<group>"; };
 		331A591510AD6D21001AB869 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		331CB89B10CCDBD100906A28 /* PanelXMLParsingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PanelXMLParsingTests.m; sourceTree = "<group>"; };
 		3322875410BFB09B00D94163 /* panel_absolute_monitor.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_absolute_monitor.xml; sourceTree = "<group>"; };
 		3322875710BFB0A600D94163 /* panel_grid_monitor.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_grid_monitor.xml; sourceTree = "<group>"; };
 		3322878B10BFB18800D94163 /* panel_grid_slider.xml */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.xml; path = panel_grid_slider.xml; sourceTree = "<group>"; };
@@ -271,6 +281,13 @@
 		33981B3410B119BC0076DB59 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		33981C8610B1378F0076DB59 /* database.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.db; sourceTree = "<group>"; };
 		339C75EA10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.xml; path = panel_absolute_screen_backgroundimage.xml; sourceTree = "<group>"; };
+		33DF2E0610CCC90D0038DA82 /* panel_tabbar.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_tabbar.xml; sourceTree = "<group>"; };
+		33DF2E1410CCCB8C0038DA82 /* TabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBar.h; sourceTree = "<group>"; };
+		33DF2E1510CCCB8C0038DA82 /* TabBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBar.m; sourceTree = "<group>"; };
+		33DF2E6010CCD3BD0038DA82 /* TabBarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarItem.h; sourceTree = "<group>"; };
+		33DF2E6110CCD3BD0038DA82 /* TabBarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarItem.m; sourceTree = "<group>"; };
+		33DF56CC10CCF6B50005446D /* TabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarController.h; sourceTree = "<group>"; };
+		33DF56CD10CCF6B50005446D /* TabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarController.m; sourceTree = "<group>"; };
 		799CC3CC0F4D4EEA006195BD /* URLConnectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLConnectionHelper.h; sourceTree = "<group>"; };
 		799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLConnectionHelper.m; sourceTree = "<group>"; };
 		8C09E76210BA838800A475D8 /* ControllerException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerException.h; sourceTree = "<group>"; };
@@ -363,7 +380,6 @@
 		8C460F5A109564D000C7A686 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		8C460F5B109564D000C7A686 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		8C460F8D1095666A00C7A686 /* panel_absolute_switch.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_absolute_switch.xml; sourceTree = "<group>"; };
-		8C460FEC1095A30A00C7A686 /* PanelXMLParsingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PanelXMLParsingTests.m; sourceTree = "<group>"; };
 		8C5E9AA310BFD38C00CD87AD /* panel_absolute_slider_gesture.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_absolute_slider_gesture.xml; sourceTree = "<group>"; };
 		8C6502E0109809EC006FC19F /* PollingHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PollingHelper.h; sourceTree = "<group>"; };
 		8C6502E1109809EC006FC19F /* PollingHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PollingHelper.m; sourceTree = "<group>"; };
@@ -636,7 +652,7 @@
 				3338CDBE10C5039B0067C94D /* panel_grid_label.xml */,
 				8C5E9AA310BFD38C00CD87AD /* panel_absolute_slider_gesture.xml */,
 				8C460E52109552EB00C7A686 /* PanelXMLParsingTests.h */,
-				8C460FEC1095A30A00C7A686 /* PanelXMLParsingTests.m */,
+				331CB89B10CCDBD100906A28 /* PanelXMLParsingTests.m */,
 				3322878B10BFB18800D94163 /* panel_grid_slider.xml */,
 				3322878E10BFB19E00D94163 /* panel_absolute_slider.xml */,
 				8C6504721098337F006FC19F /* panel_grid_switch.xml */,
@@ -647,6 +663,7 @@
 				3322875410BFB09B00D94163 /* panel_absolute_monitor.xml */,
 				339C75EA10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml */,
 				3389A2D410C5FF86009E074A /* panel_relative_screen_backgroundimage.xml */,
+				33DF2E0610CCC90D0038DA82 /* panel_tabbar.xml */,
 			);
 			name = panelxml;
 			sourceTree = "<group>";
@@ -667,6 +684,14 @@
 		8CFEE27F0F558C2900DF8759 /* model */ = {
 			isa = PBXGroup;
 			children = (
+				33DF2E1410CCCB8C0038DA82 /* TabBar.h */,
+				33DF2E1510CCCB8C0038DA82 /* TabBar.m */,
+				33DF2E6010CCD3BD0038DA82 /* TabBarItem.h */,
+				33DF2E6110CCD3BD0038DA82 /* TabBarItem.m */,
+				8C460EC51095573600C7A686 /* Screen.h */,
+				8C460EC61095573600C7A686 /* Screen.m */,
+				8C460EB91095573600C7A686 /* Group.h */,
+				8C460EBA1095573600C7A686 /* Group.m */,
 				3322879510BFB55A00D94163 /* Slider.h */,
 				3322879610BFB55A00D94163 /* Slider.m */,
 				8CE7ED0510BE988600E15487 /* Monitor.h */,
@@ -689,8 +714,6 @@
 				8C460EB61095573600C7A686 /* GridCell.m */,
 				8C460EB71095573600C7A686 /* GridLayoutContainer.h */,
 				8C460EB81095573600C7A686 /* GridLayoutContainer.m */,
-				8C460EB91095573600C7A686 /* Group.h */,
-				8C460EBA1095573600C7A686 /* Group.m */,
 				8C460EBB1095573600C7A686 /* Image.h */,
 				8C460EBC1095573600C7A686 /* Image.m */,
 				8C460EBD1095573600C7A686 /* Label.h */,
@@ -699,8 +722,6 @@
 				8C460EC01095573600C7A686 /* LayoutContainer.m */,
 				8C460EC11095573600C7A686 /* Navigate.h */,
 				8C460EC21095573600C7A686 /* Navigate.m */,
-				8C460EC51095573600C7A686 /* Screen.h */,
-				8C460EC61095573600C7A686 /* Screen.m */,
 				8C460EC91095573600C7A686 /* Toggle.h */,
 				8C460ECA1095573600C7A686 /* Toggle.m */,
 				8C460ECB1095573600C7A686 /* ToggleState.h */,
@@ -775,6 +796,8 @@
 				8CF5341E10B64C1900C52FB0 /* ChoosePanelViewController.m */,
 				8CF539A910B9359F00C52FB0 /* ErrorViewController.h */,
 				8CF539AA10B9359F00C52FB0 /* ErrorViewController.m */,
+				33DF56CC10CCF6B50005446D /* TabBarController.h */,
+				33DF56CD10CCF6B50005446D /* TabBarController.m */,
 			);
 			name = controller;
 			sourceTree = "<group>";
@@ -880,6 +903,7 @@
 				3338CDC210C5039B0067C94D /* panel_grid_label.xml in Resources */,
 				3389A2D610C5FF86009E074A /* panel_relative_screen_backgroundimage.xml in Resources */,
 				339C75EB10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml in Resources */,
+				33DF2E0810CCC90D0038DA82 /* panel_tabbar.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -905,6 +929,7 @@
 				3338CDC610C5039B0067C94D /* panel_grid_label.xml in Resources */,
 				3389A2D510C5FF86009E074A /* panel_relative_screen_backgroundimage.xml in Resources */,
 				339C75EC10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml in Resources */,
+				33DF2E0710CCC90D0038DA82 /* panel_tabbar.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1003,6 +1028,10 @@
 				3338CDB810C5036C0067C94D /* LabelView.m in Sources */,
 				3389A32110C60472009E074A /* Background.m in Sources */,
 				3389A32510C60E5B009E074A /* BackgroundImageRelativePositionConstant.m in Sources */,
+				33DF2E1710CCCB8C0038DA82 /* TabBar.m in Sources */,
+				33DF2E6310CCD3BD0038DA82 /* TabBarItem.m in Sources */,
+				331CB89D10CCDBD100906A28 /* PanelXMLParsingTests.m in Sources */,
+				33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1083,7 +1112,6 @@
 				8C460F2D109562D200C7A686 /* CheckNetwork.m in Sources */,
 				8C460F41109563E100C7A686 /* NotificationConstant.m in Sources */,
 				8C460F5D109564D000C7A686 /* AppDelegate.m in Sources */,
-				8C460FED1095A30A00C7A686 /* PanelXMLParsingTests.m in Sources */,
 				8C65FDF61096F33C006FC19F /* PollingStatusParserDelegate.m in Sources */,
 				8C6502E3109809EC006FC19F /* PollingHelper.m in Sources */,
 				8CAEB81C10A6B25B0051C827 /* LoginViewController.m in Sources */,
@@ -1103,6 +1131,10 @@
 				3338CDBA10C5036C0067C94D /* LabelView.m in Sources */,
 				3389A32010C60472009E074A /* Background.m in Sources */,
 				3389A32410C60E5B009E074A /* BackgroundImageRelativePositionConstant.m in Sources */,
+				33DF2E1610CCCB8C0038DA82 /* TabBar.m in Sources */,
+				33DF2E6210CCD3BD0038DA82 /* TabBarItem.m in Sources */,
+				331CB89C10CCDBD100906A28 /* PanelXMLParsingTests.m in Sources */,
+				33DF56CE10CCF6B50005446D /* TabBarController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
