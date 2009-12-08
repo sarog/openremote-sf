@@ -580,8 +580,8 @@ public class ResourceServiceImpl implements ResourceService {
                } else {
                   xmlContent.append(" relative=\"" + screen.getBackground().getRelatedType().toString().replace("-", " ")+"\"");
                }
-               xmlContent.append("/>");
             }
+            xmlContent.append("/>");
          }
          for (Absolute absolute : screen.getAbsolutes()) {
             xmlContent.append("      <absolute left=\"" + absolute.getLeft() + "\" top=\"" + absolute.getTop()
