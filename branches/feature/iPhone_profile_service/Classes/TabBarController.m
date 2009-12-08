@@ -34,20 +34,20 @@
 		TabBar *newTabBar =  [[Definition sharedDefinition] tabBar];
 		if (newTabBar) {
 			self.delegate = self;
-			
+			[self.view setFrame:CGRectMake(0, 0, 320, 460)];
 			customziedTabBar = [newTabBar retain];
 			self.groupController = groupControllerParam;
 			NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
 			for (TabBarItem *tabBarItem in customziedTabBar.tabBarItems) {
-				UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:groupController];
-				nc.navigationBar.hidden = YES;
+				UIViewController *itemController = [[UIViewController alloc] init];
+				itemController.view = groupController.view;
 				NSLog(@"before title is : %@", [tabBarItem tabBarItemName]);
-				nc.tabBarItem.title = tabBarItem.tabBarItemName;
+				itemController.tabBarItem.title = tabBarItem.tabBarItemName;
 				UIImage *image = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:tabBarItem.tabBarItemImage.src]];
-				nc.tabBarItem.image = image;
-				NSLog(@"after title is : %@", nc.tabBarItem.title);
+				itemController.tabBarItem.image = image;
+				NSLog(@"after title is : %@", itemController.tabBarItem.title);
 				
-				[viewControllers addObject:nc];
+				[viewControllers addObject:itemController];
 			}
 			self.viewControllers = viewControllers;
 		}

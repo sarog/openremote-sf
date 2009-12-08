@@ -34,8 +34,6 @@
 	
 	BOOL pageControlUsed;
 	
-	
-	CGPoint    gestureStartPoint;
 }
 
 @property(nonatomic,copy) NSArray *viewControllers;
