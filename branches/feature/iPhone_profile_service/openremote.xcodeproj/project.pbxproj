@@ -58,8 +58,8 @@
 		33981C8810B1378F0076DB59 /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 33981C8610B1378F0076DB59 /* database.db */; };
 		339C75EB10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml in Resources */ = {isa = PBXBuildFile; fileRef = 339C75EA10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml */; };
 		339C75EC10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml in Resources */ = {isa = PBXBuildFile; fileRef = 339C75EA10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml */; };
-		33DF2E0710CCC90D0038DA82 /* panel_tabbar.xml in Resources */ = {isa = PBXBuildFile; fileRef = 33DF2E0610CCC90D0038DA82 /* panel_tabbar.xml */; };
-		33DF2E0810CCC90D0038DA82 /* panel_tabbar.xml in Resources */ = {isa = PBXBuildFile; fileRef = 33DF2E0610CCC90D0038DA82 /* panel_tabbar.xml */; };
+		33DF2E0710CCC90D0038DA82 /* panel_global_tabbar.xml in Resources */ = {isa = PBXBuildFile; fileRef = 33DF2E0610CCC90D0038DA82 /* panel_global_tabbar.xml */; };
+		33DF2E0810CCC90D0038DA82 /* panel_global_tabbar.xml in Resources */ = {isa = PBXBuildFile; fileRef = 33DF2E0610CCC90D0038DA82 /* panel_global_tabbar.xml */; };
 		33DF2E1610CCCB8C0038DA82 /* TabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF2E1510CCCB8C0038DA82 /* TabBar.m */; };
 		33DF2E1710CCCB8C0038DA82 /* TabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF2E1510CCCB8C0038DA82 /* TabBar.m */; };
 		33DF2E6210CCD3BD0038DA82 /* TabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF2E6110CCD3BD0038DA82 /* TabBarItem.m */; };
@@ -281,7 +281,7 @@
 		33981B3410B119BC0076DB59 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		33981C8610B1378F0076DB59 /* database.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.db; sourceTree = "<group>"; };
 		339C75EA10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.xml; path = panel_absolute_screen_backgroundimage.xml; sourceTree = "<group>"; };
-		33DF2E0610CCC90D0038DA82 /* panel_tabbar.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_tabbar.xml; sourceTree = "<group>"; };
+		33DF2E0610CCC90D0038DA82 /* panel_global_tabbar.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_global_tabbar.xml; sourceTree = "<group>"; };
 		33DF2E1410CCCB8C0038DA82 /* TabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBar.h; sourceTree = "<group>"; };
 		33DF2E1510CCCB8C0038DA82 /* TabBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBar.m; sourceTree = "<group>"; };
 		33DF2E6010CCD3BD0038DA82 /* TabBarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarItem.h; sourceTree = "<group>"; };
@@ -663,7 +663,7 @@
 				3322875410BFB09B00D94163 /* panel_absolute_monitor.xml */,
 				339C75EA10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml */,
 				3389A2D410C5FF86009E074A /* panel_relative_screen_backgroundimage.xml */,
-				33DF2E0610CCC90D0038DA82 /* panel_tabbar.xml */,
+				33DF2E0610CCC90D0038DA82 /* panel_global_tabbar.xml */,
 			);
 			name = panelxml;
 			sourceTree = "<group>";
@@ -903,7 +903,7 @@
 				3338CDC210C5039B0067C94D /* panel_grid_label.xml in Resources */,
 				3389A2D610C5FF86009E074A /* panel_relative_screen_backgroundimage.xml in Resources */,
 				339C75EB10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml in Resources */,
-				33DF2E0810CCC90D0038DA82 /* panel_tabbar.xml in Resources */,
+				33DF2E0810CCC90D0038DA82 /* panel_global_tabbar.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -929,7 +929,7 @@
 				3338CDC610C5039B0067C94D /* panel_grid_label.xml in Resources */,
 				3389A2D510C5FF86009E074A /* panel_relative_screen_backgroundimage.xml in Resources */,
 				339C75EC10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml in Resources */,
-				33DF2E0710CCC90D0038DA82 /* panel_tabbar.xml in Resources */,
+				33DF2E0710CCC90D0038DA82 /* panel_global_tabbar.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
