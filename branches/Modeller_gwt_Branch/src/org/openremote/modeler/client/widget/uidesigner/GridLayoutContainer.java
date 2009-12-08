@@ -154,7 +154,7 @@ public class GridLayoutContainer extends ComponentContainer {
                   e.setCancelled(true);
                   return;
                }
-               cellContainer = addNewWidget(grid, cellWidth + 1, cellHeight + 1, e, targetCell, targetPosition,
+               cellContainer = addNewWidget(grid, cellWidth, cellHeight, e, targetCell, targetPosition,
                      cellContainer);
             } else if (data instanceof GridContainer) {
                ((ComponentContainer) data).hideBackground();
@@ -186,14 +186,15 @@ public class GridLayoutContainer extends ComponentContainer {
          // rendered.
          List<Cell> cells = grid.getCells();
          for (Cell cell : cells) {
-            GridCellContainer cellContainer = createCellContainer(grid, cell, (cellWidth + 1) * cell.getColspan() - 1,
-                  (cellHeight + 1) * cell.getRowspan() - 1);
+            GridCellContainer cellContainer = createCellContainer(grid, cell, (cellWidth + 1) * cell.getColspan()+1,
+                  (cellHeight + 1) * cell.getRowspan()+1);
             makeCellContainerResizable(cellWidth, cellHeight, cellContainer);
             cellContainer.setPosition(cellWidth * cell.getPosX() + cell.getPosX() + 1, cellHeight * cell.getPosY()
                   + cell.getPosY() + 1);
             cellContainer.setName(cell.getUiComponent().getName());
+            cellContainer.setCellSpan(1, 1);
             add(cellContainer);
-            cellContainer.setBorders(true);
+            cellContainer.setBorders(false);
             cellContainer.fillArea(btnInArea);
             createDragSource(cellContainer);
             layout();
@@ -428,8 +429,8 @@ public class GridLayoutContainer extends ComponentContainer {
             GridCellContainer resizedCellContainer = (GridCellContainer) re.getComponent();
             int vSize = (int) Math.round((float) resizedCellContainer.getHeight() / cellHeight);
             int hSize = (int) Math.round((float) resizedCellContainer.getWidth() / cellWidth);
-            resizedCellContainer.setHeight(vSize * cellHeight + vSize - 1);
-            resizedCellContainer.setWidth(hSize * cellWidth + hSize - 1);
+            resizedCellContainer.setHeight(vSize * cellHeight + vSize/* - 1*/);
+            resizedCellContainer.setWidth(hSize * cellWidth + hSize/* - 1*/);
             resizedCellContainer.setCellSpan(hSize, vSize);
             resizedCellContainer.fillArea(btnInArea);
             cellContainers.add(resizedCellContainer);
@@ -445,8 +446,8 @@ public class GridLayoutContainer extends ComponentContainer {
 //            int maxY = findMaxYWhenResize(resizeCellContainer, screen.getGrid());
             int maxX = findMaxXWhenResize(resizeCellContainer, grid);
             int maxY = findMaxYWhenResize(resizeCellContainer, grid);
-            resizable.setMaxWidth((maxX - resizeCellContainer.getCell().getPosX() + 1) * cellWidth);
-            resizable.setMaxHeight((maxY - resizeCellContainer.getCell().getPosY() + 1) * cellHeight);
+            resizable.setMaxWidth((maxX - resizeCellContainer.getCell().getPosX()/* + 1*/) * cellWidth);
+            resizable.setMaxHeight((maxY - resizeCellContainer.getCell().getPosY()/* + 1*/) * cellHeight);
             resizeCellContainer.clearArea(btnInArea);
          }
 
@@ -501,7 +502,6 @@ public class GridLayoutContainer extends ComponentContainer {
       if (models.size() > 0) {
          BeanModel dataModel = models.get(0).get("model");
          cellContainer = createNewCellContainer((UIComponent) dataModel.getBean(), grid, cellWidth, cellHeight);
-         cellContainer.getClass();
          cellContainer.setCellSpan(1, 1);
          cellContainer.setCellPosition(targetPosition.x, targetPosition.y);
          cellContainer.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
