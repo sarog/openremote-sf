@@ -1225,7 +1225,7 @@
 - (void) testParsePanelTabbarXML {
 	NSLog(@"Begin testParsePanelTabbarXML");
 	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_tabbar.xml"];
+	NSData *xml = [self readFile:@"panel_global_tabbar.xml"];
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
 	[xmlParser setDelegate:self];
@@ -1269,7 +1269,7 @@
 		
 		// assert tabbar item image
 		NSString *expectedTabBarItemImageSrc = [expectedTabBarItemsImageSrc objectAtIndex:i];
-		STAssertTrue([[tabBarItem.tabBarItemImage imageNamed] isEqualToString:expectedTabBarItemImageSrc], @"expected %@, but %@", expectedTabBarItemImageSrc, tabBarItem.tabBarItemImage.src);
+		STAssertTrue([tabBarItem.tabBarItemImage.src isEqualToString:expectedTabBarItemImageSrc], @"expected %@, but %@", expectedTabBarItemImageSrc, tabBarItem.tabBarItemImage.src);
 		NSLog(@"tabBarItemImage src is %@", [[tabBarItem tabBarItemImage] src]);
 		NSLog(@"expectedTabBarItemsImage src is %@", expectedTabBarItemImageSrc);
 	}
