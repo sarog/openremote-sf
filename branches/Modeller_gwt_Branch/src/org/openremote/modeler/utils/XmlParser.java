@@ -76,15 +76,15 @@ public class XmlParser {
     */
    public static String validateAndOutputXML(File xsdfile, String xmlString, File folder) {
       SAXBuilder sb = new SAXBuilder(true);
-      sb.setValidation(false);
+      sb.setValidation(true);
 
-//      sb.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
-//      sb.setProperty(SCHEMA_SOURCE, xsdfile);
+      sb.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
+      sb.setProperty(SCHEMA_SOURCE, xsdfile);
       String result = "";
       try {         
           Document doc = sb.build(new InputSource(new StringReader(xmlString)));
-//          xpathParseImage(folder, doc, "//or:screen[@background]", "background");          
-//          xpathParseImage(folder, doc, "//or:image[@src]", "src");          
+          xpathParseImage(folder, doc, "//or:image[@src]", "src");
+          xpathParseImage(folder, doc, "//or:background[@src]", "src");
          Format format = Format.getPrettyFormat();
          format.setIndent("  ");
          format.setEncoding("UTF-8");
@@ -102,10 +102,10 @@ public class XmlParser {
    
    public static String validateAndOutputXML(File xsdfile, String xmlString) {
       SAXBuilder sb = new SAXBuilder(true);
-      sb.setValidation(false);
+      sb.setValidation(true);
 
-//      sb.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
-//      sb.setProperty(SCHEMA_SOURCE, xsdfile);
+      sb.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
+      sb.setProperty(SCHEMA_SOURCE, xsdfile);
       String result = "";
       try {         
           Document doc = sb.build(new InputSource(new StringReader(xmlString)));

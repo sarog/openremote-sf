@@ -573,18 +573,15 @@ public class ResourceServiceImpl implements ResourceService {
          xmlContent.append(">\n");
          if (!"".equals(screen.getBackground().getSrc())) {
             xmlContent.append("<background src=\"" + screen.getBackground().getSrc() + "\"");
-            xmlContent.append(" fillScreen=\"" + screen.getBackground().isFillScreen() + "\">");
             if (!screen.getBackground().isFillScreen()) {
-               xmlContent.append("<property name=\"absolute\" value=\"" + screen.getBackground().isAbsolute() + "\"/>");
+               xmlContent.append(" fillScreen=\"" + false +"\"" );
                if (screen.getBackground().isAbsolute()) {
-                  xmlContent.append("<property name=\"left\" value=\"" + screen.getBackground().getLeft() + "\"/>");
-                  xmlContent.append("<property name=\"top\" value=\"" + screen.getBackground().getTop() + "\"/>");
+                  xmlContent.append(" absolute=\"" + screen.getBackground().getLeft() + ","+screen.getBackground().getTop()+"\"");
                } else {
-                  xmlContent.append("<property name=\"relative\" value=\"" + screen.getBackground().getRelatedType().toString().replace("_", " ")
-                        + "\"/>");
+                  xmlContent.append(" relative=\"" + screen.getBackground().getRelatedType().toString().replace("-", " ")+"\"");
                }
+               xmlContent.append("/>");
             }
-            xmlContent.append("</background>");
          }
          for (Absolute absolute : screen.getAbsolutes()) {
             xmlContent.append("      <absolute left=\"" + absolute.getLeft() + "\" top=\"" + absolute.getTop()
@@ -628,7 +625,7 @@ public class ResourceServiceImpl implements ResourceService {
 
    private void parseTabbarsToXML(StringBuffer xmlContent, Collection<UITabbarItem> tabbars) {
       if (tabbars.size() > 0) {
-         xmlContent.append("<tab>");
+         xmlContent.append("<tabbar>");
          for (UITabbarItem item : tabbars) {
             xmlContent.append("<item name=\"" + item.getName() + "\">");
             Navigate navigate = item.getNavigate();
@@ -641,15 +638,15 @@ public class ResourceServiceImpl implements ResourceService {
             } else if (navigate.isToSetting()) {
                xmlContent.append(" toSetting= \"" + navigate.isToSetting() + "\"");
             } else if (navigate.isBack()) {
-               xmlContent.append(" back= \"" + navigate.isBack() + "\"");
+               xmlContent.append(" toBack= \"" + navigate.isBack() + "\"");
             } else if (navigate.isLogin()) {
-               xmlContent.append(" login= \"" + navigate.isLogin() + "\"");
+               xmlContent.append(" toLogin= \"" + navigate.isLogin() + "\"");
             } else if (navigate.isLogout()) {
-               xmlContent.append(" logout= \"" + navigate.isLogout() + "\"");
+               xmlContent.append(" toLogout= \"" + navigate.isLogout() + "\"");
             } else if (navigate.isPrevious()) {
-               xmlContent.append(" previous= \"" + navigate.isPrevious() + "\"");
+               xmlContent.append(" toPreviousScreen= \"" + navigate.isPrevious() + "\"");
             } else if (navigate.isNext()) {
-               xmlContent.append(" next= \"" + navigate.isNext() + "\"");
+               xmlContent.append(" toNextScreen= \"" + navigate.isNext() + "\"");
             }
             xmlContent.append("/>");
             if (item.getImage() != null) {
@@ -658,7 +655,7 @@ public class ResourceServiceImpl implements ResourceService {
             }
             xmlContent.append("</item>");
          }
-         xmlContent.append("</tab>");
+         xmlContent.append("</tabbar>");
       }
    }
 
