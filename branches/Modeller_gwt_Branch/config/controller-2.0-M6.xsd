@@ -25,7 +25,17 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	
+	<xsd:element name="property">
+	<xsd:annotation>
+		<xsd:documentation><![CDATA[
+				The property is used to describe the property for a background..
+			]]></xsd:documentation>
+	</xsd:annotation>
+	<xsd:complexType>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+		<xsd:attribute name="value" type="xsd:string" use="required" />
+	</xsd:complexType>
+	</xsd:element>
 	<xsd:element name="controls">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -54,15 +64,12 @@
 			]]></xsd:documentation>
         </xsd:annotation>
         <xsd:complexType>
-			<xsd:simpleContent>
-				<xsd:extension base="xsd:string">
+	        <xsd:sequence>
+	        		<xsd:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+	        </xsd:sequence>
 				<xsd:attribute name="id" type="idType" use="required" />
 				<xsd:attribute name="protocol" type="xsd:string" use="required"/>
-				<xsd:attribute name="url" type="xsd:string" />
-				<xsd:attribute name="groupAddress" type="xsd:string" />
-				<xsd:attribute name="name" type="xsd:string"/>
-				</xsd:extension>
-			</xsd:simpleContent>
+				<xsd:attribute name="value" type="xsd:string" use="required"/>
 		</xsd:complexType>
 	</xsd:element>
 	
@@ -111,9 +118,8 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="up" />
-				<xsd:element ref="down" />
-				<xsd:element ref="status" />
+				<xsd:element ref="exe" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element ref="status" minOccurs="0" maxOccurs="unbounded"/>
 			</xsd:sequence>
 			<xsd:attribute name="id" type="xsd:int" />
 		</xsd:complexType>
@@ -189,7 +195,7 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:group ref="macroGroup" />
+				<xsd:group ref="macroGroup" minOccurs="0" maxOccurs="unbounded"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -226,7 +232,70 @@
 		</xsd:complexType>
 	</xsd:element>
 	
+	<xsd:element name="monitor">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					a button element.
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="status" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:int" />
+		</xsd:complexType>
+	</xsd:element>
 	
+	<xsd:element name="label">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					a button element.
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="status" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:int" />
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="gesture">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					a button element.
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:int" />
+			<xsd:attribute name="type" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="exe">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					a button element.
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:int" />
+		</xsd:complexType>
+	</xsd:element>
 	<xsd:element name="include">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -276,6 +345,9 @@
 			<xsd:element ref="toggle" />
 			<xsd:element ref="slider"/>
 			<xsd:element ref="button"/>
+			<xsd:element ref="monitor"/>
+			<xsd:element ref="label" />
+			<xsd:element ref="gesture" />
 		</xsd:choice>
 	</xsd:group>
 	

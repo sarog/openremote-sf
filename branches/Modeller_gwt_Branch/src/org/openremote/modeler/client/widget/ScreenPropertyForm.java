@@ -257,7 +257,7 @@ public class ScreenPropertyForm extends PropertyForm {
       fillScreen.setName(FILL_SCREEN);
       fillScreen.setBoxLabel("yes");
       fillScreen.setValueAttribute(yesFill);
-      fillScreen.setValue(true);
+      fillScreen.setValue(canvas.getScreen().getBackground().isFillScreen());
       
       Radio notFillScreen = new Radio();
       notFillScreen.setName(FILL_SCREEN);
