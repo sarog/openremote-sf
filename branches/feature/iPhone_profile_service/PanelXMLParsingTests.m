@@ -914,16 +914,11 @@
 			STAssertTrue(backgroundImageTop == expectedBackgroundImageTop, @"expected %d, but %d", expectedBackgroundImageTop, backgroundImageTop);
 			NSLog(@"absolute position of background image is: %d,%d", backgroundImageLeft, backgroundImageTop);
 			
-			// fullscreen
-			BOOL fullScreen = [[screen background] fullScreen];
-			BOOL expectedFullScreen;
-			if (background_index%2 != 0) {
-				expectedFullScreen = YES;
-			} else {
-				expectedFullScreen = NO;
-			}
-			STAssertTrue(fullScreen == expectedFullScreen, @"expected %d, but %d", expectedFullScreen, fullScreen);
-			NSLog(@"fullScreen of background image is %d", fullScreen);
+			// fillscreen
+			BOOL fillScreen = [[screen background] fillScreen];
+			BOOL expectedFillScreen = NO;
+			STAssertTrue(fillScreen == expectedFillScreen, @"expected %d, but %d", expectedFillScreen, fillScreen);
+			NSLog(@"fillScreen of background image is %d", fillScreen);
 			
 			// background image src
 			NSString *backgroundImageSrc = [[[screen background] backgroundImage] src];
@@ -1013,16 +1008,11 @@
 			STAssertTrue([backgroundImageRelativePosition isEqualToString:expectedBackgroundImageRelativePosition], @"expected %@, but %@", expectedBackgroundImageRelativePosition, backgroundImageRelativePosition);
 			NSLog(@"relative position of background image is %@", backgroundImageRelativePosition);
 			
-			// fullscreen
-			BOOL fullScreen = [[screen background] fullScreen];
-			BOOL expectedFullScreen;
-			if (background_index%2 != 0) {
-				expectedFullScreen = YES;
-			} else {
-				expectedFullScreen = NO;
-			}
-			STAssertTrue(fullScreen == expectedFullScreen, @"expected %d, but %d", expectedFullScreen, fullScreen);
-			NSLog(@"fullScreen of background image is %d", fullScreen);
+			// fillscreen
+			BOOL fillScreen = [[screen background] fillScreen];
+			BOOL expectedFillScreen = NO;
+			STAssertTrue(fillScreen == expectedFillScreen, @"expected %d, but %d", expectedFillScreen, fillScreen);
+			NSLog(@"fillScreen of background image is %d", fillScreen);
 			
 			// background image src
 			NSString *backgroundImageSrc = [[[screen background] backgroundImage] src];
@@ -1301,16 +1291,11 @@
 			STAssertTrue([backgroundImageRelativePosition isEqualToString:expectedBackgroundImageRelativePosition], @"expected %@, but %@", expectedBackgroundImageRelativePosition, backgroundImageRelativePosition);
 			NSLog(@"relative position of background image is %@", backgroundImageRelativePosition);
 			
-			// fullscreen
-			BOOL fullScreen = [[screen background] fullScreen];
-			BOOL expectedFullScreen;
-			if (background_index%2 != 0) {
-				expectedFullScreen = YES;
-			} else {
-				expectedFullScreen = NO;
-			}
-			STAssertTrue(fullScreen == expectedFullScreen, @"expected %d, but %d", expectedFullScreen, fullScreen);
-			NSLog(@"fullScreen of background image is %d", fullScreen);
+			// fillscreen
+			BOOL fillScreen = [[screen background] fillScreen];
+			BOOL expectedFillScreen = NO;
+			STAssertTrue(fillScreen == expectedFillScreen, @"expected %d, but %d", expectedFillScreen, fillScreen);
+			NSLog(@"fillScreen of background image is %d", fillScreen);
 			
 			// background image src
 			NSString *backgroundImageSrc = [[[screen background] backgroundImage] src];

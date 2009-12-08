@@ -25,7 +25,7 @@
 
 @implementation Background
 
-@synthesize backgroundImageAbsolutePositionLeft, backgroundImageAbsolutePositionTop, isBackgroundImageAbsolutePosition, backgroundImageRelativePosition, fullScreen, backgroundImage;
+@synthesize backgroundImageAbsolutePositionLeft, backgroundImageAbsolutePositionTop, isBackgroundImageAbsolutePosition, backgroundImageRelativePosition, fillScreen, backgroundImage;
 
 #pragma mark constructor
 //Initialize itself accoding to xml parser
@@ -66,8 +66,8 @@
 			isBackgroundImageAbsolutePosition = YES;
 		}
 		
-		NSString *fullScreenStr = [[attributeDict objectForKey:@"fullScreen"] copy];
-		fullScreen = (fullScreenStr) ? (([@"true" isEqualToString:[fullScreenStr lowercaseString]]) ? YES : NO) : NO;
+		NSString *fillScreenStr = [[attributeDict objectForKey:@"fillScreen"] copy];
+		fillScreen = (fillScreenStr) ? (([@"true" isEqualToString:[fillScreenStr lowercaseString]]) ? YES : NO) : NO;
 		
 		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];
