@@ -19,6 +19,8 @@
 */
 package org.openremote.controller.protocol.infrared;
 
+import java.util.List;
+
 import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
@@ -35,10 +37,18 @@ public class IRCommandBuilder implements CommandBuilder {
    /**
     * {@inheritDoc}
     */
+   @SuppressWarnings("unchecked")
    public Command build(Element element) {
       IRCommand irCommand = new IRCommand();
-      String command = element.getAttributeValue("command");
-      String name = element.getAttributeValue("name");
+      String command = element.getAttributeValue("value");
+      List<Element> propertyEles = element.getChildren("property", element.getNamespace());
+      String name = "";
+      for(Element ele : propertyEles){
+         if("name".equals(ele.getAttributeValue("name"))){
+            name = ele.getAttributeValue("value");
+            break;
+         } 
+      }
       if ("".equals(command) || "".equals(name)) {
          throw new CommandBuildException("Cannot build a IREvent with empty property : command=" + command + ",name=" + name);
       } else {
