@@ -19,6 +19,8 @@
 */
 package org.openremote.controller.protocol.knx;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.openremote.controller.command.CommandBuilder;
@@ -128,10 +130,18 @@ public class KNXCommandBuilder implements CommandBuilder
    *
    * {@inheritDoc}
    */
-  public Command build(Element element)
+  @SuppressWarnings("unchecked")
+public Command build(Element element)
   {
-    String groupAddress = element.getAttributeValue(GROUP_ADDRESS_XML_ATTRIBUTE);
-    String knxCommandStr = element.getTextTrim();
+     String groupAddress = null;
+     String knxCommandStr = element.getAttributeValue("value");
+     List<Element> propertyEles = element.getChildren("property", element.getNamespace());
+     for(Element ele : propertyEles){
+        if(GROUP_ADDRESS_XML_ATTRIBUTE.equals(ele.getAttributeValue("name"))){
+           groupAddress = ele.getAttributeValue("value");
+           break;
+        } 
+     }
 
     KNXCommandType knxCommand = null;
 

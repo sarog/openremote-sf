@@ -73,7 +73,7 @@ public class SliderBuilder extends ControlBuilder {
             Element commandRefElement = (Element) operationElement.getChildren().get(0);
             String commandID = commandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
             Element commandElement = remoteActionXMLParser.queryElementFromXMLById(controlElement.getDocument(),commandID);
-            commandElement.setText(commandParam);
+            commandElement.setAttribute("value", commandParam);
             Command command = commandFactory.getCommand(commandElement);
             slider.addExecutableCommand((ExecutableCommand) command);
             break;
