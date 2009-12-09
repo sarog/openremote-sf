@@ -288,8 +288,11 @@
 		//navigationController = [[UINavigationController alloc] initWithRootViewController:targetGroupController];
 		//UIView *view = [groupViewMap objectForKey:[NSString stringWithFormat:@"%d", groupId]];
 		
-
-		[currentGroupController.view removeFromSuperview];
+		if (globalTabBarController || targetGroupController.group.tabBar) {
+			[targetTabBarController.view removeFromSuperview];
+		} else {
+			[currentGroupController.view removeFromSuperview];
+		}
 		[defaultView addSubview:view];
 
 		[UIView commitAnimations];
@@ -363,6 +366,8 @@
 	}
 	[groupControllers removeAllObjects];
 	[groupViewMap removeAllObjects];
+	[tabBarControllers removeAllObjects];
+	[tabBarControllerViewMap removeAllObjects];
 	if (currentGroupController) {
 		[currentGroupController stopPolling];
 	}
