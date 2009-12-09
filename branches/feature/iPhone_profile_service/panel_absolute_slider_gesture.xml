@@ -2,10 +2,10 @@
 <openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/controller.xsd">
 	<screens>
 		<screen id="5" name="basement" background="basement.png">		 
-			<gesture id="11" type = "swipe-top-to-bottom" hasControlCommnad="true"/>
-			<gesture id="12" type = "swipe-bottom-to-top" hasControlCommnad="true"/>	 
-			<gesture id="13" type = "swipe-left-to-right" hasControlCommnad="true"/>
-			<gesture id="14" type = "swipe-right-to-left" hasControlCommnad="true"/>	
+			<gesture id="11" type = "swipe-top-to-bottom" hasControlCommand="true"/>
+			<gesture id="12" type = "swipe-bottom-to-top" hasControlCommand="true"/>	 
+			<gesture id="13" type = "swipe-left-to-right" hasControlCommand="true"/>
+			<gesture id="14" type = "swipe-right-to-left" hasControlCommand="true"/>	
 			<absolute left="20" top="320" width="100" height="100" >
 				<slider id="59">
 					<min value="0" />
@@ -26,10 +26,10 @@
 					<max value="100" />
 				</slider>
 			</absolute>
-			<gesture id="15" type = "swipe-top-to-bottom" hasControlCommnad="true"/>
-			<gesture id="16" type = "swipe-bottom-to-top" hasControlCommnad="true"/>	 
-			<gesture id="17" type = "swipe-left-to-right" hasControlCommnad="true"/>
-			<gesture id="18" type = "swipe-right-to-left" hasControlCommnad="true"/>
+			<gesture id="15" type = "swipe-top-to-bottom" hasControlCommand="true"/>
+			<gesture id="16" type = "swipe-bottom-to-top" hasControlCommand="true"/>	 
+			<gesture id="17" type = "swipe-left-to-right" hasControlCommand="true"/>
+			<gesture id="18" type = "swipe-right-to-left" hasControlCommand="true"/>
 		</screen>
 	<screens>
 	<groups>

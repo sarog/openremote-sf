@@ -33,12 +33,12 @@ typedef enum {
 @interface Gesture : Control {
 	
 	GestureSwipeType swipeType;
-	BOOL hasControlCommnad;
+	BOOL hasControlCommand;
 
 }
 
 @property (nonatomic, readonly)GestureSwipeType swipeType;
-@property (nonatomic, readonly)BOOL hasControlCommnad;
+@property (nonatomic, readonly)BOOL hasControlCommand;
 
 - (id)initWithGestureSwipeType:(GestureSwipeType)type;
 

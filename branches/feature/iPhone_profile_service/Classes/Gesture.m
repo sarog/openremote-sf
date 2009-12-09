@@ -25,7 +25,7 @@
 
 @implementation Gesture
 
-@synthesize swipeType, hasControlCommnad;
+@synthesize swipeType, hasControlCommand;
 
 // This method is abstract method of indirectclass XMLEntity.
 // So, this method must be overridden in subclass.
@@ -62,7 +62,7 @@
 		} else if ([type isEqualToString:@"swipe-right-to-left"]) {
 			swipeType = GestureSwipeTypeRightToLeft;
 		}
-		hasControlCommnad = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"hasControlCommnad"] uppercaseString]] ? YES : NO;
+		hasControlCommand = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"hasControlCommand"] uppercaseString]] ? YES : NO;
 
 		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];

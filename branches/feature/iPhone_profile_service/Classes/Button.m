@@ -30,7 +30,7 @@
 	if (self = [super init]) {		
 		controlId = [[attributeDict objectForKey:@"id"] intValue];
 		name = [[attributeDict objectForKey:@"name"] copy];
-		hasCommand = NO;
+		hasCommand = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"hasControlCommand"] uppercaseString]] ? YES : NO;
 		repeat = NO;
 		if ([[attributeDict objectForKey:@"repeat"] isEqualToString:@"true"]) {
 			repeat = YES;
@@ -54,8 +54,6 @@
 
 	} else if ([elementName isEqualToString:@"navigate"]) {
 		navigate = [[Navigate alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-	} else if ([elementName isEqualToString:@"command"]) {
-		hasCommand = YES;
 	} 
 	
 }
