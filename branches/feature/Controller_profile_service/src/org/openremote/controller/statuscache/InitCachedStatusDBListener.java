@@ -68,6 +68,7 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
          simulateStatusCacheControlID2();
          simulateStatusCacheControlID3();
          simulateStatusCacheControlID5();
+         simulateStatusCacheControlID8();
       } catch (Exception e) {
          e.printStackTrace();
       }
@@ -172,16 +173,43 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
    
    private void simulateStatusCacheControlID5() {
       Thread simulateThread = new Thread() {
-         String[] imageNames = new String[] {"1.png","2.png","3.png","4.png","5.png"};
+         String[] imageNames = new String[] {"1.png","", "2.png", "", "3.png", "", "4.png", "","5.png", ""};
          @Override
          public void run() {
             int index = 0;
             while(true){
                String image = imageNames[index];
-               statusCacheService.saveOrUpdateStatus(5, resourceBasePath+image);
+               if ("".equals(image)) {
+                  int d = ((int)(Math.random()*50) - 10);
+                  statusCacheService.saveOrUpdateStatus(5, d+""); 
+               } else {
+                  statusCacheService.saveOrUpdateStatus(5, resourceBasePath+image);
+               }
                index = index<imageNames.length-1?++index:0;
                try {
-                  sleep(1000);
+                  sleep(5000);
+               } catch (InterruptedException e) {
+                  e.printStackTrace();
+               }
+            }
+         }
+      };
+      simulateThread.start();
+   }
+   
+   /**
+    * Slider simulation.
+    */
+   private void simulateStatusCacheControlID8() {
+      Thread simulateThread = new Thread() {
+         @Override
+         public void run() {
+            while(true){
+               float floatValue = (float) (Math.random()*100 + 1);
+               System.out.println("current slider value is : " + floatValue);
+               statusCacheService.saveOrUpdateStatus(8, floatValue+"");
+               try {
+                  sleep(5000);
                } catch (InterruptedException e) {
                   e.printStackTrace();
                }
