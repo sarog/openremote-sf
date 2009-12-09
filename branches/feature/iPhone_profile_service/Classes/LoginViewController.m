@@ -22,6 +22,7 @@
 #import "LoginViewController.h"
 #import "Definition.h"
 #import "ViewHelper.h"
+#import "DataBaseService.h"
 
 @interface LoginViewController (Private)
 
@@ -42,12 +43,10 @@
 }
 
 - (void)viewDidLoad {
-	
+	[[DataBaseService sharedDataBaseService] deleteAllUsers];
 	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(goBack:)];
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelInput:)];
 	[super viewDidLoad];
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 
@@ -83,6 +82,7 @@
 	}
 	[Definition sharedDefinition].username = usernameField.text;
 	[Definition sharedDefinition].password = passwordField.text;
+	[[DataBaseService sharedDataBaseService] saveCurrentUser];
 	[self dismissModalViewControllerAnimated:NO];
 	if ([theDelegate respondsToSelector:@selector(onSignin)]) {
 		[theDelegate performSelector:@selector(onSignin)];
