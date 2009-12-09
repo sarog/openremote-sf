@@ -131,7 +131,13 @@
 			globalTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController tabBar:[[Definition sharedDefinition] tabBar]];
 			[defaultView addSubview:globalTabBarController.view];
 		} else {
-			[defaultView addSubview:currentGroupController.view];
+			TabBar *localTabBar = currentGroupController.group.tabBar;
+			if (localTabBar) {
+				TabBarController *localTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController tabBar:localTabBar];
+				[defaultView addSubview:localTabBarController.view];
+			} else {
+				[defaultView addSubview:currentGroupController.view];
+			}
 		}
 	} else {		
 		errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" message:@"Please associate screens with group or reset setting."];
