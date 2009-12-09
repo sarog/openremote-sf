@@ -126,18 +126,18 @@
 		[groupViewMap setObject:gc.view forKey:[NSString stringWithFormat:@"%d", gc.group.groupId]];	
 		currentGroupController = [gc retain];
 		
+		TabBar *localTabBar = currentGroupController.group.tabBar;
+		// local tabBar
+		if (localTabBar) {
+			TabBarController *localTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController tabBar:localTabBar];
+			[defaultView addSubview:localTabBarController.view];
+		} else 
 		// global tabBar
 		if ([[Definition sharedDefinition] tabBar]) {
 			globalTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController tabBar:[[Definition sharedDefinition] tabBar]];
 			[defaultView addSubview:globalTabBarController.view];
 		} else {
-			TabBar *localTabBar = currentGroupController.group.tabBar;
-			if (localTabBar) {
-				TabBarController *localTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController tabBar:localTabBar];
-				[defaultView addSubview:localTabBarController.view];
-			} else {
-				[defaultView addSubview:currentGroupController.view];
-			}
+			[defaultView addSubview:currentGroupController.view];
 		}
 	} else {		
 		errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" message:@"Please associate screens with group or reset setting."];
