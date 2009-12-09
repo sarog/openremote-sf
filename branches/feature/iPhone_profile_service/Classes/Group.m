@@ -24,7 +24,7 @@
 
 @implementation Group
 
-@synthesize groupId, name, screens;
+@synthesize groupId, name, screens, tabBar;
 
 
 #pragma mark Initializers
@@ -52,7 +52,7 @@
 - (void)dealloc {
 	[name release];
 	[screens release];
-	
+	[tabBar release];
 	[super dealloc];
 }
 
@@ -74,6 +74,8 @@
 				break;
 			}
 		}
+	} else if ([elementName isEqualToString:@"tabbar"]) {
+		tabBar = [[TabBar alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 	}
 }
 

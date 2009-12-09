@@ -21,17 +21,20 @@
 
 #import <Foundation/Foundation.h>
 #import "XMLEntity.h"
+#import "TabBar.h"
 
 @interface Group : XMLEntity {
 	
 	int groupId;
 	NSString *name;
 	NSMutableArray *screens;
+	TabBar *tabBar;
 	
 }
 
 @property (nonatomic,readonly) int groupId;
 @property (nonatomic,readonly) NSString *name;
 @property (nonatomic,readonly) NSMutableArray *screens;
+@property (nonatomic,readonly) TabBar *tabBar;
 
 @end

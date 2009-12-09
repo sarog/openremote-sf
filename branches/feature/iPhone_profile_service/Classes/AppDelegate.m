@@ -94,6 +94,8 @@
 	[updateController checkConfigAndUpdate];
 	groupControllers = [[NSMutableArray alloc] init]; 
 	groupViewMap = [[NSMutableDictionary alloc] init];
+	tabBarControllers = [[NSMutableArray alloc] init];
+	tabBarControllerViewMap = [[NSMutableDictionary alloc] init];
 	navigationHistory = [[NSMutableArray alloc] init];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateFromNotification:) name:NotificationNavigateTo object:nil];
@@ -126,8 +128,7 @@
 		
 		// global tabBar
 		if ([[Definition sharedDefinition] tabBar]) {
-			globalTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController];
-			[defaultView setFrame:CGRectMake(0, 0, 320, 460)];
+			globalTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController tabBar:[[Definition sharedDefinition] tabBar]];
 			[defaultView addSubview:globalTabBarController.view];
 		} else {
 			[defaultView addSubview:currentGroupController.view];
@@ -228,7 +229,34 @@
 			} else {
 				return NO;
 			}
+		}		
+		UIView *view = [groupViewMap objectForKey:[NSString stringWithFormat:@"%d", groupId]];
+		
+		// begin tabBar and view(local or global)
+		TabBarController *targetTabBarController = nil;
+		//if global tabbar exists
+		if (globalTabBarController) {
+			targetTabBarController = globalTabBarController;
+			view = targetTabBarController.view;
+		}		
+		//if local tabbar exists
+		if (targetGroupController.group.tabBar) {
+			BOOL findCachedTargetTabBarController = NO;
+			for (TabBarController *tempTargetTabBarController in tabBarControllers) {
+				if (tempTargetTabBarController.groupController.group.groupId == targetGroupController.group.groupId) {
+					targetTabBarController = tempTargetTabBarController;
+					findCachedTargetTabBarController = YES;
+					break;
+				}
+			}
+			if (!findCachedTargetTabBarController) {
+				targetTabBarController = [[TabBarController alloc] initWithGroupController:targetGroupController tabBar:targetGroupController.group.tabBar];
+				[tabBarControllers addObject:targetTabBarController];
+				[tabBarControllerViewMap setObject:targetTabBarController.view forKey:[NSString stringWithFormat:@"%d", targetTabBarController.groupController.group.groupId]];
+			}
+			view = [tabBarControllerViewMap objectForKey:[NSString stringWithFormat:@"%d", targetTabBarController.groupController.group.groupId]];
 		}
+		// end tabBar and view(local or global)
 		
 		[currentGroupController stopPolling];
 		[targetGroupController startPolling];
@@ -258,7 +286,7 @@
 
 		//[navigationController.view removeFromSuperview];
 		//navigationController = [[UINavigationController alloc] initWithRootViewController:targetGroupController];
-		UIView *view = [groupViewMap objectForKey:[NSString stringWithFormat:@"%d", groupId]];
+		//UIView *view = [groupViewMap objectForKey:[NSString stringWithFormat:@"%d", groupId]];
 		
 
 		[currentGroupController.view removeFromSuperview];
@@ -397,6 +425,7 @@
 	[navigationHistory release];
 	[errorViewController release];
 	[globalTabBarController release];
+	[tabBarControllers release];
 	
 	[super dealloc];
 }

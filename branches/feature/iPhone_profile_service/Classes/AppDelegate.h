@@ -42,7 +42,8 @@
 	NSMutableArray *navigationHistory;
 	ErrorViewController* errorViewController;
 	TabBarController *globalTabBarController;
-	
+	NSMutableArray *tabBarControllers;
+	NSMutableDictionary *tabBarControllerViewMap;
 }
 
 
