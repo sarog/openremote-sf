@@ -54,7 +54,7 @@
 
 - (void)performGesture:(Gesture *)gesture {
 	Gesture * g = [screen getGestureIdByGestureSwipeType:gesture.swipeType];
-	if (g && g.hasControlCommnad) {
+	if (g && g.hasControlCommand) {
 		[self sendCommandRequest:g.controlId];
 	}
 }

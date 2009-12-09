@@ -11,17 +11,15 @@
               </button>
 				  </cell>
 					<cell x="0" y="1" rowspan="1" >
-						 <button id="60" name="B">
+						 <button id="60" name="B" hasControlCommand="true">
                 <image src = "c.png" />
                 <image src = "d.png" state = "onPress"/>
-                <command ref="33" />
               </button>
 				  </cell>
 					<cell x="1" y="1" colspan="1">
-						 <button id="61" name="C">
+						 <button id="61" name="C" hasControlCommand="true">
                 <image src = "e.png" />
                 <image src = "f.png" state = "onPress"/>
-                <command ref="33" />
 								<navigate toScreen="29" />
 						</button>
 				  </cell>

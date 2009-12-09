@@ -1158,7 +1158,7 @@
 			STAssertTrue(4 == count, @"expected 4, but %d",count);
 			for (Gesture *gesture in screen.gestures) {
 				STAssertEquals(gesture.swipeType, gesture_index % 4, @"expected %d, but %d",gesture_index % 4,gesture.swipeType);
-				STAssertEquals(gesture.hasControlCommnad, YES, @"expected yes, but %d",gesture.hasControlCommnad);
+				STAssertEquals(gesture.hasControlCommand, YES, @"expected yes, but %d",gesture.hasControlCommand);
 				gesture_index++;
 			}
 			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
