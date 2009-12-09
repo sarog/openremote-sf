@@ -29,13 +29,13 @@
 
 @synthesize customziedTabBar, groupController;
 
-- (id) initWithGroupController:(GroupController *)groupControllerParam {
+- (id) initWithGroupController:(GroupController *)groupControllerParam tabBar:(TabBar *)tabBar {
 	if (self = [super initWithNibName:nil bundle:nil]) {
-		TabBar *newTabBar =  [[Definition sharedDefinition] tabBar];
-		if (newTabBar) {
+		if (tabBar) {
+			customziedTabBar = tabBar;
+			
 			self.delegate = self;
-			[self.view setFrame:CGRectMake(0, 0, 320, 460)];
-			customziedTabBar = [newTabBar retain];
+			[self.view setFrame:CGRectMake(0, 0, 320, 460)];			
 			self.groupController = groupControllerParam;
 			NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
 			for (TabBarItem *tabBarItem in customziedTabBar.tabBarItems) {
@@ -53,6 +53,7 @@
 		}
 	}
 	return self;
+	
 }
 
 #pragma mark Delegate method of UITabBarController
