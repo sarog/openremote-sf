@@ -64,11 +64,11 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
    public void contextInitialized(ServletContextEvent event) {
       try {
          InitStatusCache();
-         simulateStatusCacheControlID1();
-         simulateStatusCacheControlID2();
-         simulateStatusCacheControlID3();
-         simulateStatusCacheControlID5();
-         simulateStatusCacheControlID8();
+         simulateStatusCacheControlID1001();
+         simulateStatusCacheControlID1002();
+         simulateStatusCacheControlID1003();
+         simulateStatusCacheControlID1005();
+         simulateStatusCacheControlID1008();
       } catch (Exception e) {
          e.printStackTrace();
       }
@@ -78,11 +78,11 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
     * Init 4 components initial status.
     */
    private void InitStatusCache() {
-      statusCacheService.saveOrUpdateStatus(1, "OFF");
-      statusCacheService.saveOrUpdateStatus(2, "OFF");
-      statusCacheService.saveOrUpdateStatus(3, "OFF");
-      statusCacheService.saveOrUpdateStatus(4, "OFF");
-      statusCacheService.saveOrUpdateStatus(5, "url");
+      statusCacheService.saveOrUpdateStatus(1001, "OFF");
+      statusCacheService.saveOrUpdateStatus(1002, "OFF");
+      statusCacheService.saveOrUpdateStatus(1003, "OFF");
+      statusCacheService.saveOrUpdateStatus(1004, "OFF");
+      statusCacheService.saveOrUpdateStatus(1005, "url");
    }
    
    /**
@@ -90,16 +90,16 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
     * 
     * The device of control id is 1 will switch ON/OFF every 10 seconds.
     */
-   private void simulateStatusCacheControlID1() {
+   private void simulateStatusCacheControlID1001() {
       Thread thread = new Thread() {
          @Override
          public void run() {
             int i = 0;
             for(; ; i++) {
                if (i % 2 == 0) {
-                  statusCacheService.saveOrUpdateStatus(1, "ON");
+                  statusCacheService.saveOrUpdateStatus(1001, "ON");
                } else {
-                  statusCacheService.saveOrUpdateStatus(1, "OFF");
+                  statusCacheService.saveOrUpdateStatus(1001, "OFF");
                }
                try {
                   sleep(10000);
@@ -119,18 +119,18 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
     *   get the changed status during two polling requests.<br /> 
     *   So, the client will get timeout response in odd times and changed statuses in even times.
     */
-   private void simulateStatusCacheControlID2() {
+   private void simulateStatusCacheControlID1002() {
       Thread simulateThread = new Thread() {
          @Override
          public void run() {
             int i = 0;
             for (;; i++) {
-               List<ChangedStatusRecord> changedStatusRecord = changedStatusTable.query(2);
+               List<ChangedStatusRecord> changedStatusRecord = changedStatusTable.query(1002);
                if (changedStatusRecord != null && changedStatusRecord.size() != 0) {
                   if (i % 2 == 0) {
-                     statusCacheService.saveOrUpdateStatus(2, "ON");
+                     statusCacheService.saveOrUpdateStatus(1002, "ON");
                   } else {
-                     statusCacheService.saveOrUpdateStatus(2, "OFF");
+                     statusCacheService.saveOrUpdateStatus(1002, "OFF");
                   }
                   try {
                      sleep(10000);
@@ -144,7 +144,7 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
       simulateThread.start();
    }
    
-   private void simulateStatusCacheControlID3() {
+   private void simulateStatusCacheControlID1003() {
       Thread simulateThread = new Thread() {
          @Override
          public void run() {
@@ -156,9 +156,9 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
                   e.printStackTrace();
                }
                if (i % 2 == 0) {
-                  statusCacheService.saveOrUpdateStatus(3, "ON");
+                  statusCacheService.saveOrUpdateStatus(1003, "ON");
                } else {
-                  statusCacheService.saveOrUpdateStatus(3, "OFF");
+                  statusCacheService.saveOrUpdateStatus(1003, "OFF");
                }
                try {
                   sleep(10000);
@@ -171,7 +171,7 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
       simulateThread.start();
    }
    
-   private void simulateStatusCacheControlID5() {
+   private void simulateStatusCacheControlID1005() {
       Thread simulateThread = new Thread() {
          String[] imageNames = new String[] {"1.png","", "2.png", "", "3.png", "", "4.png", "","5.png", ""};
          @Override
@@ -181,9 +181,9 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
                String image = imageNames[index];
                if ("".equals(image)) {
                   int d = ((int)(Math.random()*50) - 10);
-                  statusCacheService.saveOrUpdateStatus(5, d+""); 
+                  statusCacheService.saveOrUpdateStatus(1005, d+""); 
                } else {
-                  statusCacheService.saveOrUpdateStatus(5, resourceBasePath+image);
+                  statusCacheService.saveOrUpdateStatus(1005, resourceBasePath+image);
                }
                index = index<imageNames.length-1?++index:0;
                try {
@@ -200,14 +200,14 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
    /**
     * Slider simulation.
     */
-   private void simulateStatusCacheControlID8() {
+   private void simulateStatusCacheControlID1008() {
       Thread simulateThread = new Thread() {
          @Override
          public void run() {
             while(true){
                float floatValue = (float) (Math.random()*100 + 1);
                System.out.println("current slider value is : " + floatValue);
-               statusCacheService.saveOrUpdateStatus(8, floatValue+"");
+               statusCacheService.saveOrUpdateStatus(1008, floatValue+"");
                try {
                   sleep(5000);
                } catch (InterruptedException e) {
