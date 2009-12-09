@@ -47,7 +47,9 @@
 			]]></xsd:documentation>
 	</xsd:annotation>
 	<xsd:complexType>
-		<xsd:attribute name="src" type="xsd:string" use="required" />
+	   <xsd:sequence>
+            <xsd:element ref="image" minOccurs="1" maxOccurs="1" />
+         </xsd:sequence>
 		<xsd:attribute name="fillScreen" type="xsd:boolean" use="optional" />
 		<xsd:attribute name="absolute" type="xsd:string" use="optional"/>
 		<xsd:attribute name="relative" type="xsd:string" use="optional"/>
@@ -79,6 +81,7 @@
 			<xsd:attribute name="id" type="idType" use="required" />
 			<xsd:attribute name="name" type="xsd:string" use="required" />
 			<xsd:attribute name="repeat" type="xsd:boolean" use="optional"></xsd:attribute>
+			<xsd:attribute name="hasControlCommand" type="xsd:boolean" use="optional"></xsd:attribute>
 		</xsd:complexType>
 	</xsd:element>
 	
@@ -355,7 +358,6 @@
 	<xsd:group name="buttonGroup">
 		<xsd:choice>
 			<xsd:element ref="image"></xsd:element>
-			<xsd:element ref="command"></xsd:element>
 			<xsd:element ref="navigate"></xsd:element>
 		</xsd:choice>
 	</xsd:group>

@@ -135,7 +135,7 @@ public class ResourceServiceImpl implements ResourceService {
        * validate and output panel.xml.
        */
       String newIphoneXML = XmlParser.validateAndOutputXML(new File(getClass().getResource(
-            configuration.getIphoneXsdPath()).getPath()), panelXmlContent, sessionFolder);
+            configuration.getPanelXsdPath()).getPath()), panelXmlContent, sessionFolder);
       controllerXmlContent = XmlParser.validateAndOutputXML(new File(getClass().getResource(
             configuration.getControllerXsdPath()).getPath()), controllerXmlContent);
       /*
@@ -313,7 +313,7 @@ public class ResourceServiceImpl implements ResourceService {
     */
    private boolean checkXML(ZipInputStream zipInputStream, ZipEntry zipEntry, String xmlName) throws IOException {
       if (zipEntry.getName().equals(xmlName + ".xml")) {
-         String xsdRelativePath = "iphone".equals(xmlName) ? configuration.getIphoneXsdPath() : configuration
+         String xsdRelativePath = "iphone".equals(xmlName) ? configuration.getPanelXsdPath() : configuration
                .getControllerXsdPath();
          String xsdPath = getClass().getResource(xsdRelativePath).getPath();
          if (!XmlParser.checkXmlSchema(xsdPath, IOUtils.toString(zipInputStream))) {
@@ -551,7 +551,7 @@ public class ResourceServiceImpl implements ResourceService {
       xmlContent.append("<openremote xmlns=\"http://www.openremote.org\" "
             + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
             + "xsi:schemaLocation=\"http://www.openremote.org "
-            + "http://www.openremote.org/schemas/controller.xsd\">\n");
+            + "http://www.openremote.org/schemas/panel.xsd\">\n");
       xmlContent.append("  <panels>\n");
       for (Panel panel : panels) {
          xmlContent.append("    <panel id=\"" + panel.getOid() + "\" name=\"" + panel.getName() + "\">");
@@ -572,16 +572,18 @@ public class ResourceServiceImpl implements ResourceService {
          xmlContent.append("    <screen id=\"" + screen.getOid() + "\" name=\"" + screen.getName() + "\"");
          xmlContent.append(">\n");
          if (!"".equals(screen.getBackground().getSrc())) {
-            xmlContent.append("<background src=\"" + screen.getBackground().getSrc() + "\"");
+            xmlContent.append("<background");
             if (!screen.getBackground().isFillScreen()) {
-               xmlContent.append(" fillScreen=\"" + false +"\"" );
                if (screen.getBackground().isAbsolute()) {
                   xmlContent.append(" absolute=\"" + screen.getBackground().getLeft() + ","+screen.getBackground().getTop()+"\"");
                } else {
                   xmlContent.append(" relative=\"" + screen.getBackground().getRelatedType().toString().replace("-", " ")+"\"");
                }
+            } else {
+               xmlContent.append(" fillScreen=\"" + true +"\"" );
             }
-            xmlContent.append("/>");
+            xmlContent.append(">\n <image src=\"" + screen.getBackground().getSrc() + "\" />\n");
+            xmlContent.append("</background>\n");
          }
          for (Absolute absolute : screen.getAbsolutes()) {
             xmlContent.append("      <absolute left=\"" + absolute.getLeft() + "\" top=\"" + absolute.getTop()

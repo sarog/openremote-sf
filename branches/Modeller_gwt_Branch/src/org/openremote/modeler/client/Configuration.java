@@ -35,7 +35,7 @@ public class Configuration {
    private String beehiveRestIconUrl;
    
    /** The iphone xsd path. */
-   private String iphoneXsdPath;
+   private String panelXsdPath;
 
    /** The controller xsd path. */
    private String controllerXsdPath;
@@ -51,8 +51,8 @@ public class Configuration {
     * 
     * @return the iphone xsd path
     */
-   public String getIphoneXsdPath() {
-      return iphoneXsdPath;
+   public String getPanelXsdPath() {
+      return panelXsdPath;
    }
 
    /**
@@ -78,8 +78,8 @@ public class Configuration {
     * @param iphoneXsdPath
     *           the new iphone xsd path
     */
-   public void setIphoneXsdPath(String iphoneXsdPath) {
-      this.iphoneXsdPath = iphoneXsdPath;
+   public void setPanelXsdPath(String panelXsdPath) {
+      this.panelXsdPath = panelXsdPath;
    }
 
    /**

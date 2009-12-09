@@ -150,6 +150,9 @@ public class UIButton extends UIControl {
    public String getPanelXml() {
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("        <button id=\"" + getOid() + "\" name=\"" + getName() + "\"");
+      if (uiCommand != null) {
+         xmlContent.append(" hasControlCommand=\"true\"");
+      }
       if (repeate) {
          xmlContent.append(" repeat=\"" + repeate + "\"");
       }
