@@ -173,6 +173,7 @@ public class ScreenPropertyForm extends PropertyForm {
          }
       });
       posTopField.setLabelStyle("text-align:right;");
+      posTopField.setValue(canvas.getScreen().getBackground().getTop()+"");
       return posTopField;
    }
 
@@ -193,6 +194,7 @@ public class ScreenPropertyForm extends PropertyForm {
          }
       });
       posLeftField.setLabelStyle("text-align:right;");
+      posLeftField.setValue(canvas.getScreen().getBackground().getLeft()+"");
       return posLeftField;
    }
 
@@ -200,7 +202,6 @@ public class ScreenPropertyForm extends PropertyForm {
       CheckBox absolute = new CheckBox();
       absolute.setHideLabel(true);
       absolute.setBoxLabel("absolute");
-      absolute.setValue(canvas.getScreen().getBackground().isAbsolute());
       final ComboBox<ModelData> relative = new ComboBox<ModelData>();
       ListStore<ModelData> store = new ListStore<ModelData>();
       RelativeType[] relatedTypes  = RelativeType.values();
@@ -223,11 +224,13 @@ public class ScreenPropertyForm extends PropertyForm {
             ComboBoxDataModel<RelativeType> relativeItem;
             relativeItem = (ComboBoxDataModel<RelativeType>) se.getSelectedItem();
             bkGrd.setRelatedType(relativeItem.getData());
-            bkGrd.setAbsolute(false);
+//            bkGrd.setAbsolute(false);
             canvas.updateGround();
          }
          
       });
+      
+      relative.setValue(new ComboBoxDataModel<RelativeType>(canvas.getScreen().getBackground().getRelatedType().toString(),canvas.getScreen().getBackground().getRelatedType()));
       absolute.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
@@ -248,6 +251,7 @@ public class ScreenPropertyForm extends PropertyForm {
      
       positionSet.add(relative);
       positionSet.add(absolute);
+      absolute.setValue(canvas.getScreen().getBackground().isAbsolute());
       relative.setEnabled(!canvas.getScreen().getBackground().isAbsolute());
       enableTextField(canvas.getScreen().getBackground().isAbsolute(), fields);
      
