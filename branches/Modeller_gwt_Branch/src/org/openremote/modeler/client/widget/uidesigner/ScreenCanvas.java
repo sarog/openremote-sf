@@ -109,15 +109,13 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
       setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
       setStyleAttribute("backgroundRepeat", "no-repeat");
       setStyleAttribute("overflow", "hidden");
-
+      updateGround();
       new DragSource(this);
    }
 
    public void updateGround() {
       Background bgd = screen.getBackground();
       if (bgd.isFillScreen()) {
-         setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
-         setStyleAttribute("backgroundRepeat", "no-repeat");
          setStyleAttribute("backgroundPosition", "top left");
          return;
       } else if (bgd.isAbsolute()) {
@@ -154,7 +152,7 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
             break;
          }
       }
-
+      layout();
    }
    public void hideBackground() {
       moveBackGround.hide();
