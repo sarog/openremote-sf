@@ -37,8 +37,7 @@ public class GestureBuilder extends ControlBuilder {
    @Override
    public Control build(Element gestureElement, String commandParam) {
       Gesture gesture = new Gesture();
-      List<Element> commandRefElements = gestureElement.getChildren(Control.COMMAND_ELEMENT_NAME, gestureElement
-            .getNamespace());
+      List<Element> commandRefElements = gestureElement.getChildren();
       for (Element commandRefElement : commandRefElements) {
          String commandID = commandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
          Element commandElement = remoteActionXMLParser.queryElementFromXMLById(gestureElement.getDocument(),commandID);
