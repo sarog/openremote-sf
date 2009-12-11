@@ -50,9 +50,11 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 public class SelectScreenForm extends CommonForm {
 
    private CheckBoxListView<BeanModel> screenListView = null;
+   private CheckBox showAll = null;
    protected BeanModel groupRefBeanModel = null;
    protected Component wrapper;
    private List<BeanModel> otherModels = new ArrayList<BeanModel>();
+   private Boolean oldValue = false;
    public SelectScreenForm(Component wrapper, BeanModel groupRefBeanModel) {
       super();
       this.wrapper = wrapper;
@@ -67,23 +69,25 @@ public class SelectScreenForm extends CommonForm {
       AdapterField screenField = new AdapterField(createScreenList());
       screenField.setFieldLabel("Screen");
       
-      CheckBox showAll = new CheckBox();
+      showAll = new CheckBox();
       showAll.setHideLabel(true);
       showAll.setBoxLabel("show all screens");
       showAll.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
-            if ("true".equals(be.getValue().toString())) {
-               screenListView.getStore().add(otherModels);
-            } else if ("false".equals(be.getValue().toString())) {
-               for (BeanModel otherModel : otherModels) {
-                  screenListView.getStore().remove(otherModel);
+            if (!oldValue.toString().equals(be.getValue().toString())) {
+               if ("true".equals(be.getValue().toString())) {
+                  screenListView.getStore().add(otherModels);
+               } else if ("false".equals(be.getValue().toString())) {
+                  for (BeanModel otherModel : otherModels) {
+                     screenListView.getStore().remove(otherModel);
+                  }
                }
             }
+            oldValue = new Boolean(be.getValue().toString());
          }
          
       });
-      
       add(screenField);
       add(showAll);
    }
@@ -135,6 +139,7 @@ public class SelectScreenForm extends CommonForm {
             otherModels.add(screenModel);
          }
       }
+      showAll.setValue(false);
          
    }
    
