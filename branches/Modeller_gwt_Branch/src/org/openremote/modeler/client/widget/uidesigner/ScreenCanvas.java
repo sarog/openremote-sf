@@ -27,7 +27,7 @@ import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Background;
-import org.openremote.modeler.domain.BoundsRecorder;
+import org.openremote.modeler.domain.GridCellBounds;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
@@ -206,7 +206,7 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
                GridCellContainer controlContainer = (GridCellContainer) data;
                controlContainer.setPosition(position.x, position.y);
                LayoutContainer componentContainer = new LayoutContainer();
-               BoundsRecorder recorder = controlContainer.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
+               GridCellBounds recorder = controlContainer.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
                componentContainer = dragComponentFromGrid(screen, controlContainer, recorder);
                createDragSource(canvas, componentContainer);
                canvas.add(componentContainer);
@@ -308,7 +308,7 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
       GridCellContainer container = event.getData();
       Point mousePoint = event.getXY();
       Point distance = ((LayoutContainer) event.getData()).getData(AbsoluteLayoutContainer.ABSOLUTE_DISTANCE_NAME);
-      BoundsRecorder recorder = container.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
+      GridCellBounds recorder = container.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
       int left = mousePoint.x - distance.x - absolutePosition.x + recorder.getWidth();
       int top = mousePoint.y - distance.y - absolutePosition.y + recorder.getHeight();
       return new Point(left, top);
@@ -375,7 +375,7 @@ public class ScreenCanvas extends LayoutContainer  implements PropertyPanelBuild
       return controlContainer;
    }
    private AbsoluteLayoutContainer dragComponentFromGrid(Screen screen, GridCellContainer cellContainer,
-         BoundsRecorder recorder) {
+         GridCellBounds recorder) {
       cellContainer.getGridContainer().getGrid().removeCell(cellContainer.getCell()); // remove the old cell from grid.
 
       UIComponent uiComponent = cellContainer.getCell().getUiComponent();

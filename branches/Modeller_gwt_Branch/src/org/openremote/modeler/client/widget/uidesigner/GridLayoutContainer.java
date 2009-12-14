@@ -27,7 +27,7 @@ import org.openremote.modeler.client.gxtextends.ScreenDropTarget;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.SelectedWidgetContainer;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
-import org.openremote.modeler.domain.BoundsRecorder;
+import org.openremote.modeler.domain.GridCellBounds;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
@@ -364,7 +364,7 @@ public class GridLayoutContainer extends ComponentContainer {
 
          @Override
          protected void onDragStart(DNDEvent event) {
-            BoundsRecorder boundsRecorder = new BoundsRecorder(cellContainer, grid);
+            GridCellBounds boundsRecorder = new GridCellBounds(cellContainer, grid);
             cellContainer.clearArea(btnInArea);
             Point distance = new Point(boundsRecorder.getWidth(), boundsRecorder.getHeight());
             cellContainer.setData(AbsoluteLayoutContainer.ABSOLUTE_DISTANCE_NAME, distance);
@@ -400,7 +400,7 @@ public class GridLayoutContainer extends ComponentContainer {
             Object data = e.getData();
             if (data instanceof GridCellContainer) {
                GridCellContainer container = (GridCellContainer) data;
-               BoundsRecorder recorder = container.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
+               GridCellBounds recorder = container.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
                cellContainer = cloneCellContainer(container);
                cellContainer.setBounds(recorder.getBounds());
                add(cellContainer);
@@ -517,7 +517,7 @@ public class GridLayoutContainer extends ComponentContainer {
          Object data) {
       GridCellContainer cellContainer;
       GridCellContainer container = (GridCellContainer) data;
-      BoundsRecorder recorder = container.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
+      GridCellBounds recorder = container.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
       cellContainer = cloneCellContainer(container);
       cellContainer.setBounds(recorder.getBounds());
       if (canDrop(targetPosition.x, targetPosition.y, cellContainer.getCell(), grid)) {

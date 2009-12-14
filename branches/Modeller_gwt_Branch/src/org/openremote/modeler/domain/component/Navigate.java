@@ -26,6 +26,8 @@ public class Navigate extends BusinessEntity {
 
    private long toScreen = -1L;
    private long toGroup = -1L;
+   private ToLogicalType toLogical;
+   
    private boolean toSetting;
    private boolean back;
    private boolean login;
@@ -81,10 +83,45 @@ public class Navigate extends BusinessEntity {
    public void setLogout(boolean logout) {
       this.logout = logout;
    }
+   
+   public ToLogicalType getToLogical() {
+      return toLogical;
+   }
+   public void setToLogical(ToLogicalType toLogical) {
+      this.toLogical = toLogical;
+   }
+   public void clearToLogical() {
+      this.toLogical = null;
+   }
    public boolean isSet() {
       if (toGroup != -1) {
          return true;
+      } else if(toLogical != null) {
+         return true;
       }
-      return toSetting || back || login || logout || next || previous;
+      return false;
+   }
+   
+   public static enum ToLogicalType {
+      toSetting, toBack, toLogin, toLogout, toNextScreen, toPreviousScreen;
+   }
+   
+   public boolean isToLogic() {
+      if(toLogical != null) {
+         return true;
+      }
+      return false;
+   }
+   
+   public boolean isToGroup() {
+      if (toGroup != -1) {
+         return true;
+      }
+      return false;
+   }
+   public void clear() {
+      this.toLogical = null;
+      this.toGroup = -1;
+      this.toScreen = -1;
    }
 }

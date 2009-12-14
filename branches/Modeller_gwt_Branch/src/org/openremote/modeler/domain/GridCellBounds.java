@@ -28,13 +28,13 @@ import com.extjs.gxt.ui.client.util.Rectangle;
  * @author Javen
  *
  */
-public class BoundsRecorder {
+public class GridCellBounds {
    private int left = 0;
    private int top = 0;
    private int width = 0;
    private int height = 0;
    
-   public BoundsRecorder(GridCellContainer container, UIGrid grid) {
+   public GridCellBounds(GridCellContainer container, UIGrid grid) {
       int cellWidth = grid.getWidth() / grid.getColumnCount();
       int cellHeight = grid.getHeight() / grid.getRowCount();
       this.left = container.getAbsoluteLeft();
