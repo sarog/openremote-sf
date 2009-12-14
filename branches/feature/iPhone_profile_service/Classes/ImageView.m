@@ -22,6 +22,7 @@
 #import "ImageView.h"
 #import "Image.h"
 #import "DirectoryDefinition.h"
+#import "ClippedUIImageView.h"
 
 @interface ImageView(Private)
 -(void) initImage;
@@ -47,9 +48,9 @@
 -(void) initImage {
 	Image *imageModel = (Image *)control;
 	UIImage *uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:imageModel.src]];
-	UIButton * uiButton = [[UIButton alloc] initWithFrame:[self bounds]];
-	[uiButton setImage:uiImage forState:UIControlStateNormal];
-	[self addSubview:uiButton];
+	ClippedUIImageView *clippedUIImageView = [[ClippedUIImageView alloc] initWithClipUIImage:uiImage dependingOnView:self imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW imageFillView:NO];
+	[clippedUIImageView setContentMode:UIViewContentModeTopLeft];
+	[self addSubview:clippedUIImageView];
 }
 
 @end
