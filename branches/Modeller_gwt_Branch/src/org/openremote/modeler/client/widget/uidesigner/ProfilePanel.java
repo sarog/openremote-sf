@@ -629,7 +629,13 @@ public class ProfilePanel extends ContentPanel {
          private boolean canMove(BeanModel scrRefBean, BeanModel groupRefBean) {
             GroupRef groupRef = groupRefBean.getBean();
             ScreenRef scrRef = scrRefBean.getBean();
-            return -1 == groupRef.getGroup().getScreenRefs().indexOf(scrRef);
+            List<ScreenRef> screenRefs = groupRef.getGroup().getScreenRefs();
+            for(ScreenRef ref : screenRefs){
+               if(ref.getScreenId()==scrRef.getScreenId()){
+                  return false;
+               }
+            }
+            return true;
          }
          private boolean inSamePanel(BeanModel sourceGroupRef, BeanModel targetGroupRef) {
             BeanModel sourceGrandFatherNode = (BeanModel) tree.getStore().getParent(sourceGroupRef);

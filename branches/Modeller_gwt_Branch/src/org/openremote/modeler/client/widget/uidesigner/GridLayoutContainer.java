@@ -429,8 +429,8 @@ public class GridLayoutContainer extends ComponentContainer {
             GridCellContainer resizedCellContainer = (GridCellContainer) re.getComponent();
             int vSize = (int) Math.round((float) resizedCellContainer.getHeight() / cellHeight);
             int hSize = (int) Math.round((float) resizedCellContainer.getWidth() / cellWidth);
-            resizedCellContainer.setHeight(vSize * cellHeight + vSize/* - 1*/);
-            resizedCellContainer.setWidth(hSize * cellWidth + hSize/* - 1*/);
+            resizedCellContainer.setHeight(vSize * cellHeight + vSize - 1);
+            resizedCellContainer.setWidth(hSize * cellWidth + hSize - 1);
             resizedCellContainer.setCellSpan(hSize, vSize);
             resizedCellContainer.fillArea(btnInArea);
             cellContainers.add(resizedCellContainer);
@@ -446,8 +446,8 @@ public class GridLayoutContainer extends ComponentContainer {
 //            int maxY = findMaxYWhenResize(resizeCellContainer, screen.getGrid());
             int maxX = findMaxXWhenResize(resizeCellContainer, grid);
             int maxY = findMaxYWhenResize(resizeCellContainer, grid);
-            resizable.setMaxWidth((maxX - resizeCellContainer.getCell().getPosX()/* + 1*/) * cellWidth);
-            resizable.setMaxHeight((maxY - resizeCellContainer.getCell().getPosY()/* + 1*/) * cellHeight);
+            resizable.setMaxWidth((maxX - resizeCellContainer.getCell().getPosX() + 1) * cellWidth);
+            resizable.setMaxHeight((maxY - resizeCellContainer.getCell().getPosY() + 1) * cellHeight);
             resizeCellContainer.clearArea(btnInArea);
          }
 
