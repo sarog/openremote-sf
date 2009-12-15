@@ -25,7 +25,7 @@ import java.util.List;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.gxtextends.ScreenDropTarget;
 import org.openremote.modeler.client.utils.IDUtil;
-import org.openremote.modeler.client.utils.SelectedWidgetContainer;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.domain.GridCellBounds;
 import org.openremote.modeler.domain.Cell;
@@ -156,13 +156,13 @@ public class GridLayoutContainer extends ComponentContainer {
                }
                cellContainer = addNewWidget(grid, cellWidth, cellHeight, e, targetCell, targetPosition,
                      cellContainer);
-            } else if (data instanceof GridContainer) {
+            } else if (data instanceof GridLayoutContainerHandle) {
                ((ComponentContainer) data).hideBackground();
                e.setCancelled(true);
                return;
             }
             cellContainer.fillArea(btnInArea);
-            SelectedWidgetContainer.setSelectWidget(cellContainer);
+            WidgetSelectionUtil.setSelectWidget(cellContainer);
             makeCellContainerResizable(cellWidth, cellHeight, cellContainer);
             layout();
             cellContainers.add(cellContainer);
@@ -217,7 +217,7 @@ public class GridLayoutContainer extends ComponentContainer {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
-               SelectedWidgetContainer.setSelectWidget((GridCellContainer) this);
+               WidgetSelectionUtil.setSelectWidget((GridCellContainer) this);
             }
             event.stopPropagation();
             super.onBrowserEvent(event);
@@ -237,7 +237,7 @@ public class GridLayoutContainer extends ComponentContainer {
                   if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
                      grid.removeCell(cellContainer.getCell());
                      cellContainer.removeFromParent();
-                     SelectedWidgetContainer.setSelectWidget(null);
+                     WidgetSelectionUtil.setSelectWidget(null);
                   }
                }
             });
@@ -252,11 +252,11 @@ public class GridLayoutContainer extends ComponentContainer {
    
    private GridCellContainer cloneCellContainer(GridCellContainer container) {
       Cell cell = container.getCell();
-      final GridCellContainer cellContainer =  new GridCellContainer(getScreenCanvas(), cell, container.getScreenControl(), this) {
+      final GridCellContainer cellContainer =  new GridCellContainer(getScreenCanvas(), cell, container.getScreenComponent(), this) {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
-               SelectedWidgetContainer.setSelectWidget((GridCellContainer) this);
+               WidgetSelectionUtil.setSelectWidget((GridCellContainer) this);
             }
             event.stopPropagation();
             super.onBrowserEvent(event);
@@ -276,7 +276,7 @@ public class GridLayoutContainer extends ComponentContainer {
                     if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
                        grid.removeCell(cellContainer.getCell());
                        cellContainer.removeFromParent();
-                       SelectedWidgetContainer.setSelectWidget(null);
+                       WidgetSelectionUtil.setSelectWidget(null);
                     }
                 }
             });

@@ -17,8 +17,9 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.client.widget.uidesigner;
+package org.openremote.modeler.client.widget.propertyform;
 
+import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.component.UIGrid;
 
@@ -31,9 +32,9 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.google.gwt.user.client.ui.FlexTable;
 
 public class GridPropertyForm extends PropertyForm {
-   private GridContainer gridContainer = null;
+   private GridLayoutContainerHandle gridContainer = null;
 
-   public GridPropertyForm(GridContainer gridContainer) {
+   public GridPropertyForm(GridLayoutContainerHandle gridContainer) {
       super();
       this.gridContainer = gridContainer;
       initForm();

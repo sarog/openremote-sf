@@ -20,19 +20,20 @@
 package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.widget.component.ScreenComponent;
+import org.openremote.modeler.client.widget.propertyform.GridPropertyForm;
+import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.domain.component.UIGrid;
 
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
 
-public class GridContainer extends ScreenComponent {
+public class GridLayoutContainerHandle extends ScreenComponent {
    
    public static final int DEFALUT_HANDLE_WIDTH = 16;
    public static final int DEFAULT_HANDLE_HEIGHT = 16;
    
    private GridLayoutContainer gridlayoutContainer = null;
 
-   public GridContainer(ScreenCanvas canvas, GridLayoutContainer gridlayoutContainer) {
+   public GridLayoutContainerHandle(ScreenCanvas canvas, GridLayoutContainer gridlayoutContainer) {
       super(canvas);
       this.gridlayoutContainer = gridlayoutContainer;
       setSize(DEFALUT_HANDLE_WIDTH, DEFAULT_HANDLE_HEIGHT);
@@ -61,7 +62,7 @@ public class GridContainer extends ScreenComponent {
    }
 
    @Override
-   public FormPanel buildPropertiesForm() {
+   public PropertyForm getPropertiesForm() {
       return new GridPropertyForm(this);
    }
 

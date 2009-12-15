@@ -19,12 +19,12 @@
 */
 package org.openremote.modeler.client.widget.component;
 
-import org.openremote.modeler.client.widget.uidesigner.ButtonPropertyForm;
+import org.openremote.modeler.client.widget.propertyform.ButtonPropertyForm;
+import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.component.UIButton;
 
 import com.extjs.gxt.ui.client.widget.Text;
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
 
@@ -33,7 +33,7 @@ import com.google.gwt.user.client.ui.Image;
  */
 public class ScreenButton extends ScreenComponent {
 
-   private FlexTable btnTable = new FlexTableBox();
+   private FlexTable btnTable = new FlexStyleBox();
 
    /** The btnTable center text. */
    protected Text center = new Text("Button");
@@ -111,7 +111,7 @@ public class ScreenButton extends ScreenComponent {
    }
 
    @Override
-   public FormPanel buildPropertiesForm() {
+   public PropertyForm getPropertiesForm() {
       return new ButtonPropertyForm(this, uiButton);
    }
 

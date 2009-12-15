@@ -21,42 +21,39 @@ package org.openremote.modeler.client.utils;
 
 import org.openremote.modeler.client.event.WidgetSelectChangeEvent;
 import org.openremote.modeler.client.listener.WidgetSelectChangeListener;
-import org.openremote.modeler.client.widget.uidesigner.PropertyPanelBuilder;
-
-import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
 
 /**
  * The SelectedWidgetContainer for store selected widget and fire widgetSelectChange event.
  */
-public class SelectedWidgetContainer {
+public class WidgetSelectionUtil {
 
-   private static PropertyPanelBuilder selectedWidget;
+   private static ComponentContainer currentSelectedWidget;
    private static WidgetSelectChangeListener widgetSelectChangeListener;
    
-   public static void setChangeListener(WidgetSelectChangeListener widgetSelectChangeListener) {
-      SelectedWidgetContainer.widgetSelectChangeListener = widgetSelectChangeListener;
+   public static void setChangeListener(WidgetSelectChangeListener listener) {
+      widgetSelectChangeListener = listener;
    }
    
-   public static void setSelectWidget(PropertyPanelBuilder selectedWidget) {
-      if (SelectedWidgetContainer.selectedWidget != null) {
-         ((LayoutContainer)SelectedWidgetContainer.selectedWidget).removeStyleName("button-border");
+   public static void setSelectWidget(ComponentContainer selectedWidget) {
+      if (currentSelectedWidget != null) {
+         currentSelectedWidget.removeStyleName("button-border");
       }
       if (selectedWidget != null) {
-         LayoutContainer selectComponent = (LayoutContainer)selectedWidget;
-         selectComponent.addStyleName("button-border");
+         selectedWidget.addStyleName("button-border");
          
          // add tab index and focus it, for catch keyboard "delete" event in Firefox.
-         if (selectComponent.isRendered()) {
-            selectComponent.el().dom.setPropertyInt("tabIndex", 0);
+         if (selectedWidget.isRendered()) {
+            selectedWidget.el().dom.setPropertyInt("tabIndex", 0);
          }
-         selectComponent.focus();
+         selectedWidget.focus();
       }
-      SelectedWidgetContainer.selectedWidget = selectedWidget;
+      currentSelectedWidget = selectedWidget;
       widgetSelectChangeListener.handleEvent(new WidgetSelectChangeEvent(selectedWidget));
    }
    
-   public static PropertyPanelBuilder getSelectWidget() {
-      return SelectedWidgetContainer.selectedWidget;
+   public static ComponentContainer getSelectWidget() {
+      return currentSelectedWidget;
    }
    
 }
