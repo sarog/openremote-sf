@@ -20,41 +20,40 @@
 package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.widget.component.ScreenComponent;
+import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.domain.Cell;
-
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
 
 /**
  * The Class GridCellContainer.
  */
-public class GridCellContainer extends ComponentContainer implements PropertyPanelBuilder { 
+public class GridCellContainer extends ComponentContainer { 
 
    private Cell cell;
    private GridLayoutContainer gridContainer = null;
    
-   private ScreenComponent screenControl;
+   private ScreenComponent screenComponent;
    
    public GridCellContainer(ScreenCanvas canvas, GridLayoutContainer gridContainer) {
       super(canvas);
       this.gridContainer = gridContainer;
    }
-   public GridCellContainer(ScreenCanvas canvas, Cell cell, ScreenComponent screenControl,
+   public GridCellContainer(ScreenCanvas canvas, Cell cell, ScreenComponent screenComponent,
          GridLayoutContainer gridContainer) {
       super(canvas);
       this.cell = cell;
-      this.screenControl = screenControl;
+      this.screenComponent = screenComponent;
       this.gridContainer = gridContainer;
       addStyleName("cursor-move");
       setStyleAttribute("position", "absolute");
-      add(screenControl);
+      add(screenComponent);
    }
 
    public Cell getCell() {
       return cell;
    }
 
-   public ScreenComponent getScreenControl() {
-      return screenControl;
+   public ScreenComponent getScreenComponent() {
+      return screenComponent;
    }
    
    public void setCellPosition(int posX, int posY) {
@@ -73,7 +72,7 @@ public class GridCellContainer extends ComponentContainer implements PropertyPan
    @Override
    public void setSize(int width, int height) {
       super.setSize(width, height);
-      screenControl.setSize(width - 2, height - 2);
+      screenComponent.setSize(width - 2, height - 2);
    }
    
    /**
@@ -103,10 +102,10 @@ public class GridCellContainer extends ComponentContainer implements PropertyPan
    }
    
    public void setName(String name) {
-      screenControl.setName(name);
+      screenComponent.setName(name);
    }
    @Override
-   public FormPanel buildPropertiesForm() {
-     return this.screenControl.buildPropertiesForm();
+   public PropertyForm getPropertiesForm() {
+     return this.screenComponent.getPropertiesForm();
    }
 }

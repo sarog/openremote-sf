@@ -20,42 +20,41 @@
 package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.widget.component.ScreenComponent;
+import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.domain.Absolute;
-
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
 
 /**
  * A layout container act as absolute position in screen canvas.
  */
-public class AbsoluteLayoutContainer extends ComponentContainer implements PropertyPanelBuilder {
+public class AbsoluteLayoutContainer extends ComponentContainer {
    public static final String ABSOLUTE_DISTANCE_NAME = "distance";
    private Absolute absolute;
-   private ScreenComponent screenControl;
+   private ScreenComponent screenComponent;
    /**
     * Instantiates a new absolute layout container.
     */
-   public AbsoluteLayoutContainer(ScreenCanvas screenCanvas, Absolute absolute, ScreenComponent screenControl) {
+   public AbsoluteLayoutContainer(ScreenCanvas screenCanvas, Absolute absolute, ScreenComponent screenComponent) {
       super(screenCanvas);
       addStyleName("cursor-move");
       setStyleAttribute("position", "absolute");
       this.absolute = absolute;
-      this.screenControl = screenControl;
-      add(screenControl);
+      this.screenComponent = screenComponent;
+      add(screenComponent);
    }
 
    public Absolute getAbsolute() {
       return absolute;
    }
 
-   public ScreenComponent getScreenControl() {
-      return screenControl;
+   public ScreenComponent getScreenComponent() {
+      return screenComponent;
    }
 
    @Override
    public void setSize(int width, int height) {
       super.setSize(width, height);
       absolute.setSize(width, height);
-      screenControl.setSize(width - 2, height - 2);
+      screenComponent.setSize(width - 2, height - 2);
    }
 
    @Override
@@ -65,8 +64,8 @@ public class AbsoluteLayoutContainer extends ComponentContainer implements Prope
    }
 
    @Override
-   public FormPanel buildPropertiesForm() {
-     return this.screenControl.buildPropertiesForm();
+   public PropertyForm getPropertiesForm() {
+     return this.screenComponent.getPropertiesForm();
    }
 
 }

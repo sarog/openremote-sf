@@ -17,18 +17,22 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.client.widget.uidesigner;
+package org.openremote.modeler.client.widget.propertyform;
 
+import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
+
 /**
- * This interface is used to build a property panel for a component. 
- * @author Javen
- *
+ * The PropertyForm initialize the property form display style.
  */
-public interface PropertyPanelBuilder {
-   /**
-    * build a proprety panel for a screen component. 
-    * @return a form panel for a screen component. 
-    */
-   FormPanel buildPropertiesForm(); 
+public class PropertyForm extends FormPanel {
+   public PropertyForm() {
+      setFrame(true);
+      setHeaderVisible(false);
+      setBorders(false);
+      setBodyBorder(false);
+      setLabelWidth(60);
+      setFieldWidth(100);
+      setScrollMode(Scroll.AUTO);
+   }
 }

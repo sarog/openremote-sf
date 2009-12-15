@@ -19,12 +19,12 @@
 */
 package org.openremote.modeler.client.widget.component;
 
+import org.openremote.modeler.client.widget.propertyform.PropertyForm;
+import org.openremote.modeler.client.widget.propertyform.SwitchPropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
-import org.openremote.modeler.client.widget.uidesigner.SwitchPropertyForm;
 import org.openremote.modeler.domain.component.UISwitch;
 
 import com.extjs.gxt.ui.client.widget.Text;
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
 
@@ -32,7 +32,7 @@ import com.google.gwt.user.client.ui.Image;
  * ScreenSwitch is the switch widget in screen.
  */
 public class ScreenSwitch extends ScreenComponent {
-   private FlexTable switchTable = new FlexTableBox();
+   private FlexTable switchTable = new FlexStyleBox();
 
    /** The switchTable center text. */
    private Text center = new Text("Switch");
@@ -70,7 +70,7 @@ public class ScreenSwitch extends ScreenComponent {
    }
 
    @Override
-   public FormPanel buildPropertiesForm() {
+   public PropertyForm getPropertiesForm() {
       return new SwitchPropertyForm(this, uiSwitch);
    }
 

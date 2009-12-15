@@ -24,9 +24,9 @@ import com.google.gwt.user.client.ui.FlexTable;
 /**
  * FlexTableBox is a style box which can be change size.
  */
-public class FlexTableBox extends FlexTable {
+public class FlexStyleBox extends FlexTable {
    
-   public FlexTableBox() {
+   public FlexStyleBox() {
       addStyleName("screen-btn-cont");
       setCellPadding(0);
       setCellSpacing(0);

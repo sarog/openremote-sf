@@ -325,7 +325,7 @@ public class ProfilePanel extends ContentPanel {
       });
    }
    private void editScreen(final BeanModel panelBeanModel) {
-      final ScreenWizard screenWizard = new ScreenWizard(screenTab, panelBeanModel, true);
+      final ScreenWindow screenWizard = new ScreenWindow(screenTab, panelBeanModel, true);
       screenWizard.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
@@ -480,7 +480,7 @@ public class ProfilePanel extends ContentPanel {
       newScreenItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             BeanModel selectItem = panelTree.getSelectionModel().getSelectedItem();
-            final ScreenWizard screenWindow = new ScreenWizard(screenTab, selectItem);
+            final ScreenWindow screenWindow = new ScreenWindow(screenTab, selectItem);
             screenWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {

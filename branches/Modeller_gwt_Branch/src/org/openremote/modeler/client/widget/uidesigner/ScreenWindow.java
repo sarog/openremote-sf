@@ -52,14 +52,14 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
  * @author Javen
  *
  */
-public class ScreenWizard extends FormWindow {
+public class ScreenWindow extends FormWindow {
    
    private TextField<String> nameField = null;
    private BeanModel selectItem = null;
    private boolean editMode = false;
    private TreePanel<BeanModel> groupSelectTree = null;
    
-   public ScreenWizard(ScreenTab screenTab, BeanModel selectItem, boolean editMode) {
+   public ScreenWindow(ScreenTab screenTab, BeanModel selectItem, boolean editMode) {
       super();
       this.editMode = editMode;
       this.selectItem = selectItem;
@@ -74,7 +74,7 @@ public class ScreenWizard extends FormWindow {
       show();
    }
 
-   public ScreenWizard(ScreenTab screenTab, BeanModel selectItem) {
+   public ScreenWindow(ScreenTab screenTab, BeanModel selectItem) {
       this(screenTab, selectItem, false);
    }
    

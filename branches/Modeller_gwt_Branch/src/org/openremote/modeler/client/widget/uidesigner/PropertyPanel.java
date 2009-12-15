@@ -21,8 +21,7 @@ package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.event.WidgetSelectChangeEvent;
 import org.openremote.modeler.client.listener.WidgetSelectChangeListener;
-import org.openremote.modeler.client.utils.SelectedWidgetContainer;
-import org.openremote.modeler.client.widget.component.ScreenComponent;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
@@ -33,7 +32,7 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
  */
 public class PropertyPanel extends ContentPanel {
 
-   private PropertyPanelBuilder currentLayoutContainer;
+   private ComponentContainer currentLayoutContainer;
    private FormPanel currentPropertyForm;
 //   private static PropertyPanel propertyPanel;
    public PropertyPanel() {
@@ -41,7 +40,7 @@ public class PropertyPanel extends ContentPanel {
       setHeading("Properties");
       setLayout(new FitLayout());
       setFrame(true);
-      SelectedWidgetContainer.setChangeListener(new WidgetSelectChangeListener() {
+      WidgetSelectionUtil.setChangeListener(new WidgetSelectChangeListener() {
          @Override
          public void changeSelect(WidgetSelectChangeEvent be) {
             update(be.getSelectWidget());
@@ -60,33 +59,23 @@ public class PropertyPanel extends ContentPanel {
    /**
     * Update the panel's content follow with different component.
     */
-   public void update(PropertyPanelBuilder component) {
+   public void update(ComponentContainer component) {
       if (component == null) {
          removePropertiesForm();
          layout();
          return;
       }
       if (!component.equals(currentLayoutContainer)) {
+         currentLayoutContainer =  component;
          if (component instanceof AbsoluteLayoutContainer) {
-            AbsoluteLayoutContainer alc = (AbsoluteLayoutContainer) component;
-            ScreenComponent screenControl = alc.getScreenControl();
-            // UIComponent uiComponent = alc.getAbsolute().getUIComponent();
-            addPropertiesForm(screenControl);
-            currentLayoutContainer =  component;
+            addPropertiesForm(((AbsoluteLayoutContainer) component).getScreenComponent());
          } else if (component instanceof GridCellContainer) {
-            GridCellContainer gcc = (GridCellContainer) component;
-            ScreenComponent screenControl = gcc.getScreenControl();
-            // UIControl uiControl = gcc.getCell().getUiControl();
-            addPropertiesForm(screenControl);
-            currentLayoutContainer =  component;
-         } else if (component instanceof GridContainer) {
-            GridContainer gridContainer = (GridContainer) component;
-            addPropertiesForm(gridContainer);
+            addPropertiesForm(((GridCellContainer) component).getScreenComponent());
+         } else if (component instanceof GridLayoutContainerHandle) {
+            addPropertiesForm(component);
             currentLayoutContainer = null;
          } else if (component instanceof ScreenCanvas) {
-            ScreenCanvas canvas = (ScreenCanvas) component;
-            addPropertiesForm(canvas);
-            currentLayoutContainer =  component;
+            addPropertiesForm(component);
          }
          layout();
       }
@@ -97,11 +86,11 @@ public class PropertyPanel extends ContentPanel {
     * @param screenControl
     * @param uiComponent
     */
-   private void addPropertiesForm(PropertyPanelBuilder screenControl) {
+   private void addPropertiesForm(ComponentContainer screenControl) {
       if (currentPropertyForm != null) {
          currentPropertyForm.removeFromParent();
       }
-      currentPropertyForm = screenControl.buildPropertiesForm();
+      currentPropertyForm = screenControl.getPropertiesForm();
       add(currentPropertyForm);
    }
    

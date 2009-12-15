@@ -17,12 +17,12 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.client.widget;
+package org.openremote.modeler.client.widget.propertyform;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
-import org.openremote.modeler.client.widget.uidesigner.PropertyForm;
+import org.openremote.modeler.client.widget.ImageUploadField;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.Background;
 import org.openremote.modeler.domain.Screen;

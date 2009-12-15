@@ -19,7 +19,7 @@
 */
 package org.openremote.modeler.client.event;
 
-import org.openremote.modeler.client.widget.uidesigner.PropertyPanelBuilder;
+import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.EventType;
@@ -28,18 +28,18 @@ public class WidgetSelectChangeEvent extends BaseEvent {
 
    public static final EventType WIDGETSELECTCHANGEED = new EventType();
    
-   private PropertyPanelBuilder selectWidget;
+   private ComponentContainer selectWidget;
    
    public WidgetSelectChangeEvent() {
       super(WIDGETSELECTCHANGEED);
    }
    
-   public WidgetSelectChangeEvent(PropertyPanelBuilder data) {
+   public WidgetSelectChangeEvent(ComponentContainer data) {
       this();
       selectWidget = data;
    }
    
-   public PropertyPanelBuilder getSelectWidget() {
+   public ComponentContainer getSelectWidget() {
       return selectWidget;
    }
   
