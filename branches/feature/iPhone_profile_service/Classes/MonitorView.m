@@ -28,15 +28,16 @@
 #import "StringUtils.h"
 
 @interface MonitorView(Private)
-- (void) setImage:(NSString *)urlString;
-- (void) setNormalStringStatus:(NSString *)normalString;
-- (void) initImageButton;
-- (void) clearImageButton;
+- (void) initMonitorContent;
+- (void) refreshMonitorContent:(NSString *)newStatus;
+- (void) refreshMonitorImageURL:(NSString *)imageURL;
+- (void) refreshMonitorText:(NSString *)text;
+- (void) clearMonitorContent;
 @end
 
 @implementation MonitorView
 
-@synthesize imageButton;
+@synthesize monitorContent;
 
 #pragma mark Overridden methods
 
@@ -45,77 +46,71 @@
 - (void)setPollingStatus:(NSNotification *)notification {
 	PollingStatusParserDelegate *delegate = (PollingStatusParserDelegate *)[notification object];
 	NSString *newStatus = [delegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",control.controlId]];
-	// If the newStatus is a URL string.
-	if ([[newStatus lowercaseString] hasPrefix:@"http://"]) {
-		NSLog(@"Got URL status string %@ for Monitor.", newStatus);
-		NSLog(@"Downloading image with URL string %@ for Monitor.", newStatus);
-		[FileUtils downloadFromURL:newStatus path:[DirectoryDefinition imageCacheFolder]];
-		[self setImage:newStatus];
-	} else {
-		NSLog(@"Got normal status string for Monitor.");
-		[self setNormalStringStatus:newStatus];
-	}
+	[self refreshMonitorContent:newStatus];
 }
 
 // This method is abstract method of indirect superclass UIView's.
 - (void)layoutSubviews {
-	[self initImageButton];
+	[self initMonitorContent];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,control.controlId] object:nil];
 	
 }
 
 #pragma mark Private methods implementation
 
-- (void) initImageButton {
-	if (imageButton) {
-		[imageButton removeFromSuperview];
-		[imageButton release];
-	}
-	imageButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
-	[imageButton setFrame:[self bounds]];
-	[self addSubview:imageButton];
-
+- (void) initMonitorContent {
+	monitorContent = [[UIView alloc] initWithFrame:[self bounds]];
+	[self addSubview:monitorContent];
 }
 
-- (void) clearImageButton {
-	if (imageButton) {
-		[imageButton setTitle:@"" forState:UIControlStateNormal];
-		[imageButton setBackgroundImage:nil forState:UIControlStateNormal];
-		[imageButton setBackgroundColor:nil];
-		[imageButton setImage:nil forState:UIControlStateNormal];
+- (void) refreshMonitorContent:(NSString *)newStatus {
+	// The newStatus is a image URL string.
+	if ([[newStatus lowercaseString] hasPrefix:@"http://"]) {
+		[self refreshMonitorImageURL:newStatus];
+	} 
+	// The newStatus is a normal string.
+	else {
+		[self refreshMonitorText:newStatus];
 	}
 }
 
-- (void) setImage:(NSString *)urlString {
-	
-	NSLog(@"Begin: Update image with updated status for Monitor.");
-	NSString *imageFileName = [StringUtils parsefileNameFromString:urlString];
-	NSLog(@"Image Name in setImage---------------%@", imageFileName);
-	UIImage *newStateImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:imageFileName]];
-	NSLog(@"new StateImage is : %@", newStateImage);
-	NSLog(@"new stateimage width is : %d", newStateImage.size.width);
-	NSLog(@"new stateimage height is : %d", newStateImage.size.height);
-	[self clearImageButton];
-	if (newStateImage) {
-		[imageButton setImage:newStateImage forState:UIControlStateNormal];
+- (void) refreshMonitorImageURL:(NSString *)imageURL {
+	[self clearMonitorContent];
+	[FileUtils downloadFromURL:imageURL path:[DirectoryDefinition imageCacheFolder]];
+	NSString *imageFileName = [StringUtils parsefileNameFromString:imageURL];
+	UIImage *imageContent = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:imageFileName]];
+	if (imageContent) {
+		self.monitorContent = [[UIImageView alloc] initWithFrame:[self bounds]];
+		[(UIImageView *)monitorContent setImage:imageContent];
+		[(UIImageView *)monitorContent sizeToFit];
+		[monitorContent setBackgroundColor:nil];
 	} else {
-		[imageButton setBackgroundColor:[UIColor blackColor]];
+		self.monitorContent = [[UILabel alloc] initWithFrame:[self bounds]];
+		[monitorContent setBackgroundColor:[UIColor grayColor]];
 	}
-	NSLog(@"End: Update image with updated status for Monitor.");
-	
+	[self addSubview:monitorContent];
 }
 
-- (void) setNormalStringStatus:(NSString *)normalString {
-	NSLog(@"Begin: Update string status for Monitor.");
-	[self clearImageButton];
-	[imageButton setBackgroundColor:[UIColor blackColor]];
-	[imageButton setTitle:[NSString stringWithUTF8String:[normalString UTF8String]] forState:UIControlStateNormal];
-	NSLog(@"End: Update string status for Monitor.");
+- (void) refreshMonitorText:(NSString *)text {
+	[self clearMonitorContent];
+	self.monitorContent = [[UILabel alloc] initWithFrame:[self bounds]];
+	[(UILabel *)monitorContent setTextAlignment:UITextAlignmentCenter];
+	[monitorContent setBackgroundColor:[UIColor grayColor]];
+	[(UILabel *)monitorContent setText:[NSString stringWithUTF8String:[text UTF8String]]];
+	[self addSubview:monitorContent];
+}
+
+- (void) clearMonitorContent {
+	for (UIView *view in self.subviews) {
+		[view removeFromSuperview];
+	}
 }
 
 #pragma mark Dealloc method
 - (void)dealloc {
-	[imageButton release];
+	if (monitorContent) {
+		[monitorContent release];
+	}
 	[super dealloc];
 }
 
