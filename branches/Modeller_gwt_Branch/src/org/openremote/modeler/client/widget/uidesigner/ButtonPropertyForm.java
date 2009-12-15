@@ -101,13 +101,12 @@ public class ButtonPropertyForm extends PropertyForm {
       final Navigate navigate = uiButton.getNavigate();
       final NavigateFieldSet navigateSet = new NavigateFieldSet(navigate, BeanModelDataBase.groupTable.loadAll());
       navigateSet.setCheckboxToggle(true);
-      if (!navigate.isSet()) {
-         navigateSet.collapse();
-      }
       navigateSet.addListener(Events.BeforeExpand, new Listener<FieldSetEvent>() {
          @Override
          public void handleEvent(FieldSetEvent be) {
-            navigate.setToLogical(ToLogicalType.toSetting);
+            if (!navigate.isSet()) {
+               navigate.setToLogical(ToLogicalType.SETTING);
+            }
             navigateSet.update(navigate);
          }
          
@@ -118,6 +117,11 @@ public class ButtonPropertyForm extends PropertyForm {
             navigate.clear();
          }
       });
+      if (navigate.isSet()) {
+         navigateSet.fireEvent(Events.BeforeExpand);
+      } else {
+         navigateSet.collapse();
+      }
       
       Button imageBtn = new Button("Select");
       imageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {

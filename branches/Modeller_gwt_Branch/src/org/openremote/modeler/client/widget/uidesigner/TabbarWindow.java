@@ -291,7 +291,7 @@ public class TabbarWindow extends CommonWindow {
             }
             Navigate navigate = tabbarItem.getNavigate();
             if (!navigate.isSet()) {
-               navigate.setToLogical(ToLogicalType.toSetting);
+               navigate.setToLogical(ToLogicalType.SETTING);
             }
             navigateSet.update(tabbarItem.getNavigate());
          }
