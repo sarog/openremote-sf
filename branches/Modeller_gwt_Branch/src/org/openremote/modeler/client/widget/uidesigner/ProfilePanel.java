@@ -21,19 +21,20 @@ package org.openremote.modeler.client.widget.uidesigner;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
 import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
+import org.openremote.modeler.client.gxtextends.TreePanelDragSourcePanelTreeExt;
+import org.openremote.modeler.client.gxtextends.TreePanelDropTargetPanelTreeExt;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
+import org.openremote.modeler.client.listener.PanelTreeStoreChangeListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
@@ -51,21 +52,12 @@ import org.openremote.modeler.domain.component.UITabbarItem;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
-import com.extjs.gxt.ui.client.data.ChangeEventSupport;
 import com.extjs.gxt.ui.client.data.ChangeListener;
-import com.extjs.gxt.ui.client.data.ModelData;
-import com.extjs.gxt.ui.client.dnd.TreePanelDragSource;
-import com.extjs.gxt.ui.client.dnd.TreePanelDropTarget;
-import com.extjs.gxt.ui.client.dnd.DND.Feedback;
-import com.extjs.gxt.ui.client.dnd.DND.Operation;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
-import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.store.Store;
-import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -83,12 +75,10 @@ import com.google.gwt.user.client.Element;
  */
 public class ProfilePanel extends ContentPanel {
 
-
    private TreePanel<BeanModel> panelTree;
    private Icons icon = GWT.create(Icons.class);
    private SelectionServiceExt<BeanModel> selectionService;
    private ScreenTab screenTab = null;
-   private Map<BeanModel, ChangeListener> changeListenerMap = null;
    /**
     * Instantiates a new profile panel.
     */
@@ -100,8 +90,8 @@ public class ProfilePanel extends ContentPanel {
       setLayout(new FitLayout());
       createMenu();
       createPanelTree(screenTab);
-      createDragSource4PanelTree();
-      createDropTarget4PanelTree();
+      new TreePanelDragSourcePanelTreeExt(panelTree);
+      new TreePanelDropTargetPanelTreeExt(panelTree);
    }
 
    /**
@@ -146,7 +136,8 @@ public class ProfilePanel extends ContentPanel {
          @Override
          protected void onRender(Element parent, int index) {
             super.onRender(parent, index);
-            addTreeStoreEventListener();
+//            addTreeStoreEventListener();
+            new PanelTreeStoreChangeListener(panelTree);
             add(panelTree);
          }
       };
@@ -550,261 +541,4 @@ public class ProfilePanel extends ContentPanel {
       this.screenTab = screenTab;
    }
    
-   private void createDragSource4PanelTree() {
-      new TreePanelDragSource(this.panelTree) {
-
-         @Override
-         protected void onDragStart(DNDEvent e) {
-            if (panelTree.getSelectionModel().getSelectedItems().size() > 1) {
-               e.setCancelled(true);
-               return;
-            }
-            super.onDragStart(e);
-         }
-
-         @Override
-         protected void onDragDrop(DNDEvent event) {
-            return;
-         }
-
-         @Override
-         public void setGroup(String group) {
-            super.setGroup("REORDER_PANEL");
-         }
-      };
-   }
-   
-   private void createDropTarget4PanelTree() {
-      final TreePanelDropTarget target = new TreePanelDropTarget(panelTree) {
-         @SuppressWarnings("unchecked")
-         @Override
-         protected void onDragDrop(DNDEvent event) {
-            boolean successed = false;
-
-            if (activeItem == null || event.getData() == null) {
-               event.setCancelled(true);
-               return;
-            }
-
-            BeanModel targetNode = (BeanModel) activeItem.getModel();
-            BeanModel sourceNode = ((List<ModelData>) event.getData()).get(0).get("model");
-            BeanModel sourceParentNode = (BeanModel) tree.getStore().getParent(sourceNode);
-            BeanModel targetParentNode = (BeanModel) tree.getStore().getParent(targetNode);
-
-            if (status == -1) { // append operation
-               tree.getView().onDropChange(activeItem, false);
-               if (sourceParentNode == targetNode) {
-                  tree.getStore().remove(sourceNode);
-                  handleAppendDrop(event, activeItem);
-                  doAppend(sourceParentNode, sourceNode, targetNode);
-                  successed = true;
-               } else if (sourceNode.getBean() instanceof ScreenRef && targetNode.getBean() instanceof GroupRef
-                     && inSamePanel(sourceParentNode, targetNode) && canMove(sourceNode, targetNode)) {
-                  tree.getStore().remove(sourceNode);
-                  handleAppendDrop(event, activeItem);
-                  appendScreen(sourceParentNode, sourceNode, targetNode);
-                  successed = true;
-               }
-            } else if (targetParentNode == sourceParentNode) { // insert operation
-               tree.getStore().remove(sourceNode);
-               handleInsertDrop(event, activeItem, status);
-               doInsert(sourceParentNode, sourceNode, targetNode);
-               successed = true;
-            } else if (sourceNode.getBean() instanceof ScreenRef && targetParentNode.getBean() instanceof GroupRef
-                  && inSamePanel(sourceParentNode, targetParentNode) && canMove(sourceNode, targetParentNode)) {
-               tree.getStore().remove(sourceNode);
-               handleInsertDrop(event, activeItem, status);
-               reorderScreen(sourceParentNode, sourceNode, targetNode);
-               successed = true;
-            }
-            if (!successed) {
-               event.setCancelled(true);
-            }
-         }
-         
-         @Override
-         public void setGroup(String group) {
-            super.setGroup("REORDER_PANEL");
-         }
-         private boolean canMove(BeanModel scrRefBean, BeanModel groupRefBean) {
-            GroupRef groupRef = groupRefBean.getBean();
-            ScreenRef scrRef = scrRefBean.getBean();
-            List<ScreenRef> screenRefs = groupRef.getGroup().getScreenRefs();
-            for(ScreenRef ref : screenRefs){
-               if(ref.getScreenId()==scrRef.getScreenId()){
-                  return false;
-               }
-            }
-            return true;
-         }
-         private boolean inSamePanel(BeanModel sourceGroupRef, BeanModel targetGroupRef) {
-            BeanModel sourceGrandFatherNode = (BeanModel) tree.getStore().getParent(sourceGroupRef);
-            BeanModel targetGrandFatherNode = (BeanModel) tree.getStore().getParent(targetGroupRef);
-            return sourceGrandFatherNode.equals(targetGrandFatherNode);
-         }
-         private void appendScreen(BeanModel sourceGroupRefBeanModel, BeanModel sourceScreenRefBeanModel,
-               BeanModel targetGroupRefBeanModel) {
-            ScreenRef sourceScreenRef = sourceScreenRefBeanModel.getBean();
-            GroupRef targetGroupRef = targetGroupRefBeanModel.getBean();
-            targetGroupRef.getGroup().addScreenRef(sourceScreenRef);
-            GroupRef sourceGroupRef = sourceGroupRefBeanModel.getBean();
-            sourceGroupRef.getGroup().removeScreenRef(sourceScreenRef);
-         }
-         private void reorderScreen(BeanModel sourceGroupRefBean, BeanModel fromBean, BeanModel toBean) {
-            Group sourceGroup = ((GroupRef) sourceGroupRefBean.getBean()).getGroup();
-            Group targetGroup = sourceGroup;
-            ScreenRef from = fromBean.getBean();
-            ScreenRef to = toBean.getBean();
-            if (!sourceGroup.equals(to.getGroup())) {
-               targetGroup = to.getGroup();
-            }
-            sourceGroup.removeScreenRef(from);
-            targetGroup.insertScreenRef(to, from);
-         }
-
-         private void doAppend(BeanModel sourceParent, BeanModel source, BeanModel target) {
-            if (sourceParent.getBean() instanceof GroupRef && source.getBean() instanceof ScreenRef
-                  && target.getBean() instanceof GroupRef) {
-               appendScreen(sourceParent, source, target);
-            } else if (sourceParent.getBean() instanceof Panel && source.getBean() instanceof GroupRef
-                  && target.getBean() instanceof Panel) {
-               appendGroup(sourceParent, source, target);
-            }
-         }
-
-         private void doInsert(BeanModel sourceParent, BeanModel source, BeanModel insertTo) {
-            if (sourceParent.getBean() instanceof GroupRef && source.getBean() instanceof ScreenRef
-                  && insertTo.getBean() instanceof ScreenRef) {
-               reorderScreen(sourceParent, source, insertTo);
-            } else if (sourceParent.getBean() instanceof Panel && source.getBean() instanceof GroupRef
-                  && insertTo.getBean() instanceof GroupRef) {
-               reorderGroup(sourceParent, source, insertTo);
-            }
-         }
-
-         private void appendGroup(BeanModel sourcePanelBean, BeanModel groupRefBean, BeanModel targetPanelBean) {
-            Panel sourcePanel = sourcePanelBean.getBean();
-            Panel targetpanel = targetPanelBean.getBean();
-            GroupRef groupRef = groupRefBean.getBean();
-            sourcePanel.removeGroupRef(groupRef);
-            targetpanel.addGroupRef(groupRef);
-         }
-         private void reorderGroup(BeanModel sourcePanelBean, BeanModel fromBean, BeanModel toBean) {
-            Panel panel = sourcePanelBean.getBean();
-            GroupRef from = fromBean.getBean();
-            panel.removeGroupRef(from);
-            GroupRef to = toBean.getBean();
-            panel.insertGroupRef(to, from);
-         }
-      };
-
-      target.setAllowSelfAsSource(true);
-      target.setOperation(Operation.MOVE);
-      target.setAutoExpand(false);
-      target.setFeedback(Feedback.BOTH);
-      target.setAllowDropOnLeaf(true);
-   }
-   
-   /**
-    * Adds the tree store event listener.
-    */
-   private void addTreeStoreEventListener() {
-      panelTree.getStore().addListener(Store.Add, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            addChangeListenerToDragSource(be.getChildren());
-         }
-      });
-      panelTree.getStore().addListener(Store.DataChanged, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            addChangeListenerToDragSource(be.getChildren());
-         }
-      });
-      panelTree.getStore().addListener(Store.Clear, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            removeChangeListenerToDragSource(be.getChildren());
-         }
-      });
-      panelTree.getStore().addListener(Store.Remove, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            removeChangeListenerToDragSource(be.getChildren());
-         }
-      });
-   }
-
-   /**
-    * Adds the change listener to drag source.
-    * 
-    * @param models
-    *           the models
-    */
-   private void addChangeListenerToDragSource(List<BeanModel> models) {
-      if (models == null) {
-         return;
-      }
-      for (BeanModel beanModel : models) {
-         if (beanModel.getBean() instanceof ScreenRef) {
-            BeanModelDataBase.screenTable.addChangeListener(BeanModelDataBase
-                  .getOriginalDesignerRefBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-         }
-      }
-   }
-
-   /**
-    * Removes the change listener to drag source.
-    * 
-    * @param models
-    *           the models
-    */
-   private void removeChangeListenerToDragSource(List<BeanModel> models) {
-      if (models == null) {
-         return;
-      }
-      for (BeanModel beanModel : models) {
-         if (beanModel.getBean() instanceof ScreenRef) {
-            BeanModelDataBase.screenTable.removeChangeListener(BeanModelDataBase
-                  .getOriginalDesignerRefBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-         }
-         changeListenerMap.remove(beanModel);
-      }
-   }
-
-   /**
-    * Gets the drag source bean model change listener.
-    * 
-    * @param target
-    *           the target
-    * 
-    * @return the drag source bean model change listener
-    */
-   private ChangeListener getDragSourceBeanModelChangeListener(final BeanModel target) {
-      if (changeListenerMap == null) {
-         changeListenerMap = new HashMap<BeanModel, ChangeListener>();
-      }
-      ChangeListener changeListener = changeListenerMap.get(target);
-      if (changeListener == null) {
-         changeListener = new ChangeListener() {
-            public void modelChanged(ChangeEvent changeEvent) {
-               if (changeEvent.getType() == ChangeEventSupport.Remove) {
-                  if (target.getBean() instanceof ScreenRef) {
-                     ScreenRef screenRef = (ScreenRef) target.getBean();
-                     Group group = screenRef.getGroup();
-                     group.removeScreenRef(screenRef);
-                  }
-                  panelTree.getStore().remove(target);
-               }
-               if (changeEvent.getType() == ChangeEventSupport.Update) {
-                  BeanModel source = (BeanModel) changeEvent.getItem();
-                  if (source.getBean() instanceof Screen) {
-                     Screen screen = (Screen) source.getBean();
-                     ScreenRef screenRef = (ScreenRef) target.getBean();
-                     screenRef.setScreen(screen);
-                  }
-                  panelTree.getStore().update(target);
-               }
-            }
-         };
-         changeListenerMap.put(target, changeListener);
-      }
-      return changeListener;
-   }
 }

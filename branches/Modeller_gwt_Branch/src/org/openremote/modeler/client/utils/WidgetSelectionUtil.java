@@ -52,8 +52,4 @@ public class WidgetSelectionUtil {
       widgetSelectChangeListener.handleEvent(new WidgetSelectChangeEvent(selectedWidget));
    }
    
-   public static ComponentContainer getSelectWidget() {
-      return currentSelectedWidget;
-   }
-   
 }

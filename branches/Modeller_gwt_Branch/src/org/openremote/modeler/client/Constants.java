@@ -45,6 +45,9 @@ public class Constants {
    /** The Constant CONTROL_DND_GROUP. */
    public static final String CONTROL_DND_GROUP = "controlDNDGroup";
    
+   /** The Constant REORDER_PANEL_GROUP. */
+   public static final String REORDER_PANEL_GROUP = "reorderPanelGroup";
+   
    /** The Constant DEVICES. */
    public static final String DEVICES = "devices";
    
