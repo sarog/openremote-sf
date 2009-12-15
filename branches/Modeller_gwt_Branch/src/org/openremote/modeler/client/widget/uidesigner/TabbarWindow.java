@@ -26,6 +26,7 @@ import org.openremote.modeler.client.event.SelectEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SelectListener;
 import org.openremote.modeler.client.widget.CommonWindow;
+import org.openremote.modeler.client.widget.ImageUploadField;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
@@ -54,7 +55,6 @@ import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
-import com.extjs.gxt.ui.client.widget.form.FileUploadField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
@@ -239,8 +239,7 @@ public class TabbarWindow extends CommonWindow {
       imageForm.setBodyBorder(false);
       imageForm.setPadding(0);
       imageForm.setLabelAlign(LabelAlign.TOP);
-      final FileUploadField imageField = new FileUploadField() {
-
+      final ImageUploadField imageField = new ImageUploadField() {
          @Override
          protected void onChange(ComponentEvent ce) {
             super.onChange(ce);
@@ -251,13 +250,8 @@ public class TabbarWindow extends CommonWindow {
          }
          
       };
-      imageField.setFieldLabel("Image");
-      imageField.setName(TABBAR_ITEM_IMAGE);
-      imageField.setRegex(".+?\\.(png|gif|jpg|PNG|GIF|JPG)");
-      imageField.getMessages().setRegexText("Please select a gif, jpg or png type image.");
-      imageField.setStyleAttribute("overflow", "hidden");
       imageForm.add(imageField);
-      imageForm.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName=" + TABBAR_ITEM_IMAGE);
+      imageForm.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName=" + ImageUploadField.IMAGEUPLOADFIELD);
       imageForm.setEncoding(Encoding.MULTIPART);
       imageForm.setMethod(Method.POST);
       imageForm.addListener(Events.Submit, new Listener<FormEvent>() {

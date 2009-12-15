@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyForm;
@@ -161,7 +162,7 @@ public class ScreenPropertyForm extends PropertyForm {
       posTopField.setName("posTop");
       posTopField.setFieldLabel("Top");
       posTopField.setAllowBlank(false);
-      posTopField.setRegex("^\\d+$");
+      posTopField.setRegex(Constants.REG_NONNEGATIVEINT);
       posTopField.getMessages().setRegexText("The top must be a nonnegative integer");
       posTopField.setValue("0"); // temp set top 0
       posTopField.addListener(Events.Blur, new Listener<BaseEvent>() {
@@ -182,7 +183,7 @@ public class ScreenPropertyForm extends PropertyForm {
       posLeftField.setName("posLeft");
       posLeftField.setFieldLabel("Left");
       posLeftField.setAllowBlank(false);
-      posLeftField.setRegex("^\\d+$");
+      posLeftField.setRegex(Constants.REG_NONNEGATIVEINT);
       posLeftField.getMessages().setRegexText("The left must be a nonnegative integer");
       posLeftField.setValue("0"); // temp set left 0
       posLeftField.addListener(Events.Blur, new Listener<BaseEvent>() {
@@ -300,8 +301,8 @@ public class ScreenPropertyForm extends PropertyForm {
       return whetherFieldGroup;
    }
 
-   private FileUploadField createBackgroundField() {
-      FileUploadField background = new FileUploadField() {
+   private ImageUploadField createBackgroundField() {
+      ImageUploadField background = new ImageUploadField() {
          @Override
          protected void onChange(ComponentEvent ce) {
             super.onChange(ce);
@@ -314,10 +315,6 @@ public class ScreenPropertyForm extends PropertyForm {
       };
       background.setValue(canvas.getScreen().getBackground().getSrc());
       background.setFieldLabel("Background");
-      background.setName(SCREEN_BACKGROUND);
-      background.setRegex(".+?\\.(png|gif|jpg|PNG|GIF|JPG)");
-      background.getMessages().setRegexText("Please select a gif, jpg or png type image.");
-      background.setStyleAttribute("overflow", "hidden");
       return background;
    }
    
@@ -332,7 +329,7 @@ public class ScreenPropertyForm extends PropertyForm {
    
    private void addListenersToForm(final RadioGroup whetherFillScreen) {
       setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName="
-            + SCREEN_BACKGROUND);
+            + ImageUploadField.IMAGEUPLOADFIELD);
       setEncoding(Encoding.MULTIPART);
       setMethod(Method.POST);
 

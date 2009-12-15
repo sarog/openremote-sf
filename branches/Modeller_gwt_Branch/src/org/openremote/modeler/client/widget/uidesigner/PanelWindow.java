@@ -31,6 +31,7 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.TouchPanels;
 import org.openremote.modeler.client.widget.FormWindow;
+import org.openremote.modeler.client.widget.ImageUploadField;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
@@ -50,7 +51,6 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
-import com.extjs.gxt.ui.client.widget.form.FileUploadField;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Method;
@@ -61,7 +61,6 @@ import com.google.gwt.core.client.GWT;
 public class PanelWindow extends FormWindow {
 
    private static final String PANEL_NAME = "panelName";
-   private static final String PANEL_IMAGE = "panelImage";
    private BeanModel panelModel = null;
    private TextField<String> panelNameField = null;
    private CheckBox createScreen = new CheckBox();
@@ -71,7 +70,7 @@ public class PanelWindow extends FormWindow {
    private TextField<Integer> panelHeightField = null;
    private TextField<Integer> panelPaddingLeftField = null;
    private TextField<Integer> panelPaddingTopField = null;
-   private FileUploadField panelImage = null;
+   private ImageUploadField panelImage = null;
    private TextField<Integer> screenWidthField = null;
    private TextField<Integer> screenHeightField = null;
    /**
@@ -167,90 +166,56 @@ public class PanelWindow extends FormWindow {
       customType.setHideLabel(true);
       
       panelWidthField = new TextField<Integer>();
-      panelWidthField.disable();
-      panelWidthField.setLabelStyle("text-align:right;");
       panelWidthField.setName("panelWidth");
       panelWidthField.setFieldLabel("Panel width");
-      panelWidthField.setAllowBlank(false);
-      panelWidthField.setRegex("^[1-9][0-9]*$");
+      panelWidthField.setRegex(Constants.REG_POSITIVEINT);
       panelWidthField.getMessages().setRegexText("The panel width must be a positive integer");
       
       panelHeightField = new TextField<Integer>();
-      panelHeightField.disable();
-      panelHeightField.setLabelStyle("text-align:right;");
       panelHeightField.setName("panelHeight");
       panelHeightField.setFieldLabel("Panel height");
-      panelHeightField.setAllowBlank(false);
-      panelHeightField.setRegex("^[1-9][0-9]*$");
+      panelHeightField.setRegex(Constants.REG_POSITIVEINT);
       panelHeightField.getMessages().setRegexText("The panel height must be a positive integer");
       
       panelPaddingLeftField = new TextField<Integer>();
-      panelPaddingLeftField.disable();
-      panelPaddingLeftField.setLabelStyle("text-align:right;");
       panelPaddingLeftField.setName("panelPaddingLeft");
       panelPaddingLeftField.setFieldLabel("Panel padding left");
-      panelPaddingLeftField.setAllowBlank(false);
-      panelPaddingLeftField.setRegex("^\\d+$");
+      panelPaddingLeftField.setRegex(Constants.REG_NONNEGATIVEINT);
       panelPaddingLeftField.getMessages().setRegexText("The padding left must be a nonnegative integer");
       
       panelPaddingTopField = new TextField<Integer>();
-      panelPaddingTopField.disable();
-      panelPaddingTopField.setLabelStyle("text-align:right;");
       panelPaddingTopField.setName("panelPaddingTop");
       panelPaddingTopField.setFieldLabel("Panel padding top");
-      panelPaddingTopField.setAllowBlank(false);
-      panelPaddingTopField.setRegex("^\\d+$");
+      panelPaddingTopField.setRegex(Constants.REG_NONNEGATIVEINT);
       panelPaddingTopField.getMessages().setRegexText("The padding top must be a nonnegative integer");
       
-      panelImage = new FileUploadField();
-      panelImage.disable();
-      panelImage.setLabelStyle("text-align:right;");
-      panelImage.setFieldLabel("Panel image");
-      panelImage.setName(PANEL_IMAGE);
-      panelImage.setAllowBlank(false);
-      panelImage.setRegex(".+?\\.(png|gif|jpg|PNG|GIF|JPG)");
-      panelImage.getMessages().setRegexText("Please select a gif, jpg or png type image.");
-      panelImage.setStyleAttribute("overflow", "hidden");
+      panelImage = new ImageUploadField();
       
       screenWidthField = new TextField<Integer>();
-      screenWidthField.disable();
-      screenWidthField.setLabelStyle("text-align:right;");
       screenWidthField.setName("screenWidth");
       screenWidthField.setFieldLabel("Screen width");
-      screenWidthField.setAllowBlank(false);
-      screenWidthField.setRegex("^[1-9][0-9]*$");
+      screenWidthField.setRegex(Constants.REG_POSITIVEINT);
       screenWidthField.getMessages().setRegexText("The screen width must be a positive integer");
       
       screenHeightField = new TextField<Integer>();
-      screenHeightField.disable();
-      screenHeightField.setLabelStyle("text-align:right;");
       screenHeightField.setName("screenHeight");
       screenHeightField.setFieldLabel("Screen height");
-      screenHeightField.setAllowBlank(false);
-      screenHeightField.setRegex("^[1-9][0-9]*$");
+      screenHeightField.setRegex(Constants.REG_POSITIVEINT);
       screenHeightField.getMessages().setRegexText("The screen height must be a positive integer");
       
+      initIntegerFieldStyle(panelWidthField, panelHeightField, panelPaddingLeftField, panelPaddingTopField, panelImage,
+            screenWidthField, screenHeightField);
       customType.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
             if ("true".equals(be.getValue().toString())) {
                predefinedPanel.disable();
-               panelWidthField.enable();
-               panelHeightField.enable();
-               panelPaddingLeftField.enable();
-               panelPaddingTopField.enable();
-               panelImage.enable();
-               screenWidthField.enable();
-               screenHeightField.enable();
+               enableCustomFields(true, panelWidthField, panelHeightField, panelPaddingLeftField,
+                     panelPaddingTopField, panelImage, screenWidthField, screenHeightField);
             } else if ("false".equals(be.getValue().toString())) {
                predefinedPanel.enable();
-               panelWidthField.disable();
-               panelHeightField.disable();
-               panelPaddingLeftField.disable();
-               panelPaddingTopField.disable();
-               panelImage.disable();
-               screenWidthField.disable();
-               screenHeightField.disable();
+               enableCustomFields(false, panelWidthField, panelHeightField, panelPaddingLeftField,
+                     panelPaddingTopField, panelImage, screenWidthField, screenHeightField);
             }
          }
          
@@ -282,7 +247,7 @@ public class PanelWindow extends FormWindow {
 
    private void addListenersToForm() {
       form.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName="
-            + PANEL_IMAGE);
+            + ImageUploadField.IMAGEUPLOADFIELD);
       form.setEncoding(Encoding.MULTIPART);
       form.setMethod(Method.POST);
       form.addListener(Events.Submit, new Listener<FormEvent>() {
@@ -336,5 +301,19 @@ public class PanelWindow extends FormWindow {
             fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(panel));
          }
       });
+   }
+   
+   private void initIntegerFieldStyle(TextField<?>... fields) {
+      for (TextField<?> field : fields) {
+         field.setLabelStyle("text-align:right;");
+         field.setAllowBlank(false);
+         field.disable();
+      }
+   }
+   
+   private void enableCustomFields(boolean enable, TextField<?>... fields){
+      for (TextField<?> field : fields) {
+         field.setEnabled(enable);
+      }
    }
 }

@@ -76,4 +76,7 @@ public class Constants {
    public static final String CUSTOM_PANEL = "customPanel";
    public static final String DEFAULT_GROUP = "firstGroup";
    public static final String DEFAULT_SCREEN = "firstScreen";
+   
+   public static final String REG_POSITIVEINT = "^[1-9][0-9]*$";
+   public static final String REG_NONNEGATIVEINT= "^\\d+$";
 }
