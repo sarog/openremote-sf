@@ -23,9 +23,9 @@
 #import "ControlView.h"
 
 @interface MonitorView : ControlView {
-	UIButton *imageButton;
+	UIView *monitorContent;
 }
 
-@property (nonatomic, readonly)UIButton *imageButton;
+@property (nonatomic, retain)UIView *monitorContent;
 
 @end
