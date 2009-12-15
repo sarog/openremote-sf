@@ -103,7 +103,7 @@ public class Navigate extends BusinessEntity {
    }
    
    public static enum ToLogicalType {
-      toSetting, toBack, toLogin, toLogout, toNextScreen, toPreviousScreen;
+      SETTING, BACK, LOGIN, LOGOUT, NEXTSCREEN, PREVIOUSSCREEN;
    }
    
    public boolean isToLogic() {

@@ -120,7 +120,7 @@ public class NavigateFieldSet extends FieldSet {
       typeList.setEmptyText("--type--");
       ToLogicalType[] toTypes = ToLogicalType.values();
       for (int i = 0; i < toTypes.length; i++) {
-         ComboBoxDataModel<ToLogicalType> toTypeItem = new ComboBoxDataModel<ToLogicalType>(toTypes[i].toString(),
+         ComboBoxDataModel<ToLogicalType> toTypeItem = new ComboBoxDataModel<ToLogicalType>(toTypes[i].toString().toLowerCase(),
                toTypes[i]);
          typeList.getStore().add(toTypeItem);
       }
@@ -184,7 +184,7 @@ public class NavigateFieldSet extends FieldSet {
       this.navigate = navigate;
       if (navigate.isToLogic()) {
          toLogical.setValue(true);
-         typeList.setValue(new ComboBoxDataModel<ToLogicalType>(navigate.getToLogical().toString(), navigate.getToLogical()));
+         typeList.setValue(new ComboBoxDataModel<ToLogicalType>(navigate.getToLogical().toString().toLowerCase(), navigate.getToLogical()));
       } else if (navigate.isToGroup()) {
          toGroup.setValue(true);
          for (BeanModel groupModel : groupModels) {
