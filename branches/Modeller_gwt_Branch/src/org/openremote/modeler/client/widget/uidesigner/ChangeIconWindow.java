@@ -19,10 +19,12 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.widget.ImageUploadField;
 import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.domain.component.UImage;
@@ -50,7 +52,6 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.ListView;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.form.FileUploadField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.Radio;
 import com.extjs.gxt.ui.client.widget.form.RadioGroup;
@@ -274,7 +275,7 @@ public class ChangeIconWindow extends Dialog {
       urlPanel.add(urlField);
       iconContainer.add(urlPanel);
       
-      FileUploadField imageUpload = new FileUploadField() {
+      ImageUploadField imageUpload = new ImageUploadField() {
          @Override
          protected void onChange(ComponentEvent ce) {
             super.onChange(ce);
@@ -286,18 +287,13 @@ public class ChangeIconWindow extends Dialog {
             window.mask("Uploading image...");
          }
       };
-      imageUpload.setFieldLabel("File");
-      imageUpload.setName("uploadImage");
-      imageUpload.setRegex(".+?\\.(png|gif|jpg)");
-      imageUpload.getMessages().setRegexText("Please select a gif, jpg or png type image.");
-      imageUpload.setStyleAttribute("overflow", "hidden");
       uploadPanel.setSize(320, 80);
       uploadPanel.setLabelWidth(45);
       uploadPanel.setHeaderVisible(false);
       uploadPanel.setBorders(false);
       uploadPanel.setBodyBorder(false);
       uploadPanel.add(imageUpload);
-      uploadPanel.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName="+UPLOAD_IMAGE);
+      uploadPanel.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName="+ImageUploadField.IMAGEUPLOADFIELD);
       uploadPanel.setEncoding(Encoding.MULTIPART);
       uploadPanel.setMethod(Method.POST);
       uploadPanel.addListener(Events.Submit, new Listener<FormEvent>() {
