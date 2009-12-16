@@ -36,7 +36,7 @@
 		  							toScreen="${navigate.getToScreen()}"
 		  						#end
 		  					#else
-		  						to="${navigate.getToLogical()}"
+		  						to="${navigate.getToLogical().toString()}"
 		  					#end
 		  					/>
 		  				#if($!{tabbarItem.getImage()})
@@ -70,14 +70,14 @@
   			<background
 	  			#if(!$screen.getBackground().isFillScreen())
 	  				#if($screen.getBackground().isAbsolute())
-	  					absolute="${screen.getBackground().getLeft()},${screen.getBackground().getTop()}/>
+	  					absolute="${screen.getBackground().getLeft()},${screen.getBackground().getTop()}">
 	  				#else
-	  					relative="${screen.getBackground().getRelativeType()}"/>
+	  					relative="${screen.getBackground().getRelatedType()}">
 	  				#end
 	  			#else
-	  				fillScreen="true"/>
+	  				fillScreen="true">
 	  			#end
-  				<image src="${screen.getBackground().getSrc()}/>
+  				<image src="${screen.getBackground().getSrc()}"/>
   			</background>
   		#end
   		###<-----------background---------->###
@@ -123,7 +123,7 @@
 				  							toScreen="${navigate.getToScreen()}"
 				  						#end
 				  					#else
-				  						to="${navigate.getToLogical()}"
+				  						to="${navigate.getToLogical().toString()}"
 				  					#end
 				  					/>
 				  				#if($!{tabbarItem.getImage()})
