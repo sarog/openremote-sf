@@ -1,0 +1,151 @@
+##
+## OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
+## 
+## See the contributors.txt file in the distribution for a full listing of individual contributors.
+## 
+## This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+## Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+## later version.
+## 
+## This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+## warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+## details.
+## 
+## You should have received a copy of the GNU Affero General Public License along with this program. If not, see
+## <http://www.gnu.org/licenses/>.
+##
+##*****************************
+##******@author Javen**********
+##*****************************
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/controller.xsd">
+  #########################panels######################
+  <panels>
+  #foreach ($panel in $panels)
+  	<panel id="${panel.getOid()}" name="${panel.getName()}">
+  		##<-------tabbar---------->##
+		#if($panel.getTabbarItems().size()>0)
+			<tabbar>
+		  		#foreach($tabbarItem in $panel.getTabbarItems())
+		  			<item name="$tabbarItem.getName()">
+		  				#set($navigate = $tabbarItem.getNavigate())
+		  				<navigate 
+		  					#if($navigate.getToGroup()!=-1)
+		  						toGroup="${navigate.getToGroup()}"
+		  						#if($navigate.getToScreen()!=-1)
+		  							toScreen="${navigate.getToScreen()}"
+		  						#end
+		  					#else
+		  						to="${navigate.getToLogical()}"
+		  					#end
+		  					/>
+		  				#if($!{tabbarItem.getImage()})
+		  					<image scr="${tabbarItem.getImage().getSrc()}" border="${tabbarItem.getImage().getBorder()}"/>
+		  				#end
+		  			</item>
+		  		#end
+	  		</tabbar>
+  		#end
+  		##<-------tabbar---------->##
+  		
+  		##<-----include groups--->##
+		#if($panel.getGroupRefs().size()>0)
+			#foreach($groupnRef in $panel.getGroupRefs())
+				<include type="group" ref="${groupnRef.getGroupId()}"/>
+			#end
+		#end
+		##<-----include groups--->##
+		
+  	</panel>
+  #end
+  </panels> 
+  #########################panels######################
+  
+  #########################screens######################
+  <screens>
+  	#foreach($screen in $screens)
+  		<screen id="${screen.getOid()}" name="${screen.getName()}">
+  		###<-----------background---------->###
+  		#if($screen.getBackground().getSrc()!="")
+  			<background
+	  			#if(!$screen.getBackground().isFillScreen())
+	  				#if($screen.getBackground().isAbsolute())
+	  					absolute="${screen.getBackground().getLeft()},${screen.getBackground().getTop()}/>
+	  				#else
+	  					relative="${screen.getBackground().getRelativeType()}"/>
+	  				#end
+	  			#else
+	  				fillScreen="true"/>
+	  			#end
+  				<image src="${screen.getBackground().getSrc()}/>
+  			</background>
+  		#end
+  		###<-----------background---------->###
+  		
+  		###<------------absolute---------->###
+  		#foreach($absolute in $screen.getAbsolutes())
+  			<absolute left="${absolute.getLeft()}" top="${absolute.getTop()}" width="${absolute.getWidth()}" height="${absolute.getHeight()}">
+  				${absolute.getUIComponent().getPanelXml()}
+  			</absolute>
+  		#end
+  		###<------------absolute---------->###
+  		
+  		###<------------grid---------->###
+  		#foreach($grid in $screen.getGrids())
+  			<grid left="${grid.getLeft()}" top="${grid.getTop()}" width="${grid.getWidth()}" height="${grid.getHeight()}" rows="${grid.getRowCount()}" cols="${grid.getColumnCount()}">
+  				#foreach($cell in $grid.getCells())
+  					<cell x="${cell.getPosX()}" y="${cell.getPosY()}" rowspan="${cell.getRowspan()}" colspan="${cell.getColspan()}">
+  						${cell.getUIComponent().getPanelXml()}
+  					</cell>
+  				#end
+  			</grid>
+  		#end
+  		###<------------grid---------->###
+  		</screen>
+  	#end
+  </screens>
+  #########################screens######################
+  
+  #########################groups######################
+  	<groups>
+  		#foreach($group in $groups)
+  			<group id="${group.getOid()}" name="${group.getName()}">
+  				##<-------tabbar---------->##
+				#if($group.getTabbarItems().size()>0)
+					<tabbar>
+				  		#foreach($tabbarItem in $group.getTabbarItems())
+				  			<item name="$tabbarItem.getName()">
+				  				#set($navigate = $tabbarItem.getNavigate())
+				  				<navigate 
+				  					#if($navigate.getToGroup()!=-1)
+				  						toGroup="${navigate.getToGroup()}"
+				  						#if($navigate.getToScreen()!=-1)
+				  							toScreen="${navigate.getToScreen()}"
+				  						#end
+				  					#else
+				  						to="${navigate.getToLogical()}"
+				  					#end
+				  					/>
+				  				#if($!{tabbarItem.getImage()})
+				  					<image scr="${tabbarItem.getImage().getSrc()}" border="${tabbarItem.getImage().getBorder()}"/>
+				  				#end
+				  			</item>
+				  		#end
+			  		</tabbar>
+		  		#end
+  				##<-------tabbar---------->##
+				
+				##<-----include screens--->##
+				#if($group.getScreenRefs().size()>0)
+					#foreach($screenRef in $group.getScreenRefs())
+						<include type="screen" ref="${screenRef.getScreenId()}"/>
+					#end
+				#end
+				##<-----include screens--->##
+  			</group>
+  		#end
+  	</groups>
+  #########################groups######################
+  
+  
+</openremote>

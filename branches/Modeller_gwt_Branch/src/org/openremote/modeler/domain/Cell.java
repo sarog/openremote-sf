@@ -125,7 +125,7 @@ public class Cell extends BusinessEntity {
     * 
     * @return the ui control
     */
-   public UIComponent getUiComponent() {
+   public UIComponent getUIComponent() {
       return uiComponent;
    }
 
