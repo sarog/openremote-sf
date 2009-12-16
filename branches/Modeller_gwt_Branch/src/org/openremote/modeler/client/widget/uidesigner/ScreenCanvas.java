@@ -378,7 +378,7 @@ public class ScreenCanvas extends ComponentContainer {
          GridCellBounds recorder) {
       cellContainer.getGridContainer().getGrid().removeCell(cellContainer.getCell()); // remove the old cell from grid.
 
-      UIComponent uiComponent = cellContainer.getCell().getUiComponent();
+      UIComponent uiComponent = cellContainer.getCell().getUIComponent();
       AbsoluteLayoutContainer controlContainer = null;
       Absolute absolute = new Absolute(IDUtil.nextID());
       if (uiComponent instanceof UIButton) {
