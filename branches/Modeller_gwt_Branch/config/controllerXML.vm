@@ -28,7 +28,6 @@
   			#if(${uiComponent.getClass().getName().equals("org.openremote.modeler.domain.component.UIButton")})
   				<button id="${uiComponent.getOid()}">
   				#if(${uiComponent.getUiCommand()})
-	  				###!!!TODO------------>insert command
 	  				#set($uiCmd=${uiComponent.getUiCommand()})
 	  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
 	  					#if($cmd.getDelay().equals(""))
@@ -42,10 +41,8 @@
   			###############UISwitch#################
   			#elseif(${uiComponent.getClass().getName().equals("org.openremote.modeler.domain.component.UISwitch")})
   				<switch id="${uiComponent.getOid()}">
-  				###!!!TODO------------>insert command
   					<on>
   						#if(${uiComponent.getOnCommand()})
-  							###!!!TODO------------>insert command
 			  				#set($uiCmd=${uiComponent.getOnCommand()})
 			  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
 			  					#if($cmd.getDelay().equals(""))
@@ -58,7 +55,6 @@
   					</on>
   					<off>
   						#if(${uiComponent.getOffCommand()})
-	  						###!!!TODO------------>insert command
 				  				#set($uiCmd=${uiComponent.getOffCommand()})
 				  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
 				  					#if($cmd.getDelay().equals(""))
@@ -71,7 +67,6 @@
   					</off>
   					<status>
   						#if(${uiComponent.getStatusCommand()})
-	  						###!!!TODO------------>insert command
 				  				#set($uiCmd=${uiComponent.getStatusCommand()})
 				  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
 				  					#if($cmd.getDelay().equals(""))
@@ -95,7 +90,6 @@
 	  			#if(${uiComponent.getClass().getName().equals("org.openremote.modeler.domain.component.UIButton")})
 	  				<button id="${uiComponent.getOid()}">
 	  				#if(${uiComponent.getUiCommand()})
-		  				###!!!TODO------------>insert command
 		  				#set($uiCmd=${uiComponent.getUiCommand()})
 		  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
 		  					#if($cmd.getDelay().equals(""))
@@ -109,10 +103,8 @@
 	  			###############UISwitch#################
 	  			#elseif(${uiComponent.getClass().getName().equals("org.openremote.modeler.domain.component.UISwitch")})
 	  				<switch id="${uiComponent.getOid()}">
-	  				###!!!TODO------------>insert command
 	  					<on>
 	  						#if(${uiComponent.getOnCommand()})
-	  							###!!!TODO------------>insert command
 				  				#set($uiCmd=${uiComponent.getOnCommand()})
 				  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
 				  					#if($cmd.getDelay().equals(""))
@@ -125,7 +117,6 @@
 	  					</on>
 	  					<off>
 	  						#if(${uiComponent.getOffCommand()})
-		  						###!!!TODO------------>insert command
 					  				#set($uiCmd=${uiComponent.getOffCommand()})
 					  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
 					  					#if($cmd.getDelay().equals(""))
@@ -138,7 +129,7 @@
 	  					</off>
 	  					<status>
 	  						#if(${uiComponent.getStatusCommand()})
-		  						###!!!TODO------------>insert command
+		  						
 					  				#set($uiCmd=${uiComponent.getStatusCommand()})
 					  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
 					  					#if($cmd.getDelay().equals(""))

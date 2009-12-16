@@ -19,13 +19,13 @@
 */
 package org.openremote.modeler.server;
 
+import java.util.List;
+
 import org.openremote.modeler.client.rpc.DeviceMacroRPCService;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.impl.UserServiceImpl;
-
-import java.util.List;
 
 /**
  * The Class DeviceMacroController.

@@ -40,7 +40,7 @@
 		  					#end
 		  					/>
 		  				#if($!{tabbarItem.getImage()})
-		  					<image scr="${tabbarItem.getImage().getSrc()}" border="${tabbarItem.getImage().getBorder()}"/>
+		  					<image src="${tabbarItem.getImage().getSrc()}" border="${tabbarItem.getImage().getBorder()}"/>
 		  				#end
 		  			</item>
 		  		#end
@@ -127,7 +127,7 @@
 				  					#end
 				  					/>
 				  				#if($!{tabbarItem.getImage()})
-				  					<image scr="${tabbarItem.getImage().getSrc()}" border="${tabbarItem.getImage().getBorder()}"/>
+				  					<image src="${tabbarItem.getImage().getSrc()}" border="${tabbarItem.getImage().getBorder()}"/>
 				  				#end
 				  			</item>
 				  		#end
