@@ -22,7 +22,7 @@ package org.openremote.modeler.service;
 import junit.framework.Assert;
 
 import org.hibernate.ObjectNotFoundException;
-import org.openremote.modeler.SpringContext;
+import org.openremote.modeler.SpringTestContext;
 import org.openremote.modeler.TestNGBase;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
@@ -39,11 +39,11 @@ public class DeviceServiceTest extends TestNGBase {
    
    /** The device service. */
    private DeviceService deviceService =
-      (DeviceService) SpringContext.getInstance().getBean("deviceService");
+      (DeviceService) SpringTestContext.getInstance().getBean("deviceService");
    
    /** The user service. */
    private UserService userService =
-      (UserService) SpringContext.getInstance().getBean("userService");
+      (UserService) SpringTestContext.getInstance().getBean("userService");
 
     /**
        * Test save device.
