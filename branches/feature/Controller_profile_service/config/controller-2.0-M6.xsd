@@ -3,10 +3,10 @@
 
     <xsd:annotation>
 		<xsd:documentation><![CDATA[
-			OpenRemote iPhone XML Schema, version 2.0.
+			OpenRemote iPhone XML Schema, version 1.0.
 			Authors:Dan Cong.
 						
-			This defines the UI component layout on panel.
+			This defines the button layout on iPhone panel.
 			iPhone native application can redraw the layout by them.
 		]]></xsd:documentation>
 	</xsd:annotation>
@@ -15,7 +15,7 @@
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
 	The top level (typically root) element. Allows the definition
-	of the different groups.
+	of the different activities.
 			]]></xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
@@ -25,10 +25,11 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
+	
 	<xsd:element name="property">
 	<xsd:annotation>
 		<xsd:documentation><![CDATA[
-				The property is used to describe the property for a background..
+				The property is used to describe the property for some component. 
 			]]></xsd:documentation>
 	</xsd:annotation>
 	<xsd:complexType>
@@ -36,7 +37,13 @@
 		<xsd:attribute name="value" type="xsd:string" use="required" />
 	</xsd:complexType>
 	</xsd:element>
+	
 	<xsd:element name="controls">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+					a controll collection, it can include some control component such as button, switch, gesture, label etc...
+				]]></xsd:documentation>
+		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:group ref="controlGroup" minOccurs="0" maxOccurs="unbounded"></xsd:group>
@@ -47,7 +54,7 @@
 	<xsd:element name="commands">
         <xsd:annotation>
         	<xsd:documentation><![CDATA[
-	The parent element of command. include all the coomand's definition
+				The parent element of command. include all the coomand's definition
 			]]></xsd:documentation>
         </xsd:annotation>
         <xsd:complexType>
@@ -60,7 +67,7 @@
 	<xsd:element name="command">
         <xsd:annotation>
         	<xsd:documentation><![CDATA[
-	the definition of a command. the command must have a id , protocol.  
+			the definition of a command. the command must have a id , protocol.  
 			]]></xsd:documentation>
         </xsd:annotation>
         <xsd:complexType>
@@ -236,7 +243,7 @@
 		<xsd:annotation>
 			<xsd:documentation>
 				<![CDATA[
-					a monitor element.
+					a button element.
 				]]>
 			</xsd:documentation>
 		</xsd:annotation>
@@ -252,7 +259,7 @@
 		<xsd:annotation>
 			<xsd:documentation>
 				<![CDATA[
-					a label element.
+					a button element.
 				]]>
 			</xsd:documentation>
 		</xsd:annotation>
@@ -268,7 +275,7 @@
 		<xsd:annotation>
 			<xsd:documentation>
 				<![CDATA[
-					a gesture element.
+					a button element.
 				]]>
 			</xsd:documentation>
 		</xsd:annotation>
