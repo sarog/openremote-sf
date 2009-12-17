@@ -43,7 +43,11 @@
 	<xsd:element name="background">
 	<xsd:annotation>
 		<xsd:documentation><![CDATA[
-				The background is used for describe the background for a screen. 
+				Background for a screen. 
+				sub element image represent the image for this screen. 
+				attribute fillScreen: whether the background will be filled with a background, as a default it is true.
+				attribute absolute: represent the absloute position with a string cosisting with two part: LEFT and TOP. eg absolute="100,50".
+				attribute relative: represent the relative position with a stirng. Its value should be same as css relative type. eg relative="top left" 
 			]]></xsd:documentation>
 	</xsd:annotation>
 	<xsd:complexType>
@@ -55,10 +59,13 @@
 		<xsd:attribute name="relative" type="xsd:string" use="optional"/>
 	</xsd:complexType>
 	</xsd:element>
+	
 	<xsd:element name="property">
 	<xsd:annotation>
 		<xsd:documentation><![CDATA[
-				The property is used to describe the property for a background..
+				represent the property for a element. 
+				attribute name: The name of the property. 
+				attribute value: The value of the property. 
 			]]></xsd:documentation>
 	</xsd:annotation>
 	<xsd:complexType>
@@ -66,12 +73,15 @@
 		<xsd:attribute name="value" type="xsd:string" use="required" />
 	</xsd:complexType>
 	</xsd:element>
+	
 	<xsd:element name="button">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
 				The button on iPhone panel.Its label is the name shown on the button.
 				Its position is defined by coordinates (x, y).
 				Its size is defined by width and height.The meature is one cell on the iPhone panel.
+				attribute repeat: whether the button send command on and on when it is pressed down. 	
+				attribute hasControlCommand: whether the button has bound a command. 			
 			]]></xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
@@ -80,17 +90,17 @@
 			</xsd:sequence>
 			<xsd:attribute name="id" type="idType" use="required" />
 			<xsd:attribute name="name" type="xsd:string" use="required" />
-			<xsd:attribute name="repeat" type="xsd:boolean" use="optional"></xsd:attribute>
-			<xsd:attribute name="hasControlCommand" type="xsd:boolean" use="optional"></xsd:attribute>
+			<xsd:attribute name="repeat" type="xsd:boolean" use="optional"/>
+			<xsd:attribute name="hasControlCommand" type="xsd:boolean" use="optional"/>
 		</xsd:complexType>
 	</xsd:element>
 	
 	<xsd:element name="panel">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
-				The button on iPhone panel.Its label is the name shown on the button.
-				Its position is defined by coordinates (x, y).
-				Its size is defined by width and height.The meature is one cell on the iPhone panel.
+				The panel represent a panel for a device.
+				sub element tabbar: A tabbar for a panel. 
+				sub element include: Something belongs to a panel, eg: <include type="group" ref="12"/> 
 			]]></xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
@@ -106,6 +116,7 @@
 	<xsd:element name="panels">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
+				A panel collection. 
 			]]></xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
@@ -114,13 +125,17 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:attributeGroup name="idAttr">
-		<xsd:annotation>
-			<xsd:documentation><![CDATA[
-				The unique identifier attribute for a event or button. 				
-			]]></xsd:documentation>
-		</xsd:annotation>
-	</xsd:attributeGroup>
+	
+	<xsd:simpleType name="toLogcialType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="setting" />
+			<xsd:enumeration value="back" />
+			<xsd:enumeration value="login" />
+			<xsd:enumeration value="logout" />
+			<xsd:enumeration value="nextscreen" />
+			<xsd:enumeration value="previousscreen" />
+		</xsd:restriction>
+	</xsd:simpleType>
 	<xsd:simpleType name="idType">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
@@ -132,6 +147,11 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:element name="groups">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				A group List. 			
+			]]></xsd:documentation>
+		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element ref="group" minOccurs="0" maxOccurs="unbounded"/>
@@ -143,14 +163,15 @@
 	<xsd:element name="group">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
-				The screen is a page when you slide the iPhone.
+				A group of some screens. you can put some special screens into the same group for your special purpose.
+				sub element tabbar: A tabbar for a group. 
+				sub element include: Something belongs to a group, eg: <include type="screen" ref="30"/>  
 			]]></xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element ref="tabbar" minOccurs="0" maxOccurs="unbounded"/>
 				<xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
-				
 			</xsd:sequence>
 			<xsd:attribute name="name" type="xsd:string" use="required"/>
 			<xsd:attribute name="id" type="idType"/>
@@ -158,13 +179,18 @@
 	</xsd:element>
 	
 	<xsd:element name="screens">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				A screen list. 
+			]]></xsd:documentation>
+		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element ref="screen" minOccurs="0" maxOccurs="unbounded"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	
+	<!-- 
 	<xsd:element name="portrait">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -180,8 +206,16 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	
+	 -->
 	<xsd:element name="image">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				A image. 
+				attribute src: the url for the image. 
+				attribute satte: the state for the image. 
+				attribute border: the border for the state.  
+			]]></xsd:documentation>
+		</xsd:annotation> 
 		<xsd:complexType>
 			<xsd:attribute name="src" type="xsd:string" use="required"/>
 			<xsd:attribute name="state" type="xsd:string"/>
@@ -189,11 +223,29 @@
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="navigate">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				A navigator for panel or group. 
+				attribute toGroup: the group you want to go to. 
+				attribute toScreen: the screen you want to go to. ATTENTION: if the navigate has the attribute, the toGroup attribute is necessary. 
+				attribute to: you can only choose from "setting, back, login, logout, nextScreen, previousScreen". eg: <navigate to="back"/> 
+			]]></xsd:documentation>
+		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:attributeGroup ref="toLogicalGroup"/>
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="absolute">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				represent the absolute position for a widget. 
+				attribute left: the left coordinate. 
+				attribute right: the right coordinate. 
+				attribute width: the width for the widget. 
+				attribute height: the height for the widget.
+				Attention: These attributes are all integer value , They mean how many pixels are these attributes. 
+			]]></xsd:documentation>
+		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:group ref="componentGroup"/>
 			<xsd:attribute name="left" type="xsd:int" use="required"/>
@@ -202,6 +254,7 @@
 			<xsd:attribute name="height" type="xsd:int" use="required"/>
 		</xsd:complexType>
 	</xsd:element>
+	
 	<xsd:element name="monitor">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -213,25 +266,36 @@
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="status">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The status for a widget. 
+			]]></xsd:documentation>
+		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:attribute name="ref" type="xsd:int"/>
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="gesture">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				A gesture control for your phone. 
+			]]></xsd:documentation>
+		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="command"/>
+				<xsd:element ref="include"/>
 			</xsd:sequence>
 			<xsd:attribute name="type" type="xsd:string" use="required"/>
 			<xsd:attribute name="id" type="idType" use="required"/>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="command">
-		<xsd:complexType>
-			<xsd:attribute name="ref" type="idType" use="required"/>
-		</xsd:complexType>
-	</xsd:element>
+	
 	<xsd:element name="label">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				a component to display some information. 
+			]]></xsd:documentation>
+		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:group ref="statusGroup" minOccurs="0"/>
@@ -257,14 +321,26 @@
 			<xsd:attribute name="name" type="xsd:string"/>
 		</xsd:complexType>
 	</xsd:element>
+	
 	<xsd:element name="tabbar">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				tabbar for navigating or other functions.  
+			]]></xsd:documentation>
+		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element ref="item" maxOccurs="unbounded"></xsd:element>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
+	
 	<xsd:element name="item">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				item for tabbar.  
+			]]></xsd:documentation>
+		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:all>
 				<xsd:element ref="image" minOccurs="0" maxOccurs="1"/>
@@ -273,7 +349,14 @@
 			<xsd:attribute name="name" type="xsd:string" />
 		</xsd:complexType>
 	</xsd:element>
+	
 	<xsd:element name="switch">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				a switch widget. 
+				sub element image : image for switch on and switch off. often it has two images if it does has. 
+			]]></xsd:documentation>
+		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element ref="image" minOccurs="0" maxOccurs="2"/>
@@ -281,7 +364,20 @@
 			<xsd:attribute name="id" type="idType" use="required"/>
 		</xsd:complexType>
 	</xsd:element>
+	
 	<xsd:element name="grid">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				A component to store some widgets as its cells. 
+				element cell: every widget in the grid should be in the cell.
+				attribute left: The left coordinate on the screen canvas. 
+				attribute top: The top coordinate on the screen canvas. 
+				attribute width: The width for the grid. 
+				attribute height: The height for the grid. 
+				attribute rows: The count of the rows. 
+				attribute cols: The count of the columns. 
+			]]></xsd:documentation>
+		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element ref="cell" maxOccurs="unbounded" minOccurs="0"></xsd:element>
@@ -296,28 +392,33 @@
 	</xsd:element>
 	
 	<xsd:element name="cell">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				A cell in the grid. 
+				attribute x: The row index in the grid of this cell.
+				attribute y: The column index in the grid of this cell.
+				attribute rowspan: The row span for the cell in a grid. 
+				attribute colspan: The column span for the cell in a grid. 
+				
+			]]></xsd:documentation>
+		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:group ref="componentGroup"></xsd:group>
 			</xsd:sequence>
-			<xsd:attribute name="x" type="xsd:int" use="required"></xsd:attribute>
-			<xsd:attribute name="y" type="xsd:int" use="required"></xsd:attribute>
-			<xsd:attribute name="rowspan" type="xsd:int"
-				use="optional">
-			</xsd:attribute>
-			<xsd:attribute name="colspan" type="xsd:int"
-				use="optional">
-			</xsd:attribute>
+			<xsd:attribute name="x" type="xsd:int" use="required"/>
+			<xsd:attribute name="y" type="xsd:int" use="required"/>
+			<xsd:attribute name="rowspan" type="xsd:int"	use="optional"/>			
+			<xsd:attribute name="colspan" type="xsd:int"	use="optional"/>
 		</xsd:complexType>
 	</xsd:element>
 	
-	<!--<xsd:element name="screenRef">
-		<xsd:complexType>
-			<xsd:attribute name="id" type="idType" use="required"/>
-		</xsd:complexType>
-	</xsd:element>
-	
-	--><xsd:element name="include">
+	<xsd:element name="include">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				A generic include  direct for including some element. 
+			]]></xsd:documentation>
+		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:attribute name="type" type="xsd:string"></xsd:attribute>
 			<xsd:attribute name="ref" type="xsd:int"></xsd:attribute>
@@ -356,8 +457,8 @@
 	</xsd:group>
 	
 	<xsd:attributeGroup name="toLogicalGroup">
-		<xsd:attribute name="toGroup" type="xsd:int" use="optional"/>
-		<xsd:attribute name="toScreen" type="xsd:int" use="optional"/>
-		<xsd:attribute name="to" type="xsd:string" use="optional"/>
+		<xsd:attribute name="toGroup" use="optional" />
+		<xsd:attribute name="toScreen" use="optional" />
+		<xsd:attribute name="to" type="toLogcialType" use="optional"/>
 	</xsd:attributeGroup>
 </xsd:schema>

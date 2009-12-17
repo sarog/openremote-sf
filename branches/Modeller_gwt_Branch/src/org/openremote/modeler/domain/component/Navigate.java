@@ -60,13 +60,7 @@ public class Navigate extends BusinessEntity {
    }
    
    public static enum ToLogicalType {
-      SETTING, BACK, LOGIN, LOGOUT, NEXTSCREEN, PREVIOUSSCREEN;
-
-      @Override
-      public String toString() {
-         return super.toString().toLowerCase();
-      }
-      
+      setting, back, login, logout, nextScreen, previousScreen;
    }
    
    public boolean isToLogic() {

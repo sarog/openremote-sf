@@ -25,10 +25,11 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
+	
 	<xsd:element name="property">
 	<xsd:annotation>
 		<xsd:documentation><![CDATA[
-				The property is used to describe the property for a background..
+				The property is used to describe the property for some component. 
 			]]></xsd:documentation>
 	</xsd:annotation>
 	<xsd:complexType>
@@ -36,7 +37,13 @@
 		<xsd:attribute name="value" type="xsd:string" use="required" />
 	</xsd:complexType>
 	</xsd:element>
+	
 	<xsd:element name="controls">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+					a controll collection, it can include some control component such as button, switch, gesture, label etc...
+				]]></xsd:documentation>
+		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:group ref="controlGroup" minOccurs="0" maxOccurs="unbounded"></xsd:group>
@@ -47,7 +54,7 @@
 	<xsd:element name="commands">
         <xsd:annotation>
         	<xsd:documentation><![CDATA[
-	The parent element of command. include all the coomand's definition
+				The parent element of command. include all the coomand's definition
 			]]></xsd:documentation>
         </xsd:annotation>
         <xsd:complexType>
@@ -60,7 +67,7 @@
 	<xsd:element name="command">
         <xsd:annotation>
         	<xsd:documentation><![CDATA[
-	the definition of a command. the command must have a id , protocol.  
+			the definition of a command. the command must have a id , protocol.  
 			]]></xsd:documentation>
         </xsd:annotation>
         <xsd:complexType>
