@@ -172,7 +172,7 @@ public class ResourceServiceImplTest {
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
       nav.setOid(IDUtil.nextID());
-      nav.setToLogical(ToLogicalType.BACK);
+      nav.setToLogical(ToLogicalType.back);
       UITabbarItem item = new UITabbarItem();
       item.setNavigate(nav);
       item.setName("navigate name");
@@ -190,7 +190,7 @@ public class ResourceServiceImplTest {
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
       nav.setOid(IDUtil.nextID());
-      nav.setToLogical(ToLogicalType.BACK);
+      nav.setToLogical(ToLogicalType.back);
       
       UImage image = new UImage();
       image.setBorder(14);
@@ -215,7 +215,7 @@ public class ResourceServiceImplTest {
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
       nav.setOid(IDUtil.nextID());
-      nav.setToLogical(ToLogicalType.BACK);
+      nav.setToLogical(ToLogicalType.back);
       
       UImage image = new UImage();
       image.setBorder(14);
