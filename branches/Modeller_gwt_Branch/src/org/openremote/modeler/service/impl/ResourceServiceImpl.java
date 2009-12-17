@@ -20,16 +20,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -38,9 +37,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.UIButtonEvent;
@@ -74,6 +71,7 @@ import org.openremote.modeler.utils.ProtocolEventContainer;
 import org.openremote.modeler.utils.StringUtils;
 import org.openremote.modeler.utils.XmlParser;
 import org.openremote.modeler.utils.ZipUtils;
+import org.springframework.ui.velocity.VelocityEngineUtils;
 
 /**
  * The Class ResourceServiceImpl.
@@ -81,14 +79,12 @@ import org.openremote.modeler.utils.ZipUtils;
  * @author Allen, Handy, Javen
  */
 public class ResourceServiceImpl implements ResourceService {
+   
+   public static final String PANEL_XML_TEMPLATE = "panelXML.vm";
+   public static final String CONTROLLER_XML_TEMPLATE="controllerXML.vm";
+   
+   
 
-   public long getEventId() {
-      return eventId;
-   }
-
-   public void setEventId(long eventId) {
-      this.eventId = eventId;
-   }
    /** The Constant logger. */
    private static final Logger LOGGER = Logger.getLogger(ResourceServiceImpl.class);
 
@@ -103,6 +99,9 @@ public class ResourceServiceImpl implements ResourceService {
 
    /** The device macro service. */
    private DeviceMacroService deviceMacroService;
+   
+   private VelocityEngine velocity;
+   
 
    /**
     * {@inheritDoc}
@@ -110,19 +109,10 @@ public class ResourceServiceImpl implements ResourceService {
    public String downloadZipResource(long maxId, String sessionId, List<Panel> panels) {
       Set<Group> groups = new LinkedHashSet<Group>();
       Set<Screen> screens = new LinkedHashSet<Screen>();
-      for (Panel panel : panels) {
-         List<GroupRef> groupRefs = panel.getGroupRefs();
-         for (GroupRef groupRef : groupRefs) {
-            groups.add(groupRef.getGroup());
-         }
-      }
-
-      for (Group group : groups) {
-         List<ScreenRef> screenRefs = group.getScreenRefs();
-         for (ScreenRef screenRef : screenRefs) {
-            screens.add(screenRef.getScreen());
-         }
-      }
+      /*
+       * initialize groups and screens. 
+       */
+      initGroupsAndScreens(panels, groups, screens);
       String controllerXmlContent = getControllerXmlContent(maxId, screens);
       String panelXmlContent = getPanelXML(panels);
       String sectionIds = getSectionIds(screens);
@@ -201,11 +191,8 @@ public class ResourceServiceImpl implements ResourceService {
 
    /**
     * Compress files to zip.
-    * 
-    * @param files
-    *           the files
-    * @param zipFilePath
-    *           the zip file path
+    * @param files the files
+    * @param zipFilePath the zip file path
     * 
     * @return the file
     */
@@ -308,17 +295,13 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Check xml.
     * 
-    * @param zipInputStream
-    *           the zip input stream
-    * @param zipEntry
-    *           the zip entry
-    * @param xmlName
-    *           the xml name
+    * @param zipInputStream the zip input stream
+    * @param zipEntry the zip entry
+    * @param xmlName the xml name
     * 
     * @return true, if successful
     * 
-    * @throws IOException
-    *            Signals that an I/O exception has occurred.
+    * @throws IOException Signals that an I/O exception has occurred.
     */
    private boolean checkXML(ZipInputStream zipInputStream, ZipEntry zipEntry, String xmlName) throws IOException {
       if (zipEntry.getName().equals(xmlName + ".xml")) {
@@ -388,10 +371,8 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Gets the controller xml segment content.
     * 
-    * @param deviceMacroItem
-    *           the device command item
-    * @param protocolEventContainer
-    *           the protocol event container
+    * @param deviceMacroItem the device command item
+    * @param protocolEventContaine the protocol event container
     * 
     * @return the controller xml segment content
     */
@@ -439,9 +420,7 @@ public class ResourceServiceImpl implements ResourceService {
     */
    /**
     * Gets the section ids.
-    * 
-    * @param screenList
-    *           the activity list
+    * @param screenList the activity list
     * 
     * @return the section ids
     */
@@ -484,9 +463,7 @@ public class ResourceServiceImpl implements ResourceService {
 
    /**
     * Gets the devcie macro item section ids.
-    * 
-    * @param deviceMacroItem
-    *           the device macro item
+    * @param deviceMacroItem the device macro item
     * 
     * @return the devcie macro item section ids
     */
@@ -535,8 +512,7 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Sets the device command service.
     * 
-    * @param deviceCommandService
-    *           the new device command service
+    * @param deviceCommandService the new device command service
     */
    public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
       this.deviceCommandService = deviceCommandService;
@@ -545,8 +521,7 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Sets the device macro service.
     * 
-    * @param deviceMacroService
-    *           the new device macro service
+    * @param deviceMacroService the new device macro service
     */
    public void setDeviceMacroService(DeviceMacroService deviceMacroService) {
       this.deviceMacroService = deviceMacroService;
@@ -558,7 +533,14 @@ public class ResourceServiceImpl implements ResourceService {
    public String getRelativeResourcePath(String sessionId, String fileName) {
       return PathConfig.getInstance(configuration).getRelativeResourcePath(fileName, sessionId);
    }
+   
+   public long getEventId() {
+      return eventId;
+   }
 
+   public void setEventId(long eventId) {
+      this.eventId = eventId;
+   }
    @Override
    public String getGroupsJson(Collection<Group> groups) {
       try {
@@ -607,75 +589,55 @@ public class ResourceServiceImpl implements ResourceService {
        */
       Set<Group> groups = new LinkedHashSet<Group>();
       Set<Screen> screens = new LinkedHashSet<Screen>();
-      for (Panel panel : panels) {
-         List<GroupRef> groupRefs = panel.getGroupRefs();
-         for (GroupRef groupRef : groupRefs) {
-            groups.add(groupRef.getGroup());
-         }
-      }
-      for (Group group : groups) {
-         List<ScreenRef> screenRefs = group.getScreenRefs();
-         for (ScreenRef screenRef : screenRefs) {
-            screens.add(screenRef.getScreen());
-         }
-      }
+      initGroupsAndScreens(panels, groups, screens);
+      
       try {
-         initVelocity();
-         VelocityContext context = new VelocityContext();
-         Writer writer = new StringWriter();
-         /*
-          * put panels into the context.
-          */
+         Map<String,Object> context = new HashMap<String,Object>();
          context.put("panels", panels);
-         /*
-          * put groups into context.
-          */
          context.put("groups", groups);
-         /*
-          * put screens into context.
-          */
          context.put("screens", screens);
 
-         Template template = Velocity.getTemplate("panelXML.vm");
-         template.merge(context, writer);
-         return writer.toString();
+         return VelocityEngineUtils.mergeTemplateIntoString(velocity, PANEL_XML_TEMPLATE, context);
       } catch (Exception e) {
          e.printStackTrace();
          throw new RuntimeException("faild when get panel.xml by template", e);
       }
       
    }
+   
+   public VelocityEngine getVelocity() {
+      return velocity;
+   }
+
+   public void setVelocity(VelocityEngine velocity) {
+      this.velocity = velocity;
+   }
+
    public  String getControllerXML(Collection<Screen> screens){
-      initVelocity();
-      VelocityContext context = new VelocityContext();
-      Writer writer = new StringWriter();
+      Map<String,Object> context = new HashMap<String,Object>();
       ProtocolEventContainer eventContainer = new ProtocolEventContainer();
       ProtocolContainer protocolContainer = ProtocolContainer.getInstance();
       context.put("screens", screens);
       context.put("eventContainer", eventContainer);
       context.put("xmlParser", this);
       context.put("protocolContainer", protocolContainer);
-      try {
-         Template template = Velocity.getTemplate("controllerXML.vm");
-         template.merge(context, writer);
-         return writer.toString();
-      } catch (Exception e){
-         e.printStackTrace();
-         throw new RuntimeException("faild when get controller.xml by template", e);
-      }
-   }
-   private static void initVelocity(){
-      Properties p = new Properties();   
-      p.setProperty("resource.loader", "class");   
-      p.setProperty("class.resource.loader.class",    
-          "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");   
-      p.setProperty("input.encoding", "UTF-8"); 
       
-      try {
-         Velocity.init(p);
-      } catch (Exception e) {
-         e.printStackTrace();
-         throw new RuntimeException(e);
+      return VelocityEngineUtils.mergeTemplateIntoString(velocity, CONTROLLER_XML_TEMPLATE, context);
+   }
+   
+   private void initGroupsAndScreens(Collection<Panel>panels,Set<Group> groups,Set<Screen> screens){
+      for (Panel panel : panels) {
+         List<GroupRef> groupRefs = panel.getGroupRefs();
+         for (GroupRef groupRef : groupRefs) {
+            groups.add(groupRef.getGroup());
+         }
+      }
+
+      for (Group group : groups) {
+         List<ScreenRef> screenRefs = group.getScreenRefs();
+         for (ScreenRef screenRef : screenRefs) {
+            screens.add(screenRef.getScreen());
+         }
       }
    }
 }
