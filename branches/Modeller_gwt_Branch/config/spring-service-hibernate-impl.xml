@@ -56,9 +56,18 @@
         <property name="nestedTransactionAllowed" value="true"/>
 
     </bean>
-
-    <bean id="abstractService" abstract="true"
-	class="org.openremote.modeler.service.BaseAbstractService" />
+    
+	 <bean id="velocity" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+		<property name="velocityProperties">
+			<value>
+				resource.loader=class
+				class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+				input.encoding=UTF8
+			</value>
+		</property>
+	</bean>
+	
+   <bean id="abstractService" abstract="true" class="org.openremote.modeler.service.BaseAbstractService" />
 	
 	<bean id="userService" class="org.openremote.modeler.service.impl.UserServiceImpl" parent="abstractService"></bean>
 	<bean id="deviceService" class="org.openremote.modeler.service.impl.DeviceServiceImpl" parent="abstractService"></bean>
