@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.openremote.modeler.SpringTestContext;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
@@ -39,6 +37,8 @@ import org.openremote.modeler.service.impl.UserServiceImpl;
 import org.openremote.modeler.utils.XmlParser;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 public class ResourceServiceImplTest {
    
@@ -47,7 +47,7 @@ public class ResourceServiceImplTest {
    private DeviceCommandService deviceCommandService;
    private DeviceMacroService deviceMacroService;
    private UserServiceImpl userServiceImpl;
-   @Before
+   @BeforeClass
    public void setUp(){
       resourceServiceImpl = (ResourceServiceImpl) SpringTestContext.getInstance().getBean("resourceService");
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
@@ -438,7 +438,7 @@ public class ResourceServiceImplTest {
    /*
     * The case has some problem because of LazyInitializationException 
     */
-   @Test
+//   @Test
    public void testGetControllerXMLWithButtonAndSwitchButHaveMacro(){
 /*      
       Account account = new Account();
@@ -566,8 +566,8 @@ public class ResourceServiceImplTest {
          System.out.println( XmlParser.validateAndOutputXML(new File(getClass().getResource(
                configuration.getPanelXsdPath()).getPath()),resourceServiceImpl.getPanelXML(panels)));
       } catch (Exception e) {
-         fail();
          e.printStackTrace();
+         fail();
       }
    }
    
@@ -576,8 +576,8 @@ public class ResourceServiceImplTest {
          System.out.println( XmlParser.validateAndOutputXML(new File(getClass().getResource(
                configuration.getControllerXsdPath()).getPath()),resourceServiceImpl.getControllerXML(screens)));
       } catch (Exception e) {
-         fail();
          e.printStackTrace();
+         fail();
       }
    }
 }
