@@ -31,12 +31,13 @@
 	if (self = [super init]) {
 		toScreen = [[attributeDict objectForKey:@"toScreen"] intValue];
 		toGroup = [[attributeDict objectForKey:@"toGroup"] intValue];
-		isPreviousScreen = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"toPreviousScreen"] uppercaseString]] ? YES : NO;
-		isNextScreen = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"toNextScreen"] uppercaseString]] ? YES : NO;
-		isSetting = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"toSetting"] uppercaseString]] ? YES : NO;
-		isBack = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"toBack"] uppercaseString]] ? YES : NO;
-		isLogin = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"toLogin"] uppercaseString]] ? YES : NO;
-		isLogout = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"toLogout"] uppercaseString]] ? YES : NO;
+		NSString *to = [[attributeDict objectForKey:@"to"] lowercaseString];
+		isPreviousScreen = [@"previousscreen" isEqualToString:to] ? YES : NO;
+		isNextScreen = [@"nextscreen" isEqualToString:to] ? YES : NO;
+		isSetting = [@"setting" isEqualToString:to] ? YES : NO;
+		isBack = [@"back" isEqualToString:to] ? YES : NO;
+		isLogin = [@"login" isEqualToString:to] ? YES : NO;
+		isLogout = [@"logout" isEqualToString:to] ? YES : NO;
 		
 		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];

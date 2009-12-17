@@ -36,15 +36,15 @@
 		<!-- define the local tab bar in the group -->
 		<tabbar>
 			<item name="previous">
-				<navigate toPreviousScreen="true" />
+				<navigate to="previousscreen" />
 				<image src="previous.png" />
 			</item>
 			<item name="next">
-				<navigate toNextScreen="true" />
+				<navigate to="NextScreen" />
 				<image src="next.png" />
 			</item>
 			<item name="setting">
-				<navigate toSetting="true" />
+				<navigate to="Setting" />
 				<image src="setting.png" />
 			</item>                
 		</tabbar>

@@ -34,25 +34,7 @@
 	if (self = [super init]) {
 		NSString *relativeStr = [[attributeDict objectForKey:@"relative"] copy];
 		if (relativeStr) {
-			if ([BG_IMAGE_RELATIVE_POSITION_LEFT isEqualToString:relativeStr]) {
-				backgroundImageRelativePosition = BG_IMAGE_RELATIVE_POSITION_LEFT;
-			} else if ([BG_IMAGE_RELATIVE_POSITION_RIGHT isEqualToString:relativeStr]) {
-				backgroundImageRelativePosition = BG_IMAGE_RELATIVE_POSITION_RIGHT;
-			} else if ([BG_IMAGE_RELATIVE_POSITION_TOP isEqualToString:relativeStr]) {
-				backgroundImageRelativePosition = BG_IMAGE_RELATIVE_POSITION_TOP;
-			} else if ([BG_IMAGE_RELATIVE_POSITION_BOTTOM isEqualToString:relativeStr]) {
-				backgroundImageRelativePosition = BG_IMAGE_RELATIVE_POSITION_BOTTOM;
-			} else if ([BG_IMAGE_RELATIVE_POSITION_TOP_LEFT isEqualToString:relativeStr]) {
-				backgroundImageRelativePosition = BG_IMAGE_RELATIVE_POSITION_TOP_LEFT;
-			} else if ([BG_IMAGE_RELATIVE_POSITION_BOTTOM_LEFT isEqualToString:relativeStr]) {
-				backgroundImageRelativePosition = BG_IMAGE_RELATIVE_POSITION_BOTTOM_LEFT;
-			} else if ([BG_IMAGE_RELATIVE_POSITION_TOP_RIGHT isEqualToString:relativeStr]) {
-				backgroundImageRelativePosition = BG_IMAGE_RELATIVE_POSITION_TOP_RIGHT;
-			} else if ([BG_IMAGE_RELATIVE_POSITION_BOTTOM_RIGHT isEqualToString:relativeStr]) {
-				backgroundImageRelativePosition = BG_IMAGE_RELATIVE_POSITION_BOTTOM_RIGHT;
-			} else if ([BG_IMAGE_RELATIVE_POSITION_CENTER isEqualToString:relativeStr]) {
-				backgroundImageRelativePosition = BG_IMAGE_RELATIVE_POSITION_CENTER;
-			}
+			backgroundImageRelativePosition = relativeStr;
 			isBackgroundImageAbsolutePosition = NO;
 		}
 		

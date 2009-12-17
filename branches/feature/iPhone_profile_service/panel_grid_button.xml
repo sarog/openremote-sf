@@ -43,32 +43,32 @@
 					</cell>
 					<cell x="0" y="1" rowspan="1" colspan="2">
 							<button id="64" name="F" >      														
-                    <navigate toPreviousScreen="true"/>
+                    <navigate to="previousScreen"/>
               </button>
 					</cell>
 					<cell x="0" y="1" rowspan="1" colspan="2">
 							<button id="65" name="G" >         
-                    <navigate toNextScreen="true"/>
+                    <navigate to="nextScreen"/>
               </button>
 					</cell>	
 					<cell x="0" y="1" rowspan="1" colspan="2">
 							<button id="66" name="H" >         
-                    <navigate toSetting="true"/>
+                    <navigate to="setting"/>
               </button>
 					</cell>
 					<cell x="0" y="1" rowspan="1" colspan="2">
 							<button id="67" name="I" >          
-                    <navigate toBack="true"/>
+                    <navigate to="back"/>
               </button>
 					</cell>
 					<cell x="0" y="1" rowspan="1" colspan="2">
 							<button id="68" name="J" >           
-                    <navigate toLogin="true"/>
+                    <navigate to="login"/>
               </button>
 					</cell>
 					<cell x="0" y="1" rowspan="1" colspan="2">
 							<button id="69" name="K" >          
-                    <navigate toLogout="true"/>
+                    <navigate to="logout"/>
               </button>
 					</cell>
 			 </grid>
