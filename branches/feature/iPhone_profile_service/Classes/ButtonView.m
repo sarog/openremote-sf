@@ -25,6 +25,7 @@
 #import "ServerDefinition.h"
 #import "ViewHelper.h"
 #import "NotificationConstant.h"
+#import "ClippedUIImage.h"
 
 //defines the interval (seconds) of command when pressing a repeat button
 #define REPEAT_CMD_INTERVAL 0.3
@@ -95,10 +96,14 @@
 	if (button.image) {
 		uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.image.src]];
 		uiImagePressed = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.imagePressed.src]];	
-		[uiButton setImage:uiImage forState:UIControlStateNormal];
-		[uiButton setImage:uiImagePressed forState:UIControlStateHighlighted];
+		ClippedUIImage *clippedUIImage = [[ClippedUIImage alloc] initWithUIImage:uiImage dependingOnUIView:self imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW];		
+		[uiButton setImage:clippedUIImage forState:UIControlStateNormal];
+		if (uiImagePressed) {
+			ClippedUIImage *clippedUIImagePressed = [[ClippedUIImage alloc] initWithUIImage:uiImagePressed dependingOnUIView:self imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW];
+			[uiButton setImage:clippedUIImagePressed forState:UIControlStateHighlighted];
+		}
 		//use top-left alignment
-		[uiButton setFrame:CGRectMake(0, 0, uiImage.size.width, uiImage.size.height)];
+		[uiButton setFrame:CGRectMake(0, 0, clippedUIImage.size.width, clippedUIImage.size.height)];
 	} else {
 		[uiButton setFrame:[self bounds]];
 		UIImage *buttonImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
