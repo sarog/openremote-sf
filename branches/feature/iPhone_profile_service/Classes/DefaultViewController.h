@@ -19,30 +19,43 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
 #import <UIKit/UIKit.h>
-#import "InitViewController.h"
-#import "UpdateController.h"
-#import "ViewHelper.h"
-#import "GestureWindow.h"
-#import "ScreenViewController.h"
 #import "GroupController.h"
-#import "Group.h"
+#import "ErrorViewController.h"
+#import "Navigate.h"
+#import "NotificationConstant.h"
+#import	"LoginViewController.h"
+#import "AppSettingController.h"
+#import "DataBaseService.h"
+#import "LogoutHelper.h"
+#import "Gesture.h"
+#import "TabBarItem.h"
+#import "TabBarController.h"
 #import "Definition.h"
-#import "InitViewController.h"
 #import "UpdateController.h"
-#import "DefaultViewController.h"
 
-@interface AppDelegate : NSObject <UIApplicationDelegate> {
+
+@interface DefaultViewController : UIViewController {
 	
-	GestureWindow *window;
-	UIView *defaultView;
-	InitViewController *initViewController;
-	DefaultViewController *defaultViewController;
+	id theDelegate;
+	
+	NSMutableArray *groupControllers;
+	GroupController *currentGroupController;
+	NSMutableDictionary *groupViewMap;
+	NSMutableArray *navigationHistory;
+	ErrorViewController* errorViewController;
+	TabBarController *globalTabBarController;
+	TabBarController *localTabBarController;
+	NSString *tabBarScale;
+	NSMutableArray *tabBarControllers;
+	NSMutableDictionary *tabBarControllerViewMap;
 	UpdateController *updateController;
+
 }
 
-
+- (void)initGroups;
+- (void)populateLoginView:(id)sender;
+- (void)populateSettingsView:(id)sender;
+- (void)performGesture:(Gesture *)gesture;
 
 @end
-

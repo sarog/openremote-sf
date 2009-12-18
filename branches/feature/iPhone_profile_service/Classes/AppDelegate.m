@@ -26,24 +26,6 @@
 
 #import "AppDelegate.h"
 
-#import "ScreenViewController.h"
-#import "GroupController.h"
-#import "Group.h"
-#import "Definition.h"
-#import "InitViewController.h"
-#import "UpdateController.h"
-#import "Navigate.h"
-#import "NotificationConstant.h"
-#import	"LoginViewController.h"
-#import "AppSettingController.h"
-#import "DataBaseService.h"
-#import "LogoutHelper.h"
-#import "Gesture.h"
-#import "TabBarItem.h"
-
-static NSString *TABBAR_SCALE_GLOBAL = @"global";
-static NSString *TABBAR_SCALE_LOCAL = @"local";
-static NSString *TABBAR_SCALE_NONE = @"none";
 
 //Private method declare
 @interface AppDelegate (Private)
@@ -51,20 +33,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 - (void)didUpadted;
 - (void)didUseLocalCache:(NSString *)errorMessage;
 - (void)didUpdateFail:(NSString *)errorMessage;
-- (void)navigateFromNotification:(NSNotification *)notification;
-- (void)populateLoginView:(id)sender;
-- (void)populateSettingsView:(id)sender;
-- (void)refreshView:(id)sender;
-- (BOOL)navigateToGroup:(int)groupId toScreen:(int)screenId;
-- (BOOL)navigateToScreen:(int)to;
-- (BOOL)navigateToPreviousScreen;
-- (BOOL)navigateToNextScreen;
-- (void)logout;
-- (void)navigateBackwardInHistory:(id)sender;
-- (BOOL)navigateTo:(Navigate *)navi;
-- (void)navigateToWithHistory:(Navigate *)navi;
-- (void)initGroups;
-- (void)performGesture:(Gesture *)gesture;
+- (void)checkConfigAndUpdate;
 @end
 
 @implementation AppDelegate
@@ -78,12 +47,9 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	// Load logined iphone user last time.
 	[[DataBaseService sharedDataBaseService] initLastLoginUser];
 	
-	defaultViewController = [[UIViewController alloc] init];
-	// Create a default view that won't be overlapped by status bar.
-	// status bar is 20px high and on the top of window.
-	// all the visible view contents will be shown inside this container.
-	defaultView = [[UIView alloc] initWithFrame:CGRectMake(0, 20, 320, 460) ];
-	[defaultViewController setView:defaultView];
+	defaultViewController = [[DefaultViewController alloc] initWithDelegate:self];
+	
+	defaultView = defaultViewController.view;
 	[window addSubview:defaultView];
 	
 	//Init the loading view
@@ -95,21 +61,15 @@ static NSString *TABBAR_SCALE_NONE = @"none";
     // - (void)didUseLocalCache:(NSString *)errorMessage;
     // - (void)didUpdateFail:(NSString *)errorMessage;
 	updateController = [[UpdateController alloc] initWithDelegate:self];
-	[updateController checkConfigAndUpdate];
-	groupControllers = [[NSMutableArray alloc] init]; 
-	groupViewMap = [[NSMutableDictionary alloc] init];
-	tabBarControllers = [[NSMutableArray alloc] init];
-	tabBarControllerViewMap = [[NSMutableDictionary alloc] init];
-	navigationHistory = [[NSMutableArray alloc] init];
 	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateFromNotification:) name:NotificationNavigateTo object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateSettingsView:) name:NotificationPopulateSettingsView object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshView:) name:NotificationRefreshGroupsView object:nil];	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateBackwardInHistory:) name:NotificationNavigateBack object:nil];	
+	[self checkConfigAndUpdate];
 	
 }
 
+
+- (void)checkConfigAndUpdate {
+	[updateController checkConfigAndUpdate];
+}
 
 // this method will be called after UpdateController give a callback.
 - (void)updateDidFinished {
@@ -117,277 +77,13 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	
 	[initViewController.view removeFromSuperview];
 	
-	[self initGroups];
+	[defaultViewController initGroups];
 
 }
 
-- (void)initGroups {
-	NSArray *groups = [[Definition sharedDefinition] groups];
-	
-	if (groups.count > 0) {
-		GroupController *gc = [[GroupController alloc] initWithGroup:((Group *)[groups objectAtIndex:0])];
-		[groupControllers addObject:gc];
-		[groupViewMap setObject:gc.view forKey:[NSString stringWithFormat:@"%d", gc.group.groupId]];	
-		currentGroupController = [gc retain];
-		
-		TabBar *localTabBar = currentGroupController.group.tabBar;
-		// local tabBar
-		if (localTabBar) {
-			localTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController tabBar:localTabBar];
-			tabBarScale = TABBAR_SCALE_LOCAL;
-			[defaultView addSubview:localTabBarController.view];
-		} else 
-		// global tabBar
-		if ([[Definition sharedDefinition] tabBar]) {
-			globalTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController tabBar:[[Definition sharedDefinition] tabBar]];
-			tabBarScale = TABBAR_SCALE_GLOBAL;
-			[defaultView addSubview:globalTabBarController.view];
-		} else {
-			tabBarScale = TABBAR_SCALE_NONE;
-			[defaultView addSubview:currentGroupController.view];
-		}
-	} else {		
-		errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" message:@"Please associate screens with group or reset setting."];
-		[defaultView addSubview:errorViewController.view];		
-	}
-	
-}
-
-- (void)navigateFromNotification:(NSNotification *)notification {
-	if (notification) {
-		Navigate *navi = (Navigate *)[notification object];
-		[self navigateToWithHistory:navi];
-	}
-}
-
-- (void)navigateToWithHistory:(Navigate *)navi {
-	if (currentGroupController.group) {
-		navi.fromGroup = currentGroupController.group.groupId;
-		navi.fromScreen = [currentGroupController currentScreenId];
-	} else {
-		return;
-	}
-	
-	if ([self navigateTo:navi]) {
-		[navigationHistory addObject:navi];
-	}
-	
-	NSLog(@"navi history count = %d", navigationHistory.count);
-}
-
-// Returned BOOL value is whether to save history
-// if YES, save history
-// if NO, don't save history
-- (BOOL)navigateTo:(Navigate *)navi {
-	
-	if (navi.toGroup > 0 ) {	                //toGroup & toScreen
-		return [self navigateToGroup:navi.toGroup toScreen:navi.toScreen];
-	} 
-	
-	else if (navi.toScreen > 0) {             //toScreen in current group
-		return [self navigateToScreen:navi.toScreen];
-	} 
-	
-	else if (navi.isSetting) {								//toSetting
-		[self populateSettingsView:nil];
-		return NO;
-	} 
-	
-	else if (navi.isPreviousScreen) {					//toPreviousScreen
-		return [self navigateToPreviousScreen];
-	}
-	
-	else if (navi.isNextScreen) {							//toNextScreen
-		return [self navigateToNextScreen];
-	}
-	
-	else if (navi.isBack) {										//toBack
-		[self navigateBackwardInHistory:nil]; 
-		return NO;
-	} 
-	
-	else if (navi.isLogin) {									//toLogin
-		[self populateLoginView:nil];
-		return NO;
-	} 
-	
-	else if (navi.isLogout) {									//toLogout
-		[self logout];
-		return NO;
-	}
-	return NO;
-}
-
-- (BOOL)navigateToGroup:(int)groupId toScreen:(int)screenId {
-	GroupController *targetGroupController = nil;	
-	BOOL notItSelf = groupId != [currentGroupController groupId];
-	
-	//if screenId is specified, and is not current group, jump to that group
-	if (groupId > 0 && notItSelf) {
-		//find in cache first
-		NSLog(@"groupControllers size = %d",groupControllers.count);
-		for (GroupController *gc in groupControllers) {
-			if ([gc groupId] == groupId) {
-				targetGroupController = gc;
-				break;
-			}
-		}
-		//if not found in cache, create one
-		if (targetGroupController == nil) {
-			Group *group = [[Definition sharedDefinition] findGroupById:groupId];
-			if (group) {
-				targetGroupController = [[GroupController alloc] initWithGroup:group];
-				[groupControllers addObject:targetGroupController];
-				[groupViewMap setObject:targetGroupController.view forKey:[NSString stringWithFormat:@"%d", group.groupId]];
-			} else {
-				return NO;
-			}
-		}
-		
-		if ([TABBAR_SCALE_GLOBAL isEqualToString:tabBarScale]) {
-			[globalTabBarController.view removeFromSuperview];
-		} else if([TABBAR_SCALE_LOCAL isEqualToString:tabBarScale]) {
-			[localTabBarController.view removeFromSuperview];
-		} else if([TABBAR_SCALE_NONE isEqualToString:tabBarScale]) {
-			[currentGroupController.view removeFromSuperview];
-		}
-		UIView *view = [groupViewMap objectForKey:[NSString stringWithFormat:@"%d", groupId]];
-		tabBarScale = TABBAR_SCALE_NONE;
-		
-		// begin tabBar and view(local or global)
-		//if global tabbar exists
-		if (globalTabBarController) {
-			view = globalTabBarController.view;
-			tabBarScale = TABBAR_SCALE_GLOBAL;
-		}		
-		//if local tabbar exists
-		if (targetGroupController.group.tabBar) {
-			BOOL findCachedTargetTabBarController = NO;
-			for (TabBarController *tempTargetTabBarController in tabBarControllers) {
-				if (tempTargetTabBarController.groupController.group.groupId == targetGroupController.group.groupId) {
-					localTabBarController = tempTargetTabBarController;
-					findCachedTargetTabBarController = YES;
-					break;
-				}
-			}
-			if (!findCachedTargetTabBarController) {
-				localTabBarController = [[TabBarController alloc] initWithGroupController:targetGroupController tabBar:targetGroupController.group.tabBar];
-				[tabBarControllers addObject:localTabBarController];
-				[tabBarControllerViewMap setObject:localTabBarController.view forKey:[NSString stringWithFormat:@"%d", localTabBarController.groupController.group.groupId]];
-			}
-			tabBarScale = TABBAR_SCALE_LOCAL;
-			view = [tabBarControllerViewMap objectForKey:[NSString stringWithFormat:@"%d", localTabBarController.groupController.group.groupId]];
-		}
-		// end tabBar and view(local or global)
-		
-		[currentGroupController stopPolling];
-		[targetGroupController startPolling];
-		
-		[UIView beginAnimations:nil context:nil];
-		[UIView setAnimationDuration:1];
-		
-		// calculate animation curl up or down
-		int currentIndex = 0;
-		int targetIndex = 0;
-		for (int i = 0; i<groupControllers.count; i++) {
-			GroupController *gc = (GroupController *)[groupControllers objectAtIndex:i];
-			if ([gc groupId] == [currentGroupController groupId]) {
-				currentIndex = i;
-			}
-			if ([gc groupId] == [targetGroupController groupId]) {
-				targetIndex = i;
-			}			
-		}
-		BOOL forward = targetIndex > currentIndex;
-		
-		if (forward) {
-			[UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:defaultView cache:YES];
-		} else {
-			[UIView setAnimationTransition:UIViewAnimationTransitionCurlDown forView:defaultView cache:YES];
-		}
-
-		[defaultView addSubview:view];
-
-		[UIView commitAnimations];
-		
-		currentGroupController = targetGroupController;
-	}
-	
-	//if screenId is specified, jump to that screen
-	if (screenId > 0) {
-		return [currentGroupController switchToScreen:screenId];
-	}
-	
-	return YES;
-}
-
-- (void)logout {
-	if ([Definition sharedDefinition].password) {
-		LogoutHelper *logout = [[LogoutHelper alloc] init];
-		[logout requestLogout];
-		[logout release];
-	}	
-}
-
-- (void)navigateBackwardInHistory:(id)sender {
-	if (navigationHistory.count > 0) {		
-		Navigate *backward = (Navigate *)[navigationHistory lastObject];
-		if (backward.toGroup > 0 || backward.toScreen > 0 || backward.isPreviousScreen || backward.isNextScreen) {
-			[self navigateToGroup:backward.fromGroup toScreen:backward.fromScreen];
-		} else {
-			[self navigateTo:backward];
-		}
-		//remove current navigation, navigate backward
-		[navigationHistory removeLastObject];
-	}
-}
-
-- (BOOL)navigateToScreen:(int)to {
-		return [currentGroupController switchToScreen:to];
-}
-
-- (BOOL)navigateToPreviousScreen {
-		return [currentGroupController previousScreen];
-}
-
-- (BOOL)navigateToNextScreen {
-		return [currentGroupController nextScreen];
-}
-
-
-//prompts the user to enter a valid user name and password
-- (void)populateLoginView:(id)sender {
-	LoginViewController *loginController = [[LoginViewController alloc] initWithDelegate:self];
-	UINavigationController *loginNavController = [[UINavigationController alloc] initWithRootViewController:loginController];
-	[defaultViewController presentModalViewController:loginNavController animated:NO];
-	[loginController release];
-	[loginNavController release];
-}
-
-
-- (void)populateSettingsView:(id)sender {
-	AppSettingController *settingController = [[AppSettingController alloc]init];
-	UINavigationController *settingNavController = [[UINavigationController alloc] initWithRootViewController:settingController];
-	[defaultViewController presentModalViewController:settingNavController animated:YES];
-	[settingController release];
-	[settingNavController release];
-}
-
-- (void)refreshView:(id)sender {
-	for (UIView *view in defaultView.subviews) {
-		[view removeFromSuperview];
-	}
-	[groupControllers removeAllObjects];
-	[groupViewMap removeAllObjects];
-	[tabBarControllers removeAllObjects];
-	[tabBarControllerViewMap removeAllObjects];
-	if (currentGroupController) {
-		[currentGroupController stopPolling];
-	}
-	currentGroupController = nil;
-	
-	[self initGroups];
-	
+#pragma mark delegate method of GestureWindow
+- (void)performGesture:(Gesture *)gesture {
+	[defaultViewController performGesture:gesture];
 }
 
 #pragma mark delegate method of updateController
@@ -398,7 +94,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 
 - (void)didUseLocalCache:(NSString *)errorMessage {
 	if ([errorMessage isEqualToString:@"401"]) {
-		[self populateLoginView:nil];
+		[defaultViewController populateLoginView:nil];
 	} else {
 		[[[ViewHelper alloc] init] showAlertViewWithTitleAndSettingNavigation:@"Warning" Message:[errorMessage stringByAppendingString:@" Using cached content."]];		
 		[self updateDidFinished];
@@ -408,7 +104,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 
 - (void)didUpdateFail:(NSString *)errorMessage {
 	if ([errorMessage isEqualToString:@"401"]) {
-		[self populateLoginView:nil];
+		[defaultViewController populateLoginView:nil];
 	} else {
 		[[[ViewHelper alloc] init] showAlertViewWithTitleAndSettingNavigation:@"Update Failed" Message:errorMessage];		
 		[self updateDidFinished];
@@ -416,34 +112,11 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	
 }
 
-#pragma mark delegate method of LoginViewController
-
-- (void)onSignin {
-	[currentGroupController stopPolling];
-	[updateController checkConfigAndUpdate];
-}
-
-- (void)onBackFromLogin {
-	[self updateDidFinished];
-}
-
-#pragma mark delegate method of GestureWindow
-- (void)performGesture:(Gesture *)gesture {
-	[currentGroupController performGesture:gesture];
-}
-
 
 - (void)dealloc {
 	[updateController release];
-	[defaultView release];
-	[defaultViewController release];
-	[groupControllers release];
-	[window release];
-	[groupViewMap release];
-	[navigationHistory release];
-	[errorViewController release];
-	[globalTabBarController release];
-	[tabBarControllers release];
+	[defaultViewController release];	
+	[window release];	
 	
 	[super dealloc];
 }

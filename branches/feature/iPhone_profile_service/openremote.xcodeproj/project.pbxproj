@@ -238,6 +238,8 @@
 		8CAEB81B10A6B25B0051C827 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CAEB81A10A6B25B0051C827 /* LoginViewController.m */; };
 		8CAEB81C10A6B25B0051C827 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CAEB81A10A6B25B0051C827 /* LoginViewController.m */; };
 		8CB33E4E0FCA4AE400B010DF /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */; };
+		8CC1E07E10DB491400155CC0 /* DefaultViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC1E07D10DB491400155CC0 /* DefaultViewController.m */; };
+		8CC1E07F10DB491400155CC0 /* DefaultViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC1E07D10DB491400155CC0 /* DefaultViewController.m */; };
 		8CC6364E10BD37D8009C25C9 /* CredentialUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC6364D10BD37D8009C25C9 /* CredentialUtil.m */; };
 		8CC6364F10BD37D8009C25C9 /* CredentialUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC6364D10BD37D8009C25C9 /* CredentialUtil.m */; };
 		8CC636D010BD4DCC009C25C9 /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC636CF10BD4DCC009C25C9 /* NSStringAdditions.m */; };
@@ -449,6 +451,8 @@
 		8CAEB81910A6B25B0051C827 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		8CAEB81A10A6B25B0051C827 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		8CC1E07C10DB491400155CC0 /* DefaultViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultViewController.h; sourceTree = "<group>"; };
+		8CC1E07D10DB491400155CC0 /* DefaultViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefaultViewController.m; sourceTree = "<group>"; };
 		8CC6364C10BD37D8009C25C9 /* CredentialUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CredentialUtil.h; sourceTree = "<group>"; };
 		8CC6364D10BD37D8009C25C9 /* CredentialUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CredentialUtil.m; sourceTree = "<group>"; };
 		8CC636CE10BD4DCC009C25C9 /* NSStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringAdditions.h; sourceTree = "<group>"; };
@@ -864,6 +868,8 @@
 				8CF539AA10B9359F00C52FB0 /* ErrorViewController.m */,
 				33DF56CC10CCF6B50005446D /* TabBarController.h */,
 				33DF56CD10CCF6B50005446D /* TabBarController.m */,
+				8CC1E07C10DB491400155CC0 /* DefaultViewController.h */,
+				8CC1E07D10DB491400155CC0 /* DefaultViewController.m */,
 			);
 			name = controller;
 			sourceTree = "<group>";
@@ -1121,6 +1127,7 @@
 				338C3CD510D60F610029D62B /* ClippedUIImageViewTest.m in Sources */,
 				338D2ED610D8AADB0043BFE9 /* ClippedUIImage.m in Sources */,
 				338D306C10D8DD000043BFE9 /* UIViewUtil.m in Sources */,
+				8CC1E07F10DB491400155CC0 /* DefaultViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1227,6 +1234,7 @@
 				338C3CD610D60F610029D62B /* ClippedUIImageViewTest.m in Sources */,
 				338D2ED710D8AADB0043BFE9 /* ClippedUIImage.m in Sources */,
 				338D306D10D8DD000043BFE9 /* UIViewUtil.m in Sources */,
+				8CC1E07E10DB491400155CC0 /* DefaultViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
