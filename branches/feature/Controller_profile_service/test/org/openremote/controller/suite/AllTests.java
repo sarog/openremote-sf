@@ -22,6 +22,8 @@ package org.openremote.controller.suite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+import org.openremote.controller.net.MulticastAutoDiscoveryTest;
+import org.openremote.controller.utils.MacrosIrDelayUtilTest;
 
 
 @RunWith(Suite.class)
@@ -29,7 +31,10 @@ import org.junit.runners.Suite.SuiteClasses;
 {
    AllControlBuilderTests.class,
    AllServiceTests.class,
-   AllRESTfulAPIMockTests.class
+   AllRESTfulAPIMockTests.class,
+   MacrosIrDelayUtilTest.class,
+   AllCommandBuildersTest.class,
+   MulticastAutoDiscoveryTest.class
 }
 )
 public class AllTests {

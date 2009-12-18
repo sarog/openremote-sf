@@ -45,7 +45,7 @@ public class TelnetCommandBuilder implements CommandBuilder {
             telnetEvent.setName(ele.getAttributeValue("value"));
          } else if("port".equals(ele.getAttributeValue("name"))){
             telnetEvent.setPort(ele.getAttributeValue("value"));
-         } else if("ipAddress".equals(ele.getAttributeValue("ipAddress"))){
+         } else if("ipAddress".equals(ele.getAttributeValue("name"))){
             telnetEvent.setIp(ele.getAttributeValue("value"));
          }
       }

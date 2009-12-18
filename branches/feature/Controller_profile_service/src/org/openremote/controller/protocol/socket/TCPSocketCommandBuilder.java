@@ -45,7 +45,7 @@ public class TCPSocketCommandBuilder implements CommandBuilder {
             tcpEvent.setName(ele.getAttributeValue("value"));
          } else if("port".equals(ele.getAttributeValue("name"))){
             tcpEvent.setPort(ele.getAttributeValue("value"));
-         } else if("ipAddress".equals(ele.getAttributeValue("ipAddress"))){
+         } else if("ipAddress".equals(ele.getAttributeValue("name"))){
             tcpEvent.setIp(ele.getAttributeValue("value"));
          }
       }

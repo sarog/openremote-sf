@@ -49,7 +49,7 @@ public class IRCommandBuilder implements CommandBuilder {
             break;
          } 
       }
-      if ("".equals(command) || "".equals(name)) {
+      if ("".equals(command.trim()) || "".equals(name.trim())) {
          throw new CommandBuildException("Cannot build a IREvent with empty property : command=" + command + ",name=" + name);
       } else {
          irCommand.setCommand(command);
