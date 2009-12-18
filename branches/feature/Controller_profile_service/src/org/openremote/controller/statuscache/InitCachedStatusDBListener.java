@@ -206,7 +206,6 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
          public void run() {
             while(true){
                float floatValue = (float) (Math.random()*100 + 1);
-               System.out.println("current slider value is : " + floatValue);
                statusCacheService.saveOrUpdateStatus(1008, floatValue+"");
                try {
                   sleep(5000);
