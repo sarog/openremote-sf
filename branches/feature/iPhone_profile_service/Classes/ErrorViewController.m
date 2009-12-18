@@ -22,12 +22,17 @@
 #import "ErrorViewController.h"
 #import "NotificationConstant.h"
 #import "Navigate.h"
+#import "UIViewUtil.h"
+#import "ClippedUIImage.h"
+#import "BackgroundImageRelativePositionConstant.h"
 
 @interface ErrorViewController (Private)
 - (void)gotoSettings:(id)sender;
 - (void)goBack:(id)sender;
 @end
 
+static const int ERROR_IMAGE_FIXED_WIDTH = 160;
+static const int ERROR_IMAGE_FIXED_HEIGHT = 160;
 
 @implementation ErrorViewController
 
@@ -50,8 +55,10 @@
 		[bgview setBackgroundColor:[UIColor whiteColor]];
 		[self setView:bgview];
 		UIImage *errorImage = [UIImage imageNamed:@"repair.png"];
-		UIButton *errorImageView = [[UIButton alloc] initWithFrame:CGRectMake((320-errorImage.size.width)/2.0, 100, errorImage.size.width , errorImage.size.height)];
-		[errorImageView setBackgroundImage:errorImage forState:UIControlStateNormal];
+		//UIButton *errorImageView = [[UIButton alloc] initWithFrame:CGRectMake((320-errorImage.size.width)/2.0, 100, errorImage.size.width , errorImage.size.height)];
+		//[errorImageView setBackgroundImage:errorImage forState:UIControlStateNormal];
+		UIView *errorImageDependingOnView = [[UIView alloc] initWithFrame:CGRectMake((320-ERROR_IMAGE_FIXED_WIDTH)/2.0, 100, ERROR_IMAGE_FIXED_WIDTH , ERROR_IMAGE_FIXED_HEIGHT)];
+		UIImageView *errorImageView = [UIViewUtil clippedUIImageViewWith:errorImage dependingOnUIView:errorImageDependingOnView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
 		
 		titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 280, 320, 30)];
 		[titleLabel setText:title];
