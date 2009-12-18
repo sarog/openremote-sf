@@ -22,13 +22,17 @@ package org.openremote.controller.suite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+import org.openremote.controller.control.button.ButtonBuilderTest;
 import org.openremote.controller.control.gesture.GestureBuilderTest;
 import org.openremote.controller.control.slider.SliderBuilderTest;
+import org.openremote.controller.control.switchtoggle.SwitchBuilderTest;
 import org.openremote.controller.label.LabelBuilderTest;
 
 @RunWith(Suite.class)
 @SuiteClasses(
 {
+   ButtonBuilderTest.class,
+   SwitchBuilderTest.class,
    GestureBuilderTest.class,
    SliderBuilderTest.class,
    LabelBuilderTest.class

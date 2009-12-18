@@ -48,7 +48,7 @@ public class X10CommandBuilder implements CommandBuilder {
             break;
          } 
       }
-      if(command==null||command.equals("")||address==null||address.trim().equals("")){
+      if(command==null||command.trim().equals("")||address==null||address.trim().equals("")){
          throw new CommandBuildException("Can not build a X10Command with empty command: "+command+"or address: "+address);
       }
       xCommand.setAddress(address);
