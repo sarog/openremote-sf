@@ -25,7 +25,7 @@
 @interface ClippedUIImage(Private)
 - (CGPoint) clippedPointDependingOnUIView:(UIView *)uiView alignToViewPattern:(NSString *)align;
 - (CGSize) clippedSizeDependingOnUIView:(UIView *)uiView;
-- (UIImage *) clipWithRect:(CGRect)clipRect;
+- (void) clipWithRect:(CGRect)clipRect;
 - (int) startXWithRelativeAlignPattern:(NSString *)align uiViewSize:(CGSize)uiViewSize;
 - (int) startYWithRelativeAlignPattern:(NSString *)align uiViewSize:(CGSize)uiViewSize;
 @end
@@ -39,7 +39,7 @@ NSString *const IMAGE_ABSOLUTE_ALIGN_TO_VIEW = @"ABSOLUTE";
 		if (self && uiView) {
 			CGPoint startAtImagePoint = [self clippedPointDependingOnUIView:uiView alignToViewPattern:align];
 			CGSize clipImageSize = [self clippedSizeDependingOnUIView:uiView];
-			return [self clipWithRect:CGRectMake(startAtImagePoint.x, startAtImagePoint.y, clipImageSize.width, clipImageSize.height)];
+			[self clipWithRect:CGRectMake(startAtImagePoint.x, startAtImagePoint.y, clipImageSize.width, clipImageSize.height)];
 		} else {
 			return nil;
 		}
@@ -140,9 +140,9 @@ NSString *const IMAGE_ABSOLUTE_ALIGN_TO_VIEW = @"ABSOLUTE";
 	return clipImageSize;
 }
 
-- (UIImage *) clipWithRect:(CGRect)clipRect {
+- (void) clipWithRect:(CGRect)clipRect {
 	CGImageRef uiImageRef = CGImageCreateWithImageInRect([self CGImage], clipRect);
-	return [UIImage imageWithCGImage:uiImageRef];
+	[self initWithCGImage:uiImageRef];
 }
 
 @end
