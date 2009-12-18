@@ -29,8 +29,8 @@
 #import "ViewHelper.h"
 #import "DirectoryDefinition.h"
 #import "BackgroundImageRelativePositionConstant.h"
-#import "ClippedUIImageView.h"
-
+#import "ClippedUIImage.h"
+#import "UIViewUtil.h"
 
 @interface ScreenView (Private) 
 - (void)createLayout;
@@ -94,7 +94,7 @@
 				int left = [[screen background] backgroundImageAbsolutePositionLeft];
 				int top = [[screen background] backgroundImageAbsolutePositionTop];
 				[backgroundImageView setFrame:CGRectMake(left, top, screenBackgroundImageViewWidth-left, screenBackgroundImageViewHeight-top)];
-				backgroundImageView = [[ClippedUIImageView alloc] initWithClipUIImage:backgroundImage dependingOnView:backgroundImageView imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW imageFillView:NO];
+				backgroundImageView = [UIViewUtil clippedUIImageViewWith:backgroundImage dependingOnUIView:backgroundImageView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
 				NSLog(@"Clipped BackgroundImage's width:%f, height:%f", backgroundImageView.image.size.width, backgroundImageView.image.size.height);
 				NSLog(@"BackgroundImageView's left is %d, top is %d", left, top);
 				NSLog(@"BackgroundImageView's width:%f, height:%f", backgroundImageView.frame.size.width, backgroundImageView.frame.size.height);
@@ -104,13 +104,13 @@
 				// relative position
 				[backgroundImageView setFrame:CGRectMake(0, 0, screenBackgroundImageViewWidth, screenBackgroundImageViewHeight)];
 				NSString *backgroundImageRelativePosition = [[screen background] backgroundImageRelativePosition];
-				backgroundImageView = [[ClippedUIImageView alloc] initWithClipUIImage:backgroundImage dependingOnView:backgroundImageView imageAlignToView:backgroundImageRelativePosition imageFillView:NO];
+				backgroundImageView = [UIViewUtil clippedUIImageViewWith:backgroundImage dependingOnUIView:backgroundImageView uiImageAlignToUIViewPattern:backgroundImageRelativePosition isUIImageFillUIView:NO];
 			}
 		}
 		// fillscreen is true
 		else {
 			[backgroundImageView setFrame:CGRectMake(0, 0, screenBackgroundImageViewWidth, screenBackgroundImageViewHeight)];
-			backgroundImageView = [[ClippedUIImageView alloc] initWithClipUIImage:backgroundImage dependingOnView:backgroundImageView imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW imageFillView:NO];
+			backgroundImageView = [UIViewUtil clippedUIImageViewWith:backgroundImage dependingOnUIView:backgroundImageView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
 		}
 		NSLog(@"Added width: %d, height: %d backgroundImageView", screenBackgroundImageViewWidth, screenBackgroundImageViewHeight);
 		[self addSubview:backgroundImageView];

@@ -20,7 +20,8 @@
  */
 
 #import "ClippedUIImageViewTest.h"
-#import "ClippedUIImageView.h"
+#import "ClippedUIImage.h"
+#import "UIViewUtil.h"
 
 static NSString *assertImageWidthString = @"expected image width is %f, but actual width is %f";
 static NSString *assertImageHeightString = @"expected image height is %f, but actual height is %f";
@@ -64,7 +65,7 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
 	float expectedOriginalImageHeight = 500.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
 	STAssertTrue(uiImage.size.height == expectedOriginalImageHeight, assertImageHeightString, expectedOriginalImageHeight, uiImage.size.height);
-	ClippedUIImageView *newUIImageView = [[ClippedUIImageView alloc] initWithClipUIImage:uiImage dependingOnView:uiView imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW imageFillView:NO];
+	UIImageView *newUIImageView = [UIViewUtil clippedUIImageViewWith:uiImage dependingOnUIView:uiView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
 	STAssertTrue(newUIImageView.image.size.width == uiView.frame.size.width, assertImageWidthString, uiView.frame.size.width, newUIImageView.image.size.width);
 	STAssertTrue(newUIImageView.image.size.height == uiView.frame.size.height, assertImageHeightString, uiView.frame.size.height, newUIImageView.image.size.height);
 }
@@ -79,7 +80,7 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
 	float expectedOriginalImageHeight = 480.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
 	STAssertTrue(uiImage.size.height == expectedOriginalImageHeight, assertImageHeightString, expectedOriginalImageHeight, uiImage.size.height);
-	ClippedUIImageView *newUIImageView = [[ClippedUIImageView alloc] initWithClipUIImage:uiImage dependingOnView:uiView imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW imageFillView:NO];
+	UIImageView *newUIImageView = [UIViewUtil clippedUIImageViewWith:uiImage dependingOnUIView:uiView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
 	STAssertTrue(newUIImageView.image.size.width == uiView.frame.size.width, assertImageWidthString, uiView.frame.size.width, newUIImageView.image.size.width);
 	STAssertTrue(newUIImageView.image.size.height == uiView.frame.size.height, assertImageHeightString, uiView.frame.size.height, newUIImageView.image.size.height);
 }
@@ -94,7 +95,7 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
 	float expectedOriginalImageHeight = 320.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
 	STAssertTrue(uiImage.size.height == expectedOriginalImageHeight, assertImageHeightString, expectedOriginalImageHeight, uiImage.size.height);
-	ClippedUIImageView *newUIImageView = [[ClippedUIImageView alloc] initWithClipUIImage:uiImage dependingOnView:uiView imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW imageFillView:NO];
+	UIImageView *newUIImageView = [UIViewUtil clippedUIImageViewWith:uiImage dependingOnUIView:uiView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
 	STAssertTrue(newUIImageView.image.size.width == uiView.frame.size.width, assertImageWidthString, uiView.frame.size.width, newUIImageView.image.size.width);
 	STAssertTrue(newUIImageView.image.size.height == uiImage.size.height, assertImageHeightString, uiImage.size.height, newUIImageView.image.size.height);
 }
@@ -109,7 +110,7 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
 	float expectedOriginalImageHeight = 500.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
 	STAssertTrue(uiImage.size.height == expectedOriginalImageHeight, assertImageHeightString, expectedOriginalImageHeight, uiImage.size.height);
-	ClippedUIImageView *newUIImageView = [[ClippedUIImageView alloc] initWithClipUIImage:uiImage dependingOnView:uiView imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW imageFillView:NO];
+	UIImageView *newUIImageView = [UIViewUtil clippedUIImageViewWith:uiImage dependingOnUIView:uiView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
 	STAssertTrue(newUIImageView.image.size.width == uiView.frame.size.width, assertImageWidthString, uiView.frame.size.width, newUIImageView.image.size.width);
 	STAssertTrue(newUIImageView.image.size.height == uiView.frame.size.height, assertImageHeightString, uiView.frame.size.height, newUIImageView.image.size.height);
 }
@@ -124,7 +125,7 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
 	float expectedOriginalImageHeight = 480.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
 	STAssertTrue(uiImage.size.height == expectedOriginalImageHeight, assertImageHeightString, expectedOriginalImageHeight, uiImage.size.height);
-	ClippedUIImageView *newUIImageView = [[ClippedUIImageView alloc] initWithClipUIImage:uiImage dependingOnView:uiView imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW imageFillView:NO];
+	UIImageView *newUIImageView = [UIViewUtil clippedUIImageViewWith:uiImage dependingOnUIView:uiView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
 	STAssertTrue(newUIImageView.image.size.width == uiView.frame.size.width, assertImageWidthString, uiImage.size.width, newUIImageView.image.size.width);
 	STAssertTrue(newUIImageView.image.size.height == uiView.frame.size.height, assertImageHeightString, uiImage.size.height, newUIImageView.image.size.height);
 }
@@ -139,7 +140,7 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
 	float expectedOriginalImageHeight = 320.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
 	STAssertTrue(uiImage.size.height == expectedOriginalImageHeight, assertImageHeightString, expectedOriginalImageHeight, uiImage.size.height);
-	ClippedUIImageView *newUIImageView = [[ClippedUIImageView alloc] initWithClipUIImage:uiImage dependingOnView:uiView imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW imageFillView:NO];
+	UIImageView *newUIImageView = [UIViewUtil clippedUIImageViewWith:uiImage dependingOnUIView:uiView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
 	STAssertTrue(newUIImageView.image.size.width == uiView.frame.size.width, assertImageWidthString, uiView.frame.size.width, newUIImageView.image.size.width);
 	STAssertTrue(newUIImageView.image.size.height == uiImage.size.height, assertImageHeightString, uiImage.size.height, newUIImageView.image.size.height);
 }
@@ -154,7 +155,7 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
 	float expectedOriginalImageHeight = 500.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
 	STAssertTrue(uiImage.size.height == expectedOriginalImageHeight, assertImageHeightString, expectedOriginalImageHeight, uiImage.size.height);
-	ClippedUIImageView *newUIImageView = [[ClippedUIImageView alloc] initWithClipUIImage:uiImage dependingOnView:uiView imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW imageFillView:NO];
+	UIImageView *newUIImageView = [UIViewUtil clippedUIImageViewWith:uiImage dependingOnUIView:uiView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
 	STAssertTrue(newUIImageView.image.size.width == uiImage.size.width, assertImageWidthString, uiImage.size.width, newUIImageView.image.size.width);
 	STAssertTrue(newUIImageView.image.size.height == uiView.frame.size.height, assertImageHeightString, uiView.frame.size.height, newUIImageView.image.size.height);
 }
@@ -169,7 +170,7 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
 	float expectedOriginalImageHeight = 480.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
 	STAssertTrue(uiImage.size.height == expectedOriginalImageHeight, assertImageHeightString, expectedOriginalImageHeight, uiImage.size.height);
-	ClippedUIImageView *newUIImageView = [[ClippedUIImageView alloc] initWithClipUIImage:uiImage dependingOnView:uiView imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW imageFillView:NO];
+	UIImageView *newUIImageView = [UIViewUtil clippedUIImageViewWith:uiImage dependingOnUIView:uiView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
 	STAssertTrue(newUIImageView.image.size.width == uiImage.size.width, assertImageWidthString, uiImage.size.width, newUIImageView.image.size.width);
 	STAssertTrue(newUIImageView.image.size.height == uiView.frame.size.height, assertImageHeightString, uiView.frame.size.height, newUIImageView.image.size.height);
 }
@@ -184,7 +185,7 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
 	float expectedOriginalImageHeight = 300.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
 	STAssertTrue(uiImage.size.height == expectedOriginalImageHeight, assertImageHeightString, expectedOriginalImageHeight, uiImage.size.height);
-	ClippedUIImageView *newUIImageView = [[ClippedUIImageView alloc] initWithClipUIImage:uiImage dependingOnView:uiView imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW imageFillView:NO];
+	UIImageView *newUIImageView = [UIViewUtil clippedUIImageViewWith:uiImage dependingOnUIView:uiView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
 	STAssertTrue(newUIImageView.image.size.width == uiImage.size.width, assertImageWidthString, uiImage.size.width, newUIImageView.image.size.width);
 	STAssertTrue(newUIImageView.image.size.height == uiImage.size.height, assertImageHeightString, uiImage.size.height, newUIImageView.image.size.height);
 }

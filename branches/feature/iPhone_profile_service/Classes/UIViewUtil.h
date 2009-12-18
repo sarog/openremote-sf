@@ -21,15 +21,11 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <UIKit/UIView.h>
 
-extern NSString *const IMAGE_ABSOLUTE_ALIGN_TO_VIEW;
 
-@interface ClippedUIImageView : UIImageView {
-
+@interface UIViewUtil : NSObject {
 }
 
-//- (id) initWithClipUIImage:(UIImage *)uiImage startAtX:(int)x startAtY:(int)y dependingOnView:(UIView *)uiView imageFillView:(BOOL)imageFillView;
-- (id) initWithClipUIImage:(UIImage *)uiImage dependingOnView:(UIView *)uiView imageAlignToView:(NSString *)align imageFillView:(BOOL)imageFillView;
++ (UIImageView *) clippedUIImageViewWith:(UIImage *)uiImage dependingOnUIView:(UIView *)uiView uiImageAlignToUIViewPattern:(NSString *)align isUIImageFillUIView:(BOOL)imageFillView;
 
 @end
