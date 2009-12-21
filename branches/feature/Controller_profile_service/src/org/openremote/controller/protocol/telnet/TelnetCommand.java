@@ -31,7 +31,7 @@ import org.openremote.controller.command.ExecutableCommand;
 
 /**
  * The Telnet Event.
- *
+ * 
  * @author Marcus 2009-4-26
  */
 public class TelnetCommand implements ExecutableCommand {
@@ -45,8 +45,9 @@ public class TelnetCommand implements ExecutableCommand {
    /** A name to identify event in controller.xml. */
    private String name;
 
-   /** A pipe separated list of command strings that are sent over the connection
-    * It must have the format <waitFor>|<send>|<waitFor>|<send>
+   /**
+    * A pipe separated list of command strings that are sent over the connection It must have the format
+    * <waitFor>|<send>|<waitFor>|<send>
     */
    private String command;
 
@@ -55,7 +56,6 @@ public class TelnetCommand implements ExecutableCommand {
 
    /** The port that is opened */
    private String port;
-
 
    /**
     * Gets the command.
@@ -68,8 +68,9 @@ public class TelnetCommand implements ExecutableCommand {
 
    /**
     * Sets the command.
-    *
-    * @param command the new command
+    * 
+    * @param command
+    *           the new command
     */
    public void setCommand(String command) {
       this.command = command;
@@ -77,7 +78,7 @@ public class TelnetCommand implements ExecutableCommand {
 
    /**
     * Gets the name.
-    *
+    * 
     * @return the name
     */
    public String getName() {
@@ -86,20 +87,21 @@ public class TelnetCommand implements ExecutableCommand {
 
    /**
     * Sets the name.
-    *
-    * @param name the new name
+    * 
+    * @param name
+    *           the new name
     */
    public void setName(String name) {
       this.name = name;
    }
 
-
    /**
     * Gets the ip
+    * 
     * @return the ip
     */
    public String getIp() {
-	return ip;
+      return ip;
    }
 
    /**
@@ -107,97 +109,95 @@ public class TelnetCommand implements ExecutableCommand {
     * @param ip the new ip
     */
    public void setIp(String ip) {
-    this.ip = ip;
+      this.ip = ip;
    }
 
    /**
     * Gets the port
+    * 
     * @return the port
     */
-	public String getPort() {
-		return port;
-	}
+   public String getPort() {
+      return port;
+   }
 
-	/**
-	 * Sets the port
-	 * @param port the new port
-	 */
-	public void setPort(String port) {
-		this.port = port;
-	}
+   /**
+    * Sets the port 
+    * @param port the new port
+    */
+   public void setPort(String port) {
+      this.port = port;
+   }
 
-	/**
+   /**
     * {@inheritDoc}
     */
    @Override
    public void send() {
-	   TelnetClient tc = null;
-		try {
-			tc = new TelnetClient();
-			tc.connect(getIp(), Integer.parseInt( getPort()));
-			StringTokenizer st = new StringTokenizer(getCommand(), "|");
-			int count = 0;
-			while (st.hasMoreElements()) {
-				String cmd = (String) st.nextElement();
-			      if (count % 2 == 0)
-			      {
-			    	  waitForString(cmd, tc);
-			      }
-			      else
-			      {
-			    	  sendString(cmd, tc);
-			      }
-			      count++;
-			}
-		} catch (Exception e) {
-			logger.error("could not perform telnetEvent", e);
-		} finally {
-			if (tc != null)  {
-				try {
-					tc.disconnect();
-				} catch (IOException e) {
-					logger.error("could not disconnect from telnet", e);
-				}
-			}
-		}
+      TelnetClient tc = null;
+      try {
+         tc = new TelnetClient();
+         tc.connect(getIp(), Integer.parseInt(getPort()));
+         StringTokenizer st = new StringTokenizer(getCommand(), "|");
+         int count = 0;
+         while (st.hasMoreElements()) {
+            String cmd = (String) st.nextElement();
+            if (count % 2 == 0) {
+               waitForString(cmd, tc);
+            } else {
+               sendString(cmd, tc);
+            }
+            count++;
+         }
+      } catch (Exception e) {
+         logger.error("could not perform telnetEvent", e);
+      } finally {
+         if (tc != null) {
+            try {
+               tc.disconnect();
+            } catch (IOException e) {
+               logger.error("could not disconnect from telnet", e);
+            }
+         }
+      }
    }
 
    /**
-    * Read from the telnet session until the string we are
-    * waiting for is found or the timeout has been reached.
-    * The timeout is 1 second
+    * Read from the telnet session until the string we are waiting for is found or the timeout has been reached. The
+    * timeout is 1 second
+    * 
     * @param s The string to wait on
     * @param tc The instance of the TelnetClient
     */
-   private void waitForString(String s, TelnetClient tc)  throws Exception {
-       InputStream is = tc.getInputStream();
-       StringBuffer sb = new StringBuffer();
-       Calendar endTime = Calendar.getInstance();
-       endTime.add(Calendar.SECOND, DEFAULT_TIMEOUT);
-       while (sb.toString().indexOf(s) == -1) {
-           while (Calendar.getInstance().before(endTime)
-                  && is.available() == 0) {
-               Thread.sleep(250);
-           }
-           if (is.available() == 0) {
-        	   logger.info("Read before running into timeout: "+ sb.toString());
-               throw new Exception("Response timed-out waiting for \"" + s + "\"");
-           }
-           sb.append((char) is.read());
-       }
-       logger.info("received: " + sb.toString());
+   private void waitForString(String s, TelnetClient tc) throws Exception {
+      InputStream is = tc.getInputStream();
+      StringBuffer sb = new StringBuffer();
+      Calendar endTime = Calendar.getInstance();
+      endTime.add(Calendar.SECOND, DEFAULT_TIMEOUT);
+      while (sb.toString().indexOf(s) == -1) {
+         while (Calendar.getInstance().before(endTime) && is.available() == 0) {
+            Thread.sleep(250);
+         }
+         if (is.available() == 0) {
+            logger.info("Read before running into timeout: " + sb.toString());
+            throw new Exception("Response timed-out waiting for \"" + s + "\"");
+         }
+         sb.append((char) is.read());
+      }
+      logger.info("received: " + sb.toString());
    }
 
    /**
     * Write this string to the telnet session.
-    * @param s          the string to write
+    * 
+    * @param the string to write
     * @param tc The instance of the TelnetClient
     */
    private void sendString(String s, TelnetClient tc) throws Exception {
-       OutputStream os = tc.getOutputStream();
-       os.write((s + "\n").getBytes());
-   	   logger.info("send: " + s);
-       os.flush();
+      OutputStream os = tc.getOutputStream();
+      os.write((s + "\n").getBytes());
+      logger.info("send: " + s);
+      os.flush();
    }
 
 }

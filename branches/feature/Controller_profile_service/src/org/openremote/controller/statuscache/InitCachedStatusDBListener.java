@@ -19,7 +19,6 @@
 */
 package org.openremote.controller.statuscache;
 
-import java.sql.Connection;
 import java.util.List;
 
 import javax.servlet.ServletContextEvent;
@@ -39,12 +38,6 @@ import org.springframework.context.support.ApplicationObjectSupport;
  */
 public class InitCachedStatusDBListener extends ApplicationObjectSupport implements ServletContextListener {
 
-   /** The logger. */
-//   private Logger logger = Logger.getLogger(InitCachedStatusDBListener.class.getName());
-   
-   /** The connection. */
-   public static Connection connection;
-   
    /**
     * TIME_OUT table instance.
     */
@@ -55,7 +48,8 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
    private static  String ServerIP = NetworkUtil.getLocalhostIP();
    
    private static  String webAppName = "controller";
-   private static  String resourceBasePath = "http://"+ServerIP+":"+configuration.getWebappPort()+"/"+webAppName+"/resources/";
+   private static String resourceBasePath = "http://" + ServerIP + ":" + configuration.getWebappPort() + "/"
+         + webAppName + "/resources/";
    
    /* (non-Javadoc)
     * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
