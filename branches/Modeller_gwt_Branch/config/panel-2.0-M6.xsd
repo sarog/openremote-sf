@@ -74,6 +74,42 @@
 	</xsd:complexType>
 	</xsd:element>
 	
+	<xsd:element name="icon">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The icon for a component. 		
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="src" type="xsd:string" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="default">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The default state for a component. 		
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="icon" minOccurs="1" maxOccurs="1"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="pressed">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The pressed state for a component. 		
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="icon" minOccurs="1" maxOccurs="1"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
 	<xsd:element name="button">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
@@ -207,6 +243,14 @@
 		</xsd:complexType>
 	</xsd:element>
 	 -->
+	 <xsd:element name="link">
+	 	<xsd:complexType>
+	 		<xsd:sequence>
+	 			<xsd:element ref="state" minOccurs="1" maxOccurs="unbounded"/>
+	 		</xsd:sequence>
+	 		<xsd:attribute name="type" type="xsd:string" use="required" />
+	 	</xsd:complexType>
+	 </xsd:element>
 	<xsd:element name="image">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
@@ -217,6 +261,10 @@
 			]]></xsd:documentation>
 		</xsd:annotation> 
 		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="link" minOccurs="0" maxOccurs="1" />
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:int"/>
 			<xsd:attribute name="src" type="xsd:string" use="required"/>
 			<xsd:attribute name="state" type="xsd:string"/>
 			<xsd:attribute name="border" type="xsd:string"/>
@@ -255,26 +303,7 @@
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="monitor">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element ref="image"/>
-				<xsd:element ref="status"/>
-			</xsd:sequence>
-			<xsd:attribute name="id" type="xsd:int"/>
-			<xsd:attribute name="border" type="xsd:string"/>
-		</xsd:complexType>
-	</xsd:element>
-	<xsd:element name="status">
-		<xsd:annotation>
-			<xsd:documentation><![CDATA[
-				The status for a widget. 
-			]]></xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:attribute name="ref" type="xsd:int"/>
-		</xsd:complexType>
-	</xsd:element>
+
 	<xsd:element name="gesture">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
@@ -298,27 +327,52 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:group ref="statusGroup" minOccurs="0"/>
+				<xsd:element ref="link" minOccurs="0" maxOccurs="1"/>
 			</xsd:sequence>
 			<xsd:attribute name="id" type="idType" use="required"/>
-			<xsd:attribute name="border" type="xsd:string" use="optional"/>
-			<xsd:attribute name="value" type="xsd:string"/>
+			<xsd:attribute name="font-size" type="xsd:int" use="optional"/>
+			<xsd:attribute name="color" type="xsd:string" use="optional"/>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="toggle">
+	
+	<xsd:element name="min">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The  minimum value for a slider. 
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="value" type="xsd:int" use="required" />
+			<xsd:attribute name="image" type="xsd:string" use="optional"/>
+			<xsd:attribute name="trackImage" type="xsd:string" use="optional"/>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="max">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The  maximum value for a slider. 
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="value" type="xsd:int" use="required" />
+			<xsd:attribute name="image" type="xsd:string" use="optional"/>
+			<xsd:attribute name="trackImage" type="xsd:string" use="optional"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="slider">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="state" minOccurs="2" maxOccurs="unbounded"/>
+				<xsd:group ref="sliderGroup"/>
 			</xsd:sequence>
 			<xsd:attribute name="id" type="idType" use="required"/>
+			<xsd:attribute name="thumbImage" type="xsd:string" use="optional"/>
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="state">
 		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element ref="image"/>
-			</xsd:sequence>
-			<xsd:attribute name="name" type="xsd:string"/>
+			<xsd:attribute name="name" type="xsd:string" use="required"/>
+			<xsd:attribute name="value" type="xsd:string" use="required"/>
 		</xsd:complexType>
 	</xsd:element>
 	
@@ -359,7 +413,7 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="image" minOccurs="0" maxOccurs="2"/>
+				<xsd:element ref="link" minOccurs="0" maxOccurs="2"/>
 			</xsd:sequence>
 			<xsd:attribute name="id" type="idType" use="required"/>
 		</xsd:complexType>
@@ -428,11 +482,9 @@
 	<xsd:group name="componentGroup">
 		<xsd:choice>
 			<xsd:element ref="button"/>
-			<xsd:element ref="toggle"/>
 			<xsd:element ref="label"/>
 			<xsd:element ref="switch"/>
 			<xsd:element ref="image"/>
-			<xsd:element ref="monitor"/>
 		</xsd:choice>
 	</xsd:group>
 	<xsd:group name="screenGroup">
@@ -443,19 +495,22 @@
 			<xsd:element ref="background"/>
 		</xsd:choice>
 	</xsd:group>
-	<xsd:group name="statusGroup">
-		<xsd:choice>
-			<xsd:element ref="status"/>
-		</xsd:choice>
-	</xsd:group>
+	
 
 	<xsd:group name="buttonGroup">
 		<xsd:choice>
-			<xsd:element ref="image"></xsd:element>
-			<xsd:element ref="navigate"></xsd:element>
+			<xsd:element ref="default"/>
+			<xsd:element ref="pressed"/>
+			<xsd:element ref="navigate"/>
 		</xsd:choice>
 	</xsd:group>
 	
+	<xsd:group name="sliderGroup">
+		<xsd:choice>
+			<xsd:element ref="min" minOccurs="1" maxOccurs="1"/>
+			<xsd:element ref="max" minOccurs="1" maxOccurs="1"/>
+		</xsd:choice>
+	</xsd:group>
 	<xsd:attributeGroup name="toLogicalGroup">
 		<xsd:attribute name="toGroup" use="optional" />
 		<xsd:attribute name="toScreen" use="optional" />

@@ -71,6 +71,10 @@ public class ResourceServiceImplTest {
       UIButton absBtn = new UIButton();
       absBtn.setOid(IDUtil.nextID());
       absBtn.setName("abs_btn1");
+      UImage defaultImage = new UImage("default.jpg");
+      UImage pressedImage = new UImage("pressed.jpg");
+      absBtn.setImage(defaultImage);
+      absBtn.setPressImage(pressedImage);
       
       UIButton gridBtn = new UIButton();
       gridBtn.setOid(IDUtil.nextID());
@@ -78,6 +82,10 @@ public class ResourceServiceImplTest {
       
       UISwitch absSwitch = new UISwitch();
       absSwitch.setOid(IDUtil.nextID());
+      UImage onImage = new UImage("on.jpg");
+      UImage offImage = new UImage("off.jpg");
+      absSwitch.setOnImage(onImage);
+      absSwitch.setOffImage(offImage);
       
       UISwitch gridSwitch = new UISwitch();
       gridSwitch.setOid(IDUtil.nextID());

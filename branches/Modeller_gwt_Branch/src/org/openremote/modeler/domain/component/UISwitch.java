@@ -118,11 +118,15 @@ public class UISwitch extends UIControl {
    public String getPanelXml() {
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("        <switch id=\"" + getOid() + "\">\n");
-      if (onImage != null && onImage.getSrc() != null) {
-         xmlContent.append("          <image src=\"" + onImage.getSrc() + "\" state=\"" + onImage.getState() + "\" />\n");
-      }
-      if (offImage != null && offImage.getSrc() != null) {
-         xmlContent.append("          <image src=\"" + offImage.getSrc() + "\" state=\"" + offImage.getState() + "\" />\n");
+      if((onImage != null && onImage.getSrc() != null )||(offImage != null && offImage.getSrc() != null)){
+         xmlContent.append("<link type=\"sensor\" >");
+         if (onImage != null && onImage.getSrc() != null) {
+            xmlContent.append("          <state name=\"on\" value=\""+ onImage.getSrc() + "\"/>\n");
+         }
+         if (offImage != null && offImage.getSrc() != null) {
+            xmlContent.append("          <state name=\"off\" value=\""+ offImage.getSrc() + "\"/>\n");
+         }
+         xmlContent.append("</link>");
       }
       xmlContent.append("        </switch>\n");
       return xmlContent.toString();
