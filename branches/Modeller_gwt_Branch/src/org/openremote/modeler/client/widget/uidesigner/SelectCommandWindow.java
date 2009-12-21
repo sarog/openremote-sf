@@ -55,6 +55,8 @@ public class SelectCommandWindow extends Dialog {
 
    private void initDevicesAndMacrosTree() {
       ContentPanel devicesAndMacrosTreeContainer = new ContentPanel();
+      devicesAndMacrosTreeContainer.setBorders(false);
+      devicesAndMacrosTreeContainer.setBodyBorder(false);
       devicesAndMacrosTreeContainer.setHeaderVisible(false);
       if (devicesAndMacrosTree == null) {
          devicesAndMacrosTree = DeviceAndMacroTree.getInstance();

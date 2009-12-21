@@ -19,11 +19,11 @@
 */
 package org.openremote.modeler.domain;
 import java.util.ArrayList;
-
 import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
@@ -57,6 +57,8 @@ public class Screen extends RefedEntity {
    /** The background. */
    private Background background = new Background("");
 
+   private List<Gesture> gestures = new ArrayList<Gesture>();
+   
    public Screen() {
       this.background = new Background("");
    }
@@ -234,6 +236,13 @@ public class Screen extends RefedEntity {
    public Background getBackground() {
       return background;
    }
-   
+
+   public List<Gesture> getGestures() {
+      return gestures;
+   }
+
+   public void setGestures(List<Gesture> gestures) {
+      this.gestures = gestures;
+   }
    
 }
