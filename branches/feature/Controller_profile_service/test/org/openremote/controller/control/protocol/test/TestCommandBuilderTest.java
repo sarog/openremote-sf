@@ -38,58 +38,69 @@ import org.openremote.controller.protocol.test.TestCommandBuilder;
  */
 public class TestCommandBuilderTest {
    private TestCommandBuilder builder = null;
+
    @Before
-   public void setUp(){
+   public void setUp() {
       builder = new TestCommandBuilder();
    }
+
    @Test
-   public void testOn(){
+   public void testOn() {
       Command cmd = getCommand("ON");
       Assert.assertTrue(cmd instanceof ExecutableCommand);
    }
+
    @Test
-   public void testOFF(){
+   public void testOFF() {
       Command cmd = getCommand("OFF");
       Assert.assertTrue(cmd instanceof ExecutableCommand);
    }
+
    @Test
-   public void testStatus(){
+   public void testStatus() {
       Command cmd = getCommand("STATUS");
       Assert.assertTrue(cmd instanceof StatusCommand);
    }
+
    @Test
-   public void testRightNumber(){
+   public void testRightNumber() {
       Command cmd = getCommand("12");
       Assert.assertTrue(cmd instanceof ExecutableCommand);
    }
+
    @Test
-   public void testWrongNumber1(){
-      try{
+   public void testWrongNumber1() {
+      try {
          getCommand("-11");
          fail();
-      }catch(NoSuchCommandException nse){}
+      } catch (NoSuchCommandException nse) {
+      }
    }
+
    @Test
-   public void testWrongNumber2(){
-      try{
+   public void testWrongNumber2() {
+      try {
          getCommand("-36");
          fail();
-      }catch(NoSuchCommandException nse){}
+      } catch (NoSuchCommandException nse) {
+      }
    }
+
    @Test
-   public void testErrorCommand(){
-      try{
+   public void testErrorCommand() {
+      try {
          getCommand("xxx");
          fail();
-      }catch(NumberFormatException nfe){}
+      } catch (NumberFormatException nfe) {
+      }
    }
-  
-   private Command getCommand(String cmdString){
+
+   private Command getCommand(String cmdString) {
       Element ele = new Element("command");
-      ele.setAttribute("id","1234");
-      ele.setAttribute("protocol","test");
-      ele.setAttribute("value",cmdString);
-      
+      ele.setAttribute("id", "1234");
+      ele.setAttribute("protocol", "test");
+      ele.setAttribute("value", cmdString);
+
       return builder.build(ele);
    }
 }

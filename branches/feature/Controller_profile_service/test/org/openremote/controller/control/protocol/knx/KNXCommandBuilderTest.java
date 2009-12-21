@@ -39,56 +39,60 @@ import org.openremote.controller.protocol.knx.KNXStatusCommand;
  */
 public class KNXCommandBuilderTest {
    private KNXCommandBuilder builder = null;
-   
+
    @Before
-   public void setUp(){
+   public void setUp() {
       builder = new KNXCommandBuilder();
    }
+
    @Test
-   public void testKNXOn(){
-      Command cmd = getCommand("ON","testGroupAddress");
+   public void testKNXOn() {
+      Command cmd = getCommand("ON", "testGroupAddress");
       assertTrue(cmd instanceof KNXExecutableCommand);
       KNXExecutableCommand exeCmd = (KNXExecutableCommand) cmd;
-      assertEquals(exeCmd.getGroupAddress(),"testGroupAddress");
-      assertEquals(exeCmd.getKnxCommandType(),KNXCommandType.SWITCH_ON);
+      assertEquals(exeCmd.getGroupAddress(), "testGroupAddress");
+      assertEquals(exeCmd.getKnxCommandType(), KNXCommandType.SWITCH_ON);
    }
-   
+
    @Test
-   public void testKNXOff(){
-      Command cmd = getCommand("OFF","testGroupAddress");
+   public void testKNXOff() {
+      Command cmd = getCommand("OFF", "testGroupAddress");
       assertTrue(cmd instanceof KNXExecutableCommand);
       KNXExecutableCommand exeCmd = (KNXExecutableCommand) cmd;
-      assertEquals(exeCmd.getGroupAddress(),"testGroupAddress");
-      assertEquals(exeCmd.getKnxCommandType(),KNXCommandType.SWITCH_OFF);
+      assertEquals(exeCmd.getGroupAddress(), "testGroupAddress");
+      assertEquals(exeCmd.getKnxCommandType(), KNXCommandType.SWITCH_OFF);
    }
+
    @Test
-   public void testKNXStatus(){
-      Command cmd = getCommand("STATUS","testGroupAddress");
+   public void testKNXStatus() {
+      Command cmd = getCommand("STATUS", "testGroupAddress");
       assertTrue(cmd instanceof KNXStatusCommand);
       KNXStatusCommand exeCmd = (KNXStatusCommand) cmd;
-      assertEquals(exeCmd.getGroupAddress(),"testGroupAddress");
-      assertEquals(exeCmd.getKnxCommandType(),null);
+      assertEquals(exeCmd.getGroupAddress(), "testGroupAddress");
+      assertEquals(exeCmd.getKnxCommandType(), null);
    }
+
    @Test
-   public void testNoSuchCommand(){
-     try{
-      getCommand(" ","testGroupAddress");
-      fail();
-     }catch(NoSuchCommandException e){}
+   public void testNoSuchCommand() {
+      try {
+         getCommand(" ", "testGroupAddress");
+         fail();
+      } catch (NoSuchCommandException e) {
+      }
    }
-   
-   private Command getCommand(String cmd,String groupAddress){
+
+   private Command getCommand(String cmd, String groupAddress) {
       Element ele = new Element("command");
-      ele.setAttribute("id","test");
-      ele.setAttribute("protocal","knx");
-      ele.setAttribute("value",cmd);
-      
+      ele.setAttribute("id", "test");
+      ele.setAttribute("protocal", "knx");
+      ele.setAttribute("value", cmd);
+
       Element propAddr = new Element("property");
-      propAddr.setAttribute("name",KNXCommandBuilder.GROUP_ADDRESS_XML_ATTRIBUTE);
-      propAddr.setAttribute("value",groupAddress);
-      
+      propAddr.setAttribute("name", KNXCommandBuilder.GROUP_ADDRESS_XML_ATTRIBUTE);
+      propAddr.setAttribute("value", groupAddress);
+
       ele.addContent(propAddr);
-      
-      return  builder.build(ele);
+
+      return builder.build(ele);
    }
 }

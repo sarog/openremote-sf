@@ -34,43 +34,48 @@ import org.openremote.controller.protocol.infrared.IRCommandBuilder;
  */
 public class IRCommandBuilderTest {
    private IRCommandBuilder builder = null;
+
    @Before
-   public void setUp(){
+   public void setUp() {
       builder = new IRCommandBuilder();
    }
+
    @Test
-   public void testRightIRCommandBuilder(){
-      IRCommand cmd = getCommand("testName","VL++");
-      
-      Assert.assertEquals(cmd.getName(),"testName");
+   public void testRightIRCommandBuilder() {
+      IRCommand cmd = getCommand("testName", "VL++");
+
+      Assert.assertEquals(cmd.getName(), "testName");
       Assert.assertEquals(cmd.getCommand(), "VL++");
    }
+
    @Test
-   public void testBuildWithInvalidName(){
-      try{
-         getCommand("   ","VL++");
+   public void testBuildWithInvalidName() {
+      try {
+         getCommand("   ", "VL++");
          fail();
-      }catch(CommandBuildException e){}
+      } catch (CommandBuildException e) {
+      }
    }
-   
+
    @Test
-   public void testBuildWithInvalidValue(){
-      try{
-         getCommand("testName"," ");
+   public void testBuildWithInvalidValue() {
+      try {
+         getCommand("testName", " ");
          fail();
-      }catch(CommandBuildException e){}
+      } catch (CommandBuildException e) {
+      }
    }
-   private IRCommand getCommand(String name,String value){
+
+   private IRCommand getCommand(String name, String value) {
       Element ele = new Element("command");
       ele.setAttribute("id", "test");
-      ele.setAttribute("protocal","ir");
-      ele.setAttribute("value",value);
-      
+      ele.setAttribute("protocal", "ir");
+      ele.setAttribute("value", value);
+
       Element propName = new Element("property");
-      propName.setAttribute("name","name");
-      propName.setAttribute("value",name);
-      
-      
+      propName.setAttribute("name", "name");
+      propName.setAttribute("value", name);
+
       ele.addContent(propName);
       return (IRCommand) builder.build(ele);
    }

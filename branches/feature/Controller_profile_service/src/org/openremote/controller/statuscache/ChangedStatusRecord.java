@@ -57,7 +57,7 @@ public class ChangedStatusRecord {
       this.pollingControlIDs = pollingControlIDs;
       this.statusChangedIDs = new HashSet<Integer>();
    }
-   
+
    public ChangedStatusRecord(String deviceID, Integer[] pollingControlIDs) {
       super();
       this.deviceID = deviceID;
@@ -69,23 +69,23 @@ public class ChangedStatusRecord {
    public ChangedStatusRecord(String deviceID, String[] pollingControlIDs) {
       super();
       this.pollingControlIDs = new ArrayList<Integer>();
-      for(String s:pollingControlIDs){
+      for (String s : pollingControlIDs) {
          this.pollingControlIDs.add(Integer.parseInt(s));
       }
       this.deviceID = deviceID;
       this.statusChangedIDs = new HashSet<Integer>();
    }
-   
+
    public ChangedStatusRecord(String deviceID, Collection<Integer> pollingControlIDs) {
       super();
       this.pollingControlIDs = new ArrayList<Integer>();
-      for(Integer i:pollingControlIDs){
+      for (Integer i : pollingControlIDs) {
          this.pollingControlIDs.add(i);
       }
       this.deviceID = deviceID;
       this.statusChangedIDs = new HashSet<Integer>();
    }
-   
+
    public String getDeviceID() {
       return deviceID;
    }
@@ -113,15 +113,16 @@ public class ChangedStatusRecord {
       if (obj == null || !(obj instanceof ChangedStatusRecord)) {
          return false;
       }
-      ChangedStatusRecord timeoutRecord = (ChangedStatusRecord)obj;
+      ChangedStatusRecord timeoutRecord = (ChangedStatusRecord) obj;
       if ("".equals(timeoutRecord.getDeviceID()) || !timeoutRecord.getDeviceID().equals(this.deviceID)) {
          return false;
       }
-      if (timeoutRecord.getPollingControlIDs().size() == 0 || timeoutRecord.getPollingControlIDs().size() != this.pollingControlIDs.size()) {
+      if (timeoutRecord.getPollingControlIDs().size() == 0
+            || timeoutRecord.getPollingControlIDs().size() != this.pollingControlIDs.size()) {
          return false;
       }
-      
-      Collections.sort(this.getPollingControlIDs(), new PollingControlIDListComparator());      
+
+      Collections.sort(this.getPollingControlIDs(), new PollingControlIDListComparator());
       Collections.sort(timeoutRecord.getPollingControlIDs(), new PollingControlIDListComparator());
       for (int i = 0; i < timeoutRecord.getPollingControlIDs().size(); i++) {
          if (!this.getPollingControlIDs().get(i).equals(timeoutRecord.getPollingControlIDs().get(i))) {
@@ -155,15 +156,15 @@ public class ChangedStatusRecord {
    public void setStatusChangedIDs(Set<Integer> statusChangedIDs) {
       this.statusChangedIDs = statusChangedIDs;
    }
-   
+
    @Override
-   public String toString(){
+   public String toString() {
       StringBuffer sb = new StringBuffer();
-      
-      sb.append("DEVICEID:"+deviceID);
-      sb.append("\tcomponentID:"+this.pollingControlIDs.toString());
-      sb.append("statusChangedComponentID:"+this.statusChangedIDs);
+
+      sb.append("DEVICEID:" + deviceID);
+      sb.append("\tcomponentID:" + this.pollingControlIDs.toString());
+      sb.append("statusChangedComponentID:" + this.statusChangedIDs);
       return sb.toString();
    }
-   
+
 }

@@ -42,14 +42,15 @@ public class X10CommandBuilder implements CommandBuilder {
       X10Command xCommand = new X10Command();
       String command = element.getAttributeValue("value");
       List<Element> propertyEles = element.getChildren("property", element.getNamespace());
-      for(Element ele : propertyEles){
-         if("address".equals(ele.getAttributeValue("name"))){
+      for (Element ele : propertyEles) {
+         if ("address".equals(ele.getAttributeValue("name"))) {
             address = ele.getAttributeValue("value");
             break;
-         } 
+         }
       }
-      if(command==null||command.trim().equals("")||address==null||address.trim().equals("")){
-         throw new CommandBuildException("Can not build a X10Command with empty command: "+command+"or address: "+address);
+      if (command == null || command.trim().equals("") || address == null || address.trim().equals("")) {
+         throw new CommandBuildException("Can not build a X10Command with empty command: " + command + "or address: "
+               + address);
       }
       xCommand.setAddress(address);
       xCommand.setCommand(command);

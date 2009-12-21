@@ -39,44 +39,48 @@ public class SwitchBuilderTest {
    private String controllerXMLPath = null;
    private Document doc = null;
    private SwitchBuilder builder = (SwitchBuilder) SpringTestContext.getInstance().getBean("switchBuilder");
-   
+
    @Before
    public void setUp() throws Exception {
-      controllerXMLPath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR + "controller.xml").getFile();
+      controllerXMLPath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR + "controller.xml")
+            .getFile();
       doc = XMLUtil.getControllerDocument(controllerXMLPath);
    }
-   
-   protected Element getElementByID(String id)  {
+
+   protected Element getElementByID(String id) {
       return XMLUtil.getElementByID(doc, id);
    }
-   
-   private Switch getSwitchByID(String switchID,String cmdParam) {
+
+   private Switch getSwitchByID(String switchID, String cmdParam) {
       Element controlElement = getElementByID(switchID);
-      if(! controlElement.getName().equals("switch")) {
+      if (!controlElement.getName().equals("switch")) {
          throw new NoSuchComponentException("switch .");
       }
       return (Switch) builder.build(controlElement, cmdParam);
    }
+
    @Test
-   public void testNuSuchSwitch(){
-      try{
-         getSwitchByID("9","on");
+   public void testNuSuchSwitch() {
+      try {
+         getSwitchByID("9", "on");
          fail();
-      }catch(Exception e){};
+      } catch (Exception e) {
+      };
    }
+
    @Test
-   public void testNoNull(){
-      Assert.assertNotNull(getSwitchByID("3","on"));
+   public void testNoNull() {
+      Assert.assertNotNull(getSwitchByID("3", "on"));
    }
-   
+
    @Test
-   public void testGetCommand(){
-      Switch swh = getSwitchByID("4","on");
-      Assert.assertEquals(swh.getExecutableCommands().size(),1);
-      swh = getSwitchByID("4","off");
-      Assert.assertEquals(swh.getExecutableCommands().size(),1);
-      
-      swh = getSwitchByID("4","status");
-      Assert.assertEquals(swh.getExecutableCommands().size(),0);
+   public void testGetCommand() {
+      Switch swh = getSwitchByID("4", "on");
+      Assert.assertEquals(swh.getExecutableCommands().size(), 1);
+      swh = getSwitchByID("4", "off");
+      Assert.assertEquals(swh.getExecutableCommands().size(), 1);
+
+      swh = getSwitchByID("4", "status");
+      Assert.assertEquals(swh.getExecutableCommands().size(), 0);
    }
 }
