@@ -158,10 +158,14 @@ public class UIButton extends UIControl {
       }
       xmlContent.append(">\n");
       if (image != null && image.getSrc() != null) {
-         xmlContent.append("          <image src=\"" + image.getSrc() + "\" />\n");
+         xmlContent.append("          <default>\n");
+         xmlContent.append("          <icon src=\"" + image.getSrc() + "\" />\n");
+         xmlContent.append("          </default>\n");
       }
       if (pressImage != null && pressImage.getSrc() != null) {
-         xmlContent.append("          <image src=\"" + pressImage.getSrc() + "\" state=\"onPress\" />\n");
+         xmlContent.append("          <pressed>\n");
+         xmlContent.append("          <icon src=\"" + pressImage.getSrc()+"\" />\n");
+         xmlContent.append("          </pressed>\n");
       }
       if (navigate.isSet()) {
          xmlContent.append("          <navigate");
