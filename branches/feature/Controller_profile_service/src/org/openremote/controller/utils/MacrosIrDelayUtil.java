@@ -48,38 +48,38 @@ public class MacrosIrDelayUtil {
    public static void ensureDelayForIrCommand(List<ExecutableCommand> commands){
       
       List<Integer> irCmdIndex = getIrCommandIndexList(commands);
-      if(irCmdIndex == null){
+      if (irCmdIndex == null) {
          return;
       }
       long minDelaySeconds = ConfigFactory.getConfig().getMacroIRExecutionDelay();
       Map<Integer, DelayCommand> delays = getDelayForIrCommand(commands, irCmdIndex, minDelaySeconds);
-      
+
       int addTimes = 0;
       Set<Integer> insertIndex = delays.keySet();
-      for(Integer index :insertIndex){
-         commands.add(index+addTimes,delays.get(index));
-         addTimes ++ ;
-         logger.info("add "+minDelaySeconds+" seconds before "+index+" ircommand");
+      for (Integer index : insertIndex) {
+         commands.add(index + addTimes, delays.get(index));
+         addTimes++;
+         logger.info("add " + minDelaySeconds + " seconds before " + index + " ircommand");
       }
    }
 
    private static Map<Integer, DelayCommand> getDelayForIrCommand(List<ExecutableCommand> commands,
          List<Integer> irCmdIndex, long minDelaySeconds) {
-      Map<Integer,DelayCommand> delays = new HashMap<Integer,DelayCommand>();
-      
-      for(int i=0;i<irCmdIndex.size()-1;i++){
+      Map<Integer, DelayCommand> delays = new HashMap<Integer, DelayCommand>();
+
+      for (int i = 0; i < irCmdIndex.size() - 1; i++) {
          int currIndex = irCmdIndex.get(i);
-         int nextIndex = irCmdIndex.get(i+1);
+         int nextIndex = irCmdIndex.get(i + 1);
          Long delaySeconds = 0L;
-         if(nextIndex-currIndex==1){
+         if (nextIndex - currIndex == 1) {
             DelayCommand delayCmd = new DelayCommand(String.valueOf(minDelaySeconds));
             delays.put(nextIndex, delayCmd);
          } else {
-            for(int j= currIndex+1;j<nextIndex;j++){
-               delaySeconds+= ((DelayCommand)commands.get(j)).getDelaySeconds();
+            for (int j = currIndex + 1; j < nextIndex; j++) {
+               delaySeconds += ((DelayCommand) commands.get(j)).getDelaySeconds();
             }
-            if(delaySeconds<minDelaySeconds){
-               DelayCommand delayCmd = new DelayCommand(String.valueOf(minDelaySeconds-delaySeconds));
+            if (delaySeconds < minDelaySeconds) {
+               DelayCommand delayCmd = new DelayCommand(String.valueOf(minDelaySeconds - delaySeconds));
                delays.put(nextIndex, delayCmd);
             }
          }
@@ -89,11 +89,11 @@ public class MacrosIrDelayUtil {
 
    private static List<Integer> getIrCommandIndexList(List<ExecutableCommand> commands) {
       List<Integer> irCmdIndex = new ArrayList<Integer>(5);
-      for(int i =0;i<commands.size();i++){
+      for (int i = 0; i < commands.size(); i++) {
          ExecutableCommand cmd = commands.get(i);
-         if(! (cmd instanceof IRCommand)&& !(cmd instanceof DelayCommand)){
+         if (!(cmd instanceof IRCommand) && !(cmd instanceof DelayCommand)) {
             return null;
-         }else if(cmd instanceof IRCommand){
+         } else if (cmd instanceof IRCommand) {
             irCmdIndex.add(i);
          }
       }

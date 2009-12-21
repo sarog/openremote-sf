@@ -58,6 +58,9 @@ public class ControlCommandException extends RuntimeException {
    
    public final static int INVALID_ELEMENT = 429;
    
+   public final static int INVALID_REFERENCE = 430;
+   
+   
    /** The error code. */
    private int errorCode;
 
