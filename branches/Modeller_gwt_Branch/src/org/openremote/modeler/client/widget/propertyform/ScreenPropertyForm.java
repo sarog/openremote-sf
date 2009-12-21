@@ -19,18 +19,24 @@
 */
 package org.openremote.modeler.client.widget.propertyform;
 
+import java.util.List;
+
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.widget.ImageUploadField;
+import org.openremote.modeler.client.widget.uidesigner.GestureWindow;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.Background;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Background.RelativeType;
+import org.openremote.modeler.domain.component.Gesture;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.BaseEvent;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
@@ -38,7 +44,10 @@ import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
@@ -113,6 +122,7 @@ public class ScreenPropertyForm extends PropertyForm {
       this.add(background);
       this.add(whetherFillScreen);
       this.add(positionSet);
+      this.add(createGestureField());
       
       addListenersToForm(whetherFillScreen);
    }
@@ -370,4 +380,22 @@ public class ScreenPropertyForm extends PropertyForm {
       }
    }
    
+   private AdapterField createGestureField() {
+      Button configGesture = new Button("Config");
+      configGesture.addSelectionListener(new SelectionListener<ButtonEvent>() {
+         public void componentSelected(ButtonEvent ce) {
+            GestureWindow configGestureWindow = new GestureWindow(canvas.getScreen().getGestures());
+            configGestureWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+               @SuppressWarnings("unchecked")
+               public void afterSubmit(SubmitEvent be) {
+                  canvas.getScreen().setGestures((List<Gesture>)be.getData());
+               }
+            });
+         }
+      });
+      AdapterField adapterConfigGesture = new AdapterField(configGesture);
+      adapterConfigGesture.setFieldLabel("Gestures");
+      adapterConfigGesture.setAutoWidth(true);
+      return adapterConfigGesture;
+   }
 }
