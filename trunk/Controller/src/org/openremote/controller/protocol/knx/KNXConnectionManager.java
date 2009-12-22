@@ -802,6 +802,38 @@ class KNXConnectionManager
 //      GroupAddress group = new GroupAddress(0, 0, 4);
 //      IndividualAddress src = new IndividualAddress(0);
 
+      String[] elements;
+      int hibyte = 0, midbyte = 0, lowbyte = 0;
+
+      if (groupAddress.contains("/"))
+      {
+        elements = groupAddress.split("/");
+
+        if (elements.length != 3)
+          log.error("Incorrect KNX group address structure");
+
+        hibyte = new Integer(elements[0]);
+        midbyte = new Integer(elements[1]);
+        lowbyte = new Integer(elements[2]);
+
+        hibyte = hibyte << 5;
+        hibyte = hibyte | midbyte;
+      }
+      else
+      {
+        elements = groupAddress.split(".");
+
+        if (elements.length != 3)
+          log.error("Incorrect KNX individual address structure.");
+
+        hibyte = new Integer(elements[0]);
+        midbyte = new Integer(elements[1]);
+        lowbyte = new Integer(elements[2]);
+
+        hibyte = hibyte << 4;
+        hibyte = hibyte | midbyte;
+      }
+      
       byte commandPayload = 0;
       
       switch (command)
@@ -823,8 +855,6 @@ class KNXConnectionManager
           log.error("");    // TODO
       }
 
-      //CEMILData cEMI = new CEMILData(0x11, src, group, new byte[] { (byte)SWITCH_OFF }, Priority.NORMAL);
-
       CEMILData cEMI = null;
 
       try
@@ -832,7 +862,7 @@ class KNXConnectionManager
         cEMI = new CEMILData(
             new byte[]
                 {
-                    0x11, 0x00, (byte)0x8C, (byte)0xE0, 0x00, 0x00, 0x00, 0x04, 0x01, 0x00, commandPayload
+                    0x11, 0x00, (byte)0x8C, (byte)0xE0, 0x00, 0x00, (byte)hibyte, (byte)lowbyte, 0x01, 0x00, commandPayload
                 },
             0
         );
