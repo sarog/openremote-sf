@@ -303,7 +303,7 @@ public class ApplicationView implements View {
          UIDesignerView uiDesignerItem = new UIDesignerView();
          uiDesignerItem.initialize();
          modelerTabPanel.add(uiDesignerItem);
-         modelerTabPanel.setSelection(uiDesignerItem); // Temp to show uiDesigner. It will remove after development.
+//         modelerTabPanel.setSelection(uiDesignerItem); // Temp to show uiDesigner. It will remove after development.
          this.uiDesignerView = uiDesignerItem;
       }
       modelerTabPanel.setAutoSelect(true);
