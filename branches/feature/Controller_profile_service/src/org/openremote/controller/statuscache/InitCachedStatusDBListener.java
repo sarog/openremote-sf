@@ -95,11 +95,7 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
                } else {
                   statusCacheService.saveOrUpdateStatus(1001, "OFF");
                }
-               try {
-                  sleep(10000);
-               } catch (InterruptedException e) {
-                  e.printStackTrace();
-               }
+               nap(10000);
             }
          }
       };
@@ -126,12 +122,9 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
                   } else {
                      statusCacheService.saveOrUpdateStatus(1002, "OFF");
                   }
-                  try {
-                     sleep(10000);
-                  } catch (InterruptedException e) {
-                     e.printStackTrace();
-                  }
+                  nap(10000);
                }
+               nap(3);
             }
          }
       };
@@ -144,21 +137,13 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
          public void run() {
             int i = 0;
             for (;; i++) {
-               try {
-                  Thread.sleep(80000);
-               } catch (InterruptedException e) {
-                  e.printStackTrace();
-               }
+               nap(80000);
                if (i % 2 == 0) {
                   statusCacheService.saveOrUpdateStatus(1003, "ON");
                } else {
                   statusCacheService.saveOrUpdateStatus(1003, "OFF");
                }
-               try {
-                  sleep(10000);
-               } catch (InterruptedException e) {
-                  e.printStackTrace();
-               }
+               nap(10000);
             }
          }
       };
@@ -181,11 +166,7 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
                   statusCacheService.saveOrUpdateStatus(1005, resourceBasePath + image);
                }
                index = index < imageNames.length - 1 ? ++index : 0;
-               try {
-                  sleep(5000);
-               } catch (InterruptedException e) {
-                  e.printStackTrace();
-               }
+               nap(5000);
             }
          }
       };
@@ -202,11 +183,7 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
             while(true){
                float floatValue = (float) (Math.random()*100 + 1);
                statusCacheService.saveOrUpdateStatus(1008, floatValue+"");
-               try {
-                  sleep(5000);
-               } catch (InterruptedException e) {
-                  e.printStackTrace();
-               }
+               nap(5000);
             }
          }
       };
@@ -220,5 +197,12 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
    public void contextDestroyed(ServletContextEvent event) {
    }
 
+   private void nap(long sec) {
+      try {
+         Thread.sleep(sec);
+      } catch (InterruptedException e) {
+         e.printStackTrace();
+      }
+   }
 
 }
