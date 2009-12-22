@@ -47,6 +47,11 @@
                 <value>org.openremote.modeler.domain.User</value> 
                 <value>org.openremote.modeler.domain.Role</value> 
                 <value>org.openremote.modeler.domain.Account</value> 
+                <value>org.openremote.modeler.domain.State</value> 
+                <value>org.openremote.modeler.domain.Range</value> 
+                <value>org.openremote.modeler.domain.Sensor</value> 
+                <value>org.openremote.modeler.domain.Switch</value> 
+                <value>org.openremote.modeler.domain.Slider</value> 
 			</list>
 		</property>
 		<property name="mappingResources">
