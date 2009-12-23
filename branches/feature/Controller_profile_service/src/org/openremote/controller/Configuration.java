@@ -53,6 +53,22 @@ public class Configuration {
    private long macroIRExecutionDelay = 500;
    
    private String webappIp;
+   
+   /**  Discovery multicast address of round robin. */
+   private String roundRobinMulticastAddress;
+   
+   /** Discovery multicast port of round robin. */
+   private int roundRobinMulticastPort;
+   
+   /** Group name of Controller app. */
+   private String controllerGroupName;
+   
+   /** ApplicationName of Controller. */
+   private String controllerApplicationName;
+
+   /** TCP server socket port of Round Robin */
+   public int roundRobinTCPServerSocketPort;
+   
    /**
     * Gets the irsend path.
     * 
@@ -212,6 +228,45 @@ public class Configuration {
    public void setWebappIp(String webappIp) {
       this.webappIp = webappIp;
    }
-   
+
+   public String getRoundRobinMulticastAddress() {
+      return roundRobinMulticastAddress;
+   }
+
+   public void setRoundRobinMulticastAddress(String roundRobinMulticastAddress) {
+      this.roundRobinMulticastAddress = roundRobinMulticastAddress;
+   }
+
+   public int getRoundRobinMulticastPort() {
+      return roundRobinMulticastPort;
+   }
+
+   public void setRoundRobinMulticastPort(int roundRobinMulticastPort) {
+      this.roundRobinMulticastPort = roundRobinMulticastPort;
+   }
+
+   public String getControllerGroupName() {
+      return controllerGroupName;
+   }
+
+   public void setControllerGroupName(String controllerGroupName) {
+      this.controllerGroupName = controllerGroupName;
+   }
+
+   public String getControllerApplicationName() {
+      return controllerApplicationName;
+   }
+
+   public void setControllerApplicationName(String controllerApplicationName) {
+      this.controllerApplicationName = controllerApplicationName;
+   }
+
+   public int getRoundRobinTCPServerSocketPort() {
+      return roundRobinTCPServerSocketPort;
+   }
+
+   public void setRoundRobinTCPServerSocketPort(int roundRobinTCPServerSocketPort) {
+      this.roundRobinTCPServerSocketPort = roundRobinTCPServerSocketPort;
+   }
    
 }
