@@ -305,4 +305,8 @@ public class GenericDAO extends HibernateDaoSupport {
    public void initialize(Object arg0) {
        this.getHibernateTemplate().initialize(arg0);
    }
+   
+   public void flush() {
+      this.getHibernateTemplate().flush();
+   }
 }

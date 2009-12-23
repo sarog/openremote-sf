@@ -36,9 +36,7 @@ import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
-import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
-import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.Radio;
 import com.extjs.gxt.ui.client.widget.form.RadioGroup;
@@ -198,13 +196,6 @@ public class NavigateFieldSet extends FieldSet {
       } else {
          toLogical.setValue(false);
          toGroup.setValue(false);
-      }
-   }
-   private class SimpleComboBox extends ComboBox<ModelData> {
-      public SimpleComboBox() {
-         setStore(new ListStore<ModelData>());
-         setDisplayField(ComboBoxDataModel.getDisplayProperty());
-         setValueField(ComboBoxDataModel.getDataProperty());
       }
    }
 }

@@ -47,7 +47,9 @@ public class Account extends BusinessEntity {
    /** The device macros. */
    private List<DeviceMacro> deviceMacros;
    
+   private List<Sensor> sensors;
    
+   private List<Switch> switches;
 
    /**
     * Instantiates a new account.
@@ -55,6 +57,7 @@ public class Account extends BusinessEntity {
    public Account() {
       devices = new ArrayList<Device>();
       deviceMacros = new ArrayList<DeviceMacro>();
+      sensors = new ArrayList<Sensor>();
    }
 
    /**
@@ -123,6 +126,23 @@ public class Account extends BusinessEntity {
    public void addDevice(Device device) {
       devices.add(device);
    }
-   
+
+   @OneToMany(mappedBy = "account")
+   public List<Sensor> getSensors() {
+      return sensors;
+   }
+
+   public void setSensors(List<Sensor> sensors) {
+      this.sensors = sensors;
+   }
+
+   @OneToMany(mappedBy = "account")
+   public List<Switch> getSwitches() {
+      return switches;
+   }
+
+   public void setSwitches(List<Switch> switches) {
+      this.switches = switches;
+   }
    
 }
