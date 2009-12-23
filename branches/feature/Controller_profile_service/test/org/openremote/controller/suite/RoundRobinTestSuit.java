@@ -17,30 +17,20 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.utils;
+package org.openremote.controller.suite;
 
-import org.openremote.controller.Configuration;
-import org.openremote.controller.RoundRobinConfig;
-import org.openremote.controller.spring.SpringContext;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
+import org.openremote.controller.net.RoundRobinClientTest;
+import org.openremote.controller.net.RoundRobinServerTest;
 
-/**
- * A factory for creating Configuration objects.
- * 
- * @author Dan 2009-6-9
- */
-public class ConfigFactory {
-
-   /**
-    * Gets the config.
-    * 
-    * @return the config
-    */
-   public static Configuration getConfig(){
-      return (Configuration) SpringContext.getInstance().getBean("configuration");
-   }
-   
-   public static RoundRobinConfig getRoundRobinConfig() {
-      return (RoundRobinConfig) SpringContext.getInstance().getBean("roundRobinConfig");
-   }
-   
+@RunWith(Suite.class)
+@SuiteClasses(
+{
+   RoundRobinServerTest.class,
+   RoundRobinClientTest.class
+}
+)
+public class RoundRobinTestSuit {
 }

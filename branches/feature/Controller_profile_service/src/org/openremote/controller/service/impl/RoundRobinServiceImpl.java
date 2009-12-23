@@ -21,6 +21,7 @@ package org.openremote.controller.service.impl;
 
 import java.util.Set;
 
+import org.openremote.controller.RoundRobinConfig;
 import org.openremote.controller.net.RoundRobinClient;
 import org.openremote.controller.service.RoundRobinService;
 
@@ -30,6 +31,8 @@ import org.openremote.controller.service.RoundRobinService;
  * @author Handy.Wang 2009-12-23
  */
 public class RoundRobinServiceImpl implements RoundRobinService {
+   
+  private RoundRobinConfig roundRobinConfig;
    
    private static final String XML_HEADER_ELEMENT = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
    
@@ -50,8 +53,12 @@ public class RoundRobinServiceImpl implements RoundRobinService {
     */
    @Override
    public Set<String> discoverGroupMembersAppURL() {
-      RoundRobinClient roundRobinClient = new RoundRobinClient();
-      return roundRobinClient.getGroupMemberURLsSet();
+      if (roundRobinConfig.getIsRoundRobinOn()) {
+         RoundRobinClient roundRobinClient = new RoundRobinClient();
+         return roundRobinClient.getGroupMemberURLsSet();
+      } else {
+         return roundRobinConfig.getGroupMembersURLsSet();
+      }
    }
 
    /**
@@ -72,6 +79,10 @@ public class RoundRobinServiceImpl implements RoundRobinService {
       xml.append(SERVERS_END_ELEMENT);
       xml.append(OPENREMOTE_END_ELEMENT);
       return xml.toString();
+   }
+
+   public void setRoundRobinConfig(RoundRobinConfig roundRobinConfig) {
+      this.roundRobinConfig = roundRobinConfig;
    }
 
 }

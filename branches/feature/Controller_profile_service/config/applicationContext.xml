@@ -10,8 +10,11 @@
 
     <bean id="propertyConfigurer"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location">
-            <value>classpath:config.properties</value>
+        <property name="locations">
+        	<list>
+            	<value>classpath:config.properties</value>
+            	<value>classpath:roundrobin.properties</value>
+            </list>
         </property>
     </bean>
     
@@ -27,11 +30,17 @@
         <property name="resourcePath" value="${resource.path}" />
         <property name="resourceUpload" value="${resource.upload.enable}" />
         <property name="macroIRExecutionDelay" value="${Macro.IR.Execution.Delay}" />
+    </bean>
+    
+    
+    <bean id="roundRobinConfig" class="org.openremote.controller.RoundRobinConfig">
+    	<property name="isRoundRobinOn" value="${controller.roundrobin.on}" />
         <property name="roundRobinMulticastAddress" value="${controller.roundrobin.multicast.address}" />
         <property name="roundRobinMulticastPort" value="${controller.roundrobin.multicast.port}" />
         <property name="controllerGroupName" value="${controller.groupname}" />
         <property name="controllerApplicationName" value="${controller.applicationname}" />
         <property name="roundRobinTCPServerSocketPort" value="${controller.roundrobin.tcpserver.port}" />
+        <property name="groupMembersURLs" value="${controller.groupmembers.urls}" />
     </bean>
     
     <!-- service for button command from iPhone -->
