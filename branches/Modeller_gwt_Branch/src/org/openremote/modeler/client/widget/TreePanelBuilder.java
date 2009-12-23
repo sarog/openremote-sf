@@ -25,6 +25,7 @@ import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
+import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTabItem;
@@ -38,6 +39,8 @@ import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.domain.component.UISwitch;
@@ -82,6 +85,7 @@ public class TreePanelBuilder {
    private static TreeStore<BeanModel> groupTreeStore = null;
    private static TreeStore<BeanModel> widgetTreeStore = null;
    private static TreeStore<BeanModel> panelTreeStore = null;
+   private static TreeStore<BeanModel> sensorTreeStore = null;
    
    
    /**
@@ -385,5 +389,53 @@ public class TreePanelBuilder {
       });
 
       return panelTree;
+   }
+   
+   public static TreePanel<BeanModel> buildSensorTree() {
+      if (sensorTreeStore == null) {
+         RpcProxy<List<BeanModel>> loadSensorRPCProxy = new RpcProxy<List<BeanModel>>() {
+
+            protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
+               SensorBeanModelProxy.loadSensor((BeanModel) o, new AsyncSuccessCallback<List<BeanModel>>() {
+
+                  public void onSuccess(List<BeanModel> result) {
+                     listAsyncCallback.onSuccess(result);
+                  }
+               });
+            }
+         };
+         BaseTreeLoader<BeanModel> loadSensorTreeLoader = new BaseTreeLoader<BeanModel>(loadSensorRPCProxy) {
+            @Override
+            public boolean hasChildren(BeanModel beanModel) {
+               if (beanModel.getBean() instanceof Sensor) {
+                  return true;
+               }
+               return false;
+            }
+         };
+         sensorTreeStore = new TreeStore<BeanModel>(loadSensorTreeLoader);
+      }
+
+      final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(sensorTreeStore);
+      tree.setStateful(true);
+      tree.setBorders(false);
+      tree.setHeight("100%");
+      tree.setDisplayProperty("displayName");
+      
+      tree.setIconProvider(new ModelIconProvider<BeanModel>() {
+         public AbstractImagePrototype getIcon(BeanModel thisModel) {
+
+            if (thisModel.getBean() instanceof Sensor) {
+               return ICON.macroIcon();
+            } else if (thisModel.getBean() instanceof DeviceCommandRef) {
+               return ICON.deviceCmd();
+            } else if (thisModel.getBean() instanceof State) {
+               return ICON.delayIcon();
+            } else {
+               return ICON.macroIcon();
+            }
+         }
+      });
+      return tree;
    }
 }

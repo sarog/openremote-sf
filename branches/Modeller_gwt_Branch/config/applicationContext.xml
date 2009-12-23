@@ -50,6 +50,7 @@
                 <value>org.openremote.modeler.domain.State</value> 
                 <value>org.openremote.modeler.domain.Range</value> 
                 <value>org.openremote.modeler.domain.Sensor</value> 
+                <value>org.openremote.modeler.domain.SensorRef</value> 
                 <value>org.openremote.modeler.domain.Switch</value> 
                 <value>org.openremote.modeler.domain.Slider</value> 
 			</list>
