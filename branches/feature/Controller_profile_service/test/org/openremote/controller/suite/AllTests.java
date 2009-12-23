@@ -34,7 +34,8 @@ import org.openremote.controller.utils.MacrosIrDelayUtilTest;
    AllRESTfulAPIMockTests.class,
    MacrosIrDelayUtilTest.class,
    AllCommandBuildersTest.class,
-   MulticastAutoDiscoveryTest.class
+   MulticastAutoDiscoveryTest.class,
+   RoundRobinTestSuit.class
 }
 )
 public class AllTests {
