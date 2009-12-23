@@ -24,6 +24,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import flexjson.JSON;
 
@@ -38,7 +39,7 @@ public class Switch extends BusinessEntity {
    private String name;
    private DeviceCommandRef onDeviceCommandRef;
    private DeviceCommandRef offDeviceCommandRef;
-   private Sensor sensor;
+   private SensorRef sensorRef;
    private Account account;
 
    public String getName() {
@@ -57,11 +58,6 @@ public class Switch extends BusinessEntity {
       return offDeviceCommandRef;
    }
    
-   @ManyToOne
-   public Sensor getSensor() {
-      return sensor;
-   }
-
    public void setName(String name) {
       this.name = name;
    }
@@ -74,8 +70,13 @@ public class Switch extends BusinessEntity {
       this.offDeviceCommandRef = offDeviceCommandRef;
    }
 
-   public void setSensor(Sensor sensor) {
-      this.sensor = sensor;
+   @ManyToOne
+   public SensorRef getSensorRef() {
+      return sensorRef;
+   }
+
+   public void setSensorRef(SensorRef sensorRef) {
+      this.sensorRef = sensorRef;
    }
 
    @ManyToOne
@@ -86,6 +87,11 @@ public class Switch extends BusinessEntity {
 
    public void setAccount(Account account) {
       this.account = account;
+   }
+   
+   @Transient
+   public String getDisplayName() {
+      return getName();
    }
 
 }

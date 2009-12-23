@@ -16,12 +16,14 @@
  */
 package org.openremote.modeler.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import flexjson.JSON;
 
@@ -46,7 +48,7 @@ public class Sensor extends BusinessEntity {
       return name;
    }
 
-   @OneToOne
+   @OneToOne(cascade = CascadeType.ALL)
    @JoinColumn(name = "status_cmd_oid")
    public DeviceCommandRef getDeviceCommandRef() {
       return deviceCommandRef;
@@ -78,4 +80,8 @@ public class Sensor extends BusinessEntity {
       this.type = type;
    }
 
+   @Transient
+   public String getDisplayName() {
+      return getName();
+   }
 }
