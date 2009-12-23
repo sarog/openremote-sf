@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -48,7 +49,7 @@ public class Slider extends BusinessEntity {
       this.name = name;
    }
 
-   @OneToOne
+   @OneToOne(cascade = CascadeType.ALL)
    @JoinColumn(name = "set_value_cmd_oid")
    public DeviceCommandRef getSetValueCmd() {
       return setValueCmd;
@@ -68,7 +69,8 @@ public class Slider extends BusinessEntity {
       this.account = account;
    }
 
-   @ManyToOne
+   @OneToOne(cascade = CascadeType.ALL)
+   @JoinColumn(name = "sensor_ref_oid")
    public SensorRef getSensorRef() {
       return sensorRef;
    }
