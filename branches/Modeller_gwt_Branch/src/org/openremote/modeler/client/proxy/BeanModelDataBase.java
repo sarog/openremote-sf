@@ -29,6 +29,7 @@ import org.openremote.modeler.client.utils.DeviceBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.GroupTable;
 import org.openremote.modeler.client.utils.ScreenTable;
+import org.openremote.modeler.client.utils.SensorBeanModelTable;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -77,6 +78,8 @@ public class BeanModelDataBase {
    public static final BeanModelTable screenTable = new ScreenTable();
    
    public static final BeanModelTable panelTable = new BeanModelTable();
+   
+   public static final BeanModelTable sensorTable = new SensorBeanModelTable();
    
    /**
     * Gets the original device macro item bean model id,if not find return 0.

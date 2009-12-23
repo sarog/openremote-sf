@@ -53,6 +53,7 @@
                 <prop key="/modeler/utils.smvc">utilsController</prop>
                 <prop key="/account.htm">accountController</prop>
                 <prop key="/modeler/fileUploadController.htm">fileUploadController</prop>
+                <prop key="/modeler/sensor.smvc">sensorController</prop>
             </props>
         </property>
     </bean>
@@ -77,4 +78,5 @@
     <bean id="utilsController" class="org.openremote.modeler.server.UtilsController"></bean>
     <bean id="accountController" class="org.openremote.modeler.action.AccountController"></bean>
     <bean id="fileUploadController" class="org.openremote.modeler.action.FileUploadController"></bean>
+    <bean id="sensorController" class="org.openremote.modeler.server.SensorController"></bean>
 </beans>

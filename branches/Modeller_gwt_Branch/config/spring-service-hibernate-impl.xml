@@ -75,5 +75,6 @@
 	<bean id="deviceMacroService" class="org.openremote.modeler.service.impl.DeviceMacroServiceImpl" parent="abstractService"></bean>
 	<bean id="deviceMacroItemService" class="org.openremote.modeler.service.impl.DeviceMacroItemServiceImpl" parent="abstractService"></bean>
 	<bean id="resourceService" class="org.openremote.modeler.service.impl.ResourceServiceImpl" parent="abstractService"></bean>
+	<bean id="sensorService" class="org.openremote.modeler.service.impl.SensorServiceImpl" parent="abstractService"></bean>
 </beans>
 

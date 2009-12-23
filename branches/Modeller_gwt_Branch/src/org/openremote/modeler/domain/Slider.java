@@ -37,7 +37,7 @@ public class Slider extends BusinessEntity {
 
    private String name;
    private DeviceCommandRef setValueCmd;
-   private Sensor sensor;
+   private SensorRef sensorRef;
    private Account account;
    
    public String getName() {
@@ -54,17 +54,8 @@ public class Slider extends BusinessEntity {
       return setValueCmd;
    }
 
-   @ManyToOne
-   public Sensor getSensor() {
-      return sensor;
-   }
-
    public void setSetValueCmd(DeviceCommandRef setValueCmd) {
       this.setValueCmd = setValueCmd;
-   }
-
-   public void setSensor(Sensor sensor) {
-      this.sensor = sensor;
    }
 
    @ManyToOne
@@ -77,4 +68,12 @@ public class Slider extends BusinessEntity {
       this.account = account;
    }
 
+   @ManyToOne
+   public SensorRef getSensorRef() {
+      return sensorRef;
+   }
+
+   public void setSensorRef(SensorRef sensorRef) {
+      this.sensorRef = sensorRef;
+   }
 }

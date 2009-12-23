@@ -50,6 +50,8 @@ public class AsyncServiceFactory {
    /** The utils rpc service async. */
    private static UtilsRPCServiceAsync utilsRPCServiceAsync = null;
 
+   private static SensorRPCServiceAsync sensorRPCServiceAsync = null;
+
    
    /**
     * Gets the device macro service async.
@@ -109,5 +111,12 @@ public class AsyncServiceFactory {
          utilsRPCServiceAsync = GWT.create(UtilsRPCService.class);
       }
       return utilsRPCServiceAsync;
+   }
+   
+   public static SensorRPCServiceAsync getSensorRPCServiceAsync() {
+      if (sensorRPCServiceAsync == null) {
+         sensorRPCServiceAsync = GWT.create(SensorRPCService.class);
+      }
+      return sensorRPCServiceAsync;
    }
 }
