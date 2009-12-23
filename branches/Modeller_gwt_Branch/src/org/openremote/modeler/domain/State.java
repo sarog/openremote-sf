@@ -33,7 +33,7 @@ import javax.persistence.Transient;
 @Entity
 @Table(name = "state")
 public class State extends BusinessEntity {
-   private String name;
+   private String name = "state1";
    private Sensor sensor;
    
    public String getName() {
