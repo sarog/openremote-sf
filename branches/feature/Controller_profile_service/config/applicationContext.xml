@@ -163,5 +163,7 @@
   <bean id = "changedStatusTable" class="org.openremote.controller.statuscache.ChangedStatusTable" />
 
   <bean id = "statusCache" class="org.openremote.controller.statuscache.StatusCache" />
+  
+  <bean id = "servers" class="java.util.concurrent.ConcurrentHashMap" />
 
 </beans>

@@ -39,11 +39,11 @@ public class RoundRobinServerTest {
 
    @Before
    public void setUp() throws Exception {
-      new Thread(new RoundRobinServer("A")).start();
-      new Thread(new RoundRobinServer("A")).start();
-      new Thread(new RoundRobinServer("A")).start();
-      new Thread(new RoundRobinServer("A")).start();
-      new Thread(new RoundRobinServer("B")).start();
+      new Thread(new RoundRobinUDPServer("A")).start();
+      new Thread(new RoundRobinUDPServer("A")).start();
+      new Thread(new RoundRobinUDPServer("A")).start();
+      new Thread(new RoundRobinUDPServer("A")).start();
+      new Thread(new RoundRobinUDPServer("B")).start();
    }
    
    @After
