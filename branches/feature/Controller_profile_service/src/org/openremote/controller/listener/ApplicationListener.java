@@ -25,6 +25,7 @@ import javax.servlet.ServletContextListener;
 import org.openremote.controller.net.IPAutoDiscoveryServer;
 import org.openremote.controller.net.RoundRobinTCPServer;
 import org.openremote.controller.net.RoundRobinUDPServer;
+import org.springframework.context.ApplicationEvent;
 
 
 /**

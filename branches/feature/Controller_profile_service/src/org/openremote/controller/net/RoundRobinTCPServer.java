@@ -37,18 +37,16 @@ public class RoundRobinTCPServer implements Runnable {
          logger.error(e.getStackTrace(), e);
          throw new TCPServerStartFailException("Start TCP Server fail.");
       }
+      
       Socket socket;
       logger.info("TCP Server : started successfully for receiving groupmember urls...");
       logger.info("TCP Server : Waiting for groupmember response...");
+      
       try {
          while ((socket = tcpServerSocket.accept()) != null) {
             logger.info("TCP Server : a new groupmember socket established...");
             new Thread(new AppendGroupMemberThread(socket)).start();
-            try {
-               Thread.sleep(100);
-            } catch (InterruptedException e) {
-               e.printStackTrace();
-            }
+            nap(100);
          }
       } catch (IOException e) {
          logger.info("TCP Server socket closed.");
@@ -78,7 +76,9 @@ public class RoundRobinTCPServer implements Runnable {
             RoundRobinData roundRobinData = splitReceivedDataFromRoundRobinUDPServer(br.readLine());
             String groupMemberURL = roundRobinData.getContent();
             logger.info("TCP Server deal thread : received a groundmember url : " + groupMemberURL);
-            ((ConcurrentHashMap<String, String>)(SpringContext.getInstance().getBean("servers"))).put(roundRobinData.getContent(), roundRobinData.getMsgKey());
+            
+            ConcurrentHashMap<String, String> chm = (ConcurrentHashMap<String, String>)(SpringContext.getInstance().getBean("servers"));
+            chm.put(roundRobinData.getContent(), roundRobinData.getMsgKey());
             innerSocket.close();
          } catch (IOException e) {
             logger.error("Create bufferedReader fail.", e);
@@ -98,4 +98,11 @@ public class RoundRobinTCPServer implements Runnable {
       }
    }
    
+   private void nap(long time) {
+      try {
+         Thread.sleep(time);
+      } catch (InterruptedException e) {
+         e.printStackTrace();
+      }
+   }
 }
