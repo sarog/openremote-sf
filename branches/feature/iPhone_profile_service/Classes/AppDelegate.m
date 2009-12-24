@@ -40,9 +40,6 @@
 
 //Entry point method
 - (void)applicationDidFinishLaunching:(UIApplication *)application {    
-	// Default window for the app
-	window = [[GestureWindow alloc] initWithDelegate:self];
-	[window makeKeyAndVisible];
 	
 	// Load logined iphone user last time.
 	[[DataBaseService sharedDataBaseService] initLastLoginUser];
@@ -50,6 +47,11 @@
 	defaultViewController = [[DefaultViewController alloc] initWithDelegate:self];
 	
 	defaultView = defaultViewController.view;
+	
+	// Default window for the app
+	window = [[GestureWindow alloc] initWithDelegate:defaultViewController];
+	[window makeKeyAndVisible];
+	
 	[window addSubview:defaultView];
 	
 	//Init the loading view
@@ -81,10 +83,6 @@
 
 }
 
-#pragma mark delegate method of GestureWindow
-- (void)performGesture:(Gesture *)gesture {
-	[defaultViewController performGesture:gesture];
-}
 
 #pragma mark delegate method of updateController
 - (void)didUpadted {

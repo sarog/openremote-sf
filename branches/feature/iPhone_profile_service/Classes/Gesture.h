@@ -22,6 +22,7 @@
 
 #import <Foundation/Foundation.h>
 #import "Control.h"
+#import "Navigate.h"
 
 typedef enum {
 	GestureSwipeTypeTopToBottom  = 0,
@@ -34,11 +35,13 @@ typedef enum {
 	
 	GestureSwipeType swipeType;
 	BOOL hasControlCommand;
+	Navigate *navigate;
 
 }
 
 @property (nonatomic, readonly)GestureSwipeType swipeType;
 @property (nonatomic, readonly)BOOL hasControlCommand;
+@property (nonatomic, readonly)Navigate *navigate;
 
 - (id)initWithGestureSwipeType:(GestureSwipeType)type;
 

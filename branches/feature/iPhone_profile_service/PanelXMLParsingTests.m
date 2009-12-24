@@ -1159,7 +1159,26 @@
 			for (Gesture *gesture in screen.gestures) {
 				STAssertEquals(gesture.swipeType, gesture_index % 4, @"expected %d, but %d",gesture_index % 4,gesture.swipeType);
 				STAssertEquals(gesture.hasControlCommand, YES, @"expected yes, but %d",gesture.hasControlCommand);
+				
+				switch (gesture_index % 4) {
+					case 0:
+						STAssertEquals(gesture.navigate.toScreen, 19, @"expected 19, but %d",gesture.navigate.toScreen);
+						break;
+					case 1:
+						STAssertEquals(gesture.navigate.toGroup, 19, @"expected 19, but %d",gesture.navigate.toGroup);
+						break;
+					case 2:
+						STAssertEquals(gesture.navigate.isSetting, YES, @"expected YES, but %d",gesture.navigate.isSetting);
+						break;
+					case 3:
+						STAssertTrue(gesture.navigate == nil, @"expected nil, but %d",gesture.navigate);
+						break;
+					default:
+						break;
+				}
+				
 				gesture_index++;
+				
 			}
 			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
 			for (LayoutContainer *layout in screen.layouts) {

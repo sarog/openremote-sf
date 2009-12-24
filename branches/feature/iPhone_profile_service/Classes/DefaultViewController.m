@@ -356,6 +356,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 
 #pragma mark delegate method of GestureWindow
 - (void)performGesture:(Gesture *)gesture {
+	NSLog(@"detected gesture : %d", gesture.swipeType);
 	[currentGroupController performGesture:gesture];
 }
 

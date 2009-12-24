@@ -25,7 +25,7 @@
 
 @implementation Gesture
 
-@synthesize swipeType, hasControlCommand;
+@synthesize swipeType, hasControlCommand, navigate;
 
 // This method is abstract method of indirectclass XMLEntity.
 // So, this method must be overridden in subclass.
@@ -74,7 +74,9 @@
  * Parse the gesture's sub elements .
  */
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	// Because there is no sub elements in monitor, so do nothing.
+	if ([elementName isEqualToString:@"navigate"]) {
+		navigate = [[Navigate alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+	}
 }
 
 
