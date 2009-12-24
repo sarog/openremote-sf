@@ -73,6 +73,31 @@ public class RoundRobinClientTest {
       simulateUDPServer("B");
       nap(2000);
    }
+   
+   @Test
+   public void testConcurrentRoundRobinClient() {
+      new Thread(){
+         @Override
+         public void run() {
+            RoundRobinClient rrc = new RoundRobinClient();
+            for(String s : rrc.getGroupMemberURLsSet()) {
+               logger.info("####################" +s);
+            }
+         }
+      }.start();
+      nap(100);
+      new Thread(){
+         @Override
+         public void run() {
+            RoundRobinClient rrc = new RoundRobinClient();
+            for(String s : rrc.getGroupMemberURLsSet()) {
+               logger.info("####################" +s);
+            }
+         }
+      }.start();
+      
+      nap(10000);
+   }
 
    private void nap(long time) {
       try {

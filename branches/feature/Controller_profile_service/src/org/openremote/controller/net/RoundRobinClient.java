@@ -88,7 +88,7 @@ public class RoundRobinClient {
    }
    
    public Set<String> getGroupMemberURLsSet() {
-      this.groupMemberURLs.clear();
+      logger.info("---------------msgKey is " + msgKey);
       discoverGroupMembers();
       Set<String> urls = new HashSet<String>();
       urls.addAll(groupMemberURLs);
@@ -102,7 +102,6 @@ public class RoundRobinClient {
    private void discoverGroupMembers() throws TCPServerStartFailException {
       sendRoundRobinUDPMultiCastRequest();
       waitForGroupMemberURLS();
-      
       ConcurrentHashMap<String, String> chm = (ConcurrentHashMap<String, String>) SpringContext.getInstance().getBean("servers");
       if (chm.contains(msgKey)) {
          groupMemberURLs.clear();
@@ -111,6 +110,7 @@ public class RoundRobinClient {
             if (chm.get(serverURL).equals(msgKey)) {
                groupMemberURLs.add(serverURL);
             }
+            logger.info("url is : " + serverURL + ", msgkey is : " +msgKey);
          }
       }
    }
