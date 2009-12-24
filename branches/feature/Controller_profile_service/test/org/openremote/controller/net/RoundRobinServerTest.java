@@ -40,10 +40,11 @@ public class RoundRobinServerTest {
    @Before
    public void setUp() throws Exception {
       new Thread(new RoundRobinUDPServer("A")).start();
-      new Thread(new RoundRobinUDPServer("A")).start();
-      new Thread(new RoundRobinUDPServer("A")).start();
-      new Thread(new RoundRobinUDPServer("A")).start();
+      nap(10);
       new Thread(new RoundRobinUDPServer("B")).start();
+      nap(10);
+      new Thread(new RoundRobinTCPServer()).start();
+      nap(10);
    }
    
    @After
@@ -55,11 +56,19 @@ public class RoundRobinServerTest {
     */
    @Test
    public void testIsRoundRobinSeverALive() {
-      RoundRobinClient rrc = new RoundRobinClient("A");
+      RoundRobinClient rrc = new RoundRobinClient("B");
       int acturalGroupMembersSize = rrc.getGroupMemberURLsList().size();
-      Assert.assertTrue("expected groupmembers size = 4 but size = " + acturalGroupMembersSize , acturalGroupMembersSize == 4);
+      Assert.assertTrue("expected groupmembers size = 1 but size = " + acturalGroupMembersSize , acturalGroupMembersSize == 1);
       for (String groupName : rrc.getGroupMemberURLsList()) {
          logger.info(groupName);
+      }
+   }
+   
+   private void nap(long time) {
+      try {
+         Thread.sleep(time);
+      } catch (InterruptedException e) {
+         e.printStackTrace();
       }
    }
 }

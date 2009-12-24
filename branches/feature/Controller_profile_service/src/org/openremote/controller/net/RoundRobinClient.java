@@ -102,13 +102,13 @@ public class RoundRobinClient {
       sendRoundRobinUDPMultiCastRequest();
       waitForGroupMemberURLS();
       
-      ConcurrentHashMap<String, Set> chm = (ConcurrentHashMap<String, Set>) SpringContext.getInstance().getBean("servers");
+      ConcurrentHashMap<String, List> chm = (ConcurrentHashMap<String, List>) SpringContext.getInstance().getBean("servers");
       if (chm.containsKey(msgKey)) {
          groupMemberURLs.clear();
          Set<String> msgKeys = chm.keySet();
          for (String tempMsgKey : msgKeys) {
             if (tempMsgKey.equals(msgKey)) {
-               groupMemberURLs.addAll((chm.get(tempMsgKey)));
+               groupMemberURLs = chm.get(tempMsgKey);
             }
          }
       }
