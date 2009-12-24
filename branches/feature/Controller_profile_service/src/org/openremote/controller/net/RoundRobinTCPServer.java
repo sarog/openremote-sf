@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
@@ -77,8 +79,13 @@ public class RoundRobinTCPServer implements Runnable {
             String groupMemberURL = roundRobinData.getContent();
             logger.info("TCP Server deal thread : received a groundmember url : " + groupMemberURL);
             
-            ConcurrentHashMap<String, String> chm = (ConcurrentHashMap<String, String>)(SpringContext.getInstance().getBean("servers"));
-            chm.put(roundRobinData.getContent(), roundRobinData.getMsgKey());
+            ConcurrentHashMap<String, Set> chm = (ConcurrentHashMap<String, Set>)(SpringContext.getInstance().getBean("servers"));
+            Set<String> urlSet = chm.get(roundRobinData.getMsgKey());
+            if (urlSet == null) {
+               urlSet = new HashSet<String>();
+            }            
+            urlSet.add(roundRobinData.getContent());
+            chm.put(roundRobinData.getMsgKey(), urlSet);
             innerSocket.close();
          } catch (IOException e) {
             logger.error("Create bufferedReader fail.", e);
