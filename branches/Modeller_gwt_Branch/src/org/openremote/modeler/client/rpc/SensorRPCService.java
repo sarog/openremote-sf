@@ -36,4 +36,6 @@ public interface SensorRPCService extends RemoteService {
    void deleteSensor(long id);
    
    List<Sensor> loadAll();
+   
+   Sensor loadById(long id);
 }

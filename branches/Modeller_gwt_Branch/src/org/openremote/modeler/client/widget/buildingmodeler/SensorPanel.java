@@ -1,3 +1,22 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.client.widget.buildingmodeler;
 
 import java.util.ArrayList;
@@ -13,14 +32,12 @@ import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
+import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
-import org.openremote.modeler.domain.DeviceMacro;
-import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Sensor;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -70,15 +87,6 @@ public class SensorPanel extends ContentPanel {
       newSensorBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-//            final MacroWindow macroWindow = new MacroWindow();
-//
-//            macroWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-//               @Override
-//               public void afterSubmit(SubmitEvent be) {
-//                  afterCreateDeviceMacro(be.<DeviceMacro> getData());
-//                  macroWindow.hide();
-//               }
-//            });
             final SensorWindow sensorWindow = new SensorWindow();
             sensorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                public void afterSubmit(SubmitEvent be) {
@@ -102,7 +110,7 @@ public class SensorPanel extends ContentPanel {
       editSensorBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            onEditDeviceSensorBtnClicked();
+            onEditSensorBtnClicked();
 
          }
       });
@@ -126,7 +134,47 @@ public class SensorPanel extends ContentPanel {
    }
 
    /**
-    * Creates the macro tree.
+    * On edit sensor btn clicked.
+    */
+   private void onEditSensorBtnClicked() {
+      if (sensorTree.getSelectionModel().getSelectedItem() != null) {
+         final BeanModel oldModel = sensorTree.getSelectionModel().getSelectedItem();
+         final SensorWindow sensorWindow = new SensorWindow(sensorTree.getSelectionModel().getSelectedItem());
+         sensorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+            @Override
+            public void afterSubmit(SubmitEvent be) {
+               Sensor old = oldModel.getBean();
+               old.setName(be.<Sensor> getData().getName());
+               sensorTree.getStore().update(oldModel);
+               sensorTree.setExpanded(oldModel, true);
+               sensorWindow.hide();
+            }
+         });
+      }
+   }
+
+   /**
+    * On delete sensor btn clicked.
+    */
+   private void onDeleteSensorBtnClicked() {
+      if (sensorTree.getSelectionModel().getSelectedItems().size() > 0) {
+         for (final BeanModel data : sensorTree.getSelectionModel().getSelectedItems()) {
+            if (data.getBean() instanceof Sensor) {
+               SensorBeanModelProxy.deleteSensor(data, new AsyncSuccessCallback<Void>() {
+                  @Override
+                  public void onSuccess(Void result) {
+                     sensorTree.getStore().remove(data);
+                     Info.display("Info", "Delete success.");
+                  }
+               });
+            }
+
+         }
+      }
+   }
+   
+   /**
+    * Creates the sensor tree.
     */
    private void createSensorTree() {
       sensorTreeContainer = new LayoutContainer() {
@@ -137,7 +185,7 @@ public class SensorPanel extends ContentPanel {
                sensorTree = TreePanelBuilder.buildSensorTree();
                selectionService.addListener(new SourceSelectionChangeListenerExt(sensorTree.getSelectionModel()));
                selectionService.register(sensorTree.getSelectionModel());
-//               addTreeStoreEventListener();
+               addTreeStoreEventListener();
                sensorTreeContainer.add(sensorTree);
             }
             add(sensorTree);
@@ -188,10 +236,7 @@ public class SensorPanel extends ContentPanel {
          return;
       }
       for (BeanModel beanModel : models) {
-         if (beanModel.getBean() instanceof DeviceMacroRef) {
-            BeanModelDataBase.deviceMacroTable.addChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-         } else if (beanModel.getBean() instanceof DeviceCommandRef) {
+         if (beanModel.getBean() instanceof DeviceCommandRef) {
             BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase
                   .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
             BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel),
@@ -211,10 +256,6 @@ public class SensorPanel extends ContentPanel {
          return;
       }
       for (BeanModel beanModel : models) {
-         if (beanModel.getBean() instanceof DeviceMacroRef) {
-            BeanModelDataBase.deviceMacroTable.removeChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-         }
          if (beanModel.getBean() instanceof DeviceCommandRef) {
             BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase
                   .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
@@ -223,76 +264,7 @@ public class SensorPanel extends ContentPanel {
       }
    }
 
-   /**
-    * After create device macro.
-    * 
-    * @param deviceMacro
-    *           the device macro
-    */
-   private void afterCreateDeviceMacro(DeviceMacro deviceMacro) {
-      BeanModel deviceBeanModel = deviceMacro.getBeanModel();
-      sensorTree.getStore().add(deviceBeanModel, false);
-      sensorTree.setExpanded(deviceBeanModel, true);
-   }
-
-   /**
-    * On edit device macro btn clicked.
-    */
-   private void onEditDeviceSensorBtnClicked() {
-      if (sensorTree.getSelectionModel().getSelectedItem() != null) {
-         final BeanModel oldModel = sensorTree.getSelectionModel().getSelectedItem();
-         final MacroWindow macroWindow = new MacroWindow(sensorTree.getSelectionModel().getSelectedItem());
-         macroWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-            @Override
-            public void afterSubmit(SubmitEvent be) {
-               afterUpdateDeviceMacroSubmit(oldModel, be.<DeviceMacro> getData());
-               macroWindow.hide();
-            }
-         });
-      }
-   }
-
-   /**
-    * On delete device macro btn clicked.
-    */
-   private void onDeleteSensorBtnClicked() {
-      if (sensorTree.getSelectionModel().getSelectedItems().size() > 0) {
-         for (final BeanModel data : sensorTree.getSelectionModel().getSelectedItems()) {
-            if (data.getBean() instanceof DeviceMacro) {
-               DeviceMacroBeanModelProxy.deleteDeviceMacro(data, new AsyncSuccessCallback<Void>() {
-                  @Override
-                  public void onSuccess(Void result) {
-                     sensorTree.getStore().remove(data);
-                     Info.display("Info", "Delete success.");
-                  }
-               });
-            }
-
-         }
-      }
-   }
-
-   /**
-    * After update device macro submit.
-    * 
-    * @param dataModel
-    *           the data model
-    * @param deviceMacro
-    *           the device macro
-    */
-   private void afterUpdateDeviceMacroSubmit(final BeanModel dataModel, DeviceMacro deviceMacro) {
-      DeviceMacro old = dataModel.getBean();
-      old.setName(deviceMacro.getName());
-      old.setDeviceMacroItems(deviceMacro.getDeviceMacroItems());
-      List<BeanModel> macroItemBeanModels = BeanModelDataBase.getBeanModelsByBeans(deviceMacro.getDeviceMacroItems(),
-            BeanModelDataBase.deviceMacroItemTable);
-      sensorTree.getStore().removeAll(dataModel);
-      for (BeanModel beanModel : macroItemBeanModels) {
-         sensorTree.getStore().add(dataModel, beanModel, false);
-      }
-      sensorTree.getStore().update(dataModel);
-      sensorTree.setExpanded(dataModel, true);
-   }
+   
 
    /**
     * Gets the drag source bean model change listener.
@@ -315,11 +287,7 @@ public class SensorPanel extends ContentPanel {
                }
                if (changeEvent.getType() == ChangeEventSupport.Update) {
                   BeanModel source = (BeanModel) changeEvent.getItem();
-                  if (source.getBean() instanceof DeviceMacro) {
-                     DeviceMacro deviceMacro = (DeviceMacro) source.getBean();
-                     DeviceMacroRef deviceMacroRef = (DeviceMacroRef) target.getBean();
-                     deviceMacroRef.setTargetDeviceMacro(deviceMacro);
-                  } else if (source.getBean() instanceof DeviceCommand) {
+                  if (source.getBean() instanceof DeviceCommand) {
                      DeviceCommand deviceCommand = (DeviceCommand) source.getBean();
                      DeviceCommandRef deviceCommandRef = (DeviceCommandRef) target.getBean();
                      deviceCommandRef.setDeviceCommand(deviceCommand);

@@ -15,4 +15,6 @@ public interface SensorRPCServiceAsync {
    void deleteSensor(long id, AsyncCallback<Void> async);
    
    void loadAll(AsyncCallback<List<Sensor>> async);
+   
+   void loadById(long id, AsyncCallback<Sensor> async);
 }

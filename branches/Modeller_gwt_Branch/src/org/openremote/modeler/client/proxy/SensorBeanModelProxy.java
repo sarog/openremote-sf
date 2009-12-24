@@ -66,4 +66,24 @@ public class SensorBeanModelProxy {
          }
       });
    }
+   
+   public static void updateSensor(Sensor sensor, final AsyncSuccessCallback<Sensor> callback) {
+      AsyncServiceFactory.getSensorRPCServiceAsync().updateSensor(sensor, new AsyncSuccessCallback<Sensor>() {
+         public void onSuccess(Sensor result) {
+            BeanModelDataBase.sensorTable.update(result.getBeanModel());
+            callback.onSuccess(result);
+         }
+      });
+   }
+   
+   public static void deleteSensor(final BeanModel beanModel, final AsyncSuccessCallback<Void> callback) {
+      Sensor sensor = beanModel.getBean();
+      AsyncServiceFactory.getSensorRPCServiceAsync().deleteSensor(sensor.getOid(), new AsyncSuccessCallback<Void>() {
+         public void onSuccess(Void result) {
+            BeanModelDataBase.sensorTable.delete(beanModel);
+            callback.onSuccess(result);
+         }
+         
+      });
+   }
 }
