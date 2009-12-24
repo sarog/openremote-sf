@@ -33,6 +33,8 @@
 @interface ScreenViewController (Private)
 
 - (void)sendCommandRequest:(int)controlId;
+- (void)doNavigate:(Navigate *)navi;
+
 @end
 
 
@@ -54,9 +56,14 @@
 
 - (void)performGesture:(Gesture *)gesture {
 	Gesture * g = [screen getGestureIdByGestureSwipeType:gesture.swipeType];
-	if (g && g.hasControlCommand) {
-		[self sendCommandRequest:g.controlId];
+	if (g) {
+		if (g.hasControlCommand) {
+			[self sendCommandRequest:g.controlId];
+		} else if (g.navigate) {
+			[self doNavigate:g.navigate];
+		}
 	}
+
 }
 
 // Implement loadView to create a view hierarchy programmatically.
@@ -131,6 +138,9 @@
 }
 
 
+- (void)doNavigate:(Navigate *)navi {
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:navi];
+}
 
 - (void)dealoc {
 	[polling release];

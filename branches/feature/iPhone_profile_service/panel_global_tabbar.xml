@@ -2,15 +2,15 @@
 <openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/controller.xsd">
 	<tabbar> <!-- define the global tab bar in the panel -->
 		<item name="previous">
-			<navigate toPreviousScreen="true" />
+			<navigate to="PreviousScreen" />
 			<image src="previous.png" />
 		</item>
 		<item name="next">
-			<navigate toNextScreen="true" />
+			<navigate to="NextScreen" />
 			<image src="next.png" />
 		</item>
 		<item name="setting">
-			<navigate toSetting="true" />
+			<navigate to="Setting" />
 			<image src="setting.png" />
 		</item>                
 	</tabbar>

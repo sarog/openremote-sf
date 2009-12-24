@@ -64,9 +64,11 @@
 				//evaluate gesture
 				if (previousTouchLocation.x < location.x) {
 					//left to right -->
+					NSLog(@"gesture: left to right");
 					[theDelegate performSelector:@selector(performGesture:) withObject:[[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeLeftToRight]];
 				} else if (previousTouchLocation.x > location.x) {
 					//right to left <--
+					NSLog(@"gesture: right to left");
 					[theDelegate performSelector:@selector(performGesture:) withObject:[[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeRightToLeft]];
 				}
 			} 
@@ -76,10 +78,12 @@
 				if (location.y > previousTouchLocation.y) {
 					//           |
 					//up to down V
+					NSLog(@"gesture: up to down");
 					[theDelegate performSelector:@selector(performGesture:) withObject:[[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeTopToBottom]];
 				} else if (previousTouchLocation.y > location.y) {
 					//donw to up ^
 					//           |
+					NSLog(@"gesture: donw to up");
 					[theDelegate performSelector:@selector(performGesture:) withObject:[[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeBottomToTop]];
 				}
 			}
