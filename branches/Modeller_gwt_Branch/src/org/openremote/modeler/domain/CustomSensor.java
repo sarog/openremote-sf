@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
@@ -30,6 +32,8 @@ import javax.persistence.OrderBy;
  * The Class CustomSensor.
  */
 @SuppressWarnings("serial")
+@Entity
+@DiscriminatorValue("CUSTOM_SENSOR")
 public class CustomSensor extends Sensor {
 
    private List<State> states = new ArrayList<State>();
@@ -45,5 +49,9 @@ public class CustomSensor extends Sensor {
 
    public void setStates(List<State> states) {
       this.states = states;
+   }
+   
+   public void addState(State state) {
+      states.add(state);
    }
 }

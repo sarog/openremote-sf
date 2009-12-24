@@ -19,25 +19,42 @@
 */
 package org.openremote.modeler.domain;
 
-import javax.persistence.CascadeType;
-import javax.persistence.OneToOne;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
 
 @SuppressWarnings("serial")
+@Entity
+@DiscriminatorValue("RANGE_SENSOR")
+@SecondaryTable(name="range_sensor", pkJoinColumns= @PrimaryKeyJoinColumn(name="oid"))
 public class RangeSensor extends Sensor {
 
-   private Range range;
+   private int min;
+   private int max;
 
    public RangeSensor() {
       super(SensorType.RANGE);
    }
    
-   @OneToOne(mappedBy = "sensor", cascade = CascadeType.ALL)
-   public Range getRange() {
-      return range;
+   @Column(table = "range_sensor", name = "min_value")
+   public int getMin() {
+      return min;
+   }
+   
+   @Column(table = "range_sensor", name = "max_value")
+   public int getMax() {
+      return max;
    }
 
-   public void setRange(Range range) {
-      this.range = range;
+   public void setMin(int min) {
+      this.min = min;
    }
+
+   public void setMax(int max) {
+      this.max = max;
+   }
+   
    
 }

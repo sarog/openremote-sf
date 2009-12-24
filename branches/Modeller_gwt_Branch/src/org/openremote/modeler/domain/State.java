@@ -34,7 +34,7 @@ import javax.persistence.Transient;
 @Table(name = "state")
 public class State extends BusinessEntity {
    private String name = "state1";
-   private Sensor sensor;
+   private CustomSensor sensor;
    
    public String getName() {
       return name;
@@ -46,11 +46,11 @@ public class State extends BusinessEntity {
 
    @ManyToOne(fetch = FetchType.LAZY)
    @JoinColumn(nullable = false)
-   public Sensor getSensor() {
+   public CustomSensor getSensor() {
       return sensor;
    }
 
-   public void setSensor(Sensor sensor) {
+   public void setSensor(CustomSensor sensor) {
       this.sensor = sensor;
    }
    

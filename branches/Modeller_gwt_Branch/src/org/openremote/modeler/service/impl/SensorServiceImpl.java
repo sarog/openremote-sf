@@ -33,8 +33,8 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
 
    public Sensor updateSensor(Sensor sensor) {
       Sensor old = genericDAO.loadById(Sensor.class, sensor.getOid());
-      genericDAO.delete(old.getDeviceCommandRef());
-      old.setDeviceCommandRef(sensor.getDeviceCommandRef());
+//      genericDAO.delete(old.getDeviceCommandRef());
+//      old.setDeviceCommandRef(sensor.getDeviceCommandRef());`
       old.setName(sensor.getName());
       return (Sensor)genericDAO.merge(old);
    }
