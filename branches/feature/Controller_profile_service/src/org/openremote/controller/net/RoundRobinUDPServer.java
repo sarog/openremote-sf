@@ -42,13 +42,15 @@ import org.openremote.controller.utils.NetworkUtil;
  * 
  * @author Handy.Wang 2009-12-22
  */
-public class RoundRobinServer implements Runnable {
+public class RoundRobinUDPServer implements Runnable {
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
    private Configuration configuration = ConfigFactory.getConfig();
    
    private RoundRobinConfig roundRobinConfig = ConfigFactory.getRoundRobinConfig();
+   
+   private static final String SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME = RoundRobinClient.SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME;
    
    /**
     * Group name of controller.
@@ -61,11 +63,11 @@ public class RoundRobinServer implements Runnable {
    /** Separator of controller application url. */
    private static final String CONTROLLER_URL_SEPARATOR = "/";
    
-   public RoundRobinServer() {
+   public RoundRobinUDPServer() {
       super();
    }
    
-   public RoundRobinServer(String controllerGroupName) {
+   public RoundRobinUDPServer(String controllerGroupName) {
       this.groupName = controllerGroupName;
    }
    
@@ -124,7 +126,8 @@ public class RoundRobinServer implements Runnable {
          if (groupName == null || "".equals(groupName)) {
             groupName = roundRobinConfig.getControllerGroupName();
          }
-         String roundRobinClientControllerGroupName = new String(datagramPacket.getData()).trim();
+         RoundRobinData roundRobinData = splitReceivedDataFromRoundRobinClient(new String(datagramPacket.getData()).trim());
+         String roundRobinClientControllerGroupName = roundRobinData.getContent();
          if (groupName.equalsIgnoreCase(roundRobinClientControllerGroupName)) {
             logger.info("UDP Server : Received the controller multicast request from the same group " + roundRobinClientControllerGroupName);
             Socket tcpClientSocket = null;
@@ -136,7 +139,7 @@ public class RoundRobinServer implements Runnable {
                throw new TCPClientEstablishException("Established TCP Client socket fail.");
             }
             String controllerURL = CONTROLLER_URL_PROTOCOL_HEADER + NetworkUtil.getLocalhostIP() + ":" + configuration.getWebappPort() + CONTROLLER_URL_SEPARATOR + roundRobinConfig.getControllerApplicationName();
-            printWriter.println(controllerURL);
+            printWriter.println(roundRobinData.getMsgKey() + SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME + controllerURL);
             printWriter.close();
             try {
                tcpClientSocket.close();
@@ -146,6 +149,18 @@ public class RoundRobinServer implements Runnable {
          } else {
             logger.info("UDP Server : The client controller groupname " + roundRobinClientControllerGroupName + " doesn't equals self-groupname " + groupName);
          }
+      }
+      
+      private RoundRobinData splitReceivedDataFromRoundRobinClient(String roundRobinRawData) {
+         String[] datas = roundRobinRawData.split(SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME);
+         RoundRobinData rrd = new RoundRobinData();
+         if (datas.length > 0) {
+            rrd.setMsgKey(datas[0]);
+         }
+         if (datas.length > 1) {
+            rrd.setContent(datas[1]);
+         }
+         return rrd;
       }
    }
    
