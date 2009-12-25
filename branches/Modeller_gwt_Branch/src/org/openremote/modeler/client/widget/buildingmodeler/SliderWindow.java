@@ -30,6 +30,7 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
 import org.openremote.modeler.client.utils.DeviceCommandSelectWindow;
 import org.openremote.modeler.client.widget.FormWindow;
+import org.openremote.modeler.client.widget.SimpleComboBox;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.Sensor;
@@ -43,6 +44,8 @@ import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
+import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.MessageBox;
@@ -65,7 +68,7 @@ public class SliderWindow extends FormWindow {
    private Slider slider = null;
    
    private TextField<String> nameField = new TextField<String>();
-   private ComboBox<ModelData> sensorField = new ComboBox<ModelData>();
+   private ComboBox<ModelData> sensorField = new SimpleComboBox();
    private Button setValueBtn = new Button("select");
    
    private boolean edit = false;
@@ -90,11 +93,16 @@ public class SliderWindow extends FormWindow {
       setWidth(380);
       setAutoHeight(true);
       setLayout(new FlowLayout());
+      form.setFrame(true);
+      form.setHeaderVisible(false);
+      form.setBorders(false);
+      form.setLabelWidth(60);
+      form.setFieldWidth(150);
       
-      form.setWidth(370);
       
       nameField.setFieldLabel(SLIDER_NAME_FIELD_NAME);
       nameField.setName(SLIDER_NAME_FIELD_NAME);
+      nameField.setAllowBlank(false);
       
       sensorField.setFieldLabel(SLIDER_SENSOR_FIELD_NAME);
       sensorField.setName(SLIDER_SENSOR_FIELD_NAME);
@@ -103,12 +111,19 @@ public class SliderWindow extends FormWindow {
       List<BeanModel> sensors = BeanModelDataBase.sensorTable.loadAll();
       for(BeanModel sensorBean : sensors){
          Sensor sensor = sensorBean.getBean();
-         SensorRef sensorRef = new SensorRef(sensor);
-         ComboBoxDataModel<SensorRef> sensorRefSelector = new ComboBoxDataModel<SensorRef>(sensorRef.getSensor().getName(),sensorRef);
+         ComboBoxDataModel<Sensor> sensorRefSelector = new ComboBoxDataModel<Sensor>(sensor.getName(),sensor);
          sensorStore.add(sensorRefSelector);
       }
       sensorField.setStore(sensorStore);
+      sensorField.addSelectionChangedListener(new SensorSelectChangeListener());
       
+      if(edit){
+         nameField.setValue(slider.getName());
+         if(slider.getSensorRef()!= null){
+            sensorField.setValue(new ComboBoxDataModel<Sensor>(slider.getSensorRef().getSensor().getDisplayName(),slider.getSensorRef().getSensor()));
+         }
+         setValueBtn.setText(slider.getSetValueCmd().getDisplayName());
+      }
       
       AdapterField switchOnAdapter = new AdapterField(setValueBtn);
       switchOnAdapter.setFieldLabel(SLIDER_SETVALUE_COMMMAND_FIELD_NAME);
@@ -117,6 +132,8 @@ public class SliderWindow extends FormWindow {
       Button resetButton = new Button("Reset");
 //      resetButton.addSelectionListener(new FormCaccleListener(form));
       
+      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      resetButton.addSelectionListener(new FormResetListener(form));
       
       form.add(nameField);
       form.add(sensorField);
@@ -125,8 +142,6 @@ public class SliderWindow extends FormWindow {
       form.addButton(submitBtn);
       form.addButton(resetButton);
       
-      submitBtn.addSelectionListener(new FormSubmitListener(form));
-      resetButton.addSelectionListener(new FormResetListener(form));
       
       setValueBtn.addSelectionListener(new CommandSelectListener());
       
@@ -139,12 +154,15 @@ public class SliderWindow extends FormWindow {
 
       @Override
       public void handleEvent(FormEvent be) {
+         if (slider.getSetValueCmd() == null){
+            MessageBox.alert("Slider", "The slider must have a command to control its value", null);
+            return;
+         }
          List<Field<?>> fields = form.getFields();
          for (Field<?> field : fields) {
             if (SLIDER_NAME_FIELD_NAME.equals(field.getName())) {
                slider.setName(field.getValue().toString());
-            } else if (SLIDER_SENSOR_FIELD_NAME.equals(field.getName())) {
-               slider.setSensorRef((SensorRef) field.getValue());
+               break;
             }
          }
          if(!edit){
@@ -180,6 +198,17 @@ public class SliderWindow extends FormWindow {
               slider.setSetValueCmd((DeviceCommandRef) uiCommand);
             }
          });
+      }
+   }
+   
+   class SensorSelectChangeListener extends SelectionChangedListener<ModelData> {
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public void selectionChanged(SelectionChangedEvent<ModelData> se) {
+         ComboBoxDataModel<Sensor> sensorItem;
+         sensorItem = (ComboBoxDataModel<Sensor>) se.getSelectedItem();
+         slider.setSensorRef(new SensorRef(sensorItem.getData()));
       }
    }
 }

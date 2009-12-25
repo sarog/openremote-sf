@@ -19,7 +19,9 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
@@ -27,16 +29,25 @@ import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.SubmitListener;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.SwitchTree;
+import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.Switch;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.ChangeEvent;
+import com.extjs.gxt.ui.client.data.ChangeEventSupport;
+import com.extjs.gxt.ui.client.data.ChangeListener;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.store.Store;
+import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
@@ -58,6 +69,7 @@ public class SwitchPanel extends ContentPanel {
    private TreePanel <BeanModel> switchTree = null;
    
    private SelectionServiceExt<BeanModel> selectionService;
+   private Map<BeanModel, ChangeListener> changeListenerMap = null;
    
    public SwitchPanel(){
       this.setHeading("Switch");
@@ -118,10 +130,95 @@ public class SwitchPanel extends ContentPanel {
       this.switchTree = SwitchTree.buildSwitchTree();
       selectionService.addListener(new SourceSelectionChangeListenerExt(switchTree.getSelectionModel()));
       selectionService.register(switchTree.getSelectionModel());
+      addTreeStoreEventListenerToTree(switchTree);
       add(switchTree);
    }
    
+   private void addTreeStoreEventListenerToTree(TreePanel<BeanModel> tree) {
+      tree.getStore().addListener(Store.Add, new Listener<TreeStoreEvent<BeanModel>>() {
+         public void handleEvent(TreeStoreEvent<BeanModel> be) {
+            addDeviceCommnadChangeListener(be.getChildren());
+         }
+      });
+      tree.getStore().addListener(Store.DataChanged, new Listener<TreeStoreEvent<BeanModel>>() {
+         public void handleEvent(TreeStoreEvent<BeanModel> be) {
+            addDeviceCommnadChangeListener(be.getChildren());
+         }
+      });
+      tree.getStore().addListener(Store.Clear, new Listener<TreeStoreEvent<BeanModel>>() {
+         public void handleEvent(TreeStoreEvent<BeanModel> be) {
+            removeDeviceCommandChangeListener(be.getChildren());
+         }
+      });
+      tree.getStore().addListener(Store.Remove, new Listener<TreeStoreEvent<BeanModel>>() {
+         public void handleEvent(TreeStoreEvent<BeanModel> be) {
+            removeDeviceCommandChangeListener(be.getChildren());
+         }
+      });
+   }
+   
+   private void addDeviceCommnadChangeListener(List<BeanModel> models) {
+      if (models == null) {
+         return;
+      }
+      for (BeanModel beanModel : models) {
+         if (beanModel.getBean() instanceof DeviceCommandRef) {
+            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase
+                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getTreeUpdateListener(switchTree,beanModel));
+            BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel),
+                  getTreeUpdateListener(switchTree,beanModel));
+         } 
+      }
+   }
 
+   /**
+    * Removes the change listener to drag source.
+    * 
+    * @param models  the models
+    */
+   private void removeDeviceCommandChangeListener(List<BeanModel> models) {
+      if (models == null) {
+         return;
+      }
+      for (BeanModel beanModel : models) {
+         if (beanModel.getBean() instanceof DeviceCommandRef) {
+            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase
+                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getTreeUpdateListener(switchTree,beanModel));
+         }
+         changeListenerMap.remove(beanModel);
+      }
+   }
+   
+   private ChangeListener getTreeUpdateListener(final TreePanel<BeanModel> tree,final BeanModel target) {
+      if (changeListenerMap == null) {
+         changeListenerMap = new HashMap<BeanModel, ChangeListener>();
+      }
+      ChangeListener changeListener = changeListenerMap.get(target);
+      if (changeListener == null) {
+         changeListener = new ChangeListener() {
+            public void modelChanged(ChangeEvent changeEvent) {
+               if (changeEvent.getType() == ChangeEventSupport.Remove) {
+                  tree.getStore().remove(target);
+               }
+               if (changeEvent.getType() == ChangeEventSupport.Update) {
+                  BeanModel source = (BeanModel) changeEvent.getItem();
+                  if (source.getBean() instanceof DeviceCommand) {
+                     DeviceCommand deviceCommand = (DeviceCommand) source.getBean();
+                     DeviceCommandRef deviceCommandRef = (DeviceCommandRef) target.getBean();
+                     deviceCommandRef.setDeviceCommand(deviceCommand);
+                  } else if (source.getBean() instanceof Device) {
+                     Device device = (Device) source.getBean();
+                     DeviceCommandRef targetDeviceCommandRef = (DeviceCommandRef) target.getBean();
+                     targetDeviceCommandRef.setDeviceName(device.getName());
+                  }
+                  tree.getStore().update(target);
+               }
+            }
+         };
+         changeListenerMap.put(target, changeListener);
+      }
+      return changeListener;
+   }
    class NewSwitchListener extends SelectionListener<ButtonEvent>{
 
       @Override
@@ -136,7 +233,6 @@ public class SwitchPanel extends ContentPanel {
                switchTree.getStore().add(switchBeanModel, true);
                switchTree.getStore().add(switchBeanModel, swh.getOnDeviceCommandRef().getBeanModel(), false);
                switchTree.getStore().add(switchBeanModel, swh.getOffDeviceCommandRef().getBeanModel(), false);
-               System.out.println("add switch success...........");
                switchWindow.hide();
             }
             
@@ -165,7 +261,6 @@ public class SwitchPanel extends ContentPanel {
                switchTree.getStore().add(swh.getBeanModel(),swh.getOffDeviceCommandRef().getBeanModel(),false);
                
                switchTree.setExpanded(switchBeanModel, true);
-               System.out.println("update switch success...........");
                switchWindow.hide();
             }
             
