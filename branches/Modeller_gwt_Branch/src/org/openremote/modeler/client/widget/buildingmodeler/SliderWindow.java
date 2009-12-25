@@ -93,12 +93,8 @@ public class SliderWindow extends FormWindow {
       setWidth(380);
       setAutoHeight(true);
       setLayout(new FlowLayout());
-      form.setFrame(true);
-      form.setHeaderVisible(false);
-      form.setBorders(false);
-      form.setLabelWidth(60);
-      form.setFieldWidth(150);
       
+      form.setWidth(370);
       
       nameField.setFieldLabel(SLIDER_NAME_FIELD_NAME);
       nameField.setName(SLIDER_NAME_FIELD_NAME);
