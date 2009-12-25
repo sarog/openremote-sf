@@ -103,8 +103,8 @@ public class SwitchWindow extends FormWindow {
       form.add(switchOnAdapter);
       form.add(switchOffAdapter);
       
-      form.add(submitBtn);
-      form.add(resetButton);
+      form.addButton(submitBtn);
+      form.addButton(resetButton);
       
       submitBtn.addSelectionListener(new FormSubmitListener(form));
       resetButton.addSelectionListener(new FormResetListener(form));

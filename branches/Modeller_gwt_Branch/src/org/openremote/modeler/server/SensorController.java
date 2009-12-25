@@ -40,7 +40,7 @@ public class SensorController extends BaseGWTSpringControllerWithHibernateSuppor
       this.userService = userService;
    }
 
-   public Sensor loadById(long id) {
+   public Sensor getById(long id) {
       return sensorService.loadById(id);
    }
 }

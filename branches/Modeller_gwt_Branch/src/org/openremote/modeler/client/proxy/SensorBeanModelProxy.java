@@ -47,14 +47,19 @@ public class SensorBeanModelProxy {
          });
       } else {
          Sensor sensor = (Sensor) beanModel.getBean();
-         List<BeanModel> beanModels = new ArrayList<BeanModel>();
-         if (sensor.getDeviceCommandRef() != null) {
-            beanModels.add(sensor.getDeviceCommandRef().getBeanModel());
-         }
-         if (sensor instanceof CustomSensor) {
-            beanModels.addAll(State.createModels(((CustomSensor)sensor).getStates()));
-         }
-         callback.onSuccess(beanModels);
+         AsyncServiceFactory.getSensorRPCServiceAsync().getById(sensor.getOid(), new AsyncSuccessCallback<Sensor>() {
+            public void onSuccess(Sensor result) {
+               List<BeanModel> beanModels = new ArrayList<BeanModel>();
+               if (result.getDeviceCommandRef() != null) {
+                  beanModels.add(result.getDeviceCommandRef().getBeanModel());
+               }
+               if (result instanceof CustomSensor) {
+                  beanModels.addAll(State.createModels(((CustomSensor)result).getStates()));
+               }
+               callback.onSuccess(beanModels);
+            }
+            
+         });
       }
    }
    

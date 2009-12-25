@@ -12,7 +12,7 @@ import org.openremote.modeler.service.SensorService;
 public class SensorServiceImpl extends BaseAbstractService<Sensor> implements SensorService {
 
    public void deleteSensor(long id) {
-      Sensor sensor = loadById(id);
+      Sensor sensor = super.loadById(id);
       genericDAO.delete(sensor);
    }
 
@@ -40,7 +40,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
    }
 
    public Sensor loadById(long id) {
-      return super.loadById(id);
+      return genericDAO.getById(Sensor.class, id);
    }
 
 }
