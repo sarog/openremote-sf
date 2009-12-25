@@ -37,5 +37,5 @@ public interface SensorRPCService extends RemoteService {
    
    List<Sensor> loadAll();
    
-   Sensor loadById(long id);
+   Sensor getById(long id);
 }

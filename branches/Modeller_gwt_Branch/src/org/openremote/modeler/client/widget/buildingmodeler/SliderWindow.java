@@ -122,8 +122,8 @@ public class SliderWindow extends FormWindow {
       form.add(sensorField);
       form.add(switchOnAdapter);
       
-      form.add(submitBtn);
-      form.add(resetButton);
+      form.addButton(submitBtn);
+      form.addButton(resetButton);
       
       submitBtn.addSelectionListener(new FormSubmitListener(form));
       resetButton.addSelectionListener(new FormResetListener(form));
