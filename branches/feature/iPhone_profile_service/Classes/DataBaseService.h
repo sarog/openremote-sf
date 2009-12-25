@@ -22,6 +22,7 @@
 #import <Foundation/Foundation.h>
 #import	"User.h"
 #import "sqlite3.h"
+#import "GroupMember.h"
 
 
 @interface DataBaseService : NSObject {
@@ -49,6 +50,12 @@
 - (void) saveCurrentUser;
 
 - (void) initLastLoginUser;
+
+- (void) insertGroupMember:(GroupMember *)groupMember;
+
+- (NSMutableArray *) findAllGroupMembers;
+
+- (void) deleteAllGroupMembers;
 
 @property (nonatomic, readwrite) sqlite3 *openDatabase;
 

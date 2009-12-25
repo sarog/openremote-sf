@@ -19,24 +19,33 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-#import <UIKit/UIKit.h>
+#import "NSDateHelper.h"
 
-@interface ServerDefinition : NSObject {
-	
+
+@implementation NSDate (Helper)
+
++ (NSString *)dbFormatString {
+	return @"yyyy-MM-dd HH:mm:ss";
 }
 
-+ (NSString *)panelXmlUrl;
-+ (NSString *)imageUrl;
-+ (NSString *)controlRESTUrl;
-+ (NSString *)statusRESTUrl;
-+ (NSString *)pollingRESTUrl;
-+ (NSString *)serverUrl;
-+ (NSString *)securedServerUrl;
-+ (NSString *)securedControlRESTUrl;
-+ (NSString *)logoutUrl;
-+ (NSString *)panelsRESTUrl;
-+ (NSString *)panelXmlRESTUrl;
-+ (NSString *)hostName;
-+ (NSString *)serversXmlRESTUrl;
++ (NSDate *)dateFromString:(NSString *)string {
+	NSDateFormatter *inputFormatter = [[NSDateFormatter alloc] init];
+	[inputFormatter setDateFormat:[NSDate dbFormatString]];
+	NSDate *date = [inputFormatter dateFromString:string];
+	[inputFormatter release];
+	return date;
+}
+
++ (NSString *)stringFromDate:(NSDate *)date withFormat:(NSString *)format {
+	NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
+	[outputFormatter setDateFormat:format];
+	NSString *timestamp_str = [outputFormatter stringFromDate:date];
+	[outputFormatter release];
+	return timestamp_str;
+}
+
++ (NSString *)stringFromDate:(NSDate *)date {
+	return [NSDate stringFromDate:date withFormat:[NSDate dbFormatString]];
+}
 
 @end

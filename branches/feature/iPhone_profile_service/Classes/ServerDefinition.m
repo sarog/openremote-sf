@@ -57,6 +57,11 @@
 	return panelXmlUrl;
 }
 
++ (NSString *)serversXmlRESTUrl {
+	NSString *serversXmlUrl = [[self serverUrl] stringByAppendingPathComponent:@"rest/servers"];
+	return serversXmlUrl;
+}
+
 + (NSString *)imageUrl {
 	return [[self serverUrl] stringByAppendingPathComponent:@"resources"];
 }

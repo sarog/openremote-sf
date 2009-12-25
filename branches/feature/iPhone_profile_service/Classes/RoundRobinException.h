@@ -19,24 +19,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import "ControllerException.h"
 
-@interface ServerDefinition : NSObject {
-	
+#define CONTROLLER_TCP_SERVER_START_FAIL 450
+#define CONTROLLER_UDP_SERVER_START_FAIL 451
+#define CONTROLLER_UDP_CLIENT_ESTABLISH_FAIL 452
+#define CONTROLLER_INVALID_ROUND_ROBIN_URL 453
+
+@interface RoundRobinException : ControllerException {
+
 }
 
-+ (NSString *)panelXmlUrl;
-+ (NSString *)imageUrl;
-+ (NSString *)controlRESTUrl;
-+ (NSString *)statusRESTUrl;
-+ (NSString *)pollingRESTUrl;
-+ (NSString *)serverUrl;
-+ (NSString *)securedServerUrl;
-+ (NSString *)securedControlRESTUrl;
-+ (NSString *)logoutUrl;
-+ (NSString *)panelsRESTUrl;
-+ (NSString *)panelXmlRESTUrl;
-+ (NSString *)hostName;
-+ (NSString *)serversXmlRESTUrl;
++ (NSString *)exceptionMessageOfCode:(int)code;
 
 @end

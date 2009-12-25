@@ -19,24 +19,33 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-#import <UIKit/UIKit.h>
+#import "RoundRobinException.h"
 
-@interface ServerDefinition : NSObject {
-	
+
+@implementation RoundRobinException
+
++ (NSString *)exceptionMessageOfCode:(int)code {
+	NSString *errorMessage = nil;
+	if (code != 200) {
+		switch (code) {
+			case CONTROLLER_TCP_SERVER_START_FAIL://450
+				errorMessage = @"The TCP server of controller didn't startup.";
+				break;
+			case CONTROLLER_UDP_SERVER_START_FAIL://451
+				errorMessage = @"The UDP server of controller didn't startup.";
+				break;
+			case CONTROLLER_UDP_CLIENT_ESTABLISH_FAIL://452
+				errorMessage = @"Established servers RESTful request fail.";
+				break;
+			case CONTROLLER_INVALID_ROUND_ROBIN_URL://453
+				errorMessage = @"The servers(roundrobin) url was invalid.";
+				break;
+		}
+		if (!errorMessage) {
+			errorMessage = [NSString stringWithFormat:@"Occured unknown error, satus code is %d", code];
+		}
+	}
+	return errorMessage;
 }
-
-+ (NSString *)panelXmlUrl;
-+ (NSString *)imageUrl;
-+ (NSString *)controlRESTUrl;
-+ (NSString *)statusRESTUrl;
-+ (NSString *)pollingRESTUrl;
-+ (NSString *)serverUrl;
-+ (NSString *)securedServerUrl;
-+ (NSString *)securedControlRESTUrl;
-+ (NSString *)logoutUrl;
-+ (NSString *)panelsRESTUrl;
-+ (NSString *)panelXmlRESTUrl;
-+ (NSString *)hostName;
-+ (NSString *)serversXmlRESTUrl;
 
 @end

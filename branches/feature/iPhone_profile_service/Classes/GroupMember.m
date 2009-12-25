@@ -19,24 +19,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-#import <UIKit/UIKit.h>
+#import "GroupMember.h"
 
-@interface ServerDefinition : NSObject {
-	
+
+@implementation GroupMember
+
+@synthesize url, age;
+
+- (id) initWithUrl:(NSString *)groupMemberUrl {
+	if (self = [super init]) {
+		self.url = groupMemberUrl;
+		self.age = [NSDate date];
+	}
+	return self;
 }
 
-+ (NSString *)panelXmlUrl;
-+ (NSString *)imageUrl;
-+ (NSString *)controlRESTUrl;
-+ (NSString *)statusRESTUrl;
-+ (NSString *)pollingRESTUrl;
-+ (NSString *)serverUrl;
-+ (NSString *)securedServerUrl;
-+ (NSString *)securedControlRESTUrl;
-+ (NSString *)logoutUrl;
-+ (NSString *)panelsRESTUrl;
-+ (NSString *)panelXmlRESTUrl;
-+ (NSString *)hostName;
-+ (NSString *)serversXmlRESTUrl;
+- (void) dealloc {
+	[url release];
+	[age release];
+	[super dealloc];
+}
+
 
 @end

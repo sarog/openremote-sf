@@ -22,6 +22,7 @@
 #import "DataBaseServiceTest.h"
 #import "DataBaseService.h"
 #import "User.h"
+#import "GroupMember.h"
 
 @interface DataBaseTest (Private)
 - (void) insertUser;
@@ -90,6 +91,30 @@
 	User *user = [dbService findLastLoginUser];
 	STAssertNil(user, @"", @"");
 	[user release];
+}
+
+- (void) testFindAllGroupMembers {
+	GroupMember *groupMember = [[GroupMember alloc] initWithUrl:@"http://192.168.1.101/controller/"];
+	[dbService insertGroupMember:groupMember];
+	NSMutableArray *groupMembers = [dbService findAllGroupMembers];
+	STAssertTrue(groupMembers.count > 0, @"expected size great than 0, but size is %d", groupMembers.count);
+	[dbService deleteAllGroupMembers];
+}
+
+- (void) testDeleteAllGroupMembers {
+	[dbService deleteAllGroupMembers];
+	NSMutableArray *groupMembers = [dbService findAllGroupMembers];
+	STAssertTrue(groupMembers.count == 0, @"expected size great than 0, but size is %d", groupMembers.count);
+	
+}
+
+- (void) testInsertGroupMember {
+	[dbService deleteAllGroupMembers];
+	GroupMember *groupMember = [[GroupMember alloc] initWithUrl:@"http://192.168.1.102/controller/"];
+	[dbService insertGroupMember:groupMember];	
+	NSMutableArray *groupMembers = [dbService findAllGroupMembers];
+	STAssertTrue(groupMembers.count > 0, @"expected size great than 0, but size is %d", groupMembers.count);
+	[dbService deleteAllGroupMembers];
 }
 
 
