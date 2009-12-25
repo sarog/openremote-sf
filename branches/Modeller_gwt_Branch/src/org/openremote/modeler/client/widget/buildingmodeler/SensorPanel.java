@@ -34,7 +34,7 @@ import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.widget.TreePanelBuilder;
+import org.openremote.modeler.client.utils.SensorTree;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
@@ -182,7 +182,7 @@ public class SensorPanel extends ContentPanel {
          protected void onRender(Element parent, int index) {
             super.onRender(parent, index);
             if (sensorTree == null) {
-               sensorTree = TreePanelBuilder.buildSensorTree();
+               sensorTree = SensorTree.buildSensorTree();
                selectionService.addListener(new SourceSelectionChangeListenerExt(sensorTree.getSelectionModel()));
                selectionService.register(sensorTree.getSelectionModel());
                addTreeStoreEventListener();
