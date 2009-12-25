@@ -25,6 +25,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import flexjson.JSON;
 
@@ -77,5 +78,10 @@ public class Slider extends BusinessEntity {
 
    public void setSensorRef(SensorRef sensorRef) {
       this.sensorRef = sensorRef;
+   }
+   
+   @Transient
+   public String getDisplayName() {
+      return getName();
    }
 }

@@ -300,4 +300,25 @@ public interface Icons extends ImageBundle {
    
    @Resource("tabbar_config.png")
    AbstractImagePrototype tabbarConfigIcon();
+   
+   @Resource("brick_add.png")
+   AbstractImagePrototype switchAddIcon();
+   
+   @Resource("brick_add.png")
+   AbstractImagePrototype switchEditIcon();
+   
+   @Resource("brick_add.png")
+   AbstractImagePrototype switchDeleteIcon();
+   
+   @Resource("brick_add.png")
+   AbstractImagePrototype sliderIcon();
+   
+   @Resource("brick_add.png")
+   AbstractImagePrototype sliderAddIcon();
+   
+   @Resource("brick_add.png")
+   AbstractImagePrototype sliderEditIcon();
+   
+   @Resource("brick_add.png")
+   AbstractImagePrototype sliderDeleteIcon();
 }

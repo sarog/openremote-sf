@@ -50,7 +50,11 @@ public class AsyncServiceFactory {
    /** The utils rpc service async. */
    private static UtilsRPCServiceAsync utilsRPCServiceAsync = null;
 
+   private static SwitchRPCServiceAsync switchRPCServiceAsync = null;
+   
    private static SensorRPCServiceAsync sensorRPCServiceAsync = null;
+   
+   private static SliderRPCServiceAsync sliderRPCServiceAsync = null;
 
    
    /**
@@ -113,10 +117,25 @@ public class AsyncServiceFactory {
       return utilsRPCServiceAsync;
    }
    
+   public static SwitchRPCServiceAsync getSwitchRPCServiceAsync() {
+      if (switchRPCServiceAsync == null) {
+         switchRPCServiceAsync = GWT.create(SwitchRPCService.class);
+      }
+
+      return switchRPCServiceAsync;
+   }
+   
    public static SensorRPCServiceAsync getSensorRPCServiceAsync() {
       if (sensorRPCServiceAsync == null) {
          sensorRPCServiceAsync = GWT.create(SensorRPCService.class);
       }
       return sensorRPCServiceAsync;
+   }
+
+   public static SliderRPCServiceAsync getSliderRPCServiceAsync() {
+      if (sliderRPCServiceAsync == null){
+         sliderRPCServiceAsync = GWT.create(SliderRPCService.class);
+      }
+      return sliderRPCServiceAsync;
    }
 }

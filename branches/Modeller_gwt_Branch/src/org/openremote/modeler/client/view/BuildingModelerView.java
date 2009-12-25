@@ -22,6 +22,8 @@ package org.openremote.modeler.client.view;
 import org.openremote.modeler.client.widget.buildingmodeler.DevicePanel;
 import org.openremote.modeler.client.widget.buildingmodeler.MacroPanel;
 import org.openremote.modeler.client.widget.buildingmodeler.SensorPanel;
+import org.openremote.modeler.client.widget.buildingmodeler.SliderPanel;
+import org.openremote.modeler.client.widget.buildingmodeler.SwitchPanel;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.util.Margins;
@@ -75,6 +77,8 @@ public class BuildingModelerView extends TabItem implements View {
       west.add(new MacroPanel());
       west.add(new SensorPanel());
 
+      west.add(new SwitchPanel());
+      west.add(new SliderPanel());
       westData.setMargins(new Margins(2));
       add(west, westData);
    }

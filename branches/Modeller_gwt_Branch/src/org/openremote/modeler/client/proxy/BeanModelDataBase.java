@@ -79,7 +79,10 @@ public class BeanModelDataBase {
    
    public static final BeanModelTable panelTable = new BeanModelTable();
    
+   public static final BeanModelTable switchTable = new BeanModelTable();
    public static final BeanModelTable sensorTable = new SensorBeanModelTable();
+   public static final BeanModelTable sliderTable = new BeanModelTable();
+   
    
    /**
     * Gets the original device macro item bean model id,if not find return 0.
