@@ -347,15 +347,15 @@ public class ResourceServiceImplTest {
       
       UISwitch absSwitch = new UISwitch();
       absSwitch.setOid(IDUtil.nextID());
-      absSwitch.setOnCommand(delayCmd);
-      absSwitch.setOffCommand(delayCmd);
-      absSwitch.setStatusCommand(delayCmd);
+//      absSwitch.setOnCommand(delayCmd);
+//      absSwitch.setOffCommand(delayCmd);
+//      absSwitch.setStatusCommand(delayCmd);
       
       UISwitch gridSwitch = new UISwitch();
       gridSwitch.setOid(IDUtil.nextID());
-      gridSwitch.setOnCommand(delayCmd);
-      gridSwitch.setOffCommand(delayCmd);
-      gridSwitch.setStatusCommand(delayCmd);
+//      gridSwitch.setOnCommand(delayCmd);
+//      gridSwitch.setOffCommand(delayCmd);
+//      gridSwitch.setStatusCommand(delayCmd);
       
       Absolute abs1 = new Absolute();
       abs1.setUIComponent(absBtn);
@@ -410,15 +410,15 @@ public class ResourceServiceImplTest {
       
       UISwitch absSwitch = new UISwitch();
       absSwitch.setOid(IDUtil.nextID());
-      absSwitch.setOnCommand(cmdRef);
-      absSwitch.setOffCommand(cmdRef);
-      absSwitch.setStatusCommand(cmdRef);
+//      absSwitch.setOnCommand(cmdRef);
+//      absSwitch.setOffCommand(cmdRef);
+//      absSwitch.setStatusCommand(cmdRef);
       
       UISwitch gridSwitch = new UISwitch();
       gridSwitch.setOid(IDUtil.nextID());
-      gridSwitch.setOnCommand(cmdRef);
-      gridSwitch.setOffCommand(cmdRef);
-      gridSwitch.setStatusCommand(cmdRef);
+//      gridSwitch.setOnCommand(cmdRef);
+//      gridSwitch.setOffCommand(cmdRef);
+//      gridSwitch.setStatusCommand(cmdRef);
       
       Absolute abs1 = new Absolute();
       abs1.setUIComponent(absBtn);
@@ -537,15 +537,15 @@ public class ResourceServiceImplTest {
       
       UISwitch absSwitch = new UISwitch();
       absSwitch.setOid(IDUtil.nextID());
-      absSwitch.setOnCommand(macroRef);
-      absSwitch.setOffCommand(macroRef);
-      absSwitch.setStatusCommand(macroRef);
+//      absSwitch.setOnCommand(macroRef);
+//      absSwitch.setOffCommand(macroRef);
+//      absSwitch.setStatusCommand(macroRef);
       
       UISwitch gridSwitch = new UISwitch();
       gridSwitch.setOid(IDUtil.nextID());
-      gridSwitch.setOnCommand(macroRef);
-      gridSwitch.setOffCommand(macroRef);
-      gridSwitch.setStatusCommand(macroRef);
+//      gridSwitch.setOnCommand(macroRef);
+//      gridSwitch.setOffCommand(macroRef);
+//      gridSwitch.setStatusCommand(macroRef);
       
       Absolute abs1 = new Absolute();
       abs1.setUIComponent(absBtn);

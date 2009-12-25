@@ -23,12 +23,8 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
-import org.openremote.modeler.client.widget.uidesigner.SelectCommandWindow;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceCommandRef;
-import org.openremote.modeler.domain.DeviceMacro;
-import org.openremote.modeler.domain.DeviceMacroRef;
-import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.client.widget.uidesigner.SelectSwitchWindow;
+import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.domain.component.UImage;
 
@@ -95,36 +91,18 @@ public class SwitchPropertyForm extends PropertyForm {
       AdapterField adapterImageOFF = new AdapterField(imageOFF);
       adapterImageOFF.setFieldLabel("Image(OFF)");
 
-      Button commandON = new Button("Select");
-      if (uiSwitch.getOnCommand() != null) {
-         commandON.setText(uiSwitch.getOnCommand().getDisplayName());
+      Button switchCommand = new Button("Select");
+      if (uiSwitch.getSwitchCommand() != null) {
+         switchCommand.setText(uiSwitch.getSwitchCommand().getDisplayName());
       }
-      commandON.addSelectionListener(createSelectionListener(uiSwitch, commandON, "ON"));
-      AdapterField adapterCommandON = new AdapterField(commandON);
-      adapterCommandON.setFieldLabel("Cmd(ON)");
-      adapterCommandON.setAutoHeight(true);
-
-      final Button commandOFF = new Button("Select");
-      if (uiSwitch.getOffCommand() != null) {
-         commandOFF.setText(uiSwitch.getOffCommand().getDisplayName());
-      }
-      commandOFF.addSelectionListener(createSelectionListener(uiSwitch, commandOFF, "OFF"));
-      AdapterField adapterCommandOFF = new AdapterField(commandOFF);
-      adapterCommandOFF.setFieldLabel("Cmd(OFF)");
-
-      Button commandStatus = new Button("Select");
-      if (uiSwitch.getStatusCommand() != null) {
-         commandStatus.setText(uiSwitch.getStatusCommand().getDisplayName());
-      }
-      commandStatus.addSelectionListener(createSelectionListener(uiSwitch, commandStatus, "STATUS"));
-      AdapterField adapterCommandStatus = new AdapterField(commandStatus);
-      adapterCommandStatus.setFieldLabel("Cmd(Status)");
+      switchCommand.addSelectionListener(createSelectionListener(uiSwitch, switchCommand));
+      AdapterField adapterSwitchCommand = new AdapterField(switchCommand);
+      adapterSwitchCommand.setFieldLabel("Command");
+      adapterSwitchCommand.setAutoHeight(true);
 
       add(adapterImageON);
       add(adapterImageOFF);
-      add(adapterCommandON);
-      add(adapterCommandOFF);
-      add(adapterCommandStatus);
+      add(adapterSwitchCommand);
    }
 
    /**
@@ -132,28 +110,19 @@ public class SwitchPropertyForm extends PropertyForm {
     * @param command
     * @return
     */
-   private SelectionListener<ButtonEvent> createSelectionListener(final UISwitch uiSwitch, final Button command, final String type) {
+   private SelectionListener<ButtonEvent> createSelectionListener(final UISwitch uiSwitch, final Button command) {
       return new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            SelectCommandWindow selectCommandWindow = new SelectCommandWindow();
-            selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+            SelectSwitchWindow selectSwitchWindow = new SelectSwitchWindow();
+            selectSwitchWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   BeanModel dataModel = be.<BeanModel> getData();
-                  UICommand uiCommand = null;
-                  if (dataModel.getBean() instanceof DeviceCommand) {
-                     uiCommand = new DeviceCommandRef((DeviceCommand) dataModel.getBean());
-                  } else if (dataModel.getBean() instanceof DeviceMacro) {
-                     uiCommand = new DeviceMacroRef((DeviceMacro) dataModel.getBean());
-                  }
-                  command.setText(uiCommand.getDisplayName());
-                  if ("ON".equals(type)) {
-                     uiSwitch.setOnCommand(uiCommand);
-                  } else if ("OFF".equals(type)) {
-                     uiSwitch.setOffCommand(uiCommand);
-                  } else if ("STATUS".equals(type)) {
-                     uiSwitch.setStatusCommand(uiCommand);
+                  if (dataModel.getBean() instanceof Switch) {
+                     Switch switchCommand = dataModel.getBean();
+                     uiSwitch.setSwitchCommand(switchCommand);
+                     command.setText(switchCommand.getDisplayName());
                   }
                }
             });

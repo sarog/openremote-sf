@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.UICommand;
 
 @SuppressWarnings("serial")
@@ -31,18 +32,14 @@ public class UISwitch extends UIControl {
 
    private UImage onImage;
    private UImage offImage;
-   private UICommand onCommand;
-   private UICommand offCommand;
-   private UICommand statusCommand;
+   private Switch switchCommand;
    public UISwitch() {
       super();
    }
    public UISwitch(UISwitch swh) {
       this.onImage = swh.offImage;
-      this.offCommand = swh.offCommand;
       this.offImage = swh.offImage;
-      this.onCommand = swh.onCommand;
-      this.statusCommand = swh.statusCommand;
+      this.switchCommand = swh.switchCommand;
    }
    public UISwitch(long id) {
       super(id);
@@ -54,15 +51,6 @@ public class UISwitch extends UIControl {
    public UImage getOffImage() {
       return offImage;
    }
-   public UICommand getOnCommand() {
-      return onCommand;
-   }
-   public UICommand getOffCommand() {
-      return offCommand;
-   }
-   public UICommand getStatusCommand() {
-      return statusCommand;
-   }
    public void setOnImage(UImage onImage) {
       onImage.setState("ON");
       this.onImage = onImage;
@@ -71,16 +59,12 @@ public class UISwitch extends UIControl {
       offImage.setState("OFF");
       this.offImage = offImage;
    }
-   public void setOnCommand(UICommand onCommand) {
-      this.onCommand = onCommand;
+   public Switch getSwitchCommand() {
+      return switchCommand;
    }
-   public void setOffCommand(UICommand offCommand) {
-      this.offCommand = offCommand;
+   public void setSwitchCommand(Switch switchCommand) {
+      this.switchCommand = switchCommand;
    }
-   public void setStatusCommand(UICommand statusCommand) {
-      this.statusCommand = statusCommand;
-   }
-   
    @Override
    public String getName() {
       return "Switch";
@@ -89,15 +73,15 @@ public class UISwitch extends UIControl {
    @Override
    public List<UICommand> getCommands() {
       List<UICommand> commands = new ArrayList<UICommand>();
-      if (onCommand != null) {
-         commands.add(onCommand);
-      }
-      if (offCommand != null) {
-         commands.add(offCommand);
-      }
-      if (statusCommand != null) {
-         commands.add(statusCommand);
-      }
+//      if (onCommand != null) {
+//         commands.add(onCommand);
+//      }
+//      if (offCommand != null) {
+//         commands.add(offCommand);
+//      }
+//      if (statusCommand != null) {
+//         commands.add(statusCommand);
+//      }
       return commands;
    }
    
