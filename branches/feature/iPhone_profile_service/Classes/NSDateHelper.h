@@ -19,24 +19,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-@interface ServerDefinition : NSObject {
-	
-}
 
-+ (NSString *)panelXmlUrl;
-+ (NSString *)imageUrl;
-+ (NSString *)controlRESTUrl;
-+ (NSString *)statusRESTUrl;
-+ (NSString *)pollingRESTUrl;
-+ (NSString *)serverUrl;
-+ (NSString *)securedServerUrl;
-+ (NSString *)securedControlRESTUrl;
-+ (NSString *)logoutUrl;
-+ (NSString *)panelsRESTUrl;
-+ (NSString *)panelXmlRESTUrl;
-+ (NSString *)hostName;
-+ (NSString *)serversXmlRESTUrl;
+@interface NSDate (Helper)
++ (NSString *)dbFormatString;
++ (NSDate *)dateFromString:(NSString *)string;
++ (NSString *)stringFromDate:(NSDate *)date withFormat:(NSString *)string;
++ (NSString *)stringFromDate:(NSDate *)date;
 
 @end

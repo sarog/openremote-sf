@@ -25,6 +25,9 @@
 #import "SwitchServerAlertHelper.h"
 #import "CheckNetwork.h"
 #import "CheckNetworkException.h"
+#import "DataBaseService.h"
+#import "UpdateController.h"
+#import "NotificationConstant.h"
 
 //allows self-signed cert
 @interface NSURLRequest(HTTPSCertificate) 
@@ -44,6 +47,12 @@
 - (void)doSwitchToAvailableAutoServer;
 - (void)switchToAvailableCustomizedServer;
 - (void)doSwitchToAvailableCustomizedServer;
+
+- (void) swithToGroupMemberServer;
+- (void) clearServerChooseState:(NSMutableArray *)servers;
+- (void) removeBadCurrentServerUrl:(NSString *)tempCurrentServerUrl servers:(NSMutableArray *)servers;
+- (NSString *) checkGroupMemberServers;
+- (void) updateControllerWith:(NSString *)groupMemberUrl;
 @end
 
 @implementation URLConnectionHelper 
@@ -90,6 +99,107 @@
 }
 
 #pragma mark Instance method
+
+// Swith to groupmember controller.
+- (void) swithToGroupMemberServer {
+	NSString *tempCurrentServerUrl = [AppSettingsDefinition getCurrentServerUrl];
+	NSMutableArray *servers;
+	if ([AppSettingsDefinition isAutoDiscoveryEnable]) {
+		servers = [AppSettingsDefinition getAutoServers];
+		NSMutableArray *autoServers = [AppSettingsDefinition getAutoServers];
+		for (int i=0; i < [autoServers count]; i++) {
+			[[autoServers objectAtIndex:i] setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];
+			if ([tempCurrentServerUrl isEqualToString:[[autoServers objectAtIndex:i] objectForKey:@"url"]]) {
+				[[AppSettingsDefinition getAutoServers] removeObjectAtIndex:i];
+			}
+		}
+	} else {
+		servers = [AppSettingsDefinition getCustomServers];
+		NSMutableArray *customServers = [AppSettingsDefinition getCustomServers];
+		for (int i=0; i < [customServers count]; i++) {
+			[[customServers objectAtIndex:i] setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];
+			if ([tempCurrentServerUrl isEqualToString:[[customServers objectAtIndex:i] objectForKey:@"url"]]) {
+				[[AppSettingsDefinition getCustomServers] removeObjectAtIndex:i];
+			}
+		}
+	}
+//	[self clearServerChooseState:servers];
+//	[self removeBadCurrentServerUrl:tempCurrentServerUrl servers:servers];
+	NSString *aAvailableGroupMemberUrl = [self checkGroupMemberServers];
+	if (aAvailableGroupMemberUrl != nil && ![@"" isEqualToString:aAvailableGroupMemberUrl]) {
+		[self updateControllerWith:aAvailableGroupMemberUrl];
+	} else {
+		// Do nothing.
+	}
+}
+
+
+- (void) clearServerChooseState:(NSMutableArray *)servers {
+	for (int i=0; i < [servers count]; i++) {
+		[[servers objectAtIndex:i] setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];
+	}
+	[AppSettingsDefinition writeToFile];
+}
+
+- (void) removeBadCurrentServerUrl:(NSString *)tempCurrentServerUrl servers:(NSMutableArray *)servers {
+	for (int i=0; i < [servers count]; i++) {
+		if([tempCurrentServerUrl isEqualToString:[[servers objectAtIndex:i] objectForKey:@"url"]]) {
+			[servers removeObjectAtIndex:i];
+		}
+	}
+	[AppSettingsDefinition writeToFile];
+}
+
+// Check whether the url of groupmember is available.
+- (NSString *) checkGroupMemberServers {
+	NSMutableArray *groupMembers = [[DataBaseService sharedDataBaseService] findAllGroupMembers];
+	for (GroupMember *gm in groupMembers) {
+		@try {
+			[AppSettingsDefinition setCurrentServerUrl:gm.url];
+			[CheckNetwork checkAll];
+			
+			NSMutableDictionary *groupMemberServer = [NSMutableDictionary dictionaryWithObject:gm.url forKey:@"url"];
+			[groupMemberServer setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
+			
+			BOOL hadSameUrlBefore = NO;
+			if ([AppSettingsDefinition isAutoDiscoveryEnable]) {
+				for (int i=0; i<[[AppSettingsDefinition getAutoServers] count]; i++) {
+					if ([gm.url isEqualToString:[[[AppSettingsDefinition getAutoServers] objectAtIndex:i] objectForKey:@"url"]]) {
+						[[[AppSettingsDefinition getAutoServers] objectAtIndex:i] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
+						hadSameUrlBefore = YES;
+					}
+				}
+				if (!hadSameUrlBefore) {
+					[AppSettingsDefinition addAutoServer:groupMemberServer];
+				}
+			} else {
+				for (int i=0; i<[[AppSettingsDefinition getCustomServers] count]; i++) {
+					if ([gm.url isEqualToString:[[[AppSettingsDefinition getCustomServers] objectAtIndex:i] objectForKey:@"url"]]) {
+						[[[AppSettingsDefinition getCustomServers] objectAtIndex:i] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
+						hadSameUrlBefore = YES;
+					}
+				}
+				if (!hadSameUrlBefore) {
+					[[AppSettingsDefinition getCustomServers] addObject:groupMemberServer];
+				}
+			}
+			[AppSettingsDefinition writeToFile];
+			return gm.url;
+		}
+		@catch (NSException * e) {
+			continue;
+		}
+	}
+	return nil;
+}
+
+- (void) updateControllerWith:(NSString *)groupMemberUrl {
+	NSLog(@"Switching to groupmember controller server %@, please wait...", groupMemberUrl);
+	UpdateController *updateController = [[UpdateController alloc] initWithDelegate:self];
+	[updateController checkConfigAndUpdate];
+}
+
+////////////////////////////
 
 - (void)switchToAvailableServer {
 	if ([AppSettingsDefinition isAutoDiscoveryEnable]) {
@@ -210,7 +320,8 @@
 	if ([delegate respondsToSelector:@selector(definitionURLConnectionDidFailWithError:)]) {
 		[delegate definitionURLConnectionDidFailWithError:error];
 		self.errorMsg = error;
-		[self switchToAvailableServer];
+		//[self switchToAvailableServer];
+		[self swithToGroupMemberServer];
 	} else {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 		[alert show];
@@ -232,6 +343,23 @@
 - (void)onFindServerFail:(NSString *)errorMessage {
 	NSLog(@"Find Server Error in class URLConnectionHelper. %@", errorMessage);
 	[ViewHelper showAlertViewWithTitle:@"Auto Discovery" Message:errorMessage];
+}
+
+#pragma mark Delegate method of UpdateController
+- (void)didUpadted {
+	[[DataBaseService sharedDataBaseService] saveCurrentUser];
+	NSLog(@"----------DidUpdated in URLConnectionHelper------------");
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
+}
+
+- (void)didUseLocalCache:(NSString *)errorMessage {
+	NSLog(@"------------didUseLocalCache in URLConnectionHelper------------");
+	
+	if ([errorMessage isEqualToString:@"401"]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+	} else {
+		[ViewHelper showAlertViewWithTitle:@"Use Local Cache" Message:errorMessage];
+	}
 }
 
 - (void)dealloc {

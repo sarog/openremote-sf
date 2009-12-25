@@ -36,15 +36,20 @@
 #import "StringUtils.h"
 #import "ServerDefinition.h"
 #import "DirectoryDefinition.h"
+#import "RoundRobinException.h"
+#import "DataBaseService.h"
+#import "GroupMember.h"
 
 //Define the default max retry times. It should be set by user in later version.
 #define MAX_RETRY_TIMES 0
+#define TIMEOUT_INTERVAL 2
 
 @interface UpdateController (private)
 - (void)checkNetworkAndUpdate;
 - (void)findServer;
 - (void)updateFailOrUseLocalCache:(NSString *)errorMessage;
 - (void)useCustomDefaultUrl;
+- (void)getRoundRobinGroupMembers;
 @end
 
 
@@ -117,6 +122,8 @@
 		// this method will throw CheckNetworkException if the check failed.
 		[CheckNetwork checkAll];
 		
+		[self getRoundRobinGroupMembers];
+
 		//Add an Observer to listern Definition's update behavior
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpadted) name:DefinationUpdateDidFinishedNotification object:nil];
 		// If all the check success, it will call Definition's update method to update resouces.
@@ -168,6 +175,47 @@
 		}
 	} else {
 		[self didUpdateFail:@"There is no customized default Controller server."];
+	}
+}
+
+- (void)getRoundRobinGroupMembers {
+	NSError *error = nil;
+	NSHTTPURLResponse *resp = nil;
+	NSURL *url = [NSURL URLWithString:[ServerDefinition serversXmlRESTUrl]]; 
+	NSLog(@"serversXmlRESTUrl %@", [ServerDefinition serversXmlRESTUrl]);
+	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
+	NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&resp error:&error];
+	NSLog(@"Servers Xml REST url is : %@", [ServerDefinition serversXmlRESTUrl]);
+	[request release];
+	if (error ) {
+		NSLog(@"getRoundRobinGroupMembers failed %@",[error localizedDescription]);
+		@throw [CheckNetworkException exceptionWithTitle:@"Servers request fail" 
+												 message:@"Could not find OpenRemote Controller. It may not be running or the connection URL in Settings is invalid."];
+	} else if ([resp statusCode] != 200) {	
+		NSLog(@"getRoundRobinGroupMembers statusCode %d",[resp statusCode] );
+		@throw [CheckNetworkException exceptionWithTitle:@"Servers request fail" message:[RoundRobinException exceptionMessageOfCode:[resp statusCode]]];
+	}
+	[[DataBaseService sharedDataBaseService] deleteAllGroupMembers];
+	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
+	[xmlParser setDelegate:self];
+	[xmlParser parse];
+	[xmlParser release];
+}
+
+#pragma mark delegate method of NSXMLParser
+//when find a servers, gets their *url* attribute.
+- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
+	if ([elementName isEqualToString:@"server"]) {
+		NSLog(@"groupmember url : %@",[attributeDict valueForKey:@"url"]);
+		GroupMember *groupMember = [[GroupMember alloc] initWithUrl:[attributeDict valueForKey:@"url"]];
+		NSLog(@"groupMember.url is : %@", groupMember.url);
+		[[DataBaseService sharedDataBaseService] insertGroupMember:groupMember];
+		for(GroupMember *gm in [[DataBaseService sharedDataBaseService] findAllGroupMembers]) {
+			NSLog(@"url is : %@", gm.url);
+		}
+	}
+	for(GroupMember *gm in [[DataBaseService sharedDataBaseService] findAllGroupMembers]) {
+		NSLog(@"url is : %@", gm.url);
 	}
 }
 

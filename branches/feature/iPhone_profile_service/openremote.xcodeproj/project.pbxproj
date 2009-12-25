@@ -28,6 +28,12 @@
 		3322879810BFB55A00D94163 /* Slider.m in Sources */ = {isa = PBXBuildFile; fileRef = 3322879610BFB55A00D94163 /* Slider.m */; };
 		3322883110BFC03F00D94163 /* SliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3322883010BFC03F00D94163 /* SliderView.m */; };
 		3322883210BFC03F00D94163 /* SliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3322883010BFC03F00D94163 /* SliderView.m */; };
+		33267E3B10E4711B00E3AE42 /* GroupMember.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267E3A10E4711B00E3AE42 /* GroupMember.m */; };
+		33267E3C10E4711B00E3AE42 /* GroupMember.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267E3A10E4711B00E3AE42 /* GroupMember.m */; };
+		33267E7110E47C5B00E3AE42 /* NSDateHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267E7010E47C5B00E3AE42 /* NSDateHelper.m */; };
+		33267E7210E47C5B00E3AE42 /* NSDateHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267E7010E47C5B00E3AE42 /* NSDateHelper.m */; };
+		33267ED410E4895E00E3AE42 /* RoundRobinException.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267ED310E4895E00E3AE42 /* RoundRobinException.m */; };
+		33267ED510E4895E00E3AE42 /* RoundRobinException.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267ED310E4895E00E3AE42 /* RoundRobinException.m */; };
 		3338CDB710C5036C0067C94D /* ImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3338CDB410C5036C0067C94D /* ImageView.m */; };
 		3338CDB810C5036C0067C94D /* LabelView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3338CDB610C5036C0067C94D /* LabelView.m */; };
 		3338CDB910C5036C0067C94D /* ImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3338CDB410C5036C0067C94D /* ImageView.m */; };
@@ -287,6 +293,12 @@
 		3322879610BFB55A00D94163 /* Slider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Slider.m; sourceTree = "<group>"; };
 		3322882F10BFC03F00D94163 /* SliderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SliderView.h; sourceTree = "<group>"; };
 		3322883010BFC03F00D94163 /* SliderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SliderView.m; sourceTree = "<group>"; };
+		33267E3910E4711B00E3AE42 /* GroupMember.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupMember.h; sourceTree = "<group>"; };
+		33267E3A10E4711B00E3AE42 /* GroupMember.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupMember.m; sourceTree = "<group>"; };
+		33267E6F10E47C5B00E3AE42 /* NSDateHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSDateHelper.h; sourceTree = "<group>"; };
+		33267E7010E47C5B00E3AE42 /* NSDateHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSDateHelper.m; sourceTree = "<group>"; };
+		33267ED210E4895E00E3AE42 /* RoundRobinException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundRobinException.h; sourceTree = "<group>"; };
+		33267ED310E4895E00E3AE42 /* RoundRobinException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoundRobinException.m; sourceTree = "<group>"; };
 		3338CDB310C5036C0067C94D /* ImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageView.h; sourceTree = "<group>"; };
 		3338CDB410C5036C0067C94D /* ImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageView.m; sourceTree = "<group>"; };
 		3338CDB510C5036C0067C94D /* LabelView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabelView.h; sourceTree = "<group>"; };
@@ -651,6 +663,8 @@
 				8C460E6E109554D600C7A686 /* CheckNetworkException.m */,
 				8C09E76210BA838800A475D8 /* ControllerException.h */,
 				8CE7EBE310BE773600E15487 /* ControllerException.m */,
+				33267ED210E4895E00E3AE42 /* RoundRobinException.h */,
+				33267ED310E4895E00E3AE42 /* RoundRobinException.m */,
 			);
 			name = exception;
 			sourceTree = "<group>";
@@ -706,6 +720,8 @@
 				8CEB4E7E10B2827200A67721 /* LogoutHelper.m */,
 				3397F88210B52AB3008052AF /* SwitchServerAlertHelper.h */,
 				3397F88310B52AB3008052AF /* SwitchServerAlertHelper.m */,
+				33267E6F10E47C5B00E3AE42 /* NSDateHelper.h */,
+				33267E7010E47C5B00E3AE42 /* NSDateHelper.m */,
 			);
 			name = helper;
 			sourceTree = "<group>";
@@ -798,6 +814,8 @@
 				8C460ECE1095573600C7A686 /* XMLEntity.m */,
 				3389A31E10C60472009E074A /* Background.h */,
 				3389A31F10C60472009E074A /* Background.m */,
+				33267E3910E4711B00E3AE42 /* GroupMember.h */,
+				33267E3A10E4711B00E3AE42 /* GroupMember.m */,
 			);
 			name = model;
 			sourceTree = "<group>";
@@ -1128,6 +1146,9 @@
 				338D2ED610D8AADB0043BFE9 /* ClippedUIImage.m in Sources */,
 				338D306C10D8DD000043BFE9 /* UIViewUtil.m in Sources */,
 				8CC1E07F10DB491400155CC0 /* DefaultViewController.m in Sources */,
+				33267E3C10E4711B00E3AE42 /* GroupMember.m in Sources */,
+				33267E7210E47C5B00E3AE42 /* NSDateHelper.m in Sources */,
+				33267ED410E4895E00E3AE42 /* RoundRobinException.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1235,6 +1256,9 @@
 				338D2ED710D8AADB0043BFE9 /* ClippedUIImage.m in Sources */,
 				338D306D10D8DD000043BFE9 /* UIViewUtil.m in Sources */,
 				8CC1E07E10DB491400155CC0 /* DefaultViewController.m in Sources */,
+				33267E3B10E4711B00E3AE42 /* GroupMember.m in Sources */,
+				33267E7110E47C5B00E3AE42 /* NSDateHelper.m in Sources */,
+				33267ED510E4895E00E3AE42 /* RoundRobinException.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

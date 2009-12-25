@@ -174,6 +174,57 @@ static DataBaseService *myInstance = nil;
 	[Definition sharedDefinition].password = user.password;
 }
 
+// Insert a new groupmember into group_members table.
+- (void) insertGroupMember:(GroupMember *)groupMember {
+	const char *sqlStatement = "insert into group_members values(@url,@age)";
+	sqlite3_stmt *compiledStatement;
+	if(sqlite3_prepare_v2(openDatabase, sqlStatement, -1, &compiledStatement, NULL) ==SQLITE_OK) {
+		sqlite3_bind_text(compiledStatement, 1, [groupMember.url UTF8String], -1, SQLITE_TRANSIENT);
+		sqlite3_bind_double(compiledStatement, 2, [groupMember.age timeIntervalSince1970]);
+		if(SQLITE_DONE != sqlite3_step(compiledStatement)) {
+			NSLog(0, @"Error while inserting user. '%s'", sqlite3_errmsg(openDatabase));
+		} else {
+		}
+		sqlite3_reset(compiledStatement);
+	}
+	sqlite3_finalize(compiledStatement);
+}
+
+// Find all groupmembers.
+- (NSMutableArray *) findAllGroupMembers {
+	NSMutableArray *groupMembers = [[NSMutableArray alloc] init];
+	const char *sqlStatement = "select * from group_members";
+	sqlite3_stmt *compiledStatement;
+	if(sqlite3_prepare_v2(openDatabase, sqlStatement, -1, &compiledStatement, NULL) ==SQLITE_OK) {
+		if (sqlite3_step(compiledStatement) == SQLITE_ROW) {
+			NSString *url = [NSString stringWithUTF8String:(char *)sqlite3_column_text(compiledStatement, 0)];
+			NSDate *age = [NSDate dateWithTimeIntervalSince1970:sqlite3_column_double(compiledStatement, 1)];
+			GroupMember *groupMember = [[GroupMember alloc] init];
+			groupMember.url = url;
+			groupMember.age = age;
+			[groupMembers addObject:groupMember];
+		} else {
+			NSLog(0, @"Error while findAllGroupMembers. '%s'", sqlite3_errmsg(openDatabase));
+		}
+		sqlite3_reset(compiledStatement);
+		sqlite3_finalize(compiledStatement);
+	}
+	return groupMembers;
+}
+
+// Delete all the groupmembers.
+- (void) deleteAllGroupMembers {
+	const char *sqlStatement = "delete from group_members";
+	sqlite3_stmt *compiledStatement;
+	if(sqlite3_prepare_v2(openDatabase, sqlStatement, -1, &compiledStatement, NULL) ==SQLITE_OK) {
+		if(SQLITE_DONE != sqlite3_step(compiledStatement)) {
+			NSLog(@"Error while deleteAllGroupMembers.");
+		}
+	}
+	sqlite3_reset(compiledStatement);
+	sqlite3_finalize(compiledStatement);
+}
+
 - (void) dealloc {
 	sqlite3_close(openDatabase);
 	
