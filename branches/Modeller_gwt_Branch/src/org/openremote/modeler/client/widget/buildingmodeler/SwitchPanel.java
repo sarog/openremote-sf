@@ -29,7 +29,7 @@ import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.widget.TreePanelBuilder;
+import org.openremote.modeler.client.utils.SwitchTree;
 import org.openremote.modeler.domain.Switch;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -115,7 +115,7 @@ public class SwitchPanel extends ContentPanel {
    }
 
    private void createSwitchsTree(){
-      this.switchTree = TreePanelBuilder.buildSwitchTree(this);
+      this.switchTree = SwitchTree.buildSwitchTree();
       selectionService.addListener(new SourceSelectionChangeListenerExt(switchTree.getSelectionModel()));
       selectionService.register(switchTree.getSelectionModel());
       add(switchTree);

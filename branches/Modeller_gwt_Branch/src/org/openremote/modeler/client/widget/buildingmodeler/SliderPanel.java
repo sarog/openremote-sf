@@ -11,7 +11,7 @@ import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.widget.TreePanelBuilder;
+import org.openremote.modeler.client.utils.SliderTree;
 import org.openremote.modeler.domain.Slider;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -92,7 +92,7 @@ public class SliderPanel extends ContentPanel {
    }
 
    private void createSliderTree(){
-      this.sliderTree = TreePanelBuilder.buildsliderTree(this);
+      this.sliderTree = SliderTree.buildsliderTree();
       selectionService.addListener(new SourceSelectionChangeListenerExt(sliderTree.getSelectionModel()));
       selectionService.register(sliderTree.getSelectionModel());
       add(sliderTree);
