@@ -123,7 +123,7 @@ public class RoundRobinClient {
          socket = new MulticastSocket();
          InetAddress groupMulticastAdressForRoundRobin = InetAddress.getByName(roundRobinConfig.getRoundRobinMulticastAddress());
          socket.joinGroup(groupMulticastAdressForRoundRobin);
-         String transferData = msgKey + SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME;
+         String transferData = msgKey + SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME + roundRobinConfig.getRoundRobinTCPServerSocketPort() + SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME;
          if (groupName == null || "".equals(groupName)) {
             transferData += roundRobinConfig.getControllerGroupName();
          } else {
