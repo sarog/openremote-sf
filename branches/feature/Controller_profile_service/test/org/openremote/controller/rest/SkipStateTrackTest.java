@@ -55,7 +55,7 @@ public class SkipStateTrackTest {
    @Test
    public void testCase1() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1");
+      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001");
       try {
          WebResponse wr = wc.getResponse(request);
          System.out.println("The result is : \n" + wr.getText());
@@ -83,7 +83,7 @@ public class SkipStateTrackTest {
    @Test
    public void testCase2() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/2");
+      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1002");
       WebResponse wr;
       try {
          wr = wc.getResponse(request);
@@ -120,7 +120,7 @@ public class SkipStateTrackTest {
    @Test
    public void testCase3() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3");
+      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1003");
       WebResponse wr;
       try {
          wr = wc.getResponse(request);
@@ -156,7 +156,7 @@ public class SkipStateTrackTest {
    @Test
    public void testCase4() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/4");
+      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1004");
       WebResponse wr;
       try {
          wr = wc.getResponse(request);
