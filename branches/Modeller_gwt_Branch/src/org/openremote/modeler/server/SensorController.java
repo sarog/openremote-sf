@@ -15,8 +15,8 @@ public class SensorController extends BaseGWTSpringControllerWithHibernateSuppor
    
    private UserService userService;
    
-   public void deleteSensor(long id) {
-      sensorService.deleteSensor(id);
+   public Boolean deleteSensor(long id) {
+      return sensorService.deleteSensor(id);
    }
 
    public List<Sensor> loadAll() {

@@ -18,7 +18,7 @@ public class SliderCommandRef extends CommandRefItem {
       this.slider = slider;
    }
    @OneToOne
-   @JoinColumn(name = "target_slider_oid")
+   @JoinColumn(name = "slider_oid")
    public Slider getSlider() {
       return slider;
    }

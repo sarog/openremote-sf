@@ -32,7 +32,7 @@ public class SwitchSensorRef extends SensorRefItem {
    private Switch switchToggle;
 
    @OneToOne
-   @JoinColumn(name = "target_switch_oid")
+   @JoinColumn(name = "switch_oid")
    public Switch getSwitchToggle() {
       return switchToggle;
    }

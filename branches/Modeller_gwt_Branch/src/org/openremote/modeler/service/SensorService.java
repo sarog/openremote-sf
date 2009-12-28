@@ -32,7 +32,7 @@ public interface SensorService {
 
    Sensor updateSensor(Sensor sensor);
 
-   void deleteSensor(long id);
+   Boolean deleteSensor(long id);
    
    Sensor loadById(long id);
 }

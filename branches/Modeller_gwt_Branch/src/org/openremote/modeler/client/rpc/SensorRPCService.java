@@ -33,7 +33,7 @@ public interface SensorRPCService extends RemoteService {
    
    Sensor updateSensor(Sensor sensor);
    
-   void deleteSensor(long id);
+   Boolean deleteSensor(long id);
    
    List<Sensor> loadAll();
    

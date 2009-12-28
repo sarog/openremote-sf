@@ -22,8 +22,10 @@ public class CommandRefItem extends BusinessEntity {
 
    private DeviceCommand deviceCommand;
 
+   private String deviceName;
+   
    @ManyToOne
-   @JoinColumn(name = "device_command_oid")
+   @JoinColumn(name = "target_device_command_oid")
    @JSON(include = false)
    public DeviceCommand getDeviceCommand() {
       return deviceCommand;
@@ -34,8 +36,19 @@ public class CommandRefItem extends BusinessEntity {
    }
    
    @Transient
-   public String getDisplayName(){
-      return deviceCommand.getDisplayName();
+   public String getDeviceName() {
+      return deviceName;
+   }
+
+   public void setDeviceName(String deviceName) {
+      this.deviceName = deviceName;
+   }
+   
+   @Override
+   @Transient
+   public String getDisplayName() {
+      this.deviceName = (this.deviceName == null || "".equals(this.deviceName)) ? getDeviceCommand().getDevice().getName() : this.deviceName;
+      return getDeviceCommand().getName() + " (" + this.deviceName + ")";
    }
    
 }

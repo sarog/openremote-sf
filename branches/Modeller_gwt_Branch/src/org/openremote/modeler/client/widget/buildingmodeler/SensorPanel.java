@@ -53,6 +53,7 @@ import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
@@ -162,11 +163,15 @@ public class SensorPanel extends ContentPanel {
       if (sensorTree.getSelectionModel().getSelectedItems().size() > 0) {
          for (final BeanModel data : sensorTree.getSelectionModel().getSelectedItems()) {
             if (data.getBean() instanceof Sensor) {
-               SensorBeanModelProxy.deleteSensor(data, new AsyncSuccessCallback<Void>() {
+               SensorBeanModelProxy.deleteSensor(data, new AsyncSuccessCallback<Boolean>() {
                   @Override
-                  public void onSuccess(Void result) {
-                     sensorTree.getStore().remove(data);
-                     Info.display("Info", "Delete success.");
+                  public void onSuccess(Boolean result) {
+                     if (result) {
+                        sensorTree.getStore().remove(data);
+                        Info.display("Info", "Delete success.");
+                     } else {
+                        MessageBox.alert("Warn", "The sensor cann't be delete, because it was refrenced by other switch or slider", null);
+                     }
                   }
                });
             }
