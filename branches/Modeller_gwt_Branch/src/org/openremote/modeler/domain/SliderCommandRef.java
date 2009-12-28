@@ -11,7 +11,12 @@ import javax.persistence.OneToOne;
 public class SliderCommandRef extends CommandRefItem {
 
    private Slider slider;
-
+   
+   public SliderCommandRef(){}
+   
+   public SliderCommandRef(Slider slider){
+      this.slider = slider;
+   }
    @OneToOne
    @JoinColumn(name = "target_slider_oid")
    public Slider getSlider() {

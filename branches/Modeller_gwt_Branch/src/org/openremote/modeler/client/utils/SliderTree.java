@@ -24,7 +24,7 @@ import java.util.List;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.DeviceCommandRef;
+import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.Slider;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
@@ -96,10 +96,9 @@ public class SliderTree {
 
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
-
             if (thisModel.getBean() instanceof Slider) {
                return ICON.sliderIcon();
-            } else if (thisModel.getBean() instanceof DeviceCommandRef) {
+            } else if (thisModel.getBean() instanceof CommandRefItem) {
                return ICON.deviceCmd();
             } else {
                return ICON.sliderIcon();

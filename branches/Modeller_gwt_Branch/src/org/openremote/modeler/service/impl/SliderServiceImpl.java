@@ -28,6 +28,7 @@ public class SliderServiceImpl extends BaseAbstractService<Slider>implements Sli
 
    @Override
    public void update(Slider slider) {
-      genericDAO.saveOrUpdate(slider);
+      Slider oldSlider = genericDAO.loadById(Slider.class, slider.getOid());
+      oldSlider.setName(slider.getName());
    }
 }

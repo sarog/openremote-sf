@@ -35,7 +35,8 @@ import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
-import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.domain.SliderCommandRef;
+import org.openremote.modeler.domain.SliderSensorRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -114,9 +115,9 @@ public class SliderWindow extends FormWindow {
       
       if(edit){
          nameField.setValue(slider.getName());
-//         if(slider.getSensorRef()!= null){
-//            sensorField.setValue(new ComboBoxDataModel<Sensor>(slider.getSensorRef().getSensor().getDisplayName(),slider.getSensorRef().getSensor()));
-//         }
+         if(slider.getSliderSensorRef()!= null){
+            sensorField.setValue(new ComboBoxDataModel<Sensor>(slider.getSliderSensorRef().getSensor().getDisplayName(),slider.getSliderSensorRef().getSensor()));
+         }
          setValueBtn.setText(slider.getSetValueCmd().getDisplayName());
       }
       
@@ -179,18 +180,19 @@ public class SliderWindow extends FormWindow {
             @Override
             public void afterSubmit(SubmitEvent be) {
                BeanModel dataModel = be.<BeanModel> getData();
-               UICommand uiCommand = null;
+               DeviceCommandRef deviceCommandRef = null;
                if (dataModel.getBean() instanceof DeviceCommand) {
-                  uiCommand = new DeviceCommandRef((DeviceCommand) dataModel.getBean());
+                  deviceCommandRef = new DeviceCommandRef((DeviceCommand) dataModel.getBean());
                } else if (dataModel.getBean() instanceof DeviceCommandRef) {
-                  uiCommand = (DeviceCommandRef) dataModel.getBean();
+                  deviceCommandRef = (DeviceCommandRef) dataModel.getBean();
                } else {
                   MessageBox.alert("error", "A switch can only have command instead of macor", null);
                   return;
                }
-               command.setText(uiCommand.getDisplayName());
-               System.out.println(command.getTitle());
-//              slider.setSetValueCmd((DeviceCommandRef) uiCommand);
+               command.setText(deviceCommandRef.getDisplayName());
+               SliderCommandRef sliderCommandRef = new SliderCommandRef(slider);
+               sliderCommandRef.setDeviceCommand(deviceCommandRef.getDeviceCommand());
+               slider.setSetValueCmd(sliderCommandRef);
             }
          });
       }
@@ -201,9 +203,10 @@ public class SliderWindow extends FormWindow {
       @SuppressWarnings("unchecked")
       @Override
       public void selectionChanged(SelectionChangedEvent<ModelData> se) {
-         ComboBoxDataModel<Sensor> sensorItem;
-         sensorItem = (ComboBoxDataModel<Sensor>) se.getSelectedItem();
-//         slider.setSensorRef(new SensorRef(sensorItem.getData()));
+          ComboBoxDataModel<Sensor> sensorItem = (ComboBoxDataModel<Sensor>) se.getSelectedItem();
+         SliderSensorRef sensorRef = new SliderSensorRef(slider);
+         sensorRef.setSensor(sensorItem.getData());
+         slider.setSliderSensorRef(sensorRef);
       }
    }
 }

@@ -33,10 +33,10 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.SwitchTree;
-import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.domain.SwitchSensorRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
@@ -50,11 +50,13 @@ import com.extjs.gxt.ui.client.store.Store;
 import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Element;
 
 /**
  * 
@@ -100,7 +102,6 @@ public class SwitchPanel extends ContentPanel {
       
       makeCreateAndDeleteControlable();
       add(switchToolBar);
-//      add(createSwitchsTree());
       
       newBtn.addSelectionListener(new NewSwitchListener());
       editBtn.addSelectionListener(new EditSwitchListener());
@@ -128,10 +129,20 @@ public class SwitchPanel extends ContentPanel {
 
    private void createSwitchsTree(){
       this.switchTree = SwitchTree.buildSwitchTree();
-      selectionService.addListener(new SourceSelectionChangeListenerExt(switchTree.getSelectionModel()));
-      selectionService.register(switchTree.getSelectionModel());
-      addTreeStoreEventListenerToTree(switchTree);
-      add(switchTree);
+      LayoutContainer treeContainer = new LayoutContainer(){
+
+         @Override
+         protected void onRender(Element parent, int index) {
+            super.onRender(parent, index);
+            selectionService.addListener(new SourceSelectionChangeListenerExt(switchTree.getSelectionModel()));
+            selectionService.register(switchTree.getSelectionModel());
+            addTreeStoreEventListenerToTree(switchTree);
+         }
+         
+      };
+      treeContainer.add(switchTree);
+      treeContainer.setLayoutOnChange(true);
+      add(treeContainer);
    }
    
    private void addTreeStoreEventListenerToTree(TreePanel<BeanModel> tree) {
@@ -162,9 +173,8 @@ public class SwitchPanel extends ContentPanel {
          return;
       }
       for (BeanModel beanModel : models) {
-         if (beanModel.getBean() instanceof DeviceCommandRef) {
-            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getTreeUpdateListener(switchTree,beanModel));
+         if (beanModel.getBean() instanceof CommandRefItem) {
+            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase.getOriginalCommandRefItemBeanModelId(beanModel), getTreeUpdateListener(switchTree,beanModel));
             BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel),
                   getTreeUpdateListener(switchTree,beanModel));
          } 
@@ -181,9 +191,8 @@ public class SwitchPanel extends ContentPanel {
          return;
       }
       for (BeanModel beanModel : models) {
-         if (beanModel.getBean() instanceof DeviceCommandRef) {
-            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getTreeUpdateListener(switchTree,beanModel));
+         if (beanModel.getBean() instanceof SwitchSensorRef) {
+            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase.getOriginalCommandRefItemBeanModelId(beanModel), getTreeUpdateListener(switchTree,beanModel));
          }
          changeListenerMap.remove(beanModel);
       }
@@ -204,12 +213,8 @@ public class SwitchPanel extends ContentPanel {
                   BeanModel source = (BeanModel) changeEvent.getItem();
                   if (source.getBean() instanceof DeviceCommand) {
                      DeviceCommand deviceCommand = (DeviceCommand) source.getBean();
-                     DeviceCommandRef deviceCommandRef = (DeviceCommandRef) target.getBean();
-                     deviceCommandRef.setDeviceCommand(deviceCommand);
-                  } else if (source.getBean() instanceof Device) {
-                     Device device = (Device) source.getBean();
-                     DeviceCommandRef targetDeviceCommandRef = (DeviceCommandRef) target.getBean();
-                     targetDeviceCommandRef.setDeviceName(device.getName());
+                     CommandRefItem cmdRefItem = target.getBean();
+                     cmdRefItem.setDeviceCommand(deviceCommand);
                   }
                   tree.getStore().update(target);
                }
@@ -230,9 +235,11 @@ public class SwitchPanel extends ContentPanel {
             public void afterSubmit(SubmitEvent be) {
                BeanModel switchBeanModel = be.getData();
                Switch swh = switchBeanModel.getBean();
-               switchTree.getStore().add(switchBeanModel, true);
-//               switchTree.getStore().add(switchBeanModel, swh.getOnDeviceCommandRef().getBeanModel(), false);
-//               switchTree.getStore().add(switchBeanModel, swh.getOffDeviceCommandRef().getBeanModel(), false);
+               switchTree.getStore().add(switchBeanModel, false);
+               switchTree.getStore().add(switchBeanModel, swh.getSwitchCommandOnRef().getBeanModel(), false);
+               switchTree.getStore().add(switchBeanModel, swh.getSwitchCommandOffRef().getBeanModel(), false);
+               
+               switchTree.setExpanded(switchBeanModel, true);
                switchWindow.hide();
             }
             
@@ -245,7 +252,7 @@ public class SwitchPanel extends ContentPanel {
 
       @Override
       public void componentSelected(ButtonEvent ce) {
-         BeanModel selectedSwitchBean = switchTree.getSelectionModel().getSelectedItem();
+         final BeanModel selectedSwitchBean = switchTree.getSelectionModel().getSelectedItem();
          Switch switchToggle = selectedSwitchBean.getBean();
          
          final SwitchWindow switchWindow = new SwitchWindow(switchToggle);
@@ -253,12 +260,14 @@ public class SwitchPanel extends ContentPanel {
 
             @Override
             public void afterSubmit(SubmitEvent be) {
+               switchTree.getStore().removeAll(selectedSwitchBean);
+               switchTree.getStore().remove(selectedSwitchBean);
+               
                BeanModel switchBeanModel = be.getData();
                Switch swh = switchBeanModel.getBean();
-               switchTree.getStore().update(switchBeanModel);
-               switchTree.getStore().removeAll(switchBeanModel);
-//               switchTree.getStore().add(swh.getBeanModel(),swh.getOnDeviceCommandRef().getBeanModel(),false);
-//               switchTree.getStore().add(swh.getBeanModel(),swh.getOffDeviceCommandRef().getBeanModel(),false);
+               switchTree.getStore().add(switchBeanModel,false);
+               switchTree.getStore().add(swh.getBeanModel(),swh.getSwitchCommandOnRef().getBeanModel(),false);
+               switchTree.getStore().add(swh.getBeanModel(),swh.getSwitchCommandOffRef().getBeanModel(),false);
                
                switchTree.setExpanded(switchBeanModel, true);
                switchWindow.hide();

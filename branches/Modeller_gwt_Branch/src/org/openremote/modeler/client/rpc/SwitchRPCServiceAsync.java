@@ -12,8 +12,8 @@ public interface SwitchRPCServiceAsync {
 
    void delete(Switch switchToggle, AsyncCallback<Void> callback);
 
-   void save(Switch switchToggle, AsyncCallback<Void> callback);
+   void save(Switch switchToggle, AsyncCallback<Switch> callback);
 
-   void update(Switch switchToggle, AsyncCallback<Void> callback);
+   void update(Switch switchToggle, AsyncCallback<Switch> callback);
    
 }

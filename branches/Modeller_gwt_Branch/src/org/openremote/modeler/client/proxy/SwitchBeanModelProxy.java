@@ -25,8 +25,8 @@ public class SwitchBeanModelProxy {
       } else {
          Switch switchToggle = switchBean.getBean();
          List<BeanModel> commandBeanModels = new ArrayList<BeanModel>();
-//         commandBeanModels.add(switchToggle.getOnDeviceCommandRef().getBeanModel());
-//         commandBeanModels.add(switchToggle.getOffDeviceCommandRef().getBeanModel());
+         commandBeanModels.add(switchToggle.getSwitchCommandOnRef().getBeanModel());
+         commandBeanModels.add(switchToggle.getSwitchCommandOffRef().getBeanModel());
          
          callback.onSuccess(commandBeanModels);
       }
@@ -44,26 +44,28 @@ public class SwitchBeanModelProxy {
       }
    }
    
-   public static void save(final BeanModel beanModel){
+   public static void save(final BeanModel beanModel,final AsyncSuccessCallback<Switch> callback){
       if (beanModel != null && beanModel.getBean() instanceof Switch) {
-         AsyncServiceFactory.getSwitchRPCServiceAsync().save((Switch)(beanModel.getBean()), new AsyncSuccessCallback<Void>(){
+         AsyncServiceFactory.getSwitchRPCServiceAsync().save((Switch)(beanModel.getBean()), new AsyncSuccessCallback<Switch>(){
 
             @Override
-            public void onSuccess(Void result) {
+            public void onSuccess(Switch result) {
                BeanModelDataBase.switchTable.insert(beanModel);
+               callback.onSuccess(result);
             }
             
          });
       }
    }
    
-   public static void update(final BeanModel beanModel){
+   public static void update(final BeanModel beanModel,final AsyncSuccessCallback<Switch> callback){
       if (beanModel != null && beanModel.getBean() instanceof Switch) {
-         AsyncServiceFactory.getSwitchRPCServiceAsync().update((Switch)(beanModel.getBean()), new AsyncSuccessCallback<Void>(){
+         AsyncServiceFactory.getSwitchRPCServiceAsync().update((Switch)(beanModel.getBean()), new AsyncSuccessCallback<Switch>(){
 
             @Override
-            public void onSuccess(Void result) {
+            public void onSuccess(Switch result) {
                BeanModelDataBase.switchTable.update(beanModel);
+               callback.onSuccess(result);
             }
             
          });

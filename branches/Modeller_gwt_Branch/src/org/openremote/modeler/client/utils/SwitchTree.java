@@ -24,7 +24,7 @@ import java.util.List;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.DeviceCommandRef;
+import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.Switch;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
@@ -95,10 +95,9 @@ public class SwitchTree {
       
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
-
             if (thisModel.getBean() instanceof Switch) {
                return ICON.switchIcon();
-            } else if (thisModel.getBean() instanceof DeviceCommandRef) {
+            } else if (thisModel.getBean() instanceof CommandRefItem ) {
                return ICON.deviceCmd();
             } else {
                return ICON.switchIcon();
