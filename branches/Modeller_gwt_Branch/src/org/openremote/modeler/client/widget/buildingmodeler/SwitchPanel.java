@@ -231,8 +231,8 @@ public class SwitchPanel extends ContentPanel {
                BeanModel switchBeanModel = be.getData();
                Switch swh = switchBeanModel.getBean();
                switchTree.getStore().add(switchBeanModel, true);
-               switchTree.getStore().add(switchBeanModel, swh.getOnDeviceCommandRef().getBeanModel(), false);
-               switchTree.getStore().add(switchBeanModel, swh.getOffDeviceCommandRef().getBeanModel(), false);
+//               switchTree.getStore().add(switchBeanModel, swh.getOnDeviceCommandRef().getBeanModel(), false);
+//               switchTree.getStore().add(switchBeanModel, swh.getOffDeviceCommandRef().getBeanModel(), false);
                switchWindow.hide();
             }
             
@@ -257,8 +257,8 @@ public class SwitchPanel extends ContentPanel {
                Switch swh = switchBeanModel.getBean();
                switchTree.getStore().update(switchBeanModel);
                switchTree.getStore().removeAll(switchBeanModel);
-               switchTree.getStore().add(swh.getBeanModel(),swh.getOnDeviceCommandRef().getBeanModel(),false);
-               switchTree.getStore().add(swh.getBeanModel(),swh.getOffDeviceCommandRef().getBeanModel(),false);
+//               switchTree.getStore().add(swh.getBeanModel(),swh.getOnDeviceCommandRef().getBeanModel(),false);
+//               switchTree.getStore().add(swh.getBeanModel(),swh.getOffDeviceCommandRef().getBeanModel(),false);
                
                switchTree.setExpanded(switchBeanModel, true);
                switchWindow.hide();

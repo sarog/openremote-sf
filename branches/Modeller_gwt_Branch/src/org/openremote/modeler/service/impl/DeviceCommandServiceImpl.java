@@ -19,14 +19,17 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.util.List;
+
 import org.hibernate.Hibernate;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
+import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroItemService;
-
-import java.util.List;
 
 /**
  * The implementation for DeviceCommandService interface.
@@ -75,8 +78,14 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     */
    public void deleteCommand(long id) {
       DeviceCommand deviceCommand = loadById(id);
-      deviceMacroItemService.deleteByDeviceCommand(deviceCommand);
-      genericDAO.delete(deviceCommand);
+      DetachedCriteria criteria = DetachedCriteria.forClass(CommandRefItem.class);
+      List<CommandRefItem> commandRefItems = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("deviceCommand", deviceCommand)));
+      if (commandRefItems.size() > 0){
+         System.out.println("size:"+commandRefItems.size());
+      } else {
+         deviceMacroItemService.deleteByDeviceCommand(deviceCommand);
+         genericDAO.delete(deviceCommand);
+      }
    }
 
    /**

@@ -19,31 +19,27 @@
 */
 package org.openremote.modeler.domain;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "sensor_ref")
-public class SensorRef extends BusinessEntity {
+@DiscriminatorValue("SWITCH_SENSOR_REF")
+public class SwitchSensorRef extends SensorRefItem {
 
-   private Sensor sensor;
-   
-   public SensorRef() {
-   }
-   public SensorRef(Sensor sensor) {
-      this.sensor = sensor;
-   }
-   
+   private Switch switchToggle;
+
    @OneToOne
-   @JoinColumn(name = "sensor_oid")
-   public Sensor getSensor() {
-      return sensor;
+   @JoinColumn(name = "target_switch_oid")
+   public Switch getSwitchToggle() {
+      return switchToggle;
    }
-   public void setSensor(Sensor sensor) {
-      this.sensor = sensor;
+
+   public void setSwitchToggle(Switch switchToggle) {
+      this.switchToggle = switchToggle;
    }
+   
    
 }

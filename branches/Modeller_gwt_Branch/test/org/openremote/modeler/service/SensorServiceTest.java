@@ -71,7 +71,7 @@ public class SensorServiceTest extends TestNGBase {
       Sensor sensor = new Sensor();
       String name = "sensor1";
       sensor.setName(name);
-      sensor.setDeviceCommandRef(new DeviceCommandRef(deviceCommand));
+//      sensor.setDeviceCommandRef(new DeviceCommandRef(deviceCommand));
       sensor.setType(SensorType.SWITCH);
       
       User user = new User();
@@ -107,7 +107,7 @@ public class SensorServiceTest extends TestNGBase {
       RangeSensor sensor = new RangeSensor();
       String name = "rangSensor";
       sensor.setName(name);
-      sensor.setDeviceCommandRef(new DeviceCommandRef(deviceCommand));
+//      sensor.setDeviceCommandRef(new DeviceCommandRef(deviceCommand));
       sensor.setMin(5);
       sensor.setMax(30);
       
@@ -144,7 +144,7 @@ public class SensorServiceTest extends TestNGBase {
       CustomSensor sensor = new CustomSensor();
       String name = "customSensor";
       sensor.setName(name);
-      sensor.setDeviceCommandRef(new DeviceCommandRef(deviceCommand));
+//      sensor.setDeviceCommandRef(new DeviceCommandRef(deviceCommand));
       State state1 = new State();
       state1.setSensor(sensor);
       sensor.addState(state1);

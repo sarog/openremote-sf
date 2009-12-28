@@ -21,7 +21,6 @@ package org.openremote.modeler.domain;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -38,8 +37,8 @@ import flexjson.JSON;
 public class Slider extends BusinessEntity {
 
    private String name;
-   private DeviceCommandRef setValueCmd;
-   private SensorRef sensorRef;
+   private SliderCommandRef setValueCmd;
+   private SliderSensorRef sliderSensorRef;
    private Account account;
    
    public String getName() {
@@ -50,13 +49,12 @@ public class Slider extends BusinessEntity {
       this.name = name;
    }
 
-   @OneToOne(cascade = CascadeType.ALL)
-   @JoinColumn(name = "set_value_cmd_oid")
-   public DeviceCommandRef getSetValueCmd() {
+   @OneToOne(mappedBy = "slider", cascade = CascadeType.ALL)
+   public SliderCommandRef getSetValueCmd() {
       return setValueCmd;
    }
 
-   public void setSetValueCmd(DeviceCommandRef setValueCmd) {
+   public void setSetValueCmd(SliderCommandRef setValueCmd) {
       this.setValueCmd = setValueCmd;
    }
 
@@ -70,16 +68,15 @@ public class Slider extends BusinessEntity {
       this.account = account;
    }
 
-   @OneToOne(cascade = CascadeType.ALL)
-   @JoinColumn(name = "sensor_ref_oid")
-   public SensorRef getSensorRef() {
-      return sensorRef;
+   @OneToOne(mappedBy = "slider", cascade = CascadeType.ALL)
+   public SliderSensorRef getSliderSensorRef() {
+      return sliderSensorRef;
    }
 
-   public void setSensorRef(SensorRef sensorRef) {
-      this.sensorRef = sensorRef;
+   public void setSliderSensorRef(SliderSensorRef sliderSensorRef) {
+      this.sliderSensorRef = sliderSensorRef;
    }
-   
+
    @Transient
    public String getDisplayName() {
       return getName();

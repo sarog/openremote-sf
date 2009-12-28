@@ -21,7 +21,6 @@ package org.openremote.modeler.domain;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -38,48 +37,49 @@ import flexjson.JSON;
 public class Switch extends BusinessEntity {
 
    private String name;
-   private DeviceCommandRef onDeviceCommandRef;
-   private DeviceCommandRef offDeviceCommandRef;
-   private SensorRef sensorRef;
+   private SwitchCommandOnRef switchCommandOnRef;
+   private SwitchCommandOffRef switchCommandOffRef;
+   private SwitchSensorRef switchSensorRef;
    private Account account;
 
    public String getName() {
       return name;
    }
 
-   @OneToOne(cascade = CascadeType.ALL)
-   @JoinColumn(name = "on_cmd_oid")
-   public DeviceCommandRef getOnDeviceCommandRef() {
-      return onDeviceCommandRef;
-   }
-
-   @OneToOne(cascade = CascadeType.ALL)
-   @JoinColumn(name = "off_cmd_oid")
-   public DeviceCommandRef getOffDeviceCommandRef() {
-      return offDeviceCommandRef;
-   }
    
    public void setName(String name) {
       this.name = name;
    }
 
-   public void setOnDeviceCommandRef(DeviceCommandRef onDeviceCommandRef) {
-      this.onDeviceCommandRef = onDeviceCommandRef;
+   @OneToOne(mappedBy = "offSwitch", cascade = CascadeType.ALL)
+   public SwitchCommandOffRef getSwitchCommandOffRef() {
+      return switchCommandOffRef;
    }
 
-   public void setOffDeviceCommandRef(DeviceCommandRef offDeviceCommandRef) {
-      this.offDeviceCommandRef = offDeviceCommandRef;
+   public void setSwitchCommandOffRef(SwitchCommandOffRef switchCommandOffRef) {
+      this.switchCommandOffRef = switchCommandOffRef;
    }
 
-   @OneToOne(cascade = CascadeType.ALL)
-   @JoinColumn(name = "sensor_ref_oid")
-   public SensorRef getSensorRef() {
-      return sensorRef;
+
+   @OneToOne(mappedBy = "onSwitch", cascade = CascadeType.ALL)
+   public SwitchCommandOnRef getSwitchCommandOnRef() {
+      return switchCommandOnRef;
    }
 
-   public void setSensorRef(SensorRef sensorRef) {
-      this.sensorRef = sensorRef;
+   public void setSwitchCommandOnRef(SwitchCommandOnRef switchCommandOnRef) {
+      this.switchCommandOnRef = switchCommandOnRef;
    }
+
+   @OneToOne(mappedBy = "switchToggle", cascade = CascadeType.ALL)
+   public SwitchSensorRef getSwitchSensorRef() {
+      return switchSensorRef;
+   }
+
+
+   public void setSwitchSensorRef(SwitchSensorRef switchSensorRef) {
+      this.switchSensorRef = switchSensorRef;
+   }
+
 
    @ManyToOne
    @JSON(include = false)

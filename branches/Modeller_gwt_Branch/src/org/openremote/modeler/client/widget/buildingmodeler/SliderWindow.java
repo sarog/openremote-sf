@@ -34,7 +34,6 @@ import org.openremote.modeler.client.widget.SimpleComboBox;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.Sensor;
-import org.openremote.modeler.domain.SensorRef;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.UICommand;
 
@@ -115,9 +114,9 @@ public class SliderWindow extends FormWindow {
       
       if(edit){
          nameField.setValue(slider.getName());
-         if(slider.getSensorRef()!= null){
-            sensorField.setValue(new ComboBoxDataModel<Sensor>(slider.getSensorRef().getSensor().getDisplayName(),slider.getSensorRef().getSensor()));
-         }
+//         if(slider.getSensorRef()!= null){
+//            sensorField.setValue(new ComboBoxDataModel<Sensor>(slider.getSensorRef().getSensor().getDisplayName(),slider.getSensorRef().getSensor()));
+//         }
          setValueBtn.setText(slider.getSetValueCmd().getDisplayName());
       }
       
@@ -191,7 +190,7 @@ public class SliderWindow extends FormWindow {
                }
                command.setText(uiCommand.getDisplayName());
                System.out.println(command.getTitle());
-              slider.setSetValueCmd((DeviceCommandRef) uiCommand);
+//              slider.setSetValueCmd((DeviceCommandRef) uiCommand);
             }
          });
       }
@@ -204,7 +203,7 @@ public class SliderWindow extends FormWindow {
       public void selectionChanged(SelectionChangedEvent<ModelData> se) {
          ComboBoxDataModel<Sensor> sensorItem;
          sensorItem = (ComboBoxDataModel<Sensor>) se.getSelectedItem();
-         slider.setSensorRef(new SensorRef(sensorItem.getData()));
+//         slider.setSensorRef(new SensorRef(sensorItem.getData()));
       }
    }
 }

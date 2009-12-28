@@ -33,9 +33,9 @@ import org.openremote.modeler.client.widget.SimpleComboBox;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorCommandRef;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
 
@@ -167,11 +167,11 @@ public class SensorWindow extends FormWindow {
       
       if (sensorModel != null) {
          Sensor sensor = sensorModel.getBean();
-         if (sensor.getDeviceCommandRef() != null) {
-            BeanModel selectedCommandModel = sensor.getDeviceCommandRef().getDeviceCommand().getBeanModel();
-            commandSelectTree.setExpanded(selectedCommandModel, true);
-            commandSelectTree.getSelectionModel().select(selectedCommandModel, false);
-         }
+//         if (sensor.getDeviceCommandRef() != null) {
+//            BeanModel selectedCommandModel = sensor.getDeviceCommandRef().getDeviceCommand().getBeanModel();
+//            commandSelectTree.setExpanded(selectedCommandModel, true);
+//            commandSelectTree.getSelectionModel().select(selectedCommandModel, false);
+//         }
          if (sensor.getType() != null) {
             typeList.setValue(new ComboBoxDataModel<SensorType>(sensor.getType().toString(), sensor.getType()));
             if (sensor.getType() == SensorType.RANGE) {
@@ -333,7 +333,10 @@ public class SensorWindow extends FormWindow {
                sensor.setName(nameField.getValue());
                BeanModel selectedCommand = commandSelectTree.getSelectionModel().getSelectedItem();
                if (selectedCommand != null && selectedCommand.getBean() instanceof DeviceCommand) {
-                  sensor.setDeviceCommandRef(new DeviceCommandRef((DeviceCommand)selectedCommand.getBean()));
+                  SensorCommandRef sensorCommandRef = new SensorCommandRef();
+                  sensorCommandRef.setDeviceCommand((DeviceCommand)selectedCommand.getBean());
+                  sensorCommandRef.setSensor(sensor);
+                  sensor.setSensorCommandRef(sensorCommandRef);
                }
                SensorBeanModelProxy.saveSensor(sensor, new AsyncSuccessCallback<Sensor>() {
                   public void onSuccess(Sensor result) {
@@ -344,7 +347,7 @@ public class SensorWindow extends FormWindow {
             } else if (null != sensorModel) {
                Sensor sensor = sensorModel.getBean();
                sensor.setName(nameField.getValue());
-               SensorBeanModelProxy.saveSensor(sensor, new AsyncSuccessCallback<Sensor>() {
+               SensorBeanModelProxy.updateSensor(sensor, new AsyncSuccessCallback<Sensor>() {
                   public void onSuccess(Sensor result) {
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result));
                   }

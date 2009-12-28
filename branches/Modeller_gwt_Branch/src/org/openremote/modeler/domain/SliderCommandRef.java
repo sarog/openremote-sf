@@ -1,0 +1,26 @@
+package org.openremote.modeler.domain;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+
+@SuppressWarnings("serial")
+@Entity
+@DiscriminatorValue("SLIDER_CMD_REF")
+public class SliderCommandRef extends CommandRefItem {
+
+   private Slider slider;
+
+   @OneToOne
+   @JoinColumn(name = "target_slider_oid")
+   public Slider getSlider() {
+      return slider;
+   }
+
+   public void setSlider(Slider slider) {
+      this.slider = slider;
+   }
+   
+   
+}
