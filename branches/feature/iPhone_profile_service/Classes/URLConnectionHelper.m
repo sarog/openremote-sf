@@ -48,9 +48,8 @@
 - (void)switchToAvailableCustomizedServer;
 - (void)doSwitchToAvailableCustomizedServer;
 
+- (void) removeBadCurrentServerURL;
 - (void) swithToGroupMemberServer;
-- (void) clearServerChooseState:(NSMutableArray *)servers;
-- (void) removeBadCurrentServerUrl:(NSString *)tempCurrentServerUrl servers:(NSMutableArray *)servers;
 - (NSString *) checkGroupMemberServers;
 - (void) updateControllerWith:(NSString *)groupMemberUrl;
 @end
@@ -102,10 +101,20 @@
 
 // Swith to groupmember controller.
 - (void) swithToGroupMemberServer {
+	[self removeBadCurrentServerURL];
+	NSString *aAvailableGroupMemberUrl = [self checkGroupMemberServers];
+	
+	if (aAvailableGroupMemberUrl != nil && ![@"" isEqualToString:aAvailableGroupMemberUrl]) {
+		[self updateControllerWith:aAvailableGroupMemberUrl];
+	} else {
+		ViewHelper *viewHelper = [[ViewHelper alloc] init];
+		[viewHelper showAlertViewWithTitleAndSettingNavigation:@"Command failed" Message:@"There's no server available. Leave this problem?"];
+	}
+}
+
+- (void) removeBadCurrentServerURL {
 	NSString *tempCurrentServerUrl = [AppSettingsDefinition getCurrentServerUrl];
-	NSMutableArray *servers;
 	if ([AppSettingsDefinition isAutoDiscoveryEnable]) {
-		servers = [AppSettingsDefinition getAutoServers];
 		NSMutableArray *autoServers = [AppSettingsDefinition getAutoServers];
 		for (int i=0; i < [autoServers count]; i++) {
 			[[autoServers objectAtIndex:i] setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];
@@ -114,7 +123,6 @@
 			}
 		}
 	} else {
-		servers = [AppSettingsDefinition getCustomServers];
 		NSMutableArray *customServers = [AppSettingsDefinition getCustomServers];
 		for (int i=0; i < [customServers count]; i++) {
 			[[customServers objectAtIndex:i] setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];
@@ -123,31 +131,6 @@
 			}
 		}
 	}
-//	[self clearServerChooseState:servers];
-//	[self removeBadCurrentServerUrl:tempCurrentServerUrl servers:servers];
-	NSString *aAvailableGroupMemberUrl = [self checkGroupMemberServers];
-	if (aAvailableGroupMemberUrl != nil && ![@"" isEqualToString:aAvailableGroupMemberUrl]) {
-		[self updateControllerWith:aAvailableGroupMemberUrl];
-	} else {
-		// Do nothing.
-	}
-}
-
-
-- (void) clearServerChooseState:(NSMutableArray *)servers {
-	for (int i=0; i < [servers count]; i++) {
-		[[servers objectAtIndex:i] setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];
-	}
-	[AppSettingsDefinition writeToFile];
-}
-
-- (void) removeBadCurrentServerUrl:(NSString *)tempCurrentServerUrl servers:(NSMutableArray *)servers {
-	for (int i=0; i < [servers count]; i++) {
-		if([tempCurrentServerUrl isEqualToString:[[servers objectAtIndex:i] objectForKey:@"url"]]) {
-			[servers removeObjectAtIndex:i];
-		}
-	}
-	[AppSettingsDefinition writeToFile];
 }
 
 // Check whether the url of groupmember is available.
