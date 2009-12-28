@@ -23,8 +23,11 @@ package org.openremote.controller.protocol.knx;
 import org.apache.log4j.Logger;
 import tuwien.auto.calimero.cemi.CEMILData;
 import tuwien.auto.calimero.exception.KNXException;
+import tuwien.auto.calimero.exception.KNXFormatException;
+import tuwien.auto.calimero.exception.KNXTimeoutException;
 import tuwien.auto.calimero.knxnetip.Discoverer;
 import tuwien.auto.calimero.knxnetip.KNXnetIPTunnel;
+import tuwien.auto.calimero.knxnetip.KNXConnectionClosedException;
 import tuwien.auto.calimero.knxnetip.servicetype.SearchResponse;
 import tuwien.auto.calimero.knxnetip.util.HPAI;
 
@@ -799,101 +802,483 @@ class KNXConnectionManager
 
     public void send(String groupAddress, KNXCommand command)
     {
-//      GroupAddress group = new GroupAddress(0, 0, 4);
-//      IndividualAddress src = new IndividualAddress(0);
 
-      String[] elements;
-      int hibyte = 0, midbyte = 0, lowbyte = 0;
+      // KNX Addressing on the common EMI wireformat is a two byte field, consisting of address
+      // high byte (a.k.a Octet 0) and low byte (a.k.a Octet 1) [KNX 1.1].
+      //
+      // [KNX 1.1] Volume 3: Systems Specifications, Part 3 Chapter 2: Data Link Layer General
+      // defines Group Address bit structure (1.4 Definitions on page 6-7) as follows:
+      //
+      //           +-----------------------------------------------+
+      // 16 bits   |                 GROUP ADDRESS                 |
+      //           +-----------------------+-----------------------+
+      //           | OCTET 0 (high byte)   |  OCTET 1 (low byte)   |
+      //           +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+      //    bits   | 7| 6| 5| 4| 3| 2| 1| 0| 7| 6| 5| 4| 3| 2| 1| 0|
+      //           +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+      //           |  |  Main Group (S13)  |   Sub Group (S13)     |
+      //           +--+--------------------+-----------------------+
+      //
+      // KNX Group addresses do not need to be unique and a device may have more than one group
+      // address. Group addresses are defined globally for the entire KNX network (however, in
+      // the message frames it is possible to restrict the number of routers that can be crossed
+      // to reach devices).  A group address zero is sent to every device (it is a broadcast).
+      //
+      // NOTE:
+      //        Supplement 13 (S13) to KNX 1.1 specification shows additional structure with
+      //        Main Group (what appears a 7 bit value) and Sub Group (a 8 bit value) but gives
+      //        no further definition for these fields.
+      //                                                                                  [JPL]
+      //
+      // NOTE:
+      //        Regarding the group address segments, I haven't found the corresponding
+      //        KNX specification to support the common convention of main/middle/sub levels
+      //        (5/3/8 bits respectively) or main/sub levels (5/11 bits respectively).
+      //
+      //        This implementation will however treat '/' separated group address fields
+      //        according to these conventions in an attempt to maintain interoperability.
+      //        If there's a spec recommendation for this convention somewhere, let me know
+      //        (haven't looked through KNX 2.0 to see if it clarifies group address structure).
+      //
+      //                                                                                  [JPL]
+      //
+
+      /* Group Address high byte in the cEMI frame (unstructured) */
+      int addressHiByte = 0;
+
+      /* Group Address low byte in the cEMI frame (unstructured) */
+      int addressLoByte = 0;
+
+
+      // Common External Message Interface Control Fields [KNX 1.1 Application Note 033]
+      //
+      // Common External Message Interface (EMI) defines two control fields in its frame format
+      // (one byte each). The bit structure of each control field is defined in the KNX 1.1
+      // Application Note 033: Common EMI Specification, section 2.4 Basic Message Structure:
+      //
+      //   Control Field 1
+      //
+      //    Bit  |
+      //   ------+---------------------------------------------------------------
+      //     7   | Frame Type  - 0x0 for extended frame
+      //         |               0x1 for standard frame
+      //   ------+---------------------------------------------------------------
+      //     6   | Reserved
+      //         |
+      //   ------+---------------------------------------------------------------
+      //     5   | Repeat Flag - 0x0 repeat frame on medium in case of an error
+      //         |               0x1 do not repeat
+      //   ------+---------------------------------------------------------------
+      //     4   | System Broadcast - 0x0 system broadcast
+      //         |                    0x1 broadcast
+      //   ------+---------------------------------------------------------------
+      //     3   | Priority    - 0x0 system
+      //         |               0x1 normal
+      //   ------+               0x2 urgent
+      //     2   |               0x3 low
+      //         |
+      //   ------+---------------------------------------------------------------
+      //     1   | Acknowledge Request - 0x0 no ACK requested
+      //         | (L_Data.req)          0x1 ACK requested
+      //   ------+---------------------------------------------------------------
+      //     0   | Confirm      - 0x0 no error
+      //         | (L_Data.con) - 0x1 error
+      //   ------+---------------------------------------------------------------
+      //
+
+      /* A bit for standard common EMI frame type (not extended) in the first control field. */
+      final int STANDARD_FRAME_TYPE = 0x01 << 7;
+
+      /* Use frame repeat in the first control field. */
+      final int REPEAT_FRAME = 0x00;
+
+      /* Use system broadcast in the first control field. */
+      final int SYSTEM_BROADCAST = 0x00;
+
+      /* Bits for normal frame priority (%01) in the first control field of the common EMI frame. */
+      final int NORMAL_PRIORITY = 0x01 << 2;
+
+      /* Bit for requesting an ACK (L_Data.req only) for the frame in the first control field. */
+      final int REQUEST_ACK = 0x01 << 1;
+
+
+      //   Control Field 2
+      //
+      //    Bit  |
+      //   ------+---------------------------------------------------------------
+      //     7   | Destination Address Type - 0x0 individual address
+      //         |                          - 0x1 group address
+      //   ------+---------------------------------------------------------------
+      //    6-4  | Hop Count (0-7)
+      //   ------+---------------------------------------------------------------
+      //    3-0  | Extended Frame Format - 0x0 for standard frame
+      //   ------+---------------------------------------------------------------
+      //
+
+      /* Destination Address Type bit for group address in the second control field of the common
+       * EMI frame - most significant bit of the byte. */
+      final int GROUP_ADDRESS = 0x01 << 7;
+
+      /* Hop count. Default to six. Bits 4 to 6 in the second control field of the cEMI frame. */
+      final int HOP_COUNT =  0x06 << 4;
+
+      /* Non-extended frame format in the second control field of the common EMI frame
+       *(four zero bits) */
+      final int NON_EXTENDED_FRAME_FORMAT = 0x0;
+
+
+      // The KNX Common External Message Interface (a.k.a cEMI) frame has a variable length
+      // and structure depending on the Common EMI frame message code (first byte) and additional
+      // info length (second byte).
+      //
+      // In a very generic fashion, a Common EMI frame can be defined as follows
+      // (KNX 1.1 Application Note 033 - Common EMI Specification, 2.4 Basic Message Structure,
+      // page 8):
+      //
+      // +----+----+---- ... ----+-------- ... --------+
+      // | MC | AI |  Add. Info  |   Service Info      |
+      // +----+----+---- ... ----+-------- ... --------+
+      //
+      // MC = Message Code
+      // AI = Additional Info Length (0x00 if no additional info is included)
+      //
+      // KNX communication stack defines a frame transfer service (known as L_Data Service) in the
+      // data link layer (KNX 1.1 -- Volume 3 System Specification, Part 2 Communication,
+      // Chapter 2 Data Link Layer General, section 2.1 L_Data Service, page 8).
+      //
+      // Link layer data services are available in "normal" mode (vs. bus monitor mode). A data
+      // request (known as L_Data.req primitive) is used to transmit a frame. The corresponding
+      // Common EMI frame for L_Data.req is defined as shown below (KNX 1.1 Application Note 033,
+      // section 2.5.33 L_Data.req, page 13). Example assumes a standard (non-extended) frame with
+      // no additional info fields set in the frame. The application protocol data unit (APDU) is
+      // for a short data (<= 6 bits) group value write request (A_GroupValue_Write.req)
+      //
+      // +--------+--------+--------+--------+----------------+----------------+--------+----------------+
+      // |  Msg   |Add.Info| Ctrl 1 | Ctrl 2 | Source Address | Dest. Address  |  Data  |      APDU      |
+      // | Code   | Length |        |        |                |                | Length |                |
+      // +--------+--------+--------+--------+----------------+----------------+--------+----------------+
+      //   1 byte   1 byte   1 byte   1 byte      2 bytes          2 bytes       1 byte      2 bytes
+      //
+      //  Message Code    = 0x11 - a L_Data.req primitive
+      //  Add.Info Length = 0x00 - no additional info
+      //  Control Field 1 = see the bit structure above
+      //  Control Field 2 = see the bit structure above
+      //  Source Address  = 0x0000 - filled in by router/gateway with its source address which is
+      //                    part of the KNX subnet
+      //  Dest. Address   = KNX group or individual address (2 byte)
+      //  Data Length     = Number of bytes of data in the APDU excluding the TPCI/APCI bits
+      //  APDU            = Application Protocol Data Unit - the actual payload including transport
+      //                    protocol control information (TPCI), application protocol control
+      //                    information (APCI) and data passed as an argument from higher layers of
+      //                    the KNX communication stack
+      //
+
+      final int LINK_LAYER_DATA_REQUEST   = 0x11;
+      final int NO_ADDITIONAL_INFORMATION = 0x00;
+      final int SOURCE_ADDRESS_HIBYTE     = 0x00;
+      final int SOURCE_ADDRESS_LOBYTE     = 0x00;
+
+      //
+      // APDU...
+      //
+      final int APDU_DATA_LENGTH = 0x01;
+      final int APCI_GROUPVALUE_WRITE_HIBYTE = 0x00;
+      final int APCI_GROUPVALUE_WRITE_LOBYTE = 0x80;
+
+      final int DATATYPE_BOOLEAN_BIT_ON   = 0x01;
+      final int DATATYPE_BOOLEAN_BIT_OFF  = 0x00;
+
+
+      /* Indicates in the code if the address submitted as method parameter is interpreted as
+       * individual or group address. */
+      //boolean isGroupAddressType = true;
+
+
+      // We take a forward slash ('/') to mean group address semantics -- either as
+      // three-level 5bit/3bit/8bit (main/middle/sub) hierarchy or 5bit/11bit (main/sub)
+      // hierarchy...
 
       if (groupAddress.contains("/"))
       {
-        elements = groupAddress.split("/");
+        String [] elements = groupAddress.split("/");
 
-        if (elements.length != 3)
-          log.error("Incorrect KNX group address structure");
+        // Interpret group address in 3 segments as 5/3/8 bit sequence...
 
-        hibyte = new Integer(elements[0]);
-        midbyte = new Integer(elements[1]);
-        lowbyte = new Integer(elements[2]);
+        if (elements.length == 3)
+        {
 
-        hibyte = hibyte << 5;
-        hibyte = hibyte | midbyte;
+          try
+          {
+            int hibits = new Integer(elements[0]);
+            int midbits = new Integer(elements[1]);
+            int lowbits = new Integer(elements[2]);
+
+            // Sanity checks on address field sizes -- 5 bits is at most 31 decimal...
+
+            if (hibits < 0 || hibits > 31)
+            {
+              log.error(
+                  "Group address value '" + hibits + "' in '" + groupAddress + "' is too large."
+              );
+
+              return;
+            }
+
+            // ...middle bits is max 7 decimal (%111)...
+
+            if (midbits < 0 || midbits > 7)
+            {
+              log.error(
+                  "Group address value '" + midbits + "' in '" + groupAddress + "' is too large."
+              );
+
+              return;
+            }
+
+            // ...low bits max 255 (8 bits)...
+
+            if (lowbits < 0 || lowbits > 255)
+            {
+              log.error(
+                  "Group address value '" + lowbits + "' in '" + groupAddress + "' is too large."
+              );
+
+              return;
+            }
+
+            // shift hibits by 3 to the left to make space for midbits in the first address byte..
+
+            hibits = hibits << 3;
+
+            // and merge with the middle bits...
+
+            hibits = hibits | midbits;
+
+            // store in two bytes for cEMI frame...
+
+            addressHiByte = hibits;
+            addressLoByte = lowbits;
+          }
+          catch (NumberFormatException exception)
+          {
+            log.error(
+                "Cannot parse group address '" + groupAddress +
+                "' (assuming 5/3/8 bit format): " + exception.getMessage(), exception
+            );
+
+            return;
+          }
+        }
+
+        // Interpret group address as 5/11 bit segments...
+
+        else if (elements.length == 2)
+        {
+          // TODO...
+
+          log.error("Dual segment (main/sub) style group addresses not implemented yet.");
+          return;
+        }
+
+        else
+        {
+          log.error("Unknown group address structure in '" + groupAddress + "'.");
+          return;
+        }
       }
+
+
+      //// Interpret addresses with dot notation as individual addresses...
+      //
+      //else if (address.contains("."))
+      //{
+      //
+      //  // Switch the Common EMI frame control bit to individual address type...
+      //
+      //  isGroupAddressType = false;
+      //
+      //  String[] elements = address.split("\\." /* must escape '.' for regexp */);
+      //
+      //  if (elements.length != 3)
+      //  {
+      //    log.error("Incorrect KNX individual address structure.");
+      //    return;
+      //  }
+      //
+      //  try
+      //  {
+      //    // Area and line addresses are 4 bits each, device address is 8 bits...
+      //
+      //    int areaAddress = new Integer(elements[0]);
+      //    int lineAddress = new Integer(elements[1]);
+      //    int deviceAddress = new Integer(elements[2]);
+      //
+      //    // Shift area address to make space for line address in the same byte...
+      //
+      //    areaAddress = areaAddress << 4;
+      //
+      //    // Combine area and line address into the high byte, device address goes to low byte...
+      //
+      //    addressHiByte = areaAddress + lineAddress;
+      //    addressLoByte = deviceAddress;
+      //  }
+      //  catch (NumberFormatException exception)
+      //  {
+      //    log.error(
+      //        "Unable to parse individual address '" + address + "': " +
+      //        exception.getMessage(), exception
+      //    );
+      //
+      //    return;
+      //  }
+      //}
+
       else
       {
-        elements = groupAddress.split(".");
+        // TODO : if no address structure, could interpret as two byte value address...
 
-        if (elements.length != 3)
-          log.error("Incorrect KNX individual address structure.");
+        log.error("KNX Group Address must be in format main/middle/sub (" + groupAddress + ")");
 
-        hibyte = new Integer(elements[0]);
-        midbyte = new Integer(elements[1]);
-        lowbyte = new Integer(elements[2]);
-
-        hibyte = hibyte << 4;
-        hibyte = hibyte | midbyte;
+        return;
       }
+
+
+      //// Setup the common EMI frame control fields...
+      //
+      //int commonEMIControlField1 = 0x00;
+      //
+      //commonEMIControlField1 += STANDARD_FRAME_TYPE;
+      //commonEMIControlField1 += REPEAT_FRAME;
+      //commonEMIControlField1 += SYSTEM_BROADCAST;
+      //commonEMIControlField1 += NORMAL_PRIORITY;
+      //commonEMIControlField1 += REQUEST_ACK;
+      //
+      //int commonEMIControlField2 = 0x00;
+      //
+      //int addressType = 0;
+      //
+      //// Set the group address bit in case we have a group address...
+      //
+      //if (isGroupAddressType)
+      //  addressType = GROUP_ADDRESS_BIT;
+      //
+      //commonEMIControlField2 += GROUP_ADDRESS_BIT;
+      //commonEMIControlField2 += HOP_COUNT;
+      //commonEMIControlField2 += NON_EXTENDED_FRAME_FORMAT;
       
-      byte commandPayload = 0;
+
+      int apduData = APCI_GROUPVALUE_WRITE_LOBYTE;
       
       switch (command)
       {
         case SWITCH_ON:
 
-          commandPayload = (byte)0x81;
+          apduData += DATATYPE_BOOLEAN_BIT_ON;
 
           break;
 
         case SWITCH_OFF:
 
-          commandPayload = (byte)0x80;
+          apduData += DATATYPE_BOOLEAN_BIT_OFF;
 
           break;
 
         default:
 
-          log.error("");    // TODO
+          log.error("Unknown KNX command type: '" + command + "'.");  
+
+          return;
       }
 
-      CEMILData cEMI = null;
+      CEMILData commonEMI = null;
 
       try
       {
-        cEMI = new CEMILData(
-            new byte[]
-                {
-                    0x11, 0x00, (byte)0x8C, (byte)0xE0, 0x00, 0x00, (byte)hibyte, (byte)lowbyte, 0x01, 0x00, commandPayload
-                },
-            0
-        );
+        byte[] commonEMIFrame = new byte[]
+            {
+                LINK_LAYER_DATA_REQUEST,        // Message Code
+                NO_ADDITIONAL_INFORMATION,      // Additional Info Length
+                (byte)(STANDARD_FRAME_TYPE +     // Control Field 1
+                      REPEAT_FRAME +
+                      SYSTEM_BROADCAST +
+                      NORMAL_PRIORITY +
+                      REQUEST_ACK),
+                (byte)(GROUP_ADDRESS +           // Control Field 2
+                      HOP_COUNT +
+                      NON_EXTENDED_FRAME_FORMAT),
+                SOURCE_ADDRESS_HIBYTE,          // Source Address
+                SOURCE_ADDRESS_LOBYTE,
+                (byte)addressHiByte,            // Destination Address
+                (byte)addressLoByte,
+                APDU_DATA_LENGTH,               // Data Length
+                APCI_GROUPVALUE_WRITE_HIBYTE,   // TPCI/APCI
+                (byte)apduData                  // APCI & Data
+            };
+
+        commonEMI = new CEMILData(commonEMIFrame, 0);
+
+        log.info(printCommonEMIFrame(commonEMIFrame));
       }
-      catch (Throwable t)
+      catch (KNXFormatException exception)
       {
-        log.error(t);
+        log.error("Error in Common EMI frame: " + exception.getMessage(), exception);
+
+        return;
       }
       
       try
       {
-        log.info("sending...");
+        log.debug("sending...");
 
-        //byte[] payload = cEMI.getPayload();
-        byte[] payload = cEMI.toByteArray();
-        for (int i = 0; i < payload.length; ++i)
-        {
-          System.out.print(Integer.toHexString(((int)payload[i]) & 0xFF));
-          System.out.flush();
-        }
-        System.out.println();
-        
-        connection.send(cEMI, KNXnetIPTunnel.NONBLOCKING);
+        connection.send(commonEMI, KNXnetIPTunnel.NONBLOCKING);
 
         log.info("sent!");
       }
-      catch (Throwable t)
+      catch (KNXTimeoutException exception)
       {
-        log.error(t);
+        log.warn(
+            "Sending KNX command to " + groupAddress + " timed out: " +
+            exception.getMessage(), exception
+        );
+      }
+      catch (KNXConnectionClosedException exception)
+      {
+        log.error(
+            "Unable to send KNX command to " + groupAddress + ". Connection closed.",
+            exception
+        );
       }
     }
+  }
+
+
+  // Private Methods ------------------------------------------------------------------------------
+
+  private String printCommonEMIFrame(byte[] frame)
+  {
+    StringBuilder str = new StringBuilder(1024);
+
+    if (frame.length < 11)
+      return "Unknown or unsupported Common EMI frame format";
+
+    for (int i = 0; i < 11; ++i)
+    {
+      str.append(printUnsignedByteAsTwoDigitHex(frame[i])).append(' ');
+
+      // TODO : decode the CEMI fields to human readable descriptions
+    }
+
+    return str.toString();
+  }
+
+  private String printUnsignedByteAsTwoDigitHex(byte value)
+  {
+    int hex = value & 0xFF;
+        
+    if (hex < 0x0F)
+      return "0x0" + Integer.toHexString(hex).toUpperCase();
+    else
+      return "0x" + Integer.toHexString(hex).toUpperCase();
   }
 
 
