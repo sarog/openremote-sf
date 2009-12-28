@@ -22,20 +22,20 @@ public class SwitchController extends BaseGWTSpringControllerWithHibernateSuppor
 
    @Override
    public List<Switch> loadAll() {
-      return switchService.loadAll();
+      return switchService.loadAll(userService.getAccount());
    }
 
    @Override
-   public void save(Switch switchToggle) {
+   public Switch save(Switch switchToggle) {
       switchToggle.setAccount(userService.getAccount());
-      switchService.save(switchToggle);
+      return switchService.save(switchToggle);
    }
 
    
    @Override
-   public void update(Switch switchToggle) {
+   public Switch update(Switch switchToggle) {
       switchToggle.setAccount(userService.getAccount());
-      switchService.update(switchToggle);
+      return switchService.update(switchToggle);
    }
 
    public void setSwitchService(SwitchService switchService) {

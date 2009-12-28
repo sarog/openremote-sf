@@ -13,7 +13,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
 
    public void deleteSensor(long id) {
       Sensor sensor = super.loadById(id);
-      genericDAO.delete(sensor);
+            genericDAO.delete(sensor);
    }
 
    public List<Sensor> loadAll(Account account) {

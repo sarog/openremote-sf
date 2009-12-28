@@ -8,6 +8,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import flexjson.JSON;
 
@@ -32,5 +33,9 @@ public class CommandRefItem extends BusinessEntity {
       this.deviceCommand = deviceCommand;
    }
    
+   @Transient
+   public String getDisplayName(){
+      return deviceCommand.getDisplayName();
+   }
    
 }

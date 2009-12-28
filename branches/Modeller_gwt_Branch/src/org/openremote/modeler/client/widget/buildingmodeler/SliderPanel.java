@@ -15,10 +15,12 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.SliderTree;
+import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.SliderCommandRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
@@ -32,11 +34,13 @@ import com.extjs.gxt.ui.client.store.Store;
 import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Element;
 
 public class SliderPanel extends ContentPanel {
    private Icons icons = GWT.create(Icons.class);
@@ -104,11 +108,21 @@ public class SliderPanel extends ContentPanel {
    }
 
    private void createSliderTree(){
-      this.sliderTree = SliderTree.buildsliderTree();
-      selectionService.addListener(new SourceSelectionChangeListenerExt(sliderTree.getSelectionModel()));
-      selectionService.register(sliderTree.getSelectionModel());
-      addTreeStoreEventListenerToTree(sliderTree);
-      add(sliderTree);
+      sliderTree = SliderTree.buildsliderTree();
+      LayoutContainer treeContainer = new LayoutContainer(){
+
+         @Override
+         protected void onRender(Element parent, int index) {
+            super.onRender(parent, index);
+            selectionService.addListener(new SourceSelectionChangeListenerExt(sliderTree.getSelectionModel()));
+            selectionService.register(sliderTree.getSelectionModel());
+            addTreeStoreEventListenerToTree(sliderTree);
+         }
+         
+      };
+      treeContainer.add(sliderTree);
+      treeContainer.setLayoutOnChange(true);
+      add(treeContainer);
    }
    
    private void addTreeStoreEventListenerToTree(TreePanel<BeanModel> tree) {
@@ -139,9 +153,8 @@ public class SliderPanel extends ContentPanel {
          return;
       }
       for (BeanModel beanModel : models) {
-         if (beanModel.getBean() instanceof DeviceCommandRef) {
-            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getTreeUpdateListener(sliderTree,beanModel));
+         if (beanModel.getBean() instanceof SliderCommandRef) {
+            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase.getOriginalCommandRefItemBeanModelId(beanModel), getTreeUpdateListener(sliderTree,beanModel));
             BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel),
                   getTreeUpdateListener(sliderTree,beanModel));
          } 
@@ -159,8 +172,8 @@ public class SliderPanel extends ContentPanel {
       }
       for (BeanModel beanModel : models) {
          if (beanModel.getBean() instanceof DeviceCommandRef) {
-            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getTreeUpdateListener(sliderTree,beanModel));
+            BeanModelDataBase.deviceCommandTable.removeChangeListener((BeanModelDataBase
+                  .getOriginalDeviceMacroItemBeanModelId(beanModel)), getTreeUpdateListener(sliderTree,beanModel));
          }
          changeListenerMap.remove(beanModel);
       }
@@ -181,8 +194,8 @@ public class SliderPanel extends ContentPanel {
                   BeanModel source = (BeanModel) changeEvent.getItem();
                   if (source.getBean() instanceof DeviceCommand) {
                      DeviceCommand deviceCommand = (DeviceCommand) source.getBean();
-                     DeviceCommandRef deviceCommandRef = (DeviceCommandRef) target.getBean();
-                     deviceCommandRef.setDeviceCommand(deviceCommand);
+                     CommandRefItem cmdRefItem = target.getBean();
+                     cmdRefItem.setDeviceCommand(deviceCommand);
                   } else if (source.getBean() instanceof Device) {
                      Device device = (Device) source.getBean();
                      DeviceCommandRef targetDeviceCommandRef = (DeviceCommandRef) target.getBean();

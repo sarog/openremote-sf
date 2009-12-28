@@ -30,6 +30,12 @@ import javax.persistence.OneToOne;
 public class SliderSensorRef extends SensorRefItem {
 
    private Slider slider;
+   
+   public SliderSensorRef(){}
+   
+   public SliderSensorRef(Slider slider){
+      this.slider = slider;
+   }
 
    @OneToOne
    @JoinColumn(name = "target_slider_oid")
