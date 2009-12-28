@@ -183,7 +183,6 @@ static DataBaseService *myInstance = nil;
 		sqlite3_bind_double(compiledStatement, 2, [groupMember.age timeIntervalSince1970]);
 		if(SQLITE_DONE != sqlite3_step(compiledStatement)) {
 			NSLog(0, @"Error while inserting user. '%s'", sqlite3_errmsg(openDatabase));
-		} else {
 		}
 		sqlite3_reset(compiledStatement);
 	}
@@ -196,15 +195,13 @@ static DataBaseService *myInstance = nil;
 	const char *sqlStatement = "select * from group_members";
 	sqlite3_stmt *compiledStatement;
 	if(sqlite3_prepare_v2(openDatabase, sqlStatement, -1, &compiledStatement, NULL) ==SQLITE_OK) {
-		if (sqlite3_step(compiledStatement) == SQLITE_ROW) {
+		while (sqlite3_step(compiledStatement) == SQLITE_ROW) {
 			NSString *url = [NSString stringWithUTF8String:(char *)sqlite3_column_text(compiledStatement, 0)];
 			NSDate *age = [NSDate dateWithTimeIntervalSince1970:sqlite3_column_double(compiledStatement, 1)];
 			GroupMember *groupMember = [[GroupMember alloc] init];
 			groupMember.url = url;
 			groupMember.age = age;
 			[groupMembers addObject:groupMember];
-		} else {
-			NSLog(0, @"Error while findAllGroupMembers. '%s'", sqlite3_errmsg(openDatabase));
 		}
 		sqlite3_reset(compiledStatement);
 		sqlite3_finalize(compiledStatement);

@@ -206,16 +206,8 @@
 //when find a servers, gets their *url* attribute.
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
 	if ([elementName isEqualToString:@"server"]) {
-		NSLog(@"groupmember url : %@",[attributeDict valueForKey:@"url"]);
 		GroupMember *groupMember = [[GroupMember alloc] initWithUrl:[attributeDict valueForKey:@"url"]];
-		NSLog(@"groupMember.url is : %@", groupMember.url);
 		[[DataBaseService sharedDataBaseService] insertGroupMember:groupMember];
-		for(GroupMember *gm in [[DataBaseService sharedDataBaseService] findAllGroupMembers]) {
-			NSLog(@"url is : %@", gm.url);
-		}
-	}
-	for(GroupMember *gm in [[DataBaseService sharedDataBaseService] findAllGroupMembers]) {
-		NSLog(@"url is : %@", gm.url);
 	}
 }
 
