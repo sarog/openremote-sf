@@ -40,7 +40,7 @@ public class StatusAndPollingTest {
    @Test
    public void testCase1() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/status/1");
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/status/1001");
       WebResponse wr;
       try {
          wr = wc.getResponse(pollingGetMethodRequest);
@@ -49,7 +49,7 @@ public class StatusAndPollingTest {
          if (e1.getResponseCode() == 504) {
             logger.info("Polling request was timeout.");
             try {
-               pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/status/1");
+               pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/status/1001");
                wr = wc.getResponse(pollingGetMethodRequest);
                logger.info("The result was : \n" + wr.getText());
             } catch (HttpException e2) {
@@ -63,7 +63,7 @@ public class StatusAndPollingTest {
    @Test
    public void testCase2() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/status/2");
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/status/1002");
       try {
          WebResponse wr = wc.getResponse(pollingGetMethodRequest);
          logger.info("The result was : \n" + wr.getText());
@@ -76,7 +76,7 @@ public class StatusAndPollingTest {
    @Test
    public void testCase3() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3");
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1003");
       try {
          WebResponse wr = wc.getResponse(pollingGetMethodRequest);
          logger.info("The result was : \n" + wr.getText());
@@ -86,10 +86,10 @@ public class StatusAndPollingTest {
          }
       }
    }
-   @Test
+   //@Test
    public void testCase4() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/4");
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1004");
       try {
          WebResponse wr = wc.getResponse(pollingGetMethodRequest);
          logger.info("The result was : \n" + wr.getText());
