@@ -67,7 +67,7 @@ public interface DeviceCommandService {
     * 
     * @param id the id
     */
-   void deleteCommand(long id);
+   Boolean deleteCommand(long id);
    
    /**
     * Load by device.

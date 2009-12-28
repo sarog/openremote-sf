@@ -27,11 +27,11 @@ import org.openremote.modeler.dao.GenericDAO;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorCommandRef;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.User;
@@ -71,7 +71,10 @@ public class SensorServiceTest extends TestNGBase {
       Sensor sensor = new Sensor();
       String name = "sensor1";
       sensor.setName(name);
-//      sensor.setDeviceCommandRef(new DeviceCommandRef(deviceCommand));
+      SensorCommandRef sensorCommandRef = new SensorCommandRef();
+      sensorCommandRef.setDeviceCommand(deviceCommand);
+      sensorCommandRef.setSensor(sensor);
+      sensor.setSensorCommandRef(sensorCommandRef);
       sensor.setType(SensorType.SWITCH);
       
       User user = new User();
@@ -107,7 +110,10 @@ public class SensorServiceTest extends TestNGBase {
       RangeSensor sensor = new RangeSensor();
       String name = "rangSensor";
       sensor.setName(name);
-//      sensor.setDeviceCommandRef(new DeviceCommandRef(deviceCommand));
+      SensorCommandRef sensorCommandRef = new SensorCommandRef();
+      sensorCommandRef.setDeviceCommand(deviceCommand);
+      sensorCommandRef.setSensor(sensor);
+      sensor.setSensorCommandRef(sensorCommandRef);
       sensor.setMin(5);
       sensor.setMax(30);
       
@@ -144,7 +150,10 @@ public class SensorServiceTest extends TestNGBase {
       CustomSensor sensor = new CustomSensor();
       String name = "customSensor";
       sensor.setName(name);
-//      sensor.setDeviceCommandRef(new DeviceCommandRef(deviceCommand));
+      SensorCommandRef sensorCommandRef = new SensorCommandRef();
+      sensorCommandRef.setDeviceCommand(deviceCommand);
+      sensorCommandRef.setSensor(sensor);
+      sensor.setSensorCommandRef(sensorCommandRef);
       State state1 = new State();
       state1.setSensor(sensor);
       sensor.addState(state1);
@@ -166,7 +175,6 @@ public class SensorServiceTest extends TestNGBase {
    public void update() {
       List<Sensor> sensors = genericDAO.loadAll(Sensor.class);
       String name = "sensor2";
-      System.out.println("size:"+sensors.size());
       sensors.get(0).setName(name);
       
       Sensor sensorInDB = sensorService.updateSensor(sensors.get(0));

@@ -12,7 +12,7 @@ public interface SensorRPCServiceAsync {
    
    void updateSensor(Sensor sensor, AsyncCallback<Sensor> async);
    
-   void deleteSensor(long id, AsyncCallback<Void> async);
+   void deleteSensor(long id, AsyncCallback<Boolean> async);
    
    void loadAll(AsyncCallback<List<Sensor>> async);
    

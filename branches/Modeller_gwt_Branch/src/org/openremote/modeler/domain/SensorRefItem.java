@@ -8,6 +8,9 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import flexjson.JSON;
 
 @SuppressWarnings("serial")
 @Entity
@@ -20,11 +23,18 @@ public class SensorRefItem extends BusinessEntity {
    private Sensor sensor;
    
    @OneToOne
-   @JoinColumn(name = "sensor_oid")
+   @JoinColumn(name = "target_sensor_oid")
+   @JSON(include = false)
    public Sensor getSensor() {
       return sensor;
    }
    public void setSensor(Sensor sensor) {
       this.sensor = sensor;
+   }
+   
+   @Override
+   @Transient
+   public String getDisplayName() {
+      return sensor.getDisplayName();
    }
 }

@@ -22,6 +22,7 @@ package org.openremote.modeler.client.widget.buildingmodeler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.bridge.Message;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
 import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
@@ -337,11 +338,15 @@ public class DevicePanel extends ContentPanel {
     * @param deviceCommnadModel the device commnad model
     */
    private void deleteCommand(final BeanModel deviceCommnadModel) {
-      DeviceCommandBeanModelProxy.deleteDeviceCommand(deviceCommnadModel, new AsyncSuccessCallback<Void>() {
+      DeviceCommandBeanModelProxy.deleteDeviceCommand(deviceCommnadModel, new AsyncSuccessCallback<Boolean>() {
          @Override
-         public void onSuccess(Void result) {
-            tree.getStore().remove(deviceCommnadModel);
-            Info.display("Info", "Delete success.");
+         public void onSuccess(Boolean result) {
+            if (result) {
+               tree.getStore().remove(deviceCommnadModel);
+               Info.display("Info", "Delete success.");
+            } else {
+               MessageBox.alert("Warn", "The command cann't be delete, because it was refrenced by other sensor, switch or slider.", null);
+            }
          }
       });
    }

@@ -71,7 +71,7 @@ public interface DeviceCommandRPCService extends RemoteService {
     * 
     * @param id the id
     */
-   void deleteCommand(long id);
+   Boolean deleteCommand(long id);
    
    /**
     * Load by device.

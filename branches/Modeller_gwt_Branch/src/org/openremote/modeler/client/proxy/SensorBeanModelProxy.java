@@ -81,11 +81,13 @@ public class SensorBeanModelProxy {
       });
    }
    
-   public static void deleteSensor(final BeanModel beanModel, final AsyncSuccessCallback<Void> callback) {
+   public static void deleteSensor(final BeanModel beanModel, final AsyncSuccessCallback<Boolean> callback) {
       Sensor sensor = beanModel.getBean();
-      AsyncServiceFactory.getSensorRPCServiceAsync().deleteSensor(sensor.getOid(), new AsyncSuccessCallback<Void>() {
-         public void onSuccess(Void result) {
-            BeanModelDataBase.sensorTable.delete(beanModel);
+      AsyncServiceFactory.getSensorRPCServiceAsync().deleteSensor(sensor.getOid(), new AsyncSuccessCallback<Boolean>() {
+         public void onSuccess(Boolean result) {
+            if (result) {
+               BeanModelDataBase.sensorTable.delete(beanModel);
+            }
             callback.onSuccess(result);
          }
          

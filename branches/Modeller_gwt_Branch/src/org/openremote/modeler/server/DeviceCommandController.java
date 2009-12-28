@@ -70,8 +70,8 @@ public class DeviceCommandController extends BaseGWTSpringControllerWithHibernat
     * 
     * @see org.openremote.modeler.client.rpc.DeviceCommandRPCService#deleteCommand(long)
     */
-   public void deleteCommand(long id) {
-      deviceCommandService.deleteCommand(id);
+   public Boolean deleteCommand(long id) {
+      return deviceCommandService.deleteCommand(id);
    }
 
    /**

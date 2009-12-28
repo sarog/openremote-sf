@@ -13,7 +13,7 @@ public class SwitchCommandOffRef extends CommandRefItem {
    private Switch offSwitch;
 
    @OneToOne
-   @JoinColumn(name = "target_switch_off_oid")
+   @JoinColumn(name = "off_switch_oid")
    public Switch getOffSwitch() {
       return offSwitch;
    }

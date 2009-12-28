@@ -38,7 +38,7 @@ public class SliderSensorRef extends SensorRefItem {
    }
 
    @OneToOne
-   @JoinColumn(name = "target_slider_oid")
+   @JoinColumn(name = "slider_oid")
    public Slider getSlider() {
       return slider;
    }

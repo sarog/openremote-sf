@@ -70,7 +70,7 @@ public interface DeviceCommandRPCServiceAsync {
     * @param callback
     *           the callback
     */
-   void deleteCommand(long id, AsyncCallback<Void> callback);
+   void deleteCommand(long id, AsyncCallback<Boolean> callback);
 
    /**
     * Load by device.

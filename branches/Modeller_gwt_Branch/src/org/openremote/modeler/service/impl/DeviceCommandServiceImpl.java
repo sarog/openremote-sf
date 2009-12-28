@@ -76,16 +76,17 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#deleteCommand(long)
     */
-   public void deleteCommand(long id) {
+   public Boolean deleteCommand(long id) {
       DeviceCommand deviceCommand = loadById(id);
       DetachedCriteria criteria = DetachedCriteria.forClass(CommandRefItem.class);
       List<CommandRefItem> commandRefItems = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("deviceCommand", deviceCommand)));
       if (commandRefItems.size() > 0){
-         System.out.println("size:"+commandRefItems.size());
+         return false;
       } else {
          deviceMacroItemService.deleteByDeviceCommand(deviceCommand);
          genericDAO.delete(deviceCommand);
       }
+      return true;
    }
 
    /**
