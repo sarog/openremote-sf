@@ -50,8 +50,8 @@ public class SensorBeanModelProxy {
          AsyncServiceFactory.getSensorRPCServiceAsync().getById(sensor.getOid(), new AsyncSuccessCallback<Sensor>() {
             public void onSuccess(Sensor result) {
                List<BeanModel> beanModels = new ArrayList<BeanModel>();
-               if (result.getDeviceCommandRef() != null) {
-                  beanModels.add(result.getDeviceCommandRef().getBeanModel());
+               if (result.getSensorCommandRef() != null) {
+                  beanModels.add(result.getSensorCommandRef().getBeanModel());
                }
                if (result instanceof CustomSensor) {
                   beanModels.addAll(State.createModels(((CustomSensor)result).getStates()));

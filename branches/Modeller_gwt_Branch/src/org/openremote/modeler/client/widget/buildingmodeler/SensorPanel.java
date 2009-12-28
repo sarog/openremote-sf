@@ -37,8 +37,8 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.SensorTree;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorCommandRef;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -139,17 +139,19 @@ public class SensorPanel extends ContentPanel {
    private void onEditSensorBtnClicked() {
       if (sensorTree.getSelectionModel().getSelectedItem() != null) {
          final BeanModel oldModel = sensorTree.getSelectionModel().getSelectedItem();
-         final SensorWindow sensorWindow = new SensorWindow(sensorTree.getSelectionModel().getSelectedItem());
-         sensorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-            @Override
-            public void afterSubmit(SubmitEvent be) {
-               Sensor old = oldModel.getBean();
-               old.setName(be.<Sensor> getData().getName());
-               sensorTree.getStore().update(oldModel);
-               sensorTree.setExpanded(oldModel, true);
-               sensorWindow.hide();
-            }
-         });
+         if (oldModel.getBean() instanceof Sensor) {
+            final SensorWindow sensorWindow = new SensorWindow(oldModel);
+            sensorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+               @Override
+               public void afterSubmit(SubmitEvent be) {
+                  Sensor old = oldModel.getBean();
+                  old.setName(be.<Sensor> getData().getName());
+                  sensorTree.getStore().update(oldModel);
+                  sensorTree.setExpanded(oldModel, true);
+                  sensorWindow.hide();
+               }
+            });
+         }
       }
    }
 
@@ -236,9 +238,8 @@ public class SensorPanel extends ContentPanel {
          return;
       }
       for (BeanModel beanModel : models) {
-         if (beanModel.getBean() instanceof DeviceCommandRef) {
-            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
+         if (beanModel.getBean() instanceof SensorCommandRef) {
+            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase.getOriginalCommandRefItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
             BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel),
                   getDragSourceBeanModelChangeListener(beanModel));
          }
@@ -256,9 +257,8 @@ public class SensorPanel extends ContentPanel {
          return;
       }
       for (BeanModel beanModel : models) {
-         if (beanModel.getBean() instanceof DeviceCommandRef) {
-            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
+         if (beanModel.getBean() instanceof SensorCommandRef) {
+            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase.getOriginalCommandRefItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
          }
          changeListenerMap.remove(beanModel);
       }
@@ -289,12 +289,12 @@ public class SensorPanel extends ContentPanel {
                   BeanModel source = (BeanModel) changeEvent.getItem();
                   if (source.getBean() instanceof DeviceCommand) {
                      DeviceCommand deviceCommand = (DeviceCommand) source.getBean();
-                     DeviceCommandRef deviceCommandRef = (DeviceCommandRef) target.getBean();
-                     deviceCommandRef.setDeviceCommand(deviceCommand);
+                     SensorCommandRef sensorCommandRef = (SensorCommandRef) target.getBean();
+                     sensorCommandRef.setDeviceCommand(deviceCommand);
                   } else if (source.getBean() instanceof Device) {
                      Device device = (Device) source.getBean();
-                     DeviceCommandRef targetDeviceCommandRef = (DeviceCommandRef) target.getBean();
-                     targetDeviceCommandRef.setDeviceName(device.getName());
+                     SensorCommandRef targetSensorCommandRef = (SensorCommandRef) target.getBean();
+                     targetSensorCommandRef.setDeviceName(device.getName());
                   }
                   sensorTree.getStore().update(target);
                }
@@ -304,6 +304,5 @@ public class SensorPanel extends ContentPanel {
       }
       return changeListener;
    }
-
 
 }

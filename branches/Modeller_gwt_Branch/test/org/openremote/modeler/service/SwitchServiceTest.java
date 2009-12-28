@@ -40,8 +40,8 @@ public class SwitchServiceTest {
       
       swh.setName("testName");
       DeviceCommandRef cmdRef = new DeviceCommandRef(cmd);
-      swh.setOnDeviceCommandRef(cmdRef);
-      swh.setOffDeviceCommandRef(cmdRef);
+//      swh.setOnDeviceCommandRef(cmdRef);
+//      swh.setOffDeviceCommandRef(cmdRef);
       
       Switch swh2 = new Switch();
       swh.setName("testName2");
@@ -52,8 +52,8 @@ public class SwitchServiceTest {
       Switch switchFromTable = service.loadAll().get(0);
       Assert.assertEquals(swh.getOid(),1);
       Assert.assertEquals(swh2.getOid(),2);
-      Assert.assertEquals(switchFromTable.getOnDeviceCommandRef().getDeviceCommand().getName(), "testLirc");
-      Assert.assertEquals(switchFromTable.getOffDeviceCommandRef().getDeviceCommand().getName(), "testLirc");
+//      Assert.assertEquals(switchFromTable.getOnDeviceCommandRef().getDeviceCommand().getName(), "testLirc");
+//      Assert.assertEquals(switchFromTable.getOffDeviceCommandRef().getDeviceCommand().getName(), "testLirc");
    }
    @Test(dependsOnMethods="testSaveSwitch")
    public void testUpdate(){

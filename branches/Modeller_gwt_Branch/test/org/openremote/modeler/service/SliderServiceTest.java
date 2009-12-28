@@ -38,7 +38,7 @@ public class SliderServiceTest {
       slider.setName("testName");
       DeviceCommandRef cmdRef = new DeviceCommandRef(deviceCommandService.loadById(1));
       Assert.assertEquals(cmdRef.getDeviceCommand().getName(), "testLirc");
-      slider.setSetValueCmd(cmdRef);
+//      slider.setSetValueCmd(cmdRef);
       
       Slider slider2 = new Slider();
       slider.setName("testName2");

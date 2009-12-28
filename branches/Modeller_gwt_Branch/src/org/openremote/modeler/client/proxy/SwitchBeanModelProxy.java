@@ -25,8 +25,8 @@ public class SwitchBeanModelProxy {
       } else {
          Switch switchToggle = switchBean.getBean();
          List<BeanModel> commandBeanModels = new ArrayList<BeanModel>();
-         commandBeanModels.add(switchToggle.getOnDeviceCommandRef().getBeanModel());
-         commandBeanModels.add(switchToggle.getOffDeviceCommandRef().getBeanModel());
+//         commandBeanModels.add(switchToggle.getOnDeviceCommandRef().getBeanModel());
+//         commandBeanModels.add(switchToggle.getOffDeviceCommandRef().getBeanModel());
          
          callback.onSuccess(commandBeanModels);
       }

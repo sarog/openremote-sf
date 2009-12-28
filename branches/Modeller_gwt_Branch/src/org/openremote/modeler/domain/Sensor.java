@@ -23,7 +23,6 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -41,7 +40,7 @@ import flexjson.JSON;
 public class Sensor extends BusinessEntity {
 
    private String name;
-   private DeviceCommandRef deviceCommandRef;
+   private SensorCommandRef sensorCommandRef;
    private SensorType type;
    private Account account;
    
@@ -55,20 +54,17 @@ public class Sensor extends BusinessEntity {
       return name;
    }
 
-   @OneToOne(cascade = CascadeType.ALL)
-   @JoinColumn(name = "status_cmd_oid")
-   public DeviceCommandRef getDeviceCommandRef() {
-      return deviceCommandRef;
-   }
-
    public void setName(String name) {
       this.name = name;
    }
 
-   public void setDeviceCommandRef(DeviceCommandRef deviceCommandRef) {
-      this.deviceCommandRef = deviceCommandRef;
+   @OneToOne(mappedBy = "sensor", cascade = CascadeType.ALL)
+   public SensorCommandRef getSensorCommandRef() {
+      return sensorCommandRef;
    }
-
+   public void setSensorCommandRef(SensorCommandRef sensorCommandRef) {
+      this.sensorCommandRef = sensorCommandRef;
+   }
    @ManyToOne
    @JSON(include = false)
    public Account getAccount() {

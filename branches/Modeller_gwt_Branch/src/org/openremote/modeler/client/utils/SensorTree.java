@@ -24,8 +24,8 @@ import java.util.List;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorCommandRef;
 import org.openremote.modeler.domain.State;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
@@ -99,7 +99,7 @@ public class SensorTree {
 
             if (thisModel.getBean() instanceof Sensor) {
                return ICON.macroIcon();
-            } else if (thisModel.getBean() instanceof DeviceCommandRef) {
+            } else if (thisModel.getBean() instanceof SensorCommandRef) {
                return ICON.deviceCmd();
             } else if (thisModel.getBean() instanceof State) {
                return ICON.delayIcon();

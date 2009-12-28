@@ -31,6 +31,7 @@ import org.openremote.modeler.client.utils.GroupTable;
 import org.openremote.modeler.client.utils.ScreenTable;
 import org.openremote.modeler.client.utils.SensorBeanModelTable;
 import org.openremote.modeler.domain.BusinessEntity;
+import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
@@ -104,6 +105,14 @@ public class BeanModelDataBase {
       }
       return 0;
    }
+   
+   public static long getOriginalCommandRefItemBeanModelId(BeanModel commandRefItemBeanModel) {
+      if (commandRefItemBeanModel.getBean() instanceof CommandRefItem) {
+         CommandRefItem deviceMacroItem = (CommandRefItem) commandRefItemBeanModel.getBean();
+         return deviceMacroItem.getDeviceCommand().getOid();
+      }
+      return 0;
+   }
 
    
    /**
@@ -132,6 +141,9 @@ public class BeanModelDataBase {
       } else if (beanModel.getBean() instanceof DeviceCommandRef) {
          DeviceCommandRef deviceCommandRef = (DeviceCommandRef) beanModel.getBean();
          return deviceCommandRef.getDeviceCommand().getDevice().getOid();
+      } else if (beanModel.getBean() instanceof CommandRefItem) {
+         CommandRefItem commandRefItem = (CommandRefItem) beanModel.getBean();
+         return commandRefItem.getDeviceCommand().getDevice().getOid();
       }
       return 0L;
    }

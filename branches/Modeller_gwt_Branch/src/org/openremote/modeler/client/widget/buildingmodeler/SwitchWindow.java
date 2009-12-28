@@ -15,7 +15,6 @@ import org.openremote.modeler.client.widget.SimpleComboBox;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.Sensor;
-import org.openremote.modeler.domain.SensorRef;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.UICommand;
 
@@ -29,8 +28,6 @@ import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.store.Store;
-import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
@@ -94,11 +91,11 @@ public class SwitchWindow extends FormWindow {
       
       if(edit){
          nameField.setValue(switchToggle.getName());
-         if (switchToggle.getSensorRef() != null){
-            sensorField.setValue(new ComboBoxDataModel<Sensor>(switchToggle.getSensorRef().getSensor().getDisplayName(),switchToggle.getSensorRef().getSensor()));
-         }
-         switchOnBtn.setText(switchToggle.getOnDeviceCommandRef().getDisplayName());
-         switchOffBtn.setText(switchToggle.getOffDeviceCommandRef().getDisplayName());
+//         if (switchToggle.getSensorRef() != null){
+//            sensorField.setValue(new ComboBoxDataModel<Sensor>(switchToggle.getSensorRef().getSensor().getDisplayName(),switchToggle.getSensorRef().getSensor()));
+//         }
+//         switchOnBtn.setText(switchToggle.getOnDeviceCommandRef().getDisplayName());
+//         switchOffBtn.setText(switchToggle.getOffDeviceCommandRef().getDisplayName());
       }
       
       AdapterField switchOnAdapter = new AdapterField(switchOnBtn);
@@ -134,10 +131,10 @@ public class SwitchWindow extends FormWindow {
 
       @Override
       public void handleEvent(FormEvent be) {
-         if(switchToggle.getOnDeviceCommandRef()==null || switchToggle.getOffDeviceCommandRef() == null){
-            MessageBox.alert("Switch", "A switch must have the command to control its on and off", null);
-            return ;
-         }
+//         if(switchToggle.getOnDeviceCommandRef()==null || switchToggle.getOffDeviceCommandRef() == null){
+//            MessageBox.alert("Switch", "A switch must have the command to control its on and off", null);
+//            return ;
+//         }
          List<Field<?>> fields = form.getFields();
          for (Field<?> field : fields) {
             if (SWITCH_NAME_FIELD_NAME.equals(field.getName())) {
@@ -180,9 +177,9 @@ public class SwitchWindow extends FormWindow {
                command.setText(uiCommand.getDisplayName());
                System.out.println(command.getTitle());
                if (forSwitchOn) {
-                  switchToggle.setOnDeviceCommandRef((DeviceCommandRef)uiCommand);
+//                  switchToggle.setOnDeviceCommandRef((DeviceCommandRef)uiCommand);
                } else  {
-                  switchToggle.setOffDeviceCommandRef((DeviceCommandRef)uiCommand);
+//                  switchToggle.setOffDeviceCommandRef((DeviceCommandRef)uiCommand);
                }
             }
          });
@@ -197,7 +194,7 @@ public class SwitchWindow extends FormWindow {
          ComboBoxDataModel<Sensor> sensorItem;
          sensorItem = (ComboBoxDataModel<Sensor>) se.getSelectedItem();
          if(sensorItem != null){
-            switchToggle.setSensorRef(new SensorRef(sensorItem.getData()));
+//            switchToggle.setSensorRef(new SensorRef(sensorItem.getData()));
          }
       }
    }
