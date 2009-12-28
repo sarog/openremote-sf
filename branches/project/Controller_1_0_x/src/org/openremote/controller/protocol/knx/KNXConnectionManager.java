@@ -1088,51 +1088,6 @@ class KNXConnectionManager
       }
 
 
-      //// Interpret addresses with dot notation as individual addresses...
-      //
-      //else if (address.contains("."))
-      //{
-      //
-      //  // Switch the Common EMI frame control bit to individual address type...
-      //
-      //  isGroupAddressType = false;
-      //
-      //  String[] elements = address.split("\\." /* must escape '.' for regexp */);
-      //
-      //  if (elements.length != 3)
-      //  {
-      //    log.error("Incorrect KNX individual address structure.");
-      //    return;
-      //  }
-      //
-      //  try
-      //  {
-      //    // Area and line addresses are 4 bits each, device address is 8 bits...
-      //
-      //    int areaAddress = new Integer(elements[0]);
-      //    int lineAddress = new Integer(elements[1]);
-      //    int deviceAddress = new Integer(elements[2]);
-      //
-      //    // Shift area address to make space for line address in the same byte...
-      //
-      //    areaAddress = areaAddress << 4;
-      //
-      //    // Combine area and line address into the high byte, device address goes to low byte...
-      //
-      //    addressHiByte = areaAddress + lineAddress;
-      //    addressLoByte = deviceAddress;
-      //  }
-      //  catch (NumberFormatException exception)
-      //  {
-      //    log.error(
-      //        "Unable to parse individual address '" + address + "': " +
-      //        exception.getMessage(), exception
-      //    );
-      //
-      //    return;
-      //  }
-      //}
-
       else
       {
         // TODO : if no address structure, could interpret as two byte value address...
@@ -1142,30 +1097,6 @@ class KNXConnectionManager
         return;
       }
 
-
-      //// Setup the common EMI frame control fields...
-      //
-      //int commonEMIControlField1 = 0x00;
-      //
-      //commonEMIControlField1 += STANDARD_FRAME_TYPE;
-      //commonEMIControlField1 += REPEAT_FRAME;
-      //commonEMIControlField1 += SYSTEM_BROADCAST;
-      //commonEMIControlField1 += NORMAL_PRIORITY;
-      //commonEMIControlField1 += REQUEST_ACK;
-      //
-      //int commonEMIControlField2 = 0x00;
-      //
-      //int addressType = 0;
-      //
-      //// Set the group address bit in case we have a group address...
-      //
-      //if (isGroupAddressType)
-      //  addressType = GROUP_ADDRESS_BIT;
-      //
-      //commonEMIControlField2 += GROUP_ADDRESS_BIT;
-      //commonEMIControlField2 += HOP_COUNT;
-      //commonEMIControlField2 += NON_EXTENDED_FRAME_FORMAT;
-      
 
       int apduData = APCI_GROUPVALUE_WRITE_LOBYTE;
       
