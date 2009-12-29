@@ -77,7 +77,53 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	NSArray *groups = [[Definition sharedDefinition] groups];
 	
 	if (groups.count > 0) {
-		GroupController *gc = [[GroupController alloc] initWithGroup:((Group *)[groups objectAtIndex:0])];
+		
+		/**
+		 * About recovering to last group and screen.
+		 * I)Currently, there are two use cases which relate with recovery mechanism.
+		 * 1) While setting.
+		 *    DESC: User presses setting item in tabbar or in certain screen when user had switch
+		 *    to certain screen of certain group. After Uesr done setting, the app must switch to 
+		 *    the screen which before user pressing setting.
+		 *    
+		 * 2) While switching to groupmember controller.
+		 *    DESC: If current controller down, app will switch to groupmember controller of crashed controller.
+		 *    However, the process is tranparent. That means user won't feel controller-switch. So, the app must
+		 *    keep the same screen before and after switching controller.
+		 *
+		 * II)Technically speaking, app will save the groupId and screenId when user switch to certain group and screen 
+		 * or navigage to certain screen. The follows are in detail:
+		 *    1)Navigate action: Append code in self method *navigateToWithHistory*
+		 *    2)Scroll screen action: Apend code in method *setViewControllers* and *updateViewForCurrentPageAndBothSides*
+		 *    of class PaginationController.
+		 *    3)Finished the initGroups: Append code in tail of self method *initGroups*:[self saveLastGroupIdAndScreenId];
+		 *
+		 * III)The saved groupId and screenId will be used in following situation:
+		 *    While app initializing groups(see method initGroups) in current classs, app gets groupId and screenId stored, and then switch
+		 *    to the destination described by groupId and screenId.
+		 */
+		//Begin: Recover the last group
+		NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+		GroupController *gc;
+		if ([userDefaults objectForKey:@"lastGroupId"]) {
+			int lastGroupId = [[userDefaults objectForKey:@"lastGroupId"] intValue];
+			Group *lastGroup;
+			for (Group *tempGroup in groups) {
+				if (lastGroupId == tempGroup.groupId) {
+					lastGroup = tempGroup;
+					break;
+				}
+			}
+			if (lastGroup) {
+				gc = [[GroupController alloc] initWithGroup:lastGroup];
+			} else {
+				gc = [[GroupController alloc] initWithGroup:((Group *)[groups objectAtIndex:0])];
+			}
+		} else {
+			gc = [[GroupController alloc] initWithGroup:((Group *)[groups objectAtIndex:0])];
+		}
+		//End: Recover the last group
+		
 		[groupControllers addObject:gc];
 		[groupViewMap setObject:gc.view forKey:[NSString stringWithFormat:@"%d", gc.group.groupId]];	
 		currentGroupController = [gc retain];
@@ -98,6 +144,15 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 				tabBarScale = TABBAR_SCALE_NONE;
 				[self.view addSubview:currentGroupController.view];
 			}
+		
+		//Begin: Recover the last screen	
+		int lastScreenId = [[userDefaults objectForKey:@"lastScreenId"] intValue];
+		if (lastScreenId > 0) {
+			[currentGroupController switchToScreen:lastScreenId];
+		}
+		//End: Recover the last screen
+		// ReSave last groupId and screenId
+		[self saveLastGroupIdAndScreenId];
 	} else {		
 		errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" message:@"Please associate screens with group or reset setting."];
 		[self.view addSubview:errorViewController.view];		
@@ -121,10 +176,20 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	}
 	
 	if ([self navigateTo:navi]) {
+		NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+		[userDefaults setObject:[NSString stringWithFormat:@"%d",currentGroupController.group.groupId] forKey:@"lastGroupId"];
+		[userDefaults setObject:[NSString stringWithFormat:@"%d",[currentGroupController currentScreenId]] forKey:@"lastScreenId"];		
 		[navigationHistory addObject:navi];
 	}
 	
 	NSLog(@"navi history count = %d", navigationHistory.count);
+}
+
+- (void) saveLastGroupIdAndScreenId {
+	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+	[userDefaults setObject:[NSString stringWithFormat:@"%d",currentGroupController.group.groupId] forKey:@"lastGroupId"];
+	[userDefaults setObject:[NSString stringWithFormat:@"%d",[currentGroupController currentScreenId]] forKey:@"lastScreenId"];
+	NSLog(@"saveLastGroupIdAndScreenId : groupID %d, screenID %d", [[userDefaults objectForKey:@"lastGroupId"] intValue], [[userDefaults objectForKey:@"lastScreenId"] intValue]);
 }
 
 // Returned BOOL value is whether to save history

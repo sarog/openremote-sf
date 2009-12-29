@@ -76,8 +76,6 @@
 		33960A9410D73104006AFDA8 /* 300X480.png in Resources */ = {isa = PBXBuildFile; fileRef = 33960A9210D73104006AFDA8 /* 300X480.png */; };
 		33960A9A10D731EE006AFDA8 /* 300X300.png in Resources */ = {isa = PBXBuildFile; fileRef = 33960A9910D731EE006AFDA8 /* 300X300.png */; };
 		33960A9B10D731EE006AFDA8 /* 300X300.png in Resources */ = {isa = PBXBuildFile; fileRef = 33960A9910D731EE006AFDA8 /* 300X300.png */; };
-		3397F88410B52AB3008052AF /* SwitchServerAlertHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3397F88310B52AB3008052AF /* SwitchServerAlertHelper.m */; };
-		3397F88510B52AB3008052AF /* SwitchServerAlertHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3397F88310B52AB3008052AF /* SwitchServerAlertHelper.m */; };
 		33981B1110B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
 		33981B1210B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
 		33981B1A10B108C30076DB59 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1910B108C30076DB59 /* User.m */; };
@@ -327,8 +325,6 @@
 		33960A8710D72F65006AFDA8 /* 300X500.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 300X500.png; sourceTree = "<group>"; };
 		33960A9210D73104006AFDA8 /* 300X480.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 300X480.png; sourceTree = "<group>"; };
 		33960A9910D731EE006AFDA8 /* 300X300.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 300X300.png; sourceTree = "<group>"; };
-		3397F88210B52AB3008052AF /* SwitchServerAlertHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchServerAlertHelper.h; sourceTree = "<group>"; };
-		3397F88310B52AB3008052AF /* SwitchServerAlertHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwitchServerAlertHelper.m; sourceTree = "<group>"; };
 		33981B0F10B103260076DB59 /* DataBaseService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataBaseService.h; sourceTree = "<group>"; };
 		33981B1010B103260076DB59 /* DataBaseService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataBaseService.m; sourceTree = "<group>"; };
 		33981B1810B108C30076DB59 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
@@ -718,8 +714,6 @@
 				8C6502E1109809EC006FC19F /* PollingHelper.m */,
 				8CEB4E7D10B2827200A67721 /* LogoutHelper.h */,
 				8CEB4E7E10B2827200A67721 /* LogoutHelper.m */,
-				3397F88210B52AB3008052AF /* SwitchServerAlertHelper.h */,
-				3397F88310B52AB3008052AF /* SwitchServerAlertHelper.m */,
 				33267E6F10E47C5B00E3AE42 /* NSDateHelper.h */,
 				33267E7010E47C5B00E3AE42 /* NSDateHelper.m */,
 			);
@@ -1123,7 +1117,6 @@
 				33981B1110B103260076DB59 /* DataBaseService.m in Sources */,
 				33981B1A10B108C30076DB59 /* User.m in Sources */,
 				8CEB4E7F10B2827200A67721 /* LogoutHelper.m in Sources */,
-				3397F88410B52AB3008052AF /* SwitchServerAlertHelper.m in Sources */,
 				8CF5341F10B64C1900C52FB0 /* ChoosePanelViewController.m in Sources */,
 				8CF539AC10B9359F00C52FB0 /* ErrorViewController.m in Sources */,
 				8CC6364E10BD37D8009C25C9 /* CredentialUtil.m in Sources */,
@@ -1235,7 +1228,6 @@
 				331A58E810AD6A79001AB869 /* DataBaseServiceTest.m in Sources */,
 				33981B1210B103260076DB59 /* DataBaseService.m in Sources */,
 				8CEB4E8010B2827200A67721 /* LogoutHelper.m in Sources */,
-				3397F88510B52AB3008052AF /* SwitchServerAlertHelper.m in Sources */,
 				8CF5342010B64C1900C52FB0 /* ChoosePanelViewController.m in Sources */,
 				8CF539AB10B9359F00C52FB0 /* ErrorViewController.m in Sources */,
 				8CC6364F10BD37D8009C25C9 /* CredentialUtil.m in Sources */,

@@ -36,8 +36,8 @@
 	int fromScreen;
 }
 
-@property (nonatomic, readonly) int toScreen;
-@property (nonatomic, readonly) int toGroup;
+@property (nonatomic, readwrite, assign) int toScreen;
+@property (nonatomic, readwrite, assign) int toGroup;
 @property (nonatomic, readonly) BOOL isPreviousScreen;
 @property (nonatomic, readonly) BOOL isNextScreen;
 @property (nonatomic, readonly) BOOL isBack;
