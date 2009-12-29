@@ -22,7 +22,6 @@
 
 #import "URLConnectionHelper.h"
 #import "AppSettingsDefinition.h"
-#import "SwitchServerAlertHelper.h"
 #import "CheckNetwork.h"
 #import "CheckNetworkException.h"
 #import "DataBaseService.h"
@@ -42,12 +41,6 @@
 @end
 
 @interface URLConnectionHelper (Private)
-- (void)switchToAvailableServer;
-- (void)switchToAvailableAutoServer;
-- (void)doSwitchToAvailableAutoServer;
-- (void)switchToAvailableCustomizedServer;
-- (void)doSwitchToAvailableCustomizedServer;
-
 - (void) removeBadCurrentServerURL;
 - (void) swithToGroupMemberServer;
 - (NSString *) checkGroupMemberServers;
@@ -182,107 +175,6 @@
 	[updateController checkConfigAndUpdate];
 }
 
-////////////////////////////
-
-- (void)switchToAvailableServer {
-	if ([AppSettingsDefinition isAutoDiscoveryEnable]) {
-		[self switchToAvailableAutoServer];
-	} else {
-		[self switchToAvailableCustomizedServer];
-	}	
-}
-
-- (void)switchToAvailableAutoServer {
-	// AutoDiscovery was enabled.
-	NSLog(@"Switch to a available server in automatical mode when connection fail.");
-	[AppSettingsDefinition removeAllAutoServer];
-	[AppSettingsDefinition writeToFile];
-	if (autoDiscoverController) {
-		[autoDiscoverController setDelegate:nil];
-		[autoDiscoverController release];
-		autoDiscoverController = nil;
-	}
-	autoDiscoverController = [[ServerAutoDiscoveryController alloc]initWithDelegate:self];
-	getAutoServersTimer = [[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(doSwitchToAvailableAutoServer) userInfo:nil repeats:NO] retain];
-}
-
-
-/**
- * Switch to a autoServer depends on whether there are available autoServers.
- * If there are, then alert user switching to a server whose index is 0 in autoServers array.
- * If there aren't, then alert user adding server manually.
- */
-- (void)doSwitchToAvailableAutoServer {
-	NSString *alertInfo = [errorMsg localizedDescription];
-	NSMutableArray *availableAutoServers = [AppSettingsDefinition getAutoServers];
-	NSString *availableAutoServerURL;
-	NSLog(@"Found %d autoServer(s) before switch to a available autoServer.", availableAutoServers.count);
-	if (availableAutoServers.count > 0) {
-		availableAutoServerURL = [[availableAutoServers objectAtIndex:0] objectForKey:@"url"];
-		NSString *tempAlertInfo = [[[@"! \nSwitch to another server: [" stringByAppendingString:availableAutoServerURL] stringByAppendingString:@"]"] stringByAppendingString:@" or setting?"];
-		alertInfo = [alertInfo stringByAppendingString: tempAlertInfo];
-		[[[SwitchServerAlertHelper alloc] init] showAlertViewWithTitleDiscorveredServerAndSettingNavigation:@"Command failed" Message:alertInfo];
-	} else {
-		NSLog(@"No auto servers found, then alert uesr adding server manually.");
-		alertInfo = [alertInfo stringByAppendingString:@"\n There's no autodiscovered server available. Add a server manually?"];
-		[[[SwitchServerAlertHelper alloc] init] showAlertViewWithTitleOnlyNoAndSettingNavigation:@"Command failed" Message:alertInfo];
-	}
-}
-
-- (void)switchToAvailableCustomizedServer {
-	// AutoDiscovery wasn't enabled.
-	NSLog(@"Switch to a available server in manual mode when connection fail.");			
-	NSMutableArray *availableCustomServers = [AppSettingsDefinition getCustomServers];
-	NSString *alertInfo = [errorMsg localizedDescription];
-	
-	// If there are customized servers then alert user switching to a available one.
-	if (availableCustomServers.count > 0) {
-		for(int i=0; i < availableCustomServers.count; i++) {
-			[[[AppSettingsDefinition getCustomServers] objectAtIndex:i] setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];
-		}
-		[AppSettingsDefinition writeToFile];
-		
-		NSString *oldCurrentServerUrl = [AppSettingsDefinition getCurrentServerUrl];
-		NSString *availableCustomServerURL = @"";
-		// check if there a customizedURL is available. 
-		for(int i=0; i < availableCustomServers.count; i++) {
-			NSString *toBeCheckedCustomizedURL = [[availableCustomServers objectAtIndex:i] objectForKey:@"url"];
-			NSLog(@"toBeCheckedCustomizedURL is : %@", toBeCheckedCustomizedURL);
-			@try {
-				[AppSettingsDefinition setCurrentServerUrl:toBeCheckedCustomizedURL];
-				// this method will throw CheckNetworkException if the check failed.
-				[CheckNetwork checkAll];
-				availableCustomServerURL = toBeCheckedCustomizedURL;
-				[[[AppSettingsDefinition getCustomServers] objectAtIndex:i] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
-				[AppSettingsDefinition writeToFile];
-				
-				break;
-			} @catch (CheckNetworkException *e) {
-				NSLog(@"-------CheckNetworkException------- %@",e.message);
-				[AppSettingsDefinition setCurrentServerUrl:oldCurrentServerUrl];
-				[AppSettingsDefinition writeToFile];
-				continue;
-			}
-		}
-		if(![availableCustomServerURL isEqualToString:@""]) {
-			NSLog(@"After checking customized serverURL, a availableCustomServerURL is %@", availableCustomServerURL);
-			// Temporarily, I just select the first customized url, even if it isn't available.
-			//*availableCustomServerURL = [[availableCustomServers objectAtIndex:0] objectForKey:@"url"];
-			NSString *tempAlertInfo = [[[@"! \nSwitch to available customized server: [" stringByAppendingString:availableCustomServerURL] stringByAppendingString:@"]"] stringByAppendingString:@" or setting?"];
-			alertInfo = [alertInfo stringByAppendingString:tempAlertInfo];
-			[[[SwitchServerAlertHelper alloc] init] showAlertViewWithTitleCustomizedServerAndSettingNavigation:@"Command failed" Message:alertInfo];
-		} else {
-			// If there aren't any customized servers available then alert user customizing a new server.
-			alertInfo = [alertInfo stringByAppendingString:@"\n There's no cumtomized server available. Add a server manually?"];
-			[[[SwitchServerAlertHelper alloc] init] showAlertViewWithTitleOnlyNoAndSettingNavigation:@"Command failed" Message:alertInfo];
-		}
-	} else {
-		// If there aren't any customized servers then alert user customizing a new server.
-		alertInfo = [alertInfo stringByAppendingString:@"\n There's no cumtomized server available. Add a server manually?"];
-		[[[SwitchServerAlertHelper alloc] init] showAlertViewWithTitleOnlyNoAndSettingNavigation:@"Command failed" Message:alertInfo];
-	}
-}
-
 #pragma mark delegate method of NSURLConnection
 
 //Called we connection receive data
@@ -303,7 +195,6 @@
 	if ([delegate respondsToSelector:@selector(definitionURLConnectionDidFailWithError:)]) {
 		[delegate definitionURLConnectionDidFailWithError:error];
 		self.errorMsg = error;
-		//[self switchToAvailableServer];
 		[self swithToGroupMemberServer];
 	} else {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];

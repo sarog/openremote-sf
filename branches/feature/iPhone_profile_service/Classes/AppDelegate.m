@@ -25,6 +25,7 @@
   */
 
 #import "AppDelegate.h"
+#import "NotificationConstant.h"
 
 
 //Private method declare

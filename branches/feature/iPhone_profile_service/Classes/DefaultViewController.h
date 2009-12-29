@@ -57,5 +57,6 @@
 - (void)populateLoginView:(id)sender;
 - (void)populateSettingsView:(id)sender;
 - (void)performGesture:(Gesture *)gesture;
+- (void) saveLastGroupIdAndScreenId;
 
 @end

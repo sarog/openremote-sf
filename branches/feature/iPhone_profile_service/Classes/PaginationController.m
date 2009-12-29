@@ -29,8 +29,8 @@
 - (void)updateViewForPage:(NSUInteger)page;
 - (void)updateViewForCurrentPageAndBothSides;
 - (void)pageControlValueDidChange:(id)sender;
-- (void)scrollToSelectedView;
-
+- (void)scrollToSelectedViewWithAnimation:(BOOL)withAnimation;
+- (BOOL)switchToScreen:(int)screenId withAnimation:(BOOL) withAnimation;
 @end
 
 @implementation PaginationController
@@ -51,7 +51,19 @@
 	[viewControllers release];
 	viewControllers = [newViewControllers copy];
 	
-	selectedIndex = 0;
+	//Recover last screen
+	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+	int lastScreenId = [[userDefaults objectForKey:@"lastScreenId"] intValue];
+	if (lastScreenId > 0) {
+		for (int i=0; i<[viewControllers count]; i++) {
+			if (lastScreenId == [[[viewControllers objectAtIndex:i] screen] screenId]) {
+				selectedIndex = i;
+				break;
+			}
+		}
+	} else {
+		selectedIndex = 0;
+	}
 	
 	//[self updateView];
 }
@@ -63,8 +75,13 @@
 	[self updateViewForCurrentPageAndBothSides];
 }
 
-//Return YES if succuess
+//Return YES if succuess, without animation.
 - (BOOL)switchToScreen:(int)screenId {
+	return [self switchToScreen:screenId withAnimation:NO];
+}
+
+//Return YES if succuess
+- (BOOL)switchToScreen:(int)screenId withAnimation:(BOOL) withAnimation {
 	int index = -1;
 	for (int i = 0; i<viewControllers.count; i++) {
 		ScreenViewController *svc = (ScreenViewController *)[viewControllers objectAtIndex:i];
@@ -76,11 +93,11 @@
 	if (index != -1) {
 		selectedIndex = index;
 		[pageControl setCurrentPage:selectedIndex];
-		[self scrollToSelectedView];
+		[self scrollToSelectedViewWithAnimation:NO];
 	} else {
 		return NO;
 	}
-
+	
 	return YES;
 }
 
@@ -91,7 +108,7 @@
 	}
 	selectedIndex--;
 	[pageControl setCurrentPage:selectedIndex];
-	[self scrollToSelectedView];
+	[self scrollToSelectedViewWithAnimation:YES];
 	return YES;
 }
 
@@ -102,7 +119,7 @@
 	}
 	selectedIndex++;
 	[pageControl setCurrentPage:selectedIndex];
-	[self scrollToSelectedView];
+	[self scrollToSelectedViewWithAnimation:YES];
 	return YES;
 }
 
@@ -112,6 +129,10 @@
 	[self updateViewForPage:selectedIndex + 1];
 	
 	[pageControl setCurrentPage:selectedIndex];
+	
+	int lastScreenId = ((ScreenViewController *)[viewControllers objectAtIndex:selectedIndex]).screen.screenId;
+	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+	[userDefaults setObject:[NSString stringWithFormat:@"%d",lastScreenId] forKey:@"lastScreenId"];
 }
 
 - (void)updateViewForPage:(NSUInteger)page {
@@ -137,11 +158,11 @@
 }
 
 //if you have changed *selectedIndex* then calling this method will scroll to that seleted view immediately
-- (void)scrollToSelectedView {
+- (void)scrollToSelectedViewWithAnimation:(BOOL)withAnimation {
 	CGRect frame = scrollView.bounds;
 	frame.origin.x = frame.size.width * selectedIndex;
 	frame.origin.y = 0;
-	[scrollView scrollRectToVisible:frame animated:YES];
+	[scrollView scrollRectToVisible:frame animated:withAnimation];
 }
 
 - (void)loadView {
