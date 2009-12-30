@@ -53,8 +53,13 @@ public class ScreenImage extends ScreenComponent {
    protected void initial() {
       image.setStyleName("screen-image");
       imageTable.removeStyleName("screen-btn-cont");
-      image.setUrl(uiImage.getSrc());
       imageTable.setWidget(1, 1, image);
+      if (!"".equals(uiImage.getSrc())) {
+         image.setUrl(uiImage.getSrc());
+         image.removeStyleName("default-image");
+      } else {
+         image.setStyleName("default-image");
+      }
       add(imageTable);
       
       layout();

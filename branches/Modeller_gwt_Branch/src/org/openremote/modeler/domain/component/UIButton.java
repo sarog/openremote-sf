@@ -50,6 +50,7 @@ public class UIButton extends UIControl {
       super();
    }
    public UIButton(UIButton btn) {
+      this.setOid(btn.getOid());
       this.name = btn.name;
       this.repeate = btn.repeate;
       this.image = btn.image;

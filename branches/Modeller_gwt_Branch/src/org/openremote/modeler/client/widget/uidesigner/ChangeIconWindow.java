@@ -423,5 +423,6 @@ public class ChangeIconWindow extends Dialog {
          screenButton.setIcon(imageURL);
       }
       screenButton.addStyleName("button-border");
+      screenButton.layout();
    }
 }
