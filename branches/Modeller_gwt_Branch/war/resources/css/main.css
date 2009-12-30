@@ -200,3 +200,7 @@ table.screen-btn-cont td.br-c{
    padding-left: 10px;
    padding-top: 10px;
 }
+.screen-image {
+	background-repeat: no-repeat;
+   overflow:hidden;
+}
