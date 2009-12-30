@@ -19,7 +19,7 @@
 ##*****************************
 <?xml version="1.0" encoding="UTF-8"?>
 <openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/controller.xsd">
-  <controls>
+  <components>
   	#foreach($screen in $screens)
   		#########################absolute####################
   		#foreach($abs in $screen.getAbsolutes())
@@ -146,7 +146,7 @@
   		#end
   		#########################UIGrid####################
   	#end
-  </controls>
+  </components>
   <commands>
     #foreach($protocolDisplayName in $eventContainer.getProtocolEvents().keySet())
     	#set($protocalTagName=${protocolContainer.findTagName($protocolDisplayName)})

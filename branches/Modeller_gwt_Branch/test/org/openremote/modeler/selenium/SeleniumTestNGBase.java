@@ -53,7 +53,7 @@ public class SeleniumTestNGBase {
       selenium.start();
       selenium.setTimeout("10000");
 //      selenium.setSpeed("1000");
-      login("super", "123");
+      login("root", "root");
    }
 
    /**

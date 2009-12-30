@@ -28,6 +28,9 @@ import org.openremote.modeler.domain.BusinessEntity;
  */
 @SuppressWarnings("serial")
 public abstract class UIComponent extends BusinessEntity {
+   
+   private transient boolean removed = false;
+   
    public UIComponent() {
    }
 
@@ -38,6 +41,16 @@ public abstract class UIComponent extends BusinessEntity {
    public String getName() {
       return "UIComponent";
    }
+   
+   
+   public boolean isRemoved() {
+      return removed;
+   }
+
+   public void setRemoved(boolean removed) {
+      this.removed = removed;
+   }
+
    public abstract void transImagePathToRelative(String relativeSessionFolderPath);
 
    /*

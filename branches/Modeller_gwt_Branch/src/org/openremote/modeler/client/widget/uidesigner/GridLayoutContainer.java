@@ -27,11 +27,13 @@ import org.openremote.modeler.client.gxtextends.ScreenDropTarget;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
-import org.openremote.modeler.domain.GridCellBounds;
 import org.openremote.modeler.domain.Cell;
+import org.openremote.modeler.domain.GridCellBounds;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIGrid;
+import org.openremote.modeler.domain.component.UIImage;
+import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISwitch;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -464,6 +466,10 @@ public class GridLayoutContainer extends ComponentContainer {
          cell.setUiComponent(new UIButton(IDUtil.nextID()));
       } else if (uiComponent instanceof UISwitch) {
          cell.setUiComponent(new UISwitch(IDUtil.nextID()));
+      } else if (uiComponent instanceof UILabel){
+         cell.setUiComponent(new UILabel(IDUtil.nextID()));
+      } else if (uiComponent instanceof UIImage){
+         cell.setUiComponent(new UIImage(IDUtil.nextID()));
       }
       grid.addCell(cell);
       return createCellContainer(grid, cell, cellWidth, cellHeight);
@@ -475,6 +481,10 @@ public class GridLayoutContainer extends ComponentContainer {
          cell.setUiComponent(new UIButton((UIButton) uiComponent));
       } else if (uiComponent instanceof UISwitch) {
          cell.setUiComponent(new UISwitch((UISwitch) uiComponent));
+      } else if (uiComponent instanceof UILabel){
+         cell.setUiComponent(new UILabel((UILabel)uiComponent));
+      } else if (uiComponent instanceof UIImage){
+         cell.setUiComponent(new UIImage((UIImage)uiComponent));
       }
       grid.addCell(cell);
       return createCellContainer(grid, cell, cellWidth, cellHeight);

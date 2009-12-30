@@ -44,7 +44,7 @@ public abstract class TestBase extends TestCase {
     */
    protected void setUp() throws Exception {
       super.setUp();
-      sessionFactory = (SessionFactory) SpringContext.getInstance().getBean("sessionFactory");
+      sessionFactory = (SessionFactory) SpringTestContext.getInstance().getBean("sessionFactory");
 
       Session s = sessionFactory.openSession();
       TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(s));

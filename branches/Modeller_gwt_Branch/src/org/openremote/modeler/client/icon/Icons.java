@@ -304,21 +304,27 @@ public interface Icons extends ImageBundle {
    @Resource("brick_add.png")
    AbstractImagePrototype switchAddIcon();
    
-   @Resource("brick_add.png")
+   @Resource("brick_edit.png")
    AbstractImagePrototype switchEditIcon();
    
-   @Resource("brick_add.png")
+   @Resource("brick_delete.png")
    AbstractImagePrototype switchDeleteIcon();
    
-   @Resource("brick_add.png")
+   @Resource("slider.png")
    AbstractImagePrototype sliderIcon();
    
    @Resource("brick_add.png")
    AbstractImagePrototype sliderAddIcon();
    
-   @Resource("brick_add.png")
+   @Resource("brick_edit.png")
    AbstractImagePrototype sliderEditIcon();
    
-   @Resource("brick_add.png")
+   @Resource("brick_delete.png")
    AbstractImagePrototype sliderDeleteIcon();
+   
+   @Resource("label.gif")
+   AbstractImagePrototype labelIcon();
+
+   @Resource("image.png")
+   AbstractImagePrototype imageIcon();
 }

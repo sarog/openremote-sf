@@ -40,6 +40,8 @@ import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIGrid;
+import org.openremote.modeler.domain.component.UIImage;
+import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISwitch;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
@@ -290,6 +292,8 @@ public class TreePanelBuilder {
 //      folderBean.setDisplayName("groups");
       widgetTreeStore.add(new UIButton().getBeanModel(), true);
       widgetTreeStore.add(new UISwitch().getBeanModel(), true);
+      widgetTreeStore.add(new UILabel().getBeanModel(), true);
+      widgetTreeStore.add(new UIImage().getBeanModel(), true);
       widgetTreeStore.add(new UIGrid().getBeanModel(), true);
       
       widgetTree.setIconProvider(new ModelIconProvider<BeanModel>() {
@@ -298,6 +302,10 @@ public class TreePanelBuilder {
                return ICON.buttonIcon();
             } else if (thisModel.getBean() instanceof UISwitch) {
                return ICON.switchIcon();
+            } else if (thisModel.getBean() instanceof UILabel){
+               return ICON.labelIcon();
+            } else if (thisModel.getBean() instanceof UIImage) {
+               return ICON.imageIcon();
             } else if (thisModel.getBean() instanceof UIGrid) {
                return ICON.gridIcon();
             } else {

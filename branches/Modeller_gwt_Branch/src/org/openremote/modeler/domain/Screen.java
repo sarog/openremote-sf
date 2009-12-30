@@ -19,11 +19,13 @@
 */
 package org.openremote.modeler.domain;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Transient;
 
 import org.openremote.modeler.domain.component.Gesture;
+import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
@@ -212,6 +214,7 @@ public class Screen extends RefedEntity {
    public void removeAbsolute(Absolute absolute) {
       if (this.absolutes.size() > 0) {
          this.absolutes.remove(absolute);
+         absolute.getUIComponent().setRemoved(true);
       }
    }
 
@@ -230,6 +233,10 @@ public class Screen extends RefedEntity {
    public void removeGrid(UIGrid grid) {
       if (grids.size() > 0) {
          this.grids.remove(grid);
+         Collection<Cell> cells = grid.getCells();
+         for(Cell cell : cells){
+            cell.getUIComponent().setRemoved(true);
+         }
       }
    }
 
@@ -245,4 +252,26 @@ public class Screen extends RefedEntity {
       this.gestures = gestures;
    }
    
+   /**
+    * get all the UIComponent by the component's class. for example, if you want to get all the UIButton on the screen.
+    * you can invoke this method like this: <code>getAllUIComponentByType(UIButton.class)</code>
+    * @param clazz
+    * @return
+    */
+   public Collection<? extends UIComponent> getAllUIComponentByType(Class<? extends UIComponent> clazz){
+   Collection<UIComponent> uiComponents = new ArrayList<UIComponent>();
+         for (Absolute absolute : absolutes){
+            if (absolute.getUIComponent().getClass()==clazz){
+               uiComponents.add(absolute.getUIComponent());
+            }
+         }
+         for (UIGrid grid : grids){
+            for(Cell cell : grid.getCells()){
+               if(cell.getUIComponent().getClass()==clazz){
+                  uiComponents.add(cell.getUIComponent());
+               }
+            }
+         }
+      return uiComponents;
+   }
 }
