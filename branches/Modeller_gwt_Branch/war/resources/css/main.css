@@ -204,3 +204,24 @@ table.screen-btn-cont td.br-c{
 	background-repeat: no-repeat;
    overflow:hidden;
 }
+
+.slider-left-track {
+	width: 40%;
+   background: url(../images/custom/slider/background-scroll.png) repeat-x scroll 0 50%;
+}
+.slider-right-track {
+	width: 40%;
+   background: url(../images/custom/slider/background-scroll.png) repeat-x scroll 0 50%;
+}
+.slider-top-track {
+   height: 40%;
+   background: url(../images/custom/slider/background-scroll.png) repeat-y scroll 0 0;
+}
+.slider-bottom-track {
+   height: 40%;
+   background: url(../images/custom/slider/background-scroll.png) repeat-y scroll 0 0;
+}
+
+.default-image {
+   text: expression(src="./image/global.logo.png"); 	
+}

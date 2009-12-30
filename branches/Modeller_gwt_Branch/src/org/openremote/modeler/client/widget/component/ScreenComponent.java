@@ -25,6 +25,7 @@ import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
+import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
 
 /**
@@ -50,6 +51,8 @@ public abstract class ScreenComponent extends ComponentContainer {
          return new ScreenButton(canvas, (UIButton) uiComponent);
       } else if (uiComponent instanceof UISwitch) {
          return new ScreenSwitch(canvas, (UISwitch) uiComponent);
+      } else if(uiComponent instanceof UISlider) {
+         return new ScreenSlider(canvas, (UISlider) uiComponent);
       } else if (uiComponent instanceof UILabel){
          return new ScreenLabel(canvas,(UILabel)uiComponent);
       } else if (uiComponent instanceof UIImage){

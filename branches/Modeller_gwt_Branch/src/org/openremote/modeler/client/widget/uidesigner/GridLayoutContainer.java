@@ -34,6 +34,7 @@ import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
+import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -470,6 +471,8 @@ public class GridLayoutContainer extends ComponentContainer {
          cell.setUiComponent(new UILabel(IDUtil.nextID()));
       } else if (uiComponent instanceof UIImage){
          cell.setUiComponent(new UIImage(IDUtil.nextID()));
+      } else if (uiComponent instanceof UISlider){
+         cell.setUiComponent(new UISlider(IDUtil.nextID()));
       }
       grid.addCell(cell);
       return createCellContainer(grid, cell, cellWidth, cellHeight);
@@ -485,6 +488,8 @@ public class GridLayoutContainer extends ComponentContainer {
          cell.setUiComponent(new UILabel((UILabel)uiComponent));
       } else if (uiComponent instanceof UIImage){
          cell.setUiComponent(new UIImage((UIImage)uiComponent));
+      } else if (uiComponent instanceof UISlider){
+         cell.setUiComponent(new UISlider((UISlider)uiComponent));
       }
       grid.addCell(cell);
       return createCellContainer(grid, cell, cellWidth, cellHeight);

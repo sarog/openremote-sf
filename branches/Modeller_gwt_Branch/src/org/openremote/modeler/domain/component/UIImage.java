@@ -17,6 +17,7 @@ public class UIImage extends UIComponent {
    }
    
    public UIImage(UIImage uiImage) {
+      this.setOid(uiImage.getOid());
       this.src = uiImage.src;
       this.sensor = uiImage.sensor;
       this.label = uiImage.label;

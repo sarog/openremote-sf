@@ -25,6 +25,7 @@ import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.client.widget.component.ScreenImage;
 import org.openremote.modeler.client.widget.component.ScreenLabel;
+import org.openremote.modeler.client.widget.component.ScreenSlider;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.propertyform.ScreenPropertyForm;
@@ -37,6 +38,7 @@ import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
+import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 
@@ -85,13 +87,15 @@ public class ScreenCanvas extends ComponentContainer {
       if (screen.getAbsolutes().size() > 0) {
          List<Absolute> absolutes = screen.getAbsolutes();
          for (Absolute absolute : absolutes) {
-            AbsoluteLayoutContainer controlContainer = createAbsoluteLayoutContainer(screen, absolute, ScreenComponent
+            AbsoluteLayoutContainer componentContainer = createAbsoluteLayoutContainer(screen, absolute, ScreenComponent
                   .build(this, absolute.getUIComponent()));
-            controlContainer.setSize(absolute.getWidth(), absolute.getHeight());
-            controlContainer.setPosition(absolute.getLeft(), absolute.getTop());
-            this.add(controlContainer);
-            new Resizable(controlContainer, Constants.RESIZABLE_HANDLES);
-            createDragSource(this, controlContainer);
+            componentContainer.setSize(absolute.getWidth(), absolute.getHeight());
+            componentContainer.setPosition(absolute.getLeft(), absolute.getTop());
+            this.add(componentContainer);
+            Resizable resizable = new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
+            resizable.setMinHeight(10);
+            resizable.setMinWidth(10);
+            createDragSource(this, componentContainer);
          }
       }
       if (screen.getGrids().size() > 0) {
@@ -215,7 +219,9 @@ public class ScreenCanvas extends ComponentContainer {
                createDragSource(canvas, componentContainer);
                canvas.add(componentContainer);
                componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY() - absolutePosition.y);
-               new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
+               Resizable resizable = new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
+               resizable.setMinHeight(10);
+               resizable.setMinWidth(10);
             } else if (data instanceof LayoutContainer) {
                if (data instanceof GridLayoutContainerHandle) {
                   GridLayoutContainerHandle gridContainer = (GridLayoutContainerHandle) data;
@@ -244,7 +250,9 @@ public class ScreenCanvas extends ComponentContainer {
                   } else {
                      componentContainer = createNewAbsoluteLayoutContainer(screen, (UIComponent) dataModel.getBean());
                      createDragSource(canvas, componentContainer);
-                     new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
+                     Resizable resizable = new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
+                     resizable.setMinHeight(10);
+                     resizable.setMinWidth(10);
                   }
                   WidgetSelectionUtil.setSelectWidget(componentContainer);
                   canvas.add(componentContainer);
@@ -374,6 +382,11 @@ public class ScreenCanvas extends ComponentContainer {
          absolute.setUIComponent(uiSwitch);
          controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenSwitch(this, uiSwitch));
          controlContainer.setSize(50, 50); // set the switch's default size after drag from widget tree.
+      } else if (uiComponent instanceof UISlider) {
+         UISlider uiSlider = new UISlider(IDUtil.nextID());
+         absolute.setUIComponent(uiSlider);
+         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenSlider(this, uiSlider));
+         controlContainer.setSize(150, 20);
       } else if (uiComponent instanceof UILabel){
          UILabel uiLabel = new UILabel(IDUtil.nextID());
          absolute.setUIComponent(uiLabel);
@@ -416,6 +429,10 @@ public class ScreenCanvas extends ComponentContainer {
          UIImage uiImage = new UIImage((UIImage)uiComponent);
          absolute.setUIComponent(uiImage);
          controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenImage(this, uiImage));
+      } else if (uiComponent instanceof UISlider){
+         UISlider uiSlider = new UISlider((UISlider)uiComponent);
+         absolute.setUIComponent(uiSlider);
+         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenSlider(this, uiSlider));
       }
       controlContainer.setSize(recorder.getWidth(), recorder.getHeight());
       screen.addAbsolute(absolute);
