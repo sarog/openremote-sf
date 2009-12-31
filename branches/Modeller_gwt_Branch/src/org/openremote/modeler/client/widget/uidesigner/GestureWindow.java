@@ -93,9 +93,9 @@ public class GestureWindow extends Dialog {
                for (BeanModel beanModel : checkedGestures) {
                   gestures.add(gestureMaps.get(((Gesture)beanModel.getBean()).getType().toString()));
                }
-               devicesAndMacrosTree.removeAllListeners();
                fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(gestures));
             }
+            devicesAndMacrosTree.getSelectionModel().removeAllListeners();
          }
       });
       createGestureTypeList();
