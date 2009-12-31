@@ -248,7 +248,7 @@
 	 	<xsd:annotation>
 			<xsd:documentation><![CDATA[
 				A Element used to link a component with another component.eg:
-				<link type="sensor">
+				<link type="sensor" ref="5">
 					<state name="on" value="on"/>
 					<state name="off" value="off"/>
 				</link>
@@ -256,9 +256,10 @@
 		</xsd:annotation> 
 	 	<xsd:complexType>
 	 		<xsd:sequence>
-	 			<xsd:element ref="state" minOccurs="1" maxOccurs="unbounded"/>
+	 			<xsd:element ref="state" minOccurs="0" maxOccurs="unbounded"/>
 	 		</xsd:sequence>
 	 		<xsd:attribute name="type" type="xsd:string" use="required" />
+	 		<xsd:attribute name="ref" type="xsd:int" use="required" />
 	 	</xsd:complexType>
 	 </xsd:element>
 	<xsd:element name="image">

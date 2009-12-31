@@ -25,6 +25,13 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorCommandRef;
+import org.openremote.modeler.domain.SensorType;
+import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.domain.SwitchCommandOffRef;
+import org.openremote.modeler.domain.SwitchCommandOnRef;
+import org.openremote.modeler.domain.SwitchSensorRef;
 import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIGrid;
@@ -56,12 +63,12 @@ public class ResourceServiceImplTest {
       /*------------xml validation-------------*/
       configuration = (Configuration) SpringTestContext.getInstance().getBean("configuration");
    }
-   @Test
+@Test
    public void testNopanel(){
       Collection<Panel> emptyPanel = new ArrayList<Panel>();
      outputPanelXML(emptyPanel);
    }
-   @Test
+@Test
    public void testPanelHasGroupScreenControl()throws Exception{
       List<ScreenRef> screenRefs = new ArrayList<ScreenRef>();
       List<GroupRef> groupRefs = new ArrayList<GroupRef> ();
@@ -80,16 +87,27 @@ public class ResourceServiceImplTest {
       gridBtn.setOid(IDUtil.nextID());
       gridBtn.setName("grid_btn1");
       
+      Switch switchToggle = new Switch();
+      switchToggle.setOid(IDUtil.nextID());
+      Sensor sensor = new Sensor();
+      sensor.setOid(IDUtil.nextID());
+      sensor.setName("testSensro");
+      SwitchSensorRef sensorRef = new SwitchSensorRef(switchToggle);
+      sensorRef.setOid(IDUtil.nextID());
+      sensorRef.setSensor(sensor);
+      switchToggle.setSwitchSensorRef(sensorRef);
+      
       UISwitch absSwitch = new UISwitch();
       absSwitch.setOid(IDUtil.nextID());
       UImage onImage = new UImage("on.jpg");
       UImage offImage = new UImage("off.jpg");
       absSwitch.setOnImage(onImage);
       absSwitch.setOffImage(offImage);
+      absSwitch.setSwitchCommand(switchToggle);
       
       UISwitch gridSwitch = new UISwitch();
       gridSwitch.setOid(IDUtil.nextID());
-         
+      gridSwitch.setSwitchCommand(switchToggle); 
          
       /*---------------widget-------------------*/
       
@@ -156,7 +174,7 @@ public class ResourceServiceImplTest {
       panels.add(panel2);
       outputPanelXML(panels);
    }
-   @Test
+@Test
    public void testPanelTabbarWithNavigateToGroupAndScreen(){
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
@@ -175,7 +193,7 @@ public class ResourceServiceImplTest {
       outputPanelXML(panelWithJustOneNavigate);
    }
    
-   @Test
+@Test
    public void testPanelTabbarWithNavigateToLogical(){
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
@@ -193,7 +211,7 @@ public class ResourceServiceImplTest {
       outputPanelXML(panelWithJustOneNavigate);
    }
    
-   @Test
+@Test
    public void testPanelNavigateHasImage(){
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
@@ -218,7 +236,7 @@ public class ResourceServiceImplTest {
       outputPanelXML(panelWithJustOneNavigate);
    }
    
-   @Test
+@Test
    public void testGroupNavigateHasImage(){
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
@@ -249,7 +267,7 @@ public class ResourceServiceImplTest {
       outputPanelXML(panelWithJustOneNavigate);
    }
    
- @Test
+// @Test
    public void testScreenHasBackgrouond(){
       Collection<Panel> panel = new ArrayList<Panel>();
       Screen screen = new Screen();
@@ -270,7 +288,7 @@ public class ResourceServiceImplTest {
       panel.add(p);
       outputPanelXML(panel);
    }
-   @Test
+@Test
    public void testgetControllXMWithEmptyScreen(){
       List<Screen> screens = new ArrayList<Screen>();
       Screen screen = new Screen();
@@ -281,7 +299,7 @@ public class ResourceServiceImplTest {
       outputControllerXML(screens);
    }
    
-   @Test
+@Test
    public void testGetControllerXMLWithButtonAndSwitchButNoCmd(){
       List<Screen> screens = new ArrayList<Screen>();
       Screen screen = new Screen();
@@ -296,12 +314,25 @@ public class ResourceServiceImplTest {
       gridBtn.setOid(IDUtil.nextID());
       gridBtn.setName("grid_btn1");
       
+      
+      Switch switchToggle = new Switch();
+      switchToggle.setOid(IDUtil.nextID());
+      Sensor sensor = new Sensor();
+      sensor.setType(SensorType.SWITCH);
+      sensor.setOid(IDUtil.nextID());
+      sensor.setName("testSensro");
+      SwitchSensorRef sensorRef = new SwitchSensorRef(switchToggle);
+      sensorRef.setOid(IDUtil.nextID());
+      sensorRef.setSensor(sensor);
+      switchToggle.setSwitchSensorRef(sensorRef);
+      
       UISwitch absSwitch = new UISwitch();
       absSwitch.setOid(IDUtil.nextID());
+      absSwitch.setSwitchCommand(switchToggle);
       
       UISwitch gridSwitch = new UISwitch();
       gridSwitch.setOid(IDUtil.nextID());
-      
+      gridSwitch.setSwitchCommand(switchToggle);
       Absolute abs1 = new Absolute();
       abs1.setUIComponent(absBtn);
       Absolute abs2 = new Absolute();
@@ -325,63 +356,8 @@ public class ResourceServiceImplTest {
       outputControllerXML(screens);
    }
    
-   @Test
-   public void testGetControllerXMLWithButtonAndSwitchButHaveOnlyDelayCmd(){
-      
-      CommandDelay delayCmd = new CommandDelay("100");
-      
-      List<Screen> screens = new ArrayList<Screen>();
-      Screen screen = new Screen();
-      screen.setOid(IDUtil.nextID());
-      screen.setName("screenWithButtonAndSwitch");
-      
-      UIButton absBtn = new UIButton();
-      absBtn.setOid(IDUtil.nextID());
-      absBtn.setName("abs_btn1");
-      absBtn.setUiCommand(delayCmd);
-      
-      UIButton gridBtn = new UIButton();
-      gridBtn.setOid(IDUtil.nextID());
-      gridBtn.setName("grid_btn1");
-      gridBtn.setUiCommand(delayCmd);
-      
-      UISwitch absSwitch = new UISwitch();
-      absSwitch.setOid(IDUtil.nextID());
-//      absSwitch.setOnCommand(delayCmd);
-//      absSwitch.setOffCommand(delayCmd);
-//      absSwitch.setStatusCommand(delayCmd);
-      
-      UISwitch gridSwitch = new UISwitch();
-      gridSwitch.setOid(IDUtil.nextID());
-//      gridSwitch.setOnCommand(delayCmd);
-//      gridSwitch.setOffCommand(delayCmd);
-//      gridSwitch.setStatusCommand(delayCmd);
-      
-      Absolute abs1 = new Absolute();
-      abs1.setUIComponent(absBtn);
-      Absolute abs2 = new Absolute();
-      abs2.setUIComponent(absSwitch);
-      
-      UIGrid grid1 = new UIGrid(10,10,20,20,4,4);
-      Cell c1 = new Cell();
-      c1.setUiComponent(gridBtn);
-      grid1.addCell(c1);
-      UIGrid grid2 = new UIGrid(10,10,34,20,5,4);
-      Cell c2 = new Cell();
-      c2.setUiComponent(gridSwitch);
-      grid2.addCell(c2);
-      
-      screen.addAbsolute(abs1);
-      screen.addAbsolute(abs2);
-      screen.addGrid(grid1);
-      screen.addGrid(grid2);
-      
-      screens.add(screen);
-      outputControllerXML(screens);
-   }
-   
-   @Test
-   public void testGetControllerXMLWithButtonAndSwitchButHaveDeviceCommand(){
+@Test
+   public void testGetControllerXMLWithButtonAndSwitchJustHaveDeviceCommand(){
       
       Protocol protocol = new Protocol();
       protocol.setType(Constants.INFRARED_TYPE);
@@ -410,15 +386,104 @@ public class ResourceServiceImplTest {
       
       UISwitch absSwitch = new UISwitch();
       absSwitch.setOid(IDUtil.nextID());
-//      absSwitch.setOnCommand(cmdRef);
-//      absSwitch.setOffCommand(cmdRef);
-//      absSwitch.setStatusCommand(cmdRef);
+      
+      Switch switchToggle = new Switch();
+      
+      SwitchCommandOnRef onCommand = new SwitchCommandOnRef();
+      onCommand.setOnSwitch(switchToggle);
+      onCommand.setDeviceCommand(cmd);
+      SwitchCommandOffRef offCommand = new SwitchCommandOffRef();
+      offCommand.setOffSwitch(switchToggle);
+      offCommand.setDeviceCommand(cmd);
+      switchToggle.setSwitchCommandOffRef(offCommand);
+      switchToggle.setSwitchCommandOnRef(onCommand);
+      
+      absSwitch.setSwitchCommand(switchToggle);
       
       UISwitch gridSwitch = new UISwitch();
       gridSwitch.setOid(IDUtil.nextID());
-//      gridSwitch.setOnCommand(cmdRef);
-//      gridSwitch.setOffCommand(cmdRef);
-//      gridSwitch.setStatusCommand(cmdRef);
+      gridSwitch.setSwitchCommand(switchToggle);
+      
+      Absolute abs1 = new Absolute();
+      abs1.setUIComponent(absBtn);
+      Absolute abs2 = new Absolute();
+      abs2.setUIComponent(absSwitch);
+      
+      UIGrid grid1 = new UIGrid(10,10,20,20,4,4);
+      Cell c1 = new Cell();
+      c1.setUiComponent(gridBtn);
+      grid1.addCell(c1);
+      UIGrid grid2 = new UIGrid(10,10,34,20,5,4);
+      Cell c2 = new Cell();
+      c2.setUiComponent(gridSwitch);
+      grid2.addCell(c2);
+      
+      screen.addAbsolute(abs1);
+      screen.addAbsolute(abs2);
+      screen.addGrid(grid1);
+      screen.addGrid(grid2);
+      
+      screens.add(screen);
+      outputControllerXML(screens);
+   }
+   @Test
+   public void testGetControllerXMLWithButtonAndSwitchHaveSensor(){
+      
+      Protocol protocol = new Protocol();
+      protocol.setType(Constants.INFRARED_TYPE);
+      
+      DeviceCommand cmd = new DeviceCommand();
+      cmd.setProtocol(protocol);
+      cmd.setName("testLirc");
+      //cmd.setOid(IDUtil.nextID());
+      deviceCommandService.save(cmd);
+      DeviceCommandRef cmdRef = new DeviceCommandRef(cmd);
+      resourceServiceImpl.setEventId(1);
+      List<Screen> screens = new ArrayList<Screen>();
+      Screen screen = new Screen();
+      screen.setOid(IDUtil.nextID());
+      screen.setName("screenWithButtonAndSwitch");
+      
+      UIButton absBtn = new UIButton();
+      absBtn.setOid(IDUtil.nextID());
+      absBtn.setName("abs_btn1");
+      absBtn.setUiCommand(cmdRef);
+      
+      UIButton gridBtn = new UIButton();
+      gridBtn.setOid(IDUtil.nextID());
+      gridBtn.setName("grid_btn1");
+      gridBtn.setUiCommand(cmdRef);
+      
+      UISwitch absSwitch = new UISwitch();
+      absSwitch.setOid(IDUtil.nextID());
+      
+      Switch switchToggle = new Switch();
+      SwitchCommandOnRef onCommand = new SwitchCommandOnRef();
+      onCommand.setOnSwitch(switchToggle);
+      onCommand.setDeviceCommand(cmd);
+      SwitchCommandOffRef offCommand = new SwitchCommandOffRef();
+      offCommand.setOffSwitch(switchToggle);
+      offCommand.setDeviceCommand(cmd);
+      switchToggle.setSwitchCommandOffRef(offCommand);
+      switchToggle.setSwitchCommandOnRef(onCommand);
+      
+      Sensor sensor = new Sensor();
+      sensor.setOid(IDUtil.nextID());
+      sensor.setType(SensorType.SWITCH);
+      sensor.setName("testSensor");
+      SensorCommandRef sensorCmdRef = new SensorCommandRef();
+      sensorCmdRef.setDeviceCommand(cmd);
+      sensorCmdRef.setSensor(sensor);
+      sensor.setSensorCommandRef(sensorCmdRef);
+      SwitchSensorRef switchSensorRef = new SwitchSensorRef(switchToggle);
+      switchSensorRef.setSensor(sensor);
+      switchToggle.setSwitchSensorRef(switchSensorRef);
+      
+      absSwitch.setSwitchCommand(switchToggle);
+      
+      UISwitch gridSwitch = new UISwitch();
+      gridSwitch.setOid(IDUtil.nextID());
+      gridSwitch.setSwitchCommand(switchToggle);
       
       Absolute abs1 = new Absolute();
       abs1.setUIComponent(absBtn);
@@ -446,8 +511,8 @@ public class ResourceServiceImplTest {
    /*
     * The case has some problem because of LazyInitializationException 
     */
-//   @Test
-   public void testGetControllerXMLWithButtonAndSwitchButHaveMacro(){
+// @Test
+   public void testGetControllerXMLWithButtonAndSwitchHaveMacro(){
 /*      
       Account account = new Account();
       account.setOid(5);
