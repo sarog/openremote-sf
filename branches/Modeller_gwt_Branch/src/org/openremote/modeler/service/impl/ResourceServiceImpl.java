@@ -56,9 +56,14 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.domain.component.SensorOwner;
+import org.openremote.modeler.domain.component.UIButton;
+import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIControl;
 import org.openremote.modeler.domain.component.UIGrid;
+import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.XmlParserException;
 import org.openremote.modeler.protocol.ProtocolContainer;
@@ -69,6 +74,7 @@ import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ProtocolEventContainer;
 import org.openremote.modeler.utils.StringUtils;
+import org.openremote.modeler.utils.UIComponentBox;
 import org.openremote.modeler.utils.XmlParser;
 import org.openremote.modeler.utils.ZipUtils;
 import org.springframework.ui.velocity.VelocityEngineUtils;
@@ -102,7 +108,7 @@ public class ResourceServiceImpl implements ResourceService {
    
    private VelocityEngine velocity;
    
-
+   private UIComponentBox uiComponentBox = new UIComponentBox();
    /**
     * {@inheritDoc}
     */
@@ -113,6 +119,12 @@ public class ResourceServiceImpl implements ResourceService {
        * initialize groups and screens. 
        */
       initGroupsAndScreens(panels, groups, screens);
+      
+      /*
+       * initialize UI component box. 
+       */
+      initUIComponentBox(screens);
+     
       String controllerXmlContent = getControllerXmlContent(maxId, screens);
       String panelXmlContent = getPanelXML(panels);
       String sectionIds = getSectionIds(screens);
@@ -596,7 +608,6 @@ public class ResourceServiceImpl implements ResourceService {
          context.put("panels", panels);
          context.put("groups", groups);
          context.put("screens", screens);
-
          return VelocityEngineUtils.mergeTemplateIntoString(velocity, PANEL_XML_TEMPLATE, context);
       } catch (Exception e) {
          e.printStackTrace();
@@ -614,13 +625,20 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    public  String getControllerXML(Collection<Screen> screens){
+      initUIComponentBox(screens);
       Map<String,Object> context = new HashMap<String,Object>();
       ProtocolEventContainer eventContainer = new ProtocolEventContainer();
       ProtocolContainer protocolContainer = ProtocolContainer.getInstance();
+      Collection<Sensor> sensors = getAllSensor(screens);
+      Collection<UIComponent> switchs = uiComponentBox.getUIComponentsByType(UISwitch.class);
+      Collection<UIComponent> buttons = uiComponentBox.getUIComponentsByType(UIButton.class);
+      context.put("switchs", switchs);
+      context.put("buttons", buttons);
       context.put("screens", screens);
       context.put("eventContainer", eventContainer);
       context.put("xmlParser", this);
       context.put("protocolContainer", protocolContainer);
+      context.put("sensors", sensors);
       
       return VelocityEngineUtils.mergeTemplateIntoString(velocity, CONTROLLER_XML_TEMPLATE, context);
    }
@@ -637,6 +655,49 @@ public class ResourceServiceImpl implements ResourceService {
          List<ScreenRef> screenRefs = group.getScreenRefs();
          for (ScreenRef screenRef : screenRefs) {
             screens.add(screenRef.getScreen());
+         }
+      }
+   }
+   
+   private Set<Sensor> getAllSensor(Collection<Screen> screens){
+      Set<Sensor> sensors = new HashSet<Sensor>();
+      for(Screen screen : screens){
+         for(Absolute absolute : screen.getAbsolutes()){
+            UIComponent component = absolute.getUIComponent();
+            initSensors(sensors,component);
+         }
+         
+         for(UIGrid grid :screen.getGrids()){
+            for(Cell cell : grid.getCells()){
+               initSensors(sensors,cell.getUIComponent());
+            }
+         }
+      }
+      
+      
+      return sensors;
+   }
+   
+   private void initSensors(Set<Sensor> sensors,UIComponent component){
+      if(component instanceof SensorOwner){
+         SensorOwner sensorOwner = (SensorOwner) component;
+         if(sensorOwner.getSensor()!=null){
+            sensors.add(sensorOwner.getSensor());
+         }
+      }
+   }
+   
+   private void initUIComponentBox(Collection<Screen> screens){
+      for(Screen screen : screens){
+         for(Absolute absolute : screen.getAbsolutes()){
+            UIComponent component = absolute.getUIComponent();
+            uiComponentBox.add(component);
+         }
+         
+         for(UIGrid grid :screen.getGrids()){
+            for(Cell cell : grid.getCells()){
+               uiComponentBox.add(cell.getUIComponent());
+            }
          }
       }
    }

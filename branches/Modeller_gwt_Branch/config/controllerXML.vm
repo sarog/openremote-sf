@@ -20,133 +20,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/controller.xsd">
   <components>
-  	#foreach($screen in $screens)
-  		#########################absolute####################
-  		#foreach($abs in $screen.getAbsolutes())
-  			#set($uiComponent=$abs.getUIComponent())
-  			###############UIButton#################
-  			#if(${uiComponent.getClass().getName().equals("org.openremote.modeler.domain.component.UIButton")})
-  				<button id="${uiComponent.getOid()}">
-  				#if(${uiComponent.getUiCommand()})
-	  				#set($uiCmd=${uiComponent.getUiCommand()})
-	  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
+  ##<------------------------------------------------------------------------UISwitch------------------------------------------------------------------
+  	#foreach($swh in $switchs)
+  		<switch id="${swh.getOid()}">
+		#if(${swh.getSwitchCommand()})
+			#set($switchCmd=${swh.getSwitchCommand()})
+			<on>
+				#if(${switchCmd.getSwitchCommandOnRef()})
+	  				#set($uiCmd=${switchCmd.getSwitchCommandOnRef().getDeviceCommand()})
+	  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd.getDeviceCommandRef(),$eventContainer)})
 	  					#if($cmd.getDelay().equals(""))
 	  						<include type="command" ref="${cmd.getId()}"/>
 	  					#else
 	  						<delay>${cmd.getDelay()}</delay>
 	  					#end
-	  				#end
-  				#end
-  				</button>
-  			###############UISwitch#################
-  			#elseif(${uiComponent.getClass().getName().equals("org.openremote.modeler.domain.component.UISwitch")})
-  				<switch id="${uiComponent.getOid()}">
-  					<on>
-  						#if(${uiComponent.getOnCommand()})
-			  				#set($uiCmd=${uiComponent.getOnCommand()})
-			  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
-			  					#if($cmd.getDelay().equals(""))
-			  						<include type="command" ref="${cmd.getId()}"/>
-			  					#else
-			  						<delay>${cmd.getDelay()}</delay>
-			  					#end
-	  						#end
-  						#end
-  					</on>
-  					<off>
-  						#if(${uiComponent.getOffCommand()})
-				  				#set($uiCmd=${uiComponent.getOffCommand()})
-				  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
-				  					#if($cmd.getDelay().equals(""))
-				  						<include type="command" ref="${cmd.getId()}"/>
-				  					#else
-				  						<delay>${cmd.getDelay()}</delay>
-				  					#end
-		  						#end
-  						#end
-  					</off>
-  					<status>
-  						#if(${uiComponent.getStatusCommand()})
-				  				#set($uiCmd=${uiComponent.getStatusCommand()})
-				  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
-				  					#if($cmd.getDelay().equals(""))
-				  						<include type="command" ref="${cmd.getId()}"/>
-				  					#else
-				  						<delay>${cmd.getDelay()}</delay>
-				  					#end
-		  						#end
-  						#end
-  					</status>
-  				</switch>
-  			#end
-  		#end
-  		#########################absolute####################
-  		
-  		#########################UIGrid####################
-  		#foreach($grid in $screen.getGrids())
-  			#foreach($cell in $grid.getCells())
-  				#set($uiComponent=$cell.getUIComponent())
-  				###############UIButton#################
-	  			#if(${uiComponent.getClass().getName().equals("org.openremote.modeler.domain.component.UIButton")})
-	  				<button id="${uiComponent.getOid()}">
-	  				#if(${uiComponent.getUiCommand()})
-		  				#set($uiCmd=${uiComponent.getUiCommand()})
-		  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
-		  					#if($cmd.getDelay().equals(""))
-		  						<include type="command" ref="${cmd.getId()}"/>
-		  					#else
-		  						<delay>${cmd.getDelay()}</delay>
-		  					#end
-		  				#end
-	  				#end
-	  				</button>
-	  			###############UISwitch#################
-	  			#elseif(${uiComponent.getClass().getName().equals("org.openremote.modeler.domain.component.UISwitch")})
-	  				<switch id="${uiComponent.getOid()}">
-	  					<on>
-	  						#if(${uiComponent.getOnCommand()})
-				  				#set($uiCmd=${uiComponent.getOnCommand()})
-				  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
-				  					#if($cmd.getDelay().equals(""))
-				  						<include type="command" ref="${cmd.getId()}"/>
-				  					#else
-				  						<delay>${cmd.getDelay()}</delay>
-				  					#end
-		  						#end
-	  						#end
-	  					</on>
-	  					<off>
-	  						#if(${uiComponent.getOffCommand()})
-					  				#set($uiCmd=${uiComponent.getOffCommand()})
-					  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
-					  					#if($cmd.getDelay().equals(""))
-					  						<include type="command" ref="${cmd.getId()}"/>
-					  					#else
-					  						<delay>${cmd.getDelay()}</delay>
-					  					#end
-			  						#end
-	  						#end
-	  					</off>
-	  					<status>
-	  						#if(${uiComponent.getStatusCommand()})
-		  						
-					  				#set($uiCmd=${uiComponent.getStatusCommand()})
-					  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
-					  					#if($cmd.getDelay().equals(""))
-					  						<include type="command" ref="${cmd.getId()}"/>
-					  					#else
-					  						<delay>${cmd.getDelay()}</delay>
-					  					#end
-			  						#end
-	  						#end
-	  					</status>
-	  				</switch>
-	  			#end
-  			#end
-  		#end
-  		#########################UIGrid####################
+					#end
+				#end
+			</on>
+			<off>
+				#if(${switchCmd.getSwitchCommandOffRef()})
+	  				#set($uiCmd=${switchCmd.getSwitchCommandOffRef().getDeviceCommand()})
+	  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd.getDeviceCommandRef(),$eventContainer)})
+	  					#if($cmd.getDelay().equals(""))
+	  						<include type="command" ref="${cmd.getId()}"/>
+	  					#else
+	  						<delay>${cmd.getDelay()}</delay>
+	  					#end
+					#end
+				#end
+			</off>
+		#end
+		#if(${swh.getSwitchCommand().getSwitchSensorRef()})
+			<include type="sensor" ref="${swh.getSwitchCommand().getSwitchSensorRef().getSensor().getOid()}"/>
+		#end
+		</switch>
   	#end
+  ##<------------------------------------------------------------------------UIButton------------------------------------------------------------------
+  #foreach($button in $buttons)
+	  <button id="${button.getOid()}">
+		#if(${button.getUiCommand()})
+			#set($uiCmd=${button.getUiCommand()})
+			#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
+				#if($cmd.getDelay().equals(""))
+					<include type="command" ref="${cmd.getId()}"/>
+				#else
+					<delay>${cmd.getDelay()}</delay>
+				#end
+			#end
+		#end
+		</button>
+  #end
   </components>
+ ##<------------------------------------------------------------------------Sensors------------------------------------------------------------------
+  <sensors>
+  	#foreach($sensor in $sensors)
+  		<sensor id="${sensor.getOid()}" name="${sensor.getName()}" type="${sensor.getType()}">
+  			#if(${sensor.getSensorCommandRef()}&&${sensor.getSensorCommandRef().getDeviceCommand()})
+  				#set($deviceCmd=${sensor.getSensorCommandRef().getDeviceCommand()})
+  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($deviceCmd.getDeviceCommandRef(),$eventContainer)})
+  					<include type="command" ref="${cmd.getId()}"/>
+				#end
+				#if(${sensor.getType().toString().equals("range")})
+					##TODO
+				#elseif(${sensor.getType().toString().equals("switch")})
+					##TODO
+				#elseif(${sensor.getType().toString().equals("custom")})
+					##TODO
+				#end
+  			#end
+  		</sensor>
+  	#end
+  </sensors>
+  ##<------------------------------------------------------------------------Commands------------------------------------------------------------------
   <commands>
     #foreach($protocolDisplayName in $eventContainer.getProtocolEvents().keySet())
     	#set($protocalTagName=${protocolContainer.findTagName($protocolDisplayName)})
@@ -163,4 +108,3 @@
     #end
   </commands>
 </openremote>
-

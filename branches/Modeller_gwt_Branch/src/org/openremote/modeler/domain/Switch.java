@@ -95,5 +95,4 @@ public class Switch extends BusinessEntity {
    public String getDisplayName() {
       return getName();
    }
-
 }

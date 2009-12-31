@@ -24,11 +24,12 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.UICommand;
 
 @SuppressWarnings("serial")
-public class UISwitch extends UIControl {
+public class UISwitch extends UIControl implements SensorOwner{
 
    private UImage onImage;
    private UImage offImage;
@@ -103,17 +104,22 @@ public class UISwitch extends UIControl {
    public String getPanelXml() {
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("        <switch id=\"" + getOid() + "\">\n");
-      if((onImage != null && onImage.getSrc() != null )||(offImage != null && offImage.getSrc() != null)){
-         xmlContent.append("<link type=\"sensor\" >");
-         if (onImage != null && onImage.getSrc() != null) {
-            xmlContent.append("          <state name=\"on\" value=\""+ onImage.getSrc() + "\"/>\n");
-         }
-         if (offImage != null && offImage.getSrc() != null) {
-            xmlContent.append("          <state name=\"off\" value=\""+ offImage.getSrc() + "\"/>\n");
-         }
-         xmlContent.append("</link>");
+      xmlContent.append("<link type=\"sensor\" ref=\""+getSensor().getOid()+"\">");
+      if (onImage != null && onImage.getSrc() != null) {
+         xmlContent.append("          <state name=\"on\" value=\"" + onImage.getSrc() + "\"/>\n");
       }
+      if (offImage != null && offImage.getSrc() != null) {
+         xmlContent.append("          <state name=\"off\" value=\"" + offImage.getSrc() + "\"/>\n");
+      }
+      xmlContent.append("</link>");
       xmlContent.append("        </switch>\n");
       return xmlContent.toString();
+   }
+   @Override
+   public Sensor getSensor() {
+     if(switchCommand!= null && switchCommand.getSwitchSensorRef()!=null){
+        return switchCommand.getSwitchSensorRef().getSensor();
+     }
+     return null;
    }
 }

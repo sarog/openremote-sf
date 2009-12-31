@@ -21,6 +21,7 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element ref="components" />
+				<xsd:element ref="sensors" />
 				<xsd:element ref="commands" />
 			</xsd:sequence>
 		</xsd:complexType>
@@ -36,6 +37,19 @@
 		<xsd:attribute name="name" type="xsd:string" use="required" />
 		<xsd:attribute name="value" type="xsd:string" use="required" />
 	</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="sensors">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+					a sensor collection, it contains the all sensors.
+				]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="sensor" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
 	</xsd:element>
 	
 	<xsd:element name="components">
@@ -75,7 +89,8 @@
 			<xsd:sequence>
 				<xsd:group ref="sensorGroup" />
 			</xsd:sequence>
-			<xsd:attribute name="id" type="xsd:ID" use="required"/>
+			<xsd:attribute name="id" type="xsd:int" use="required"/>
+			<xsd:attribute name="type" type="sensorType" use="required"/>
 			<xsd:attribute name="name" type="xsd:string" use="required" />
 		</xsd:complexType>
 	</xsd:element>
@@ -107,7 +122,7 @@
 			<xsd:sequence>
 				<xsd:element ref="on" minOccurs="1" maxOccurs="1"/>
 				<xsd:element ref="off" minOccurs="1" maxOccurs="1" />
-				<xsd:element ref="include" minOccurs="1" maxOccurs="unbounded"/>
+				<xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
 			</xsd:sequence>
 			<xsd:attribute name="id" type="xsd:int" />
 		</xsd:complexType>
@@ -321,6 +336,16 @@
 		</xsd:annotation>
 		<xsd:restriction base="xsd:int">
 			<xsd:minInclusive value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="sensorType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="switch" />
+			<xsd:enumeration value="level" />
+			<xsd:enumeration value="range" />
+			<xsd:enumeration value="color" />
+			<xsd:enumeration value="custom" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	
