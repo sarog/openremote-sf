@@ -143,7 +143,6 @@ public class ScreenWindow extends FormWindow {
       screen.setName(nameField.getValue());
       screen.setTouchPanelDefinition(selectedGroup.getPanel().getTouchPanelDefinition());
       BeanModelDataBase.screenTable.insert(screen.getBeanModel());
-      screen.setAbsoluteLayout(true);
       ScreenRef screenRef = new ScreenRef(screen);
       selectedGroup.getGroup().addScreenRef(screenRef);
       fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));

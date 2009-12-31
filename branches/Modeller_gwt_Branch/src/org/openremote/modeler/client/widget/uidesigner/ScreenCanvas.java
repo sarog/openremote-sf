@@ -33,6 +33,7 @@ import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Background;
 import org.openremote.modeler.domain.GridCellBounds;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.Background.RelativeType;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIGrid;
@@ -124,41 +125,13 @@ public class ScreenCanvas extends ComponentContainer {
    public void updateGround() {
       Background bgd = screen.getBackground();
       if (bgd.isFillScreen()) {
-         setStyleAttribute("backgroundPosition", "top left");
+         setStyleAttribute("backgroundPosition", Background.getRelativeMap().get(RelativeType.TOP_LEFT));
          return;
       } else if (bgd.isAbsolute()) {
          // setStyleAttribute("position", "absolute");
          setStyleAttribute("backgroundPosition", bgd.getLeft() + " " + bgd.getTop());
       } else {
-         switch (bgd.getRelatedType()) {
-         case LEFT:
-            setStyleAttribute("backgroundPosition", "center left");
-            break;
-         case RIGHT:
-            setStyleAttribute("backgroundPosition", "center right");
-            break;
-         case TOP:
-            setStyleAttribute("backgroundPosition", "top center");
-            break;
-         case BOTTOM:
-            setStyleAttribute("backgroundPosition", "bottom center");
-            break;
-         case TOP_LEFT:
-            setStyleAttribute("backgroundPosition", "top left");
-            break;
-         case BOTTOM_LEFT:
-            setStyleAttribute("backgroundPosition", "bottom left");
-            break;
-         case TOP_RIGHT:
-            setStyleAttribute("backgroundPosition", "top right");
-            break;
-         case BOTTOM_RIGHT:
-            setStyleAttribute("backgroundPosition", "bottom right");
-            break;
-         case CENTER:
-            setStyleAttribute("backgroundPosition", "center center");
-            break;
-         }
+         setStyleAttribute("backgroundPosition", Background.getRelativeMap().get(bgd.getRelatedType()));
       }
       layout();
    }

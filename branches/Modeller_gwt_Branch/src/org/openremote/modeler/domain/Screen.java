@@ -42,12 +42,6 @@ public class Screen extends RefedEntity {
    /** The name. */
    private String name;
    
-   /** The absolute. */
-   private boolean absoluteLayout;
-   
-   /** The grid. */
-   private Grid grid;
-   
    /** The absolutes. */
    private List<Absolute> absolutes = new ArrayList<Absolute>();
    
@@ -73,15 +67,6 @@ public class Screen extends RefedEntity {
       return name;
    }
 
-   /**
-    * Gets the grid.
-    * 
-    * @return the grid
-    */
-   public Grid getGrid() {
-      return grid;
-   }
-   
    public UIGrid getGrid(int index) {
       return grids.size() > 0 ? grids.get(index) : null;
    }
@@ -114,17 +99,6 @@ public class Screen extends RefedEntity {
     */
    public void setName(String name) {
       this.name = name;
-   }
-
-   /**
-    * Sets the grid.
-    * 
-    * @param grid the new grid
-    */
-   public void setGrid(Grid grid) {
-      if (!absoluteLayout) {
-         this.grid = grid;
-      }
    }
 
    /**
@@ -163,24 +137,6 @@ public class Screen extends RefedEntity {
       this.background = background;
    }
 
-   /**
-    * Checks if is absolute layout.
-    * 
-    * @return true, if is absolute layout
-    */
-   public boolean isAbsoluteLayout() {
-      return absoluteLayout;
-   }
-
-   /**
-    * Sets the absolute layout.
-    * 
-    * @param absoluteLayout the new absolute layout
-    */
-   public void setAbsoluteLayout(boolean absoluteLayout) {
-      this.absoluteLayout = absoluteLayout;
-   }
-   
    /**
     * {@inheritDoc}
     * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()

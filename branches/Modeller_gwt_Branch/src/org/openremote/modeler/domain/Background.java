@@ -18,6 +18,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package org.openremote.modeler.domain;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This class is used to store the background image information for a screen. 
  * @author Javen
@@ -34,7 +38,7 @@ public class Background extends BusinessEntity {
    private int width = 0;
    private int height = 0;
    private RelativeType relatedType = RelativeType.TOP_LEFT;
-   
+   private static Map<RelativeType, String> relativeMap;
    public Background() {
       this.src = "";
    }
@@ -110,5 +114,22 @@ public class Background extends BusinessEntity {
       }
       
       
+   }
+   
+   public static Map<RelativeType, String> getRelativeMap() {
+      if (relativeMap == null) {
+         relativeMap = new HashMap<RelativeType, String>();
+         relativeMap.put(RelativeType.LEFT, "center left");
+         relativeMap.put(RelativeType.RIGHT, "center right");
+         relativeMap.put(RelativeType.TOP, "top center");
+         relativeMap.put(RelativeType.BOTTOM, "bottom center");
+         relativeMap.put(RelativeType.TOP_LEFT, "top left");
+         relativeMap.put(RelativeType.BOTTOM_LEFT, "bottom left");
+         relativeMap.put(RelativeType.TOP_RIGHT, "top right");
+         relativeMap.put(RelativeType.BOTTOM_RIGHT, "bottom right");
+         relativeMap.put(RelativeType.CENTER, "center center");
+      }
+      
+      return relativeMap;
    }
 }
