@@ -69,9 +69,52 @@
 		</slider>
 		<button id="9">
 			<delay>500</delay>
-      	<include type="command" ref="99" />
-    </button>
+      		<include type="command" ref="99" />
+    	</button>
+    	<image id="990">
+			<include type="sensor" ref="1009" />
+		</image>
 	</controls>
+	
+	<!-- sensors -->
+	<sensors>
+		<sensor id="1001" name="lampA power sensor" type="boolean">
+	    	<include type="command" ref="98" />
+	    	<state name="on"/>
+	    	<state name="off"/>
+		</sensor>
+		<sensor id="1002" name="lampB power sensor" type="boolean">
+	    	<include type="command" ref="98" />
+	    	<state name="on"/>
+	    	<state name="off"/>
+		</sensor>
+		<sensor id="1003" name="lampC power sensor" type="boolean">
+	    	<include type="command" ref="98" />
+	    	<state name="on"/>
+	    	<state name="off"/>
+		</sensor>
+		<sensor id="1004" name="lampD power sensor" type="boolean">
+	    	<include type="command" ref="98" />
+	    	<state name="on"/>
+	    	<state name="off"/>
+		</sensor>
+		<sensor id="1005" name="DV sensor" type="custom">
+	    	<include type="command" ref="97" />
+	    	<state name="imageURL" />
+	    	<state name="text" />
+		</sensor>
+		<sensor id="1008" name="Air conditioner sensor" type="range">
+	    	<include type="command" ref="97" />
+	    	<min value="-20" />
+	    	<max value="100" />
+		</sensor>
+		<sensor id="1009" name="Door power sensor" type="custom">
+	    	<include type="command" ref="98" />
+	    	<state name="open"/>
+	    	<state name="close"/>
+		</sensor>
+	</sensors>
+	
 	<commands>
 		<command id="100" protocol="test" value="ON" />
 		<command id="99" protocol="test" value="OFF"/>
