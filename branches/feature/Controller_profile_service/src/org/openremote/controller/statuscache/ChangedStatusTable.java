@@ -34,15 +34,13 @@ import java.util.List;
  * which is not synchronous any more.<br />
  * 
  * <b>Use Case2:</b>If no statuses changed, polling request will <b>WAIT</b><br /> the Corresponded ChangedStatusRecord until<br />
- * the waited polling control ids' statuses changed. So, the polling request will be notified and get the change statuses.<br />
+ * the waited polling sensor ids' statuses changed. So, the polling request will be notified and get the change statuses.<br />
  * 
  * @author Handy.Wang 2009-10-23
  */
 public class ChangedStatusTable {
    
    private List<ChangedStatusRecord> recordList;
-   
-//   private Logger logger = Logger.getLogger(this.getClass().getName());
 
    public ChangedStatusTable() {
       super();
@@ -53,19 +51,19 @@ public class ChangedStatusTable {
     * Insert a changed status record.
     */
    public synchronized void insert(ChangedStatusRecord record) {
-      if (this.query(record.getDeviceID(), record.getPollingControlIDs()) == null) { 
+      if (this.query(record.getDeviceID(), record.getPollingSensorIDs()) == null) { 
          recordList.add(record);
       }
    }
    
    /**
-    * Query changed status record by deviceID and pollingControlIDs(pollingControlIDs is not order-insensitive).
+    * Query changed status record by deviceID and pollingSensorIDs(pollingSensorIDs is order-insensitive).
     */
-   public synchronized ChangedStatusRecord query(String deviceID, List<Integer> pollingControlIDs) {
-      if (recordList.size() == 0 || pollingControlIDs == null || pollingControlIDs.size() == 0) {
+   public synchronized ChangedStatusRecord query(String deviceID, List<Integer> pollingSensorIDs) {
+      if (recordList.size() == 0 || pollingSensorIDs == null || pollingSensorIDs.size() == 0) {
          return null;
       }
-      ChangedStatusRecord record = new ChangedStatusRecord(deviceID, pollingControlIDs);
+      ChangedStatusRecord record = new ChangedStatusRecord(deviceID, pollingSensorIDs);
       
       for (ChangedStatusRecord tempRecord : recordList) {
          if (tempRecord.equals(record)) {
@@ -76,15 +74,15 @@ public class ChangedStatusTable {
    }
    
    /**
-    * Query all changed status records whose pollingControlID column contains statusChangeControlID.
+    * Query all changed status records whose pollingSensorID column contains statusChangedSensorID.
     */
-   public synchronized List<ChangedStatusRecord> query(Integer statusChangedControlID) {
+   public synchronized List<ChangedStatusRecord> query(Integer statusChangedSensorID) {
       List<ChangedStatusRecord> statusChangedRecord = new ArrayList<ChangedStatusRecord>();
       if(recordList==null||recordList.size()==0){
          return null;
       }
       for (ChangedStatusRecord record : recordList) {
-         if (record.getPollingControlIDs().contains(statusChangedControlID)) {
+         if (record.getPollingSensorIDs().contains(statusChangedSensorID)) {
             statusChangedRecord.add(record);
          }
       }
@@ -94,13 +92,13 @@ public class ChangedStatusTable {
    /**
     * Update status_changed_id column.
     */
-   public void updateStatusChangedIDs(Integer statusChangedControlID) {
+   public void updateStatusChangedIDs(Integer statusChangedSensorID) {
       for(ChangedStatusRecord record : recordList){
          synchronized (record) {
-            if (record.getPollingControlIDs() != null && record.getPollingControlIDs().size() != 0) {
-               for (Integer tmpControlId : record.getPollingControlIDs()) {
-                  if (statusChangedControlID.equals(tmpControlId)) {
-                     record.getStatusChangedIDs().add(statusChangedControlID);
+            if (record.getPollingSensorIDs() != null && record.getPollingSensorIDs().size() != 0) {
+               for (Integer tmpSensorId : record.getPollingSensorIDs()) {
+                  if (statusChangedSensorID.equals(tmpSensorId)) {
+                     record.getStatusChangedSensorIDs().add(statusChangedSensorID);
                      record.notifyAll();
                      break;
                   }
@@ -113,9 +111,9 @@ public class ChangedStatusTable {
    /**
     * Reset changed status of panel in {@link ChangedStatusTable}. 
     */
-   public synchronized void resetChangedStatusIDs(String deviceID, List<Integer> pollingControlIDs) {
-      ChangedStatusRecord skippedStatusRecord = this.query(deviceID, pollingControlIDs);
-      skippedStatusRecord.setStatusChangedIDs(new HashSet<Integer>());
+   public synchronized void resetChangedStatusIDs(String deviceID, List<Integer> pollingSensorIDs) {
+      ChangedStatusRecord skippedStatusRecord = this.query(deviceID, pollingSensorIDs);
+      skippedStatusRecord.setStatusChangedSensorIDs(new HashSet<Integer>());
    }
 
 }

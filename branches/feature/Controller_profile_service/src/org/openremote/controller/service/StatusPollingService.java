@@ -1,4 +1,3 @@
-package org.openremote.controller.service;
 /* OpenRemote, the Home of the Digital Home.
 * Copyright 2008-2009, OpenRemote Inc.
 *
@@ -18,19 +17,28 @@ package org.openremote.controller.service;
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-import java.util.Map;
-import java.util.Set;
+package org.openremote.controller.service;
+
 
 /**
- * service for manage the StatusCache
- * @author Javen
- *
+ * It's responsiable for polling changed statuses from changed status table.
+ * 
+ * @author Handy.Wang 2009-10-21
  */
-public interface StatusCacheService {
+public interface StatusPollingService {
    
-   void saveOrUpdateStatus(Integer sensorId,String newStatus);
+   /** The max length of time of current servlet response. */
+    static final int MAX_TIME_OUT_SECONDS = 50;
    
-   String getStatusBySensorId(Integer sensorId);
+   /** A second equals how much mili seconds. */
+    static final int MILLI_SECONDS_A_SECOND = 1000;
+
+   /** This value will be responsed when current servlet couldn't get the changed statuses in the <b>MAX_TIME_OUT_SECONDS</b>. */
+   static final String SERVER_RESPONSE_TIME_OUT_STATUS_CODE = "TIMEOUT";
+
+   /**
+    * Query changed states from ChangedStatus table. 
+    */
+   public String queryChangedState(String deviceID, String unParsedSensorIDs);
    
-   Map<Integer,String> queryStatuses(Set<Integer> sensorIds);
 }

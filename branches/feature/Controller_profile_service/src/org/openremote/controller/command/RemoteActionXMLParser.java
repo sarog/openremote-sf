@@ -32,8 +32,8 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 import org.openremote.controller.Configuration;
 import org.openremote.controller.Constants;
-import org.openremote.controller.control.Control;
-import org.openremote.controller.control.ControlFactory;
+import org.openremote.controller.component.ComponentFactory;
+import org.openremote.controller.component.control.Control;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.InvalidControllerXMLException;
 import org.openremote.controller.exception.NoSuchComponentException;
@@ -51,7 +51,7 @@ public class RemoteActionXMLParser {
    private static Logger logger = Logger.getLogger(RemoteActionXMLParser.class.getName());
    
    /** The control factory. */
-   private ControlFactory controlFactory;
+   private ComponentFactory componentFactory;
    
    /** The configuration. */
    private Configuration configuration;
@@ -71,7 +71,7 @@ public class RemoteActionXMLParser {
       if (controlElement == null) {
          throw new NoSuchComponentException("Cannot find that component with id = " + controlID);
       }
-      Control control = controlFactory.getControl(controlElement, commandParam);
+      Control control = componentFactory.getControl(controlElement, commandParam);
       return control.getExecutableCommands();
    }
    
@@ -90,7 +90,7 @@ public class RemoteActionXMLParser {
       if (controlElement == null) {
          throw new NoSuchComponentException("Cannot find that component with id = " + controlID);
       }
-      Control control = controlFactory.getControl(controlElement, commandParam);
+      Control control = componentFactory.getControl(controlElement, commandParam);
       return control.getExecutableCommands();
    }
    /**
@@ -105,7 +105,7 @@ public class RemoteActionXMLParser {
       if (controlElement == null) {
          throw new NoSuchComponentException("Cannot find that control with id = " + controlID);
         }
-      Control control = controlFactory.getControl(controlElement, Command.STATUS_COMMAND);
+      Control control = componentFactory.getControl(controlElement, Command.STATUS_COMMAND);
       return control.getStatusCommand();
    }
    
@@ -133,11 +133,11 @@ public class RemoteActionXMLParser {
     */
    private Element queryElementFromXML(String xPath) {
       SAXBuilder sb = new SAXBuilder();
-      sb.setValidation(true);
-      File xsdfile = new File(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath());
+      //sb.setValidation(true);
+      //File xsdfile = new File(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath());
 
       sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
-      sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+      //sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
       String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.CONTROLLER_XML;
       if (!new File(xmlPath).exists()) {
          throw new ControllerXMLNotFoundException(" Make sure it's in /resources");
@@ -183,12 +183,7 @@ public class RemoteActionXMLParser {
       this.configuration = configuration;
    }
 
-   /**
-    * Sets the control factory.
-    * 
-    * @param controlFactory the new control factory
-    */
-   public void setControlFactory(ControlFactory controlFactory) {
-      this.controlFactory = controlFactory;
+   public void setComponentFactory(ComponentFactory componentFactory) {
+      this.componentFactory = componentFactory;
    }
 }

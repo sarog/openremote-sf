@@ -26,7 +26,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.control.Control;
+import org.openremote.controller.component.control.Control;
 
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.IndividualAddress;

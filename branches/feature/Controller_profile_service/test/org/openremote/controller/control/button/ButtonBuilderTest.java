@@ -27,6 +27,8 @@ import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.TestConstraint;
+import org.openremote.controller.component.control.button.Button;
+import org.openremote.controller.component.control.button.ButtonBuilder;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.utils.SpringTestContext;
 import org.openremote.controller.utils.XMLUtil;
