@@ -17,26 +17,10 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.control.switchtoggle;
+package org.openremote.controller.component;
 
-import org.openremote.controller.command.NoStatusCommand;
-import org.openremote.controller.control.Control;
-import org.openremote.controller.control.Status;
-
-/**
- * Switch Control.<br />
- * It provides two operations: ON and OFF.
- * 
- * @author Handy.Wang 2009-10-23
- */
-public class Switch extends Control {
+public interface Sensory {
    
-   /** Available actions of Switch control. */
-   public static final String[] AVAILABLE_ACTIONS = { "on", "off", "status"};
+   public int fetchSensorID();
    
-   public Switch() {
-      super();
-      setStatus(new Status(new NoStatusCommand()));
-   }
-
 }

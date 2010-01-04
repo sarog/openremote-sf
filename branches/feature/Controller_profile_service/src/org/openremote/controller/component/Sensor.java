@@ -17,27 +17,44 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.control.slider;
+package org.openremote.controller.component;
 
-import org.openremote.controller.command.NoStatusCommand;
-import org.openremote.controller.control.Control;
-import org.openremote.controller.control.Status;
+import org.openremote.controller.command.StatusCommand;
 
 /**
- * Slider control for controlling devices with slide action.
+ * Sensor class for referencing status command
  * 
- * @author Handy.Wang 2009-11-10
+ * @author Handy.Wang 2010-01-04
+ *
  */
-public class Slider extends Control {
-
-   /** The actions which slider allows. */
-   public static final String[] AVAILABLE_ACTIONS = { "status" };
+public class Sensor {
    
-   /** The container element name of executable command refence of slider. */
-   public static final String EXE_CONTENT_ELEMENT_NAME = "exe";
-
-   public Slider() {
+   private int sensorID;
+   
+   private StatusCommand statusCommand;
+   
+   public Sensor() {
       super();
-      setStatus(new Status(new NoStatusCommand()));
+   }
+
+   public Sensor(StatusCommand statusCommand) {
+      super();
+      this.statusCommand = statusCommand;
+   }
+
+   public int getSensorID() {
+      return sensorID;
+   }
+
+   public void setSensorID(int sensorID) {
+      this.sensorID = sensorID;
+   }
+
+   public StatusCommand getStatusCommand() {
+      return statusCommand;
+   }
+
+   public void setStatusCommand(StatusCommand statusCommand) {
+      this.statusCommand = statusCommand;
    }
 }

@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package org.openremote.controller.component.onlysensorycomponent;
 
 /* OpenRemote, the Home of the Digital Home.
@@ -24,17 +27,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.controller.command.NoStatusCommand;
+import org.openremote.controller.component.Sensor;
+import org.openremote.controller.component.Sensory;
 import org.openremote.controller.component.control.Control;
-import org.openremote.controller.component.control.Status;
 /**
  * This class is used to store the information for a label. 
  * @author Javen
  *
  */
-public class Label extends Control {
+public class Label extends Control implements Sensory {
    public Label(){
       super();
-      this.setStatus(new Status(new NoStatusCommand()));
+      setSensor(new Sensor((new NoStatusCommand())));
    }
 
    @Override
@@ -42,5 +46,10 @@ public class Label extends Control {
       List<String> availableActions = new ArrayList<String>();
       availableActions.add("status");
       return availableActions;
+   }
+
+   @Override
+   public int fetchSensorID() {
+      return getSensor().getSensorID();
    }
 }
