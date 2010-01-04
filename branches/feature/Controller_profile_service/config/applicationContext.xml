@@ -138,22 +138,22 @@
   </bean>
   
   <!-- Button Builder -->
-  <bean id = "buttonBuilder" class = "org.openremote.controller.control.button.ButtonBuilder"/>
+  <bean id = "buttonBuilder" class = "org.openremote.controller.component.control.button.ButtonBuilder"/>
 
   <!-- Toggle Builder -->
-  <bean id = "toggleBuilder" class = "org.openremote.controller.control.toggle.ToggleBuilder"/>
+  <bean id = "toggleBuilder" class = "org.openremote.controller.component.control.toggle.ToggleBuilder"/>
   
   <!-- Switch Builder -->
-  <bean id = "switchBuilder" class = "org.openremote.controller.control.switchtoggle.SwitchBuilder"/>
+  <bean id = "switchBuilder" class = "org.openremote.controller.component.control.switchtoggle.SwitchBuilder"/>
   
   <!-- Label Builder -->
   <bean id= "labelBuilder" class="org.openremote.controller.component.onlysensorycomponent.LabelBuilder" />
   
   <!-- Slider Builder -->
-  <bean id= "sliderBuilder" class="org.openremote.controller.control.slider.SliderBuilder" />
+  <bean id= "sliderBuilder" class="org.openremote.controller.component.control.slider.SliderBuilder" />
   
   <!-- Gesture Builder -->
-  <bean id= "gestureBuilder" class="org.openremote.controller.control.gesture.GestureBuilder" />
+  <bean id= "gestureBuilder" class="org.openremote.controller.component.control.gesture.GestureBuilder" />
   
   
   <bean id = "changedStatusTable" class="org.openremote.controller.statuscache.ChangedStatusTable" />
