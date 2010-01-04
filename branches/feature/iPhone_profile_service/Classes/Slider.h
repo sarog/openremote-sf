@@ -20,15 +20,24 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "Control.h"
+#import "SensorComponent.h"
+#import "Image.h"
 
 
-@interface Slider : Control {
+@interface Slider : SensorComponent {
 	float minValue;
 	float maxValue;
+	Image *minImage;
+	Image *minTrackImage;
+	Image *maxImage;
+	Image *maxTrackImage;
 }
 
-@property(nonatomic, readwrite) float minValue;
-@property(nonatomic, readwrite) float maxValue;
+@property(nonatomic, readonly) float minValue;
+@property(nonatomic, readonly) float maxValue;
+@property(nonatomic, readonly) Image *minImage;
+@property(nonatomic, readonly) Image *minTrackImage;
+@property(nonatomic, readonly) Image *maxImage;
+@property(nonatomic, readonly) Image *maxTrackImage;
 
 @end

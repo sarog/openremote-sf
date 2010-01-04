@@ -21,18 +21,16 @@
 
 #import <Foundation/Foundation.h>
 #import "XMLEntity.h"
-#import "Image.h"
 
-@interface ToggleState : XMLEntity {
-	
+@interface SensorState : XMLEntity {
+
 	NSString *name;
-	Image *image;
-	//int commandId;
-
+	NSString *value;
+	
 }
 
-@property (nonatomic, readonly) NSString *name;
-@property (nonatomic, readonly) Image *image;
-//@property (nonatomic, readonly) int commandId;
+@property(nonatomic,readonly)NSString *name;
+@property(nonatomic,readonly)NSString *value;
+
 
 @end

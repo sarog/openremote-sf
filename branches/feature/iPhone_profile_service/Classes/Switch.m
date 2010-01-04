@@ -21,7 +21,7 @@
 
 #import "Switch.h"
 #import "Image.h"
-
+#import "SensorState.h"
 
 @implementation Switch
 
@@ -30,19 +30,17 @@
 
 //get element name, must be overriden in subclass
 - (NSString *) elementName {
-	return @"switch";
+	return SWITCH;
 }
 
-- (BOOL)hasPollingStatus {
-	return YES;
-}
 
 #pragma mark Delegate methods of NSXMLParser  
 
 
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {
-		controlId = [[attributeDict objectForKey:@"id"] intValue];
+		componentId = [[attributeDict objectForKey:ID] intValue];
+		
 		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];
 	}
@@ -50,18 +48,25 @@
 }
 
 /**
- * Parse the switch on/off sub elements .
+ * Fill the switch on/off state images .
  */
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	
-	if ([elementName isEqualToString:@"image"]) {
-		Image *img = [[Image alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		if ([[attributeDict objectForKey:@"state"] isEqualToString:@"ON"]) {
+- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
+	if ([elementName isEqualToString:[self elementName]]) {	
+		
+		for (SensorState *state in sensor.states) {
+			Image *img = [[Image alloc] init];
+			img.src = state.value;
+			if ([[state.name lowercaseString] isEqualToString:ON]) {
 				onImage = img;
-		} else if ([[attributeDict objectForKey:@"state"] isEqualToString:@"OFF"]) {
+			} else if ([[state.name lowercaseString] isEqualToString:OFF]) {
 				offImage = img;
+			}
+			
 		}
-
+				
+ 		[parser setDelegate:xmlParserParentDelegate];
+		[xmlParserParentDelegate release];
+		xmlParserParentDelegate = nil;
 	}
 }
 

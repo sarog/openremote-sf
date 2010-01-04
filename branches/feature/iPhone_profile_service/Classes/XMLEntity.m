@@ -31,6 +31,28 @@
  */
 @implementation XMLEntity
 
+NSString *const ID = @"id";
+NSString *const REF = @"ref";
+
+NSString *const SWITCH = @"switch";
+NSString *const ON = @"on";
+NSString *const OFF = @"off";
+
+NSString *const SENSOR = @"sensor";
+NSString *const LINK = @"link";
+NSString *const TYPE = @"type";
+
+NSString *const STATE = @"state";
+NSString *const NAME = @"name";
+NSString *const VALUE = @"value";
+
+NSString *const SLIDER = @"slider";
+NSString *const MIN_VALUE = @"min";
+NSString *const MAX_VALUE = @"max";
+NSString *const IMAGE = @"image";
+NSString *const TRACK_IMAGE = @"trackImage";
+
+NSString *const SRC = @"src";
 
 // NOTE: This is an abstract method, must be implemented in subclass
 - (NSString *) elementName {

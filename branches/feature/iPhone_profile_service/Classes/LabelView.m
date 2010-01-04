@@ -48,7 +48,7 @@
 	//[uiLabel backgroundColor:[UIColor blackColor]];
 	[uiLabel setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
 	[uiLabel setTextAlignment:UITextAlignmentCenter];
-	Label *labelModel = (Label *)control;
+	Label *labelModel = (Label *)component;
 	uiLabel.text = labelModel.value;
 	uiLabel.textColor = [UIColor grayColor];
 	[self addSubview:uiLabel];

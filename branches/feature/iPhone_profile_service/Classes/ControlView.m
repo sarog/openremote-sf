@@ -19,16 +19,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 #import "ControlView.h"
-#import "Toggle.h"
-#import "ToggleView.h"
 #import "SwitchView.h"
 #import "Switch.h"
 #import "ViewHelper.h"
 #import "ServerDefinition.h"
 #import "ButtonView.h"
 #import "Button.h"
-#import "MonitorView.h"
-#import "Monitor.h"
 #import "CFNetwork/CFHTTPMessage.h"
 #import "Definition.h"
 #import "NotificationConstant.h"
@@ -37,10 +33,6 @@
 #import "ControllerException.h"
 #import "Slider.h"
 #import "SliderView.h"
-#import "Label.h"
-#import "LabelView.h"
-#import "Image.h"
-#import "ImageView.h"
 
 @interface ControlView (Private)
 
@@ -49,26 +41,17 @@
 
 @implementation ControlView
 
-@synthesize control;
 
 //NOTE:You should init all these views with initWithFrame and you should pass in valid frame rects.
 //Otherwise, UI widget will not work in nested UIViews
 + (ControlView *)buildWithControl:(Control *)control frame:(CGRect)frame{
 	ControlView *controlView = nil;
-	if ([control isKindOfClass:[Toggle class]]) {
-		controlView = [ToggleView alloc];
-	} else if  ([control isKindOfClass:[Switch class]]) {
+	if ([control isKindOfClass:[Switch class]]) {
 		controlView = [SwitchView alloc];
 	} else if  ([control isKindOfClass:[Button class]]) {
 		controlView = [ButtonView alloc];
-	} else if ([control isKindOfClass:[Monitor class]]) {
-		controlView = [MonitorView alloc];
 	} else if ([control isKindOfClass:[Slider class]]) {
 		controlView = [SliderView alloc];
-	} else if ([control isKindOfClass:[Label class]]) {
-		controlView = [LabelView alloc];
-	} else if ([control isKindOfClass:[Image class]]) {
-		controlView	= [ImageView alloc];
 	} else {
 		return nil;
 	}
@@ -80,7 +63,7 @@
 
 - (id)initWithControl:(Control *)c frame:(CGRect)frame{
 	if (self = [super initWithFrame:frame]) {
-		control = c;
+		component = c;
 		isError = NO;
 		//transparent background 
 		[self setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
@@ -109,8 +92,8 @@
 
 	
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition securedControlRESTUrl]];
-	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",control.controlId,commandType]];
-	NSLog([location stringByAppendingFormat:@"/%d/%@",control.controlId,commandType]);
+	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]];
+	NSLog([location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]);
 
 
 	//assemble put request 
@@ -162,7 +145,7 @@
 
 - (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
 	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
-	NSLog(@"control[%d]statusCode is %d",control.controlId, [httpResp statusCode]);
+	NSLog(@"control[%d]statusCode is %d",component.componentId, [httpResp statusCode]);
 	
 	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
 }
@@ -170,7 +153,6 @@
 
 - (void)dealloc {
 	[controlTimer release];
-	[control release];
 	[super dealloc];
 }
 

@@ -28,7 +28,7 @@
 
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {		
-		controlId = [[attributeDict objectForKey:@"id"] intValue];
+		componentId = [[attributeDict objectForKey:@"id"] intValue];
 		name = [[attributeDict objectForKey:@"name"] copy];
 		hasCommand = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"hasControlCommand"] uppercaseString]] ? YES : NO;
 		repeat = NO;
@@ -63,13 +63,6 @@
 - (NSString *) elementName {
 	return @"button";
 }
-
-
-// don't do polling to button
-- (BOOL)hasPollingStatus {
-	return NO;
-}
-
 
 
 - (void)dealloc {

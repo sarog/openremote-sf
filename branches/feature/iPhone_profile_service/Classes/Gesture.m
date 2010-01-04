@@ -33,12 +33,6 @@
 	return @"gesture";
 }
 
-// This method is abstract method of direct superclass Control.
-// So, this method must be overridden in subclass.
-- (BOOL)hasPollingStatus {
-	return NO;
-}
-
 - (id)initWithGestureSwipeType:(GestureSwipeType)type {
 	if (self = [super init]) {
 		swipeType = type;
@@ -50,7 +44,7 @@
 
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {
-		controlId = [[attributeDict objectForKey:@"id"] intValue];
+		componentId = [[attributeDict objectForKey:@"id"] intValue];
 		NSString *type = [attributeDict objectForKey:@"type"];
 		NSLog(@"gestrue %@", elementName);
 		if ([type isEqualToString:@"swipe-top-to-bottom"]) {

@@ -19,10 +19,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-#import <Foundation/Foundation.h>
+#import "Component.h"
 #import "Control.h"
+#import "Label.h"
+#import "Image.h"
 
-@interface Monitor : Control {
+
+@implementation Component
+
+@synthesize componentId;
+
++ (id)buildWithXMLParser:(NSString *) componentType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+	Component *newComponent;
+	if ([componentType isEqualToString:@"label"]) {
+		newComponent = [Label alloc];
+	} else if ([componentType isEqualToString:@"image"]) {
+		newComponent = [Image alloc];
+	} else {
+		return [Control buildWithXMLParser:componentType parser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
+	}
+	
+	return [newComponent initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
 }
 
 @end

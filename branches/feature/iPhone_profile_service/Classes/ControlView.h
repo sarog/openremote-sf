@@ -22,10 +22,10 @@
 #import <UIKit/UIKit.h>
 #import "Control.h"
 #import "URLConnectionHelper.h"
+#import "ComponentView.h"
 
-@interface ControlView : UIView <URLConnectionHelperDelegate>{
+@interface ControlView : ComponentView <URLConnectionHelperDelegate>{
 	
-	Control *control;
 	NSTimer *controlTimer;
 	BOOL isError;
 }
@@ -46,7 +46,6 @@
 - (void)handleServerErrorWithStatusCode:(int) statusCode;
 - (void)cancelTimer;
 
-@property (nonatomic,readonly)Control *control;
 
 
 @end

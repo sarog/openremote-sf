@@ -4,27 +4,35 @@
 		<screen id="5" name="basement" background="basement.png">		  	
 			<grid left="20" top="20" width="300" height="400" rows="2" cols="2">
 					<cell x="0" y="0" rowspan="1" colspan="1">
-						 <switch id="59" >
-									<image src = "a.png" state="ON"/>
-									<image src = "b.png" state="OFF"/>
+						<switch id="59">
+								<link type="sensor" ref="59">
+										<state name="on" value="a.png" />
+										<state name="off" value="b.png" />
+								</link>
 						</switch>
 				  </cell>
 					<cell x="0" y="1" rowspan="1" >
 						 <switch id="60" >
-									<image src = "c.png" state="ON"/>
-									<image src = "d.png" state="OFF"/>
+								<link type="sensor" ref="60">
+										<state name="on" value="c.png" />
+										<state name="off" value="d.png" />
+								</link>
 						</switch>
 				  </cell>
 					<cell x="1" y="1" colspan="1">
 						 <switch id="61" >
-									<image src = "e.png" state="ON"/>
-									<image src = "f.png" state="OFF"/>
+								<link type="sensor" ref="61">
+										<state name="on" value="e.png" />
+										<state name="off" value="f.png" />
+								</link>									
 						</switch>
 				  </cell>
 					<cell x="1" y="1" >
 						 <switch id="62" >
-									<image src = "g.png" state="ON"/>
-									<image src = "h.png" state="OFF"/>
+						 		<link type="sensor" ref="62">
+										<state name="on" value="g.png" />
+										<state name="off" value="h.png" />
+								</link>
 						</switch>
 				  </cell>
 			</grid>
@@ -33,8 +41,10 @@
 		  	<grid left="20" top="20" width="300" height="400" rows="4" cols="4">
 					<cell x="0" y="1" rowspan="1" colspan="2">
 						 <switch id="63" >
-									<image src = "i.png" state="ON"/>
-									<image src = "j.png" state="OFF"/>
+						 		<link type="sensor" ref="63">
+										<state name="on" value="i.png" />
+										<state name="off" value="j.png" />
+								</link>
 						</switch>
 					</cell>					
 			 </grid>

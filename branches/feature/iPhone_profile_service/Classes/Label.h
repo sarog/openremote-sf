@@ -20,9 +20,9 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "Control.h"
+#import "SensorComponent.h"
 
-@interface Label : Control {
+@interface Label : SensorComponent {
 	NSString *value;
 }
 

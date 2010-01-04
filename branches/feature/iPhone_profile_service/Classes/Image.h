@@ -20,13 +20,13 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "Control.h"
+#import "SensorComponent.h"
 
-@interface Image : Control {
+@interface Image : SensorComponent {
 	NSString *src;
 
 }
 
-@property (nonatomic, readonly) NSString *src;
+@property (nonatomic, readwrite, retain) NSString *src;
 
 @end

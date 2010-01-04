@@ -25,32 +25,26 @@
 
 @implementation AbsoluteLayoutContainerView
 
-@synthesize controlView;
+@synthesize componentView;
 
 
 - (void)layoutSubviews {
 	AbsoluteLayoutContainer *abso = (AbsoluteLayoutContainer *)layout;
-	if (abso.control) {
+	if (abso.component) {
 		//NOTE:You should init all nested views with *initWithFrame* and you should pass in valid frame rects.
 		//Otherwise, UI widget inside will not work in nested UIViews
-		controlView = [ControlView buildWithControl:abso.control frame:CGRectMake(0, 0, abso.width, abso.height)];
+		componentView = [ComponentView buildWithComponent:abso.component frame:CGRectMake(0, 0, abso.width, abso.height)];
 	}
 
-	[self addSubview:controlView];
+	[self addSubview:componentView];
 
-	
-}
-
-
-
-
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
 }
 
 
 - (void)dealloc {
-    [super dealloc];
+	[componentView release];
+  
+	[super dealloc];
 }
 
 

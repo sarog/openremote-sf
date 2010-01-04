@@ -32,7 +32,7 @@
 
 @interface ScreenViewController (Private)
 
-- (void)sendCommandRequest:(int)controlId;
+- (void)sendCommandRequest:(int)componentId;
 - (void)doNavigate:(Navigate *)navi;
 
 @end
@@ -58,7 +58,7 @@
 	Gesture * g = [screen getGestureIdByGestureSwipeType:gesture.swipeType];
 	if (g) {
 		if (g.hasControlCommand) {
-			[self sendCommandRequest:g.controlId];
+			[self sendCommandRequest:g.componentId];
 		} else if (g.navigate) {
 			[self doNavigate:g.navigate];
 		}
@@ -83,7 +83,7 @@
 	[polling cancelPolling];
 }
 
-- (void)sendCommandRequest:(int)controlId {
+- (void)sendCommandRequest:(int)componentId {
 	
 	if ([[Definition sharedDefinition] password] == nil) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
@@ -92,8 +92,8 @@
 	
 	
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition securedControlRESTUrl]];
-	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",controlId,@"swipe"]];
-	NSLog([location stringByAppendingFormat:@"/%d/%@",controlId,@"swipe"]);
+	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",componentId,@"swipe"]];
+	NSLog([location stringByAppendingFormat:@"/%d/%@",componentId,@"swipe"]);
 	
 	
 	//assemble put request 

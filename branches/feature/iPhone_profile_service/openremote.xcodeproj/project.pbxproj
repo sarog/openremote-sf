@@ -16,20 +16,12 @@
 		331A591710AD6D21001AB869 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 331A591510AD6D21001AB869 /* SenTestingKit.framework */; };
 		331CB89C10CCDBD100906A28 /* PanelXMLParsingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 331CB89B10CCDBD100906A28 /* PanelXMLParsingTests.m */; };
 		331CB89D10CCDBD100906A28 /* PanelXMLParsingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 331CB89B10CCDBD100906A28 /* PanelXMLParsingTests.m */; };
-		3322875510BFB09B00D94163 /* panel_absolute_monitor.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322875410BFB09B00D94163 /* panel_absolute_monitor.xml */; };
-		3322875610BFB09B00D94163 /* panel_absolute_monitor.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322875410BFB09B00D94163 /* panel_absolute_monitor.xml */; };
-		3322875810BFB0A600D94163 /* panel_grid_monitor.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322875710BFB0A600D94163 /* panel_grid_monitor.xml */; };
-		3322875910BFB0A600D94163 /* panel_grid_monitor.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322875710BFB0A600D94163 /* panel_grid_monitor.xml */; };
 		3322878C10BFB18800D94163 /* panel_grid_slider.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322878B10BFB18800D94163 /* panel_grid_slider.xml */; };
 		3322878D10BFB18800D94163 /* panel_grid_slider.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322878B10BFB18800D94163 /* panel_grid_slider.xml */; };
 		3322878F10BFB19E00D94163 /* panel_absolute_slider.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322878E10BFB19E00D94163 /* panel_absolute_slider.xml */; };
 		3322879010BFB19E00D94163 /* panel_absolute_slider.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3322878E10BFB19E00D94163 /* panel_absolute_slider.xml */; };
-		3322879710BFB55A00D94163 /* Slider.m in Sources */ = {isa = PBXBuildFile; fileRef = 3322879610BFB55A00D94163 /* Slider.m */; };
-		3322879810BFB55A00D94163 /* Slider.m in Sources */ = {isa = PBXBuildFile; fileRef = 3322879610BFB55A00D94163 /* Slider.m */; };
 		3322883110BFC03F00D94163 /* SliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3322883010BFC03F00D94163 /* SliderView.m */; };
 		3322883210BFC03F00D94163 /* SliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3322883010BFC03F00D94163 /* SliderView.m */; };
-		33267E3B10E4711B00E3AE42 /* GroupMember.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267E3A10E4711B00E3AE42 /* GroupMember.m */; };
-		33267E3C10E4711B00E3AE42 /* GroupMember.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267E3A10E4711B00E3AE42 /* GroupMember.m */; };
 		33267E7110E47C5B00E3AE42 /* NSDateHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267E7010E47C5B00E3AE42 /* NSDateHelper.m */; };
 		33267E7210E47C5B00E3AE42 /* NSDateHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267E7010E47C5B00E3AE42 /* NSDateHelper.m */; };
 		33267ED410E4895E00E3AE42 /* RoundRobinException.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267ED310E4895E00E3AE42 /* RoundRobinException.m */; };
@@ -48,8 +40,6 @@
 		3338CDC610C5039B0067C94D /* panel_grid_label.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3338CDBE10C5039B0067C94D /* panel_grid_label.xml */; };
 		3389A2D510C5FF86009E074A /* panel_relative_screen_backgroundimage.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3389A2D410C5FF86009E074A /* panel_relative_screen_backgroundimage.xml */; };
 		3389A2D610C5FF86009E074A /* panel_relative_screen_backgroundimage.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3389A2D410C5FF86009E074A /* panel_relative_screen_backgroundimage.xml */; };
-		3389A32010C60472009E074A /* Background.m in Sources */ = {isa = PBXBuildFile; fileRef = 3389A31F10C60472009E074A /* Background.m */; };
-		3389A32110C60472009E074A /* Background.m in Sources */ = {isa = PBXBuildFile; fileRef = 3389A31F10C60472009E074A /* Background.m */; };
 		3389A32410C60E5B009E074A /* BackgroundImageRelativePositionConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = 3389A32310C60E5B009E074A /* BackgroundImageRelativePositionConstant.m */; };
 		3389A32510C60E5B009E074A /* BackgroundImageRelativePositionConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = 3389A32310C60E5B009E074A /* BackgroundImageRelativePositionConstant.m */; };
 		338C3CD510D60F610029D62B /* ClippedUIImageViewTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 338C3CD410D60F610029D62B /* ClippedUIImageViewTest.m */; };
@@ -78,29 +68,20 @@
 		33960A9B10D731EE006AFDA8 /* 300X300.png in Resources */ = {isa = PBXBuildFile; fileRef = 33960A9910D731EE006AFDA8 /* 300X300.png */; };
 		33981B1110B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
 		33981B1210B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
-		33981B1A10B108C30076DB59 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1910B108C30076DB59 /* User.m */; };
-		33981B1B10B108C30076DB59 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1910B108C30076DB59 /* User.m */; };
 		33981B3510B119BC0076DB59 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 33981B3410B119BC0076DB59 /* libsqlite3.dylib */; };
 		33981B3610B119BC0076DB59 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 33981B3410B119BC0076DB59 /* libsqlite3.dylib */; };
 		339C75EB10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml in Resources */ = {isa = PBXBuildFile; fileRef = 339C75EA10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml */; };
 		339C75EC10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml in Resources */ = {isa = PBXBuildFile; fileRef = 339C75EA10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml */; };
 		339EADA610CE3FA3004B8AED /* panel_local_tabbar.xml in Resources */ = {isa = PBXBuildFile; fileRef = 339EADA510CE3FA3004B8AED /* panel_local_tabbar.xml */; };
 		339EADA710CE3FA3004B8AED /* panel_local_tabbar.xml in Resources */ = {isa = PBXBuildFile; fileRef = 339EADA510CE3FA3004B8AED /* panel_local_tabbar.xml */; };
-		33DAACF210E8538200577483 /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 33DAACF110E8538200577483 /* database.db */; };
-		33DAACF310E8538200577483 /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 33DAACF110E8538200577483 /* database.db */; };
 		33DF2E0710CCC90D0038DA82 /* panel_global_tabbar.xml in Resources */ = {isa = PBXBuildFile; fileRef = 33DF2E0610CCC90D0038DA82 /* panel_global_tabbar.xml */; };
 		33DF2E0810CCC90D0038DA82 /* panel_global_tabbar.xml in Resources */ = {isa = PBXBuildFile; fileRef = 33DF2E0610CCC90D0038DA82 /* panel_global_tabbar.xml */; };
-		33DF2E1610CCCB8C0038DA82 /* TabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF2E1510CCCB8C0038DA82 /* TabBar.m */; };
-		33DF2E1710CCCB8C0038DA82 /* TabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF2E1510CCCB8C0038DA82 /* TabBar.m */; };
-		33DF2E6210CCD3BD0038DA82 /* TabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF2E6110CCD3BD0038DA82 /* TabBarItem.m */; };
-		33DF2E6310CCD3BD0038DA82 /* TabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF2E6110CCD3BD0038DA82 /* TabBarItem.m */; };
 		33DF56CE10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
 		33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
 		8C1F31C310AA9B3D0081A3D4 /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C1F31C210AA9B3D0081A3D4 /* btn_green.png */; };
 		8C1F31C410AA9B3D0081A3D4 /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C1F31C210AA9B3D0081A3D4 /* btn_green.png */; };
 		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
-		8C460E54109552EB00C7A686 /* panel_absolute_toggle.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C460E51109552EB00C7A686 /* panel_absolute_toggle.xml */; };
 		8C460E6F109554D600C7A686 /* CheckNetworkException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E6E109554D600C7A686 /* CheckNetworkException.m */; };
 		8C460E70109554D600C7A686 /* CheckNetworkException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E6E109554D600C7A686 /* CheckNetworkException.m */; };
 		8C460E771095555500C7A686 /* AppSettingsDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E721095555500C7A686 /* AppSettingsDefinition.m */; };
@@ -116,7 +97,6 @@
 		8C460E9D1095563A00C7A686 /* LayoutContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E921095563A00C7A686 /* LayoutContainerView.m */; };
 		8C460E9E1095563A00C7A686 /* ScreenView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E941095563A00C7A686 /* ScreenView.m */; };
 		8C460E9F1095563A00C7A686 /* SwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E961095563A00C7A686 /* SwitchView.m */; };
-		8C460EA01095563A00C7A686 /* ToggleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E981095563A00C7A686 /* ToggleView.m */; };
 		8C460EA11095563A00C7A686 /* AbsoluteLayoutContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E8A1095563A00C7A686 /* AbsoluteLayoutContainerView.m */; };
 		8C460EA21095563A00C7A686 /* ButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E8C1095563A00C7A686 /* ButtonView.m */; };
 		8C460EA31095563A00C7A686 /* ControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E8E1095563A00C7A686 /* ControlView.m */; };
@@ -124,41 +104,6 @@
 		8C460EA51095563A00C7A686 /* LayoutContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E921095563A00C7A686 /* LayoutContainerView.m */; };
 		8C460EA61095563A00C7A686 /* ScreenView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E941095563A00C7A686 /* ScreenView.m */; };
 		8C460EA71095563A00C7A686 /* SwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E961095563A00C7A686 /* SwitchView.m */; };
-		8C460EA81095563A00C7A686 /* ToggleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E981095563A00C7A686 /* ToggleView.m */; };
-		8C460ECF1095573600C7A686 /* AbsoluteLayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EAA1095573600C7A686 /* AbsoluteLayoutContainer.m */; };
-		8C460ED11095573600C7A686 /* Button.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EAE1095573600C7A686 /* Button.m */; };
-		8C460ED21095573600C7A686 /* Control.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB01095573600C7A686 /* Control.m */; };
-		8C460ED31095573600C7A686 /* Definition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB21095573600C7A686 /* Definition.m */; };
-		8C460ED41095573600C7A686 /* Gesture.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB41095573600C7A686 /* Gesture.m */; };
-		8C460ED51095573600C7A686 /* GridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB61095573600C7A686 /* GridCell.m */; };
-		8C460ED61095573600C7A686 /* GridLayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB81095573600C7A686 /* GridLayoutContainer.m */; };
-		8C460ED71095573600C7A686 /* Group.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EBA1095573600C7A686 /* Group.m */; };
-		8C460ED81095573600C7A686 /* Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EBC1095573600C7A686 /* Image.m */; };
-		8C460ED91095573600C7A686 /* Label.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EBE1095573600C7A686 /* Label.m */; };
-		8C460EDA1095573600C7A686 /* LayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC01095573600C7A686 /* LayoutContainer.m */; };
-		8C460EDB1095573600C7A686 /* Navigate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC21095573600C7A686 /* Navigate.m */; };
-		8C460EDD1095573600C7A686 /* Screen.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC61095573600C7A686 /* Screen.m */; };
-		8C460EDE1095573600C7A686 /* Switch.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC81095573600C7A686 /* Switch.m */; };
-		8C460EDF1095573600C7A686 /* Toggle.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460ECA1095573600C7A686 /* Toggle.m */; };
-		8C460EE01095573600C7A686 /* ToggleState.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460ECC1095573600C7A686 /* ToggleState.m */; };
-		8C460EE11095573600C7A686 /* XMLEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460ECE1095573600C7A686 /* XMLEntity.m */; };
-		8C460EE21095573600C7A686 /* AbsoluteLayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EAA1095573600C7A686 /* AbsoluteLayoutContainer.m */; };
-		8C460EE41095573600C7A686 /* Button.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EAE1095573600C7A686 /* Button.m */; };
-		8C460EE51095573600C7A686 /* Control.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB01095573600C7A686 /* Control.m */; };
-		8C460EE61095573600C7A686 /* Definition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB21095573600C7A686 /* Definition.m */; };
-		8C460EE71095573600C7A686 /* Gesture.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB41095573600C7A686 /* Gesture.m */; };
-		8C460EE81095573600C7A686 /* GridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB61095573600C7A686 /* GridCell.m */; };
-		8C460EE91095573600C7A686 /* GridLayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB81095573600C7A686 /* GridLayoutContainer.m */; };
-		8C460EEA1095573600C7A686 /* Group.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EBA1095573600C7A686 /* Group.m */; };
-		8C460EEB1095573600C7A686 /* Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EBC1095573600C7A686 /* Image.m */; };
-		8C460EEC1095573600C7A686 /* Label.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EBE1095573600C7A686 /* Label.m */; };
-		8C460EED1095573600C7A686 /* LayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC01095573600C7A686 /* LayoutContainer.m */; };
-		8C460EEE1095573600C7A686 /* Navigate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC21095573600C7A686 /* Navigate.m */; };
-		8C460EF01095573600C7A686 /* Screen.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC61095573600C7A686 /* Screen.m */; };
-		8C460EF11095573600C7A686 /* Switch.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC81095573600C7A686 /* Switch.m */; };
-		8C460EF21095573600C7A686 /* Toggle.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460ECA1095573600C7A686 /* Toggle.m */; };
-		8C460EF31095573600C7A686 /* ToggleState.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460ECC1095573600C7A686 /* ToggleState.m */; };
-		8C460EF41095573600C7A686 /* XMLEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460ECE1095573600C7A686 /* XMLEntity.m */; };
 		8C460F141095628C00C7A686 /* AddServerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EFF1095628C00C7A686 /* AddServerViewController.m */; };
 		8C460F151095628C00C7A686 /* AppSettingController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F011095628C00C7A686 /* AppSettingController.m */; };
 		8C460F161095628C00C7A686 /* GroupController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F031095628C00C7A686 /* GroupController.m */; };
@@ -201,26 +146,6 @@
 		8C460FA5109566F900C7A686 /* AsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27F0FBD3782006ED733 /* AsyncUdpSocket.m */; };
 		8C5E9AA410BFD38C00CD87AD /* panel_absolute_slider_gesture.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C5E9AA310BFD38C00CD87AD /* panel_absolute_slider_gesture.xml */; };
 		8C5E9AA510BFD38C00CD87AD /* panel_absolute_slider_gesture.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C5E9AA310BFD38C00CD87AD /* panel_absolute_slider_gesture.xml */; };
-		8C5E9B6E10BFF29900CD87AD /* Slider.h in Sources */ = {isa = PBXBuildFile; fileRef = 3322879510BFB55A00D94163 /* Slider.h */; };
-		8C5E9B6F10BFF29900CD87AD /* Monitor.h in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7ED0510BE988600E15487 /* Monitor.h */; };
-		8C5E9B7010BFF29900CD87AD /* Switch.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC71095573600C7A686 /* Switch.h */; };
-		8C5E9B7110BFF29900CD87AD /* User.h in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1810B108C30076DB59 /* User.h */; };
-		8C5E9B7210BFF29900CD87AD /* AbsoluteLayoutContainer.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EA91095573600C7A686 /* AbsoluteLayoutContainer.h */; };
-		8C5E9B7310BFF29900CD87AD /* Button.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EAD1095573600C7A686 /* Button.h */; };
-		8C5E9B7410BFF29900CD87AD /* Control.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EAF1095573600C7A686 /* Control.h */; };
-		8C5E9B7510BFF29900CD87AD /* Definition.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB11095573600C7A686 /* Definition.h */; };
-		8C5E9B7610BFF29900CD87AD /* Gesture.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB31095573600C7A686 /* Gesture.h */; };
-		8C5E9B7710BFF29900CD87AD /* GridCell.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB51095573600C7A686 /* GridCell.h */; };
-		8C5E9B7810BFF29900CD87AD /* GridLayoutContainer.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB71095573600C7A686 /* GridLayoutContainer.h */; };
-		8C5E9B7910BFF29900CD87AD /* Group.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EB91095573600C7A686 /* Group.h */; };
-		8C5E9B7A10BFF29900CD87AD /* Image.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EBB1095573600C7A686 /* Image.h */; };
-		8C5E9B7B10BFF29900CD87AD /* Label.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EBD1095573600C7A686 /* Label.h */; };
-		8C5E9B7C10BFF29900CD87AD /* LayoutContainer.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EBF1095573600C7A686 /* LayoutContainer.h */; };
-		8C5E9B7D10BFF29900CD87AD /* Navigate.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC11095573600C7A686 /* Navigate.h */; };
-		8C5E9B7E10BFF29900CD87AD /* Screen.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC51095573600C7A686 /* Screen.h */; };
-		8C5E9B7F10BFF29900CD87AD /* Toggle.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EC91095573600C7A686 /* Toggle.h */; };
-		8C5E9B8010BFF29900CD87AD /* ToggleState.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460ECB1095573600C7A686 /* ToggleState.h */; };
-		8C5E9B8110BFF29900CD87AD /* XMLEntity.h in Sources */ = {isa = PBXBuildFile; fileRef = 8C460ECD1095573600C7A686 /* XMLEntity.h */; };
 		8C6502E2109809EC006FC19F /* PollingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6502E1109809EC006FC19F /* PollingHelper.m */; };
 		8C6502E3109809EC006FC19F /* PollingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6502E1109809EC006FC19F /* PollingHelper.m */; };
 		8C6504731098337F006FC19F /* panel_grid_switch.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C6504721098337F006FC19F /* panel_grid_switch.xml */; };
@@ -252,12 +177,62 @@
 		8CDE3FF910C39D1F0096CAC9 /* GestureWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CDE3FF710C39D1F0096CAC9 /* GestureWindow.m */; };
 		8CE7EBE410BE773600E15487 /* ControllerException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7EBE310BE773600E15487 /* ControllerException.m */; };
 		8CE7EBE510BE773600E15487 /* ControllerException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7EBE310BE773600E15487 /* ControllerException.m */; };
-		8CE7ED0310BE987800E15487 /* MonitorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7ED0210BE987800E15487 /* MonitorView.m */; };
-		8CE7ED0410BE987800E15487 /* MonitorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7ED0210BE987800E15487 /* MonitorView.m */; };
-		8CE7ED0710BE988600E15487 /* Monitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7ED0610BE988600E15487 /* Monitor.m */; };
-		8CE7ED0810BE988600E15487 /* Monitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7ED0610BE988600E15487 /* Monitor.m */; };
 		8CEB4E7F10B2827200A67721 /* LogoutHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEB4E7E10B2827200A67721 /* LogoutHelper.m */; };
 		8CEB4E8010B2827200A67721 /* LogoutHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEB4E7E10B2827200A67721 /* LogoutHelper.m */; };
+		8CECF3E110E9DD1400C0E1BB /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 8CECF3E010E9DD1400C0E1BB /* database.db */; };
+		8CECF3E210E9DD1400C0E1BB /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 8CECF3E010E9DD1400C0E1BB /* database.db */; };
+		8CECF79810EB523700C0E1BB /* ComponentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF79710EB523700C0E1BB /* ComponentView.m */; };
+		8CECF79910EB523700C0E1BB /* ComponentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF79710EB523700C0E1BB /* ComponentView.m */; };
+		8CECF88A10EB6E3300C0E1BB /* AbsoluteLayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85110EB6E3200C0E1BB /* AbsoluteLayoutContainer.m */; };
+		8CECF88B10EB6E3300C0E1BB /* Background.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85310EB6E3200C0E1BB /* Background.m */; };
+		8CECF88C10EB6E3300C0E1BB /* Button.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85510EB6E3200C0E1BB /* Button.m */; };
+		8CECF88D10EB6E3300C0E1BB /* Component.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85710EB6E3200C0E1BB /* Component.m */; };
+		8CECF88E10EB6E3300C0E1BB /* Control.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85910EB6E3200C0E1BB /* Control.m */; };
+		8CECF88F10EB6E3300C0E1BB /* Definition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85B10EB6E3300C0E1BB /* Definition.m */; };
+		8CECF89010EB6E3300C0E1BB /* Gesture.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85D10EB6E3300C0E1BB /* Gesture.m */; };
+		8CECF89110EB6E3300C0E1BB /* GridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85F10EB6E3300C0E1BB /* GridCell.m */; };
+		8CECF89210EB6E3300C0E1BB /* GridLayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86110EB6E3300C0E1BB /* GridLayoutContainer.m */; };
+		8CECF89310EB6E3300C0E1BB /* Group.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86310EB6E3300C0E1BB /* Group.m */; };
+		8CECF89410EB6E3300C0E1BB /* GroupMember.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86510EB6E3300C0E1BB /* GroupMember.m */; };
+		8CECF89510EB6E3300C0E1BB /* Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86710EB6E3300C0E1BB /* Image.m */; };
+		8CECF89610EB6E3300C0E1BB /* Label.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86910EB6E3300C0E1BB /* Label.m */; };
+		8CECF89710EB6E3300C0E1BB /* LayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86B10EB6E3300C0E1BB /* LayoutContainer.m */; };
+		8CECF89A10EB6E3300C0E1BB /* Navigate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87110EB6E3300C0E1BB /* Navigate.m */; };
+		8CECF89B10EB6E3300C0E1BB /* Screen.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87310EB6E3300C0E1BB /* Screen.m */; };
+		8CECF89C10EB6E3300C0E1BB /* Sensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87510EB6E3300C0E1BB /* Sensor.m */; };
+		8CECF89D10EB6E3300C0E1BB /* SensorComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87710EB6E3300C0E1BB /* SensorComponent.m */; };
+		8CECF89E10EB6E3300C0E1BB /* SensorState.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87910EB6E3300C0E1BB /* SensorState.m */; };
+		8CECF89F10EB6E3300C0E1BB /* Slider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87B10EB6E3300C0E1BB /* Slider.m */; };
+		8CECF8A010EB6E3300C0E1BB /* Switch.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87D10EB6E3300C0E1BB /* Switch.m */; };
+		8CECF8A110EB6E3300C0E1BB /* TabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87F10EB6E3300C0E1BB /* TabBar.m */; };
+		8CECF8A210EB6E3300C0E1BB /* TabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88110EB6E3300C0E1BB /* TabBarItem.m */; };
+		8CECF8A510EB6E3300C0E1BB /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88710EB6E3300C0E1BB /* User.m */; };
+		8CECF8A610EB6E3300C0E1BB /* XMLEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88910EB6E3300C0E1BB /* XMLEntity.m */; };
+		8CECF8A710EB6E3300C0E1BB /* AbsoluteLayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85110EB6E3200C0E1BB /* AbsoluteLayoutContainer.m */; };
+		8CECF8A810EB6E3300C0E1BB /* Background.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85310EB6E3200C0E1BB /* Background.m */; };
+		8CECF8A910EB6E3300C0E1BB /* Button.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85510EB6E3200C0E1BB /* Button.m */; };
+		8CECF8AA10EB6E3300C0E1BB /* Component.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85710EB6E3200C0E1BB /* Component.m */; };
+		8CECF8AB10EB6E3300C0E1BB /* Control.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85910EB6E3200C0E1BB /* Control.m */; };
+		8CECF8AC10EB6E3300C0E1BB /* Definition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85B10EB6E3300C0E1BB /* Definition.m */; };
+		8CECF8AD10EB6E3300C0E1BB /* Gesture.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85D10EB6E3300C0E1BB /* Gesture.m */; };
+		8CECF8AE10EB6E3300C0E1BB /* GridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85F10EB6E3300C0E1BB /* GridCell.m */; };
+		8CECF8AF10EB6E3300C0E1BB /* GridLayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86110EB6E3300C0E1BB /* GridLayoutContainer.m */; };
+		8CECF8B010EB6E3300C0E1BB /* Group.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86310EB6E3300C0E1BB /* Group.m */; };
+		8CECF8B110EB6E3300C0E1BB /* GroupMember.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86510EB6E3300C0E1BB /* GroupMember.m */; };
+		8CECF8B210EB6E3300C0E1BB /* Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86710EB6E3300C0E1BB /* Image.m */; };
+		8CECF8B310EB6E3300C0E1BB /* Label.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86910EB6E3300C0E1BB /* Label.m */; };
+		8CECF8B410EB6E3300C0E1BB /* LayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86B10EB6E3300C0E1BB /* LayoutContainer.m */; };
+		8CECF8B710EB6E3300C0E1BB /* Navigate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87110EB6E3300C0E1BB /* Navigate.m */; };
+		8CECF8B810EB6E3300C0E1BB /* Screen.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87310EB6E3300C0E1BB /* Screen.m */; };
+		8CECF8B910EB6E3300C0E1BB /* Sensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87510EB6E3300C0E1BB /* Sensor.m */; };
+		8CECF8BA10EB6E3300C0E1BB /* SensorComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87710EB6E3300C0E1BB /* SensorComponent.m */; };
+		8CECF8BB10EB6E3300C0E1BB /* SensorState.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87910EB6E3300C0E1BB /* SensorState.m */; };
+		8CECF8BC10EB6E3300C0E1BB /* Slider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87B10EB6E3300C0E1BB /* Slider.m */; };
+		8CECF8BD10EB6E3300C0E1BB /* Switch.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87D10EB6E3300C0E1BB /* Switch.m */; };
+		8CECF8BE10EB6E3300C0E1BB /* TabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87F10EB6E3300C0E1BB /* TabBar.m */; };
+		8CECF8BF10EB6E3300C0E1BB /* TabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88110EB6E3300C0E1BB /* TabBarItem.m */; };
+		8CECF8C210EB6E3300C0E1BB /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88710EB6E3300C0E1BB /* User.m */; };
+		8CECF8C310EB6E3300C0E1BB /* XMLEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88910EB6E3300C0E1BB /* XMLEntity.m */; };
 		8CF5341F10B64C1900C52FB0 /* ChoosePanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF5341E10B64C1900C52FB0 /* ChoosePanelViewController.m */; };
 		8CF5342010B64C1900C52FB0 /* ChoosePanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF5341E10B64C1900C52FB0 /* ChoosePanelViewController.m */; };
 		8CF539A710B9356700C52FB0 /* repair.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CF539A610B9356700C52FB0 /* repair.png */; };
@@ -283,16 +258,10 @@
 		331A58E610AD6A79001AB869 /* DataBaseServiceTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataBaseServiceTest.m; sourceTree = "<group>"; };
 		331A591510AD6D21001AB869 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		331CB89B10CCDBD100906A28 /* PanelXMLParsingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PanelXMLParsingTests.m; sourceTree = "<group>"; };
-		3322875410BFB09B00D94163 /* panel_absolute_monitor.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_absolute_monitor.xml; sourceTree = "<group>"; };
-		3322875710BFB0A600D94163 /* panel_grid_monitor.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_grid_monitor.xml; sourceTree = "<group>"; };
 		3322878B10BFB18800D94163 /* panel_grid_slider.xml */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.xml; path = panel_grid_slider.xml; sourceTree = "<group>"; };
 		3322878E10BFB19E00D94163 /* panel_absolute_slider.xml */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.xml; path = panel_absolute_slider.xml; sourceTree = "<group>"; };
-		3322879510BFB55A00D94163 /* Slider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Slider.h; sourceTree = "<group>"; };
-		3322879610BFB55A00D94163 /* Slider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Slider.m; sourceTree = "<group>"; };
 		3322882F10BFC03F00D94163 /* SliderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SliderView.h; sourceTree = "<group>"; };
 		3322883010BFC03F00D94163 /* SliderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SliderView.m; sourceTree = "<group>"; };
-		33267E3910E4711B00E3AE42 /* GroupMember.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupMember.h; sourceTree = "<group>"; };
-		33267E3A10E4711B00E3AE42 /* GroupMember.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupMember.m; sourceTree = "<group>"; };
 		33267E6F10E47C5B00E3AE42 /* NSDateHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSDateHelper.h; sourceTree = "<group>"; };
 		33267E7010E47C5B00E3AE42 /* NSDateHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSDateHelper.m; sourceTree = "<group>"; };
 		33267ED210E4895E00E3AE42 /* RoundRobinException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundRobinException.h; sourceTree = "<group>"; };
@@ -306,8 +275,6 @@
 		3338CDBD10C5039B0067C94D /* panel_grid_image.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_grid_image.xml; sourceTree = "<group>"; };
 		3338CDBE10C5039B0067C94D /* panel_grid_label.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_grid_label.xml; sourceTree = "<group>"; };
 		3389A2D410C5FF86009E074A /* panel_relative_screen_backgroundimage.xml */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.xml; path = panel_relative_screen_backgroundimage.xml; sourceTree = "<group>"; };
-		3389A31E10C60472009E074A /* Background.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Background.h; sourceTree = "<group>"; };
-		3389A31F10C60472009E074A /* Background.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Background.m; sourceTree = "<group>"; };
 		3389A32210C60E5B009E074A /* BackgroundImageRelativePositionConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackgroundImageRelativePositionConstant.h; sourceTree = "<group>"; };
 		3389A32310C60E5B009E074A /* BackgroundImageRelativePositionConstant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackgroundImageRelativePositionConstant.m; sourceTree = "<group>"; };
 		338C3CD310D60F610029D62B /* ClippedUIImageViewTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClippedUIImageViewTest.h; sourceTree = "<group>"; };
@@ -327,17 +294,10 @@
 		33960A9910D731EE006AFDA8 /* 300X300.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 300X300.png; sourceTree = "<group>"; };
 		33981B0F10B103260076DB59 /* DataBaseService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataBaseService.h; sourceTree = "<group>"; };
 		33981B1010B103260076DB59 /* DataBaseService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataBaseService.m; sourceTree = "<group>"; };
-		33981B1810B108C30076DB59 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
-		33981B1910B108C30076DB59 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		33981B3410B119BC0076DB59 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		339C75EA10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.xml; path = panel_absolute_screen_backgroundimage.xml; sourceTree = "<group>"; };
 		339EADA510CE3FA3004B8AED /* panel_local_tabbar.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_local_tabbar.xml; sourceTree = "<group>"; };
-		33DAACF110E8538200577483 /* database.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.db; sourceTree = "<group>"; };
 		33DF2E0610CCC90D0038DA82 /* panel_global_tabbar.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_global_tabbar.xml; sourceTree = "<group>"; };
-		33DF2E1410CCCB8C0038DA82 /* TabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBar.h; sourceTree = "<group>"; };
-		33DF2E1510CCCB8C0038DA82 /* TabBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBar.m; sourceTree = "<group>"; };
-		33DF2E6010CCD3BD0038DA82 /* TabBarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarItem.h; sourceTree = "<group>"; };
-		33DF2E6110CCD3BD0038DA82 /* TabBarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarItem.m; sourceTree = "<group>"; };
 		33DF56CC10CCF6B50005446D /* TabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarController.h; sourceTree = "<group>"; };
 		33DF56CD10CCF6B50005446D /* TabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarController.m; sourceTree = "<group>"; };
 		799CC3CC0F4D4EEA006195BD /* URLConnectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLConnectionHelper.h; sourceTree = "<group>"; };
@@ -347,7 +307,6 @@
 		8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		8C460E4A109552C800C7A686 /* UnitTest.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UnitTest.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C460E4B109552C800C7A686 /* UnitTest-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "UnitTest-Info.plist"; sourceTree = "<group>"; };
-		8C460E51109552EB00C7A686 /* panel_absolute_toggle.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_absolute_toggle.xml; sourceTree = "<group>"; };
 		8C460E52109552EB00C7A686 /* PanelXMLParsingTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanelXMLParsingTests.h; sourceTree = "<group>"; };
 		8C460E6D109554D600C7A686 /* CheckNetworkException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CheckNetworkException.h; sourceTree = "<group>"; };
 		8C460E6E109554D600C7A686 /* CheckNetworkException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CheckNetworkException.m; sourceTree = "<group>"; };
@@ -371,42 +330,6 @@
 		8C460E941095563A00C7A686 /* ScreenView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenView.m; sourceTree = "<group>"; };
 		8C460E951095563A00C7A686 /* SwitchView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchView.h; sourceTree = "<group>"; };
 		8C460E961095563A00C7A686 /* SwitchView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwitchView.m; sourceTree = "<group>"; };
-		8C460E971095563A00C7A686 /* ToggleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToggleView.h; sourceTree = "<group>"; };
-		8C460E981095563A00C7A686 /* ToggleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ToggleView.m; sourceTree = "<group>"; };
-		8C460EA91095573600C7A686 /* AbsoluteLayoutContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbsoluteLayoutContainer.h; sourceTree = "<group>"; };
-		8C460EAA1095573600C7A686 /* AbsoluteLayoutContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AbsoluteLayoutContainer.m; sourceTree = "<group>"; };
-		8C460EAD1095573600C7A686 /* Button.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Button.h; sourceTree = "<group>"; };
-		8C460EAE1095573600C7A686 /* Button.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Button.m; sourceTree = "<group>"; };
-		8C460EAF1095573600C7A686 /* Control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Control.h; sourceTree = "<group>"; };
-		8C460EB01095573600C7A686 /* Control.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Control.m; sourceTree = "<group>"; };
-		8C460EB11095573600C7A686 /* Definition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Definition.h; sourceTree = "<group>"; };
-		8C460EB21095573600C7A686 /* Definition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Definition.m; sourceTree = "<group>"; };
-		8C460EB31095573600C7A686 /* Gesture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gesture.h; sourceTree = "<group>"; };
-		8C460EB41095573600C7A686 /* Gesture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Gesture.m; sourceTree = "<group>"; };
-		8C460EB51095573600C7A686 /* GridCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridCell.h; sourceTree = "<group>"; };
-		8C460EB61095573600C7A686 /* GridCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridCell.m; sourceTree = "<group>"; };
-		8C460EB71095573600C7A686 /* GridLayoutContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridLayoutContainer.h; sourceTree = "<group>"; };
-		8C460EB81095573600C7A686 /* GridLayoutContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridLayoutContainer.m; sourceTree = "<group>"; };
-		8C460EB91095573600C7A686 /* Group.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Group.h; sourceTree = "<group>"; };
-		8C460EBA1095573600C7A686 /* Group.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Group.m; sourceTree = "<group>"; };
-		8C460EBB1095573600C7A686 /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Image.h; sourceTree = "<group>"; };
-		8C460EBC1095573600C7A686 /* Image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Image.m; sourceTree = "<group>"; };
-		8C460EBD1095573600C7A686 /* Label.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Label.h; sourceTree = "<group>"; };
-		8C460EBE1095573600C7A686 /* Label.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Label.m; sourceTree = "<group>"; };
-		8C460EBF1095573600C7A686 /* LayoutContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutContainer.h; sourceTree = "<group>"; };
-		8C460EC01095573600C7A686 /* LayoutContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayoutContainer.m; sourceTree = "<group>"; };
-		8C460EC11095573600C7A686 /* Navigate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Navigate.h; sourceTree = "<group>"; };
-		8C460EC21095573600C7A686 /* Navigate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Navigate.m; sourceTree = "<group>"; };
-		8C460EC51095573600C7A686 /* Screen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Screen.h; sourceTree = "<group>"; };
-		8C460EC61095573600C7A686 /* Screen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Screen.m; sourceTree = "<group>"; };
-		8C460EC71095573600C7A686 /* Switch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Switch.h; sourceTree = "<group>"; };
-		8C460EC81095573600C7A686 /* Switch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Switch.m; sourceTree = "<group>"; };
-		8C460EC91095573600C7A686 /* Toggle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Toggle.h; sourceTree = "<group>"; };
-		8C460ECA1095573600C7A686 /* Toggle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Toggle.m; sourceTree = "<group>"; };
-		8C460ECB1095573600C7A686 /* ToggleState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToggleState.h; sourceTree = "<group>"; };
-		8C460ECC1095573600C7A686 /* ToggleState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ToggleState.m; sourceTree = "<group>"; };
-		8C460ECD1095573600C7A686 /* XMLEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLEntity.h; sourceTree = "<group>"; };
-		8C460ECE1095573600C7A686 /* XMLEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMLEntity.m; sourceTree = "<group>"; };
 		8C460EFE1095628C00C7A686 /* AddServerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddServerViewController.h; sourceTree = "<group>"; };
 		8C460EFF1095628C00C7A686 /* AddServerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddServerViewController.m; sourceTree = "<group>"; };
 		8C460F001095628C00C7A686 /* AppSettingController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppSettingController.h; sourceTree = "<group>"; };
@@ -468,12 +391,61 @@
 		8CDE3FF610C39D1F0096CAC9 /* GestureWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GestureWindow.h; sourceTree = "<group>"; };
 		8CDE3FF710C39D1F0096CAC9 /* GestureWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GestureWindow.m; sourceTree = "<group>"; };
 		8CE7EBE310BE773600E15487 /* ControllerException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerException.m; sourceTree = "<group>"; };
-		8CE7ED0110BE987800E15487 /* MonitorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MonitorView.h; sourceTree = "<group>"; };
-		8CE7ED0210BE987800E15487 /* MonitorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MonitorView.m; sourceTree = "<group>"; };
-		8CE7ED0510BE988600E15487 /* Monitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Monitor.h; sourceTree = "<group>"; };
-		8CE7ED0610BE988600E15487 /* Monitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Monitor.m; sourceTree = "<group>"; };
 		8CEB4E7D10B2827200A67721 /* LogoutHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogoutHelper.h; sourceTree = "<group>"; };
 		8CEB4E7E10B2827200A67721 /* LogoutHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogoutHelper.m; sourceTree = "<group>"; };
+		8CECF3E010E9DD1400C0E1BB /* database.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = database.db; sourceTree = "<group>"; };
+		8CECF79610EB523700C0E1BB /* ComponentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentView.h; sourceTree = "<group>"; };
+		8CECF79710EB523700C0E1BB /* ComponentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComponentView.m; sourceTree = "<group>"; };
+		8CECF85010EB6E3200C0E1BB /* AbsoluteLayoutContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbsoluteLayoutContainer.h; sourceTree = "<group>"; };
+		8CECF85110EB6E3200C0E1BB /* AbsoluteLayoutContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AbsoluteLayoutContainer.m; sourceTree = "<group>"; };
+		8CECF85210EB6E3200C0E1BB /* Background.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Background.h; sourceTree = "<group>"; };
+		8CECF85310EB6E3200C0E1BB /* Background.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Background.m; sourceTree = "<group>"; };
+		8CECF85410EB6E3200C0E1BB /* Button.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Button.h; sourceTree = "<group>"; };
+		8CECF85510EB6E3200C0E1BB /* Button.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Button.m; sourceTree = "<group>"; };
+		8CECF85610EB6E3200C0E1BB /* Component.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Component.h; sourceTree = "<group>"; };
+		8CECF85710EB6E3200C0E1BB /* Component.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Component.m; sourceTree = "<group>"; };
+		8CECF85810EB6E3200C0E1BB /* Control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Control.h; sourceTree = "<group>"; };
+		8CECF85910EB6E3200C0E1BB /* Control.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Control.m; sourceTree = "<group>"; };
+		8CECF85A10EB6E3200C0E1BB /* Definition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Definition.h; sourceTree = "<group>"; };
+		8CECF85B10EB6E3300C0E1BB /* Definition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Definition.m; sourceTree = "<group>"; };
+		8CECF85C10EB6E3300C0E1BB /* Gesture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gesture.h; sourceTree = "<group>"; };
+		8CECF85D10EB6E3300C0E1BB /* Gesture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Gesture.m; sourceTree = "<group>"; };
+		8CECF85E10EB6E3300C0E1BB /* GridCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridCell.h; sourceTree = "<group>"; };
+		8CECF85F10EB6E3300C0E1BB /* GridCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridCell.m; sourceTree = "<group>"; };
+		8CECF86010EB6E3300C0E1BB /* GridLayoutContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridLayoutContainer.h; sourceTree = "<group>"; };
+		8CECF86110EB6E3300C0E1BB /* GridLayoutContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridLayoutContainer.m; sourceTree = "<group>"; };
+		8CECF86210EB6E3300C0E1BB /* Group.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Group.h; sourceTree = "<group>"; };
+		8CECF86310EB6E3300C0E1BB /* Group.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Group.m; sourceTree = "<group>"; };
+		8CECF86410EB6E3300C0E1BB /* GroupMember.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupMember.h; sourceTree = "<group>"; };
+		8CECF86510EB6E3300C0E1BB /* GroupMember.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupMember.m; sourceTree = "<group>"; };
+		8CECF86610EB6E3300C0E1BB /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Image.h; sourceTree = "<group>"; };
+		8CECF86710EB6E3300C0E1BB /* Image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Image.m; sourceTree = "<group>"; };
+		8CECF86810EB6E3300C0E1BB /* Label.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Label.h; sourceTree = "<group>"; };
+		8CECF86910EB6E3300C0E1BB /* Label.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Label.m; sourceTree = "<group>"; };
+		8CECF86A10EB6E3300C0E1BB /* LayoutContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutContainer.h; sourceTree = "<group>"; };
+		8CECF86B10EB6E3300C0E1BB /* LayoutContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayoutContainer.m; sourceTree = "<group>"; };
+		8CECF87010EB6E3300C0E1BB /* Navigate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Navigate.h; sourceTree = "<group>"; };
+		8CECF87110EB6E3300C0E1BB /* Navigate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Navigate.m; sourceTree = "<group>"; };
+		8CECF87210EB6E3300C0E1BB /* Screen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Screen.h; sourceTree = "<group>"; };
+		8CECF87310EB6E3300C0E1BB /* Screen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Screen.m; sourceTree = "<group>"; };
+		8CECF87410EB6E3300C0E1BB /* Sensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sensor.h; sourceTree = "<group>"; };
+		8CECF87510EB6E3300C0E1BB /* Sensor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Sensor.m; sourceTree = "<group>"; };
+		8CECF87610EB6E3300C0E1BB /* SensorComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorComponent.h; sourceTree = "<group>"; };
+		8CECF87710EB6E3300C0E1BB /* SensorComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensorComponent.m; sourceTree = "<group>"; };
+		8CECF87810EB6E3300C0E1BB /* SensorState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorState.h; sourceTree = "<group>"; };
+		8CECF87910EB6E3300C0E1BB /* SensorState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensorState.m; sourceTree = "<group>"; };
+		8CECF87A10EB6E3300C0E1BB /* Slider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Slider.h; sourceTree = "<group>"; };
+		8CECF87B10EB6E3300C0E1BB /* Slider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Slider.m; sourceTree = "<group>"; };
+		8CECF87C10EB6E3300C0E1BB /* Switch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Switch.h; sourceTree = "<group>"; };
+		8CECF87D10EB6E3300C0E1BB /* Switch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Switch.m; sourceTree = "<group>"; };
+		8CECF87E10EB6E3300C0E1BB /* TabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBar.h; sourceTree = "<group>"; };
+		8CECF87F10EB6E3300C0E1BB /* TabBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBar.m; sourceTree = "<group>"; };
+		8CECF88010EB6E3300C0E1BB /* TabBarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarItem.h; sourceTree = "<group>"; };
+		8CECF88110EB6E3300C0E1BB /* TabBarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarItem.m; sourceTree = "<group>"; };
+		8CECF88610EB6E3300C0E1BB /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
+		8CECF88710EB6E3300C0E1BB /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
+		8CECF88810EB6E3300C0E1BB /* XMLEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLEntity.h; sourceTree = "<group>"; };
+		8CECF88910EB6E3300C0E1BB /* XMLEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMLEntity.m; sourceTree = "<group>"; };
 		8CF5341D10B64C1900C52FB0 /* ChoosePanelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChoosePanelViewController.h; sourceTree = "<group>"; };
 		8CF5341E10B64C1900C52FB0 /* ChoosePanelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChoosePanelViewController.m; sourceTree = "<group>"; };
 		8CF539A610B9356700C52FB0 /* repair.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = repair.png; sourceTree = "<group>"; };
@@ -584,7 +556,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				33DAACF110E8538200577483 /* database.db */,
+				8CECF3E010E9DD1400C0E1BB /* database.db */,
 				8CF539A610B9356700C52FB0 /* repair.png */,
 				8C1F31C210AA9B3D0081A3D4 /* btn_green.png */,
 				974DAC981063B2E300B1B04B /* Icon.png */,
@@ -734,10 +706,7 @@
 				3322878E10BFB19E00D94163 /* panel_absolute_slider.xml */,
 				8C6504721098337F006FC19F /* panel_grid_switch.xml */,
 				8C460F8D1095666A00C7A686 /* panel_absolute_switch.xml */,
-				8C460E51109552EB00C7A686 /* panel_absolute_toggle.xml */,
 				8C6505F710987E1D006FC19F /* panel_grid_button.xml */,
-				3322875710BFB0A600D94163 /* panel_grid_monitor.xml */,
-				3322875410BFB09B00D94163 /* panel_absolute_monitor.xml */,
 				339C75EA10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml */,
 				3389A2D410C5FF86009E074A /* panel_relative_screen_backgroundimage.xml */,
 				33DF2E0610CCC90D0038DA82 /* panel_global_tabbar.xml */,
@@ -762,54 +731,56 @@
 		8CFEE27F0F558C2900DF8759 /* model */ = {
 			isa = PBXGroup;
 			children = (
-				33DF2E1410CCCB8C0038DA82 /* TabBar.h */,
-				33DF2E1510CCCB8C0038DA82 /* TabBar.m */,
-				33DF2E6010CCD3BD0038DA82 /* TabBarItem.h */,
-				33DF2E6110CCD3BD0038DA82 /* TabBarItem.m */,
-				8C460EC51095573600C7A686 /* Screen.h */,
-				8C460EC61095573600C7A686 /* Screen.m */,
-				8C460EB91095573600C7A686 /* Group.h */,
-				8C460EBA1095573600C7A686 /* Group.m */,
-				3322879510BFB55A00D94163 /* Slider.h */,
-				3322879610BFB55A00D94163 /* Slider.m */,
-				8CE7ED0510BE988600E15487 /* Monitor.h */,
-				8CE7ED0610BE988600E15487 /* Monitor.m */,
-				8C460EC71095573600C7A686 /* Switch.h */,
-				8C460EC81095573600C7A686 /* Switch.m */,
-				33981B1810B108C30076DB59 /* User.h */,
-				33981B1910B108C30076DB59 /* User.m */,
-				8C460EA91095573600C7A686 /* AbsoluteLayoutContainer.h */,
-				8C460EAA1095573600C7A686 /* AbsoluteLayoutContainer.m */,
-				8C460EAD1095573600C7A686 /* Button.h */,
-				8C460EAE1095573600C7A686 /* Button.m */,
-				8C460EAF1095573600C7A686 /* Control.h */,
-				8C460EB01095573600C7A686 /* Control.m */,
-				8C460EB11095573600C7A686 /* Definition.h */,
-				8C460EB21095573600C7A686 /* Definition.m */,
-				8C460EB31095573600C7A686 /* Gesture.h */,
-				8C460EB41095573600C7A686 /* Gesture.m */,
-				8C460EB51095573600C7A686 /* GridCell.h */,
-				8C460EB61095573600C7A686 /* GridCell.m */,
-				8C460EB71095573600C7A686 /* GridLayoutContainer.h */,
-				8C460EB81095573600C7A686 /* GridLayoutContainer.m */,
-				8C460EBB1095573600C7A686 /* Image.h */,
-				8C460EBC1095573600C7A686 /* Image.m */,
-				8C460EBD1095573600C7A686 /* Label.h */,
-				8C460EBE1095573600C7A686 /* Label.m */,
-				8C460EBF1095573600C7A686 /* LayoutContainer.h */,
-				8C460EC01095573600C7A686 /* LayoutContainer.m */,
-				8C460EC11095573600C7A686 /* Navigate.h */,
-				8C460EC21095573600C7A686 /* Navigate.m */,
-				8C460EC91095573600C7A686 /* Toggle.h */,
-				8C460ECA1095573600C7A686 /* Toggle.m */,
-				8C460ECB1095573600C7A686 /* ToggleState.h */,
-				8C460ECC1095573600C7A686 /* ToggleState.m */,
-				8C460ECD1095573600C7A686 /* XMLEntity.h */,
-				8C460ECE1095573600C7A686 /* XMLEntity.m */,
-				3389A31E10C60472009E074A /* Background.h */,
-				3389A31F10C60472009E074A /* Background.m */,
-				33267E3910E4711B00E3AE42 /* GroupMember.h */,
-				33267E3A10E4711B00E3AE42 /* GroupMember.m */,
+				8CECF85010EB6E3200C0E1BB /* AbsoluteLayoutContainer.h */,
+				8CECF85110EB6E3200C0E1BB /* AbsoluteLayoutContainer.m */,
+				8CECF85210EB6E3200C0E1BB /* Background.h */,
+				8CECF85310EB6E3200C0E1BB /* Background.m */,
+				8CECF85410EB6E3200C0E1BB /* Button.h */,
+				8CECF85510EB6E3200C0E1BB /* Button.m */,
+				8CECF85610EB6E3200C0E1BB /* Component.h */,
+				8CECF85710EB6E3200C0E1BB /* Component.m */,
+				8CECF85810EB6E3200C0E1BB /* Control.h */,
+				8CECF85910EB6E3200C0E1BB /* Control.m */,
+				8CECF85A10EB6E3200C0E1BB /* Definition.h */,
+				8CECF85B10EB6E3300C0E1BB /* Definition.m */,
+				8CECF85C10EB6E3300C0E1BB /* Gesture.h */,
+				8CECF85D10EB6E3300C0E1BB /* Gesture.m */,
+				8CECF85E10EB6E3300C0E1BB /* GridCell.h */,
+				8CECF85F10EB6E3300C0E1BB /* GridCell.m */,
+				8CECF86010EB6E3300C0E1BB /* GridLayoutContainer.h */,
+				8CECF86110EB6E3300C0E1BB /* GridLayoutContainer.m */,
+				8CECF86210EB6E3300C0E1BB /* Group.h */,
+				8CECF86310EB6E3300C0E1BB /* Group.m */,
+				8CECF86410EB6E3300C0E1BB /* GroupMember.h */,
+				8CECF86510EB6E3300C0E1BB /* GroupMember.m */,
+				8CECF86610EB6E3300C0E1BB /* Image.h */,
+				8CECF86710EB6E3300C0E1BB /* Image.m */,
+				8CECF86810EB6E3300C0E1BB /* Label.h */,
+				8CECF86910EB6E3300C0E1BB /* Label.m */,
+				8CECF86A10EB6E3300C0E1BB /* LayoutContainer.h */,
+				8CECF86B10EB6E3300C0E1BB /* LayoutContainer.m */,
+				8CECF87010EB6E3300C0E1BB /* Navigate.h */,
+				8CECF87110EB6E3300C0E1BB /* Navigate.m */,
+				8CECF87210EB6E3300C0E1BB /* Screen.h */,
+				8CECF87310EB6E3300C0E1BB /* Screen.m */,
+				8CECF87410EB6E3300C0E1BB /* Sensor.h */,
+				8CECF87510EB6E3300C0E1BB /* Sensor.m */,
+				8CECF87610EB6E3300C0E1BB /* SensorComponent.h */,
+				8CECF87710EB6E3300C0E1BB /* SensorComponent.m */,
+				8CECF87810EB6E3300C0E1BB /* SensorState.h */,
+				8CECF87910EB6E3300C0E1BB /* SensorState.m */,
+				8CECF87A10EB6E3300C0E1BB /* Slider.h */,
+				8CECF87B10EB6E3300C0E1BB /* Slider.m */,
+				8CECF87C10EB6E3300C0E1BB /* Switch.h */,
+				8CECF87D10EB6E3300C0E1BB /* Switch.m */,
+				8CECF87E10EB6E3300C0E1BB /* TabBar.h */,
+				8CECF87F10EB6E3300C0E1BB /* TabBar.m */,
+				8CECF88010EB6E3300C0E1BB /* TabBarItem.h */,
+				8CECF88110EB6E3300C0E1BB /* TabBarItem.m */,
+				8CECF88610EB6E3300C0E1BB /* User.h */,
+				8CECF88710EB6E3300C0E1BB /* User.m */,
+				8CECF88810EB6E3300C0E1BB /* XMLEntity.h */,
+				8CECF88910EB6E3300C0E1BB /* XMLEntity.m */,
 			);
 			name = model;
 			sourceTree = "<group>";
@@ -823,8 +794,6 @@
 				3338CDB610C5036C0067C94D /* LabelView.m */,
 				3322882F10BFC03F00D94163 /* SliderView.h */,
 				3322883010BFC03F00D94163 /* SliderView.m */,
-				8CE7ED0110BE987800E15487 /* MonitorView.h */,
-				8CE7ED0210BE987800E15487 /* MonitorView.m */,
 				8C460F0E1095628C00C7A686 /* TextFieldCell.h */,
 				8C460F0F1095628C00C7A686 /* TextFieldCell.m */,
 				8C460E891095563A00C7A686 /* AbsoluteLayoutContainerView.h */,
@@ -841,14 +810,14 @@
 				8C460E941095563A00C7A686 /* ScreenView.m */,
 				8C460E951095563A00C7A686 /* SwitchView.h */,
 				8C460E961095563A00C7A686 /* SwitchView.m */,
-				8C460E971095563A00C7A686 /* ToggleView.h */,
-				8C460E981095563A00C7A686 /* ToggleView.m */,
 				8C650566109870D2006FC19F /* GridCellView.h */,
 				8C650567109870D2006FC19F /* GridCellView.m */,
 				8CDE3FF610C39D1F0096CAC9 /* GestureWindow.h */,
 				8CDE3FF710C39D1F0096CAC9 /* GestureWindow.m */,
 				338D2ED410D8AADB0043BFE9 /* ClippedUIImage.h */,
 				338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */,
+				8CECF79610EB523700C0E1BB /* ComponentView.h */,
+				8CECF79710EB523700C0E1BB /* ComponentView.m */,
 			);
 			name = view;
 			sourceTree = "<group>";
@@ -975,8 +944,6 @@
 				974DAC991063B2E300B1B04B /* Icon.png in Resources */,
 				8C1F31C310AA9B3D0081A3D4 /* btn_green.png in Resources */,
 				8CF539A710B9356700C52FB0 /* repair.png in Resources */,
-				3322875510BFB09B00D94163 /* panel_absolute_monitor.xml in Resources */,
-				3322875810BFB0A600D94163 /* panel_grid_monitor.xml in Resources */,
 				3322878D10BFB18800D94163 /* panel_grid_slider.xml in Resources */,
 				3322879010BFB19E00D94163 /* panel_absolute_slider.xml in Resources */,
 				8C5E9AA410BFD38C00CD87AD /* panel_absolute_slider_gesture.xml in Resources */,
@@ -997,7 +964,7 @@
 				33960A8810D72F65006AFDA8 /* 300X500.png in Resources */,
 				33960A9310D73104006AFDA8 /* 300X480.png in Resources */,
 				33960A9A10D731EE006AFDA8 /* 300X300.png in Resources */,
-				33DAACF210E8538200577483 /* database.db in Resources */,
+				8CECF3E110E9DD1400C0E1BB /* database.db in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1005,14 +972,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8C460E54109552EB00C7A686 /* panel_absolute_toggle.xml in Resources */,
 				8C460F8E1095666A00C7A686 /* panel_absolute_switch.xml in Resources */,
 				8C6504731098337F006FC19F /* panel_grid_switch.xml in Resources */,
 				8C6505F810987E1D006FC19F /* panel_grid_button.xml in Resources */,
 				8C1F31C410AA9B3D0081A3D4 /* btn_green.png in Resources */,
 				8CF539A810B9356800C52FB0 /* repair.png in Resources */,
-				3322875610BFB09B00D94163 /* panel_absolute_monitor.xml in Resources */,
-				3322875910BFB0A600D94163 /* panel_grid_monitor.xml in Resources */,
 				3322878C10BFB18800D94163 /* panel_grid_slider.xml in Resources */,
 				3322878F10BFB19E00D94163 /* panel_absolute_slider.xml in Resources */,
 				8C5E9AA510BFD38C00CD87AD /* panel_absolute_slider_gesture.xml in Resources */,
@@ -1033,7 +997,7 @@
 				33960A8910D72F65006AFDA8 /* 300X500.png in Resources */,
 				33960A9410D73104006AFDA8 /* 300X480.png in Resources */,
 				33960A9B10D731EE006AFDA8 /* 300X300.png in Resources */,
-				33DAACF310E8538200577483 /* database.db in Resources */,
+				8CECF3E210E9DD1400C0E1BB /* database.db in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1079,24 +1043,6 @@
 				8C460E9D1095563A00C7A686 /* LayoutContainerView.m in Sources */,
 				8C460E9E1095563A00C7A686 /* ScreenView.m in Sources */,
 				8C460E9F1095563A00C7A686 /* SwitchView.m in Sources */,
-				8C460EA01095563A00C7A686 /* ToggleView.m in Sources */,
-				8C460ECF1095573600C7A686 /* AbsoluteLayoutContainer.m in Sources */,
-				8C460ED11095573600C7A686 /* Button.m in Sources */,
-				8C460ED21095573600C7A686 /* Control.m in Sources */,
-				8C460ED31095573600C7A686 /* Definition.m in Sources */,
-				8C460ED41095573600C7A686 /* Gesture.m in Sources */,
-				8C460ED51095573600C7A686 /* GridCell.m in Sources */,
-				8C460ED61095573600C7A686 /* GridLayoutContainer.m in Sources */,
-				8C460ED71095573600C7A686 /* Group.m in Sources */,
-				8C460ED81095573600C7A686 /* Image.m in Sources */,
-				8C460ED91095573600C7A686 /* Label.m in Sources */,
-				8C460EDA1095573600C7A686 /* LayoutContainer.m in Sources */,
-				8C460EDB1095573600C7A686 /* Navigate.m in Sources */,
-				8C460EDD1095573600C7A686 /* Screen.m in Sources */,
-				8C460EDE1095573600C7A686 /* Switch.m in Sources */,
-				8C460EDF1095573600C7A686 /* Toggle.m in Sources */,
-				8C460EE01095573600C7A686 /* ToggleState.m in Sources */,
-				8C460EE11095573600C7A686 /* XMLEntity.m in Sources */,
 				8C460F141095628C00C7A686 /* AddServerViewController.m in Sources */,
 				8C460F151095628C00C7A686 /* AppSettingController.m in Sources */,
 				8C460F161095628C00C7A686 /* GroupController.m in Sources */,
@@ -1115,33 +1061,51 @@
 				8CAEB81B10A6B25B0051C827 /* LoginViewController.m in Sources */,
 				331A58E710AD6A79001AB869 /* DataBaseServiceTest.m in Sources */,
 				33981B1110B103260076DB59 /* DataBaseService.m in Sources */,
-				33981B1A10B108C30076DB59 /* User.m in Sources */,
 				8CEB4E7F10B2827200A67721 /* LogoutHelper.m in Sources */,
 				8CF5341F10B64C1900C52FB0 /* ChoosePanelViewController.m in Sources */,
 				8CF539AC10B9359F00C52FB0 /* ErrorViewController.m in Sources */,
 				8CC6364E10BD37D8009C25C9 /* CredentialUtil.m in Sources */,
 				8CC636D010BD4DCC009C25C9 /* NSStringAdditions.m in Sources */,
 				8CE7EBE510BE773600E15487 /* ControllerException.m in Sources */,
-				8CE7ED0410BE987800E15487 /* MonitorView.m in Sources */,
-				8CE7ED0810BE988600E15487 /* Monitor.m in Sources */,
-				3322879810BFB55A00D94163 /* Slider.m in Sources */,
 				3322883210BFC03F00D94163 /* SliderView.m in Sources */,
 				8CDE3FF910C39D1F0096CAC9 /* GestureWindow.m in Sources */,
 				3338CDB710C5036C0067C94D /* ImageView.m in Sources */,
 				3338CDB810C5036C0067C94D /* LabelView.m in Sources */,
-				3389A32110C60472009E074A /* Background.m in Sources */,
 				3389A32510C60E5B009E074A /* BackgroundImageRelativePositionConstant.m in Sources */,
-				33DF2E1710CCCB8C0038DA82 /* TabBar.m in Sources */,
-				33DF2E6310CCD3BD0038DA82 /* TabBarItem.m in Sources */,
 				331CB89D10CCDBD100906A28 /* PanelXMLParsingTests.m in Sources */,
 				33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */,
 				338C3CD510D60F610029D62B /* ClippedUIImageViewTest.m in Sources */,
 				338D2ED610D8AADB0043BFE9 /* ClippedUIImage.m in Sources */,
 				338D306C10D8DD000043BFE9 /* UIViewUtil.m in Sources */,
 				8CC1E07F10DB491400155CC0 /* DefaultViewController.m in Sources */,
-				33267E3C10E4711B00E3AE42 /* GroupMember.m in Sources */,
 				33267E7210E47C5B00E3AE42 /* NSDateHelper.m in Sources */,
 				33267ED410E4895E00E3AE42 /* RoundRobinException.m in Sources */,
+				8CECF79910EB523700C0E1BB /* ComponentView.m in Sources */,
+				8CECF8A710EB6E3300C0E1BB /* AbsoluteLayoutContainer.m in Sources */,
+				8CECF8A810EB6E3300C0E1BB /* Background.m in Sources */,
+				8CECF8A910EB6E3300C0E1BB /* Button.m in Sources */,
+				8CECF8AA10EB6E3300C0E1BB /* Component.m in Sources */,
+				8CECF8AB10EB6E3300C0E1BB /* Control.m in Sources */,
+				8CECF8AC10EB6E3300C0E1BB /* Definition.m in Sources */,
+				8CECF8AD10EB6E3300C0E1BB /* Gesture.m in Sources */,
+				8CECF8AE10EB6E3300C0E1BB /* GridCell.m in Sources */,
+				8CECF8AF10EB6E3300C0E1BB /* GridLayoutContainer.m in Sources */,
+				8CECF8B010EB6E3300C0E1BB /* Group.m in Sources */,
+				8CECF8B110EB6E3300C0E1BB /* GroupMember.m in Sources */,
+				8CECF8B210EB6E3300C0E1BB /* Image.m in Sources */,
+				8CECF8B310EB6E3300C0E1BB /* Label.m in Sources */,
+				8CECF8B410EB6E3300C0E1BB /* LayoutContainer.m in Sources */,
+				8CECF8B710EB6E3300C0E1BB /* Navigate.m in Sources */,
+				8CECF8B810EB6E3300C0E1BB /* Screen.m in Sources */,
+				8CECF8B910EB6E3300C0E1BB /* Sensor.m in Sources */,
+				8CECF8BA10EB6E3300C0E1BB /* SensorComponent.m in Sources */,
+				8CECF8BB10EB6E3300C0E1BB /* SensorState.m in Sources */,
+				8CECF8BC10EB6E3300C0E1BB /* Slider.m in Sources */,
+				8CECF8BD10EB6E3300C0E1BB /* Switch.m in Sources */,
+				8CECF8BE10EB6E3300C0E1BB /* TabBar.m in Sources */,
+				8CECF8BF10EB6E3300C0E1BB /* TabBarItem.m in Sources */,
+				8CECF8C210EB6E3300C0E1BB /* User.m in Sources */,
+				8CECF8C310EB6E3300C0E1BB /* XMLEntity.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1149,46 +1113,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8C5E9B6E10BFF29900CD87AD /* Slider.h in Sources */,
-				3322879710BFB55A00D94163 /* Slider.m in Sources */,
-				8C5E9B6F10BFF29900CD87AD /* Monitor.h in Sources */,
-				8CE7ED0710BE988600E15487 /* Monitor.m in Sources */,
-				8C5E9B7010BFF29900CD87AD /* Switch.h in Sources */,
-				8C460EF11095573600C7A686 /* Switch.m in Sources */,
-				8C5E9B7110BFF29900CD87AD /* User.h in Sources */,
-				33981B1B10B108C30076DB59 /* User.m in Sources */,
-				8C5E9B7210BFF29900CD87AD /* AbsoluteLayoutContainer.h in Sources */,
-				8C460EE21095573600C7A686 /* AbsoluteLayoutContainer.m in Sources */,
-				8C5E9B7310BFF29900CD87AD /* Button.h in Sources */,
-				8C460EE41095573600C7A686 /* Button.m in Sources */,
-				8C5E9B7410BFF29900CD87AD /* Control.h in Sources */,
-				8C460EE51095573600C7A686 /* Control.m in Sources */,
-				8C5E9B7510BFF29900CD87AD /* Definition.h in Sources */,
-				8C460EE61095573600C7A686 /* Definition.m in Sources */,
-				8C5E9B7610BFF29900CD87AD /* Gesture.h in Sources */,
-				8C460EE71095573600C7A686 /* Gesture.m in Sources */,
-				8C5E9B7710BFF29900CD87AD /* GridCell.h in Sources */,
-				8C460EE81095573600C7A686 /* GridCell.m in Sources */,
-				8C5E9B7810BFF29900CD87AD /* GridLayoutContainer.h in Sources */,
-				8C460EE91095573600C7A686 /* GridLayoutContainer.m in Sources */,
-				8C5E9B7910BFF29900CD87AD /* Group.h in Sources */,
-				8C460EEA1095573600C7A686 /* Group.m in Sources */,
-				8C5E9B7A10BFF29900CD87AD /* Image.h in Sources */,
-				8C460EEB1095573600C7A686 /* Image.m in Sources */,
-				8C5E9B7B10BFF29900CD87AD /* Label.h in Sources */,
-				8C460EEC1095573600C7A686 /* Label.m in Sources */,
-				8C5E9B7C10BFF29900CD87AD /* LayoutContainer.h in Sources */,
-				8C460EED1095573600C7A686 /* LayoutContainer.m in Sources */,
-				8C5E9B7D10BFF29900CD87AD /* Navigate.h in Sources */,
-				8C460EEE1095573600C7A686 /* Navigate.m in Sources */,
-				8C5E9B7E10BFF29900CD87AD /* Screen.h in Sources */,
-				8C460EF01095573600C7A686 /* Screen.m in Sources */,
-				8C5E9B7F10BFF29900CD87AD /* Toggle.h in Sources */,
-				8C460EF21095573600C7A686 /* Toggle.m in Sources */,
-				8C5E9B8010BFF29900CD87AD /* ToggleState.h in Sources */,
-				8C460EF31095573600C7A686 /* ToggleState.m in Sources */,
-				8C5E9B8110BFF29900CD87AD /* XMLEntity.h in Sources */,
-				8C460EF41095573600C7A686 /* XMLEntity.m in Sources */,
 				8C650624109882F2006FC19F /* GridCellView.m in Sources */,
 				8C460F9E109566F900C7A686 /* main.m in Sources */,
 				8C460F9F109566F900C7A686 /* URLConnectionHelper.m in Sources */,
@@ -1209,7 +1133,6 @@
 				8C460EA51095563A00C7A686 /* LayoutContainerView.m in Sources */,
 				8C460EA61095563A00C7A686 /* ScreenView.m in Sources */,
 				8C460EA71095563A00C7A686 /* SwitchView.m in Sources */,
-				8C460EA81095563A00C7A686 /* ToggleView.m in Sources */,
 				8C460F201095628C00C7A686 /* AddServerViewController.m in Sources */,
 				8C460F211095628C00C7A686 /* AppSettingController.m in Sources */,
 				8C460F221095628C00C7A686 /* GroupController.m in Sources */,
@@ -1233,24 +1156,45 @@
 				8CC6364F10BD37D8009C25C9 /* CredentialUtil.m in Sources */,
 				8CC636D110BD4DCC009C25C9 /* NSStringAdditions.m in Sources */,
 				8CE7EBE410BE773600E15487 /* ControllerException.m in Sources */,
-				8CE7ED0310BE987800E15487 /* MonitorView.m in Sources */,
 				3322883110BFC03F00D94163 /* SliderView.m in Sources */,
 				8CDE3FF810C39D1F0096CAC9 /* GestureWindow.m in Sources */,
 				3338CDB910C5036C0067C94D /* ImageView.m in Sources */,
 				3338CDBA10C5036C0067C94D /* LabelView.m in Sources */,
-				3389A32010C60472009E074A /* Background.m in Sources */,
 				3389A32410C60E5B009E074A /* BackgroundImageRelativePositionConstant.m in Sources */,
-				33DF2E1610CCCB8C0038DA82 /* TabBar.m in Sources */,
-				33DF2E6210CCD3BD0038DA82 /* TabBarItem.m in Sources */,
 				331CB89C10CCDBD100906A28 /* PanelXMLParsingTests.m in Sources */,
 				33DF56CE10CCF6B50005446D /* TabBarController.m in Sources */,
 				338C3CD610D60F610029D62B /* ClippedUIImageViewTest.m in Sources */,
 				338D2ED710D8AADB0043BFE9 /* ClippedUIImage.m in Sources */,
 				338D306D10D8DD000043BFE9 /* UIViewUtil.m in Sources */,
 				8CC1E07E10DB491400155CC0 /* DefaultViewController.m in Sources */,
-				33267E3B10E4711B00E3AE42 /* GroupMember.m in Sources */,
 				33267E7110E47C5B00E3AE42 /* NSDateHelper.m in Sources */,
 				33267ED510E4895E00E3AE42 /* RoundRobinException.m in Sources */,
+				8CECF79810EB523700C0E1BB /* ComponentView.m in Sources */,
+				8CECF88A10EB6E3300C0E1BB /* AbsoluteLayoutContainer.m in Sources */,
+				8CECF88B10EB6E3300C0E1BB /* Background.m in Sources */,
+				8CECF88C10EB6E3300C0E1BB /* Button.m in Sources */,
+				8CECF88D10EB6E3300C0E1BB /* Component.m in Sources */,
+				8CECF88E10EB6E3300C0E1BB /* Control.m in Sources */,
+				8CECF88F10EB6E3300C0E1BB /* Definition.m in Sources */,
+				8CECF89010EB6E3300C0E1BB /* Gesture.m in Sources */,
+				8CECF89110EB6E3300C0E1BB /* GridCell.m in Sources */,
+				8CECF89210EB6E3300C0E1BB /* GridLayoutContainer.m in Sources */,
+				8CECF89310EB6E3300C0E1BB /* Group.m in Sources */,
+				8CECF89410EB6E3300C0E1BB /* GroupMember.m in Sources */,
+				8CECF89510EB6E3300C0E1BB /* Image.m in Sources */,
+				8CECF89610EB6E3300C0E1BB /* Label.m in Sources */,
+				8CECF89710EB6E3300C0E1BB /* LayoutContainer.m in Sources */,
+				8CECF89A10EB6E3300C0E1BB /* Navigate.m in Sources */,
+				8CECF89B10EB6E3300C0E1BB /* Screen.m in Sources */,
+				8CECF89C10EB6E3300C0E1BB /* Sensor.m in Sources */,
+				8CECF89D10EB6E3300C0E1BB /* SensorComponent.m in Sources */,
+				8CECF89E10EB6E3300C0E1BB /* SensorState.m in Sources */,
+				8CECF89F10EB6E3300C0E1BB /* Slider.m in Sources */,
+				8CECF8A010EB6E3300C0E1BB /* Switch.m in Sources */,
+				8CECF8A110EB6E3300C0E1BB /* TabBar.m in Sources */,
+				8CECF8A210EB6E3300C0E1BB /* TabBarItem.m in Sources */,
+				8CECF8A510EB6E3300C0E1BB /* User.m in Sources */,
+				8CECF8A610EB6E3300C0E1BB /* XMLEntity.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

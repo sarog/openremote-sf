@@ -28,20 +28,15 @@
 
 // get element name, must be overriden in subclass
 - (NSString *) elementName {
-	return @"image";
+	return IMAGE;
 }
 
-// This method is abstract method of direct superclass Control.
-// So, this method must be overridden in subclass.
-- (BOOL)hasPollingStatus {
-	return NO;
-}
 
 // init a xml entity with NSXMLParser and remember its xmlparser parent delegate 
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {
-		controlId = [[attributeDict objectForKey:@"id"] intValue];
-		src = [[attributeDict objectForKey:@"src"] copy];
+		componentId = [[attributeDict objectForKey:ID] intValue];
+		src = [[attributeDict objectForKey:SRC] copy];
 		[[Definition sharedDefinition] addImageName:src];
 		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];
@@ -49,9 +44,11 @@
 	return self;
 }
 
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	//stop parsing
+- (void)setSrc:(NSString *)ImgSrc {
+	src = ImgSrc;
+	[[Definition sharedDefinition] addImageName:src];
 }
+
 
 - (void)dealloc {
 	[src release];

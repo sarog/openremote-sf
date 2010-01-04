@@ -19,39 +19,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-#import "Monitor.h"
+#import "SensorComponent.h"
 
 
-@implementation Monitor
+@implementation SensorComponent
 
-// This method is abstract method of indirectclass XMLEntity.
-// So, this method must be overridden in subclass.
-- (NSString *) elementName {
-	return @"monitor";
-}
-
-// This method is abstract method of direct superclass Control.
-// So, this method must be overridden in subclass.
-- (BOOL)hasPollingStatus {
-	return YES;
-}
-
-#pragma mark Delegate methods of NSXMLParser
-
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
-	if (self = [super init]) {
-		controlId = [[attributeDict objectForKey:@"id"] intValue];
-		xmlParserParentDelegate = [parent retain];
-		[parser setDelegate:self];
-	}
-	return self;
-}
+@synthesize sensor;
 
 /**
- * Parse the monitor's sub elements .
+ * Parse the switch sub element : sensor link.
  */
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	// Because there is no sub elements in monitor, so do nothing.
+	
+	if ([elementName isEqualToString:LINK] && [SENSOR isEqualToString:[attributeDict objectForKey:TYPE]]) {
+		sensor = [[Sensor alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+	}
+	
+}
+
+- (void)dealloc {
+	[sensor release];
+	[super dealloc];
 }
 
 @end

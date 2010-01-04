@@ -20,11 +20,11 @@
  */
 
 #import "AbsoluteLayoutContainer.h"
-#import "Toggle.h"
+#import "SensorComponent.h"
 
 @implementation AbsoluteLayoutContainer
 
-@synthesize control;
+@synthesize component;
 
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {		
@@ -42,10 +42,10 @@
 
 - (NSArray *)pollingComponentsIds {
 	NSMutableArray *ids = [[NSMutableArray alloc] init];
-	if ([control hasPollingStatus]) {
-		[ids addObject:[NSString stringWithFormat:@"%d",control.controlId]];
-	}
-
+	if ([component isKindOfClass:SensorComponent.class]){		
+		[ids addObject:[NSString stringWithFormat:@"%d",((SensorComponent *)component).sensor.sensorId]];
+	} 
+	
 	return ids;
 }
 
@@ -57,14 +57,14 @@
 // parse all kinds of controls
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
 
-		control = [Control buildWithXMLParser:elementName parser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+		component = [Component buildWithXMLParser:elementName parser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 
 }
 
 
 
 - (void)dealloc {
-	[control release];
+	[component release];
 	
 	[super dealloc];
 }

@@ -20,7 +20,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "Control.h"
+#import "Component.h"
 #import "XMLEntity.h"
 
 @interface GridCell : XMLEntity {
@@ -29,7 +29,7 @@
 	int y;
 	int rowspan;
 	int colspan;
-	Control *control;
+	Component *component;
 	
 }
 
@@ -37,6 +37,6 @@
 @property (nonatomic, readonly) int y;
 @property (nonatomic, readonly) int rowspan;
 @property (nonatomic, readonly) int colspan;
-@property (nonatomic, readonly) Control *control;
+@property (nonatomic, readonly) Component *component;
 
 @end

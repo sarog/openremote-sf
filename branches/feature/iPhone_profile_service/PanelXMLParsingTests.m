@@ -25,8 +25,6 @@
 #import "Control.h"
 #import "LayoutContainer.h"
 #import "AbsoluteLayoutContainer.h"
-#import "Toggle.h"
-#import "ToggleState.h"
 #import "Switch.h"
 #import "GridLayoutContainer.h"
 #import "GridCell.h"
@@ -92,13 +90,13 @@
 					
 					for (GridCell *cell in grid.cells) {			
 						[cells addObject:cell];
-						if ([cell.control isKindOfClass:[Button class]]) {
-							Button * but = (Button *)cell.control;
+						if ([cell.component isKindOfClass:[Button class]]) {
+							Button * but = (Button *)cell.component;
 							[buts addObject:but];
 							NSString *expectedName = [[NSMutableString alloc] initWithFormat:@"%c",(char)65 + but_index];						
 							STAssertTrue([but.name isEqualToString:expectedName],@"expected %@, but %@",expectedName,but.name);
 							int expectedId = (59 + but_index++);
-							STAssertTrue(expectedId == but.controlId,@"expected %d, but %d",expectedId,but.controlId);
+							STAssertTrue(expectedId == but.componentId,@"expected %d, but %d",expectedId,but.componentId);
 							NSString *expectedNormalImageName = nil;
 							if (but.image) {
 								expectedNormalImageName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + image_index++];						
@@ -206,10 +204,10 @@
 					
 					for (GridCell *cell in grid.cells) {			
 						[cells addObject:cell];
-						if ([cell.control isKindOfClass:[Switch class]]) {
-							Switch *theSwitch = (Switch *)cell.control;
+						if ([cell.component isKindOfClass:[Switch class]]) {
+							Switch *theSwitch = (Switch *)cell.component;
 							int expectedId = (59 + switch_index++);
-							STAssertTrue(expectedId == theSwitch.controlId,@"expected %d, but %d",expectedId,theSwitch.controlId);	
+							STAssertTrue(expectedId == theSwitch.componentId,@"expected %d, but %d",expectedId,theSwitch.componentId);	
 							NSString *expectedOnName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + state_index++];						
 							STAssertTrue([theSwitch.onImage.src isEqualToString:expectedOnName],@"expected %@, but %@",expectedOnName,theSwitch.onImage.src);
 							NSString *expectedOffName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + state_index++];
@@ -285,10 +283,10 @@
 					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
 					[layoutAttrs release];
 					
-					if ([abso.control isKindOfClass:[Switch class]]) {
-						Switch *theSwitch = (Switch *)abso.control;
+					if ([abso.component isKindOfClass:[Switch class]]) {
+						Switch *theSwitch = (Switch *)abso.component;
 						int expectedId = (59 + switch_index++);
-						STAssertTrue(expectedId == theSwitch.controlId,@"expected %d, but %d",expectedId,theSwitch.controlId);	
+						STAssertTrue(expectedId == theSwitch.componentId,@"expected %d, but %d",expectedId,theSwitch.componentId);	
 						NSString *expectedOnName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + state_index++];						
 						STAssertTrue([theSwitch.onImage.src isEqualToString:expectedOnName],@"expected %@, but %@",expectedOnName,theSwitch.onImage.src);
 						NSString *expectedOffName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + state_index++];
@@ -328,142 +326,6 @@
 
 }
 
-// panel_grid_monitor.xml test
-- (void) testParsePanelGridMonitorXML {
-	NSLog(@"Begin testParsePanelGridMonitorXML");
-	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_grid_monitor.xml"];
-	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
-	NSMutableArray *groups = [[Definition sharedDefinition] groups];
-	NSMutableArray *screens = [[Definition sharedDefinition] screens];
-	int monitor_index = 0;
-	NSMutableArray *cells = [[NSMutableArray alloc] init];
-	for (Group *group in groups) {
-		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
-		for (Screen *screen in group.screens) {			
-			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
-			for (LayoutContainer *layout in screen.layouts) {
-				if([layout isKindOfClass:[GridLayoutContainer class]]){					
-					NSLog(@"layout is grid ");
-					GridLayoutContainer *grid =(GridLayoutContainer *)layout;
-					NSString *layoutAttrs = [[NSMutableString alloc] initWithFormat:@"%d %d %d %d",grid.left,grid.top,grid.width,grid.height];
-					NSString *expectedAttrs = @"20 20 300 400";
-					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
-					[layoutAttrs release];
-					
-					for (GridCell *cell in grid.cells) {			
-						[cells addObject:cell];
-						if ([cell.control isKindOfClass:[Monitor class]]) {
-							Monitor *theMonitor = (Monitor *)cell.control;
-							int expectedId = (59 + monitor_index++);
-							STAssertTrue(expectedId == theMonitor.controlId,@"expected %d, but %d",expectedId,theMonitor.controlId);
-						}	
-					}
-				}				
-			}
-		}
-	}
-	
-	NSLog(@"groups count = %d",[groups count]);
-	NSLog(@"screens count = %d",[screens count]);
-	NSLog(@"xml parse done");
-	
-	NSMutableArray *screenNames = [NSMutableArray arrayWithObjects:@"basement",@"floor",nil];
-	NSMutableArray *groupNames = [NSMutableArray arrayWithObjects:@"All rooms",@"living room",nil];
-	
-	//check screens
-	for (int i=0;i<screenNames.count;i++) {
-		STAssertTrue([[screenNames objectAtIndex:i] isEqualToString:[[screens objectAtIndex:i] name]],@"expected %@, but %@",[screenNames objectAtIndex:i],[[screens objectAtIndex:i] name]);
-		STAssertTrue(i+5 == [[screens objectAtIndex:i] screenId],@"expected %d, but %d",i+5,[[screens objectAtIndex:i] screenId]);
-	}
-	
-	//check groups
-	for (int i=0;i<groupNames.count;i++) {
-		STAssertTrue([[groupNames objectAtIndex:i] isEqualToString:[[groups objectAtIndex:i] name]],@"expected %@, but %@",[groupNames objectAtIndex:i],[[groups objectAtIndex:i] name]);
-		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
-	}
-	
-	STAssertTrue(cells.count== 5,@"expected %d, but %d",5,cells.count);
-	STAssertTrue(((GridCell *)[cells objectAtIndex:0]).colspan == 1,@"expected %d",1);
-	STAssertTrue(((GridCell *)[cells objectAtIndex:0]).rowspan == 1,@"expected %d",1);
-	STAssertTrue(((GridCell *)[cells objectAtIndex:1]).rowspan == 1,@"expected %d",1);
-	STAssertTrue(((GridCell *)[cells objectAtIndex:2]).colspan == 1,@"expected %d",1);
-	STAssertTrue(((GridCell *)[cells objectAtIndex:3]).colspan == 1,@"expected %d",1);
-	STAssertTrue(((GridCell *)[cells objectAtIndex:4]).colspan == 2,@"expected %d",2);
-	Screen *screen1 = (Screen *)[screens objectAtIndex:0];
-	NSString *ids = [[screen1 pollingComponentsIds] componentsJoinedByString:@","];
-	STAssertTrue([@"59,60,61,62" isEqualToString:ids],@"expected 59,60,61,62, but %@",ids);
-	
-	[xmlParser release];
-	[xml release];
-	[cells release];
-	NSLog(@"End testParsePanelGridMonitorXML");
-}
-
-// panel_absolute_monitor.xml test
-- (void) testParsePanelAbsoluteMonitorXML {
-	NSLog(@"Begin testParsePanelAbsoluteMonitorXML ");
-	[[Definition sharedDefinition] clearPanelXMLData];	
-	NSData *xml = [self readFile:@"panel_absolute_monitor.xml"];
-	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
-	NSMutableArray *groups = [[Definition sharedDefinition] groups];
-	NSMutableArray *screens = [[Definition sharedDefinition] screens];
-	int monitor_index = 0;
-	for (Group *group in groups) {
-		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
-		for (Screen *screen in group.screens) {			
-			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
-			for (LayoutContainer *layout in screen.layouts) {
-				if([layout isKindOfClass:[AbsoluteLayoutContainer class]]){					
-					NSLog(@"layout is absolute ");
-					AbsoluteLayoutContainer *abso =(AbsoluteLayoutContainer *)layout;
-					NSString *layoutAttrs = [[NSMutableString alloc] initWithFormat:@"%d %d %d %d",abso.left,abso.top,abso.width,abso.height];
-					NSString *expectedAttrs = @"20 320 100 100";
-					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
-					[layoutAttrs release];
-					
-					if ([abso.control isKindOfClass:[Monitor class]]) {
-						Monitor *theMonitor = (Monitor *)abso.control;
-						int expectedId = (59 + monitor_index++);
-						STAssertTrue(expectedId == theMonitor.controlId,@"expected %d, but %d",expectedId,theMonitor.controlId);
-					}					
-				}				
-			}
-		}
-	}
-	
-	NSLog(@"groups count = %d",[groups count]);
-	NSLog(@"screens count = %d",[screens count]);
-	NSLog(@"xml parse done");
-	
-	NSMutableArray *screenNames = [NSMutableArray arrayWithObjects:@"basement",@"floor",nil];
-	NSMutableArray *groupNames = [NSMutableArray arrayWithObjects:@"All rooms",@"living room",nil];
-	
-	//check screens
-	for (int i=0;i<screenNames.count;i++) {
-		STAssertTrue([[screenNames objectAtIndex:i] isEqualToString:[[screens objectAtIndex:i] name]],@"expected %@, but %@",[screenNames objectAtIndex:i],[[screens objectAtIndex:i] name]);
-		STAssertTrue(i+5 == [[screens objectAtIndex:i] screenId],@"expected %d, but %d",i+5,[[screens objectAtIndex:i] screenId]);
-	}
-	
-	//check groups
-	for (int i=0;i<groupNames.count;i++) {
-		STAssertTrue([[groupNames objectAtIndex:i] isEqualToString:[[groups objectAtIndex:i] name]],@"expected %@, but %@",[groupNames objectAtIndex:i],[[groups objectAtIndex:i] name]);
-		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
-	}
-	Screen *screen1 = (Screen *)[screens objectAtIndex:0];
-	NSString *ids = [[screen1 pollingComponentsIds] componentsJoinedByString:@","];
-	STAssertTrue([@"59,60" isEqualToString:ids],@"expected 59,60 but %@",ids);
-	
-	[xmlParser release];
-	[xml release];
-	NSLog(@"End testParsePanelAbsoluteMonitorXML ");
-}
 
 // panel_grid_slider.xml test
 - (void) testParsePanelGridSliderXML {
@@ -493,10 +355,10 @@
 					
 					for (GridCell *cell in grid.cells) {			
 						[cells addObject:cell];
-						if ([cell.control isKindOfClass:[Slider class]]) {
-							Slider *theSlider = (Slider *)cell.control;
+						if ([cell.component isKindOfClass:[Slider class]]) {
+							Slider *theSlider = (Slider *)cell.component;
 							int expectedId = (59 + slider_index++);
-							STAssertTrue(expectedId == theSlider.controlId,@"expected %d, but %d",expectedId,theSlider.controlId);
+							STAssertTrue(expectedId == theSlider.componentId,@"expected %d, but %d",expectedId,theSlider.componentId);
 							float maxValue = 100.0f;						
 							STAssertTrue(theSlider.maxValue == maxValue,@"expected %f, but %f", maxValue, theSlider.maxValue);
 							float minValue = 0.0f;
@@ -569,10 +431,10 @@
 					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
 					[layoutAttrs release];
 					
-					if ([abso.control isKindOfClass:[Switch class]]) {
-						Slider *theSlider = (Slider *)abso.control;
+					if ([abso.component isKindOfClass:[Switch class]]) {
+						Slider *theSlider = (Slider *)abso.component;
 						int expectedId = (59 + slider_index++);
-						STAssertTrue(expectedId == theSlider.controlId,@"expected %d, but %d",expectedId,theSlider.controlId);
+						STAssertTrue(expectedId == theSlider.componentId,@"expected %d, but %d",expectedId,theSlider.componentId);
 						float maxValue = 100.0f;						
 						STAssertTrue(theSlider.maxValue == maxValue,@"expected %f, but %f", maxValue, theSlider.maxValue);
 						float minValue = 0.0f;
@@ -639,10 +501,10 @@
 					
 					for (GridCell *cell in grid.cells) {			
 						[cells addObject:cell];
-						if ([cell.control isKindOfClass:[Label class]]) {
-							Label *theLabel = (Label *)cell.control;
+						if ([cell.component isKindOfClass:[Label class]]) {
+							Label *theLabel = (Label *)cell.component;
 							int expectedId = (59 + label_index++);
-							STAssertTrue(expectedId == theLabel.controlId,@"expected %d, but %d",expectedId,theLabel.controlId);
+							STAssertTrue(expectedId == theLabel.componentId,@"expected %d, but %d",expectedId,theLabel.componentId);
 							NSString *labelValue = [[NSString alloc] initWithFormat:@"%c", (char)65 + state_index++];					
 							STAssertTrue([theLabel.value isEqualToString:labelValue],@"expected %@, but %@", labelValue, theLabel.value);
 						}	
@@ -711,10 +573,10 @@
 					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
 					[layoutAttrs release];
 					
-					if ([abso.control isKindOfClass:[Label class]]) {
-						Label *theLabel= (Label *)abso.control;
+					if ([abso.component isKindOfClass:[Label class]]) {
+						Label *theLabel= (Label *)abso.component;
 						int expectedId = (59 + label_index++);
-						STAssertTrue(expectedId == theLabel.controlId,@"expected %d, but %d",expectedId,theLabel.controlId);
+						STAssertTrue(expectedId == theLabel.componentId,@"expected %d, but %d",expectedId,theLabel.componentId);
 						NSString *labelValue = [[NSString alloc] initWithFormat:@"%c", (char)65 + state_index++];
 						STAssertTrue([theLabel.value isEqualToString:labelValue],@"expected %@, but %@", labelValue, theLabel.value);
 					}					
@@ -776,10 +638,10 @@
 					
 					for (GridCell *cell in grid.cells) {			
 						[cells addObject:cell];
-						if ([cell.control isKindOfClass:[Image class]]) {
-							Image *theImage = (Image *)cell.control;
+						if ([cell.component isKindOfClass:[Image class]]) {
+							Image *theImage = (Image *)cell.component;
 							int expectedId = (59 + image_index++);
-							STAssertTrue(expectedId == theImage.controlId,@"expected %d, but %d",expectedId,theImage.controlId);
+							STAssertTrue(expectedId == theImage.componentId,@"expected %d, but %d",expectedId,theImage.componentId);
 							NSString *imageSrc = [[NSString alloc] initWithFormat:@"%c.png", (char)97 + state_index++];					
 							STAssertTrue([theImage.src isEqualToString:imageSrc],@"expected %@, but %@", imageSrc, theImage.src);
 						}	
@@ -847,10 +709,10 @@
 					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
 					[layoutAttrs release];
 					
-					if ([abso.control isKindOfClass:[Image class]]) {
-						Image *theImage= (Image *)abso.control;
+					if ([abso.component isKindOfClass:[Image class]]) {
+						Image *theImage= (Image *)abso.component;
 						int expectedId = (59 + image_index++);
-						STAssertTrue(expectedId == theImage.controlId,@"expected %d, but %d",expectedId,theImage.controlId);
+						STAssertTrue(expectedId == theImage.componentId,@"expected %d, but %d",expectedId,theImage.componentId);
 						NSString *imageSrc = [[NSString alloc] initWithFormat:@"%c.png", (char)97 + state_index++];
 						STAssertTrue([theImage.src isEqualToString:imageSrc],@"expected %@, but %@", theImage.src, imageSrc);
 					}					
@@ -939,10 +801,10 @@
 					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
 					[layoutAttrs release];
 					
-					if ([abso.control isKindOfClass:[Image class]]) {
-						Image *theImage= (Image *)abso.control;
+					if ([abso.component isKindOfClass:[Image class]]) {
+						Image *theImage= (Image *)abso.component;
 						int expectedId = (59 + image_index++);
-						STAssertTrue(expectedId == theImage.controlId,@"expected %d, but %d",expectedId,theImage.controlId);
+						STAssertTrue(expectedId == theImage.componentId,@"expected %d, but %d",expectedId,theImage.componentId);
 						NSString *imageSrc = [[NSString alloc] initWithFormat:@"%c.png", (char)97 + state_index++];
 						STAssertTrue([theImage.src isEqualToString:imageSrc],@"expected %@, but %@", theImage.src, imageSrc);
 					}					
@@ -1032,10 +894,10 @@
 					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
 					[layoutAttrs release];
 					
-					if ([abso.control isKindOfClass:[Image class]]) {
-						Image *theImage= (Image *)abso.control;
+					if ([abso.component isKindOfClass:[Image class]]) {
+						Image *theImage= (Image *)abso.component;
 						int expectedId = (59 + image_index++);
-						STAssertTrue(expectedId == theImage.controlId,@"expected %d, but %d",expectedId,theImage.controlId);
+						STAssertTrue(expectedId == theImage.componentId,@"expected %d, but %d",expectedId,theImage.componentId);
 						NSString *imageSrc = [[NSString alloc] initWithFormat:@"%c.png", (char)97 + state_index++];
 						STAssertTrue([theImage.src isEqualToString:imageSrc],@"expected %@, but %@", theImage.src, imageSrc);
 					}					
@@ -1066,76 +928,6 @@
 	[xmlParser release];
 	[xml release];
 	NSLog(@"End testParsePanelRelativeScreenBackgroundimageXML");
-}
-
-// panel_absolute_toggle.xml test
-- (void) testParsePanelAbsoluteToggleXML {
-
-	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_absolute_toggle.xml"];
-	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
-	NSMutableArray *groups = [[Definition sharedDefinition] groups];
-	NSMutableArray *screens = [[Definition sharedDefinition] screens];
-	int state_index = 0;
-	int toggle_index = 0;
-	for (Group *group in groups) {
-		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
-		for (Screen *screen in group.screens) {			
-			NSLog(@"screen %@ has %d layout", screen.name, screen.layouts.count);
-			for (LayoutContainer *layout in screen.layouts) {
-				if([layout isKindOfClass:[AbsoluteLayoutContainer class]]){					
-					NSLog(@"layout is absolute ");
-					AbsoluteLayoutContainer *abso =(AbsoluteLayoutContainer *)layout;
-					NSString *layoutAttrs = [[NSMutableString alloc] initWithFormat:@"%d %d %d %d",abso.left,abso.top,abso.width,abso.height];
-					NSString *expectedAttrs = @"20 320 100 100";
-					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
-					[layoutAttrs release];
-					if ([abso.control isKindOfClass:[Toggle class]]) {
-						Toggle *toggle = (Toggle *)abso.control;
-						int expectedId = (59 + toggle_index++);
-						STAssertTrue(expectedId == toggle.controlId,@"expected %d, but %d",expectedId,toggle.controlId);
-						NSLog(@"toggle has %d states", toggle.states.count);
-						for (ToggleState *st in toggle.states) {							
-							//NSLog(@"command ref = %d" ,st.commandId);
-							NSString *expectedName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + state_index++];
-							NSLog(@"expected state name = %@", expectedName);
-							STAssertTrue([st.image.src isEqualToString:expectedName],@"expected %@, but %@",expectedName,st.image.src);
-							[expectedName release];
-						}
-					}					
-				}				
-			}
-		}
-	}
-	
-	NSLog(@"groups count = %d",[groups count]);
-	NSLog(@"screens count = %d",[screens count]);
-	NSLog(@"xml parse done");
-	
-	NSMutableArray *screenNames = [NSMutableArray arrayWithObjects:@"basement",@"floor",nil];
-	NSMutableArray *groupNames = [NSMutableArray arrayWithObjects:@"All rooms",@"living room",nil];
-	
-	//check screens
-	for (int i=0;i<screenNames.count;i++) {
-		STAssertTrue([[screenNames objectAtIndex:i] isEqualToString:[[screens objectAtIndex:i] name]],@"expected %@, but %@",[screenNames objectAtIndex:i],[[screens objectAtIndex:i] name]);
-		STAssertTrue(i+5 == [[screens objectAtIndex:i] screenId],@"expected %d, but %d",i+5,[[screens objectAtIndex:i] screenId]);
-	}
-	
-	//check groups
-	for (int i=0;i<groupNames.count;i++) {
-		STAssertTrue([[groupNames objectAtIndex:i] isEqualToString:[[groups objectAtIndex:i] name]],@"expected %@, but %@",[groupNames objectAtIndex:i],[[groups objectAtIndex:i] name]);
-		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
-	}
-	
-	Screen *screen1 = (Screen *)[screens objectAtIndex:0];
-	NSString *ids = [[screen1 pollingComponentsIds] componentsJoinedByString:@","];
-	STAssertTrue([@"59,60" isEqualToString:ids],@"expected '59,60', but %@",ids);
-	
-	[xmlParser release];
-	[xml release];
 }
 
 // panel_absolute_slider_gesture.xml test
@@ -1190,10 +982,10 @@
 					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
 					[layoutAttrs release];
 					
-					if ([abso.control isKindOfClass:[Switch class]]) {
-						Slider *theSlider = (Slider *)abso.control;
+					if ([abso.component isKindOfClass:[Switch class]]) {
+						Slider *theSlider = (Slider *)abso.component;
 						int expectedId = (59 + slider_index++);
-						STAssertTrue(expectedId == theSlider.controlId,@"expected %d, but %d",expectedId,theSlider.controlId);
+						STAssertTrue(expectedId == theSlider.componentId,@"expected %d, but %d",expectedId,theSlider.componentId);
 						float maxValue = 100.0f;						
 						STAssertTrue(theSlider.maxValue == maxValue,@"expected %f, but %f", maxValue, theSlider.maxValue);
 						float minValue = 0.0f;
@@ -1337,10 +1129,10 @@
 					
 					for (GridCell *cell in grid.cells) {			
 						[cells addObject:cell];
-						if ([cell.control isKindOfClass:[Image class]]) {
-							Image *theImage = (Image *)cell.control;
+						if ([cell.component isKindOfClass:[Image class]]) {
+							Image *theImage = (Image *)cell.component;
 							int expectedId = (59 + image_index++);
-							STAssertTrue(expectedId == theImage.controlId,@"expected %d, but %d",expectedId,theImage.controlId);
+							STAssertTrue(expectedId == theImage.componentId,@"expected %d, but %d",expectedId,theImage.componentId);
 							NSString *imageSrc = [[NSString alloc] initWithFormat:@"%c.png", (char)97 + state_index++];					
 							STAssertTrue([theImage.src isEqualToString:imageSrc],@"expected %@, but %@", imageSrc, theImage.src);
 						}	
@@ -1481,10 +1273,10 @@
 					
 					for (GridCell *cell in grid.cells) {			
 						[cells addObject:cell];
-						if ([cell.control isKindOfClass:[Image class]]) {
-							Image *theImage = (Image *)cell.control;
+						if ([cell.component isKindOfClass:[Image class]]) {
+							Image *theImage = (Image *)cell.component;
 							int expectedId = (59 + image_index++);
-							STAssertTrue(expectedId == theImage.controlId,@"expected %d, but %d",expectedId,theImage.controlId);
+							STAssertTrue(expectedId == theImage.componentId,@"expected %d, but %d",expectedId,theImage.componentId);
 							NSString *imageSrc = [[NSString alloc] initWithFormat:@"%c.png", (char)97 + state_index++];					
 							STAssertTrue([theImage.src isEqualToString:imageSrc],@"expected %@, but %@", imageSrc, theImage.src);
 						}	

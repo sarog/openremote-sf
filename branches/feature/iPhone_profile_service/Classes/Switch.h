@@ -20,10 +20,10 @@
  */
 
 
-#import "Control.h"
+#import "SensorComponent.h"
 #import "Image.h"
 
-@interface Switch : Control {
+@interface Switch : SensorComponent {
 
 	Image *onImage;
 	Image *offImage;

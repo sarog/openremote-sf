@@ -21,48 +21,28 @@
 
 
 #import "Control.h"
-#import "Toggle.h"
 #import "Button.h"
 #import "Switch.h"
-#import "Monitor.h"
 #import "Slider.h"
-#import "Label.h"
-#import "Image.h"
+
 
 @implementation Control
 
-@synthesize controlId;
+
 
 + (id)buildWithXMLParser:(NSString *) controlType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	Control *newControl;
-	if ([controlType isEqualToString:@"toggle"]) {
-		newControl = [Toggle alloc]; 
-	} else if ([controlType isEqualToString:@"button"]) {
+	if ([controlType isEqualToString:@"button"]) {
 		newControl = [Button alloc];
 	} else if ([controlType isEqualToString:@"switch"]) {
 		newControl = [Switch alloc];
-	} else if ([controlType isEqualToString:@"monitor"]) {
-		newControl = [Monitor alloc];
 	} else if ([controlType isEqualToString:@"slider"]) {
 		newControl = [Slider alloc];
-	} else if ([controlType isEqualToString:@"label"]) {
-		newControl = [Label alloc];
-	} else if ([controlType isEqualToString:@"image"]) {
-		newControl = [Image alloc];
 	} else {
 		return nil;
 	}
 
 	return [newControl initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
-}
-
-/* Whether this control has status to do polling.
- * Returns YES if it has.
- * NOTE: This is an abstract method, must be implemented in subclass
- */
-- (BOOL)hasPollingStatus {
-	[self doesNotRecognizeSelector:_cmd];
-	return NO;
 }
 	
 	

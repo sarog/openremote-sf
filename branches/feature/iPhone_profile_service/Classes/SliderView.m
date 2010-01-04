@@ -38,8 +38,8 @@
 // This method is abstract method of direct superclass ControlView's.
 // So, this method must be overridden in subclass.
 - (void)setPollingStatus:(NSNotification *)notification {
-	PollingStatusParserDelegate *delegate = (PollingStatusParserDelegate *)[notification object];
-	float newStatus = [[delegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",control.controlId]] floatValue];
+	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
+	float newStatus = [[pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",component.componentId]] floatValue];
 	slider.value = newStatus;
 	currentValue = (int)newStatus;
 }
@@ -48,7 +48,7 @@
 - (void)layoutSubviews {
 	NSLog(@"layoutSubviews of SliderView.");
 	[self initSlider];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,control.controlId] object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,component.componentId] object:nil];
 	
 }
 
@@ -60,7 +60,7 @@
 		[slider release];
 	}
 	slider = [[UISlider alloc] initWithFrame:[self bounds]];
-	Slider *theSlider = (Slider *)control;
+	Slider *theSlider = (Slider *)component;
 	slider.minimumValue = theSlider.minValue;
 	slider.maximumValue = theSlider.maxValue;
 	//slider.continuous = NO;
