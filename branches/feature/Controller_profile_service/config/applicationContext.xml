@@ -53,7 +53,7 @@
     <bean id="statusCommandService" class="org.openremote.controller.service.impl.StatusCommandServiceImpl" />
     
     <!-- service for listenning the status of control -->
-    <bean id="controlStatusPollingService" class="org.openremote.controller.service.impl.ControlStatusPollingServiceImpl" />
+    <bean id="statusPollingService" class="org.openremote.controller.service.impl.StatusPollingServiceImpl" />
     
     <!-- service for control command from iPhone -->
     <bean id="controlCommandService" class="org.openremote.controller.service.impl.ControlCommandServiceImpl" />
@@ -124,13 +124,12 @@
   <bean id = "testCommandBuilder" class = "org.openremote.controller.protocol.test.TestCommandBuilder"
         scope = "prototype" />
         
-  <bean id = "controlFactory" class = "org.openremote.controller.control.ControlFactory">
-		<property name = "controlBuilders">
+  <bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
+		<property name = "componentBuilders">
 		    <props>
 		        <prop key = "button">buttonBuilder</prop>
 		        <prop key = "toggle">toggleBuilder</prop>
 		        <prop key = "switch">switchBuilder</prop>
-		        <prop key = "monitor">monitorBuilder</prop>
 		        <prop key = "label">labelBuilder</prop>
 		        <prop key = "slider">sliderBuilder</prop>
 		        <prop key = "gesture">gestureBuilder</prop>
@@ -147,11 +146,8 @@
   <!-- Switch Builder -->
   <bean id = "switchBuilder" class = "org.openremote.controller.control.switchtoggle.SwitchBuilder"/>
   
-  <!-- Monitor Builder -->
-  <bean id= "monitorBuilder" class="org.openremote.controller.control.monitor.MonitorBuilder" />
-  
   <!-- Label Builder -->
-  <bean id= "labelBuilder" class="org.openremote.controller.control.label.LabelBuilder" />
+  <bean id= "labelBuilder" class="org.openremote.controller.component.onlysensorycomponent.LabelBuilder" />
   
   <!-- Slider Builder -->
   <bean id= "sliderBuilder" class="org.openremote.controller.control.slider.SliderBuilder" />

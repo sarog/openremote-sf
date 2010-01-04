@@ -17,24 +17,55 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.service;
+package org.openremote.controller.component;
+
+import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.control.Status;
 
 /**
- * The service for status Command from remote.
+ * Super class of all components
  * 
- * @author Handy.Wang 2009-10-15
+ * @author Handy.Wang 2009-12-31
  */
-public interface StatusCommandService {
+public abstract class Component {
+   
+   /** The status. */
+   private Status status;
    
    /**
-    * Trigger command .
+    * Instantiates a new Component.
+    */
+   public Component() {
+       super();
+       status = new Status();
+   }
+   
+   
+   /**
+    * Gets the status command.
     * 
+    * @return the status command
     */
-   String trigger(String unParsedSensorIDs);
-   
+   public StatusCommand getStatusCommand() {
+       return status.getStatusCommand();
+   }
+
    /**
-    * Read statuses of sensor ids from statuscache. 
+    * Gets the status.
+    * 
+    * @return the status
     */
-   String readFromCache(String unParsedSensorIDs);
+   public Status getStatus() {
+       return status;
+   }
+
+   /**
+    * Sets the status.
+    * 
+    * @param status the new status
+    */
+   public void setStatus(Status status) {
+       this.status = status;
+   }
 
 }

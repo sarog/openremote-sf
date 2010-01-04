@@ -35,6 +35,8 @@ import org.junit.Test;
 import org.openremote.controller.Constants;
 import org.openremote.controller.TestConstraint;
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.component.control.slider.Slider;
+import org.openremote.controller.component.control.slider.SliderBuilder;
 import org.openremote.controller.exception.InvalidElementException;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.utils.SpringTestContext;

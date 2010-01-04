@@ -63,6 +63,7 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
          simulateStatusCacheControlID1003();
          simulateStatusCacheControlID1005();
          simulateStatusCacheControlID1008();
+         simulateStatusCacheControlID1009();
       } catch (Exception e) {
          e.printStackTrace();
       }
@@ -77,6 +78,8 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
       statusCacheService.saveOrUpdateStatus(1003, "OFF");
       statusCacheService.saveOrUpdateStatus(1004, "OFF");
       statusCacheService.saveOrUpdateStatus(1005, "url");
+      statusCacheService.saveOrUpdateStatus(1008, "50.0");
+      statusCacheService.saveOrUpdateStatus(1009, "close");
    }
    
    /**
@@ -188,6 +191,27 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
          }
       };
       simulateThread.start();
+   }
+   
+   /**
+    * Switch door(open/close) simulation.
+    */
+   private void simulateStatusCacheControlID1009() {
+      Thread thread = new Thread() {
+         @Override
+         public void run() {
+            int i = 0;
+            for (;; i++) {
+               if (i % 2 == 0) {
+                  statusCacheService.saveOrUpdateStatus(1009, "close");
+               } else {
+                  statusCacheService.saveOrUpdateStatus(1009, "open");
+               }
+               nap(10000);
+            }
+         }
+      };
+      thread.start();
    }
    
    /* (non-Javadoc)

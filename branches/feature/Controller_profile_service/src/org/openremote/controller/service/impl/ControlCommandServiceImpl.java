@@ -25,8 +25,8 @@ import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.RemoteActionXMLParser;
-import org.openremote.controller.control.Control;
-import org.openremote.controller.control.ControlFactory;
+import org.openremote.controller.component.ComponentFactory;
+import org.openremote.controller.component.control.Control;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.ControlCommandService;
 import org.openremote.controller.service.StatusCacheService;
@@ -37,14 +37,13 @@ import org.openremote.controller.utils.MacrosIrDelayUtil;
  * The implementation for ControlCommandService class.
  * 
  * @author Handy.Wang
- * @param <T>
  */
 public class ControlCommandServiceImpl implements ControlCommandService {
 
    /** The remote action xml parser. */
    private RemoteActionXMLParser remoteActionXMLParser;
    
-   private ControlFactory controlFactory;
+   private ComponentFactory componentFactory;
    
    private StatusCacheService statusCacheService;
    
@@ -58,7 +57,7 @@ public class ControlCommandServiceImpl implements ControlCommandService {
       if (controlElement == null) {
          throw new NoSuchComponentException("No such component id :" + controlID);
       }
-      Control control = controlFactory.getControl(controlElement, commandParam);
+      Control control = componentFactory.getControl(controlElement, commandParam);
       List<ExecutableCommand> executableCommands = control.getExecutableCommands();
       MacrosIrDelayUtil.ensureDelayForIrCommand(executableCommands);
       for (ExecutableCommand executableCommand : executableCommands) {
@@ -78,13 +77,8 @@ public class ControlCommandServiceImpl implements ControlCommandService {
       this.remoteActionXMLParser = remoteActionXMLParser;
    }
 
-   /**
-    * Sets the control factory.
-    * 
-    * @param controlFactory the new control factory
-    */
-   public void setControlFactory(ControlFactory controlFactory) {
-      this.controlFactory = controlFactory;
+   public void setComponentFactory(ComponentFactory componentFactory) {
+      this.componentFactory = componentFactory;
    }
 
    public void setStatusCacheService(StatusCacheService statusCacheService) {

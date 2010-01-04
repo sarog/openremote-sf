@@ -28,6 +28,8 @@ import org.jdom.JDOMException;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.TestConstraint;
+import org.openremote.controller.component.control.gesture.Gesture;
+import org.openremote.controller.component.control.gesture.GestureBuilder;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.utils.SpringTestContext;
 import org.openremote.controller.utils.XMLUtil;

@@ -43,10 +43,10 @@ public class StatusCache {
 
    private ChangedStatusTable changedStatusTable;
 
-   private Map<Integer, String> controlStatus = null;
+   private Map<Integer, String> sensorStatus = null;
 
    public StatusCache() {
-      controlStatus = new HashMap<Integer, String>();
+      sensorStatus = new HashMap<Integer, String>();
    }
 
    public StatusCache(ChangedStatusTable changedStatusTable) {
@@ -60,13 +60,13 @@ public class StatusCache {
     * @param status
     */
    public synchronized void saveOrUpdateStatus(Integer componentID, String status) {
-      String oldStatus = controlStatus.get(componentID);
+      String oldStatus = sensorStatus.get(componentID);
       if (status == null || "".equals(status)) {
          throw new NullPointerException("The current status was null.");
       }
       
       boolean needNotify = false;
-      controlStatus.put(componentID, status);
+      sensorStatus.put(componentID, status);
       if (oldStatus== null || "".equals(oldStatus) || !oldStatus.equals(status)) {
          needNotify = true;
       }
@@ -78,29 +78,29 @@ public class StatusCache {
    
    /**
     * This method is used to query the status whose component id in componentIDs. 
-    * @param componentIDs
+    * @param sensorIDs
     * @return null if componentIDS is null.
     * @throws NoSuchComponentException when the component id is not cached. 
     */
-   public Map<Integer, String> queryStatuses(Set<Integer> componentIDs) {
-      if (componentIDs == null || componentIDs.size() == 0) {
+   public Map<Integer, String> queryStatuses(Set<Integer> sensorIDs) {
+      if (sensorIDs == null || sensorIDs.size() == 0) {
          return null;
       }
       Map<Integer, String> statuses = new HashMap<Integer, String>();
-      for (Integer controlId : componentIDs) {
-         if (this.controlStatus.get(controlId) == null || "".equals(this.controlStatus.get(controlId))) {
-            throw new NoSuchComponentException("No such component in status cache : " + controlId);
+      for (Integer sensorId : sensorIDs) {
+         if (this.sensorStatus.get(sensorId) == null || "".equals(this.sensorStatus.get(sensorId))) {
+            throw new NoSuchComponentException("No such component in status cache : " + sensorId);
          } else {
-            statuses.put(controlId, this.controlStatus.get(controlId));
+            statuses.put(sensorId, this.sensorStatus.get(sensorId));
          }
       }
       return statuses;
    }
    
-   public String queryStatusByComponentlId(Integer componentId) {
-      String result = this.controlStatus.get(componentId);
+   public String queryStatusBySensorlId(Integer sensorId) {
+      String result = this.sensorStatus.get(sensorId);
       if (result == null) {
-         throw new NoSuchComponentException("no such a component whose id is :"+componentId);
+         throw new NoSuchComponentException("no such a component whose id is :"+sensorId);
       }
       return result;
    }
