@@ -21,10 +21,9 @@ package org.openremote.controller.component;
 import org.jdom.Element;
 import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.command.RemoteActionXMLParser;
-import org.openremote.controller.component.control.Control;
 
 /**
- * The Class ControlBuilder.
+ * The Class ComponentBuilder.
  * 
  * @author Handy.Wang 2009-10-15
  */
@@ -37,14 +36,14 @@ public abstract class ComponentBuilder {
     protected CommandFactory commandFactory;
     
     /**
-     * Builds the control.
+     * Builds the component.
      * 
-     * @param controlElement the control element
+     * @param componentElement the component element
      * @param commandParam the command param
      * 
-     * @return the control
+     * @return the component
      */
-    public abstract Control build(Element controlElement, String commandParam);
+    public abstract Component build(Element componentElement, String commandParam);
 
     /**
      * Sets the remote action xml parser.

@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package org.openremote.controller.component.onlysensorycomponent;
 
 /* OpenRemote, the Home of the Digital Home.

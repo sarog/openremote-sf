@@ -26,6 +26,7 @@ import org.jdom.Element;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.component.ComponentFactory;
+import org.openremote.controller.component.Sensory;
 import org.openremote.controller.component.control.Control;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.ControlCommandService;
@@ -53,19 +54,27 @@ public class ControlCommandServiceImpl implements ControlCommandService {
     * {@inheritDoc}
     */
    public void trigger(String controlID, String commandParam) {
-      Element controlElement = remoteActionXMLParser.queryElementFromXMLById(controlID);
-      if (controlElement == null) {
-         throw new NoSuchComponentException("No such component id :" + controlID);
-      }
-      Control control = componentFactory.getControl(controlElement, commandParam);
+      
+      Control control = getControl(controlID, commandParam);
       List<ExecutableCommand> executableCommands = control.getExecutableCommands();
       MacrosIrDelayUtil.ensureDelayForIrCommand(executableCommands);
       for (ExecutableCommand executableCommand : executableCommands) {
          executableCommand.send();
       }
-      logger.info("Begin updating statuscache after sending command to device.");
-      statusCacheService.saveOrUpdateStatus(Integer.parseInt(controlID), commandParam.toUpperCase());
-      logger.info("Finish updating statuscache after sending command to device.");
+      if (control instanceof Sensory) {
+         logger.info("Begin updating statuscache after sending command to device.");
+         int sensorID = ((Sensory)control).fetchSensorID();
+         statusCacheService.saveOrUpdateStatus(sensorID, commandParam.toUpperCase());
+         logger.info("Finish updating statuscache after sending command to device.");
+      }
+   }
+   
+   private Control getControl(String controlID, String commandParam) {
+      Element controlElement = remoteActionXMLParser.queryElementFromXMLById(controlID);
+      if (controlElement == null) {
+         throw new NoSuchComponentException("No such component id :" + controlID);
+      }
+      return (Control) componentFactory.getComponent(controlElement, commandParam);
    }
    
    /**
