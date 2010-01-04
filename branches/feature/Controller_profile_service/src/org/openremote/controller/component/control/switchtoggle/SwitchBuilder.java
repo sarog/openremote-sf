@@ -25,6 +25,7 @@ import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.ComponentBuilder;
+import org.openremote.controller.component.Sensor;
 import org.openremote.controller.component.control.Control;
 
 /**
@@ -39,45 +40,29 @@ public class SwitchBuilder extends ComponentBuilder {
     */
    @SuppressWarnings("unchecked")
    @Override
-   public Control build(Element controlElement, String commandParam) {
+   public Control build(Element componentElement, String commandParam) {
       Switch switchToggle = new Switch();
       if (!switchToggle.isValidActionWith(commandParam)) {
          return switchToggle;
       }
-      List<Element> operationElements = controlElement.getChildren();
-      for (Element childElementOfControl : operationElements) {
-         if (isIncludedSensorElement(childElementOfControl, commandParam)) {
-            //TODO: Parse status command with sensor element, because the following commented codes aren't useful for sensor-controller.xml any more.
-//            Element statusCommandRefElement = (Element) childElementOfControl.getChildren().get(0);
-//            String statusCommandID = statusCommandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-//            Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(controlElement.getDocument(),statusCommandID);
-//            if (statusCommandElement != null) {
-//               StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
-//               switchToggle.setStatus(new Status(statusCommand));
-//               break;
-//            } else {
-//               throw new NoSuchCommandException("Cannot find that command with id = " + statusCommandID);
-//            }
+      List<Element> operationElements = componentElement.getChildren();
+      for (Element operationElement : operationElements) {
+         if (isIncludedSensorElement(operationElement)) {
+            Sensor sensor = parseSensor(componentElement, operationElement);
+            switchToggle.setSensor(sensor);
          }
-         if (commandParam.equalsIgnoreCase(childElementOfControl.getName())) {
-            List<Element> commandRefElements = childElementOfControl.getChildren();
+         if (commandParam.equalsIgnoreCase(operationElement.getName())) {
+            List<Element> commandRefElements = operationElement.getChildren();
             for (Element commandRefElement : commandRefElements) {
-               String commandID = commandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-               Element commandElement = remoteActionXMLParser.queryElementFromXMLById(controlElement.getDocument(),commandID);
+               String commandID = commandRefElement.getAttributeValue(Control.REF_ATTRIBUTE_NAME);
+               Element commandElement = remoteActionXMLParser.queryElementFromXMLById(componentElement.getDocument(),commandID);
                Command command = commandFactory.getCommand(commandElement);
                switchToggle.addExecutableCommand((ExecutableCommand) command);
             }      
-            break;
+            continue;
          }
       }
       return switchToggle;
-   }
-   
-   private boolean isIncludedSensorElement(Element childElementOfControl, String commandParam) {
-      boolean isStatusCommandParam = commandParam.equalsIgnoreCase(Control.STATUS_ELEMENT_NAME);
-      boolean isIncludeChildElememntOfControl = Control.INCLUDE_ELEMENT_NAME.equalsIgnoreCase(childElementOfControl.getName());
-      boolean isIncludedSensor = Control.INCLUDE_TYPE_SENSOR.equals(childElementOfControl.getAttributeValue(Control.INCLUDE_TYPE_ATTRIBUTE_NAME));
-      return isStatusCommandParam && isIncludeChildElememntOfControl && isIncludedSensor;
    }
 
 }

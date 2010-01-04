@@ -38,7 +38,7 @@ public class Slider extends Control implements Sensory {
    public static final String[] AVAILABLE_ACTIONS = { "status" };
    
    /** The container element name of executable command refence of slider. */
-   public static final String EXE_CONTENT_ELEMENT_NAME = "exe";
+   public static final String EXECUTE_CONTENT_ELEMENT_NAME = "setvalue";
 
    public Slider() {
       super();

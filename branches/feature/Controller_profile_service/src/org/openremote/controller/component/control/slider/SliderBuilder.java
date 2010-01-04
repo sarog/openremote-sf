@@ -24,7 +24,9 @@ import java.util.List;
 import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.component.Component;
 import org.openremote.controller.component.ComponentBuilder;
+import org.openremote.controller.component.Sensor;
 import org.openremote.controller.component.control.Control;
 import org.openremote.controller.exception.InvalidElementException;
 
@@ -40,41 +42,34 @@ public class SliderBuilder extends ComponentBuilder {
     */
    @SuppressWarnings("unchecked")
    @Override
-   public Control build(Element controlElement, String commandParam) {
+   public Control build(Element componentElement, String commandParam) {
       Slider slider = new Slider();
       if (!slider.isValidActionWith(commandParam)) {
          return slider;
       }
-      List<Element> operationElements = controlElement.getChildren(); 
+      List<Element> operationElements = componentElement.getChildren(); 
       for (Element operationElement : operationElements) {
-         //TODO: the following commented codes are useless, because they aren't useful for sensor-controller.xml
-         /** Status Element */
-//         if (Control.INCLUDE_ELEMENT_NAME.equalsIgnoreCase(operationElement.getName()) && Control.STATUS_ELEMENT_NAME.equals(commandParam) && Control.INCLUDE_TYPE_SENSOR.equalsIgnoreCase(operationElement.getAttributeValue(Control.INCLUDE_TYPE_ATTRIBUTE_NAME))) {
-//            Element statusCommandRefElement = (Element) operationElement.getChildren().get(0);
-//            String statusCommandID = statusCommandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-//            Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(controlElement.getDocument(),statusCommandID);
-//            if (statusCommandElement != null) {
-//               StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
-//               slider.setStatus(new Status(statusCommand));
-//               break;
-//            } else {
-//               throw new NoSuchCommandException("Cannot find that command with id = " + statusCommandID);
-//            }
-//         }
+         /** sensor Element */
+         if (isIncludedSensorElement(operationElement)) {
+            Sensor sensor = parseSensor(componentElement, operationElement);
+            slider.setSensor(sensor);
+            continue;
+         }
          
-         /** Non-Status Element */
-         if (Slider.EXE_CONTENT_ELEMENT_NAME.equalsIgnoreCase(operationElement.getName())) {
+         /** non-sensor Element */
+         if (Slider.EXECUTE_CONTENT_ELEMENT_NAME.equalsIgnoreCase(operationElement.getName())) {
             Element commandRefElement = (Element) operationElement.getChildren().get(0);
-            String commandID = commandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-            Element commandElement = remoteActionXMLParser.queryElementFromXMLById(controlElement.getDocument(),commandID);
+            String commandID = commandRefElement.getAttributeValue(Component.REF_ATTRIBUTE_NAME);
+            Element commandElement = remoteActionXMLParser.queryElementFromXMLById(componentElement.getDocument(),commandID);
             commandElement.setAttribute("value", commandParam);
             Command command = commandFactory.getCommand(commandElement);
             slider.addExecutableCommand((ExecutableCommand) command);
-            break;
+            continue;
          } else {
             throw new InvalidElementException("Don't support element name \"" + operationElement.getName() + "\" in slider.");
          }
       }
       return slider;
    }
+   
 }
