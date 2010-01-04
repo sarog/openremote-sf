@@ -24,25 +24,19 @@
 
 @implementation Slider
 
-@synthesize minValue, maxValue;
+@synthesize minValue, maxValue, minImage, minTrackImage, maxImage, maxTrackImage;
 
 // This method is abstract method of indirectclass XMLEntity.
 // So, this method must be overridden in subclass.
 - (NSString *) elementName {
-	return @"slider";
-}
-
-// This method is abstract method of direct superclass Control.
-// So, this method must be overridden in subclass.
-- (BOOL)hasPollingStatus {
-	return YES;
+	return SLIDER;
 }
 
 #pragma mark Delegate methods of NSXMLParser  
 
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {
-		controlId = [[attributeDict objectForKey:@"id"] intValue];
+		componentId = [[attributeDict objectForKey:ID] intValue];
 		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];
 	}
@@ -53,13 +47,22 @@
  * Parse the slider min/max sub elements .
  */
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
+	Image *img = [[Image alloc] init];
+	img.src = [[attributeDict objectForKey:IMAGE] copy];
+	Image *trackImg = [[Image alloc] init];
+	trackImg.src = [[attributeDict objectForKey:TRACK_IMAGE] copy];
 	
-	if ([elementName isEqualToString:@"min"]) {
-		minValue = [[attributeDict objectForKey:@"value"] floatValue];
-	} else if ([elementName isEqualToString:@"max"]) {
-		maxValue = [[attributeDict objectForKey:@"value"] floatValue];
-	} else{
-	}
+	if ([elementName isEqualToString:MIN_VALUE]) {
+		minValue = [[attributeDict objectForKey:VALUE] floatValue];				
+		minImage = img;		
+		minTrackImage = trackImg;
+	} else if ([elementName isEqualToString:MAX_VALUE]) {
+		maxValue = [[attributeDict objectForKey:VALUE] floatValue];
+		maxImage = img;		
+		maxTrackImage = trackImg;
+	} 
+	
+	[super parser:parser didStartElement:elementName namespaceURI:namespaceURI qualifiedName:qualifiedName attributes:attributeDict];
 }
 
 - (void)dealloc {

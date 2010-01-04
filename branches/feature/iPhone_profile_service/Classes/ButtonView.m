@@ -63,7 +63,7 @@
 
 - (void) controlButtonUp:(id)sender {
 	[self cancelTimer];
-	Button *button = (Button *)control;
+	Button *button = (Button *)component;
 	if (button.navigate) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:button.navigate];
 	}
@@ -73,7 +73,7 @@
 	
 	[self cancelTimer];
 	
-	Button *button = (Button *)control;
+	Button *button = (Button *)component;
 	if (button.hasCommand == YES) {
 		[self sendCommand:nil];
 	 	if (button.repeat == YES ) {			
@@ -92,7 +92,7 @@
 - (void)layoutSubviews {	
 	[self createButton];
 	
-	Button *button = (Button *)control;
+	Button *button = (Button *)component;
 	if (button.image) {
 		uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.image.src]];
 		uiImagePressed = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.imagePressed.src]];	

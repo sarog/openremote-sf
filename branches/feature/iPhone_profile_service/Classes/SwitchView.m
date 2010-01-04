@@ -49,9 +49,12 @@
 	} 
 }
 
+#pragma mark PollingCallBackNotificationDelegate method 'setPollingStatus:'
+
 - (void)setPollingStatus:(NSNotification *)notification {
-	PollingStatusParserDelegate *delegate = (PollingStatusParserDelegate *)[notification object];
-	NSString *newStatus = [delegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",control.controlId]];
+	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
+	int sensorId = ((Switch *)component).sensor.sensorId;
+	NSString *newStatus = [pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",sensorId]];
 	if ([[newStatus uppercaseString] isEqualToString:@"ON"]) {
 		[self setOn:YES];
 	} else if ([[newStatus uppercaseString] isEqualToString:@"OFF"]) {
@@ -95,7 +98,7 @@
 	[button addTarget:self action:@selector(stateChanged:) forControlEvents:UIControlEventTouchUpInside];
 	
 	[self addSubview:button];
-	Switch *theSwitch = (Switch *)control;
+	Switch *theSwitch = (Switch *)component;
 	NSString *onImage = theSwitch.onImage.src;
 	NSString *offImage = theSwitch.offImage.src;
 	
@@ -107,10 +110,9 @@
 //Otherwise, UI widget inside will not work in nested UIViews
 - (void)layoutSubviews {
 	[self createButton];
-	Switch *theSwitch = (Switch *)control;
+	Switch *theSwitch = (Switch *)component;
 	NSString *onImage = theSwitch.onImage.src;
 	NSString *offImage = theSwitch.offImage.src;
-	
 	if (canUseImage) {		
 		onUIImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:onImage]];
 		offUIImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:offImage]];
@@ -131,7 +133,8 @@
 		button.titleLabel.shadowOffset = CGSizeMake(0, -2);
 	}
 	[self setOn:NO];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,control.controlId] object:nil];
+	int sensorId = ((Switch *)component).sensor.sensorId;
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,sensorId] object:nil];
 }
 
 

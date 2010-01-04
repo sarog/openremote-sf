@@ -47,7 +47,7 @@
 #pragma mark Private methods implementation
 
 -(void) initImage {
-	Image *imageModel = (Image *)control;
+	Image *imageModel = (Image *)component;
 	UIImage *uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:imageModel.src]];
 	UIImageView *uiImageView = [UIViewUtil clippedUIImageViewWith:uiImage dependingOnUIView:self uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
 	[uiImageView setContentMode:UIViewContentModeTopLeft];

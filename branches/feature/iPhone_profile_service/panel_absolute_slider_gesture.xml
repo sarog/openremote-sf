@@ -14,22 +14,25 @@
 			<gesture id="14" type = "swipe-right-to-left" hasControlCommand="true"/>	
 			<absolute left="20" top="320" width="100" height="100" >
 				<slider id="59">
-					<min value="0" />
-					<max value="100" />
+					<min value="0" image="mute.png" trackImage="red.png"/>
+					<max value="100" image="loud.png" trackImage="green.png"/>
+					<link type="sensor" ref="59" />
 				</slider>
 			</absolute>
 			<absolute left="20" top="320" width="100" height="100" >
 				<slider id="60">
-					<min value="0" />
-					<max value="100" />
+					<min value="0" image="mute.png" trackImage="red.png"/>
+					<max value="100" image="loud.png" trackImage="green.png"/>
+					<link type="sensor" ref="60" />
 				</slider>
 			</absolute>
 		</screen>
 	  <screen id="6" name="floor" background="basement.png">		  	
 			<absolute left="20" top="320" width="100" height="100" >
 				<slider id="61">
-					<min value="0" />
-					<max value="100" />
+					<min value="0" image="mute.png" trackImage="red.png"/>
+					<max value="100" image="loud.png" trackImage="green.png"/>
+					<link type="sensor" ref="61" />
 				</slider>
 			</absolute>
 			<gesture id="15" type = "swipe-top-to-bottom" hasControlCommand="true">

@@ -20,13 +20,14 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "Control.h"
+#import "Component.h"
+#import "Sensor.h"
 
-@interface Toggle : Control {
-
-	NSMutableArray *states;
+//This is a base class, means a component with sensor
+@interface SensorComponent : Component {
+	Sensor *sensor;
 }
 
-@property (nonatomic, readonly) NSMutableArray *states;
+@property(nonatomic,readonly)Sensor *sensor;
 
 @end

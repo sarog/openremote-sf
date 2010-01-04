@@ -20,10 +20,10 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "ControlView.h"
+#import "ComponentView.h"
 
 
-@interface ImageView : ControlView {
+@interface ImageView : ComponentView {
 
 }
 

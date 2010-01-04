@@ -19,15 +19,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-#import <UIKit/UIKit.h>
-#import "ControlView.h"
+#import <Foundation/Foundation.h>
+#import "XMLEntity.h"
 
+@interface Sensor : XMLEntity {
+	
+	int sensorId;
+	
+	NSMutableArray *states;
 
-@interface ToggleView : ControlView {
-
-	UISwitch *switchToggle;
 }
 
-@property (nonatomic,readonly)UISwitch *switchToggle;
+@property(nonatomic, readonly)int sensorId;
+@property(nonatomic, readonly)NSMutableArray *states;
 
 @end

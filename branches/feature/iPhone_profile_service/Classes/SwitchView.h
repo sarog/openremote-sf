@@ -24,9 +24,9 @@
 #import <UIKit/UIKit.h>
 #import "ControlView.h"
 #import "URLConnectionHelper.h"
+#import "ComponentView.h"
 
-
-@interface SwitchView : ControlView {
+@interface SwitchView : ControlView <PollingCallBackNotificationDelegate> {
 	UIButton *button;
 	BOOL isOn;
 	BOOL canUseImage;

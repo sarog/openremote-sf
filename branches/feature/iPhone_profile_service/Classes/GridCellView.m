@@ -24,13 +24,13 @@
 
 @implementation GridCellView
 
-@synthesize controlView, cell;
+@synthesize componentView, cell;
 
 - (id)initWithGridCell:(GridCell *)gridCell frame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
 			cell = gridCell;
 			//transparent background 
-			[self setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]]; 
+			[self setBackgroundColor:[UIColor clearColor]]; 
     }
     return self;
 }
@@ -38,13 +38,13 @@
 
 - (void)layoutSubviews {
 	
-	if (cell.control) {
+	if (cell.component) {
 		//NOTE:You should init all nested views with *initWithFrame* and you should pass in valid frame rects.
 		//Otherwise, UI widget inside will not work in nested UIViews
-		controlView = [ControlView buildWithControl:cell.control frame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
+		componentView = [ComponentView buildWithComponent:cell.component frame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
 	}
 	
-	[self addSubview:controlView];
+	[self addSubview:componentView];
 	
 	
 }

@@ -21,15 +21,15 @@
 
 #import <Foundation/Foundation.h>
 #import "LayoutContainer.h"
-#import "Control.h"
+#import "Component.h"
 
 
 @interface AbsoluteLayoutContainer : LayoutContainer {
 	
-	Control *control;
+	Component *component;
 
 }
 
-@property (nonatomic,readonly) Control *control;
+@property (nonatomic,readonly) Component *component;
 
 @end

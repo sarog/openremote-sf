@@ -38,8 +38,8 @@
 
 #if USE_APPLICATION_UNIT_TEST
 - (void) testAppDelegate;       // simple test on application
-#else
-- (void) testParsePanelAbsoluteToggleXML;              // panel_absolute_toggle.xml test
+#else 
+
 #endif
 
 @property (nonatomic, readonly) Definition *definition;

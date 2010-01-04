@@ -21,6 +21,7 @@
 
 #import "GridLayoutContainer.h"
 #import "GridCell.h"
+#import "SensorComponent.h"
 
 @implementation GridLayoutContainer
 
@@ -47,9 +48,13 @@
 - (NSArray *)pollingComponentsIds {
 	NSMutableArray *ids = [[NSMutableArray alloc] init];
 	for (GridCell *cell in cells) {
-		if ([cell.control hasPollingStatus]) {
-			[ids addObject:[NSString stringWithFormat:@"%d",cell.control.controlId]];
-		}
+		if ([cell.component isKindOfClass:SensorComponent.class]){
+			Sensor *sensor = ((SensorComponent *)cell.component).sensor;
+			if (sensor) {
+				[ids addObject:[NSString stringWithFormat:@"%d",sensor.sensorId]];
+			}
+			
+		} 
 	}
 	return ids;
 }

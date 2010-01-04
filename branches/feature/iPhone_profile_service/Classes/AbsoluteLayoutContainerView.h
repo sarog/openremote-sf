@@ -20,15 +20,15 @@
  */
 
 #import "LayoutContainerView.h"
-#import "ControlView.h"
+#import "ComponentView.h"
 
 
 @interface AbsoluteLayoutContainerView : LayoutContainerView {
 	
-	ControlView *controlView;
+	ComponentView *componentView;
 
 }
 
-@property (nonatomic, readonly)ControlView *controlView;
+@property (nonatomic, readonly)ComponentView *componentView;
 
 @end

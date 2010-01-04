@@ -22,6 +22,29 @@
 
 #import <Foundation/Foundation.h>
 
+extern NSString *const ID;
+extern NSString *const REF;
+
+extern NSString *const SWITCH;
+extern NSString *const ON;
+extern NSString *const OFF;
+
+extern NSString *const SENSOR;
+extern NSString *const LINK;
+extern NSString *const TYPE;
+
+extern NSString *const STATE;
+extern NSString *const NAME;
+extern NSString *const VALUE;
+
+extern NSString *const SLIDER;
+extern NSString *const MIN_VALUE;
+extern NSString *const MAX_VALUE;
+extern NSString *const IMAGE;
+extern NSString *const TRACK_IMAGE;
+
+extern NSString *const SRC;
+
 /* This is an abstract class for all entities (element) in panel.xml.
  * Objective-C doesn't have the abstract compiler construct like Java at 
  * this time.

@@ -24,7 +24,7 @@
 
 @implementation GridCell
 
-@synthesize x,y,rowspan,colspan,control;
+@synthesize x,y,rowspan,colspan,component;
 
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {		
@@ -49,7 +49,7 @@
 // parse all kinds of controls
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
 	
-	control = [Control buildWithXMLParser:elementName parser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+	component = [Component buildWithXMLParser:elementName parser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 	
 }
 
@@ -60,7 +60,7 @@
 }
 
 - (void)dealloc {
-	[control release];
+	[component release];
 	[super dealloc];
 }
 

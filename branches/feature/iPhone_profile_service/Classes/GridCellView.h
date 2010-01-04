@@ -21,17 +21,17 @@
 
 #import <UIKit/UIKit.h>
 #import "GridCell.h"
-#import "ControlView.h"
+#import "ComponentView.h"
 
 @interface GridCellView : UIView {
 	
 	GridCell *cell;
-	ControlView *controlView;
+	ComponentView *componentView;
 }
 
 - (id)initWithGridCell:(GridCell *)gridCell frame:(CGRect)frame;
 
-@property (nonatomic, readonly)ControlView *controlView;
+@property (nonatomic, readonly)ComponentView *componentView;
 @property (nonatomic, readonly)GridCell *cell;
 
 @end

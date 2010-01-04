@@ -20,11 +20,16 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "ComponentView.h"
+#import "XMLEntity.h"
 
+@interface Component : XMLEntity {
 
-@interface LabelView : ComponentView {
-
+	int componentId;
+	
 }
+
+@property(nonatomic,readonly)int componentId;
+
++ (id)buildWithXMLParser:(NSString *) componentType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent;
 
 @end

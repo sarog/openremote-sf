@@ -19,40 +19,32 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-#import "ToggleState.h"
+#import "SensorState.h"
 
 
-@implementation ToggleState
+@implementation SensorState
 
-@synthesize name,image;
+@synthesize name,value;
+
+- (NSString *) elementName {
+	return STATE;
+}
 
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {		
-		name = [[attributeDict objectForKey:@"name"] copy];
+		name = [[attributeDict objectForKey:NAME] copy];
+		value = [[attributeDict objectForKey:VALUE] copy];
+		
 		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];
 	}
 	return self;
 }
 
-// get element name, must be overriden in subclass
-- (NSString *) elementName {
-	return @"state";
-}
-
-// parse image and command
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	if ([elementName isEqualToString:@"image"]) {
-		image = [[Image alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-	//} else if ([elementName isEqualToString:@"command"]) {
-//		commandId = [[attributeDict objectForKey:@"ref"] intValue];
-//		NSLog(@"cmd ref id = %d", commandId);
-	}
-}
-
-
 - (void)dealloc {
-	[image release];
+	[name release];
+	[value release];
+	
 	[super dealloc];
 }
 

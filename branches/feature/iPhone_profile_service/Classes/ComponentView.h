@@ -19,13 +19,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-#import <Foundation/Foundation.h>
-#import "ControlView.h"
+#import <UIKit/UIKit.h>
+#import "Component.h"
 
-@interface MonitorView : ControlView {
-	UIView *monitorContent;
+
+@protocol PollingCallBackNotificationDelegate <NSObject>
+- (void)setPollingStatus:(NSNotification *)notification;
+@end
+
+@interface ComponentView : UIView {
+	
+	Component *component;
+	
 }
 
-@property (nonatomic, retain)UIView *monitorContent;
+@property(nonatomic,readonly)Component *component;
+
+//Class methods:
++ (ComponentView *)buildWithComponent:(Component *)component frame:(CGRect)frame;
+
+//Instance methods:
+- (id)initWithComponent:(Component *)c frame:(CGRect)frame;
 
 @end
