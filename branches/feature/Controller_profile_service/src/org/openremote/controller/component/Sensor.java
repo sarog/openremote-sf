@@ -19,6 +19,7 @@
 */
 package org.openremote.controller.component;
 
+import org.openremote.controller.command.NoStatusCommand;
 import org.openremote.controller.command.StatusCommand;
 
 /**
@@ -35,6 +36,7 @@ public class Sensor {
    
    public Sensor() {
       super();
+      this.statusCommand = new NoStatusCommand();
    }
 
    public Sensor(StatusCommand statusCommand) {

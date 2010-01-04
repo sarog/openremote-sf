@@ -24,6 +24,7 @@ import java.util.List;
 import org.jdom.Element;
 import org.openremote.controller.command.DelayCommand;
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.component.Component;
 import org.openremote.controller.component.ComponentBuilder;
 import org.openremote.controller.component.control.Control;
 
@@ -43,17 +44,17 @@ public class ButtonBuilder extends ComponentBuilder {
      */
     @SuppressWarnings("unchecked")
    @Override
-    public Control build(Element buttonElement, String commandParam) {
+    public Component build(Element componentElement, String commandParam) {
        Button button = new Button();
        if (button.isValidActionWith(commandParam)) {
-          List<Element> commandRefElements = buttonElement.getChildren();
+          List<Element> commandRefElements = componentElement.getChildren();
           for (Element commandRefElement : commandRefElements) {
               if (Control.DELAY_ELEMENT_NAME.equalsIgnoreCase(commandRefElement.getName())) {
                   button.addExecutableCommand(new DelayCommand(commandRefElement.getTextTrim()));
                   continue;
               }
-              String commandID = commandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-              Element commandElement = remoteActionXMLParser.queryElementFromXMLById(buttonElement.getDocument(),commandID);
+              String commandID = commandRefElement.getAttributeValue(Control.REF_ATTRIBUTE_NAME);
+              Element commandElement = remoteActionXMLParser.queryElementFromXMLById(componentElement.getDocument(),commandID);
               ExecutableCommand command = (ExecutableCommand) commandFactory.getCommand(commandElement);
               button.addExecutableCommand(command);
           }

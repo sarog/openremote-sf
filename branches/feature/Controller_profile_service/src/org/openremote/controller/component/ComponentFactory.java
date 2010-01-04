@@ -48,7 +48,7 @@ public class ComponentFactory extends ApplicationObjectSupport {
         String componentBuilderName = componentBuilders.getProperty(componentType);
         if(componentBuilderName == null || componentBuilderName.equals("")){
            //TODO: refactored to NoSuchComponentBuilderException();
-           throw new NoSuchCommandBuilderException();
+           throw new NoSuchCommandBuilderException("No such component builer with the component " + componentElement.getName());
         }
         ComponentBuilder componentBuilder = (ComponentBuilder)getApplicationContext().getBean(componentBuilderName);
         return componentBuilder.build(componentElement, commandParam);

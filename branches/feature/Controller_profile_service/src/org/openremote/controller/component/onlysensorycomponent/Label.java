@@ -1,8 +1,3 @@
-/*
- * 
- */
-package org.openremote.controller.component.onlysensorycomponent;
-
 /* OpenRemote, the Home of the Digital Home.
 * Copyright 2008-2009, OpenRemote Inc.
 *
@@ -22,6 +17,7 @@ package org.openremote.controller.component.onlysensorycomponent;
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+package org.openremote.controller.component.onlysensorycomponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +28,7 @@ import org.openremote.controller.component.Sensory;
 import org.openremote.controller.component.control.Control;
 /**
  * This class is used to store the information for a label. 
- * @author Javen
+ * @author Javen, Handy
  *
  */
 public class Label extends Control implements Sensory {

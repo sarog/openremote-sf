@@ -1,5 +1,3 @@
-package org.openremote.controller.component.onlysensorycomponent;
-
 /* OpenRemote, the Home of the Digital Home.
 * Copyright 2008-2009, OpenRemote Inc.
 *
@@ -19,6 +17,7 @@ package org.openremote.controller.component.onlysensorycomponent;
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+package org.openremote.controller.component.onlysensorycomponent;
 
 import java.util.List;
 
@@ -26,28 +25,30 @@ import org.jdom.Element;
 import org.openremote.controller.component.Component;
 import org.openremote.controller.component.ComponentBuilder;
 import org.openremote.controller.component.Sensor;
+
 /**
- * This class is used to build a Label by parse controll.xml
- * @author Javen, Handy
+ * This class is used to build a Image by parse controll.xml
+ * 
+ * @author Handy
  *
  */
-public class LabelBuilder extends ComponentBuilder {
+public class ImageBuilder extends ComponentBuilder {
 
    @SuppressWarnings("unchecked")
    @Override
    public Component build(Element componentElement, String commandParam) {
-      Label label = new Label();
-      if (!label.isValidActionWith(commandParam)) {
-         return label;
+      Image image = new Image();
+      if (!image.isValidActionWith(commandParam)) {
+         return image;
       }
       List<Element> operationElements = componentElement.getChildren(); 
       for (Element operationElement : operationElements) {
          if (isIncludedSensorElement(operationElement)) {
             Sensor sensor = parseSensor(componentElement, operationElement);
-            label.setSensor(sensor);
+            image.setSensor(sensor);
          }
       }
-      return label;
+      return image;
    }
 
 }
