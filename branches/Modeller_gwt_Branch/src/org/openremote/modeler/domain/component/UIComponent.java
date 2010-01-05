@@ -19,6 +19,9 @@
 */
 package org.openremote.modeler.domain.component;
 
+import javax.persistence.Transient;
+
+import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.domain.BusinessEntity;
 
 /**
@@ -56,6 +59,72 @@ public abstract class UIComponent extends BusinessEntity {
    /*
     * Generate the xml content which used in panel.xml
     */
+   @Transient
    public abstract String getPanelXml();
-
+   
+   public int getPreferredWidth(){
+      int width = 50;
+      return width;
+   }
+   public int getPreferredHeight(){
+      int height = 50;
+      return height;
+   }
+   
+   /**
+    * create a new UIComponet with the same type of <b>uiComponent</b>
+    * @param uiComponent 
+    * @return a new UIComponet with the same type of <b>uiComponent</b>
+    */
+   public static UIComponent createNew(UIComponent uiComponent){
+      UIComponent result = null;
+      if(uiComponent != null){
+         /*Class clazz = uiComponent.getClass();
+         try {
+            result = (UIComponent) clazz.newInstance();
+            result.setOid(IDUtil.nextID());
+         } catch (InstantiationException e) {
+            e.printStackTrace();
+         } catch (IllegalAccessException e) {
+            e.printStackTrace();
+         }*/
+         
+         if (uiComponent instanceof UIButton) {
+            result = new UIButton();
+         } else if (uiComponent instanceof UISwitch) {
+            result = new UISwitch();
+         } else if(uiComponent instanceof UISlider) {
+            result = new UISlider();
+         } else if (uiComponent instanceof UILabel){
+            result = new UILabel();
+         } else if (uiComponent instanceof UIImage){
+            result = new UIImage();
+         }
+      }
+      result.setOid(IDUtil.nextID());
+      return result;
+   }
+   
+   /**
+    * create a new UIComponet with the same type and the same attribute of <b>uiComponent</b>
+    * @param uiComponent 
+    * @return a new UIComponet with the same type and the same attribute of <b>uiComponent</b>
+    */
+   public static UIComponent copy(UIComponent uiComponent){
+      if(uiComponent != null){
+         if (uiComponent instanceof UIButton) {
+            return new UIButton((UIButton)uiComponent);
+         } else if (uiComponent instanceof UISwitch) {
+            return new UISwitch((UISwitch)uiComponent);
+         } else if(uiComponent instanceof UISlider) {
+            return new UISlider((UISlider)uiComponent);
+         } else if (uiComponent instanceof UILabel){
+            return new UILabel((UILabel)uiComponent);
+         } else if (uiComponent instanceof UIImage){
+            return new UIImage((UIImage)uiComponent);
+         }
+      }
+      return null;
+   }
+   
 }

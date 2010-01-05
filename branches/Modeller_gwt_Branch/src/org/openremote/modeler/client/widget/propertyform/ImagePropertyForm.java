@@ -20,15 +20,22 @@
 package org.openremote.modeler.client.widget.propertyform;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
+import org.openremote.modeler.client.utils.SensorLinker;
 import org.openremote.modeler.client.widget.ImageUploadField;
 import org.openremote.modeler.client.widget.SimpleComboBox;
 import org.openremote.modeler.client.widget.component.ScreenImage;
 import org.openremote.modeler.client.widget.uidesigner.SelectSensorWindow;
+import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorType;
+import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
 
@@ -46,6 +53,8 @@ import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
+import com.extjs.gxt.ui.client.widget.form.FieldSet;
+import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.google.gwt.core.client.GWT;
 
 /**
@@ -53,6 +62,11 @@ import com.google.gwt.core.client.GWT;
  */
 public class ImagePropertyForm extends PropertyForm {
    private ScreenImage screenImage = null;
+   private transient Operation operation=Operation.UPLOAD_IMAGE;
+   private FieldSet optionPanel; 
+   
+   private State customSensorState = null;
+   
    public ImagePropertyForm(ScreenImage screenImage) {
       super();
       this.screenImage = screenImage;
@@ -77,10 +91,14 @@ public class ImagePropertyForm extends PropertyForm {
                   Sensor sensor = dataModel.getBean();
                   uiImage.setSensor(sensor);
                   sensorSelectBtn.setText(sensor.getDisplayName());
+
+                  createSwitchSensorOption();
                }
             });
          }
       });
+      
+     
       /*final Button selectLabel = new Button("Select");
       selectLabel.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
@@ -104,10 +122,19 @@ public class ImagePropertyForm extends PropertyForm {
       AdapterField sensorAdapter = new AdapterField(sensorSelectBtn);
       sensorAdapter.setFieldLabel("Sensor");
       add(sensorAdapter);
+      
       add(labelBox);
 //      AdapterField labelAdapter = new AdapterField(selectLabel);
 //      labelAdapter.setFieldLabel("Label");
 //      add(labelAdapter);
+      
+      optionPanel = new FieldSet();
+      FormLayout layout = new FormLayout();
+      layout.setLabelWidth(80);
+      layout.setDefaultWidth(80);
+      optionPanel.setLayout(layout);
+      optionPanel.setHeading("option");
+      add(optionPanel);
    }
    @SuppressWarnings("unchecked")
    private ComboBox<ModelData> createLabelSelector() {
@@ -145,6 +172,8 @@ public class ImagePropertyForm extends PropertyForm {
             if (!isValid()) {
                return;
             }
+            operation = Operation.UPLOAD_IMAGE;
+            setImageUploadAction(ImageUploadField.IMAGEUPLOADFIELD);
             submit();
             screenImage.getScreenCanvas().mask("Uploading image...");
          }
@@ -155,22 +184,117 @@ public class ImagePropertyForm extends PropertyForm {
    }
    
    private void addListenersToForm() {
-      setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName="
-            + ImageUploadField.IMAGEUPLOADFIELD);
-      setEncoding(Encoding.MULTIPART);
-      setMethod(Method.POST);
-
+      setImageUploadAction(null);
       addListener(Events.Submit, new Listener<FormEvent>() {
          @Override
          public void handleEvent(FormEvent be) {
-            String backgroundImgURL = be.getResultHtml();
-            if (!"".equals(backgroundImgURL)) {
-               screenImage.setSrc(backgroundImgURL);
-               screenImage.getScreenCanvas().unmask();
+            String imageURL = be.getResultHtml();
+            SensorLinker sensorLinker = screenImage.getUiImage().getSensorLinker();
+            Map<String,String> sensorAttrMap = new HashMap<String,String>();
+            
+            if (!"".equals(imageURL)) {
+               if(operation == Operation.UPLOAD_IMAGE){
+                  screenImage.setSrc(imageURL);
+               }else {
+                  switch (operation){
+                  case UPLOAD_SWITCH_ON_IMAGE:
+                     sensorAttrMap.put("name","on");
+                     sensorAttrMap.put("value", imageURL);
+                     System.out.println("upload image for switch on: "+imageURL);
+                     break;
+                  case UPLOAD_SWITCH_OFF_IMAGE:
+                     sensorAttrMap.put("name","off");
+                     sensorAttrMap.put("value", imageURL);
+                     System.out.println("upload image for switch off: "+imageURL);
+                     break;
+                  default:
+                     sensorAttrMap.put("name",customSensorState.getName());
+                     sensorAttrMap.put("value", imageURL);
+                  }
+                  sensorLinker.AddChildForSensorLinker("state", sensorAttrMap);
+               }
             }
+            screenImage.getScreenCanvas().unmask();
             BeanModel screenBeanModel = null;
+            System.out.println(screenImage.getUiImage().getPanelXml());
             fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenBeanModel));
          }
       });
+   }
+   private void createSwitchSensorOption(){
+      optionPanel.removeAll();
+      if(screenImage.getUiImage().getSensor().getType()==SensorType.SWITCH){
+         ImageUploadField onImageUpload = new ImageUploadField() {
+            @Override
+            protected void onChange(ComponentEvent ce) {
+               super.onChange(ce);
+               if (!isValid()) {
+                  return;
+               }
+               operation = Operation.UPLOAD_SWITCH_ON_IMAGE;
+               setImageUploadAction("switchOnImage");
+               submit();
+               screenImage.getScreenCanvas().mask("Uploading image...");
+            }
+         };
+         onImageUpload.setName("switchOnImage");
+         
+         onImageUpload.setFieldLabel("on:");
+         
+         ImageUploadField offImageUpload = new ImageUploadField() {
+            @Override
+            protected void onChange(ComponentEvent ce) {
+               super.onChange(ce);
+               if (!isValid()) {
+                  return;
+               }
+               operation = Operation.UPLOAD_SWITCH_OFF_IMAGE;
+               setImageUploadAction("switchOffImage");
+               submit();
+               screenImage.getScreenCanvas().mask("Uploading image...");
+            }
+         };
+         offImageUpload.setFieldLabel("off:");
+         offImageUpload.setName(("switchOffImage"));
+         optionPanel.add(onImageUpload);
+         optionPanel.add(offImageUpload);
+      }else if(screenImage.getUiImage().getSensor().getType() == SensorType.CUSTOM){
+         CustomSensor customSensor = (CustomSensor) screenImage.getUiImage().getSensor();
+         List<State> states = customSensor.getStates();
+         System.out.println("states:"+states);
+         for(final State state: states){
+            ImageUploadField imageUploader = new ImageUploadField() {
+               @Override
+               protected void onChange(ComponentEvent ce) {
+                  super.onChange(ce);
+                  if (!isValid()) {
+                     return;
+                  }
+                  operation = Operation.OTHER;
+                  customSensorState = state;
+                  setImageUploadAction(state.getName());
+                  submit();
+                  screenImage.getScreenCanvas().mask("Uploading image...");
+               }
+            };
+            imageUploader.setName(state.getName());
+            imageUploader.setFieldLabel(state.getName());
+//            add(imageUploader);
+            optionPanel.add(imageUploader);
+            
+         }
+      }
+      optionPanel.layout(true);
+   }
+   
+   static enum Operation{
+      UPLOAD_IMAGE,UPLOAD_SWITCH_ON_IMAGE,UPLOAD_SWITCH_OFF_IMAGE,OTHER;
+   }
+   
+   private void setImageUploadAction(String ImageFieldName){
+      String action = GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName=" +(ImageFieldName==null?ImageUploadField.IMAGEUPLOADFIELD:ImageFieldName);
+      setAction(action);
+      setEncoding(Encoding.MULTIPART);
+      setMethod(Method.POST);
    }
 }

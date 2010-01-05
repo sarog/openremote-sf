@@ -21,6 +21,7 @@ package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.utils.SensorTree;
+import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Sensor;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -69,6 +70,8 @@ public class SelectSensorWindow extends Dialog {
          public void handleEvent(WindowEvent be) {
             if (be.getButtonClicked() == getButtonById("ok")) {
                BeanModel beanModel = sensorTree.getSelectionModel().getSelectedItem();
+               if(beanModel.getBean() instanceof CustomSensor){
+               }
                if (beanModel == null) {
                   MessageBox.alert("Error", "Please select a sensor.", null);
                   be.cancelBubble();

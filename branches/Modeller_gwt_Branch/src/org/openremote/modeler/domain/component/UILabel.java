@@ -21,6 +21,7 @@ package org.openremote.modeler.domain.component;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.client.utils.SensorLinker;
 import org.openremote.modeler.domain.Sensor;
 /**
  * 
@@ -31,12 +32,13 @@ import org.openremote.modeler.domain.Sensor;
 public class UILabel extends UIComponent implements SensorOwner{
 
    private String text = "Label Text";
-   private String font = "";
-   private String color = "black";
+   private String color = "000000";
    private int fontSize = 10;
 
    private Sensor sensor;
 
+   private  SensorLinker sensorLinker;
+   
    public UILabel(long oid) {
      super(oid);
    }
@@ -48,12 +50,17 @@ public class UILabel extends UIComponent implements SensorOwner{
       this.color = color;
       this.fontSize = fontSize;
       this.sensor = sensor;
+      if(sensor!=null){
+         this.sensorLinker = new SensorLinker(sensor);
+      } else {
+         sensorLinker.clear();
+      }
    }
 
 
    public UILabel(UILabel uiLabel) {
+      setOid(uiLabel.getOid());
       this.text = uiLabel.text;
-      this.font = uiLabel.font;
       this.fontSize = uiLabel.fontSize;
    }
    public String getText() {
@@ -64,13 +71,6 @@ public class UILabel extends UIComponent implements SensorOwner{
       this.text = text;
    }
 
-   public String getFont() {
-      return font;
-   }
-
-   public void setFont(String font) {
-      this.font = font;
-   }
    
    public String getColor() {
       return color;
@@ -92,12 +92,29 @@ public class UILabel extends UIComponent implements SensorOwner{
 
    public void setSensor(Sensor sensor) {
       this.sensor = sensor;
+      if(sensor!=null){
+         this.sensorLinker = new SensorLinker(sensor);
+      } else {
+         sensorLinker.clear();
+      }
    }
 
+   public SensorLinker getSensorLinker() {
+      return sensorLinker;
+   }
+   public void setSensorLinker(SensorLinker sensorLinker) {
+      this.sensorLinker = sensorLinker;
+   }
+   @Transient
    @Override
    public String getPanelXml() {
-      //TODO 
-      return null;
+      StringBuilder sb = new StringBuilder();
+      sb.append("<label id=\""+getOid()+"\" font-size=\""+fontSize+"\" color=\""+color+"\">\n" );
+      if(sensor!=null){
+         sb.append(sensorLinker.getXMLString());
+      }
+      sb.append("</label>");
+      return sb.toString();
    }
 
    @Override
@@ -118,5 +135,15 @@ public class UILabel extends UIComponent implements SensorOwner{
          return text.substring(0,text.length()-maxLength)+"...";
       }
       return text;
+   }
+   
+   public @Override int getPreferredWidth(){
+      int width = 150;
+      return width;
+   }
+   
+   public @Override int getPreferredHeight(){
+      int height = 50;
+      return height;
    }
 }

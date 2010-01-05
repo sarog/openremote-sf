@@ -19,11 +19,19 @@
 */
 package org.openremote.modeler.client.widget.propertyform;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.widget.component.ScreenLabel;
+import org.openremote.modeler.client.widget.uidesigner.SelectColorWindow;
 import org.openremote.modeler.client.widget.uidesigner.SelectSensorWindow;
+import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorType;
+import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.UILabel;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -34,18 +42,26 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
+import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 
 /**
  * A panel for display screen label properties.
+ * @author Javen
  */
 public class LabelPropertyForm extends PropertyForm {
-
-   public LabelPropertyForm(ScreenLabel screebLabel) {
+   
+   private ScreenLabel screenLabel;
+   private FieldSet optionPanel; 
+   
+   
+   public LabelPropertyForm(ScreenLabel screenLabel) {
       super();
-      addFields(screebLabel);
+      this.screenLabel = screenLabel;
+      addFields();
    }
-   private void addFields(final ScreenLabel screenLabel) {
+   private void addFields() {
       final TextField<String> textField = new TextField<String>();
       textField.setFieldLabel("Text");
       final UILabel uiLabel = screenLabel.getUiLabel();
@@ -54,26 +70,6 @@ public class LabelPropertyForm extends PropertyForm {
          @Override
          public void handleEvent(BaseEvent be) {
             screenLabel.setText(textField.getValue());
-         }
-      });
-      
-     /* final TextField<String> font = new TextField<String>();
-      font.setFieldLabel("Font");
-      font.setValue(uiLabel.getFont());
-      font.addListener(Events.Blur, new Listener<BaseEvent>() {
-         @Override
-         public void handleEvent(BaseEvent be) {
-            uiLabel.setFont(font.getValue());
-            //TODO set font 
-         }
-      });*/
-      final TextField<String> colorField = new TextField<String>();
-      colorField.setFieldLabel("Color");
-      colorField.setValue(uiLabel.getColor());
-      colorField.addListener(Events.Blur, new Listener<BaseEvent>() {
-         @Override
-         public void handleEvent(BaseEvent be) {
-           screenLabel.setColor(colorField.getValue());
          }
       });
       
@@ -98,16 +94,110 @@ public class LabelPropertyForm extends PropertyForm {
                   Sensor sensor = dataModel.getBean();
                   uiLabel.setSensor(sensor);
                   sensorSelectBtn.setText(sensor.getDisplayName());
+                  createSwitchSensorOption();
+               }
+            });
+         }
+      });
+      if(screenLabel.getUiLabel().getSensor()!=null){
+         sensorSelectBtn.setText(screenLabel.getUiLabel().getSensor().getDisplayName());
+      }
+      final Button colorSelectBtn = new Button("Select");
+      colorSelectBtn.setStyleAttribute("border", "2px solid #"+screenLabel.getUiLabel().getColor());
+      colorSelectBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            SelectColorWindow selectColorWindow = new SelectColorWindow();
+            selectColorWindow.setDefaultColor(screenLabel.getUiLabel().getColor());
+            selectColorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+               @Override
+               public void afterSubmit(SubmitEvent be) {
+                  String color = be.getData();
+                  screenLabel.setColor(color);
+                  colorSelectBtn.setStyleAttribute("border", "2px solid #"+color);
                }
             });
          }
       });
       
       add(textField);
-      add(colorField);
       add(fontSizeField);
       AdapterField adapter = new AdapterField(sensorSelectBtn);
-      adapter.setFieldLabel("select sensor");
+      adapter.setFieldLabel("Sensor");
+      
+      AdapterField colorBtnAdapter = new AdapterField(colorSelectBtn);
+      colorBtnAdapter.setFieldLabel("Color");
+      add(colorBtnAdapter);
       add(adapter);
+      
+      optionPanel = new FieldSet();
+      FormLayout layout = new FormLayout();
+      layout.setLabelWidth(80);
+      layout.setDefaultWidth(80);
+      optionPanel.setLayout(layout);
+      optionPanel.setHeading("option");
+      add(optionPanel);
+      
    }
+   
+   private void createSwitchSensorOption(){
+      optionPanel.removeAll();
+      System.out.println(screenLabel.getUiLabel().getSensor().getType());
+      final Map<String,String> sensorAttrs = new HashMap<String,String>();
+      if(screenLabel.getUiLabel().getSensor().getType()==SensorType.SWITCH){
+        final TextField<String> onField = new TextField<String>();
+        final TextField<String> offField = new TextField<String>();
+        
+        onField.setFieldLabel("On Text");
+        offField.setFieldLabel("Off Text");
+        onField.addListener(Events.Blur, new Listener<BaseEvent>() {
+           @Override
+           public void handleEvent(BaseEvent be) {
+              String onText = onField.getValue();
+              sensorAttrs.put("name", "on");
+              sensorAttrs.put("value", onText);
+              screenLabel.getUiLabel().getSensorLinker().AddChildForSensorLinker("state", sensorAttrs);
+              System.out.println(screenLabel.getUiLabel().getPanelXml());
+           }
+        });
+        
+        offField.addListener(Events.Blur, new Listener<BaseEvent>() {
+           @Override
+           public void handleEvent(BaseEvent be) {
+              String offText = offField.getValue();
+              sensorAttrs.put("name", "off");
+              sensorAttrs.put("value", offText);
+              screenLabel.getUiLabel().getSensorLinker().AddChildForSensorLinker("state", sensorAttrs);
+              System.out.println(screenLabel.getUiLabel().getPanelXml());
+           }
+        });
+       
+        optionPanel.add(onField);
+        optionPanel.add(offField);
+      } else if(screenLabel.getUiLabel().getSensor().getType() == SensorType.CUSTOM){
+         CustomSensor customSensor = (CustomSensor) screenLabel.getUiLabel().getSensor();
+         List<State> states = customSensor.getStates();
+         System.out.println("states:"+states);
+         for(final State state: states){
+           final TextField<String> stateTextField = new TextField<String>();
+           stateTextField.setFieldLabel(state.getDisplayName());
+           stateTextField.addListener(Events.Blur, new Listener<BaseEvent>(){
+
+            @Override
+            public void handleEvent(BaseEvent be) {
+               String stateText = stateTextField.getValue();
+               if(stateText!=null&&!stateText.trim().isEmpty()){
+                  sensorAttrs.put("name", state.getName());
+                  sensorAttrs.put("value", stateText);
+                  screenLabel.getUiLabel().getSensorLinker().AddChildForSensorLinker("state", sensorAttrs);
+               }
+            }
+              
+           });
+           optionPanel.add(stateTextField);
+         }
+      }
+      optionPanel.layout(true);
+   }
+   
 }

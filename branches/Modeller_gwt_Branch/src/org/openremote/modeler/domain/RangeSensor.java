@@ -56,5 +56,12 @@ public class RangeSensor extends Sensor {
       this.max = max;
    }
    
-   
+   public @Override String toString(){
+      StringBuilder sb = new StringBuilder();
+      sb.append("<link type=\"sensor\" ref=\""+getOid()+"\">\n");
+      sb.append("\t<min value=\""+min+"\"/>\n");
+      sb.append("\t<max value=\""+min+"\"/>\n");
+      sb.append("</link>");
+      return sb.toString();
+   }
 }
