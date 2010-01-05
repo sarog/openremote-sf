@@ -48,7 +48,7 @@ public class ProfileRestServletTest {
             TestConstraint.FIXTURE_DIR + Constants.PANEL_XML).getFile();
       panelXmlPath = PathUtil.addSlashSuffix(ConfigFactory.getConfig().getResourcePath()) + Constants.PANEL_XML;
       if (new File(panelXmlPath).exists()) {
-         copyFile(panelXmlPath, panelXmlPath + ".bak");
+         new File(panelXmlPath).renameTo(new File(panelXmlPath + ".bak"));
       }
       copyFile(panelXmlFixturePath, panelXmlPath);
 
@@ -57,7 +57,7 @@ public class ProfileRestServletTest {
    @After
    public void tearDown() {
       if (new File(panelXmlPath + ".bak").exists()) {
-         copyFile(panelXmlPath + ".bak", panelXmlPath);
+         new File(panelXmlPath + ".bak").renameTo(new File(panelXmlPath));
          deleteFile(panelXmlPath + ".bak");
       } else {
          deleteFile(panelXmlPath);
@@ -88,6 +88,12 @@ public class ProfileRestServletTest {
       FileReader in;
       try {
          in = new FileReader(inputFile);
+         if (!outputFile.getParentFile().exists()) {
+            outputFile.getParentFile().mkdirs();
+         }
+         if (!outputFile.exists()) {
+            outputFile.createNewFile();
+         }
          FileWriter out = new FileWriter(outputFile);
          int c;
 
