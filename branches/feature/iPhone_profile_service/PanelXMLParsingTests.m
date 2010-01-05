@@ -431,7 +431,7 @@
 					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
 					[layoutAttrs release];
 					
-					if ([abso.component isKindOfClass:[Switch class]]) {
+					if ([abso.component isKindOfClass:[Slider class]]) {
 						Slider *theSlider = (Slider *)abso.component;
 						int expectedId = (59 + slider_index++);
 						STAssertTrue(expectedId == theSlider.componentId,@"expected %d, but %d",expectedId,theSlider.componentId);
@@ -982,7 +982,7 @@
 					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
 					[layoutAttrs release];
 					
-					if ([abso.component isKindOfClass:[Switch class]]) {
+					if ([abso.component isKindOfClass:[Slider class]]) {
 						Slider *theSlider = (Slider *)abso.component;
 						int expectedId = (59 + slider_index++);
 						STAssertTrue(expectedId == theSlider.componentId,@"expected %d, but %d",expectedId,theSlider.componentId);
