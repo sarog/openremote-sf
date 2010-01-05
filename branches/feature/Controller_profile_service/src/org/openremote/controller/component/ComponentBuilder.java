@@ -46,7 +46,7 @@ public abstract class ComponentBuilder {
        Element sensorElementRef = sensorIncludeElement;//(Element) sensorIncludeElement.getChildren().get(0);
        String sensorID = sensorElementRef.getAttributeValue(Component.REF_ATTRIBUTE_NAME);
        Sensor sensor = new Sensor();
-       Element sensorElement = remoteActionXMLParser.queryElementFromXMLById(sensorID);
+       Element sensorElement = remoteActionXMLParser.queryElementFromXMLById(componentElement.getDocument(), sensorID);
        if (sensorElement != null) {
           List<Element> sensorSubElements = sensorElement.getChildren();
           for (Element sensorSubElement : sensorSubElements) {
