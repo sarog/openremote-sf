@@ -32,5 +32,5 @@ import org.openremote.controller.net.RoundRobinServerTest;
    RoundRobinClientTest.class
 }
 )
-public class RoundRobinTestSuit {
+public class RoundRobinTests {
 }
