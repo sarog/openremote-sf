@@ -29,13 +29,8 @@ import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.GridCellBounds;
-import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIGrid;
-import org.openremote.modeler.domain.component.UIImage;
-import org.openremote.modeler.domain.component.UILabel;
-import org.openremote.modeler.domain.component.UISlider;
-import org.openremote.modeler.domain.component.UISwitch;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -129,12 +124,8 @@ public class GridLayoutContainer extends ComponentContainer {
          @Override
          public void dragEnter(DNDEvent e) {
             Object data = e.getData();
-            if (data instanceof AbsoluteLayoutContainer) {
-               AbsoluteLayoutContainer container = (AbsoluteLayoutContainer) data;
-               container.hideBackground();
-            } else if (data instanceof GridCellContainer) {
-               GridCellContainer container = (GridCellContainer) data;
-               container.hideBackground();
+            if(data instanceof ComponentContainer){
+              ((ComponentContainer) data).hideBackground();
             }
             super.dragEnter(e);
          }
@@ -205,7 +196,6 @@ public class GridLayoutContainer extends ComponentContainer {
          }
       }
       setSize(gridWidth, gridHeight);
-      //setPosition(grid.getLeft(), grid.getTop());
       setBorders(false);
       layout();
    }
@@ -463,34 +453,14 @@ public class GridLayoutContainer extends ComponentContainer {
     */
    private GridCellContainer createNewCellContainer(UIComponent uiComponent, UIGrid grid, int cellWidth, int cellHeight) {
       Cell cell = new Cell(IDUtil.nextID());
-      if (uiComponent instanceof UIButton) {
-         cell.setUiComponent(new UIButton(IDUtil.nextID()));
-      } else if (uiComponent instanceof UISwitch) {
-         cell.setUiComponent(new UISwitch(IDUtil.nextID()));
-      } else if (uiComponent instanceof UILabel){
-         cell.setUiComponent(new UILabel(IDUtil.nextID()));
-      } else if (uiComponent instanceof UIImage){
-         cell.setUiComponent(new UIImage(IDUtil.nextID()));
-      } else if (uiComponent instanceof UISlider){
-         cell.setUiComponent(new UISlider(IDUtil.nextID()));
-      }
+      cell.setUiComponent(UIComponent.createNew(uiComponent));
       grid.addCell(cell);
       return createCellContainer(grid, cell, cellWidth, cellHeight);
    }
    
    private GridCellContainer AbsoluteToCell(UIComponent uiComponent, UIGrid grid, int cellWidth, int cellHeight) {
       Cell cell = new Cell(IDUtil.nextID());
-      if (uiComponent instanceof UIButton) {
-         cell.setUiComponent(new UIButton((UIButton) uiComponent));
-      } else if (uiComponent instanceof UISwitch) {
-         cell.setUiComponent(new UISwitch((UISwitch) uiComponent));
-      } else if (uiComponent instanceof UILabel){
-         cell.setUiComponent(new UILabel((UILabel)uiComponent));
-      } else if (uiComponent instanceof UIImage){
-         cell.setUiComponent(new UIImage((UIImage)uiComponent));
-      } else if (uiComponent instanceof UISlider){
-         cell.setUiComponent(new UISlider((UISlider)uiComponent));
-      }
+      cell.setUiComponent(UIComponent.copy(uiComponent));
       grid.addCell(cell);
       return createCellContainer(grid, cell, cellWidth, cellHeight);
    }

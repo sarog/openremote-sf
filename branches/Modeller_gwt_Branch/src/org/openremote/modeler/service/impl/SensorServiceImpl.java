@@ -6,10 +6,10 @@ import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Account;
-import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorRefItem;
+import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SensorService;
 
@@ -28,7 +28,13 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
    }
 
    public List<Sensor> loadAll(Account account) {
-      return account.getSensors();
+      List<Sensor> sensors = account.getSensors();
+      for(Sensor sensor : sensors){
+         if(sensor.getType() == SensorType.CUSTOM){
+            Hibernate.initialize(((CustomSensor)sensor).getStates());
+         }
+      }
+      return sensors;
    }
 
    public Sensor saveSensor(Sensor sensor) {

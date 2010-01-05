@@ -21,12 +21,7 @@ import java.util.List;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
-import org.openremote.modeler.client.widget.component.ScreenImage;
-import org.openremote.modeler.client.widget.component.ScreenLabel;
-import org.openremote.modeler.client.widget.component.ScreenSlider;
-import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.propertyform.ScreenPropertyForm;
 import org.openremote.modeler.domain.Absolute;
@@ -34,13 +29,8 @@ import org.openremote.modeler.domain.Background;
 import org.openremote.modeler.domain.GridCellBounds;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Background.RelativeType;
-import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIGrid;
-import org.openremote.modeler.domain.component.UIImage;
-import org.openremote.modeler.domain.component.UILabel;
-import org.openremote.modeler.domain.component.UISlider;
-import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -344,35 +334,10 @@ public class ScreenCanvas extends ComponentContainer {
    private AbsoluteLayoutContainer createNewAbsoluteLayoutContainer(Screen screen, UIComponent uiComponent) {
       AbsoluteLayoutContainer controlContainer = null;
       Absolute absolute = new Absolute(IDUtil.nextID());
-      if (uiComponent instanceof UIButton) {
-         UIButton uiButton = new UIButton(IDUtil.nextID());
-         absolute.setUIComponent(uiButton);
-         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenButton(this, uiButton));
-         controlContainer.setSize(50, 50); // set the button's default size after drag from widget tree.
-
-      } else if (uiComponent instanceof UISwitch) {
-         UISwitch uiSwitch = new UISwitch(IDUtil.nextID());
-         absolute.setUIComponent(uiSwitch);
-         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenSwitch(this, uiSwitch));
-         controlContainer.setSize(50, 50); // set the switch's default size after drag from widget tree.
-      } else if (uiComponent instanceof UISlider) {
-         UISlider uiSlider = new UISlider(IDUtil.nextID());
-         absolute.setUIComponent(uiSlider);
-         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenSlider(this, uiSlider));
-         controlContainer.setSize(150, 20);
-      } else if (uiComponent instanceof UILabel){
-         UILabel uiLabel = new UILabel(IDUtil.nextID());
-         absolute.setUIComponent(uiLabel);
-         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenLabel(this, uiLabel));
-         
-         controlContainer.setSize(150, 50);
-      } else if (uiComponent instanceof UIImage){
-         UIImage uiImage = new UIImage(IDUtil.nextID());
-         absolute.setUIComponent(uiImage);
-         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenImage(this, uiImage));
-         
-         controlContainer.setSize(150, 50);
-      } 
+      UIComponent component = UIComponent.createNew(uiComponent);
+      absolute.setUIComponent(component);
+      controlContainer = createAbsoluteLayoutContainer(screen, absolute, ScreenComponent.build(this, component));
+      controlContainer.setSize(component.getPreferredWidth(), component.getPreferredHeight());
       screen.addAbsolute(absolute);
       return controlContainer;
    }
@@ -383,30 +348,9 @@ public class ScreenCanvas extends ComponentContainer {
       UIComponent uiComponent = cellContainer.getCell().getUIComponent();
       AbsoluteLayoutContainer controlContainer = null;
       Absolute absolute = new Absolute(IDUtil.nextID());
-      if (uiComponent instanceof UIButton) {
-         UIButton uiButton = new UIButton((UIButton) uiComponent);
-         absolute.setUIComponent(uiButton);
-         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenButton(this, uiButton));
-         // controlContainer.setSize(50, 50); // set the button's default size after drag from widget tree.
-
-      } else if (uiComponent instanceof UISwitch) {
-         UISwitch uiSwitch = new UISwitch((UISwitch) uiComponent);
-         absolute.setUIComponent(uiSwitch);
-         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenSwitch(this, uiSwitch));
-         // controlContainer.setSize(50, 50); // set the switch's default size after drag from widget tree.
-      } else if (uiComponent instanceof UILabel){
-         UILabel uiLabel = new UILabel((UILabel)uiComponent);
-         absolute.setUIComponent(uiLabel);
-         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenLabel(this, uiLabel));
-      } else if (uiComponent instanceof UIImage){
-         UIImage uiImage = new UIImage((UIImage)uiComponent);
-         absolute.setUIComponent(uiImage);
-         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenImage(this, uiImage));
-      } else if (uiComponent instanceof UISlider){
-         UISlider uiSlider = new UISlider((UISlider)uiComponent);
-         absolute.setUIComponent(uiSlider);
-         controlContainer = createAbsoluteLayoutContainer(screen, absolute, new ScreenSlider(this, uiSlider));
-      }
+      UIComponent component = UIComponent.createNew(uiComponent);
+      absolute.setUIComponent(component);
+      controlContainer = createAbsoluteLayoutContainer(screen, absolute, ScreenComponent.build(this, component));
       controlContainer.setSize(recorder.getWidth(), recorder.getHeight());
       screen.addAbsolute(absolute);
       return controlContainer;

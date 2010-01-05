@@ -35,6 +35,8 @@ import org.openremote.modeler.domain.SwitchSensorRef;
 import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIGrid;
+import org.openremote.modeler.domain.component.UIImage;
+import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.domain.component.UImage;
@@ -63,25 +65,29 @@ public class ResourceServiceImplTest {
       /*------------xml validation-------------*/
       configuration = (Configuration) SpringTestContext.getInstance().getBean("configuration");
    }
-@Test
+   @Test
    public void testNopanel(){
       Collection<Panel> emptyPanel = new ArrayList<Panel>();
      outputPanelXML(emptyPanel);
    }
-@Test
+   @Test
    public void testPanelHasGroupScreenControl()throws Exception{
       List<ScreenRef> screenRefs = new ArrayList<ScreenRef>();
       List<GroupRef> groupRefs = new ArrayList<GroupRef> ();
       List<Panel> panels = new ArrayList<Panel>();
       
       /*---------------widget-------------------*/
-      UIButton absBtn = new UIButton();
+      UIButton absBtn = new UIButton();            //UIButton
       absBtn.setOid(IDUtil.nextID());
       absBtn.setName("abs_btn1");
       UImage defaultImage = new UImage("default.jpg");
       UImage pressedImage = new UImage("pressed.jpg");
       absBtn.setImage(defaultImage);
       absBtn.setPressImage(pressedImage);
+      
+      UILabel label = new UILabel(IDUtil.nextID());//UILabel 
+      label.setText("testLabel");
+      label.setColor("000fff000");
       
       UIButton gridBtn = new UIButton();
       gridBtn.setOid(IDUtil.nextID());
@@ -90,14 +96,16 @@ public class ResourceServiceImplTest {
       Switch switchToggle = new Switch();
       switchToggle.setOid(IDUtil.nextID());
       Sensor sensor = new Sensor();
+      sensor.setType(SensorType.SWITCH);
       sensor.setOid(IDUtil.nextID());
       sensor.setName("testSensro");
       SwitchSensorRef sensorRef = new SwitchSensorRef(switchToggle);
       sensorRef.setOid(IDUtil.nextID());
       sensorRef.setSensor(sensor);
       switchToggle.setSwitchSensorRef(sensorRef);
+      label.setSensor(sensor);
       
-      UISwitch absSwitch = new UISwitch();
+      UISwitch absSwitch = new UISwitch();      //UISwitch
       absSwitch.setOid(IDUtil.nextID());
       UImage onImage = new UImage("on.jpg");
       UImage offImage = new UImage("off.jpg");
@@ -108,6 +116,10 @@ public class ResourceServiceImplTest {
       UISwitch gridSwitch = new UISwitch();
       gridSwitch.setOid(IDUtil.nextID());
       gridSwitch.setSwitchCommand(switchToggle); 
+      
+      UIImage uiImage = new UIImage(IDUtil.nextID());//UIImage
+      uiImage.setSensor(sensor);
+      uiImage.setLabel(label);
          
       /*---------------widget-------------------*/
       
@@ -134,7 +146,13 @@ public class ResourceServiceImplTest {
       Cell c2 = new Cell();
       c2.setUiComponent(gridSwitch);
       grid2.addCell(c2);
+      Cell uiImageCell = new Cell();
+      uiImageCell.setUiComponent(uiImage);
+      grid2.addCell(uiImageCell);
       
+      Cell labelCell = new Cell();
+      labelCell.setUiComponent(label);
+      grid2.addCell(labelCell);
       
       screen1.addAbsolute(abs1);
       screen2.addAbsolute(abs2);
@@ -267,7 +285,7 @@ public class ResourceServiceImplTest {
       outputPanelXML(panelWithJustOneNavigate);
    }
    
-// @Test
+ @Test
    public void testScreenHasBackgrouond(){
       Collection<Panel> panel = new ArrayList<Panel>();
       Screen screen = new Screen();

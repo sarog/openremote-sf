@@ -87,7 +87,7 @@
 	<xsd:element name="sensor">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:group ref="sensorGroup" />
+				<xsd:group ref="sensorGroup" minOccurs="0" maxOccurs="unbounded"/>
 			</xsd:sequence>
 			<xsd:attribute name="id" type="xsd:int" use="required"/>
 			<xsd:attribute name="type" type="sensorType" use="required"/>
@@ -317,6 +317,16 @@
 		</xsd:complexType>
 	</xsd:element>
 	
+	<xsd:element name="min">
+		<xsd:complexType>
+			<xsd:attribute name="value" type="xsd:int" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="max">
+		<xsd:complexType>
+			<xsd:attribute name="value" type="xsd:int" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
 	<xsd:element name="delay" type="xsd:int" >
 		<xsd:annotation>
 			<xsd:documentation>
@@ -353,6 +363,8 @@
 		<xsd:choice>
 			<xsd:element ref="include" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element ref="state" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element ref="min" minOccurs="0" maxOccurs="1" />
+			<xsd:element ref="max" minOccurs="0" maxOccurs="1" />
 		</xsd:choice>
 	</xsd:group>
 	<xsd:group name="componentGroup">

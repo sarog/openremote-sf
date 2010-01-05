@@ -87,4 +87,12 @@ public class Sensor extends BusinessEntity {
    public String getDisplayName() {
       return getName();
    }
+   
+   @Override
+   public String toString(){
+      StringBuilder sb = new StringBuilder();
+      sb.append("<link type=\"sensor\" ref=\""+getOid()+"\">\n");
+      sb.append("</link>");
+      return sb.toString();
+   }
 }

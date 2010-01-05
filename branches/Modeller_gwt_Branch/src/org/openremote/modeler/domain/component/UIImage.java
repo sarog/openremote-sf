@@ -19,6 +19,9 @@
 */
 package org.openremote.modeler.domain.component;
 
+import javax.persistence.Transient;
+
+import org.openremote.modeler.client.utils.SensorLinker;
 import org.openremote.modeler.domain.Sensor;
 /**
  * 
@@ -33,6 +36,8 @@ public class UIImage extends UIComponent implements SensorOwner{
    private Sensor sensor = null;
    
    private UILabel label = null;
+   
+   private SensorLinker sensorLinker;
    
    public UIImage(){}
    public UIImage(long oid){
@@ -59,6 +64,11 @@ public class UIImage extends UIComponent implements SensorOwner{
 
    public void setSensor(Sensor sensor) {
       this.sensor = sensor;
+      if(sensor!=null){
+         this.sensorLinker = new SensorLinker(sensor);
+      } else {
+         sensorLinker.clear();
+      }
    }
 
    public UILabel getLabel() {
@@ -70,14 +80,29 @@ public class UIImage extends UIComponent implements SensorOwner{
    }
 
    
+   public SensorLinker getSensorLinker() {
+      return sensorLinker;
+   }
+   public void setSensorLinker(SensorLinker sensorLinker) {
+      this.sensorLinker = sensorLinker;
+   }
    @Override
    public String getName() {
       return "Image";
    }
+   @Transient
    @Override
    public String getPanelXml() {
-      // TODO Auto-generated method stub
-      return null;
+      StringBuilder sb = new StringBuilder();
+      sb.append("<image id=\""+getOid()+"\" src=\""+src+"\"> ");
+      if(sensor!=null){
+         sb.append(sensorLinker.getXMLString());
+      }
+      if(label!=null){
+         sb.append("<include type=\"label\" ref=\""+label.getOid()+"\"/>\n");
+      }
+      sb.append("</image>");
+      return sb.toString();
    }
 
    @Override
@@ -86,4 +111,13 @@ public class UIImage extends UIComponent implements SensorOwner{
 
    }
    
+   public @Override int getPreferredWidth(){
+      int width = 150;
+      return width;
+   }
+   
+   public @Override int getPreferredHeight(){
+      int height = 50;
+      return height;
+   }
 }

@@ -109,4 +109,14 @@ public class UISlider extends UIControl {
    public String getName() {
       return "Slider";
    }
+   
+   public @Override int getPreferredWidth(){
+      int width = 150;
+      return width;
+   }
+   
+   public @Override int getPreferredHeight(){
+      int height = 20;
+      return height;
+   }
 }

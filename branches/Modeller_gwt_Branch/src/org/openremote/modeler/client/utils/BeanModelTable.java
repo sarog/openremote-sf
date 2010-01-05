@@ -125,7 +125,7 @@ public class BeanModelTable {
     * @param parentBeanModel the parent bean model
     * @param treeStore the tree store
     */
-   public void addInsertListener(BeanModel parentBeanModel, TreeStore treeStore) {}
+   public void addInsertListener(BeanModel parentBeanModel, TreeStore<BeanModel> treeStore) {}
 
    /**
     * Notify all the {@link ChangeListener}.

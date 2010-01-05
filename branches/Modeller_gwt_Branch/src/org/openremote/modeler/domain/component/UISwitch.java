@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.client.utils.SensorLinker;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.UICommand;
@@ -34,6 +35,9 @@ public class UISwitch extends UIControl implements SensorOwner{
    private UImage onImage;
    private UImage offImage;
    private Switch switchCommand;
+   
+   private SensorLinker sensorLinker;
+   
    public UISwitch() {
       super();
    }
@@ -66,6 +70,13 @@ public class UISwitch extends UIControl implements SensorOwner{
    }
    public void setSwitchCommand(Switch switchCommand) {
       this.switchCommand = switchCommand;
+   }
+   
+   public SensorLinker getSensorLinker() {
+      return sensorLinker;
+   }
+   public void setSensorLinker(SensorLinker sensorLinker) {
+      this.sensorLinker = sensorLinker;
    }
    @Override
    public String getName() {
