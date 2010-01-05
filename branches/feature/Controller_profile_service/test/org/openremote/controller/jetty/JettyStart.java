@@ -30,7 +30,7 @@ import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.openremote.controller.TestConstraint;
 
-public class Start {
+public class JettyStart {
 
    private static Server server;
 
@@ -66,7 +66,7 @@ public class Start {
 
       @Override
       public void run() {
-         System.out.println("*** running jetty 'stop' thread");
+         System.out.println("*** running jetty 'stop monitor' thread");
          Socket accept;
          try {
             accept = socket.accept();

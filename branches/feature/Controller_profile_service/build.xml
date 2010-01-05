@@ -259,13 +259,13 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		<echo message="" />
 		<property name="test.targetclasspath" value="${classes.dir}" />
 		<parallel>
-			<java classname="org.openremote.controller.jetty.Start" classpathref="test.path.id" fork="true" />
+			<java classname="org.openremote.controller.jetty.JettyStart" classpathref="test.path.id" fork="true" />
 			<sequential>
 				<waitfor>
 					<socket server="127.0.0.1" port="8090" />
 				</waitfor>
 				<antcall target="testsuite" />
-				<java classname="org.openremote.controller.jetty.Stop" classpathref="test.path.id" />
+				<java classname="org.openremote.controller.jetty.JettyStop" classpathref="test.path.id" />
 			</sequential>
 		</parallel>
 	</target>
@@ -356,9 +356,13 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		<delete file="${cobertura.datafile}"/>
 		<cobertura-instrument todir="${instrumented.dir}" datafile="${cobertura.datafile}">
 			<ignore regex="org.apache.log4j.*"/>
+			<ignore regex="org.openremote.controller.jetty.*"/>
+			<ignore regex="org.openremote.controller.suite.*"/>
 			<fileset dir="${classes.dir}">
 				<include name="**/*.class"/>
+				<exclude name="**/Jetty*.class"/>
 				<exclude name="**/*Test.class"/>
+				<exclude name="**/*Tests.class"/>
 			</fileset>
 		</cobertura-instrument>
 	</target>
