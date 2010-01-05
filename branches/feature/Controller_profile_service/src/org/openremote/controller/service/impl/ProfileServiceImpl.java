@@ -270,7 +270,7 @@ public class ProfileServiceImpl implements ProfileService {
       SAXBuilder sb = new SAXBuilder();
 
       if (!new File(xmlPath).exists()) {
-         throw new PanelXMLNotFoundException(" Make sure it's in /resources");
+         throw new PanelXMLNotFoundException(" Make sure it's in " + xmlPath);
       }
       try {
          Document doc = sb.build(new File(xmlPath));
