@@ -83,7 +83,7 @@ public class SliderBuilderTest {
    public void testGetSliderNoSuchID() throws JDOMException{
       Slider slider  = null;
       try{
-         slider = getSliderByID("11");
+         slider = getSliderByID("13");
       }catch(Exception e){
          
       }

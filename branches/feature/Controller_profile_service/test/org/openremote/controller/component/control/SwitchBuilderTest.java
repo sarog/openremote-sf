@@ -27,6 +27,7 @@ import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.TestConstraint;
+import org.openremote.controller.component.Sensory;
 import org.openremote.controller.component.control.switchtoggle.Switch;
 import org.openremote.controller.component.control.switchtoggle.SwitchBuilder;
 import org.openremote.controller.exception.NoSuchComponentException;
@@ -83,6 +84,7 @@ public class SwitchBuilderTest {
       Assert.assertEquals(swh.getExecutableCommands().size(), 1);
 
       swh = getSwitchByID("4", "status");
-      Assert.assertEquals(swh.getExecutableCommands().size(), 0);
+      Assert.assertTrue(swh instanceof Sensory);
+      Assert.assertTrue(((Sensory)swh).fetchSensorID() == 1004);
    }
 }
