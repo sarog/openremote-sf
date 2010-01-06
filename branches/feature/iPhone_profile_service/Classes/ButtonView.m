@@ -93,9 +93,9 @@
 	[self createButton];
 	
 	Button *button = (Button *)component;
-	if (button.image) {
-		uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.image.src]];
-		uiImagePressed = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.imagePressed.src]];	
+	if (button.defaultIcon) {
+		uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.defaultIcon.src]];
+		uiImagePressed = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.pressedIcon.src]];	
 		ClippedUIImage *clippedUIImage = [[ClippedUIImage alloc] initWithUIImage:uiImage dependingOnUIView:self imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW];		
 		[uiButton setImage:clippedUIImage forState:UIControlStateNormal];
 		if (uiImagePressed) {

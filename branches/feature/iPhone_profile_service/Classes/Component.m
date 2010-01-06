@@ -31,9 +31,9 @@
 
 + (id)buildWithXMLParser:(NSString *) componentType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	Component *newComponent;
-	if ([componentType isEqualToString:@"label"]) {
+	if ([componentType isEqualToString:LABEL]) {
 		newComponent = [Label alloc];
-	} else if ([componentType isEqualToString:@"image"]) {
+	} else if ([componentType isEqualToString:IMAGE]) {
 		newComponent = [Image alloc];
 	} else {
 		return [Control buildWithXMLParser:componentType parser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];

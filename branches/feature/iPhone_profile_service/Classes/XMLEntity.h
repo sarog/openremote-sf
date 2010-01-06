@@ -43,6 +43,13 @@ extern NSString *const MAX_VALUE;
 extern NSString *const IMAGE;
 extern NSString *const TRACK_IMAGE;
 
+extern NSString *const LABEL;
+
+extern NSString *const BUTTON;
+extern NSString *const DEFAULT;
+extern NSString *const PRESSED;
+extern NSString *const ICON;
+
 extern NSString *const SRC;
 
 /* This is an abstract class for all entities (element) in panel.xml.

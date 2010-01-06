@@ -74,6 +74,8 @@
 		339C75EC10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml in Resources */ = {isa = PBXBuildFile; fileRef = 339C75EA10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml */; };
 		339EADA610CE3FA3004B8AED /* panel_local_tabbar.xml in Resources */ = {isa = PBXBuildFile; fileRef = 339EADA510CE3FA3004B8AED /* panel_local_tabbar.xml */; };
 		339EADA710CE3FA3004B8AED /* panel_local_tabbar.xml in Resources */ = {isa = PBXBuildFile; fileRef = 339EADA510CE3FA3004B8AED /* panel_local_tabbar.xml */; };
+		33A89DCE10F4B9B5005D7281 /* Icon.m in Sources */ = {isa = PBXBuildFile; fileRef = 33A89DCD10F4B9B5005D7281 /* Icon.m */; };
+		33A89DCF10F4B9B5005D7281 /* Icon.m in Sources */ = {isa = PBXBuildFile; fileRef = 33A89DCD10F4B9B5005D7281 /* Icon.m */; };
 		33DF2E0710CCC90D0038DA82 /* panel_global_tabbar.xml in Resources */ = {isa = PBXBuildFile; fileRef = 33DF2E0610CCC90D0038DA82 /* panel_global_tabbar.xml */; };
 		33DF2E0810CCC90D0038DA82 /* panel_global_tabbar.xml in Resources */ = {isa = PBXBuildFile; fileRef = 33DF2E0610CCC90D0038DA82 /* panel_global_tabbar.xml */; };
 		33DF56CE10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
@@ -297,6 +299,8 @@
 		33981B3410B119BC0076DB59 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		339C75EA10C6655D00FD678B /* panel_absolute_screen_backgroundimage.xml */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.xml; path = panel_absolute_screen_backgroundimage.xml; sourceTree = "<group>"; };
 		339EADA510CE3FA3004B8AED /* panel_local_tabbar.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_local_tabbar.xml; sourceTree = "<group>"; };
+		33A89DCC10F4B9B5005D7281 /* Icon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Icon.h; sourceTree = "<group>"; };
+		33A89DCD10F4B9B5005D7281 /* Icon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Icon.m; sourceTree = "<group>"; };
 		33DF2E0610CCC90D0038DA82 /* panel_global_tabbar.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_global_tabbar.xml; sourceTree = "<group>"; };
 		33DF56CC10CCF6B50005446D /* TabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarController.h; sourceTree = "<group>"; };
 		33DF56CD10CCF6B50005446D /* TabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarController.m; sourceTree = "<group>"; };
@@ -781,6 +785,8 @@
 				8CECF88710EB6E3300C0E1BB /* User.m */,
 				8CECF88810EB6E3300C0E1BB /* XMLEntity.h */,
 				8CECF88910EB6E3300C0E1BB /* XMLEntity.m */,
+				33A89DCC10F4B9B5005D7281 /* Icon.h */,
+				33A89DCD10F4B9B5005D7281 /* Icon.m */,
 			);
 			name = model;
 			sourceTree = "<group>";
@@ -1106,6 +1112,7 @@
 				8CECF8BF10EB6E3300C0E1BB /* TabBarItem.m in Sources */,
 				8CECF8C210EB6E3300C0E1BB /* User.m in Sources */,
 				8CECF8C310EB6E3300C0E1BB /* XMLEntity.m in Sources */,
+				33A89DCF10F4B9B5005D7281 /* Icon.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1195,6 +1202,7 @@
 				8CECF8A210EB6E3300C0E1BB /* TabBarItem.m in Sources */,
 				8CECF8A510EB6E3300C0E1BB /* User.m in Sources */,
 				8CECF8A610EB6E3300C0E1BB /* XMLEntity.m in Sources */,
+				33A89DCE10F4B9B5005D7281 /* Icon.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

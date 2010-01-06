@@ -19,12 +19,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-#import "Button.h"
+#import "Button.h" 
 
 
 @implementation Button
 
-@synthesize image, imagePressed, repeat, hasCommand, name, navigate;
+@synthesize defaultIcon, pressedIcon, repeat, hasCommand, name, navigate, subElememntNameOfBackground;
 
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {		
@@ -42,34 +42,36 @@
 	return self;
 }
 
-// parse image, pressed image, command, navigate.
+// parse defaultIcon, pressedIcon, command, navigate.
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	if ([elementName isEqualToString:@"image"]) {
-		Image *img = [[Image alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		if ([[attributeDict objectForKey:@"state"] isEqualToString:@"onPress"]) {
-			imagePressed = img;
-		} else {
-			image = img;
+	if ([elementName isEqualToString:DEFAULT]) {
+		subElememntNameOfBackground = DEFAULT;
+	} else if ([elementName isEqualToString:PRESSED]) {
+		subElememntNameOfBackground = PRESSED;	
+	} else if ([elementName isEqualToString:ICON]) {
+		if ([DEFAULT isEqualToString:subElememntNameOfBackground]) {
+			defaultIcon = [[Icon alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+		} else if ([PRESSED isEqualToString:subElememntNameOfBackground]) {
+			pressedIcon = [[Icon alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 		}
-
 	} else if ([elementName isEqualToString:@"navigate"]) {
 		navigate = [[Navigate alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-	} 
-	
+	}	
 }
 
 
 // get element name, must be overriden in subclass
 - (NSString *) elementName {
-	return @"button";
+	return BUTTON;
 }
 
 
 - (void)dealloc {
-	[image release];
-	[imagePressed release];
+	[defaultIcon release];
+	[pressedIcon release];
 	[navigate release];
 	[name	 release];
+	[subElememntNameOfBackground release];
 	
 	[super dealloc];
 }

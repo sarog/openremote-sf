@@ -19,31 +19,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+#import <Foundation/Foundation.h>
+#import "XMLEntity.h"
 
-#import "Control.h"
-#import "Button.h"
-#import "Switch.h"
-#import "Slider.h"
-
-
-@implementation Control
-
-
-
-+ (id)buildWithXMLParser:(NSString *) controlType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
-	Control *newControl;
-	if ([controlType isEqualToString:BUTTON]) {
-		newControl = [Button alloc];
-	} else if ([controlType isEqualToString:SWITCH]) {
-		newControl = [Switch alloc];
-	} else if ([controlType isEqualToString:SLIDER]) {
-		newControl = [Slider alloc];
-	} else {
-		return nil;
-	}
-
-	return [newControl initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
+@interface Icon : XMLEntity {
+	NSString *src;
 }
-	
-	
+
+@property (nonatomic, readwrite, retain) NSString *src;
+
 @end
