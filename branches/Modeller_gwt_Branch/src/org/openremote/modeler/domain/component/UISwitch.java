@@ -115,12 +115,14 @@ public class UISwitch extends UIControl implements SensorOwner{
    public String getPanelXml() {
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("        <switch id=\"" + getOid() + "\">\n");
-      xmlContent.append("<link type=\"sensor\" ref=\""+getSensor().getOid()+"\">");
-      if (onImage != null && onImage.getSrc() != null) {
-         xmlContent.append("          <state name=\"on\" value=\"" + onImage.getSrc() + "\"/>\n");
-      }
-      if (offImage != null && offImage.getSrc() != null) {
-         xmlContent.append("          <state name=\"off\" value=\"" + offImage.getSrc() + "\"/>\n");
+      if(getSensor()!=null){
+         xmlContent.append("<link type=\"sensor\" ref=\""+getSensor().getOid()+"\">");
+         if (onImage != null && onImage.getSrc() != null) {
+            xmlContent.append("          <state name=\"on\" value=\"" + onImage.getSrc() + "\"/>\n");
+         }
+         if (offImage != null && offImage.getSrc() != null) {
+            xmlContent.append("          <state name=\"off\" value=\"" + offImage.getSrc() + "\"/>\n");
+         }
       }
       xmlContent.append("</link>");
       xmlContent.append("        </switch>\n");
