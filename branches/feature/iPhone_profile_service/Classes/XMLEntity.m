@@ -52,6 +52,13 @@ NSString *const MAX_VALUE = @"max";
 NSString *const IMAGE = @"image";
 NSString *const TRACK_IMAGE = @"trackImage";
 
+NSString *const LABEL = @"label";
+
+NSString *const BUTTON = @"button";
+NSString *const DEFAULT = @"default";
+NSString *const PRESSED = @"pressed";
+NSString *const ICON = @"icon";
+
 NSString *const SRC = @"src";
 
 // NOTE: This is an abstract method, must be implemented in subclass

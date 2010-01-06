@@ -19,31 +19,37 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+#import "Icon.h"
+#import "Definition.h"
 
-#import "Control.h"
-#import "Button.h"
-#import "Switch.h"
-#import "Slider.h"
+@implementation Icon
 
+@synthesize src;
 
-@implementation Control
-
-
-
-+ (id)buildWithXMLParser:(NSString *) controlType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
-	Control *newControl;
-	if ([controlType isEqualToString:BUTTON]) {
-		newControl = [Button alloc];
-	} else if ([controlType isEqualToString:SWITCH]) {
-		newControl = [Switch alloc];
-	} else if ([controlType isEqualToString:SLIDER]) {
-		newControl = [Slider alloc];
-	} else {
-		return nil;
+// init a xml entity with NSXMLParser and remember its xmlparser parent delegate 
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+	if (self = [super init]) {
+		src = [[attributeDict objectForKey:SRC] copy];
+		[[Definition sharedDefinition] addImageName:src];
+		xmlParserParentDelegate = [parent retain];
+		[parser setDelegate:self];
 	}
-
-	return [newControl initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
+	return self;
 }
-	
-	
+
+- (void)setSrc:(NSString *)IconSrc {
+	src = IconSrc;
+	[[Definition sharedDefinition] addImageName:src];
+}
+
+// get element name, must be overriden in subclass
+- (NSString *) elementName {
+	return ICON;
+}
+
+- (void)dealloc {
+	[src release];
+	[super dealloc];
+}
+
 @end

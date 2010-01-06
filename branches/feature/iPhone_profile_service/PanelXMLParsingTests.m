@@ -97,19 +97,19 @@
 							STAssertTrue([but.name isEqualToString:expectedName],@"expected %@, but %@",expectedName,but.name);
 							int expectedId = (59 + but_index++);
 							STAssertTrue(expectedId == but.componentId,@"expected %d, but %d",expectedId,but.componentId);
-							NSString *expectedNormalImageName = nil;
-							if (but.image) {
-								expectedNormalImageName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + image_index++];						
-								STAssertTrue([but.image.src isEqualToString:expectedNormalImageName],@"expected %@, but %@",expectedNormalImageName,but.image.src);
+							NSString *expectedDefaultIconName = nil;
+							if (but.defaultIcon) {
+								expectedDefaultIconName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + image_index++];						
+								STAssertTrue([but.defaultIcon.src isEqualToString:expectedDefaultIconName],@"expected %@, but %@",expectedDefaultIconName,but.defaultIcon.src);
 							}
-							NSString *expectedPressedImageName = nil;
-							if (but.imagePressed) {
-								expectedPressedImageName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + image_index++];
-								STAssertTrue([but.imagePressed.src isEqualToString:expectedPressedImageName],@"expected %@, but %@",expectedPressedImageName,but.imagePressed.src);
+							NSString *expectedPressedIconName = nil;
+							if (but.pressedIcon) {
+								expectedPressedIconName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + image_index++];
+								STAssertTrue([but.pressedIcon.src isEqualToString:expectedPressedIconName],@"expected %@, but %@",expectedPressedIconName,but.pressedIcon.src);
 							}
 							
-							[expectedNormalImageName release];
-							[expectedPressedImageName release];
+							[expectedDefaultIconName release];
+							[expectedPressedIconName release];
 						}	
 					}
 				}				
@@ -153,7 +153,7 @@
 	STAssertTrue(((Button *)[buts objectAtIndex:0]).hasCommand == NO,@"expected NO");
 	STAssertTrue(((Button *)[buts objectAtIndex:1]).hasCommand == YES,@"expected YES");
 	STAssertTrue(((Button *)[buts objectAtIndex:1]).navigate == nil,@"expected nil");
-	STAssertTrue(((Button *)[buts objectAtIndex:2]).hasCommand == YES,@"expected YES");
+	STAssertTrue(((Button *)[buts objectAtIndex:2]).hasCommand == NO,@"expected NO");
 	STAssertTrue(((Button *)[buts objectAtIndex:2]).navigate.toScreen == 29,@"expected %d",29);
 	STAssertTrue(((Button *)[buts objectAtIndex:3]).hasCommand == NO,@"expected %d",NO);
 	STAssertTrue(((Button *)[buts objectAtIndex:3]).navigate.toGroup == 9,@"expected %d",9);

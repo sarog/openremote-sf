@@ -29,7 +29,7 @@
 // This method is abstract method of indirectclass XMLEntity.
 // So, this method must be overridden in subclass.
 - (NSString *) elementName {
-	return @"label";
+	return LABEL;
 }
 
 

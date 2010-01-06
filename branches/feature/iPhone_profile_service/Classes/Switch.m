@@ -55,7 +55,7 @@
 		
 		for (SensorState *state in sensor.states) {
 			Image *img = [[Image alloc] init];
-			img.src = state.value;
+			img.src = [state.value copy];
 			if ([[state.name lowercaseString] isEqualToString:ON]) {
 				onImage = img;
 			} else if ([[state.name lowercaseString] isEqualToString:OFF]) {
