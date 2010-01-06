@@ -61,6 +61,16 @@ NSString *const ICON = @"icon";
 
 NSString *const SRC = @"src";
 
+NSString *const BG_IMAGE_RELATIVE_POSITION_LEFT = @"LEFT";
+NSString *const BG_IMAGE_RELATIVE_POSITION_RIGHT = @"RIGHT";
+NSString *const BG_IMAGE_RELATIVE_POSITION_TOP = @"TOP";
+NSString *const BG_IMAGE_RELATIVE_POSITION_BOTTOM =@"BOTTOM";
+NSString *const BG_IMAGE_RELATIVE_POSITION_TOP_LEFT = @"TOP_LEFT";
+NSString *const BG_IMAGE_RELATIVE_POSITION_BOTTOM_LEFT = @"BOTTOM_LEFT";
+NSString *const BG_IMAGE_RELATIVE_POSITION_TOP_RIGHT = @"TOP_RIGHT";
+NSString *const BG_IMAGE_RELATIVE_POSITION_BOTTOM_RIGHT = @"BOTTOM_RIGHT";
+NSString *const BG_IMAGE_RELATIVE_POSITION_CENTER = @"CENTER";
+
 // NOTE: This is an abstract method, must be implemented in subclass
 - (NSString *) elementName {
 	[self doesNotRecognizeSelector:_cmd];

@@ -34,7 +34,7 @@
 #import "Label.h"
 #import "Image.h"
 #import "Gesture.h"
-#import "BackgroundImageRelativePositionConstant.h"
+#import "XMLEntity.h"
 #import "Tabbar.h"
 #import "TabbarItem.h"
 

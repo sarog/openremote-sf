@@ -24,7 +24,7 @@
 #import "Navigate.h"
 #import "UIViewUtil.h"
 #import "ClippedUIImage.h"
-#import "BackgroundImageRelativePositionConstant.h"
+#import "XMLEntity.h"
 
 @interface ErrorViewController (Private)
 - (void)gotoSettings:(id)sender;

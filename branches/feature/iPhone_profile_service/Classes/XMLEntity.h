@@ -52,6 +52,16 @@ extern NSString *const ICON;
 
 extern NSString *const SRC;
 
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_LEFT;
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_RIGHT;
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_TOP;
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_BOTTOM;
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_TOP_LEFT;
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_BOTTOM_LEFT;
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_TOP_RIGHT;
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_BOTTOM_RIGHT;
+extern NSString *const BG_IMAGE_RELATIVE_POSITION_CENTER;
+
 /* This is an abstract class for all entities (element) in panel.xml.
  * Objective-C doesn't have the abstract compiler construct like Java at 
  * this time.
