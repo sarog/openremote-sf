@@ -58,7 +58,7 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.google.gwt.core.client.GWT;
 
 /**
- * A panel for display screen label properties.
+ * A panel for display screen Image properties.
  */
 public class ImagePropertyForm extends PropertyForm {
    private ScreenImage screenImage = null;
@@ -72,6 +72,7 @@ public class ImagePropertyForm extends PropertyForm {
       this.screenImage = screenImage;
       addFields(screenImage);
       addListenersToForm();
+      createSensorOption();
    }
    private void addFields(final ScreenImage screenImage) {
       final UIImage uiImage = screenImage.getUiImage();
@@ -92,7 +93,7 @@ public class ImagePropertyForm extends PropertyForm {
                   uiImage.setSensor(sensor);
                   sensorSelectBtn.setText(sensor.getDisplayName());
 
-                  createSwitchSensorOption();
+                  createSensorOption();
                }
             });
          }
@@ -133,7 +134,7 @@ public class ImagePropertyForm extends PropertyForm {
       layout.setLabelWidth(80);
       layout.setDefaultWidth(80);
       optionPanel.setLayout(layout);
-      optionPanel.setHeading("option");
+      optionPanel.setHeading("Sensor option");
       add(optionPanel);
    }
    @SuppressWarnings("unchecked")
@@ -211,7 +212,7 @@ public class ImagePropertyForm extends PropertyForm {
                      sensorAttrMap.put("name",customSensorState.getName());
                      sensorAttrMap.put("value", imageURL);
                   }
-                  sensorLinker.AddChildForSensorLinker("state", sensorAttrMap);
+                  sensorLinker.AddOrUpdateChildForSensorLinker("state", sensorAttrMap);
                }
             }
             screenImage.getScreenCanvas().unmask();
@@ -221,9 +222,10 @@ public class ImagePropertyForm extends PropertyForm {
          }
       });
    }
-   private void createSwitchSensorOption(){
+   private void createSensorOption(){
       optionPanel.removeAll();
-      if(screenImage.getUiImage().getSensor().getType()==SensorType.SWITCH){
+      SensorLinker sensorLinker = screenImage.getUiImage().getSensorLinker();
+      if(screenImage.getUiImage().getSensor()!=null && screenImage.getUiImage().getSensor().getType()==SensorType.SWITCH){
          ImageUploadField onImageUpload = new ImageUploadField() {
             @Override
             protected void onChange(ComponentEvent ce) {
@@ -256,9 +258,13 @@ public class ImagePropertyForm extends PropertyForm {
          };
          offImageUpload.setFieldLabel("off:");
          offImageUpload.setName(("switchOffImage"));
+         if(sensorLinker!=null){
+            onImageUpload.setValue(sensorLinker.getStateValueByStateName("on"));
+            offImageUpload.setValue(sensorLinker.getStateValueByStateName("off"));
+         }
          optionPanel.add(onImageUpload);
          optionPanel.add(offImageUpload);
-      }else if(screenImage.getUiImage().getSensor().getType() == SensorType.CUSTOM){
+      }else if(screenImage.getUiImage().getSensor()!=null && screenImage.getUiImage().getSensor().getType() == SensorType.CUSTOM){
          CustomSensor customSensor = (CustomSensor) screenImage.getUiImage().getSensor();
          List<State> states = customSensor.getStates();
          System.out.println("states:"+states);
@@ -279,6 +285,10 @@ public class ImagePropertyForm extends PropertyForm {
             };
             imageUploader.setName(state.getName());
             imageUploader.setFieldLabel(state.getName());
+            
+            if(sensorLinker!=null){
+               imageUploader.setValue(sensorLinker.getStateValueByStateName(state.getName()));
+            }
 //            add(imageUploader);
             optionPanel.add(imageUploader);
             

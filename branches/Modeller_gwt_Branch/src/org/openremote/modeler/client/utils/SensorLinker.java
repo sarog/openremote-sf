@@ -1,3 +1,22 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.client.utils;
 
 import java.util.HashMap;
@@ -7,7 +26,16 @@ import java.util.Set;
 
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.Sensor;
-
+/**
+ * This class is used for record the property for a sensor 
+ * A sensor is defined in the build modeler, include the state, state name... But we can only set the value for the state in the UI designer.
+ * we can't change the property for a sensor because it only have a device command or state name. therefore we need a class to record the state value 
+ * for every SeonsorOwner and here it is. 
+ * Attention: If it already has a element which has a attribute called <b>name</b>,when you add another element which has the same name as well as a attribute called name
+ * the element will be replaced by the other one. 
+ * @author Javen
+ *
+ */
 @SuppressWarnings("serial")
 public class SensorLinker extends BusinessEntity{
    private long sensorId;
@@ -19,10 +47,30 @@ public class SensorLinker extends BusinessEntity{
    public SensorLinker(Sensor sensor){
       this.sensorId = sensor.getOid();
    }
-   
+   /**
+    * Most of the sensors have some states,SO the method can be used get the state value by state name,like getStateValueByStateName("on") can get the value for a switch sensor when it is on the on state.
+    * @param stateName The name for the state. 
+    * @return The state value for the state.
+    */
+   public String getStateValueByStateName(String stateName){
+      String result = "";
+      for(LinkerChild child : linkerChildren){
+         if(child.childName.equals("state")&&child.getAttributeValue("name")!=null&&child.getAttributeValue("name").equals(stateName)){
+            result =  child.attributes.get("value");
+         }
+      }
+      return result;
+   }
+   /**
+    * Remove all the sensor property record.
+    * This method is useful when your change the sensor for a SensorOwner.
+    */
    public void clear(){
       linkerChildren.removeAll(linkerChildren);
    }
+   /**
+    * Get the XML string 
+    */
    public String getXMLString(){
       StringBuilder sb = new StringBuilder();
       sb.append("<link type=\"sensor\" ref=\""+sensorId+"\">");
@@ -32,24 +80,13 @@ public class SensorLinker extends BusinessEntity{
       sb.append("</link>");
       return sb.toString();
    }
-   public String getAttributeValue(String childName,String attributeName){
-      String result = null;
-      for(LinkerChild child : linkerChildren){
-         if(child.childName.equals(childName)){
-            result =  child.attributes.get(attributeName);
-         }
-      }
-      return result;
-   }
    
-   public void setAttribute(String childName,String attributeName,String attributeValue){
-      for(LinkerChild child : linkerChildren){
-         if(child.childName.equals(childName)){
-            child.attributes.get(attributeName);
-         }
-      }
-   }
-   public void AddChildForSensorLinker(String childName,Map<String,String> attrMap){
+   /**
+    * add or update the sensor property whose name is <b>childName</b>
+    * @param childName the child name for a SensorLinker node. 
+    * @param attrMap a map contains the all attribute for the sensor linker's child. 
+    */
+   public void AddOrUpdateChildForSensorLinker(String childName,Map<String,String> attrMap){
       LinkerChild child = new LinkerChild(childName);
       child.setAttributes(attrMap);
       if(linkerChildren.contains(child)){
@@ -66,6 +103,11 @@ public class SensorLinker extends BusinessEntity{
       this.sensorId = sensorId;
    }
 
+   /**
+    * A class for storing the property for a sensor linker child
+    * @author Javen
+    *
+    */
    public static class LinkerChild extends BusinessEntity{
       String childName = "";
       Map<String,String> attributes = new HashMap<String,String>();
@@ -100,6 +142,10 @@ public class SensorLinker extends BusinessEntity{
       }
       public void setAttributes(Map<String,String> attrMap){
          attributes.putAll(attrMap);
+      }
+      
+      public String getAttributeValue(String attributeName){
+         return attributes.get(attributeName);
       }
       public String toString(){
          StringBuilder sb = new StringBuilder();
