@@ -221,7 +221,3 @@ table.screen-btn-cont td.br-c{
    height: 40%;
    background: url(../images/custom/slider/background-scroll.png) repeat-y scroll 0 0;
 }
-
-.default-image {
-   text: expression(src="./image/global.logo.png"); 	
-}
