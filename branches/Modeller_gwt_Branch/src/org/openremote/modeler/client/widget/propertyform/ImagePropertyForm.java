@@ -289,7 +289,6 @@ public class ImagePropertyForm extends PropertyForm {
             if(sensorLinker!=null){
                imageUploader.setValue(sensorLinker.getStateValueByStateName(state.getName()));
             }
-//            add(imageUploader);
             optionPanel.add(imageUploader);
             
          }

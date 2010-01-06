@@ -19,14 +19,16 @@
 */
 package org.openremote.modeler.domain.component;
 
-import org.openremote.modeler.domain.BusinessEntity;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openremote.modeler.domain.UICommand;
 
 /**
  * The Gesture defined the gesture on screen.
  */
 @SuppressWarnings("serial")
-public class Gesture extends BusinessEntity {
+public class Gesture extends UIControl {
 
    private GestureType type;
    private Navigate navigate = new Navigate();
@@ -61,13 +63,30 @@ public class Gesture extends BusinessEntity {
       this.uiCommand = uiCommand;
    }
 
+
+   @Override
+   public String getPanelXml() {
+      // TODO Auto-generated method stub
+      return null;
+   }
+   @Override
+   public void transImagePathToRelative(String relativeSessionFolderPath) {
+      // TODO Auto-generated method stub
+      
+   }
+   @Override
+   public List<UICommand> getCommands() {
+      return new ArrayList<UICommand>(){
+         {add(uiCommand);} 
+      };
+   }
    public static enum GestureType {
       swipe_bottom_to_top, swipe_top_to_bottom, swipe_left_to_right, swipe_right_to_left;
-
+      
       @Override
       public String toString() {
          return super.toString().replaceAll("_", "-");
       }
-
+      
    }
 }

@@ -58,6 +58,7 @@ import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.SensorOwner;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
@@ -632,6 +633,8 @@ public class ResourceServiceImpl implements ResourceService {
       Collection<Sensor> sensors = getAllSensor(screens);
       Collection<UIComponent> switchs = uiComponentBox.getUIComponentsByType(UISwitch.class);
       Collection<UIComponent> buttons = uiComponentBox.getUIComponentsByType(UIButton.class);
+      Collection<UIComponent> gestures = uiComponentBox.getUIComponentsByType(Gesture.class);
+      
       context.put("switchs", switchs);
       context.put("buttons", buttons);
       context.put("screens", screens);
@@ -639,6 +642,7 @@ public class ResourceServiceImpl implements ResourceService {
       context.put("xmlParser", this);
       context.put("protocolContainer", protocolContainer);
       context.put("sensors", sensors);
+      context.put("gestures", gestures);
       
       return VelocityEngineUtils.mergeTemplateIntoString(velocity, CONTROLLER_XML_TEMPLATE, context);
    }
@@ -698,6 +702,10 @@ public class ResourceServiceImpl implements ResourceService {
             for(Cell cell : grid.getCells()){
                uiComponentBox.add(cell.getUIComponent());
             }
+         }
+         
+         for(Gesture gesture: screen.getGestures()){
+            uiComponentBox.add(gesture);
          }
       }
    }
