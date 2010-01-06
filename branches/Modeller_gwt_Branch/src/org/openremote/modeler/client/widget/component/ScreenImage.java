@@ -39,6 +39,7 @@ public class ScreenImage extends ScreenComponent {
 
    private UIImage uiImage = new UIImage();
 
+   private static String DEFAULT_IMAGE_URL = "./image/global.logo.png";
    
    public ScreenImage(ScreenCanvas canvas, UIImage uiImage) {
       super(canvas);
@@ -56,9 +57,8 @@ public class ScreenImage extends ScreenComponent {
       imageTable.setWidget(1, 1, image);
       if (!"".equals(uiImage.getSrc())) {
          image.setUrl(uiImage.getSrc());
-         image.removeStyleName("default-image");
       } else {
-         image.setStyleName("default-image");
+         image.setUrl(DEFAULT_IMAGE_URL);
       }
       add(imageTable);
       
