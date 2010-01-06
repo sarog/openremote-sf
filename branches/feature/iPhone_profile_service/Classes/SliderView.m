@@ -23,6 +23,7 @@
 #import "PollingStatusParserDelegate.h"
 #import "NotificationConstant.h"
 #import "Slider.h"
+#import "DirectoryDefinition.h"
 
 @interface SliderView(Private)
 - (void) initSlider;
@@ -39,7 +40,8 @@
 // So, this method must be overridden in subclass.
 - (void)setPollingStatus:(NSNotification *)notification {
 	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
-	float newStatus = [[pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",component.componentId]] floatValue];
+	int sensorId = ((Slider *)component).sensor.sensorId;
+	float newStatus = [[pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",sensorId]] floatValue];
 	slider.value = newStatus;
 	currentValue = (int)newStatus;
 }
@@ -48,7 +50,8 @@
 - (void)layoutSubviews {
 	NSLog(@"layoutSubviews of SliderView.");
 	[self initSlider];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,component.componentId] object:nil];
+	int sensorId = ((Slider *)component).sensor.sensorId;
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,sensorId] object:nil];
 	
 }
 
@@ -59,14 +62,40 @@
 		[slider removeFromSuperview];
 		[slider release];
 	}
-	slider = [[UISlider alloc] initWithFrame:[self bounds]];
 	Slider *theSlider = (Slider *)component;
+	
+	slider = [[UISlider alloc] initWithFrame:[self bounds]];
+	if (theSlider.vertical) {
+		slider.transform = CGAffineTransformMakeRotation(-90.0/180*M_PI);
+	}	
 	slider.minimumValue = theSlider.minValue;
+	NSString *minimumValueImageSrc = theSlider.minImage.src;
+	UIImage *minimumValueImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:minimumValueImageSrc]];
+	slider.minimumValueImage = minimumValueImage;
+	
 	slider.maximumValue = theSlider.maxValue;
+	NSString *maximumValueImageSrc = theSlider.maxImage.src;
+	UIImage *maximumValueImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:maximumValueImageSrc]];
+	slider.maximumValueImage = maximumValueImage;
+	
+	slider.backgroundColor = [UIColor clearColor];	
+	NSString *minTrackImageSrc = theSlider.minTrackImage.src;
+	NSString *maxTrackImageSrc = theSlider.maxTrackImage.src;
+	NSString *thumbImageSrc = theSlider.thumbImage.src;
+	
+	UIImage *stetchLeftTrack = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:minTrackImageSrc]] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
+	UIImage *stetchRightTrack = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:maxTrackImageSrc]] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
+	UIImage *thumbImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:thumbImageSrc]];
+	[slider setThumbImage: thumbImage forState:UIControlStateNormal];
+	[slider setMinimumTrackImage:stetchLeftTrack forState:UIControlStateNormal];
+	[slider setMaximumTrackImage:stetchRightTrack forState:UIControlStateNormal];
+	
 	//slider.continuous = NO;
 	slider.value = 0;
 	currentValue = 0;
-	[slider addTarget:self action:@selector(afterSlide:) forControlEvents:UIControlEventValueChanged];
+	//if (theSlider.active) {
+		[slider addTarget:self action:@selector(afterSlide:) forControlEvents:UIControlEventValueChanged];
+	//}
 	[self addSubview:slider];
 }
 

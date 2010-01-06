@@ -24,7 +24,7 @@
 
 @implementation Slider
 
-@synthesize minValue, maxValue, minImage, minTrackImage, maxImage, maxTrackImage;
+@synthesize thumbImage, vertical, minValue, maxValue, minImage, minTrackImage, maxImage, maxTrackImage;
 
 // This method is abstract method of indirectclass XMLEntity.
 // So, this method must be overridden in subclass.
@@ -37,7 +37,14 @@
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {
 		componentId = [[attributeDict objectForKey:ID] intValue];
-		xmlParserParentDelegate = [parent retain];
+		
+		NSString *verticalStr = [attributeDict objectForKey:VERTICAL];		
+		vertical = verticalStr ? [[verticalStr lowercaseString] isEqualToString:@"true"] ? YES : NO : NO;
+		
+		Image *tempImg = [[Image alloc] init];
+		tempImg.src = [[attributeDict objectForKey:THUMB_IMAGE] copy];
+		thumbImage = tempImg;
+		xmlParserParentDelegate = [parent retain];		
 		[parser setDelegate:self];
 	}
 	return self;
