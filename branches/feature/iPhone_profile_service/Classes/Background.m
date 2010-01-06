@@ -20,7 +20,7 @@
  */
 
 #import "Background.h"
-#import "BackgroundImageRelativePositionConstant.h"
+#import "XMLEntity.h"
 
 
 @implementation Background

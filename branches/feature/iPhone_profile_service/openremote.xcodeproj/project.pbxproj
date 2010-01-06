@@ -40,8 +40,6 @@
 		3338CDC610C5039B0067C94D /* panel_grid_label.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3338CDBE10C5039B0067C94D /* panel_grid_label.xml */; };
 		3389A2D510C5FF86009E074A /* panel_relative_screen_backgroundimage.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3389A2D410C5FF86009E074A /* panel_relative_screen_backgroundimage.xml */; };
 		3389A2D610C5FF86009E074A /* panel_relative_screen_backgroundimage.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3389A2D410C5FF86009E074A /* panel_relative_screen_backgroundimage.xml */; };
-		3389A32410C60E5B009E074A /* BackgroundImageRelativePositionConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = 3389A32310C60E5B009E074A /* BackgroundImageRelativePositionConstant.m */; };
-		3389A32510C60E5B009E074A /* BackgroundImageRelativePositionConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = 3389A32310C60E5B009E074A /* BackgroundImageRelativePositionConstant.m */; };
 		338C3CD510D60F610029D62B /* ClippedUIImageViewTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 338C3CD410D60F610029D62B /* ClippedUIImageViewTest.m */; };
 		338C3CD610D60F610029D62B /* ClippedUIImageViewTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 338C3CD410D60F610029D62B /* ClippedUIImageViewTest.m */; };
 		338C3D7010D629910029D62B /* 500X500.png in Resources */ = {isa = PBXBuildFile; fileRef = 338C3D6F10D629910029D62B /* 500X500.png */; };
@@ -277,8 +275,6 @@
 		3338CDBD10C5039B0067C94D /* panel_grid_image.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_grid_image.xml; sourceTree = "<group>"; };
 		3338CDBE10C5039B0067C94D /* panel_grid_label.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_grid_label.xml; sourceTree = "<group>"; };
 		3389A2D410C5FF86009E074A /* panel_relative_screen_backgroundimage.xml */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.xml; path = panel_relative_screen_backgroundimage.xml; sourceTree = "<group>"; };
-		3389A32210C60E5B009E074A /* BackgroundImageRelativePositionConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackgroundImageRelativePositionConstant.h; sourceTree = "<group>"; };
-		3389A32310C60E5B009E074A /* BackgroundImageRelativePositionConstant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackgroundImageRelativePositionConstant.m; sourceTree = "<group>"; };
 		338C3CD310D60F610029D62B /* ClippedUIImageViewTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClippedUIImageViewTest.h; sourceTree = "<group>"; };
 		338C3CD410D60F610029D62B /* ClippedUIImageViewTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClippedUIImageViewTest.m; sourceTree = "<group>"; };
 		338C3D6F10D629910029D62B /* 500X500.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 500X500.png; sourceTree = "<group>"; };
@@ -518,8 +514,6 @@
 				8C460F3F109563E100C7A686 /* NotificationConstant.m */,
 				8C460F5A109564D000C7A686 /* AppDelegate.h */,
 				8C460F5B109564D000C7A686 /* AppDelegate.m */,
-				3389A32210C60E5B009E074A /* BackgroundImageRelativePositionConstant.h */,
-				3389A32310C60E5B009E074A /* BackgroundImageRelativePositionConstant.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1077,7 +1071,6 @@
 				8CDE3FF910C39D1F0096CAC9 /* GestureWindow.m in Sources */,
 				3338CDB710C5036C0067C94D /* ImageView.m in Sources */,
 				3338CDB810C5036C0067C94D /* LabelView.m in Sources */,
-				3389A32510C60E5B009E074A /* BackgroundImageRelativePositionConstant.m in Sources */,
 				331CB89D10CCDBD100906A28 /* PanelXMLParsingTests.m in Sources */,
 				33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */,
 				338C3CD510D60F610029D62B /* ClippedUIImageViewTest.m in Sources */,
@@ -1167,7 +1160,6 @@
 				8CDE3FF810C39D1F0096CAC9 /* GestureWindow.m in Sources */,
 				3338CDB910C5036C0067C94D /* ImageView.m in Sources */,
 				3338CDBA10C5036C0067C94D /* LabelView.m in Sources */,
-				3389A32410C60E5B009E074A /* BackgroundImageRelativePositionConstant.m in Sources */,
 				331CB89C10CCDBD100906A28 /* PanelXMLParsingTests.m in Sources */,
 				33DF56CE10CCF6B50005446D /* TabBarController.m in Sources */,
 				338C3CD610D60F610029D62B /* ClippedUIImageViewTest.m in Sources */,

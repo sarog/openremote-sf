@@ -20,7 +20,7 @@
  */
 
 #import "ClippedUIImage.h"
-#import	"BackgroundImageRelativePositionConstant.h"
+#import	"XMLEntity.h"
 
 @interface ClippedUIImage(Private)
 - (CGPoint) clippedPointDependingOnUIView:(UIView *)uiView alignToViewPattern:(NSString *)align;

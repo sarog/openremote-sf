@@ -28,7 +28,7 @@
 #import "ServerDefinition.h"
 #import "ViewHelper.h"
 #import "DirectoryDefinition.h"
-#import "BackgroundImageRelativePositionConstant.h"
+#import "XMLEntity.h"
 #import "ClippedUIImage.h"
 #import "UIViewUtil.h"
 
