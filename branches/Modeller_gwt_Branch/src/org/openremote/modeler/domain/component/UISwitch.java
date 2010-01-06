@@ -123,8 +123,8 @@ public class UISwitch extends UIControl implements SensorOwner{
          if (offImage != null && offImage.getSrc() != null) {
             xmlContent.append("          <state name=\"off\" value=\"" + offImage.getSrc() + "\"/>\n");
          }
+         xmlContent.append("</link>");
       }
-      xmlContent.append("</link>");
       xmlContent.append("        </switch>\n");
       return xmlContent.toString();
    }

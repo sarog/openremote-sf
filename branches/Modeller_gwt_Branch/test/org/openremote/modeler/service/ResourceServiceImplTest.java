@@ -32,6 +32,7 @@ import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.SwitchCommandOffRef;
 import org.openremote.modeler.domain.SwitchCommandOnRef;
 import org.openremote.modeler.domain.SwitchSensorRef;
+import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIGrid;
@@ -40,6 +41,7 @@ import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.domain.component.UImage;
+import org.openremote.modeler.domain.component.Gesture.GestureType;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
 import org.openremote.modeler.service.impl.ResourceServiceImpl;
 import org.openremote.modeler.service.impl.UserServiceImpl;
@@ -210,6 +212,47 @@ public class ResourceServiceImplTest {
       panelWithJustOneNavigate.add(p);
       outputPanelXML(panelWithJustOneNavigate);
    }
+@Test
+public void testScreenHasGesture(){
+   Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
+   List<ScreenRef> screenRefs = new ArrayList<ScreenRef>();
+   List<GroupRef> groupRefs = new ArrayList<GroupRef> ();
+   
+   List<Gesture> gestures = new ArrayList<Gesture>();
+   
+   Navigate nav = new Navigate();
+   nav.setOid(IDUtil.nextID());
+   nav.setToGroup(1L);
+   nav.setToScreen(2L);
+   Gesture gesture = new Gesture();
+   gesture.setNavigate(nav);
+   gesture.setOid(IDUtil.nextID());
+   gesture.setType(GestureType.swipe_bottom_to_top);
+   
+   gestures.add(gesture);
+   
+   Panel p = new Panel();
+   p.setName("panel has a navigate");
+   
+   final Screen screen1 = new Screen();
+   screen1.setOid(IDUtil.nextID());
+   screen1.setName("screen1");
+   screen1.setGestures(gestures);
+   screenRefs.add(new ScreenRef(screen1));
+   
+   Group group1 = new Group();
+   group1.setOid(IDUtil.nextID());
+   group1.setName("group1");
+   group1.setScreenRefs(screenRefs);
+   
+   groupRefs.add(new GroupRef(group1));
+   p.setGroupRefs(groupRefs);
+   
+   panelWithJustOneNavigate.add(p);
+   outputPanelXML(panelWithJustOneNavigate);
+   
+   
+}
    
 @Test
    public void testPanelTabbarWithNavigateToLogical(){
@@ -444,6 +487,31 @@ public class ResourceServiceImplTest {
       screens.add(screen);
       outputControllerXML(screens);
    }
+@Test
+public void testGetControllerXMLWithGestureHaveDeviceCommand(){
+   
+   Protocol protocol = new Protocol();
+   protocol.setType(Constants.INFRARED_TYPE);
+   
+   DeviceCommand cmd = new DeviceCommand();
+   cmd.setProtocol(protocol);
+   cmd.setName("testLirc");
+   deviceCommandService.save(cmd);
+   DeviceCommandRef cmdRef = new DeviceCommandRef(cmd);
+   resourceServiceImpl.setEventId(1);
+   List<Screen> screens = new ArrayList<Screen>();
+   Screen screen = new Screen();
+   screen.setOid(IDUtil.nextID());
+   screen.setName("screenWithButtonAndSwitch");
+   List<Gesture> gestures = new ArrayList<Gesture>();
+   Gesture gesture = new Gesture();
+   gesture.setOid(IDUtil.nextID());
+   gesture.setUiCommand(cmdRef);
+   gestures.add(gesture);
+   screen.setGestures(gestures);
+   screens.add(screen);
+   outputControllerXML(screens);
+}
    @Test
    public void testGetControllerXMLWithButtonAndSwitchHaveSensor(){
       
@@ -453,7 +521,6 @@ public class ResourceServiceImplTest {
       DeviceCommand cmd = new DeviceCommand();
       cmd.setProtocol(protocol);
       cmd.setName("testLirc");
-      //cmd.setOid(IDUtil.nextID());
       deviceCommandService.save(cmd);
       DeviceCommandRef cmdRef = new DeviceCommandRef(cmd);
       resourceServiceImpl.setEventId(1);

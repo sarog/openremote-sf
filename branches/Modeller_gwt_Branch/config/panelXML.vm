@@ -18,33 +18,14 @@
 ##******@author Javen**********
 ##*****************************
 <?xml version="1.0" encoding="UTF-8"?>
-<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/panel.xsd">
-  #########################panels######################
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/controller.xsd">
+  ##-----------------------------------------------------------------panels---------------------------------------------------------------------------
   <panels>
   #foreach ($panel in $panels)
   	<panel id="${panel.getOid()}" name="${panel.getName()}">
   		##<-------tabbar---------->##
 		#if($panel.getTabbarItems().size()>0)
-			<tabbar>
-		  		#foreach($tabbarItem in $panel.getTabbarItems())
-		  			<item name="$tabbarItem.getName()">
-		  				#set($navigate = $tabbarItem.getNavigate())
-		  				<navigate 
-		  					#if($navigate.getToGroup()!=-1)
-		  						toGroup="${navigate.getToGroup()}"
-		  						#if($navigate.getToScreen()!=-1)
-		  							toScreen="${navigate.getToScreen()}"
-		  						#end
-		  					#else
-		  						to="${navigate.getToLogical().toString()}"
-		  					#end
-		  					/>
-		  				#if($!{tabbarItem.getImage()})
-		  					<image src="${tabbarItem.getImage().getSrc()}" state="$!{tabbarItem.getImage().getState()}"/>
-		  				#end
-		  			</item>
-		  		#end
-	  		</tabbar>
+	  		#getTabbarXML($panel.getTabbarItems())
   		#end
   		##<-------tabbar---------->##
   		
@@ -59,13 +40,11 @@
   	</panel>
   #end
   </panels> 
-  #########################panels######################
-  
-  #########################screens######################
+  ##-----------------------------------------------------------------screens---------------------------------------------------------------------------
   <screens>
   	#foreach($screen in $screens)
   		<screen id="${screen.getOid()}" name="${screen.getName()}">
-  		###<-----------background---------->###
+  		##-----------------------------------------------------------------background---------------------------------------------------------------------------
   		#if($screen.getBackground().getSrc()!="")
   			<background
 	  			#if(!$screen.getBackground().isFillScreen())
@@ -80,17 +59,13 @@
   				<image src="${screen.getBackground().getSrc()}"/>
   			</background>
   		#end
-  		###<-----------background---------->###
-  		
-  		###<------------absolute---------->###
+  		##-----------------------------------------------------------------absolute---------------------------------------------------------------------------
   		#foreach($absolute in $screen.getAbsolutes())
   			<absolute left="${absolute.getLeft()}" top="${absolute.getTop()}" width="${absolute.getWidth()}" height="${absolute.getHeight()}">
   				${absolute.getUIComponent().getPanelXml()}
   			</absolute>
   		#end
-  		###<------------absolute---------->###
-  		
-  		###<------------grid---------->###
+  		##--------------------------------------------------------------------grid---------------------------------------------------------------------------
   		#foreach($grid in $screen.getGrids())
   			<grid left="${grid.getLeft()}" top="${grid.getTop()}" width="${grid.getWidth()}" height="${grid.getHeight()}" rows="${grid.getRowCount()}" cols="${grid.getColumnCount()}">
   				#foreach($cell in $grid.getCells())
@@ -100,38 +75,23 @@
   				#end
   			</grid>
   		#end
-  		###<------------grid---------->###
+  		##-----------------------------------------------------------------gesture---------------------------------------------------------------------------
+  		#foreach($gesture in $screen.getGestures())
+  			<gesture id="${gesture.getOid()}" type="${gesture.getType().toString()}">
+  				#set($navigate=${gesture.getNavigate()})
+  				#getNavigateXML(${navigate})
+  			</gesture>
+  		#end
   		</screen>
   	#end
   </screens>
-  #########################screens######################
-  
-  #########################groups######################
+  ##-----------------------------------------------------------------groups---------------------------------------------------------------------------
   	<groups>
   		#foreach($group in $groups)
   			<group id="${group.getOid()}" name="${group.getName()}">
   				##<-------tabbar---------->##
 				#if($group.getTabbarItems().size()>0)
-					<tabbar>
-				  		#foreach($tabbarItem in $group.getTabbarItems())
-				  			<item name="$tabbarItem.getName()">
-				  				#set($navigate = $tabbarItem.getNavigate())
-				  				<navigate 
-				  					#if($navigate.getToGroup()!=-1)
-				  						toGroup="${navigate.getToGroup()}"
-				  						#if($navigate.getToScreen()!=-1)
-				  							toScreen="${navigate.getToScreen()}"
-				  						#end
-				  					#else
-				  						to="${navigate.getToLogical().toString()}"
-				  					#end
-				  					/>
-				  				#if($!{tabbarItem.getImage()})
-				  					<image src="${tabbarItem.getImage().getSrc()}" state="$!{tabbarItem.getImage().getState()}"/>
-				  				#end
-				  			</item>
-				  		#end
-			  		</tabbar>
+					#getTabbarXML($group.getTabbarItems())
 		  		#end
   				##<-------tabbar---------->##
 				
@@ -145,7 +105,38 @@
   			</group>
   		#end
   	</groups>
-  #########################groups######################
-  
-  
 </openremote>
+##----------------------------------------------------------------------------Methods-------------------------------------------------------------------------------------
+#*
+*	===================get the xml string for tabbar .===================
+*#
+#macro(getTabbarXML,$tabbarItems)
+	<tabbar>
+		#foreach($tabbarItem in $tabbarItems)
+			<item name="$tabbarItem.getName()">
+				#set($navigate = $tabbarItem.getNavigate())
+				#getNavigateXML($navigate)
+				#if($!{tabbarItem.getImage()})
+					<image src="${tabbarItem.getImage().getSrc()}" state="$!{tabbarItem.getImage().getState()}"/>
+				#end
+			</item>
+		#end
+	</tabbar>
+#end
+
+#*
+*	===================get the xml string for tabbar .===================
+*#
+#macro(getNavigateXML,$navigate)
+	<navigate 
+		#if($navigate.getToGroup()!=-1)
+			toGroup="${navigate.getToGroup()}"
+			#if($navigate.getToScreen()!=-1)
+				toScreen="${navigate.getToScreen()}"
+			#end
+		#else
+			to="${navigate.getToLogical().toString()}"
+		#end
+		/>
+#end
+##----------------------------------------------------------------------------Methods-------------------------------------------------------------------------------------

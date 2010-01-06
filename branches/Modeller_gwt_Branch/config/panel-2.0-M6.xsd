@@ -324,7 +324,7 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="include"/>
+				<xsd:element ref="navigate" minOccurs="0" maxOccurs="unbounded"/>
 			</xsd:sequence>
 			<xsd:attribute name="type" type="xsd:string" use="required"/>
 			<xsd:attribute name="id" type="idType" use="required"/>

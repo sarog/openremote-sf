@@ -283,8 +283,7 @@
 			<xsd:sequence>
 				<xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
 			</xsd:sequence>
-			<xsd:attribute name="id" type="xsd:int" />
-			<xsd:attribute name="type" type="xsd:string" />
+			<xsd:attribute name="id" type="xsd:int" use="required"/>
 		</xsd:complexType>
 	</xsd:element>
 	
