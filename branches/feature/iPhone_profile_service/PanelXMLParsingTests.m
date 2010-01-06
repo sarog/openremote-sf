@@ -357,12 +357,30 @@
 						[cells addObject:cell];
 						if ([cell.component isKindOfClass:[Slider class]]) {
 							Slider *theSlider = (Slider *)cell.component;
-							int expectedId = (59 + slider_index++);
+							int expectedId = (59 + slider_index);
 							STAssertTrue(expectedId == theSlider.componentId,@"expected %d, but %d",expectedId,theSlider.componentId);
 							float maxValue = 100.0f;						
 							STAssertTrue(theSlider.maxValue == maxValue,@"expected %f, but %f", maxValue, theSlider.maxValue);
 							float minValue = 0.0f;
 							STAssertTrue(theSlider.minValue == minValue,@"expected %f, but %f", minValue, theSlider.minValue);
+							
+							NSString *expectedThumbImageSrc = @"thumbImage.png";
+							NSString *expectedMinImageSrc = @"mute.png";
+							NSString *expectedMinTrackImageSrc = @"red.png";
+							NSString *expectedMaxImageSrc = @"loud.png";
+							NSString *expectedMaxTrackImageSrc = @"green.png";
+							NSString *assertMsgOfImageSrc = @"expected %@, but %@";
+							BOOL expectedVertical = NO;
+							if (slider_index % 2 == 0) {
+								expectedVertical = YES;
+							}
+							slider_index++;
+							STAssertTrue([theSlider.thumbImage.src isEqualToString:expectedThumbImageSrc], assertMsgOfImageSrc, expectedThumbImageSrc, theSlider.thumbImage.src);
+							STAssertTrue([theSlider.minImage.src isEqualToString:expectedMinImageSrc], assertMsgOfImageSrc, expectedMinImageSrc, theSlider.minImage.src);
+							STAssertTrue([theSlider.minTrackImage.src isEqualToString:expectedMinTrackImageSrc], assertMsgOfImageSrc, expectedMinTrackImageSrc, theSlider.minTrackImage.src);
+							STAssertTrue([theSlider.maxImage.src isEqualToString:expectedMaxImageSrc], assertMsgOfImageSrc, expectedMaxImageSrc, theSlider.maxImage.src);
+							STAssertTrue([theSlider.maxTrackImage.src isEqualToString:expectedMaxTrackImageSrc], assertMsgOfImageSrc, expectedMaxTrackImageSrc, theSlider.maxTrackImage.src);
+							STAssertTrue(theSlider.vertical == expectedVertical, @"expected %d, but %d", expectedVertical, theSlider.vertical);
 						}	
 					}
 				}				
@@ -433,12 +451,31 @@
 					
 					if ([abso.component isKindOfClass:[Slider class]]) {
 						Slider *theSlider = (Slider *)abso.component;
-						int expectedId = (59 + slider_index++);
+						int expectedId = (59 + slider_index);
 						STAssertTrue(expectedId == theSlider.componentId,@"expected %d, but %d",expectedId,theSlider.componentId);
 						float maxValue = 100.0f;						
 						STAssertTrue(theSlider.maxValue == maxValue,@"expected %f, but %f", maxValue, theSlider.maxValue);
 						float minValue = 0.0f;
 						STAssertTrue(theSlider.minValue == minValue,@"expected %f, but %f", minValue, theSlider.minValue);
+						
+						BOOL expectedVertical = NO;
+						if (slider_index % 2 == 0) {
+							expectedVertical = YES;
+						}
+						slider_index++;
+						
+						NSString *expectedThumbImageSrc = @"thumbImage.png";
+						NSString *expectedMinImageSrc = @"mute.png";
+						NSString *expectedMinTrackImageSrc = @"red.png";
+						NSString *expectedMaxImageSrc = @"loud.png";
+						NSString *expectedMaxTrackImageSrc = @"green.png";
+						NSString *assertMsgOfImageSrc = @"expected %@, but %@";
+						STAssertTrue([theSlider.thumbImage.src isEqualToString:expectedThumbImageSrc], assertMsgOfImageSrc, expectedThumbImageSrc, theSlider.thumbImage.src);
+						STAssertTrue([theSlider.minImage.src isEqualToString:expectedMinImageSrc], assertMsgOfImageSrc, expectedMinImageSrc, theSlider.minImage.src);
+						STAssertTrue([theSlider.minTrackImage.src isEqualToString:expectedMinTrackImageSrc], assertMsgOfImageSrc, expectedMinTrackImageSrc, theSlider.minTrackImage.src);
+						STAssertTrue([theSlider.maxImage.src isEqualToString:expectedMaxImageSrc], assertMsgOfImageSrc, expectedMaxImageSrc, theSlider.maxImage.src);
+						STAssertTrue([theSlider.maxTrackImage.src isEqualToString:expectedMaxTrackImageSrc], assertMsgOfImageSrc, expectedMaxTrackImageSrc, theSlider.maxTrackImage.src);
+						STAssertTrue(theSlider.vertical == expectedVertical, @"expected %d, but %d", expectedVertical, theSlider.vertical);
 					}					
 				}				
 			}

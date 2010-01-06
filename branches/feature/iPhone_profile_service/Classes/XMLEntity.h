@@ -38,6 +38,8 @@ extern NSString *const NAME;
 extern NSString *const VALUE;
 
 extern NSString *const SLIDER;
+extern NSString *const THUMB_IMAGE;
+extern NSString *const VERTICAL;
 extern NSString *const MIN_VALUE;
 extern NSString *const MAX_VALUE;
 extern NSString *const IMAGE;

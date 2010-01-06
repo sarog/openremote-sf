@@ -47,6 +47,8 @@ NSString *const NAME = @"name";
 NSString *const VALUE = @"value";
 
 NSString *const SLIDER = @"slider";
+NSString *const THUMB_IMAGE = @"thumbImage";
+NSString *const VERTICAL = @"vertical";
 NSString *const MIN_VALUE = @"min";
 NSString *const MAX_VALUE = @"max";
 NSString *const IMAGE = @"image";
