@@ -107,8 +107,7 @@ public class UIImage extends UIComponent implements SensorOwner{
 
    @Override
    public void transImagePathToRelative(String relativeSessionFolderPath) {
-      // TODO Auto-generated method stub
-
+      src = relativeSessionFolderPath + src.substring(src.lastIndexOf("/") + 1);
    }
    
    public @Override int getPreferredWidth(){
