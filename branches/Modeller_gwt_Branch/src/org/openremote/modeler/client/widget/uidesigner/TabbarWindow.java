@@ -32,7 +32,7 @@ import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.UITabbarItem;
-import org.openremote.modeler.domain.component.UImage;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
@@ -256,10 +256,10 @@ public class TabbarWindow extends CommonWindow {
       imageForm.setMethod(Method.POST);
       imageForm.addListener(Events.Submit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
-            UImage image = selectTabbarItem.getImage();
+            ImageSource image = selectTabbarItem.getImage();
             String imageSrc =  be.getResultHtml();
             if (image == null) {
-               image = new UImage(imageSrc);
+               image = new ImageSource(imageSrc);
             } else {
                image.setSrc(imageSrc);
             }

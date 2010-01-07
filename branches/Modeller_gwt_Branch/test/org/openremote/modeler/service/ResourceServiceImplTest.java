@@ -40,7 +40,7 @@ import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.domain.component.UITabbarItem;
-import org.openremote.modeler.domain.component.UImage;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Gesture.GestureType;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
 import org.openremote.modeler.service.impl.ResourceServiceImpl;
@@ -82,8 +82,8 @@ public class ResourceServiceImplTest {
       UIButton absBtn = new UIButton();            //UIButton
       absBtn.setOid(IDUtil.nextID());
       absBtn.setName("abs_btn1");
-      UImage defaultImage = new UImage("default.jpg");
-      UImage pressedImage = new UImage("pressed.jpg");
+      ImageSource defaultImage = new ImageSource("default.jpg");
+      ImageSource pressedImage = new ImageSource("pressed.jpg");
       absBtn.setImage(defaultImage);
       absBtn.setPressImage(pressedImage);
       
@@ -109,8 +109,8 @@ public class ResourceServiceImplTest {
       
       UISwitch absSwitch = new UISwitch();      //UISwitch
       absSwitch.setOid(IDUtil.nextID());
-      UImage onImage = new UImage("on.jpg");
-      UImage offImage = new UImage("off.jpg");
+      ImageSource onImage = new ImageSource("on.jpg");
+      ImageSource offImage = new ImageSource("off.jpg");
       absSwitch.setOnImage(onImage);
       absSwitch.setOffImage(offImage);
       absSwitch.setSwitchCommand(switchToggle);
@@ -279,7 +279,7 @@ public void testScreenHasGesture(){
       nav.setOid(IDUtil.nextID());
       nav.setToLogical(ToLogicalType.back);
       
-      UImage image = new UImage();
+      ImageSource image = new ImageSource();
       image.setBorder(14);
       image.setSrc("http://finalist.cn/logo.ico");
       
@@ -304,7 +304,7 @@ public void testScreenHasGesture(){
       nav.setOid(IDUtil.nextID());
       nav.setToLogical(ToLogicalType.back);
       
-      UImage image = new UImage();
+      ImageSource image = new ImageSource();
       image.setBorder(14);
       image.setSrc("http://finalist.cn/logo.ico");
       
@@ -334,7 +334,7 @@ public void testScreenHasGesture(){
       Screen screen = new Screen();
       screen.setOid(IDUtil.nextID());
       
-      screen.getBackground().setSrc("http://finalist.cn/logo.jpg");
+      screen.getBackground().setImageSource(new ImageSource("http://finalist.cn/logo.jpg"));
       
       Panel p = new Panel();
       p.setName("panel has a navigate");

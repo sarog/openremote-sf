@@ -143,13 +143,6 @@ public class UIGrid extends UIComponent {
       // TODO Auto-generated method stub
       return null;
    }
-
-   @Override
-   public void transImagePathToRelative(String relativeSessionFolderPath) {
-      // TODO Auto-generated method stub
-
-   }
-
    @Override
    public String getName() {
      return "Grid";

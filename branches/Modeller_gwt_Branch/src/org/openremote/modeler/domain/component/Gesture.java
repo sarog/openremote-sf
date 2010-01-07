@@ -70,11 +70,6 @@ public class Gesture extends UIControl {
       return null;
    }
    @Override
-   public void transImagePathToRelative(String relativeSessionFolderPath) {
-      // TODO Auto-generated method stub
-      
-   }
-   @Override
    public List<UICommand> getCommands() {
       return new ArrayList<UICommand>(){
          {add(uiCommand);} 

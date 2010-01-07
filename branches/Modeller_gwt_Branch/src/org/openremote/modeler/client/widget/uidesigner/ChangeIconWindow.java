@@ -26,7 +26,7 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.ImageUploadField;
 import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
-import org.openremote.modeler.domain.component.UImage;
+import org.openremote.modeler.domain.component.ImageSource;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BaseListLoader;
@@ -118,7 +118,7 @@ public class ChangeIconWindow extends Dialog {
     * 
     * @param screenButton the screen button
     */
-   public ChangeIconWindow(ScreenComponent screenControl, UImage uImage) {
+   public ChangeIconWindow(ScreenComponent screenControl, ImageSource uImage) {
       ScreenCanvas canvas = screenControl.getScreenCanvas();
       createScreenControl(canvas, screenControl, uImage);
       window = this;
@@ -418,7 +418,7 @@ public class ChangeIconWindow extends Dialog {
     * @param screenControl the screen control
     * @param uImage the u image
     */
-   private void createScreenControl(ScreenCanvas canvas, ScreenComponent screenControl, UImage uImage) {
+   private void createScreenControl(ScreenCanvas canvas, ScreenComponent screenControl, ImageSource uImage) {
       screenButton = new ScreenButton(canvas, screenControl.getWidth(), screenControl.getHeight());
       screenButton.setName(screenControl.getName());
       if (uImage != null) {

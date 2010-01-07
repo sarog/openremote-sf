@@ -45,6 +45,19 @@ public class UIComponentBox {
          uiComponentsMap.put((Class<UIComponent>) component.getClass(), components);
       }
       Set<UIComponent> components = uiComponentsMap.get(component.getClass());
+      /*
+       * save or update 
+       */
+      UIComponent oldComponent = null;
+      for(UIComponent uiComponent : components){
+         if(uiComponent.getOid()==component.getOid()){
+            oldComponent = uiComponent;
+            break;
+         }
+      }
+      if(oldComponent!=null){
+         components.remove(oldComponent);
+      }
       components.add(component);
    }
    /**

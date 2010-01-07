@@ -109,19 +109,13 @@ public class UILabel extends UIComponent implements SensorOwner{
    @Override
    public String getPanelXml() {
       StringBuilder sb = new StringBuilder();
-      sb.append("<label id=\""+getOid()+"\" font-size=\""+fontSize+"\" color=\""+color+"\">\n" );
+      sb.append("<label id=\""+getOid()+"\" font-size=\""+fontSize+"\" color=\"#"+color+"\" text=\""+text+"\">\n" );
       if(sensor!=null){
          sb.append(sensorLinker.getXMLString());
       }
       sb.append("</label>");
       return sb.toString();
    }
-
-   @Override
-   public void transImagePathToRelative(String relativeSessionFolderPath) {
-      //TODO
-   }
-
 
    @Override
    public String getName() {

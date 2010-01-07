@@ -95,4 +95,18 @@ public class Sensor extends BusinessEntity {
       sb.append("</link>");
       return sb.toString();
    }
+   
+   @Override
+   public int hashCode() {
+      return (int) getOid();
+   }
+   
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
+      Sensor other = (Sensor) obj;
+      return getOid()==other.getOid();
+   }
 }

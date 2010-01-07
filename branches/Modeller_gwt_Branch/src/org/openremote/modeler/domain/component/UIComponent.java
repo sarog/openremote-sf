@@ -54,7 +54,6 @@ public abstract class UIComponent extends BusinessEntity {
       this.removed = removed;
    }
 
-   public abstract void transImagePathToRelative(String relativeSessionFolderPath);
 
    /*
     * Generate the xml content which used in panel.xml
@@ -139,7 +138,7 @@ public abstract class UIComponent extends BusinessEntity {
          return false;
       }
       UIComponent other = (UIComponent) obj;
-      return other.getOid() == getOid();
+      return other.getPanelXml().equals(getPanelXml());
    }
 
    @Override

@@ -19,50 +19,33 @@
 */
 package org.openremote.modeler.domain.component;
 
+import org.openremote.modeler.domain.BusinessEntity;
+
 
 /**
  * The Class UImage.
  */
 @SuppressWarnings("serial")
-public class UImage extends UIComponent {
+public class ImageSource extends BusinessEntity {
 
    private String src;
-   private String state;
-   private int border;
-   public UImage() {
+   public ImageSource() {
    }
-   public UImage(String src) {
+   public ImageSource(String src) {
       this.src = src;
    }
    
    public String getSrc() {
       return src;
    }
-   public String getState() {
-      return state;
-   }
-   public int getBorder() {
-      return border;
-   }
    public void setSrc(String src) {
       this.src = src;
    }
-   public void setState(String state) {
-      this.state = state;
+   public String getImageFileName(){
+      String result = "";
+      if(src!=null && src.trim().length()!=0){
+         result = src.substring(src.lastIndexOf("/")+1);
+      }
+      return result;
    }
-   public void setBorder(int border) {
-      this.border = border;
-   }
-   @Override
-   public String getPanelXml() {
-      // TODO 
-      return null;
-   }
-   @Override
-   public void transImagePathToRelative(String relativeSessionFolderPath) {
-      // TODO
-      
-   }
-   
-   
 }

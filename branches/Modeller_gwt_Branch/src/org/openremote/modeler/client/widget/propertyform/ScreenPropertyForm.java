@@ -32,6 +32,7 @@ import org.openremote.modeler.domain.Background;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Background.RelativeType;
 import org.openremote.modeler.domain.component.Gesture;
+import org.openremote.modeler.domain.component.ImageSource;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -304,7 +305,7 @@ public class ScreenPropertyForm extends PropertyForm {
       });
       whetherFieldGroup.hide();
       whetherFieldGroup.setValue(canvas.getScreen().getBackground().isFillScreen()?fillScreen:notFillScreen);
-      String backgroundSrc = canvas.getScreen().getBackground().getSrc();
+      String backgroundSrc = canvas.getScreen().getBackground().getImageSource().getSrc();
       if (backgroundSrc != null && !backgroundSrc.equals("")) {
          whetherFieldGroup.show();
       }
@@ -323,7 +324,7 @@ public class ScreenPropertyForm extends PropertyForm {
             canvas.mask("Uploading image...");
          }
       };
-      background.setValue(canvas.getScreen().getBackground().getSrc());
+      background.setValue(canvas.getScreen().getBackground().getImageSource().getSrc());
       background.setFieldLabel("Background");
       return background;
    }
@@ -369,7 +370,7 @@ public class ScreenPropertyForm extends PropertyForm {
 
    private void setBackground(String backgroundImgURL) {
       Screen screen = canvas.getScreen();
-      screen.setBackground(new Background(backgroundImgURL));
+      screen.setBackground(new Background(new ImageSource(backgroundImgURL)));
       canvas.setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
       canvas.unmask();
 

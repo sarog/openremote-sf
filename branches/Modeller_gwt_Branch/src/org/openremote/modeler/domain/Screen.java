@@ -51,12 +51,12 @@ public class Screen extends RefedEntity {
    private TouchPanelDefinition touchPanelDefinition;
    
    /** The background. */
-   private Background background = new Background("");
+   private Background background = null;
 
    private List<Gesture> gestures = new ArrayList<Gesture>();
    
    public Screen() {
-      this.background = new Background("");
+      this.background =  new Background();
    }
    /**
     * Gets the name.
@@ -89,7 +89,7 @@ public class Screen extends RefedEntity {
    }
 
    public String getCSSBackground() {
-      return background.getSrc().replaceAll(" ", "%20");
+      return background.getImageSource().getSrc().replaceAll(" ", "%20");
    }
 
    /**

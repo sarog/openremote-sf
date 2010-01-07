@@ -25,14 +25,12 @@ import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.component.UILabel;
 
 import com.extjs.gxt.ui.client.widget.Text;
-import com.google.gwt.user.client.ui.FlexTable;
 
 /**
  * The Class ScreenButton. It display as a style box, can be adjust size.
  */
 public class ScreenLabel extends ScreenComponent {
 
-   private FlexTable labelTable = new FlexStyleBox();
 
    /** The btnTable center text. */
    protected Text center = new Text("The text of the label");
@@ -54,13 +52,11 @@ public class ScreenLabel extends ScreenComponent {
     * 
     */
    protected void initial() {
-      addStyleName("screen-btn");
-      labelTable.setWidget(1, 1, center);
-      add(labelTable);
-      
       center.setStyleAttribute("color", uiLabel.getColor());
       center.setStyleAttribute("fontSize", uiLabel.getFontSize()+"");
-      
+      setStyleAttribute("background","white");
+//      setLayout(new )
+      add(center);
       layout();
    }
 

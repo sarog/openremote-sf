@@ -27,6 +27,7 @@ import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
 import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
 import org.openremote.modeler.client.widget.uidesigner.SelectSliderWindow;
 import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UISlider;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -102,7 +103,8 @@ public class SliderPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   String minImageUrl = be.getData();
-                  uiSlider.setMinImage(minImageUrl);
+                  ImageSource minImage = new ImageSource(minImageUrl);
+                  uiSlider.setMinImage(minImage);
                   screenSlider.getSlider().setMinImageUrl(minImageUrl);
                   screenSlider.layout();
                }
@@ -121,7 +123,8 @@ public class SliderPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   String minTrackImageUrl = be.getData();
-                  uiSlider.setMinTrackImage(minTrackImageUrl);
+                  ImageSource minTrackImage = new ImageSource(minTrackImageUrl);
+                  uiSlider.setMinTrackImage(minTrackImage);
                   screenSlider.getSlider().setMinTrackImageUrl(minTrackImageUrl);
                   screenSlider.layout();
                }
@@ -140,7 +143,7 @@ public class SliderPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   String thumbImageUrl = be.getData();
-                  uiSlider.setThumbImage(thumbImageUrl);
+                  uiSlider.setThumbImage(new ImageSource(thumbImageUrl));
                   screenSlider.getSlider().setThumbImageUrl(thumbImageUrl);
                   screenSlider.layout();
                }
@@ -159,7 +162,7 @@ public class SliderPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   String maxImageUrl = be.getData();
-                  uiSlider.setMaxImage(maxImageUrl);
+                  uiSlider.setMaxImage(new ImageSource(maxImageUrl));
                   screenSlider.getSlider().setMaxImageUrl(maxImageUrl);
                   screenSlider.layout();
                }
@@ -178,7 +181,7 @@ public class SliderPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   String maxTrackImageUrl = be.getData();
-                  uiSlider.setMaxTrackImage(maxTrackImageUrl);
+                  uiSlider.setMaxTrackImage(new ImageSource(maxTrackImageUrl));
                   screenSlider.getSlider().setMinTrackImageUrl(maxTrackImageUrl);
                   screenSlider.layout();
                }
