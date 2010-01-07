@@ -33,7 +33,7 @@ import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.UIButton;
-import org.openremote.modeler.domain.component.UImage;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -129,7 +129,7 @@ public class ButtonPropertyForm extends PropertyForm {
       imageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            final UImage image = uiButton.getImage();
+            final ImageSource image = uiButton.getImage();
             ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenButton, image);
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
@@ -139,7 +139,7 @@ public class ButtonPropertyForm extends PropertyForm {
                   if (image != null) {
                      image.setSrc(imageUrl);
                   } else {
-                     uiButton.setImage(new UImage(imageUrl));
+                     uiButton.setImage(new ImageSource(imageUrl));
                   }
                }
             });
@@ -152,7 +152,7 @@ public class ButtonPropertyForm extends PropertyForm {
       onPressImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            final UImage onPressImage = uiButton.getPressImage();
+            final ImageSource onPressImage = uiButton.getPressImage();
             ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenButton, onPressImage);
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
@@ -161,7 +161,7 @@ public class ButtonPropertyForm extends PropertyForm {
                   if (onPressImage != null) {
                      onPressImage.setSrc(onPressImageUrl);
                   } else {
-                     uiButton.setPressImage(new UImage(onPressImageUrl));
+                     uiButton.setPressImage(new ImageSource(onPressImageUrl));
                   }
                }
             });

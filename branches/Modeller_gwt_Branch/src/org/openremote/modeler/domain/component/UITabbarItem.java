@@ -25,14 +25,14 @@ import javax.persistence.Transient;
 public class UITabbarItem extends UIComponent {
 
    private String name = "TabbarItem";
-   private UImage image;
+   private ImageSource image;
    private Navigate navigate = new Navigate();
    
    public String getName() {
       return name;
    }
 
-   public UImage getImage() {
+   public ImageSource getImage() {
       return image;
    }
 
@@ -44,7 +44,7 @@ public class UITabbarItem extends UIComponent {
       this.name = name;
    }
 
-   public void setImage(UImage image) {
+   public void setImage(ImageSource image) {
       this.image = image;
    }
 
@@ -60,11 +60,6 @@ public class UITabbarItem extends UIComponent {
    @Override
    public String getPanelXml() {
       return null;
-   }
-
-   @Override
-   public void transImagePathToRelative(String relativeSessionFolderPath) {
-
    }
 
 }

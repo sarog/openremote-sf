@@ -278,7 +278,6 @@
 			</xsd:sequence>
 			<xsd:attribute name="id" type="xsd:int"/>
 			<xsd:attribute name="src" type="xsd:string" use="required"/>
-			<xsd:attribute name="state" type="xsd:string"/>
 			<xsd:attribute name="style" type="xsd:string"/>
 		</xsd:complexType>
 	</xsd:element>
@@ -387,6 +386,7 @@
 			<xsd:attribute name="id" type="idType" use="required"/>
 			<xsd:attribute name="thumbImage" type="xsd:string" use="optional"/>
 			<xsd:attribute name="vertical" type="xsd:boolean" use="optional" default="false"/>
+			<xsd:attribute name="passive" type="xsd:boolean" use="optional" default="false"/>
 		</xsd:complexType>
 	</xsd:element>
 	

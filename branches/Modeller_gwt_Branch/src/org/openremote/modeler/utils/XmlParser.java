@@ -83,8 +83,8 @@ public class XmlParser {
       String result = "";
       try {         
           Document doc = sb.build(new InputSource(new StringReader(xmlString)));
-          xpathParseImage(folder, doc, "//or:*[@src]", "src");
-          xpathParseImage(folder, doc, "//or:state[@value]", "value");
+//          xpathParseImage(folder, doc, "//or:*[@src]", "src");
+//          xpathParseImage(folder, doc, "//or:state[@value]", "value");
           //xpathParseImage(folder, doc, "//or:background[@src]", "src");
          Format format = Format.getPrettyFormat();
          format.setIndent("  ");

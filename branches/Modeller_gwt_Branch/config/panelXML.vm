@@ -56,7 +56,8 @@
 	  			#else
 	  				fillScreen="true">
 	  			#end
-  				<image src="${screen.getBackground().getSrc()}"/>
+	  			#set($index=$screen.getBackground().getSrc().lastIndexOf("/")+1)
+  				<image src="${screen.getBackground().getSrc().substring($index)}"/>
   			</background>
   		#end
   		##-----------------------------------------------------------------absolute---------------------------------------------------------------------------

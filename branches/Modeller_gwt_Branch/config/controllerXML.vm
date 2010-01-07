@@ -45,7 +45,7 @@
 			<on />
 			<off />
 		#end
-		#if(${swh.getSwitchCommand().getSwitchSensorRef()})
+		#if(${swh.getSensor()})
 			<include type="sensor" ref="${swh.getSensor().getOid()}"/>
 		#end
 		</switch>
@@ -84,14 +84,16 @@
   #foreach($uiSlider in $uiSliders)
    #if($uiSlider.getSlider())
       #set($slider=$uiSlider.getSlider())
-      <slider id="${slider.getOid()}">
+      <slider id="${uiSlider.getOid()}">
       #if(${slider.getSetValueCmd()})
          #set($uiCmd=${slider.getSetValueCmd()})
          #foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
-            <include type="command" ref="${cmd.getId()}"/>
+         	<setValue>
+            	<include type="command" ref="${cmd.getId()}"/>
+            </setValue>
          #end
       #end
-      #if(${slider.getSliderSensorRef()})
+      #if(${uiSlider.getSensor()})
          <include type="sensor" ref="${uiSlider.getSensor().getOid()}"/>
       #end
       </slider>

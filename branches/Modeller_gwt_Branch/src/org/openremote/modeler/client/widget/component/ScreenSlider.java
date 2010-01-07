@@ -41,11 +41,11 @@ public class ScreenSlider extends ScreenComponent {
          slider.setVertical(true);
       }
       if (uiSlider.getMinImage() != null) {
-         slider.setMinImageUrl(uiSlider.getMinImage());
-         slider.setMinTrackImageUrl(uiSlider.getMinTrackImage());
-         slider.setThumbImageUrl(uiSlider.getThumbImage());
-         slider.setMaxImageUrl(uiSlider.getMaxImage());
-         slider.setMaxTrackImageUrl(uiSlider.getMaxTrackImage());
+         slider.setMinImageUrl(uiSlider.getMinImage().getSrc());
+         slider.setMinTrackImageUrl(uiSlider.getMinTrackImage().getSrc());
+         slider.setThumbImageUrl(uiSlider.getThumbImage().getSrc());
+         slider.setMaxImageUrl(uiSlider.getMaxImage().getSrc());
+         slider.setMaxTrackImageUrl(uiSlider.getMaxTrackImage().getSrc());
       }
    }
    

@@ -34,9 +34,9 @@ public class UIButton extends UIControl {
 
    private boolean repeate;
    
-   private UImage image;
+   private ImageSource image;
    
-   private UImage pressImage;
+   private ImageSource pressImage;
    
    private Navigate navigate = new Navigate();
 
@@ -92,11 +92,11 @@ public class UIButton extends UIControl {
       return repeate;
    }
 
-   public UImage getImage() {
+   public ImageSource getImage() {
       return image;
    }
 
-   public UImage getPressImage() {
+   public ImageSource getPressImage() {
       return pressImage;
    }
 
@@ -112,11 +112,11 @@ public class UIButton extends UIControl {
       this.repeate = repeate;
    }
 
-   public void setImage(UImage image) {
+   public void setImage(ImageSource image) {
       this.image = image;
    }
 
-   public void setPressImage(UImage pressImage) {
+   public void setPressImage(ImageSource pressImage) {
       pressImage.setState("onPress");
       this.pressImage = pressImage;
    }
@@ -134,18 +134,6 @@ public class UIButton extends UIControl {
       return commands;
    }
 
-   @Override
-   public void transImagePathToRelative(String relativeSessionFolderPath) {
-      if (image != null && image.getSrc() != null) {
-         String imageSrc = image.getSrc();
-         image.setSrc(relativeSessionFolderPath + imageSrc.substring(imageSrc.lastIndexOf("/") + 1));
-      }
-      if (pressImage != null && pressImage.getSrc() != null) {
-         String pressImageSrc = pressImage.getSrc();
-         pressImage.setSrc(relativeSessionFolderPath + pressImageSrc.substring(pressImageSrc.lastIndexOf("/") + 1));
-      }
-   }
-
    @Transient
    @Override
    public String getPanelXml() {
@@ -158,14 +146,14 @@ public class UIButton extends UIControl {
          xmlContent.append(" repeat=\"" + repeate + "\"");
       }
       xmlContent.append(">\n");
-      if (image != null && image.getSrc() != null) {
+      if (image != null && image.getImageFileName() != null) {
          xmlContent.append("          <default>\n");
-         xmlContent.append("          <icon src=\"" + image.getSrc() + "\" />\n");
+         xmlContent.append("          <icon src=\"" + image.getImageFileName() + "\" />\n");
          xmlContent.append("          </default>\n");
       }
-      if (pressImage != null && pressImage.getSrc() != null) {
+      if (pressImage != null && pressImage.getImageFileName() != null) {
          xmlContent.append("          <pressed>\n");
-         xmlContent.append("          <icon src=\"" + pressImage.getSrc()+"\" />\n");
+         xmlContent.append("          <icon src=\"" + pressImage.getImageFileName()+"\" />\n");
          xmlContent.append("          </pressed>\n");
       }
       if (navigate.isSet()) {

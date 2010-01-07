@@ -31,8 +31,8 @@ import org.openremote.modeler.domain.UICommand;
 @SuppressWarnings("serial")
 public class UISwitch extends UIControl implements SensorOwner{
 
-   private UImage onImage;
-   private UImage offImage;
+   private ImageSource onImage;
+   private ImageSource offImage;
    private Switch switchCommand;
    
    public UISwitch() {
@@ -48,17 +48,17 @@ public class UISwitch extends UIControl implements SensorOwner{
       super(id);
    }
    
-   public UImage getOnImage() {
+   public ImageSource getOnImage() {
       return onImage;
    }
-   public UImage getOffImage() {
+   public ImageSource getOffImage() {
       return offImage;
    }
-   public void setOnImage(UImage onImage) {
+   public void setOnImage(ImageSource onImage) {
       onImage.setState("ON");
       this.onImage = onImage;
    }
-   public void setOffImage(UImage offImage) {
+   public void setOffImage(ImageSource offImage) {
       offImage.setState("OFF");
       this.offImage = offImage;
    }
@@ -88,18 +88,6 @@ public class UISwitch extends UIControl implements SensorOwner{
       return commands;
    }
    
-   @Override
-   public void transImagePathToRelative(String relativeSessionFolderPath) {
-      if (onImage != null && onImage.getSrc() != null) {
-         String onImageSrc = onImage.getSrc();
-         onImage.setSrc(relativeSessionFolderPath + onImageSrc.substring(onImageSrc.lastIndexOf("/") + 1));
-      }
-      if (offImage != null && offImage.getSrc() != null) {
-         String offImageSrc = offImage.getSrc();
-         offImage.setSrc(relativeSessionFolderPath + offImageSrc.substring(offImageSrc.lastIndexOf("/") + 1));
-      }
-   }
-
    @Transient
    @Override
    public String getPanelXml() {
@@ -108,10 +96,10 @@ public class UISwitch extends UIControl implements SensorOwner{
       if(getSensor()!=null){
          xmlContent.append("<link type=\"sensor\" ref=\""+getSensor().getOid()+"\">");
          if (onImage != null && onImage.getSrc() != null) {
-            xmlContent.append("          <state name=\"on\" value=\"" + onImage.getSrc() + "\"/>\n");
+            xmlContent.append("          <state name=\"on\" value=\"" + onImage.getImageFileName() + "\"/>\n");
          }
          if (offImage != null && offImage.getSrc() != null) {
-            xmlContent.append("          <state name=\"off\" value=\"" + offImage.getSrc() + "\"/>\n");
+            xmlContent.append("          <state name=\"off\" value=\"" + offImage.getImageFileName() + "\"/>\n");
          }
          xmlContent.append("</link>");
       }

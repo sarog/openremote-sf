@@ -128,7 +128,7 @@ public class ResourceServiceImpl implements ResourceService {
       String panelXmlContent = getPanelXML(panels);
       String sectionIds = getSectionIds(screens);
 
-      replaceUrl(screens, sessionId);
+//      replaceUrl(screens, sessionId);
       // String activitiesJson = getActivitiesJson(activities);
 
       PathConfig pathConfig = PathConfig.getInstance(configuration);
@@ -186,7 +186,7 @@ public class ResourceServiceImpl implements ResourceService {
     * @param sessionId
     *           the user id
     */
-   private void replaceUrl(Collection<Screen> screens, String sessionId) {
+   /*private void replaceUrl(Collection<Screen> screens, String sessionId) {
       String rerlativeSessionFolderPath = PathConfig.getInstance(configuration).getRelativeSessionFolderPath(sessionId);
       for (Screen screen : screens) {
          for (Absolute absolute : screen.getAbsolutes()) {
@@ -199,7 +199,7 @@ public class ResourceServiceImpl implements ResourceService {
          }
       }
    }
-
+*/
    /**
     * Compress files to zip.
     * @param files the files
@@ -591,9 +591,9 @@ public class ResourceServiceImpl implements ResourceService {
    @Override
    public String getScreensJson(Collection<Screen> screens) {
       try {
-         String[] includedPropertyNames = {"absolutes", "absolutes.uiCommand", "grid", "grid.cells",
-               "grid.cells.uiCommand"};
-         String[] excludePropertyNames = {"absolutes.uiControl.panelXml", "grid.cells.uiControl.panelXml"};
+         String[] includedPropertyNames = {"absolutes", "absolutes.uiComponent", "grid", "grid.cells",
+               "grid.cells.uiComponent"};
+         String[] excludePropertyNames = {"absolutes.uiComponent.panelXml", "grid.cells.uiComponent.panelXml"};
          String groupsJson = JsonGenerator
                .serializerObjectInclude(screens, includedPropertyNames, excludePropertyNames);
          return groupsJson;
@@ -607,8 +607,9 @@ public class ResourceServiceImpl implements ResourceService {
    public String getPanelsJson(Collection<Panel> panels) {
       try {
          String[] includedPropertyNames = {"groupRefs", "tabbarItems", "groupRefs.group.tabbarItems",
-               "groupRefs.group.screenRefs", "groupRefs.group.screenRefs.screen.absolutes.uiComponent",
-               "groupRefs.group.screenRefs.screen.grids.cells.uiComponent" };
+               "groupRefs.group.screenRefs", "groupRefs.group.screenRefs.screen.absolutes.uiComponent","groupRefs.group.screenRefs.screen.absolutes.uiComponent.uiCommand","groupRefs.group.screenRefs.screen.absolutes.uiComponent.commands",
+               "groupRefs.group.screenRefs.screen.grids.cells.uiComponent","groupRefs.group.screenRefs.screen.grids.cells.uiComponent.uiCommand","groupRefs.group.screenRefs.screen.grids.cells.uiComponent.commands","groupRefs.group.screenRefs.screen.grids.uiComponent.sensor",
+               "groupRefs.group.screenRefs.screen.grids.cells.uiComponent.sensor"  };
          String[] excludePropertyNames = {};
          String panelsJson = JsonGenerator.serializerObjectInclude(panels, includedPropertyNames, excludePropertyNames);
          return panelsJson;

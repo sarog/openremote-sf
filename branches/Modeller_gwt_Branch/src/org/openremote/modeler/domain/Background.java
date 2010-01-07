@@ -22,6 +22,8 @@ package org.openremote.modeler.domain;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openremote.modeler.domain.component.ImageSource;
+
 /**
  * This class is used to store the background image information for a screen. 
  * @author Javen
@@ -30,7 +32,7 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class Background extends BusinessEntity {
    
-   private String src = "";
+   private ImageSource imageSource = null;
    private boolean fillScreen = true;
    private  boolean absolute = false;
    private int left = 0;
@@ -40,17 +42,17 @@ public class Background extends BusinessEntity {
    private RelativeType relatedType = RelativeType.TOP_LEFT;
    private static Map<RelativeType, String> relativeMap;
    public Background() {
-      this.src = "";
+      this.imageSource = new ImageSource("");
    }
-   public Background(String src) {
-      this.src = src;
+   public Background(ImageSource src) {
+      this.imageSource = src;
    }
 
-   public String getSrc() {
-      return src;
+   public ImageSource getImageSource() {
+      return imageSource;
    }
-   public void setSrc(String src) {
-      this.src = src;
+   public void setImageSource(ImageSource imageSource) {
+      this.imageSource = imageSource;
    }
    public boolean isFillScreen() {
       return fillScreen;

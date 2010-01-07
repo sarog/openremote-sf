@@ -12,11 +12,11 @@ import org.openremote.modeler.domain.UICommand;
 public class UISlider extends UIControl implements SensorOwner{
 
    private boolean vertical = false;
-   private String thumbImage;
-   private String minImage;
-   private String minTrackImage;
-   private String maxImage;
-   private String maxTrackImage;
+   private ImageSource thumbImage;
+   private ImageSource minImage;
+   private ImageSource minTrackImage;
+   private ImageSource maxImage;
+   private ImageSource maxTrackImage;
    private Slider slider;
    
    public UISlider() {
@@ -42,44 +42,44 @@ public class UISlider extends UIControl implements SensorOwner{
    public void setVertical(boolean vertical) {
       this.vertical = vertical;
    }
-
-   public String getThumbImage() {
+  
+   public ImageSource getThumbImage() {
       return thumbImage;
    }
 
-   public String getMinImage() {
-      return minImage;
-   }
-
-   public String getMinTrackImage() {
-      return minTrackImage;
-   }
-
-   public String getMaxImage() {
-      return maxImage;
-   }
-
-   public String getMaxTrackImage() {
-      return maxTrackImage;
-   }
-
-   public void setThumbImage(String thumbImage) {
+   public void setThumbImage(ImageSource thumbImage) {
       this.thumbImage = thumbImage;
    }
 
-   public void setMinImage(String minImage) {
+   public ImageSource getMinImage() {
+      return minImage;
+   }
+
+   public void setMinImage(ImageSource minImage) {
       this.minImage = minImage;
    }
 
-   public void setMinTrackImage(String minTrackImage) {
+   public ImageSource getMinTrackImage() {
+      return minTrackImage;
+   }
+
+   public void setMinTrackImage(ImageSource minTrackImage) {
       this.minTrackImage = minTrackImage;
    }
 
-   public void setMaxImage(String maxImage) {
+   public ImageSource getMaxImage() {
+      return maxImage;
+   }
+
+   public void setMaxImage(ImageSource maxImage) {
       this.maxImage = maxImage;
    }
 
-   public void setMaxTrackImage(String maxTrackImage) {
+   public ImageSource getMaxTrackImage() {
+      return maxTrackImage;
+   }
+
+   public void setMaxTrackImage(ImageSource maxTrackImage) {
       this.maxTrackImage = maxTrackImage;
    }
 
@@ -105,10 +105,13 @@ public class UISlider extends UIControl implements SensorOwner{
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("        <slider id=\"" + getOid() + "\" ");
       if (thumbImage != null) {
-         xmlContent.append("thumbImage=\"" + thumbImage + "\" ");
+         xmlContent.append("thumbImage=\"" + thumbImage.getImageFileName() + "\" ");
       }
       if (vertical) {
          xmlContent.append("vertical=\"true\" ");
+      }
+      if (slider == null || slider.getSetValueCmd() == null) {
+         xmlContent.append("passive=\"true\" ");
       }
       xmlContent.append(">\n");
       if(getSensor()!=null){
@@ -117,19 +120,19 @@ public class UISlider extends UIControl implements SensorOwner{
             RangeSensor rangeSensor = (RangeSensor) getSensor();
             xmlContent.append("<min value=\"" + rangeSensor.getMin() + "\"");
             if (minImage != null) {
-               xmlContent.append(" image=\"" + minImage + "\"");
+               xmlContent.append(" image=\"" + minImage.getImageFileName() + "\"");
             }
             if (minTrackImage != null) {
-               xmlContent.append(" trackImage=\"" + minTrackImage + "\"");
+               xmlContent.append(" trackImage=\"" + minTrackImage.getImageFileName() + "\"");
             }
             xmlContent.append("/>\n");
             
             xmlContent.append("<max value=\"" + rangeSensor.getMax() + "\"");
             if (maxImage != null) {
-               xmlContent.append("image=\"" + maxImage + "\" ");
+               xmlContent.append("image=\"" + maxImage.getImageFileName() + "\" ");
             }
             if (maxTrackImage != null) {
-               xmlContent.append("trackImage=\"" + maxTrackImage + "\" ");
+               xmlContent.append("trackImage=\"" + maxTrackImage.getImageFileName() + "\" ");
             }
             xmlContent.append("/>\n");
          }
@@ -138,24 +141,6 @@ public class UISlider extends UIControl implements SensorOwner{
       return xmlContent.toString();
    }
 
-   @Override
-   public void transImagePathToRelative(String relativeSessionFolderPath) {
-      if (thumbImage != null) {
-         thumbImage = relativeSessionFolderPath + thumbImage.substring(thumbImage.lastIndexOf("/") + 1);
-      }
-      if (minImage != null) {
-         minImage = relativeSessionFolderPath + minImage.substring(minImage.lastIndexOf("/") + 1);
-      }
-      if (minTrackImage != null) {
-         minTrackImage = relativeSessionFolderPath + minTrackImage.substring(minTrackImage.lastIndexOf("/") + 1);
-      }
-      if (maxImage != null) {
-         maxImage = relativeSessionFolderPath + maxImage.substring(maxImage.lastIndexOf("/") + 1);
-      }
-      if (maxTrackImage != null) {
-         maxTrackImage = relativeSessionFolderPath + maxTrackImage.substring(maxTrackImage.lastIndexOf("/") + 1);
-      }
-   }
 
    @Override
    public String getName() {

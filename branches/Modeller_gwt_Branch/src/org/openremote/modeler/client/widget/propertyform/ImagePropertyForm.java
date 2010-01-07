@@ -36,6 +36,7 @@ import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
 
@@ -179,7 +180,7 @@ public class ImagePropertyForm extends PropertyForm {
             screenImage.getScreenCanvas().mask("Uploading image...");
          }
       };
-      imageSrc.setValue(screenImage.getUiImage().getSrc());
+      imageSrc.setValue(screenImage.getUiImage().getImageSource().getImageFileName());
       imageSrc.setFieldLabel("src");
       return imageSrc;
    }
@@ -195,29 +196,24 @@ public class ImagePropertyForm extends PropertyForm {
             
             if (!"".equals(imageURL)) {
                if(operation == Operation.UPLOAD_IMAGE){
-                  screenImage.setSrc(imageURL);
+                  screenImage.setImageSource(new ImageSource(imageURL));
                }else {
                   switch (operation){
                   case UPLOAD_SWITCH_ON_IMAGE:
                      sensorAttrMap.put("name","on");
-                     sensorAttrMap.put("value", imageURL);
-                     System.out.println("upload image for switch on: "+imageURL);
                      break;
                   case UPLOAD_SWITCH_OFF_IMAGE:
                      sensorAttrMap.put("name","off");
-                     sensorAttrMap.put("value", imageURL);
-                     System.out.println("upload image for switch off: "+imageURL);
                      break;
                   default:
                      sensorAttrMap.put("name",customSensorState.getName());
-                     sensorAttrMap.put("value", imageURL);
                   }
+                  sensorAttrMap.put("value", imageURL.substring(imageURL.lastIndexOf("/"+1)));
                   sensorLinker.AddOrUpdateChildForSensorLinker("state", sensorAttrMap);
                }
             }
             screenImage.getScreenCanvas().unmask();
             BeanModel screenBeanModel = null;
-            System.out.println(screenImage.getUiImage().getPanelXml());
             fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenBeanModel));
          }
       });
@@ -267,7 +263,6 @@ public class ImagePropertyForm extends PropertyForm {
       }else if(screenImage.getUiImage().getSensor()!=null && screenImage.getUiImage().getSensor().getType() == SensorType.CUSTOM){
          CustomSensor customSensor = (CustomSensor) screenImage.getUiImage().getSensor();
          List<State> states = customSensor.getStates();
-         System.out.println("states:"+states);
          for(final State state: states){
             ImageUploadField imageUploader = new ImageUploadField() {
                @Override

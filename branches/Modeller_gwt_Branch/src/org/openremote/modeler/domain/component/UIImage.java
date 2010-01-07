@@ -31,7 +31,7 @@ import org.openremote.modeler.domain.Sensor;
 @SuppressWarnings("serial")
 public class UIImage extends UIComponent implements SensorOwner{
 
-   private String src = "";
+   private ImageSource imageSource = new ImageSource("./image/global.logo.png");
    
    private Sensor sensor = null;
    
@@ -46,16 +46,16 @@ public class UIImage extends UIComponent implements SensorOwner{
    
    public UIImage(UIImage uiImage) {
       this.setOid(uiImage.getOid());
-      this.src = uiImage.src;
+      this.imageSource = uiImage.imageSource;
       this.sensor = uiImage.sensor;
       this.label = uiImage.label;
    }
-   public String getSrc() {
-      return src;
+   public ImageSource getImageSource() {
+      return imageSource;
    }
 
-   public void setSrc(String src) {
-      this.src = src;
+   public void setImageSource(ImageSource imageSource) {
+      this.imageSource = imageSource;
    }
 
    public Sensor getSensor() {
@@ -94,7 +94,7 @@ public class UIImage extends UIComponent implements SensorOwner{
    @Override
    public String getPanelXml() {
       StringBuilder sb = new StringBuilder();
-      sb.append("<image id=\"" + getOid() + "\" src=\"" + src + "\"> ");
+      sb.append("<image id=\"" + getOid() + "\" src=\"" + imageSource.getImageFileName() + "\"> ");
       if (sensor != null) {
          sb.append(sensorLinker.getXMLString());
       }
@@ -104,14 +104,9 @@ public class UIImage extends UIComponent implements SensorOwner{
       sb.append("</image>");
       return sb.toString();
    }
-
-   @Override
-   public void transImagePathToRelative(String relativeSessionFolderPath) {
-      src = relativeSessionFolderPath + src.substring(src.lastIndexOf("/") + 1);
-   }
    
    public @Override int getPreferredWidth(){
-      int width = 150;
+      int width = 223;
       return width;
    }
    

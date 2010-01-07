@@ -26,7 +26,7 @@ import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
 import org.openremote.modeler.client.widget.uidesigner.SelectSwitchWindow;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.component.UISwitch;
-import org.openremote.modeler.domain.component.UImage;
+import org.openremote.modeler.domain.component.ImageSource;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -49,7 +49,7 @@ public class SwitchPropertyForm extends PropertyForm {
       imageON.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            final UImage onImage = uiSwitch.getOnImage();
+            final ImageSource onImage = uiSwitch.getOnImage();
             ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenSwitch, onImage);
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
@@ -58,7 +58,7 @@ public class SwitchPropertyForm extends PropertyForm {
                   if (onImage != null) {
                      onImage.setSrc(imageOnUrl);
                   } else {
-                     uiSwitch.setOnImage(new UImage(imageOnUrl));
+                     uiSwitch.setOnImage(new ImageSource(imageOnUrl));
                   }
                   screenSwitch.setIcon(imageOnUrl);
                }
@@ -72,7 +72,7 @@ public class SwitchPropertyForm extends PropertyForm {
       imageOFF.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            final UImage offImage = uiSwitch.getOffImage();
+            final ImageSource offImage = uiSwitch.getOffImage();
             ChangeIconWindow selectImageOFFWindow = new ChangeIconWindow(screenSwitch, offImage);
             selectImageOFFWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
@@ -81,7 +81,7 @@ public class SwitchPropertyForm extends PropertyForm {
                   if (offImage != null) {
                      offImage.setSrc(imageOffUrl);
                   } else {
-                     uiSwitch.setOffImage(new UImage(imageOffUrl));
+                     uiSwitch.setOffImage(new ImageSource(imageOffUrl));
                   }
                }
             });

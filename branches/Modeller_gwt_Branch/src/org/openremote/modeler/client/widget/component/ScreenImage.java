@@ -22,9 +22,9 @@ package org.openremote.modeler.client.widget.component;
 import org.openremote.modeler.client.widget.propertyform.ImagePropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UIImage;
 
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
 
 /**
@@ -32,7 +32,6 @@ import com.google.gwt.user.client.ui.Image;
  */
 public class ScreenImage extends ScreenComponent {
 
-   private FlexTable imageTable = new FlexStyleBox();
 
    /** The btnTable center text. */
    protected Image image = new Image();
@@ -40,7 +39,7 @@ public class ScreenImage extends ScreenComponent {
    private UIImage uiImage = new UIImage();
 
    private static String DEFAULT_IMAGE_URL = "./image/global.logo.png";
-   
+
    public ScreenImage(ScreenCanvas canvas, UIImage uiImage) {
       super(canvas);
       this.uiImage = uiImage;
@@ -53,19 +52,15 @@ public class ScreenImage extends ScreenComponent {
     */
    protected void initial() {
       image.setStyleName("screen-image");
-      imageTable.removeStyleName("screen-btn-cont");
-      imageTable.setWidget(1, 1, image);
-      if (!"".equals(uiImage.getSrc())) {
-         image.setUrl(uiImage.getSrc());
+      if (!"".equals(uiImage.getImageSource().getSrc().trim())) {
+         image.setUrl(uiImage.getImageSource().getSrc());
       } else {
          image.setUrl(DEFAULT_IMAGE_URL);
       }
-      add(imageTable);
-      
+      add(image);
       layout();
    }
-   
-   
+
    public UIImage getUiImage() {
       return uiImage;
    }
@@ -74,30 +69,24 @@ public class ScreenImage extends ScreenComponent {
       this.uiImage = uiImage;
    }
 
-   public void setSrc(String imageURL){
-      imageTable.removeStyleName("screen-btn-cont");
-      uiImage.setSrc(imageURL);
-      image.setUrl(imageURL);
-      imageTable.setWidget(1, 1, image);
+   public void setImageSource(ImageSource imageURL) {
+      uiImage.setImageSource(imageURL);
+      image.setUrl(imageURL.getSrc());
    }
+
    @Override
    public void setName(String name) {
       return;
    }
-   
 
    @Override
    public String getName() {
       return uiImage.getName();
    }
 
-
    @Override
    public PropertyForm getPropertiesForm() {
       return new ImagePropertyForm(this);
    }
-
-  
-
 
 }

@@ -163,7 +163,6 @@ public class LabelPropertyForm extends PropertyForm {
               sensorAttrs.put("name", "on");
               sensorAttrs.put("value", onText);
               screenLabel.getUiLabel().getSensorLinker().AddOrUpdateChildForSensorLinker("state", sensorAttrs);
-              System.out.println(screenLabel.getUiLabel().getPanelXml());
            }
         });
         
@@ -174,7 +173,6 @@ public class LabelPropertyForm extends PropertyForm {
               sensorAttrs.put("name", "off");
               sensorAttrs.put("value", offText);
               screenLabel.getUiLabel().getSensorLinker().AddOrUpdateChildForSensorLinker("state", sensorAttrs);
-              System.out.println(screenLabel.getUiLabel().getPanelXml());
            }
         });
        
