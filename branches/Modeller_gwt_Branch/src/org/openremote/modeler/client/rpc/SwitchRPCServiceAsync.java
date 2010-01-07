@@ -10,7 +10,7 @@ public interface SwitchRPCServiceAsync {
 
    void loadAll(AsyncCallback<List<Switch>> callback);
 
-   void delete(Switch switchToggle, AsyncCallback<Void> callback);
+   void delete(long id, AsyncCallback<Void> callback);
 
    void save(Switch switchToggle, AsyncCallback<Switch> callback);
 

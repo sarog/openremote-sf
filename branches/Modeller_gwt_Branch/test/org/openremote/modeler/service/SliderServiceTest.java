@@ -78,7 +78,7 @@ public class SliderServiceTest {
    public void testDelte(){
       Slider slider = new Slider();
       slider.setOid(1);
-      service.delete(slider);
+      service.delete(1);
       Collection<Slider> switchs = service.loadAll();
       Assert.assertEquals(switchs.size(), 1);
    }

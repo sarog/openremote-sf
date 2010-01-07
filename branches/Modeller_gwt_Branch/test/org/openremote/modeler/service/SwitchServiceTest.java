@@ -82,7 +82,7 @@ public class SwitchServiceTest {
    public void testDelte(){
       Switch swh = new Switch();
       swh.setOid(1);
-      service.delete(swh);
+      service.delete(1);
       Collection<Switch> switchs = service.loadAll();
       Assert.assertEquals(switchs.size(), 1);
    }

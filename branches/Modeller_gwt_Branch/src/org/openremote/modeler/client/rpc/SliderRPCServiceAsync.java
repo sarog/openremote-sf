@@ -10,7 +10,7 @@ public interface SliderRPCServiceAsync {
 
    void save(Slider slider, AsyncCallback<Void> callback);
 
-   void delete(Slider slider, AsyncCallback<Void> callback);
+   void delete(long id, AsyncCallback<Void> callback);
 
    void update(Slider slider, AsyncCallback<Void> callback);
 

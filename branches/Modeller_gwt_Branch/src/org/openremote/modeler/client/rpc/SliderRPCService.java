@@ -12,7 +12,7 @@ public interface SliderRPCService extends RemoteService {
    
    void save(Slider slider);
 
-   void delete(Slider slider);
+   void delete(long id);
 
    void update(Slider slider);
 
