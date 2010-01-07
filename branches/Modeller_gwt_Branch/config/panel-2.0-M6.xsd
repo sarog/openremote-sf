@@ -381,10 +381,11 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:group ref="sliderGroup" />
+				<xsd:group ref="sliderGroup" minOccurs="2" maxOccurs="3"/>
 			</xsd:sequence>
 			<xsd:attribute name="id" type="idType" use="required"/>
 			<xsd:attribute name="thumbImage" type="xsd:string" use="optional"/>
+			<xsd:attribute name="vertical" type="xsd:boolean" use="optional" default="false"/>
 		</xsd:complexType>
 	</xsd:element>
 	
@@ -482,7 +483,7 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:group ref="componentGroup"></xsd:group>
+				<xsd:group ref="componentGroup" minOccurs="1" maxOccurs="1"/>
 			</xsd:sequence>
 			<xsd:attribute name="x" type="xsd:int" use="required"/>
 			<xsd:attribute name="y" type="xsd:int" use="required"/>
@@ -509,6 +510,7 @@
 			<xsd:element ref="label"/>
 			<xsd:element ref="switch"/>
 			<xsd:element ref="image"/>
+			<xsd:element ref="slider"/>
 		</xsd:choice>
 	</xsd:group>
 	
@@ -532,6 +534,7 @@
 	
 	<xsd:group name="sliderGroup">
 		<xsd:choice>
+			<xsd:element ref="link" minOccurs="0" maxOccurs="1"/>
 			<xsd:element ref="min" minOccurs="1" maxOccurs="1"/>
 			<xsd:element ref="max" minOccurs="1" maxOccurs="1"/>
 		</xsd:choice>

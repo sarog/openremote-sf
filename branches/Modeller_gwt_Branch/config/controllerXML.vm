@@ -27,25 +27,17 @@
 			#set($switchCmd=${swh.getSwitchCommand()})
 			<on>
 				#if(${switchCmd.getSwitchCommandOnRef()})
-	  				#set($uiCmd=${switchCmd.getSwitchCommandOnRef().getDeviceCommand()})
-	  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd.getDeviceCommandRef(),$eventContainer)})
-	  					#if($cmd.getDelay().equals(""))
-	  						<include type="command" ref="${cmd.getId()}"/>
-	  					#else
-	  						<delay>${cmd.getDelay()}</delay>
-	  					#end
+	  				#set($uiCmd=${switchCmd.getSwitchCommandOnRef()})
+	  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
+  						<include type="command" ref="${cmd.getId()}"/>
 					#end
 				#end
 			</on>
 			<off>
 				#if(${switchCmd.getSwitchCommandOffRef()})
-	  				#set($uiCmd=${switchCmd.getSwitchCommandOffRef().getDeviceCommand()})
-	  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd.getDeviceCommandRef(),$eventContainer)})
-	  					#if($cmd.getDelay().equals(""))
-	  						<include type="command" ref="${cmd.getId()}"/>
-	  					#else
-	  						<delay>${cmd.getDelay()}</delay>
-	  					#end
+	  				#set($uiCmd=${switchCmd.getSwitchCommandOffRef()})
+	  				#foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
+	  					<include type="command" ref="${cmd.getId()}"/>
 					#end
 				#end
 			</off>
@@ -54,7 +46,7 @@
 			<off />
 		#end
 		#if(${swh.getSwitchCommand().getSwitchSensorRef()})
-			<include type="sensor" ref="${swh.getSwitchCommand().getSwitchSensorRef().getSensor().getOid()}"/>
+			<include type="sensor" ref="${swh.getSensor().getOid()}"/>
 		#end
 		</switch>
   	#end
@@ -88,8 +80,41 @@
 		#end
 		</gesture>
   #end
+  ##<------------------------------------------------------------------------Slider------------------------------------------------------------------
+  #foreach($uiSlider in $uiSliders)
+   #if($uiSlider.getSlider())
+      #set($slider=$uiSlider.getSlider())
+      <slider id="${slider.getOid()}">
+      #if(${slider.getSetValueCmd()})
+         #set($uiCmd=${slider.getSetValueCmd()})
+         #foreach($cmd in ${xmlParser.getEventsOfDeviceMacroItem($uiCmd,$eventContainer)})
+            <include type="command" ref="${cmd.getId()}"/>
+         #end
+      #end
+      #if(${slider.getSliderSensorRef()})
+         <include type="sensor" ref="${uiSlider.getSensor().getOid()}"/>
+      #end
+      </slider>
+    #end
+  #end
+  ##<------------------------------------------------------------------------Image------------------------------------------------------------------
+  #foreach($image in $images)
+   <image id="${image.getOid()}">
+      #if($image.getSensor())
+         <include type="sensor" ref="${image.getSensor().getOid()}"/>
+      #end
+    </image>
+  #end
+  ##<------------------------------------------------------------------------Label------------------------------------------------------------------
+  #foreach($label in $labels)
+   <label id="${label.getOid()}">
+      #if($label.getSensor())
+         <include type="sensor" ref="${label.getSensor().getOid()}"/>
+      #end
+    </label>
+  #end
   </components>
- ##<------------------------------------------------------------------------Sensors------------------------------------------------------------------
+  ##<------------------------------------------------------------------------Sensors------------------------------------------------------------------
   <sensors>
   	#foreach($sensor in $sensors)
   		<sensor id="${sensor.getOid()}" name="${sensor.getName()}" type="${sensor.getType()}">

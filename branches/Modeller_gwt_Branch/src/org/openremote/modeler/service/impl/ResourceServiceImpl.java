@@ -45,6 +45,7 @@ import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
+import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -64,6 +65,9 @@ import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIControl;
 import org.openremote.modeler.domain.component.UIGrid;
+import org.openremote.modeler.domain.component.UIImage;
+import org.openremote.modeler.domain.component.UILabel;
+import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.XmlParserException;
@@ -89,8 +93,6 @@ public class ResourceServiceImpl implements ResourceService {
    
    public static final String PANEL_XML_TEMPLATE = "panelXML.vm";
    public static final String CONTROLLER_XML_TEMPLATE="controllerXML.vm";
-   
-   
 
    /** The Constant logger. */
    private static final Logger LOGGER = Logger.getLogger(ResourceServiceImpl.class);
@@ -121,10 +123,6 @@ public class ResourceServiceImpl implements ResourceService {
        */
       initGroupsAndScreens(panels, groups, screens);
       
-      /*
-       * initialize UI component box. 
-       */
-      initUIComponentBox(screens);
      
       String controllerXmlContent = getControllerXmlContent(maxId, screens);
       String panelXmlContent = getPanelXML(panels);
@@ -384,46 +382,61 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Gets the controller xml segment content.
     * 
-    * @param deviceMacroItem the device command item
+    * @param command the device command item
     * @param protocolEventContaine the protocol event container
     * 
     * @return the controller xml segment content
     */
-   public List<UIButtonEvent> getEventsOfDeviceMacroItem(UICommand deviceMacroItem,
+   public List<UIButtonEvent> getEventsOfDeviceMacroItem(UICommand command,
          ProtocolEventContainer protocolEventContainer) {
-      if(!(deviceMacroItem instanceof DeviceMacroItem)){
+      List<UIButtonEvent> oneUIButtonEventList = new ArrayList<UIButtonEvent>();
+      if (command instanceof DeviceMacroItem) {
+         if (command instanceof DeviceCommandRef) {
+            DeviceCommand deviceCommand = deviceCommandService.loadById(((DeviceCommandRef) command)
+                  .getDeviceCommand().getOid());
+            addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand);
+         } else if (command instanceof DeviceMacroRef) {
+            DeviceMacro deviceMacro = ((DeviceMacroRef) command).getTargetDeviceMacro();
+            deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
+            for (DeviceMacroItem tempDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
+               oneUIButtonEventList.addAll(getEventsOfDeviceMacroItem(tempDeviceMacroItem, protocolEventContainer));
+            }
+         } else if (command instanceof CommandDelay) {
+            CommandDelay delay = (CommandDelay) command;
+            UIButtonEvent uiButtonEvent = new UIButtonEvent();
+            uiButtonEvent.setId(this.eventId++);
+            uiButtonEvent.setDelay(delay.getDelaySecond());
+            oneUIButtonEventList.add(uiButtonEvent);
+         }
+      } else if (command instanceof CommandRefItem) {
+         DeviceCommand deviceCommand = deviceCommandService.loadById(((CommandRefItem) command)
+               .getDeviceCommand().getOid());
+         addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand);
+      } else {
          return new ArrayList<UIButtonEvent>();
       }
-      List<UIButtonEvent> oneUIButtonEventList = new ArrayList<UIButtonEvent>();
-      if (deviceMacroItem instanceof DeviceCommandRef) {
-         DeviceCommand deviceCommand = deviceCommandService.loadById(((DeviceCommandRef) deviceMacroItem)
-               .getDeviceCommand().getOid());
-         String protocolType = deviceCommand.getProtocol().getType();
-         List<ProtocolAttr> protocolAttrs = deviceCommand.getProtocol().getAttributes();
-
-         UIButtonEvent uiButtonEvent = new UIButtonEvent();
-         uiButtonEvent.setId(this.eventId++);
-         uiButtonEvent.setProtocolDisplayName(protocolType);
-         for (ProtocolAttr protocolAttr : protocolAttrs) {
-            uiButtonEvent.getProtocolAttrs().put(protocolAttr.getName(), protocolAttr.getValue());
-         }
-         uiButtonEvent.setLabel(deviceCommand.getName());
-         protocolEventContainer.addUIButtonEvent(uiButtonEvent);
-         oneUIButtonEventList.add(uiButtonEvent);
-      } else if (deviceMacroItem instanceof DeviceMacroRef) {
-         DeviceMacro deviceMacro = ((DeviceMacroRef) deviceMacroItem).getTargetDeviceMacro();
-         deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
-         for (DeviceMacroItem tempDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
-            oneUIButtonEventList.addAll(getEventsOfDeviceMacroItem(tempDeviceMacroItem, protocolEventContainer));
-         }
-      } else if (deviceMacroItem instanceof CommandDelay) {
-         CommandDelay delay = (CommandDelay) deviceMacroItem;
-         UIButtonEvent uiButtonEvent = new UIButtonEvent();
-         uiButtonEvent.setId(this.eventId++);
-         uiButtonEvent.setDelay(delay.getDelaySecond());
-         oneUIButtonEventList.add(uiButtonEvent);
-      }
       return oneUIButtonEventList;
+   }
+
+   /**
+    * @param protocolEventContainer
+    * @param oneUIButtonEventList
+    * @param deviceCommand
+    */
+   private void addDeviceCommandEvent(ProtocolEventContainer protocolEventContainer,
+         List<UIButtonEvent> oneUIButtonEventList, DeviceCommand deviceCommand) {
+      String protocolType = deviceCommand.getProtocol().getType();
+      List<ProtocolAttr> protocolAttrs = deviceCommand.getProtocol().getAttributes();
+      
+      UIButtonEvent uiButtonEvent = new UIButtonEvent();
+      uiButtonEvent.setId(this.eventId++);
+      uiButtonEvent.setProtocolDisplayName(protocolType);
+      for (ProtocolAttr protocolAttr : protocolAttrs) {
+         uiButtonEvent.getProtocolAttrs().put(protocolAttr.getName(), protocolAttr.getValue());
+      }
+      uiButtonEvent.setLabel(deviceCommand.getName());
+      protocolEventContainer.addUIButtonEvent(uiButtonEvent);
+      oneUIButtonEventList.add(uiButtonEvent);
    }
 
    /*
@@ -443,9 +456,7 @@ public class ResourceServiceImpl implements ResourceService {
          for (Absolute absolute : screen.getAbsolutes()) {
             if (absolute.getUIComponent() instanceof UIControl) {
                for (UICommand command : ((UIControl) absolute.getUIComponent()).getCommands()) {
-                  if (command instanceof DeviceMacroItem) {
-                     sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem) command));
-                  }
+                  addSectionIds(sectionIds, command);
                }
             }
          }
@@ -453,9 +464,7 @@ public class ResourceServiceImpl implements ResourceService {
             for (Cell cell : grid.getCells()) {
                if (cell.getUIComponent() instanceof UIControl) {
                   for (UICommand command : ((UIControl) cell.getUIComponent()).getCommands()) {
-                     if (command instanceof DeviceMacroItem) {
-                        sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem) command));
-                     }
+                     addSectionIds(sectionIds, command);
                   }
                }
             }
@@ -472,6 +481,18 @@ public class ResourceServiceImpl implements ResourceService {
          i++;
       }
       return sectionIdsSB.toString();
+   }
+
+   /**
+    * @param sectionIds
+    * @param command
+    */
+   private void addSectionIds(Set<String> sectionIds, UICommand command) {
+      if (command instanceof DeviceMacroItem) {
+         sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem) command));
+      } else if (command instanceof CommandRefItem) {
+         sectionIds.add(((CommandRefItem)command).getDeviceCommand().getSectionId());
+      }
    }
 
    /**
@@ -626,6 +647,9 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    public  String getControllerXML(Collection<Screen> screens){
+      /*
+       * initialize UI component box. 
+       */
       initUIComponentBox(screens);
       Map<String,Object> context = new HashMap<String,Object>();
       ProtocolEventContainer eventContainer = new ProtocolEventContainer();
@@ -634,7 +658,9 @@ public class ResourceServiceImpl implements ResourceService {
       Collection<UIComponent> switchs = uiComponentBox.getUIComponentsByType(UISwitch.class);
       Collection<UIComponent> buttons = uiComponentBox.getUIComponentsByType(UIButton.class);
       Collection<UIComponent> gestures = uiComponentBox.getUIComponentsByType(Gesture.class);
-      
+      Collection<UIComponent> uiSliders = uiComponentBox.getUIComponentsByType(UISlider.class);
+      Collection<UIComponent> uiImages = uiComponentBox.getUIComponentsByType(UIImage.class);
+      Collection<UIComponent> uiLabels = uiComponentBox.getUIComponentsByType(UILabel.class);
       context.put("switchs", switchs);
       context.put("buttons", buttons);
       context.put("screens", screens);
@@ -643,6 +669,9 @@ public class ResourceServiceImpl implements ResourceService {
       context.put("protocolContainer", protocolContainer);
       context.put("sensors", sensors);
       context.put("gestures", gestures);
+      context.put("uiSliders", uiSliders);
+      context.put("labels", uiLabels);
+      context.put("images", uiImages);
       
       return VelocityEngineUtils.mergeTemplateIntoString(velocity, CONTROLLER_XML_TEMPLATE, context);
    }

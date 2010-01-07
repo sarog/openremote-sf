@@ -94,12 +94,12 @@ public class UIImage extends UIComponent implements SensorOwner{
    @Override
    public String getPanelXml() {
       StringBuilder sb = new StringBuilder();
-      sb.append("<image id=\""+getOid()+"\" src=\""+src+"\"> ");
-      if(sensor!=null){
+      sb.append("<image id=\"" + getOid() + "\" src=\"" + src + "\"> ");
+      if (sensor != null) {
          sb.append(sensorLinker.getXMLString());
       }
-      if(label!=null){
-         sb.append("<include type=\"label\" ref=\""+label.getOid()+"\"/>\n");
+      if (label != null) {
+         sb.append("<include type=\"label\" ref=\"" + label.getOid() + "\"/>\n");
       }
       sb.append("</image>");
       return sb.toString();
