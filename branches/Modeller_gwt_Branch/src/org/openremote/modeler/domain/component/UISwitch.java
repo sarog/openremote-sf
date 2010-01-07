@@ -55,11 +55,9 @@ public class UISwitch extends UIControl implements SensorOwner{
       return offImage;
    }
    public void setOnImage(ImageSource onImage) {
-      onImage.setState("ON");
       this.onImage = onImage;
    }
    public void setOffImage(ImageSource offImage) {
-      offImage.setState("OFF");
       this.offImage = offImage;
    }
    public Switch getSwitchCommand() {
