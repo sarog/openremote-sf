@@ -21,37 +21,78 @@
 
 #import "LabelView.h"
 #import "Label.h"
+#import "NotificationConstant.h"
+#import "SensorState.h"
+#import "PollingStatusParserDelegate.h"
 
 @interface LabelView(Private)
 -(void) initLabel;
+-(UIColor *) colorWithRGBString:(NSString *)rgbString;
 @end
 
 @implementation LabelView
 
-#pragma mark Overridden methods
+@synthesize uiLabel;
 
-// This method is abstract method of direct superclass ControlView's.
+#pragma mark PollingCallBackNotificationDelegate method 'setPollingStatus:'
+
 // So, this method must be overridden in subclass.
 - (void)setPollingStatus:(NSNotification *)notification {
+	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
+	int sensorId = ((Label *)component).sensor.sensorId;
+	NSString *newStatus = [pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",sensorId]];
+	NSLog(@"new status is : %@", newStatus);
+	
+	Label *labelModel = ((Label *)component);
+	BOOL changeText = NO;
+	for (SensorState *sensorState in labelModel.sensor.states) {
+		if ([[sensorState.name lowercaseString] isEqualToString:[newStatus lowercaseString]]) {
+			uiLabel.text = sensorState.value;
+			changeText = YES;
+			break;
+		}
+	}
+	if (!changeText) {
+		uiLabel.text = labelModel.text;
+	}
 }
 
 // This method is abstract method of indirect superclass UIView's.
 - (void)layoutSubviews {
 	NSLog(@"layoutSubviews of LabelView.");
 	[self initLabel];
+	
+	int sensorId = ((Label *)component).sensor.sensorId;
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,sensorId] object:nil];
 }
 
 #pragma mark Private methods implementation
 
 -(void) initLabel {
-	UILabel *uiLabel = [[UILabel alloc] initWithFrame:[self bounds]];
-	//[uiLabel backgroundColor:[UIColor blackColor]];
+	uiLabel = [[UILabel alloc] initWithFrame:[self bounds]];
 	[uiLabel setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
 	[uiLabel setTextAlignment:UITextAlignmentCenter];
 	Label *labelModel = (Label *)component;
-	uiLabel.text = labelModel.value;
-	uiLabel.textColor = [UIColor grayColor];
+	
+	uiLabel.text = labelModel.text;
+	uiLabel.font = [UIFont fontWithName:@"Arial" size:labelModel.fontSize];
+	uiLabel.textColor = [self colorWithRGBString:[labelModel.color substringFromIndex:1]];
+	
 	[self addSubview:uiLabel];
+}
+
+-(UIColor *) colorWithRGBString:(NSString *)rgbString {
+	if(!rgbString) {
+		return [UIColor grayColor];
+	}
+	unsigned int hexIntColorValue;
+	[[NSScanner scannerWithString:rgbString] scanHexInt:&hexIntColorValue];
+	return UIColorWithRGB(hexIntColorValue);
+}
+
+- (void)dealloc {
+	[uiLabel release];
+	[super dealloc];
 }
 
 @end

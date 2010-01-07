@@ -55,6 +55,9 @@ NSString *const IMAGE = @"image";
 NSString *const TRACK_IMAGE = @"trackImage";
 
 NSString *const LABEL = @"label";
+NSString *const FONT_SIZE = @"font-size";
+NSString *const COLOR = @"color";
+NSString *const TEXT = @"text";
 
 NSString *const BUTTON = @"button";
 NSString *const DEFAULT = @"default";
