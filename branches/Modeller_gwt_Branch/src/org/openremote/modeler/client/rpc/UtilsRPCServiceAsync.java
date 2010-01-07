@@ -71,4 +71,6 @@ public interface UtilsRPCServiceAsync {
     * 
     */
    void loadMaxID(AsyncCallback<Long> callback);
+   
+   void downLoadImage(String url, AsyncCallback<Void> callback);
 }

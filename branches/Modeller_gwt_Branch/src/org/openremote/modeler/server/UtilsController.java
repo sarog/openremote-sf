@@ -19,16 +19,21 @@
 */
 package org.openremote.modeler.server;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.rpc.UtilsRPCService;
+import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.service.ResourceService;
+import org.openremote.modeler.utils.XmlParser;
 
 /**
  * The server side implementation of the RPC service <code>DeviceRPCService</code>.
@@ -38,6 +43,7 @@ import org.openremote.modeler.service.ResourceService;
 @SuppressWarnings("serial")
 public class UtilsController extends BaseGWTSpringController implements UtilsRPCService {
    
+   private static final Logger LOGGER = Logger.getLogger(UtilsController.class);
    /** The resource service. */
    private ResourceService resourceService;
    
@@ -168,6 +174,21 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    public Long loadMaxID() {
       Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_MAXID);
       return (obj == null) ? 0 : (Long)obj;
+   }
+
+   @Override
+   public void downLoadImage(String url) {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      File sessionFolder = new File(pathConfig.userFolder(this.getThreadLocalRequest().getSession().getId()));
+      if (!sessionFolder.exists()) {
+         sessionFolder.mkdirs();
+      }
+      File imageFile = new File(sessionFolder, url.substring(url.lastIndexOf("/") + 1));
+      try {
+         XmlParser.downloadFile(url, imageFile);
+      } catch (IOException e) {
+         LOGGER.error("Download image " + url + " occur IOException.", e);
+      }
    }
 
 

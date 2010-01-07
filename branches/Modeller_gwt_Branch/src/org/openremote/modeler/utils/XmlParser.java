@@ -148,7 +148,7 @@ public class XmlParser {
     * 
     * @throws IOException Signals that an I/O exception has occurred.
     */
-   private static void downloadFile(String srcUrl, File destFile) throws IOException {
+   public static void downloadFile(String srcUrl, File destFile) throws IOException {
       HttpClient client = new HttpClient();
       GetMethod get = new GetMethod(srcUrl);
       client.executeMethod(get);

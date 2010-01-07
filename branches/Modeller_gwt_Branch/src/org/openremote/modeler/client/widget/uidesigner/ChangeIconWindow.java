@@ -148,6 +148,9 @@ public class ChangeIconWindow extends Dialog {
             if (be.getButtonClicked() == getButtonById("ok")) {
                setImageURL();
                if (imageURL != null) {
+                  if (imageURL.startsWith("http")) {
+                     UtilsProxy.downLoadImage(imageURL, null);
+                  }
                   fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(imageURL));
                } else {
                   MessageBox.alert("Error", "Please select a image.", null);
