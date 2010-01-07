@@ -18,7 +18,7 @@ import flexjson.JSON;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type")
 @DiscriminatorValue("COMMAND_REF_ITEM")
-public class CommandRefItem extends BusinessEntity {
+public class CommandRefItem extends UICommand {
 
    private DeviceCommand deviceCommand;
 

@@ -1,12 +1,15 @@
 package org.openremote.modeler.domain.component;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.modeler.domain.RangeSensor;
+import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.UICommand;
 
 @SuppressWarnings("serial")
-public class UISlider extends UIControl {
+public class UISlider extends UIControl implements SensorOwner{
 
    private boolean vertical = false;
    private String thumbImage;
@@ -90,19 +93,68 @@ public class UISlider extends UIControl {
 
    @Override
    public List<UICommand> getCommands() {
-      return null;
+      List<UICommand> commands = new ArrayList<UICommand>();
+      if (slider != null && slider.getSetValueCmd() != null) {
+         commands.add(slider.getSetValueCmd());
+      }
+      return commands;
    }
 
    @Override
    public String getPanelXml() {
-      // TODO Auto-generated method stub
-      return null;
+      StringBuffer xmlContent = new StringBuffer();
+      xmlContent.append("        <slider id=\"" + getOid() + "\" ");
+      if (thumbImage != null) {
+         xmlContent.append("thumbImage=\"" + thumbImage + "\" ");
+      }
+      if (vertical) {
+         xmlContent.append("vertical=\"true\" ");
+      }
+      xmlContent.append(">\n");
+      if(getSensor()!=null){
+         xmlContent.append("<link type=\"sensor\" ref=\""+getSensor().getOid()+"\" />\n");
+         if (getSensor() instanceof RangeSensor) {
+            RangeSensor rangeSensor = (RangeSensor) getSensor();
+            xmlContent.append("<min value=\"" + rangeSensor.getMin() + "\"");
+            if (minImage != null) {
+               xmlContent.append(" image=\"" + minImage + "\"");
+            }
+            if (minTrackImage != null) {
+               xmlContent.append(" trackImage=\"" + minTrackImage + "\"");
+            }
+            xmlContent.append("/>\n");
+            
+            xmlContent.append("<max value=\"" + rangeSensor.getMax() + "\"");
+            if (maxImage != null) {
+               xmlContent.append("image=\"" + maxImage + "\" ");
+            }
+            if (maxTrackImage != null) {
+               xmlContent.append("trackImage=\"" + maxTrackImage + "\" ");
+            }
+            xmlContent.append("/>\n");
+         }
+      }
+      xmlContent.append("        </slider>\n");
+      return xmlContent.toString();
    }
 
    @Override
    public void transImagePathToRelative(String relativeSessionFolderPath) {
-      // TODO Auto-generated method stub
-
+      if (thumbImage != null) {
+         thumbImage = relativeSessionFolderPath + thumbImage.substring(thumbImage.lastIndexOf("/") + 1);
+      }
+      if (minImage != null) {
+         minImage = relativeSessionFolderPath + minImage.substring(minImage.lastIndexOf("/") + 1);
+      }
+      if (minTrackImage != null) {
+         minTrackImage = relativeSessionFolderPath + minTrackImage.substring(minTrackImage.lastIndexOf("/") + 1);
+      }
+      if (maxImage != null) {
+         maxImage = relativeSessionFolderPath + maxImage.substring(maxImage.lastIndexOf("/") + 1);
+      }
+      if (maxTrackImage != null) {
+         maxTrackImage = relativeSessionFolderPath + maxTrackImage.substring(maxTrackImage.lastIndexOf("/") + 1);
+      }
    }
 
    @Override
@@ -118,5 +170,13 @@ public class UISlider extends UIControl {
    public @Override int getPreferredHeight(){
       int height = 20;
       return height;
+   }
+
+   @Override
+   public Sensor getSensor() {
+      if(slider!= null && slider.getSliderSensorRef()!=null){
+         return slider.getSliderSensorRef().getSensor();
+      }
+      return null;
    }
 }
