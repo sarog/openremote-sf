@@ -16,8 +16,8 @@ public class SwitchController extends BaseGWTSpringControllerWithHibernateSuppor
    private UserService userService;
    
    @Override
-   public void delete(Switch switchToggle) {
-      switchService.delete(switchToggle);
+   public void delete(long id) {
+      switchService.delete(id);
    }
 
    @Override

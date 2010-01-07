@@ -11,5 +11,5 @@ public interface SwitchRPCService extends RemoteService {
    public List<Switch> loadAll();
    Switch save(Switch switchToggle);
    Switch update(Switch switchToggle);
-   void delete(Switch switchToggle);
+   void delete(long id);
 }
