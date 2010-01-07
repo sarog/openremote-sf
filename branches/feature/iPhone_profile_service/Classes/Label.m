@@ -24,7 +24,7 @@
 
 @implementation Label
 
-@synthesize value;
+@synthesize fontSize, color, text;
 
 // This method is abstract method of indirectclass XMLEntity.
 // So, this method must be overridden in subclass.
@@ -37,22 +37,31 @@
 
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {
-		componentId = [[attributeDict objectForKey:@"id"] intValue];
-		value = [[attributeDict objectForKey:@"value"] copy];
+		componentId = [[attributeDict objectForKey:ID] intValue];
+		fontSize = [[attributeDict objectForKey:FONT_SIZE] intValue];
+		color = [[attributeDict objectForKey:COLOR] copy];
+		text = [[attributeDict objectForKey:TEXT] copy];
 		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];
 	}
 	return self;
 }
 
-/**
- * Parse the label sub elements .
- */
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-}
+///**
+// * Fill the label states .
+// */
+//- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
+//	if ([elementName isEqualToString:[self elementName]]) {	
+//		sensorStates = [sensor.states retain];
+// 		[parser setDelegate:xmlParserParentDelegate];
+//		[xmlParserParentDelegate release];
+//		xmlParserParentDelegate = nil;
+//	}
+//}
 
 - (void)dealloc {
-	[value release];
+	[color release];
+	[text release];
 	[super dealloc];
 }
 

@@ -46,6 +46,9 @@ extern NSString *const IMAGE;
 extern NSString *const TRACK_IMAGE;
 
 extern NSString *const LABEL;
+extern NSString *const FONT_SIZE;
+extern NSString *const COLOR;
+extern NSString *const TEXT;
 
 extern NSString *const BUTTON;
 extern NSString *const DEFAULT;

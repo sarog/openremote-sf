@@ -3,15 +3,30 @@
 	<screens>
 		<screen id="5" name="basement" background="basement.png">		  	
 		  	<absolute left="20" top="320" width="100" height="100" >
-				<label id="59" value="A" />
+				<label id="59" font-size="14" color="#AAAAAA" text="AWaiting">
+					<link type="sensor" ref="1001">
+						<state name="on" value="开" />
+						<state name="off" value="关" />
+					</link>
+				</label>
 			</absolute>
 			<absolute left="20" top="320" width="100" height="100" >
-				<label id="60" value="B" />
+				<label id="60" font-size="14" color="#BBBBBB" text="BWaiting">
+					<link type="sensor" ref="1001">
+						<state name="on" value="开" />
+						<state name="off" value="关" />
+					</link>
+				</label>
 			</absolute>
 		</screen>
 	  <screen id="6" name="floor" background="basement.png">		  	
 		  	<absolute left="20" top="320" width="100" height="100" >
-				<label id="61" value="C" />
+				<label id="61" font-size="14" color="#CCCCCC" text="CWaiting">
+					<link type="sensor" ref="1001">
+						<state name="on" value="开" />
+						<state name="off" value="关" />
+					</link>
+				</label>
 			</absolute>
 		</screen>
 	<screens>

@@ -24,7 +24,7 @@
 
 #define MIN_SLIDE_VARIANT 1
 
-@interface SliderView : ControlView {
+@interface SliderView : ControlView <PollingCallBackNotificationDelegate> {
 	UISlider *slider;
 	int currentValue;
 }

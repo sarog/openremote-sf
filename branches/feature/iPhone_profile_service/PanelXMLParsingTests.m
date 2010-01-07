@@ -37,6 +37,7 @@
 #import "XMLEntity.h"
 #import "Tabbar.h"
 #import "TabbarItem.h"
+#import "SensorState.h"
 
 @implementation PanelXMLParsingTests
 
@@ -540,10 +541,35 @@
 						[cells addObject:cell];
 						if ([cell.component isKindOfClass:[Label class]]) {
 							Label *theLabel = (Label *)cell.component;
-							int expectedId = (59 + label_index++);
+							
+							// assert atrributes
+							int expectedId = (59 + label_index);							
+							int expectedFontSize = 14;
+							NSString *expectedColor = [@"#" stringByAppendingFormat:@"%c%c%c%c%c%c", (char)65 + label_index, (char)65 + label_index, (char)65 + label_index, (char)65 + label_index, (char)65 + label_index, (char)65 + label_index];
+							NSString *expectedText = [@"" stringByAppendingFormat:@"%cWaiting", (char)65 + label_index];
 							STAssertTrue(expectedId == theLabel.componentId,@"expected %d, but %d",expectedId,theLabel.componentId);
-							NSString *labelValue = [[NSString alloc] initWithFormat:@"%c", (char)65 + state_index++];					
-							STAssertTrue([theLabel.value isEqualToString:labelValue],@"expected %@, but %@", labelValue, theLabel.value);
+							STAssertTrue(expectedFontSize == theLabel.fontSize, @"expected %d, but %d", expectedFontSize, theLabel.fontSize);
+							STAssertTrue([expectedColor isEqualToString:theLabel.color], @"expected %@, but %@", expectedColor, theLabel.color);
+							STAssertTrue([expectedText isEqualToString:theLabel.text], @"expected %@, but %@", expectedText, theLabel.text);
+							
+							// assert sensor
+							for (int i = 0; i < [theLabel.sensor.states count]; i++) {
+								NSString *expectedStateName;
+								NSString *expectedStateValue;
+								if (i % 2 == 0) {
+									expectedStateName = @"on";
+									expectedStateValue = @"开";
+								} else {
+									expectedStateName = @"off";
+									expectedStateValue = @"关";
+								}
+								SensorState *sensorState = [theLabel.sensor.states objectAtIndex:i];
+								STAssertTrue([expectedStateName isEqualToString:sensorState.name], @"expected %@, but %@", expectedStateName, sensorState.name);
+								STAssertTrue([expectedStateValue isEqualToString:sensorState.value], @"expected %@, but %@", expectedStateValue, sensorState.value);
+							}
+							
+							label_index++;
+							state_index++;
 						}	
 					}
 				}				
@@ -612,10 +638,34 @@
 					
 					if ([abso.component isKindOfClass:[Label class]]) {
 						Label *theLabel= (Label *)abso.component;
-						int expectedId = (59 + label_index++);
+						int expectedId = (59 + label_index);
 						STAssertTrue(expectedId == theLabel.componentId,@"expected %d, but %d",expectedId,theLabel.componentId);
-						NSString *labelValue = [[NSString alloc] initWithFormat:@"%c", (char)65 + state_index++];
-						STAssertTrue([theLabel.value isEqualToString:labelValue],@"expected %@, but %@", labelValue, theLabel.value);
+						
+						int expectedFontSize = 14;
+						NSString *expectedColor = [@"#" stringByAppendingFormat:@"%c%c%c%c%c%c", (char)65 + label_index, (char)65 + label_index, (char)65 + label_index, (char)65 + label_index, (char)65 + label_index, (char)65 + label_index];
+						NSString *expectedText = [@"" stringByAppendingFormat:@"%cWaiting", (char)65 + label_index];
+						STAssertTrue(expectedFontSize == theLabel.fontSize, @"expected %d, but %d", expectedFontSize, theLabel.fontSize);
+						STAssertTrue([expectedColor isEqualToString:theLabel.color], @"expected %@, but %@", expectedColor, theLabel.color);
+						STAssertTrue([expectedText isEqualToString:theLabel.text], @"expected %@, but %@", expectedText, theLabel.text);
+						
+						// assert sensor
+						for (int i = 0; i < [theLabel.sensor.states count]; i++) {
+							NSString *expectedStateName;
+							NSString *expectedStateValue;
+							if (i % 2 == 0) {
+								expectedStateName = @"on";
+								expectedStateValue = @"开";
+							} else {
+								expectedStateName = @"off";
+								expectedStateValue = @"关";
+							}
+							SensorState *sensorState = [theLabel.sensor.states objectAtIndex:i];
+							STAssertTrue([expectedStateName isEqualToString:sensorState.name], @"expected %@, but %@", expectedStateName, sensorState.name);
+							STAssertTrue([expectedStateValue isEqualToString:sensorState.value], @"expected %@, but %@", expectedStateValue, sensorState.value);
+						}
+						
+						label_index++;
+						state_index++;
 					}					
 				}				
 			}

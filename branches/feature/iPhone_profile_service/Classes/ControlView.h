@@ -41,7 +41,7 @@
  * Returns YES if success, returns NO if the status is invalid.
  * NOTE: This is an abstract method, must be implemented in subclass
  */
-- (void)setPollingStatus:(NSNotification *)notification;
+//- (void)setPollingStatus:(NSNotification *)notification;
 - (void)sendCommandRequest:(NSString *)commandType;
 - (void)handleServerErrorWithStatusCode:(int) statusCode;
 - (void)cancelTimer;

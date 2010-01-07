@@ -77,9 +77,9 @@
  * Returns YES if success, returns NO if the status is invalid.
  * NOTE: This is an abstract method, must be implemented in subclass
  */
-- (void)setPollingStatus:(NSNotification *)notification {
-	[self doesNotRecognizeSelector:_cmd];
-}
+//- (void)setPollingStatus:(NSNotification *)notification {
+//	[self doesNotRecognizeSelector:_cmd];
+//}
 
 
 
