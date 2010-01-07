@@ -344,6 +344,7 @@
 			<xsd:attribute name="id" type="idType" use="required"/>
 			<xsd:attribute name="font-size" type="xsd:int" use="optional"/>
 			<xsd:attribute name="color" type="xsd:string" use="optional"/>
+			<xsd:attribute name="text" type="xsd:string" use="required"/>
 		</xsd:complexType>
 	</xsd:element>
 	
