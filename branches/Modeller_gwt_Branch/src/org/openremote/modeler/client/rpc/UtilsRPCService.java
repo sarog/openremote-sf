@@ -78,4 +78,5 @@ public interface UtilsRPCService extends RemoteService {
     */
    Long loadMaxID();
 
+   void downLoadImage(String url);
 }
