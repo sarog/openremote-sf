@@ -24,7 +24,7 @@
 
 @implementation Button
 
-@synthesize defaultIcon, pressedIcon, repeat, hasCommand, name, navigate, subElememntNameOfBackground;
+@synthesize defaultImage, pressedImage, repeat, hasCommand, name, navigate, subElememntNameOfBackground;
 
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {		
@@ -48,11 +48,11 @@
 		subElememntNameOfBackground = DEFAULT;
 	} else if ([elementName isEqualToString:PRESSED]) {
 		subElememntNameOfBackground = PRESSED;	
-	} else if ([elementName isEqualToString:ICON]) {
+	} else if ([elementName isEqualToString:IMAGE]) {
 		if ([DEFAULT isEqualToString:subElememntNameOfBackground]) {
-			defaultIcon = [[Icon alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+			defaultImage = [[Image alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 		} else if ([PRESSED isEqualToString:subElememntNameOfBackground]) {
-			pressedIcon = [[Icon alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+			pressedImage = [[Image alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 		}
 	} else if ([elementName isEqualToString:@"navigate"]) {
 		navigate = [[Navigate alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
@@ -67,8 +67,8 @@
 
 
 - (void)dealloc {
-	[defaultIcon release];
-	[pressedIcon release];
+	[defaultImage release];
+	[pressedImage release];
 	[navigate release];
 	[name	 release];
 	[subElememntNameOfBackground release];

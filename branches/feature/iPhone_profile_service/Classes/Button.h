@@ -23,12 +23,13 @@
 #import "Control.h"
 #import "Icon.h"
 #import "Navigate.h"
+#import "Image.h"
 
 @interface Button : Control {
 	
 	NSString *name;
-	Icon *defaultIcon;
-	Icon *pressedIcon;
+	Image *defaultImage;
+	Image *pressedImage;
 	BOOL repeat;
 	BOOL hasCommand;
 	Navigate *navigate;
@@ -38,8 +39,8 @@
 }
 
 @property (nonatomic, readonly) NSString *name;
-@property (nonatomic, readonly) Icon *defaultIcon;
-@property (nonatomic, readonly) Icon *pressedIcon;
+@property (nonatomic, readonly) Image *defaultImage;
+@property (nonatomic, readonly) Image *pressedImage;
 @property (nonatomic, readonly) BOOL repeat;
 @property (nonatomic, readonly) BOOL hasCommand;
 @property (nonatomic, readonly) Navigate *navigate;
