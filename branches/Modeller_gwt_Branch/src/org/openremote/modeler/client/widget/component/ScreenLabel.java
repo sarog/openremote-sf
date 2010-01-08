@@ -54,6 +54,7 @@ public class ScreenLabel extends ScreenComponent {
     */
    protected void initial() {
       setLayout(new CenterLayout());
+      center.setStyleAttribute("textAlign", "center");
       center.setStyleAttribute("color", uiLabel.getColor());
       center.setStyleAttribute("fontSize", uiLabel.getFontSize()+"");
       setStyleAttribute("background","white");
