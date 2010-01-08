@@ -25,6 +25,7 @@ import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.component.UILabel;
 
 import com.extjs.gxt.ui.client.widget.Text;
+import com.extjs.gxt.ui.client.widget.layout.CenterLayout;
 
 /**
  * The Class ScreenButton. It display as a style box, can be adjust size.
@@ -52,10 +53,10 @@ public class ScreenLabel extends ScreenComponent {
     * 
     */
    protected void initial() {
+      setLayout(new CenterLayout());
       center.setStyleAttribute("color", uiLabel.getColor());
       center.setStyleAttribute("fontSize", uiLabel.getFontSize()+"");
       setStyleAttribute("background","white");
-//      setLayout(new )
       add(center);
       layout();
    }
@@ -119,7 +120,7 @@ public class ScreenLabel extends ScreenComponent {
 
    private void adjustTextLength(int width) {
       if (center.isVisible()) {
-         int ajustLength = (width - 6) / 7;
+         int ajustLength = (width - 6) / 6;
          if (ajustLength < uiLabel.getText().length()) {
             center.setText(uiLabel.getText().substring(0, ajustLength) + "..");
          } else {

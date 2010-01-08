@@ -27,7 +27,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -36,6 +38,7 @@ import org.apache.commons.io.IOUtils;
  */
 public class FileUtilsExt {
    
+   private static final Logger LOGGER = Logger.getLogger(FileUtilsExt.class);
    /**
     * Instantiates a new file utils ext.
     */
@@ -264,5 +267,13 @@ public class FileUtilsExt {
     */
    public static String replaceURL(String sourceString, String regex, String replacement) {
       return sourceString.replaceAll(regex, replacement);
+   }
+   
+   public static void copyFile(File srcFile, File destFile) {
+      try {
+         FileUtils.copyFile(srcFile, destFile);
+      } catch (IOException e) {
+         LOGGER.error("Unable to copy file " + srcFile.getName(), e);
+      }
    }
 }

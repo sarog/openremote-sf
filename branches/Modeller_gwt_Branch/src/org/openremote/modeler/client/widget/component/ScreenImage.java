@@ -38,8 +38,6 @@ public class ScreenImage extends ScreenComponent {
 
    private UIImage uiImage = new UIImage();
 
-   private static String DEFAULT_IMAGE_URL = "./image/OpenRemote.Logo.16x16.png";
-
    public ScreenImage(ScreenCanvas canvas, UIImage uiImage) {
       super(canvas);
       this.uiImage = uiImage;
@@ -54,8 +52,6 @@ public class ScreenImage extends ScreenComponent {
       image.setStyleName("screen-image");
       if (!"".equals(uiImage.getImageSource().getSrc().trim())) {
          image.setUrl(uiImage.getImageSource().getSrc());
-      } else {
-         image.setUrl(DEFAULT_IMAGE_URL);
       }
       add(image);
       layout();
