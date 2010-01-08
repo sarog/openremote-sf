@@ -66,7 +66,9 @@
 	
 	slider = [[UISlider alloc] initWithFrame:[self bounds]];
 	if (theSlider.vertical) {
-		slider.transform = CGAffineTransformMakeRotation(-90.0/180*M_PI);
+		//slider.frame = CGRectMake(slider.frame.origin.x, slider.frame.origin.y, self.frame.size.height, slider.frame.size.width);
+		//[self setContentMode:UIViewContentModeCenter];
+		slider.transform = CGAffineTransformMakeRotation(270.0/180*M_PI);
 	}
 
 	slider.minimumValue = theSlider.minValue;
