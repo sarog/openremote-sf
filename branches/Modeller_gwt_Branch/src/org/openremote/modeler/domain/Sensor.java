@@ -89,9 +89,9 @@ public class Sensor extends BusinessEntity {
    }
    
    @Override
-   public String toString(){
+   public String toString() {
       StringBuilder sb = new StringBuilder();
-      sb.append("<link type=\"sensor\" ref=\""+getOid()+"\">\n");
+      sb.append("<link type=\"sensor\" ref=\"" + getOid() + "\">\n");
       sb.append("</link>");
       return sb.toString();
    }
@@ -107,6 +107,6 @@ public class Sensor extends BusinessEntity {
       if (obj == null) return false;
       if (getClass() != obj.getClass()) return false;
       Sensor other = (Sensor) obj;
-      return getOid()==other.getOid();
+      return getOid() == other.getOid();
    }
 }

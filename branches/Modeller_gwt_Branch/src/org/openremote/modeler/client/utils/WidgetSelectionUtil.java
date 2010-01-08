@@ -28,6 +28,8 @@ import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
  */
 public class WidgetSelectionUtil {
 
+   private WidgetSelectionUtil() {
+   }
    private static ComponentContainer currentSelectedWidget;
    private static WidgetSelectChangeListener widgetSelectChangeListener;
    

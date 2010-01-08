@@ -18,6 +18,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package org.openremote.modeler.domain;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,33 +32,34 @@ import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 /**
- * The Class UIScreen.
+ * The Class Screen.
  */
 @SuppressWarnings("serial")
 public class Screen extends RefedEntity {
 
    /** The default name index. */
    private static int defaultNameIndex = 1;
-   
+
    /** The name. */
    private String name;
-   
+
    /** The absolutes. */
    private List<Absolute> absolutes = new ArrayList<Absolute>();
-   
+
    private List<UIGrid> grids = new ArrayList<UIGrid>();
-   
+
    /** The touch panel definition. */
    private TouchPanelDefinition touchPanelDefinition;
-   
+
    /** The background. */
    private Background background = null;
 
    private List<Gesture> gestures = new ArrayList<Gesture>();
-   
+
    public Screen() {
-      this.background =  new Background();
+      this.background = new Background();
    }
+
    /**
     * Gets the name.
     * 
@@ -70,6 +72,7 @@ public class Screen extends RefedEntity {
    public UIGrid getGrid(int index) {
       return grids.size() > 0 ? grids.get(index) : null;
    }
+
    /**
     * Gets the absolutes.
     * 
@@ -95,7 +98,8 @@ public class Screen extends RefedEntity {
    /**
     * Sets the name.
     * 
-    * @param name the new name
+    * @param name
+    *           the new name
     */
    public void setName(String name) {
       this.name = name;
@@ -104,7 +108,8 @@ public class Screen extends RefedEntity {
    /**
     * Sets the absolutes.
     * 
-    * @param absolutes the new absolutes
+    * @param absolutes
+    *           the new absolutes
     */
    public void setAbsolutes(List<Absolute> absolutes) {
       this.absolutes = absolutes;
@@ -113,16 +118,18 @@ public class Screen extends RefedEntity {
    /**
     * Adds the absolute.
     * 
-    * @param absolute the absolute
+    * @param absolute
+    *           the absolute
     */
    public void addAbsolute(Absolute absolute) {
       this.absolutes.add(absolute);
    }
-   
+
    /**
     * Sets the touch panel definition.
     * 
-    * @param touchPanelDefinition the new touch panel definition
+    * @param touchPanelDefinition
+    *           the new touch panel definition
     */
    public void setTouchPanelDefinition(TouchPanelDefinition touchPanelDefinition) {
       this.touchPanelDefinition = touchPanelDefinition;
@@ -131,7 +138,8 @@ public class Screen extends RefedEntity {
    /**
     * Sets the background.
     * 
-    * @param background the new background
+    * @param background
+    *           the new background
     */
    public void setBackground(Background background) {
       this.background = background;
@@ -139,19 +147,20 @@ public class Screen extends RefedEntity {
 
    /**
     * {@inheritDoc}
+    * 
     * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()
     */
    @Transient
    public String getDisplayName() {
       return name;
    }
-   
+
    @Transient
    public String getPanelName() {
       TouchPanelCanvasDefinition canvas = touchPanelDefinition.getCanvas();
       return name + "(" + touchPanelDefinition.getName() + "," + canvas.getWidth() + "X" + canvas.getHeight() + ")";
    }
-   
+
    /**
     * Gets the new default name when you want a new name. such as screen1.
     * 
@@ -161,12 +170,12 @@ public class Screen extends RefedEntity {
    public static String getNewDefaultName() {
       return "screen" + defaultNameIndex;
    }
-   
+
    @Transient
    public static void increaseDefaultNameIndex() {
       defaultNameIndex++;
    }
-   
+
    public void removeAbsolute(Absolute absolute) {
       if (this.absolutes.size() > 0) {
          this.absolutes.remove(absolute);
@@ -181,16 +190,16 @@ public class Screen extends RefedEntity {
    public void setGrids(List<UIGrid> grids) {
       this.grids = grids;
    }
-   
+
    public void addGrid(UIGrid grid) {
       grids.add(grid);
    }
-   
+
    public void removeGrid(UIGrid grid) {
       if (grids.size() > 0) {
          this.grids.remove(grid);
          Collection<Cell> cells = grid.getCells();
-         for(Cell cell : cells){
+         for (Cell cell : cells) {
             cell.getUIComponent().setRemoved(true);
          }
       }
@@ -207,27 +216,28 @@ public class Screen extends RefedEntity {
    public void setGestures(List<Gesture> gestures) {
       this.gestures = gestures;
    }
-   
+
    /**
     * get all the UIComponent by the component's class. for example, if you want to get all the UIButton on the screen.
     * you can invoke this method like this: <code>getAllUIComponentByType(UIButton.class)</code>
+    * 
     * @param clazz
     * @return
     */
-   public Collection<? extends UIComponent> getAllUIComponentByType(Class<? extends UIComponent> clazz){
-   Collection<UIComponent> uiComponents = new ArrayList<UIComponent>();
-         for (Absolute absolute : absolutes){
-            if (absolute.getUIComponent().getClass()==clazz){
-               uiComponents.add(absolute.getUIComponent());
+   public Collection<? extends UIComponent> getAllUIComponentByType(Class<? extends UIComponent> clazz) {
+      Collection<UIComponent> uiComponents = new ArrayList<UIComponent>();
+      for (Absolute absolute : absolutes) {
+         if (absolute.getUIComponent().getClass() == clazz) {
+            uiComponents.add(absolute.getUIComponent());
+         }
+      }
+      for (UIGrid grid : grids) {
+         for (Cell cell : grid.getCells()) {
+            if (cell.getUIComponent().getClass() == clazz) {
+               uiComponents.add(cell.getUIComponent());
             }
          }
-         for (UIGrid grid : grids){
-            for(Cell cell : grid.getCells()){
-               if(cell.getUIComponent().getClass()==clazz){
-                  uiComponents.add(cell.getUIComponent());
-               }
-            }
-         }
+      }
       return uiComponents;
    }
 }

@@ -80,7 +80,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
       DeviceCommand deviceCommand = loadById(id);
       DetachedCriteria criteria = DetachedCriteria.forClass(CommandRefItem.class);
       List<CommandRefItem> commandRefItems = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("deviceCommand", deviceCommand)));
-      if (commandRefItems.size() > 0){
+      if (commandRefItems.size() > 0) {
          return false;
       } else {
          deviceMacroItemService.deleteByDeviceCommand(deviceCommand);

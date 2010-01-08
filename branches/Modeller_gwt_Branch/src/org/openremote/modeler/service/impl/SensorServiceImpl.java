@@ -37,7 +37,8 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
    public Boolean deleteSensor(long id) {
       Sensor sensor = super.loadById(id);
       DetachedCriteria criteria = DetachedCriteria.forClass(SensorRefItem.class);
-      List<SensorRefItem> sensorRefItems = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("sensor", sensor)));
+      List<SensorRefItem> sensorRefItems = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("sensor",
+            sensor)));
       if (sensorRefItems.size() > 0) {
          return false;
       } else {
@@ -48,9 +49,9 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
 
    public List<Sensor> loadAll(Account account) {
       List<Sensor> sensors = account.getSensors();
-      for(Sensor sensor : sensors){
-         if(sensor.getType() == SensorType.CUSTOM){
-            Hibernate.initialize(((CustomSensor)sensor).getStates());
+      for (Sensor sensor : sensors) {
+         if (sensor.getType() == SensorType.CUSTOM) {
+            Hibernate.initialize(((CustomSensor) sensor).getStates());
          }
       }
       return sensors;
@@ -63,16 +64,16 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
 
    public Sensor updateSensor(Sensor sensor) {
       Sensor old = genericDAO.loadById(Sensor.class, sensor.getOid());
-//      genericDAO.delete(old.getDeviceCommandRef());
-//      old.setDeviceCommandRef(sensor.getDeviceCommandRef());`
+      // genericDAO.delete(old.getDeviceCommandRef());
+      // old.setDeviceCommandRef(sensor.getDeviceCommandRef());`
       old.setName(sensor.getName());
-       return old;
+      return old;
    }
 
    public Sensor loadById(long id) {
       Sensor sensor = genericDAO.getById(Sensor.class, id);
-      if(sensor instanceof CustomSensor) {
-         Hibernate.initialize(((CustomSensor)sensor).getStates());
+      if (sensor instanceof CustomSensor) {
+         Hibernate.initialize(((CustomSensor) sensor).getStates());
       }
       return sensor;
    }

@@ -133,7 +133,7 @@ public class AsyncServiceFactory {
    }
 
    public static SliderRPCServiceAsync getSliderRPCServiceAsync() {
-      if (sliderRPCServiceAsync == null){
+      if (sliderRPCServiceAsync == null) {
          sliderRPCServiceAsync = GWT.create(SliderRPCService.class);
       }
       return sliderRPCServiceAsync;

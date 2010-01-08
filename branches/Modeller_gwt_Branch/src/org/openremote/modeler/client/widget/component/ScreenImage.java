@@ -38,7 +38,7 @@ public class ScreenImage extends ScreenComponent {
 
    private UIImage uiImage = new UIImage();
 
-   private static String DEFAULT_IMAGE_URL = "./image/global.logo.png";
+   private static String DEFAULT_IMAGE_URL = "./image/OpenRemote.Logo.16x16.png";
 
    public ScreenImage(ScreenCanvas canvas, UIImage uiImage) {
       super(canvas);

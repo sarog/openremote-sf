@@ -162,7 +162,7 @@ public class LabelPropertyForm extends PropertyForm {
               String onText = onField.getValue();
               sensorAttrs.put("name", "on");
               sensorAttrs.put("value", onText);
-              screenLabel.getUiLabel().getSensorLinker().AddOrUpdateChildForSensorLinker("state", sensorAttrs);
+              screenLabel.getUiLabel().getSensorLinker().addOrUpdateChildForSensorLinker("state", sensorAttrs);
            }
         });
         
@@ -172,7 +172,7 @@ public class LabelPropertyForm extends PropertyForm {
               String offText = offField.getValue();
               sensorAttrs.put("name", "off");
               sensorAttrs.put("value", offText);
-              screenLabel.getUiLabel().getSensorLinker().AddOrUpdateChildForSensorLinker("state", sensorAttrs);
+              screenLabel.getUiLabel().getSensorLinker().addOrUpdateChildForSensorLinker("state", sensorAttrs);
            }
         });
        
@@ -195,7 +195,7 @@ public class LabelPropertyForm extends PropertyForm {
                if(stateText!=null&&!stateText.trim().isEmpty()){
                   sensorAttrs.put("name", state.getName());
                   sensorAttrs.put("value", stateText);
-                  screenLabel.getUiLabel().getSensorLinker().AddOrUpdateChildForSensorLinker("state", sensorAttrs);
+                  screenLabel.getUiLabel().getSensorLinker().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
             }
               

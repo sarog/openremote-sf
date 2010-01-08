@@ -23,33 +23,32 @@ import javax.persistence.Transient;
 
 import org.openremote.modeler.client.utils.SensorLinker;
 import org.openremote.modeler.domain.Sensor;
-/**
- * 
- * @author Javen
- *
- */
-@SuppressWarnings("serial")
-public class UIImage extends UIComponent implements SensorOwner{
 
-   private ImageSource imageSource = new ImageSource("./image/global.logo.png");
-   
+@SuppressWarnings("serial")
+public class UIImage extends UIComponent implements SensorOwner {
+
+   private ImageSource imageSource = new ImageSource("");
+
    private Sensor sensor = null;
-   
+
    private UILabel label = null;
-   
+
    private SensorLinker sensorLinker;
-   
-   public UIImage(){}
-   public UIImage(long oid){
+
+   public UIImage() {
+   }
+
+   public UIImage(long oid) {
       super(oid);
    }
-   
+
    public UIImage(UIImage uiImage) {
       this.setOid(uiImage.getOid());
       this.imageSource = uiImage.imageSource;
       this.sensor = uiImage.sensor;
       this.label = uiImage.label;
    }
+
    public ImageSource getImageSource() {
       return imageSource;
    }
@@ -64,7 +63,7 @@ public class UIImage extends UIComponent implements SensorOwner{
 
    public void setSensor(Sensor sensor) {
       this.sensor = sensor;
-      if(sensor!=null){
+      if (sensor != null) {
          this.sensorLinker = new SensorLinker(sensor);
       } else {
          sensorLinker.clear();
@@ -79,17 +78,19 @@ public class UIImage extends UIComponent implements SensorOwner{
       this.label = label;
    }
 
-   
    public SensorLinker getSensorLinker() {
       return sensorLinker;
    }
+
    public void setSensorLinker(SensorLinker sensorLinker) {
       this.sensorLinker = sensorLinker;
    }
+
    @Override
    public String getName() {
       return "Image";
    }
+
    @Transient
    @Override
    public String getPanelXml() {
@@ -104,14 +105,16 @@ public class UIImage extends UIComponent implements SensorOwner{
       sb.append("</image>");
       return sb.toString();
    }
-   
-   public @Override int getPreferredWidth(){
-      int width = 223;
+
+   @Override
+   public int getPreferredWidth() {
+      int width = 16;
       return width;
    }
-   
-   public @Override int getPreferredHeight(){
-      int height = 50;
+
+   @Override
+   public int getPreferredHeight() {
+      int height = 16;
       return height;
    }
 }

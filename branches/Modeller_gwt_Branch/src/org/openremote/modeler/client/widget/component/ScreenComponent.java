@@ -51,12 +51,12 @@ public abstract class ScreenComponent extends ComponentContainer {
          return new ScreenButton(canvas, (UIButton) uiComponent);
       } else if (uiComponent instanceof UISwitch) {
          return new ScreenSwitch(canvas, (UISwitch) uiComponent);
-      } else if(uiComponent instanceof UISlider) {
+      } else if (uiComponent instanceof UISlider) {
          return new ScreenSlider(canvas, (UISlider) uiComponent);
-      } else if (uiComponent instanceof UILabel){
-         return new ScreenLabel(canvas,(UILabel)uiComponent);
-      } else if (uiComponent instanceof UIImage){
-         return new ScreenImage(canvas,(UIImage)uiComponent);
+      } else if (uiComponent instanceof UILabel) {
+         return new ScreenLabel(canvas, (UILabel) uiComponent);
+      } else if (uiComponent instanceof UIImage) {
+         return new ScreenImage(canvas, (UIImage) uiComponent);
       }
       return null;
    }

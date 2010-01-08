@@ -73,23 +73,23 @@ public class SliderWindow extends FormWindow {
    
    private boolean edit = false;
    
-   public SliderWindow(Slider slider){
+   public SliderWindow(Slider slider) {
       super();
-      if (null != slider){
+      if (null != slider) {
          this.slider = slider;
          edit = true;
       } else {
          this.slider = new Slider();
          edit = false;
       }
-      this.setHeading(edit?"Edit Slider":"New Slider");
+      this.setHeading(edit ? "Edit Slider" : "New Slider");
       this.setSize(320, 240);
       
       createField();
       
    }
    
-   private void createField(){
+   private void createField() {
       setWidth(380);
       setAutoHeight(true);
       setLayout(new FlowLayout());
@@ -105,18 +105,19 @@ public class SliderWindow extends FormWindow {
       
       ListStore<ModelData> sensorStore = new ListStore<ModelData>();
       List<BeanModel> sensors = BeanModelDataBase.sensorTable.loadAll();
-      for(BeanModel sensorBean : sensors){
+      for (BeanModel sensorBean : sensors) {
          Sensor sensor = sensorBean.getBean();
-         ComboBoxDataModel<Sensor> sensorRefSelector = new ComboBoxDataModel<Sensor>(sensor.getName(),sensor);
+         ComboBoxDataModel<Sensor> sensorRefSelector = new ComboBoxDataModel<Sensor>(sensor.getName(), sensor);
          sensorStore.add(sensorRefSelector);
       }
       sensorField.setStore(sensorStore);
       sensorField.addSelectionChangedListener(new SensorSelectChangeListener());
       
-      if(edit){
+      if (edit) {
          nameField.setValue(slider.getName());
-         if(slider.getSliderSensorRef()!= null){
-            sensorField.setValue(new ComboBoxDataModel<Sensor>(slider.getSliderSensorRef().getSensor().getDisplayName(),slider.getSliderSensorRef().getSensor()));
+         if (slider.getSliderSensorRef() != null) {
+            sensorField.setValue(new ComboBoxDataModel<Sensor>(
+                  slider.getSliderSensorRef().getSensor().getDisplayName(), slider.getSliderSensorRef().getSensor()));
          }
          setValueBtn.setText(slider.getSetValueCmd().getDisplayName());
       }
@@ -146,11 +147,11 @@ public class SliderWindow extends FormWindow {
    }
    
    
-   class SwitchSubmitListener implements Listener<FormEvent>{
+   class SwitchSubmitListener implements Listener<FormEvent> {
 
       @Override
       public void handleEvent(FormEvent be) {
-         if (slider.getSetValueCmd() == null){
+         if (slider.getSetValueCmd() == null) {
             MessageBox.alert("Slider", "The slider must have a command to control its value", null);
             return;
          }
@@ -161,7 +162,7 @@ public class SliderWindow extends FormWindow {
                break;
             }
          }
-         if(!edit){
+         if (!edit) {
             SliderBeanModelProxy.save(slider.getBeanModel());
          } else {
             SliderBeanModelProxy.update(slider.getBeanModel());

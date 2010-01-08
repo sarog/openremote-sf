@@ -24,39 +24,36 @@ import org.openremote.modeler.selenium.SeleniumTestNGBase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-/**
- * The TestNGTest for Screen create,edit and delete Selenium Test.
- */
 public class ScreenSeleniumTestNGTest extends SeleniumTestNGBase {
-   
+
    private static final int PAUSE_MS = 2000;
-   
+
    @Test
    public void createScreen() throws Exception {
       pause(PAUSE_MS);
       click(DebugId.SCREEN_NEW_BTN);
       pause(PAUSE_MS);
-      String name = "ScreenTest"+Math.random();
+      String name = "ScreenTest" + Math.random();
       type(DebugId.SCREEN_NAME_FIELD, name);
       click(DebugId.SCREEN_SUBMIT_BTN);
       pause(PAUSE_MS);
-      
+
       Assert.assertTrue(selenium.isTextPresent(name));
    }
-   
+
    @Test(dependsOnMethods = { "createScreen" })
    public void editScreen() throws Exception {
       click(DebugId.SCREEN_EDIT_BTN);
       pause(PAUSE_MS);
       double random = Math.random();
       String name = "ScreenTestUpdated" + random;
-      
+
       pause(PAUSE_MS);
       type(DebugId.SCREEN_NAME_FIELD, name);
       click(DebugId.SCREEN_SUBMIT_BTN);
       pause(PAUSE_MS);
    }
-   
+
    @Test(dependsOnMethods = { "editScreen" })
    public void deleteScreen() throws Exception {
       click(DebugId.SCREEN_DELETE_BTN);

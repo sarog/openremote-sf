@@ -137,7 +137,7 @@ public class DeviceCommand extends BusinessEntity {
       return sectionId;
    }
    @Transient
-   public DeviceCommandRef getDeviceCommandRef(){
+   public DeviceCommandRef getDeviceCommandRef() {
       DeviceCommandRef cmdRef = new DeviceCommandRef(this);
       return cmdRef;
    }

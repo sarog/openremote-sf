@@ -113,7 +113,7 @@ public class SensorWindow extends FormWindow {
       nameField.setFieldLabel("Name");
       nameField.setAllowBlank(false);
       if (sensorModel != null) {
-         nameField.setValue(((Sensor)sensorModel.getBean()).getName());
+         nameField.setValue(((Sensor) sensorModel.getBean()).getName());
       }
       
       AdapterField commandField = new AdapterField(createCommandTreeView());
@@ -141,13 +141,13 @@ public class SensorWindow extends FormWindow {
       typeList.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
          @SuppressWarnings("unchecked")
          public void selectionChanged(SelectionChangedEvent<ModelData> se) {
-            SensorType type = ((ComboBoxDataModel<SensorType>)se.getSelectedItem()).getData();
+            SensorType type = ((ComboBoxDataModel<SensorType>) se.getSelectedItem()).getData();
             if (type == SensorType.RANGE) {
                if (customFieldSet != null) {
                   customFieldSet.hide();
                }
                rangeSet.show();
-            } else if(type == SensorType.CUSTOM) {
+            } else if (type == SensorType.CUSTOM) {
                rangeSet.hide();
                if (customFieldSet == null) {
                   customFieldSet = createCustomSet();
@@ -175,13 +175,13 @@ public class SensorWindow extends FormWindow {
          if (sensor.getType() != null) {
             typeList.setValue(new ComboBoxDataModel<SensorType>(sensor.getType().toString(), sensor.getType()));
             if (sensor.getType() == SensorType.RANGE) {
-               minField.setValue(((RangeSensor)sensor).getMin());
-               maxField.setValue(((RangeSensor)sensor).getMax());
+               minField.setValue(((RangeSensor) sensor).getMin());
+               maxField.setValue(((RangeSensor) sensor).getMax());
                minField.disable();
                maxField.disable();
             } else if (sensor.getType() == SensorType.CUSTOM) {
-               List<State> states = ((CustomSensor)sensor).getStates();
-               for (State state: states) {
+               List<State> states = ((CustomSensor) sensor).getStates();
+               for (State state : states) {
                   stateItemListView.getStore().add(state.getBeanModel());
                }
                customFieldSet.disable();
@@ -314,18 +314,18 @@ public class SensorWindow extends FormWindow {
             if (null == sensorModel) {
                Sensor sensor = new Sensor();
                if (typeList.getValue() != null) {
-                  SensorType type = ((ComboBoxDataModel<SensorType>)typeList.getValue()).getData();
+                  SensorType type = ((ComboBoxDataModel<SensorType>) typeList.getValue()).getData();
                   if (type == SensorType.RANGE) {
                      sensor = new RangeSensor();
-                     ((RangeSensor)sensor).setMin(Integer.valueOf(minField.getRawValue()));
-                     ((RangeSensor)sensor).setMax(Integer.valueOf(maxField.getRawValue()));
+                     ((RangeSensor) sensor).setMin(Integer.valueOf(minField.getRawValue()));
+                     ((RangeSensor) sensor).setMax(Integer.valueOf(maxField.getRawValue()));
                   } else if (type == SensorType.CUSTOM) {
                      sensor = new CustomSensor();
                      List<BeanModel> states = stateItemListView.getStore().getModels();
                      for (BeanModel stateModel : states) {
                         State state = stateModel.getBean();
-                        state.setSensor((CustomSensor)sensor);
-                        ((CustomSensor)sensor).addState(state);
+                        state.setSensor((CustomSensor) sensor);
+                        ((CustomSensor) sensor).addState(state);
                      }
                   }
                   sensor.setType(type);
@@ -334,7 +334,7 @@ public class SensorWindow extends FormWindow {
                BeanModel selectedCommand = commandSelectTree.getSelectionModel().getSelectedItem();
                if (selectedCommand != null && selectedCommand.getBean() instanceof DeviceCommand) {
                   SensorCommandRef sensorCommandRef = new SensorCommandRef();
-                  sensorCommandRef.setDeviceCommand((DeviceCommand)selectedCommand.getBean());
+                  sensorCommandRef.setDeviceCommand((DeviceCommand) selectedCommand.getBean());
                   sensorCommandRef.setSensor(sensor);
                   sensor.setSensorCommandRef(sensorCommandRef);
                }
@@ -342,7 +342,7 @@ public class SensorWindow extends FormWindow {
                   public void onSuccess(Sensor result) {
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result));
                   }
-                  
+
                });
             } else if (null != sensorModel) {
                Sensor sensor = sensorModel.getBean();

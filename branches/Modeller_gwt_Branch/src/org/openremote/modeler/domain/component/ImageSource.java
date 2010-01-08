@@ -41,10 +41,10 @@ public class ImageSource extends BusinessEntity {
    public void setSrc(String src) {
       this.src = src;
    }
-   public String getImageFileName(){
+   public String getImageFileName() {
       String result = "";
-      if(src!=null && src.trim().length()!=0){
-         result = src.substring(src.lastIndexOf("/")+1);
+      if (src != null && src.trim().length() != 0) {
+         result = src.substring(src.lastIndexOf("/") + 1);
       }
       return result;
    }

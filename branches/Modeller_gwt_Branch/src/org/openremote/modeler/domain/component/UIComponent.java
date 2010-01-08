@@ -1,22 +1,19 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.modeler.domain.component;
 
 import javax.persistence.Transient;
@@ -25,15 +22,16 @@ import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.domain.BusinessEntity;
 
 /**
- * parent for UIButton,UISwich,UIGrid... 
+ * parent for UIButton,UISwich,UIGrid...
+ * 
  * @author Javen
- *
+ * 
  */
 @SuppressWarnings("serial")
 public abstract class UIComponent extends BusinessEntity {
-   
+
    private transient boolean removed = false;
-   
+
    public UIComponent() {
    }
 
@@ -44,8 +42,7 @@ public abstract class UIComponent extends BusinessEntity {
    public String getName() {
       return "UIComponent";
    }
-   
-   
+
    public boolean isRemoved() {
       return removed;
    }
@@ -54,73 +51,71 @@ public abstract class UIComponent extends BusinessEntity {
       this.removed = removed;
    }
 
-
    /*
     * Generate the xml content which used in panel.xml
     */
    @Transient
    public abstract String getPanelXml();
-   
-   public int getPreferredWidth(){
+
+   public int getPreferredWidth() {
       int width = 50;
       return width;
    }
-   public int getPreferredHeight(){
+
+   public int getPreferredHeight() {
       int height = 50;
       return height;
    }
-   
+
    /**
     * create a new UIComponet with the same type of <b>uiComponent</b>
-    * @param uiComponent 
+    * 
+    * @param uiComponent
     * @return a new UIComponet with the same type of <b>uiComponent</b>
     */
-   public static UIComponent createNew(UIComponent uiComponent){
+   public static UIComponent createNew(UIComponent uiComponent) {
       UIComponent result = null;
-      if(uiComponent != null){
-         /*Class clazz = uiComponent.getClass();
-         try {
-            result = (UIComponent) clazz.newInstance();
-            result.setOid(IDUtil.nextID());
-         } catch (InstantiationException e) {
-            e.printStackTrace();
-         } catch (IllegalAccessException e) {
-            e.printStackTrace();
-         }*/
-         
+      if (uiComponent != null) {
+         /*
+          * Class clazz = uiComponent.getClass(); try { result = (UIComponent) clazz.newInstance();
+          * result.setOid(IDUtil.nextID()); } catch (InstantiationException e) { e.printStackTrace(); } catch
+          * (IllegalAccessException e) { e.printStackTrace(); }
+          */
+
          if (uiComponent instanceof UIButton) {
             result = new UIButton();
          } else if (uiComponent instanceof UISwitch) {
             result = new UISwitch();
-         } else if(uiComponent instanceof UISlider) {
+         } else if (uiComponent instanceof UISlider) {
             result = new UISlider();
-         } else if (uiComponent instanceof UILabel){
+         } else if (uiComponent instanceof UILabel) {
             result = new UILabel();
-         } else if (uiComponent instanceof UIImage){
+         } else if (uiComponent instanceof UIImage) {
             result = new UIImage();
          }
       }
       result.setOid(IDUtil.nextID());
       return result;
    }
-   
+
    /**
     * create a new UIComponet with the same type and the same attribute of <b>uiComponent</b>
-    * @param uiComponent 
+    * 
+    * @param uiComponent
     * @return a new UIComponet with the same type and the same attribute of <b>uiComponent</b>
     */
-   public static UIComponent copy(UIComponent uiComponent){
-      if(uiComponent != null){
+   public static UIComponent copy(UIComponent uiComponent) {
+      if (uiComponent != null) {
          if (uiComponent instanceof UIButton) {
-            return new UIButton((UIButton)uiComponent);
+            return new UIButton((UIButton) uiComponent);
          } else if (uiComponent instanceof UISwitch) {
-            return new UISwitch((UISwitch)uiComponent);
-         } else if(uiComponent instanceof UISlider) {
-            return new UISlider((UISlider)uiComponent);
-         } else if (uiComponent instanceof UILabel){
-            return new UILabel((UILabel)uiComponent);
-         } else if (uiComponent instanceof UIImage){
-            return new UIImage((UIImage)uiComponent);
+            return new UISwitch((UISwitch) uiComponent);
+         } else if (uiComponent instanceof UISlider) {
+            return new UISlider((UISlider) uiComponent);
+         } else if (uiComponent instanceof UILabel) {
+            return new UILabel((UILabel) uiComponent);
+         } else if (uiComponent instanceof UIImage) {
+            return new UIImage((UIImage) uiComponent);
          }
       }
       return null;
@@ -145,6 +140,5 @@ public abstract class UIComponent extends BusinessEntity {
    public int hashCode() {
       return (int) getOid();
    }
-   
-   
+
 }

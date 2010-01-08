@@ -304,7 +304,7 @@ public class TreePanelBuilder {
                return ICON.buttonIcon();
             } else if (thisModel.getBean() instanceof UISwitch) {
                return ICON.switchIcon();
-            } else if (thisModel.getBean() instanceof UILabel){
+            } else if (thisModel.getBean() instanceof UILabel) {
                return ICON.labelIcon();
             } else if (thisModel.getBean() instanceof UIImage) {
                return ICON.imageIcon();

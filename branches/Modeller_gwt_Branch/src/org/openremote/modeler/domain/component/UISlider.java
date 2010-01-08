@@ -9,7 +9,7 @@ import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.UICommand;
 
 @SuppressWarnings("serial")
-public class UISlider extends UIControl implements SensorOwner{
+public class UISlider extends UIControl implements SensorOwner {
 
    private boolean vertical = false;
    private ImageSource thumbImage;

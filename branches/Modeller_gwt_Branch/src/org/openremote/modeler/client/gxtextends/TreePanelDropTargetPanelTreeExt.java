@@ -99,8 +99,8 @@ public class TreePanelDropTargetPanelTreeExt extends TreePanelDropTarget {
       GroupRef groupRef = groupRefBean.getBean();
       ScreenRef scrRef = scrRefBean.getBean();
       List<ScreenRef> screenRefs = groupRef.getGroup().getScreenRefs();
-      for(ScreenRef ref : screenRefs){
-         if(ref.getScreenId()==scrRef.getScreenId()){
+      for (ScreenRef ref : screenRefs) {
+         if (ref.getScreenId() == scrRef.getScreenId()) {
             return false;
          }
       }

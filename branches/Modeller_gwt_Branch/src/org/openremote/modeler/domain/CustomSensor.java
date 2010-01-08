@@ -55,11 +55,12 @@ public class CustomSensor extends Sensor {
       states.add(state);
    }
    
-   public @Override String toString(){
+   @Override
+   public String toString() {
       StringBuilder sb = new StringBuilder();
-      sb.append("<link type=\"sensor\" ref=\""+getOid()+"\">\n");
-      for(State state:states){
-         sb.append("\t<state name=\""+state.getName()+"\"/>\n");
+      sb.append("<link type=\"sensor\" ref=\"" + getOid() + "\">\n");
+      for (State state : states) {
+         sb.append("\t<state name=\"" + state.getName() + "\"/>\n");
       }
       sb.append("</link>");
       return sb.toString();

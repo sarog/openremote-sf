@@ -209,7 +209,7 @@ public class ImagePropertyForm extends PropertyForm {
                      sensorAttrMap.put("name",customSensorState.getName());
                   }
                   sensorAttrMap.put("value", imageURL.substring(imageURL.lastIndexOf("/"+1)));
-                  sensorLinker.AddOrUpdateChildForSensorLinker("state", sensorAttrMap);
+                  sensorLinker.addOrUpdateChildForSensorLinker("state", sensorAttrMap);
                }
             }
             screenImage.getScreenCanvas().unmask();

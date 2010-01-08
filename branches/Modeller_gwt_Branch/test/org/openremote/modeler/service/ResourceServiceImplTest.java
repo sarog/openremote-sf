@@ -72,13 +72,13 @@ import org.testng.annotations.Test;
 
 public class ResourceServiceImplTest {
    
-   Configuration configuration;
+   private Configuration configuration;
    private ResourceServiceImpl resourceServiceImpl = null;
    private DeviceCommandService deviceCommandService;
    private DeviceMacroService deviceMacroService;
    private UserServiceImpl userServiceImpl;
    @BeforeClass
-   public void setUp(){
+   public void setUp() {
       resourceServiceImpl = (ResourceServiceImpl) SpringTestContext.getInstance().getBean("resourceService");
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
       deviceMacroService = (DeviceMacroService) SpringTestContext.getInstance().getBean("deviceMacroService");
@@ -87,14 +87,14 @@ public class ResourceServiceImplTest {
       configuration = (Configuration) SpringTestContext.getInstance().getBean("configuration");
    }
    @Test
-   public void testNopanel(){
+   public void testNopanel() {
       Collection<Panel> emptyPanel = new ArrayList<Panel>();
      outputPanelXML(emptyPanel);
    }
    @Test
-   public void testPanelHasGroupScreenControl()throws Exception{
+   public void testPanelHasGroupScreenControl()throws Exception {
       List<ScreenRef> screenRefs = new ArrayList<ScreenRef>();
-      List<GroupRef> groupRefs = new ArrayList<GroupRef> ();
+      List<GroupRef> groupRefs = new ArrayList<GroupRef>();
       List<Panel> panels = new ArrayList<Panel>();
       
       /*---------------widget-------------------*/
@@ -106,7 +106,7 @@ public class ResourceServiceImplTest {
       absBtn.setImage(defaultImage);
       absBtn.setPressImage(pressedImage);
       
-      UILabel label = new UILabel(IDUtil.nextID());//UILabel 
+      UILabel label = new UILabel(IDUtil.nextID());    // UILabel
       label.setText("testLabel");
       label.setColor("000fff000");
       
@@ -138,7 +138,7 @@ public class ResourceServiceImplTest {
       gridSwitch.setOid(IDUtil.nextID());
       gridSwitch.setSwitchCommand(switchToggle); 
       
-      UIImage uiImage = new UIImage(IDUtil.nextID());//UIImage
+      UIImage uiImage = new UIImage(IDUtil.nextID()); //UIImage
       uiImage.setSensor(sensor);
       uiImage.setLabel(label);
          
@@ -214,7 +214,7 @@ public class ResourceServiceImplTest {
       outputPanelXML(panels);
    }
 @Test
-   public void testPanelTabbarWithNavigateToGroupAndScreen(){
+   public void testPanelTabbarWithNavigateToGroupAndScreen() {
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
       nav.setOid(IDUtil.nextID());
@@ -232,10 +232,10 @@ public class ResourceServiceImplTest {
       outputPanelXML(panelWithJustOneNavigate);
    }
 @Test
-public void testScreenHasGesture(){
+public void testScreenHasGesture() {
    Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
    List<ScreenRef> screenRefs = new ArrayList<ScreenRef>();
-   List<GroupRef> groupRefs = new ArrayList<GroupRef> ();
+   List<GroupRef> groupRefs = new ArrayList<GroupRef>();
    
    List<Gesture> gestures = new ArrayList<Gesture>();
    
@@ -274,7 +274,7 @@ public void testScreenHasGesture(){
 }
    
 @Test
-   public void testPanelTabbarWithNavigateToLogical(){
+   public void testPanelTabbarWithNavigateToLogical() {
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
       nav.setOid(IDUtil.nextID());
@@ -292,7 +292,7 @@ public void testScreenHasGesture(){
    }
    
 @Test
-   public void testPanelNavigateHasImage(){
+   public void testPanelNavigateHasImage() {
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
       nav.setOid(IDUtil.nextID());
@@ -316,7 +316,7 @@ public void testScreenHasGesture(){
    }
    
 @Test
-   public void testGroupNavigateHasImage(){
+   public void testGroupNavigateHasImage() {
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
       nav.setOid(IDUtil.nextID());
@@ -346,7 +346,7 @@ public void testScreenHasGesture(){
    }
    
  @Test
-   public void testScreenHasBackgrouond(){
+   public void testScreenHasBackgrouond() {
       Collection<Panel> panel = new ArrayList<Panel>();
       Screen screen = new Screen();
       screen.setOid(IDUtil.nextID());
@@ -367,7 +367,7 @@ public void testScreenHasGesture(){
       outputPanelXML(panel);
    }
 @Test
-   public void testgetControllXMWithEmptyScreen(){
+   public void testgetControllXMWithEmptyScreen() {
       List<Screen> screens = new ArrayList<Screen>();
       Screen screen = new Screen();
       screen.setOid(IDUtil.nextID());
@@ -378,7 +378,7 @@ public void testScreenHasGesture(){
    }
    
 @Test
-   public void testGetControllerXMLWithButtonAndSwitchButNoCmd(){
+   public void testGetControllerXMLWithButtonAndSwitchButNoCmd() {
       List<Screen> screens = new ArrayList<Screen>();
       Screen screen = new Screen();
       screen.setOid(IDUtil.nextID());
@@ -435,7 +435,7 @@ public void testScreenHasGesture(){
    }
    
 @Test
-   public void testGetControllerXMLWithButtonAndSwitchJustHaveDeviceCommand(){
+   public void testGetControllerXMLWithButtonAndSwitchJustHaveDeviceCommand() {
       
       Protocol protocol = new Protocol();
       protocol.setType(Constants.INFRARED_TYPE);
@@ -505,7 +505,7 @@ public void testScreenHasGesture(){
       outputControllerXML(screens);
    }
 @Test
-public void testGetControllerXMLWithGestureHaveDeviceCommand(){
+public void testGetControllerXMLWithGestureHaveDeviceCommand() {
    
    Protocol protocol = new Protocol();
    protocol.setType(Constants.INFRARED_TYPE);
@@ -530,7 +530,7 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand(){
    outputControllerXML(screens);
 }
    @Test
-   public void testGetControllerXMLWithButtonAndSwitchHaveSensor(){
+   public void testGetControllerXMLWithButtonAndSwitchHaveSensor() {
       
       Protocol protocol = new Protocol();
       protocol.setType(Constants.INFRARED_TYPE);
@@ -614,7 +614,7 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand(){
     * The case has some problem because of LazyInitializationException 
     */
 // @Test
-   public void testGetControllerXMLWithButtonAndSwitchHaveMacro(){
+   public void testGetControllerXMLWithButtonAndSwitchHaveMacro() {
 /*      
       Account account = new Account();
       account.setOid(5);
@@ -736,20 +736,20 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand(){
       screens.add(screen);
       outputControllerXML(screens);
    }
-   private  void outputPanelXML(Collection<Panel> panels){
+   private void outputPanelXML(Collection<Panel> panels) {
       try {
-         System.out.println( XmlParser.validateAndOutputXML(new File(getClass().getResource(
-               configuration.getPanelXsdPath()).getPath()),resourceServiceImpl.getPanelXML(panels)));
+         System.out.println(XmlParser.validateAndOutputXML(new File(getClass().getResource(
+               configuration.getPanelXsdPath()).getPath()), resourceServiceImpl.getPanelXML(panels)));
       } catch (Exception e) {
          e.printStackTrace();
          fail();
       }
    }
    
-   private  void outputControllerXML(Collection<Screen> screens){
+   private void outputControllerXML(Collection<Screen> screens) {
       try {
-         System.out.println( XmlParser.validateAndOutputXML(new File(getClass().getResource(
-               configuration.getControllerXsdPath()).getPath()),resourceServiceImpl.getControllerXML(screens)));
+         System.out.println(XmlParser.validateAndOutputXML(new File(getClass().getResource(
+               configuration.getControllerXsdPath()).getPath()), resourceServiceImpl.getControllerXML(screens)));
       } catch (Exception e) {
          e.printStackTrace();
          fail();

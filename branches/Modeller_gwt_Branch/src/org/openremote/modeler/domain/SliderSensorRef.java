@@ -30,10 +30,11 @@ import javax.persistence.OneToOne;
 public class SliderSensorRef extends SensorRefItem {
 
    private Slider slider;
-   
-   public SliderSensorRef(){}
-   
-   public SliderSensorRef(Slider slider){
+
+   public SliderSensorRef() {
+   }
+
+   public SliderSensorRef(Slider slider) {
       this.slider = slider;
    }
 
@@ -47,5 +48,4 @@ public class SliderSensorRef extends SensorRefItem {
       this.slider = slider;
    }
 
-   
 }

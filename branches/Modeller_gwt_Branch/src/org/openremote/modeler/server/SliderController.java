@@ -28,7 +28,7 @@ import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.service.impl.UserServiceImpl;
 
 @SuppressWarnings("serial")
-public class SliderController extends BaseGWTSpringControllerWithHibernateSupport implements SliderRPCService{
+public class SliderController extends BaseGWTSpringControllerWithHibernateSupport implements SliderRPCService {
 
    private SliderService sliderService;
    

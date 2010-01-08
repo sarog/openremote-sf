@@ -40,10 +40,11 @@ public class SwitchSensorRef extends SensorRefItem {
    public void setSwitchToggle(Switch switchToggle) {
       this.switchToggle = switchToggle;
    }
-   
-   public SwitchSensorRef(Switch switchToggle){
+
+   public SwitchSensorRef(Switch switchToggle) {
       this.switchToggle = switchToggle;
    }
-   
-   public SwitchSensorRef(){}
+
+   public SwitchSensorRef() {
+   }
 }

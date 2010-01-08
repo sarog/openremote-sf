@@ -37,14 +37,15 @@ import org.openremote.modeler.domain.Sensor;
  *
  */
 @SuppressWarnings("serial")
-public class SensorLinker extends BusinessEntity{
+public class SensorLinker extends BusinessEntity {
    private long sensorId;
    private Set<LinkerChild> linkerChildren = new HashSet<LinkerChild>(5);
    
-   public SensorLinker(){};
+   public SensorLinker() {
+   };
    
    
-   public SensorLinker(Sensor sensor){
+   public SensorLinker(Sensor sensor) {
       this.sensorId = sensor.getOid();
    }
    /**
@@ -52,11 +53,12 @@ public class SensorLinker extends BusinessEntity{
     * @param stateName The name for the state. 
     * @return The state value for the state.
     */
-   public String getStateValueByStateName(String stateName){
+   public String getStateValueByStateName(String stateName) {
       String result = "";
-      for(LinkerChild child : linkerChildren){
-         if(child.childName.equals("state")&&child.getAttributeValue("name")!=null&&child.getAttributeValue("name").equals(stateName)){
-            result =  child.attributes.get("value");
+      for (LinkerChild child : linkerChildren) {
+         if (child.childName.equals("state") && child.getAttributeValue("name") != null
+               && child.getAttributeValue("name").equals(stateName)) {
+            result = child.attributes.get("value");
          }
       }
       return result;
@@ -65,16 +67,16 @@ public class SensorLinker extends BusinessEntity{
     * Remove all the sensor property record.
     * This method is useful when your change the sensor for a SensorOwner.
     */
-   public void clear(){
+   public void clear() {
       linkerChildren.removeAll(linkerChildren);
    }
    /**
     * Get the XML string 
     */
-   public String getXMLString(){
+   public String getXMLString() {
       StringBuilder sb = new StringBuilder();
-      sb.append("<link type=\"sensor\" ref=\""+sensorId+"\">");
-      for(LinkerChild child: linkerChildren){
+      sb.append("<link type=\"sensor\" ref=\"" + sensorId + "\">");
+      for (LinkerChild child : linkerChildren) {
          sb.append(child.toString());
       }
       sb.append("</link>");
@@ -86,10 +88,10 @@ public class SensorLinker extends BusinessEntity{
     * @param childName the child name for a SensorLinker node. 
     * @param attrMap a map contains the all attribute for the sensor linker's child. 
     */
-   public void AddOrUpdateChildForSensorLinker(String childName,Map<String,String> attrMap){
+   public void addOrUpdateChildForSensorLinker(String childName, Map<String, String> attrMap) {
       LinkerChild child = new LinkerChild(childName);
       child.setAttributes(attrMap);
-      if(linkerChildren.contains(child)){
+      if (linkerChildren.contains(child)) {
          linkerChildren.remove(child);
       }
       linkerChildren.add(child);
@@ -108,12 +110,13 @@ public class SensorLinker extends BusinessEntity{
     * @author Javen
     *
     */
-   public static class LinkerChild extends BusinessEntity{
+   public static class LinkerChild extends BusinessEntity {
       String childName = "";
       Map<String,String> attributes = new HashMap<String,String>();
       
-      public LinkerChild(){}
-      public LinkerChild(String childName){
+      public LinkerChild() {
+      }
+      public LinkerChild(String childName) {
          this.childName = childName;
       }
       @Override
@@ -126,36 +129,36 @@ public class SensorLinker extends BusinessEntity{
          if (obj == null) return false;
          if (getClass() != obj.getClass()) return false;
          LinkerChild other = (LinkerChild) obj;
-         if(!other.childName.equals(childName)){
+         if (!other.childName.equals(childName)) {
             return false;
          }
-         if(attributes.get("name")!=null && other.attributes.get("name")!=null){
+         if (attributes.get("name") != null && other.attributes.get("name") != null) {
             return attributes.get("name").equals(other.attributes.get("name"));
          }
          return false;
       }
       
-      public void setAttribute(String attrName,String attrValue){
-         if(attrName!=null&&! attrName.trim().isEmpty()){
+      public void setAttribute(String attrName, String attrValue) {
+         if (attrName != null && !attrName.trim().isEmpty()) {
             attributes.put(attrName, attrValue);
          }
       }
-      public void setAttributes(Map<String,String> attrMap){
+      public void setAttributes(Map<String, String> attrMap) {
          attributes.putAll(attrMap);
       }
       
-      public String getAttributeValue(String attributeName){
+      public String getAttributeValue(String attributeName) {
          return attributes.get(attributeName);
       }
-      public String toString(){
+      public String toString() {
          StringBuilder sb = new StringBuilder();
-         sb.append("<"+childName);
+         sb.append("<" + childName);
          Set<String> keys = attributes.keySet();
-         for(String key: keys){
-            sb.append(" "+key+"=\""+attributes.get(key)+"\"");
+         for (String key : keys) {
+            sb.append(" " + key + "=\"" + attributes.get(key) + "\"");
          }
          sb.append(">");
-         sb.append("</"+childName+">");
+         sb.append("</" + childName + ">");
          return sb.toString();
       }
    }

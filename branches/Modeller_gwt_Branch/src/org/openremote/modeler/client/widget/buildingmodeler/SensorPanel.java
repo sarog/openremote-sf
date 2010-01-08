@@ -244,7 +244,8 @@ public class SensorPanel extends ContentPanel {
       }
       for (BeanModel beanModel : models) {
          if (beanModel.getBean() instanceof SensorCommandRef) {
-            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase.getOriginalCommandRefItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
+            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase
+                  .getOriginalCommandRefItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
             BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel),
                   getDragSourceBeanModelChangeListener(beanModel));
          }
@@ -263,7 +264,8 @@ public class SensorPanel extends ContentPanel {
       }
       for (BeanModel beanModel : models) {
          if (beanModel.getBean() instanceof SensorCommandRef) {
-            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase.getOriginalCommandRefItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
+            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase
+                  .getOriginalCommandRefItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
          }
          changeListenerMap.remove(beanModel);
       }

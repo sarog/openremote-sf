@@ -62,7 +62,7 @@ public class SwitchTree {
     * Builds the switch tree.
     * The tree is new, and the store is the same.
     */
-   public static TreePanel<BeanModel> buildSwitchTree(){
+   public static TreePanel<BeanModel> buildSwitchTree() {
       if (switchTreeStore == null) {
          RpcProxy<List<BeanModel>> loadSensorRPCProxy = new RpcProxy<List<BeanModel>>() {
 
@@ -97,7 +97,7 @@ public class SwitchTree {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
             if (thisModel.getBean() instanceof Switch) {
                return ICON.switchIcon();
-            } else if (thisModel.getBean() instanceof CommandRefItem ) {
+            } else if (thisModel.getBean() instanceof CommandRefItem) {
                return ICON.deviceCmd();
             } else {
                return ICON.switchIcon();

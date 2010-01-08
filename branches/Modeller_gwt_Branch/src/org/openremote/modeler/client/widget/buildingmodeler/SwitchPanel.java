@@ -73,7 +73,7 @@ public class SwitchPanel extends ContentPanel {
    private SelectionServiceExt<BeanModel> selectionService;
    private Map<BeanModel, ChangeListener> changeListenerMap = null;
    
-   public SwitchPanel(){
+   public SwitchPanel() {
       this.setHeading("Switch");
       this.setIcon(icons.switchIcon());
       selectionService = new SelectionServiceExt<BeanModel>();
@@ -83,7 +83,7 @@ public class SwitchPanel extends ContentPanel {
       createSwitchsTree();
    }
    
-   private void createMenu(){
+   private void createMenu() {
       ToolBar switchToolBar = new ToolBar();
       newBtn.setToolTip("Create a switch");
       newBtn.setIcon(icons.switchAddIcon());
@@ -115,7 +115,7 @@ public class SwitchPanel extends ContentPanel {
       selectionService.addListener(new EditDelBtnSelectionListener(btns) {
          @Override
          protected boolean isEditableAndDeletable(List<BeanModel> sels) {
-            if(sels.size()>1){
+            if (sels.size() > 1) {
                return false;
             }
             BeanModel selectModel = sels.get(0);
@@ -127,9 +127,9 @@ public class SwitchPanel extends ContentPanel {
       });
    }
 
-   private void createSwitchsTree(){
+   private void createSwitchsTree() {
       this.switchTree = SwitchTree.buildSwitchTree();
-      LayoutContainer treeContainer = new LayoutContainer(){
+      LayoutContainer treeContainer = new LayoutContainer() {
 
          @Override
          protected void onRender(Element parent, int index) {
@@ -174,9 +174,10 @@ public class SwitchPanel extends ContentPanel {
       }
       for (BeanModel beanModel : models) {
          if (beanModel.getBean() instanceof CommandRefItem) {
-            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase.getOriginalCommandRefItemBeanModelId(beanModel), getTreeUpdateListener(switchTree,beanModel));
+            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase
+                  .getOriginalCommandRefItemBeanModelId(beanModel), getTreeUpdateListener(switchTree, beanModel));
             BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel),
-                  getTreeUpdateListener(switchTree,beanModel));
+                  getTreeUpdateListener(switchTree, beanModel));
          } 
       }
    }
@@ -192,13 +193,14 @@ public class SwitchPanel extends ContentPanel {
       }
       for (BeanModel beanModel : models) {
          if (beanModel.getBean() instanceof SwitchSensorRef) {
-            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase.getOriginalCommandRefItemBeanModelId(beanModel), getTreeUpdateListener(switchTree,beanModel));
+            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase
+                  .getOriginalCommandRefItemBeanModelId(beanModel), getTreeUpdateListener(switchTree, beanModel));
          }
          changeListenerMap.remove(beanModel);
       }
    }
    
-   private ChangeListener getTreeUpdateListener(final TreePanel<BeanModel> tree,final BeanModel target) {
+   private ChangeListener getTreeUpdateListener(final TreePanel<BeanModel> tree, final BeanModel target) {
       if (changeListenerMap == null) {
          changeListenerMap = new HashMap<BeanModel, ChangeListener>();
       }
@@ -224,12 +226,12 @@ public class SwitchPanel extends ContentPanel {
       }
       return changeListener;
    }
-   class NewSwitchListener extends SelectionListener<ButtonEvent>{
+   class NewSwitchListener extends SelectionListener<ButtonEvent> {
 
       @Override
       public void componentSelected(ButtonEvent ce) {
          final SwitchWindow switchWindow = new SwitchWindow(null);
-         switchWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener(){
+         switchWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
 
             @Override
             public void afterSubmit(SubmitEvent be) {
@@ -248,7 +250,7 @@ public class SwitchPanel extends ContentPanel {
       }
    }
    
-   class EditSwitchListener extends SelectionListener<ButtonEvent>{
+   class EditSwitchListener extends SelectionListener<ButtonEvent> {
 
       @Override
       public void componentSelected(ButtonEvent ce) {
@@ -256,19 +258,19 @@ public class SwitchPanel extends ContentPanel {
          Switch switchToggle = selectedSwitchBean.getBean();
          
          final SwitchWindow switchWindow = new SwitchWindow(switchToggle);
-         switchWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener(){
+         switchWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
 
             @Override
             public void afterSubmit(SubmitEvent be) {
                switchTree.getStore().removeAll(selectedSwitchBean);
                switchTree.getStore().remove(selectedSwitchBean);
-               
+
                BeanModel switchBeanModel = be.getData();
                Switch swh = switchBeanModel.getBean();
-               switchTree.getStore().add(switchBeanModel,false);
-               switchTree.getStore().add(swh.getBeanModel(),swh.getSwitchCommandOnRef().getBeanModel(),false);
-               switchTree.getStore().add(swh.getBeanModel(),swh.getSwitchCommandOffRef().getBeanModel(),false);
-               
+               switchTree.getStore().add(switchBeanModel, false);
+               switchTree.getStore().add(swh.getBeanModel(), swh.getSwitchCommandOnRef().getBeanModel(), false);
+               switchTree.getStore().add(swh.getBeanModel(), swh.getSwitchCommandOffRef().getBeanModel(), false);
+
                switchTree.setExpanded(switchBeanModel, true);
                switchWindow.hide();
             }
@@ -278,7 +280,7 @@ public class SwitchPanel extends ContentPanel {
       }
    }
    
-   class DeleteSwitchListener extends SelectionListener<ButtonEvent>{
+   class DeleteSwitchListener extends SelectionListener<ButtonEvent> {
 
       @Override
       public void componentSelected(ButtonEvent ce) {
@@ -292,7 +294,7 @@ public class SwitchPanel extends ContentPanel {
 
              public void handleEvent(MessageBoxEvent be) {
                  if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                    SwitchBeanModelProxy.delete(selectedSwitchBean, new AsyncSuccessCallback<Void>(){
+                    SwitchBeanModelProxy.delete(selectedSwitchBean, new AsyncSuccessCallback<Void>() {
                      @Override
                      public void onSuccess(Void result) {
                         switchTree.getStore().remove(selectedSwitchBean);
