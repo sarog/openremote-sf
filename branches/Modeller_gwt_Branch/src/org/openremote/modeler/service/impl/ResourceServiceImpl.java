@@ -733,18 +733,15 @@ public class ResourceServiceImpl implements ResourceService {
       /*
        * reset sensor oid, avoid reduplicate id in export xml.
        */
+
       for (Sensor sensor : SensorWithoutDuplicate) {
-         Collection<Sensor> sameSensors = new ArrayList<Sensor>();
+         long sensorOid = sensor.getOid();
+         long currentSensorId = eventId++;
          for (Sensor s : allSensors) {
-            if (sensor.equals(s)) {
-               sameSensors.add(s);
+            if (s.getOid() == sensorOid) {
+               s.setOid(currentSensorId);
             }
          }
-         long currentSensorId = eventId;
-         for(Sensor s : sameSensors){
-            s.setOid(currentSensorId);
-         }
-         eventId++;
       }
       return SensorWithoutDuplicate;
    }
