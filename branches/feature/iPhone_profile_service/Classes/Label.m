@@ -47,18 +47,6 @@
 	return self;
 }
 
-///**
-// * Fill the label states .
-// */
-//- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
-//	if ([elementName isEqualToString:[self elementName]]) {	
-//		sensorStates = [sensor.states retain];
-// 		[parser setDelegate:xmlParserParentDelegate];
-//		[xmlParserParentDelegate release];
-//		xmlParserParentDelegate = nil;
-//	}
-//}
-
 - (void)dealloc {
 	[color release];
 	[text release];

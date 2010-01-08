@@ -23,8 +23,10 @@
 #import "ComponentView.h"
 
 
-@interface ImageView : ComponentView {
-
+@interface ImageView : ComponentView <PollingCallBackNotificationDelegate> {
+	UIImageView *defaultImageView;
 }
+
+@property (nonatomic, retain) UIImageView *defaultImageView;
 
 @end

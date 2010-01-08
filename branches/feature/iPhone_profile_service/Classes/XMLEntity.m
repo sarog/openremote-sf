@@ -41,6 +41,7 @@ NSString *const OFF = @"off";
 NSString *const SENSOR = @"sensor";
 NSString *const LINK = @"link";
 NSString *const TYPE = @"type";
+NSString *const INCLUDE = @"include";
 
 NSString *const STATE = @"state";
 NSString *const NAME = @"name";
@@ -65,6 +66,7 @@ NSString *const PRESSED = @"pressed";
 NSString *const ICON = @"icon";
 
 NSString *const SRC = @"src";
+NSString *const STYLE = @"style";
 
 NSString *const BG_IMAGE_RELATIVE_POSITION_LEFT = @"LEFT";
 NSString *const BG_IMAGE_RELATIVE_POSITION_RIGHT = @"RIGHT";

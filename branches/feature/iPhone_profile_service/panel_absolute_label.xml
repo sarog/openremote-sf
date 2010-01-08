@@ -5,16 +5,16 @@
 		  	<absolute left="20" top="320" width="100" height="100" >
 				<label id="59" font-size="14" color="#AAAAAA" text="AWaiting">
 					<link type="sensor" ref="1001">
-						<state name="on" value="开" />
-						<state name="off" value="关" />
+						<state name="on" value="LAMP_ON" />
+						<state name="off" value="LAMP_OFF" />
 					</link>
 				</label>
 			</absolute>
 			<absolute left="20" top="320" width="100" height="100" >
 				<label id="60" font-size="14" color="#BBBBBB" text="BWaiting">
 					<link type="sensor" ref="1001">
-						<state name="on" value="开" />
-						<state name="off" value="关" />
+						<state name="on" value="LAMP_ON" />
+						<state name="off" value="LAMP_OFF" />
 					</link>
 				</label>
 			</absolute>
@@ -23,8 +23,8 @@
 		  	<absolute left="20" top="320" width="100" height="100" >
 				<label id="61" font-size="14" color="#CCCCCC" text="CWaiting">
 					<link type="sensor" ref="1001">
-						<state name="on" value="开" />
-						<state name="off" value="关" />
+						<state name="on" value="LAMP_ON" />
+						<state name="off" value="LAMP_OFF" />
 					</link>
 				</label>
 			</absolute>

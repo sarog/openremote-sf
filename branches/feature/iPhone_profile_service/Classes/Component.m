@@ -23,7 +23,7 @@
 #import "Control.h"
 #import "Label.h"
 #import "Image.h"
-
+#import "Definition.h"
 
 @implementation Component
 
@@ -38,8 +38,14 @@
 	} else {
 		return [Control buildWithXMLParser:componentType parser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
 	}
+	newComponent = [newComponent initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
+
+	// Cache lables
+	if ([newComponent isKindOfClass:[Label class]]) {
+		[[Definition sharedDefinition] addLabel:(Label *)newComponent];
+	}
 	
-	return [newComponent initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
+	return newComponent;
 }
 
 @end

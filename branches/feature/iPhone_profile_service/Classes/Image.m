@@ -21,10 +21,11 @@
 
 #import "Image.h"
 #import "Definition.h"
+#import "SensorState.h"
 
 @implementation Image
 
-@synthesize src;
+@synthesize src, style, label;
 
 // get element name, must be overriden in subclass
 - (NSString *) elementName {
@@ -37,6 +38,7 @@
 	if (self = [super init]) {
 		componentId = [[attributeDict objectForKey:ID] intValue];
 		src = [[attributeDict objectForKey:SRC] copy];
+		style = [[attributeDict objectForKey:STYLE] copy];
 		[[Definition sharedDefinition] addImageName:src];
 		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];
@@ -49,9 +51,39 @@
 	[[Definition sharedDefinition] addImageName:src];
 }
 
+/**
+ * Parse the image sub element : sensor link and include.
+ */
+- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
+	if ([elementName isEqualToString:INCLUDE] && [LABEL isEqualToString:[attributeDict objectForKey:TYPE]]) {
+		int labelRefId = [[attributeDict objectForKey:REF] intValue];
+		label = [[Label alloc] init];
+		label.componentId = labelRefId;
+	}
+	[super parser:parser didStartElement:elementName namespaceURI:namespaceURI qualifiedName:qualifiedName attributes:attributeDict];
+	
+}
+
+/**
+ * Fill the image's sensorImages .
+ */
+- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
+	if ([elementName isEqualToString:[self elementName]]) {	
+		
+		for (SensorState *state in sensor.states) {
+			[[Definition sharedDefinition] addImageName:state.value];
+		}
+		
+ 		[parser setDelegate:xmlParserParentDelegate];
+		[xmlParserParentDelegate release];
+		xmlParserParentDelegate = nil;
+	}
+}
 
 - (void)dealloc {
 	[src release];
+	[style release];
+	[label release];
 	[super dealloc];
 }
 
