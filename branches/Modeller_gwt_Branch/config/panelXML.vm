@@ -118,7 +118,7 @@
 				#set($navigate = $tabbarItem.getNavigate())
 				#getNavigateXML($navigate)
 				#if($!{tabbarItem.getImage()})
-					<image src="${tabbarItem.getImage().getSrc()}" state="$!{tabbarItem.getImage().getState()}"/>
+					<image src="${tabbarItem.getImage().getSrc()}" #*state="$!{tabbarItem.getImage().getState()}"*#/>
 				#end
 			</item>
 		#end
