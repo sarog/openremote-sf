@@ -189,6 +189,7 @@
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
 	int state_index = 0;
 	int switch_index = 0;
+	int state_value_index = 0;
 	NSMutableArray *cells = [[NSMutableArray alloc] init];
 	for (Group *group in groups) {
 		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
@@ -215,6 +216,20 @@
 							STAssertTrue([theSwitch.offImage.src isEqualToString:expectedOffName],@"expected %@, but %@",expectedOffName,theSwitch.offImage.src);
 							[expectedOnName release];
 							[expectedOffName release];
+							
+							// assert sensor
+							for (int i = 0; i < [theSwitch.sensor.states count]; i++) {
+								NSString *expectedStateName;
+								NSString *expectedStateValue = [@"" stringByAppendingFormat:@"%c.png", (char)97 + state_value_index++];
+								if (i % 2 == 0) {
+									expectedStateName = @"on";
+								} else {
+									expectedStateName = @"off";
+								}
+								SensorState *sensorState = [theSwitch.sensor.states objectAtIndex:i];
+								STAssertTrue([expectedStateName isEqualToString:sensorState.name], @"expected %@, but %@", expectedStateName, sensorState.name);
+								STAssertTrue([expectedStateValue isEqualToString:sensorState.value], @"expected %@, but %@", expectedStateValue, sensorState.value);
+							}
 						}	
 					}
 				}				
@@ -271,6 +286,7 @@
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
 	int state_index = 0;
 	int switch_index = 0;
+	int state_value_index = 0;
 	for (Group *group in groups) {
 		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
 		for (Screen *screen in group.screens) {			
@@ -294,6 +310,20 @@
 						STAssertTrue([theSwitch.offImage.src isEqualToString:expectedOffName],@"expected %@, but %@",expectedOffName,theSwitch.offImage.src);
 						[expectedOnName release];
 						[expectedOffName release];
+						
+						// assert sensor
+						for (int i = 0; i < [theSwitch.sensor.states count]; i++) {
+							NSString *expectedStateName;
+							NSString *expectedStateValue = [@"" stringByAppendingFormat:@"%c.png", (char)97 + state_value_index++];
+							if (i % 2 == 0) {
+								expectedStateName = @"on";
+							} else {
+								expectedStateName = @"off";
+							}
+							SensorState *sensorState = [theSwitch.sensor.states objectAtIndex:i];
+							STAssertTrue([expectedStateName isEqualToString:sensorState.name], @"expected %@, but %@", expectedStateName, sensorState.name);
+							STAssertTrue([expectedStateValue isEqualToString:sensorState.value], @"expected %@, but %@", expectedStateValue, sensorState.value);
+						}
 					}					
 				}				
 			}
@@ -558,10 +588,10 @@
 								NSString *expectedStateValue;
 								if (i % 2 == 0) {
 									expectedStateName = @"on";
-									expectedStateValue = @"开";
+									expectedStateValue = @"LAMP_ON";
 								} else {
 									expectedStateName = @"off";
-									expectedStateValue = @"关";
+									expectedStateValue = @"LAMP_OFF";
 								}
 								SensorState *sensorState = [theLabel.sensor.states objectAtIndex:i];
 								STAssertTrue([expectedStateName isEqualToString:sensorState.name], @"expected %@, but %@", expectedStateName, sensorState.name);
@@ -654,10 +684,10 @@
 							NSString *expectedStateValue;
 							if (i % 2 == 0) {
 								expectedStateName = @"on";
-								expectedStateValue = @"开";
+								expectedStateValue = @"LAMP_ON";
 							} else {
 								expectedStateName = @"off";
-								expectedStateValue = @"关";
+								expectedStateValue = @"LAMP_OFF";
 							}
 							SensorState *sensorState = [theLabel.sensor.states objectAtIndex:i];
 							STAssertTrue([expectedStateName isEqualToString:sensorState.name], @"expected %@, but %@", expectedStateName, sensorState.name);
@@ -729,8 +759,54 @@
 							Image *theImage = (Image *)cell.component;
 							int expectedId = (59 + image_index++);
 							STAssertTrue(expectedId == theImage.componentId,@"expected %d, but %d",expectedId,theImage.componentId);
-							NSString *imageSrc = [[NSString alloc] initWithFormat:@"%c.png", (char)97 + state_index++];					
-							STAssertTrue([theImage.src isEqualToString:imageSrc],@"expected %@, but %@", imageSrc, theImage.src);
+							NSString *expectedImageSrc = [[NSString alloc] initWithFormat:@"%c.png", (char)97 + state_index++];					
+							STAssertTrue([theImage.src isEqualToString:expectedImageSrc],@"expected %@, but %@", expectedImageSrc, theImage.src);
+							NSString *expectedImageStyle = @"";
+							STAssertTrue([theImage.style isEqualToString:expectedImageStyle], @"expected %@, but %@", expectedImageStyle, theImage.style);
+							
+							// assert sensor
+							for (int i = 0; i < [theImage.sensor.states count]; i++) {
+								NSString *expectedStateName;
+								NSString *expectedStateValue;
+								if (i % 2 == 0) {
+									expectedStateName = @"on";
+									expectedStateValue = @"on.png";
+								} else {
+									expectedStateName = @"off";
+									expectedStateValue = @"off.png";
+								}
+								SensorState *sensorState = [theImage.sensor.states objectAtIndex:i];
+								STAssertTrue([expectedStateName isEqualToString:sensorState.name], @"expected %@, but %@", expectedStateName, sensorState.name);
+								STAssertTrue([expectedStateValue isEqualToString:sensorState.value], @"expected %@, but %@", expectedStateValue, sensorState.value);
+							}
+							
+							// assert include
+							Label *includedLabel = theImage.label;
+							for (Label *tempLabel in [Definition sharedDefinition].labels) {
+								if (tempLabel.componentId == includedLabel.componentId) {
+									includedLabel = tempLabel;
+									break;
+								}
+							}
+							STAssertTrue(includedLabel.componentId == 64, @"expected 64, but %d", includedLabel.componentId);
+							int expectedIncludedLabelSensorId = 1001;
+							STAssertTrue(includedLabel.sensor.sensorId == expectedIncludedLabelSensorId, @"expected %d, but %d", expectedIncludedLabelSensorId, includedLabel.sensor.sensorId);
+							
+							// assert include label's sensor
+							for (int i = 0; i < [includedLabel.sensor.states count]; i++) {
+								NSString *expectedStateName;
+								NSString *expectedStateValue;
+								if (i % 2 == 0) {
+									expectedStateName = @"on";
+									expectedStateValue = @"LAMP_ON";
+								} else {
+									expectedStateName = @"off";
+									expectedStateValue = @"LAMP_OFF";
+								}
+								SensorState *sensorState = [includedLabel.sensor.states objectAtIndex:i];
+								STAssertTrue([expectedStateName isEqualToString:sensorState.name], @"expected %@, but %@", expectedStateName, sensorState.name);
+								STAssertTrue([expectedStateValue isEqualToString:sensorState.value], @"expected %@, but %@", expectedStateValue, sensorState.value);
+							}
 						}	
 					}
 				}				
@@ -757,19 +833,20 @@
 		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
 	}
 	
-	STAssertTrue(cells.count== 5,@"expected %d, but %d",5,cells.count);
-	STAssertTrue(((GridCell *)[cells objectAtIndex:0]).colspan == 1,@"expected %d",1);
-	STAssertTrue(((GridCell *)[cells objectAtIndex:0]).rowspan == 1,@"expected %d",1);
-	STAssertTrue(((GridCell *)[cells objectAtIndex:1]).rowspan == 1,@"expected %d",1);
-	STAssertTrue(((GridCell *)[cells objectAtIndex:2]).colspan == 1,@"expected %d",1);
-	STAssertTrue(((GridCell *)[cells objectAtIndex:3]).colspan == 1,@"expected %d",1);
-	STAssertTrue(((GridCell *)[cells objectAtIndex:4]).colspan == 2,@"expected %d",2);
+	STAssertTrue(cells.count== 6,@"expected %d, but %d",6,cells.count);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:0]).colspan == 1,@"expected %d, but %d",1, ((GridCell *)[cells objectAtIndex:0]).colspan);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:0]).rowspan == 1,@"expected %d, but %d",1, ((GridCell *)[cells objectAtIndex:0]).rowspan);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:1]).rowspan == 1,@"expected %d, but %d",1, ((GridCell *)[cells objectAtIndex:1]).rowspan);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:2]).colspan == 1,@"expected %d, but %d",1, ((GridCell *)[cells objectAtIndex:2]).colspan);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:3]).colspan == 1,@"expected %d, but %d",1, ((GridCell *)[cells objectAtIndex:3]).colspan);
+	STAssertTrue(((GridCell *)[cells objectAtIndex:4]).colspan == 1,@"expected %d, but %d",1, ((GridCell *)[cells objectAtIndex:4]).colspan);
 	
 	[xmlParser release];
 	[xml release];
 	[cells release];
 	NSLog(@"End testParsePanelGridImageXML");
 }
+
 // panel_absolute_image.xml test
 - (void) testParsePanelAbsoluteImageXML {
 	NSLog(@"Begin testParsePanelAbsoluteImageXML");
@@ -802,6 +879,52 @@
 						STAssertTrue(expectedId == theImage.componentId,@"expected %d, but %d",expectedId,theImage.componentId);
 						NSString *imageSrc = [[NSString alloc] initWithFormat:@"%c.png", (char)97 + state_index++];
 						STAssertTrue([theImage.src isEqualToString:imageSrc],@"expected %@, but %@", theImage.src, imageSrc);
+						NSString *expectedImageStyle = @"";
+						STAssertTrue([theImage.style isEqualToString:expectedImageStyle], @"expected %@, but %@", expectedImageStyle, theImage.style);
+						
+						// assert sensor
+						for (int i = 0; i < [theImage.sensor.states count]; i++) {
+							NSString *expectedStateName;
+							NSString *expectedStateValue;
+							if (i % 2 == 0) {
+								expectedStateName = @"on";
+								expectedStateValue = @"on.png";
+							} else {
+								expectedStateName = @"off";
+								expectedStateValue = @"off.png";
+							}
+							SensorState *sensorState = [theImage.sensor.states objectAtIndex:i];
+							STAssertTrue([expectedStateName isEqualToString:sensorState.name], @"expected %@, but %@", expectedStateName, sensorState.name);
+							STAssertTrue([expectedStateValue isEqualToString:sensorState.value], @"expected %@, but %@", expectedStateValue, sensorState.value);
+						}
+						
+						// assert include
+						Label *includedLabel = theImage.label;
+						for (Label *tempLabel in [Definition sharedDefinition].labels) {
+							if (tempLabel.componentId == includedLabel.componentId) {
+								includedLabel = tempLabel;
+								break;
+							}
+						}
+						STAssertTrue(includedLabel.componentId == 62, @"expected 62, but %d", includedLabel.componentId);
+						int expectedIncludedLabelSensorId = 1001;
+						STAssertTrue(includedLabel.sensor.sensorId == expectedIncludedLabelSensorId, @"expected %d, but %d", expectedIncludedLabelSensorId, includedLabel.sensor.sensorId);
+						
+						// assert include label's sensor
+						for (int i = 0; i < [includedLabel.sensor.states count]; i++) {
+							NSString *expectedStateName;
+							NSString *expectedStateValue;
+							if (i % 2 == 0) {
+								expectedStateName = @"on";
+								expectedStateValue = @"LAMP_ON";
+							} else {
+								expectedStateName = @"off";
+								expectedStateValue = @"LAMP_OFF";
+							}
+							SensorState *sensorState = [includedLabel.sensor.states objectAtIndex:i];
+							STAssertTrue([expectedStateName isEqualToString:sensorState.name], @"expected %@, but %@", expectedStateName, sensorState.name);
+							STAssertTrue([expectedStateValue isEqualToString:sensorState.value], @"expected %@, but %@", expectedStateValue, sensorState.value);
+						}
 					}					
 				}				
 			}

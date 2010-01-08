@@ -51,7 +51,7 @@ static Definition *myInstance = nil;
 @implementation Definition
 
 
-@synthesize isUpdating, lastUpdateTime, groups, screens, tabBar, imageNames, loading, username, password;
+@synthesize isUpdating, lastUpdateTime, groups, screens, labels, tabBar, imageNames, loading, username, password;
 
 - (id)init {			
 	if (myInstance != nil) {
@@ -61,6 +61,7 @@ static Definition *myInstance = nil;
 		myInstance = self; 
 		groups = [[NSMutableArray alloc] init];
 		screens = [[NSMutableArray alloc] init];
+		labels = [[NSMutableArray alloc] init];
 		imageNames = [[NSMutableArray alloc] init];
 		//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:@"kNetworkReachabilityChangedNotification" object:nil];
 		
@@ -84,6 +85,11 @@ static Definition *myInstance = nil;
 		}
 	}
 	return nil;
+}
+
+- (void) addLabel:(Label *)label {
+	[self.labels addObject:label];
+	[label release];
 }
 
 - (BOOL)isDataReady {
@@ -302,6 +308,9 @@ static Definition *myInstance = nil;
 	}
 	if (screens) {
 		[screens removeAllObjects];
+	}
+	if (labels) {
+		[labels removeAllObjects];
 	}
 	if (imageNames) {
 		[imageNames removeAllObjects];

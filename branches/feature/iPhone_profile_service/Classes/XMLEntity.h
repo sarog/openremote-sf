@@ -32,6 +32,7 @@ extern NSString *const OFF;
 extern NSString *const SENSOR;
 extern NSString *const LINK;
 extern NSString *const TYPE;
+extern NSString *const INCLUDE;
 
 extern NSString *const STATE;
 extern NSString *const NAME;
@@ -56,6 +57,7 @@ extern NSString *const PRESSED;
 extern NSString *const ICON;
 
 extern NSString *const SRC;
+extern NSString *const STYLE;
 
 extern NSString *const BG_IMAGE_RELATIVE_POSITION_LEFT;
 extern NSString *const BG_IMAGE_RELATIVE_POSITION_RIGHT;

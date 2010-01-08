@@ -31,6 +31,7 @@
 	NSDate *lastUpdateTime;
 	NSMutableArray *groups;
 	NSMutableArray *screens;
+	NSMutableArray *labels;
 	TabBar *tabBar;
 	NSMutableArray *imageNames;
 	NSInvocationOperation *updateOperation;
@@ -47,11 +48,13 @@
 - (void)clearPanelXMLData;
 - (void)addImageName:(NSString *)imageName;
 - (Group *)findGroupById:(int)groupId;
+- (void) addLabel:(Label *)label;
 
 @property (nonatomic,readonly) BOOL isUpdating;
 @property (nonatomic,readonly) NSDate *lastUpdateTime;
 @property (nonatomic,readonly) NSMutableArray *groups;
 @property (nonatomic,readonly) NSMutableArray *screens;
+@property (nonatomic,retain) NSMutableArray *labels;
 @property (nonatomic,retain) TabBar *tabBar;
 @property (nonatomic,readonly) NSMutableArray *imageNames;
 @property (nonatomic,retain) UILabel *loading;

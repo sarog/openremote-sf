@@ -27,7 +27,7 @@
 @synthesize sensor;
 
 /**
- * Parse the switch sub element : sensor link.
+ * Parse the sub element : sensor link.
  */
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
 	

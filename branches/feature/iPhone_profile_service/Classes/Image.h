@@ -21,12 +21,16 @@
 
 #import <Foundation/Foundation.h>
 #import "SensorComponent.h"
+#import "Label.h"
 
 @interface Image : SensorComponent {
 	NSString *src;
-
+	NSString *style;
+	Label *label;
 }
 
 @property (nonatomic, readwrite, retain) NSString *src;
+@property (nonatomic, readwrite, retain) NSString *style;
+@property (nonatomic, readwrite, retain) Label *label;
 
 @end

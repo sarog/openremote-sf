@@ -28,7 +28,7 @@
 	
 }
 
-@property(nonatomic,readonly)int componentId;
+@property(nonatomic,readwrite)int componentId;
 
 + (id)buildWithXMLParser:(NSString *) componentType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent;
 
