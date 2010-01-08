@@ -208,7 +208,7 @@ public class ImagePropertyForm extends PropertyForm {
                   default:
                      sensorAttrMap.put("name",customSensorState.getName());
                   }
-                  sensorAttrMap.put("value", imageURL.substring(imageURL.lastIndexOf("/"+1)));
+                  sensorAttrMap.put("value", imageURL.substring(imageURL.lastIndexOf("/")+1));
                   sensorLinker.addOrUpdateChildForSensorLinker("state", sensorAttrMap);
                }
             }
