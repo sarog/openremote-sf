@@ -27,6 +27,7 @@
 @interface Slider : SensorComponent {
 	Image *thumbImage;
 	BOOL vertical;
+	BOOL passive;
 	float minValue;
 	float maxValue;
 	Image *minImage;
@@ -37,6 +38,7 @@
 
 @property(nonatomic, readonly) Image *thumbImage;
 @property(nonatomic, readonly) BOOL vertical;
+@property(nonatomic, readonly) BOOL passive;
 @property(nonatomic, readonly) float minValue;
 @property(nonatomic, readonly) float maxValue;
 @property(nonatomic, readonly) Image *minImage;

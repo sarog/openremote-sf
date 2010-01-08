@@ -42,7 +42,7 @@
 
 	// Cache lables
 	if ([newComponent isKindOfClass:[Label class]]) {
-		[[Definition sharedDefinition] addLabel:(Label *)newComponent];
+		[[Definition sharedDefinition] addLabel:[(Label *)newComponent retain]];
 	}
 	
 	return newComponent;
