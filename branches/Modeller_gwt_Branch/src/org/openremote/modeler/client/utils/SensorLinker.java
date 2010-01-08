@@ -38,7 +38,7 @@ import org.openremote.modeler.domain.Sensor;
  */
 @SuppressWarnings("serial")
 public class SensorLinker extends BusinessEntity {
-   private long sensorId;
+   private Sensor sensor = null;
    private Set<LinkerChild> linkerChildren = new HashSet<LinkerChild>(5);
    
    public SensorLinker() {
@@ -46,7 +46,7 @@ public class SensorLinker extends BusinessEntity {
    
    
    public SensorLinker(Sensor sensor) {
-      this.sensorId = sensor.getOid();
+      this.sensor = sensor;
    }
    /**
     * Most of the sensors have some states,SO the method can be used get the state value by state name,like getStateValueByStateName("on") can get the value for a switch sensor when it is on the on state.
@@ -75,7 +75,7 @@ public class SensorLinker extends BusinessEntity {
     */
    public String getXMLString() {
       StringBuilder sb = new StringBuilder();
-      sb.append("<link type=\"sensor\" ref=\"" + sensorId + "\">");
+      sb.append("<link type=\"sensor\" ref=\"" + sensor.getOid() + "\">");
       for (LinkerChild child : linkerChildren) {
          sb.append(child.toString());
       }
@@ -97,12 +97,13 @@ public class SensorLinker extends BusinessEntity {
       linkerChildren.add(child);
    }
    
-   public long getSensorId() {
-      return sensorId;
+   public Sensor getSensor() {
+      return sensor;
    }
 
-   public void setSensorId(long sensorId) {
-      this.sensorId = sensorId;
+
+   public void setSensor(Sensor sensor) {
+      this.sensor = sensor;
    }
 
    /**

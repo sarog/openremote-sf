@@ -721,6 +721,10 @@ public class ResourceServiceImpl implements ResourceService {
          }
       }
 
+      // reset sensor oid, avoid reduplicate id in export xml.
+      for (Sensor sensor : sensors) {
+         sensor.setOid(this.eventId++);
+      }
       return sensors;
    }
 
