@@ -45,7 +45,7 @@
   	#foreach($screen in $screens)
   		<screen id="${screen.getOid()}" name="${screen.getName()}">
   		##-----------------------------------------------------------------background---------------------------------------------------------------------------
-  		#if($screen.getBackground().getSrc()!="")
+  		#if($screen.getBackground().getImageSource().getSrc().length()!=0)
   			<background
 	  			#if(!$screen.getBackground().isFillScreen())
 	  				#if($screen.getBackground().isAbsolute())
@@ -56,8 +56,7 @@
 	  			#else
 	  				fillScreen="true">
 	  			#end
-	  			#set($index=$screen.getBackground().getSrc().lastIndexOf("/")+1)
-  				<image src="${screen.getBackground().getSrc().substring($index)}"/>
+  				<image src="${screen.getBackground().getImageSource().getImageFileName()}"/>
   			</background>
   		#end
   		##-----------------------------------------------------------------absolute---------------------------------------------------------------------------
