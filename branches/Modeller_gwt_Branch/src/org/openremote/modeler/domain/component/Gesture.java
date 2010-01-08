@@ -70,11 +70,14 @@ public class Gesture extends UIControl {
    }
    @Override
    public List<UICommand> getCommands() {
-      return new ArrayList<UICommand>() {
-         {
-            add(uiCommand);
-         }
-      };
+      if (uiCommand != null) {
+         return new ArrayList<UICommand>() {
+            {
+               add(uiCommand);
+            }
+         };
+      }
+      return new ArrayList<UICommand>();
    }
    public static enum GestureType {
       swipe_bottom_to_top, swipe_top_to_bottom, swipe_left_to_right, swipe_right_to_left;
