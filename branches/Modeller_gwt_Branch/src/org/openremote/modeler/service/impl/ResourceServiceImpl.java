@@ -136,6 +136,13 @@ public class ResourceServiceImpl implements ResourceService {
       if (!sessionFolder.exists()) {
          sessionFolder.mkdirs();
       }
+      
+      /*
+       * down load the default image.
+       */
+      File defaultImage = new File(UIImage.DEFAULT_IMAGE_URL);
+      FileUtilsExt.copyFile(defaultImage, new File(sessionFolder, defaultImage.getName()));
+      
       File panelXMLFile = new File(pathConfig.panelXmlFilePath(sessionId));
       File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(sessionId));
       File lircdFile = new File(pathConfig.lircFilePath(sessionId));

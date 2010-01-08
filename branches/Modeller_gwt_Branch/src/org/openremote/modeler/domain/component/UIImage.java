@@ -27,7 +27,9 @@ import org.openremote.modeler.domain.Sensor;
 @SuppressWarnings("serial")
 public class UIImage extends UIComponent implements SensorOwner {
 
-   private ImageSource imageSource = new ImageSource("");
+   public static String DEFAULT_IMAGE_URL = "./image/OpenRemote.Logo.16x16.png";
+   
+   private ImageSource imageSource = new ImageSource(DEFAULT_IMAGE_URL);
 
    private Sensor sensor = null;
 
