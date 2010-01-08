@@ -90,9 +90,9 @@ import org.springframework.ui.velocity.VelocityEngineUtils;
  * @author Allen, Handy, Javen
  */
 public class ResourceServiceImpl implements ResourceService {
-   
+
    public static final String PANEL_XML_TEMPLATE = "panelXML.vm";
-   public static final String CONTROLLER_XML_TEMPLATE="controllerXML.vm";
+   public static final String CONTROLLER_XML_TEMPLATE = "controllerXML.vm";
 
    /** The Constant logger. */
    private static final Logger LOGGER = Logger.getLogger(ResourceServiceImpl.class);
@@ -108,10 +108,11 @@ public class ResourceServiceImpl implements ResourceService {
 
    /** The device macro service. */
    private DeviceMacroService deviceMacroService;
-   
+
    private VelocityEngine velocity;
-   
+
    private UIComponentBox uiComponentBox = new UIComponentBox();
+
    /**
     * {@inheritDoc}
     */
@@ -119,16 +120,15 @@ public class ResourceServiceImpl implements ResourceService {
       Set<Group> groups = new LinkedHashSet<Group>();
       Set<Screen> screens = new LinkedHashSet<Screen>();
       /*
-       * initialize groups and screens. 
+       * initialize groups and screens.
        */
       initGroupsAndScreens(panels, groups, screens);
-      
-     
+
       String controllerXmlContent = getControllerXmlContent(maxId, screens);
       String panelXmlContent = getPanelXML(panels);
       String sectionIds = getSectionIds(screens);
 
-//      replaceUrl(screens, sessionId);
+      // replaceUrl(screens, sessionId);
       // String activitiesJson = getActivitiesJson(activities);
 
       PathConfig pathConfig = PathConfig.getInstance(configuration);
@@ -186,24 +186,21 @@ public class ResourceServiceImpl implements ResourceService {
     * @param sessionId
     *           the user id
     */
-   /*private void replaceUrl(Collection<Screen> screens, String sessionId) {
-      String rerlativeSessionFolderPath = PathConfig.getInstance(configuration).getRelativeSessionFolderPath(sessionId);
-      for (Screen screen : screens) {
-         for (Absolute absolute : screen.getAbsolutes()) {
-            absolute.getUIComponent().transImagePathToRelative(rerlativeSessionFolderPath);
-         }
-         for (UIGrid grid : screen.getGrids()) {
-            for (Cell cell : grid.getCells()) {
-               cell.getUIComponent().transImagePathToRelative(rerlativeSessionFolderPath);
-            }
-         }
-      }
-   }
-*/
+   /*
+    * private void replaceUrl(Collection<Screen> screens, String sessionId) { String rerlativeSessionFolderPath =
+    * PathConfig.getInstance(configuration).getRelativeSessionFolderPath(sessionId); for (Screen screen : screens) { for
+    * (Absolute absolute : screen.getAbsolutes()) {
+    * absolute.getUIComponent().transImagePathToRelative(rerlativeSessionFolderPath); } for (UIGrid grid :
+    * screen.getGrids()) { for (Cell cell : grid.getCells()) {
+    * cell.getUIComponent().transImagePathToRelative(rerlativeSessionFolderPath); } } } }
+    */
    /**
     * Compress files to zip.
-    * @param files the files
-    * @param zipFilePath the zip file path
+    * 
+    * @param files
+    *           the files
+    * @param zipFilePath
+    *           the zip file path
     * 
     * @return the file
     */
@@ -306,13 +303,17 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Check xml.
     * 
-    * @param zipInputStream the zip input stream
-    * @param zipEntry the zip entry
-    * @param xmlName the xml name
+    * @param zipInputStream
+    *           the zip input stream
+    * @param zipEntry
+    *           the zip entry
+    * @param xmlName
+    *           the xml name
     * 
     * @return true, if successful
     * 
-    * @throws IOException Signals that an I/O exception has occurred.
+    * @throws IOException
+    *            Signals that an I/O exception has occurred.
     */
    private boolean checkXML(ZipInputStream zipInputStream, ZipEntry zipEntry, String xmlName) throws IOException {
       if (zipEntry.getName().equals(xmlName + ".xml")) {
@@ -376,14 +377,13 @@ public class ResourceServiceImpl implements ResourceService {
       return getControllerXML(screens);
    }
 
-
-
-   
    /**
     * Gets the controller xml segment content.
     * 
-    * @param command the device command item
-    * @param protocolEventContaine the protocol event container
+    * @param command
+    *           the device command item
+    * @param protocolEventContaine
+    *           the protocol event container
     * 
     * @return the controller xml segment content
     */
@@ -392,8 +392,8 @@ public class ResourceServiceImpl implements ResourceService {
       List<UIButtonEvent> oneUIButtonEventList = new ArrayList<UIButtonEvent>();
       if (command instanceof DeviceMacroItem) {
          if (command instanceof DeviceCommandRef) {
-            DeviceCommand deviceCommand = deviceCommandService.loadById(((DeviceCommandRef) command)
-                  .getDeviceCommand().getOid());
+            DeviceCommand deviceCommand = deviceCommandService.loadById(((DeviceCommandRef) command).getDeviceCommand()
+                  .getOid());
             addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand);
          } else if (command instanceof DeviceMacroRef) {
             DeviceMacro deviceMacro = ((DeviceMacroRef) command).getTargetDeviceMacro();
@@ -409,8 +409,8 @@ public class ResourceServiceImpl implements ResourceService {
             oneUIButtonEventList.add(uiButtonEvent);
          }
       } else if (command instanceof CommandRefItem) {
-         DeviceCommand deviceCommand = deviceCommandService.loadById(((CommandRefItem) command)
-               .getDeviceCommand().getOid());
+         DeviceCommand deviceCommand = deviceCommandService.loadById(((CommandRefItem) command).getDeviceCommand()
+               .getOid());
          addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand);
       } else {
          return new ArrayList<UIButtonEvent>();
@@ -427,7 +427,7 @@ public class ResourceServiceImpl implements ResourceService {
          List<UIButtonEvent> oneUIButtonEventList, DeviceCommand deviceCommand) {
       String protocolType = deviceCommand.getProtocol().getType();
       List<ProtocolAttr> protocolAttrs = deviceCommand.getProtocol().getAttributes();
-      
+
       UIButtonEvent uiButtonEvent = new UIButtonEvent();
       uiButtonEvent.setId(this.eventId++);
       uiButtonEvent.setProtocolDisplayName(protocolType);
@@ -446,7 +446,9 @@ public class ResourceServiceImpl implements ResourceService {
     */
    /**
     * Gets the section ids.
-    * @param screenList the activity list
+    * 
+    * @param screenList
+    *           the activity list
     * 
     * @return the section ids
     */
@@ -491,13 +493,15 @@ public class ResourceServiceImpl implements ResourceService {
       if (command instanceof DeviceMacroItem) {
          sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem) command));
       } else if (command instanceof CommandRefItem) {
-         sectionIds.add(((CommandRefItem)command).getDeviceCommand().getSectionId());
+         sectionIds.add(((CommandRefItem) command).getDeviceCommand().getSectionId());
       }
    }
 
    /**
     * Gets the devcie macro item section ids.
-    * @param deviceMacroItem the device macro item
+    * 
+    * @param deviceMacroItem
+    *           the device macro item
     * 
     * @return the devcie macro item section ids
     */
@@ -546,7 +550,8 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Sets the device command service.
     * 
-    * @param deviceCommandService the new device command service
+    * @param deviceCommandService
+    *           the new device command service
     */
    public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
       this.deviceCommandService = deviceCommandService;
@@ -555,7 +560,8 @@ public class ResourceServiceImpl implements ResourceService {
    /**
     * Sets the device macro service.
     * 
-    * @param deviceMacroService the new device macro service
+    * @param deviceMacroService
+    *           the new device macro service
     */
    public void setDeviceMacroService(DeviceMacroService deviceMacroService) {
       this.deviceMacroService = deviceMacroService;
@@ -567,7 +573,7 @@ public class ResourceServiceImpl implements ResourceService {
    public String getRelativeResourcePath(String sessionId, String fileName) {
       return PathConfig.getInstance(configuration).getRelativeResourcePath(fileName, sessionId);
    }
-   
+
    public long getEventId() {
       return eventId;
    }
@@ -575,6 +581,7 @@ public class ResourceServiceImpl implements ResourceService {
    public void setEventId(long eventId) {
       this.eventId = eventId;
    }
+
    @Override
    public String getGroupsJson(Collection<Group> groups) {
       try {
@@ -607,9 +614,14 @@ public class ResourceServiceImpl implements ResourceService {
    public String getPanelsJson(Collection<Panel> panels) {
       try {
          String[] includedPropertyNames = {"groupRefs", "tabbarItems", "groupRefs.group.tabbarItems",
-               "groupRefs.group.screenRefs", "groupRefs.group.screenRefs.screen.absolutes.uiComponent","groupRefs.group.screenRefs.screen.absolutes.uiComponent.uiCommand","groupRefs.group.screenRefs.screen.absolutes.uiComponent.commands",
-               "groupRefs.group.screenRefs.screen.grids.cells.uiComponent","groupRefs.group.screenRefs.screen.grids.cells.uiComponent.uiCommand","groupRefs.group.screenRefs.screen.grids.cells.uiComponent.commands","groupRefs.group.screenRefs.screen.grids.uiComponent.sensor",
-               "groupRefs.group.screenRefs.screen.grids.cells.uiComponent.sensor"  };
+               "groupRefs.group.screenRefs", "groupRefs.group.screenRefs.screen.absolutes.uiComponent",
+               "groupRefs.group.screenRefs.screen.absolutes.uiComponent.uiCommand",
+               "groupRefs.group.screenRefs.screen.absolutes.uiComponent.commands",
+               "groupRefs.group.screenRefs.screen.grids.cells.uiComponent",
+               "groupRefs.group.screenRefs.screen.grids.cells.uiComponent.uiCommand",
+               "groupRefs.group.screenRefs.screen.grids.cells.uiComponent.commands",
+               "groupRefs.group.screenRefs.screen.grids.uiComponent.sensor",
+               "groupRefs.group.screenRefs.screen.grids.cells.uiComponent.sensor" };
          String[] excludePropertyNames = {};
          String panelsJson = JsonGenerator.serializerObjectInclude(panels, includedPropertyNames, excludePropertyNames);
          return panelsJson;
@@ -618,16 +630,17 @@ public class ResourceServiceImpl implements ResourceService {
          return "";
       }
    }
-   public String getPanelXML(Collection<Panel> panels){
+
+   public String getPanelXML(Collection<Panel> panels) {
       /*
-       * init groups and screens. 
+       * init groups and screens.
        */
       Set<Group> groups = new LinkedHashSet<Group>();
       Set<Screen> screens = new LinkedHashSet<Screen>();
       initGroupsAndScreens(panels, groups, screens);
-      
+
       try {
-         Map<String,Object> context = new HashMap<String,Object>();
+         Map<String, Object> context = new HashMap<String, Object>();
          context.put("panels", panels);
          context.put("groups", groups);
          context.put("screens", screens);
@@ -636,9 +649,9 @@ public class ResourceServiceImpl implements ResourceService {
          e.printStackTrace();
          throw new RuntimeException("faild when get panel.xml by template", e);
       }
-      
+
    }
-   
+
    public VelocityEngine getVelocity() {
       return velocity;
    }
@@ -647,12 +660,12 @@ public class ResourceServiceImpl implements ResourceService {
       this.velocity = velocity;
    }
 
-   public  String getControllerXML(Collection<Screen> screens){
+   public String getControllerXML(Collection<Screen> screens) {
       /*
-       * initialize UI component box. 
+       * initialize UI component box.
        */
       initUIComponentBox(screens);
-      Map<String,Object> context = new HashMap<String,Object>();
+      Map<String, Object> context = new HashMap<String, Object>();
       ProtocolEventContainer eventContainer = new ProtocolEventContainer();
       ProtocolContainer protocolContainer = ProtocolContainer.getInstance();
       Collection<Sensor> sensors = getAllSensor(screens);
@@ -673,11 +686,11 @@ public class ResourceServiceImpl implements ResourceService {
       context.put("uiSliders", uiSliders);
       context.put("labels", uiLabels);
       context.put("images", uiImages);
-      
+
       return VelocityEngineUtils.mergeTemplateIntoString(velocity, CONTROLLER_XML_TEMPLATE, context);
    }
-   
-   private void initGroupsAndScreens(Collection<Panel>panels,Set<Group> groups,Set<Screen> screens){
+
+   private void initGroupsAndScreens(Collection<Panel> panels, Set<Group> groups, Set<Screen> screens) {
       for (Panel panel : panels) {
          List<GroupRef> groupRefs = panel.getGroupRefs();
          for (GroupRef groupRef : groupRefs) {
@@ -692,49 +705,48 @@ public class ResourceServiceImpl implements ResourceService {
          }
       }
    }
-   
-   private Set<Sensor> getAllSensor(Collection<Screen> screens){
+
+   private Set<Sensor> getAllSensor(Collection<Screen> screens) {
       Set<Sensor> sensors = new HashSet<Sensor>();
-      for(Screen screen : screens){
-         for(Absolute absolute : screen.getAbsolutes()){
+      for (Screen screen : screens) {
+         for (Absolute absolute : screen.getAbsolutes()) {
             UIComponent component = absolute.getUIComponent();
-            initSensors(sensors,component);
+            initSensors(sensors, component);
          }
-         
-         for(UIGrid grid :screen.getGrids()){
-            for(Cell cell : grid.getCells()){
-               initSensors(sensors,cell.getUIComponent());
+
+         for (UIGrid grid : screen.getGrids()) {
+            for (Cell cell : grid.getCells()) {
+               initSensors(sensors, cell.getUIComponent());
             }
          }
       }
-      
-      
+
       return sensors;
    }
-   
-   private void initSensors(Set<Sensor> sensors,UIComponent component){
-      if(component instanceof SensorOwner){
+
+   private void initSensors(Set<Sensor> sensors, UIComponent component) {
+      if (component instanceof SensorOwner) {
          SensorOwner sensorOwner = (SensorOwner) component;
-         if(sensorOwner.getSensor()!=null){
+         if (sensorOwner.getSensor() != null) {
             sensors.add(sensorOwner.getSensor());
          }
       }
    }
-   
-   private void initUIComponentBox(Collection<Screen> screens){
-      for(Screen screen : screens){
-         for(Absolute absolute : screen.getAbsolutes()){
+
+   private void initUIComponentBox(Collection<Screen> screens) {
+      for (Screen screen : screens) {
+         for (Absolute absolute : screen.getAbsolutes()) {
             UIComponent component = absolute.getUIComponent();
             uiComponentBox.add(component);
          }
-         
-         for(UIGrid grid :screen.getGrids()){
-            for(Cell cell : grid.getCells()){
+
+         for (UIGrid grid : screen.getGrids()) {
+            for (Cell cell : grid.getCells()) {
                uiComponentBox.add(cell.getUIComponent());
             }
          }
-         
-         for(Gesture gesture: screen.getGestures()){
+
+         for (Gesture gesture : screen.getGestures()) {
             uiComponentBox.add(gesture);
          }
       }

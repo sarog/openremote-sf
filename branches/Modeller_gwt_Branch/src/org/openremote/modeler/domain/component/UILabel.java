@@ -1,35 +1,33 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.modeler.domain.component;
 
 import javax.persistence.Transient;
 
 import org.openremote.modeler.client.utils.SensorLinker;
 import org.openremote.modeler.domain.Sensor;
+
 /**
  * 
  * @author Javen
- *
+ * 
  */
 @SuppressWarnings("serial")
-public class UILabel extends UIComponent implements SensorOwner{
+public class UILabel extends UIComponent implements SensorOwner {
 
    private String text = "Label Text";
    private String color = "000000";
@@ -37,32 +35,33 @@ public class UILabel extends UIComponent implements SensorOwner{
 
    private Sensor sensor;
 
-   private  SensorLinker sensorLinker;
-   
-   public UILabel(long oid) {
-     super(oid);
-   }
-   public UILabel() { }
+   private SensorLinker sensorLinker;
 
-   
+   public UILabel(long oid) {
+      super(oid);
+   }
+
+   public UILabel() {
+   }
+
    public UILabel(String text, String color, int fontSize, Sensor sensor) {
       this.text = text;
       this.color = color;
       this.fontSize = fontSize;
       this.sensor = sensor;
-      if(sensor!=null){
+      if (sensor != null) {
          this.sensorLinker = new SensorLinker(sensor);
       } else {
          sensorLinker.clear();
       }
    }
 
-
    public UILabel(UILabel uiLabel) {
       setOid(uiLabel.getOid());
       this.text = uiLabel.text;
       this.fontSize = uiLabel.fontSize;
    }
+
    public String getText() {
       return text;
    }
@@ -71,13 +70,14 @@ public class UILabel extends UIComponent implements SensorOwner{
       this.text = text;
    }
 
-   
    public String getColor() {
       return color;
    }
+
    public void setColor(String color) {
       this.color = color;
    }
+
    public int getFontSize() {
       return fontSize;
    }
@@ -92,7 +92,7 @@ public class UILabel extends UIComponent implements SensorOwner{
 
    public void setSensor(Sensor sensor) {
       this.sensor = sensor;
-      if(sensor!=null){
+      if (sensor != null) {
          this.sensorLinker = new SensorLinker(sensor);
       } else {
          sensorLinker.clear();
@@ -102,15 +102,18 @@ public class UILabel extends UIComponent implements SensorOwner{
    public SensorLinker getSensorLinker() {
       return sensorLinker;
    }
+
    public void setSensorLinker(SensorLinker sensorLinker) {
       this.sensorLinker = sensorLinker;
    }
+
    @Transient
    @Override
    public String getPanelXml() {
       StringBuilder sb = new StringBuilder();
-      sb.append("<label id=\""+getOid()+"\" font-size=\""+fontSize+"\" color=\"#"+color+"\" text=\""+text+"\">\n" );
-      if(sensor!=null){
+      sb.append("<label id=\"" + getOid() + "\" font-size=\"" + fontSize + "\" color=\"#" + color + "\" text=\"" + text
+            + "\">\n");
+      if (sensor != null) {
          sb.append(sensorLinker.getXMLString());
       }
       sb.append("</label>");
@@ -121,22 +124,24 @@ public class UILabel extends UIComponent implements SensorOwner{
    public String getName() {
       return "Label";
    }
-   
+
    @Transient
    public String getDisplayName() {
       int maxLength = 10;
-      if(text.length()>maxLength){
-         return text.substring(0,text.length()-maxLength)+"...";
+      if (text.length() > maxLength) {
+         return text.substring(0, text.length() - maxLength) + "...";
       }
       return text;
    }
-   
-   public @Override int getPreferredWidth(){
+
+   @Override
+   public int getPreferredWidth() {
       int width = 150;
       return width;
    }
-   
-   public @Override int getPreferredHeight(){
+
+   @Override
+   public int getPreferredHeight() {
       int height = 50;
       return height;
    }

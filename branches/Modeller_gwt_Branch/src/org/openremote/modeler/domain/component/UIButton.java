@@ -152,7 +152,7 @@ public class UIButton extends UIControl {
       }
       if (pressImage != null && pressImage.getImageFileName() != null) {
          xmlContent.append("          <pressed>\n");
-         xmlContent.append("          <image src=\"" + pressImage.getImageFileName()+"\" />\n");
+         xmlContent.append("          <image src=\"" + pressImage.getImageFileName() + "\" />\n");
          xmlContent.append("          </pressed>\n");
       }
       if (navigate.isSet()) {

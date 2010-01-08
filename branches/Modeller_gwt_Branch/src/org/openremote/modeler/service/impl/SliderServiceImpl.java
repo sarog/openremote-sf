@@ -29,7 +29,7 @@ import org.openremote.modeler.domain.SliderSensorRef;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SliderService;
 
-public class SliderServiceImpl extends BaseAbstractService<Slider>implements SliderService{
+public class SliderServiceImpl extends BaseAbstractService<Slider>implements SliderService {
    
    @Override
    public void delete(long id) {

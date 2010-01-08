@@ -66,13 +66,14 @@ public class Gesture extends UIControl {
 
    @Override
    public String getPanelXml() {
-      // TODO Auto-generated method stub
       return null;
    }
    @Override
    public List<UICommand> getCommands() {
-      return new ArrayList<UICommand>(){
-         {add(uiCommand);} 
+      return new ArrayList<UICommand>() {
+         {
+            add(uiCommand);
+         }
       };
    }
    public static enum GestureType {

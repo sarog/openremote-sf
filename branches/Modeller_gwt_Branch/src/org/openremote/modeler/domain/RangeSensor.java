@@ -28,7 +28,7 @@ import javax.persistence.SecondaryTable;
 @SuppressWarnings("serial")
 @Entity
 @DiscriminatorValue("RANGE_SENSOR")
-@SecondaryTable(name="range_sensor", pkJoinColumns= @PrimaryKeyJoinColumn(name="oid"))
+@SecondaryTable(name = "range_sensor", pkJoinColumns = @PrimaryKeyJoinColumn(name = "oid"))
 public class RangeSensor extends Sensor {
 
    private int min;
@@ -56,11 +56,12 @@ public class RangeSensor extends Sensor {
       this.max = max;
    }
    
-   public @Override String toString(){
+   @Override
+   public String toString() {
       StringBuilder sb = new StringBuilder();
-      sb.append("<link type=\"sensor\" ref=\""+getOid()+"\">\n");
-      sb.append("\t<min value=\""+min+"\"/>\n");
-      sb.append("\t<max value=\""+min+"\"/>\n");
+      sb.append("<link type=\"sensor\" ref=\"" + getOid() + "\">\n");
+      sb.append("\t<min value=\"" + min + "\"/>\n");
+      sb.append("\t<max value=\"" + min + "\"/>\n");
       sb.append("</link>");
       return sb.toString();
    }

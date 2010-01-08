@@ -1,3 +1,22 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.client.widget.buildingmodeler;
 
 import java.util.ArrayList;
@@ -52,7 +71,7 @@ public class SliderPanel extends ContentPanel {
    private SelectionServiceExt<BeanModel> selectionService;
    private Map<BeanModel, ChangeListener> changeListenerMap = null;
    
-   public SliderPanel(){
+   public SliderPanel() {
       this.setHeading("Slider");
       this.setIcon(icons.sliderIcon());
       selectionService = new SelectionServiceExt<BeanModel>();
@@ -63,7 +82,7 @@ public class SliderPanel extends ContentPanel {
       layout();
    }
    
-   private void createMenu(){
+   private void createMenu() {
       ToolBar sliderToolBar = new ToolBar();
       newBtn.setToolTip("Create a slider");
       newBtn.setIcon(icons.sliderAddIcon());
@@ -95,7 +114,7 @@ public class SliderPanel extends ContentPanel {
       selectionService.addListener(new EditDelBtnSelectionListener(btns) {
          @Override
          protected boolean isEditableAndDeletable(List<BeanModel> sels) {
-            if(sels.size()>1){
+            if (sels.size() > 1) {
                return false;
             }
             BeanModel selectModel = sels.get(0);
@@ -107,9 +126,9 @@ public class SliderPanel extends ContentPanel {
       });
    }
 
-   private void createSliderTree(){
+   private void createSliderTree() {
       sliderTree = SliderTree.buildsliderTree();
-      LayoutContainer treeContainer = new LayoutContainer(){
+      LayoutContainer treeContainer = new LayoutContainer() {
 
          @Override
          protected void onRender(Element parent, int index) {
@@ -154,10 +173,11 @@ public class SliderPanel extends ContentPanel {
       }
       for (BeanModel beanModel : models) {
          if (beanModel.getBean() instanceof SliderCommandRef) {
-            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase.getOriginalCommandRefItemBeanModelId(beanModel), getTreeUpdateListener(sliderTree,beanModel));
+            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase
+                  .getOriginalCommandRefItemBeanModelId(beanModel), getTreeUpdateListener(sliderTree, beanModel));
             BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel),
-                  getTreeUpdateListener(sliderTree,beanModel));
-         } 
+                  getTreeUpdateListener(sliderTree, beanModel));
+         }
       }
    }
 
@@ -173,13 +193,13 @@ public class SliderPanel extends ContentPanel {
       for (BeanModel beanModel : models) {
          if (beanModel.getBean() instanceof DeviceCommandRef) {
             BeanModelDataBase.deviceCommandTable.removeChangeListener((BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel)), getTreeUpdateListener(sliderTree,beanModel));
+                  .getOriginalDeviceMacroItemBeanModelId(beanModel)), getTreeUpdateListener(sliderTree, beanModel));
          }
          changeListenerMap.remove(beanModel);
       }
    }
    
-   private ChangeListener getTreeUpdateListener(final TreePanel<BeanModel> tree,final BeanModel target) {
+   private ChangeListener getTreeUpdateListener(final TreePanel<BeanModel> tree, final BeanModel target) {
       if (changeListenerMap == null) {
          changeListenerMap = new HashMap<BeanModel, ChangeListener>();
       }
@@ -210,12 +230,12 @@ public class SliderPanel extends ContentPanel {
       return changeListener;
    }
 
-   class NewSwitchListener extends SelectionListener<ButtonEvent>{
+   class NewSwitchListener extends SelectionListener<ButtonEvent> {
 
       @Override
       public void componentSelected(ButtonEvent ce) {
          final SliderWindow sliderWindow = new SliderWindow(null);
-         sliderWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener(){
+         sliderWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
 
             @Override
             public void afterSubmit(SubmitEvent be) {
@@ -231,7 +251,7 @@ public class SliderPanel extends ContentPanel {
       }
    }
    
-   class EditSwitchListener extends SelectionListener<ButtonEvent>{
+   class EditSwitchListener extends SelectionListener<ButtonEvent> {
 
       @Override
       public void componentSelected(ButtonEvent ce) {
@@ -239,7 +259,7 @@ public class SliderPanel extends ContentPanel {
          Slider slider = selectedSwitchBean.getBean();
          
          final SliderWindow sliderWindow = new SliderWindow(slider);
-         sliderWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener(){
+         sliderWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
 
             @Override
             public void afterSubmit(SubmitEvent be) {
@@ -247,8 +267,8 @@ public class SliderPanel extends ContentPanel {
                Slider slider = sliderBeanModel.getBean();
                sliderTree.getStore().update(sliderBeanModel);
                sliderTree.getStore().removeAll(sliderBeanModel);
-               sliderTree.getStore().add(slider.getBeanModel(),slider.getSetValueCmd().getBeanModel(),false);
-               
+               sliderTree.getStore().add(slider.getBeanModel(), slider.getSetValueCmd().getBeanModel(), false);
+
                sliderTree.setExpanded(sliderBeanModel, true);
                sliderWindow.hide();
             }
@@ -258,7 +278,7 @@ public class SliderPanel extends ContentPanel {
       }
    }
    
-   class DeleteSwitchListener extends SelectionListener<ButtonEvent>{
+   class DeleteSwitchListener extends SelectionListener<ButtonEvent> {
 
       @Override
       public void componentSelected(ButtonEvent ce) {
@@ -272,7 +292,7 @@ public class SliderPanel extends ContentPanel {
 
              public void handleEvent(MessageBoxEvent be) {
                  if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                    SliderBeanModelProxy.delete(selectedSwitchBean, new AsyncSuccessCallback<Void>(){
+                    SliderBeanModelProxy.delete(selectedSwitchBean, new AsyncSuccessCallback<Void>() {
                      @Override
                      public void onSuccess(Void result) {
                         sliderTree.getStore().remove(selectedSwitchBean);

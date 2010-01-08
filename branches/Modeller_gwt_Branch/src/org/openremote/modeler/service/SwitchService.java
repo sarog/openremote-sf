@@ -26,13 +26,13 @@ import org.openremote.modeler.domain.Switch;
 
 public interface SwitchService {
    
-   public List<Switch> loadAll(Account account);
-   public List<Switch> loadAll();
+   List<Switch> loadAll(Account account);
+   List<Switch> loadAll();
    
-   public void delete(long id);
+   void delete(long id);
    
-   public Switch save(Switch switchToggle);
+   Switch save(Switch switchToggle);
    
-   public Switch update(Switch switchToggle);
+   Switch update(Switch switchToggle);
    
 }

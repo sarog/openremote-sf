@@ -54,7 +54,7 @@ public class SensorBeanModelProxy {
                   beanModels.add(result.getSensorCommandRef().getBeanModel());
                }
                if (result instanceof CustomSensor) {
-                  beanModels.addAll(State.createModels(((CustomSensor)result).getStates()));
+                  beanModels.addAll(State.createModels(((CustomSensor) result).getStates()));
                }
                callback.onSuccess(beanModels);
             }
