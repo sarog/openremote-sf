@@ -675,7 +675,7 @@ public class ResourceServiceImpl implements ResourceService {
       Map<String, Object> context = new HashMap<String, Object>();
       ProtocolEventContainer eventContainer = new ProtocolEventContainer();
       ProtocolContainer protocolContainer = ProtocolContainer.getInstance();
-      Collection<Sensor> sensors = getAllSensor(screens);
+      Collection<Sensor> sensors = getAllSensorWithoutDuplicate(screens);
       Collection<UIComponent> switchs = uiComponentBox.getUIComponentsByType(UISwitch.class);
       Collection<UIComponent> buttons = uiComponentBox.getUIComponentsByType(UIButton.class);
       Collection<UIComponent> gestures = uiComponentBox.getUIComponentsByType(Gesture.class);
@@ -713,33 +713,48 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
 
-   private Set<Sensor> getAllSensor(Collection<Screen> screens) {
-      Set<Sensor> sensors = new HashSet<Sensor>();
+   private Set<Sensor> getAllSensorWithoutDuplicate(Collection<Screen> screens) {
+      Set<Sensor> SensorWithoutDuplicate = new HashSet<Sensor>();
+      Collection<Sensor> allSensors = new ArrayList<Sensor>();
+
       for (Screen screen : screens) {
          for (Absolute absolute : screen.getAbsolutes()) {
             UIComponent component = absolute.getUIComponent();
-            initSensors(sensors, component);
+            initSensors(allSensors, SensorWithoutDuplicate, component);
          }
 
          for (UIGrid grid : screen.getGrids()) {
             for (Cell cell : grid.getCells()) {
-               initSensors(sensors, cell.getUIComponent());
+               initSensors(allSensors, SensorWithoutDuplicate, cell.getUIComponent());
             }
          }
       }
 
-      // reset sensor oid, avoid reduplicate id in export xml.
-      for (Sensor sensor : sensors) {
-         sensor.setOid(this.eventId++);
+      /*
+       * reset sensor oid, avoid reduplicate id in export xml.
+       */
+      for (Sensor sensor : SensorWithoutDuplicate) {
+         Collection<Sensor> sameSensors = new ArrayList<Sensor>();
+         for (Sensor s : allSensors) {
+            if (sensor.equals(s)) {
+               sameSensors.add(s);
+            }
+         }
+         long currentSensorId = eventId;
+         for(Sensor s : sameSensors){
+            s.setOid(currentSensorId);
+         }
+         eventId++;
       }
-      return sensors;
+      return SensorWithoutDuplicate;
    }
 
-   private void initSensors(Set<Sensor> sensors, UIComponent component) {
+   private void initSensors(Collection<Sensor> allSensors, Set<Sensor> sensorsWithDuplicate,UIComponent component) {
       if (component instanceof SensorOwner) {
          SensorOwner sensorOwner = (SensorOwner) component;
          if (sensorOwner.getSensor() != null) {
-            sensors.add(sensorOwner.getSensor());
+            allSensors.add(sensorOwner.getSensor());
+            sensorsWithDuplicate.add(sensorOwner.getSensor());
          }
       }
    }
