@@ -74,17 +74,6 @@
 	</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="icon">
-		<xsd:annotation>
-			<xsd:documentation><![CDATA[
-				The icon for a component such as button.  		
-			]]></xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:attribute name="src" type="xsd:string" use="required"/>
-		</xsd:complexType>
-	</xsd:element>
-	
 	<xsd:element name="default">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
@@ -93,7 +82,7 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="icon" minOccurs="1" maxOccurs="1"/>
+				<xsd:element ref="image" minOccurs="1" maxOccurs="1"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -106,7 +95,7 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="icon" minOccurs="1" maxOccurs="1"/>
+				<xsd:element ref="image" minOccurs="1" maxOccurs="1"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
