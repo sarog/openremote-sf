@@ -67,7 +67,8 @@
 	slider = [[UISlider alloc] initWithFrame:[self bounds]];
 	if (theSlider.vertical) {
 		slider.transform = CGAffineTransformMakeRotation(-90.0/180*M_PI);
-	}	
+	}
+
 	slider.minimumValue = theSlider.minValue;
 	NSString *minimumValueImageSrc = theSlider.minImage.src;
 	UIImage *minimumValueImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:minimumValueImageSrc]];
@@ -93,10 +94,19 @@
 	//slider.continuous = NO;
 	slider.value = 0;
 	currentValue = 0;
-	//if (theSlider.active) {
-		[slider addTarget:self action:@selector(afterSlide:) forControlEvents:UIControlEventValueChanged];
-	//}
+	
 	[self addSubview:slider];
+	
+	if (!theSlider.passive) {
+		[slider addTarget:self action:@selector(afterSlide:) forControlEvents:UIControlEventValueChanged];
+	}
+	// If passive slider then cover a transparent view over the slider.
+	if (theSlider.passive) {
+		UIView *cover = [[UIView alloc] initWithFrame:self.bounds];
+		[cover setBackgroundColor:[UIColor colorWithRed:255.0 green:255.0 blue:255.0 alpha:0.0]];
+		[self addSubview:cover]; 
+	}
+
 }
 
 // This method will be executed after slide action finished.

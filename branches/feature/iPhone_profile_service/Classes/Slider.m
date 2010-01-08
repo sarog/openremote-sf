@@ -24,7 +24,7 @@
 
 @implementation Slider
 
-@synthesize thumbImage, vertical, minValue, maxValue, minImage, minTrackImage, maxImage, maxTrackImage;
+@synthesize thumbImage, vertical, passive, minValue, maxValue, minImage, minTrackImage, maxImage, maxTrackImage;
 
 // This method is abstract method of indirectclass XMLEntity.
 // So, this method must be overridden in subclass.
@@ -40,7 +40,8 @@
 		
 		NSString *verticalStr = [attributeDict objectForKey:VERTICAL];		
 		vertical = verticalStr ? [[verticalStr lowercaseString] isEqualToString:@"true"] ? YES : NO : NO;
-		
+		NSString *passiveStr = [attributeDict objectForKey:PASSIVE];
+		passive = passiveStr ? [[passiveStr lowercaseString] isEqualToString:@"true"] ? YES : NO : NO;
 		Image *tempImg = [[Image alloc] init];
 		tempImg.src = [[attributeDict objectForKey:THUMB_IMAGE] copy];
 		thumbImage = tempImg;

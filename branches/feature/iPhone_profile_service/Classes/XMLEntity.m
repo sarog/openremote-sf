@@ -50,6 +50,7 @@ NSString *const VALUE = @"value";
 NSString *const SLIDER = @"slider";
 NSString *const THUMB_IMAGE = @"thumbImage";
 NSString *const VERTICAL = @"vertical";
+NSString *const PASSIVE = @"passive";
 NSString *const MIN_VALUE = @"min";
 NSString *const MAX_VALUE = @"max";
 NSString *const IMAGE = @"image";

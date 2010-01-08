@@ -270,7 +270,6 @@
 	[cells release];
 }
 
-
 // panel_absolute_switch.xml test
 - (void) testParsePanelAbsoluteSwitchXML {
 	[[Definition sharedDefinition] clearPanelXMLData];
@@ -355,7 +354,6 @@
 
 }
 
-
 // panel_grid_slider.xml test
 - (void) testParsePanelGridSliderXML {
 	NSLog(@"Begin testParsePanelGridSliderXML");
@@ -400,16 +398,19 @@
 							NSString *expectedMaxTrackImageSrc = @"green.png";
 							NSString *assertMsgOfImageSrc = @"expected %@, but %@";
 							BOOL expectedVertical = NO;
+							BOOL expectedPassive = NO;
 							if (slider_index % 2 == 0) {
 								expectedVertical = YES;
+								expectedPassive = YES;
 							}
-							slider_index++;
 							STAssertTrue([theSlider.thumbImage.src isEqualToString:expectedThumbImageSrc], assertMsgOfImageSrc, expectedThumbImageSrc, theSlider.thumbImage.src);
 							STAssertTrue([theSlider.minImage.src isEqualToString:expectedMinImageSrc], assertMsgOfImageSrc, expectedMinImageSrc, theSlider.minImage.src);
 							STAssertTrue([theSlider.minTrackImage.src isEqualToString:expectedMinTrackImageSrc], assertMsgOfImageSrc, expectedMinTrackImageSrc, theSlider.minTrackImage.src);
 							STAssertTrue([theSlider.maxImage.src isEqualToString:expectedMaxImageSrc], assertMsgOfImageSrc, expectedMaxImageSrc, theSlider.maxImage.src);
 							STAssertTrue([theSlider.maxTrackImage.src isEqualToString:expectedMaxTrackImageSrc], assertMsgOfImageSrc, expectedMaxTrackImageSrc, theSlider.maxTrackImage.src);
 							STAssertTrue(theSlider.vertical == expectedVertical, @"expected %d, but %d", expectedVertical, theSlider.vertical);
+							STAssertTrue(theSlider.passive == expectedPassive, @"expected %d, but %d", expectedPassive, theSlider.passive);
+							slider_index++;
 						}	
 					}
 				}				
@@ -488,8 +489,10 @@
 						STAssertTrue(theSlider.minValue == minValue,@"expected %f, but %f", minValue, theSlider.minValue);
 						
 						BOOL expectedVertical = NO;
+						BOOL expectedPassive = NO;
 						if (slider_index % 2 == 0) {
 							expectedVertical = YES;
+							expectedPassive = YES;
 						}
 						slider_index++;
 						
@@ -505,6 +508,7 @@
 						STAssertTrue([theSlider.maxImage.src isEqualToString:expectedMaxImageSrc], assertMsgOfImageSrc, expectedMaxImageSrc, theSlider.maxImage.src);
 						STAssertTrue([theSlider.maxTrackImage.src isEqualToString:expectedMaxTrackImageSrc], assertMsgOfImageSrc, expectedMaxTrackImageSrc, theSlider.maxTrackImage.src);
 						STAssertTrue(theSlider.vertical == expectedVertical, @"expected %d, but %d", expectedVertical, theSlider.vertical);
+						STAssertTrue(theSlider.passive == expectedPassive, @"expected %d, but %d", expectedPassive, theSlider.passive);
 					}					
 				}				
 			}
