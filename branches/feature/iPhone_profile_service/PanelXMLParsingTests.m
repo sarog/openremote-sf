@@ -98,19 +98,19 @@
 							STAssertTrue([but.name isEqualToString:expectedName],@"expected %@, but %@",expectedName,but.name);
 							int expectedId = (59 + but_index++);
 							STAssertTrue(expectedId == but.componentId,@"expected %d, but %d",expectedId,but.componentId);
-							NSString *expectedDefaultIconName = nil;
-							if (but.defaultIcon) {
-								expectedDefaultIconName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + image_index++];						
-								STAssertTrue([but.defaultIcon.src isEqualToString:expectedDefaultIconName],@"expected %@, but %@",expectedDefaultIconName,but.defaultIcon.src);
+							NSString *expectedDefaultImageName = nil;
+							if (but.defaultImage) {
+								expectedDefaultImageName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + image_index++];						
+								STAssertTrue([but.defaultImage.src isEqualToString:expectedDefaultImageName],@"expected %@, but %@",expectedDefaultImageName,but.defaultImage.src);
 							}
-							NSString *expectedPressedIconName = nil;
-							if (but.pressedIcon) {
-								expectedPressedIconName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + image_index++];
-								STAssertTrue([but.pressedIcon.src isEqualToString:expectedPressedIconName],@"expected %@, but %@",expectedPressedIconName,but.pressedIcon.src);
+							NSString *expectedPressedImageName = nil;
+							if (but.pressedImage) {
+								expectedPressedImageName = [[NSMutableString alloc] initWithFormat:@"%c.png",(char)97 + image_index++];
+								STAssertTrue([but.pressedImage.src isEqualToString:expectedPressedImageName],@"expected %@, but %@",expectedPressedImageName,but.pressedImage.src);
 							}
 							
-							[expectedDefaultIconName release];
-							[expectedPressedIconName release];
+							[expectedDefaultImageName release];
+							[expectedPressedImageName release];
 						}	
 					}
 				}				
@@ -173,8 +173,6 @@
 	[xml release];
 	[cells release];
 }
-
-
 
 // panel_grid_switch.xml test
 - (void) testParsePanelGridSwitchXML {

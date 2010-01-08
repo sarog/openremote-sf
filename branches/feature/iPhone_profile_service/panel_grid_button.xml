@@ -6,10 +6,10 @@
 				<cell x="0" y="0" rowspan="1" colspan="1">
 					<button id="59" name="A" repeat="false" hasControlCommand="false">
 						<default>
-							<icon src="a.png" />
+							<image src="a.png" />
 						</default>
 						<pressed>
-							<icon src="b.png" />
+							<image src="b.png" />
 						</pressed>
 						<navigate toScreen="19" />
 					</button>
@@ -17,20 +17,20 @@
 				<cell x="0" y="1" rowspan="1" >
 					<button id="60" name="B" repeat="false" hasControlCommand="true">
 						<default>
-							<icon src="c.png" />
+							<image src="c.png" />
 						</default>
 						<pressed>
-							<icon src="d.png" />
+							<image src="d.png" />
 						</pressed>
 					</button>
 				</cell>
 				<cell x="1" y="1" colspan="1">
 					<button id="61" name="C" repeat="false" hasControlCommand="false">
 						<default>
-							<icon src="e.png" />
+							<image src="e.png" />
 						</default>
 						<pressed>
-							<icon src="f.png" />
+							<image src="f.png" />
 						</pressed>
 						<navigate toScreen="29" />
 					</button>
@@ -38,10 +38,10 @@
 				<cell x="1" y="1" >
 					<button id="62" name="D" repeat="false" hasControlCommand="false">
 						<default>
-							<icon src="g.png" />
+							<image src="g.png" />
 						</default>
 						<pressed>
-							<icon src="h.png" />
+							<image src="h.png" />
 						</pressed>
 						<navigate toGroup="9" />
 					</button>
@@ -53,10 +53,10 @@
 				<cell x="0" y="1" rowspan="1" colspan="2">
 					<button id="63" name="E" repeat="false" hasControlCommand="false">
 						<default>
-							<icon src="i.png" />
+							<image src="i.png" />
 						</default>
 						<pressed>
-							<icon src="j.png" />
+							<image src="j.png" />
 						</pressed>
 						<navigate toGroup="9" toScreen="10"/>
 					</button>
