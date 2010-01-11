@@ -59,10 +59,10 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 
 public class SwitchWindow extends FormWindow {
-   public static String SWITCH_NAME_FIELD_NAME = "name";
-   public static String SWITCH_SENSOR_FIELD_NAME = "sensor";
-   public static String SWITCH_ON_COMMAND_FIELD_NAME="command(on)";
-   public static String SWITCH_OFF_COMMAND_FIELD_NAME="command(off)";
+   public static final String SWITCH_NAME_FIELD_NAME = "name";
+   public static final String SWITCH_SENSOR_FIELD_NAME = "sensor";
+   public static final String SWITCH_ON_COMMAND_FIELD_NAME="command(on)";
+   public static final String SWITCH_OFF_COMMAND_FIELD_NAME="command(off)";
    
    private Switch switchToggle = null;
    
@@ -128,7 +128,6 @@ public class SwitchWindow extends FormWindow {
       
       Button submitBtn = new Button("Submit");
       Button resetButton = new Button("Reset");
-//      resetButton.addSelectionListener(new FormCaccleListener(form));
       
       
       form.add(nameField);
