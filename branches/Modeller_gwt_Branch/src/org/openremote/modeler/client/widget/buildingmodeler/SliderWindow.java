@@ -61,9 +61,9 @@ import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
  *
  */
 public class SliderWindow extends FormWindow {
-   public static String SLIDER_NAME_FIELD_NAME = "name";
-   public static String SLIDER_SENSOR_FIELD_NAME = "sensor";
-   public static String SLIDER_SETVALUE_COMMMAND_FIELD_NAME="setValue";
+   public static final String SLIDER_NAME_FIELD_NAME = "name";
+   public static final String SLIDER_SENSOR_FIELD_NAME = "sensor";
+   public static final String SLIDER_SETVALUE_COMMMAND_FIELD_NAME="setValue";
    
    private Slider slider = null;
    
