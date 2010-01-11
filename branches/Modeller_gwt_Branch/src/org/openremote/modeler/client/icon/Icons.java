@@ -80,7 +80,7 @@ public interface Icons extends ImageBundle {
     * 
     * @return the abstract image prototype
     */
-   @Resource("pencil.png")
+   @Resource("edit.png")
    AbstractImagePrototype edit();
 
    /**
