@@ -27,7 +27,7 @@ import org.openremote.modeler.domain.Sensor;
 @SuppressWarnings("serial")
 public class UIImage extends UIComponent implements SensorOwner {
 
-   public static String DEFAULT_IMAGE_URL = "image/OpenRemote.Logo.16x16.png";
+   public static String DEFAULT_IMAGE_URL = "image/OpenRemote.Logo.30x32.png";
    
    private ImageSource imageSource = new ImageSource(DEFAULT_IMAGE_URL);
 
@@ -110,13 +110,13 @@ public class UIImage extends UIComponent implements SensorOwner {
 
    @Override
    public int getPreferredWidth() {
-      int width = 16;
+      int width = 30;
       return width;
    }
 
    @Override
    public int getPreferredHeight() {
-      int height = 16;
+      int height = 32;
       return height;
    }
 }
