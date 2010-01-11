@@ -67,7 +67,7 @@ public class GestureWindow extends Dialog {
    private List<Gesture> gestures;
    private CheckBoxListView<BeanModel> gestureTypeListView;
    private TreePanel<BeanModel> devicesAndMacrosTree;
-   private Gesture selectedGesture = new Gesture();;
+   private Gesture selectedGesture = new Gesture(GestureType.swipe_left_to_right);
    private Map<String, Gesture> gestureMaps = new HashMap<String, Gesture>();
    public GestureWindow(List<Gesture> gestures) {
       this.gestures = gestures;
