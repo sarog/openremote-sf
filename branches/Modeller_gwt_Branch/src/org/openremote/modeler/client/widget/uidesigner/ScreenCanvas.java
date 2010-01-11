@@ -348,7 +348,7 @@ public class ScreenCanvas extends ComponentContainer {
       UIComponent uiComponent = cellContainer.getCell().getUIComponent();
       AbsoluteLayoutContainer controlContainer = null;
       Absolute absolute = new Absolute(IDUtil.nextID());
-      UIComponent component = UIComponent.createNew(uiComponent);
+      UIComponent component = UIComponent.copy(uiComponent);
       absolute.setUIComponent(component);
       controlContainer = createAbsoluteLayoutContainer(screen, absolute, ScreenComponent.build(this, component));
       controlContainer.setSize(recorder.getWidth(), recorder.getHeight());

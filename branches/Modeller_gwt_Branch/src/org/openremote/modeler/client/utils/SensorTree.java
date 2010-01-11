@@ -98,13 +98,13 @@ public class SensorTree {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
 
             if (thisModel.getBean() instanceof Sensor) {
-               return ICON.macroIcon();
+               return ICON.sensorIcon();
             } else if (thisModel.getBean() instanceof SensorCommandRef) {
                return ICON.deviceCmd();
             } else if (thisModel.getBean() instanceof State) {
                return ICON.delayIcon();
             } else {
-               return ICON.macroIcon();
+               return ICON.sensorIcon();
             }
          }
       });

@@ -30,7 +30,7 @@ import org.openremote.modeler.domain.Sensor;
 public class UILabel extends UIComponent implements SensorOwner {
 
    private String text = "Label Text";
-   private String color = "000000";
+   private String color = "FFFFFF";
    private int fontSize = 10;
 
    private Sensor sensor;

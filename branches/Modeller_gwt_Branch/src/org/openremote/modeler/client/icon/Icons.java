@@ -301,25 +301,25 @@ public interface Icons extends ImageBundle {
    @Resource("tabbar_config.png")
    AbstractImagePrototype tabbarConfigIcon();
    
-   @Resource("brick_add.png")
+   @Resource("switch_add.png")
    AbstractImagePrototype switchAddIcon();
    
-   @Resource("brick_edit.png")
+   @Resource("switch_edit.png")
    AbstractImagePrototype switchEditIcon();
    
-   @Resource("brick_delete.png")
+   @Resource("switch_delete.png")
    AbstractImagePrototype switchDeleteIcon();
    
    @Resource("slider.png")
    AbstractImagePrototype sliderIcon();
    
-   @Resource("brick_add.png")
+   @Resource("add.png")
    AbstractImagePrototype sliderAddIcon();
    
-   @Resource("brick_edit.png")
+   @Resource("edit.png")
    AbstractImagePrototype sliderEditIcon();
    
-   @Resource("brick_delete.png")
+   @Resource("delete.png")
    AbstractImagePrototype sliderDeleteIcon();
    
    @Resource("label.gif")
@@ -327,4 +327,16 @@ public interface Icons extends ImageBundle {
 
    @Resource("image.png")
    AbstractImagePrototype imageIcon();
+
+   @Resource("sensor.png")
+   AbstractImagePrototype sensorIcon();
+
+   @Resource("add.png")
+   AbstractImagePrototype sensorAddIcon();
+
+   @Resource("edit.png")
+   AbstractImagePrototype sensorEditIcon();
+
+   @Resource("delete.png")
+   AbstractImagePrototype sensorDeleteIcon();
 }
