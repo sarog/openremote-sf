@@ -75,7 +75,7 @@ public class SensorPanel extends ContentPanel {
       selectionService = new SelectionServiceExt<BeanModel>();
       createMenu();
       createSensorTree();
-      setIcon(icons.macroIcon());
+      setIcon(icons.sensorIcon());
 //      getHeader().ensureDebugId(DebugId.DEVICE_MACRO_PANEL_HEADER);
    }
 
@@ -83,7 +83,7 @@ public class SensorPanel extends ContentPanel {
       ToolBar sensorToolBar = new ToolBar();
       Button newSensorBtn = new Button("New");
       newSensorBtn.setToolTip("Create Sensor");
-      newSensorBtn.setIcon(icons.macroAddIcon());
+      newSensorBtn.setIcon(icons.sensorAddIcon());
 //      newMacroBtn.ensureDebugId(DebugId.NEW_MACRO_BTN);
       newSensorBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
@@ -107,7 +107,7 @@ public class SensorPanel extends ContentPanel {
       Button editSensorBtn = new Button("Edit");
       editSensorBtn.setEnabled(false);
       editSensorBtn.setToolTip("Edit Sensor");
-      editSensorBtn.setIcon(icons.macroEditIcon());
+      editSensorBtn.setIcon(icons.sensorEditIcon());
       editSensorBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
@@ -119,7 +119,7 @@ public class SensorPanel extends ContentPanel {
       Button deleteSensorBtn = new Button("Delete");
       deleteSensorBtn.setEnabled(false);
       deleteSensorBtn.setToolTip("Delete Sensor");
-      deleteSensorBtn.setIcon(icons.macroDeleteIcon());
+      deleteSensorBtn.setIcon(icons.sensorDeleteIcon());
       
       deleteSensorBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
          @Override
