@@ -74,6 +74,7 @@ public class LabelPropertyForm extends PropertyForm {
       textField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
+            if(textField.getValue()!=null&&textField.getValue().trim().length()!=0)
             screenLabel.setText(textField.getValue());
          }
       });
@@ -179,21 +180,25 @@ public class LabelPropertyForm extends PropertyForm {
         onField.addListener(Events.Blur, new Listener<BaseEvent>() {
            @Override
            public void handleEvent(BaseEvent be) {
-              String onText = onField.getValue();
-              sensorAttrs.put("name", "on");
-              sensorAttrs.put("value", onText);
-              screenLabel.getUiLabel().getSensorLinker().addOrUpdateChildForSensorLinker("state", sensorAttrs);
-           }
+               String onText = onField.getValue();
+               if (onText != null && onText.trim().length() != 0) {
+                  sensorAttrs.put("name", "on");
+                  sensorAttrs.put("value", onText);
+                  screenLabel.getUiLabel().getSensorLinker().addOrUpdateChildForSensorLinker("state", sensorAttrs);
+               }
+            }
         });
         
         offField.addListener(Events.Blur, new Listener<BaseEvent>() {
            @Override
-           public void handleEvent(BaseEvent be) {
-              String offText = offField.getValue();
-              sensorAttrs.put("name", "off");
-              sensorAttrs.put("value", offText);
-              screenLabel.getUiLabel().getSensorLinker().addOrUpdateChildForSensorLinker("state", sensorAttrs);
-           }
+            public void handleEvent(BaseEvent be) {
+               String offText = offField.getValue();
+               if (offText != null && offText.trim().length() != 0) {
+                  sensorAttrs.put("name", "off");
+                  sensorAttrs.put("value", offText);
+                  screenLabel.getUiLabel().getSensorLinker().addOrUpdateChildForSensorLinker("state", sensorAttrs);
+               }
+            }
         });
        
         optionPanel.add(onField);

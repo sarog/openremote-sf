@@ -620,8 +620,10 @@ public class ResourceServiceImpl implements ResourceService {
    @Override
    public String getPanelsJson(Collection<Panel> panels) {
       try {
-         String[] includedPropertyNames = {"groupRefs", "tabbarItems", "groupRefs.group.tabbarItems",
-               "groupRefs.group.screenRefs", "groupRefs.group.screenRefs.screen.absolutes.uiComponent",
+         String[] includedPropertyNames = { "groupRefs", "tabbarItems", "tabbarItems.navigate",
+               "groupRefs.group.tabbarItems", "groupRefs.group.tabbarItems.navigate", "groupRefs.group.screenRefs",
+               "groupRefs.group.screenRefs.screen.absolutes.uiComponent", "groupRefs.group.screenRefs.screen.gestures",
+               "groupRefs.group.screenRefs.screen.gestures.navigate",
                "groupRefs.group.screenRefs.screen.absolutes.uiComponent.uiCommand",
                "groupRefs.group.screenRefs.screen.absolutes.uiComponent.commands",
                "groupRefs.group.screenRefs.screen.grids.cells.uiComponent",
