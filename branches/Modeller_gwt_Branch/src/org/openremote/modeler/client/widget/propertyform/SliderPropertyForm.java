@@ -182,7 +182,7 @@ public class SliderPropertyForm extends PropertyForm {
                public void afterSubmit(SubmitEvent be) {
                   String maxTrackImageUrl = be.getData();
                   uiSlider.setMaxTrackImage(new ImageSource(maxTrackImageUrl));
-                  screenSlider.getSlider().setMinTrackImageUrl(maxTrackImageUrl);
+                  screenSlider.getSlider().setMaxTrackImageUrl(maxTrackImageUrl);
                   screenSlider.layout();
                }
             });
