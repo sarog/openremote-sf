@@ -43,8 +43,10 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
+import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.form.Validator;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 
 /**
@@ -66,6 +68,7 @@ public class LabelPropertyForm extends PropertyForm {
    private void addFields() {
       final TextField<String> textField = new TextField<String>();
       textField.setFieldLabel("Text");
+      textField.setAllowBlank(false);
       final UILabel uiLabel = screenLabel.getUiLabel();
       textField.setValue(uiLabel.getText());
       textField.addListener(Events.Blur, new Listener<BaseEvent>() {
@@ -78,10 +81,24 @@ public class LabelPropertyForm extends PropertyForm {
       final TextField<String> fontSizeField = new TextField<String>();
       fontSizeField.setFieldLabel("Font-Size");
       fontSizeField.setValue(uiLabel.getFontSize()+"");
+      fontSizeField.setValidator(new Validator(){
+
+		@Override
+		public String validate(Field<?> field, String value) {
+			if(value.matches("[a-z,A-Z]+")){
+				return "Only number can allowed here";
+			}
+			return null;
+		}
+    	  
+      });
       fontSizeField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
-           screenLabel.setFontSize(Integer.parseInt(fontSizeField.getValue()));
+            String value = fontSizeField.getValue();
+            if (value != null && !value.matches("[a-z,A-Z]+")) {
+               screenLabel.setFontSize(Integer.parseInt(fontSizeField.getValue()));
+            }
          }
       });
       final Button sensorSelectBtn = new Button("Select");
@@ -152,6 +169,9 @@ public class LabelPropertyForm extends PropertyForm {
         
         onField.setFieldLabel("On Text");
         offField.setFieldLabel("Off Text");
+        
+        onField.setAllowBlank(false);
+        offField.setAllowBlank(false);
         if(sensorLinker!=null){
            onField.setValue(sensorLinker.getStateValueByStateName("on"));
            offField.setValue(sensorLinker.getStateValueByStateName("off"));
@@ -184,6 +204,7 @@ public class LabelPropertyForm extends PropertyForm {
          for(final State state: states){
            final TextField<String> stateTextField = new TextField<String>();
            stateTextField.setFieldLabel(state.getDisplayName());
+           stateTextField.setAllowBlank(false);
            if(sensorLinker!=null){
               stateTextField.setValue(sensorLinker.getStateValueByStateName(state.getName()));
            }

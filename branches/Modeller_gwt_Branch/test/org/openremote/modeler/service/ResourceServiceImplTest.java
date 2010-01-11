@@ -52,6 +52,7 @@ import org.openremote.modeler.domain.SwitchCommandOffRef;
 import org.openremote.modeler.domain.SwitchCommandOnRef;
 import org.openremote.modeler.domain.SwitchSensorRef;
 import org.openremote.modeler.domain.component.Gesture;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIGrid;
@@ -59,7 +60,6 @@ import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.domain.component.UITabbarItem;
-import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Gesture.GestureType;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
 import org.openremote.modeler.service.impl.ResourceServiceImpl;
@@ -69,6 +69,7 @@ import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
 
 public class ResourceServiceImplTest {
    
