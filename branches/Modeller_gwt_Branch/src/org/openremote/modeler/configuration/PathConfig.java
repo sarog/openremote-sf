@@ -43,6 +43,7 @@ public class PathConfig {
    /** The Constant RESOURCEFOLDER. */
    private static final String RESOURCEFOLDER = "tmp";
    
+   private static final String WEBROOT = "modeler";
    /** The configuration. */
    private Configuration configuration;
    
@@ -200,5 +201,14 @@ public class PathConfig {
    
    public String getRelativeSessionFolderPath(String sessionId) {
       return "../" + RESOURCEFOLDER + "/" + sessionId + "/";
+   }
+   
+   public String getWebRootFolder() {
+      String root = configuration.getOsWebappsRoot() + File.separator;
+      if (root == null) {
+         LOGGER.fatal("Can't find modeler.root in system property, please check web.xml.");
+         throw new IllegalStateException("Can't find modeler.root in system property, please check web.xml.");
+      }
+      return  root + WEBROOT + File.separator;
    }
 }

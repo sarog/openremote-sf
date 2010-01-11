@@ -140,7 +140,7 @@ public class ResourceServiceImpl implements ResourceService {
       /*
        * down load the default image.
        */
-      File defaultImage = new File(UIImage.DEFAULT_IMAGE_URL);
+      File defaultImage = new File(pathConfig.getWebRootFolder() + UIImage.DEFAULT_IMAGE_URL);
       FileUtilsExt.copyFile(defaultImage, new File(sessionFolder, defaultImage.getName()));
       
       File panelXMLFile = new File(pathConfig.panelXmlFilePath(sessionId));
