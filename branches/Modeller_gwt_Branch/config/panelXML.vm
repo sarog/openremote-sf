@@ -77,10 +77,7 @@
   		#end
   		##-----------------------------------------------------------------gesture---------------------------------------------------------------------------
   		#foreach($gesture in $screen.getGestures())
-  			<gesture id="${gesture.getOid()}" type="${gesture.getType().toString()}">
-  				#set($navigate=${gesture.getNavigate()})
-  				#getNavigateXML(${navigate})
-  			</gesture>
+  			${gesture.getPanelXml()}
   		#end
   		</screen>
   	#end

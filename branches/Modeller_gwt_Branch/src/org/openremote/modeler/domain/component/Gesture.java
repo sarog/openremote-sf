@@ -63,10 +63,26 @@ public class Gesture extends UIControl {
       this.uiCommand = uiCommand;
    }
 
-
    @Override
    public String getPanelXml() {
-      return null;
+      StringBuilder XMLContent = new StringBuilder();
+      XMLContent.append("<gesture id=\""+getOid()+"\" ");
+      XMLContent.append("type=\""+type.toString()+"\">");
+      if(navigate!=null){
+         XMLContent.append("<navigate ");
+          
+         if(navigate.getToGroup()!=-1){
+            XMLContent.append("toGroup=\""+navigate.getToGroup()+"\" ");
+            if(navigate.getToScreen()!=-1){
+               XMLContent.append("toScreen=\""+navigate.getToScreen()+"\" ");
+            }
+         }else{
+            XMLContent.append("to=\""+navigate.getToLogical().toString()+"\"");
+         }
+         XMLContent.append("/>");
+      }
+      XMLContent.append("</gesture>");
+      return XMLContent.toString();
    }
    @Override
    public List<UICommand> getCommands() {

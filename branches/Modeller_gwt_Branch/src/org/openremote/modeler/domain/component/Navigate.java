@@ -26,7 +26,7 @@ public class Navigate extends BusinessEntity {
 
    private long toScreen = -1L;
    private long toGroup = -1L;
-   private ToLogicalType toLogical;
+   private ToLogicalType toLogical = ToLogicalType.login;
 
    public long getToScreen() {
       return toScreen;
