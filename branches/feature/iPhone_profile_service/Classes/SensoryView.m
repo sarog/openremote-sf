@@ -19,63 +19,41 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-#import "ComponentView.h"
-#import "ControlView.h"
+#import "SensoryView.h"
+#import "NotificationConstant.h"
 #import "Label.h"
-#import "LabelView.h"
 #import "Image.h"
-#import "ImageView.h"
-#import "Control.h"
 
-@implementation ComponentView
-
-@synthesize component;
-
-#pragma mark class methods.
-
-//NOTE:You should init all these views with initWithFrame and you should pass in valid frame rects.
-//Otherwise, UI widget will not work in nested UIViews
-+ (ComponentView *)buildWithComponent:(Component *)component frame:(CGRect)frame {
-	ComponentView *componentView = nil;
-
-	if ([component isKindOfClass:[Label class]]) {
-		componentView = [LabelView alloc];
-	} else if ([component isKindOfClass:[Image class]]) {
-		componentView	= [ImageView alloc];
-	} else {
-		return [ControlView buildWithControl:(Control *)component frame:frame];
-	}
-	
-	return [componentView initWithComponent:component frame:frame];
-}
-
+@implementation SensoryView
 
 #pragma mark instance methods.
 
-- (id)initWithComponent:(Component *)c frame:(CGRect)frame {
-	if (self = [super initWithFrame:frame]) {
-		component = c;
-		//transparent background 
-		[self setBackgroundColor:[UIColor clearColor]];
-		//[self setContentMode:UIViewContentModeTopLeft];
+- (void) addPollingNotificationObserver {
+	int sensorId;
+	if ([component isKindOfClass:[Label class]]) {
+		sensorId = ((Label *)component).sensor.sensorId;
+	} else if ([component isKindOfClass:[Image class]]) {
+		sensorId = ((Image *)component).sensor.sensorId;
 	}
-	
-	return self;
+	if (sensorId > 0 ) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,sensorId] object:nil];
+	}
 }
 
-- (void) initView {
+#pragma mark Delegate method of protocol SensoryDelegate.
+/**
+ * The implementation of this method is empty.<br /> 
+ * That means this method must be override in it's subclasses or runtime error.
+ */
+- (void)setPollingStatus:(NSNotification *)notification; {
 	[self doesNotRecognizeSelector:_cmd];
 }
 
 #pragma mark Methods of UIView
 
+// This method is abstract method of indirect superclass UIView's.
 - (void)layoutSubviews {
 	[self initView];
+	[self addPollingNotificationObserver];
 }
-
-- (void)dealloc {
-    [super dealloc];
-}
-
-
 @end

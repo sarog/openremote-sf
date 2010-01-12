@@ -23,14 +23,12 @@
 #import "Component.h"
 
 
-@protocol PollingCallBackNotificationDelegate <NSObject>
-- (void)setPollingStatus:(NSNotification *)notification;
-@end
+//@protocol PollingCallBackNotificationDelegate <NSObject>
+//- (void)setPollingStatus:(NSNotification *)notification;
+//@end
 
 @interface ComponentView : UIView {
-	
-	Component *component;
-	
+	Component *component;	
 }
 
 @property(nonatomic,readonly)Component *component;
@@ -40,5 +38,6 @@
 
 //Instance methods:
 - (id)initWithComponent:(Component *)c frame:(CGRect)frame;
+- (void) initView;
 
 @end

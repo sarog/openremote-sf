@@ -42,7 +42,7 @@
 
 @synthesize uiButton, uiImage, uiImagePressed;
 
-
+#pragma mark Private methods
 
 //Create button according to control and add tap event
 - (void)createButton {
@@ -56,7 +56,6 @@
 	//[uiButton addTarget:self action:@selector(controlButtonUp:) forControlEvents:UIControlEventTouchUpOutside];	
 	[uiButton addTarget:self action:@selector(controlButtonUp:) forControlEvents:UIControlEventTouchUpInside];
 
-	
 	[self addSubview:uiButton];
 	
 }
@@ -70,7 +69,6 @@
 }
 
 - (void) controlButtonDown:(id)sender {
-	
 	[self cancelTimer];
 	
 	Button *button = (Button *)component;
@@ -87,9 +85,9 @@
 	[self	sendCommandRequest:@"click"];
 }
 
+#pragma mark Override the methods of superclass(ComponentView)
 
-//override layoutSubviews method of UIView 
-- (void)layoutSubviews {	
+- (void)initView {	
 	[self createButton];
 	
 	Button *button = (Button *)component;
@@ -120,8 +118,7 @@
 	
 }
 
-
-
+#pragma mark dealloc
 
 - (void)dealloc {
 	[uiImage  release];

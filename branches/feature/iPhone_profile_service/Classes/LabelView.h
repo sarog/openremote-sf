@@ -21,10 +21,12 @@
 
 #import <Foundation/Foundation.h>
 #import "ComponentView.h"
+#import "SensoryView.h"
+
 #define UIColorWithRGBAndAplpha(rgbAlphaValue) [UIColor colorWithRed:((rgbAlphaValue>>24)&0xFF)/255.0 green:((rgbAlphaValue>>16)&0xFF)/255.0 blue:((rgbAlphaValue>>8)&0xFF)/255.0 alpha:((rgbAlphaValue)&0xFF)/255.0];
 #define UIColorWithRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
-@interface LabelView : ComponentView <PollingCallBackNotificationDelegate> {
+@interface LabelView : SensoryView {
 	UILabel *uiLabel;
 }
 

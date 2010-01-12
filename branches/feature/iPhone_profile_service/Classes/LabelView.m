@@ -26,7 +26,6 @@
 #import "PollingStatusParserDelegate.h"
 
 @interface LabelView(Private)
--(void) initLabel;
 -(UIColor *) colorWithRGBString:(NSString *)rgbString;
 @end
 
@@ -34,9 +33,21 @@
 
 @synthesize uiLabel;
 
-#pragma mark PollingCallBackNotificationDelegate method 'setPollingStatus:'
+#pragma mark Overrided methods of superclass(SensoryView)
 
-// So, this method must be overridden in subclass.
+- (void) initView {
+	uiLabel = [[UILabel alloc] initWithFrame:[self bounds]];
+	[uiLabel setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
+	[uiLabel setTextAlignment:UITextAlignmentCenter];
+	Label *labelModel = (Label *)component;
+	
+	uiLabel.text = labelModel.text;
+	uiLabel.font = [UIFont fontWithName:@"Arial" size:labelModel.fontSize];
+	uiLabel.textColor = [self colorWithRGBString:[labelModel.color substringFromIndex:1]];
+	
+	[self addSubview:uiLabel];
+}
+
 - (void)setPollingStatus:(NSNotification *)notification {
 	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
 	int sensorId = ((Label *)component).sensor.sensorId;
@@ -57,29 +68,7 @@
 	}
 }
 
-// This method is abstract method of indirect superclass UIView's.
-- (void)layoutSubviews {
-	NSLog(@"layoutSubviews of LabelView.");
-	[self initLabel];
-	
-	int sensorId = ((Label *)component).sensor.sensorId;
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,sensorId] object:nil];
-}
-
 #pragma mark Private methods implementation
-
--(void) initLabel {
-	uiLabel = [[UILabel alloc] initWithFrame:[self bounds]];
-	[uiLabel setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
-	[uiLabel setTextAlignment:UITextAlignmentCenter];
-	Label *labelModel = (Label *)component;
-	
-	uiLabel.text = labelModel.text;
-	uiLabel.font = [UIFont fontWithName:@"Arial" size:labelModel.fontSize];
-	uiLabel.textColor = [self colorWithRGBString:[labelModel.color substringFromIndex:1]];
-	
-	[self addSubview:uiLabel];
-}
 
 -(UIColor *) colorWithRGBString:(NSString *)rgbString {
 	if(!rgbString) {
@@ -89,6 +78,8 @@
 	[[NSScanner scannerWithString:rgbString] scanHexInt:&hexIntColorValue];
 	return UIColorWithRGB(hexIntColorValue);
 }
+
+#pragma mark dealloc
 
 - (void)dealloc {
 	[uiLabel release];
