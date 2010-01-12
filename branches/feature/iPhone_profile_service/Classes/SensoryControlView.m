@@ -19,24 +19,37 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
-#import "Switch.h"
-#import <UIKit/UIKit.h>
-#import "ControlView.h"
-#import "URLConnectionHelper.h"
-#import "ComponentView.h"
 #import "SensoryControlView.h"
+#import "Slider.h"
+#import "Switch.h"
+#import "NotificationConstant.h"
 
-@interface SwitchView : SensoryControlView {
-	UIButton *button;
-	BOOL isOn;
-	BOOL canUseImage;
-	UIImage *onUIImage;
-	UIImage *offUIImage;
+@implementation SensoryControlView
+
+#pragma mark instance methods
+
+- (void) addPollingNotificationObserver {
+	int sensorId;
+	if ([component isKindOfClass:[Slider class]]) {
+		sensorId = ((Slider *)component).sensor.sensorId;
+	} else if ([component isKindOfClass:[Switch class]]) {
+		sensorId = ((Switch *)component).sensor.sensorId;
+	}
+	if (sensorId > 0 ) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,sensorId] object:nil];
+	}
 }
 
-@property (nonatomic,readonly)UIButton *button;
-@property (nonatomic,readonly)UIImage *onUIImage;
-@property (nonatomic,readonly)UIImage *offUIImage;
+#pragma mark delegate methods of SensoryDelegate.
+
+- (void)setPollingStatus:(NSNotification *)notification {
+	[self doesNotRecognizeSelector:_cmd];
+}
+
+#pragma mark Override mehtods of UIView
+- (void)layoutSubviews {
+	[self initView];
+	[self addPollingNotificationObserver];
+}
 
 @end

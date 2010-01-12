@@ -20,13 +20,8 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "ComponentView.h"
-#import "SensoryView.h"
+#import "URLConnectionHelper.h"
 
-@interface ImageView : SensoryView {
-	UIImageView *defaultImageView;
-}
-
-@property (nonatomic, retain) UIImageView *defaultImageView;
-
+@protocol ControlDelegate <NSObject, URLConnectionHelperDelegate>
+- (void)sendCommandRequest:(NSString *)commandType;
 @end

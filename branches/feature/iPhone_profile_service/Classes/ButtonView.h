@@ -24,9 +24,7 @@
 #import "Button.h"
 #import "ControlView.h"
 
-
 @interface ButtonView : ControlView {
-
 	
 	UIButton *uiButton;
 	UIImage *uiImage;

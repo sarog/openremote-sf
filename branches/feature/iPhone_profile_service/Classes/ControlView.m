@@ -61,6 +61,8 @@
 	return [controlView initWithControl:control frame:frame];
 }
 
+#pragma mark instance methods
+
 - (id)initWithControl:(Control *)c frame:(CGRect)frame{
 	if (self = [super initWithFrame:frame]) {
 		component = c;
@@ -71,44 +73,6 @@
 	}
 
 	return self;
-}
-
-/* Sets polling status.
- * Returns YES if success, returns NO if the status is invalid.
- * NOTE: This is an abstract method, must be implemented in subclass
- */
-//- (void)setPollingStatus:(NSNotification *)notification {
-//	[self doesNotRecognizeSelector:_cmd];
-//}
-
-
-
-- (void)sendCommandRequest:(NSString *)commandType{
-	
-	if ([[Definition sharedDefinition] password] == nil) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
-		return;
-	}
-
-	
-	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition securedControlRESTUrl]];
-	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]];
-	NSLog([location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]);
-
-
-	//assemble put request 
-	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-	[request setURL:url];
-	[request setHTTPMethod:@"POST"];
-	
-	[CredentialUtil addCredentialToNSMutableURLRequest:request];
-	
-	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
-	
-	[location release];
-	[url	 release];
-	[request release];
-	[connection autorelease];	
 }
 
 - (void)handleServerErrorWithStatusCode:(int) statusCode {
@@ -132,13 +96,41 @@
 	controlTimer = nil;
 }
 
-#pragma mark delegate method of NSURLConnection
-- (void) definitionURLConnectionDidFailWithError:(NSError *)error {
+#pragma mark delegate methods of Protocol ControlDelegate.
 
-	[self cancelTimer];
-
+- (void)sendCommandRequest:(NSString *)commandType{
+	
+	if ([[Definition sharedDefinition] password] == nil) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+		return;
+	}
+	
+	
+	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition securedControlRESTUrl]];
+	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]];
+	NSLog([location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]);
+	
+	
+	//assemble put request 
+	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+	[request setURL:url];
+	[request setHTTPMethod:@"POST"];
+	
+	[CredentialUtil addCredentialToNSMutableURLRequest:request];
+	
+	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
+	
+	[location release];
+	[url	 release];
+	[request release];
+	[connection autorelease];	
 }
 
+#pragma mark delegate methods of NSURLConnection abstract into Protocol URLConnectionHelperDelegate.
+
+- (void) definitionURLConnectionDidFailWithError:(NSError *)error {
+	[self cancelTimer];
+}
 
 - (void)definitionURLConnectionDidFinishLoading:(NSData *)data {
 }
@@ -150,6 +142,7 @@
 	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
 }
 
+#pragma mark dealloc
 
 - (void)dealloc {
 	[controlTimer release];

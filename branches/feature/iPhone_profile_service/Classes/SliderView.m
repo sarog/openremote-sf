@@ -26,7 +26,6 @@
 #import "DirectoryDefinition.h"
 
 @interface SliderView(Private)
-- (void) initSlider;
 - (void) afterSlide:(UISlider *)sender;
 @end
 
@@ -34,30 +33,9 @@
 
 @synthesize slider, currentValue;
 
-#pragma mark Overridden methods
+#pragma mark Override methods of SensoryControlView.
 
-// This method is abstract method of direct superclass ControlView's.
-// So, this method must be overridden in subclass.
-- (void)setPollingStatus:(NSNotification *)notification {
-	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
-	int sensorId = ((Slider *)component).sensor.sensorId;
-	float newStatus = [[pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",sensorId]] floatValue];
-	slider.value = newStatus;
-	currentValue = (int)newStatus;
-}
-
-// This method is abstract method of indirect superclass UIView's.
-- (void)layoutSubviews {
-	NSLog(@"layoutSubviews of SliderView.");
-	[self initSlider];
-	int sensorId = ((Slider *)component).sensor.sensorId;
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,sensorId] object:nil];
-	
-}
-
-#pragma mark Private methods implementation
-
-- (void) initSlider {
+- (void) initView {
 	if (slider) {
 		[slider removeFromSuperview];
 		[slider release];
@@ -108,8 +86,17 @@
 		[cover setBackgroundColor:[UIColor colorWithRed:255.0 green:255.0 blue:255.0 alpha:0.0]];
 		[self addSubview:cover]; 
 	}
-
 }
+
+- (void)setPollingStatus:(NSNotification *)notification {
+	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
+	int sensorId = ((Slider *)component).sensor.sensorId;
+	float newStatus = [[pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",sensorId]] floatValue];
+	slider.value = newStatus;
+	currentValue = (int)newStatus;
+}
+
+#pragma mark Private methods
 
 // This method will be executed after slide action finished.
 - (void) afterSlide:(UISlider *)sender {
@@ -121,6 +108,8 @@
 		NSLog(@"The min slide variant value less than %d", MIN_SLIDE_VARIANT);
 	}
 }
+
+#pragma mark dealloc
 
 -(void) dealloc{
 	[slider release];

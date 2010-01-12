@@ -20,13 +20,12 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "ComponentView.h"
-#import "SensoryView.h"
+#import "ControlView.h"
+#import	"SensoryDelegate.h"
 
-@interface ImageView : SensoryView {
-	UIImageView *defaultImageView;
+@interface SensoryControlView : ControlView<SensoryDelegate> {
 }
 
-@property (nonatomic, retain) UIImageView *defaultImageView;
+- (void) addPollingNotificationObserver;
 
 @end

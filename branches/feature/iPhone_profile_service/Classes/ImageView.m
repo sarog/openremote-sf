@@ -30,7 +30,6 @@
 #import "SensorState.h"
 
 @interface ImageView(Private)
--(void) initImageView;
 -(Image *) initImageModelWithLabel;
 @end
 
@@ -38,10 +37,30 @@
 
 @synthesize defaultImageView;
 
-#pragma mark Overridden methods
+#pragma mark Overrided methods of superclass(SensoryView)
 
-// This method is abstract method of protocol PollingCallBackNotificationDelegate's.
-// So, this method must be implemented in subclass.
+- (void) initView {
+	Image *imageModel = [self initImageModelWithLabel];
+	UIImage *uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:imageModel.src]];
+	defaultImageView = [[UIImageView alloc] initWithFrame:self.bounds];
+	defaultImageView = [UIViewUtil clippedUIImageViewWith:uiImage dependingOnUIView:self uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
+	[defaultImageView setContentMode:UIViewContentModeTopLeft];
+	[self addSubview:defaultImageView];
+}
+
+- (void) addPollingNotificationObserver {
+	Image *imageModel = ((Image *)component);
+	int sensorId = imageModel.sensor.sensorId;
+	NSLog(@"image sensor id is : %d", sensorId);
+	if (!(sensorId > 0)) {
+		sensorId = imageModel.label.sensor.sensorId;
+	}
+	NSLog(@"label sensor id is : %d", sensorId);
+	if (sensorId > 0) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,sensorId] object:nil];
+	}
+}
+
 - (void)setPollingStatus:(NSNotification *)notification {
 	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
 	int sensorId = ((Image *)component).sensor.sensorId;
@@ -56,7 +75,7 @@
 	BOOL changeView = NO;
 	
 	NSLog(@"sensor states count is %d", imageModel.sensor.states.count);
-	// Render sensor state image
+	// Render sensor's state image
 	for (SensorState *sensorState in imageModel.sensor.states) {
 		NSLog(@"sensorState.name is %@", sensorState.name);
 		NSLog(@"newStatus is %@", newStatus);
@@ -82,33 +101,7 @@
 	}	
 }
 
-// This method is abstract method of indirect superclass UIView's.
-- (void)layoutSubviews {
-	NSLog(@"layoutSubviews of ImageView.");
-	[self initImageView];
-	
-	Image *imageModel = ((Image *)component);
-	int sensorId = imageModel.sensor.sensorId;
-	NSLog(@"image sensor id is : %d", sensorId);
-	if (!(sensorId > 0)) {
-		sensorId = imageModel.label.sensor.sensorId;
-	}
-	NSLog(@"label sensor id is : %d", sensorId);
-	if (sensorId > 0) {
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,sensorId] object:nil];
-	}
-}
-
 #pragma mark Private methods implementation
-
--(void) initImageView {
-	Image *imageModel = [self initImageModelWithLabel];
-	UIImage *uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:imageModel.src]];
-	defaultImageView = [[UIImageView alloc] initWithFrame:self.bounds];
-	defaultImageView = [UIViewUtil clippedUIImageViewWith:uiImage dependingOnUIView:self uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
-	[defaultImageView setContentMode:UIViewContentModeTopLeft];
-	[self addSubview:defaultImageView];
-}
 
 -(Image *) initImageModelWithLabel {
 	Image *tempImageModel = (Image *)component;
@@ -120,6 +113,8 @@
 	}
 	return tempImageModel;
 }
+
+#pragma mark dealloc
 
 - (void) dealloc {
 	[defaultImageView release];

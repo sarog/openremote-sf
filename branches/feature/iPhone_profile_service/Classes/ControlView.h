@@ -23,29 +23,19 @@
 #import "Control.h"
 #import "URLConnectionHelper.h"
 #import "ComponentView.h"
+#import "ControlDelegate.h"
 
-@interface ControlView : ComponentView <URLConnectionHelperDelegate>{
-	
+@interface ControlView : ComponentView <ControlDelegate>{
 	NSTimer *controlTimer;
 	BOOL isError;
 }
 
-//Class methods:
+#pragma mark Class methods:
 + (ControlView *)buildWithControl:(Control *)control frame:(CGRect)frame;
 
-//Instance methods:
+#pragma mark Instance methods:
 - (id)initWithControl:(Control *)c frame:(CGRect)frame;
-
-
-/* Sets polling status.
- * Returns YES if success, returns NO if the status is invalid.
- * NOTE: This is an abstract method, must be implemented in subclass
- */
-//- (void)setPollingStatus:(NSNotification *)notification;
-- (void)sendCommandRequest:(NSString *)commandType;
 - (void)handleServerErrorWithStatusCode:(int) statusCode;
 - (void)cancelTimer;
-
-
 
 @end

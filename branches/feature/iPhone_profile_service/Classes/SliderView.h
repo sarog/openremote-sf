@@ -21,10 +21,11 @@
 
 #import <Foundation/Foundation.h>
 #import "ControlView.h"
+#import "SensoryControlView.h"
 
 #define MIN_SLIDE_VARIANT 1
 
-@interface SliderView : ControlView <PollingCallBackNotificationDelegate> {
+@interface SliderView : SensoryControlView {
 	UISlider *slider;
 	int currentValue;
 }

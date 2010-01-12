@@ -20,13 +20,11 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "ComponentView.h"
-#import "SensoryView.h"
 
-@interface ImageView : SensoryView {
-	UIImageView *defaultImageView;
-}
+@protocol SensoryDelegate <NSObject>
 
-@property (nonatomic, retain) UIImageView *defaultImageView;
-
+/**
+ * This method is responsible for handling the notification of polling status callback.
+ */
+- (void)setPollingStatus:(NSNotification *)notification;
 @end
