@@ -112,6 +112,7 @@ public class GestureWindow extends Dialog {
       gestureTypeListView = new CheckBoxListView<BeanModel>();
       gestureTypeListView.addListener(Events.Select, new Listener<ListViewEvent<BeanModel>>() {
          public void handleEvent(ListViewEvent<BeanModel> be) {
+            gestureTypeListView.setChecked(be.getModel(), true);
             fireEvent(SelectEvent.SELECT, new SelectEvent(gestureMaps.get(((Gesture)be.getModel().getBean()).getType().toString())));
          }
       });
@@ -143,7 +144,7 @@ public class GestureWindow extends Dialog {
       gesturePropertyForm.setLabelAlign(LabelAlign.TOP);
       gesturePropertyForm.setHeaderVisible(false);
       
-      // Command tree filed.
+      // Command field.
       ContentPanel commandTreeContainer = new ContentPanel();
       commandTreeContainer.setHeaderVisible(false);
       commandTreeContainer.setBorders(false);

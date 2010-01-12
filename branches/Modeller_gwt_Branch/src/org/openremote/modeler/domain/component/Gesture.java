@@ -68,7 +68,7 @@ public class Gesture extends UIControl {
       StringBuilder XMLContent = new StringBuilder();
       XMLContent.append("<gesture id=\""+getOid()+"\" ");
       XMLContent.append("type=\""+type.toString()+"\">");
-      if(navigate!=null){
+      if (navigate != null && navigate.isSet()) {
          XMLContent.append("<navigate ");
           
          if(navigate.getToGroup()!=-1){
