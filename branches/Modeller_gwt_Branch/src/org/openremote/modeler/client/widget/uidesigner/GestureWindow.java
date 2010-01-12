@@ -144,7 +144,6 @@ public class GestureWindow extends Dialog {
       gesturePropertyForm.setLabelAlign(LabelAlign.TOP);
       gesturePropertyForm.setHeaderVisible(false);
       
-      // Command field.
       ContentPanel commandTreeContainer = new ContentPanel();
       commandTreeContainer.setHeaderVisible(false);
       commandTreeContainer.setBorders(false);
@@ -183,7 +182,6 @@ public class GestureWindow extends Dialog {
          
       });
       
-      // navigate filed
       final NavigateFieldSet navigateSet = new NavigateFieldSet(selectedGesture.getNavigate(), BeanModelDataBase.groupTable.loadAll());
       navigateSet.setCheckboxToggle(true);
       navigateSet.addListener(Events.BeforeExpand, new Listener<FieldSetEvent>() {
