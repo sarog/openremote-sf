@@ -161,6 +161,7 @@ public class SensorWindow extends FormWindow {
                rangeSet.hide();
             }
             form.layout();
+            layout();
          }
          
       });
