@@ -37,6 +37,7 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.Radio;
 import com.extjs.gxt.ui.client.widget.form.RadioGroup;
@@ -58,7 +59,7 @@ public class NavigateFieldSet extends FieldSet {
       this.navigate = navigate;
       this.groupModels = groupModels;
       init();
-      createLeftRadios();
+      createLeftContainer();
       createRightComboBoxes();
    }
    private void init() {
@@ -66,9 +67,11 @@ public class NavigateFieldSet extends FieldSet {
       setHeading("Navigate");
    }
    
-   private void createLeftRadios() {
-      RadioGroup navigateGroup = new RadioGroup();
-      navigateGroup.setOrientation(Orientation.VERTICAL);
+   private void createLeftContainer() {
+      LayoutContainer leftContainer = new LayoutContainer();
+      
+      RadioGroup radioGroup = new RadioGroup();
+      radioGroup.setOrientation(Orientation.VERTICAL);
       
       toLogical.setBoxLabel("ToLogical");
       toGroup.setBoxLabel("ToGroup");
@@ -94,16 +97,16 @@ public class NavigateFieldSet extends FieldSet {
        }
        
     });
-         
-      Radio toScreen = new Radio();
-      toScreen.setBoxLabel("ToScreen");
-      toScreen.disable();
+
+      radioGroup.add(toLogical);
+      radioGroup.add(toGroup);
+
+      Text toScreen = new Text("ToScreen");
+      toScreen.setStyleAttribute("textAlign", "center");
       
-      navigateGroup.add(toLogical);
-      navigateGroup.add(toGroup);
-      navigateGroup.add(toScreen);
-      
-      add(navigateGroup);
+      leftContainer.add(radioGroup);
+      leftContainer.add(toScreen);
+      add(leftContainer);
    }
    
    private void createRightComboBoxes() {
