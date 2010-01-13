@@ -78,6 +78,8 @@
 		33B8ED1410FCA5B700F3363D /* SensoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED1210FCA5B700F3363D /* SensoryView.m */; };
 		33B8ED5010FCAB4F00F3363D /* SensoryControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */; };
 		33B8ED5110FCAB4F00F3363D /* SensoryControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */; };
+		33C3A49410FE32E3001C520E /* ColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 33C3A49310FE32E3001C520E /* ColorUtil.m */; };
+		33C3A49510FE32E3001C520E /* ColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 33C3A49310FE32E3001C520E /* ColorUtil.m */; };
 		33DF2E0710CCC90D0038DA82 /* panel_global_tabbar.xml in Resources */ = {isa = PBXBuildFile; fileRef = 33DF2E0610CCC90D0038DA82 /* panel_global_tabbar.xml */; };
 		33DF2E0810CCC90D0038DA82 /* panel_global_tabbar.xml in Resources */ = {isa = PBXBuildFile; fileRef = 33DF2E0610CCC90D0038DA82 /* panel_global_tabbar.xml */; };
 		33DF56CE10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
@@ -307,6 +309,8 @@
 		33B8ED1210FCA5B700F3363D /* SensoryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensoryView.m; sourceTree = "<group>"; };
 		33B8ED4E10FCAB4F00F3363D /* SensoryControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensoryControlView.h; sourceTree = "<group>"; };
 		33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensoryControlView.m; sourceTree = "<group>"; };
+		33C3A49210FE32E3001C520E /* ColorUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorUtil.h; sourceTree = "<group>"; };
+		33C3A49310FE32E3001C520E /* ColorUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorUtil.m; sourceTree = "<group>"; };
 		33DF2E0610CCC90D0038DA82 /* panel_global_tabbar.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_global_tabbar.xml; sourceTree = "<group>"; };
 		33DF56CC10CCF6B50005446D /* TabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarController.h; sourceTree = "<group>"; };
 		33DF56CD10CCF6B50005446D /* TabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarController.m; sourceTree = "<group>"; };
@@ -688,6 +692,8 @@
 				8CC6364D10BD37D8009C25C9 /* CredentialUtil.m */,
 				338D306A10D8DD000043BFE9 /* UIViewUtil.h */,
 				338D306B10D8DD000043BFE9 /* UIViewUtil.m */,
+				33C3A49210FE32E3001C520E /* ColorUtil.h */,
+				33C3A49310FE32E3001C520E /* ColorUtil.m */,
 			);
 			name = utils;
 			sourceTree = "<group>";
@@ -1132,6 +1138,7 @@
 				33A89DCF10F4B9B5005D7281 /* Icon.m in Sources */,
 				33B8ED1310FCA5B700F3363D /* SensoryView.m in Sources */,
 				33B8ED5010FCAB4F00F3363D /* SensoryControlView.m in Sources */,
+				33C3A49410FE32E3001C520E /* ColorUtil.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1223,6 +1230,7 @@
 				33A89DCE10F4B9B5005D7281 /* Icon.m in Sources */,
 				33B8ED1410FCA5B700F3363D /* SensoryView.m in Sources */,
 				33B8ED5110FCAB4F00F3363D /* SensoryControlView.m in Sources */,
+				33C3A49510FE32E3001C520E /* ColorUtil.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

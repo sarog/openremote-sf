@@ -24,10 +24,7 @@
 #import "NotificationConstant.h"
 #import "SensorState.h"
 #import "PollingStatusParserDelegate.h"
-
-@interface LabelView(Private)
--(UIColor *) colorWithRGBString:(NSString *)rgbString;
-@end
+#import "ColorUtil.h"
 
 @implementation LabelView
 
@@ -43,7 +40,7 @@
 	
 	uiLabel.text = labelModel.text;
 	uiLabel.font = [UIFont fontWithName:@"Arial" size:labelModel.fontSize];
-	uiLabel.textColor = [self colorWithRGBString:[labelModel.color substringFromIndex:1]];
+	uiLabel.textColor = [ColorUtil colorWithRGBString:[labelModel.color substringFromIndex:1]];
 	
 	[self addSubview:uiLabel];
 }
@@ -66,17 +63,6 @@
 	if (!changeText) {
 		uiLabel.text = labelModel.text;
 	}
-}
-
-#pragma mark Private methods implementation
-
--(UIColor *) colorWithRGBString:(NSString *)rgbString {
-	if(!rgbString) {
-		return [UIColor grayColor];
-	}
-	unsigned int hexIntColorValue;
-	[[NSScanner scannerWithString:rgbString] scanHexInt:&hexIntColorValue];
-	return UIColorWithRGB(hexIntColorValue);
 }
 
 #pragma mark dealloc
