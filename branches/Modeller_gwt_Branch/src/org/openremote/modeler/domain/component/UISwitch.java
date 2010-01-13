@@ -38,7 +38,7 @@ public class UISwitch extends UIControl implements SensorOwner {
 
    public UISwitch(UISwitch swh) {
       this.setOid(swh.getOid());
-      this.onImage = swh.offImage;
+      this.onImage = swh.onImage;
       this.offImage = swh.offImage;
       this.switchCommand = swh.switchCommand;
    }
