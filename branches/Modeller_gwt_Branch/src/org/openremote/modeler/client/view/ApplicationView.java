@@ -204,6 +204,7 @@ public class ApplicationView implements View {
     * 
     * @return the menu item
     */
+   @SuppressWarnings("unused")
    private MenuItem createImportMenuItem() {
       MenuItem importMenuItem = new MenuItem("Import");
       importMenuItem.ensureDebugId(DebugId.IMPORT);

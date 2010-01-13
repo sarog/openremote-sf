@@ -72,7 +72,7 @@ public class SliderPanel extends ContentPanel {
    private Map<BeanModel, ChangeListener> changeListenerMap = null;
    
    public SliderPanel() {
-      this.setHeading("Slider");
+      this.setHeading("SliderCommandSet");
       this.setIcon(icons.sliderIcon());
       selectionService = new SelectionServiceExt<BeanModel>();
       

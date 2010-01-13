@@ -52,11 +52,8 @@ import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
-import com.extjs.gxt.ui.client.widget.form.FormPanel.Method;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
-import com.google.gwt.core.client.GWT;
 
 public class PanelWindow extends FormWindow {
 
@@ -189,7 +186,8 @@ public class PanelWindow extends FormWindow {
       panelPaddingTopField.setRegex(Constants.REG_NONNEGATIVEINT);
       panelPaddingTopField.getMessages().setRegexText("The padding top must be a nonnegative integer");
       
-      panelImage = new ImageUploadField();
+      panelImage = new ImageUploadField(null);
+      panelImage.setActionToForm(form);
       
       screenWidthField = new TextField<Integer>();
       screenWidthField.setName("screenWidth");
@@ -246,10 +244,6 @@ public class PanelWindow extends FormWindow {
    }
 
    private void addListenersToForm() {
-      form.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName="
-            + ImageUploadField.IMAGEUPLOADFIELD);
-      form.setEncoding(Encoding.MULTIPART);
-      form.setMethod(Method.POST);
       form.addListener(Events.Submit, new Listener<FormEvent>() {
          @SuppressWarnings("unchecked")
          @Override

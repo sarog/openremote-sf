@@ -30,26 +30,26 @@ import org.openremote.modeler.domain.Sensor;
  * This class is used for record the property for a sensor 
  * A sensor is defined in the build modeler, include the state, state name... But we can only set the value for the state in the UI designer.
  * we can't change the property for a sensor because it only have a device command or state name. therefore we need a class to record the state value 
- * for every SeonsorOwner and here it is. 
+ * for every SensorOwner and here it is. 
  * Attention: If it already has a element which has a attribute called <b>name</b>,when you add another element which has the same name as well as a attribute called name
  * the element will be replaced by the other one. 
  * @author Javen
  *
  */
 @SuppressWarnings("serial")
-public class SensorLinker extends BusinessEntity {
+public class SensorLink extends BusinessEntity {
    private Sensor sensor = null;
    private Set<LinkerChild> linkerChildren = new HashSet<LinkerChild>(5);
    
-   public SensorLinker() {
+   public SensorLink() {
    };
    
    
-   public SensorLinker(Sensor sensor) {
+   public SensorLink(Sensor sensor) {
       this.sensor = sensor;
    }
    /**
-    * Most of the sensors have some states,SO the method can be used get the state value by state name,like getStateValueByStateName("on") can get the value for a switch sensor when it is on the on state.
+    * Most of the sensors have some states,So the method can be used get the state value by state name,like getStateValueByStateName("on") can get the value for a switch sensor when it is on the on state.
     * @param stateName The name for the state. 
     * @return The state value for the state.
     */

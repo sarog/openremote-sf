@@ -30,9 +30,9 @@ import org.openremote.modeler.client.widget.ImageUploadField;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.UITabbarItem;
-import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
@@ -57,16 +57,13 @@ import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.LabelAlign;
-import com.extjs.gxt.ui.client.widget.form.FormPanel.Method;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
-import com.google.gwt.core.client.GWT;
 
 public class TabbarWindow extends CommonWindow {
 
@@ -239,7 +236,7 @@ public class TabbarWindow extends CommonWindow {
       imageForm.setBodyBorder(false);
       imageForm.setPadding(0);
       imageForm.setLabelAlign(LabelAlign.TOP);
-      final ImageUploadField imageField = new ImageUploadField() {
+      final ImageUploadField imageField = new ImageUploadField(null) {
          @Override
          protected void onChange(ComponentEvent ce) {
             super.onChange(ce);
@@ -250,10 +247,8 @@ public class TabbarWindow extends CommonWindow {
          }
          
       };
+      imageField.setActionToForm(imageForm);
       imageForm.add(imageField);
-      imageForm.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName=" + ImageUploadField.IMAGEUPLOADFIELD);
-      imageForm.setEncoding(Encoding.MULTIPART);
-      imageForm.setMethod(Method.POST);
       imageForm.addListener(Events.Submit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             ImageSource image = selectTabbarItem.getImage();

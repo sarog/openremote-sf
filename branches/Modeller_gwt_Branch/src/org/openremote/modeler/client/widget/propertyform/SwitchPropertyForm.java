@@ -97,7 +97,7 @@ public class SwitchPropertyForm extends PropertyForm {
       }
       switchCommand.addSelectionListener(createSelectionListener(uiSwitch, switchCommand));
       AdapterField adapterSwitchCommand = new AdapterField(switchCommand);
-      adapterSwitchCommand.setFieldLabel("Command");
+      adapterSwitchCommand.setFieldLabel("SwitchCommand");
       adapterSwitchCommand.setAutoHeight(true);
 
       add(adapterImageON);

@@ -74,7 +74,7 @@ public class SwitchPanel extends ContentPanel {
    private Map<BeanModel, ChangeListener> changeListenerMap = null;
    
    public SwitchPanel() {
-      this.setHeading("Switch");
+      this.setHeading("SwitchCommandSet");
       this.setIcon(icons.switchIcon());
       selectionService = new SelectionServiceExt<BeanModel>();
       

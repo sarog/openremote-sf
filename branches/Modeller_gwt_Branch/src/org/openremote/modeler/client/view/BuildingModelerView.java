@@ -54,6 +54,7 @@ public class BuildingModelerView extends TabItem implements View {
    /**
     * Creates the north.
     */
+   @SuppressWarnings("unused")
    private void createNorth() {
       ToolBar north = new ToolBar();
       BorderLayoutData northData = new BorderLayoutData(LayoutRegion.NORTH, 200);

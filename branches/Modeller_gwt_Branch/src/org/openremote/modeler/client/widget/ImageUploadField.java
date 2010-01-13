@@ -20,16 +20,58 @@
 package org.openremote.modeler.client.widget;
 
 import com.extjs.gxt.ui.client.widget.form.FileUploadField;
+import com.extjs.gxt.ui.client.widget.form.FormPanel;
+import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
+import com.extjs.gxt.ui.client.widget.form.FormPanel.Method;
+import com.google.gwt.core.client.GWT;
 
+/**
+ * 
+ * @author Tomsky, Javen
+ *
+ */
 public class ImageUploadField extends FileUploadField {
-
+   public static final String BASE_ACTION_URL = GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName=";
    public final static String IMAGEUPLOADFIELD = "imageUploadField";
    
-   public ImageUploadField() {
+   private String fieldName = "imageUploadField";
+   
+   /**
+    * create a new ImageUploadField 
+    * If the fieldName is null, The default fieldName is : <code>ImageUploadField.IMAGEUPLOADFIELD</code>
+    * @param fieldName The name for the field in your form. 
+    */
+   public ImageUploadField(String fieldName) {
       setFieldLabel("Image");
-      setName(IMAGEUPLOADFIELD);
-      setRegex(".+?\\.(png|gif|jpg|PNG|GIF|JPG)");
+      if (fieldName != null && fieldName.trim().length() != 0) {
+         this.fieldName = fieldName;
+         setName(fieldName);
+      } else {
+         setName(IMAGEUPLOADFIELD);
+      }
+      setRegex(".+?\\.(png|gif|jpg|jpeg|PNG|GIF|JPG|GPEG)");
       getMessages().setRegexText("Please select a gif, jpg or png type image.");
       setStyleAttribute("overflow", "hidden");
+   }
+   /**
+    * A form just has one action, suppose that there are several ImageUploadFields in a form and you want to upload an image when an image has be selected, 
+    * The only thing you can do is to change the form's action to the url that required by this ImageUploadField.
+    * <br />
+    * This method is used to change the action for a form by binding the form's action to itself. 
+    * @param form
+    */
+   public void setActionToForm(FormPanel form) {
+      String action = getActionURL();
+      form.setAction(action);
+      form.setEncoding(Encoding.MULTIPART);
+      form.setMethod(Method.POST);
+   }
+
+   public String getUploadFieldName() {
+      return fieldName;
+   }
+
+   public String getActionURL() {
+      return BASE_ACTION_URL + (fieldName != null ? fieldName : IMAGEUPLOADFIELD);
    }
 }

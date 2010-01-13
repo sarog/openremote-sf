@@ -25,7 +25,7 @@ import java.util.Map;
 /**
  * The Class UIButtonEvent.
  */
-public class UIButtonEvent {
+public class Command {
 
    /** The protocol display name. */
    private String protocolDisplayName;

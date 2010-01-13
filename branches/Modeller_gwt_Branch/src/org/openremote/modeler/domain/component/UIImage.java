@@ -21,7 +21,7 @@ package org.openremote.modeler.domain.component;
 
 import javax.persistence.Transient;
 
-import org.openremote.modeler.client.utils.SensorLinker;
+import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.domain.Sensor;
 
 @SuppressWarnings("serial")
@@ -35,7 +35,7 @@ public class UIImage extends UIComponent implements SensorOwner {
 
    private UILabel label = null;
 
-   private SensorLinker sensorLinker;
+   private SensorLink sensorLinker;
 
    public UIImage() {
    }
@@ -66,7 +66,7 @@ public class UIImage extends UIComponent implements SensorOwner {
    public void setSensor(Sensor sensor) {
       this.sensor = sensor;
       if (sensor != null) {
-         this.sensorLinker = new SensorLinker(sensor);
+         this.sensorLinker = new SensorLink(sensor);
       } else {
          sensorLinker.clear();
       }
@@ -80,11 +80,11 @@ public class UIImage extends UIComponent implements SensorOwner {
       this.label = label;
    }
 
-   public SensorLinker getSensorLinker() {
+   public SensorLink getSensorLinker() {
       return sensorLinker;
    }
 
-   public void setSensorLinker(SensorLinker sensorLinker) {
+   public void setSensorLinker(SensorLink sensorLinker) {
       this.sensorLinker = sensorLinker;
    }
 
@@ -101,7 +101,7 @@ public class UIImage extends UIComponent implements SensorOwner {
       if (sensor != null) {
          sb.append(sensorLinker.getXMLString());
       }
-      if (label != null) {
+      if (label != null && label.isRemoved()==false) {
          sb.append("<include type=\"label\" ref=\"" + label.getOid() + "\"/>\n");
       }
       sb.append("</image>");
