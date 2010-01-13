@@ -31,57 +31,54 @@
 
 @implementation SliderView
 
-@synthesize slider, currentValue;
+@synthesize uiSlider, currentValue;
 
 #pragma mark Override methods of SensoryControlView.
 
 - (void) initView {
-	if (slider) {
-		[slider removeFromSuperview];
-		[slider release];
+	if (uiSlider) {
+		[uiSlider removeFromSuperview];
+		[uiSlider release];
 	}
-	Slider *theSlider = (Slider *)component;
+	Slider *sliderModel = (Slider *)component;
 	
-	slider = [[UISlider alloc] initWithFrame:[self bounds]];
-	if (theSlider.vertical) {
-		//slider.frame = CGRectMake(slider.frame.origin.x, slider.frame.origin.y, self.frame.size.height, slider.frame.size.width);
-		//[self setContentMode:UIViewContentModeCenter];
-		slider.transform = CGAffineTransformMakeRotation(270.0/180*M_PI);
+	uiSlider = [[UISlider alloc] initWithFrame:[self bounds]];
+	if (sliderModel.vertical) {
+		uiSlider.transform = CGAffineTransformMakeRotation(270.0/180*M_PI);
+		uiSlider.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, self.frame.size.height);
 	}
 
-	slider.minimumValue = theSlider.minValue;
-	NSString *minimumValueImageSrc = theSlider.minImage.src;
+	uiSlider.minimumValue = sliderModel.minValue;
+	NSString *minimumValueImageSrc = sliderModel.minImage.src;
 	UIImage *minimumValueImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:minimumValueImageSrc]];
-	slider.minimumValueImage = minimumValueImage;
+	uiSlider.minimumValueImage = minimumValueImage;
 	
-	slider.maximumValue = theSlider.maxValue;
-	NSString *maximumValueImageSrc = theSlider.maxImage.src;
+	uiSlider.maximumValue = sliderModel.maxValue;
+	NSString *maximumValueImageSrc = sliderModel.maxImage.src;
 	UIImage *maximumValueImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:maximumValueImageSrc]];
-	slider.maximumValueImage = maximumValueImage;
+	uiSlider.maximumValueImage = maximumValueImage;
 	
-	slider.backgroundColor = [UIColor clearColor];	
-	NSString *minTrackImageSrc = theSlider.minTrackImage.src;
-	NSString *maxTrackImageSrc = theSlider.maxTrackImage.src;
-	NSString *thumbImageSrc = theSlider.thumbImage.src;
+	uiSlider.backgroundColor = [UIColor clearColor];	
+	NSString *minTrackImageSrc = sliderModel.minTrackImage.src;
+	NSString *maxTrackImageSrc = sliderModel.maxTrackImage.src;
+	NSString *thumbImageSrc = sliderModel.thumbImage.src;
 	
 	UIImage *stetchLeftTrack = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:minTrackImageSrc]] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
 	UIImage *stetchRightTrack = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:maxTrackImageSrc]] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
 	UIImage *thumbImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:thumbImageSrc]];
-	[slider setThumbImage: thumbImage forState:UIControlStateNormal];
-	[slider setMinimumTrackImage:stetchLeftTrack forState:UIControlStateNormal];
-	[slider setMaximumTrackImage:stetchRightTrack forState:UIControlStateNormal];
+	[uiSlider setThumbImage: thumbImage forState:UIControlStateNormal];
+	[uiSlider setMinimumTrackImage:stetchLeftTrack forState:UIControlStateNormal];
+	[uiSlider setMaximumTrackImage:stetchRightTrack forState:UIControlStateNormal];
 	
-	//slider.continuous = NO;
-	slider.value = 0;
+	//uiSlider.continuous = NO;
+	uiSlider.value = 0;
 	currentValue = 0;
 	
-	[self addSubview:slider];
+	[self addSubview:uiSlider];
 	
-	if (!theSlider.passive) {
-		[slider addTarget:self action:@selector(afterSlide:) forControlEvents:UIControlEventValueChanged];
-	}
-	// If passive slider then cover a transparent view over the slider.
-	if (theSlider.passive) {
+	if (!sliderModel.passive) {
+		[uiSlider addTarget:self action:@selector(afterSlide:) forControlEvents:UIControlEventValueChanged];
+	} else {
 		UIView *cover = [[UIView alloc] initWithFrame:self.bounds];
 		[cover setBackgroundColor:[UIColor colorWithRed:255.0 green:255.0 blue:255.0 alpha:0.0]];
 		[self addSubview:cover]; 
@@ -92,7 +89,7 @@
 	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
 	int sensorId = ((Slider *)component).sensor.sensorId;
 	float newStatus = [[pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",sensorId]] floatValue];
-	slider.value = newStatus;
+	uiSlider.value = newStatus;
 	currentValue = (int)newStatus;
 }
 
@@ -112,7 +109,7 @@
 #pragma mark dealloc
 
 -(void) dealloc{
-	[slider release];
+	[uiSlider release];
 	[super dealloc];
 }
 
