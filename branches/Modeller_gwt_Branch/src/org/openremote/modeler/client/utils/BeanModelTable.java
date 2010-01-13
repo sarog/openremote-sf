@@ -295,7 +295,7 @@ public class BeanModelTable {
     * @param bean the bean
     */
    public static <T extends BusinessEntity> void updateWithBean(BeanModel oldBeanModel, T bean) {
-      for (String property : oldBeanModel.getPropertyNames()) {
+      for (@SuppressWarnings("unused") String property : oldBeanModel.getPropertyNames()) {
 
       }
    }

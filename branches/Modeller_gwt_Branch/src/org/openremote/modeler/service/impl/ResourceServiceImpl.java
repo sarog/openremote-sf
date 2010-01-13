@@ -40,7 +40,7 @@ import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.client.model.UIButtonEvent;
+import org.openremote.modeler.client.model.Command;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Cell;
@@ -77,7 +77,7 @@ import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
-import org.openremote.modeler.utils.ProtocolEventContainer;
+import org.openremote.modeler.utils.ProtocolCommandContainer;
 import org.openremote.modeler.utils.StringUtils;
 import org.openremote.modeler.utils.UIComponentBox;
 import org.openremote.modeler.utils.XmlParser;
@@ -394,9 +394,9 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the controller xml segment content
     */
-   public List<UIButtonEvent> getEventsOfDeviceMacroItem(UICommand command,
-         ProtocolEventContainer protocolEventContainer) {
-      List<UIButtonEvent> oneUIButtonEventList = new ArrayList<UIButtonEvent>();
+   public List<Command> getCommandOwnerByUICommand(UICommand command,
+         ProtocolCommandContainer protocolEventContainer) {
+      List<Command> oneUIButtonEventList = new ArrayList<Command>();
       if (command instanceof DeviceMacroItem) {
          if (command instanceof DeviceCommandRef) {
             DeviceCommand deviceCommand = deviceCommandService.loadById(((DeviceCommandRef) command).getDeviceCommand()
@@ -406,11 +406,11 @@ public class ResourceServiceImpl implements ResourceService {
             DeviceMacro deviceMacro = ((DeviceMacroRef) command).getTargetDeviceMacro();
             deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
             for (DeviceMacroItem tempDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
-               oneUIButtonEventList.addAll(getEventsOfDeviceMacroItem(tempDeviceMacroItem, protocolEventContainer));
+               oneUIButtonEventList.addAll(getCommandOwnerByUICommand(tempDeviceMacroItem, protocolEventContainer));
             }
          } else if (command instanceof CommandDelay) {
             CommandDelay delay = (CommandDelay) command;
-            UIButtonEvent uiButtonEvent = new UIButtonEvent();
+            Command uiButtonEvent = new Command();
             uiButtonEvent.setId(this.eventId++);
             uiButtonEvent.setDelay(delay.getDelaySecond());
             oneUIButtonEventList.add(uiButtonEvent);
@@ -420,7 +420,7 @@ public class ResourceServiceImpl implements ResourceService {
                .getOid());
          addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand);
       } else {
-         return new ArrayList<UIButtonEvent>();
+         return new ArrayList<Command>();
       }
       return oneUIButtonEventList;
    }
@@ -430,12 +430,12 @@ public class ResourceServiceImpl implements ResourceService {
     * @param oneUIButtonEventList
     * @param deviceCommand
     */
-   private void addDeviceCommandEvent(ProtocolEventContainer protocolEventContainer,
-         List<UIButtonEvent> oneUIButtonEventList, DeviceCommand deviceCommand) {
+   private void addDeviceCommandEvent(ProtocolCommandContainer protocolEventContainer,
+         List<Command> oneUIButtonEventList, DeviceCommand deviceCommand) {
       String protocolType = deviceCommand.getProtocol().getType();
       List<ProtocolAttr> protocolAttrs = deviceCommand.getProtocol().getAttributes();
 
-      UIButtonEvent uiButtonEvent = new UIButtonEvent();
+      Command uiButtonEvent = new Command();
       uiButtonEvent.setId(this.eventId++);
       uiButtonEvent.setProtocolDisplayName(protocolType);
       for (ProtocolAttr protocolAttr : protocolAttrs) {
@@ -675,7 +675,7 @@ public class ResourceServiceImpl implements ResourceService {
        */
       initUIComponentBox(screens);
       Map<String, Object> context = new HashMap<String, Object>();
-      ProtocolEventContainer eventContainer = new ProtocolEventContainer();
+      ProtocolCommandContainer eventContainer = new ProtocolCommandContainer();
       ProtocolContainer protocolContainer = ProtocolContainer.getInstance();
       Collection<Sensor> sensors = getAllSensorWithoutDuplicate(screens);
       Collection<UIComponent> switchs = uiComponentBox.getUIComponentsByType(UISwitch.class);
@@ -688,7 +688,7 @@ public class ResourceServiceImpl implements ResourceService {
       context.put("buttons", buttons);
       context.put("screens", screens);
       context.put("eventContainer", eventContainer);
-      context.put("xmlParser", this);
+      context.put("resouceServiceImpl", this);
       context.put("protocolContainer", protocolContainer);
       context.put("sensors", sensors);
       context.put("gestures", gestures);
@@ -716,27 +716,27 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    private Set<Sensor> getAllSensorWithoutDuplicate(Collection<Screen> screens) {
-      Set<Sensor> SensorWithoutDuplicate = new HashSet<Sensor>();
+      Set<Sensor> sensorWithoutDuplicate = new HashSet<Sensor>();
       Collection<Sensor> allSensors = new ArrayList<Sensor>();
 
       for (Screen screen : screens) {
          for (Absolute absolute : screen.getAbsolutes()) {
             UIComponent component = absolute.getUIComponent();
-            initSensors(allSensors, SensorWithoutDuplicate, component);
+            initSensors(allSensors, sensorWithoutDuplicate, component);
          }
 
          for (UIGrid grid : screen.getGrids()) {
             for (Cell cell : grid.getCells()) {
-               initSensors(allSensors, SensorWithoutDuplicate, cell.getUIComponent());
+               initSensors(allSensors, sensorWithoutDuplicate, cell.getUIComponent());
             }
          }
       }
 
       /*
-       * reset sensor oid, avoid reduplicate id in export xml.
+       * reset sensor oid, avoid duplicated id in export xml.
        */
 
-      for (Sensor sensor : SensorWithoutDuplicate) {
+      for (Sensor sensor : sensorWithoutDuplicate) {
          long sensorOid = sensor.getOid();
          long currentSensorId = eventId++;
          for (Sensor s : allSensors) {
@@ -745,15 +745,15 @@ public class ResourceServiceImpl implements ResourceService {
             }
          }
       }
-      return SensorWithoutDuplicate;
+      return sensorWithoutDuplicate;
    }
 
-   private void initSensors(Collection<Sensor> allSensors, Set<Sensor> sensorsWithDuplicate,UIComponent component) {
+   private void initSensors(Collection<Sensor> allSensors, Set<Sensor> sensorsWithoutDuplicate,UIComponent component) {
       if (component instanceof SensorOwner) {
          SensorOwner sensorOwner = (SensorOwner) component;
          if (sensorOwner.getSensor() != null) {
             allSensors.add(sensorOwner.getSensor());
-            sensorsWithDuplicate.add(sensorOwner.getSensor());
+            sensorsWithoutDuplicate.add(sensorOwner.getSensor());
          }
       }
    }

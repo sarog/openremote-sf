@@ -57,7 +57,6 @@ import com.extjs.gxt.ui.client.widget.form.Radio;
 import com.extjs.gxt.ui.client.widget.form.RadioGroup;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
-import com.google.gwt.core.client.GWT;
 /**
  * A property form for editing the screen's property . 
  * @author User
@@ -313,7 +312,7 @@ public class ScreenPropertyForm extends PropertyForm {
    }
 
    private ImageUploadField createBackgroundField() {
-      ImageUploadField background = new ImageUploadField() {
+      ImageUploadField background = new ImageUploadField(null) {
          @Override
          protected void onChange(ComponentEvent ce) {
             super.onChange(ce);
@@ -326,6 +325,7 @@ public class ScreenPropertyForm extends PropertyForm {
       };
       background.setValue(canvas.getScreen().getBackground().getImageSource().getSrc());
       background.setFieldLabel("Background");
+      background.setActionToForm(ScreenPropertyForm.this);
       return background;
    }
    
@@ -339,24 +339,10 @@ public class ScreenPropertyForm extends PropertyForm {
    }*/
    
    private void addListenersToForm(final RadioGroup whetherFillScreen) {
-      setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName="
-            + ImageUploadField.IMAGEUPLOADFIELD);
-      setEncoding(Encoding.MULTIPART);
-      setMethod(Method.POST);
-
       addListener(Events.Submit, new Listener<FormEvent>() {
          @Override
          public void handleEvent(FormEvent be) {
             String backgroundImgURL = be.getResultHtml();
-            //String uploadFieldValue = "";
-            /*List<Field<?>> list = getFields();
-            for (Field<?> field : list) {
-              if (SCREEN_BACKGROUND.equals(field.getName())
-                     && !(field.getValue() == null || field.getValue().equals(""))) {
-                  uploadFieldValue = field.getValue().toString();
-               }
-            }*/
-            
             boolean success = !"".equals(backgroundImgURL);
             if (success) {
                setBackground(backgroundImgURL);

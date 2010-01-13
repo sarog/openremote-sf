@@ -124,7 +124,7 @@ public class XmlParser {
       }
       return result;
    }
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({ "unchecked", "unused" })
    private static void xpathParseImage(File folder, Document doc, String xpathExpression, String attrName) throws JDOMException, IOException {
       XPath xpath = XPath.newInstance(xpathExpression);
        xpath.addNamespace("or", "http://www.openremote.org");

@@ -82,9 +82,6 @@ public class IRCommandImportForm extends CommonForm {
    /** The device. */
    protected Device device = null;
    
-   /** The Constant LOADING. */
-   private static final String LOADING = "Loading... ";
-   
    /** The select container. */
    private LayoutContainer selectContainer = new LayoutContainer();
    

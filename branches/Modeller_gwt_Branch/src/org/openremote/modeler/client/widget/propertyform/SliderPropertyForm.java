@@ -92,7 +92,7 @@ public class SliderPropertyForm extends PropertyForm {
          command.setText(uiSlider.getSlider().getName());
       }
       AdapterField adapterCommand = new AdapterField(command);
-      adapterCommand.setFieldLabel("Command");
+      adapterCommand.setFieldLabel("SliderCommand");
       
       Button minImageBtn = new Button("Select");
       minImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {

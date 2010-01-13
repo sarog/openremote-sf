@@ -6,9 +6,10 @@ import org.openremote.modeler.SpringContext;
 import org.openremote.modeler.SpringTestContext;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.domain.SwitchCommandOffRef;
+import org.openremote.modeler.domain.SwitchCommandOnRef;
 import org.springframework.security.Authentication;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
@@ -39,8 +40,19 @@ public class SwitchServiceTest {
       deviceCommandService.save(cmd);
       
       swh.setName("testName");
-      DeviceCommandRef cmdRef = new DeviceCommandRef(cmd);
-//      swh.setOnDeviceCommandRef(cmdRef);
+      
+      SwitchCommandOnRef swhOnCmdRef = new SwitchCommandOnRef();
+      swhOnCmdRef.setDeviceCommand(cmd);
+      swhOnCmdRef.setOnSwitch(swh);
+      
+      SwitchCommandOffRef swhOffCmdRef = new SwitchCommandOffRef();
+      swhOffCmdRef.setDeviceCommand(cmd);
+      swhOffCmdRef.setOffSwitch(swh);
+      
+      swh.setSwitchCommandOnRef(swhOnCmdRef);
+      swh.setSwitchCommandOffRef(swhOffCmdRef);
+      
+      
 //      swh.setOffDeviceCommandRef(cmdRef);
       
       Switch swh2 = new Switch();
@@ -52,8 +64,8 @@ public class SwitchServiceTest {
       Switch switchFromTable = service.loadAll().get(0);
       Assert.assertEquals(swh.getOid(),1);
       Assert.assertEquals(swh2.getOid(),2);
-//      Assert.assertEquals(switchFromTable.getOnDeviceCommandRef().getDeviceCommand().getName(), "testLirc");
-//      Assert.assertEquals(switchFromTable.getOffDeviceCommandRef().getDeviceCommand().getName(), "testLirc");
+      Assert.assertEquals(switchFromTable.getSwitchCommandOnRef().getDeviceCommand().getName(), "testLirc");
+      Assert.assertEquals(switchFromTable.getSwitchCommandOffRef().getDeviceCommand().getName(), "testLirc");
    }
    @Test(dependsOnMethods="testSaveSwitch")
    public void testUpdate(){

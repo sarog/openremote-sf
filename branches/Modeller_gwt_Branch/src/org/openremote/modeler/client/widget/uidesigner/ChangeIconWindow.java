@@ -55,8 +55,6 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.Radio;
 import com.extjs.gxt.ui.client.widget.form.RadioGroup;
 import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
-import com.extjs.gxt.ui.client.widget.form.FormPanel.Method;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
@@ -64,7 +62,6 @@ import com.extjs.gxt.ui.client.widget.layout.VBoxLayout;
 import com.extjs.gxt.ui.client.widget.layout.VBoxLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.BoxLayout.BoxLayoutPack;
 import com.extjs.gxt.ui.client.widget.layout.VBoxLayout.VBoxLayoutAlign;
-import com.google.gwt.core.client.GWT;
 
 /**
  * The Class ChangeIconWindow.
@@ -277,7 +274,7 @@ public class ChangeIconWindow extends Dialog {
       urlPanel.add(urlField);
       iconContainer.add(urlPanel);
       
-      ImageUploadField imageUpload = new ImageUploadField() {
+      ImageUploadField imageUpload = new ImageUploadField(null) {
          @Override
          protected void onChange(ComponentEvent ce) {
             super.onChange(ce);
@@ -289,15 +286,13 @@ public class ChangeIconWindow extends Dialog {
             window.mask("Uploading image...");
          }
       };
+      imageUpload.setActionToForm(uploadPanel);
       uploadPanel.setSize(320, 80);
       uploadPanel.setLabelWidth(45);
       uploadPanel.setHeaderVisible(false);
       uploadPanel.setBorders(false);
       uploadPanel.setBodyBorder(false);
       uploadPanel.add(imageUpload);
-      uploadPanel.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName="+ImageUploadField.IMAGEUPLOADFIELD);
-      uploadPanel.setEncoding(Encoding.MULTIPART);
-      uploadPanel.setMethod(Method.POST);
       uploadPanel.addListener(Events.Submit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             uploadImageURL = be.getResultHtml();

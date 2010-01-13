@@ -36,7 +36,7 @@ public class SelectColorWindow extends Dialog {
      private ColorPalette colorPalette = new ColorPalette();
      
      public SelectColorWindow(){
-        setHeading("Select Label");
+        setHeading("Select Color");
         setMinHeight(260);
         setWidth(200);
         setLayout(new FitLayout());

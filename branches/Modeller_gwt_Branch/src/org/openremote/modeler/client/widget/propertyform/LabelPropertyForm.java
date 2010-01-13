@@ -25,7 +25,7 @@ import java.util.Map;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
-import org.openremote.modeler.client.utils.SensorLinker;
+import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.widget.component.ScreenLabel;
 import org.openremote.modeler.client.widget.uidesigner.SelectColorWindow;
 import org.openremote.modeler.client.widget.uidesigner.SelectSensorWindow;
@@ -43,10 +43,8 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
-import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.extjs.gxt.ui.client.widget.form.Validator;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 
 /**
@@ -56,14 +54,14 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 public class LabelPropertyForm extends PropertyForm {
    
    private ScreenLabel screenLabel;
-   private FieldSet optionPanel; 
+   private FieldSet statesPanel; 
    
    
    public LabelPropertyForm(ScreenLabel screenLabel) {
       super();
       this.screenLabel = screenLabel;
       addFields();
-      createSensorOption();
+      createSensorStates();
    }
    private void addFields() {
       final TextField<String> textField = new TextField<String>();
@@ -82,22 +80,13 @@ public class LabelPropertyForm extends PropertyForm {
       final TextField<String> fontSizeField = new TextField<String>();
       fontSizeField.setFieldLabel("Font-Size");
       fontSizeField.setValue(uiLabel.getFontSize()+"");
-      fontSizeField.setValidator(new Validator(){
-
-		@Override
-		public String validate(Field<?> field, String value) {
-			if(value.matches("[a-z,A-Z]+")){
-				return "Only number can allowed here";
-			}
-			return null;
-		}
-    	  
-      });
+      fontSizeField.setRegex("\\d");
+      fontSizeField.getMessages().setRegexText("Only number is allowed");
       fontSizeField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
             String value = fontSizeField.getValue();
-            if (value != null && !value.matches("[a-z,A-Z]+")) {
+            if (value != null) {
                screenLabel.setFontSize(Integer.parseInt(fontSizeField.getValue()));
             }
          }
@@ -114,7 +103,7 @@ public class LabelPropertyForm extends PropertyForm {
                   Sensor sensor = dataModel.getBean();
                   uiLabel.setSensor(sensor);
                   sensorSelectBtn.setText(sensor.getDisplayName());
-                  createSensorOption();
+                  createSensorStates();
                }
             });
          }
@@ -150,19 +139,19 @@ public class LabelPropertyForm extends PropertyForm {
       add(colorBtnAdapter);
       add(adapter);
       
-      optionPanel = new FieldSet();
+      statesPanel = new FieldSet();
       FormLayout layout = new FormLayout();
       layout.setLabelWidth(80);
       layout.setDefaultWidth(80);
-      optionPanel.setLayout(layout);
-      optionPanel.setHeading("Sensor option");
-      add(optionPanel);
+      statesPanel.setLayout(layout);
+      statesPanel.setHeading("Sensor State");
+      add(statesPanel);
       
    }
    
-   private void createSensorOption(){
-      optionPanel.removeAll();
-      SensorLinker sensorLinker = screenLabel.getUiLabel().getSensorLinker();
+   private void createSensorStates(){
+      statesPanel.removeAll();
+      SensorLink sensorLink = screenLabel.getUiLabel().getSensorLinker();
       final Map<String,String> sensorAttrs = new HashMap<String,String>();
       if(screenLabel.getUiLabel().getSensor()!=null && screenLabel.getUiLabel().getSensor().getType()==SensorType.SWITCH){
         final TextField<String> onField = new TextField<String>();
@@ -173,9 +162,9 @@ public class LabelPropertyForm extends PropertyForm {
         
         onField.setAllowBlank(false);
         offField.setAllowBlank(false);
-        if(sensorLinker!=null){
-           onField.setValue(sensorLinker.getStateValueByStateName("on"));
-           offField.setValue(sensorLinker.getStateValueByStateName("off"));
+        if(sensorLink!=null){
+           onField.setValue(sensorLink.getStateValueByStateName("on"));
+           offField.setValue(sensorLink.getStateValueByStateName("off"));
         }
         onField.addListener(Events.Blur, new Listener<BaseEvent>() {
            @Override
@@ -201,8 +190,8 @@ public class LabelPropertyForm extends PropertyForm {
             }
         });
        
-        optionPanel.add(onField);
-        optionPanel.add(offField);
+        statesPanel.add(onField);
+        statesPanel.add(offField);
       } else if(screenLabel.getUiLabel().getSensor()!=null && screenLabel.getUiLabel().getSensor().getType() == SensorType.CUSTOM){
          CustomSensor customSensor = (CustomSensor) screenLabel.getUiLabel().getSensor();
          List<State> states = customSensor.getStates();
@@ -210,8 +199,8 @@ public class LabelPropertyForm extends PropertyForm {
            final TextField<String> stateTextField = new TextField<String>();
            stateTextField.setFieldLabel(state.getDisplayName());
            stateTextField.setAllowBlank(false);
-           if(sensorLinker!=null){
-              stateTextField.setValue(sensorLinker.getStateValueByStateName(state.getName()));
+           if(sensorLink!=null){
+              stateTextField.setValue(sensorLink.getStateValueByStateName(state.getName()));
            }
            stateTextField.addListener(Events.Blur, new Listener<BaseEvent>(){
 
@@ -226,10 +215,10 @@ public class LabelPropertyForm extends PropertyForm {
             }
               
            });
-           optionPanel.add(stateTextField);
+           statesPanel.add(stateTextField);
          }
       }
-      optionPanel.layout();
+      statesPanel.layout();
    }
    
 }
