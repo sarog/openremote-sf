@@ -236,7 +236,10 @@ public class GridLayoutContainer extends ComponentContainer {
             });
             box.show();
          }
-
+         public void onBackspace(ComponentEvent ce) {
+            super.onBackspace(ce);
+            this.onDelete(ce);
+         }
       } .bind(cellContainer);
       cellContainer.setSize(cellWidth + 1, cellHeight + 1);
       cellContainers.add(cellContainer);
@@ -275,7 +278,10 @@ public class GridLayoutContainer extends ComponentContainer {
             });
             box.show();
          }
-         
+         public void onBackspace(ComponentEvent ce) {
+            super.onBackspace(ce);
+            this.onDelete(ce);
+         }
       } .bind(cellContainer);
       cellContainers.add(cellContainer);
       return cellContainer;

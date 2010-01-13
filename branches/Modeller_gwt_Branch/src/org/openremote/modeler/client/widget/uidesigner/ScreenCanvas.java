@@ -323,6 +323,11 @@ public class ScreenCanvas extends ComponentContainer {
             box.show();
          }
 
+         public void onBackspace(ComponentEvent ce) {
+            super.onBackspace(ce);
+            this.onDelete(ce);
+         }
+         
       } .bind(controlContainer);
       return controlContainer;
    }
@@ -389,7 +394,10 @@ public class ScreenCanvas extends ComponentContainer {
             });
             box.show();
          }
-         
+         public void onBackspace(ComponentEvent ce) {
+            super.onBackspace(ce);
+            this.onDelete(ce);
+         }
       } .bind(gridContainer);
       
       return gridContainer;
