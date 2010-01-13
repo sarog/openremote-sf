@@ -20,9 +20,10 @@
  */
 
 #import "ColorUtil.h"
+
 @implementation ColorUtil
 
-+ (UIColor *) colorWithRGBString:(NSString *)rgbString {
++ (UIColor *)colorWithRGBString:(NSString *)rgbString {
 	if(!rgbString) {
 		return [UIColor grayColor];
 	}
