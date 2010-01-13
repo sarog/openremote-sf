@@ -24,6 +24,10 @@
 @protocol SensoryDelegate <NSObject>
 
 /**
+ * Add notification observer for polling.
+ */
+- (void) addPollingNotificationObserver;
+/**
  * This method is responsible for handling the notification of polling status callback.
  */
 - (void)setPollingStatus:(NSNotification *)notification;
