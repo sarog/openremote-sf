@@ -23,9 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openremote.modeler.client.event.SelectEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.listener.SelectListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.DeviceAndMacroTree;
 import org.openremote.modeler.client.utils.IDUtil;
@@ -54,6 +52,7 @@ import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.CheckBoxListView;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.LabelAlign;
@@ -69,6 +68,7 @@ public class GestureWindow extends Dialog {
    private TreePanel<BeanModel> devicesAndMacrosTree;
    private Gesture selectedGesture = new Gesture(GestureType.swipe_left_to_right);
    private Map<String, Gesture> gestureMaps = new HashMap<String, Gesture>();
+   private final String SELECTED_COMMAND = "Selected command: ";
    public GestureWindow(List<Gesture> gestures) {
       this.gestures = gestures;
       initial();
@@ -77,7 +77,7 @@ public class GestureWindow extends Dialog {
    
    private void initial() {
       setHeading("Config gestures");
-      setMinHeight(380);
+      setMinHeight(390);
       setMinWidth(420);
       setModal(true);
       setLayout(new BorderLayout());
@@ -110,12 +110,7 @@ public class GestureWindow extends Dialog {
       gestureTypesContainer.setBodyBorder(false);
       
       gestureTypeListView = new CheckBoxListView<BeanModel>();
-      gestureTypeListView.addListener(Events.Select, new Listener<ListViewEvent<BeanModel>>() {
-         public void handleEvent(ListViewEvent<BeanModel> be) {
-            gestureTypeListView.setChecked(be.getModel(), true);
-            fireEvent(SelectEvent.SELECT, new SelectEvent(gestureMaps.get(((Gesture)be.getModel().getBean()).getType().toString())));
-         }
-      });
+      
       ListStore<BeanModel> gestureStore = new ListStore<BeanModel>();
       GestureType[] gestureTypes = GestureType.values();
       for (int i = 0; i < gestureTypes.length; i++) {
@@ -144,6 +139,8 @@ public class GestureWindow extends Dialog {
       gesturePropertyForm.setLabelAlign(LabelAlign.TOP);
       gesturePropertyForm.setHeaderVisible(false);
       
+      final Text selectedCommand = new Text(SELECTED_COMMAND);
+      
       ContentPanel commandTreeContainer = new ContentPanel();
       commandTreeContainer.setHeaderVisible(false);
       commandTreeContainer.setBorders(false);
@@ -157,32 +154,29 @@ public class GestureWindow extends Dialog {
       }
       devicesAndMacrosTree.collapseAll();
       final AdapterField commandField = new AdapterField(commandTreeContainer);
-      commandField.setFieldLabel("select a command");
+      commandField.setFieldLabel("Select a command");
       commandField.setBorders(true);
       devicesAndMacrosTree.getSelectionModel().addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
          public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
-            BeanModel selectedCommand = se.getSelectedItem();
-            if (selectedCommand.getBean() != null) {
-               commandField.fireEvent(Events.Change, new SelectEvent(selectedCommand));
+            BeanModel commandModel = se.getSelectedItem();
+            if (commandModel.getBean() != null) {
+               UICommand uiCommand = null;
+               String commandName = SELECTED_COMMAND;
+               if (commandModel.getBean() instanceof DeviceCommand) {
+                  uiCommand = new DeviceCommandRef((DeviceCommand) commandModel.getBean());
+                  commandName = SELECTED_COMMAND + uiCommand.getDisplayName();
+               } else if (commandModel.getBean() instanceof DeviceMacro) {
+                  uiCommand = new DeviceMacroRef((DeviceMacro) commandModel.getBean());
+                  commandName = SELECTED_COMMAND + uiCommand.getDisplayName();
+               }
+               selectedCommand.setText(commandName);
+               selectedGesture.setUiCommand(uiCommand);
             }
          }
-      });
-      commandField.addListener(Events.Change, new Listener<SelectEvent>() {
-         public void handleEvent(SelectEvent be) {
-            BeanModel commandModel = be.getData();
-            UICommand uiCommand = null;
-            if (commandModel.getBean() instanceof DeviceCommand) {
-               uiCommand = new DeviceCommandRef((DeviceCommand) commandModel.getBean());
-            } else if (commandModel.getBean() instanceof DeviceMacro) {
-               uiCommand = new DeviceMacroRef((DeviceMacro) commandModel.getBean());
-            }
-            selectedGesture.setUiCommand(uiCommand);
-            be.setCancelled(true);
-         }
-         
       });
       
       final NavigateFieldSet navigateSet = new NavigateFieldSet(selectedGesture.getNavigate(), BeanModelDataBase.groupTable.loadAll());
+      navigateSet.setStyleAttribute("marginTop", "10px");
       navigateSet.setCheckboxToggle(true);
       navigateSet.addListener(Events.BeforeExpand, new Listener<FieldSetEvent>() {
          @Override
@@ -203,30 +197,28 @@ public class GestureWindow extends Dialog {
       navigateSet.collapse();
       
       gesturePropertyForm.add(commandField);
+      gesturePropertyForm.add(selectedCommand);
       gesturePropertyForm.add(navigateSet);
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       add(gesturePropertyForm, centerData);
       
-      addListener(SelectEvent.SELECT, new SelectListener() {
-         public void afterSelect(SelectEvent be) {
-            Gesture gesture = be.getData();
+      gestureTypeListView.addListener(Events.Select, new Listener<ListViewEvent<BeanModel>>() {
+         public void handleEvent(ListViewEvent<BeanModel> be) {
+            gestureTypeListView.setChecked(be.getModel(), true);
+            Gesture gesture = gestureMaps.get(((Gesture)be.getModel().getBean()).getType().toString());
             if (!gesture.equals(selectedGesture)) {
                selectedGesture = gesture;
                devicesAndMacrosTree.collapseAll();
-               // TODO: after select a gesture, select it's command in the tree.
-//               devicesAndMacrosTree.getSelectionModel().deselectAll();
-//               if (selectedGesture.getUiCommand() != null) {
-//                  UICommand uiCommnad = selectedGesture.getUiCommand();
-//                  if (uiCommnad instanceof DeviceCommandRef) {
-//                     BeanModel beanModel = ((DeviceCommandRef) uiCommnad).getDeviceCommand().getBeanModel();
-//                     devicesAndMacrosTree.setExpanded(beanModel, true);
-//                     devicesAndMacrosTree.getSelectionModel().select(beanModel, false);
-//                  } else if (uiCommnad instanceof DeviceMacroRef) {
-//                     BeanModel beanModel = ((DeviceMacroRef) uiCommnad).getTargetDeviceMacro().getBeanModel();
-//                     devicesAndMacrosTree.setExpanded(beanModel, true);
-//                     devicesAndMacrosTree.getSelectionModel().select(beanModel, false);
-//                  }
-//               }
+               if (selectedGesture.getUiCommand() != null) {
+                  UICommand uiCommnad = selectedGesture.getUiCommand();
+                  if (uiCommnad instanceof DeviceCommandRef) {
+                     selectedCommand.setText(SELECTED_COMMAND + ((DeviceCommandRef) uiCommnad).getDisplayName());
+                  } else if (uiCommnad instanceof DeviceMacroRef) {
+                     selectedCommand.setText(SELECTED_COMMAND + ((DeviceMacroRef) uiCommnad).getDisplayName());
+                  }
+               } else {
+                  selectedCommand.setText(SELECTED_COMMAND);
+               }
                if (selectedGesture.getNavigate().isSet()) {
                   navigateSet.expand();
                   navigateSet.fireEvent(Events.BeforeExpand);
@@ -235,7 +227,6 @@ public class GestureWindow extends Dialog {
                }
             }
          }
-         
       });
    }
 }
