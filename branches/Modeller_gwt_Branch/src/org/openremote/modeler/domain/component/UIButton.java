@@ -56,6 +56,7 @@ public class UIButton extends UIControl {
       this.image = btn.image;
       this.navigate = btn.navigate;
       this.pressImage = btn.pressImage;
+      this.uiCommand = btn.uiCommand;
    }
    /**
     * Instantiates a new uI button.
