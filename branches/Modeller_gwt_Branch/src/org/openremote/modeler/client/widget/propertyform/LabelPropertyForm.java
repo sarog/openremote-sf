@@ -80,13 +80,12 @@ public class LabelPropertyForm extends PropertyForm {
       final TextField<String> fontSizeField = new TextField<String>();
       fontSizeField.setFieldLabel("Font-Size");
       fontSizeField.setValue(uiLabel.getFontSize()+"");
-      fontSizeField.setRegex("\\d");
+      fontSizeField.setRegex("\\d+");
       fontSizeField.getMessages().setRegexText("Only number is allowed");
       fontSizeField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
-            String value = fontSizeField.getValue();
-            if (value != null) {
+            if (fontSizeField.isValid()) {
                screenLabel.setFontSize(Integer.parseInt(fontSizeField.getValue()));
             }
          }
