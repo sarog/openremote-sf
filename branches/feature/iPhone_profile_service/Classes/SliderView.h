@@ -26,11 +26,11 @@
 #define MIN_SLIDE_VARIANT 1
 
 @interface SliderView : SensoryControlView {
-	UISlider *slider;
+	UISlider *uiSlider;
 	int currentValue;
 }
 
-@property(nonatomic, retain)UISlider *slider;
+@property(nonatomic, retain)UISlider *uiSlider;
 @property(nonatomic, readwrite)int currentValue;
 
 @end
