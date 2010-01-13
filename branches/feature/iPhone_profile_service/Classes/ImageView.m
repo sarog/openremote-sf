@@ -28,34 +28,37 @@
 #import "PollingStatusParserDelegate.h"
 #import "NotificationConstant.h"
 #import "SensorState.h"
+#import "ColorUtil.h"
 
 @interface ImageView(Private)
 -(Image *) initImageModelWithLabel;
+-(void) clearSubviews;
+-(void) renderIncludedLabel:(Image *)imageModel newStatus:(NSString *)newStatus;
 @end
 
 @implementation ImageView
 
-@synthesize defaultImageView;
+@synthesize defaultImageView, removeSubviewsTag, changeView;
 
 #pragma mark Overrided methods of superclass(SensoryView)
 
 - (void) initView {
 	Image *imageModel = [self initImageModelWithLabel];
-	UIImage *uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:imageModel.src]];
-	defaultImageView = [[UIImageView alloc] initWithFrame:self.bounds];
-	defaultImageView = [UIViewUtil clippedUIImageViewWith:uiImage dependingOnUIView:self uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
-	[defaultImageView setContentMode:UIViewContentModeTopLeft];
-	[self addSubview:defaultImageView];
+	if (!removeSubviewsTag) {
+		UIImage *uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:imageModel.src]];
+		defaultImageView = [[UIImageView alloc] initWithFrame:self.bounds];
+		defaultImageView = [UIViewUtil clippedUIImageViewWith:uiImage dependingOnUIView:self uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
+		[defaultImageView setContentMode:UIViewContentModeTopLeft];
+		[self addSubview:defaultImageView];
+	}
 }
 
 - (void) addPollingNotificationObserver {
 	Image *imageModel = ((Image *)component);
 	int sensorId = imageModel.sensor.sensorId;
-	NSLog(@"image sensor id is : %d", sensorId);
-	if (!(sensorId > 0)) {
+	if (sensorId <= 0) {
 		sensorId = imageModel.label.sensor.sensorId;
 	}
-	NSLog(@"label sensor id is : %d", sensorId);
 	if (sensorId > 0) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,sensorId] object:nil];
 	}
@@ -67,18 +70,13 @@
 	if (!(sensorId > 0)) {
 		sensorId = ((Image *)component).label.sensor.sensorId;
 	}
-	NSLog(@"SetPollingStatus, sensor id is : %d", sensorId);
+	
 	NSString *newStatus = [pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",sensorId]];
-	NSLog(@"new status is : %@", newStatus);
-	
 	Image *imageModel = ((Image *)component);
-	BOOL changeView = NO;
+	changeView = NO;
 	
-	NSLog(@"sensor states count is %d", imageModel.sensor.states.count);
-	// Render sensor's state image
+	// Render image-sensor's state image
 	for (SensorState *sensorState in imageModel.sensor.states) {
-		NSLog(@"sensorState.name is %@", sensorState.name);
-		NSLog(@"newStatus is %@", newStatus);
 		if ([[sensorState.name lowercaseString] isEqualToString:[newStatus lowercaseString]]) {
 			UIImage *uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:sensorState.value]];
 			defaultImageView.image = uiImage;
@@ -88,17 +86,10 @@
 	}
 	
 	// Render included label
-	if (!changeView) {
-		NSLog(@"++++++++++++++++++++SetPollingStatus, sensor id is : %d", sensorId);
-		NSLog(@"++++++++++++++++++++new status is : %@", newStatus);
-		NSLog(@"++++++++++++++++++++included label sensor states count is  : %d", imageModel.label.sensor.states.count);
-		UILabel *uiLabel = [[UILabel alloc] initWithFrame:self.bounds];
-		uiLabel.text = newStatus;
+	if (!changeView && imageModel.label) {
+		[self clearSubviews];
+		[self renderIncludedLabel:imageModel newStatus:newStatus];
 	}
-	
-	// Render the default image
-	if (!changeView) {
-	}	
 }
 
 #pragma mark Private methods implementation
@@ -112,6 +103,31 @@
 		}
 	}
 	return tempImageModel;
+}
+
+-(void) clearSubviews {
+	removeSubviewsTag = YES;
+	for(UIView *tempView in self.subviews) {
+		[tempView removeFromSuperview];
+	}
+}
+
+-(void) renderIncludedLabel:(Image *)imageModel newStatus:(NSString *)newStatus {
+	UILabel *uiLabel = [[UILabel alloc] initWithFrame:self.bounds];
+	[uiLabel setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
+	[uiLabel setTextAlignment:UITextAlignmentCenter];
+	uiLabel.text = imageModel.label.text;
+	uiLabel.font = [UIFont fontWithName:@"Arial" size:imageModel.label.fontSize];
+	uiLabel.textColor = [ColorUtil colorWithRGBString:[imageModel.label.color substringFromIndex:1]];
+	
+	for (SensorState *sensorState in imageModel.label.sensor.states) {
+		if ([[sensorState.name lowercaseString] isEqualToString:[newStatus lowercaseString]]) {
+			uiLabel.text = sensorState.value;
+			changeView = YES;
+			[self addSubview:uiLabel];
+			break;
+		}
+	}
 }
 
 #pragma mark dealloc

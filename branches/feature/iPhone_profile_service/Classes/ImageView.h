@@ -25,8 +25,12 @@
 
 @interface ImageView : SensoryView {
 	UIImageView *defaultImageView;
+	BOOL removeSubviewsTag;
+	BOOL changeView;
 }
 
 @property (nonatomic, retain) UIImageView *defaultImageView;
+@property (nonatomic, readwrite) BOOL removeSubviewsTag;
+@property (nonatomic, readwrite) BOOL changeView;
 
 @end

@@ -34,6 +34,9 @@
 		sensorId = ((Label *)component).sensor.sensorId;
 	} else if ([component isKindOfClass:[Image class]]) {
 		sensorId = ((Image *)component).sensor.sensorId;
+		if (sensorId <= 0) {
+			sensorId = ((Image *)component).label.sensor.sensorId;
+		}
 	}
 	if (sensorId > 0 ) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,sensorId] object:nil];

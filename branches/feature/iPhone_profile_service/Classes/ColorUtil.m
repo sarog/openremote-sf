@@ -19,14 +19,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-#import <Foundation/Foundation.h>
-#import "ComponentView.h"
-#import "SensoryView.h"
+#import "ColorUtil.h"
+@implementation ColorUtil
 
-@interface LabelView : SensoryView {
-	UILabel *uiLabel;
++ (UIColor *) colorWithRGBString:(NSString *)rgbString {
+	if(!rgbString) {
+		return [UIColor grayColor];
+	}
+	unsigned int hexIntColorValue;
+	[[NSScanner scannerWithString:rgbString] scanHexInt:&hexIntColorValue];
+	return UIColorWithRGB(hexIntColorValue);
 }
-
-@property (nonatomic, retain) UILabel *uiLabel;
 
 @end
