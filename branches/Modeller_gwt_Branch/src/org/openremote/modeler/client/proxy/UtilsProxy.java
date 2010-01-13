@@ -141,7 +141,7 @@ public class UtilsProxy {
       AsyncServiceFactory.getUtilsRPCServiceAsync().downLoadImage(url, new AsyncSuccessCallback<Void>() {
          @Override
          public void onSuccess(Void result) {
-            callback.onSuccess(result);
+            return;
          }
       });
    }
