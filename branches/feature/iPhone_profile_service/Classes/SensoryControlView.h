@@ -26,6 +26,4 @@
 @interface SensoryControlView : ControlView<SensoryDelegate> {
 }
 
-- (void) addPollingNotificationObserver;
-
 @end
