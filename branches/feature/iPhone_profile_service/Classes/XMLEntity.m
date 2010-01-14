@@ -64,7 +64,6 @@ NSString *const TEXT = @"text";
 NSString *const BUTTON = @"button";
 NSString *const DEFAULT = @"default";
 NSString *const PRESSED = @"pressed";
-NSString *const ICON = @"icon";
 
 NSString *const SRC = @"src";
 NSString *const STYLE = @"style";

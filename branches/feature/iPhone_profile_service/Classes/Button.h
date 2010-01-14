@@ -21,7 +21,6 @@
 
 #import <Foundation/Foundation.h>
 #import "Control.h"
-#import "Icon.h"
 #import "Navigate.h"
 #import "Image.h"
 
