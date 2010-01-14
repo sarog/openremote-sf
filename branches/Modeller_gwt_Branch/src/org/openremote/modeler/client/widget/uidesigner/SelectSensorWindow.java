@@ -20,49 +20,93 @@
 package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.utils.SensorTree;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.domain.CustomSensor;
+import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorType;
+import org.openremote.modeler.domain.State;
 
+import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
+import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.WindowEvent;
+import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.Html;
+import com.extjs.gxt.ui.client.widget.ListView;
 import com.extjs.gxt.ui.client.widget.MessageBox;
-import com.extjs.gxt.ui.client.widget.layout.FitLayout;
+import com.extjs.gxt.ui.client.widget.layout.RowData;
+import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 
 public class SelectSensorWindow extends Dialog {
 
+   private ListView<BeanModel> sensorList = new ListView<BeanModel>();
    private TreePanel<BeanModel> sensorTree;
    public SelectSensorWindow() {
       setHeading("Select Sensor");
-      setMinHeight(260);
-      setWidth(200);
-      setLayout(new FitLayout());
+      setMinHeight(320);
+      setWidth(240);
+      setLayout(new RowLayout(Orientation.VERTICAL));
       setModal(true);
-      initSensorTree();
+      initSensorList();
+      initSensorInfo();
       setButtons(Dialog.OKCANCEL);
       setHideOnButtonClick(true);
       addButtonListener();
       show();
    }
 
-   private void initSensorTree() {
-      ContentPanel sensorTreeContainer = new ContentPanel();
-      sensorTreeContainer.setBorders(false);
-      sensorTreeContainer.setBodyBorder(false);
-      sensorTreeContainer.setHeaderVisible(false);
-      if (sensorTree == null) {
-         sensorTree = SensorTree.getInstance();
-         sensorTreeContainer.add(sensorTree);
-      }
-      sensorTree.getSelectionModel().deselectAll();
-      sensorTreeContainer.setScrollMode(Scroll.AUTO);
-      add(sensorTreeContainer);
+   private void initSensorList() {
+      ContentPanel sensorListContainer = new ContentPanel();
+      sensorListContainer.setSize(240, 150);
+      sensorListContainer.setBorders(false);
+      sensorListContainer.setBodyBorder(false);
+      sensorListContainer.setHeaderVisible(false);
+      sensorListContainer.setScrollMode(Scroll.AUTO);
+      
+      ListStore<BeanModel> store = new ListStore<BeanModel>();
+      store.add(BeanModelDataBase.sensorTable.loadAll());
+      sensorList.setStore(store);
+      sensorList.setDisplayProperty("displayName");
+      sensorList.setBorders(false);
+      sensorListContainer.add(sensorList);
+      add(sensorListContainer, new RowData(1, -1, new Margins(4)));
+   }
+   
+   private void initSensorInfo() {
+      final Html sensorInfoHtml = new Html("<p><b>Sensor info</b></p>"); 
+      sensorList.getSelectionModel().addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
+         @Override
+         public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
+            BeanModel selectedSensorModel = se.getSelectedItem();
+            if (selectedSensorModel != null) {
+               Sensor sensor = selectedSensorModel.getBean();
+               String sensorInfo = "<p><b>Sensor info</b></p><p>Type: " + sensor.getType() + "</p><p>Command: "
+                     + sensor.getSensorCommandRef().getDisplayName() + "</P>";
+               if (sensor.getType() == SensorType.RANGE) {
+                  sensorInfo = sensorInfo + "<p>Min: " + ((RangeSensor)sensor).getMin() + "</p>";
+                  sensorInfo = sensorInfo + "<p>Max: " + ((RangeSensor)sensor).getMax() + "</p>";
+               } else if (sensor.getType() == SensorType.CUSTOM) {
+                  CustomSensor customSensor = (CustomSensor)sensor;
+                  String states = "";
+                  for (State state : customSensor.getStates()) {
+                     states = states + state.getName() + ". ";
+                  }
+                  sensorInfo = sensorInfo + "<p>States: " + states + "</p>";
+               }
+               sensorInfoHtml.setHtml(sensorInfo);
+            }
+         }
+      });
+      add(sensorInfoHtml, new RowData(1, -1, new Margins(4)));
    }
    
    private void addButtonListener() {

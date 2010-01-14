@@ -64,7 +64,7 @@ public class SwitchTree {
     */
    public static TreePanel<BeanModel> buildSwitchTree() {
       if (switchTreeStore == null) {
-         RpcProxy<List<BeanModel>> loadSensorRPCProxy = new RpcProxy<List<BeanModel>>() {
+         RpcProxy<List<BeanModel>> loadSwitchRPCProxy = new RpcProxy<List<BeanModel>>() {
 
             protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
                SwitchBeanModelProxy.loadAll((BeanModel) o, new AsyncSuccessCallback<List<BeanModel>>() {
@@ -75,7 +75,7 @@ public class SwitchTree {
                });
             }
          };
-         BaseTreeLoader<BeanModel> loadSensorTreeLoader = new BaseTreeLoader<BeanModel>(loadSensorRPCProxy) {
+         BaseTreeLoader<BeanModel> loadSensorTreeLoader = new BaseTreeLoader<BeanModel>(loadSwitchRPCProxy) {
             @Override
             public boolean hasChildren(BeanModel beanModel) {
                if (beanModel.getBean() instanceof Switch) {
