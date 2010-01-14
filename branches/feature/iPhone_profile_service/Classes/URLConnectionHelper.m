@@ -29,16 +29,16 @@
 #import "NotificationConstant.h"
 
 //allows self-signed cert
-@interface NSURLRequest(HTTPSCertificate) 
-+ (BOOL)allowsAnyHTTPSCertificateForHost:(NSString *)host;
-@end
-
-
-@implementation NSURLRequest(HTTPSCertificate)
-+ (BOOL)allowsAnyHTTPSCertificateForHost:(NSString *)host {
-	return YES; // Should probably return YES only for a specific host
-}
-@end
+//@interface NSURLRequest(HTTPSCertificate) 
+//+ (BOOL)allowsAnyHTTPSCertificateForHost:(NSString *)host;
+//@end
+//
+//
+//@implementation NSURLRequest(HTTPSCertificate)
+//+ (BOOL)allowsAnyHTTPSCertificateForHost:(NSString *)host {
+//	return YES; // Should probably return YES only for a specific host
+//}
+//@end
 
 @interface URLConnectionHelper (Private)
 - (void) removeBadCurrentServerURL;
@@ -208,6 +208,21 @@
 		[delegate definitionURLConnectionDidReceiveResponse:response];
 	}
 }
+
+// Added by handy.wang
+- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
+	NSLog(@"protectionSpace.authenticationMethod is %@", protectionSpace.authenticationMethod);
+	return [protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+	NSLog(@"challenge.protectionSpace.authenticationMethod is %@", challenge.protectionSpace.authenticationMethod);
+	if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+		[challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
+	}
+	[challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
+}
+
 
 #pragma mark Delegate method of ServerAutoDiscoveryController
 - (void)onFindServer:(NSString *)serverUrl {
