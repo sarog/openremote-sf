@@ -66,14 +66,8 @@
 	NSLog(@"start at screen ref");
 	if ([elementName isEqualToString:@"include"] && [@"screen" isEqualToString:[attributeDict objectForKey:@"type"]]) {
 		int screenRefId = [[attributeDict objectForKey:@"ref"] intValue];
-		NSMutableArray *allScreens = [[Definition sharedDefinition] screens];	
-		for (Screen *screen in allScreens) {		
-			if (screen.screenId == screenRefId) {
-				[screens addObject:screen];
-				NSLog(@"find screen ref %d", screenRefId);
-				break;
-			}
-		}
+		Screen *existedScreen = [[Definition sharedDefinition] findScreenById:screenRefId];
+		[self.screens addObject:existedScreen];
 	} else if ([elementName isEqualToString:@"tabbar"]) {
 		tabBar = [[TabBar alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 	}

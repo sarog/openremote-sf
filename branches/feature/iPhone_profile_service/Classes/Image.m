@@ -22,6 +22,7 @@
 #import "Image.h"
 #import "Definition.h"
 #import "SensorState.h"
+#import "Definition.h"
 
 @implementation Image
 
@@ -57,8 +58,7 @@
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
 	if ([elementName isEqualToString:INCLUDE] && [LABEL isEqualToString:[attributeDict objectForKey:TYPE]]) {
 		int labelRefId = [[attributeDict objectForKey:REF] intValue];
-		label = [[Label alloc] init];
-		label.componentId = labelRefId;
+		label = [[Definition sharedDefinition] findLabelById:labelRefId];
 	}
 	[super parser:parser didStartElement:elementName namespaceURI:namespaceURI qualifiedName:qualifiedName attributes:attributeDict];
 	
