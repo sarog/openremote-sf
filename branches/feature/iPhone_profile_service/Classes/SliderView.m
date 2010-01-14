@@ -58,6 +58,7 @@
 	UIImage *maximumValueImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:maximumValueImageSrc]];
 	uiSlider.maximumValueImage = maximumValueImage;
 	
+	// TrackImages, thumbImage
 	uiSlider.backgroundColor = [UIColor clearColor];	
 	NSString *minTrackImageSrc = sliderModel.minTrackImage.src;
 	NSString *maxTrackImageSrc = sliderModel.maxTrackImage.src;
@@ -66,9 +67,15 @@
 	UIImage *stetchLeftTrack = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:minTrackImageSrc]] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
 	UIImage *stetchRightTrack = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:maxTrackImageSrc]] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
 	UIImage *thumbImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:thumbImageSrc]];
-	[uiSlider setThumbImage: thumbImage forState:UIControlStateNormal];
-	[uiSlider setMinimumTrackImage:stetchLeftTrack forState:UIControlStateNormal];
-	[uiSlider setMaximumTrackImage:stetchRightTrack forState:UIControlStateNormal];
+	if (stetchRightTrack) {
+		[uiSlider setMaximumTrackImage:stetchRightTrack forState:UIControlStateNormal];
+	}
+	if (stetchLeftTrack) {
+		[uiSlider setMinimumTrackImage:stetchLeftTrack forState:UIControlStateNormal];
+	}
+	if (thumbImage) {
+		[uiSlider setThumbImage: thumbImage forState:UIControlStateNormal];
+	}
 	
 	//uiSlider.continuous = NO;
 	uiSlider.value = 0;
