@@ -19,12 +19,12 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormResetListener;
 import org.openremote.modeler.client.listener.FormSubmitListener;
-import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
@@ -39,7 +39,6 @@ import org.openremote.modeler.domain.SensorCommandRef;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
 
-import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -47,21 +46,24 @@ import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
+import com.extjs.gxt.ui.client.event.GridEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.event.WindowEvent;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
-import com.extjs.gxt.ui.client.widget.ListView;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.grid.CellEditor;
+import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
+import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
+import com.extjs.gxt.ui.client.widget.grid.EditorGrid;
+import com.extjs.gxt.ui.client.widget.grid.EditorGrid.ClicksToEdit;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
@@ -80,8 +82,8 @@ public class SensorWindow extends FormWindow {
    private FieldSet customFieldSet = null;
    private TextField<Integer> minField = new TextField<Integer>();
    private TextField<Integer> maxField = new TextField<Integer>();
-   private ListView<BeanModel> stateItemListView = new ListView<BeanModel>();
-   
+   private EditorGrid<BeanModel> grid = null;
+   private int stateRowIndex = -1;
    public SensorWindow() {
       setHeading("New sensor");
       init();
@@ -183,7 +185,7 @@ public class SensorWindow extends FormWindow {
             } else if (sensor.getType() == SensorType.CUSTOM) {
                List<State> states = ((CustomSensor) sensor).getStates();
                for (State state : states) {
-                  stateItemListView.getStore().add(state.getBeanModel());
+                  grid.getStore().add(state.getBeanModel());
                }
                customFieldSet.disable();
             }
@@ -249,12 +251,35 @@ public class SensorWindow extends FormWindow {
       stateItemsContainer.setWidth(200);
       stateItemsContainer.setHeight(100);
       stateItemsContainer.setLayout(new FitLayout());
-      stateItemsContainer.setScrollMode(Scroll.AUTO);
+      stateItemsContainer.setScrollMode(Scroll.AUTOY);
       
-      ListStore<BeanModel> store = new ListStore<BeanModel>();
-      stateItemListView.setStore(store);
-      stateItemListView.setDisplayProperty("displayName");
-      stateItemsContainer.add(stateItemListView);
+      List<ColumnConfig> configs = new ArrayList<ColumnConfig>();
+      ColumnConfig column = new ColumnConfig();
+      column.setId("name");
+      column.setWidth(220);
+
+      TextField<String> text = new TextField<String>();
+      text.setAllowBlank(false);
+      column.setEditor(new CellEditor(text));  
+      configs.add(column);
+      
+      grid = new EditorGrid<BeanModel>(new ListStore<BeanModel>(), new ColumnModel(configs));
+      grid.setClicksToEdit(ClicksToEdit.TWO);
+      grid.setAutoExpandColumn("name");
+      grid.setHideHeaders(true);
+      stateItemsContainer.add(grid);
+      grid.addListener(Events.RowClick, new Listener<GridEvent<BeanModel>>() {
+         @Override
+         public void handleEvent(GridEvent<BeanModel> be) {
+            stateRowIndex = be.getRowIndex();
+         }
+      });
+      grid.addListener(Events.AfterEdit, new Listener<GridEvent<BeanModel>>() {
+         @Override
+         public void handleEvent(GridEvent<BeanModel> be) {
+            grid.getStore().commitChanges();
+         }
+      });
       
       LayoutContainer buttonsContainer = new LayoutContainer();
       buttonsContainer.setSize(80, 100);
@@ -265,12 +290,9 @@ public class SensorWindow extends FormWindow {
       addItemBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            StateWindow stateWindow = new StateWindow();
-            stateWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               public void afterSubmit(SubmitEvent be) {
-                  stateItemListView.getStore().add(be.<State>getData().getBeanModel());
-               }
-            });
+            grid.stopEditing();
+            grid.getStore().add(new State().getBeanModel());
+            grid.startEditing(grid.getStore().getCount() - 1, 0);
          }
       });
       
@@ -278,9 +300,8 @@ public class SensorWindow extends FormWindow {
       deleteItemBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            BeanModel selectedItem = stateItemListView.getSelectionModel().getSelectedItem();
-            if (selectedItem != null) {
-               stateItemListView.getStore().remove(selectedItem);
+            if (stateRowIndex != -1) {
+               grid.getStore().remove(grid.getStore().getAt(stateRowIndex));
             }
          }
       });
@@ -322,7 +343,7 @@ public class SensorWindow extends FormWindow {
                      ((RangeSensor) sensor).setMax(Integer.valueOf(maxField.getRawValue()));
                   } else if (type == SensorType.CUSTOM) {
                      sensor = new CustomSensor();
-                     List<BeanModel> states = stateItemListView.getStore().getModels();
+                     List<BeanModel> states = grid.getStore().getModels();
                      for (BeanModel stateModel : states) {
                         State state = stateModel.getBean();
                         state.setSensor((CustomSensor) sensor);
@@ -359,35 +380,4 @@ public class SensorWindow extends FormWindow {
       });
    }
    
-   private class StateWindow extends Dialog {
-      public StateWindow() {
-         setHeading("Add state");
-         setMinHeight(120);
-         setMinWidth(240);
-         setModal(true);
-         setBorders(true);
-         FormLayout layout = new FormLayout();
-         layout.setLabelWidth(60);
-         layout.setDefaultWidth(160);
-         layout.setLabelPad(10);
-         setLayout(layout);
-         setButtons(Dialog.OK);
-         setButtonAlign(HorizontalAlignment.CENTER);
-         setHideOnButtonClick(true);
-         final TextField<String> stateField = new TextField<String>();
-         stateField.setFieldLabel("State");
-         stateField.setValue("state1");
-         add(stateField);
-         addListener(Events.BeforeHide, new Listener<WindowEvent>() {
-            public void handleEvent(WindowEvent be) {
-               if (be.getButtonClicked() == getButtonById("ok")) {
-                  State state = new State();
-                  state.setName(stateField.getValue());
-                  fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(state));
-               }
-            }
-         });
-         this.show();
-      }
-   }
 }
