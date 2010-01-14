@@ -736,11 +736,14 @@
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
 	[xmlParser setDelegate:self];
-	[xmlParser parse];
+	for (int i = 1; i <= 2; i++) {
+		[xmlParser parse];
+	}
 	NSMutableArray *groups = [[Definition sharedDefinition] groups];
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
 	int image_index = 0;
 	int state_index = 0;
+	NSLog(@"groups count is %d", groups.count);
 	NSMutableArray *cells = [[NSMutableArray alloc] init];
 	for (Group *group in groups) {
 		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
@@ -754,7 +757,8 @@
 					NSString *expectedAttrs = @"20 20 300 400";
 					STAssertTrue([expectedAttrs isEqualToString:layoutAttrs],@"expected %@, but %@",expectedAttrs,layoutAttrs);
 					[layoutAttrs release];
-					
+
+					NSLog(@"Grid cells count is : %d", grid.cells.count);
 					for (GridCell *cell in grid.cells) {			
 						[cells addObject:cell];
 						if ([cell.component isKindOfClass:[Image class]]) {
@@ -795,6 +799,7 @@
 							STAssertTrue(includedLabel.sensor.sensorId == expectedIncludedLabelSensorId, @"expected %d, but %d", expectedIncludedLabelSensorId, includedLabel.sensor.sensorId);
 							
 							// assert include label's sensor
+							NSLog(@"grid image includedLabel.sensor.states count is %d", includedLabel.sensor.states.count);
 							for (int i = 0; i < [includedLabel.sensor.states count]; i++) {
 								NSString *expectedStateName;
 								NSString *expectedStateValue;
@@ -857,7 +862,9 @@
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
 	[xmlParser setDelegate:self];
-	[xmlParser parse];
+	for (int i = 1; i <= 2; i++) {
+		[xmlParser parse];
+	}
 	NSMutableArray *groups = [[Definition sharedDefinition] groups];
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
 	int image_index = 0;
@@ -913,6 +920,7 @@
 						STAssertTrue(includedLabel.sensor.sensorId == expectedIncludedLabelSensorId, @"expected %d, but %d", expectedIncludedLabelSensorId, includedLabel.sensor.sensorId);
 						
 						// assert include label's sensor
+						NSLog(@"absolute image includedLabel.sensor.states count is %d", includedLabel.sensor.states.count);
 						for (int i = 0; i < [includedLabel.sensor.states count]; i++) {
 							NSString *expectedStateName;
 							NSString *expectedStateValue;
@@ -1530,12 +1538,12 @@
 	if ([elementName isEqualToString:@"screen"]) {
 		NSLog(@"start at screen");
 		Screen *screen = [[Screen alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		[[[Definition sharedDefinition] screens] addObject:screen];
+		[[Definition sharedDefinition] addScreen:screen];
 		[screen release];
 	} else if ([elementName isEqualToString:@"group"]) {
 		NSLog(@"start at group");
 		Group *group = [[Group alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		[[[Definition sharedDefinition] groups] addObject:group];
+		[[Definition sharedDefinition] addGroup:group];
 		[group release];
 	} else if ([elementName isEqualToString:@"tab"]) {
 		NSLog(@"start at tab");

@@ -87,9 +87,59 @@ static Definition *myInstance = nil;
 	return nil;
 }
 
+- (Screen *)findScreenById:(int)screenId {
+	for (Screen *tempScreen in self.screens) {
+		if (tempScreen.screenId == screenId) {
+			NSLog(@"find screen screenId %d", screenId);
+			return [tempScreen retain];
+		}
+	}
+	return nil;
+}
+
+- (void)addGroup:(Group *)group {
+	for (int i = 0; i < self.groups.count; i++) {
+		Group *tempGroup = [self.groups objectAtIndex:i];
+		if (tempGroup.groupId == group.groupId) {
+			[self.groups replaceObjectAtIndex:i withObject:group];
+			return;
+		}
+	}
+	[self.groups addObject:[group retain]];
+	[group release];
+}
+
+- (void)addScreen:(Screen *)screen {
+	for (int i = 0; i < self.screens.count; i++) {
+		Screen *tempScreen = [self.screens objectAtIndex:i];
+		if (tempScreen.screenId == screen.screenId) {
+			[self.screens replaceObjectAtIndex:i withObject:screen];
+			return;
+		}
+	}
+	[self.screens addObject:[screen retain]];
+	[screen release];
+}
+
 - (void) addLabel:(Label *)label {
+	for (int i = 0; i < self.labels.count; i++) {
+		Label *tempLabel = [self.labels objectAtIndex:i];
+		if (tempLabel.componentId == label.componentId) {
+			[self.labels replaceObjectAtIndex:i withObject:label];
+			return;
+		}
+	}
 	[self.labels addObject:label];
 	[label release];
+}
+
+- (Label *)findLabelById:(int)labelId {
+	for (Label *tempLabel in self.labels) {
+		if (tempLabel.componentId == labelId) {
+			return [tempLabel retain];
+		}
+	}
+	return nil;
 }
 
 - (BOOL)isDataReady {
@@ -179,25 +229,27 @@ static Definition *myInstance = nil;
 	
 	[self clearPanelXMLData];
 	
-	NSData *data = [[NSData alloc] initWithContentsOfFile:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlRESTUrl]]]];
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
-	NSString *dataStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-	NSLog(@"%@",dataStr);
-	[dataStr release];
-	
-	//Set delegate to self in order to parse next elements by itself
-	[xmlParser setDelegate:self];
-	
-	
-	//Calls parse method to start parse xml
-	[xmlParser parse];
-	
+	for(int i = 1; i <= TWICE; i++) {
+		NSData *data = [[NSData alloc] initWithContentsOfFile:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlRESTUrl]]]];
+		NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
+		NSString *dataStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+		NSLog(@"%@",dataStr);
+		[dataStr release];
+		
+		//Set delegate to self in order to parse next elements by itself
+		[xmlParser setDelegate:self];
+		
+		
+		//Calls parse method to start parse xml
+		[xmlParser parse];
+		
 
-	NSLog(@"groups count = %d",[groups count]);
-	NSLog(@"screens count = %d",[screens count]);
-	NSLog(@"xml parse done");
-	[data release];
-	[xmlParser release];
+		NSLog(@"groups count = %d",[groups count]);
+		NSLog(@"screens count = %d",[screens count]);
+		NSLog(@"xml parse done");
+		[data release];
+		[xmlParser release];
+	}
 }
 //Parses xml
 - (void)parseXMLData {	
@@ -218,13 +270,15 @@ static Definition *myInstance = nil;
 	if ([elementName isEqualToString:@"screen"]) {
 		NSLog(@"start at screen");
 		Screen *screen = [[Screen alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		[screens addObject:[screen retain]];
-		[screen release];
+//		[screens addObject:[screen retain]];
+//		[screen release];
+		[self addScreen:screen];
 	} else if ([elementName isEqualToString:@"group"]) {
 		NSLog(@"start at group");
 		Group *group = [[Group alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		[groups addObject:group];
-		[group release];
+//		[groups addObject:group];
+//		[group release];
+		[self addGroup:group];
 	} else if ([elementName isEqualToString:@"tabbar"]) {
 		NSLog(@"start at tabbar");
 		tabBar = [[TabBar alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];

@@ -25,6 +25,7 @@
 #import "Group.h"
 #import "Tabbar.h"
 
+#define TWICE 2
 
 @interface Definition : NSObject {		
 	BOOL isUpdating;
@@ -48,7 +49,11 @@
 - (void)clearPanelXMLData;
 - (void)addImageName:(NSString *)imageName;
 - (Group *)findGroupById:(int)groupId;
+- (Screen *)findScreenById:(int)screenId;
+- (void)addGroup:(Group *)group;
+- (void)addScreen:(Screen *)screen;
 - (void) addLabel:(Label *)label;
+- (Label *)findLabelById:(int)labelId;
 
 @property (nonatomic,readonly) BOOL isUpdating;
 @property (nonatomic,readonly) NSDate *lastUpdateTime;

@@ -43,7 +43,7 @@
 #pragma mark Overrided methods of superclass(SensoryView)
 
 - (void) initView {
-	Image *imageModel = [self initImageModelWithLabel];
+	Image *imageModel = (Image *)component;//[self initImageModelWithLabel];
 	if (!removeSubviewsTag) {
 		UIImage *uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:imageModel.src]];
 		defaultImageView = [[UIImageView alloc] initWithFrame:self.bounds];
