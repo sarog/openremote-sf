@@ -55,7 +55,6 @@ extern NSString *const TEXT;
 extern NSString *const BUTTON;
 extern NSString *const DEFAULT;
 extern NSString *const PRESSED;
-extern NSString *const ICON;
 
 extern NSString *const SRC;
 extern NSString *const STYLE;
