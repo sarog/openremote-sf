@@ -316,6 +316,7 @@
 			</xsd:sequence>
 			<xsd:attribute name="type" type="xsd:string" use="required"/>
 			<xsd:attribute name="id" type="idType" use="required"/>
+			<xsd:attribute name="hasControlCommand" type="xsd:boolean" use="optional"/>
 		</xsd:complexType>
 	</xsd:element>
 	
