@@ -41,6 +41,7 @@ public class SwitchPropertyForm extends PropertyForm {
 
    public SwitchPropertyForm(ScreenSwitch screenSwitch, UISwitch uiSwitch) {
       super();
+      setLabelWidth(90);
       addFields(screenSwitch, uiSwitch);
    }
    
