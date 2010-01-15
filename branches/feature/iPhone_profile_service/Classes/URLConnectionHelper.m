@@ -28,18 +28,6 @@
 #import "UpdateController.h"
 #import "NotificationConstant.h"
 
-//allows self-signed cert
-//@interface NSURLRequest(HTTPSCertificate) 
-//+ (BOOL)allowsAnyHTTPSCertificateForHost:(NSString *)host;
-//@end
-//
-//
-//@implementation NSURLRequest(HTTPSCertificate)
-//+ (BOOL)allowsAnyHTTPSCertificateForHost:(NSString *)host {
-//	return YES; // Should probably return YES only for a specific host
-//}
-//@end
-
 @interface URLConnectionHelper (Private)
 - (void) removeBadCurrentServerURL;
 - (void) swithToGroupMemberServer;
