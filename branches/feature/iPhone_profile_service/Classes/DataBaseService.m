@@ -88,9 +88,16 @@ static DataBaseService *myInstance = nil;
 	sqlite3_stmt *compiledStatement;
 	if(sqlite3_prepare_v2(openDatabase, sqlStatement, -1, &compiledStatement, NULL) ==SQLITE_OK) {
 		while (sqlite3_step(compiledStatement) == SQLITE_ROW) {
-			NSString *usernameResult = [NSString stringWithUTF8String:(char *)sqlite3_column_text(compiledStatement, 0)];
-			NSString *passwordResult = [NSString stringWithUTF8String:(char *)sqlite3_column_text(compiledStatement, 1)];
-			User *user = [[User alloc] initWithUsernameAndPassword:usernameResult password:passwordResult];
+			User *user;
+			const unsigned char *usernameC = sqlite3_column_text(compiledStatement, 0);
+			const unsigned char *passwordC = sqlite3_column_text(compiledStatement, 1);
+			if (usernameC == NULL || passwordC == NULL) {
+				user = [[User alloc] initWithUsernameAndPassword:nil password:nil];
+			} else {
+				NSString *usernameResult = [NSString stringWithUTF8String:(char *)usernameC];
+				NSString *passwordResult = [NSString stringWithUTF8String:(char *)passwordC];
+				user = [[User alloc] initWithUsernameAndPassword:usernameResult password:passwordResult];
+			}
 			[users addObject:user];				
 			[user release];
 		}
