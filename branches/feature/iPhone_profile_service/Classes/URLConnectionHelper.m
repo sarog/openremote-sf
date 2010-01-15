@@ -220,7 +220,6 @@
 	if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
 		[challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
 	}
-	[challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
 }
 
 
