@@ -44,12 +44,10 @@ import com.extjs.gxt.ui.client.widget.ListView;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
-import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 
 public class SelectSensorWindow extends Dialog {
 
    private ListView<BeanModel> sensorList = new ListView<BeanModel>();
-   private TreePanel<BeanModel> sensorTree;
    public SelectSensorWindow() {
       setHeading("Select Sensor");
       setMinHeight(320);
@@ -113,9 +111,7 @@ public class SelectSensorWindow extends Dialog {
       addListener(Events.BeforeHide, new Listener<WindowEvent>() {
          public void handleEvent(WindowEvent be) {
             if (be.getButtonClicked() == getButtonById("ok")) {
-               BeanModel beanModel = sensorTree.getSelectionModel().getSelectedItem();
-               if(beanModel.getBean() instanceof CustomSensor){
-               }
+               BeanModel beanModel = sensorList.getSelectionModel().getSelectedItem();
                if (beanModel == null) {
                   MessageBox.alert("Error", "Please select a sensor.", null);
                   be.cancelBubble();

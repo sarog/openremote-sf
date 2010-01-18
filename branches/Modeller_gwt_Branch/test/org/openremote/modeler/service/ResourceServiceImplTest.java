@@ -447,7 +447,6 @@ public void testScreenHasGesture() {
       //cmd.setOid(IDUtil.nextID());
       deviceCommandService.save(cmd);
       DeviceCommandRef cmdRef = new DeviceCommandRef(cmd);
-      resourceServiceImpl.setEventId(1);
       List<Screen> screens = new ArrayList<Screen>();
       Screen screen = new Screen();
       screen.setOid(IDUtil.nextID());
@@ -516,7 +515,6 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
    cmd.setName("testLirc");
    deviceCommandService.save(cmd);
    DeviceCommandRef cmdRef = new DeviceCommandRef(cmd);
-   resourceServiceImpl.setEventId(1);
    List<Screen> screens = new ArrayList<Screen>();
    Screen screen = new Screen();
    screen.setOid(IDUtil.nextID());
@@ -541,7 +539,6 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
       cmd.setName("testLirc");
       deviceCommandService.save(cmd);
       DeviceCommandRef cmdRef = new DeviceCommandRef(cmd);
-      resourceServiceImpl.setEventId(1);
       List<Screen> screens = new ArrayList<Screen>();
       Screen screen = new Screen();
       screen.setOid(IDUtil.nextID());
@@ -650,7 +647,6 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
       cmd.setName("testLirc");
 //      cmd.setOid(4);
       deviceCommandService.save(cmd);
-      resourceServiceImpl.setEventId(1);
       
       DeviceMacroItem item2 = new DeviceCommandRef(cmd);
 //      item2.setOid(8);
@@ -750,7 +746,7 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
    private void outputControllerXML(Collection<Screen> screens) {
       try {
          System.out.println(XmlParser.validateAndOutputXML(new File(getClass().getResource(
-               configuration.getControllerXsdPath()).getPath()), resourceServiceImpl.getControllerXML(screens)));
+               configuration.getControllerXsdPath()).getPath()), resourceServiceImpl.getControllerXML(screens,IDUtil.nextID())));
       } catch (Exception e) {
          e.printStackTrace();
          fail();

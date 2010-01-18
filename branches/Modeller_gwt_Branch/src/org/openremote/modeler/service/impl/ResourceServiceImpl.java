@@ -104,19 +104,18 @@ public class ResourceServiceImpl implements ResourceService {
    private DeviceCommandService deviceCommandService;
 
    /** The event id. */
-   private long eventId;
+//   private long eventId;
 
    /** The device macro service. */
    private DeviceMacroService deviceMacroService;
 
    private VelocityEngine velocity;
 
-   private UIComponentBox uiComponentBox = new UIComponentBox();
 
    /**
     * {@inheritDoc}
     */
-   public String downloadZipResource(long maxId, String sessionId, List<Panel> panels) {
+   public String downloadZipResource(long maxOid, String sessionId, List<Panel> panels) {
       Set<Group> groups = new LinkedHashSet<Group>();
       Set<Screen> screens = new LinkedHashSet<Screen>();
       /*
@@ -124,7 +123,7 @@ public class ResourceServiceImpl implements ResourceService {
        */
       initGroupsAndScreens(panels, groups, screens);
 
-      String controllerXmlContent = getControllerXmlContent(maxId, screens);
+      String controllerXmlContent = getControllerXML(screens,maxOid);
       String panelXmlContent = getPanelXML(panels);
       String sectionIds = getSectionIds(screens);
 
@@ -368,20 +367,6 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @see org.openremote.modeler.service.ResourceService#getControllerXmlContent(java.util.List)
     */
-   /**
-    * Gets the controller xml content.
-    * 
-    * @param maxId
-    *           the max id
-    * @param screens
-    *           the activity list
-    * 
-    * @return the controller xml content
-    */
-   private String getControllerXmlContent(long maxId, Collection<Screen> screens) {
-      this.eventId = maxId + 1;
-      return getControllerXML(screens);
-   }
 
    /**
     * Gets the controller xml segment content.
@@ -394,30 +379,30 @@ public class ResourceServiceImpl implements ResourceService {
     * @return the controller xml segment content
     */
    public List<Command> getCommandOwnerByUICommand(UICommand command,
-         ProtocolCommandContainer protocolEventContainer) {
+         ProtocolCommandContainer protocolEventContainer,MaxId  maxId) {
       List<Command> oneUIButtonEventList = new ArrayList<Command>();
       if (command instanceof DeviceMacroItem) {
          if (command instanceof DeviceCommandRef) {
             DeviceCommand deviceCommand = deviceCommandService.loadById(((DeviceCommandRef) command).getDeviceCommand()
                   .getOid());
-            addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand);
+            addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand,maxId);
          } else if (command instanceof DeviceMacroRef) {
             DeviceMacro deviceMacro = ((DeviceMacroRef) command).getTargetDeviceMacro();
             deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
             for (DeviceMacroItem tempDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
-               oneUIButtonEventList.addAll(getCommandOwnerByUICommand(tempDeviceMacroItem, protocolEventContainer));
+               oneUIButtonEventList.addAll(getCommandOwnerByUICommand(tempDeviceMacroItem, protocolEventContainer,maxId));
             }
          } else if (command instanceof CommandDelay) {
             CommandDelay delay = (CommandDelay) command;
             Command uiButtonEvent = new Command();
-            uiButtonEvent.setId(this.eventId++);
+            uiButtonEvent.setId(maxId.maxId());
             uiButtonEvent.setDelay(delay.getDelaySecond());
             oneUIButtonEventList.add(uiButtonEvent);
          }
       } else if (command instanceof CommandRefItem) {
          DeviceCommand deviceCommand = deviceCommandService.loadById(((CommandRefItem) command).getDeviceCommand()
                .getOid());
-         addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand);
+         addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand,maxId);
       } else {
          return new ArrayList<Command>();
       }
@@ -430,12 +415,12 @@ public class ResourceServiceImpl implements ResourceService {
     * @param deviceCommand
     */
    private void addDeviceCommandEvent(ProtocolCommandContainer protocolEventContainer,
-         List<Command> oneUIButtonEventList, DeviceCommand deviceCommand) {
+         List<Command> oneUIButtonEventList, DeviceCommand deviceCommand,MaxId maxId) {
       String protocolType = deviceCommand.getProtocol().getType();
       List<ProtocolAttr> protocolAttrs = deviceCommand.getProtocol().getAttributes();
 
       Command uiButtonEvent = new Command();
-      uiButtonEvent.setId(this.eventId++);
+      uiButtonEvent.setId(maxId.maxId());
       uiButtonEvent.setProtocolDisplayName(protocolType);
       for (ProtocolAttr protocolAttr : protocolAttrs) {
          uiButtonEvent.getProtocolAttrs().put(protocolAttr.getName(), protocolAttr.getValue());
@@ -580,13 +565,7 @@ public class ResourceServiceImpl implements ResourceService {
       return PathConfig.getInstance(configuration).getRelativeResourcePath(fileName, sessionId);
    }
 
-   public long getEventId() {
-      return eventId;
-   }
 
-   public void setEventId(long eventId) {
-      this.eventId = eventId;
-   }
 
    @Override
    public String getGroupsJson(Collection<Group> groups) {
@@ -668,21 +647,30 @@ public class ResourceServiceImpl implements ResourceService {
       this.velocity = velocity;
    }
 
-   public String getControllerXML(Collection<Screen> screens) {
+   public String getControllerXML(Collection<Screen> screens,long maxOid) {
+      
+      /*
+       * store the max oid 
+       */
+      MaxId maxId = new MaxId(maxOid+1);
+      
       /*
        * initialize UI component box.
        */
-      initUIComponentBox(screens);
+      UIComponentBox uiComponentBox = new UIComponentBox();
+      initUIComponentBox(screens,uiComponentBox);
       Map<String, Object> context = new HashMap<String, Object>();
       ProtocolCommandContainer eventContainer = new ProtocolCommandContainer();
       ProtocolContainer protocolContainer = ProtocolContainer.getInstance();
-      Collection<Sensor> sensors = getAllSensorWithoutDuplicate(screens);
+      Collection<Sensor> sensors = getAllSensorWithoutDuplicate(screens,maxId);
       Collection<UIComponent> switchs = uiComponentBox.getUIComponentsByType(UISwitch.class);
       Collection<UIComponent> buttons = uiComponentBox.getUIComponentsByType(UIButton.class);
       Collection<UIComponent> gestures = uiComponentBox.getUIComponentsByType(Gesture.class);
       Collection<UIComponent> uiSliders = uiComponentBox.getUIComponentsByType(UISlider.class);
       Collection<UIComponent> uiImages = uiComponentBox.getUIComponentsByType(UIImage.class);
       Collection<UIComponent> uiLabels = uiComponentBox.getUIComponentsByType(UILabel.class);
+      
+      
       context.put("switchs", switchs);
       context.put("buttons", buttons);
       context.put("screens", screens);
@@ -694,6 +682,8 @@ public class ResourceServiceImpl implements ResourceService {
       context.put("uiSliders", uiSliders);
       context.put("labels", uiLabels);
       context.put("images", uiImages);
+      context.put("maxId", maxId);
+
 
       return VelocityEngineUtils.mergeTemplateIntoString(velocity, CONTROLLER_XML_TEMPLATE, context);
    }
@@ -714,7 +704,7 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
 
-   private Set<Sensor> getAllSensorWithoutDuplicate(Collection<Screen> screens) {
+   private Set<Sensor> getAllSensorWithoutDuplicate(Collection<Screen> screens,MaxId maxId) {
       Set<Sensor> sensorWithoutDuplicate = new HashSet<Sensor>();
       Collection<Sensor> allSensors = new ArrayList<Sensor>();
 
@@ -737,7 +727,7 @@ public class ResourceServiceImpl implements ResourceService {
 
       for (Sensor sensor : sensorWithoutDuplicate) {
          long sensorOid = sensor.getOid();
-         long currentSensorId = eventId++;
+         long currentSensorId = maxId.maxId();
          for (Sensor s : allSensors) {
             if (s.getOid() == sensorOid) {
                s.setOid(currentSensorId);
@@ -757,7 +747,7 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
 
-   private void initUIComponentBox(Collection<Screen> screens) {
+   private void initUIComponentBox(Collection<Screen> screens,UIComponentBox uiComponentBox) {
       uiComponentBox.clear();
       for (Screen screen : screens) {
          for (Absolute absolute : screen.getAbsolutes()) {
@@ -774,6 +764,17 @@ public class ResourceServiceImpl implements ResourceService {
          for (Gesture gesture : screen.getGestures()) {
             uiComponentBox.add(gesture);
          }
+      }
+   }
+   
+   static class MaxId{
+      Long maxId = 0L;
+      public MaxId(Long maxId){
+         this.maxId = maxId;
+      }
+      
+      public Long maxId(){
+         return maxId++;
       }
    }
 }
