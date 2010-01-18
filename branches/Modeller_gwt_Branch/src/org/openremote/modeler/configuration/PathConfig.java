@@ -79,7 +79,11 @@ public class PathConfig {
       }
       if ("".equals(ROOTPATH)) {
          File webRootFolder = new File(WEBROOTPATH);
-         ROOTPATH = webRootFolder.getParent();
+         ROOTPATH = webRootFolder.getParent() + File.separator;
+         File tempFolder = new File(ROOTPATH + RESOURCEFOLDER);
+         if (!tempFolder.exists()) {
+            tempFolder.mkdirs();
+         }
       }
       return  ROOTPATH + RESOURCEFOLDER + File.separator;
    }
