@@ -169,8 +169,7 @@ public class ResourceServiceImpl implements ResourceService {
          // FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
 
          if (sectionIds != "") {
-            FileUtils
-                  .copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
+            FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
          }
          if (lircdFile.exists() && lircdFile.length() == 0) {
             lircdFile.delete();
@@ -759,6 +758,7 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    private void initUIComponentBox(Collection<Screen> screens) {
+      uiComponentBox.clear();
       for (Screen screen : screens) {
          for (Absolute absolute : screen.getAbsolutes()) {
             UIComponent component = absolute.getUIComponent();

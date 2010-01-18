@@ -78,4 +78,8 @@ public class UIComponentBox {
       }
       return uiComponents;
    }
+   
+   public synchronized void clear(){
+      uiComponentsMap.clear();
+   }
 }
