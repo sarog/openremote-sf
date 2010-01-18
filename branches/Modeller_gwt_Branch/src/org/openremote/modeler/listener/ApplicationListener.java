@@ -22,10 +22,8 @@ package org.openremote.modeler.listener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.configuration.PathConfig;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.web.util.WebUtils;
 
 
 /**
