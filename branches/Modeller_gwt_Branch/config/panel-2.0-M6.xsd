@@ -158,8 +158,8 @@
 			<xsd:enumeration value="back" />
 			<xsd:enumeration value="login" />
 			<xsd:enumeration value="logout" />
-			<xsd:enumeration value="nextscreen" />
-			<xsd:enumeration value="previousscreen" />
+			<xsd:enumeration value="nextScreen" />
+			<xsd:enumeration value="previousScreen" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:simpleType name="idType">

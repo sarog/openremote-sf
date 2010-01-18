@@ -127,7 +127,7 @@ public class UISlider extends UIControl implements SensorOwner {
             }
             xmlContent.append("/>\n");
             
-            xmlContent.append("<max value=\"" + rangeSensor.getMax() + "\"");
+            xmlContent.append("<max value=\"" + rangeSensor.getMax() + "\" ");
             if (maxImage != null) {
                xmlContent.append("image=\"" + maxImage.getImageFileName() + "\" ");
             }
