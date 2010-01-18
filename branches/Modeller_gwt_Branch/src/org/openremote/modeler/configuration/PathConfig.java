@@ -41,12 +41,14 @@ public class PathConfig {
    private static final PathConfig myInstance = new PathConfig();
    
    /** The Constant RESOURCEFOLDER. */
-   private static final String RESOURCEFOLDER = "tmp";
+   private static final String RESOURCEFOLDER = "modeler_tmp";
    
-   private static final String WEBROOT = "modeler";
    /** The configuration. */
    private Configuration configuration;
    
+   public static String WEBROOTPATH = "";
+   
+   private static String ROOTPATH = "";
    /**
     * Instantiates a new path config.
     */
@@ -71,12 +73,15 @@ public class PathConfig {
     * @return folder absolute path
     */
    public String tempFolder() {
-      String root = configuration.getOsWebappsRoot() + File.separator;
-      if (root == null) {
+      if ("".equals(WEBROOTPATH)) {
          LOGGER.fatal("Can't find modeler.root in system property, please check web.xml.");
          throw new IllegalStateException("Can't find modeler.root in system property, please check web.xml.");
       }
-      return  root + RESOURCEFOLDER + File.separator;
+      if ("".equals(ROOTPATH)) {
+         File webRootFolder = new File(WEBROOTPATH);
+         ROOTPATH = webRootFolder.getParent();
+      }
+      return  ROOTPATH + RESOURCEFOLDER + File.separator;
    }
 
   
@@ -204,11 +209,6 @@ public class PathConfig {
    }
    
    public String getWebRootFolder() {
-      String root = configuration.getOsWebappsRoot() + File.separator;
-      if (root == null) {
-         LOGGER.fatal("Can't find modeler.root in system property, please check web.xml.");
-         throw new IllegalStateException("Can't find modeler.root in system property, please check web.xml.");
-      }
-      return  root + WEBROOT + File.separator;
+      return  WEBROOTPATH;
    }
 }

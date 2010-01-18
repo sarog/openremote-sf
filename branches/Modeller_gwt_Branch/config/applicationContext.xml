@@ -26,7 +26,6 @@
 		<property name="beehiveRestIconUrl" value="${beehive.RESR.Icon.Url}" />
 		<property name="panelXsdPath" value="${panel.xsd.path}" />
 		<property name="controllerXsdPath" value="${controller.xsd.path}" />
-		<property name="osWebappsRoot" value="${os.webapps.root}" />
 		<property name="webappServerRoot" value="${webapp.server.root}" />
 	</bean>
 	<bean id="sessionFactory"

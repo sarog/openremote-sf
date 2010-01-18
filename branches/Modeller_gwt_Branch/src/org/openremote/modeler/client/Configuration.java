@@ -40,9 +40,6 @@ public class Configuration {
    /** The controller xsd path. */
    private String controllerXsdPath;
 
-   /** The file dir root. */
-   private String osWebappsRoot;
-
    /** The webapp server root. */
    private String webappServerRoot;
 
@@ -89,24 +86,6 @@ public class Configuration {
     */
    public void setControllerXsdPath(String controllerXsdPath) {
       this.controllerXsdPath = controllerXsdPath;
-   }
-
-   /**
-    * Gets the os webapps root.
-    * 
-    * @return the os webapps root
-    */
-   public String getOsWebappsRoot() {
-      return osWebappsRoot;
-   }
-
-   /**
-    * Sets the os webapps root.
-    * 
-    * @param osWebappsRoot the new os webapps root
-    */
-   public void setOsWebappsRoot(String osWebappsRoot) {
-      this.osWebappsRoot = osWebappsRoot;
    }
 
    /**

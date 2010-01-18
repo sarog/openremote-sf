@@ -10,6 +10,11 @@
 		<welcome-file>Modeler.jsp</welcome-file>
 	</welcome-file-list>
     
+   <context-param>
+      <param-name>log4jExposeWebAppRoot</param-name>
+      <param-value>false</param-value>
+   </context-param>
+   
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
@@ -51,6 +56,11 @@
 			org.springframework.web.util.Log4jConfigListener
 	        </listener-class>
 	</listener>
+	<listener>
+        <listener-class>
+            org.openremote.modeler.listener.ApplicationListener
+        </listener-class>
+    </listener>
 	<filter>
 		<filter-name>OpenSessionInViewFilter</filter-name>
 		<filter-class>
