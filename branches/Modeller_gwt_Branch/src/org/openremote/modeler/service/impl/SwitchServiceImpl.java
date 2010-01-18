@@ -59,9 +59,9 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
    public Switch update(Switch switchToggle) {
       Switch oldSwitch = genericDAO.loadById(Switch.class, switchToggle.getOid());
       oldSwitch.setName(switchToggle.getName());
-//      oldSwitch.setSwitchCommandOffRef(switchToggle.getSwitchCommandOffRef());
-//      oldSwitch.setSwitchCommandOnRef(switchToggle.getSwitchCommandOnRef());
-//      oldSwitch.setSwitchSensorRef(switchToggle.getSwitchSensorRef());
+      oldSwitch.setSwitchCommandOffRef(switchToggle.getSwitchCommandOffRef());
+      oldSwitch.setSwitchCommandOnRef(switchToggle.getSwitchCommandOnRef());
+      oldSwitch.setSwitchSensorRef(switchToggle.getSwitchSensorRef());
       
       return oldSwitch;
    }
