@@ -329,7 +329,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	              defaultexcludes  = "yes"
 	              use              = "yes"
 	              header           = "OpenRemote Modeler API "
-	              doctitle         = "OpenRemote Modeler API Specification V1.0"
+	              doctitle         = "OpenRemote Modeler API Specification V2.0"
 	              nodeprecatedlist = "yes"
 			      classpathref     = "project.class.path" 
 	              sourcepath       = "./${src.dir}"

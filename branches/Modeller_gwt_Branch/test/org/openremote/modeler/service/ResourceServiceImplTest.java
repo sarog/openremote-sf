@@ -413,15 +413,19 @@ public void testScreenHasGesture() {
       gridSwitch.setOid(IDUtil.nextID());
       gridSwitch.setSwitchCommand(switchToggle);
       Absolute abs1 = new Absolute();
+      abs1.setOid(IDUtil.nextID());
       abs1.setUIComponent(absBtn);
       Absolute abs2 = new Absolute();
+      abs2.setOid(IDUtil.nextID());
       abs2.setUIComponent(absSwitch);
       
       UIGrid grid1 = new UIGrid(10,10,20,20,4,4);
+      grid1.setOid(IDUtil.nextID());
       Cell c1 = new Cell();
       c1.setUiComponent(gridBtn);
       grid1.addCell(c1);
       UIGrid grid2 = new UIGrid(10,10,34,20,5,4);
+      grid2.setOid(IDUtil.nextID());
       Cell c2 = new Cell();
       c2.setUiComponent(gridSwitch);
       grid2.addCell(c2);
