@@ -26,8 +26,8 @@ import tuwien.auto.calimero.exception.KNXException;
 import tuwien.auto.calimero.exception.KNXFormatException;
 import tuwien.auto.calimero.exception.KNXTimeoutException;
 import tuwien.auto.calimero.knxnetip.Discoverer;
-import tuwien.auto.calimero.knxnetip.KNXnetIPTunnel;
 import tuwien.auto.calimero.knxnetip.KNXConnectionClosedException;
+import tuwien.auto.calimero.knxnetip.KNXnetIPTunnel;
 import tuwien.auto.calimero.knxnetip.servicetype.SearchResponse;
 import tuwien.auto.calimero.knxnetip.util.HPAI;
 
@@ -40,9 +40,12 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ConcurrentModificationException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -80,7 +83,6 @@ import java.util.Set;
  *
  * TODO  : see KNXConnection interface
  *
- * [1] TODO
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -122,15 +124,16 @@ class KNXConnectionManager
    * NOTE: use of "any" local interface address (0.0.0.0) is not supported at the moment.
    */
 
-  // - The last note on disallowing "0.0.0.0" address is mandated by the underlying Calimero impl.
+  // IMPL NOTE: disallowing "0.0.0.0" address is mandated by the underlying Calimero impl.
   public final static String KNX_LOCAL_BIND_ADDRESS = "knx.bind.address";
 
-  private final static int CLIENT_DISCOVERY_LISTENER_PORT = 0;  // zero = any free port TODO : this setting needs to be externalized
-  private final static int CLIENT_CONNECTION_PORT = 0;          // zero = any free port TODO : this setting needs to be externalized
-  private final static boolean DISCOVERY_USE_NAT = false;       // TODO : this setting needs to be externalized
-  private final static boolean CONNECTION_USE_NAT = true;       // TODO : this setting needs to be externalized
-  private final static int DISCOVERY_TIMEOUT = 10;              // value in seconds  TODO : this setting needs to be externalized
-  private final static boolean BLOCKING_DISCOVERY = false;
+  // TODO : all the settings below should be externalized
+  private final static int CLIENT_DISCOVERY_LISTENER_PORT = 0;  // zero = any free port
+  private final static int CLIENT_CONNECTION_PORT = 0;          // zero = any free port
+  private final static boolean DISCOVERY_USE_NAT = false;
+  private final static boolean CONNECTION_USE_NAT = true;
+  private final static int DISCOVERY_TIMEOUT = 10;              // value in seconds
+  private final static boolean BLOCKING_DISCOVERY = true;
 
 
 
@@ -145,9 +148,9 @@ class KNXConnectionManager
   // Instance Fields ------------------------------------------------------------------------------
 
   /**
-   * Calimero KNX IP gateway discovery API. This is initialized in the start() method.
+   * Calimero KNX IP gateway discovery API.
    */
-  private Discoverer discovery = null;
+  private Map<InetAddress, Discoverer> discoveryMap = new HashMap<InetAddress, Discoverer>(3);
 
 
   /**
@@ -220,23 +223,39 @@ class KNXConnectionManager
 
     addShutdownHook();
 
+    
+    // TODO :
+    //
+    //   allow bypassing discovery by passing gateway ip in parameter
+
+
     // Start KNX multicast discovery...
     
     try
     {
-      /*
-       * TODO:
-       *
-       *  To be completely autonomous and "hands-free" to the user we would blast the discovery
-       *  an all NICs we consider candidates and choose one of them that receives a discovery
-       *  response.
-       *
-       *  At this point I'll just pick the first candidate IPv4 address, let's hope it works
-       */
-      clientIP = resolveLocalAddresses().iterator().next();
+      Set<InetAddress> nics = resolveLocalAddresses();
 
-      discovery = new Discoverer(clientIP, CLIENT_DISCOVERY_LISTENER_PORT, DISCOVERY_USE_NAT);
-      discovery.startSearch(DISCOVERY_TIMEOUT, BLOCKING_DISCOVERY);
+      for (InetAddress inet : nics)
+      {
+        Discoverer discoverer = new Discoverer(inet, CLIENT_DISCOVERY_LISTENER_PORT, DISCOVERY_USE_NAT);
+
+        try
+        {
+          discoverer.startSearch(
+              CLIENT_DISCOVERY_LISTENER_PORT,
+              NetworkInterface.getByInetAddress(inet), 
+              DISCOVERY_TIMEOUT,
+              !BLOCKING_DISCOVERY
+          );
+
+          discoveryMap.put(inet, discoverer);
+        }
+        catch (SocketException e)
+        {
+          log.info("Failed to get network interface for address '" + inet + "'. Skipping...");
+        }
+      }
+
     }
     catch (KNXException exception)
     {
@@ -665,6 +684,7 @@ class KNXConnectionManager
   /**
    * TODO
    *
+   *
    * @throws ConnectionException
    */
   private synchronized void buildConnection() throws ConnectionException
@@ -707,78 +727,131 @@ class KNXConnectionManager
 
   /**
    * TODO
-   * 
+   *
+   * NOTE: *must* set the clientIP on succesful discovery, other methods rely on it
+   *
    * @return
    *
    * @throws ConnectionException
    */
   private synchronized HPAI waitForDiscovery() throws ConnectionException
   {
-    SearchResponse[] responses = discovery.getSearchResponses();
+    // Make a copy to allow concurrent modification in the following loop...
 
-    if (responses.length > 0)
+    InetAddress[] nics = new InetAddress[discoveryMap.size()];
+    discoveryMap.keySet().toArray(nics);
+
+    // Check if any of the NICs has a discovery response...
+
+    // TODO :
+    //   We are returning the first valid response regardless that there may
+    //   be several responding gateways and the user might want to choose
+    //   a specific one
+
+    for (InetAddress address : nics)
     {
-      // just randomly pick first one...
+      Discoverer discoverer = discoveryMap.get(address);
+      SearchResponse[] responses = discoverer.getSearchResponses();
 
-      log.info("Discovered gateway: " + responses.toString());
+      // We have a valid response, store client NIC and return KNX gateway HPAI...
 
-      return responses[0].getControlEndpoint();
+      if (responses.length > 0)
+      {
+        HPAI gateway = responses[0].getControlEndpoint();
+        clientIP = address;
+
+        log.info("Discovered gateway: " + gateway + " through client IP " + address);
+
+        return gateway;
+      }
+
+      // No valid response and search has ended (timed out), remove the discovery
+      // object from the map...
+
+      if (!discoverer.isSearching())
+      {
+        try
+        {
+          discoveryMap.remove(address);
+
+          log.info("KNX gateway discovery on client IP " + address + " ended with no results.");
+
+          // TODO :
+          //
+          //  For discovery retry policies (gateways was restarted, etc.), removing discovery
+          //  from the map means the valid NIC collection must be rebuilt. May want to deal with
+          //  this differently once rediscovery policies are in place.
+        }
+        catch (ConcurrentModificationException exception)
+        {
+          // This is just in case -- shouldn't happen but shit happens and code changes so lets
+          // just report it and not kill the whole thread...
+
+          log.error("Developer Fail: Implementation error in collection handling!");
+        }
+      }
     }
 
-    if (!discovery.isSearching())
+    // If we exhausted all our options, give up and go home...
+
+    if (discoveryMap.isEmpty())
     {
-/*
-      log.info("Discovery has ended");    // TODO
-*/
       throw new ConnectionException("KNX IP Gateway was not found.");
     }
 
-    try
+
+    // There were still some who were searching, let's give them a chance...
+
+    // TODO :
+    //
+    //  This part is now blocking until a timeout is reached. It is going to affect
+    //  the startup time of the controller so should be executed in parallel threads
+    //  for best performance...
+
+    for (InetAddress address : discoveryMap.keySet())
     {
-      log.info("Waiting on discovery...");    // TODO
+      Discoverer discoverer = discoveryMap.get(address);
 
-      for (int i = 0; i <= DISCOVERY_TIMEOUT; ++i)
+      try
       {
-        Thread.sleep(1000);
+        log.info("Waiting on discovery on " + address);
 
-        if (discovery.getSearchResponses().length > 0)
-          i = DISCOVERY_TIMEOUT + 1;
+        for (int i = 0; i <= DISCOVERY_TIMEOUT; ++i)
+        {
+          Thread.sleep(1000);
 
-        log.info(i);    // TODO
+          if (discoverer.getSearchResponses().length > 0)
+          {
+            HPAI gateway = discoverer.getSearchResponses()[0].getControlEndpoint();
+            clientIP = address;
+
+            // TODO :
+            //
+            //  Here too return the first valid gateway without validating it or letting
+            //  user choose a specific one...
+
+            log.info("Discovered gateway '" + gateway + "' through " + address);
+
+            return gateway;
+          }
+
+          log.info("Waited " + i + " seconds (timeout at " + DISCOVERY_TIMEOUT + " seconds)...");
+        }
+
+        // still nothing...
+
+        discoverer.stopSearch();
+      }
+      catch (InterruptedException e)
+      {
+        Thread.currentThread().interrupt();
+
+        throw new ConnectionException("Thread was interrupted while waiting for discovery results.", e);
       }
     }
-    catch (InterruptedException e)
-    {
-      Thread.currentThread().interrupt();
 
-      throw new ConnectionException("Thread was interrupted while waiting for discovery results.", e);
-    }
+    // Finally give up completely....
 
-    responses = discovery.getSearchResponses();
-
-    if (responses.length > 0)
-    {
-      log.info("Discovered gateway: " + responses.toString());
-
-      return responses[0].getControlEndpoint();
-    }
-
-    // still nothing..
-    discovery.stopSearch();
-
-    // TODO : check direct IP config (once it is implemented)
-
-/*
-    try
-    {
-      HPAI hpai = new HPAI(InetAddress.getByAddress(new byte[] { (byte)192, (byte)168, 1, 33 }), 3671);
-
-      return hpai;
-    }
-    catch (Throwable t){}
-
-    log.info("Couldn't find anything!");    // TODO
-*/
     throw new ConnectionException("KNX IP Gateway not found.");
   }
 
