@@ -187,4 +187,21 @@ public class DeviceCommandBeanModelProxy {
          }
       });
    }
+   
+   /**
+    * Load all the device commands a device has. 
+    * @param device
+    * @param callback
+    */
+   public static void loadDeviceCmdFromDevice(Device device,final AsyncSuccessCallback<List<DeviceCommand>>callback){
+      AsyncServiceFactory.getDeviceCommandServiceAsync().loadByDevice(device.getOid(), new AsyncSuccessCallback<List<DeviceCommand>>(){
+
+         @Override
+         public void onSuccess(List<DeviceCommand> result) {
+            BeanModelDataBase.deviceCommandTable.insertAll(DeviceCommand.createModels(result));
+            callback.onSuccess(result);
+         }
+         
+      });
+   }
 }

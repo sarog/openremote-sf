@@ -78,4 +78,10 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       return sensor;
    }
 
+  /* @Override
+   public List<Sensor> loadByDevice(Device device) {
+      Device dvic = genericDAO.loadById(Device.class, device.getOid());
+      return dvic.getSensors();
+   }
+*/
 }

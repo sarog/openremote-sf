@@ -63,27 +63,29 @@ public class SliderBeanModelProxy {
       }
    }
    
-   public static void save(final BeanModel beanModel) {
+   public static void save(final BeanModel beanModel,final AsyncSuccessCallback<Slider>callback){
       if (beanModel != null && beanModel.getBean() instanceof Slider) {
          AsyncServiceFactory.getSliderRPCServiceAsync().save((Slider) (beanModel.getBean()),
-               new AsyncSuccessCallback<Void>() {
+               new AsyncSuccessCallback<Slider>() {
 
                   @Override
-                  public void onSuccess(Void result) {
+                  public void onSuccess(Slider result) {
                      BeanModelDataBase.sliderTable.insert(beanModel);
+                     callback.onSuccess(result);
                   }
 
                });
       }
    }
    
-   public static void update(final BeanModel beanModel) {
+   public static void update(final BeanModel beanModel,final AsyncSuccessCallback<Slider>callback) {
       if (beanModel != null && beanModel.getBean() instanceof Slider) {
          AsyncServiceFactory.getSliderRPCServiceAsync().update((Slider) (beanModel.getBean()),
-               new AsyncSuccessCallback<Void>() {
+               new AsyncSuccessCallback<Slider>() {
                   @Override
-                  public void onSuccess(Void result) {
+                  public void onSuccess(Slider result) {
                      BeanModelDataBase.sliderTable.update(beanModel);
+                     callback.onSuccess(result);
                   }
 
                });

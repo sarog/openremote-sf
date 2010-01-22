@@ -21,9 +21,10 @@
 package org.openremote.modeler.client.rpc;
 
 
+import org.openremote.modeler.auth.Authority;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import org.openremote.modeler.auth.Authority;
 
 /**
  * The Interface AuthorityRPCService, get the current user's authority.

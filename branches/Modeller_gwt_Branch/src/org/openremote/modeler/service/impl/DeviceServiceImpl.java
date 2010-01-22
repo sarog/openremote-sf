@@ -21,6 +21,7 @@ package org.openremote.modeler.service.impl;
 
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -91,6 +92,11 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
     * @see org.openremote.modeler.service.BaseAbstractService#loadById(long)
     */
    public Device loadById(long id) {
-      return super.loadById(id);
+      Device device = super.loadById(id);
+      Hibernate.initialize(device.getDeviceCommands());
+      Hibernate.initialize(device.getSensors());
+      Hibernate.initialize(device.getSliders());
+      Hibernate.initialize(device.getSwitchs());
+      return device;
    }
 }

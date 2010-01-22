@@ -309,4 +309,12 @@ public class GenericDAO extends HibernateDaoSupport {
    public void flush() {
       this.getHibernateTemplate().flush();
    }
+   
+   /**
+    * update 
+    * @param arg0
+    */
+   public void update(Object arg0){
+      this.getHibernateTemplate().update(arg0);
+   }
 }

@@ -28,9 +28,11 @@ import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceCommandSelectWindow;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.client.widget.SimpleComboBox;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.Sensor;
@@ -86,7 +88,27 @@ public class SliderWindow extends FormWindow {
       this.setSize(320, 240);
       
       createField();
+      show();
+   }
+   
+   public SliderWindow(Slider slider,Device device){
+      super();
+      if (null != slider) {
+         this.slider = slider;
+         edit = true;
+      } else {
+         this.slider = new Slider();
+         edit = false;
+      }
+      if(device==null){
+         throw new RuntimeException("A slider must belong to a device!");
+      }
+      this.slider.setDevice(device);
+      this.setHeading(edit ? "Edit Slider" : "New Slider");
+      this.setSize(320, 240);
       
+      createField();
+      show();
    }
    
    private void createField() {
@@ -107,8 +129,10 @@ public class SliderWindow extends FormWindow {
       List<BeanModel> sensors = BeanModelDataBase.sensorTable.loadAll();
       for (BeanModel sensorBean : sensors) {
          Sensor sensor = sensorBean.getBean();
-         ComboBoxDataModel<Sensor> sensorRefSelector = new ComboBoxDataModel<Sensor>(sensor.getName(), sensor);
-         sensorStore.add(sensorRefSelector);
+         if (sensor.getDevice().equals(slider.getDevice())) {
+            ComboBoxDataModel<Sensor> sensorRefSelector = new ComboBoxDataModel<Sensor>(sensor.getName(), sensor);
+            sensorStore.add(sensorRefSelector);
+         }
       }
       sensorField.setStore(sensorStore);
       sensorField.addSelectionChangedListener(new SensorSelectChangeListener());
@@ -120,6 +144,9 @@ public class SliderWindow extends FormWindow {
                   slider.getSliderSensorRef().getSensor().getDisplayName(), slider.getSliderSensorRef().getSensor()));
          }
          setValueBtn.setText(slider.getSetValueCmd().getDisplayName());
+         
+//         sensorField.setEnabled(false);
+//         setValueBtn.setEnabled(false);
       }
       
       AdapterField switchOnAdapter = new AdapterField(setValueBtn);
@@ -127,7 +154,6 @@ public class SliderWindow extends FormWindow {
       
       Button submitBtn = new Button("Submit");
       Button resetButton = new Button("Reset");
-//      resetButton.addSelectionListener(new FormCaccleListener(form));
       
       submitBtn.addSelectionListener(new FormSubmitListener(form));
       resetButton.addSelectionListener(new FormResetListener(form));
@@ -142,12 +168,12 @@ public class SliderWindow extends FormWindow {
       
       setValueBtn.addSelectionListener(new CommandSelectListener());
       
-      form.addListener(Events.BeforeSubmit, new SwitchSubmitListener());
+      form.addListener(Events.BeforeSubmit, new SliderSubmitListener());
       add(form);
    }
    
    
-   class SwitchSubmitListener implements Listener<FormEvent> {
+   class SliderSubmitListener implements Listener<FormEvent> {
 
       @Override
       public void handleEvent(FormEvent be) {
@@ -163,11 +189,30 @@ public class SliderWindow extends FormWindow {
             }
          }
          if (!edit) {
-            SliderBeanModelProxy.save(slider.getBeanModel());
+            SliderBeanModelProxy.save(slider.getBeanModel(),new AsyncSuccessCallback<Slider>(){
+               @Override
+               public void onSuccess(Slider result) {
+                  slider = result;
+                  fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(slider.getBeanModel()));
+               }
+            });
          } else {
-            SliderBeanModelProxy.update(slider.getBeanModel());
+            SliderCommandRef cmdRef = new SliderCommandRef(slider);
+            cmdRef.setDeviceCommand(slider.getSetValueCmd().getDeviceCommand());
+            cmdRef.setDeviceName(slider.getDevice().getName());
+            slider.setSetValueCmd(cmdRef);
+            SliderSensorRef sensorRef = new SliderSensorRef(slider);
+            sensorRef.setSensor(slider.getSliderSensorRef().getSensor());
+            
+            slider.setSliderSensorRef(sensorRef);
+            SliderBeanModelProxy.update(slider.getBeanModel(),new AsyncSuccessCallback<Slider>(){
+               @Override
+               public void onSuccess(Slider result) {
+                  slider = result;
+                  fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(slider.getBeanModel()));
+               }
+            });
          }
-         fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(slider.getBeanModel()));
       }
    }
    
@@ -175,7 +220,7 @@ public class SliderWindow extends FormWindow {
    class CommandSelectListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
-         final DeviceCommandSelectWindow selectCommandWindow = new DeviceCommandSelectWindow();
+         final DeviceCommandSelectWindow selectCommandWindow = new DeviceCommandSelectWindow(SliderWindow.this.slider.getDevice());
          final Button command = ce.getButton();
          selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
@@ -185,7 +230,8 @@ public class SliderWindow extends FormWindow {
                if (dataModel.getBean() instanceof DeviceCommand) {
                   deviceCommandRef = new DeviceCommandRef((DeviceCommand) dataModel.getBean());
                } else if (dataModel.getBean() instanceof DeviceCommandRef) {
-                  deviceCommandRef = (DeviceCommandRef) dataModel.getBean();
+                  DeviceCommandRef ref = (DeviceCommandRef) dataModel.getBean();
+                  deviceCommandRef = new DeviceCommandRef(ref.getDeviceCommand());
                } else {
                   MessageBox.alert("error", "A switch can only have command instead of macor", null);
                   return;

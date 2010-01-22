@@ -241,8 +241,10 @@ public class BeanModelTable {
     */
    public void delete(long id) {
       BeanModel beanModel = get(id);
-      map.remove(id);
-      notifyBeanModel(REMOVE, beanModel);
+      if (beanModel != null) {
+         map.remove(id);
+         notifyBeanModel(REMOVE, beanModel);
+      }
 
    }
 
@@ -252,7 +254,9 @@ public class BeanModelTable {
     * @param beanModel the bean model
     */
    public void delete(BeanModel beanModel) {
-      delete(getIdFromBeanModel(beanModel));
+      if(beanModel != null){
+         delete(getIdFromBeanModel(beanModel));
+      }
    }
 
    /**

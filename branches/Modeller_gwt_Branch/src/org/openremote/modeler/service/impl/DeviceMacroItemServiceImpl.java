@@ -19,13 +19,17 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.util.List;
+
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
-import org.openremote.modeler.domain.*;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.DeviceCommandRef;
+import org.openremote.modeler.domain.DeviceMacro;
+import org.openremote.modeler.domain.DeviceMacroItem;
+import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceMacroItemService;
-
-import java.util.List;
 
 /**
  * Default implement of DeviceMacroItemService.

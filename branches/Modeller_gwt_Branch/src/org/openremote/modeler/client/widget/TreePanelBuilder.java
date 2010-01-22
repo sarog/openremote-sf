@@ -24,6 +24,7 @@ import java.util.List;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
+import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
@@ -38,6 +39,10 @@ import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.domain.component.UIImage;
@@ -73,8 +78,9 @@ public class TreePanelBuilder {
    private static final Icons ICON = GWT.create(Icons.class);
 
    /** The device command treestore. */
-   private static TreeStore<BeanModel> deviceCommandTreestore = null;
+   private static TreeStore<BeanModel> deviceTreeStore = null;
 
+   private static TreeStore<BeanModel> deviceAndCmdTreeStore = null;
    /** The macro tree store. */
    private static TreeStore<BeanModel> macroTreeStore = null;
    
@@ -93,11 +99,11 @@ public class TreePanelBuilder {
     * @return the a new device command tree
     */
    public static TreePanel<BeanModel> buildDeviceCommandTree() {
-      if (deviceCommandTreestore == null) {
+//      if (commandTreeStore == null) {
          RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
             @Override
             protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
-                DeviceBeanModelProxy.loadDevice((BeanModel) o, new AsyncSuccessCallback<List<BeanModel>>() {
+                DeviceBeanModelProxy.loadDeviceAndCommand((BeanModel) o, new AsyncSuccessCallback<List<BeanModel>>() {
                     public void onSuccess(List<BeanModel> result) {
                         listAsyncCallback.onSuccess(result);
                     }
@@ -113,9 +119,9 @@ public class TreePanelBuilder {
                 return false;
             }
         };
-        deviceCommandTreestore = new TreeStore<BeanModel>(loadDeviceTreeLoader);
-      }
-      final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceCommandTreestore);
+        deviceAndCmdTreeStore = new TreeStore<BeanModel>(loadDeviceTreeLoader);
+//      }
+      final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceAndCmdTreeStore);
 
       tree.setBorders(false);
       tree.setStateful(true);
@@ -136,6 +142,103 @@ public class TreePanelBuilder {
       return tree;
    }
    
+   public static TreePanel<BeanModel> buildDeviceTree() {
+      if (deviceTreeStore == null) {
+         RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
+            @Override
+            protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
+                DeviceBeanModelProxy.loadDevice((BeanModel) o, new AsyncSuccessCallback<List<BeanModel>>() {
+                    public void onSuccess(List<BeanModel> result) {
+                        listAsyncCallback.onSuccess(result);
+                    }
+                });
+            }
+        };
+        TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy) {
+           @Override
+           public boolean hasChildren(BeanModel beanModel) {
+               if (beanModel.getBean() instanceof DeviceCommand || beanModel.getBean() instanceof UICommand) {
+                   return false;
+               }
+               return true;
+           }
+        };
+        deviceTreeStore = new TreeStore<BeanModel>(loadDeviceTreeLoader);
+      }
+      final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceTreeStore);
+
+      tree.setBorders(false);
+      tree.setStateful(true);
+      tree.setDisplayProperty("displayName");
+      tree.setHeight("100%");
+      tree.setIconProvider(new ModelIconProvider<BeanModel>() {
+         public AbstractImagePrototype getIcon(BeanModel thisModel) {
+            if (thisModel.getBean() instanceof DeviceCommand) {
+               return ICON.deviceCmd();
+            } else if (thisModel.getBean() instanceof Device) {
+               return ICON.device();
+            } else if(thisModel.getBean() instanceof Sensor){
+               return ICON.sensorIcon();
+            } else if(thisModel.getBean() instanceof Switch){
+               return ICON.switchIcon();
+            } else if(thisModel.getBean() instanceof Slider){
+               return ICON.sliderIcon();
+            } else if(thisModel.getBean() instanceof UICommand){
+               return ICON.deviceCmd();
+            } else {
+               return ICON.folder();
+            }
+         }
+
+      });
+      return tree;
+   }
+   
+   public static TreePanel<BeanModel> buildCommandTree(final Device device) {
+      RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
+         @Override
+         protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
+            DeviceCommandBeanModelProxy.loadDeviceCmdFromDevice(device,
+                  new AsyncSuccessCallback<List<DeviceCommand>>() {
+
+                     @Override
+                     public void onSuccess(List<DeviceCommand> result) {
+                        listAsyncCallback.onSuccess(DeviceCommand.createModels(result));
+                     }
+
+                  });
+         }
+      };
+      TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy) {
+         @Override
+         public boolean hasChildren(BeanModel beanModel) {
+            if (beanModel.getBean() instanceof Device) {
+               return true;
+            }
+            return false;
+         }
+      };
+      TreeStore<BeanModel> commandTree = new TreeStore<BeanModel>(loadDeviceTreeLoader);
+      final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(commandTree);
+
+      tree.setBorders(false);
+      tree.setStateful(true);
+      tree.setDisplayProperty("displayName");
+      tree.setHeight("100%");
+      tree.setIconProvider(new ModelIconProvider<BeanModel>() {
+         public AbstractImagePrototype getIcon(BeanModel thisModel) {
+            if (thisModel.getBean() instanceof DeviceCommand) {
+               return ICON.deviceCmd();
+            } else if (thisModel.getBean() instanceof Device) {
+               return ICON.device();
+            } else {
+               return ICON.folder();
+            }
+         }
+
+      });
+      return tree;
+   }
    /**
     * Builds a new macro tree.
     * 

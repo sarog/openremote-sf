@@ -31,9 +31,9 @@ import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.UIButton;
-import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
 
 import com.extjs.gxt.ui.client.data.BeanModel;

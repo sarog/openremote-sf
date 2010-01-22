@@ -22,6 +22,7 @@ package org.openremote.modeler.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.GeneratedValue;
@@ -110,7 +111,7 @@ public abstract class BusinessEntity extends LightEntity implements Serializable
     * 
     * @return the list< bean model>
     */
-   public static List<BeanModel> createModels(List<? extends BusinessEntity> list) {
+   public static List<BeanModel> createModels(Collection<? extends BusinessEntity> list) {
       List<BeanModel> models = new ArrayList<BeanModel>();
       for (BusinessEntity b : list) {
          models.add(b.getBeanModel());

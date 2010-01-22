@@ -29,11 +29,11 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("slider.smvc")
 public interface SliderRPCService extends RemoteService {
    
-   void save(Slider slider);
+   Slider save(Slider slider);
 
    void delete(long id);
 
-   void update(Slider slider);
+   Slider update(Slider slider);
 
    List<Slider> loadAll();
 }

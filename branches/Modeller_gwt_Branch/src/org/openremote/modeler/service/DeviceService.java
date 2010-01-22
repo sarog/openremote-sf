@@ -19,10 +19,10 @@
 */
 package org.openremote.modeler.service;
 
+import java.util.List;
+
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
-
-import java.util.List;
 
 /**
  * The Interface DeviceService.

@@ -30,6 +30,7 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.State;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SensorBeanModelProxy {
 
@@ -81,7 +82,7 @@ public class SensorBeanModelProxy {
       });
    }
    
-   public static void deleteSensor(final BeanModel beanModel, final AsyncSuccessCallback<Boolean> callback) {
+   public static void deleteSensor(final BeanModel beanModel, final AsyncCallback<Boolean> callback) {
       Sensor sensor = beanModel.getBean();
       AsyncServiceFactory.getSensorRPCServiceAsync().deleteSensor(sensor.getOid(), new AsyncSuccessCallback<Boolean>() {
          public void onSuccess(Boolean result) {
@@ -93,4 +94,16 @@ public class SensorBeanModelProxy {
          
       });
    }
+   
+   /*public static void loadByDevice(final Device device,final AsyncSuccessCallback<List<Sensor>> callback){
+      AsyncServiceFactory.getSensorRPCServiceAsync().loadByDevice(device, new AsyncSuccessCallback<List<Sensor>>(){
+
+         @Override
+         public void onSuccess(List<Sensor> result) {
+            BeanModelDataBase.sensorTable.insertAll(Sensor.createModels(result));
+            callback.onSuccess(result);
+         }
+         
+      });
+   }*/
 }

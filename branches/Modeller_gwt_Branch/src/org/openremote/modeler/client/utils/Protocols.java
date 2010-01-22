@@ -19,14 +19,15 @@
 */
 package org.openremote.modeler.client.utils;
 
-import com.extjs.gxt.ui.client.widget.MessageBox;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import java.util.Map;
+
 import org.openremote.modeler.client.rpc.ProtocolRPCService;
 import org.openremote.modeler.client.rpc.ProtocolRPCServiceAsync;
 import org.openremote.modeler.protocol.ProtocolDefinition;
 
-import java.util.Map;
+import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**

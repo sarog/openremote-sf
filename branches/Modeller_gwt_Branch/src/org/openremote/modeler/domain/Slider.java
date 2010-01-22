@@ -40,6 +40,7 @@ public class Slider extends BusinessEntity {
    private SliderCommandRef setValueCmd;
    private SliderSensorRef sliderSensorRef;
    private Account account;
+   private Device device;
    
    public String getName() {
       return name;
@@ -75,6 +76,16 @@ public class Slider extends BusinessEntity {
 
    public void setSliderSensorRef(SliderSensorRef sliderSensorRef) {
       this.sliderSensorRef = sliderSensorRef;
+   }
+
+   @ManyToOne
+   @JSON(include = false)
+   public Device getDevice() {
+      return device;
+   }
+
+   public void setDevice(Device device) {
+      this.device = device;
    }
 
    @Transient

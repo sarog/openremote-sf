@@ -27,11 +27,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface SliderRPCServiceAsync {
 
-   void save(Slider slider, AsyncCallback<Void> callback);
+   void save(Slider slider, AsyncCallback<Slider> callback);
 
    void delete(long id, AsyncCallback<Void> callback);
 
-   void update(Slider slider, AsyncCallback<Void> callback);
+   void update(Slider slider, AsyncCallback<Slider> callback);
 
    void loadAll(AsyncCallback<List<Slider>> callback);
 

@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.openremote.modeler.service.TouchPanelParser;
-import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
-import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

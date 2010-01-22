@@ -30,6 +30,8 @@ import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.GroupTable;
 import org.openremote.modeler.client.utils.ScreenTable;
 import org.openremote.modeler.client.utils.SensorBeanModelTable;
+import org.openremote.modeler.client.utils.SliderBeanModelTable;
+import org.openremote.modeler.client.utils.SwitchBeanModelTable;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.Device;
@@ -80,9 +82,9 @@ public class BeanModelDataBase {
    
    public static final BeanModelTable panelTable = new BeanModelTable();
    
-   public static final BeanModelTable switchTable = new BeanModelTable();
+   public static final BeanModelTable switchTable = new SwitchBeanModelTable();
    public static final BeanModelTable sensorTable = new SensorBeanModelTable();
-   public static final BeanModelTable sliderTable = new BeanModelTable();
+   public static final BeanModelTable sliderTable = new SliderBeanModelTable();
    
    
    /**

@@ -17,15 +17,28 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.service;
+package org.openremote.modeler.client.utils;
 
 import java.util.List;
 
-import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 
-public interface SliderService {
-   Slider save(Slider slider);
-   Slider update(Slider slider);
-   void delete(long id);
-   List<Slider> loadAll();
+import com.extjs.gxt.ui.client.data.BeanModel;
+
+public class SliderBeanModelTable extends BeanModelTable {
+
+   public SliderBeanModelTable() {
+      super();
+      /*
+       * initialize the Database.  
+       */
+      SliderBeanModelProxy.loadAll(null, new AsyncSuccessCallback<List<BeanModel>>(){
+
+         public void onSuccess(List<BeanModel> result) {
+           return;
+         }
+         
+      });
+   }
 }

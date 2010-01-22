@@ -35,4 +35,6 @@ public interface SensorService {
    Boolean deleteSensor(long id);
    
    Sensor loadById(long id);
+   
+//   List<Sensor> loadByDevice(Device device);
 }
