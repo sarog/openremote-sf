@@ -41,7 +41,8 @@ public class Switch extends BusinessEntity {
    private SwitchCommandOffRef switchCommandOffRef;
    private SwitchSensorRef switchSensorRef;
    private Account account;
-
+   private Device device;
+   
    public String getName() {
       return name;
    }
@@ -91,6 +92,18 @@ public class Switch extends BusinessEntity {
       this.account = account;
    }
    
+   @ManyToOne
+   @JSON(include=false)
+   public Device getDevice() {
+      return device;
+   }
+
+
+   public void setDevice(Device device) {
+      this.device = device;
+   }
+
+
    @Transient
    public String getDisplayName() {
       return getName();

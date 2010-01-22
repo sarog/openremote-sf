@@ -22,22 +22,18 @@ package org.openremote.modeler.service.impl;
 import java.util.List;
 
 import org.hibernate.Hibernate;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Switch;
-import org.openremote.modeler.domain.SwitchSensorRef;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SwitchService;
+import org.openremote.modeler.service.UserService;
 
 public class SwitchServiceImpl extends BaseAbstractService<Switch> implements SwitchService {
+   private UserService userService = null;
 
    @Override
    public void delete(long id) {
-      Switch switchToggle = super.loadById(id);
-      DetachedCriteria criteria = DetachedCriteria.forClass(SwitchSensorRef.class);
-      List<SwitchSensorRef> switchSensorRefs = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("switchToggle", switchToggle)));
-      genericDAO.deleteAll(switchSensorRefs);
+      Switch switchToggle = genericDAO.loadById(Switch.class, id);
       genericDAO.delete(switchToggle);
    }
 
@@ -57,13 +53,18 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
 
    @Override
    public Switch update(Switch switchToggle) {
-      Switch oldSwitch = genericDAO.loadById(Switch.class, switchToggle.getOid());
-      oldSwitch.setName(switchToggle.getName());
-      oldSwitch.setSwitchCommandOffRef(switchToggle.getSwitchCommandOffRef());
-      oldSwitch.setSwitchCommandOnRef(switchToggle.getSwitchCommandOnRef());
-      oldSwitch.setSwitchSensorRef(switchToggle.getSwitchSensorRef());
-      
-      return oldSwitch;
+      Switch old = genericDAO.loadById(Switch.class, switchToggle.getOid());
+      genericDAO.delete(old.getSwitchCommandOffRef());
+      genericDAO.delete(old.getSwitchCommandOnRef());
+      genericDAO.delete(old.getSwitchSensorRef());
+      old.setName(switchToggle.getName());
+      switchToggle.getSwitchCommandOffRef().setOffSwitch(old);
+      switchToggle.getSwitchCommandOnRef().setOnSwitch(old);
+      switchToggle.getSwitchSensorRef().setSwitchToggle(old);
+      old.setSwitchCommandOffRef(switchToggle.getSwitchCommandOffRef());
+      old.setSwitchCommandOnRef(switchToggle.getSwitchCommandOnRef());
+      old.setSwitchSensorRef(switchToggle.getSwitchSensorRef());
+      return old;
    }
    
     @Override
@@ -72,5 +73,13 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
       return switchs;
    }
 
+   public UserService getUserService() {
+      return userService;
+   }
 
+   public void setUserService(UserService userService) {
+      this.userService = userService;
+   }
+   
+    
 }

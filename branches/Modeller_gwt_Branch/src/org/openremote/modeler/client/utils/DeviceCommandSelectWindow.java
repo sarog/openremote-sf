@@ -21,6 +21,7 @@ package org.openremote.modeler.client.utils;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 
@@ -43,26 +44,26 @@ public class DeviceCommandSelectWindow extends Dialog{
    
    private TreePanel<BeanModel> deviceCommandTree;
    
-   public DeviceCommandSelectWindow(){
+   public DeviceCommandSelectWindow(Device device){
       setHeading("Select Command");
       setMinHeight(260);
       setWidth(200);
       setLayout(new FitLayout());
       setModal(true);
-      initCommandTree();
+      initCommandTree(device);
       setButtons(Dialog.OKCANCEL);
       setHideOnButtonClick(true);
       addButtonListener();
       show();
    }
 
-   private void initCommandTree() {
+   private void initCommandTree(Device device) {
       ContentPanel deviceCommandPanel = new ContentPanel();
       deviceCommandPanel.setBorders(false);
       deviceCommandPanel.setBodyBorder(false);
       deviceCommandPanel.setHeaderVisible(false);
       if (deviceCommandTree == null) {
-         deviceCommandTree = TreePanelBuilder.buildDeviceCommandTree();
+         deviceCommandTree = TreePanelBuilder.buildCommandTree(device);
          deviceCommandPanel.add(deviceCommandTree);
       }
       deviceCommandPanel.setScrollMode(Scroll.AUTO);

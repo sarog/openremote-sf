@@ -19,12 +19,13 @@
 */
 package org.openremote.modeler.client.rpc;
 
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import java.util.List;
+
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
 
-import java.util.List;
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
  * The Interface DeviceService, define the method to operate device.

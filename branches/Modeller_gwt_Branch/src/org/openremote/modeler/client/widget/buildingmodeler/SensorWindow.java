@@ -32,6 +32,7 @@ import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.client.widget.SimpleComboBox;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.CustomSensor;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
@@ -55,6 +56,7 @@ import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
@@ -84,6 +86,8 @@ public class SensorWindow extends FormWindow {
    private TextField<Integer> maxField = new TextField<Integer>();
    private EditorGrid<BeanModel> grid = null;
    private int stateRowIndex = -1;
+   
+   private Device device = null;
    public SensorWindow() {
       setHeading("New sensor");
       init();
@@ -96,6 +100,15 @@ public class SensorWindow extends FormWindow {
       show();
    }
    
+   public SensorWindow(Device device){
+      this.device = device;
+      if(device==null){
+         throw new RuntimeException("A sensor must belong to a device!");
+      }
+      setHeading("Edit sensor");
+      init();
+      show();
+   }
    private void init() {
       setWidth(360);
       setAutoHeight(true);
@@ -203,7 +216,8 @@ public class SensorWindow extends FormWindow {
       deviceCommandTreeContainer.setLayout(new FitLayout());
       deviceCommandTreeContainer.setScrollMode(Scroll.AUTO);
       deviceCommandTreeContainer.setStyleAttribute("backgroundColor", "white");
-      commandSelectTree = TreePanelBuilder.buildDeviceCommandTree();
+      
+      commandSelectTree = TreePanelBuilder.buildCommandTree(device!=null?device:((Sensor)sensorModel.getBean()).getDevice());
       commandSelectTree.getSelectionModel().deselectAll();
       deviceCommandTreeContainer.add(commandSelectTree);
       
@@ -335,6 +349,7 @@ public class SensorWindow extends FormWindow {
          public void handleEvent(FormEvent be) {
             if (null == sensorModel) {
                Sensor sensor = new Sensor();
+               sensor.setDevice(device);
                if (typeList.getValue() != null) {
                   SensorType type = ((ComboBoxDataModel<SensorType>) typeList.getValue()).getData();
                   if (type == SensorType.RANGE) {
@@ -351,14 +366,23 @@ public class SensorWindow extends FormWindow {
                      }
                   }
                   sensor.setType(type);
+               }else {
+                  MessageBox.alert("Warn", "A sensor must have a type", null);
+                  typeList.focus();
+                  return;
                }
                sensor.setName(nameField.getValue());
                BeanModel selectedCommand = commandSelectTree.getSelectionModel().getSelectedItem();
                if (selectedCommand != null && selectedCommand.getBean() instanceof DeviceCommand) {
+                  DeviceCommand cmd = selectedCommand.getBean();
                   SensorCommandRef sensorCommandRef = new SensorCommandRef();
-                  sensorCommandRef.setDeviceCommand((DeviceCommand) selectedCommand.getBean());
+                  sensorCommandRef.setDeviceCommand(cmd);
                   sensorCommandRef.setSensor(sensor);
                   sensor.setSensorCommandRef(sensorCommandRef);
+               } else {
+                  MessageBox.alert("Warn", "A sensor must have a device command", null);
+                  commandSelectTree.focus();
+                  return;
                }
                SensorBeanModelProxy.saveSensor(sensor, new AsyncSuccessCallback<Sensor>() {
                   public void onSuccess(Sensor result) {

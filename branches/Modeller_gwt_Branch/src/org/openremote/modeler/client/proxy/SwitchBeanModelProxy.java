@@ -84,7 +84,6 @@ public class SwitchBeanModelProxy {
       if (beanModel != null && beanModel.getBean() instanceof Switch) {
          AsyncServiceFactory.getSwitchRPCServiceAsync().update((Switch) (beanModel.getBean()),
                new AsyncSuccessCallback<Switch>() {
-
                   @Override
                   public void onSuccess(Switch result) {
                      BeanModelDataBase.switchTable.update(beanModel);

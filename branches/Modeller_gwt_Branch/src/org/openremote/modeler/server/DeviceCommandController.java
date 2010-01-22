@@ -20,11 +20,11 @@
 
 package org.openremote.modeler.server;
 
+import java.util.List;
+
 import org.openremote.modeler.client.rpc.DeviceCommandRPCService;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.service.DeviceCommandService;
-
-import java.util.List;
 
 /**
  * The server side implementation of the RPC service <code>DeviceCommandRPCService</code>.

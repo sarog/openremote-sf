@@ -19,10 +19,11 @@
 */
 package org.openremote.modeler.client.rpc;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import java.util.Map;
+
 import org.openremote.modeler.protocol.ProtocolDefinition;
 
-import java.util.Map;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 

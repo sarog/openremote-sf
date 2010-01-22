@@ -43,6 +43,7 @@ public class Sensor extends BusinessEntity {
    private SensorCommandRef sensorCommandRef;
    private SensorType type;
    private Account account;
+   private Device device;
    
    public Sensor() {
    }
@@ -87,7 +88,14 @@ public class Sensor extends BusinessEntity {
    public String getDisplayName() {
       return getName();
    }
-   
+   @ManyToOne
+   @JSON(include = false)
+   public Device getDevice() {
+      return device;
+   }
+   public void setDevice(Device device) {
+      this.device = device;
+   }
    @Override
    public String toString() {
       StringBuilder sb = new StringBuilder();

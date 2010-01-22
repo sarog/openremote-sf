@@ -62,4 +62,9 @@ public class SensorController extends BaseGWTSpringControllerWithHibernateSuppor
    public Sensor getById(long id) {
       return sensorService.loadById(id);
    }
+
+   /*@Override
+   public List<Sensor> loadByDevice(Device device) {
+      return sensorService.loadByDevice(device);
+   }*/
 }

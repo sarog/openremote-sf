@@ -22,10 +22,7 @@ package org.openremote.modeler.service.impl;
 import java.util.List;
 
 import org.hibernate.Hibernate;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Slider;
-import org.openremote.modeler.domain.SliderSensorRef;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SliderService;
 
@@ -34,9 +31,6 @@ public class SliderServiceImpl extends BaseAbstractService<Slider>implements Sli
    @Override
    public void delete(long id) {
       Slider slider = super.loadById(id);
-      DetachedCriteria criteria = DetachedCriteria.forClass(SliderSensorRef.class);
-      List<SliderSensorRef> sliderSensorRefs = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("slider", slider)));
-      genericDAO.deleteAll(sliderSensorRefs);
       genericDAO.delete(slider);
    }
 
@@ -48,13 +42,25 @@ public class SliderServiceImpl extends BaseAbstractService<Slider>implements Sli
    }
 
    @Override
-   public void save(Slider slider) {
+   public Slider save(Slider slider) {
       genericDAO.save(slider);
+      return slider;
    }
 
    @Override
-   public void update(Slider slider) {
+   public Slider update(Slider slider) {
       Slider oldSlider = genericDAO.loadById(Slider.class, slider.getOid());
+      genericDAO.delete(oldSlider.getSliderSensorRef());
+      genericDAO.delete(oldSlider.getSetValueCmd());
       oldSlider.setName(slider.getName());
+      if(slider.getSetValueCmd().getOid()!=oldSlider.getSetValueCmd().getOid()){
+         slider.getSetValueCmd().setSlider(oldSlider);
+         oldSlider.setSetValueCmd(slider.getSetValueCmd());
+      }
+      if(slider.getSliderSensorRef().getOid()!=oldSlider.getSliderSensorRef().getOid()){
+         slider.getSliderSensorRef().setSlider(oldSlider);
+         oldSlider.setSliderSensorRef(slider.getSliderSensorRef());
+      }
+      return oldSlider;
    }
 }

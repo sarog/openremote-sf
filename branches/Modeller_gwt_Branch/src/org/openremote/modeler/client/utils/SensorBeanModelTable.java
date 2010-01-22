@@ -19,9 +19,26 @@
 */
 package org.openremote.modeler.client.utils;
 
+import java.util.List;
+
+import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+
+import com.extjs.gxt.ui.client.data.BeanModel;
+
 public class SensorBeanModelTable extends BeanModelTable {
 
    public SensorBeanModelTable() {
       super();
+      /*
+       * initialize the Database.  
+       */
+      SensorBeanModelProxy.loadSensor(null, new AsyncSuccessCallback<List<BeanModel>>(){
+
+         public void onSuccess(List<BeanModel> result) {
+           return;
+         }
+         
+      });
    }
 }

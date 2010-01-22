@@ -45,16 +45,16 @@ public class SliderController extends BaseGWTSpringControllerWithHibernateSuppor
    }
 
    @Override
-   public void save(Slider slider) {
+   public Slider save(Slider slider) {
       slider.setAccount(userService.getAccount());
-      sliderService.save(slider);
+      return sliderService.save(slider);
    }
 
    
    @Override
-   public void update(Slider slider) {
+   public Slider update(Slider slider) {
       slider.setAccount(userService.getAccount());
-      sliderService.update(slider);
+      return sliderService.update(slider);
    }
 
    public void setSliderService(SliderService switchService) {

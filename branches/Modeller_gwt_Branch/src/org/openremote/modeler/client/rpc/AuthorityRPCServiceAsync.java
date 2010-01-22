@@ -21,8 +21,9 @@
 package org.openremote.modeler.client.rpc;
 
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.openremote.modeler.auth.Authority;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * The async counterpart of <code>AuthorityRPCService</code>.

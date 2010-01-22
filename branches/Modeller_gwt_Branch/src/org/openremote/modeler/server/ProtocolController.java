@@ -19,12 +19,12 @@
 */
 package org.openremote.modeler.server;
 
+import java.util.Map;
+
 import org.openremote.modeler.client.rpc.ProtocolRPCService;
 import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.protocol.ProtocolDefinition;
 import org.openremote.modeler.service.ProtocolParser;
-
-import java.util.Map;
 
 /**
  * The Class ProtocolServiceImpl.

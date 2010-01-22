@@ -20,7 +20,9 @@
 package org.openremote.modeler.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -61,6 +63,11 @@ public class Device extends BusinessEntity {
    /** The account. */
    private Account account; 
 
+   private Set<Switch> switchs = new HashSet<Switch>();
+   
+   private Set<Slider> sliders = new HashSet<Slider>();
+   
+   private Set<Sensor> sensors = new HashSet<Sensor>();
    /**
     * Instantiates a new device.
     */
@@ -198,6 +205,31 @@ public class Device extends BusinessEntity {
       this.account = account;
    }
    
+   @OneToMany(mappedBy="device",cascade=CascadeType.ALL)
+   public Set<Switch> getSwitchs() {
+      return switchs;
+   }
+
+   public void setSwitchs(Set<Switch> switchs) {
+      this.switchs = switchs;
+   }
+   @OneToMany(mappedBy="device",cascade=CascadeType.ALL)
+   public Set<Slider> getSliders() {
+      return sliders;
+   }
+
+   public void setSliders(Set<Slider> sliders) {
+      this.sliders = sliders;
+   }
+   @OneToMany(mappedBy="device",cascade=CascadeType.ALL)
+   public Set<Sensor> getSensors() {
+      return sensors;
+   }
+
+   public void setSensors(Set<Sensor> sensors) {
+      this.sensors = sensors;
+   }
+
    /**
     * Gets the display name.
     * 
@@ -207,5 +239,25 @@ public class Device extends BusinessEntity {
    public String getDisplayName() {
       return getName();
    }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
+      Device other = (Device) obj;
+      
+      if (model == null) {
+         if (other.model != null) return false;
+      } else if (!model.equals(other.model)) return false;
+      if (name == null) {
+         if (other.name != null) return false;
+      } else if (!name.equals(other.name)) return false;
+      if (vendor == null) {
+         if (other.vendor != null) return false;
+      } else if (!vendor.equals(other.vendor)) return false;
+      return getOid()==other.getOid();
+   }
+   
    
 }

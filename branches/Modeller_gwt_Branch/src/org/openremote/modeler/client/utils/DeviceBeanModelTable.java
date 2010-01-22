@@ -60,7 +60,7 @@ public class DeviceBeanModelTable extends BeanModelTable {
     */
    @Override
    public void loadFromTable(BeanModel parent, final AsyncSuccessCallback<List<BeanModel>> asyncSuccessCallback) {
-      DeviceBeanModelProxy.loadDevice(parent, new AsyncSuccessCallback<List<BeanModel>>() {
+      DeviceBeanModelProxy.loadDeviceAndCommand(parent, new AsyncSuccessCallback<List<BeanModel>>() {
          public void onSuccess(List<BeanModel> result) {
             asyncSuccessCallback.onSuccess(result);
          }            

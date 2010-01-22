@@ -313,13 +313,13 @@ public interface Icons extends ImageBundle {
    @Resource("slider.png")
    AbstractImagePrototype sliderIcon();
    
-   @Resource("add.png")
+   @Resource("slider_add.png")
    AbstractImagePrototype sliderAddIcon();
    
-   @Resource("edit.png")
+   @Resource("slider_edit.png")
    AbstractImagePrototype sliderEditIcon();
    
-   @Resource("delete.png")
+   @Resource("slider_delete.png")
    AbstractImagePrototype sliderDeleteIcon();
    
    @Resource("label.gif")
@@ -331,12 +331,12 @@ public interface Icons extends ImageBundle {
    @Resource("sensor.png")
    AbstractImagePrototype sensorIcon();
 
-   @Resource("add.png")
+   @Resource("sensor_add.png")
    AbstractImagePrototype sensorAddIcon();
 
-   @Resource("edit.png")
+   @Resource("sensor_edit.png")
    AbstractImagePrototype sensorEditIcon();
 
-   @Resource("delete.png")
+   @Resource("sensor_delete.png")
    AbstractImagePrototype sensorDeleteIcon();
 }

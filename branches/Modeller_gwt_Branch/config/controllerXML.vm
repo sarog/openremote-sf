@@ -28,7 +28,7 @@
 			<on>
 				#if(${switchCmd.getSwitchCommandOnRef()})
 	  				#set($uiCmd=${switchCmd.getSwitchCommandOnRef()})
-	  				#foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand(${uiCmd},${eventContainer})})
+	  				#foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($uiCmd,$eventContainer,$maxId)})
 	  					<include type="command" ref="${cmd.getId()}"/>
 					#end
 				#end
@@ -36,7 +36,7 @@
 			<off>
 				#if(${switchCmd.getSwitchCommandOffRef()})
 	  				#set($uiCmd=${switchCmd.getSwitchCommandOffRef()})
-	  				#foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($uiCmd,$eventContainer)})
+	  				#foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($uiCmd,$eventContainer,$maxId)})
 	  					<include type="command" ref="${cmd.getId()}"/>
 					#end
 				#end
@@ -55,7 +55,7 @@
 	  <button id="${button.getOid()}">
 		#if(${button.getUiCommand()})
 			#set($uiCmd=${button.getUiCommand()})
-			#foreach($cmd in ${resourceServiceImpl.getCommandOwnerByUICommand($uiCmd,$eventContainer)})
+			#foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($uiCmd,$eventContainer,$maxId)})
 				#if($cmd.getDelay().equals(""))
 					<include type="command" ref="${cmd.getId()}"/>
 				#else
@@ -70,7 +70,7 @@
 	  <gesture id="${gesture.getOid()}">
 		#if(${gesture.getUiCommand()})
 			#set($uiCmd=${gesture.getUiCommand()})
-			#foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($uiCmd,$eventContainer)})
+			#foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($uiCmd,$eventContainer,$maxId)})
 				#if($cmd.getDelay().equals(""))
 					<include type="command" ref="${cmd.getId()}"/>
 				#else
@@ -87,7 +87,7 @@
       <slider id="${uiSlider.getOid()}">
       #if(${slider.getSetValueCmd()})
          #set($uiCmd=${slider.getSetValueCmd()})
-         #foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($uiCmd,$eventContainer)})
+         #foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($uiCmd,$eventContainer,$maxId)})
          	<setValue>
             	<include type="command" ref="${cmd.getId()}"/>
             </setValue>
@@ -122,7 +122,7 @@
   		<sensor id="${sensor.getOid()}" name="${sensor.getName()}" type="${sensor.getType()}">
   			#if(${sensor.getSensorCommandRef()}&&${sensor.getSensorCommandRef().getDeviceCommand()})
   				#set($deviceCmd=${sensor.getSensorCommandRef().getDeviceCommand()})
-  				#foreach($cmd in ${resourceServiceImpl.getCommandOwnerByUICommand($deviceCmd.getDeviceCommandRef(),$eventContainer)})
+  				#foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($deviceCmd.getDeviceCommandRef(),$eventContainer,$maxId)})
   					<include type="command" ref="${cmd.getId()}"/>
 				#end
 				#if(${sensor.getType().toString().equals("range")})

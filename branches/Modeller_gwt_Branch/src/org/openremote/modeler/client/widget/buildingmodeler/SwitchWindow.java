@@ -32,6 +32,7 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceCommandSelectWindow;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.client.widget.SimpleComboBox;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.Sensor;
@@ -74,6 +75,10 @@ public class SwitchWindow extends FormWindow {
    private boolean edit = false;
    
    public SwitchWindow(Switch switchToggle) {
+      this(switchToggle,null);
+   }
+   
+   public SwitchWindow(Switch switchToggle, Device device) {
       super();
       if (null != switchToggle) {
          this.switchToggle = switchToggle;
@@ -82,12 +87,16 @@ public class SwitchWindow extends FormWindow {
          this.switchToggle = new Switch();
          edit = false;
       }
+      if (device != null) {
+         this.switchToggle.setDevice(device);
+      }
       this.setHeading(edit ? "Edit Switch" : "New Switch");
       this.setSize(320, 240);
       
       createField();
+      show();
    }
-   
+
    private void createField() {
       setWidth(380);
       setAutoHeight(true);
@@ -105,8 +114,10 @@ public class SwitchWindow extends FormWindow {
       List<BeanModel> sensors = BeanModelDataBase.sensorTable.loadAll();
       for (BeanModel sensorBean : sensors) {
          Sensor sensor = sensorBean.getBean();
-         ComboBoxDataModel<Sensor> sensorRefSelector = new ComboBoxDataModel<Sensor>(sensor.getName(), sensor);
-         sensorStore.add(sensorRefSelector);
+         if (sensor.getDevice().equals(switchToggle.getDevice())) {
+            ComboBoxDataModel<Sensor> sensorRefSelector = new ComboBoxDataModel<Sensor>(sensor.getName(), sensor);
+            sensorStore.add(sensorRefSelector);
+         }
       }
       sensorField.setStore(sensorStore);
       sensorField.addSelectionChangedListener(new SensorSelectChangeListener());
@@ -119,6 +130,10 @@ public class SwitchWindow extends FormWindow {
          }
          switchOnBtn.setText(switchToggle.getSwitchCommandOnRef().getDisplayName());
          switchOffBtn.setText(switchToggle.getSwitchCommandOffRef().getDisplayName());
+         
+//         switchOnBtn.setEnabled(false);
+//         switchOffBtn.setEnabled(false);
+//         sensorField.setEnabled(false);
       }
       
       AdapterField switchOnAdapter = new AdapterField(switchOnBtn);
@@ -173,6 +188,23 @@ public class SwitchWindow extends FormWindow {
 
             });
          } else {
+            SwitchCommandOnRef onRef = new SwitchCommandOnRef();
+            onRef.setDeviceCommand(switchToggle.getSwitchCommandOnRef().getDeviceCommand());
+            onRef.setDeviceName(switchToggle.getDevice().getName());
+            onRef.setOnSwitch(switchToggle);
+            
+            SwitchCommandOffRef offRef = new SwitchCommandOffRef();
+            offRef.setDeviceCommand(switchToggle.getSwitchCommandOffRef().getDeviceCommand());
+            offRef.setDeviceName(switchToggle.getDevice().getName());
+            offRef.setOffSwitch(switchToggle);
+            
+            SwitchSensorRef sensorRef = new SwitchSensorRef(switchToggle);
+            sensorRef.setSensor(switchToggle.getSwitchSensorRef().getSensor());
+            sensorRef.setSwitchToggle(switchToggle);
+            
+            switchToggle.setSwitchCommandOnRef(onRef);
+            switchToggle.setSwitchCommandOffRef(offRef);
+            switchToggle.setSwitchSensorRef(sensorRef);
             SwitchBeanModelProxy.update(switchToggle.getBeanModel(), new AsyncSuccessCallback<Switch>() {
                @Override
                public void onSuccess(Switch result) {
@@ -192,7 +224,7 @@ public class SwitchWindow extends FormWindow {
       }
       @Override
       public void componentSelected(ButtonEvent ce) {
-         final DeviceCommandSelectWindow selectCommandWindow = new DeviceCommandSelectWindow();
+         final DeviceCommandSelectWindow selectCommandWindow = new DeviceCommandSelectWindow(SwitchWindow.this.switchToggle.getDevice());
          final Button command = ce.getButton();
          selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
@@ -208,7 +240,6 @@ public class SwitchWindow extends FormWindow {
                   return;
                }
                command.setText(deviceCommand.getDisplayName());
-               System.out.println(command.getTitle());
                if (forSwitchOn) {
                   SwitchCommandOnRef switchOnCmdRef = new SwitchCommandOnRef();
                   switchOnCmdRef.setOnSwitch(switchToggle);
