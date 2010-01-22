@@ -10,6 +10,9 @@
     <string name="has_an_error">has an error.</string>
     <string name="error_connecting_to">Error connecting to server while fetching URL: </string>
     <string name="activities">Activities</string>
-    <string name="enter_device_url">Enter Device URL (i.e. http://192.168.1.1 or http://myremote.myhouse.net):</string>
+    <string name="enter_device_url">Enter Device server (i.e. 192.168.1.1:8080 or myremote.myhouse.net):</string>
     <string name="save">Save</string>
+    <string name="settings">Settings</string>
+    <string name="text_auto">AutoDiscovery:</string>
+    <string name="button_auto">Toggle</string>
 </resources>
