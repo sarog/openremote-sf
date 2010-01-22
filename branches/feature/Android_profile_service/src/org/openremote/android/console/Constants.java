@@ -27,18 +27,27 @@ import android.view.Menu;
  * @author Andrew C. Oliver <acoliver osintegrators.com>
  * 
  */
-public interface Constants {
-
-    long BINDING_VERSION = 1L;
-    int MENU_ITEM_CONFIG = Menu.FIRST + 1;
-    int MENU_ITEM_QUIT = Menu.FIRST + 2;
-    int MENU_ITEM_ACTIVITIES = Menu.FIRST + 3;
-    String ERROR = "error";
-    int DIALOG_ERROR_ID = 0;
-    int HTTP_SUCCESS = 200;
-    String ACTIVITY = "activity";
-    String ELEMENT_OPENREMOTE = "openremote";
-    String ELEMENT_BUTTONS = "buttons";
-    String URL = "url";
-    String LOADER = "loader";
+public class Constants {
+   
+   private Constants() {
+   }
+   public static final long BINDING_VERSION = 1L;
+   public static final long MODEL_VERSION = 2L;
+   public static final int MENU_ITEM_CONFIG = Menu.FIRST + 1;
+   public static final int MENU_ITEM_QUIT = Menu.FIRST + 2;
+   public static final int MENU_ITEM_ACTIVITIES = Menu.FIRST + 3;
+   public static final String ERROR = "error";
+   public static final int DIALOG_ERROR_ID = 0;
+   public static final int HTTP_SUCCESS = 200;
+   public static final String ACTIVITY = "activity";
+   public static final String ELEMENT_OPENREMOTE = "openremote";
+   public static final String ELEMENT_BUTTONS = "buttons";
+   public static final String URL = "url";
+   public static final String LOADER = "loader";
+   public static final int REQUEST_CODE = 1;
+   public static final int RESULT_CODE = 2;
+   public static final String MULTICAST_ADDRESS = "224.0.1.100";
+   public static final int MULTICAST_PORT = 3333;
+   public static final int LOCAL_SERVER_PORT = 2346;
+    
 }

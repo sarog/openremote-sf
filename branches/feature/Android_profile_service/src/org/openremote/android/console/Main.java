@@ -41,11 +41,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -77,116 +74,117 @@ public class Main extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        imageLoader = new ImageLoader();
-        ArrayList<String> activityNames = new ArrayList<String>(); // used
-        // solely for
-        // making our
-        // list view
-        activities = new ArrayList<ORActivity>();
-        this.ip = getIp();
-        if (!TextUtils.isEmpty(ip)) {
-            String error = null;
-            try {
-                parseXML(ip + "/iphone.xml", activityNames, activities);
-                startLoadingImages();
-            } catch (IllegalArgumentException e) {
-                Log.e(this.toString(), "Error in " + ip
-                        + "/iphone.xml syntax (most likely binding)", e);
-                error = getApplication().getString(R.string.config_file_at)
-                        + ip + "/iphone.xml "
-                        + getApplication().getString(R.string.has_an_error);
-                doSettings(error);
-            } catch (ParserConfigurationException e) {
-                Log.e(this.toString(), "Error in " + ip
-                        + "/iphone.xml syntax (most likely bad code)", e);
-                error = getApplication().getString(R.string.config_file_at)
-                        + ip + "/iphone.xml "
-                        + getApplication().getString(R.string.has_an_error);
-                doSettings(error);
-            } catch (SAXException e) {
-                Log
-                        .e(
-                                this.toString(),
-                                "Error in "
-                                        + ip
-                                        + "/iphone.xml syntax (most likely invalid conformance or non-wellformed)",
-                                e);
-                error = getApplication().getString(R.string.config_file_at)
-                        + ip + "/iphone.xml "
-                        + getApplication().getString(R.string.has_an_error);
-                doSettings(error);
-            } catch (IOException e) {
-                Log.e(this.toString(), "Error connecting to " + ip
-                        + " probably bad URL", e);
-                error = getApplication()
-                        .getString(R.string.error_connecting_to)
-                        + ip + "/iphone.xml";
-                doSettings(error);
-            } catch (IllegalAccessException e) {
-                Log.e(this.toString(), "Error in " + ip
-                        + "/iphone.xml probably bad XML bound to wrong stuff",
-                        e);
-                error = getApplication().getString(R.string.config_file_at)
-                        + ip + "/iphone.xml "
-                        + getApplication().getString(R.string.has_an_error);
-                doSettings(error);
-            } catch (InstantiationException e) {
-                Log.e(this.toString(), "Error in " + ip
-                        + "/iphone.xml probably bad XML bound to wrong stuff",
-                        e);
-                error = getApplication().getString(R.string.config_file_at)
-                        + ip + "/iphone.xml "
-                        + getApplication().getString(R.string.has_an_error);
-                doSettings(error);
-            } catch (InvocationTargetException e) {
-                Log.e(this.toString(), "Error in " + ip
-                        + "/iphone.xml probably bad XML bound to wrong stuff",
-                        e);
-                error = getApplication().getString(R.string.config_file_at)
-                        + ip + "/iphone.xml "
-                        + getApplication().getString(R.string.has_an_error);
-                doSettings(error);
-            }
-
-            // Set main.XML as the layout for this Activity
-            activitiesListView = new LinearLayout(this);
-            activitiesListView.setBackgroundColor(0);
-            activitiesListView.setTag(R.string.activities);
-            activitiesListView.setLayoutParams(new LinearLayout.LayoutParams(
-                    320, 480));
-            ListView lv = constructListView(activityNames);
-            lv.setCacheColorHint(0);
-            lv.setBackgroundColor(0);
-
-            activitiesListView.addView(lv);
-            this.setContentView(activitiesListView);
-
-            // add click listener to the list
-            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view,
-                        int pos, long id) {
-                    Log.d(this.toString(), "onClick");
-                    String selected = (String) parent.getItemAtPosition(pos);
-                    for (ORActivity activity : activities) {
-                        if (selected.equals(activity.getName())) {
-                            Intent intent = new Intent();
-                            intent
-                                    .setClassName(this.getClass().getPackage()
-                                            .getName(), ActivityHandler.class
-                                            .getName());
-                            intent.putExtra(Constants.ACTIVITY, activity);
-                            startActivity(intent);
-                        }
-                    }
-                }
-
-            });
-
-        } else {
-            doSettings(null);
-        }
+        configSettings();
+//        imageLoader = new ImageLoader();
+//        ArrayList<String> activityNames = new ArrayList<String>(); // used
+//        // solely for
+//        // making our
+//        // list view
+//        activities = new ArrayList<ORActivity>();
+//        this.ip = getIp();
+//        if (!TextUtils.isEmpty(ip)) {
+//            String error = null;
+//            try {
+//                parseXML(ip + "/iphone.xml", activityNames, activities);
+//                startLoadingImages();
+//            } catch (IllegalArgumentException e) {
+//                Log.e(this.toString(), "Error in " + ip
+//                        + "/iphone.xml syntax (most likely binding)", e);
+//                error = getApplication().getString(R.string.config_file_at)
+//                        + ip + "/iphone.xml "
+//                        + getApplication().getString(R.string.has_an_error);
+//                doSettings(error);
+//            } catch (ParserConfigurationException e) {
+//                Log.e(this.toString(), "Error in " + ip
+//                        + "/iphone.xml syntax (most likely bad code)", e);
+//                error = getApplication().getString(R.string.config_file_at)
+//                        + ip + "/iphone.xml "
+//                        + getApplication().getString(R.string.has_an_error);
+//                doSettings(error);
+//            } catch (SAXException e) {
+//                Log
+//                        .e(
+//                                this.toString(),
+//                                "Error in "
+//                                        + ip
+//                                        + "/iphone.xml syntax (most likely invalid conformance or non-wellformed)",
+//                                e);
+//                error = getApplication().getString(R.string.config_file_at)
+//                        + ip + "/iphone.xml "
+//                        + getApplication().getString(R.string.has_an_error);
+//                doSettings(error);
+//            } catch (IOException e) {
+//                Log.e(this.toString(), "Error connecting to " + ip
+//                        + " probably bad URL", e);
+//                error = getApplication()
+//                        .getString(R.string.error_connecting_to)
+//                        + ip + "/iphone.xml";
+//                doSettings(error);
+//            } catch (IllegalAccessException e) {
+//                Log.e(this.toString(), "Error in " + ip
+//                        + "/iphone.xml probably bad XML bound to wrong stuff",
+//                        e);
+//                error = getApplication().getString(R.string.config_file_at)
+//                        + ip + "/iphone.xml "
+//                        + getApplication().getString(R.string.has_an_error);
+//                doSettings(error);
+//            } catch (InstantiationException e) {
+//                Log.e(this.toString(), "Error in " + ip
+//                        + "/iphone.xml probably bad XML bound to wrong stuff",
+//                        e);
+//                error = getApplication().getString(R.string.config_file_at)
+//                        + ip + "/iphone.xml "
+//                        + getApplication().getString(R.string.has_an_error);
+//                doSettings(error);
+//            } catch (InvocationTargetException e) {
+//                Log.e(this.toString(), "Error in " + ip
+//                        + "/iphone.xml probably bad XML bound to wrong stuff",
+//                        e);
+//                error = getApplication().getString(R.string.config_file_at)
+//                        + ip + "/iphone.xml "
+//                        + getApplication().getString(R.string.has_an_error);
+//                doSettings(error);
+//            }
+//
+//            // Set main.XML as the layout for this Activity
+//            activitiesListView = new LinearLayout(this);
+//            activitiesListView.setBackgroundColor(0);
+//            activitiesListView.setTag(R.string.activities);
+//            activitiesListView.setLayoutParams(new LinearLayout.LayoutParams(
+//                    320, 480));
+//            ListView lv = constructListView(activityNames);
+//            lv.setCacheColorHint(0);
+//            lv.setBackgroundColor(0);
+//
+//            activitiesListView.addView(lv);
+//            this.setContentView(activitiesListView);
+//
+//            // add click listener to the list
+//            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//
+//                @Override
+//                public void onItemClick(AdapterView<?> parent, View view,
+//                        int pos, long id) {
+//                    Log.d(this.toString(), "onClick");
+//                    String selected = (String) parent.getItemAtPosition(pos);
+//                    for (ORActivity activity : activities) {
+//                        if (selected.equals(activity.getName())) {
+//                            Intent intent = new Intent();
+//                            intent
+//                                    .setClassName(this.getClass().getPackage()
+//                                            .getName(), ActivityHandler.class
+//                                            .getName());
+//                            intent.putExtra(Constants.ACTIVITY, activity);
+//                            startActivity(intent);
+//                        }
+//                    }
+//                }
+//
+//            });
+//
+//        } else {
+//            doSettings(null);
+//        }
     }
 
     private void startLoadingImages() {
@@ -327,4 +325,10 @@ public class Main extends Activity {
         quit.setIcon(R.drawable.ic_menu_close_clear_cancel);
     }
 
+    private void configSettings() {
+       Intent i = new Intent();
+       i.setClassName(this.getClass().getPackage().getName(),
+               AppSettingsActivity.class.getName());
+       startActivity(i);
+    }
 }

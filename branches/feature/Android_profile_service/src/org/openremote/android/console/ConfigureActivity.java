@@ -20,9 +20,10 @@
 package org.openremote.android.console;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -47,22 +48,22 @@ public class ConfigureActivity extends Activity {
     public void onCreate(Bundle savedState) {
         super.onCreate(savedState);
         Log.d(this.toString(), "onCreate for configure activity");
-        String url = getUrl();
-        String error = getIntent().getExtras().getString(Constants.ERROR);
+//        String url = getUrl();
+//        String error = getIntent().getExtras().getString(Constants.ERROR);
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setLayoutParams(new LinearLayout.LayoutParams(320, 480));
-        if (!TextUtils.isEmpty(error)) {
-            TextView tv = new TextView(this);
-            tv.setText(error);
-            tv.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.FILL_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
-            tv.setTextColor(Color.RED);
-            tv.setTypeface(Typeface.DEFAULT_BOLD);
-            tv.setTextSize(18);
-            layout.addView(tv);
-        }
+//        if (!TextUtils.isEmpty(error)) {
+//            TextView tv = new TextView(this);
+//            tv.setText(error);
+//            tv.setLayoutParams(new LinearLayout.LayoutParams(
+//                    LinearLayout.LayoutParams.FILL_PARENT,
+//                    LinearLayout.LayoutParams.WRAP_CONTENT));
+//            tv.setTextColor(Color.RED);
+//            tv.setTypeface(Typeface.DEFAULT_BOLD);
+//            tv.setTextSize(18);
+//            layout.addView(tv);
+//        }
 
         TextView tv = new TextView(this);
         tv.setText(R.string.enter_device_url);
@@ -73,9 +74,9 @@ public class ConfigureActivity extends Activity {
                 LinearLayout.LayoutParams.WRAP_CONTENT));
         EditText et = new EditText(this);
         et.setTag(Constants.URL);
-        if (!TextUtils.isEmpty(url)) {
-            et.setText(url);
-        }
+//        if (!TextUtils.isEmpty(url)) {
+//            et.setText(url);
+//        }
         Button b = new Button(this);
         b.setText(R.string.save);
         b.setOnClickListener(new View.OnClickListener() {
@@ -84,12 +85,16 @@ public class ConfigureActivity extends Activity {
             public void onClick(View v) {
                 String url = ((EditText) ((View) v.getParent())
                         .findViewWithTag(Constants.URL)).getText().toString();
-                SharedPreferences prefs = getSharedPreferences(
-                        OPEN_REMOTE_PREFS, 0);
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString(Constants.URL, url);
-                editor.commit();
-                System.exit(0);
+                Intent intent = getIntent();
+                intent.setData(Uri.parse(url));
+                setResult(Constants.RESULT_CODE, intent);
+                finish();
+//                SharedPreferences prefs = getSharedPreferences(
+//                        OPEN_REMOTE_PREFS, 0);
+//                SharedPreferences.Editor editor = prefs.edit();
+//                editor.putString(Constants.URL, url);
+//                editor.commit();
+//                System.exit(0);
             }
         });
         layout.addView(tv);

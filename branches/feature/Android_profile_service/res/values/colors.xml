@@ -1,2 +1,4 @@
-<resources><color name="black">#000</color>
+<resources>
+   <color name="black">#000</color>
+   <color name="yellow">#F9F900</color>
 </resources>
