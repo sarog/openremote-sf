@@ -52,7 +52,12 @@ public abstract class ScreenComponent extends ComponentContainer {
       } else if (uiComponent instanceof UISwitch) {
          return new ScreenSwitch(canvas, (UISwitch) uiComponent);
       } else if (uiComponent instanceof UISlider) {
-         return new ScreenSlider(canvas, (UISlider) uiComponent);
+         UISlider slider = uiComponent.getBeanModel().getBean();
+         if(slider.isVertical()){
+            return new VerticalScreenSlider(canvas, (UISlider) uiComponent);
+         } else {
+            return new HorizontalScreenSlider(canvas, (UISlider) uiComponent);
+         }
       } else if (uiComponent instanceof UILabel) {
          return new ScreenLabel(canvas, (UILabel) uiComponent);
       } else if (uiComponent instanceof UIImage) {

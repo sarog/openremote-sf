@@ -313,6 +313,9 @@ public interface Icons extends ImageBundle {
    @Resource("slider.png")
    AbstractImagePrototype sliderIcon();
    
+   @Resource("vslider.png")
+   AbstractImagePrototype vsliderIcon();
+   
    @Resource("slider_add.png")
    AbstractImagePrototype sliderAddIcon();
    

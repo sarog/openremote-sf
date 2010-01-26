@@ -392,14 +392,22 @@ public class TreePanelBuilder {
       widgetTree.setBorders(false);
       widgetTree.setHeight("100%");
       widgetTree.setDisplayProperty("name");
-//      TreeFolderBean folderBean = new TreeFolderBean();
-//      folderBean.setDisplayName("groups");
-      widgetTreeStore.add(new UIButton().getBeanModel(), true);
-      widgetTreeStore.add(new UISwitch().getBeanModel(), true);
+      
+      widgetTreeStore.add(new UIGrid().getBeanModel(), true);
       widgetTreeStore.add(new UILabel().getBeanModel(), true);
       widgetTreeStore.add(new UIImage().getBeanModel(), true);
-      widgetTreeStore.add(new UIGrid().getBeanModel(), true);
+      widgetTreeStore.add(new UIButton().getBeanModel(), true);
+      widgetTreeStore.add(new UISwitch().getBeanModel(), true);
+      /*
+       * add a horizontal slider
+       */
       widgetTreeStore.add(new UISlider().getBeanModel(), true);
+      /*
+       * add a vertical slider
+       */
+      UISlider vSlider = new UISlider();
+      vSlider.setVertical(true);
+      widgetTreeStore.add(vSlider.getBeanModel(), true);
       
       widgetTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
@@ -411,10 +419,11 @@ public class TreePanelBuilder {
                return ICON.labelIcon();
             } else if (thisModel.getBean() instanceof UIImage) {
                return ICON.imageIcon();
+            } else if (thisModel.getBean() instanceof UISlider) {
+               UISlider slider = thisModel.getBean();
+               return slider.isVertical()?ICON.vsliderIcon():ICON.sliderIcon();
             } else if (thisModel.getBean() instanceof UIGrid) {
                return ICON.gridIcon();
-            } else if (thisModel.getBean() instanceof UISlider) {
-               return ICON.sliderIcon();
             } else {
                return ICON.buttonIcon();
             }

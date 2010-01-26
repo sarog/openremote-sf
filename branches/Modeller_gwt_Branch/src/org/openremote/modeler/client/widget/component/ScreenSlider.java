@@ -22,38 +22,38 @@ package org.openremote.modeler.client.widget.component;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.propertyform.SliderPropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
+import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UISlider;
 
-public class ScreenSlider extends ScreenComponent {
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
+
+
+public abstract class ScreenSlider extends ScreenComponent {
 
    private UISlider uiSlider;
-   private FlexSliderTable slider = new FlexSliderTable();
-   
+
+   protected LayoutContainer minImage = new LayoutContainer();
+   protected LayoutContainer minTrackImage = new LayoutContainer();
+   protected LayoutContainer thumbImage = new LayoutContainer();
+   protected LayoutContainer maxTrackImage = new LayoutContainer();
+   protected LayoutContainer maxImage = new LayoutContainer();
+
    public ScreenSlider(ScreenCanvas screenCanvas) {
       super(screenCanvas);
-      initial();
    }
-   
+
    public ScreenSlider(ScreenCanvas screenCanvas, UISlider uiSlider) {
       this(screenCanvas);
       this.uiSlider = uiSlider;
-      if (uiSlider.isVertical()) {
-         slider.setVertical(true);
-      }
-      if (uiSlider.getMinImage() != null) {
-         slider.setMinImageUrl(uiSlider.getMinImage().getSrc());
-         slider.setMinTrackImageUrl(uiSlider.getMinTrackImage().getSrc());
-         slider.setThumbImageUrl(uiSlider.getThumbImage().getSrc());
-         slider.setMaxImageUrl(uiSlider.getMaxImage().getSrc());
-         slider.setMaxTrackImageUrl(uiSlider.getMaxTrackImage().getSrc());
-      }
+      setDefault();
+      add(minImage);
+      add(minTrackImage);
+      add(thumbImage);
+      add(maxTrackImage);
+      add(maxImage);
    }
-   
-   private void initial() {
-      add(slider);
-      setSize(150, 20);
-   }
-   
+
    public UISlider getUiSlider() {
       return uiSlider;
    }
@@ -62,21 +62,6 @@ public class ScreenSlider extends ScreenComponent {
       this.uiSlider = uiSlider;
    }
 
-   public FlexSliderTable getSlider() {
-      return slider;
-   }
-   
-   public void setVertical(boolean vertical) {
-      if (slider.isVertical() != vertical) {
-         if (vertical) {
-            setSize(20, 150);
-         } else {
-            setSize(150, 20);
-         }
-      }
-      slider.setVertical(vertical);
-   }
-   
    @Override
    public String getName() {
       return "Slider";
@@ -89,12 +74,47 @@ public class ScreenSlider extends ScreenComponent {
    @Override
    public void setSize(int width, int height) {
       super.setSize(width, height);
-      slider.setSize("" + width, "" + height);
    }
-   
+
    @Override
    public PropertyForm getPropertiesForm() {
       return new SliderPropertyForm(this);
    }
-   
+
+   public abstract void setDefault();
+
+   public void setMinImage(String imageURL) {
+      ImageSource minImageSource = new ImageSource();
+      minImageSource.setSrc(imageURL);
+      uiSlider.setMinImage(minImageSource);
+      minImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
+   }
+
+   public void setMinTrackImage(String imageURL) {
+      uiSlider.setMinTrackImage(new ImageSource(imageURL));
+      minTrackImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
+   }
+
+   public void setThumbImage(String imageURL) {
+      uiSlider.setThumbImage(new ImageSource(imageURL));
+      thumbImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
+   }
+
+   public void setMaxTrackImage(String imageURL) {
+      uiSlider.setMaxTrackImage(new ImageSource(imageURL));
+      maxTrackImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
+   }
+
+   public void setMaxImage(String imageURL) {
+      uiSlider.setMaxImage(new ImageSource(imageURL));
+      maxImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
+   }
+
+   public void setSlider(Slider slider) {
+      uiSlider.setSlider(slider);
+   }
+
+   public Slider getSlider() {
+      return uiSlider.getSlider();
+   }
 }
