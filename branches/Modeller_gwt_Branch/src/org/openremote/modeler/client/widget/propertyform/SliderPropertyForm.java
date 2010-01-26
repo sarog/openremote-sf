@@ -22,56 +22,26 @@ package org.openremote.modeler.client.widget.propertyform;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.widget.component.ScreenSlider;
-import org.openremote.modeler.client.widget.uidesigner.AbsoluteLayoutContainer;
 import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
-import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
 import org.openremote.modeler.client.widget.uidesigner.SelectSliderWindow;
 import org.openremote.modeler.domain.Slider;
-import org.openremote.modeler.domain.component.ImageSource;
-import org.openremote.modeler.domain.component.UISlider;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
-import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.FieldEvent;
-import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
-import com.extjs.gxt.ui.client.widget.form.CheckBox;
-import com.extjs.gxt.ui.client.widget.form.CheckBoxGroup;
 
 public class SliderPropertyForm extends PropertyForm {
-
+   private ScreenSlider screenSlider = null;
    public SliderPropertyForm(ScreenSlider screenSlider) {
       super();
+      this.screenSlider = screenSlider;
       setLabelWidth(100);
-      addFields(screenSlider);
+      addFields();
    }
    
-   private void addFields(final ScreenSlider screenSlider) {
-      final UISlider uiSlider = screenSlider.getUiSlider();
-      
-      CheckBoxGroup vertical = new CheckBoxGroup();
-      vertical.setFieldLabel("Vertical");
-      final CheckBox check = new CheckBox();
-      check.setValue(uiSlider.isVertical());
-      check.addListener(Events.Blur, new Listener<FieldEvent>() {
-         @Override
-         public void handleEvent(FieldEvent be) {
-            uiSlider.setVertical(check.getValue());
-            screenSlider.setVertical(check.getValue());
-            ComponentContainer container = (ComponentContainer)screenSlider.getParent();
-            if (container instanceof AbsoluteLayoutContainer) {
-               ((AbsoluteLayoutContainer)container).setSize(screenSlider.getWidth(), screenSlider.getHeight());
-            } else {
-               container.setSize(screenSlider.getWidth(), screenSlider.getHeight());
-            }
-            screenSlider.layout();
-         }
-      });
-      vertical.add(check);
-      
+   private void addFields() {
       final Button command = new Button("Select");
       command.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
@@ -82,18 +52,18 @@ public class SliderPropertyForm extends PropertyForm {
                public void afterSubmit(SubmitEvent be) {
                   BeanModel dataModel = be.<BeanModel> getData();
                   Slider slider = dataModel.getBean();
-                  uiSlider.setSlider(slider);
+                  screenSlider.setSlider(slider);
                   command.setText(slider.getName());
                }
             });
          }
       });
-      if (uiSlider.getSlider() != null) {
-         command.setText(uiSlider.getSlider().getName());
+      if (screenSlider.getSlider() != null) {
+         command.setText(screenSlider.getSlider().getName());
       }
       AdapterField adapterCommand = new AdapterField(command);
       adapterCommand.setFieldLabel("SliderCommand");
-      
+
       Button minImageBtn = new Button("Select");
       minImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
@@ -103,9 +73,7 @@ public class SliderPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   String minImageUrl = be.getData();
-                  ImageSource minImage = new ImageSource(minImageUrl);
-                  uiSlider.setMinImage(minImage);
-                  screenSlider.getSlider().setMinImageUrl(minImageUrl);
+                  screenSlider.setMinImage(minImageUrl);
                   screenSlider.layout();
                }
             });
@@ -113,7 +81,7 @@ public class SliderPropertyForm extends PropertyForm {
       });
       AdapterField adapterMinImageBtn = new AdapterField(minImageBtn);
       adapterMinImageBtn.setFieldLabel("MinImage");
-      
+
       Button minTrackImageBtn = new Button("Select");
       minTrackImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
@@ -123,9 +91,7 @@ public class SliderPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   String minTrackImageUrl = be.getData();
-                  ImageSource minTrackImage = new ImageSource(minTrackImageUrl);
-                  uiSlider.setMinTrackImage(minTrackImage);
-                  screenSlider.getSlider().setMinTrackImageUrl(minTrackImageUrl);
+                  screenSlider.setMinTrackImage(minTrackImageUrl);
                   screenSlider.layout();
                }
             });
@@ -133,7 +99,7 @@ public class SliderPropertyForm extends PropertyForm {
       });
       AdapterField adapterMinTrackImageBtn = new AdapterField(minTrackImageBtn);
       adapterMinTrackImageBtn.setFieldLabel("TrackImage(min)");
-      
+
       Button thumbImageBtn = new Button("Select");
       thumbImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
@@ -143,8 +109,7 @@ public class SliderPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   String thumbImageUrl = be.getData();
-                  uiSlider.setThumbImage(new ImageSource(thumbImageUrl));
-                  screenSlider.getSlider().setThumbImageUrl(thumbImageUrl);
+                  screenSlider.setThumbImage(thumbImageUrl);
                   screenSlider.layout();
                }
             });
@@ -152,7 +117,7 @@ public class SliderPropertyForm extends PropertyForm {
       });
       AdapterField adapterThumbImageBtn = new AdapterField(thumbImageBtn);
       adapterThumbImageBtn.setFieldLabel("ThumbImage");
-      
+
       Button maxImageBtn = new Button("Select");
       maxImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
@@ -162,8 +127,7 @@ public class SliderPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   String maxImageUrl = be.getData();
-                  uiSlider.setMaxImage(new ImageSource(maxImageUrl));
-                  screenSlider.getSlider().setMaxImageUrl(maxImageUrl);
+                  screenSlider.setMaxImage(maxImageUrl);
                   screenSlider.layout();
                }
             });
@@ -171,7 +135,7 @@ public class SliderPropertyForm extends PropertyForm {
       });
       AdapterField adapterMaxImageBtn = new AdapterField(maxImageBtn);
       adapterMaxImageBtn.setFieldLabel("MaxImage");
-      
+
       Button maxTrackImageBtn = new Button("Select");
       maxTrackImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
@@ -181,8 +145,7 @@ public class SliderPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   String maxTrackImageUrl = be.getData();
-                  uiSlider.setMaxTrackImage(new ImageSource(maxTrackImageUrl));
-                  screenSlider.getSlider().setMaxTrackImageUrl(maxTrackImageUrl);
+                  screenSlider.setMaxTrackImage(maxTrackImageUrl);
                   screenSlider.layout();
                }
             });
@@ -190,13 +153,12 @@ public class SliderPropertyForm extends PropertyForm {
       });
       AdapterField adapterMaxTrackImageBtn = new AdapterField(maxTrackImageBtn);
       adapterMaxTrackImageBtn.setFieldLabel("TrackImage(max)");
-      
-      add(vertical);
+
       add(adapterCommand);
       add(adapterMinImageBtn);
       add(adapterMinTrackImageBtn);
       add(adapterThumbImageBtn);
-      add(adapterMaxImageBtn);
       add(adapterMaxTrackImageBtn);
+      add(adapterMaxImageBtn);
    }
 }

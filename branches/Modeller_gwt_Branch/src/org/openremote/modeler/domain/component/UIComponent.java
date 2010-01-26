@@ -58,13 +58,11 @@ public abstract class UIComponent extends BusinessEntity {
    public abstract String getPanelXml();
 
    public int getPreferredWidth() {
-      int width = 50;
-      return width;
+      return 50;
    }
 
    public int getPreferredHeight() {
-      int height = 50;
-      return height;
+      return 50;
    }
 
    /**
@@ -87,7 +85,11 @@ public abstract class UIComponent extends BusinessEntity {
          } else if (uiComponent instanceof UISwitch) {
             result = new UISwitch();
          } else if (uiComponent instanceof UISlider) {
+            UISlider slider = uiComponent.getBeanModel().getBean();
             result = new UISlider();
+            if(slider.isVertical()){
+               ((UISlider)result).setVertical(true);
+            }
          } else if (uiComponent instanceof UILabel) {
             result = new UILabel();
          } else if (uiComponent instanceof UIImage) {

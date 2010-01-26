@@ -110,13 +110,11 @@ public class UIImage extends UIComponent implements SensorOwner {
 
    @Override
    public int getPreferredWidth() {
-      int width = 30;
-      return width;
+      return 30;
    }
 
    @Override
    public int getPreferredHeight() {
-      int height = 32;
-      return height;
+      return 32;
    }
 }

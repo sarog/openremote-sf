@@ -144,17 +144,15 @@ public class UISlider extends UIControl implements SensorOwner {
 
    @Override
    public String getName() {
-      return "Slider";
+      return "Slider("+(vertical?"Vertical":"Horizontal")+")";
    }
    
    public @Override int getPreferredWidth(){
-      int width = 150;
-      return width;
+      return vertical?44:198;
    }
    
    public @Override int getPreferredHeight(){
-      int height = 20;
-      return height;
+      return vertical?198:44;
    }
 
    @Override

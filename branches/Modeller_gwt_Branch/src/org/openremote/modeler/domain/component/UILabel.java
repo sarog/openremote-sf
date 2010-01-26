@@ -137,13 +137,11 @@ public class UILabel extends UIComponent implements SensorOwner {
 
    @Override
    public int getPreferredWidth() {
-      int width = 150;
-      return width;
+      return 150;
    }
 
    @Override
    public int getPreferredHeight() {
-      int height = 50;
-      return height;
+      return 50;
    }
 }
