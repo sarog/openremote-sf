@@ -45,7 +45,8 @@ public class Constants {
    public static final String URL = "url";
    public static final String LOADER = "loader";
    public static final int REQUEST_CODE = 1;
-   public static final int RESULT_CODE = 2;
+   public static final int RESULT_CONTROLLER_URL = 2;
+   public static final int RESULT_PANEL_SELECTED = 3;
    public static final String MULTICAST_ADDRESS = "224.0.1.100";
    public static final int MULTICAST_PORT = 3333;
    public static final int LOCAL_SERVER_PORT = 2346;

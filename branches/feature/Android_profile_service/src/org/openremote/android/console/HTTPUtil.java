@@ -20,12 +20,28 @@
 package org.openremote.android.console;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import android.util.Log;
 
 /**
  * Does the HTTP stuff, anything related to HttpClient should go here.
@@ -58,4 +74,34 @@ public class HTTPUtil {
         return code;
     }
 
+    public static List<String> getPanels(String serverUrl){
+       List<String> panelList = new ArrayList<String>();
+      try {
+         URL url = new URL(serverUrl + "/rest/panels");
+         URLConnection conn = url.openConnection();
+         conn.setConnectTimeout(5000);
+         conn.setReadTimeout(5000);
+         InputStream stream = conn.getInputStream();
+         
+         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+         DocumentBuilder builder = factory.newDocumentBuilder();
+         Document dom = builder.parse(stream);
+         Element root = dom.getDocumentElement();
+         
+         NodeList nodeList = root.getElementsByTagName("panel");
+         int nodeNums = nodeList.getLength();
+         for (int i = 0; i < nodeNums; i++) {
+            panelList.add(nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue());
+         }
+      } catch (MalformedURLException e) {
+         Log.e("HTTPUtil", "can not creat url(" + serverUrl + "/rest/panels)", e);
+      } catch (IOException e) {
+         Log.e("HTTPUtil", "can not open connection to url(" + serverUrl + "/rest/panels)", e);
+      } catch (ParserConfigurationException e) {
+         Log.e("HTTPUtil", "can not build new Document builder", e);
+      } catch (SAXException e) {
+         Log.e("HTTPUtil", "parse panels error", e);
+      }
+       return panelList;
+    }
 }
