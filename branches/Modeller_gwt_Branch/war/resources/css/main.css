@@ -205,24 +205,7 @@ table.screen-btn-cont td.br-c{
    overflow:hidden;
 }
 
-.slider-left-track {
-	width: 60%;
-   background: url(../images/custom/slider/left_scroll.png) repeat-x scroll 0 50%;
-}
-.slider-right-track {
-	width: 60%;
-   background: url(../images/custom/slider/right_scroll.png) repeat-x scroll 0 50%;
-}
-.slider-top-track {
-   height: 40%;
-   background: url(../images/custom/slider/right_scroll.png) repeat-y scroll 0 0;
-}
-.slider-bottom-track {
-   height: 40%;
-   background: url(../images/custom/slider/left_scroll.png) repeat-y scroll 0 0;
-}
 .sliderMinImage {
-	/*background: url(../images/custom/slider/min.png);*/
 	background-position:left center;
 	background-repeat:no-repeat;
 	display:block;
@@ -233,7 +216,6 @@ table.screen-btn-cont td.br-c{
 	width:90%;
 }
 .sliderMinTrackImage {
-	/*background: url(../images/custom/slider/minTrack.png);*/
 	background-position:left center;
 	background-repeat:repeat-x;
 	height:44px;
@@ -243,7 +225,6 @@ table.screen-btn-cont td.br-c{
 	z-index:100;
 }
 .sliderThumbImage {
-	/*background: url(../images/custom/slider/thumb.png);*/
 	background-position:center center;
 	background-repeat:no-repeat;
 	height:44px;
@@ -254,7 +235,6 @@ table.screen-btn-cont td.br-c{
 	z-index:1025;
 }
 .sliderMaxTrackImage {
-	/*background: url(../images/custom/slider/maxTrack.png);*/
 	background-position:right center;
 	background-repeat:repeat-x;
 	width:70%;
@@ -264,7 +244,6 @@ table.screen-btn-cont td.br-c{
 	right:28px;
 }
 .sliderMaxImage {
-	/*background: url(../images/custom/slider/max.png);*/
 	background-position:right center;
 	background-repeat:no-repeat;
 	height:30px;
@@ -274,7 +253,6 @@ table.screen-btn-cont td.br-c{
 	width:44px;
 }
 .vsliderMinImage {
-	/*background: url(../images/custom/slider/min.png);*/
 	background-position:center bottom;
 	background-repeat:no-repeat;
 	display:block;
@@ -285,7 +263,6 @@ table.screen-btn-cont td.br-c{
 	width:90%;
 }
 .vsliderMinTrackImage {
-	/*background: url(../images/custom/slider/minTrack.png);*/
 	background-position:center bottom;
 	background-repeat:repeat-y;
 	height:65%;
@@ -294,7 +271,6 @@ table.screen-btn-cont td.br-c{
 	width:90%;
 }
 .vsliderThumbImage {
-	/*background: url(../images/custom/slider/thumb.png);*/
 	background-position:center center;
 	background-repeat:no-repeat;
 	position:absolute;
@@ -304,7 +280,6 @@ table.screen-btn-cont td.br-c{
 	z-index:1025;
 }
 .vsliderMaxTrackImage {
-	/*background: url(../images/custom/slider/maxTrack.png);*/
 	background-position:center top;
 	background-repeat:repeat-y;
 	/*left:2px;*/
@@ -314,7 +289,6 @@ table.screen-btn-cont td.br-c{
 	height:35%
 }
 .vsliderMaxImage {
-	/*background: url(../images/custom/slider/max.png);*/
 	background-position:center top;
 	background-repeat:no-repeat;
 	height:90%;
