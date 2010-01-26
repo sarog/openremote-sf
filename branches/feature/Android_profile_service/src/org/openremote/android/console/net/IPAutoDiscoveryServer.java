@@ -20,7 +20,7 @@ public class IPAutoDiscoveryServer implements Runnable {
       try {
          srvr = new ServerSocket(Constants.LOCAL_SERVER_PORT);
          autoServers.clear();
-         srvr.setSoTimeout(3000);
+         srvr.setSoTimeout(1000);
       } catch (IOException e1) {
          e1.printStackTrace();
       }

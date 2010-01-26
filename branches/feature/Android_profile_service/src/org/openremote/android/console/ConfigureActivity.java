@@ -87,7 +87,7 @@ public class ConfigureActivity extends Activity {
                         .findViewWithTag(Constants.URL)).getText().toString();
                 Intent intent = getIntent();
                 intent.setData(Uri.parse(url));
-                setResult(Constants.RESULT_CODE, intent);
+                setResult(Constants.RESULT_CONTROLLER_URL, intent);
                 finish();
 //                SharedPreferences prefs = getSharedPreferences(
 //                        OPEN_REMOTE_PREFS, 0);

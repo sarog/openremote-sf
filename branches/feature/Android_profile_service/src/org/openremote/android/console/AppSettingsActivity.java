@@ -1,17 +1,18 @@
 package org.openremote.android.console;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.util.FileUtil;
-import org.openremote.android.console.util.IPAutoDiscoveryUtil;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -25,11 +26,12 @@ public class AppSettingsActivity extends Activity {
 
    private LinearLayout appSettingsView;
    private ListView customeListView;
-   private ListView autoListView;
-   private int currentId = -1;
+   private Button choosePanel;
+   private int currentCustomServerIndex = -1;
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
+      setTitle(R.string.settings);
       appSettingsView = new LinearLayout(this);
       appSettingsView.setBackgroundColor(0);
       appSettingsView.setTag(R.string.settings);
@@ -39,31 +41,77 @@ public class AppSettingsActivity extends Activity {
       LinearLayout autoLayout = new LinearLayout(this);
       autoLayout.setOrientation(LinearLayout.HORIZONTAL);
       TextView autoText = new TextView(this);
-      autoText.setText("AutoDiscovery:");
+      autoText.setText("Auto Discovery");
       ToggleButton autoButton = new ToggleButton(this);
+      boolean autoMode = AppSettingsModel.isAutoMode(AppSettingsActivity.this);
+      autoButton.setChecked(autoMode);
       autoButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
          public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if (isChecked) {
-               setTitle("checked");
-               appSettingsView.removeViewAt(2);
-               appSettingsView.addView(constructAutoServersView(), 2);
+               appSettingsView.removeViewAt(3);
+               appSettingsView.addView(constructAutoServersView(), 3);
             } else {
-               setTitle("not checked");
-               appSettingsView.removeViewAt(2);
-               appSettingsView.addView(constructCustomeServersView(), 2);
-               
+               appSettingsView.removeViewAt(3);
+               appSettingsView.addView(constructCustomeServersView(), 3);
             }
+            AppSettingsModel.setAutoMode(AppSettingsActivity.this, isChecked);
          }
       });
       autoLayout.addView(autoText);
       autoLayout.addView(autoButton);
       
+      TextView infoText = new TextView(this);
+      infoText.setTextSize(10);
+      infoText.setText("Turn off auto-discovery to input controller url manually.");
+      
       TextView csText = new TextView(this);
-      csText.setText("Choose server:");
+      csText.setText("Choose Controller:");
+      
+      TextView choosePanelInfo = new TextView(this);
+      choosePanelInfo.setText("Choose Panel Identity:");
+      
+      choosePanel = new Button(this);
+      choosePanel.setText("choose panel");
+      String currentPanel = AppSettingsModel.getCurrentPanelIdentity(AppSettingsActivity.this);
+      if (!TextUtils.isEmpty(currentPanel)) {
+         choosePanel.setText(currentPanel);
+      }
+      choosePanel.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+      choosePanel.setOnClickListener(new OnClickListener() {
+         public void onClick(View v) {
+            String currentServer = AppSettingsModel.getCurrentServer(AppSettingsActivity.this);
+            if (!TextUtils.isEmpty(currentServer)) {
+               Intent intent = new Intent();
+               intent.setData(Uri.parse(currentServer));
+               intent.setClass(AppSettingsActivity.this, PanelSelectorActivity.class);
+               startActivityForResult(intent, Constants.REQUEST_CODE);
+            }
+         }
+      });
+      
+      LinearLayout saveAndCancelLayout = new LinearLayout(this);
+      saveAndCancelLayout.setOrientation(LinearLayout.HORIZONTAL);
+      Button saveButton = new Button(this);
+      saveButton.setText(R.string.done);
+      
+      Button cancelButton = new Button(this);
+      cancelButton.setText(R.string.cancel);
+      
+      saveAndCancelLayout.addView(saveButton);
+      saveAndCancelLayout.addView(cancelButton);
       
       appSettingsView.addView(autoLayout);
+      appSettingsView.addView(infoText);
       appSettingsView.addView(csText);
-      appSettingsView.addView(constructCustomeServersView());
+      if (autoMode) {
+         appSettingsView.addView(constructAutoServersView());
+      } else {
+         appSettingsView.addView(constructCustomeServersView());
+      }
+      appSettingsView.addView(choosePanelInfo);
+      appSettingsView.addView(choosePanel);
+      appSettingsView.addView(saveAndCancelLayout);
+      
       setContentView(appSettingsView);
    }
 
@@ -76,8 +124,9 @@ public class AppSettingsActivity extends Activity {
             if(!data[i].startsWith("+")){
                customServers.add(data[i]);
             } else {
-               currentId = i;
+               currentCustomServerIndex = i;
                customServers.add(data[i].substring(1));
+               AppSettingsModel.setCurrentServer(AppSettingsActivity.this, data[i].substring(1));
             }
          }
       }
@@ -113,43 +162,27 @@ public class AppSettingsActivity extends Activity {
             }
          }
       });
-      Button saveServers = new Button(this);
-      saveServers.setText("Save");
-      saveServers.setOnClickListener(new OnClickListener() {
-         public void onClick(View v) {
-            int customServerCount = customeListView.getCount();
-            if (customServerCount > 0) {
-               int checkedPosition = customeListView.getCheckedItemPosition();
-               String customServerUrls = "";
-               for (int i = 0; i < customServerCount; i++) {
-                  if (i != checkedPosition) {
-                     customServerUrls = customServerUrls + customeListView.getItemAtPosition(i).toString() + ",";
-                  } else {
-                     customServerUrls = customServerUrls + "+" + customeListView.getItemAtPosition(i).toString() + ",";
-                  }
-               }
-               if (!TextUtils.isEmpty(customServerUrls)) {
-                  FileUtil.WriteSettings(customeListView.getContext(), customServerUrls);
-               }
-            }
-         }
-      });
       
       buttonsView.addView(addServer);
       buttonsView.addView(deleteServer);
-      buttonsView.addView(saveServers);
       
       customeListView = new ListView(this);
-      customeListView.setBackgroundColor(0);
       customeListView.setCacheColorHint(0);
       ArrayAdapter<String> serverListAdapter = new ArrayAdapter<String>(appSettingsView.getContext(), R.layout.server_list_item,
               customServers);
       customeListView.setAdapter(serverListAdapter);
       customeListView.setItemsCanFocus(true);
       customeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-      if (currentId != -1) {
-         customeListView.setItemChecked(currentId, true);
+      if (currentCustomServerIndex != -1) {
+         customeListView.setItemChecked(currentCustomServerIndex, true);
       }
+      customeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            AppSettingsModel.setCurrentServer(AppSettingsActivity.this, (String)parent.getItemAtPosition(position));
+            writeCustomServerToFile();
+         }
+         
+      });
       
       custumeView.addView(customeListView);
       custumeView.addView(buttonsView);
@@ -159,10 +192,15 @@ public class AppSettingsActivity extends Activity {
    @SuppressWarnings("unchecked")
    @Override
    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-      if(Constants.REQUEST_CODE == requestCode && Constants.RESULT_CODE == resultCode) {
+      if (data != null) {
          String result = data.getDataString();
-         if (!TextUtils.isEmpty(result)) {
-            ((ArrayAdapter<String>)customeListView.getAdapter()).add("http://" + result + "/controller");
+         if (Constants.REQUEST_CODE == requestCode && !TextUtils.isEmpty(result)) {
+            if (Constants.RESULT_CONTROLLER_URL == resultCode) {
+               ((ArrayAdapter<String>) customeListView.getAdapter()).add("http://" + result + "/controller");
+               writeCustomServerToFile();
+            } else if (Constants.RESULT_PANEL_SELECTED == resultCode) {
+               choosePanel.setText(result);
+            }
          }
       }
    }
@@ -172,16 +210,41 @@ public class AppSettingsActivity extends Activity {
       lv.setBackgroundColor(0);
       lv.setCacheColorHint(0);
       ArrayAdapter<String> serverListAdapter = new ArrayAdapter<String>(appSettingsView.getContext(), R.layout.server_list_item,
-            IPAutoDiscoveryUtil.getAutoDiscoveryIPs());
+            AppSettingsModel.getAutoServers());
       lv.setAdapter(serverListAdapter);
       lv.setItemsCanFocus(true);
-      // TODO store the first item.
       if (serverListAdapter.getCount() > 0) {
          lv.setItemChecked(0, true);
+         AppSettingsModel.setCurrentServer(AppSettingsActivity.this, serverListAdapter.getItem(0));
       }
+      lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            AppSettingsModel.setCurrentServer(AppSettingsActivity.this, (String)parent.getItemAtPosition(position));
+         }
+      });
       lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
       
       return lv;
    }
-   
+
+   /**
+    * 
+    */
+   private void writeCustomServerToFile() {
+      int customServerCount = customeListView.getCount();
+      if (customServerCount > 0) {
+         int checkedPosition = customeListView.getCheckedItemPosition();
+         String customServerUrls = "";
+         for (int i = 0; i < customServerCount; i++) {
+            if (i != checkedPosition) {
+               customServerUrls = customServerUrls + customeListView.getItemAtPosition(i).toString() + ",";
+            } else {
+               customServerUrls = customServerUrls + "+" + customeListView.getItemAtPosition(i).toString() + ",";
+            }
+         }
+         if (!TextUtils.isEmpty(customServerUrls)) {
+            FileUtil.WriteSettings(customeListView.getContext(), customServerUrls);
+         }
+      }
+   }
 }
