@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
+import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
@@ -68,6 +69,8 @@ public interface ResourceService {
     */
    File uploadImage(InputStream inputStream, String fileName, String sessionId);
    
+   File uploadImage(InputStream inputStream, String fileName);
+   
    /**
     * Gets the relative resource path.
     * 
@@ -78,10 +81,17 @@ public interface ResourceService {
     */
    String getRelativeResourcePath(String sessionId, String fileName);
    
+   String getRelativeResourcePathByCurrentAccount(String fileName);
+   
    String getPanelsJson(Collection<Panel> panels);
    
    String getGroupsJson(Collection<Group> groups);
    
    String getScreensJson(Collection<Screen> screens);
    
+   void updateResources(Collection<Panel> panels,long maxOid);
+   
+   PanelsAndMaxOid restore();
+   
+   boolean canRestore();
 }

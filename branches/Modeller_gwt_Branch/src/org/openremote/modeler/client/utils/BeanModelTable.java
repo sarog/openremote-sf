@@ -159,8 +159,10 @@ public class BeanModelTable {
     */
    public void removeChangeListener(Long id, ChangeListener listener) {
       List<ChangeListener> listeners = changeListeners.get(id);
-      listeners.remove(listener);
-      changeListeners.put(id, listeners);
+      if(listeners!=null&& listeners.size()>0){
+         listeners.remove(listener);
+         changeListeners.put(id, listeners);
+      }
    }
    
    /**

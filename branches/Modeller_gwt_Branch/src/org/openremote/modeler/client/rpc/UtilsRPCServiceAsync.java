@@ -19,9 +19,11 @@
 */
 package org.openremote.modeler.client.rpc;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.openremote.modeler.client.model.AutoSaveResponse;
+import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
@@ -58,9 +60,9 @@ public interface UtilsRPCServiceAsync {
     * @param groups the activities
     * @param asyncSuccessCallback the async success callback
     */
-   void autoSaveUiDesignerLayout(List<Panel> panels, long maxID, AsyncCallback<AutoSaveResponse> asyncSuccessCallback);
+   void autoSaveUiDesignerLayout(Collection<Panel> panels, long maxID, AsyncCallback<AutoSaveResponse> asyncSuccessCallback);
 
-   void loadPanelsFromSession(AsyncCallback<List<Panel>> callback);
+   void loadPanelsFromSession(AsyncCallback<Collection<Panel>> callback);
    
    void loadGroupsFromSession(AsyncCallback<List<Group>> callback);
    
@@ -73,4 +75,8 @@ public interface UtilsRPCServiceAsync {
    void loadMaxID(AsyncCallback<Long> callback);
    
    void downLoadImage(String url, AsyncCallback<Void> callback);
+   
+   void restore(AsyncCallback<PanelsAndMaxOid> panels);
+   
+   void canRestore(AsyncCallback<Boolean> canRestore);
 }

@@ -150,19 +150,9 @@ public class ProfilePanel extends ContentPanel {
    }
 
    private void initTreeWithAutoSavedPanels() {
-      UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>() {
+      UtilsProxy.loadPanelsFromSession(new AsyncSuccessCallback<Collection<Panel>>() {
          @Override
-         public void onSuccess(Long maxID) {
-            if (maxID > 0) {              // set the layout component's max id after refresh page.
-               IDUtil.setCurrentID(maxID.longValue());
-            }
-         }
-         
-      });
-      
-      UtilsProxy.loadPanelsFromSession(new AsyncSuccessCallback<List<Panel>>() {
-         @Override
-         public void onSuccess(List<Panel> panels) {
+         public void onSuccess(Collection<Panel> panels) {
             if (panels.size() > 0) {
                initModelDataBase(panels);
                panelTree.getStore().removeAll();
@@ -218,6 +208,16 @@ public class ProfilePanel extends ContentPanel {
             
          }
       });
+      UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>() {
+         @Override
+         public void onSuccess(Long maxID) {
+            if (maxID > 0) {              // set the layout component's max id after refresh page.
+               IDUtil.setCurrentID(maxID.longValue());
+            }
+         }
+         
+      });
+      
    }
    
    /**
@@ -539,6 +539,6 @@ public class ProfilePanel extends ContentPanel {
 
    public void setScreenTab(ScreenTab screenTab) {
       this.screenTab = screenTab;
-   }
+   }   
    
 }

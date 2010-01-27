@@ -17,9 +17,13 @@
 package org.openremote.modeler.service.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -41,6 +45,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.Command;
+import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Cell;
@@ -75,6 +80,7 @@ import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.ResourceService;
+import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ProtocolCommandContainer;
@@ -110,76 +116,29 @@ public class ResourceServiceImpl implements ResourceService {
    private DeviceMacroService deviceMacroService;
 
    private VelocityEngine velocity;
+   
+   private UserService userService;
 
 
    /**
     * {@inheritDoc}
     */
    public String downloadZipResource(long maxOid, String sessionId, List<Panel> panels) {
-      Set<Group> groups = new LinkedHashSet<Group>();
-      Set<Screen> screens = new LinkedHashSet<Screen>();
-      /*
-       * initialize groups and screens.
-       */
-      initGroupsAndScreens(panels, groups, screens);
-
-      String controllerXmlContent = getControllerXML(screens,maxOid);
-      String panelXmlContent = getPanelXML(panels);
-      String sectionIds = getSectionIds(screens);
-
-      // replaceUrl(screens, sessionId);
-      // String activitiesJson = getActivitiesJson(activities);
-
+      updateResources(panels, maxOid);
       PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File sessionFolder = new File(pathConfig.userFolder(sessionId));
-      if (!sessionFolder.exists()) {
-         sessionFolder.mkdirs();
-      }
-      
-      /*
-       * down load the default image.
-       */
-      File defaultImage = new File(pathConfig.getWebRootFolder() + UIImage.DEFAULT_IMAGE_URL);
-      FileUtilsExt.copyFile(defaultImage, new File(sessionFolder, defaultImage.getName()));
-      
-      File panelXMLFile = new File(pathConfig.panelXmlFilePath(sessionId));
-      File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(sessionId));
-      File lircdFile = new File(pathConfig.lircFilePath(sessionId));
-      // File dotImport = new File(pathConfig.dotImportFilePath(sessionId));
-
-      /*
-       * validate and output panel.xml.
-       */
-      String newIphoneXML = XmlParser.validateAndOutputXML(new File(getClass().getResource(
-            configuration.getPanelXsdPath()).getPath()), panelXmlContent, sessionFolder);
-      controllerXmlContent = XmlParser.validateAndOutputXML(new File(getClass().getResource(
-            configuration.getControllerXsdPath()).getPath()), controllerXmlContent);
-      /*
-       * validate and output controller.xml
-       */
-      try {
-         FileUtilsExt.deleteQuietly(panelXMLFile);
-         FileUtilsExt.deleteQuietly(controllerXMLFile);
-         FileUtilsExt.deleteQuietly(lircdFile);
-         // FileUtilsExt.deleteQuietly(dotImport);
-
-         FileUtilsExt.writeStringToFile(panelXMLFile, newIphoneXML);
-         FileUtilsExt.writeStringToFile(controllerXMLFile, controllerXmlContent);
-         // FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
-
-         if (sectionIds != "") {
-            FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
+      File sessionFolder = new File(pathConfig.userFolder(userService.getAccount()));
+      File[] filesInAccountFolder = sessionFolder.listFiles();
+      File[] filesInZip = new File[filesInAccountFolder.length];
+      int  i = 0;
+      for(File file : filesInAccountFolder){
+         if(file.exists()&&! file.getPath().equals(pathConfig.getSerizalizedPanelsFile(userService.getAccount()))){
+            filesInZip[i++] = file;
          }
-         if (lircdFile.exists() && lircdFile.length() == 0) {
-            lircdFile.delete();
-         }
-      } catch (IOException e) {
-         LOGGER.error("Compress zip file occur IOException", e);
-         throw new FileOperationException("Compress zip file occur IOException", e);
       }
-
-      File zipFile = compressFilesToZip(sessionFolder.listFiles(), pathConfig.openremoteZipFilePath(sessionId));
-      return pathConfig.getZipUrl(sessionId) + zipFile.getName();
+      File zipFile = compressFilesToZip(filesInZip, pathConfig.openremoteZipFilePath(userService
+            .getAccount()));
+//      return pathConfig.getZipUrl(sessionId) + zipFile.getName();
+      return pathConfig.getZipUrl(userService.getAccount())+zipFile.getName();
 
    }
 
@@ -212,7 +171,7 @@ public class ResourceServiceImpl implements ResourceService {
    private File compressFilesToZip(File[] files, String zipFilePath) {
       List<File> compressedfiles = new ArrayList<File>();
       for (File file : files) {
-         if (FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("zip")) {
+         if (file==null || FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("zip")) {
             continue;
          }
          compressedfiles.add(file);
@@ -337,6 +296,17 @@ public class ResourceServiceImpl implements ResourceService {
     */
    public File uploadImage(InputStream inputStream, String fileName, String sessionId) {
       File file = new File(PathConfig.getInstance(configuration).userFolder(sessionId) + File.separator + fileName);
+      return uploadFile(inputStream, file);
+   }
+   
+   public File uploadImage(InputStream inputStream, String fileName) {
+      File file = new File(PathConfig.getInstance(configuration).userFolder(userService.getAccount()) + File.separator
+            + fileName);
+      return uploadFile(inputStream, file);
+   }
+   
+   private File uploadFile(InputStream inputStream, File file) {
+//      File file = new File(PathConfig.getInstance(configuration).userFolder(prefix) + File.separator + fileName);
       FileOutputStream fileOutputStream = null;
       try {
          File dir = file.getParentFile();
@@ -565,7 +535,12 @@ public class ResourceServiceImpl implements ResourceService {
       return PathConfig.getInstance(configuration).getRelativeResourcePath(fileName, sessionId);
    }
 
+   
 
+   @Override
+   public String getRelativeResourcePathByCurrentAccount(String fileName) {
+      return PathConfig.getInstance(configuration).getRelativeResourcePath(fileName, userService.getAccount());
+   }
 
    @Override
    public String getGroupsJson(Collection<Group> groups) {
@@ -645,6 +620,11 @@ public class ResourceServiceImpl implements ResourceService {
 
    public void setVelocity(VelocityEngine velocity) {
       this.velocity = velocity;
+   }
+   
+   
+   public void setUserService(UserService userService) {
+      this.userService = userService;
    }
 
    public String getControllerXML(Collection<Screen> screens,long maxOid) {
@@ -776,5 +756,137 @@ public class ResourceServiceImpl implements ResourceService {
       public Long maxId(){
          return maxId++;
       }
+   }
+
+   @Override
+   public void updateResources(Collection<Panel> panels,long maxOid) {
+      Set<Group> groups = new LinkedHashSet<Group>();
+      Set<Screen> screens = new LinkedHashSet<Screen>();
+      /*
+       * initialize groups and screens.
+       */
+      initGroupsAndScreens(panels, groups, screens);
+
+      String controllerXmlContent = getControllerXML(screens,maxOid);
+      String panelXmlContent = getPanelXML(panels);
+      String sectionIds = getSectionIds(screens);
+
+      // replaceUrl(screens, sessionId);
+      // String activitiesJson = getActivitiesJson(activities);
+
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+//      File sessionFolder = new File(pathConfig.userFolder(sessionId));
+      File sessionFolder = new File(pathConfig.userFolder(userService.getAccount()));
+      if (!sessionFolder.exists()) {
+         sessionFolder.mkdirs();
+      }
+      
+      /*
+       * down load the default image.
+       */
+      File defaultImage = new File(pathConfig.getWebRootFolder() + UIImage.DEFAULT_IMAGE_URL);
+      FileUtilsExt.copyFile(defaultImage, new File(sessionFolder, defaultImage.getName()));
+      
+      File panelXMLFile = new File(pathConfig.panelXmlFilePath(userService.getAccount()));
+      File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(userService.getAccount()));
+      File lircdFile = new File(pathConfig.lircFilePath(userService.getAccount()));
+      // File dotImport = new File(pathConfig.dotImportFilePath(sessionId));
+
+      /*
+       * validate and output panel.xml.
+       */
+      String newIphoneXML = XmlParser.validateAndOutputXML(new File(getClass().getResource(
+            configuration.getPanelXsdPath()).getPath()), panelXmlContent, sessionFolder);
+      controllerXmlContent = XmlParser.validateAndOutputXML(new File(getClass().getResource(
+            configuration.getControllerXsdPath()).getPath()), controllerXmlContent);
+      /*
+       * validate and output controller.xml
+       */
+      try {
+         FileUtilsExt.deleteQuietly(panelXMLFile);
+         FileUtilsExt.deleteQuietly(controllerXMLFile);
+         FileUtilsExt.deleteQuietly(lircdFile);
+         // FileUtilsExt.deleteQuietly(dotImport);
+
+         FileUtilsExt.writeStringToFile(panelXMLFile, newIphoneXML);
+         FileUtilsExt.writeStringToFile(controllerXMLFile, controllerXmlContent);
+         // FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
+
+         if (sectionIds != "") {
+            FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
+         }
+         if (lircdFile.exists() && lircdFile.length() == 0) {
+            lircdFile.delete();
+         }
+         
+         serialize(panels,maxOid);
+      } catch (IOException e) {
+         LOGGER.error("Compress zip file occur IOException", e);
+         throw new FileOperationException("Compress zip file occur IOException", e);
+      }
+   }
+   
+   public void serialize(Collection<Panel> panels, long maxOid) {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      File panelsObjFile = new File(pathConfig.getSerizalizedPanelsFile(userService.getAccount()));
+      ObjectOutputStream oos = null;
+      try {
+         FileUtilsExt.deleteQuietly(panelsObjFile);
+         if(panels==null || panels.size()<1){
+            return;
+         }
+         oos = new ObjectOutputStream(new FileOutputStream(panelsObjFile));
+         oos.writeObject(panels);
+         oos.writeLong(maxOid);
+      } catch (FileNotFoundException e) {
+         e.printStackTrace();
+      } catch (IOException e) {
+         e.printStackTrace();
+      } finally {
+         try {
+            if (oos != null) {
+               oos.close();
+            }
+         } catch (IOException e) {
+            e.printStackTrace();
+         }
+      }
+   }
+
+   @SuppressWarnings("unchecked")
+   public PanelsAndMaxOid restore(){
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      File panelsObjFile = new File(pathConfig.getSerizalizedPanelsFile(userService.getAccount()));
+      if(!panelsObjFile.exists()){
+         return null;
+      }
+      ObjectInputStream ois = null;
+      PanelsAndMaxOid panelsAndMaxOid = null;
+      try{
+         
+         ois = new ObjectInputStream(new FileInputStream(panelsObjFile));
+         Collection<Panel> panels = (Collection<Panel>) ois.readObject();
+         Long maxOid = ois.readLong();
+         panelsAndMaxOid = new PanelsAndMaxOid(panels,maxOid);
+         
+      } catch(Exception e){
+         LOGGER.fatal("restore failed from server", e);
+      } finally {
+         try {
+            if(ois!=null){
+               ois.close();
+            }
+         } catch (IOException e) {
+            e.printStackTrace();
+         }
+      }
+      return panelsAndMaxOid;
+   }
+
+   @Override
+   public boolean canRestore() {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      File panelsObjFile = new File(pathConfig.getSerizalizedPanelsFile(userService.getAccount()));
+      return panelsObjFile.exists();
    }
 }

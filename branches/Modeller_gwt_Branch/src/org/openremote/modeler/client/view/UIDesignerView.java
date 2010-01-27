@@ -20,6 +20,7 @@
 package org.openremote.modeler.client.view;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -28,13 +29,17 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.IDUtil;
+import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.client.utils.TouchPanels;
 import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.client.widget.uidesigner.WidgetPanel;
+import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenRef;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -48,6 +53,7 @@ import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
@@ -62,6 +68,8 @@ public class UIDesignerView extends TabItem implements View {
    private static final int AUTO_SAVE_INTERVAL_MS = 30000;
    
    private Timer timer;
+   
+   private ContentPanel profilePanel = null;
    /**
     * Instantiates a new uI designer view.
     */
@@ -103,6 +111,37 @@ public class UIDesignerView extends TabItem implements View {
       });
    }
    
+   public void restore() {
+      UtilsProxy.restore(new AsyncCallback<PanelsAndMaxOid>() {
+         @Override
+         public void onSuccess(PanelsAndMaxOid panelsAndMaxOid) {
+            BeanModelDataBase.panelTable.clear();
+            BeanModelDataBase.groupTable.clear();
+            BeanModelDataBase.screenTable.clear();
+            Collection<Panel> panels = panelsAndMaxOid.getPanels();
+            long maxOid = panelsAndMaxOid.getMaxOid();
+            
+            for(Panel panel : panels) {
+               BeanModelDataBase.panelTable.insert(panel.getBeanModel());
+               for(GroupRef groupRef : panel.getGroupRefs()){
+                  Group group = groupRef.getGroup();
+                  BeanModelDataBase.groupTable.insert(group.getBeanModel());
+                  for(ScreenRef screenRef : group.getScreenRefs()){
+                     Screen screen = screenRef.getScreen();
+                     BeanModelDataBase.screenTable.insert(screen.getBeanModel());
+                  }
+               }
+            }
+            IDUtil.setCurrentID(maxOid);
+            refreshPanelTree();
+         }
+
+         @Override
+         public void onFailure(Throwable caught) {
+            MessageBox.alert("Fail", "Server error, UI designer restore failed.", null);
+         }
+      });
+   }
    /**
     * Initialize.
     * 
@@ -112,7 +151,7 @@ public class UIDesignerView extends TabItem implements View {
       setText("UI Designer");
 
       setLayout(new BorderLayout());
-      createWest();
+      profilePanel = createWest();
       createCenter();
       createEast();
       prepareData();
@@ -132,19 +171,26 @@ public class UIDesignerView extends TabItem implements View {
    /**
     * Creates the west.
     */
-   private void createWest() {
+   private ProfilePanel createWest() {
       ContentPanel west = new ContentPanel();
+      ProfilePanel result = new ProfilePanel(screenTab);
       BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 200);
       westData.setSplit(true);
       westData.setCollapsible(true);
       west.setLayout(new AccordionLayout());
       west.setBodyBorder(false);
       west.setHeading("Browser");
-      west.add(new ProfilePanel(screenTab));
+      west.add(result);
       westData.setMargins(new Margins(2));
       add(west, westData);
+      return result;
    }
 
+   private void refreshPanelTree() {
+      if(profilePanel != null){
+         profilePanel.layout();
+      }
+   }
    /**
     * Creates the center.
     */
