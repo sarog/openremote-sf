@@ -104,10 +104,10 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		 */
 		//Begin: Recover the last group
 		NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-		GroupController *gc;
+		GroupController *gc = nil;
 		if ([userDefaults objectForKey:@"lastGroupId"]) {
 			int lastGroupId = [[userDefaults objectForKey:@"lastGroupId"] intValue];
-			Group *lastGroup;
+			Group *lastGroup = nil;
 			for (Group *tempGroup in groups) {
 				if (lastGroupId == tempGroup.groupId) {
 					lastGroup = tempGroup;
