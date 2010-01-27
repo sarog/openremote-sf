@@ -147,22 +147,41 @@ public class ApplicationView implements View {
       Menu fileMenu = new Menu();
       final MenuItem saveMenuItem = createSaveMenuItem();
       final MenuItem exportMenuItem = createExportMenuItem();
-      saveMenuItem.setEnabled(false);
+//      final MenuItem restoreMenuItem = createRestoreMenuItem(); 
+//     saveMenuItem.setEnabled(false);
       exportMenuItem.setEnabled(false);
       
       fileMenu.add(saveMenuItem);
 //      fileMenu.add(createImportMenuItem());
       fileMenu.add(exportMenuItem);
+//      fileMenu.add(restoreMenuItem);
       fileMenu.add(createLogoutMenuItem());
       fileMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
          @Override
          public void handleEvent(MenuEvent be) {
-            boolean enabled = false;
-            if (BeanModelDataBase.screenTable.loadAll().size() > 0) {
+            final boolean enabled;
+            if (BeanModelDataBase.panelTable.loadAll().size() > 0) {
                enabled = true;
+            } else {
+               enabled = false;
             }
-            saveMenuItem.setEnabled(enabled);
             exportMenuItem.setEnabled(enabled);
+            UtilsProxy.canRestore(new AsyncCallback<Boolean>(){
+               @Override
+               public void onFailure(Throwable caught) {
+                  saveMenuItem.setEnabled(enabled || false);
+               }
+
+               @Override
+               public void onSuccess(Boolean result) {
+                  /*
+                   * make sure the persist file will be deleted. 
+                   */
+                  saveMenuItem.setEnabled(enabled || result);
+               }
+               
+            });
+            
          }
          
       });
@@ -198,6 +217,34 @@ public class ApplicationView implements View {
       });
       return saveMenuItem;
    }
+   
+   /*private MenuItem createRestoreMenuItem() {
+      final MenuItem restoreMenuItem = new MenuItem("Restore");
+      restoreMenuItem.setEnabled(false);
+      UtilsProxy.canRestore(new AsyncCallback<Boolean>(){
+         @Override
+         public void onFailure(Throwable caught) {
+            restoreMenuItem.setEnabled(false);
+         }
+
+         @Override
+         public void onSuccess(Boolean result) {
+            restoreMenuItem.setEnabled(result);
+         }
+         
+      });
+      restoreMenuItem.setIcon(icons.saveIcon());
+      restoreMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+         @Override
+         public void componentSelected(MenuEvent ce) {
+            uiDesignerView.mask("restoring from server...");
+            uiDesignerView.restore();
+            uiDesignerView.layout();
+            uiDesignerView.unmask();
+         }
+      });
+      return restoreMenuItem;
+   }*/
    
    /**
     * Creates the import menu item.

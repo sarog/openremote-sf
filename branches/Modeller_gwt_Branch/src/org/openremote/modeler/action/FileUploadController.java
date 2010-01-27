@@ -88,7 +88,7 @@ public class FileUploadController extends MultiActionController {
     * @throws IOException
     */
    public void uploadImage(HttpServletRequest request, HttpServletResponse response) throws IOException {
-      String sessionId = request.getSession().getId();
+//      String sessionId = request.getSession().getId();
       String uploadFieldName = request.getParameter("uploadFieldName");
 
       if (uploadFieldName == null || uploadFieldName.trim().length() == 0) {
@@ -101,9 +101,11 @@ public class FileUploadController extends MultiActionController {
       if (multipartFile.getSize() == 0 || multipartFile.getSize() > maxImageSize) {
          return;
       }
-      File file = resourceService.uploadImage(multipartFile.getInputStream(), multipartFile.getOriginalFilename(),
-            sessionId);
-      response.getWriter().print(resourceService.getRelativeResourcePath(sessionId, file.getName()));
+      /*File file = resourceService.uploadImage(multipartFile.getInputStream(), multipartFile.getOriginalFilename(),
+            sessionId);*/
+      File file = resourceService.uploadImage(multipartFile.getInputStream(), multipartFile.getOriginalFilename());
+//      response.getWriter().print(resourceService.getRelativeResourcePath(sessionId,file.getName()));
+      response.getWriter().print(resourceService.getRelativeResourcePathByCurrentAccount(file.getName()));
    }
 
 }

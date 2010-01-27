@@ -26,6 +26,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.domain.Account;
 
 /**
  * The Class PathConfig.
@@ -100,6 +101,9 @@ public class PathConfig {
       return userFolder(sessionId) + "panel.xml";
    }
 
+   public String panelXmlFilePath(Account account) {
+      return userFolder(account) + "panel.xml";
+   }
    /**
     * Gets controller xml file path.
     * 
@@ -111,6 +115,9 @@ public class PathConfig {
       return userFolder(sessionId) + "controller.xml";
    }
 
+   public String controllerXmlFilePath(Account account) {
+      return userFolder(account) + "controller.xml";
+   }
    /**
     * Gets panel description file path.
     * 
@@ -132,6 +139,10 @@ public class PathConfig {
    public String lircFilePath(String sessionId) {
       return userFolder(sessionId) + "lircd.conf";
    }
+   
+   public String lircFilePath(Account account) {
+      return userFolder(account) + "lircd.conf";
+   }
 
    /**
     * Gets compressed file path.
@@ -142,6 +153,10 @@ public class PathConfig {
     */
    public String openremoteZipFilePath(String sessionId) {
       return userFolder(sessionId) + "openremote." + UUID.randomUUID() + ".zip";
+   }
+   
+   public String openremoteZipFilePath(Account account) {
+      return userFolder(account) + "openremote." + UUID.randomUUID() + ".zip";
    }
    
    /**
@@ -167,6 +182,9 @@ public class PathConfig {
       return tempFolder() + sessionId + File.separator;
    }
    
+   public String userFolder(Account account) {
+      return tempFolder()+account.getOid()+File.separator;
+   }
    /**
     * Gets the zip url.
     * 
@@ -178,6 +196,9 @@ public class PathConfig {
       return configuration.getWebappServerRoot() + "/" + RESOURCEFOLDER + "/" + sessionId + "/";
    }
 
+   public String getZipUrl(Account account) {
+      return configuration.getWebappServerRoot() + "/" + RESOURCEFOLDER + "/" + account.getOid() + "/";
+   }
    /**
     * Gets the relative resource path.
     * 
@@ -188,6 +209,10 @@ public class PathConfig {
     */
    public String getRelativeResourcePath(String fileName, String sessionId) {
       return "../" + RESOURCEFOLDER + "/" + sessionId + "/" + fileName;
+   }
+   
+   public String getRelativeResourcePath(String fileName, Account account) {
+      return "../" + RESOURCEFOLDER + "/" + account.getOid() + "/" + fileName;
    }
    
    /**
@@ -214,5 +239,9 @@ public class PathConfig {
    
    public String getWebRootFolder() {
       return  WEBROOTPATH;
+   }
+   
+   public String getSerizalizedPanelsFile(Account account){
+      return userFolder(account)+"panels.obj";
    }
 }

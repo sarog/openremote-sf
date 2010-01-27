@@ -107,7 +107,9 @@ public class PanelTreeStoreChangeListener {
             BeanModelDataBase.screenTable.removeChangeListener(BeanModelDataBase
                   .getOriginalDesignerRefBeanModelId(beanModel), getSourceBeanModelChangeListener(beanModel));
          }
-         changeListenerMap.remove(beanModel);
+         if(changeListenerMap!=null){
+            changeListenerMap.remove(beanModel);
+         }
       }
    }
 

@@ -20,9 +20,11 @@
 package org.openremote.modeler.client.rpc;
 
 
+import java.util.Collection;
 import java.util.List;
 
 import org.openremote.modeler.client.model.AutoSaveResponse;
+import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
@@ -64,9 +66,13 @@ public interface UtilsRPCService extends RemoteService {
     * 
     * @return the auto save response
     */
-   AutoSaveResponse autoSaveUiDesignerLayout(List<Panel> panels, long maxID);
+   AutoSaveResponse autoSaveUiDesignerLayout(Collection<Panel> panels, long maxID);
    
-   List<Panel> loadPanelsFromSession();
+   PanelsAndMaxOid restore();
+   
+   boolean canRestore();
+   
+   Collection<Panel> loadPanelsFromSession();
    
    List<Group> loadGroupsFromSession();
    

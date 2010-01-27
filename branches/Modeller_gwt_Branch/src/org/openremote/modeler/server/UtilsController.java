@@ -22,12 +22,14 @@ package org.openremote.modeler.server;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.rpc.UtilsRPCService;
+import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
@@ -114,7 +116,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
     * {@inheritDoc}
     */
    @SuppressWarnings("unchecked")
-   public AutoSaveResponse autoSaveUiDesignerLayout(List<Panel> panels, long maxID) {
+   public AutoSaveResponse autoSaveUiDesignerLayout(Collection<Panel> panels, long maxID) {
       AutoSaveResponse autoSaveResponse = new AutoSaveResponse();
       
       List<Panel> oldPanels = new ArrayList<Panel>();
@@ -139,11 +141,12 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       if (getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY) != null) {
          oldPanels = (List<Panel>) getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
       }
-      if (panels.size() > 0) {
+      if (panels != null) {
          if (!resourceService.getPanelsJson(panels).equals(resourceService.getPanelsJson(oldPanels))) {
             getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
             getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
             autoSaveResponse.setUpdated(true);
+            resourceService.updateResources(panels, maxID);
          }
       }
       return autoSaveResponse;
@@ -151,9 +154,13 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
 
    @SuppressWarnings("unchecked")
    @Override
-   public List<Panel> loadPanelsFromSession() {
+   public Collection<Panel> loadPanelsFromSession() {
       Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
-      return (obj == null) ? new ArrayList<Panel>() : (List<Panel>)obj;
+      if(obj == null){
+         PanelsAndMaxOid panelsAndMaxOid = restore();
+         obj = panelsAndMaxOid !=null ? panelsAndMaxOid.getPanels(): null; 
+      }
+      return (obj == null) ? new ArrayList<Panel>() : (Collection<Panel>)obj;
    }
    
    @SuppressWarnings("unchecked")
@@ -191,5 +198,21 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       }
    }
 
+   @Override
+   public PanelsAndMaxOid restore() {
+      PanelsAndMaxOid result = resourceService.restore();
+      if(result!=null){
+         Collection<Panel> panels = result.getPanels();
+         long maxOid = result.getMaxOid();
+         getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
+         getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxOid);
+      }
+      return result;
+   }
+
+   @Override
+   public boolean canRestore() {
+      return resourceService.canRestore();
+   }
 
 }

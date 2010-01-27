@@ -20,14 +20,18 @@
 
 package org.openremote.modeler.client.proxy;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
@@ -66,10 +70,40 @@ public class UtilsProxy {
     * @param groups the activities
     * @param callback the callback
     */
-   public static void autoSaveUiDesignerLayout(List<Panel> panels, long maxID, final AsyncSuccessCallback<AutoSaveResponse> callback) {
+   public static void autoSaveUiDesignerLayout(Collection<Panel> panels, long maxID, final AsyncSuccessCallback<AutoSaveResponse> callback) {
       AsyncServiceFactory.getUtilsRPCServiceAsync().autoSaveUiDesignerLayout(panels,  maxID, new AsyncSuccessCallback<AutoSaveResponse>() {
          @Override
          public void onSuccess(AutoSaveResponse result) {
+            callback.onSuccess(result);
+         }
+
+         @Override
+         public void onFailure(Throwable caught) {
+            callback.onFailure(caught);
+         }
+         
+      });
+   }
+   
+   public static void restore(final AsyncCallback<PanelsAndMaxOid> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().restore(new AsyncSuccessCallback<PanelsAndMaxOid>() {
+         @Override
+         public void onSuccess(PanelsAndMaxOid result) {
+            callback.onSuccess(result);
+         }
+
+         @Override
+         public void onFailure(Throwable caught) {
+            callback.onFailure(caught);
+         }
+         
+      });
+   }
+   
+   public static void canRestore(final AsyncCallback<Boolean> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().canRestore(new AsyncSuccessCallback<Boolean>() {
+         @Override
+         public void onSuccess(Boolean result) {
             callback.onSuccess(result);
          }
 
@@ -97,10 +131,10 @@ public class UtilsProxy {
       });
    }
    
-   public static void loadPanelsFromSession(final AsyncSuccessCallback<List<Panel>> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().loadPanelsFromSession(new AsyncSuccessCallback<List<Panel>>() {
+   public static void loadPanelsFromSession(final AsyncSuccessCallback<Collection<Panel>> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().loadPanelsFromSession(new AsyncSuccessCallback<Collection<Panel>>() {
          @Override
-         public void onSuccess(List<Panel> panels) {
+         public void onSuccess(Collection<Panel> panels) {
             callback.onSuccess(panels);
          }
       });
