@@ -267,7 +267,6 @@
 
 #pragma mark Delegate method of UpdateController
 - (void)didUpadted {
-	[[DataBaseService sharedDataBaseService] saveCurrentUser];
 	[self dismissModalViewControllerAnimated:YES];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
 }
