@@ -87,7 +87,6 @@
 
 #pragma mark delegate method of updateController
 - (void)didUpadted {
-	[[DataBaseService sharedDataBaseService] saveCurrentUser];
 	[self updateDidFinished];
 }
 

@@ -158,27 +158,32 @@ static DataBaseService *myInstance = nil;
 
 // Clean the Users table data.
 - (void) deleteAllUsers {
-	const char *sqlStatement = "delete from users";
-	sqlite3_stmt *compiledStatement;
-	if(sqlite3_prepare_v2(openDatabase, sqlStatement, -1, &compiledStatement, NULL) ==SQLITE_OK) {
-		if(SQLITE_DONE != sqlite3_step(compiledStatement)) {
-			//NSLog(@"Error while deleteAllUsers. '%s'", sqlite3_errmsg(openDatabase));
-		}
-	}
-	sqlite3_reset(compiledStatement);
-	sqlite3_finalize(compiledStatement);
+	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+	[userDefaults setObject:nil	forKey:@"password"];
+//	const char *sqlStatement = "delete from users";
+//	sqlite3_stmt *compiledStatement;
+//	if(sqlite3_prepare_v2(openDatabase, sqlStatement, -1, &compiledStatement, NULL) ==SQLITE_OK) {
+//		if(SQLITE_DONE != sqlite3_step(compiledStatement)) {
+//			//NSLog(@"Error while deleteAllUsers. '%s'", sqlite3_errmsg(openDatabase));
+//		}
+//	}
+//	sqlite3_reset(compiledStatement);
+//	sqlite3_finalize(compiledStatement);
 }
 
 - (void) saveCurrentUser{
-	User *user = [[User alloc] initWithUsernameAndPassword:[Definition sharedDefinition].username password:[Definition sharedDefinition].password];
-	[self deleteAllUsers];
-	[self insertUser:user];
+	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+	[userDefaults setObject:[Definition sharedDefinition].username forKey:@"username"];
+	[userDefaults setObject:[Definition sharedDefinition].password forKey:@"password"];
 }
 
 - (void) initLastLoginUser {
-	User *user = [self findLastLoginUser];
-	[Definition sharedDefinition].username = user.username;
-	[Definition sharedDefinition].password = user.password;
+	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+	NSString *username = [userDefaults objectForKey:@"username"];
+	NSString *password = [userDefaults objectForKey:@"password"];
+
+	[Definition sharedDefinition].username = username;
+	[Definition sharedDefinition].password = password;
 }
 
 // Insert a new groupmember into group_members table.

@@ -43,7 +43,7 @@
 }
 
 - (void)viewDidLoad {
-	[[DataBaseService sharedDataBaseService] deleteAllUsers];
+	//[[DataBaseService sharedDataBaseService] deleteAllUsers];
 	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(goBack:)];
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelInput:)];
 	[super viewDidLoad];

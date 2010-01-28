@@ -113,9 +113,7 @@
 
 - (void)handleServerErrorWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
-		if (statusCode != 401) {
-			[[DataBaseService sharedDataBaseService] saveCurrentUser];
-		} else {
+		if (statusCode == 401) {
 			[Definition sharedDefinition].password = nil;
 		}
 		

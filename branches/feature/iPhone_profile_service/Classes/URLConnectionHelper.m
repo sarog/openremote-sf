@@ -223,7 +223,6 @@
 
 #pragma mark Delegate method of UpdateController
 - (void)didUpadted {
-	[[DataBaseService sharedDataBaseService] saveCurrentUser];
 	NSLog(@"----------DidUpdated in URLConnectionHelper------------");
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
 }
