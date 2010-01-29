@@ -93,6 +93,18 @@ public class AppSettingsActivity extends Activity {
       saveAndCancelLayout.setOrientation(LinearLayout.HORIZONTAL);
       Button saveButton = new Button(this);
       saveButton.setText(R.string.done);
+      saveButton.setOnClickListener(new OnClickListener() {
+         public void onClick(View v) {
+            String serverUrl = AppSettingsModel.getCurrentServer(AppSettingsActivity.this);
+            String panelName = AppSettingsModel.getCurrentPanelIdentity(AppSettingsActivity.this);
+            HTTPUtil.downLoadPanelXml(AppSettingsActivity.this, serverUrl, panelName);
+            FileUtil.parsePanelXML(AppSettingsActivity.this);
+            Intent intent = new Intent();
+            intent.setClass(AppSettingsActivity.this, GroupHandler.class);
+            startActivity(intent);
+            
+         }
+      });
       
       Button cancelButton = new Button(this);
       cancelButton.setText(R.string.cancel);
@@ -116,7 +128,7 @@ public class AppSettingsActivity extends Activity {
    }
 
    private void getCustomServersFromFile(ArrayList<String> customServers) {
-      String storedUrls = FileUtil.ReadSettings(this);
+      String storedUrls = AppSettingsModel.getCustomServers(this);
       if (! TextUtils.isEmpty(storedUrls)) {
          String[] data = storedUrls.split(",");
          int dataNum = data.length;
@@ -243,8 +255,12 @@ public class AppSettingsActivity extends Activity {
             }
          }
          if (!TextUtils.isEmpty(customServerUrls)) {
-            FileUtil.WriteSettings(customeListView.getContext(), customServerUrls);
+            AppSettingsModel.setCustomServers(customeListView.getContext(), customServerUrls);
          }
       }
+   }
+   
+   public int sum() {
+      return 2+5;
    }
 }

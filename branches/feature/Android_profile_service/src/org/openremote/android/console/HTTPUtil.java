@@ -19,11 +19,9 @@
  */
 package org.openremote.android.console;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +32,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.w3c.dom.Document;
@@ -41,6 +40,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import android.content.Context;
 import android.util.Log;
 
 /**
@@ -77,24 +77,21 @@ public class HTTPUtil {
     public static List<String> getPanels(String serverUrl){
        List<String> panelList = new ArrayList<String>();
       try {
-         URL url = new URL(serverUrl + "/rest/panels");
-         URLConnection conn = url.openConnection();
-         conn.setConnectTimeout(5000);
-         conn.setReadTimeout(5000);
-         InputStream stream = conn.getInputStream();
-         
-         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-         DocumentBuilder builder = factory.newDocumentBuilder();
-         Document dom = builder.parse(stream);
-         Element root = dom.getDocumentElement();
-         
-         NodeList nodeList = root.getElementsByTagName("panel");
-         int nodeNums = nodeList.getLength();
-         for (int i = 0; i < nodeNums; i++) {
-            panelList.add(nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue());
+         HttpClient client = new DefaultHttpClient();
+         HttpGet get = new HttpGet(serverUrl + "/rest/panels");
+         HttpResponse response = client.execute(get);
+         if (response.getStatusLine().getStatusCode() == 200) {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document dom = builder.parse(response.getEntity().getContent());
+            Element root = dom.getDocumentElement();
+            
+            NodeList nodeList = root.getElementsByTagName("panel");
+            int nodeNums = nodeList.getLength();
+            for (int i = 0; i < nodeNums; i++) {
+               panelList.add(nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue());
+            }
          }
-      } catch (MalformedURLException e) {
-         Log.e("HTTPUtil", "can not creat url(" + serverUrl + "/rest/panels)", e);
       } catch (IOException e) {
          Log.e("HTTPUtil", "can not open connection to url(" + serverUrl + "/rest/panels)", e);
       } catch (ParserConfigurationException e) {
@@ -102,6 +99,57 @@ public class HTTPUtil {
       } catch (SAXException e) {
          Log.e("HTTPUtil", "parse panels error", e);
       }
+//      for (Panel panel : panelList) {
+//         Log.d("tt", "---------------------id:"+panel.getId() + "name:" + panel.getName()+"------------------");
+//      }
+//       final Panel currentMessage = new Panel();
+//       RootElement root = new RootElement("http://www.openremote.org:openremote");
+//       final List<Panel> messages = new ArrayList<Panel>();
+//       Element item = root.getChild("panel");
+//       item.setEndElementListener(new EndElementListener(){
+//          public void end() {
+//             messages.add(currentMessage.copy());
+//          }
+//       });
+//       try {
+//          Xml.parse(stream, Xml.Encoding.UTF_8, root.getContentHandler());
+//       } catch (Exception e) {
+//          throw new RuntimeException(e);
+//       }
+//       for (Panel panel : messages) {
+//          Log.d("tt", "id:"+panel.getId() + "name:" + panel.getName());
+//      }
        return panelList;
+    }
+    
+    public static void downLoadPanelXml(Context context, String serverUrl, String panelName) {
+       downLoadFile(context, serverUrl + "/rest/panel/" + panelName, Constants.PANEL_XML);
+    }
+    
+    public static void downLoadImage(Context context, String serverUrl, String imageName) {
+       downLoadFile(context, serverUrl + "/" + imageName, imageName);
+    }
+    
+    private static void downLoadFile(Context context, String serverUrl, String fileName) {
+       HttpClient client = new DefaultHttpClient();
+       try {
+         HttpGet get = new HttpGet(serverUrl);
+         HttpResponse response = client.execute(get);
+         if (response.getStatusLine().getStatusCode() == 200) {
+            FileOutputStream fOut = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+            InputStream is = response.getEntity().getContent();
+            byte buf[] = new byte[1024];
+            int len;
+            while ((len = is.read(buf)) > 0) {
+               fOut.write(buf, 0, len);
+            }
+            fOut.close();
+            is.close();
+         }
+      } catch (ClientProtocolException e) {
+         e.printStackTrace();
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
     }
 }
