@@ -7,7 +7,7 @@ import org.openremote.android.console.bindings.TabBar;
 import org.openremote.android.console.bindings.XScreen;
 
 public class XMLEntityDataBase {
-   public static TabBar globalTabBar = new TabBar();
+   public static TabBar globalTabBar = null;
    public static final HashMap<Integer, Group> groups = new HashMap<Integer, Group>();
    public static final HashMap<Integer, XScreen> screens = new HashMap<Integer, XScreen>();
    

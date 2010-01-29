@@ -103,10 +103,9 @@ public class FileUtil {
          Element root = dom.getDocumentElement();
          NodeList nodes = root.getChildNodes();
          int nodeLength = nodes.getLength();
-         XMLEntityDataBase.globalTabBar = new TabBar();
          for (int i = 0; i < nodeLength; i++) {
             if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE && "tabbar".equals(nodes.item(i).getNodeName())) {
-               XMLEntityDataBase.globalTabBar.initWithXML(nodes.item(i));
+               XMLEntityDataBase.globalTabBar = new TabBar(nodes.item(i));
             }
          }
 
@@ -114,8 +113,7 @@ public class FileUtil {
          NodeList screenNodes = root.getElementsByTagName("screen");
          int screenNum = screenNodes.getLength();
          for (int i = 0; i < screenNum; i++) {
-            XScreen screen = new XScreen();
-            screen.initWithXML(screenNodes.item(i));
+            XScreen screen = new XScreen(screenNodes.item(i));
             XMLEntityDataBase.screens.put(screen.getScreenId(), screen);
          }
 
@@ -123,8 +121,7 @@ public class FileUtil {
          NodeList groupNodes = root.getElementsByTagName("group");
          int groupNum = groupNodes.getLength();
          for (int i = 0; i < groupNum; i++) {
-            Group group = new Group();
-            group.initWithXML(groupNodes.item(i));
+            Group group = new Group(groupNodes.item(i));
             XMLEntityDataBase.groups.put(group.getGroupId(), group);
          }
       } catch (ParserConfigurationException e) {
