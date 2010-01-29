@@ -4,7 +4,23 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.openremote.android.console.Constants;
+import org.openremote.android.console.bindings.Group;
+import org.openremote.android.console.bindings.TabBar;
+import org.openremote.android.console.bindings.XScreen;
+import org.openremote.android.console.model.XMLEntityDataBase;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import android.content.Context;
 import android.util.Log;
@@ -12,6 +28,7 @@ import android.widget.Toast;
 
 public class FileUtil {
 
+   // unused
    public static String ReadSettings(Context context) {
       StringBuffer strBuffer = new StringBuffer();
       if (context.getFileStreamPath("settings.dat").exists()) {
@@ -43,11 +60,10 @@ public class FileUtil {
       }
       return strBuffer.toString().trim();
    }
-   
+   //unused
    public static void WriteSettings(Context context, String data) {
       FileOutputStream fOut = null;
       OutputStreamWriter osw = null;
-      context.deleteFile("settings.dat");
          try {
             fOut = context.openFileOutput("settings.dat", Context.MODE_PRIVATE);
             osw = new OutputStreamWriter(fOut);
@@ -66,5 +82,64 @@ public class FileUtil {
                e.printStackTrace();
             }
          }
-   }  
+   }
+   
+   public static void parsePanelXML(Context context) {
+      if (context.getFileStreamPath(Constants.PANEL_XML).exists()) {
+         try {
+            parsePanelXMLInputStream(context.openFileInput(Constants.PANEL_XML));
+         } catch (FileNotFoundException e) {
+//            Log.e("FileUtil", "panel.xml not found.", e);
+         }
+      }
+   }
+   
+   public static void parsePanelXMLInputStream(InputStream fIn) {
+      try {
+//         Log.d("FileUtil", "Settings read");
+         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+         DocumentBuilder builder = factory.newDocumentBuilder();
+         Document dom = builder.parse(fIn);
+         Element root = dom.getDocumentElement();
+         NodeList nodes = root.getChildNodes();
+         int nodeLength = nodes.getLength();
+         XMLEntityDataBase.globalTabBar = new TabBar();
+         for (int i = 0; i < nodeLength; i++) {
+            if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE && "tabbar".equals(nodes.item(i).getNodeName())) {
+               XMLEntityDataBase.globalTabBar.initWithXML(nodes.item(i));
+            }
+         }
+
+         XMLEntityDataBase.screens.clear();
+         NodeList screenNodes = root.getElementsByTagName("screen");
+         int screenNum = screenNodes.getLength();
+         for (int i = 0; i < screenNum; i++) {
+            XScreen screen = new XScreen();
+            screen.initWithXML(screenNodes.item(i));
+            XMLEntityDataBase.screens.put(screen.getScreenId(), screen);
+         }
+
+         XMLEntityDataBase.groups.clear();
+         NodeList groupNodes = root.getElementsByTagName("group");
+         int groupNum = groupNodes.getLength();
+         for (int i = 0; i < groupNum; i++) {
+            Group group = new Group();
+            group.initWithXML(groupNodes.item(i));
+            XMLEntityDataBase.groups.put(group.getGroupId(), group);
+         }
+      } catch (ParserConfigurationException e) {
+         e.printStackTrace();
+      } catch (SAXException e) {
+         e.printStackTrace();
+      } catch (IOException e) {
+         e.printStackTrace();
+      } finally {
+         try {
+            fIn.close();
+         } catch (IOException e) {
+            e.printStackTrace();
+         }
+      }
+   }
+   
 }

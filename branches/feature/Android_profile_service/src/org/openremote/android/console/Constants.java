@@ -50,5 +50,6 @@ public class Constants {
    public static final String MULTICAST_ADDRESS = "224.0.1.100";
    public static final int MULTICAST_PORT = 3333;
    public static final int LOCAL_SERVER_PORT = 2346;
+   public static final String PANEL_XML = "panel.xml";
     
 }
