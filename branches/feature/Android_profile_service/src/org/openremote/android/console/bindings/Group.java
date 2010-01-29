@@ -17,13 +17,7 @@ public class Group extends BusinessEntity{
    private List<XScreen> screens;
    private TabBar tabBar;
    
-   @Override
-   public String getElementName() {
-      return "group";
-   }
-
-   @Override
-   public void initWithXML(Node node) {
+   public Group(Node node) {
       screens = new ArrayList<XScreen>();
       
       NamedNodeMap nodeMap = node.getAttributes();
@@ -35,8 +29,7 @@ public class Group extends BusinessEntity{
          Node childNode = nodeList.item(i);
          if(childNode.getNodeType() == Node.ELEMENT_NODE) {
             if ("tabbar".equals(childNode.getNodeName())) {
-               this.tabBar = new TabBar();
-               this.tabBar.initWithXML(childNode);
+               this.tabBar = new TabBar(childNode);
             } else if ("include".equals(childNode.getNodeName())) {
                screens.add(XMLEntityDataBase.screens.get(Integer.valueOf(childNode.getAttributes().getNamedItem("ref")
                      .getNodeValue())));
