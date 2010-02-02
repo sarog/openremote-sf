@@ -48,8 +48,15 @@ public class Constants {
    public static final int RESULT_CONTROLLER_URL = 2;
    public static final int RESULT_PANEL_SELECTED = 3;
    public static final String MULTICAST_ADDRESS = "224.0.1.100";
+   public static final String LOCAL_MULTICAST_ADDRESS = "10.0.2.2";
    public static final int MULTICAST_PORT = 3333;
    public static final int LOCAL_SERVER_PORT = 2346;
    public static final String PANEL_XML = "panel.xml";
-    
+   public static boolean IS_LOCAL;
+   public static String getMulticastAddress() {
+      if (IS_LOCAL) {
+         return LOCAL_MULTICAST_ADDRESS;
+      }
+      return MULTICAST_ADDRESS;
+   }
 }
