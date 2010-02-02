@@ -19,6 +19,7 @@ public class ButtonView extends ControlView {
    private void initButton(XButton button) {
       uiButton.setId(button.getButtonId());
       uiButton.setText(button.getName());
+      uiButton.setTextSize(10);
       addView(uiButton);
    }
 

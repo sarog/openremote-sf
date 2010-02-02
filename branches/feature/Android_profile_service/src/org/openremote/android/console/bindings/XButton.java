@@ -13,7 +13,7 @@ public class XButton extends Control {
       NamedNodeMap nodeMap = node.getAttributes();
       this.buttonId = Integer.valueOf(nodeMap.getNamedItem("id").getNodeValue());
       this.name = nodeMap.getNamedItem("name").getNodeValue();
-      if (nodeMap.getNamedItem("hasControlCommand").getNodeValue() != null) {
+      if (nodeMap.getNamedItem("hasControlCommand") != null) {
          this.hasControlCommand = Boolean.valueOf(nodeMap.getNamedItem("hasControlCommand").getNodeValue());
       }
    }

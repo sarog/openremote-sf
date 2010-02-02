@@ -9,16 +9,20 @@ public class GridCell extends BusinessEntity {
 
    private int x;
    private int y;
-   private int rowspan;
-   private int colspan;
+   private int rowspan = 1;
+   private int colspan = 1;
    private Component component;
    
    public GridCell(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
       this.x = Integer.valueOf(nodeMap.getNamedItem("x").getNodeValue()); 
       this.y = Integer.valueOf(nodeMap.getNamedItem("y").getNodeValue());
-      this.rowspan = Integer.valueOf(nodeMap.getNamedItem("rowspan").getNodeValue()); 
-      this.colspan = Integer.valueOf(nodeMap.getNamedItem("colspan").getNodeValue());
+      if (nodeMap.getNamedItem("rowspan") != null) {
+         this.rowspan = Integer.valueOf(nodeMap.getNamedItem("rowspan").getNodeValue()); 
+      }
+      if (nodeMap.getNamedItem("colspan") != null) {
+         this.colspan = Integer.valueOf(nodeMap.getNamedItem("colspan").getNodeValue());
+      }
       
       NodeList nodes = node.getChildNodes();
       int nodeNum = nodes.getLength();
