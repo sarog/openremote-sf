@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
@@ -40,6 +41,7 @@ public class GroupHandler extends Activity implements OnGestureListener {
        super.onCreate(savedInstanceState);
 
        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //       this.imageLoader = Main.imageLoader;
 //       this.imageLoader.reset();
        this.gestureScanner = new GestureDetector(this);
