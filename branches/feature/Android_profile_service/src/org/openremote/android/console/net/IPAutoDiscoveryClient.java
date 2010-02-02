@@ -13,9 +13,7 @@ public class IPAutoDiscoveryClient implements Runnable {
          DatagramSocket socket = new DatagramSocket();
          byte[] b = new byte[512];
          DatagramPacket dgram;
-         // temp use "10.0.2.2" in emulator to discovery localhost controller.
-         // use "Constants.MULTICAST_ADDRESS" in real device to discovery the controller.
-         dgram = new DatagramPacket(b, b.length, InetAddress.getByName("10.0.2.2"), Constants.MULTICAST_PORT);
+         dgram = new DatagramPacket(b, b.length, InetAddress.getByName(Constants.getMulticastAddress()), Constants.MULTICAST_PORT);
          socket.send(dgram);
       } catch (Exception e) {
          e.printStackTrace();

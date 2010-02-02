@@ -37,15 +37,20 @@ import org.openremote.android.xml.SimpleBinder;
 import org.xml.sax.SAXException;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ToggleButton;
 
 /**
  * This class represents the main OpenRemote activity. It starts up, reads the
@@ -73,7 +78,7 @@ public class Main extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        judgeNetType();
         configSettings();
 //        imageLoader = new ImageLoader();
 //        ArrayList<String> activityNames = new ArrayList<String>(); // used
@@ -330,5 +335,12 @@ public class Main extends Activity {
        i.setClassName(this.getClass().getPackage().getName(),
                AppSettingsActivity.class.getName());
        startActivity(i);
+    }
+    
+    private void judgeNetType() {
+       ConnectivityManager conn = (ConnectivityManager)(Main.this).getSystemService(Context.CONNECTIVITY_SERVICE);
+       if ("mobile".equals(conn.getActiveNetworkInfo().getTypeName().toLowerCase())) {
+          Constants.IS_LOCAL = true;
+       }
     }
 }
