@@ -24,16 +24,17 @@ import java.net.URISyntaxException;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
-import org.openremote.beehive.TestBase;
+import org.openremote.beehive.TemplateTestBase;
+import org.openremote.beehive.rest.service.IconRESTTestService;
 
 /**
- * @author Tomsky
+ * @author Tomsky, Dan Cong
  *
  */
-public class IconRestServiceTest extends TestBase {
+public class IconRestServiceTest extends TemplateTestBase {
    
    public void _testGetIconsXml() throws URISyntaxException{
-      Dispatcher dispatcher = RESTTestUtils.createDispatcher(IconRESTService.class);
+      Dispatcher dispatcher = RESTTestUtils.createDispatcher(IconRESTTestService.class);
       MockHttpRequest mockHttpRequest = MockHttpRequest.get("/icons");
       mockHttpRequest.accept("application/xml");
       
@@ -43,7 +44,7 @@ public class IconRestServiceTest extends TestBase {
    }
    
    public void testGetIconsJson() throws URISyntaxException{
-      Dispatcher dispatcher = RESTTestUtils.createDispatcher(IconRESTService.class);
+      Dispatcher dispatcher = RESTTestUtils.createDispatcher(IconRESTTestService.class);
       MockHttpRequest mockHttpRequest = MockHttpRequest.get("/icons/Menu");
       mockHttpRequest.accept("application/json");
       

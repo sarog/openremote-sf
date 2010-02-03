@@ -79,7 +79,5 @@
 	<classpathentry kind="lib" path="lib/test/spring-test/spring-test-2.5.5.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/JVM 1.6.0"/>
 	<classpathentry kind="lib" path="lib/test/hsqldb/hsqldb.jar"/>
-	<classpathentry kind="lib" path="lib/test/jetty/jetty-6.1.22.jar"/>
-	<classpathentry kind="lib" path="lib/test/jetty/jetty-util-6.1.22.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>

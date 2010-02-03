@@ -8,7 +8,7 @@
 
     <aop:config proxy-target-class="true">
         <aop:pointcut id="serviceMethods"
-                      expression="execution(* org.openremote.beehive.service.impl.*.*(..))"/>
+                      expression="execution(* org.openremote.beehive.api.service.impl.*.*(..))"/>
         <aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethods"/>
     </aop:config>
 

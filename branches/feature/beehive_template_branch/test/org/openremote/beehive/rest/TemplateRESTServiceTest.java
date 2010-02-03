@@ -24,33 +24,12 @@ import java.net.URISyntaxException;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
-import org.openremote.beehive.SpringTestContext;
-import org.openremote.beehive.TestBase;
-import org.openremote.beehive.api.service.AccountService;
-import org.openremote.beehive.domain.Account;
-import org.openremote.beehive.domain.Template;
+import org.openremote.beehive.TemplateTestBase;
 import org.openremote.beehive.rest.service.TemplateRESTTestService;
 
 
-public class TemplateRESTServiceTest  extends TestBase {
+public class TemplateRESTServiceTest  extends TemplateTestBase {
    
-   private AccountService accountService = (AccountService) SpringTestContext.getInstance().getBean("accountService");
-   
-   protected void setUp() throws Exception {
-      super.setUp();
-      Account a = new Account();
-      Template t1 = new Template();
-      t1.setAccount(a);
-      t1.setName("t1");
-      t1.setContent("content");
-      a.addTemplate(t1);
-      Template t2 = new Template();
-      t2.setAccount(a);
-      t2.setName("t2");
-      t2.setContent("content");
-      a.addTemplate(t2);
-      accountService.save(a);
-   }
    
    public void testGetTemplatesByAccountInXML() throws URISyntaxException {
       Dispatcher dispatcher = RESTTestUtils.createDispatcher(TemplateRESTTestService.class);

@@ -17,27 +17,23 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.beehive.service;
+package org.openremote.beehive.rest.service;
 
-import java.util.List;
-
-import junit.framework.Assert;
+import javax.ws.rs.Path;
 
 import org.openremote.beehive.SpringTestContext;
-import org.openremote.beehive.TemplateTestBase;
-import org.openremote.beehive.api.dto.TemplateDTO;
-import org.openremote.beehive.api.service.TemplateService;
+import org.openremote.beehive.api.service.ModelService;
+import org.openremote.beehive.rest.ModelRESTService;
 
-public class TemplateServiceTest extends TemplateTestBase {
-
-   private TemplateService service = (TemplateService) SpringTestContext.getInstance().getBean("templateService");
+/**
+ * ModelRESTService for test.
+ * 
+ */
+@Path("/lirc/{vendor_name}")
+public class ModelRESTTestService extends ModelRESTService {
    
-
-   public void testGetTemplatesByAccountOid() {
-      List<TemplateDTO> templates = service.loadAllTemplatesByAccountOid(1L);
-      Assert.assertEquals(templates.size(), 2);
-      Assert.assertEquals(templates.get(0).getName(), "t1");
-      Assert.assertEquals(templates.get(1).getName(), "t2");
+   public ModelService getModelService() {
+      return (ModelService) SpringTestContext.getInstance().getBean("modelService");
    }
 
 }
