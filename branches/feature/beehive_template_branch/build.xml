@@ -217,7 +217,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 		<echo message="--------------------------------------------------------------------" />
 		<echo message="" />
 		<property name="test.targetclasspath" value="${classes.dir}"/>
-		<antcall target="test"/>
+		<parallel>
+			<java classname="org.openremote.beehive.jetty.JettyStart" classpathref="test.path.id" fork="true" />
+			<sequential>
+				<waitfor>
+					<socket server="127.0.0.1" port="8091" />
+				</waitfor>
+				<antcall target="test"/>
+				<java classname="org.openremote.beehive.jetty.JettyStop" classpathref="test.path.id" />
+			</sequential>
+		</parallel>
 	</target>
 
 	<!--
@@ -289,7 +298,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<target name="report-cobertura" depends="cobertura_instrument"
             description="--> generate the coverage report.">
 		<property name="test.targetclasspath" value="${instrumented.dir}"/>
-		<antcall target="test"/>
+		<antcall target="run-test"/>
 		<delete includeemptydirs="true" dir="${cobertura.report.dir}"/>
 		<cobertura-report format="html" destdir="${cobertura.report.dir}" srcdir="${src.dir}"
                           datafile="${cobertura.datafile}"/>

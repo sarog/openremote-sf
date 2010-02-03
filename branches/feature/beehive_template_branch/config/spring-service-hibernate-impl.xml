@@ -8,7 +8,7 @@
 
     <aop:config proxy-target-class="true">
         <aop:pointcut id="serviceMethods"
-                      expression="execution(* org.openremote.beehive.serviceHibernateImpl.*.*(..))"/>
+                      expression="execution(* org.openremote.beehive.service.impl.*.*(..))"/>
         <aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethods"/>
     </aop:config>
 
@@ -36,41 +36,42 @@
 
     </bean>
 
-    <bean id="abstractService" abstract="true"
-	class="org.openremote.beehive.serviceHibernateImpl.BaseAbstractService" />
-	<bean id="modelService"
-		class="org.openremote.beehive.serviceHibernateImpl.ModelServiceImpl"
+	<bean id="abstractService" abstract="true"
+		class="org.openremote.beehive.api.service.impl.BaseAbstractService" />
+	<bean id="modelService" class="org.openremote.beehive.api.service.impl.ModelServiceImpl"
 		parent="abstractService" />
-	<bean id="vendorService"
-		class="org.openremote.beehive.serviceHibernateImpl.VendorServiceImpl"
+	<bean id="vendorService" class="org.openremote.beehive.api.service.impl.VendorServiceImpl"
 		parent="abstractService" />
 	<bean id="remoteSectionService"
-		class="org.openremote.beehive.serviceHibernateImpl.RemoteSectionServiceImpl"
+		class="org.openremote.beehive.api.service.impl.RemoteSectionServiceImpl"
 		parent="abstractService" />
 	<bean id="remoteOptionService"
-		class="org.openremote.beehive.serviceHibernateImpl.RemoteOptionServiceImpl"
+		class="org.openremote.beehive.api.service.impl.RemoteOptionServiceImpl"
 		parent="abstractService" />
-	<bean id="codeService"
-		class="org.openremote.beehive.serviceHibernateImpl.CodeServiceImpl"
+	<bean id="codeService" class="org.openremote.beehive.api.service.impl.CodeServiceImpl"
 		parent="abstractService" />
 	<bean id="scraperService"
-		class="org.openremote.beehive.serviceHibernateImpl.WebscraperServiceImpl"
-		parent="abstractService" >
+		class="org.openremote.beehive.api.service.impl.WebscraperServiceImpl"
+		parent="abstractService">
 	</bean>
 	<bean id="svnDelegateService"
-		class="org.openremote.beehive.serviceHibernateImpl.SVNDelegateServiceImpl"
-		parent="abstractService" >
+		class="org.openremote.beehive.api.service.impl.SVNDelegateServiceImpl"
+		parent="abstractService">
 	</bean>
-	<bean id="iconService"
-      class="org.openremote.beehive.serviceHibernateImpl.IconServiceImpl"
-      parent="abstractService" >
-   </bean>
-   <bean id="syncHistoryService"
-      class="org.openremote.beehive.serviceHibernateImpl.SyncHistoryServiceImpl"
-      parent="abstractService" >
-   </bean>
-   <bean id="progressService"
-      class="org.openremote.beehive.serviceHibernateImpl.ProgressServiceImpl"
-      parent="abstractService" >
-   </bean>
+	<bean id="iconService" class="org.openremote.beehive.api.service.impl.IconServiceImpl"
+		parent="abstractService">
+	</bean>
+	<bean id="syncHistoryService"
+		class="org.openremote.beehive.api.service.impl.SyncHistoryServiceImpl"
+		parent="abstractService">
+	</bean>
+	<bean id="progressService" class="org.openremote.beehive.api.service.impl.ProgressServiceImpl"
+		parent="abstractService">
+	</bean>
+	<bean id="templateService" class="org.openremote.beehive.api.service.impl.TemplateServiceImpl"
+		parent="abstractService">
+	</bean>
+	<bean id="accountService" class="org.openremote.beehive.api.service.impl.AccountServiceImpl"
+		parent="abstractService">
+	</bean>
 </beans>

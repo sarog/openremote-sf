@@ -38,9 +38,6 @@ import org.openremote.beehive.spring.SpringContext;
 @Path("/lirc/{vendor_name}/{model_name}/{section_id}/options")
 public class RemoteOptionRESTService {
 
-   public RemoteOptionRESTService() {
-   }
-
    /**
     * Shows remoteSecrtions by {section_id} Visits @ url "/lirc/{vendor_name}/{model_name}/{section_id}/options"
     * 
@@ -57,7 +54,7 @@ public class RemoteOptionRESTService {
       if (list.size() == 0) {
          throw new WebApplicationException(Response.Status.NO_CONTENT);
       }
-      return new RemoteOptionListing(getRemoteOptionService().findByRemoteSectionId(sectionId));
+      return new RemoteOptionListing(list);
    }
 
    /**

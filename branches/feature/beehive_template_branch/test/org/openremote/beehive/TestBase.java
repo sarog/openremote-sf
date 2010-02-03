@@ -26,7 +26,6 @@ import org.hibernate.SessionFactory;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.orm.hibernate3.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.openremote.beehive.spring.SpringContext;
 
 
 public abstract class TestBase extends TestCase {
@@ -34,7 +33,7 @@ public abstract class TestBase extends TestCase {
 
    protected void setUp() throws Exception {
       super.setUp();
-      sessionFactory = (SessionFactory) SpringContext.getInstance().getBean("sessionFactory");
+      sessionFactory = (SessionFactory) SpringTestContext.getInstance().getBean("sessionFactory");
 
       Session s = sessionFactory.openSession();
       TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(s));

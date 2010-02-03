@@ -19,14 +19,13 @@
 */
 package org.openremote.beehive.service;
 
+import org.openremote.beehive.SpringTestContext;
 import org.openremote.beehive.TestBase;
 import org.openremote.beehive.api.service.ModelService;
-import org.openremote.beehive.spring.SpringContext;
 
 public class LircConfFileServiceTest extends TestBase {
 
-    private ModelService service = (ModelService) SpringContext
-            .getInstance().getBean("modelService");
+    private ModelService service = (ModelService) SpringTestContext.getInstance().getBean("modelService");
 
 //	public void testAddLircConfFile() {
 //		StopWatch watch = new StopWatch();

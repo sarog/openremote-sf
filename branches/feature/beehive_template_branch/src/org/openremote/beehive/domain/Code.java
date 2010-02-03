@@ -26,6 +26,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.openremote.beehive.Constant;
 import org.openremote.beehive.utils.StringUtil;
 
 /**
@@ -75,7 +76,7 @@ public class Code extends BusinessEntity {
       this.name = name;
    }
 
-   @Column(nullable = false, columnDefinition = "text")
+   @Column(nullable = false, columnDefinition = Constant.TEXT_COLUMN_DEFINITION)
    public String getValue() {
       return value;
    }
@@ -84,7 +85,7 @@ public class Code extends BusinessEntity {
       this.value = value;
    }
 
-   @Column(columnDefinition = "text")
+   @Column(columnDefinition = Constant.TEXT_COLUMN_DEFINITION)
    public String getComment() {
       return comment;
    }

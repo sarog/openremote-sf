@@ -38,8 +38,6 @@ import org.openremote.beehive.spring.SpringContext;
 @Path("/lirc/{vendor_name}")
 public class ModelRESTService {
 
-   public ModelRESTService() {
-   }
 
    /**
     * Shows all models belongs to the vendor which name is {vendor_name} Visits @ url "/lirc/{vendor_name}"

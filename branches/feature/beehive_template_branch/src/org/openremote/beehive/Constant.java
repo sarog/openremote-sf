@@ -19,7 +19,6 @@
 */
 package org.openremote.beehive;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Constant.
  * 
@@ -32,6 +31,8 @@ public final class Constant {
     */
    private Constant(){
    }
+   
+   public static final String TEXT_COLUMN_DEFINITION = "VARCHAR(65532)";
    
    /** The value for the progress file. */
    public static final String SYNC_PROGRESS_FILE = "syncProgress.txt";

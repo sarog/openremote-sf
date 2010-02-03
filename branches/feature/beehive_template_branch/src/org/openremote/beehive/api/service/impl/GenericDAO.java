@@ -17,9 +17,11 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.beehive.serviceHibernateImpl;
+package org.openremote.beehive.api.service.impl;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -347,5 +349,21 @@ public class GenericDAO extends HibernateDaoSupport {
    public void flush(){
       getHibernateTemplate().flush();
    }
+   
+   public Object runRawSql(final String sql) {
+      return getHibernateTemplate().execute(new HibernateCallback() {
+         public Object doInHibernate(Session session) throws HibernateException, SQLException {
+            Connection conn = session.connection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.execute();
+            ps.close();
+            session.flush();
+            return null;
+         }
+
+      });
+   }
+   
+  
    
 }
