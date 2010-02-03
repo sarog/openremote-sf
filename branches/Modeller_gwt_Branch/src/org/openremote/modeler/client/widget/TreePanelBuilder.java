@@ -20,16 +20,20 @@
 package org.openremote.modeler.client.widget;
 
 import java.util.List;
+import java.util.Set;
 
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.model.TreeFolderBean;
+import org.openremote.modeler.client.proxy.ConfigCategoryBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.widget.buildingmodeler.ControllerConfigTabItem;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTabItem;
 import org.openremote.modeler.domain.CommandDelay;
+import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
@@ -57,6 +61,7 @@ import com.extjs.gxt.ui.client.data.RpcProxy;
 import com.extjs.gxt.ui.client.data.TreeLoader;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.TabItem;
+import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Event;
@@ -91,7 +96,7 @@ public class TreePanelBuilder {
    private static TreeStore<BeanModel> groupTreeStore = null;
    private static TreeStore<BeanModel> widgetTreeStore = null;
    private static TreeStore<BeanModel> panelTreeStore = null;
-   
+   private static TreeStore<BeanModel> controllerConfigCategoryTreeStore = null;
    
    /**
     * Builds a device command tree.
@@ -511,4 +516,76 @@ public class TreePanelBuilder {
       return panelTree;
    }
    
+   /*public static TreePanel<BeanModel> buildControllerConfigCategoryPanelTree(){
+      if(controllerConfigCategoryTreeStore == null){
+         controllerConfigCategoryTreeStore = new TreeStore<BeanModel>();
+         ControllerConfigBeanProxy.getAllCategory(new AsyncSuccessCallback<Set<ConfigCategory>>(){
+
+            @Override
+            public void onSuccess(Set<ConfigCategory> result) {
+               for(ConfigCategory category : result){
+                  controllerConfigCategoryTreeStore.add(category.getBeanModel(), false);
+               }
+            }
+         });
+      }
+      
+      TreePanel<BeanModel> tree = new TreePanel<BeanModel>(controllerConfigCategoryTreeStore);
+      tree.setIconProvider(new ModelIconProvider<BeanModel>() {
+         public AbstractImagePrototype getIcon(BeanModel thisModel) {
+            if (thisModel.getBean() instanceof ConfigCategory) {
+               return ICON.panelIcon();
+            } else {
+               return ICON.panelIcon();
+            }
+         }
+      });
+      
+      tree.setStateful(true);
+      tree.setBorders(false);
+      tree.setHeight("100%");
+      tree.setDisplayProperty("name");
+      
+      return tree;
+   }*/
+   
+   public static TreePanel<BeanModel> buildControllerConfigCategoryPanelTree(final TabPanel configTabPanel){
+      if(controllerConfigCategoryTreeStore == null){
+         controllerConfigCategoryTreeStore = new TreeStore<BeanModel>();
+         ConfigCategoryBeanModelProxy.getAllCategory(new AsyncSuccessCallback<Set<ConfigCategory>>(){
+
+            @Override
+            public void onSuccess(Set<ConfigCategory> result) {
+               for(ConfigCategory category : result){
+                  controllerConfigCategoryTreeStore.add(category.getBeanModel(), false);
+               }
+            }
+         });
+      }
+      
+      TreePanel<BeanModel> tree = new TreePanel<BeanModel>(controllerConfigCategoryTreeStore){
+         @Override
+         public void onBrowserEvent(Event event) {
+            if (event.getTypeInt() == Event.ONCLICK) {
+               BeanModel beanModel = this.getSelectionModel().getSelectedItem();
+               ConfigCategory  category = beanModel.getBean();
+               configTabPanel.removeAll();
+               ControllerConfigTabItem configTabItem = new ControllerConfigTabItem(category);
+               configTabPanel.add(configTabItem);
+            }
+            super.onBrowserEvent(event);
+         }
+      };
+      tree.setIconProvider(new ModelIconProvider<BeanModel>() {
+         public AbstractImagePrototype getIcon(BeanModel thisModel) {
+            return ICON.configIcon();
+         }
+      });
+      
+      tree.setStateful(true);
+      tree.setBorders(false);
+      tree.setHeight("100%");
+      tree.setDisplayProperty("name");
+      return tree;
+   }
 }

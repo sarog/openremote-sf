@@ -120,24 +120,6 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       AutoSaveResponse autoSaveResponse = new AutoSaveResponse();
       
       List<Panel> oldPanels = new ArrayList<Panel>();
-      /*
-       * init the groups & screens information for the panels.  
-       */
-      /*Set<Group> groups = new LinkedHashSet<Group>();
-      Set<Screen> screens = new LinkedHashSet<Screen>();
-      for(Panel panel :panels){
-         List<GroupRef> groupRefs = panel.getGroupRefs();
-         for(GroupRef groupRef : groupRefs){
-            groups.add(groupRef.getGroup());
-         }
-      }
-      
-      for(Group group:groups){
-         List<ScreenRef> screenRefs = group.getScreenRefs();
-         for(ScreenRef screenRef : screenRefs){
-            screens.add(screenRef.getScreen());
-         }
-      }*/
       if (getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY) != null) {
          oldPanels = (List<Panel>) getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
       }
@@ -148,6 +130,19 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
             autoSaveResponse.setUpdated(true);
             resourceService.updateResources(panels, maxID);
          }
+      }
+      return autoSaveResponse;
+   }
+
+   @Override
+   public AutoSaveResponse saveUiDesignerLayout(Collection<Panel> panels, long maxID) {
+      AutoSaveResponse autoSaveResponse = new AutoSaveResponse();
+
+      if (panels != null) {
+         getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
+         getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
+         autoSaveResponse.setUpdated(true);
+         resourceService.updateResources(panels, maxID);
       }
       return autoSaveResponse;
    }
@@ -214,5 +209,4 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    public boolean canRestore() {
       return resourceService.canRestore();
    }
-
 }

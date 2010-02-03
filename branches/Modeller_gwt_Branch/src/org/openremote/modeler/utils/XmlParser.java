@@ -25,11 +25,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
+import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -37,7 +40,11 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
+import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.domain.ConfigCategory;
+import org.openremote.modeler.domain.Config;
 import org.openremote.modeler.exception.XmlParserException;
+import org.openremote.modeler.service.ControllerConfigService;
 import org.xml.sax.InputSource;
 
 /**
@@ -184,5 +191,77 @@ public class XmlParser {
          return false;
       }
       return true;
+   }
+   
+   public static Document getDocument(String xmlPath) {
+      SAXBuilder builder = new SAXBuilder();
+      Document doc = null;
+      try {
+         doc = builder.build(XmlParser.class.getClassLoader().getResourceAsStream(ControllerConfigService.CONTROLLER_CONFIG_XML_FILE));
+      } catch (Exception e) {
+         throw new RuntimeException(e);
+      }
+
+      return doc;
+   }
+   @SuppressWarnings("unchecked")
+   public static List<Element> getElementsByElementName(Document doc,String eleName){
+      String xpath = "//or" + eleName;
+      try {
+         XPath xPath = XPath.newInstance(xpath);
+         xPath.addNamespace(Constants.OPENREMOTE_NAMESPACE, Constants.OPENREMOTE_WEBSITE);
+         List<Element> elements = xPath.selectNodes(doc);
+         return elements;
+      } catch (JDOMException e) {
+         throw new RuntimeException(e);
+      }
+   }
+   
+   @SuppressWarnings("unchecked")
+   public static Config buildFromXml(Element ele,String categoryName){
+      Config cfg = new Config();
+      List<Attribute> attributes = ele.getAttributes();
+      for(Attribute attr : attributes){
+         if(Config.NAME_XML_ATTRIBUTE_NAME.equals(attr.getName())){
+            cfg.setName(attr.getValue());
+         } else if(Config.VALUE_XML_ATTRIBUTE_NAME.equals(attr.getName())){
+            cfg.setValue(attr.getValue());
+         } else if(Config.VALIDATION_XML_ATTRIBUTE_NAME.equals(attr.getName())){
+            cfg.setValidation(attr.getValue());
+         } else if(Config.OPTION_XML_ATTRIBUTE_NAME.equals(attr.getName())){
+            cfg.setOptions(attr.getValue());
+         }
+      }
+      Element hintEle = ele.getChild(Config.HINT_XML_NODE_NAME,ele.getNamespace());
+      String hint = hintEle == null ?"":hintEle.getTextNormalize();
+      cfg.setHint(hint);
+      cfg.setCategory(categoryName==null?"":categoryName);
+      return cfg;
+   }
+   
+   @SuppressWarnings("unchecked")
+   public static void initControllerConfig(Set<ConfigCategory> categories,Collection<Config> defaultConfigs){
+      Document doc = XmlParser.getDocument(ControllerConfigService.CONTROLLER_CONFIG_XML_FILE);
+      Element root = doc.getRootElement();
+      List<Element> categorys = root.getChildren(ConfigCategory.XML_NODE_NAME,root.getNamespace());
+      for(Element categoryEle : categorys){
+         /*
+          * initialize category 
+          */
+         String categoryName = categoryEle.getAttributeValue(ConfigCategory.NAME_XML_ATRIBUTE_NAME);
+         Element descriptionEle = categoryEle.getChild(ConfigCategory.DESCRIBTION_NODE_NAME, categoryEle.getNamespace());
+         String description = descriptionEle == null? "":descriptionEle.getTextNormalize();
+         ConfigCategory category = new ConfigCategory(categoryName, description);
+         categories.add(category);
+         
+         /*
+          * initialize configuration
+          */
+         List<Element> configEles = categoryEle.getChildren(Config.XML_NODE_NAME, categoryEle.getNamespace());
+         for(Element configEle : configEles){
+            Config config = XmlParser.buildFromXml(configEle,categoryName);
+            defaultConfigs.add(config);
+         }
+      }
    }
 }

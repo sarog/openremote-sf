@@ -82,4 +82,18 @@ public class Constants {
    
    public static final String REG_POSITIVEINT = "^[1-9][0-9]*$";
    public static final String REG_NONNEGATIVEINT = "^\\d+$";
+   
+   public final static String OPENREMOTE_WEBSITE= "http://www.openremote.org";
+   
+   /** The Constant OPENREMOTE_NAMESPACE. */
+   public final static String OPENREMOTE_NAMESPACE= "or";
+   
+   /** The Constant SCHEMA_LANGUAGE. */
+   public final static String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+   
+   /** The Constant XML_SCHEMA. */
+   public final static String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+   
+   /** The Constant SCHEMA_SOURCE. */
+   public final static String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
 }

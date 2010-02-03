@@ -85,6 +85,20 @@ public class UtilsProxy {
       });
    }
    
+   public static void saveUiDesignerLayout(Collection<Panel> panels, long maxID, final AsyncSuccessCallback<AutoSaveResponse> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().autoSaveUiDesignerLayout(panels,  maxID, new AsyncSuccessCallback<AutoSaveResponse>() {
+         @Override
+         public void onSuccess(AutoSaveResponse result) {
+            callback.onSuccess(result);
+         }
+
+         @Override
+         public void onFailure(Throwable caught) {
+            callback.onFailure(caught);
+         }
+         
+      });
+   }
    public static void restore(final AsyncCallback<PanelsAndMaxOid> callback) {
       AsyncServiceFactory.getUtilsRPCServiceAsync().restore(new AsyncSuccessCallback<PanelsAndMaxOid>() {
          @Override

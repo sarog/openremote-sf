@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.view;
 
+import org.openremote.modeler.client.widget.buildingmodeler.ConfigPanel;
 import org.openremote.modeler.client.widget.buildingmodeler.DevicePanel;
 import org.openremote.modeler.client.widget.buildingmodeler.MacroPanel;
 
@@ -26,6 +27,7 @@ import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.TabItem;
+import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
@@ -37,6 +39,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
  */
 public class BuildingModelerView extends TabItem implements View {
 
+   private TabPanel configTabPanel = new TabPanel();
    /**
     * @see org.openremote.modeler.client.view.View#initialize()
     */
@@ -73,10 +76,8 @@ public class BuildingModelerView extends TabItem implements View {
       west.setHeading("Explorer");
       west.add(new DevicePanel());
       west.add(new MacroPanel());
-      /*west.add(new SensorPanel());
+      west.add(new ConfigPanel(this));
 
-      west.add(new SwitchPanel());
-      west.add(new SliderPanel());*/
       westData.setMargins(new Margins(2));
       add(west, westData);
    }
@@ -85,9 +86,20 @@ public class BuildingModelerView extends TabItem implements View {
     * Creates the center.
     */
    private void createCenter() {
-      ContentPanel center = new ContentPanel();
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setMargins(new Margins(2));
-      add(center, centerData);
+      configTabPanel.setTabScroll(true);
+      configTabPanel.setAnimScroll(true);
+      add(configTabPanel,centerData);
    }
+
+   public TabPanel getConfigTabPanel() {
+      return configTabPanel;
+   }
+
+   public void setConfigTabPanel(TabPanel configTabPanel) {
+      this.configTabPanel = configTabPanel;
+   }
+   
+   
 }

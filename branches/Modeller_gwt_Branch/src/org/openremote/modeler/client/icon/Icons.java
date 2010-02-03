@@ -342,4 +342,7 @@ public interface Icons extends ImageBundle {
 
    @Resource("sensor_delete.png")
    AbstractImagePrototype sensorDeleteIcon();
+   
+   @Resource("config.png")
+   AbstractImagePrototype configIcon();
 }

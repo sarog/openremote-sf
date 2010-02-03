@@ -78,5 +78,6 @@
 	<bean id="switchService" class="org.openremote.modeler.service.impl.SwitchServiceImpl" parent="abstractService"/>
 	<bean id="sliderService" class="org.openremote.modeler.service.impl.SliderServiceImpl" parent="abstractService"/>
 	<bean id="sensorService" class="org.openremote.modeler.service.impl.SensorServiceImpl" parent="abstractService"></bean>
+	<bean id="controllerConfigService" class="org.openremote.modeler.service.impl.ControllerConfigServiceImpl" parent="abstractService"/>
 </beans>
 
