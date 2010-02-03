@@ -42,6 +42,8 @@ public class Configuration {
 
    /** The webapp server root. */
    private String webappServerRoot;
+   
+   private String controllerConfigPath;
 
    /**
     * Gets the iphone xsd path.
@@ -158,6 +160,14 @@ public class Configuration {
     */
    public void setBeehiveRestIconUrl(String beehiveRestIconUrl) {
       this.beehiveRestIconUrl = beehiveRestIconUrl;
+   }
+
+   public String getControllerConfigPath() {
+      return controllerConfigPath;
+   }
+
+   public void setControllerConfigPath(String controllerConfigPath) {
+      this.controllerConfigPath = controllerConfigPath;
    }
    
    
