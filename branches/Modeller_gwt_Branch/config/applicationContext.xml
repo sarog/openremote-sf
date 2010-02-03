@@ -27,6 +27,7 @@
 		<property name="panelXsdPath" value="${panel.xsd.path}" />
 		<property name="controllerXsdPath" value="${controller.xsd.path}" />
 		<property name="webappServerRoot" value="${webapp.server.root}" />
+		<property name="controllerConfigPath" value="${controller.config.path}" />
 	</bean>
 	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
@@ -60,6 +61,7 @@
                 <value>org.openremote.modeler.domain.SliderSensorRef</value> 
                 <value>org.openremote.modeler.domain.Switch</value>
                 <value>org.openremote.modeler.domain.Slider</value> 
+                <value>org.openremote.modeler.domain.Config</value>
 			</list>
 		</property>
 		<property name="mappingResources">

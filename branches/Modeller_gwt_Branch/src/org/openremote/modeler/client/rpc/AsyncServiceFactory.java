@@ -55,7 +55,10 @@ public class AsyncServiceFactory {
    private static SensorRPCServiceAsync sensorRPCServiceAsync = null;
    
    private static SliderRPCServiceAsync sliderRPCServiceAsync = null;
-
+   
+   private static ControllerConfigPRCServiceAsync controllerConfigPRCServiceAsync = null;
+   
+   private static ConfigCategoryRPCServiceAsync configCategoryRPCServiceAsync = null;
    
    /**
     * Gets the device macro service async.
@@ -137,5 +140,21 @@ public class AsyncServiceFactory {
          sliderRPCServiceAsync = GWT.create(SliderRPCService.class);
       }
       return sliderRPCServiceAsync;
+   }
+   
+   public static ControllerConfigPRCServiceAsync getControllerConfigPRCServiceAsync(){
+      if(controllerConfigPRCServiceAsync == null){
+         controllerConfigPRCServiceAsync = GWT.create(ControllerConfigPRCService.class);
+      }
+      
+      return controllerConfigPRCServiceAsync;
+   }
+   
+   public static ConfigCategoryRPCServiceAsync getConfigCategoryRPCServiceAsync(){
+      if(configCategoryRPCServiceAsync == null){
+         configCategoryRPCServiceAsync = GWT.create(ConfigCategoryRPCService.class);
+      }
+      
+      return configCategoryRPCServiceAsync;
    }
 }

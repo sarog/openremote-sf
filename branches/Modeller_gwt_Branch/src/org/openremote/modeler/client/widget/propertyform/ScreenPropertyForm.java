@@ -59,7 +59,7 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 /**
  * A property form for editing the screen's property . 
- * @author User
+ * @author Javen
  *
  */
 public class ScreenPropertyForm extends PropertyForm {

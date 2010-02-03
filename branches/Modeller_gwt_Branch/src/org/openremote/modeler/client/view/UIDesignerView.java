@@ -111,6 +111,23 @@ public class UIDesignerView extends TabItem implements View {
       });
    }
    
+   public void saveUiDesignerLayout() {
+      UtilsProxy.saveUiDesignerLayout(getAllPanels(), IDUtil.currentID(), new AsyncSuccessCallback<AutoSaveResponse>() {
+         @Override
+         public void onSuccess(AutoSaveResponse result) {
+            if (result != null && result.isUpdated()) {
+               Info.display("Info", "UI designer layout saved at " + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
+            }
+         }
+         @Override
+         public void onFailure(Throwable caught) {
+            timer.cancel();
+            MessageBox.alert("ERROR", "Server error, UI designer layout save failed.", null);
+         }
+         
+      });
+   }
+   
    public void restore() {
       UtilsProxy.restore(new AsyncCallback<PanelsAndMaxOid>() {
          @Override

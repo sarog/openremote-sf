@@ -51,6 +51,7 @@ import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.CommandRefItem;
+import org.openremote.modeler.domain.Config;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -77,6 +78,7 @@ import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.XmlParserException;
 import org.openremote.modeler.protocol.ProtocolContainer;
+import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.ResourceService;
@@ -119,7 +121,7 @@ public class ResourceServiceImpl implements ResourceService {
    
    private UserService userService;
 
-
+   private ControllerConfigService controllerConfigService = null;
    /**
     * {@inheritDoc}
     */
@@ -535,7 +537,9 @@ public class ResourceServiceImpl implements ResourceService {
       return PathConfig.getInstance(configuration).getRelativeResourcePath(fileName, sessionId);
    }
 
-   
+   public void setControllerConfigService(ControllerConfigService controllerConfigService) {
+      this.controllerConfigService = controllerConfigService;
+   }
 
    @Override
    public String getRelativeResourcePathByCurrentAccount(String fileName) {
@@ -649,7 +653,7 @@ public class ResourceServiceImpl implements ResourceService {
       Collection<UIComponent> uiSliders = uiComponentBox.getUIComponentsByType(UISlider.class);
       Collection<UIComponent> uiImages = uiComponentBox.getUIComponentsByType(UIImage.class);
       Collection<UIComponent> uiLabels = uiComponentBox.getUIComponentsByType(UILabel.class);
-      
+      Collection<Config> configs = controllerConfigService.listAllForCurrentAccount();
       
       context.put("switchs", switchs);
       context.put("buttons", buttons);
@@ -663,6 +667,7 @@ public class ResourceServiceImpl implements ResourceService {
       context.put("labels", uiLabels);
       context.put("images", uiImages);
       context.put("maxId", maxId);
+      context.put("configs", configs);
 
 
       return VelocityEngineUtils.mergeTemplateIntoString(velocity, CONTROLLER_XML_TEMPLATE, context);

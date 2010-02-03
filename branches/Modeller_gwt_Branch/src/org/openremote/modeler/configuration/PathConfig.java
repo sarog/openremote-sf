@@ -244,4 +244,8 @@ public class PathConfig {
    public String getSerizalizedPanelsFile(Account account){
       return userFolder(account)+"panels.obj";
    }
+   
+   public String getControllerConfigPath(){
+      return configuration.getControllerConfigPath();
+   }
 }

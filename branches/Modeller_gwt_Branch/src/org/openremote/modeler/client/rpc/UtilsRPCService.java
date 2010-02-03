@@ -68,6 +68,8 @@ public interface UtilsRPCService extends RemoteService {
     */
    AutoSaveResponse autoSaveUiDesignerLayout(Collection<Panel> panels, long maxID);
    
+   AutoSaveResponse saveUiDesignerLayout(Collection<Panel> panels, long maxID);
+   
    PanelsAndMaxOid restore();
    
    boolean canRestore();

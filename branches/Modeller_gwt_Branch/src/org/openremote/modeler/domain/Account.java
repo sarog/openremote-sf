@@ -28,6 +28,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 
+
 /**
  * The Class Account.
  * 
@@ -50,6 +51,8 @@ public class Account extends BusinessEntity {
    private List<Sensor> sensors;
    
    private List<Switch> switches;
+   
+   private List<Config> configs;
 
    /**
     * Instantiates a new account.
@@ -58,6 +61,7 @@ public class Account extends BusinessEntity {
       devices = new ArrayList<Device>();
       deviceMacros = new ArrayList<DeviceMacro>();
       sensors = new ArrayList<Sensor>();
+      configs = new ArrayList<Config>();
    }
 
    /**
@@ -144,5 +148,14 @@ public class Account extends BusinessEntity {
    public void setSwitches(List<Switch> switches) {
       this.switches = switches;
    }
+   @OneToMany(mappedBy = "account")
+   public List<Config> getConfigs() {
+      return configs;
+   }
+
+   public void setConfigs(List<Config> configs) {
+      this.configs = configs;
+   }
+   
    
 }

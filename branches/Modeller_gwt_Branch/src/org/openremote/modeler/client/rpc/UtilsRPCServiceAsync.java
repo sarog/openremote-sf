@@ -61,6 +61,8 @@ public interface UtilsRPCServiceAsync {
     * @param asyncSuccessCallback the async success callback
     */
    void autoSaveUiDesignerLayout(Collection<Panel> panels, long maxID, AsyncCallback<AutoSaveResponse> asyncSuccessCallback);
+   
+   void saveUiDesignerLayout(Collection<Panel> panels, long maxID, AsyncCallback<AutoSaveResponse> asyncSuccessCallback);
 
    void loadPanelsFromSession(AsyncCallback<Collection<Panel>> callback);
    

@@ -19,13 +19,18 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.openremote.modeler.domain.Account;
+import org.openremote.modeler.domain.Config;
+import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.utils.XmlParser;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.encoding.Md5PasswordEncoder;
 
@@ -35,7 +40,6 @@ import org.springframework.security.providers.encoding.Md5PasswordEncoder;
  * @author Dan 2009-7-14
  */
 public class UserServiceImpl extends BaseAbstractService<User> implements UserService {
-
     /**
      * Gets the current account.
      * 
@@ -72,6 +76,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
          acc.setUser(user);
          user.setAccount(acc);
          genericDAO.save(user);
+         setDefaultConfigsForAccount(acc);
          return true;
       } else {
          return false;
@@ -84,5 +89,15 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     */
     public void saveUser(User user) {
         genericDAO.save(user);
+    }
+    
+    private void setDefaultConfigsForAccount(Account account){
+       Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
+       Set<Config> allDefaultConfigs = new HashSet<Config>();
+       XmlParser.initControllerConfig(categories, allDefaultConfigs);
+       for(Config cfg : allDefaultConfigs){
+          cfg.setAccount(account);
+       }
+       genericDAO.getHibernateTemplate().saveOrUpdateAll(allDefaultConfigs);
     }
 }
