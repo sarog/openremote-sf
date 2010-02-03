@@ -7,11 +7,11 @@ import org.openremote.android.console.util.FileUtil;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.AttributeSet;
-import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -22,11 +22,12 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
-public class AppSettingsActivity extends Activity {
+public class AppSettingsActivity extends Activity{
 
    private LinearLayout appSettingsView;
    private ListView customeListView;
@@ -36,6 +37,10 @@ public class AppSettingsActivity extends Activity {
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setTitle(R.string.settings);
+      ScrollView scroll = new ScrollView(this);
+      scroll.setVerticalScrollBarEnabled(false);
+      scroll.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+      
       appSettingsView = new LinearLayout(this);
       appSettingsView.setBackgroundColor(0);
       appSettingsView.setTag(R.string.settings);
@@ -92,13 +97,15 @@ public class AppSettingsActivity extends Activity {
       TextView csText = new TextView(this);
       csText.setText("Choose Controller:");
       csText.setPadding(10, 5, 0, 5);
+      csText.setBackgroundColor(Color.DKGRAY);
       
       TextView choosePanelInfo = new TextView(this);
       choosePanelInfo.setPadding(10, 10, 0, 5);
       choosePanelInfo.setText("Choose Panel Identity:");
+      choosePanelInfo.setBackgroundColor(Color.DKGRAY);
       
       choosePanelButton = new Button(this);
-      choosePanelButton.setPadding(10, 10, 5, 5);
+//      choosePanelButton.setPadding(10, 10, 5, 20);
       choosePanelButton.setText("choose panel");
       String currentPanel = AppSettingsModel.getCurrentPanelIdentity(AppSettingsActivity.this);
       if (!TextUtils.isEmpty(currentPanel)) {
@@ -117,18 +124,24 @@ public class AppSettingsActivity extends Activity {
          }
       });
       
-      RelativeLayout saveAndCancelLayout = new RelativeLayout(this);
-      saveAndCancelLayout.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, 80));
-      saveAndCancelLayout.setPadding(20, 10, 10, 5);
+      LayoutInflater inflater = (AppSettingsActivity.this).getLayoutInflater();
+      LinearLayout saveAndCancelLayout = (LinearLayout)inflater.inflate(R.layout.bottom_button_bar, null);
       
-      Button saveButton = new Button(this);
-      saveButton.setWidth(80);
-      RelativeLayout.LayoutParams saveButtonLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-      saveButtonLayout.addRule(RelativeLayout.CENTER_HORIZONTAL);
-      saveButtonLayout.addRule(RelativeLayout.CENTER_VERTICAL);
-      saveButton.setLayoutParams(saveButtonLayout);
-      saveButton.setText(R.string.done);
-      saveButton.setOnClickListener(new OnClickListener() {
+      appSettingsView.addView(autoLayout);
+      appSettingsView.addView(csText);
+      if (autoMode) {
+         appSettingsView.addView(constructAutoServersView());
+      } else {
+         appSettingsView.addView(constructCustomeServersView());
+      }
+      appSettingsView.addView(choosePanelInfo);
+      appSettingsView.addView(choosePanelButton);
+      appSettingsView.addView(saveAndCancelLayout);
+      scroll.addView(appSettingsView);
+      
+      setContentView(scroll);
+      Button doneButton = (Button)findViewById(R.id.done);
+      doneButton.setOnClickListener(new OnClickListener() {
          public void onClick(View v) {
             String serverUrl = AppSettingsModel.getCurrentServer(AppSettingsActivity.this);
             String panelName = AppSettingsModel.getCurrentPanelIdentity(AppSettingsActivity.this);
@@ -139,31 +152,6 @@ public class AppSettingsActivity extends Activity {
             startActivity(intent);
          }
       });
-      
-      Button cancelButton = new Button(this);
-      cancelButton.setWidth(80);
-      RelativeLayout.LayoutParams cancelButtonLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-      cancelButtonLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-      cancelButtonLayout.addRule(RelativeLayout.CENTER_VERTICAL);
-      cancelButton.setLayoutParams(cancelButtonLayout);
-      cancelButton.setText(R.string.cancel);
-      
-      saveAndCancelLayout.addView(saveButton);
-      saveAndCancelLayout.addView(cancelButton);
-      
-      appSettingsView.addView(autoLayout);
-//      appSettingsView.addView(infoText);
-      appSettingsView.addView(csText);
-      if (autoMode) {
-         appSettingsView.addView(constructAutoServersView());
-      } else {
-         appSettingsView.addView(constructCustomeServersView());
-      }
-      appSettingsView.addView(choosePanelInfo);
-      appSettingsView.addView(choosePanelButton);
-      appSettingsView.addView(saveAndCancelLayout);
-      
-      setContentView(appSettingsView);
    }
 
    private void getCustomServersFromFile(ArrayList<String> customServers) {
@@ -186,7 +174,8 @@ public class AppSettingsActivity extends Activity {
    private LinearLayout constructCustomeServersView() {
       LinearLayout custumeView = new LinearLayout(this);
       custumeView.setOrientation(LinearLayout.VERTICAL);
-      custumeView.setPadding(50, 5, 5, 0);
+      custumeView.setPadding(20, 5, 5, 0);
+      custumeView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
       
       ArrayList<String> customServers = new ArrayList<String>();
       getCustomServersFromFile(customServers);
@@ -228,9 +217,9 @@ public class AppSettingsActivity extends Activity {
       buttonsView.addView(deleteServer);
       
       customeListView = new ListView(this);
-      customeListView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 80));
+      customeListView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 200));
       customeListView.setCacheColorHint(0);
-      ArrayAdapter<String> serverListAdapter = new ArrayAdapter<String>(appSettingsView.getContext(), R.layout.server_list_item,
+      final ArrayAdapter<String> serverListAdapter = new ArrayAdapter<String>(appSettingsView.getContext(), R.layout.server_list_item,
               customServers);
       customeListView.setAdapter(serverListAdapter);
       customeListView.setItemsCanFocus(true);
@@ -269,14 +258,15 @@ public class AppSettingsActivity extends Activity {
   
    private ListView constructAutoServersView() {
       ListView lv = new ListView(this);
-      lv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 100));
-      lv.setPadding(50, 5, 5, 10);
+      lv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 200));
+      lv.setPadding(20, 5, 5, 10);
       lv.setBackgroundColor(0);
       lv.setCacheColorHint(0);
+      lv.setItemsCanFocus(true);
+      lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
       ArrayAdapter<String> serverListAdapter = new ArrayAdapter<String>(appSettingsView.getContext(), R.layout.server_list_item,
             AppSettingsModel.getAutoServers());
       lv.setAdapter(serverListAdapter);
-      lv.setItemsCanFocus(true);
       if (serverListAdapter.getCount() > 0) {
          lv.setItemChecked(0, true);
          AppSettingsModel.setCurrentServer(AppSettingsActivity.this, serverListAdapter.getItem(0));
@@ -286,7 +276,6 @@ public class AppSettingsActivity extends Activity {
             AppSettingsModel.setCurrentServer(AppSettingsActivity.this, (String)parent.getItemAtPosition(position));
          }
       });
-      lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
       
       return lv;
    }
@@ -315,4 +304,5 @@ public class AppSettingsActivity extends Activity {
    public int sum() {
       return 2+5;
    }
+
 }
