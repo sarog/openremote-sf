@@ -24,7 +24,7 @@ import org.jboss.resteasy.mock.MockDispatcherFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 
 /**
- * User: allenwei
+ * Author: Allen Wei, Dan Cong
  * Date: 2009-2-10
  * Time: 13:29:06
  */

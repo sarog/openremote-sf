@@ -19,22 +19,42 @@
 */
 package org.openremote.beehive.service;
 
+import java.util.List;
+
 import org.openremote.beehive.LIRCTestBase;
 import org.openremote.beehive.SpringTestContext;
 import org.openremote.beehive.api.service.impl.GenericDAO;
 import org.openremote.beehive.domain.Model;
+import org.openremote.beehive.domain.Vendor;
 
 public class GenericDAOTest extends LIRCTestBase {
    private GenericDAO genericDAO = (GenericDAO) SpringTestContext.getInstance().getBean("genericDAO");
    
-   public void testGetByNonIdField(){      
+   public void testGetByNonIdField() {
       Model model = genericDAO.getByNonIdField(Model.class, "fileName", "MP8640");
       assertNotNull(model);
-      
+
+      Vendor v = genericDAO.getByNonIdField(Vendor.class, "name", "3m");
+      assertNotNull(v);
+
    }
-   public void testGetByMaxId(){
-      Model model = genericDAO.getByMaxId(Model.class);
-      assertNotNull(model);
-      
+
+   public void testGetByMaxId() {
+      Vendor v = genericDAO.getByMaxId(Vendor.class);
+      assertNotNull(v);
    }
+
+   public void testGetById() {
+      Vendor v = genericDAO.getById(Vendor.class, 1L);
+      assertNotNull(v);
+   }
+   
+   public void testLoadAll() {
+      List<Vendor> vs = genericDAO.loadAll(Vendor.class);
+      assertEquals(4, vs.size());
+   }
+   
+   
+   
+   
 }

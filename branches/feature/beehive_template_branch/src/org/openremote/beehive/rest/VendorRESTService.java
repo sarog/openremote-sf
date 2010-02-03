@@ -57,7 +57,7 @@ public class VendorRESTService {
     * 
     * @return VendorService instance
     */
-   private VendorService getVendorService() {
+   protected VendorService getVendorService() {
       return (VendorService) SpringContext.getInstance().getBean("vendorService");
 
    }

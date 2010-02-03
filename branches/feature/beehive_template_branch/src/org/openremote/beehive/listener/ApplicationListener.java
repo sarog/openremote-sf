@@ -77,7 +77,9 @@ public class ApplicationListener implements ServletContextListener {
          svnUrl = new SVNUrl(svnDir);
          svnClient.getInfo(svnUrl);
       } catch (MalformedURLException e) {
-         logger.error("Create SVNUrl "+svnDir+" error!", e);
+         logger.error("Create SVNUrl from " + svnDir + " error!", e);
+      } catch (NullPointerException e) {
+         logger.error("Create svn client from " + svnUrl + " error!", e);
       } catch (SVNClientException e) {
         try {
            if(svnRepo.exists()){
@@ -114,6 +116,8 @@ public class ApplicationListener implements ServletContextListener {
    private void checkWorkCopyExists(SVNUrl svnUrl, File workCopyDir) {
       try {
          svnClient.getInfo(workCopyDir);
+      } catch (NullPointerException e) {
+         logger.error("Create svn client from " + svnUrl + " error!", e);
       } catch (SVNClientException e) {
          try {
             if(workCopyDir.exists()){

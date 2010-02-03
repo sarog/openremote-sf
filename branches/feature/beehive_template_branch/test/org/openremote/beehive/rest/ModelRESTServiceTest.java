@@ -24,18 +24,18 @@ import java.net.URISyntaxException;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
-import org.openremote.beehive.TestBase;
+import org.openremote.beehive.LIRCTestBase;
+import org.openremote.beehive.rest.service.ModelRESTTestService;
 
 /**
- * User: allenwei
+ * Author: Allen Wei, Dan Cong
  * Date: 2009-2-9
- * Time: 16:47:46
  */
-public class ModelRESTServiceTest extends TestBase {
+public class ModelRESTServiceTest extends LIRCTestBase {
 
 
     public void testGetModelsXml() throws URISyntaxException {
-        Dispatcher dispatcher = RESTTestUtils.createDispatcher(ModelRESTService.class);
+        Dispatcher dispatcher = RESTTestUtils.createDispatcher(ModelRESTTestService.class);
         MockHttpRequest mockHttpRequest = MockHttpRequest.get("/lirc/3m/");
         mockHttpRequest.accept("application/xml");
 
@@ -47,7 +47,7 @@ public class ModelRESTServiceTest extends TestBase {
     }
 
     public void testGetModelsJson() throws URISyntaxException {
-        Dispatcher dispatcher = RESTTestUtils.createDispatcher(ModelRESTService.class);
+        Dispatcher dispatcher = RESTTestUtils.createDispatcher(ModelRESTTestService.class);
         MockHttpRequest mockHttpRequest = MockHttpRequest.get("/lirc/3m");
         mockHttpRequest.accept("application/json");
 

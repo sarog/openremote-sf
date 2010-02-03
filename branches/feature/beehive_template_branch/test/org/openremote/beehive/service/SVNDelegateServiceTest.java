@@ -19,18 +19,16 @@
 */
 package org.openremote.beehive.service;
 
+import org.openremote.beehive.SpringTestContext;
 import org.openremote.beehive.TestBase;
 import org.openremote.beehive.api.service.SVNDelegateService;
-import org.openremote.beehive.repo.DiffStatus;
-import org.openremote.beehive.repo.DiffStatus.Element;
-import org.openremote.beehive.spring.SpringContext;
 
 /**
  * @author Tomsky
  * 
  */
 public class SVNDelegateServiceTest extends TestBase {
-	private SVNDelegateService svnDelegateService = (SVNDelegateService) SpringContext
+	private SVNDelegateService svnDelegateService = (SVNDelegateService) SpringTestContext
 			.getInstance().getBean("svnDelegateService");
 
 	public void testCopyFromScrapToWC() {

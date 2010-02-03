@@ -349,21 +349,6 @@ public class GenericDAO extends HibernateDaoSupport {
    public void flush(){
       getHibernateTemplate().flush();
    }
-   
-   public Object runRawSql(final String sql) {
-      return getHibernateTemplate().execute(new HibernateCallback() {
-         public Object doInHibernate(Session session) throws HibernateException, SQLException {
-            Connection conn = session.connection();
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.execute();
-            ps.close();
-            session.flush();
-            return null;
-         }
-
-      });
-   }
-   
   
    
 }

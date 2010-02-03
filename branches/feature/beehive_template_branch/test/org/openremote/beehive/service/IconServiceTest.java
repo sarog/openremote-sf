@@ -22,11 +22,11 @@ package org.openremote.beehive.service;
 import java.util.List;
 
 import org.openremote.beehive.SpringTestContext;
-import org.openremote.beehive.TestBase;
+import org.openremote.beehive.TemplateTestBase;
 import org.openremote.beehive.api.dto.IconDTO;
 import org.openremote.beehive.api.service.IconService;
 
-public class IconServiceTest extends TestBase {
+public class IconServiceTest extends TemplateTestBase {
 
    private IconService service = (IconService) SpringTestContext.getInstance().getBean("iconService");
 
