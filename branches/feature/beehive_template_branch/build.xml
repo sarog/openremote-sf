@@ -145,7 +145,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 				<include name="**/*" />
 			</fileset>
 		</copy>
-		<javac srcdir="${test.dir}" destdir="${classes.dir}" classpathref="test.path.id"/>
+		<javac srcdir="${test.dir}" destdir="${classes.dir}" classpathref="test.path.id" debug="true"/>
 	</target>
 
 	<!--
@@ -280,7 +280,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<target name="report-cobertura" depends="cobertura_instrument"
             description="--> generate the coverage report.">
 		<property name="test.targetclasspath" value="${instrumented.dir}"/>
-		<antcall target="run-test"/>
+		<antcall target="test"/>
 		<delete includeemptydirs="true" dir="${cobertura.report.dir}"/>
 		<cobertura-report format="html" destdir="${cobertura.report.dir}" srcdir="${src.dir}" datafile="${cobertura.datafile}" />
 		<cobertura-report format="xml" destdir="${cobertura.report.dir}" srcdir="${src.dir}" datafile="${cobertura.datafile}" />
