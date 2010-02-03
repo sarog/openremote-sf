@@ -3,13 +3,10 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="config"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v5.5"/>
 	<classpathentry kind="lib" path="lib/cobertura/apache/ant-launcher-1.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/cobertura/apache/log4j-1.2.9.jar"/>
 	<classpathentry kind="lib" path="lib/cobertura/apache/oro-2.0.8.jar"/>
-	<classpathentry kind="lib" path="lib/cobertura/asm/asm-2.2.1.jar"/>
-	<classpathentry kind="lib" path="lib/cobertura/asm/asm-tree-2.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/cobertura/cobertura/cobertura-1.9.jar"/>
 	<classpathentry kind="lib" path="lib/compile/javax.servlet.jar"/>
 	<classpathentry kind="lib" path="lib/compile/javax.servlet.jsp.jar"/>
@@ -80,5 +77,9 @@
 	<classpathentry kind="lib" path="lib/test/commons-beanutils-core/commons-beanutils-core-1.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/test/junit/junit.jar"/>
 	<classpathentry kind="lib" path="lib/test/spring-test/spring-test-2.5.5.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/JVM 1.6.0"/>
+	<classpathentry kind="lib" path="lib/test/hsqldb/hsqldb.jar"/>
+	<classpathentry kind="lib" path="lib/test/jetty/jetty-6.1.22.jar"/>
+	<classpathentry kind="lib" path="lib/test/jetty/jetty-util-6.1.22.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>

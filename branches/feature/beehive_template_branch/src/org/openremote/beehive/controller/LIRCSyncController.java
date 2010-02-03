@@ -22,8 +22,8 @@ package org.openremote.beehive.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openremote.beehive.api.service.impl.WebscraperThread;
 import org.openremote.beehive.domain.SyncHistory;
-import org.openremote.beehive.serviceHibernateImpl.WebscraperThread;
 import org.springframework.web.servlet.ModelAndView;
 
 /**

@@ -17,13 +17,22 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.beehive;
+package org.openremote.beehive.jetty;
 
-import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
-public abstract class SpringDAOTestCase extends AbstractTransactionalDataSourceSpringContextTests {
-   
-   protected String[] getConfigLocations() {
-      return new String[] {"spring-context.xml", "spring-servlet.xml" };
-   }
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
+
+public class JettyStop {
+
+    public static void main(String[] args) throws Exception {
+        Socket s = new Socket(InetAddress.getByName("127.0.0.1"), 8079);
+        OutputStream out = s.getOutputStream();
+        System.out.println("*** sending jetty stop request");
+        out.write(("\r\n").getBytes());
+        out.flush();
+        s.close();
+    }
+
 }

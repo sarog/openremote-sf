@@ -39,6 +39,7 @@ public class BeehiveApplication extends Application {
       singletons.add(new RemoteOptionRESTService());
       singletons.add(new CodeRESTService());
       singletons.add(new IconRESTService());
+      singletons.add(new TemplateRESTService());
       
    }
 

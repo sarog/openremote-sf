@@ -38,9 +38,6 @@ import org.openremote.beehive.spring.SpringContext;
 @Path("/lirc/{vendor_name}/{model_name}/{section_id}/codes")
 public class CodeRESTService {
 
-   public CodeRESTService() {
-   }
-
    /**
     * Shows codes by {section_id} Visits @ url "/lirc/{vendor_name}/{model_name}/{section_id}/codes"
     * 
@@ -57,7 +54,7 @@ public class CodeRESTService {
       if (list.size() == 0) {
          throw new WebApplicationException(Response.Status.NO_CONTENT);
       }
-      return new CodeListing(getCodeService().findByRemoteSectionId(sectionId));
+      return new CodeListing(list);
    }
 
    /**

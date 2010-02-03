@@ -33,6 +33,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.StringUtils;
+import org.openremote.beehive.Constant;
 import org.openremote.beehive.utils.StringUtil;
 
 /**
@@ -123,7 +124,7 @@ public class Model extends BusinessEntity {
       this.remoteSections = remoteSections;
    }
 
-   @Column(columnDefinition = "text")
+   @Column(columnDefinition = Constant.TEXT_COLUMN_DEFINITION)
    public String getComment() {
       return comment;
    }

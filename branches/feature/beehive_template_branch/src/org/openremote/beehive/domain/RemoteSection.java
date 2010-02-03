@@ -32,6 +32,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.openremote.beehive.Constant;
 import org.openremote.beehive.utils.StringUtil;
 
 /**
@@ -94,7 +95,7 @@ public class RemoteSection extends BusinessEntity {
       this.raw = raw;
    }
 
-   @Column(columnDefinition = "text")
+   @Column(columnDefinition = Constant.TEXT_COLUMN_DEFINITION)
    public String getComment() {
       return comment;
    }

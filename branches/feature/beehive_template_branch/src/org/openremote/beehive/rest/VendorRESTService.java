@@ -37,9 +37,6 @@ import org.openremote.beehive.spring.SpringContext;
 @Path("/lirc")
 public class VendorRESTService {
 
-   public VendorRESTService() {
-   }
-
    /**
     * Shows all vendors Visits @ url "/lirc"
     * 
@@ -50,7 +47,7 @@ public class VendorRESTService {
    public VendorListing getAllVendors() {
       List<VendorDTO> list = getVendorService().loadAllVendors();
       if (list.size() > 0) {
-         return new VendorListing(getVendorService().loadAllVendors());
+         return new VendorListing(list);
       }
       throw new WebApplicationException(Response.Status.NOT_FOUND);
    }

@@ -37,9 +37,6 @@ import org.openremote.beehive.spring.SpringContext;
 @Path("/lirc/{vendor_name}/{model_name}")
 public class RemoteSectionRESTService {
 
-   public RemoteSectionRESTService() {
-   }
-
    /**
     * Shows remoteSecrtions by {vendor_name} and {model_name} Visits @ url "/lirc/{vendor_name}/{model_name}"
     * 

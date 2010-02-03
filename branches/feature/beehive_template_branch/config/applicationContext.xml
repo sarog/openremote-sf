@@ -24,6 +24,10 @@
                 <value>org.openremote.beehive.domain.Code</value>
                 <value>org.openremote.beehive.domain.Icon</value>
                 <value>org.openremote.beehive.domain.SyncHistory</value>
+                <value>org.openremote.beehive.domain.Template</value>
+                <value>org.openremote.beehive.domain.User</value>
+                <value>org.openremote.beehive.domain.Role</value>
+                <value>org.openremote.beehive.domain.Account</value>
             </list>
         </property>
         <property name="mappingResources">
@@ -32,7 +36,7 @@
     </bean>
 
 
-    <bean id="genericDAO" class="org.openremote.beehive.serviceHibernateImpl.GenericDAO"></bean>
+    <bean id="genericDAO" class="org.openremote.beehive.api.service.impl.GenericDAO"></bean>
     
 	<bean id="configuration" class="org.openremote.beehive.Configuration">
 		<property name="workDir" value="${work.dir}" />
