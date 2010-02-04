@@ -17,38 +17,21 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.beehive.api.dto;
+package org.openremote.beehive.utils;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.io.File;
 
-/**
- * UI Template in UI Designer.
- * 
- * @author Dan 2010-1-29
- *
- */
-@SuppressWarnings("serial")
-@XmlRootElement(name = "template")
-public class TemplateDTO extends BusinessEntityDTO {
+import org.openremote.beehive.TestConstraint;
 
-   private String name;
-   private String content;
 
-   public String getName() {
-      return name;
+public class FixtureUtil {
+
+   public static String path() {
+      return FixtureUtil.class.getClassLoader().getResource(TestConstraint.FIXTURE_DIR).getFile();
    }
 
-   public void setName(String name) {
-      this.name = name;
-   }
-
-   public String getContent() {
-      return content;
-   }
-
-   public void setContent(String content) {
-      this.content = content;
+   public static String getFileContent(String fileName) {
+      return FileUtil.readFileToString(new File(FixtureUtil.path() + fileName)).toString();
    }
 
 }

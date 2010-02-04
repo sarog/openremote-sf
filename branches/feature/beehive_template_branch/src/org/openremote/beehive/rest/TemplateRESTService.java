@@ -21,7 +21,9 @@ package org.openremote.beehive.rest;
 
 import java.util.List;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -30,8 +32,15 @@ import javax.ws.rs.core.Response;
 
 import org.openremote.beehive.api.dto.TemplateDTO;
 import org.openremote.beehive.api.service.TemplateService;
+import org.openremote.beehive.domain.Account;
+import org.openremote.beehive.domain.Template;
 import org.openremote.beehive.spring.SpringContext;
-
+/**
+ * UI Template restful service.
+ * 
+ * @author Dan Cong
+ *
+ */
 
 @Path("/account/{account_id}")
 public class TemplateRESTService {
@@ -50,14 +59,37 @@ public class TemplateRESTService {
    @GET
    @Produces( { "application/xml", "application/json" })
    @Path("template/{template_id}")
-   public TemplateListing getTemplateById(@PathParam("template_id") long templateId) {
-      List<TemplateDTO> list = getTemplateService().loadTemplateByOid(templateId);
-      if (list.size() > 0) {
-         return new TemplateListing(list);
+   public TemplateDTO getTemplateById(@PathParam("template_id") long templateId) {
+      TemplateDTO t = getTemplateService().loadTemplateByOid(templateId);
+      if (t != null) {
+         return t;
       }
       throw new WebApplicationException(Response.Status.NOT_FOUND);
    }
 
+   @POST
+   @Produces( { "application/xml", "application/json" })
+   @Path("template/save")
+   public TemplateDTO addTemplateIntoAccount(@PathParam("account_id") long accountId, @FormParam("name") String name,
+         @FormParam("content") String content) {
+      if (accountId > 0 ) {
+         Account a = new Account();
+         a.setOid(accountId);
+         Template t = new Template();
+         t.setAccount(a);
+         t.setName(name);
+         t.setContent(content);
+         long newId = getTemplateService().save(t);
+         TemplateDTO newTemp = getTemplateService().loadTemplateByOid(newId);
+         if (newTemp != null) {
+            return newTemp;
+         }
+      }
+      throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+
+   }
+
+   
    protected TemplateService getTemplateService() {
       return (TemplateService) SpringContext.getInstance().getBean("templateService");
    }

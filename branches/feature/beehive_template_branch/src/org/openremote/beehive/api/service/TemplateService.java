@@ -36,6 +36,6 @@ public interface TemplateService {
    
    List<TemplateDTO> loadAllTemplatesByAccountOid(long accountOid);
    
-   List<TemplateDTO> loadTemplateByOid(long templateOid);
+   TemplateDTO loadTemplateByOid(long templateOid);
 
 }

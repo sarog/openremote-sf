@@ -26,6 +26,7 @@ import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.openremote.beehive.TemplateTestBase;
 import org.openremote.beehive.rest.service.TemplateRESTTestService;
+import org.openremote.beehive.utils.FixtureUtil;
 
 
 public class TemplateRESTServiceTest  extends TemplateTestBase {
@@ -41,12 +42,60 @@ public class TemplateRESTServiceTest  extends TemplateTestBase {
 
       System.out.println(mockHttpResponse.getContentAsString());
    }
-   
+
    public void testGetTemplatesByAccountInJSON() throws URISyntaxException {
       Dispatcher dispatcher = RESTTestUtils.createDispatcher(TemplateRESTTestService.class);
       MockHttpRequest mockHttpRequest = MockHttpRequest.get("/account/1/templates");
       mockHttpRequest.accept("application/json");
 
+      MockHttpResponse mockHttpResponse = new MockHttpResponse();
+      dispatcher.invoke(mockHttpRequest, mockHttpResponse);
+
+      System.out.println(mockHttpResponse.getContentAsString());
+   }
+
+   public void testGetTemplateByIdInXML() throws URISyntaxException {
+      Dispatcher dispatcher = RESTTestUtils.createDispatcher(TemplateRESTTestService.class);
+      MockHttpRequest mockHttpRequest = MockHttpRequest.get("/account/1/template/2");
+      mockHttpRequest.accept("application/xml");
+
+      MockHttpResponse mockHttpResponse = new MockHttpResponse();
+      dispatcher.invoke(mockHttpRequest, mockHttpResponse);
+
+      System.out.println(mockHttpResponse.getContentAsString());
+   }
+
+   public void testGetTemplateByIdInJSON() throws URISyntaxException {
+      Dispatcher dispatcher = RESTTestUtils.createDispatcher(TemplateRESTTestService.class);
+      MockHttpRequest mockHttpRequest = MockHttpRequest.get("/account/1/template/2");
+      mockHttpRequest.accept("application/json");
+
+      MockHttpResponse mockHttpResponse = new MockHttpResponse();
+      dispatcher.invoke(mockHttpRequest, mockHttpResponse);
+
+      System.out.println(mockHttpResponse.getContentAsString());
+   }
+
+   public void testSaveTemplateIntoAccountInXML() throws URISyntaxException {
+      Dispatcher dispatcher = RESTTestUtils.createDispatcher(TemplateRESTTestService.class);
+      MockHttpRequest mockHttpRequest = MockHttpRequest.post("/account/1/template/save");
+      mockHttpRequest.accept("application/xml");
+      mockHttpRequest.contentType("application/x-www-form-urlencoded");
+      String postData = "name=dan&content=" + FixtureUtil.getFileContent("template.json");
+      mockHttpRequest.content(postData.getBytes());
+      MockHttpResponse mockHttpResponse = new MockHttpResponse();
+      dispatcher.invoke(mockHttpRequest, mockHttpResponse);
+
+      System.out.println(mockHttpResponse.getContentAsString());
+   }
+
+   public void testSaveTemplateIntoAccountInJSON() throws URISyntaxException {
+      Dispatcher dispatcher = RESTTestUtils.createDispatcher(TemplateRESTTestService.class);
+      MockHttpRequest mockHttpRequest = MockHttpRequest.post("/account/1a/template/save");
+      mockHttpRequest.accept("application/json");
+      mockHttpRequest.contentType("application/x-www-form-urlencoded");
+      String postData = "name=dan&content=" + FixtureUtil.getFileContent("template.json");
+      mockHttpRequest.content(postData.getBytes());
       MockHttpResponse mockHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockHttpRequest, mockHttpResponse);
 

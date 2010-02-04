@@ -21,26 +21,24 @@ package org.openremote.beehive.service;
 
 import org.openremote.beehive.LIRCTestBase;
 import org.openremote.beehive.SpringTestContext;
-import org.openremote.beehive.TestConstraint;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.file.LircConfFileScraper;
 import org.openremote.beehive.utils.FileUtil;
+import org.openremote.beehive.utils.FixtureUtil;
 
 public class ModelServiceTest extends LIRCTestBase {
 
    private ModelService service = (ModelService) SpringTestContext.getInstance().getBean("modelService");
 
    public void testAddLircConfFile() {
-      String fixturePath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR).getFile();
-      service.add(FileUtil.readStream(fixturePath + "/remotes/3m/MP8640"), "3m", "MP8640");// single section
-      service.add(FileUtil.readStream(fixturePath + "/remotes/sigma_designs/lircd.conf.realmagic"), "sigma_designs",
+      service.add(FileUtil.readStream(FixtureUtil.path() + "/remotes/3m/MP8640"), "3m", "MP8640");// single section
+      service.add(FileUtil.readStream(FixtureUtil.path() + "/remotes/sigma_designs/lircd.conf.realmagic"), "sigma_designs",
             "lircd.conf.realmagic");// multi section
-      service.add(FileUtil.readStream(fixturePath + "/remotes/zenith/ZN110"), "zenith", "ZN110");// raw code
+      service.add(FileUtil.readStream(FixtureUtil.path() + "/remotes/zenith/ZN110"), "zenith", "ZN110");// raw code
    }
 
    public void testScrap() {
-      String fixturePath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR).getFile();
-      LircConfFileScraper.scrapDir(fixturePath + "/remotes");
+      LircConfFileScraper.scrapDir(FixtureUtil.path() + "/remotes");
    }
 
    public void testExportText() {
