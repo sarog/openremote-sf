@@ -45,15 +45,13 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
    }
    
    @Override
-   public List<TemplateDTO> loadTemplateByOid(long templateOid) {
-      List<TemplateDTO> templateDTOs = new ArrayList<TemplateDTO>();
+   public TemplateDTO loadTemplateByOid(long templateOid) {
       Template template = genericDAO.loadById(Template.class, templateOid);
       TemplateDTO t = new TemplateDTO();
       t.setName(template.getName());
       t.setOid(template.getOid());
       t.setContent(template.getContent());
-      templateDTOs.add(t);
-      return templateDTOs;
+      return t;
    }
 
    @Override
