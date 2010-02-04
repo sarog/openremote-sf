@@ -38,7 +38,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	<property name="output.dir" value="output"/>
 	<property name="javadoc.dir" value="doc"/>
 	<property name="javadoc.locale" value="en_US"/>
-	<property name="build-config.dir" value="build-config"/>
+	<property name="build-config.dir" value="build_config"/>
 	<property name="config.dir" value="config"/>
 	<property name="classes.dir" value="build/classes"/>
 	<property name="instrumented.dir" value="build/instrumented"/>
@@ -294,13 +294,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	 +-->
 	<target name="report-checkstyle" description="--> generates a report of code convention violations.">
 		<mkdir dir="${checkstyle.reports.dir}"/>
-		<checkstyle config="${build-config.dir}/checkstyle-finalist.xml" failureProperty="checkstyle.failure"
+		<checkstyle config="${build-config.dir}/openremote_checks.xml" failureProperty="checkstyle.failure"
                     failOnViolation="false">
 			<formatter type="xml" tofile="${checkstyle.reports.dir}/checkstyle_report.xml"/>
 			<fileset dir="${src.dir}" includes="**/*.java"/>
 			<fileset dir="${test.dir}" includes="**/*.java"/>
 		</checkstyle>
-		<style in="${checkstyle.reports.dir}/checkstyle_report.xml"
+		<xslt in="${checkstyle.reports.dir}/checkstyle_report.xml"
                out="${checkstyle.reports.dir}/checkstyle_report.html"
                style="${build-config.dir}/checkstyle-noframes-sorted.xsl"/>
 	</target>
