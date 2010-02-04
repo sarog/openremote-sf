@@ -36,45 +36,50 @@ public class DateUtil {
    
    /** The Constant LOGGER. */
    private static final Logger LOGGER = Logger.getLogger(DateUtil.class.getName());
-   
+
    /**
     * Instantiates a new date util.
     */
    private DateUtil() {
    }
-   
+
    /**
     * Gets the time format.
     * 
-    * @param strFormat the str format
-    * @param date the date
+    * @param strFormat
+    *           the str format
+    * @param date
+    *           the date
     * 
     * @return the string
     */
-   public static String getTimeFormat(Date date, String strFormat)
-   {
-       DateFormat sdf = new SimpleDateFormat(strFormat);
-       String sDate = sdf.format(date);
-       return sDate;
+   public static String getTimeFormat(Date date, String strFormat) {
+      DateFormat sdf = new SimpleDateFormat(strFormat);
+      String sDate = sdf.format(date);
+      return sDate;
    }
-   
+
    /**
     * Gets the default format.
     * 
-    * @param date the date
+    * @param date
+    *           the date
     * 
     * @return the default format
     */
-   public static String getDefaultFormat(Date date){
+   public static String getDefaultFormat(Date date) {
       return getTimeFormat(date, "yyyy-MM-dd HH:mm:ss");
    }
-   
+
    /**
     * String2 date.
     * 
-    * @param strDate the str date
-    * @param format the format
-    * @param locale the locale
+    * @param strDate
+    *           the str date
+    * @param format
+    *           the format
+    * @param locale
+    *           the locale
     * 
     * @return the date
     */
@@ -84,21 +89,23 @@ public class DateUtil {
       try {
          date = fmt.parse(strDate);
       } catch (ParseException e) {
-         LOGGER.error("Parse String "+strDate+" to date occur error.", e);
+         LOGGER.error("Parse String " + strDate + " to date occur error.", e);
       }
       return date;
    }
-   
+
    /**
     * Adds the timestamp to filename.
     * 
-    * @param date the date
-    * @param fileName the file name
+    * @param date
+    *           the date
+    * @param fileName
+    *           the file name
     * 
     * @return the string
     */
-   public static String addTimestampToFilename(Date date, String fileName){
+   public static String addTimestampToFilename(Date date, String fileName) {
       String[] time = getTimeFormat(date, "yyyy-MM-dd.HH-mm").split("\\.");
-      return time[0]+"/"+time[1]+fileName;
+      return time[0] + "/" + time[1] + fileName;
    }
 }

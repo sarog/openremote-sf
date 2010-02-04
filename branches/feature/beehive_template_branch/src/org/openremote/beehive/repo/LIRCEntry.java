@@ -23,7 +23,6 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 
-// TODO: Auto-generated Javadoc
 /**
  * LIRCEntry the entry of specify version file.
  * 
@@ -32,33 +31,34 @@ import java.util.Date;
 public class LIRCEntry {
    /** The path. */
    private String path;
-   
+
    /** The version. */
    private long version;
-   
+
    /** The file. */
    private boolean file;
-   
+
    /** The content. */
    private String content;
-   
+
    /** The author. */
    private String author;
-   
+
    /** The date. */
    private Date date;
-   
+
    /** The size. */
    private long size;
-   
+
    private boolean isHeadversion;
-   
+
    /**
     * Instantiates a new lIRC entry.
     */
    public LIRCEntry() {
       isHeadversion = false;
    }
+
    /**
     * Gets the content.
     * 
@@ -67,11 +67,12 @@ public class LIRCEntry {
    public String getContent() {
       return content;
    }
-   
+
    /**
     * Sets the content.
     * 
-    * @param content the new content
+    * @param content
+    *           the new content
     */
    public void setContent(String content) {
       this.content = content;
@@ -89,7 +90,8 @@ public class LIRCEntry {
    /**
     * Sets the file.
     * 
-    * @param file the new file
+    * @param file
+    *           the new file
     */
    public void setFile(boolean file) {
       this.file = file;
@@ -116,7 +118,8 @@ public class LIRCEntry {
    /**
     * Sets the path.
     * 
-    * @param path the new path
+    * @param path
+    *           the new path
     */
    public void setPath(String path) {
       this.path = path;
@@ -125,7 +128,8 @@ public class LIRCEntry {
    /**
     * Sets the version.
     * 
-    * @param version the new version
+    * @param version
+    *           the new version
     */
    public void setVersion(long version) {
       this.version = version;
@@ -143,7 +147,8 @@ public class LIRCEntry {
    /**
     * Sets the author.
     * 
-    * @param author the new author
+    * @param author
+    *           the new author
     */
    public void setAuthor(String author) {
       this.author = author;
@@ -164,18 +169,17 @@ public class LIRCEntry {
     * @return the size
     */
    public String getSizeString() {
-      return new Double( new DecimalFormat( ".0" ).format( size/1024.0 ) ).toString()+"K";
+      return new Double(new DecimalFormat(".0").format(size / 1024.0)).toString() + "K";
    }
-   
+
    /**
     * Gets the size of long.
     * 
     * @return the size of long
     */
-   public long getSize(){
+   public long getSize() {
       return size;
    }
-   
 
    /**
     * Gets the date.
@@ -189,21 +193,23 @@ public class LIRCEntry {
    /**
     * Sets the date.
     * 
-    * @param date the new date
+    * @param date
+    *           the new date
     */
-   public void setDate(Date date) {      
+   public void setDate(Date date) {
       this.date = date;
    }
 
    /**
     * Sets the content size.
     * 
-    * @param size the new content size
+    * @param size
+    *           the new content size
     */
    public void setSize(long size) {
       this.size = size;
    }
-   
+
    /**
     * Checks if is headversion.
     * 
@@ -212,11 +218,12 @@ public class LIRCEntry {
    public boolean isHeadversion() {
       return isHeadversion;
    }
-   
+
    /**
     * Sets the headversion.
     * 
-    * @param isHeadversion the new headversion
+    * @param isHeadversion
+    *           the new headversion
     */
    public void setHeadversion(boolean isHeadversion) {
       this.isHeadversion = isHeadversion;

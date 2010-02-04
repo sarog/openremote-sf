@@ -62,7 +62,7 @@ public class VendorServiceImpl extends BaseAbstractService<Vendor> implements Ve
       }
       return vendorDTOs;
    }
-   
+
    /**
     * {@inheritDoc }.
     * 
@@ -83,29 +83,29 @@ public class VendorServiceImpl extends BaseAbstractService<Vendor> implements Ve
     *           the vendor name
     */
    public void syncWith(File file) {
-      if(file.isFile()){
+      if (file.isFile()) {
          return;
       }
       boolean isDeleted = !file.exists();
       String[] arr = FileUtil.splitPath(file);
-      String vendorName = arr[arr.length-1];
-      if(vendorName.equals("ovara")){
+      String vendorName = arr[arr.length - 1];
+      if (vendorName.equals("ovara")) {
          return;
       }
-      if(isDeleted){
+      if (isDeleted) {
          return;
-      }else{
+      } else {
          Vendor vendor = loadByName(vendorName);
-         if(vendor == null){
+         if (vendor == null) {
             Vendor newVendor = new Vendor();
             newVendor.setName(vendorName);
             genericDAO.save(newVendor);
-         }else if (!vendorName.equals(vendor.getName())) {
+         } else if (!vendorName.equals(vendor.getName())) {
             vendor.setName(vendorName);
             genericDAO.merge(vendor);
          }
       }
-      
+
    }
 
    /**

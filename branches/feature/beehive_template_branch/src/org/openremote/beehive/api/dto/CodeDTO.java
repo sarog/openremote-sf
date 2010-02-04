@@ -26,12 +26,12 @@ import org.apache.commons.lang.StringUtils;
  * 
  * <pre>
  * For example:
- * 	play	0x20
- * 	plus	0xD0
- * 	ffwd	0xE0
- * 	rev	0x10
- * 	minus	0xB0
- * 	menu	0x40
+ *    play	0x20
+ *    plus	0xD0
+ *    ffwd	0xE0
+ *    rev	0x10
+ *    minus	0xB0
+ *    menu	0x40
  * </pre>
  * 
  * @author Dan 2009-2-6
@@ -82,11 +82,11 @@ public class CodeDTO extends BusinessEntityDTO {
       return StringUtils.isBlank(getComment());
    }
 
-    public String getRemoteName() {
-        return remoteName;
-    }
+   public String getRemoteName() {
+      return remoteName;
+   }
 
-    public void setRemoteName(String remoteName) {
-        this.remoteName = remoteName;
-    }
+   public void setRemoteName(String remoteName) {
+      this.remoteName = remoteName;
+   }
 }

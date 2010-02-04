@@ -31,7 +31,7 @@ import org.openremote.beehive.rest.IconRESTService;
 @Path("/icons")
 public class IconRESTTestService extends IconRESTService {
    
-   public IconService getIconService(){
+   public IconService getIconService() {
       return (IconService) SpringTestContext.getInstance().getBean("iconService");
    }
 

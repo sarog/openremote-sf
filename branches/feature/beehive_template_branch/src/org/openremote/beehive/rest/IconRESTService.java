@@ -51,17 +51,17 @@ public class IconRESTService {
    @GET
    @Produces( { "application/xml", "application/json" })
    @Path("{icon_name}")
-   public IconListing getIcons(@PathParam("icon_name") String iconName){
+   public IconListing getIcons(@PathParam("icon_name") String iconName) {
       List<IconDTO> list = getIconService().findIconsByName(iconName);
-      if(list == null){
+      if (list == null) {
          throw new WebApplicationException(Response.Status.NOT_FOUND);
       }
-      if(list.size() == 0){
+      if (list.size() == 0) {
          throw new WebApplicationException(Response.Status.NO_CONTENT);
       }
       return new IconListing(list);
    }
-   
+
    /**
     * Shows all icons Visits @ url "/icons"
     * 
@@ -69,18 +69,18 @@ public class IconRESTService {
     */
    @GET
    @Produces( { "application/xml", "application/json" })
-   public IconListing getAllIcons(){
+   public IconListing getAllIcons() {
       List<IconDTO> list = getIconService().loadAllIcons();
-      if(list == null){
+      if (list == null) {
          throw new WebApplicationException(Response.Status.NOT_FOUND);
       }
-      if(list.size() == 0){
+      if (list.size() == 0) {
          throw new WebApplicationException(Response.Status.NO_CONTENT);
       }
       return new IconListing(list);
    }
-   
-   public IconService getIconService(){
+
+   public IconService getIconService() {
       return (IconService) SpringContext.getInstance().getBean("iconService");
    }
 }

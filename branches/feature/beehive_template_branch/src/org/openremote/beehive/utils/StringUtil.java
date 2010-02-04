@@ -38,9 +38,9 @@ import org.apache.log4j.Logger;
  * 
  */
 public class StringUtil {
-   
+
    private static final Logger LOGGER = Logger.getLogger(StringUtil.class.getName());
-   
+
    private StringUtil() {
    }
 
@@ -164,48 +164,50 @@ public class StringUtil {
       return strBuffer;
    }
 
-
    /**
-    * Parse a String contrain some long to array.
-    *   If some of long parse fail, this method will ignore it can continue.
-    * @param str String
-    * @param seperator seperator
+    * Parse a String contrain some long to array. If some of long parse fail, this method will ignore it can continue.
+    * 
+    * @param str
+    *           String
+    * @param seperator
+    *           seperator
     * @return ArrayList<Long>
     */
-   public static ArrayList<Long> parseStringIds(String str,String seperator) {
+   public static ArrayList<Long> parseStringIds(String str, String seperator) {
       ArrayList<Long> result = new ArrayList<Long>();
-      String[] ids =  str.split(seperator);
+      String[] ids = str.split(seperator);
       for (String id : ids) {
          long l = 0;
          try {
             l = Long.parseLong(id);
          } catch (NumberFormatException e) {
-            LOGGER.error("Parse String "+id+" to long type occur error.");
+            LOGGER.error("Parse String " + id + " to long type occur error.");
             continue;
          }
          result.add(l);
       }
       return result;
    }
-   
+
    /**
     * Get system time
     * 
     * @return time string "yyyy-MM-dd HH:mm:ss"
     */
-   public static String systemTime(){
-      SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");      
+   public static String systemTime() {
+      SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
       return df.format(new Date());
    }
-   
+
    /**
     * Escape regexp.
     * 
-    * @param string the string
+    * @param string
+    *           the string
     * 
     * @return the string
     */
-   public static String escapeRegexp(String string){
+   public static String escapeRegexp(String string) {
       return string.replace("\\", "\\u005C").replace("+", "\\u002B").replace(".", "\\u002E").replace("|", "\\u007C")
             .replace("$", "\\u0024").replace("^", "\\u005E").replace("*", "\\u002A").replace("?", "\\u003F").replace(
                   "{", "\\u007B").replace("[", "\\u005B").replace("(", "\\u0028").replace(")", " \\u0029");

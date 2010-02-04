@@ -30,11 +30,11 @@ public class IconServiceTest extends TemplateTestBase {
 
    private IconService service = (IconService) SpringTestContext.getInstance().getBean("iconService");
 
-   public void testFindByName(){
+   public void testFindByName() {
       List<IconDTO> iconDTOs = service.findIconsByName("Menu");
-      if(!iconDTOs.isEmpty()){
+      if (!iconDTOs.isEmpty()) {
          for (IconDTO iconDTO : iconDTOs) {
-            System.out.println("fileName="+iconDTO.getFileName()+" name="+iconDTO.getName());
+            System.out.println("fileName=" + iconDTO.getFileName() + " name=" + iconDTO.getName());
          }
       }
    }

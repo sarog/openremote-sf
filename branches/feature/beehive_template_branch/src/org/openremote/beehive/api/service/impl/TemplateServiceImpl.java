@@ -57,8 +57,8 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
    }
 
    @Override
-   public void save(Template t) {
-      genericDAO.save(t);
+   public long save(Template t) {
+      return (Long) genericDAO.save(t);
    }
 
 }

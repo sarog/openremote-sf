@@ -30,46 +30,47 @@ public class ModelServiceTest extends LIRCTestBase {
 
    private ModelService service = (ModelService) SpringTestContext.getInstance().getBean("modelService");
 
-	public void testAddLircConfFile() {
-	   String fixturePath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR).getFile();
-		service.add(FileUtil.readStream(fixturePath + "/remotes/3m/MP8640"),"3m","MP8640");//single section
-		service.add(FileUtil.readStream(fixturePath + "/remotes/sigma_designs/lircd.conf.realmagic"),"sigma_designs","lircd.conf.realmagic");//multi section
-		service.add(FileUtil.readStream(fixturePath + "/remotes/zenith/ZN110"),"zenith","ZN110");//raw code
-	}
-
-    public void testScrap() {
+   public void testAddLircConfFile() {
       String fixturePath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR).getFile();
-		LircConfFileScraper.scrapDir(fixturePath + "/remotes");
-    }
-    
-    public void testExportText(){
-    	System.out.println(service.exportText(1L));
-    }
-    
-    public void testUpdate(){
-//    	String[] paths = {"/3m"}; 
-//    	try {
-//         service.update(paths, "update directory", "username");
-//      } catch (SVNException e) {
-//         e.printStackTrace();
-//      }
-    }
-    
-    public void testRollback(){
-//    	String path = "/3m/MP8640";
-//    	try {
-//         service.rollback(path, 163, "tomsky");
-//      } catch (SVNException e) {
-//         e.printStackTrace();
-//      }
-    }
-    
-    public void testCount(){
-       assertEquals(9, service.count());
-    }
-    
-    public void testSync(){
-//       File file = new File("c:/sony/RM-862");
-//       service.syncWith(file);
-    }
+      service.add(FileUtil.readStream(fixturePath + "/remotes/3m/MP8640"), "3m", "MP8640");// single section
+      service.add(FileUtil.readStream(fixturePath + "/remotes/sigma_designs/lircd.conf.realmagic"), "sigma_designs",
+            "lircd.conf.realmagic");// multi section
+      service.add(FileUtil.readStream(fixturePath + "/remotes/zenith/ZN110"), "zenith", "ZN110");// raw code
+   }
+
+   public void testScrap() {
+      String fixturePath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR).getFile();
+      LircConfFileScraper.scrapDir(fixturePath + "/remotes");
+   }
+
+   public void testExportText() {
+      System.out.println(service.exportText(1L));
+   }
+
+   public void testUpdate() {
+      // String[] paths = {"/3m"};
+      // try {
+      // service.update(paths, "update directory", "username");
+      // } catch (SVNException e) {
+      // e.printStackTrace();
+      // }
+   }
+
+   public void testRollback() {
+      // String path = "/3m/MP8640";
+      // try {
+      // service.rollback(path, 163, "tomsky");
+      // } catch (SVNException e) {
+      // e.printStackTrace();
+      // }
+   }
+
+   public void testCount() {
+      assertEquals(9, service.count());
+   }
+
+   public void testSync() {
+      // File file = new File("c:/sony/RM-862");
+      // service.syncWith(file);
+   }
 }

@@ -47,8 +47,7 @@ public class LIRCRevisionChangesController extends LIRController {
    private ModelService modelService;
    private String indexView;
    private String changeView;
-   
-   
+
    public void setIndexView(String indexView) {
       this.indexView = indexView;
    }
@@ -81,27 +80,27 @@ public class LIRCRevisionChangesController extends LIRController {
       LogMessage headMessage = svnDelegateService.getHeadLog(Constant.ROOT_PATH);
       mav.addObject("headMessage", headMessage);
       request.getSession().setAttribute("headRevision", headMessage.getRevision().toString());
-      if(svnDelegateService.isBlankSVN()){
+      if (svnDelegateService.isBlankSVN()) {
          request.setAttribute("isBlankSVN", true);
-      }else{
+      } else {
          request.setAttribute("isBlankSVN", false);
       }
       List<Element> ds = svnDelegateService.getDiffStatus(Constant.ROOT_PATH);
       int diffSize = ds.size();
       mav.addObject("diffSize", diffSize);
-      
+
       if ("true".equals(showAll)) {
          mav.addObject("showAll", true);
          mav.addObject("diffStatus", ds);
-      } else if(diffSize>50){
+      } else if (diffSize > 50) {
          mav.addObject("diffStatus", ds.subList(0, 50));
-      }else{
+      } else {
          mav.addObject("diffStatus", ds);
       }
-         
+
       return mav;
    }
-   
+
    /**
     * Show one file's difference between workCopy with svnrepo
     * 
@@ -113,16 +112,17 @@ public class LIRCRevisionChangesController extends LIRController {
     * @throws ServletRequestBindingException
     *            Exception occured when missing path or action parameter
     */
-   public ModelAndView change(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
+   public ModelAndView change(HttpServletRequest request, HttpServletResponse response)
+         throws ServletRequestBindingException {
       ModelAndView mav = new ModelAndView(changeView);
       String path = ServletRequestUtils.getRequiredStringParameter(request, "path");
       String action = ServletRequestUtils.getRequiredStringParameter(request, "action");
-      if(!"UNVERSIONED".equals(action) && !"ADDED".equals(action)){
+      if (!"UNVERSIONED".equals(action) && !"ADDED".equals(action)) {
          System.out.println(action);
          LogMessage repoMessage = svnDelegateService.getHeadLog(path);
-         mav.addObject("repoMessage", repoMessage);     
+         mav.addObject("repoMessage", repoMessage);
       }
-      mav.addObject("breadcrumbPath",path);
+      mav.addObject("breadcrumbPath", path);
       mav.addObject("isFile", modelService.isFile(path));
       mav.addObject("action", action);
       DiffResult dr = svnDelegateService.diff(path);
@@ -135,30 +135,30 @@ public class LIRCRevisionChangesController extends LIRController {
       mav.addObject("changeCount", dr.getChangeCount());
       return mav;
    }
-   
+
    /**
     * @param request
-    *          HttpServletRequest
+    *           HttpServletRequest
     * @param response
-    *          HttpServletResponse
+    *           HttpServletResponse
     * @return ModelAndView
     * @throws SVNException
-    *          Exception occured when modelService.update() failed
+    *            Exception occured when modelService.update() failed
     */
-   public ModelAndView commit(HttpServletRequest request, HttpServletResponse response ){
+   public ModelAndView commit(HttpServletRequest request, HttpServletResponse response) {
       String[] items = request.getParameterValues("items");
       String comment = request.getParameter("comment");
       String commitAll = request.getParameter("commitAll");
-      if("true".equals(commitAll)){
+      if ("true".equals(commitAll)) {
          items = svnDelegateService.getDiffPaths(Constant.ROOT_PATH);
-         if(items.length == 0){
+         if (items.length == 0) {
             items = null;
          }
       }
-      if(items != null){
-         try{
-            svnDelegateService.commit(items,comment, "admin");
-         }catch(SVNException e){
+      if (items != null) {
+         try {
+            svnDelegateService.commit(items, comment, "admin");
+         } catch (SVNException e) {
             syncHistoryService.update("faild", new Date());
             throw e;
          }

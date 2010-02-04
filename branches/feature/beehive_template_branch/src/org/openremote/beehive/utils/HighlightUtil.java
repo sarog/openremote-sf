@@ -37,47 +37,50 @@ public class HighlightUtil {
     */
    private HighlightUtil() {
    }
-   
+
    /**
     * Gets the lIRC highlight.
     * 
-    * @param lines the lines
+    * @param lines
+    *           the lines
     * 
     * @return the lIRC highlight
     */
-   public static List<String> getLIRCHtmlHighlight(List<String> lines){
+   public static List<String> getLIRCHtmlHighlight(List<String> lines) {
       List<String> highLightLines = new ArrayList<String>();
       for (int i = 0; i < lines.size(); i++) {
          String line = StringEscapeUtils.escapeHtml(lines.get(i));
          String trimLine = line.trim();
-         
-         if(trimLine.matches("\\s*")){ //""
+
+         if (trimLine.matches("\\s*")) { // ""
             line = "&nbsp;";
-         } else if(trimLine.startsWith("#")){  // comment
-            line = "<span class=\"comment\">"+line+"</span>";
-         } else if(trimLine.matches("begin\\s*remote|end\\s*remote|begin\\s*codes|end\\s*codes|begin\\s*raw_codes|end\\s*raw_codes")){ //keyword
-            line = "<span class=\"keyword\">"+line+"</span>";
-         } else if(trimLine.matches(getOptionKeyRegExp())){// options key
+         } else if (trimLine.startsWith("#")) { // comment
+            line = "<span class=\"comment\">" + line + "</span>";
+         } else if (trimLine
+               .matches("begin\\s*remote|end\\s*remote|begin\\s*codes|end\\s*codes|begin\\s*raw_codes|end\\s*raw_codes")) { // keyword
+            line = "<span class=\"keyword\">" + line + "</span>";
+         } else if (trimLine.matches(getOptionKeyRegExp())) {// options key
             String[] arr = trimLine.split("\\s+");
-            line = "<span>"+line.replaceFirst(arr[0], "<span class=\"keyname\">"+arr[0]+"</span>")+"</span>";
-         }else{
+            line = "<span>" + line.replaceFirst(arr[0], "<span class=\"keyname\">" + arr[0] + "</span>") + "</span>";
+         } else {
             String[] subStr = trimLine.split("\\s+");
-            if(subStr.length >1 && subStr[1].startsWith("0x")){ //codes key
-               line = line.replaceFirst(StringUtil.escapeRegexp(subStr[0]), "<span class=\"keyname\">"+subStr[0].replace("\\", "\\\\")+"</span>");
+            if (subStr.length > 1 && subStr[1].startsWith("0x")) { // codes key
+               line = line.replaceFirst(StringUtil.escapeRegexp(subStr[0]), "<span class=\"keyname\">"
+                     + subStr[0].replace("\\", "\\\\") + "</span>");
             }
-            
+
          }
          highLightLines.add(line);
       }
       return highLightLines;
    }
-   
+
    /**
     * Gets the option key reg exp.
     * 
     * @return the option key reg exp
     */
-   private static String getOptionKeyRegExp(){
+   private static String getOptionKeyRegExp() {
       String[] optionsKeys = new String[] { "name", "gap", "eps", "aeps", "flags", "bits", "zero", "one", "ptrail",
             "toggle_bit", "header", "pre_data_bits", "pre_data", "repeat", "min_repeat", "post_data_bits", "post_data",
             "plead", "frequency", "duty_cycle", "pre", "foot", "post", "three", "two", "repeat_gap", "tanmitter",
@@ -91,13 +94,14 @@ public class HighlightUtil {
       }
       return optionKeyRegExp.toString();
    }
-   
+
    /**
     * Highlight diff lines.
     * 
-    * @param lines the lines
+    * @param lines
+    *           the lines
     */
-   public static void highlightDiffLines(List<Line> lines){
+   public static void highlightDiffLines(List<Line> lines) {
       List<String> newLines = new ArrayList<String>();
       for (Line line : lines) {
          newLines.add(line.getLine());

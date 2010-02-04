@@ -1,9 +1,9 @@
 
 ================================================================================
-===                                                                          ===
-===                 BEEHIVE DEPLOYMENT GUIDE                                 ===
-===                                                                          ===
-=== version 1.0.0                                http://www.openremote.org   ===
+===                                                                          
+===                 BEEHIVE DEPLOYMENT GUIDE                                
+===                                                                          
+=== version 2.0.0                                http://www.openremote.org   
 ================================================================================
 
 I. Introduction 
@@ -55,7 +55,6 @@ We have set several goals for this work in an attempt to make LIRC data more con
 V. "Beehive" logging
 ====================================
 You can modify the log4j configuration in "%PROJECT_ROOT%/config/log4j.properties".
-All the logs will be written in "/webapps/beehive/logs" 
 
 VI. "Beehive" javadoc
 ====================================
