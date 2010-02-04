@@ -20,11 +20,14 @@
 package org.openremote.beehive;
 
 public class TestConstraint {
-
-   public final static int WEBAPP_PORT = 8091;
-
-   public final static String WEBAPP_IP = "127.0.0.1";
    
-   public final static String FIXTURE_DIR = "./fixture/";
+   private TestConstraint() {
+   }
+
+   public static final int WEBAPP_PORT = 8091;
+
+   public static final String WEBAPP_IP = "127.0.0.1";
+   
+   public static final String FIXTURE_DIR = "./fixture/";
 
 }

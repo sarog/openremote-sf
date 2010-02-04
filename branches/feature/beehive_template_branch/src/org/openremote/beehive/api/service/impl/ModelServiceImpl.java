@@ -52,7 +52,7 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
    
    /** The logger. */
    private static Logger logger = Logger.getLogger(ModelServiceImpl.class.getName());
-   
+
    /** The configuration. */
    private Configuration configuration;
 
@@ -133,7 +133,9 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
       return modelDTO;
    }
 
-   /* (non-Javadoc)
+   /*
+    * (non-Javadoc)
+    * 
     * @see org.openremote.beehive.api.service.ModelService#loadModelById(long)
     */
    public ModelDTO loadModelById(long modelId) {
@@ -169,17 +171,17 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
          genericDAO.save(remoteSection);
       }
    }
-   
+
    /**
-    * Merge from file into DB. Ensure that {@link RemoteSection} oid won't be changed, 
-    * for REST API '/{vendor_name}/{model_name}/ids=1,2' use this oid to show lircd.conf.
+    * Merge from file into DB. Ensure that {@link RemoteSection} oid won't be changed, for REST API
+    * '/{vendor_name}/{model_name}/ids=1,2' use this oid to show lircd.conf.
     * 
     * @param fis
     *           the fis
     * @param model
     *           the model
     */
-   public void merge(FileInputStream fis, long id){
+   public void merge(FileInputStream fis, long id) {
       List<RemoteSection> remoteSectionList = LircConfFile.getRemoteSectionList(fis);
       Model model = loadById(id);
       List<RemoteSection> oldSectionList = model.getRemoteSections();
@@ -189,31 +191,31 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
          model.setComment(comment);
          genericDAO.merge(model);
       }
-      
+
       List<Integer> removedOldIndexs = new ArrayList<Integer>();
       List<RemoteSection> mergedRMSections = new ArrayList<RemoteSection>();
-      
+
       for (int i = 0; i < oldSectionList.size(); i++) {
          int oldIndex = i;
          for (int j = i; j < remoteSectionList.size(); j++) {
-            if(oldSectionList.get(i).getName().equals(remoteSectionList.get(j).getName())){
+            if (oldSectionList.get(i).getName().equals(remoteSectionList.get(j).getName())) {
                RemoteSection dbSection = oldSectionList.get(i);
                RemoteSection newSection = remoteSectionList.get(j);
                genericDAO.deleteAll(dbSection.getCodes());
                genericDAO.deleteAll(dbSection.getRemoteOptions());
                oldSectionList.get(i).setCodes(null);
                oldSectionList.get(i).setRemoteOptions(null);
-              
+
                dbSection.setRaw(newSection.isRaw());
                dbSection.setComment(newSection.getComment());
                dbSection.setModel(model);
                genericDAO.merge(dbSection);
-               
+
                for (Code code : newSection.getCodes()) {
                   code.setRemoteSection(dbSection);
                   genericDAO.save(code);
                }
-               
+
                for (RemoteOption remoteOption : newSection.getRemoteOptions()) {
                   remoteOption.setRemoteSection(dbSection);
                   genericDAO.save(remoteOption);
@@ -223,15 +225,15 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
                break;
             }
          }
-         if(oldIndex == i){
+         if (oldIndex == i) {
             removedOldIndexs.add(oldIndex);
          }
       }
-      
+
       for (Integer oldIndex : removedOldIndexs) {
          genericDAO.delete(oldSectionList.get(oldIndex.intValue()));
       }
-      
+
       remoteSectionList.removeAll(mergedRMSections);
       for (RemoteSection remoteSection : remoteSectionList) {
          remoteSection.setModel(model);
@@ -320,20 +322,20 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
    public int count() {
       return genericDAO.loadAll(Model.class).size();
    }
-   
+
    /**
     * {@inheritDoc}
     * 
     */
-   public boolean isFile(String path){
-      return new File(configuration.getWorkCopyDir()+path).isFile();
+   public boolean isFile(String path) {
+      return new File(configuration.getWorkCopyDir() + path).isFile();
    }
-   
+
    /**
     * {@inheritDoc}
     * 
     */
-   public Model findByFileName(String fileName){
+   public Model findByFileName(String fileName) {
       return genericDAO.getByNonIdField(Model.class, "fileName", fileName);
    }
 
@@ -342,23 +344,23 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
     * 
     */
    public void syncWith(File file) {
-      if(file.isDirectory() || FileUtil.isIgnored(file)){
+      if (file.isDirectory() || FileUtil.isIgnored(file)) {
          return;
       }
       boolean isDeleted = !file.exists();
       String[] arr = FileUtil.splitPath(file);
       String vendorName = arr[arr.length - 2];
-      if(vendorName.equals("ovara")){
+      if (vendorName.equals("ovara")) {
          vendorName = arr[arr.length - 3];
       }
       String modelName = arr[arr.length - 1];
       Model model = findByFileName(modelName);
-      if(isDeleted){
+      if (isDeleted) {
          return;
       }
-      if (model != null){
-         merge(FileUtil.readStream(file.getAbsolutePath()),model.getOid());
-      }else{
+      if (model != null) {
+         merge(FileUtil.readStream(file.getAbsolutePath()), model.getOid());
+      } else {
          FileInputStream fis = null;
          try {
             fis = new FileInputStream(file);

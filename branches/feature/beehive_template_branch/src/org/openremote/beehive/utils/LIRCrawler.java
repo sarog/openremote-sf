@@ -49,39 +49,40 @@ public class LIRCrawler {
    
    /** The configuration. */
    public static Configuration configuration = (Configuration) SpringContext.getInstance().getBean("configuration");
-   
+
    /** The http client. */
    private static HttpClient httpClient = createHttpClient();
-   
+
    /** The Constant LOGGER. */
    private static final Logger LOGGER = Logger.getLogger(LIRCrawler.class.getName());
-   
+
    /**
     * Creates the http client.
     * 
     * @return the http client
     */
-   private static HttpClient createHttpClient(){
+   private static HttpClient createHttpClient() {
       HttpClient httpClient = new HttpClient();
       httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(30000);
       return httpClient;
    }
-   
+
    /**
     * List.
     * 
-    * @param lircUrl the lirc url
+    * @param lircUrl
+    *           the lirc url
     * 
     * @return the list< lirc element>
     */
-   public static List<LIRCElement> list(String lircUrl){
+   public static List<LIRCElement> list(String lircUrl) {
       List<LIRCElement> lircs = new ArrayList<LIRCElement>();
       Pattern pattern = Pattern.compile(configuration.getLircCrawRegex());
       Matcher matcher = pattern.matcher(getPageContent(lircUrl));
       while (matcher.find()) {
          LIRCElement lirc = new LIRCElement();
          String path = StringEscapeUtils.unescapeHtml(matcher.group(2));
-         if(!FileUtil.isImage(path)){
+         if (!FileUtil.isImage(path)) {
             if (matcher.group(1).equals("text") || matcher.group(1).equals("script")) {
                lirc.setModel(true);
             }
@@ -92,58 +93,63 @@ public class LIRCrawler {
       }
       return lircs;
    }
-   
+
    /**
     * Write model.
     * 
-    * @param lirc the lirc
+    * @param lirc
+    *           the lirc
     */
    public static void writeModel(LIRCElement lirc) {
       String modelContent = getPageContent(lirc.getPath());
-      if(!modelContent.equals("")){
-         FileUtil.writeStringToFile(modelContent, 
-               StringUtil.appendFileSeparator(FileUtil.configuration.getWorkCopyDir())+lirc.getRelativePath());
+      if (!modelContent.equals("")) {
+         FileUtil.writeStringToFile(modelContent, StringUtil.appendFileSeparator(FileUtil.configuration
+               .getWorkCopyDir())
+               + lirc.getRelativePath());
       }
    }
-   
+
    /**
     * Gets the page content. When the network is bad, retry 100 times.
     * 
-    * @param url the url
+    * @param url
+    *           the url
     * 
     * @return the page content
     */
-   private static String getPageContent(String url){
+   private static String getPageContent(String url) {
       String content = null;
       int retryCount = -1;
-      while(content == null){
+      while (content == null) {
          content = getHtmlBody(url);
          retryCount++;
-         if(retryCount > 10){
+         if (retryCount > 10) {
             content = "";
-            LIRCrawlerException ee = new LIRCrawlerException("Occur the network exception, maybe the url [" + url + "] is unreachable.");
+            LIRCrawlerException ee = new LIRCrawlerException("Occur the network exception, maybe the url [" + url
+                  + "] is unreachable.");
             ee.setErrorCode(LIRCrawlerException.CRAWLER_NETWORK_ERROR);
             throw ee;
-         }else if(retryCount != 0){
-            LOGGER.error("try " + url + " " + retryCount +" times.");
+         } else if (retryCount != 0) {
+            LOGGER.error("try " + url + " " + retryCount + " times.");
             try {
                Thread.sleep(1000 * 5);
             } catch (InterruptedException e) {
-               LOGGER.error("Thread sleep 5s occur error!",e);
+               LOGGER.error("Thread sleep 5s occur error!", e);
             }
          }
       }
       return content;
    }
-   
+
    /**
     * Gets the html body.
     * 
-    * @param url the url
+    * @param url
+    *           the url
     * 
     * @return the html body
     */
-   private static String getHtmlBody(String url){
+   private static String getHtmlBody(String url) {
       String responseBody = "";
       GetMethod getMethod = new GetMethod(url);
       getMethod.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 30000);
@@ -155,9 +161,9 @@ public class LIRCrawler {
          }
          BufferedReader bufferIn = new BufferedReader(new InputStreamReader(getMethod.getResponseBodyAsStream()));
          StringBuffer sb = new StringBuffer();
-         char[] buf = new char[1024*1024];
+         char[] buf = new char[1024 * 1024];
          int len;
-         while ((len=bufferIn.read(buf))>0) {
+         while ((len = bufferIn.read(buf)) > 0) {
             sb.append(buf, 0, len);
          }
          responseBody = sb.toString();

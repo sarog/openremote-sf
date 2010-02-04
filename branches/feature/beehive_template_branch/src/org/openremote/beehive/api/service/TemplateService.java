@@ -32,7 +32,7 @@ import org.openremote.beehive.domain.Template;
  */
 public interface TemplateService {
    
-   void save(Template t);
+   long save(Template t);
    
    List<TemplateDTO> loadAllTemplatesByAccountOid(long accountOid);
    

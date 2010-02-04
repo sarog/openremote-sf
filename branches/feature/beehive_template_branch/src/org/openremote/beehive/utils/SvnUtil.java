@@ -73,9 +73,9 @@ public class SvnUtil {
       return result;
 
    }
-   
-   public static String escapeFileName(String filePath){
-      return filePath.contains("@") ? filePath.concat("@") : filePath ;
+
+   public static String escapeFileName(String filePath) {
+      return filePath.contains("@") ? filePath.concat("@") : filePath;
    }
 
 }

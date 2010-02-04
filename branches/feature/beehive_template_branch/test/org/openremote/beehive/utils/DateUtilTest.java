@@ -30,11 +30,11 @@ import junit.framework.TestCase;
  */
 public class DateUtilTest extends TestCase {
    
-   public void testGetTimeFormat(){
+   public void testGetTimeFormat() {
       String currentTime = DateUtil.getTimeFormat(new Date(), "yyyy-MM-dd.HH-mm");
       System.out.println(currentTime);
       String[] time = currentTime.split("\\.");
       System.out.println(time.length);
-      System.out.println(time[0]+"   "+time[1]);
+      System.out.println(time[0] + "   " + time[1]);
    }
 }

@@ -45,8 +45,14 @@ public class LIRCTestBase extends TestBase {
       Vendor v = new Vendor();
       v.setName("3m");
       
+      String comment = "#\r\n# This config file has been automatically converted from a device "
+            + "file\r\n# found in the 06/26/00 release of the Windows Slink-e software\r\n# "
+            + "package.\r\n#\r\n# Many thanks to Colby Boles of Nirvis Systems Inc. for allowing "
+            + "us to\r\n# use these files.\r\n#\r\n# The original filename was: \"3m mp8640 3m "
+            + "lcd projector.cde\"\r\n#\r\n# The original description for this device was:"
+            + "\r\n#\r\n# 3m mp8640 3m lcd projector\r\n#\r\n";
       Model m = new Model();
-      m.setComment("#\r\n# This config file has been automatically converted from a device file\r\n# found in the 06/26/00 release of the Windows Slink-e software\r\n# package.\r\n#\r\n# Many thanks to Colby Boles of Nirvis Systems Inc. for allowing us to\r\n# use these files.\r\n#\r\n# The original filename was: \"3m mp8640 3m lcd projector.cde\"\r\n#\r\n# The original description for this device was:\r\n#\r\n# 3m mp8640 3m lcd projector\r\n#\r\n");
+      m.setComment(comment);
       m.setFileName("MP8640");
       m.setName("MP8640");
       m.setVendor(v);
@@ -58,7 +64,7 @@ public class LIRCTestBase extends TestBase {
       RemoteSection rs = new RemoteSection();
       rs.setModel(m);
       rs.setName("MP8640");
-      rs.setComment("#\r\n# This config file has been automatically converted from a device file\r\n# found in the 06/26/00 release of the Windows Slink-e software\r\n# package.\r\n#\r\n# Many thanks to Colby Boles of Nirvis Systems Inc. for allowing us to\r\n# use these files.\r\n#\r\n# The original filename was: \"3m mp8640 3m lcd projector.cde\"\r\n#\r\n# The original description for this device was:\r\n#\r\n# 3m mp8640 3m lcd projector\r\n#\r\n");
+      rs.setComment(comment);
       
       RemoteOption ro1 = new RemoteOption();
       ro1.setName("name");

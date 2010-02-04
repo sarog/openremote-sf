@@ -27,17 +27,36 @@ import org.openremote.beehive.SpringTestContext;
 import org.openremote.beehive.TemplateTestBase;
 import org.openremote.beehive.api.dto.TemplateDTO;
 import org.openremote.beehive.api.service.TemplateService;
+import org.openremote.beehive.api.service.impl.GenericDAO;
+import org.openremote.beehive.domain.Account;
+import org.openremote.beehive.domain.Template;
 
 public class TemplateServiceTest extends TemplateTestBase {
 
    private TemplateService service = (TemplateService) SpringTestContext.getInstance().getBean("templateService");
    
-
+   private GenericDAO genericDAO = (GenericDAO) SpringTestContext.getInstance().getBean("genericDAO");
+   
    public void testGetTemplatesByAccountOid() {
       List<TemplateDTO> templates = service.loadAllTemplatesByAccountOid(1L);
-      Assert.assertEquals(templates.size(), 2);
-      Assert.assertEquals(templates.get(0).getName(), "t1");
-      Assert.assertEquals(templates.get(1).getName(), "t2");
+      Assert.assertEquals(2, templates.size());
+      Assert.assertEquals("t1", templates.get(0).getName());
+      Assert.assertEquals("t2", templates.get(1).getName());
+   }
+   
+   public void testSave() {
+      Account a = genericDAO.getByMaxId(Account.class);
+      Template t3 = new Template();
+      t3.setAccount(a);
+      t3.setName("t3");
+      t3.setContent("content");
+      a.addTemplate(t3);
+
+      long templateOid = service.save(t3);
+      Template t = genericDAO.loadById(Template.class, templateOid);
+      assertEquals("t3", t.getName());
+      assertEquals("content", t.getContent());
+      assertEquals(a.getOid(), t.getAccount().getOid());
    }
 
 }

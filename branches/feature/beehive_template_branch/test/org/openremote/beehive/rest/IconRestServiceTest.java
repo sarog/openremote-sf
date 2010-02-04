@@ -33,21 +33,21 @@ import org.openremote.beehive.rest.service.IconRESTTestService;
  */
 public class IconRestServiceTest extends TemplateTestBase {
    
-   public void _testGetIconsXml() throws URISyntaxException{
+   public void testGetIconsXml() throws URISyntaxException {
       Dispatcher dispatcher = RESTTestUtils.createDispatcher(IconRESTTestService.class);
       MockHttpRequest mockHttpRequest = MockHttpRequest.get("/icons");
       mockHttpRequest.accept("application/xml");
-      
+
       MockHttpResponse mockHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockHttpRequest, mockHttpResponse);
       System.out.println(mockHttpResponse.getContentAsString());
    }
-   
-   public void testGetIconsJson() throws URISyntaxException{
+
+   public void testGetIconsJson() throws URISyntaxException {
       Dispatcher dispatcher = RESTTestUtils.createDispatcher(IconRESTTestService.class);
       MockHttpRequest mockHttpRequest = MockHttpRequest.get("/icons/Menu");
       mockHttpRequest.accept("application/json");
-      
+
       MockHttpResponse mockHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockHttpRequest, mockHttpResponse);
       System.out.println(mockHttpResponse.getContentAsString());

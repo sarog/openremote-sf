@@ -21,106 +21,53 @@ package org.openremote.beehive;
 
 import java.io.File;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class Configuration.
- */
 public class Configuration {
-   
-   /** The work dir. */
+
    private String workDir;
-   
-   /** The icons dir. */
+
    private String iconsDir;
-   
-   /** The svn dir. */
+
    private String svnDir;
-   
-   /** The lirc craw regex. */
+
    private String lircCrawRegex;
-   
-   /**
-    * Gets the work dir.
-    * 
-    * @return the work dir
-    */
+
    public String getWorkDir() {
       return workDir;
    }
 
-   /**
-    * Gets the sync history dir.
-    * 
-    * @return the sync history dir
-    */
    public String getSyncHistoryDir() {
-      return workDir+File.separator+Constant.SYNC_HISTORY;
+      return workDir + File.separator + Constant.SYNC_HISTORY;
    }
 
-   /**
-    * Sets the work dir.
-    * 
-    * @param workDir the new work dir
-    */
    public void setWorkDir(String workDir) {
       this.workDir = workDir;
    }
 
-   /**
-    * Gets the work copy dir.
-    * 
-    * @return the work copy dir
-    */
    public String getWorkCopyDir() {
-      return workDir+File.separator+Constant.WORK_COPY;
+      return workDir + File.separator + Constant.WORK_COPY;
    }
 
-   /**
-    * Gets the svn dir.
-    * 
-    * @return the svn dir
-    */
    public String getSvnDir() {
-      if(workDir.startsWith("/")){
-         svnDir = "file://"+workDir+File.separator+"svn-repos/lirc/trunk";
-      }else{
-         svnDir = "file:///"+workDir+File.separator+"svn-repos/lirc/trunk";
+      if (workDir.startsWith("/")) {
+         svnDir = "file://" + workDir + File.separator + "svn-repos/lirc/trunk";
+      } else {
+         svnDir = "file:///" + workDir + File.separator + "svn-repos/lirc/trunk";
       }
       return svnDir;
    }
 
-   /**
-    * Gets the icons dir.
-    * 
-    * @return the icons dir
-    */
    public String getIconsDir() {
       return iconsDir;
    }
 
-   /**
-    * Sets the icons dir.
-    * 
-    * @param iconsDir the new icons dir
-    */
    public void setIconsDir(String iconsDir) {
       this.iconsDir = iconsDir;
    }
 
-   /**
-    * Gets the lirc craw regex.
-    * 
-    * @return the lirc craw regex
-    */
    public String getLircCrawRegex() {
       return lircCrawRegex;
    }
 
-   /**
-    * Sets the lirc craw regex.
-    * 
-    * @param lircCrawRegex the new lirc craw regex
-    */
    public void setLircCrawRegex(String lircCrawRegex) {
       this.lircCrawRegex = lircCrawRegex;
    }

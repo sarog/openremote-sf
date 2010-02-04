@@ -30,7 +30,7 @@ import org.openremote.beehive.api.dto.IconDTO;
 public interface IconService {
    
    /**
-    * Gets all <icon>IconDTOs</icon> belongs to certain name
+    * Gets all <code>IconDTOs</code> belongs to certain name
     * 
     * @param name
     * @return list of IconDTOs
@@ -38,7 +38,7 @@ public interface IconService {
    List<IconDTO> findIconsByName(String name);
    
    /**
-    * Loads all <icon>IconDTOs</icon>
+    * Loads all <code>IconDTOs</code>
     * 
     * @return list of IconDTOs
     */

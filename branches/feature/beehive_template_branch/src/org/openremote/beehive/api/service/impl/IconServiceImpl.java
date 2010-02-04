@@ -39,7 +39,7 @@ public class IconServiceImpl extends BaseAbstractService<Icon> implements IconSe
    
    private static Logger logger = Logger.getLogger(IconServiceImpl.class.getName());
    private Configuration configuration;
-   
+
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
@@ -59,10 +59,10 @@ public class IconServiceImpl extends BaseAbstractService<Icon> implements IconSe
       for (Icon icon : icons) {
          IconDTO iconDTO = new IconDTO();
          BeanUtils.copyProperties(icon, iconDTO);
-         iconDTO.setFileName(iconDir+icon.getFileName());
+         iconDTO.setFileName(iconDir + icon.getFileName());
          iconDTOList.add(iconDTO);
       }
-      logger.info("Get list of icons by label of "+name.toLowerCase());
+      logger.info("Get list of icons by label of " + name.toLowerCase());
       return iconDTOList;
    }
 
@@ -79,7 +79,7 @@ public class IconServiceImpl extends BaseAbstractService<Icon> implements IconSe
       for (Icon icon : icons) {
          IconDTO iconDTO = new IconDTO();
          BeanUtils.copyProperties(icon, iconDTO);
-         iconDTO.setFileName(iconDir+icon.getFileName());
+         iconDTO.setFileName(iconDir + icon.getFileName());
          iconDTOList.add(iconDTO);
       }
       logger.info("Get the list of all icons");

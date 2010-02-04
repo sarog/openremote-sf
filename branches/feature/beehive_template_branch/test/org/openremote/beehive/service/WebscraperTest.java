@@ -25,19 +25,19 @@ import org.openremote.beehive.api.service.WebscraperService;
 
 /**
  * @author Tomsky
- *
+ * 
  */
-public class WebscraperTest extends TestBase{
-	private WebscraperService service = (WebscraperService) SpringTestContext
-    .getInstance().getBean("scraperService");
-	/**
-	 * @param args
-	 */
-	public void testScrapFiles() {
-//		service.scrapeFiles();
-	}
-	
-	public void testGetProgress(){
-//	   System.out.println(service.getProgress());
-	}
+public class WebscraperTest extends TestBase {
+   private WebscraperService service = (WebscraperService) SpringTestContext.getInstance().getBean("scraperService");
+
+   /**
+    * @param args
+    */
+   public void testScrapFiles() {
+      // service.scrapeFiles();
+   }
+
+   public void testGetProgress() {
+      // System.out.println(service.getProgress());
+   }
 }

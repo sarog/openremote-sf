@@ -39,23 +39,25 @@ public class ProgressServiceImpl implements ProgressService {
 
    /** The sync history service. */
    private SyncHistoryService syncHistoryService;
-   
+
    /** The configuration. */
    private Configuration configuration;
-   
+
    /**
     * Sets the sync history service.
     * 
-    * @param syncHistoryService the new sync history service
+    * @param syncHistoryService
+    *           the new sync history service
     */
    public void setSyncHistoryService(SyncHistoryService syncHistoryService) {
       this.syncHistoryService = syncHistoryService;
    }
-   
+
    /**
     * Sets the configuration.
     * 
-    * @param configuration the new configuration
+    * @param configuration
+    *           the new configuration
     */
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
@@ -66,33 +68,36 @@ public class ProgressServiceImpl implements ProgressService {
     */
    public Progress getProgress(String type, long count) {
       String logPath = syncHistoryService.getLatestByType(type).getLogPath();
-      File progressFile = new File(StringUtil.appendFileSeparator(configuration.getSyncHistoryDir())+logPath);
+      File progressFile = new File(StringUtil.appendFileSeparator(configuration.getSyncHistoryDir()) + logPath);
       return getProgressFromFile(progressFile, "Completed!", count);
    }
-   
+
    /**
     * Gets the progress from file.
     * 
-    * @param progressFile the progress file
-    * @param endTag the end tag
-    * @param count the count
+    * @param progressFile
+    *           the progress file
+    * @param endTag
+    *           the end tag
+    * @param count
+    *           the count
     * 
     * @return the progress from file
     */
-   private Progress getProgressFromFile(File progressFile, String endTag, long count){
+   private Progress getProgressFromFile(File progressFile, String endTag, long count) {
       Progress progress = new Progress();
       String message = "";
-      if(progressFile.exists()){
+      if (progressFile.exists()) {
          try {
             message = FileUtils.readFileToString(progressFile, "UTF8");
-            double percent = FileUtils.readLines(progressFile, "UTF8").size()/(double)count;
+            double percent = FileUtils.readLines(progressFile, "UTF8").size() / (double) count;
             progress.setPercent(percent);
             progress.setMessage(message);
-            if(message.trim().endsWith(endTag)){
+            if (message.trim().endsWith(endTag)) {
                progress.setStatus("isEnd");
             }
          } catch (IOException e) {
-            SVNException ee = new SVNException("Read "+progressFile.getName()+" to string occur error!",e);
+            SVNException ee = new SVNException("Read " + progressFile.getName() + " to string occur error!", e);
             ee.setErrorCode(SVNException.SVN_IO_ERROR);
             throw ee;
          }

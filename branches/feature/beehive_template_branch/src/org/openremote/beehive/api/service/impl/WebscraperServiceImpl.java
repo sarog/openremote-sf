@@ -49,7 +49,7 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
    private SVNDelegateService svnDelegateService;
    private SyncHistoryService syncHistoryService;
    private Configuration configuration;
-   
+
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
@@ -75,31 +75,33 @@ public class WebscraperServiceImpl extends BaseAbstractService<Vendor> implement
       syncHistory.setType("update");
       syncHistory.setStatus("running");
       syncHistoryService.save(syncHistory);
-      
-      String syncFilePath = configuration.getSyncHistoryDir()+File.separator+logPath;
+
+      String syncFilePath = configuration.getSyncHistoryDir() + File.separator + logPath;
       FileUtil.deleteFileOnExist(new File(syncFilePath));
-      try{
+      try {
          logger.info("Update lirc files from lirc website...");
          crawl(Constant.LIRC_ROOT_URL, syncFilePath);
          logger.info("Update lirc files from lirc website success.");
-         FileUtil.writeLineToFile(syncFilePath, DateFormatter.format(date)+" Completed!");
+         FileUtil.writeLineToFile(syncFilePath, DateFormatter.format(date) + " Completed!");
          syncHistoryService.update("success", new Date());
-      }catch(SVNException e){
+      } catch (SVNException e) {
          logger.error("update occur SVNException!");
          FileUtil.writeLineToFile(syncFilePath, e.getMessage());
          syncHistoryService.update("faild", new Date());
-      }catch(LIRCrawlerException e){
+      } catch (LIRCrawlerException e) {
          logger.error("update occur LIRCrawlerException!");
          FileUtil.writeLineToFile(syncFilePath, e.getMessage());
          syncHistoryService.update("faild", new Date());
       }
    }
+
    private void crawl(String lircUrl, String syncFilePath) {
       for (LIRCElement lirc : LIRCrawler.list(lircUrl)) {
          if (lirc.isModel()) {
             Actions action = svnDelegateService.compareFileByLastModifiedDate(lirc);
-            FileUtil.writeLineToFile(syncFilePath, " ["+StringUtil.systemTime()+"]  "+action.getValue() + "  "+lirc.getRelativePath());
-            if(!action.equals(Actions.NORMAL)){
+            FileUtil.writeLineToFile(syncFilePath, " [" + StringUtil.systemTime() + "]  " + action.getValue() + "  "
+                  + lirc.getRelativePath());
+            if (!action.equals(Actions.NORMAL)) {
                LIRCrawler.writeModel(lirc);
             }
          } else {
