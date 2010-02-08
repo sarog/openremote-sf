@@ -21,6 +21,8 @@ import javax.persistence.Transient;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.domain.BusinessEntity;
 
+import flexjson.JSON;
+
 /**
  * parent for UIButton,UISwich,UIGrid...
  * 
@@ -55,8 +57,9 @@ public abstract class UIComponent extends BusinessEntity {
     * Generate the xml content which used in panel.xml
     */
    @Transient
+   @JSON(include=false)
    public abstract String getPanelXml();
-
+   
    public int getPreferredWidth() {
       return 50;
    }
@@ -74,12 +77,6 @@ public abstract class UIComponent extends BusinessEntity {
    public static UIComponent createNew(UIComponent uiComponent) {
       UIComponent result = null;
       if (uiComponent != null) {
-         /*
-          * Class clazz = uiComponent.getClass(); try { result = (UIComponent) clazz.newInstance();
-          * result.setOid(IDUtil.nextID()); } catch (InstantiationException e) { e.printStackTrace(); } catch
-          * (IllegalAccessException e) { e.printStackTrace(); }
-          */
-
          if (uiComponent instanceof UIButton) {
             result = new UIButton();
          } else if (uiComponent instanceof UISwitch) {

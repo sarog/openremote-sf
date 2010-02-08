@@ -79,7 +79,7 @@ public class ScreenCanvas extends ComponentContainer {
          List<Absolute> absolutes = screen.getAbsolutes();
          for (Absolute absolute : absolutes) {
             AbsoluteLayoutContainer componentContainer = createAbsoluteLayoutContainer(screen, absolute, ScreenComponent
-                  .build(this, absolute.getUIComponent()));
+                  .build(this, absolute.getUiComponent()));
             componentContainer.setSize(absolute.getWidth(), absolute.getHeight());
             componentContainer.setPosition(absolute.getLeft(), absolute.getTop());
             this.add(componentContainer);
@@ -340,7 +340,7 @@ public class ScreenCanvas extends ComponentContainer {
       AbsoluteLayoutContainer controlContainer = null;
       Absolute absolute = new Absolute(IDUtil.nextID());
       UIComponent component = UIComponent.createNew(uiComponent);
-      absolute.setUIComponent(component);
+      absolute.setUiComponent(component);
       controlContainer = createAbsoluteLayoutContainer(screen, absolute, ScreenComponent.build(this, component));
       controlContainer.setSize(component.getPreferredWidth(), component.getPreferredHeight());
       screen.addAbsolute(absolute);
@@ -350,11 +350,11 @@ public class ScreenCanvas extends ComponentContainer {
          GridCellBounds recorder) {
       cellContainer.getGridContainer().getGrid().removeCell(cellContainer.getCell()); // remove the old cell from grid.
 
-      UIComponent uiComponent = cellContainer.getCell().getUIComponent();
+      UIComponent uiComponent = cellContainer.getCell().getUiComponent();
       AbsoluteLayoutContainer controlContainer = null;
       Absolute absolute = new Absolute(IDUtil.nextID());
       UIComponent component = UIComponent.copy(uiComponent);
-      absolute.setUIComponent(component);
+      absolute.setUiComponent(component);
       controlContainer = createAbsoluteLayoutContainer(screen, absolute, ScreenComponent.build(this, component));
       controlContainer.setSize(recorder.getWidth(), recorder.getHeight());
       screen.addAbsolute(absolute);

@@ -62,7 +62,7 @@
   		##-----------------------------------------------------------------absolute---------------------------------------------------------------------------
   		#foreach($absolute in $screen.getAbsolutes())
   			<absolute left="${absolute.getLeft()}" top="${absolute.getTop()}" width="${absolute.getWidth()}" height="${absolute.getHeight()}">
-  				${absolute.getUIComponent().getPanelXml()}
+  				${absolute.getUiComponent().getPanelXml()}
   			</absolute>
   		#end
   		##--------------------------------------------------------------------grid---------------------------------------------------------------------------
@@ -70,7 +70,7 @@
   			<grid left="${grid.getLeft()}" top="${grid.getTop()}" width="${grid.getWidth()}" height="${grid.getHeight()}" rows="${grid.getRowCount()}" cols="${grid.getColumnCount()}">
   				#foreach($cell in $grid.getCells())
   					<cell x="${cell.getPosX()}" y="${cell.getPosY()}" rowspan="${cell.getRowspan()}" colspan="${cell.getColspan()}">
-  						${cell.getUIComponent().getPanelXml()}
+  						${cell.getUiComponent().getPanelXml()}
   					</cell>
   				#end
   			</grid>

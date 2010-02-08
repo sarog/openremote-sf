@@ -1,0 +1,142 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+package org.openremote.modeler.client.widget.buildingmodeler;
+
+import java.util.List;
+
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.proxy.TemplateProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.widget.FormWindow;
+import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.Template;
+
+import com.extjs.gxt.ui.client.Style.Scroll;
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.widget.Info;
+import com.extjs.gxt.ui.client.widget.ListView;
+import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.FieldSet;
+import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
+import com.extjs.gxt.ui.client.widget.layout.FormData;
+
+/**
+ * A window for creating a Template.
+ * @author javen
+ *
+ */
+public class TemplateCreateWindow extends FormWindow {
+   public static final String TEMPLATE_NAME_FIELD = "name";
+   public static final String TEMPLATE_CONTENT_FIELD = "content";
+
+   private ListView<BeanModel> screenList = new ListView<BeanModel>();
+
+   private TextField<String> templateName = new TextField<String>();
+   
+   public TemplateCreateWindow(){
+      setPlain(true);  
+      setSize(500, 300);  
+      setLayout(new FitLayout());  
+      setHeading("New Template");
+      setSize(500,300);
+      setBodyBorder(true);
+      createField();
+      initScreenList();
+      show();
+   }
+   
+   private void createField(){
+      templateName = new TextField<String>();
+      templateName.setName(TEMPLATE_NAME_FIELD);
+      templateName.setLabelSeparator("Name");
+      
+      form.setBorders(false);  
+      form.setBodyBorder(false);  
+      form.setLabelWidth(55);  
+      form.setPadding(5);  
+      form.setHeaderVisible(false); 
+      form.setScrollMode(Scroll.AUTOY);
+      
+      Button submitBtn = new Button();
+      submitBtn.setText("Submit");
+      Button cancleBtn = new Button();
+      cancleBtn.setText("Close");
+      submitBtn.addSelectionListener(new SubmitListener());
+      cancleBtn.addSelectionListener(new CancleListener());
+      
+      form.add(templateName,new FormData("100%"));
+      form.addButton(submitBtn);
+      form.addButton(cancleBtn);
+      add(form);
+      
+   }
+   
+   private void initScreenList() {
+      ListStore<BeanModel> store = new ListStore<BeanModel>();
+      store.add(BeanModelDataBase.screenTable.loadAll());
+      screenList.setStore(store);
+      screenList.setDisplayProperty("displayName");
+      screenList.setAutoHeight(true);
+      screenList.setDeferHeight(false);
+      FieldSet screenListGroup = new FieldSet();
+      screenListGroup.setHeading("Select a screen");
+      screenListGroup.add(screenList);
+      form.add(screenListGroup,new FormData("100% -53"));
+   }
+
+   
+   class SubmitListener extends SelectionListener<ButtonEvent> {
+
+      @Override
+      public void componentSelected(ButtonEvent ce) {
+         List<BeanModel> screenBeanModels = screenList.getSelectionModel().getSelectedItems();
+         if (screenBeanModels == null || screenBeanModels.size() > 1) {
+            MessageBox.alert("Error", "One (and only one)screen must be selected", null);
+            return;
+         }
+         Screen screen = screenBeanModels.get(0).getBean();
+         Template template = new Template(templateName.getValue(), screen);
+         TemplateProxy.saveTemplate(template, new AsyncSuccessCallback<Template>() {
+
+            @Override
+            public void onSuccess(Template result) {
+               Info.display("Success", "template saved successfully:" + result.getOid());
+               hide();
+            }
+
+         });
+      }
+
+   }
+
+   class CancleListener extends SelectionListener<ButtonEvent> {
+
+      @Override
+      public void componentSelected(ButtonEvent ce) {
+         hide();
+      }
+
+   }
+}

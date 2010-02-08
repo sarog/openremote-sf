@@ -156,9 +156,9 @@ public class ResourceServiceImplTest {
       screen2.setName("screen1");
       
       Absolute abs1 = new Absolute();
-      abs1.setUIComponent(absBtn);
+      abs1.setUiComponent(absBtn);
       Absolute abs2 = new Absolute();
-      abs2.setUIComponent(absSwitch);
+      abs2.setUiComponent(absSwitch);
       
       UIGrid grid1 = new UIGrid(10,10,20,20,4,4);
       Cell c1 = new Cell();
@@ -414,10 +414,10 @@ public void testScreenHasGesture() {
       gridSwitch.setSwitchCommand(switchToggle);
       Absolute abs1 = new Absolute();
       abs1.setOid(IDUtil.nextID());
-      abs1.setUIComponent(absBtn);
+      abs1.setUiComponent(absBtn);
       Absolute abs2 = new Absolute();
       abs2.setOid(IDUtil.nextID());
-      abs2.setUIComponent(absSwitch);
+      abs2.setUiComponent(absSwitch);
       
       UIGrid grid1 = new UIGrid(10,10,20,20,4,4);
       grid1.setOid(IDUtil.nextID());
@@ -487,9 +487,9 @@ public void testScreenHasGesture() {
       gridSwitch.setSwitchCommand(switchToggle);
       
       Absolute abs1 = new Absolute();
-      abs1.setUIComponent(absBtn);
+      abs1.setUiComponent(absBtn);
       Absolute abs2 = new Absolute();
-      abs2.setUIComponent(absSwitch);
+      abs2.setUiComponent(absSwitch);
       
       UIGrid grid1 = new UIGrid(10,10,20,20,4,4);
       Cell c1 = new Cell();
@@ -590,9 +590,9 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
       gridSwitch.setSwitchCommand(switchToggle);
       
       Absolute abs1 = new Absolute();
-      abs1.setUIComponent(absBtn);
+      abs1.setUiComponent(absBtn);
       Absolute abs2 = new Absolute();
-      abs2.setUIComponent(absSwitch);
+      abs2.setUiComponent(absSwitch);
       
       UIGrid grid1 = new UIGrid(10,10,20,20,4,4);
       Cell c1 = new Cell();
@@ -716,9 +716,9 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
 //      gridSwitch.setStatusCommand(macroRef);
       
       Absolute abs1 = new Absolute();
-      abs1.setUIComponent(absBtn);
+      abs1.setUiComponent(absBtn);
       Absolute abs2 = new Absolute();
-      abs2.setUIComponent(absSwitch);
+      abs2.setUiComponent(absSwitch);
       
       UIGrid grid1 = new UIGrid(10,10,20,20,4,4);
       Cell c1 = new Cell();

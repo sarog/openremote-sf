@@ -193,4 +193,15 @@ public class UtilsProxy {
          }
       });
    }
+   
+   public static void getTemplatesListRestUrl(final AsyncCallback <String> callback){
+      AsyncServiceFactory.getConfigurationRPCServiceAsync().getTemplatesListRestUrl(new AsyncSuccessCallback<String>(){
+
+         @Override
+         public void onSuccess(String result) {
+           callback.onSuccess(result);
+         }
+         
+      });
+   }
 }
