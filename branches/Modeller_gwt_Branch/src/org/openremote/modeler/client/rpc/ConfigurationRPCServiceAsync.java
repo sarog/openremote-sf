@@ -34,5 +34,8 @@ public interface ConfigurationRPCServiceAsync {
     * @param callback the callback
     */
    void beehiveRESTRootUrl(AsyncCallback<String> callback);
-
+   
+   void getTemplatesListRestUrl(AsyncCallback<String> callback);
+   
+   void getTemplateSaveRestUrl(AsyncCallback<String> callback);
 }

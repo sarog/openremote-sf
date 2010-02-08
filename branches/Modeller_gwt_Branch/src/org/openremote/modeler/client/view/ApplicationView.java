@@ -32,6 +32,7 @@ import org.openremote.modeler.client.rpc.AuthorityRPCService;
 import org.openremote.modeler.client.rpc.AuthorityRPCServiceAsync;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.Protocols;
+import org.openremote.modeler.client.widget.buildingmodeler.TemplateCreateWindow;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
 import org.openremote.modeler.selenium.DebugId;
 
@@ -149,6 +150,8 @@ public class ApplicationView implements View {
       final MenuItem exportMenuItem = createExportMenuItem();
 //      final MenuItem restoreMenuItem = createRestoreMenuItem(); 
 //     saveMenuItem.setEnabled(false);
+      
+      final MenuItem templateMenuItem = createSaveTemplate();
       exportMenuItem.setEnabled(false);
       
       fileMenu.add(saveMenuItem);
@@ -156,6 +159,8 @@ public class ApplicationView implements View {
       fileMenu.add(exportMenuItem);
 //      fileMenu.add(restoreMenuItem);
       fileMenu.add(createLogoutMenuItem());
+      fileMenu.add(templateMenuItem);
+      
       fileMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
          @Override
          public void handleEvent(MenuEvent be) {
@@ -302,6 +307,17 @@ public class ApplicationView implements View {
       return exportMenuItem;
    }
    
+   private MenuItem createSaveTemplate() {
+      MenuItem exportMenuItem = new MenuItem("save to Template");
+      exportMenuItem.setIcon(icons.exportIcon());
+      exportMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+         @Override
+         public void componentSelected(MenuEvent ce) {
+           new TemplateCreateWindow();
+         }
+      });
+      return exportMenuItem;
+   }
    /**
     * Checks if is exported data valid.
     * 

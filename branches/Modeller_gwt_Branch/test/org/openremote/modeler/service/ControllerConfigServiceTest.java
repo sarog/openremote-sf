@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.openremote.modeler.SpringContext;
-import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.Config;
+import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.service.impl.UserServiceImpl;
 import org.openremote.modeler.utils.XmlParser;
 import org.springframework.security.context.SecurityContextHolder;
@@ -64,7 +64,7 @@ public class ControllerConfigServiceTest {
       
       Collection<Config> cfgs2 = configService.listAllConfigByCategoryForCurrentAccount("advance");
       Assert.assertTrue(cfgs2.size()>0);
-      for(Config cfg : cfgs){
+      for(Config cfg : cfgs2){
          Assert.assertTrue(cfg.getHint().contains(addStr));
       }
    }
