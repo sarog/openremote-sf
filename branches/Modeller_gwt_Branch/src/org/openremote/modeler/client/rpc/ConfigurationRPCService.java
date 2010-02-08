@@ -36,5 +36,9 @@ public interface ConfigurationRPCService extends RemoteService {
    * @return the string
    */
   String beehiveRESTRootUrl();
+  
+  String getTemplatesListRestUrl();
+  
+  String getTemplateSaveRestUrl();
 
 }
