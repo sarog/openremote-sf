@@ -18,8 +18,10 @@ public class TemplateTestBase extends TestBase {
    
    private AccountService accountService = (AccountService) SpringTestContext.getInstance().getBean("accountService");
    
+   @Override
    protected void setUp() throws Exception {
       super.setUp();
+
       
       Account a = new Account();
       Template t1 = new Template();
@@ -39,5 +41,12 @@ public class TemplateTestBase extends TestBase {
       i.setName("menu");
       genericDAO.save(i);
    }
+
+   @Override
+   protected void tearDown() throws Exception {
+      super.tearDown();
+   }
+   
+   
 
 }

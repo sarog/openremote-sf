@@ -21,8 +21,10 @@ package org.openremote.beehive.rest;
 
 import java.util.List;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -30,7 +32,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.dto.TemplateDTO;
+import org.openremote.beehive.api.service.AccountService;
 import org.openremote.beehive.api.service.TemplateService;
 import org.openremote.beehive.domain.Account;
 import org.openremote.beehive.domain.Template;
@@ -44,6 +48,15 @@ import org.openremote.beehive.spring.SpringContext;
 
 @Path("/account/{account_id}")
 public class TemplateRESTService {
+   
+   protected TemplateService getTemplateService() {
+      return (TemplateService) SpringContext.getInstance().getBean("templateService");
+   }
+   
+   protected AccountService getAccountService() {
+      return (AccountService) SpringContext.getInstance().getBean("accountService");
+   }
+   
 
    @GET
    @Produces( { "application/xml", "application/json" })
@@ -55,7 +68,7 @@ public class TemplateRESTService {
       }
       throw new WebApplicationException(Response.Status.NOT_FOUND);
    }
-   
+
    @GET
    @Produces( { "application/xml", "application/json" })
    @Path("template/{template_id}")
@@ -69,10 +82,14 @@ public class TemplateRESTService {
 
    @POST
    @Produces( { "application/xml", "application/json" })
-   @Path("template/save")
+   @Path("template")
    public TemplateDTO addTemplateIntoAccount(@PathParam("account_id") long accountId, @FormParam("name") String name,
-         @FormParam("content") String content) {
-      if (accountId > 0 ) {
+         @FormParam("content") String content, @HeaderParam(Constant.HTTP_BASIC_AUTH_HEADER_NAME) String credentials) {
+
+      if (!getAccountService().isHTTPBasicAuthorized(credentials)) {
+         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+      }
+      if (accountId > 0) {
          Account a = new Account();
          a.setOid(accountId);
          Template t = new Template();
@@ -88,10 +105,21 @@ public class TemplateRESTService {
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
 
    }
-
    
-   protected TemplateService getTemplateService() {
-      return (TemplateService) SpringContext.getInstance().getBean("templateService");
+   @DELETE
+   @Path("template/{template_id}")
+   public void deleteTemplate(@PathParam("template_id") long templateId,
+         @HeaderParam(Constant.HTTP_BASIC_AUTH_HEADER_NAME) String credentials) {
+      
+      if (!getAccountService().isHTTPBasicAuthorized(credentials)) {
+         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+      }
+      if (templateId > 0) {
+         getTemplateService().delete(templateId);
+         return;
+      }
+      throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
    }
 
+   
 }
