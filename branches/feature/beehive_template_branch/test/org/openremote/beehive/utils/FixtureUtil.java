@@ -22,16 +22,24 @@ package org.openremote.beehive.utils;
 import java.io.File;
 
 import org.openremote.beehive.TestConstraint;
-
+/**
+ * Test fixture utility.
+ * 
+ * @author Dan
+ *
+ */
 
 public class FixtureUtil {
+   
+   private FixtureUtil() {
+   }
 
    public static String path() {
       return FixtureUtil.class.getClassLoader().getResource(TestConstraint.FIXTURE_DIR).getFile();
    }
 
    public static String getFileContent(String fileName) {
-      return FileUtil.readFileToString(new File(FixtureUtil.path() + fileName)).toString();
+      return FileUtil.readFileToString(new File(FixtureUtil.path() + fileName)).toString().trim();
    }
 
 }

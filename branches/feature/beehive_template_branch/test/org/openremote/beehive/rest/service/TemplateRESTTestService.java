@@ -22,6 +22,7 @@ package org.openremote.beehive.rest.service;
 import javax.ws.rs.Path;
 
 import org.openremote.beehive.SpringTestContext;
+import org.openremote.beehive.api.service.AccountService;
 import org.openremote.beehive.api.service.TemplateService;
 import org.openremote.beehive.rest.TemplateRESTService;
 
@@ -31,6 +32,11 @@ public class TemplateRESTTestService extends TemplateRESTService {
    @Override
    protected TemplateService getTemplateService() {
       return (TemplateService) SpringTestContext.getInstance().getBean("templateService");
+   }
+   
+   @Override
+   protected AccountService getAccountService() {
+      return (AccountService) SpringTestContext.getInstance().getBean("accountService");
    }
 
 }

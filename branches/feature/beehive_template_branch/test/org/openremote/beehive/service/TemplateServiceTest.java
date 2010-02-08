@@ -58,5 +58,9 @@ public class TemplateServiceTest extends TemplateTestBase {
       assertEquals("content", t.getContent());
       assertEquals(a.getOid(), t.getAccount().getOid());
    }
+   
+   public void testRemove() {
+      assertTrue(service.delete(1L));
+   }
 
 }

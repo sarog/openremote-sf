@@ -59,4 +59,14 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
       return (Long) genericDAO.save(t);
    }
 
+   @Override
+   public boolean delete(long templateOid) {
+      Template t = genericDAO.loadById(Template.class, templateOid);
+      if (t != null) {
+         genericDAO.delete(t);
+         return true;
+      }
+      return false;
+   }
+
 }

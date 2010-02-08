@@ -37,5 +37,7 @@ public interface TemplateService {
    List<TemplateDTO> loadAllTemplatesByAccountOid(long accountOid);
    
    TemplateDTO loadTemplateByOid(long templateOid);
+   
+   boolean delete(long templateOid);
 
 }

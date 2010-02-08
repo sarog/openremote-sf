@@ -53,5 +53,11 @@ public final class Constant {
    /** The Constant SYNC_HISTORY. */
    public static final String SYNC_HISTORY = "syncHistory";
    
+   public static final String HTTP_BASIC_AUTH_HEADER_NAME= "Authorization";
+   
+   public static final String HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX= "Basic ";
+   
+   
+   
    
 }
