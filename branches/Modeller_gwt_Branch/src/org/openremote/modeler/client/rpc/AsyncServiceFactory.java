@@ -60,6 +60,10 @@ public class AsyncServiceFactory {
    
    private static ConfigCategoryRPCServiceAsync configCategoryRPCServiceAsync = null;
    
+   private static ConfigurationRPCServiceAsync configurationRPCServiceAsync = null;
+   
+   private static TemplateRPCServiceAsync templateRPCServiceAsync = null;
+   
    /**
     * Gets the device macro service async.
     * 
@@ -156,5 +160,21 @@ public class AsyncServiceFactory {
       }
       
       return configCategoryRPCServiceAsync;
+   }
+   
+   public static ConfigurationRPCServiceAsync getConfigurationRPCServiceAsync(){
+      if(configurationRPCServiceAsync == null){
+         configurationRPCServiceAsync = GWT.create(ConfigurationRPCService.class);
+      }
+      
+      return configurationRPCServiceAsync;
+   }
+   
+   public static TemplateRPCServiceAsync getTemplateRPCServiceAsync(){
+      if(templateRPCServiceAsync == null){
+         templateRPCServiceAsync = GWT.create(TemplateRPCService.class);
+      }
+      
+      return templateRPCServiceAsync;
    }
 }

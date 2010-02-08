@@ -26,6 +26,8 @@ import javax.persistence.Transient;
 
 import org.openremote.modeler.domain.UICommand;
 
+import flexjson.JSON;
+
 @SuppressWarnings("serial")
 public class UIButton extends UIControl {
 
@@ -135,6 +137,7 @@ public class UIButton extends UIControl {
    }
 
    @Transient
+   @JSON(include = false)
    @Override
    public String getPanelXml() {
       StringBuffer xmlContent = new StringBuffer();

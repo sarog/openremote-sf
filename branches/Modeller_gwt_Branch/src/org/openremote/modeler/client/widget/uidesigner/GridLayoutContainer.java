@@ -185,7 +185,7 @@ public class GridLayoutContainer extends ComponentContainer {
             makeCellContainerResizable(cellWidth, cellHeight, cellContainer);
             cellContainer.setPosition(cellWidth * cell.getPosX() + cell.getPosX() + 1, cellHeight * cell.getPosY()
                   + cell.getPosY() + 1);
-            cellContainer.setName(cell.getUIComponent().getName());
+            cellContainer.setName(cell.getUiComponent().getName());
             cellContainer.setCellSpan(1, 1);
             add(cellContainer);
             cellContainer.setBorders(false);
@@ -206,7 +206,7 @@ public class GridLayoutContainer extends ComponentContainer {
     */
    private GridCellContainer createCellContainer(final UIGrid grid, Cell cell, int cellWidth, int cellHeight) {
       final GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(), cell, ScreenComponent.build(this.getScreenCanvas(), cell
-            .getUIComponent()), this) {
+            .getUiComponent()), this) {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
@@ -476,7 +476,7 @@ public class GridLayoutContainer extends ComponentContainer {
       GridCellContainer cellContainer;
       container.removeFromParent();
       container.hideBackground();
-      cellContainer = AbsoluteToCell(container.getAbsolute().getUIComponent(), grid, cellWidth, cellHeight);
+      cellContainer = AbsoluteToCell(container.getAbsolute().getUiComponent(), grid, cellWidth, cellHeight);
       cellContainer.getClass();
       cellContainer.setCellSpan(1, 1);
       cellContainer.setCellPosition(targetPosition.x, targetPosition.y);

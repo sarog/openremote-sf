@@ -25,6 +25,8 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.UICommand;
 
+import flexjson.JSON;
+
 @SuppressWarnings("serial")
 public class UISwitch extends UIControl implements SensorOwner {
 
@@ -76,6 +78,7 @@ public class UISwitch extends UIControl implements SensorOwner {
       return "Switch";
    }
 
+   @JSON(include=false)
    @Override
    public List<UICommand> getCommands() {
       List<UICommand> commands = new ArrayList<UICommand>();
@@ -92,6 +95,7 @@ public class UISwitch extends UIControl implements SensorOwner {
 
    @Transient
    @Override
+   @JSON(include=false)
    public String getPanelXml() {
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("        <switch id=\"" + getOid() + "\">\n");

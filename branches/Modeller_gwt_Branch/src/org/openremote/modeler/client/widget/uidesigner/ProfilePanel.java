@@ -316,7 +316,7 @@ public class ProfilePanel extends ContentPanel {
       });
    }
    private void editScreen(final BeanModel panelBeanModel) {
-      final ScreenWindow screenWizard = new ScreenWindow(screenTab, panelBeanModel, true);
+      final ScreenWindow screenWizard = new ScreenWindow(screenTab, panelBeanModel, ScreenWindow.Operation.EDIT);
       screenWizard.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {

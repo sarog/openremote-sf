@@ -27,6 +27,7 @@ import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.Template;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -81,4 +82,6 @@ public interface UtilsRPCServiceAsync {
    void restore(AsyncCallback<PanelsAndMaxOid> panels);
    
    void canRestore(AsyncCallback<Boolean> canRestore);
+   
+   void buildScreenFromTemplate(Template template,AsyncCallback<Screen>callback);
 }

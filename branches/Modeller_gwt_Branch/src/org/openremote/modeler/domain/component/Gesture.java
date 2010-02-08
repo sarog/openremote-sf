@@ -24,6 +24,8 @@ import java.util.List;
 
 import org.openremote.modeler.domain.UICommand;
 
+import flexjson.JSON;
+
 /**
  * The Gesture defined the gesture on screen.
  */
@@ -62,7 +64,8 @@ public class Gesture extends UIControl {
    public void setUiCommand(UICommand uiCommand) {
       this.uiCommand = uiCommand;
    }
-
+   
+   @JSON(include=false)
    @Override
    public String getPanelXml() {
       StringBuilder XMLContent = new StringBuilder();
@@ -87,6 +90,7 @@ public class Gesture extends UIControl {
       XMLContent.append("</gesture>");
       return XMLContent.toString();
    }
+   @JSON(include=false)
    @Override
    public List<UICommand> getCommands() {
       if (uiCommand != null) {

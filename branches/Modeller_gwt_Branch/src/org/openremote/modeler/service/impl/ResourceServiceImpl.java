@@ -419,16 +419,16 @@ public class ResourceServiceImpl implements ResourceService {
       Set<String> sectionIds = new HashSet<String>();
       for (Screen screen : screenList) {
          for (Absolute absolute : screen.getAbsolutes()) {
-            if (absolute.getUIComponent() instanceof UIControl) {
-               for (UICommand command : ((UIControl) absolute.getUIComponent()).getCommands()) {
+            if (absolute.getUiComponent() instanceof UIControl) {
+               for (UICommand command : ((UIControl) absolute.getUiComponent()).getCommands()) {
                   addSectionIds(sectionIds, command);
                }
             }
          }
          for (UIGrid grid : screen.getGrids()) {
             for (Cell cell : grid.getCells()) {
-               if (cell.getUIComponent() instanceof UIControl) {
-                  for (UICommand command : ((UIControl) cell.getUIComponent()).getCommands()) {
+               if (cell.getUiComponent() instanceof UIControl) {
+                  for (UICommand command : ((UIControl) cell.getUiComponent()).getCommands()) {
                      addSectionIds(sectionIds, command);
                   }
                }
@@ -588,7 +588,7 @@ public class ResourceServiceImpl implements ResourceService {
                "groupRefs.group.screenRefs.screen.grids.cells.uiComponent.commands",
                "groupRefs.group.screenRefs.screen.grids.uiComponent.sensor",
                "groupRefs.group.screenRefs.screen.grids.cells.uiComponent.sensor" };
-         String[] excludePropertyNames = {};
+         String[] excludePropertyNames = {"panelName"};
          String panelsJson = JsonGenerator.serializerObjectInclude(panels, includedPropertyNames, excludePropertyNames);
          return panelsJson;
       } catch (Exception e) {
@@ -695,13 +695,13 @@ public class ResourceServiceImpl implements ResourceService {
 
       for (Screen screen : screens) {
          for (Absolute absolute : screen.getAbsolutes()) {
-            UIComponent component = absolute.getUIComponent();
+            UIComponent component = absolute.getUiComponent();
             initSensors(allSensors, sensorWithoutDuplicate, component);
          }
 
          for (UIGrid grid : screen.getGrids()) {
             for (Cell cell : grid.getCells()) {
-               initSensors(allSensors, sensorWithoutDuplicate, cell.getUIComponent());
+               initSensors(allSensors, sensorWithoutDuplicate, cell.getUiComponent());
             }
          }
       }
@@ -736,13 +736,13 @@ public class ResourceServiceImpl implements ResourceService {
       uiComponentBox.clear();
       for (Screen screen : screens) {
          for (Absolute absolute : screen.getAbsolutes()) {
-            UIComponent component = absolute.getUIComponent();
+            UIComponent component = absolute.getUiComponent();
             uiComponentBox.add(component);
          }
 
          for (UIGrid grid : screen.getGrids()) {
             for (Cell cell : grid.getCells()) {
-               uiComponentBox.add(cell.getUIComponent());
+               uiComponentBox.add(cell.getUiComponent());
             }
          }
 
@@ -831,7 +831,7 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
    
-   public void serialize(Collection<Panel> panels, long maxOid) {
+   private void serialize(Collection<Panel> panels, long maxOid) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File panelsObjFile = new File(pathConfig.getSerizalizedPanelsFile(userService.getAccount()));
       ObjectOutputStream oos = null;

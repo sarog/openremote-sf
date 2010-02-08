@@ -58,6 +58,7 @@
                 <prop key="/modeler/sensor.smvc">sensorController</prop>
                 <prop key="/modeler/controllerConfig.smvc">controllerConfig</prop>
                 <prop key="/modeler/configCategory.smvc">configCategory</prop>
+                <prop key="/modeler/template.smvc">templateController</prop>
             </props>
         </property>
     </bean>
@@ -87,5 +88,5 @@
     <bean id="sensorController" class="org.openremote.modeler.server.SensorController"></bean>
     <bean id="controllerConfig" class="org.openremote.modeler.server.ControllerConfigController"></bean>
     <bean id="configCategory" class="org.openremote.modeler.server.ConfigCategoryController"></bean>
-    
+    <bean id="templateController" class="org.openremote.modeler.server.TemplateController"></bean>
 </beans>

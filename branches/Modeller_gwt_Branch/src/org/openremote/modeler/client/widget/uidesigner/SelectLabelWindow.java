@@ -92,14 +92,14 @@ public class SelectLabelWindow extends Dialog {
          for (ScreenCanvas canvas:canvases){
             labelTreeStore.add(canvas.getScreen().getBeanModel(), false);
             for (Absolute absolute : canvas.getScreen().getAbsolutes()){
-               if (absolute.getUIComponent() instanceof UILabel){
-                  labelTreeStore.add(canvas.getScreen().getBeanModel(), absolute.getUIComponent().getBeanModel(),false);
+               if (absolute.getUiComponent() instanceof UILabel){
+                  labelTreeStore.add(canvas.getScreen().getBeanModel(), absolute.getUiComponent().getBeanModel(),false);
                }
             }
             for (UIGrid grid : canvas.getScreen().getGrids()){
                for(Cell cell : grid.getCells()){
-                  if(cell.getUIComponent() instanceof UILabel){
-                     labelTreeStore.add(canvas.getScreen().getBeanModel(), cell.getUIComponent().getBeanModel(),false);
+                  if(cell.getUiComponent() instanceof UILabel){
+                     labelTreeStore.add(canvas.getScreen().getBeanModel(), cell.getUiComponent().getBeanModel(),false);
                   }
                }
             }

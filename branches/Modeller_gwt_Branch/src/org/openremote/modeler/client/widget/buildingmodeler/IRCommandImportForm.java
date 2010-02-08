@@ -144,7 +144,7 @@ public class IRCommandImportForm extends CommonForm {
          configurationService.beehiveRESTRootUrl(new AsyncSuccessCallback<String>() {
             @Override
             public void onSuccess(String result) {
-               beehiveLircRestUrl = result;
+               beehiveLircRestUrl = result+"lirc/";
                addVendorsList();
             }
             

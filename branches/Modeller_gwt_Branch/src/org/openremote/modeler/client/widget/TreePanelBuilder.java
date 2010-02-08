@@ -516,39 +516,6 @@ public class TreePanelBuilder {
       return panelTree;
    }
    
-   /*public static TreePanel<BeanModel> buildControllerConfigCategoryPanelTree(){
-      if(controllerConfigCategoryTreeStore == null){
-         controllerConfigCategoryTreeStore = new TreeStore<BeanModel>();
-         ControllerConfigBeanProxy.getAllCategory(new AsyncSuccessCallback<Set<ConfigCategory>>(){
-
-            @Override
-            public void onSuccess(Set<ConfigCategory> result) {
-               for(ConfigCategory category : result){
-                  controllerConfigCategoryTreeStore.add(category.getBeanModel(), false);
-               }
-            }
-         });
-      }
-      
-      TreePanel<BeanModel> tree = new TreePanel<BeanModel>(controllerConfigCategoryTreeStore);
-      tree.setIconProvider(new ModelIconProvider<BeanModel>() {
-         public AbstractImagePrototype getIcon(BeanModel thisModel) {
-            if (thisModel.getBean() instanceof ConfigCategory) {
-               return ICON.panelIcon();
-            } else {
-               return ICON.panelIcon();
-            }
-         }
-      });
-      
-      tree.setStateful(true);
-      tree.setBorders(false);
-      tree.setHeight("100%");
-      tree.setDisplayProperty("name");
-      
-      return tree;
-   }*/
-   
    public static TreePanel<BeanModel> buildControllerConfigCategoryPanelTree(final TabPanel configTabPanel){
       if(controllerConfigCategoryTreeStore == null){
          controllerConfigCategoryTreeStore = new TreeStore<BeanModel>();
@@ -588,4 +555,5 @@ public class TreePanelBuilder {
       tree.setDisplayProperty("name");
       return tree;
    }
+   
 }

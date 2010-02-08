@@ -31,6 +31,8 @@ import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
+import flexjson.JSON;
+
 /**
  * The Class Screen.
  */
@@ -68,7 +70,8 @@ public class Screen extends RefedEntity {
    public String getName() {
       return name;
    }
-
+   
+   
    public UIGrid getGrid(int index) {
       return grids.size() > 0 ? grids.get(index) : null;
    }
@@ -156,6 +159,7 @@ public class Screen extends RefedEntity {
    }
 
    @Transient
+   @JSON(include=false)
    public String getPanelName() {
       TouchPanelCanvasDefinition canvas = touchPanelDefinition.getCanvas();
       return name + "(" + touchPanelDefinition.getName() + "," + canvas.getWidth() + "X" + canvas.getHeight() + ")";
@@ -179,7 +183,7 @@ public class Screen extends RefedEntity {
    public void removeAbsolute(Absolute absolute) {
       if (this.absolutes.size() > 0) {
          this.absolutes.remove(absolute);
-         absolute.getUIComponent().setRemoved(true);
+         absolute.getUiComponent().setRemoved(true);
       }
    }
 
@@ -200,7 +204,7 @@ public class Screen extends RefedEntity {
          this.grids.remove(grid);
          Collection<Cell> cells = grid.getCells();
          for (Cell cell : cells) {
-            cell.getUIComponent().setRemoved(true);
+            cell.getUiComponent().setRemoved(true);
          }
       }
    }
@@ -216,7 +220,9 @@ public class Screen extends RefedEntity {
    public void setGestures(List<Gesture> gestures) {
       this.gestures = gestures;
    }
-
+   public void addGesture(Gesture gesture){
+      gestures.add(gesture);
+   }
    /**
     * get all the UIComponent by the component's class. for example, if you want to get all the UIButton on the screen.
     * you can invoke this method like this: <code>getAllUIComponentByType(UIButton.class)</code>
@@ -227,14 +233,14 @@ public class Screen extends RefedEntity {
    public Collection<? extends UIComponent> getAllUIComponentByType(Class<? extends UIComponent> clazz) {
       Collection<UIComponent> uiComponents = new ArrayList<UIComponent>();
       for (Absolute absolute : absolutes) {
-         if (absolute.getUIComponent().getClass() == clazz) {
-            uiComponents.add(absolute.getUIComponent());
+         if (absolute.getUiComponent().getClass() == clazz) {
+            uiComponents.add(absolute.getUiComponent());
          }
       }
       for (UIGrid grid : grids) {
          for (Cell cell : grid.getCells()) {
-            if (cell.getUIComponent().getClass() == clazz) {
-               uiComponents.add(cell.getUIComponent());
+            if (cell.getUiComponent().getClass() == clazz) {
+               uiComponents.add(cell.getUiComponent());
             }
          }
       }

@@ -127,7 +127,7 @@ public class Absolute extends BusinessEntity {
     * 
     * @return the ui control
     */
-   public UIComponent getUIComponent() {
+   public UIComponent getUiComponent() {
       return uiComponent;
    }
 
@@ -136,10 +136,10 @@ public class Absolute extends BusinessEntity {
     * 
     * @param uiControl the new ui control
     */
-   public void setUIComponent(UIComponent uiComponent) {
+   public void setUiComponent(UIComponent uiComponent) {
       this.uiComponent = uiComponent;
    }
-
+   
    public void setSize(int width, int height) {
       this.width = width;
       this.height = height;

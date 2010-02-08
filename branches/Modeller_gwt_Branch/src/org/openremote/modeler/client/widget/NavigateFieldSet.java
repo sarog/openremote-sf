@@ -187,7 +187,7 @@ public class NavigateFieldSet extends FieldSet {
          toLogical.setValue(true);
          typeList.setValue(new ComboBoxDataModel<ToLogicalType>(navigate.getToLogical().toString(), navigate.getToLogical()));
          toGroup.setValue(false);
-      } else if (navigate.isToGroup()) {
+      } else if (navigate.toGroup()) {
          toGroup.setValue(true);
          for (BeanModel groupModel : groupModels) {
             ComboBoxDataModel<Group> data = new ComboBoxDataModel<Group>(groupModel.get("name").toString(), (Group) groupModel.getBean());

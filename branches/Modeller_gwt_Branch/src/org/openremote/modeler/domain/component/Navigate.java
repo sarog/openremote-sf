@@ -21,6 +21,8 @@ package org.openremote.modeler.domain.component;
 
 import org.openremote.modeler.domain.BusinessEntity;
 
+import flexjson.JSON;
+
 @SuppressWarnings("serial")
 public class Navigate extends BusinessEntity {
 
@@ -50,6 +52,7 @@ public class Navigate extends BusinessEntity {
    public void clearToLogical() {
       this.toLogical = null;
    }
+   @JSON(include=false)
    public boolean isSet() {
       if (toGroup != -1) {
          return true;
@@ -70,7 +73,7 @@ public class Navigate extends BusinessEntity {
       return false;
    }
    
-   public boolean isToGroup() {
+   public boolean toGroup() {
       if (toGroup != -1) {
          return true;
       }

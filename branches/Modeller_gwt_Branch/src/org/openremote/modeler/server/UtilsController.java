@@ -34,7 +34,9 @@ import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.service.ResourceService;
+import org.openremote.modeler.service.TemplateService;
 import org.openremote.modeler.utils.XmlParser;
 
 /**
@@ -48,6 +50,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    private static final Logger LOGGER = Logger.getLogger(UtilsController.class);
    /** The resource service. */
    private ResourceService resourceService;
+   private TemplateService screenTemplateService;
    
    /** The configuration. */
    private Configuration configuration;
@@ -103,6 +106,11 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
     */
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
+   }
+   
+   
+   public void setScreenTemplateService(TemplateService screenTemplateService) {
+      this.screenTemplateService = screenTemplateService;
    }
 
    /**
@@ -208,5 +216,9 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    @Override
    public boolean canRestore() {
       return resourceService.canRestore();
+   }
+   
+   public Screen buildScreenFromTemplate(Template template){
+      return screenTemplateService.buildScreenFromTemplate(template);
    }
 }

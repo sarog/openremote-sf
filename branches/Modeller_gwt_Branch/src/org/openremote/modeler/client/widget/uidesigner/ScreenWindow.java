@@ -35,9 +35,11 @@ import org.openremote.modeler.domain.ScreenRef;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.MessageBox;
@@ -54,14 +56,17 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
  */
 public class ScreenWindow extends FormWindow {
    
+   private Screen screen = null;
+   
    private TextField<String> nameField = null;
    private BeanModel selectItem = null;
-   private boolean editMode = false;
+   
+   private Operation operation = Operation.NEW;
    private TreePanel<BeanModel> groupSelectTree = null;
    
-   public ScreenWindow(ScreenTab screenTab, BeanModel selectItem, boolean editMode) {
+   public ScreenWindow(ScreenTab screenTab, BeanModel selectItem, Operation operation) {
       super();
-      this.editMode = editMode;
+      this.operation = operation;
       this.selectItem = selectItem;
       setSize(350, 270);
       setHeading("New Screen");
@@ -75,7 +80,7 @@ public class ScreenWindow extends FormWindow {
    }
 
    public ScreenWindow(ScreenTab screenTab, BeanModel selectItem) {
-      this(screenTab, selectItem, false);
+      this(screenTab, selectItem, Operation.NEW);
    }
    
    
@@ -102,10 +107,12 @@ public class ScreenWindow extends FormWindow {
    private void createButtons() {
       Button submitBtn = new Button("Submit");
       Button resetBtn = new Button("Reset");
-
+      Button templateSelectBtn = new Button("from template");
+      templateSelectBtn.addSelectionListener(new TemplateSelectLisntener());
       submitBtn.addSelectionListener(new FormSubmitListener(form));
       resetBtn.addSelectionListener(new FormResetListener(form));
-
+      
+      form.addButton(templateSelectBtn);
       form.addButton(submitBtn);
       form.addButton(resetBtn);
    }
@@ -123,31 +130,52 @@ public class ScreenWindow extends FormWindow {
             Object bean = groupModel.getBean();
             if (bean != null && bean instanceof GroupRef) {
                GroupRef groupRef = (GroupRef) bean;
-               if (!editMode) { // new a screen.
-                  createScreen(groupSelectTree, groupModel, groupRef);
-               } else { // update a screen.
-                  ScreenRef screenRef = (ScreenRef) selectItem.getBean();
-                  screenRef.getScreen().setName(nameField.getValue());
-                  screenRef.setGroup(groupRef.getGroup());
-                  fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));
+               ScreenRef screenRef = null;
+               switch (operation) {
+
+               case EDIT:
+                  screenRef = (ScreenRef) selectItem.getBean();
+                  screen = screenRef.getScreen();
+                  break;
+               case CREATE_BY_TEMPLATE:
+                  if (screen != null) {
+                     screen.setName(nameField.getValue());
+                     screenRef = createScreenFromTemplate(groupRef);
+                     BeanModelDataBase.screenTable.insert(screen.getBeanModel());
+                     break;
+                  }
+               case NEW:
+                  screenRef = createScreen(groupRef);
+                  screen.setName(nameField.getValue());
+                  BeanModelDataBase.screenTable.insert(screen.getBeanModel());
+                  break;
                }
+               screen.setName(nameField.getValue());
+               screenRef.setGroup(groupRef.getGroup());
+               fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));
             }
+           
          }
 
       });
    }
 
-   private void createScreen(final TreePanel<BeanModel> groupSelectTree, BeanModel groupModel, GroupRef selectedGroup) {
-      Screen screen = new Screen();
+   private ScreenRef createScreen(GroupRef selectedGroup) {
+      screen = new Screen();
       screen.setOid(IDUtil.nextID());
-      screen.setName(nameField.getValue());
+      screen.setTouchPanelDefinition(selectedGroup.getPanel().getTouchPanelDefinition());
+      ScreenRef screenRef = new ScreenRef(screen);
+      selectedGroup.getGroup().addScreenRef(screenRef);
+      return screenRef;
+   }
+   
+   private ScreenRef createScreenFromTemplate(GroupRef selectedGroup) {
       screen.setTouchPanelDefinition(selectedGroup.getPanel().getTouchPanelDefinition());
       BeanModelDataBase.screenTable.insert(screen.getBeanModel());
       ScreenRef screenRef = new ScreenRef(screen);
       selectedGroup.getGroup().addScreenRef(screenRef);
-      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));
+      return screenRef;
    }
-
    private ContentPanel createGroupTreeView(ScreenTab screenTab) {
       ContentPanel groupTreeContainer = new ContentPanel();
       groupTreeContainer.setHeaderVisible(false);
@@ -157,13 +185,13 @@ public class ScreenWindow extends FormWindow {
       List<BeanModel> panels = BeanModelDataBase.panelTable.loadAll();
       groupSelectTree = buildGroupSelectTree(panels);
       groupTreeContainer.add(groupSelectTree);
-      groupTreeContainer.setEnabled(!editMode);
+      groupTreeContainer.setEnabled(operation==Operation.NEW || operation==Operation.CREATE_BY_TEMPLATE);
       groupTreeContainer.setStyleAttribute("backgroundColor", "white");
 
       if (null != this.selectItem) {
-         if (this.selectItem.getBean() instanceof GroupRef && !editMode) {
+         if (this.selectItem.getBean() instanceof GroupRef && (operation==Operation.NEW || operation==Operation.CREATE_BY_TEMPLATE)) {
             groupSelectTree.getSelectionModel().select(selectItem, false);
-         } else if (selectItem.getBean() instanceof ScreenRef && editMode) {
+         } else if (selectItem.getBean() instanceof ScreenRef && operation == Operation.EDIT) {
             ScreenRef screenRef = (ScreenRef) selectItem.getBean();
             nameField.setValue(screenRef.getScreen().getName());
             BeanModel selectedGroup = TreePanelBuilder.buildPanelTree(screenTab).getStore().getParent(selectItem);
@@ -195,14 +223,6 @@ public class ScreenWindow extends FormWindow {
       this.selectItem = selectItem;
    }
 
-   public boolean isEditMode() {
-      return editMode;
-   }
-
-   public void setEditMode(boolean editMode) {
-      this.editMode = editMode;
-   }
-
    public BeanModel getSelectedGroupRefModel() {
       return (BeanModel) groupSelectTree.getSelectionModel().getSelectedItem();
    }
@@ -210,5 +230,28 @@ public class ScreenWindow extends FormWindow {
       return groupSelectTree;
    }
   
+   class TemplateSelectLisntener extends SelectionListener<ButtonEvent>{
+
+      @Override
+      public void componentSelected(ButtonEvent ce) {
+         SelectTemplateWindow templateWindow = new SelectTemplateWindow();
+         templateWindow.addListener(SubmitEvent.SUBMIT, new Listener<SubmitEvent>(){
+
+            @Override
+            public void handleEvent(SubmitEvent be) {
+               BeanModel screenBeanModel = be.getData();
+               screen = screenBeanModel.getBean();
+            }
+            
+         });
+         
+         operation = Operation.CREATE_BY_TEMPLATE;
+      }
+      
+   }
    
+   
+   public static enum Operation{
+      NEW,EDIT,CREATE_BY_TEMPLATE;
+   }
 }

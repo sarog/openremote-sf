@@ -22,6 +22,7 @@ package org.openremote.modeler.server;
 
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.rpc.ConfigurationRPCService;
+import org.openremote.modeler.service.UserService;
 
 /**
  * Gets the system configuration.
@@ -31,6 +32,8 @@ public class ConfigurationController extends BaseGWTSpringController implements 
    
    /** The configuration. */
    private Configuration configuration;
+   
+   private UserService userService;
 
    /**
     * Beehive rest root url.
@@ -42,7 +45,16 @@ public class ConfigurationController extends BaseGWTSpringController implements 
    public String beehiveRESTRootUrl() {
       return configuration.getBeehiveRESTRootUrl();
    }
-
+   
+   public String getTemplatesListRestUrl(){
+      Long accouontOid = userService.getAccount().getOid();
+      return configuration.getBeehiveRESTRootUrl()+"account/"+accouontOid+"/templates";
+   }
+   
+   public String getTemplateSaveRestUrl(){
+      Long accountOid = userService.getAccount().getOid();
+      return configuration.getBeehiveRESTRootUrl()+"account/"+accountOid+"/template/save";
+   }
    /**
     * Sets the configuration.
     * 
@@ -51,4 +63,10 @@ public class ConfigurationController extends BaseGWTSpringController implements 
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
+
+   public void setUserService(UserService userService) {
+      this.userService = userService;
+   }
+   
+   
 }
