@@ -96,4 +96,9 @@ public class Constants {
    
    /** The Constant SCHEMA_SOURCE. */
    public final static String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
+   
+   public static final String HTTP_BASIC_AUTH_HEADER_NAME= "Authorization";
+   
+   public static final String HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX= "Basic ";
+   
 }

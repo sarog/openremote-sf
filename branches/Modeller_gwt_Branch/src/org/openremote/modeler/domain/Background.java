@@ -109,13 +109,6 @@ public class Background extends BusinessEntity {
     */
    public static enum RelativeType {
       LEFT, RIGHT, TOP, BOTTOM, TOP_LEFT, BOTTOM_LEFT, TOP_RIGHT, BOTTOM_RIGHT, CENTER;
-
-      @Override
-      public String toString() {
-         return super.toString().replace("_", "-");
-      }
-      
-      
    }
    
    public static Map<RelativeType, String> getRelativeMap() {

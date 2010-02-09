@@ -31,6 +31,9 @@ import org.openremote.modeler.domain.Template;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.FieldEvent;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.Info;
@@ -38,6 +41,8 @@ import com.extjs.gxt.ui.client.widget.ListView;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
+import com.extjs.gxt.ui.client.widget.form.Radio;
+import com.extjs.gxt.ui.client.widget.form.RadioGroup;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormData;
@@ -54,6 +59,8 @@ public class TemplateCreateWindow extends FormWindow {
    private ListView<BeanModel> screenList = new ListView<BeanModel>();
 
    private TextField<String> templateName = new TextField<String>();
+   
+   private long shareInfo = Template.PRIVATE;
    
    public TemplateCreateWindow(){
       setPlain(true);  
@@ -87,6 +94,7 @@ public class TemplateCreateWindow extends FormWindow {
       cancleBtn.addSelectionListener(new CancleListener());
       
       form.add(templateName,new FormData("100%"));
+      form.add(createShareView(),new FormData("100%"));
       form.addButton(submitBtn);
       form.addButton(cancleBtn);
       add(form);
@@ -106,7 +114,43 @@ public class TemplateCreateWindow extends FormWindow {
       form.add(screenListGroup,new FormData("100% -53"));
    }
 
-   
+   private FieldSet createShareView(){
+      FieldSet shareFieldSet = new FieldSet();
+      RadioGroup shareRadioGroup = new RadioGroup();
+      
+      Radio shareNoneRadio = new Radio();
+      shareNoneRadio.setName("Private");
+      shareNoneRadio.setBoxLabel("Private");
+      shareNoneRadio.setValue(true);
+      shareNoneRadio.addListener(Events.Change, new Listener<FieldEvent>(){
+
+         @Override
+         public void handleEvent(FieldEvent be) {
+            Boolean noShare = (Boolean) be.getValue();
+            if(noShare) {
+               shareInfo = Template.PRIVATE;
+            } else {
+               shareInfo = Template.PUBLIC;
+            }
+            
+         }
+         
+      });
+      
+      Radio shareToAllRadio = new Radio();
+      shareToAllRadio.setName("Public");
+      shareToAllRadio.setBoxLabel("Public");
+      
+      shareRadioGroup.add(shareNoneRadio);
+      shareRadioGroup.add(shareToAllRadio);
+      
+      shareFieldSet.add(shareRadioGroup);
+      
+      shareFieldSet.setHeading("Setting");
+      shareFieldSet.setCollapsible(true);
+      shareFieldSet.collapse();
+      return shareFieldSet;
+   }
    class SubmitListener extends SelectionListener<ButtonEvent> {
 
       @Override
@@ -118,6 +162,7 @@ public class TemplateCreateWindow extends FormWindow {
          }
          Screen screen = screenBeanModels.get(0).getBean();
          Template template = new Template(templateName.getValue(), screen);
+         template.setShareTo(shareInfo);
          TemplateProxy.saveTemplate(template, new AsyncSuccessCallback<Template>() {
 
             @Override
@@ -139,4 +184,5 @@ public class TemplateCreateWindow extends FormWindow {
       }
 
    }
+   
 }

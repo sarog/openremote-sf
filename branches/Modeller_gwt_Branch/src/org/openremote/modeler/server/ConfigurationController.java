@@ -55,6 +55,10 @@ public class ConfigurationController extends BaseGWTSpringController implements 
       Long accountOid = userService.getAccount().getOid();
       return configuration.getBeehiveRESTRootUrl()+"account/"+accountOid+"/template/save";
    }
+   
+   public String getAllPublicTemplateRestUrl(){
+      return configuration.getBeehiveRESTRootUrl()+"account/0"+"/templates/";
+   }
    /**
     * Sets the configuration.
     * 

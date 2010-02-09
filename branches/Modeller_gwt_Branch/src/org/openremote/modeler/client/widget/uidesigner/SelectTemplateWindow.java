@@ -27,7 +27,7 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Template;
 
-import com.extjs.gxt.ui.client.Style.Orientation;
+import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BaseListLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.DataField;
@@ -36,6 +36,7 @@ import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelType;
 import com.extjs.gxt.ui.client.data.ScriptTagProxy;
 import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
@@ -47,8 +48,10 @@ import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.Html;
 import com.extjs.gxt.ui.client.widget.ListView;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.form.FieldSet;
+import com.extjs.gxt.ui.client.widget.form.Radio;
+import com.extjs.gxt.ui.client.widget.form.RadioGroup;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
-import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 /**
  * A window for select a template.
  * @author javen
@@ -60,10 +63,11 @@ public class SelectTemplateWindow extends Dialog{
    
    public SelectTemplateWindow(){
       setHeading("Select Template");
-      setMinHeight(320);
+      setMinHeight(400);
       setWidth(240);
-      setLayout(new RowLayout(Orientation.VERTICAL));
+//      setLayout(new RowLayout(Orientation.VERTICAL));
       setModal(true);
+      createShareView();
       initTemplatesList();
       showTemplateInfo();
       setButtons(Dialog.OKCANCEL);
@@ -71,43 +75,59 @@ public class SelectTemplateWindow extends Dialog{
       addSelectListener();
       show();
    }
-
+   
+   
    private void initTemplatesList() {
-      UtilsProxy.getTemplatesListRestUrl(new AsyncSuccessCallback<String>(){
-
-         @Override
-         public void onSuccess(String result) {
-            restURL = result;
-            /*
-             * parse template from json. 
-             */
-            ModelType templateType = new ModelType();
-            templateType.setRoot("templates.template");
-            DataField idField = new DataField("id");
-            idField.setType(Long.class);
-            templateType.addField(idField);
-            templateType.addField("content");
-            templateType.addField("name");
-            ScriptTagProxy<ListLoadResult<ModelData>> scriptTagProxy = new ScriptTagProxy<ListLoadResult<ModelData>>(restURL);
-            NestedJsonLoadResultReader<ListLoadResult<ModelData>> reader = new NestedJsonLoadResultReader<ListLoadResult<ModelData>>(
-                  templateType);
-            final BaseListLoader<ListLoadResult<BeanModel>> loader = new BaseListLoader<ListLoadResult<BeanModel>>(scriptTagProxy, reader);
-
-            ListStore<BeanModel> store = new ListStore<BeanModel>(loader);
-            loader.load();
-            templatesList.setStore(store);
-            
-            layout();
-         }
-         
-      });
+      createPriviteTemplateListView();
       templatesList.setDisplayProperty("name");
       ContentPanel templatesContainer = new ContentPanel();
+      templatesContainer.setSize(235, 300);
+      templatesContainer.setScrollMode(Scroll.AUTOY);
+      templatesContainer.setBorders(false);
+      templatesContainer.setBodyBorder(false);
       templatesContainer.add(templatesList);
-      add(templatesContainer);
+//      BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
+//      centerData.setMargins(new Margins(2));
+      
+      add(templatesContainer/*,centerData*/);
       layout();
    }
    
+   private void createShareView(){
+      FieldSet shareFieldSet = new FieldSet();
+      RadioGroup shareRadioGroup = new RadioGroup();
+      
+      Radio shareNoneRadio = new Radio();
+      shareNoneRadio.setBoxLabel("Private");
+      shareNoneRadio.setValue(true);
+      shareNoneRadio.addListener(Events.Change, new Listener<FieldEvent>(){
+
+         @Override
+         public void handleEvent(FieldEvent be) {
+            Boolean showPrivate = (Boolean) be.getValue();
+            if(showPrivate) {
+               createPriviteTemplateListView();
+            } else {
+               createPublicTemplateListView();
+            }
+            
+         }
+         
+      });
+      
+      Radio shareToAllRadio = new Radio();
+      shareToAllRadio.setName("Public");
+      shareToAllRadio.setBoxLabel("Public");
+      
+      shareRadioGroup.add(shareNoneRadio);
+      shareRadioGroup.add(shareToAllRadio);
+      
+      shareFieldSet.add(shareRadioGroup);
+      
+      shareFieldSet.setHeading("Select");
+//      shareFieldSet.setCollapsible(true);
+      add(shareFieldSet);
+   }
    private void showTemplateInfo() {
       final Html templateInfo = new Html("<p><b>Switch info</b></p>"); 
       templatesList.getSelectionModel().addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
@@ -166,5 +186,51 @@ public class SelectTemplateWindow extends Dialog{
       }
          
       });
+   }
+   
+   private void createPriviteTemplateListView(){
+      UtilsProxy.getTemplatesListRestUrl(new AsyncSuccessCallback<String>() {
+
+         @Override
+         public void onSuccess(String result) {
+            restURL = result;
+            createView();
+            layout();
+         }
+
+      });
+   }
+   
+   private void createPublicTemplateListView(){
+      UtilsProxy.getAllPublicTemplateRestURL(new AsyncSuccessCallback<String>(){
+
+         @Override
+         public void onSuccess(String result) {
+            restURL = result;
+            createView();
+            layout();
+         }
+         
+      });
+   }
+   private void createView(){
+      /*
+       * parse template from json. 
+       */
+      ModelType templateType = new ModelType();
+      templateType.setRoot("templates.template");
+      DataField idField = new DataField("id");
+      idField.setType(Long.class);
+      templateType.addField(idField);
+      templateType.addField("content");
+      templateType.addField("name");
+      ScriptTagProxy<ListLoadResult<ModelData>> scriptTagProxy = new ScriptTagProxy<ListLoadResult<ModelData>>(restURL);
+      NestedJsonLoadResultReader<ListLoadResult<ModelData>> reader = new NestedJsonLoadResultReader<ListLoadResult<ModelData>>(
+            templateType);
+      final BaseListLoader<ListLoadResult<BeanModel>> loader = new BaseListLoader<ListLoadResult<BeanModel>>(scriptTagProxy, reader);
+
+      ListStore<BeanModel> store = new ListStore<BeanModel>(loader);
+      loader.load();
+      templatesList.setStore(store);
    }
 }

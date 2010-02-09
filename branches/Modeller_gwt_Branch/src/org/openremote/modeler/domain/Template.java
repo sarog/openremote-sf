@@ -2,6 +2,11 @@ package org.openremote.modeler.domain;
 
 @SuppressWarnings("serial")
 public class Template extends BusinessEntity {
+   public static final long PRIVATE = -1L;
+   public static final long PUBLIC = 0L;
+   
+   private long shareTo = PRIVATE ;
+   
    private String name;
    private String content;
    
@@ -36,6 +41,14 @@ public class Template extends BusinessEntity {
 
    public void setScreen(Screen screen) {
       this.screen = screen;
+   }
+
+   public long getShareTo() {
+      return shareTo;
+   }
+
+   public void setShareTo(long shareTo) {
+      this.shareTo = shareTo;
    }
    
    

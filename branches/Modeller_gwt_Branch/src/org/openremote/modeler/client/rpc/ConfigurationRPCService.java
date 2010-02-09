@@ -40,5 +40,7 @@ public interface ConfigurationRPCService extends RemoteService {
   String getTemplatesListRestUrl();
   
   String getTemplateSaveRestUrl();
+  
+  String getAllPublicTemplateRestUrl();
 
 }

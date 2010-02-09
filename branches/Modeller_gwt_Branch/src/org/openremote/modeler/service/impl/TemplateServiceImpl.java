@@ -36,6 +36,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.openremote.modeler.client.Configuration;
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.service.TemplateService;
@@ -69,9 +70,14 @@ public class TemplateServiceImpl implements TemplateService {
       log.debug("TemplateContent" + screenTemplate.getContent());
 
       try {
-         String saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid()+ "/template/save";
+         String saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid()+ "/template/";
+         if(screenTemplate.getShareTo() == Template.PUBLIC){
+            saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/0" + "/template/";
+         }
          HttpPost httpPost = new HttpPost(saveRestUrl);
          UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(params, "UTF-8");
+         httpPost.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
+            + encode(userService.getAccount().getUser().getUsername()+":"+userService.getAccount().getUser().getPassword()));
          httpPost.setEntity(formEntity);
          ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 
@@ -135,5 +141,10 @@ public class TemplateServiceImpl implements TemplateService {
       public Class locate(Map map, Path currentPath) throws ClassNotFoundException {
          return Class.forName(map.get("class").toString());
       }
+   }
+   
+   private String encode(String namePassword){
+      if (namePassword == null) return null;
+      return (new sun.misc.BASE64Encoder()).encode( namePassword.getBytes() ); 
    }
 }
