@@ -62,7 +62,12 @@ public class TemplateRESTService {
    @Produces( { "application/xml", "application/json" })
    @Path("templates")
    public TemplateListing getTemplates(@PathParam("account_id") long accountId) {
-      List<TemplateDTO> list = getTemplateService().loadAllTemplatesByAccountOid(accountId);
+      List<TemplateDTO> list = null;
+      if (accountId == Template.PUBLIC_ACCOUNT_OID) {
+         list = getTemplateService().loadAllPublicTemplate();
+      } else {
+         list = getTemplateService().loadAllTemplatesByAccountOid(accountId);
+      }
       if (list.size() > 0) {
          return new TemplateListing(list);
       }
@@ -89,18 +94,18 @@ public class TemplateRESTService {
       if (!getAccountService().isHTTPBasicAuthorized(credentials)) {
          throw new WebApplicationException(Response.Status.UNAUTHORIZED);
       }
+      Template t = new Template();
       if (accountId > 0) {
          Account a = new Account();
          a.setOid(accountId);
-         Template t = new Template();
          t.setAccount(a);
-         t.setName(name);
-         t.setContent(content);
-         long newId = getTemplateService().save(t);
-         TemplateDTO newTemp = getTemplateService().loadTemplateByOid(newId);
-         if (newTemp != null) {
-            return newTemp;
-         }
+      } 
+      t.setName(name);
+      t.setContent(content);
+      long newId = getTemplateService().save(t);
+      TemplateDTO newTemp = getTemplateService().loadTemplateByOid(newId);
+      if (newTemp != null) {
+         return newTemp;
       }
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
 
