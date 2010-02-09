@@ -38,4 +38,6 @@ public interface ConfigurationRPCServiceAsync {
    void getTemplatesListRestUrl(AsyncCallback<String> callback);
    
    void getTemplateSaveRestUrl(AsyncCallback<String> callback);
+   
+   void getAllPublicTemplateRestUrl(AsyncCallback<String> callback);
 }
