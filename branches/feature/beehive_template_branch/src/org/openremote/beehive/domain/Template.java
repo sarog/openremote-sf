@@ -37,6 +37,7 @@ import org.openremote.beehive.Constant;
 @SuppressWarnings("serial")
 @Table(name = "template")
 public class Template extends BusinessEntity {
+   public static final long PUBLIC_ACCOUNT_OID = 0L;
    
    private String name;
    private String content;

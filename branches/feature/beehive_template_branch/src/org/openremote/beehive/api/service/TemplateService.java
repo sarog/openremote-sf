@@ -40,4 +40,5 @@ public interface TemplateService {
    
    boolean delete(long templateOid);
 
+   List<TemplateDTO> loadAllPublicTemplate();
 }

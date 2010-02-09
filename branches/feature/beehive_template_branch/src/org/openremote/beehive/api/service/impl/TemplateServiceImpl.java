@@ -22,6 +22,8 @@ package org.openremote.beehive.api.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.openremote.beehive.api.dto.TemplateDTO;
 import org.openremote.beehive.api.service.TemplateService;
 import org.openremote.beehive.domain.Account;
@@ -43,7 +45,22 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
       }
       return templateDTOs;
    }
-   
+   @Override
+   public List<TemplateDTO> loadAllPublicTemplate() {
+      List<TemplateDTO> templatesDTOs = new ArrayList<TemplateDTO>();
+
+      DetachedCriteria criteria = DetachedCriteria.forClass(Template.class);
+      criteria.add(Restrictions.isNull("account"));
+      List<Template> templates = genericDAO.findByDetachedCriteria(criteria);
+      for (Template template : templates) {
+         TemplateDTO templateDTO = new TemplateDTO();
+         templateDTO.setName(template.getName());
+         templateDTO.setContent(template.getContent());
+         templateDTO.setOid(template.getOid());
+         templatesDTOs.add(templateDTO);
+      }
+      return templatesDTOs;
+   }
    @Override
    public TemplateDTO loadTemplateByOid(long templateOid) {
       Template template = genericDAO.loadById(Template.class, templateOid);

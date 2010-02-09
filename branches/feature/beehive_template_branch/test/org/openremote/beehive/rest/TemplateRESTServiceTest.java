@@ -65,7 +65,16 @@ public class TemplateRESTServiceTest  extends TemplateTestBase {
 
       System.out.println(mockHttpResponse.getContentAsString());
    }
-   
+   public void testGetAllPublicTemplateInXML() throws URISyntaxException {
+      Dispatcher dispatcher = RESTTestUtils.createDispatcher(TemplateRESTTestService.class);
+      MockHttpRequest mockHttpRequest = MockHttpRequest.get("/account/0/templates");
+      mockHttpRequest.accept("application/xml");
+
+      MockHttpResponse mockHttpResponse = new MockHttpResponse();
+      dispatcher.invoke(mockHttpRequest, mockHttpResponse);
+
+      System.out.println(mockHttpResponse.getContentAsString());
+   }
    public void testGetTemplatesByAccountInXMLWithInvalidAccountId() throws URISyntaxException {
       Dispatcher dispatcher = RESTTestUtils.createDispatcher(TemplateRESTTestService.class);
       MockHttpRequest mockHttpRequest = MockHttpRequest.get("/account/1a/templates");
