@@ -33,6 +33,7 @@ import org.openremote.modeler.client.rpc.AuthorityRPCServiceAsync;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.Protocols;
 import org.openremote.modeler.client.widget.buildingmodeler.TemplateCreateWindow;
+import org.openremote.modeler.client.widget.buildingmodeler.TemplateDeleteWindow;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
 import org.openremote.modeler.selenium.DebugId;
 
@@ -151,7 +152,8 @@ public class ApplicationView implements View {
 //      final MenuItem restoreMenuItem = createRestoreMenuItem(); 
 //     saveMenuItem.setEnabled(false);
       
-      final MenuItem templateMenuItem = createSaveTemplate();
+      final MenuItem templateSaveMenuItem = createSaveTemplateMenuItem();
+      final MenuItem templateDeleteMenuItem = createDeleteTemplateMenuItem();
       exportMenuItem.setEnabled(false);
       
       fileMenu.add(saveMenuItem);
@@ -159,7 +161,8 @@ public class ApplicationView implements View {
       fileMenu.add(exportMenuItem);
 //      fileMenu.add(restoreMenuItem);
       fileMenu.add(createLogoutMenuItem());
-      fileMenu.add(templateMenuItem);
+      fileMenu.add(templateSaveMenuItem);
+      fileMenu.add(templateDeleteMenuItem);
       
       fileMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
          @Override
@@ -307,16 +310,28 @@ public class ApplicationView implements View {
       return exportMenuItem;
    }
    
-   private MenuItem createSaveTemplate() {
-      MenuItem exportMenuItem = new MenuItem("save to Template");
-      exportMenuItem.setIcon(icons.exportIcon());
-      exportMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+   private MenuItem createSaveTemplateMenuItem() {
+      MenuItem saveTemplateMenuItem = new MenuItem("save to Template");
+      saveTemplateMenuItem.setIcon(icons.exportIcon());
+      saveTemplateMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          @Override
          public void componentSelected(MenuEvent ce) {
            new TemplateCreateWindow();
          }
       });
-      return exportMenuItem;
+      return saveTemplateMenuItem;
+   }
+   
+   private MenuItem createDeleteTemplateMenuItem() {
+      MenuItem deleteTemplateMenuItem = new MenuItem("deleteTemplate");
+      deleteTemplateMenuItem.setIcon(icons.exportIcon());
+      deleteTemplateMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+         @Override
+         public void componentSelected(MenuEvent ce) {
+           new TemplateDeleteWindow();
+         }
+      });
+      return deleteTemplateMenuItem;
    }
    /**
     * Checks if is exported data valid.

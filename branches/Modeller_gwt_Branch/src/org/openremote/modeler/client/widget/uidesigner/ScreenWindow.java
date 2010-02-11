@@ -22,9 +22,12 @@ package org.openremote.modeler.client.widget.uidesigner;
 import java.util.List;
 
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
 import org.openremote.modeler.client.listener.FormResetListener;
 import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.proxy.UtilsProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
@@ -34,17 +37,30 @@ import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
+import com.extjs.gxt.ui.client.data.BaseListLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.DataField;
+import com.extjs.gxt.ui.client.data.ListLoadResult;
+import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.data.ModelType;
+import com.extjs.gxt.ui.client.data.ScriptTagProxy;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.FieldEvent;
+import com.extjs.gxt.ui.client.event.FieldSetEvent;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.ListView;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
+import com.extjs.gxt.ui.client.widget.form.FieldSet;
+import com.extjs.gxt.ui.client.widget.form.Radio;
+import com.extjs.gxt.ui.client.widget.form.RadioGroup;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FillLayout;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
@@ -63,17 +79,24 @@ public class ScreenWindow extends FormWindow {
    
    private Operation operation = Operation.NEW;
    private TreePanel<BeanModel> groupSelectTree = null;
+//   private TreePanel<BeanModel> templateSelectTree = null;
+   private ListView<ModelData> templateView = null;
    
    public ScreenWindow(ScreenTab screenTab, BeanModel selectItem, Operation operation) {
       super();
       this.operation = operation;
       this.selectItem = selectItem;
-      setSize(350, 270);
+      
+      setSize(350, 300);
+      if(operation == Operation.NEW){
+         setSize(350, 450);
+      }
       setHeading("New Screen");
       setLayout(new FillLayout());
       setModal(true);
       createButtons();
       createFields(screenTab);
+      createTemplateView();
       setBodyBorder(false);
       add(form);
       show();
@@ -215,6 +238,55 @@ public class ScreenWindow extends FormWindow {
       return groupTree;
    }
 
+   private void createTemplateView() {
+      if (operation == Operation.NEW) {
+         FieldSet templateFieldSet = new FieldSet();
+         templateFieldSet.setHeading("Select from template");
+         templateFieldSet.setCheckboxToggle(true);
+         buildTemplateList();
+         templateFieldSet.addListener(Events.BeforeExpand, new Listener<FieldSetEvent>() {
+            public void handleEvent(FieldSetEvent be) {
+               operation = Operation.CREATE_BY_TEMPLATE;
+            }
+
+         });
+         templateFieldSet.addListener(Events.BeforeCollapse, new Listener<FieldSetEvent>() {
+            public void handleEvent(FieldSetEvent be) {
+               operation = Operation.NEW;
+            }
+         });
+         
+         RadioGroup shareRadioGroup = new RadioGroup();
+         
+         Radio shareNoneRadio = new Radio();
+         shareNoneRadio.setBoxLabel("Private");
+         shareNoneRadio.setValue(true);
+         shareNoneRadio.addListener(Events.Change, new Listener<FieldEvent>(){
+
+            @Override
+            public void handleEvent(FieldEvent be) {
+               Boolean showPrivate = (Boolean) be.getValue();
+               if(showPrivate) {
+                  createPriviteTemplateListView();
+               } else {
+                  createPublicTemplateListView();
+               }
+               
+            }
+            
+         });
+         
+         Radio shareToAllRadio = new Radio();
+         shareToAllRadio.setName("Public");
+         shareToAllRadio.setBoxLabel("Public");
+         shareRadioGroup.setFieldLabel("From:");
+         shareRadioGroup.add(shareNoneRadio);
+         shareRadioGroup.add(shareToAllRadio);
+         templateFieldSet.add(shareRadioGroup);
+         templateFieldSet.add(templateView);
+         form.add(templateFieldSet);
+      }
+   }
    public BeanModel getSelectItem() {
       return selectItem;
    }
@@ -230,6 +302,62 @@ public class ScreenWindow extends FormWindow {
       return groupSelectTree;
    }
   
+   private void buildTemplateList() {
+      templateView = new ListView<ModelData>();
+      templateView.setStateful(true);
+      templateView.setBorders(false);
+      templateView.setHeight("100%");      
+      templateView.setDisplayProperty("name");
+      UtilsProxy.getTemplatesListRestUrl(new AsyncSuccessCallback<String> (){
+         public void onSuccess(String result){
+            createView(result);
+         }
+      });
+   }
+   
+   private void createPriviteTemplateListView(){
+      UtilsProxy.getTemplatesListRestUrl(new AsyncSuccessCallback<String>() {
+
+         @Override
+         public void onSuccess(String result) {
+            createView(result);
+            layout();
+         }
+
+      });
+   }
+   
+   private void createPublicTemplateListView(){
+      UtilsProxy.getAllPublicTemplateRestURL(new AsyncSuccessCallback<String>(){
+
+         @Override
+         public void onSuccess(String result) {
+            createView(result);
+            layout();
+         }
+         
+      });
+   }
+   private void createView(String restURL){
+      /*
+       * parse template from json. 
+       */
+      ModelType templateType = new ModelType();
+      templateType.setRoot("templates.template");
+      DataField idField = new DataField("id");
+      idField.setType(Long.class);
+      templateType.addField(idField);
+      templateType.addField("content");
+      templateType.addField("name");
+      ScriptTagProxy<ListLoadResult<ModelData>> scriptTagProxy = new ScriptTagProxy<ListLoadResult<ModelData>>(restURL);
+      NestedJsonLoadResultReader<ListLoadResult<ModelData>> reader = new NestedJsonLoadResultReader<ListLoadResult<ModelData>>(
+            templateType);
+      final BaseListLoader<ListLoadResult<ModelData>> loader = new BaseListLoader<ListLoadResult<ModelData>>(scriptTagProxy, reader);
+
+      ListStore<ModelData> store = new ListStore<ModelData>(loader);
+      loader.load();
+      templateView.setStore(store);
+   }
    class TemplateSelectLisntener extends SelectionListener<ButtonEvent>{
 
       @Override

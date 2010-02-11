@@ -34,6 +34,7 @@ import org.openremote.modeler.client.utils.TouchPanels;
 import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
+import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
 import org.openremote.modeler.client.widget.uidesigner.WidgetPanel;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
@@ -191,6 +192,7 @@ public class UIDesignerView extends TabItem implements View {
    private ProfilePanel createWest() {
       ContentPanel west = new ContentPanel();
       ProfilePanel result = new ProfilePanel(screenTab);
+      TemplatePanel templatePanel = new TemplatePanel();
       BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 200);
       westData.setSplit(true);
       westData.setCollapsible(true);
@@ -198,6 +200,7 @@ public class UIDesignerView extends TabItem implements View {
       west.setBodyBorder(false);
       west.setHeading("Browser");
       west.add(result);
+      west.add(templatePanel);
       westData.setMargins(new Margins(2));
       add(west, westData);
       return result;

@@ -70,6 +70,17 @@ public class TemplateProxy {
 
             });
    }
+   
+   public static void deleteTemplateById(final long templateId, final AsyncCallback<Boolean> callback){
+      AsyncServiceFactory.getTemplateRPCServiceAsync().deleteTemplate(templateId,new AsyncSuccessCallback<Boolean>(){
+
+         @Override
+         public void onSuccess(Boolean result) {
+           callback.onSuccess(result);
+         }
+         
+      });
+   }
    /**
     * initialize the oid for every BusinessEntity.
     * @param screen
@@ -90,4 +101,5 @@ public class TemplateProxy {
          }
       }
    }
+   
 }
