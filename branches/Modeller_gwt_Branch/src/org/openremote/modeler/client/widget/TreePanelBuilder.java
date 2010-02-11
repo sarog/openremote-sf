@@ -22,12 +22,14 @@ package org.openremote.modeler.client.widget;
 import java.util.List;
 import java.util.Set;
 
+import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.ConfigCategoryBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
+import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.buildingmodeler.ControllerConfigTabItem;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
@@ -46,6 +48,7 @@ import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIGrid;
@@ -54,11 +57,18 @@ import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
 
+import com.extjs.gxt.ui.client.data.BaseListLoader;
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.DataField;
+import com.extjs.gxt.ui.client.data.ListLoadResult;
+import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
+import com.extjs.gxt.ui.client.data.ModelType;
 import com.extjs.gxt.ui.client.data.RpcProxy;
+import com.extjs.gxt.ui.client.data.ScriptTagProxy;
 import com.extjs.gxt.ui.client.data.TreeLoader;
+import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
@@ -556,4 +566,44 @@ public class TreePanelBuilder {
       return tree;
    }
    
+   /*public static TreePanel<BeanModel> buildTemplateTree(){
+      final TreeStore<BeanModel> treeStore = new TreeStore<BeanModel>();
+      UtilsProxy.getTemplatesListRestUrl(new AsyncSuccessCallback<String> (){
+         public void onSuccess(String result){
+            ModelType templateType = new ModelType();
+            templateType.setRoot("templates.template");
+            DataField idField = new DataField("id");
+            idField.setType(Long.class);
+            templateType.addField(idField);
+            templateType.addField("content");
+            templateType.addField("name");
+            ScriptTagProxy<ListLoadResult<ModelData>> scriptTagProxy = new ScriptTagProxy<ListLoadResult<ModelData>>(result);
+            NestedJsonLoadResultReader<ListLoadResult<ModelData>> reader = new NestedJsonLoadResultReader<ListLoadResult<ModelData>>(
+                  templateType);
+            final BaseListLoader<ListLoadResult<ModelData>> loader = new BaseListLoader<ListLoadResult<ModelData>>(scriptTagProxy, reader);
+
+            ListStore<ModelData> store = new ListStore<ModelData>(loader);
+            loader.load();
+            for(ModelData data : store.getModels()){
+               Template template = new Template();
+               template.setOid((Long) data.get("id"));
+               template.setContent((String) data.get("content"));
+               template.setName((String) data.get("name"));
+               treeStore.add(template.getBeanModel(), false);
+            }
+         }
+      });
+      TreePanel<BeanModel> tree = new TreePanel<BeanModel> (treeStore);
+      tree.setIconProvider(new ModelIconProvider<BeanModel>() {
+         public AbstractImagePrototype getIcon(BeanModel thisModel) {
+            return ICON.configIcon();
+         }
+      });
+      
+      tree.setStateful(true);
+      tree.setBorders(false);
+      tree.setHeight("100%");
+      tree.setDisplayProperty("name");
+      return tree;
+   }*/
 }

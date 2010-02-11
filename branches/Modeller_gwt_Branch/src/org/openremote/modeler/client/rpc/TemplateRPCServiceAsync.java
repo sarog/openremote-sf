@@ -32,4 +32,5 @@ public interface TemplateRPCServiceAsync {
 //   void getTemplateList(AsyncCallback<List<Template>> callback);
    void saveTemplate(final Template template,AsyncCallback<Template> callback);
    void buildScreeFromTemplate(final Template template,AsyncCallback<Screen> callback);
+   void deleteTemplate(final long templateId,AsyncCallback<Boolean> callback);
 }

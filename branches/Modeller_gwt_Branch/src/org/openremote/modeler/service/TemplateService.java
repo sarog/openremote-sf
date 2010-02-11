@@ -42,4 +42,6 @@ public interface TemplateService {
     * @return A screen builded from the template. 
     */
    Screen buildScreenFromTemplate(Template template);
+   
+   boolean deleteTemplate(long templateOid);
 }

@@ -48,7 +48,10 @@ public class TemplateController extends BaseGWTSpringController implements Templ
    public Template saveTemplate(Template template) {
       return templateService.saveTemplate(template);
    }
-
+   @Override
+   public Boolean deleteTemplate(long templateId){
+      return templateService.deleteTemplate(templateId);
+   }
    public void setTemplateService(TemplateService templateService) {
       this.templateService = templateService;
    }

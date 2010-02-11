@@ -43,4 +43,6 @@ public interface TemplateRPCService extends RemoteService {
     * @return
     */
    Screen buildScreeFromTemplate(Template template);
+   
+   Boolean deleteTemplate(long templateId);
 }

@@ -21,6 +21,7 @@ package org.openremote.modeler.client.widget.buildingmodeler;
 
 import java.util.List;
 
+import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
@@ -148,7 +149,6 @@ public class TemplateCreateWindow extends FormWindow {
       
       shareFieldSet.setHeading("Setting");
       shareFieldSet.setCollapsible(true);
-      shareFieldSet.collapse();
       return shareFieldSet;
    }
    class SubmitListener extends SelectionListener<ButtonEvent> {
@@ -168,6 +168,7 @@ public class TemplateCreateWindow extends FormWindow {
             @Override
             public void onSuccess(Template result) {
                Info.display("Success", "template saved successfully:" + result.getOid());
+               fireEvent(SubmitEvent.SUBMIT,new SubmitEvent(result));
                hide();
             }
 

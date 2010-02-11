@@ -20,6 +20,7 @@
 package org.openremote.modeler.service.impl;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -123,6 +125,33 @@ public class TemplateServiceImpl implements TemplateService {
             .deserialize(screenJson);
    }
 
+   @Override
+   public boolean deleteTemplate(long templateOid){
+      log.debug("------------------------------------------------------delete template-------------------------- --------------");
+      log.info("Template id: " + templateOid);
+      String deleteRestUrl = configuration.getBeehiveRESTRootUrl()+"account/"+userService.getAccount().getOid()+"/template/"+templateOid;
+      
+      HttpDelete httpDelete = new HttpDelete();
+      httpDelete.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
+            + encode(userService.getAccount().getUser().getUsername()+":"+userService.getAccount().getUser().getPassword()));
+      ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+
+         @Override
+         public String handleResponse(HttpResponse arg0) throws ClientProtocolException, IOException {
+            return null;
+         }
+
+      };
+      try {
+         httpDelete.setURI(new URI(deleteRestUrl));
+         HttpClient httpClient = new DefaultHttpClient();
+         httpClient.execute(httpDelete, responseHandler);
+      } catch (Exception e) {
+         log.error("failed to delete template", e);
+         return false;
+      } 
+      return true;
+   }
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
