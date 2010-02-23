@@ -12,6 +12,7 @@ public class XScreen extends BusinessEntity {
    private int screenId;
    private String name;
    private ArrayList<LayoutContainer> layouts;
+   private Background background;
    
    public XScreen(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
@@ -25,8 +26,10 @@ public class XScreen extends BusinessEntity {
             String nodeName = childNodes.item(i).getNodeName();
             if ("absolute".equals(nodeName)) {
                layouts.add(new AbsoluteLayoutContainer(childNodes.item(i)));
-            } else if ("grid".equals(nodeName)){
+            } else if ("grid".equals(nodeName)) {
                layouts.add(new GridLayoutContainer(childNodes.item(i)));
+            } else if ("background".equals(nodeName)) {
+               this.background = new Background(childNodes.item(i));
             }
          }
       }
@@ -42,5 +45,16 @@ public class XScreen extends BusinessEntity {
 
    public ArrayList<LayoutContainer> getLayouts() {
       return layouts;
+   }
+   
+   public Background getBackground() {
+      return background;
+   }
+   
+   public String getBackgroundSrc() {
+      if (background != null) {
+         return background.getBackgroundImage().getSrc();
+      }
+      return null;
    }
 }
