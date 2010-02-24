@@ -53,6 +53,14 @@ public class Constants {
    public static final int LOCAL_SERVER_PORT = 2346;
    public static final String PANEL_XML = "panel.xml";
    public static boolean IS_LOCAL;
+   
+   /**
+    * Screen width and height may be different in different device, 
+    *  so they can be changed when the application start at runtime.
+   */
+   public static int SCREEN_WIDTH = 320;
+   public static int SCREEN_HEIGHT = 480;
+   public static int SCREEN_STATUS_BAR_HEIGHT = 20;
    public static String getMulticastAddress() {
       if (IS_LOCAL) {
          return LOCAL_MULTICAST_ADDRESS;

@@ -41,7 +41,7 @@ public class GroupHandler extends Activity implements OnGestureListener {
        super.onCreate(savedInstanceState);
 
        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //       this.imageLoader = Main.imageLoader;
 //       this.imageLoader.reset();
        this.gestureScanner = new GestureDetector(this);
