@@ -43,14 +43,12 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ToggleButton;
 
 /**
  * This class represents the main OpenRemote activity. It starts up, reads the
@@ -79,6 +77,7 @@ public class Main extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         judgeNetType();
+        readDisplayMetrics();
         configSettings();
 //        imageLoader = new ImageLoader();
 //        ArrayList<String> activityNames = new ArrayList<String>(); // used
@@ -343,4 +342,11 @@ public class Main extends Activity {
           Constants.IS_LOCAL = true;
        }
     }
+    
+    private void readDisplayMetrics() {
+      DisplayMetrics dm = new DisplayMetrics();
+      dm = getApplicationContext().getResources().getDisplayMetrics();
+      Constants.SCREEN_WIDTH = dm.widthPixels;
+      Constants.SCREEN_HEIGHT = dm.heightPixels;
+   }
 }

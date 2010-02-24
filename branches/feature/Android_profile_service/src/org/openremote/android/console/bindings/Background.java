@@ -17,8 +17,9 @@ public class Background extends BusinessEntity {
    public Background(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
       if (nodeMap.getNamedItem("fillScreen") != null) {
-         this.fillScreen = true;
-      } else if (nodeMap.getNamedItem("absolute") != null) {
+         this.fillScreen = Boolean.valueOf(nodeMap.getNamedItem("fillScreen").getNodeValue());
+      }
+      if (nodeMap.getNamedItem("absolute") != null) {
          this.isBackgroundImageAbsolutePosition = true;
          String[] absolute = nodeMap.getNamedItem("absolute").getNodeValue().split("\\,");
          this.backgroundImageAbsolutePositionLeft = Integer.valueOf(absolute[0]);
