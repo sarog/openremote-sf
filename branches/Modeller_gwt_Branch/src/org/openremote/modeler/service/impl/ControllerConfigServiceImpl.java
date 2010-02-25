@@ -56,10 +56,10 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<Config> imp
       return config;
    }
    
-   public Set<Config> saveAll(Set<Config> configs){
+   public Set<Config> saveAll(Set<Config> configs) {
       Set<Config> cfgs = new LinkedHashSet<Config>();
-      for(Config cfg : configs){
-         if(cfg.getAccount()==null){
+      for (Config cfg : configs) {
+         if (cfg.getAccount() == null) {
             cfg.setAccount(userService.getAccount());
             genericDAO.save(cfg);
          } else {

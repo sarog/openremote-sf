@@ -40,6 +40,30 @@ import org.springframework.security.providers.encoding.Md5PasswordEncoder;
  * @author Dan 2009-7-14
  */
 public class UserServiceImpl extends BaseAbstractService<User> implements UserService {
+   
+   public void initRoles() {
+      boolean hasDesignerRole = false;
+      boolean hasModelerRole = false;
+      List<Role> allRoles = genericDAO.loadAll(Role.class);
+      for (Role r : allRoles) {
+         if (r.getName().equals(Role.ROLE_DESIGNER)) {
+            hasDesignerRole = true;
+         } else if (r.getName().equals(Role.ROLE_MODELER)) {
+            hasModelerRole = true;
+         }
+      }
+      if (!hasDesignerRole) {
+         Role r = new Role();
+         r.setName(Role.ROLE_DESIGNER);
+         genericDAO.save(r);
+      }
+      if (!hasModelerRole) {
+         Role r = new Role();
+         r.setName(Role.ROLE_MODELER);
+         genericDAO.save(r);
+      }
+      
+   }
     /**
      * Gets the current account.
      * 

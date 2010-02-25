@@ -11,12 +11,7 @@
 		<property name="ignoreResourceNotFound" value="true" />
 		<property name="locations">
 			<list>
-				<!-- standard configuration -->
 				<value>classpath:config.properties</value>
-				<!-- local configuration -->
-				<value>classpath:config.local.properties</value>
-				<!-- Server Configuration -->
-				<!-- <value>file:/var/myapp/application.server.properties</value> -->
 			</list>
 		</property>
 	</bean>

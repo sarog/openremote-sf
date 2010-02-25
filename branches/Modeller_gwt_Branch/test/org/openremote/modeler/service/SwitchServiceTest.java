@@ -2,7 +2,6 @@ package org.openremote.modeler.service;
 
 import java.util.Collection;
 
-import org.openremote.modeler.SpringContext;
 import org.openremote.modeler.SpringTestContext;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -22,7 +21,7 @@ public class SwitchServiceTest {
    private DeviceCommandService deviceCommandService;
    @BeforeClass
    public void setUp(){
-      service = (SwitchService) SpringContext.getInstance().getBean("switchService");
+      service = (SwitchService) SpringTestContext.getInstance().getBean("switchService");
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
       Authentication authentication = new UsernamePasswordAuthenticationToken("javen","javen");
       SecurityContextHolder.getContext().setAuthentication(authentication);

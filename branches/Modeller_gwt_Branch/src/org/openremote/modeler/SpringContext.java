@@ -35,7 +35,7 @@ public class SpringContext {
 
    /** The context files. */
    private static String[] contextFiles = new String[] {"applicationContext.xml", "spring-service-hibernate-impl.xml",
-         "datasource-test.xml", "annomvc-servlet.xml" };
+         "datasource.xml", "annomvc-servlet.xml" };
 
    /** The ctx. */
    private ApplicationContext ctx;

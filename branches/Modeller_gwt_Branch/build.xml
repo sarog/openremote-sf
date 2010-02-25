@@ -26,11 +26,11 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  |  Author: Tomsky Wang, Dan Cong
  +-->
 <project name="modeler" default="compile" basedir=".">
-	
+
 	<property file="build.local.properties"/>
 	<property file="build.properties"/>
-	
-	
+
+
 
 	<!-- Configure path to GWT SDK -->
 	<property name="gwt.sdk" value="${gwt.sdk}" />
@@ -276,9 +276,14 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		<cobertura-instrument todir="${instrumented.dir}" datafile="${cobertura.datafile}">
 			<ignore regex="org.apache.log4j.*"/>
 			<fileset dir="${web-inf.dir}/classes">
-				<include name="**/*.class"/>
+				<include name="**/**"/>
 			</fileset>
 		</cobertura-instrument>
+		<copy todir="${instrumented.dir}">
+			<fileset dir="${config.dir}">
+				<include name="**/**" />
+			</fileset>
+		</copy>
 	</target>
 
 	<!-- ==================================================================== -->
@@ -314,10 +319,10 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		</checkstyle>
 		<xslt in="${checkstyle.reports.dir}/checkstyle_report.xml" out="${checkstyle.reports.dir}/checkstyle.report.html" style="${checkstyle.report.style}" />
 	</target>
-	
-    <!-- ==================================================================== -->
-    <!-- Javadoc                                                              -->
-    <!-- ==================================================================== -->
+
+	<!-- ==================================================================== -->
+	<!-- Javadoc                                                              -->
+	<!-- ==================================================================== -->
 	<target name="javadoc" description="Generate API docs for the DocCheck source">
 		<echo message="--------------------------------------------------------------------" />
 		<echo message=" Generating javadoc..." />

@@ -22,36 +22,32 @@ package org.openremote.modeler.listener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.openremote.modeler.SpringContext;
 import org.openremote.modeler.configuration.PathConfig;
+import org.openremote.modeler.service.UserService;
 import org.springframework.context.ApplicationEvent;
 
 
 /**
- * The listener interface for receiving application events.
- * The class that is interested in processing a application
- * event implements this interface, and the object created
- * with that class is registered with a component using the
- * component's <code>addApplicationListener<code> method. When
- * the application event occurs, that object's appropriate
- * method is invoked.
+ * Init application when web server is started.
  * 
  * @see ApplicationEvent
- * @author Tomsky 2010-1-18
+ * @author Tomsky, Dan
  */
 public class ApplicationListener implements ServletContextListener {
+   
+   private UserService userService = (UserService) SpringContext.getInstance().getBean("userService");
 
-   /**
-    * {@inheritDoc}
-    */
    public void contextDestroyed(ServletContextEvent event) {
       ;//do nothing
    }
 
-   /**
-    * {@inheritDoc}
-    */
    public void contextInitialized(ServletContextEvent event) {
       // set web root, eg: "E:\apache-tomcat-5.5.28\webapps\modeler\".
       PathConfig.WEBROOTPATH = event.getServletContext().getRealPath("/");
+      
+      userService.initRoles();
    }
+
+   
 }
