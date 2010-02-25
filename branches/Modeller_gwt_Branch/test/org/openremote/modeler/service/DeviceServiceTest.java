@@ -82,6 +82,8 @@ public class DeviceServiceTest extends TestNGBase {
    public void loadAll() {
       
       User user = new User();
+      user.setUsername("dan");
+      user.setPassword("XXX");
       Account account = new Account();
       user.setAccount(account);
       Device device = new Device();

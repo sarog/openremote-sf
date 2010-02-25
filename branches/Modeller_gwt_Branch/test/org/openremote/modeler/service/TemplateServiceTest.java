@@ -1,6 +1,6 @@
 package org.openremote.modeler.service;
 
-import org.openremote.modeler.SpringContext;
+import org.openremote.modeler.SpringTestContext;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Cell;
@@ -25,8 +25,8 @@ public class TemplateServiceTest {
    
    @BeforeClass
    public void setUp(){
-      this.templateService = (TemplateService) SpringContext.getInstance().getBean("templateService");
-      this.userServiceImpl = (UserServiceImpl) SpringContext.getInstance().getBean("userService");
+      this.templateService = (TemplateService) SpringTestContext.getInstance().getBean("templateService");
+      this.userServiceImpl = (UserServiceImpl) SpringTestContext.getInstance().getBean("userService");
       
       /*
        * initialize user information :

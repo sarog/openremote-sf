@@ -3,7 +3,7 @@
 ===                                                                          ===
 ===                 MODELER DEPLOYMENT GUIDE                                 ===
 ===                                                                          ===
-=== version 1.0.0                                http://www.openremote.org   ===
+=== version 2.0.0                                http://www.openremote.org   ===
 ================================================================================
 
 I. Introduction 
@@ -33,6 +33,7 @@ III. "Modeler" site deployment
     f) set "beehive.RESR.Icon.Url" parameter value to your Beehive REST icons URL
     g) set "os.webapps.root" parameter value to your web server webapps root (eg: E:\\apache-tomcat-5.5.28\\webapps)
     h) set "webapp.server.root" parameter value to your web server root (eg: http://localhost:8080)
+    i) set "controller.config.path" parameter value to your controller config xml descriptor file path
     
 3) modify following configuration variables in "%PROJECT_ROOT%/build.properties"
     a) set parameter 'gwt.sdk' in build.properties to your GWT SDK home. This is required by GWT build.
@@ -44,21 +45,17 @@ III. "Modeler" site deployment
 IV. Supported functions
 =======================
 In the current iteration we are focusing on infrared (LIRC), KNX, X10, HTTP, TCP/IP, Telnet protocol.
-And we can resize button, change button icon, export/import XML.
-Building Modeler:
-    1) Device
-    2) DeviceCommnad
-    3) DeviceMacro
-
-UI Designer:
-    1) Activity
-    2) Screen
-    3) ScreenButton
+1) create device, command, macro
+2) create panel, group, screen
+3) dnd switch, button, grid
+4) export zip
+5) building modeler: sensor, slider, switch
+6) ui designer: slider, image, label
+7) template save, share
     
 V. "Modeler" logging
 ====================================
 You can modify the log4j configuration in "%PROJECT_ROOT%/config/log4j.properties".
-All the logs will be written in "%WEBAPP_ROOT%/logs" 
 
 VI. "Modeler" javadoc
 ====================================

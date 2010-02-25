@@ -20,7 +20,6 @@
 	<classpathentry kind="lib" path="lib/core/cglib/cglib-2.1.3.jar"/>
 	<classpathentry kind="lib" path="lib/core/cglib/cglib-nodep-2.1_3.jar"/>
 	<classpathentry kind="lib" path="lib/core/dom4j/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="lib/core/felxjson/flexjson.jar"/>
 	<classpathentry kind="lib" path="lib/core/gilead/adapter-core-1.2.2.598.jar"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/core/gilead/adapter4gwt-1.2.2.598.jar"/>
@@ -55,5 +54,8 @@
 	<classpathentry kind="lib" path="lib/core/apache-commons/commons-io.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/selenium"/>
 	<classpathentry kind="lib" path="lib/core/velocity/velocity-1.6.2-dep.jar"/>
+	<classpathentry kind="lib" path="lib/core/flexjson/flexjson.jar"/>
+	<classpathentry kind="lib" path="lib/core/httpclient/httpclient-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/core/httpclient/httpcore-4.0.1.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

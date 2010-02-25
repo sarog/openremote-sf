@@ -2,7 +2,6 @@ package org.openremote.modeler.service;
 
 import java.util.Collection;
 
-import org.openremote.modeler.SpringContext;
 import org.openremote.modeler.SpringTestContext;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -19,7 +18,7 @@ public class SliderServiceTest {
    @BeforeClass
    public void setUp(){
       
-      service = (SliderService) SpringContext.getInstance().getBean("sliderService");
+      service = (SliderService) SpringTestContext.getInstance().getBean("sliderService");
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
    }
    

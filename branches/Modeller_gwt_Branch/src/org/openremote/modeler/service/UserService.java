@@ -28,6 +28,8 @@ import org.openremote.modeler.domain.User;
  * @author Dan 2009-7-14
  */
 public interface UserService {
+   
+   void initRoles();
 
    /**
     * Save user.
@@ -42,5 +44,16 @@ public interface UserService {
     * @return the account
     */
    Account getAccount();
+   
+   /**
+    * Creates the account.
+    * 
+    * @param username the username
+    * @param password the password
+    * @param roleStr the role string
+    * 
+    * @return true, if successful
+    */
+   boolean createAccount(String username, String password, String roleStr);
 
 }

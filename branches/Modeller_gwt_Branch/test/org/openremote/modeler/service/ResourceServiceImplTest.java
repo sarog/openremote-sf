@@ -63,7 +63,6 @@ import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.domain.component.Gesture.GestureType;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
 import org.openremote.modeler.service.impl.ResourceServiceImpl;
-import org.openremote.modeler.service.impl.UserServiceImpl;
 import org.openremote.modeler.utils.XmlParser;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
@@ -77,13 +76,13 @@ public class ResourceServiceImplTest {
    private ResourceServiceImpl resourceServiceImpl = null;
    private DeviceCommandService deviceCommandService;
    private DeviceMacroService deviceMacroService;
-   private UserServiceImpl userServiceImpl;
+   private UserService userService;
    @BeforeClass
    public void setUp() {
       resourceServiceImpl = (ResourceServiceImpl) SpringTestContext.getInstance().getBean("resourceService");
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
       deviceMacroService = (DeviceMacroService) SpringTestContext.getInstance().getBean("deviceMacroService");
-      userServiceImpl = (UserServiceImpl) SpringTestContext.getInstance().getBean("userService");
+      userService = (UserService) SpringTestContext.getInstance().getBean("userService");
       /*------------xml validation-------------*/
       configuration = (Configuration) SpringTestContext.getInstance().getBean("configuration");
    }
@@ -632,7 +631,7 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
 //      u.setOid(4);
       userService.saveUser(u);*/
       
-      userServiceImpl.createAccount("testMacro", "testMacro", "role_bm");
+      userService.createAccount("testMacro", "testMacro", "role_bm");
       
       DeviceMacro deviceMacro = new DeviceMacro();
       deviceMacro.setName("testMacro");
