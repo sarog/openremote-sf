@@ -125,7 +125,7 @@ public class TemplatePanel extends ContentPanel {
 
    private Button createNewTemplateMenuItem() {
       Button newPanelItem = new Button("New");
-      newPanelItem.setIcon(icon.panelIcon());
+      newPanelItem.setIcon(icon.add());
       newPanelItem.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
             final TemplateCreateWindow templateCreateWindow = new TemplateCreateWindow();
