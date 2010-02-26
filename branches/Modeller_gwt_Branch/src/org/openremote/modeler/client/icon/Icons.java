@@ -346,6 +346,6 @@ public interface Icons extends ImageBundle {
    @Resource("config.png")
    AbstractImagePrototype configIcon();
    
-   @Resource("template.jpeg")
+   @Resource("template.gif")
    AbstractImagePrototype templateIcon();
 }

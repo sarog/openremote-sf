@@ -45,7 +45,6 @@ import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.Radio;
 import com.extjs.gxt.ui.client.widget.form.RadioGroup;
 import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormData;
 
 /**
@@ -66,7 +65,7 @@ public class TemplateCreateWindow extends FormWindow {
    public TemplateCreateWindow(){
       setPlain(true);  
       setSize(500, 300);  
-      setLayout(new FitLayout());  
+//      setLayout(new FitLayout());  
       setHeading("New Template");
       setSize(500,300);
       setBodyBorder(true);
@@ -78,7 +77,9 @@ public class TemplateCreateWindow extends FormWindow {
    private void createField(){
       templateName = new TextField<String>();
       templateName.setName(TEMPLATE_NAME_FIELD);
-      templateName.setLabelSeparator("Name");
+      templateName.setFieldLabel("Name");
+      templateName.setAllowBlank(false);
+      templateName.setValidateOnBlur(true);
       
       form.setBorders(false);  
       form.setBodyBorder(false);  
@@ -115,8 +116,7 @@ public class TemplateCreateWindow extends FormWindow {
       form.add(screenListGroup,new FormData("100% -53"));
    }
 
-   private FieldSet createShareView(){
-      FieldSet shareFieldSet = new FieldSet();
+   private RadioGroup createShareView(){
       RadioGroup shareRadioGroup = new RadioGroup();
       
       Radio shareNoneRadio = new Radio();
@@ -144,19 +144,19 @@ public class TemplateCreateWindow extends FormWindow {
       
       shareRadioGroup.add(shareNoneRadio);
       shareRadioGroup.add(shareToAllRadio);
+      shareRadioGroup.setFieldLabel("Share to");
       
-      shareFieldSet.add(shareRadioGroup);
-      
-      shareFieldSet.setHeading("Setting");
-      shareFieldSet.setCollapsible(true);
-      return shareFieldSet;
+      return shareRadioGroup;
    }
    class SubmitListener extends SelectionListener<ButtonEvent> {
 
       @Override
       public void componentSelected(ButtonEvent ce) {
+         if(templateName.getValue()==null || templateName.getValue().trim().length()==0){
+            return;
+         }
          List<BeanModel> screenBeanModels = screenList.getSelectionModel().getSelectedItems();
-         if (screenBeanModels == null || screenBeanModels.size() > 1) {
+         if (screenBeanModels == null || screenBeanModels.size() != 1) {
             MessageBox.alert("Error", "One (and only one)screen must be selected", null);
             return;
          }
