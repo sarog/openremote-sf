@@ -54,7 +54,6 @@ public class ScreenView extends AbsoluteLayout {
       setBackgroundColor(0);
       setTag(screen.getName());
       if (screen.getBackground() != null) {
-         HTTPUtil.downLoadImage(context, AppSettingsModel.getCurrentServer(context), screen.getBackgroundSrc());
          addBackground(screen);
          
       }

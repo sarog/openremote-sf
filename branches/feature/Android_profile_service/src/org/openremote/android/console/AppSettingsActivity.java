@@ -20,8 +20,10 @@
 package org.openremote.android.console;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.openremote.android.console.model.AppSettingsModel;
+import org.openremote.android.console.model.XMLEntityDataBase;
 import org.openremote.android.console.util.FileUtil;
 
 import android.app.Activity;
@@ -166,6 +168,10 @@ public class AppSettingsActivity extends Activity{
             String panelName = AppSettingsModel.getCurrentPanelIdentity(AppSettingsActivity.this);
             HTTPUtil.downLoadPanelXml(AppSettingsActivity.this, serverUrl, panelName);
             FileUtil.parsePanelXML(AppSettingsActivity.this);
+            Iterator<String> images = XMLEntityDataBase.imageSet.iterator();
+            while (images.hasNext()) {
+               HTTPUtil.downLoadImage(AppSettingsActivity.this, AppSettingsModel.getCurrentServer(AppSettingsActivity.this), images.next());
+            }
             Intent intent = new Intent();
             intent.setClass(AppSettingsActivity.this, GroupHandler.class);
             startActivity(intent);

@@ -19,10 +19,15 @@
 */
 package org.openremote.android.console.view;
 
+import org.openremote.android.console.Constants;
 import org.openremote.android.console.bindings.XButton;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
 public class ButtonView extends ControlView {
 
@@ -35,10 +40,44 @@ public class ButtonView extends ControlView {
       }
    }
    
-   private void initButton(XButton button) {
+   private void initButton(final XButton button) {
       uiButton.setId(button.getButtonId());
       uiButton.setText(button.getName());
       uiButton.setTextSize(10);
+      if (button.getDefaultImage() != null) {
+         final Drawable defaultImage = Drawable.createFromPath(Constants.FILE_FOLDER_PATH
+               + button.getDefaultImage().getSrc());
+         if (defaultImage != null) {
+            uiButton.setText(null);
+            uiButton.setBackgroundDrawable(defaultImage);
+            uiButton.setLayoutParams(new FrameLayout.LayoutParams(defaultImage.getIntrinsicWidth(), defaultImage
+                  .getIntrinsicHeight()));
+         }
+         View.OnTouchListener touchListener = new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+               if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                  if (button.getPressedImage() != null) {
+                     Drawable pressedImage = Drawable.createFromPath(Constants.FILE_FOLDER_PATH
+                           + button.getPressedImage().getSrc());
+                     if (pressedImage != null) {
+                        uiButton.setBackgroundDrawable(pressedImage);
+                     } else {
+                        defaultImage.setAlpha(200);
+                        uiButton.setBackgroundDrawable(defaultImage);
+                     }
+                  } else {
+                     defaultImage.setAlpha(200);
+                     uiButton.setBackgroundDrawable(defaultImage);
+                  }
+               } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                  defaultImage.setAlpha(255);
+                  uiButton.setBackgroundDrawable(defaultImage);
+               }
+               return false;
+            }
+         };
+         uiButton.setOnTouchListener(touchListener);
+      }
       addView(uiButton);
    }
 
