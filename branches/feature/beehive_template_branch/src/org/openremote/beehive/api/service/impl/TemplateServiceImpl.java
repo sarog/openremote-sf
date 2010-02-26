@@ -40,8 +40,9 @@ import org.openremote.beehive.utils.FileUtil;
 
 public class TemplateServiceImpl extends BaseAbstractService<Template> implements TemplateService {
    private static final Log logger = LogFactory.getLog(TemplateService.class);
-   
-   protected Configuration configuration  = null;
+
+   protected Configuration configuration = null;
+
    @Override
    public List<TemplateDTO> loadAllTemplatesByAccountOid(long accountOid) {
       List<TemplateDTO> templateDTOs = new ArrayList<TemplateDTO>();
@@ -55,6 +56,7 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
       }
       return templateDTOs;
    }
+
    @Override
    public List<TemplateDTO> loadAllPublicTemplate() {
       List<TemplateDTO> templatesDTOs = new ArrayList<TemplateDTO>();
@@ -71,6 +73,7 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
       }
       return templatesDTOs;
    }
+
    @Override
    public TemplateDTO loadTemplateByOid(long templateOid) {
       Template template = genericDAO.loadById(Template.class, templateOid);
@@ -84,7 +87,7 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
    @Override
    public long save(Template t) {
       long templateOid = (Long) genericDAO.save(t);
-      if(t.getAccount() == null){
+      if (t.getAccount() == null) {
          createTemplateFolder(Template.PUBLIC_ACCOUNT_OID);
       } else {
          createTemplateFolder(templateOid);
@@ -101,34 +104,35 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
       }
       return false;
    }
+
    @Override
    public File getTemplateResourceZip(long templateOid) {
       File templateFolder = createTemplateFolder(templateOid);
-      File[] files = templateFolder.listFiles(new FilenameFilter(){
+      File[] files = templateFolder.listFiles(new FilenameFilter() {
 
          @Override
          public boolean accept(File dir, String name) {
-           return name.equalsIgnoreCase("template.zip");
+            return name.equalsIgnoreCase("template.zip");
          }
-         
+
       });
-      if(files!=null && files.length!=0){
+      if (files != null && files.length != 0) {
          return files[0];
       }
       return null;
    }
-   
-   private File createTemplateFolder(long templateOid){
+
+   private File createTemplateFolder(long templateOid) {
       String templateFolder = configuration.getTemplateResourcesDir() + File.separator + templateOid;
-      
+
       File templateFolderFile = new File(templateFolder);
       templateFolderFile.mkdirs();
       return templateFolderFile;
    }
-   
-   public void saveTemplateResourceZip(long templateOid,InputStream input){
+
+   public void saveTemplateResourceZip(long templateOid, InputStream input) {
       File templateFolder = createTemplateFolder(templateOid);
-      File zipFile = new File(templateFolder,TEMPLATE_RESOURCE_ZIP_FILE_NAME);
+      File zipFile = new File(templateFolder, TEMPLATE_RESOURCE_ZIP_FILE_NAME);
       FileOutputStream fos = null;
       try {
          FileUtil.deleteFileOnExist(zipFile);
@@ -139,17 +143,20 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
             fos.write(buffer, 0, length);
          }
          logger.info("save resource success!");
-      }catch(Exception e){
+      } catch (Exception e) {
          logger.error("falied to save resource from modeler to beehive", e);
       } finally {
-         if(fos != null){
-            try{fos.close();}catch(Exception e){}
+         if (fos != null) {
+            try {
+               fos.close();
+            } catch (Exception e) {
+            }
          }
       }
    }
+
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
-   
-   
+
 }
