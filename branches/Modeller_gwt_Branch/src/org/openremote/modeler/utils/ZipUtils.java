@@ -27,8 +27,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
@@ -118,4 +120,55 @@ public class ZipUtils {
       return outputFile;
    }
 
+   /**
+    * Unzip a zip.
+    * 
+    * @param inputStream the input stream
+    * @param targetDir the target dir
+    * 
+    * @return true, if success
+    */
+   public static boolean unzip(InputStream inputStream, String targetDir){
+      ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+      ZipEntry zipEntry;
+      FileOutputStream fileOutputStream = null;
+      try {
+         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+            if (!zipEntry.isDirectory()) {
+               targetDir = targetDir.endsWith("/") || targetDir.endsWith("\\") ? targetDir : targetDir + "/";
+               File zippedFile = new File(targetDir + zipEntry.getName());
+               FileUtilsExt.deleteQuietly(zippedFile);
+               fileOutputStream = new FileOutputStream(zippedFile);
+               int b;
+               while ((b = zipInputStream.read()) != -1) {
+                  fileOutputStream.write(b);
+               }
+               fileOutputStream.close();
+            }
+         }
+      } catch (IOException e) {
+         LOGGER.error("Can't unzip to " + targetDir, e);
+         return false;
+      } finally {
+         try {
+            zipInputStream.closeEntry();
+            if (fileOutputStream != null) {
+               fileOutputStream.close();
+            }
+         } catch (IOException e) {
+            LOGGER.error("Error while closing stream.", e);
+         }
+
+      }
+      return true;
+   }
+   
+   public static boolean unzip(File zipFile, String targetDir) {
+      try {
+         InputStream inputStream = new FileInputStream(zipFile);
+         return unzip(inputStream, targetDir);
+      } catch (Exception e) {
+         throw new RuntimeException("falied to unzip file" + zipFile.getName(), e);
+      }
+   }
 }

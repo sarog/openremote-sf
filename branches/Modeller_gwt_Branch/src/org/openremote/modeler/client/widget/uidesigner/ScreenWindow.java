@@ -26,6 +26,7 @@ import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
 import org.openremote.modeler.client.listener.FormResetListener;
 import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.IDUtil;
@@ -35,6 +36,7 @@ import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.Template;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BaseListLoader;
@@ -44,13 +46,11 @@ import com.extjs.gxt.ui.client.data.ListLoadResult;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelType;
 import com.extjs.gxt.ui.client.data.ScriptTagProxy;
-import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.FieldSetEvent;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
@@ -130,12 +130,12 @@ public class ScreenWindow extends FormWindow {
    private void createButtons() {
       Button submitBtn = new Button("Submit");
       Button resetBtn = new Button("Reset");
-      Button templateSelectBtn = new Button("from template");
-      templateSelectBtn.addSelectionListener(new TemplateSelectLisntener());
+//      Button templateSelectBtn = new Button("from template");
+//      templateSelectBtn.addSelectionListener(new TemplateSelectLisntener());
       submitBtn.addSelectionListener(new FormSubmitListener(form));
       resetBtn.addSelectionListener(new FormResetListener(form));
       
-      form.addButton(templateSelectBtn);
+//      form.addButton(templateSelectBtn);
       form.addButton(submitBtn);
       form.addButton(resetBtn);
    }
@@ -152,7 +152,7 @@ public class ScreenWindow extends FormWindow {
             }
             Object bean = groupModel.getBean();
             if (bean != null && bean instanceof GroupRef) {
-               GroupRef groupRef = (GroupRef) bean;
+               final GroupRef groupRef = (GroupRef) bean;
                ScreenRef screenRef = null;
                switch (operation) {
 
@@ -161,11 +161,9 @@ public class ScreenWindow extends FormWindow {
                   screen = screenRef.getScreen();
                   break;
                case CREATE_BY_TEMPLATE:
-                  if (screen != null) {
-                     screen.setName(nameField.getValue());
-                     screenRef = createScreenFromTemplate(groupRef);
-                     BeanModelDataBase.screenTable.insert(screen.getBeanModel());
-                     break;
+                  buildScreenFromTemplate(be, groupRef);
+                  if (screen == null) {
+                    return;
                   }
                case NEW:
                   screenRef = createScreen(groupRef);
@@ -178,6 +176,35 @@ public class ScreenWindow extends FormWindow {
                fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));
             }
            
+         }
+
+         private void buildScreenFromTemplate(FormEvent be, final GroupRef groupRef) {
+            ModelData templateModelData = templateView.getSelectionModel().getSelectedItem();
+            if (templateModelData == null) {
+               MessageBox.alert("Error", "Please select a Template.", null);
+               be.cancelBubble();
+            } else {
+               Long oid = templateModelData.get("id");
+               String content = templateModelData.get("content");
+               String name = templateModelData.get("name");
+               
+               Template template = new Template();
+               template.setContent(content);
+               template.setOid(oid);
+               template.setName(name);
+               TemplateProxy.buildScreenFromTemplate(template, new AsyncSuccessCallback<Screen>(){
+
+                  @Override
+                  public void onSuccess(Screen result) {
+                     screen = result;
+                     screen.setName(nameField.getValue());
+                     ScreenRef screenRef = createScreenFromTemplate(groupRef);
+                     BeanModelDataBase.screenTable.insert(screen.getBeanModel());
+                     fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));
+                  }
+                  
+               });
+            }
          }
 
       });
@@ -193,6 +220,7 @@ public class ScreenWindow extends FormWindow {
    }
    
    private ScreenRef createScreenFromTemplate(GroupRef selectedGroup) {
+//      templateView.getSelectionModel().getSelectedItem();
       screen.setTouchPanelDefinition(selectedGroup.getPanel().getTouchPanelDefinition());
       BeanModelDataBase.screenTable.insert(screen.getBeanModel());
       ScreenRef screenRef = new ScreenRef(screen);
@@ -243,6 +271,7 @@ public class ScreenWindow extends FormWindow {
          FieldSet templateFieldSet = new FieldSet();
          templateFieldSet.setHeading("Select from template");
          templateFieldSet.setCheckboxToggle(true);
+         templateFieldSet.setExpanded(false);
          buildTemplateList();
          templateFieldSet.addListener(Events.BeforeExpand, new Listener<FieldSetEvent>() {
             public void handleEvent(FieldSetEvent be) {
@@ -358,7 +387,7 @@ public class ScreenWindow extends FormWindow {
       loader.load();
       templateView.setStore(store);
    }
-   class TemplateSelectLisntener extends SelectionListener<ButtonEvent>{
+   /*class TemplateSelectLisntener extends SelectionListener<ButtonEvent>{
 
       @Override
       public void componentSelected(ButtonEvent ce) {
@@ -376,7 +405,7 @@ public class ScreenWindow extends FormWindow {
          operation = Operation.CREATE_BY_TEMPLATE;
       }
       
-   }
+   }*/
    
    
    public static enum Operation{
