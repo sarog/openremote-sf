@@ -31,10 +31,6 @@ public class Configuration {
 
    private String lircCrawRegex;
    
-   private String modelerResourcesDir ;
-   
-   private String templateResourcesDir ;
-
    public String getWorkDir() {
       return workDir;
    }
@@ -77,20 +73,13 @@ public class Configuration {
    }
 
    public String getModelerResourcesDir() {
-      return modelerResourcesDir;
-   }
-
-   public void setModelerResourcesDir(String modelerResourcesDir) {
-      this.modelerResourcesDir = modelerResourcesDir;
+      return workDir + File.separator + "resources";
    }
 
    public String getTemplateResourcesDir() {
-      return templateResourcesDir;
+      return workDir + File.separator + "templates";
    }
 
-   public void setTemplateResourcesDir(String templateResourcesDir) {
-      this.templateResourcesDir = templateResourcesDir;
-   }
    
    
 }
