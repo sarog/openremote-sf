@@ -151,7 +151,8 @@ public class PathConfig {
    }
    
    public String openremoteZipFilePath(Account account) {
-      return userFolder(account) + "openremote." + UUID.randomUUID() + ".zip";
+//      return userFolder(account) + "openremote." + UUID.randomUUID() + ".zip";
+      return userFolder(account) + "openremote.zip";
    }
    
    /**

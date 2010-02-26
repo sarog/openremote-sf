@@ -170,6 +170,7 @@ public class ResourceServiceImpl implements ResourceService {
       }
 
       File zipFile = new File(zipFilePath);
+      FileUtilsExt.deleteQuietly(zipFile);
       ZipUtils.compress(zipFile.getAbsolutePath(), compressedfiles);
       return zipFile;
    }
@@ -984,13 +985,12 @@ public class ResourceServiceImpl implements ResourceService {
 
    }
    
-   private File getTemplateZipResource() {
+   private File getTemplateZipResource(){
       List<String> ignoreExtentions = new ArrayList<String>();
       ignoreExtentions.add("zip");
       ignoreExtentions.add("xml");
       return getResourceZipFile(ignoreExtentions);
    }
-
    private File getExportResource() {
       List<String> ignoreExtentions = new ArrayList<String>();
       return getResourceZipFile(ignoreExtentions);
