@@ -20,6 +20,7 @@
 package org.openremote.android.console.model;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.openremote.android.console.bindings.Group;
 import org.openremote.android.console.bindings.TabBar;
@@ -29,7 +30,7 @@ public class XMLEntityDataBase {
    public static TabBar globalTabBar = null;
    public static final HashMap<Integer, Group> groups = new HashMap<Integer, Group>();
    public static final HashMap<Integer, XScreen> screens = new HashMap<Integer, XScreen>();
-   
+   public static final HashSet<String> imageSet = new HashSet<String>();
    public static Group getFirstGroup() {
       if (!groups.isEmpty()) {
          return groups.get(groups.keySet().iterator().next());

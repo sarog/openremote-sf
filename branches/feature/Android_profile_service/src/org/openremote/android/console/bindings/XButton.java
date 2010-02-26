@@ -21,6 +21,7 @@ package org.openremote.android.console.bindings;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 @SuppressWarnings("serial")
 public class XButton extends Control {
@@ -28,12 +29,31 @@ public class XButton extends Control {
    private int buttonId;
    private String name;
    private boolean hasControlCommand;
+   private boolean repeat;
+   private Image defaultImage;
+   private Image pressedImage;
    public XButton(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
       this.buttonId = Integer.valueOf(nodeMap.getNamedItem("id").getNodeValue());
       this.name = nodeMap.getNamedItem("name").getNodeValue();
       if (nodeMap.getNamedItem("hasControlCommand") != null) {
          this.hasControlCommand = Boolean.valueOf(nodeMap.getNamedItem("hasControlCommand").getNodeValue());
+      }
+      if (nodeMap.getNamedItem("repeat") != null) {
+         this.repeat = Boolean.valueOf(nodeMap.getNamedItem("repeat").getNodeValue());
+      }
+      
+      NodeList childNodes = node.getChildNodes();
+      int nodeNum = childNodes.getLength();
+      for (int i = 0; i < nodeNum; i++) {
+         if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
+            Node elementNode = childNodes.item(i);
+            if ("default".equals(elementNode.getNodeName())) {
+               this.defaultImage = createImage(elementNode);
+            } else if ("pressed".equals(elementNode.getNodeName())) {
+               this.pressedImage = createImage(elementNode);
+            }
+         }
       }
    }
    
@@ -47,5 +67,26 @@ public class XButton extends Control {
    
    public boolean isHasControlCommand() {
       return hasControlCommand;
+   }
+   
+   public boolean isRepeat() {
+      return repeat;
+   }
+
+   public Image getDefaultImage() {
+      return defaultImage;
+   }
+
+   public Image getPressedImage() {
+      return pressedImage;
+   }
+
+   private Image createImage(Node elementNode) {
+      for (Node imageNode = elementNode.getFirstChild(); imageNode != null; imageNode = imageNode.getNextSibling()) {
+         if (imageNode.getNodeType() == Node.ELEMENT_NODE && "image".equals(imageNode.getNodeName())) {
+            return new Image(imageNode);
+         }
+      }
+      return null;
    }
 }

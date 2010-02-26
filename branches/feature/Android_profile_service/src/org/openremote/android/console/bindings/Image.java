@@ -19,6 +19,7 @@
 */
 package org.openremote.android.console.bindings;
 
+import org.openremote.android.console.model.XMLEntityDataBase;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
@@ -32,6 +33,7 @@ public class Image extends BusinessEntity {
       NamedNodeMap nodeMap = node.getAttributes();
       if (nodeMap.getNamedItem("src") != null) {
          this.src = nodeMap.getNamedItem("src").getNodeValue();
+         XMLEntityDataBase.imageSet.add(src);
       }
       // TODO: parse sub nodes(sensory/include).
    }
