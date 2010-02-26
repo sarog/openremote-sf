@@ -252,7 +252,7 @@ public class DevicePanel extends ContentPanel {
    }
    
    private MenuItem createNewSliderMenu() {
-      MenuItem newCommandItem = new MenuItem("New Sliderr");
+      MenuItem newCommandItem = new MenuItem("New Slider");
       newCommandItem.setIcon(icon.sliderAddIcon());
       newCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
