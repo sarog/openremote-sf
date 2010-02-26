@@ -30,6 +30,10 @@ public class Configuration {
    private String svnDir;
 
    private String lircCrawRegex;
+   
+   private String modelerResourcesDir ;
+   
+   private String templateResourcesDir ;
 
    public String getWorkDir() {
       return workDir;
@@ -70,6 +74,22 @@ public class Configuration {
 
    public void setLircCrawRegex(String lircCrawRegex) {
       this.lircCrawRegex = lircCrawRegex;
+   }
+
+   public String getModelerResourcesDir() {
+      return modelerResourcesDir;
+   }
+
+   public void setModelerResourcesDir(String modelerResourcesDir) {
+      this.modelerResourcesDir = modelerResourcesDir;
+   }
+
+   public String getTemplateResourcesDir() {
+      return templateResourcesDir;
+   }
+
+   public void setTemplateResourcesDir(String templateResourcesDir) {
+      this.templateResourcesDir = templateResourcesDir;
    }
    
    

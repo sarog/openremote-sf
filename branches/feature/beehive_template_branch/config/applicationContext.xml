@@ -42,6 +42,8 @@
 		<property name="workDir" value="${work.dir}" />
 		<property name="iconsDir" value="${icons.dir}" />
 		<property name="lircCrawRegex" value="${lirc.craw.regex}" />
+		<property name="modelerResourcesDir" value="${modeler.resource.dir}" />
+		<property name="templateResourcesDir" value="${template.dir}" />
 	</bean>
 	
 

@@ -19,8 +19,12 @@
 */
 package org.openremote.beehive.rest;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -30,11 +34,16 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.plugins.providers.multipart.InputPart;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+import org.jboss.resteasy.util.GenericType;
 import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.dto.TemplateDTO;
 import org.openremote.beehive.api.service.AccountService;
+import org.openremote.beehive.api.service.ResourceService;
 import org.openremote.beehive.api.service.TemplateService;
 import org.openremote.beehive.domain.Account;
 import org.openremote.beehive.domain.Template;
@@ -85,6 +94,12 @@ public class TemplateRESTService {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
    }
 
+   @GET
+   @Produces( { "application/zip"})
+   @Path("template/resource/{template_id}")
+   public File getTemplateResources(@PathParam("template_id") long templateId) {
+      return getTemplateService().getTemplateResourceZip(templateId);
+   }
    @POST
    @Produces( { "application/xml", "application/json" })
    @Path("template")
@@ -126,5 +141,56 @@ public class TemplateRESTService {
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
    }
 
+   protected ResourceService resourceService = (ResourceService) SpringContext.getInstance().getBean("resourceService");
+   @Path("resource")
+   @POST
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   public void saveResource(@PathParam("account_id") long accountId, MultipartFormDataInput input) {
+      List<InputPart> parts = input.getParts();
+      InputStream in = null;
+      try {
+         for (InputPart part : parts) {
+            in = part.getBody(new GenericType<InputStream>() {
+            });
+            resourceService.saveResource(accountId, in);
+         }
+         return;
+      } catch (IOException e) {
+         e.printStackTrace();
+      } finally {
+         if (in != null) {
+            try {
+               in.close();
+            } catch (Exception e) {
+            }
+         }
+      }
+      throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+   }
    
+   @Path("resource/template/{templateId}")
+   @POST
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   public void saveTemplateResource(@PathParam("account_id") long accountId, @PathParam("templateId") long templateId,MultipartFormDataInput input) {
+      List<InputPart> parts = input.getParts();
+      InputStream in = null;
+      try {
+         for (InputPart part : parts) {
+            in = part.getBody(new GenericType<InputStream>() {
+            });
+            getTemplateService().saveTemplateResourceZip(templateId, in);
+         }
+         return;
+      } catch (IOException e) {
+         e.printStackTrace();
+      } finally {
+         if (in != null) {
+            try {
+               in.close();
+            } catch (Exception e) {
+            }
+         }
+      }
+      throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+   }
 }
