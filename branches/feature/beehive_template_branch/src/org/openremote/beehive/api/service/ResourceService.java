@@ -19,33 +19,18 @@
 */
 package org.openremote.beehive.api.service;
 
-import java.io.File;
 import java.io.InputStream;
-import java.util.List;
-
-import org.openremote.beehive.api.dto.TemplateDTO;
-import org.openremote.beehive.domain.Template;
-
 /**
- * Service for UI Designer templates
- * 
- * @author Dan 2010-1-29
+ * Service for manage resources for modeler.
+ * @author javen
  *
  */
-public interface TemplateService {
-   String TEMPLATE_RESOURCE_ZIP_FILE_NAME = "template.zip";
-   
-   long save(Template t);
-   
-   List<TemplateDTO> loadAllTemplatesByAccountOid(long accountOid);
-   
-   TemplateDTO loadTemplateByOid(long templateOid);
-   
-   boolean delete(long templateOid);
-
-   List<TemplateDTO> loadAllPublicTemplate();
-   
-   File getTemplateResourceZip(long templateOid);
-   
-   void saveTemplateResourceZip(long templateOid,InputStream input);
+public interface ResourceService {
+   String ZIP_FILE_NAME = "openremote.zip";
+   /**
+    * save resource for an account whose oid is accouontOid
+    * @param accountOid The oid for an account
+    * @param input
+    */
+   void saveResource(long accountOid,InputStream input);
 }
