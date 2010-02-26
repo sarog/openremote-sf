@@ -938,20 +938,22 @@ public class ResourceServiceImpl implements ResourceService {
       FileOutputStream fos = null;
       try {
          HttpResponse response = httpClient.execute(httpGet);
-         inputStream = response.getEntity().getContent();
-         File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
-         userFolder.mkdirs();
-         File outPut = new File(userFolder, "template.zip");
-         FileUtilsExt.deleteQuietly(outPut);
-         fos = new FileOutputStream(outPut);
-         byte[] buffer = new byte[1024];
-         int len = 0;
-         while ((len = inputStream.read(buffer)) != -1) {
-            fos.write(buffer, 0, len);
+         if(200 == response.getStatusLine().getStatusCode()){
+            LOGGER.error("failed to save resource to beehive");
+            inputStream = response.getEntity().getContent();
+            File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
+            userFolder.mkdirs();
+            File outPut = new File(userFolder, "template.zip");
+            FileUtilsExt.deleteQuietly(outPut);
+            fos = new FileOutputStream(outPut);
+            byte[] buffer = new byte[1024];
+            int len = 0;
+            while ((len = inputStream.read(buffer)) != -1) {
+               fos.write(buffer, 0, len);
+            }
+            ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
+            FileUtilsExt.deleteQuietly(outPut);
          }
-         ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
-         FileUtilsExt.deleteQuietly(outPut);
-
       } catch (Exception e) {
          LOGGER.error("failed to down load resource from beehive!", e);
       } finally {
@@ -970,24 +972,25 @@ public class ResourceServiceImpl implements ResourceService {
       File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
       File[] filesInAccountFolder = userFolder.listFiles();
       File[] filesInZip = new File[filesInAccountFolder.length];
-      int  i = 0;
-      for(File file : filesInAccountFolder){
-         if(file.exists()&&! file.getPath().equals(pathConfig.getSerizalizedPanelsFile(userService.getAccount()))){
+      int i = 0;
+      for (File file : filesInAccountFolder) {
+         if (file.exists() && !file.getPath().equals(pathConfig.getSerizalizedPanelsFile(userService.getAccount()))) {
             filesInZip[i++] = file;
          }
       }
-      File zipFile = compressFilesToZip(filesInZip, pathConfig.openremoteZipFilePath(userService
-            .getAccount()),ignoreExtentions);
+      File zipFile = compressFilesToZip(filesInZip, pathConfig.openremoteZipFilePath(userService.getAccount()),
+            ignoreExtentions);
       return zipFile;
 
    }
    
-   private File getTemplateZipResource(){
+   private File getTemplateZipResource() {
       List<String> ignoreExtentions = new ArrayList<String>();
       ignoreExtentions.add("zip");
       ignoreExtentions.add("xml");
       return getResourceZipFile(ignoreExtentions);
    }
+
    private File getExportResource() {
       List<String> ignoreExtentions = new ArrayList<String>();
       return getResourceZipFile(ignoreExtentions);
