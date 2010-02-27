@@ -84,6 +84,12 @@ public class TemplateProxy {
          public void onSuccess(Boolean result) {
            callback.onSuccess(result);
          }
+
+         @Override
+         public void onFailure(Throwable caught) {
+            callback.onFailure(caught);
+         }
+         
          
       });
    }
