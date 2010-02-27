@@ -43,6 +43,7 @@ import com.extjs.gxt.ui.client.data.BaseListLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.DataField;
 import com.extjs.gxt.ui.client.data.ListLoadResult;
+import com.extjs.gxt.ui.client.data.LoadEvent;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelType;
 import com.extjs.gxt.ui.client.data.ScriptTagProxy;
@@ -51,11 +52,13 @@ import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.FieldSetEvent;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.LoadListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.ListView;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
@@ -82,6 +85,8 @@ public class ScreenWindow extends FormWindow {
 //   private TreePanel<BeanModel> templateSelectTree = null;
    private ListView<ModelData> templateView = null;
    
+   private Text hintText = new Text();
+   
    public ScreenWindow(ScreenTab screenTab, BeanModel selectItem, Operation operation) {
       super();
       this.operation = operation;
@@ -97,6 +102,7 @@ public class ScreenWindow extends FormWindow {
       createButtons();
       createFields(screenTab);
       createTemplateView();
+      hintText.hide();
       setBodyBorder(false);
       add(form);
       show();
@@ -123,7 +129,6 @@ public class ScreenWindow extends FormWindow {
       
       form.add(nameField);
       form.add(adapterField);
-
       addBeforHideListener(screenTab);
    }
    
@@ -200,11 +205,13 @@ public class ScreenWindow extends FormWindow {
                      screen.setName(nameField.getValue());
                      ScreenRef screenRef = createScreenFromTemplate(groupRef);
                      BeanModelDataBase.screenTable.insert(screen.getBeanModel());
+                     ScreenWindow.this.unmask();
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));
                   }
                   
                });
             }
+            ScreenWindow.this.mask("Download resources for this template... ");
          }
 
       });
@@ -276,12 +283,17 @@ public class ScreenWindow extends FormWindow {
          templateFieldSet.addListener(Events.BeforeExpand, new Listener<FieldSetEvent>() {
             public void handleEvent(FieldSetEvent be) {
                operation = Operation.CREATE_BY_TEMPLATE;
+               if(templateView.getStore().getCount() == 0){
+                  hintText.setText("No template");
+                  hintText.show();
+               }
             }
 
          });
          templateFieldSet.addListener(Events.BeforeCollapse, new Listener<FieldSetEvent>() {
             public void handleEvent(FieldSetEvent be) {
                operation = Operation.NEW;
+               hintText.hide();
             }
          });
          
@@ -313,6 +325,7 @@ public class ScreenWindow extends FormWindow {
          shareRadioGroup.add(shareToAllRadio);
          templateFieldSet.add(shareRadioGroup);
          templateFieldSet.add(templateView);
+         templateFieldSet.add(hintText);
          form.add(templateFieldSet);
       }
    }
@@ -351,9 +364,17 @@ public class ScreenWindow extends FormWindow {
          public void onSuccess(String result) {
             createView(result);
             layout();
+            ScreenWindow.this.unmask();
+//            updateHintText();
+         }
+
+         @Override
+         public void onFailure(Throwable caught) {
+            MessageBox.alert("falid", "unable to load the template information from beehive", null);
          }
 
       });
+      ScreenWindow.this.mask("loading ...");
    }
    
    private void createPublicTemplateListView(){
@@ -363,9 +384,15 @@ public class ScreenWindow extends FormWindow {
          public void onSuccess(String result) {
             createView(result);
             layout();
+            ScreenWindow.this.unmask();
+//            updateHintText();
          }
-         
+         @Override
+         public void onFailure(Throwable caught) {
+            MessageBox.alert("falid", "unable to load the template information from beehive", null);
+         }
       });
+      ScreenWindow.this.mask("loading ...");
    }
    private void createView(String restURL){
       /*
@@ -382,32 +409,42 @@ public class ScreenWindow extends FormWindow {
       NestedJsonLoadResultReader<ListLoadResult<ModelData>> reader = new NestedJsonLoadResultReader<ListLoadResult<ModelData>>(
             templateType);
       final BaseListLoader<ListLoadResult<ModelData>> loader = new BaseListLoader<ListLoadResult<ModelData>>(scriptTagProxy, reader);
-
+      loader.setReuseLoadConfig(false);
       ListStore<ModelData> store = new ListStore<ModelData>(loader);
+      loader.addLoadListener(new LoadListener(){
+
+         
+         @Override
+         public void loaderBeforeLoad(LoadEvent le) {
+            super.loaderBeforeLoad(le);
+            hintText.setText("No template");
+            hintText.show();
+         }
+
+         @Override
+         public void loaderLoad(LoadEvent le) {
+            super.loaderLoad(le);
+            hintText.hide();
+         }
+         
+      });
       loader.load();
+      //loader.
       templateView.setStore(store);
    }
-   /*class TemplateSelectLisntener extends SelectionListener<ButtonEvent>{
-
-      @Override
-      public void componentSelected(ButtonEvent ce) {
-         SelectTemplateWindow templateWindow = new SelectTemplateWindow();
-         templateWindow.addListener(SubmitEvent.SUBMIT, new Listener<SubmitEvent>(){
-
-            @Override
-            public void handleEvent(SubmitEvent be) {
-               BeanModel screenBeanModel = be.getData();
-               screen = screenBeanModel.getBean();
-            }
-            
-         });
-         
-         operation = Operation.CREATE_BY_TEMPLATE;
+   
+   /*private void updateHintText(){
+      if (operation == Operation.CREATE_BY_TEMPLATE) {
+         if (templateView.getStore().getModels().size() == 0) {
+            hintText.show();
+            hintText.setText("No Templates");
+         } else {
+            hintText.hide();
+         }
+      } else {
+         hintText.hide();
       }
-      
    }*/
-   
-   
    public static enum Operation{
       NEW,EDIT,CREATE_BY_TEMPLATE;
    }
