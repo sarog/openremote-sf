@@ -169,6 +169,7 @@ public class TemplateCreateWindow extends FormWindow {
             public void onSuccess(Template result) {
                Info.display("Success", "template saved successfully:" + result.getOid());
                TemplateCreateWindow.this.unmask();
+               result.getBeanModel().set("id", result.getOid());
                fireEvent(SubmitEvent.SUBMIT,new SubmitEvent(result));
                hide();
             }
