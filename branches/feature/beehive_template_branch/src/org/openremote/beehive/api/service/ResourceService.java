@@ -32,5 +32,5 @@ public interface ResourceService {
     * @param accountOid The oid for an account
     * @param input
     */
-   void saveResource(long accountOid,InputStream input);
+   boolean saveResource(long accountOid,InputStream input);
 }

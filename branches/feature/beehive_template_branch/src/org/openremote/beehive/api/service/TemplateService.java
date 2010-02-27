@@ -47,5 +47,5 @@ public interface TemplateService {
    
    File getTemplateResourceZip(long templateOid);
    
-   void saveTemplateResourceZip(long templateOid,InputStream input);
+   boolean saveTemplateResourceZip(long templateOid,InputStream input);
 }

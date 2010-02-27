@@ -39,7 +39,7 @@ public class ResourceServiceImpl implements ResourceService {
    protected Configuration configuration = null;
 
    @Override
-   public void saveResource(long accountOid,InputStream input) {
+   public boolean saveResource(long accountOid,InputStream input) {
       logger.debug("save resource from modeler to beehive");
       File dir = makeSureDir(accountOid);
       File zipFile = new File(dir,ZIP_FILE_NAME);
@@ -53,6 +53,7 @@ public class ResourceServiceImpl implements ResourceService {
             fos.write(buffer, 0, length);
          }
          logger.info("save resource success!");
+         return true;
       }catch(Exception e){
          logger.error("falied to save resource from modeler to beehive", e);
       } finally {
@@ -60,6 +61,7 @@ public class ResourceServiceImpl implements ResourceService {
             try{fos.close();}catch(Exception e){}
          }
       }
+      return false;
    }
 
    

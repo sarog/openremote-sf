@@ -128,15 +128,14 @@ public class TemplateRESTService {
    
    @DELETE
    @Path("template/{template_id}")
-   public void deleteTemplate(@PathParam("template_id") long templateId,
+   public boolean deleteTemplate(@PathParam("template_id") long templateId,
          @HeaderParam(Constant.HTTP_BASIC_AUTH_HEADER_NAME) String credentials) {
       
       if (!getAccountService().isHTTPBasicAuthorized(credentials)) {
          throw new WebApplicationException(Response.Status.UNAUTHORIZED);
       }
       if (templateId > 0) {
-         getTemplateService().delete(templateId);
-         return;
+         return getTemplateService().delete(templateId);
       }
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
    }
@@ -145,16 +144,13 @@ public class TemplateRESTService {
    @Path("resource")
    @POST
    @Consumes(MediaType.MULTIPART_FORM_DATA)
-   public void saveResource(@PathParam("account_id") long accountId, MultipartFormDataInput input) {
+   public boolean saveResource(@PathParam("account_id") long accountId, MultipartFormDataInput input) {
       List<InputPart> parts = input.getParts();
       InputStream in = null;
       try {
-         for (InputPart part : parts) {
-            in = part.getBody(new GenericType<InputStream>() {
+            in = parts.get(0).getBody(new GenericType<InputStream>() {
             });
-            resourceService.saveResource(accountId, in);
-         }
-         return;
+            return resourceService.saveResource(accountId, in);
       } catch (IOException e) {
          e.printStackTrace();
       } finally {
@@ -171,16 +167,14 @@ public class TemplateRESTService {
    @Path("resource/template/{templateId}")
    @POST
    @Consumes(MediaType.MULTIPART_FORM_DATA)
-   public void saveTemplateResource(@PathParam("account_id") long accountId, @PathParam("templateId") long templateId,MultipartFormDataInput input) {
+   public boolean saveTemplateResource(@PathParam("account_id") long accountId,
+         @PathParam("templateId") long templateId, MultipartFormDataInput input) {
       List<InputPart> parts = input.getParts();
       InputStream in = null;
       try {
-         for (InputPart part : parts) {
-            in = part.getBody(new GenericType<InputStream>() {
-            });
-            getTemplateService().saveTemplateResourceZip(templateId, in);
-         }
-         return;
+         in = parts.get(0).getBody(new GenericType<InputStream>() {
+         });
+         return getTemplateService().saveTemplateResourceZip(templateId, in);
       } catch (IOException e) {
          e.printStackTrace();
       } finally {

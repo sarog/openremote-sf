@@ -19,7 +19,6 @@
 */
 package org.openremote.beehive.api.dto;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
