@@ -130,7 +130,7 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
       return templateFolderFile;
    }
 
-   public void saveTemplateResourceZip(long templateOid, InputStream input) {
+   public boolean saveTemplateResourceZip(long templateOid, InputStream input) {
       File templateFolder = createTemplateFolder(templateOid);
       File zipFile = new File(templateFolder, TEMPLATE_RESOURCE_ZIP_FILE_NAME);
       FileOutputStream fos = null;
@@ -143,8 +143,10 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
             fos.write(buffer, 0, length);
          }
          logger.info("save resource success!");
+         return true;
       } catch (Exception e) {
          logger.error("falied to save resource from modeler to beehive", e);
+         throw new RuntimeException("falied to save resource from modeler to beehive",e);
       } finally {
          if (fos != null) {
             try {
