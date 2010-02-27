@@ -447,7 +447,7 @@ public class TreePanelBuilder {
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONCLICK) {
                BeanModel beanModel = this.getSelectionModel().getSelectedItem();
-               if (beanModel.getBean() instanceof ScreenRef) {
+               if (beanModel != null && beanModel.getBean() instanceof ScreenRef) {
                   Screen screen = ((ScreenRef) beanModel.getBean()).getScreen();
                   ScreenTabItem screenTabItem = null;
                   for (TabItem tabPanel : screenTab.getItems()) {

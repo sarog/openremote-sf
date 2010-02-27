@@ -84,6 +84,7 @@ import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
+import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.XmlParserException;
 import org.openremote.modeler.protocol.ProtocolContainer;
@@ -184,7 +185,6 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the uRL
     */
-   @SuppressWarnings("unused")
    private URL buildLircRESTUrl(String restAPIUrl, String ids) {
       URL lircUrl;
       try {
@@ -809,7 +809,7 @@ public class ResourceServiceImpl implements ResourceService {
          // FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
 
          if (sectionIds != "") {
-//            FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
+            FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
          }
          if (lircdFile.exists() && lircdFile.length() == 0) {
             lircdFile.delete();
@@ -892,10 +892,14 @@ public class ResourceServiceImpl implements ResourceService {
          MultipartEntity entity = new MultipartEntity();
          entity.addPart("resource", resource);
          httpPost.setEntity(entity);
-         httpClient.execute(httpPost);
+         HttpResponse response = httpClient.execute(httpPost);
+         if(200 != response.getStatusLine().getStatusCode()){
+            throw new BeehiveNotAvailableException("failed to save resource to beehive,The status code is: "+response.getStatusLine().getStatusCode());
+         }
       } catch (Exception e) {
          LOGGER.error("failed to save resource to beehive", e);
-      }
+         throw new BeehiveNotAvailableException(e.getMessage(), e);
+      } 
    }
    
    public void saveTemplateResourcesToBeehive(Template template) {
@@ -917,9 +921,13 @@ public class ResourceServiceImpl implements ResourceService {
 
          httpPost.setEntity(entity);
 
-         httpClient.execute(httpPost);
+         HttpResponse response = httpClient.execute(httpPost);
+         if(200 != response.getStatusLine().getStatusCode()){
+            throw new BeehiveNotAvailableException("failed to save template resource to beehive,The status code is: "+response.getStatusLine().getStatusCode());
+         }
       } catch (Exception e) {
          LOGGER.error("failed to save resource to beehive", e);
+         throw new BeehiveNotAvailableException("failed to save template resource to beehive", e);
       }
    }
    @Override
@@ -940,7 +948,6 @@ public class ResourceServiceImpl implements ResourceService {
       try {
          HttpResponse response = httpClient.execute(httpGet);
          if(200 == response.getStatusLine().getStatusCode()){
-            LOGGER.error("failed to save resource to beehive");
             inputStream = response.getEntity().getContent();
             File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
             userFolder.mkdirs();
@@ -954,9 +961,12 @@ public class ResourceServiceImpl implements ResourceService {
             }
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
+         } else {
+            throw new BeehiveNotAvailableException("failed to download resources for template, The status code is: "+response.getStatusLine().getStatusCode());
          }
       } catch (Exception e) {
          LOGGER.error("failed to down load resource from beehive!", e);
+         throw new BeehiveNotAvailableException(e.getMessage(),e);
       } finally {
          if (inputStream != null) {
             try {
