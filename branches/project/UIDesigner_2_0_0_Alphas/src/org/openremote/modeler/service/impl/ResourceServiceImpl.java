@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,6 +41,13 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.openremote.modeler.client.Configuration;
@@ -64,6 +72,7 @@ import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.SensorOwner;
@@ -128,18 +137,7 @@ public class ResourceServiceImpl implements ResourceService {
    public String downloadZipResource(long maxOid, String sessionId, List<Panel> panels) {
       updateResources(panels, maxOid);
       PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File sessionFolder = new File(pathConfig.userFolder(userService.getAccount()));
-      File[] filesInAccountFolder = sessionFolder.listFiles();
-      File[] filesInZip = new File[filesInAccountFolder.length];
-      int  i = 0;
-      for(File file : filesInAccountFolder){
-         if(file.exists()&&! file.getPath().equals(pathConfig.getSerizalizedPanelsFile(userService.getAccount()))){
-            filesInZip[i++] = file;
-         }
-      }
-      File zipFile = compressFilesToZip(filesInZip, pathConfig.openremoteZipFilePath(userService
-            .getAccount()));
-//      return pathConfig.getZipUrl(sessionId) + zipFile.getName();
+      File zipFile = this.getExportResource();
       return pathConfig.getZipUrl(userService.getAccount())+zipFile.getName();
 
    }
@@ -160,30 +158,22 @@ public class ResourceServiceImpl implements ResourceService {
     * screen.getGrids()) { for (Cell cell : grid.getCells()) {
     * cell.getUIComponent().transImagePathToRelative(rerlativeSessionFolderPath); } } } }
     */
-   /**
-    * Compress files to zip.
-    * 
-    * @param files
-    *           the files
-    * @param zipFilePath
-    *           the zip file path
-    * 
-    * @return the file
-    */
-   private File compressFilesToZip(File[] files, String zipFilePath) {
+
+   private File compressFilesToZip(File[] files, String zipFilePath,List<String>ignoreExtentions) {
       List<File> compressedfiles = new ArrayList<File>();
       for (File file : files) {
-         if (file==null || FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("zip")) {
+         
+         if (file==null || ignoreExtentions.contains(FilenameUtils.getExtension(file.getName()))) {
             continue;
          }
          compressedfiles.add(file);
       }
 
       File zipFile = new File(zipFilePath);
+      FileUtilsExt.deleteQuietly(zipFile);
       ZipUtils.compress(zipFile.getAbsolutePath(), compressedfiles);
       return zipFile;
    }
-
    /**
     * Builds the lirc rest url.
     * 
@@ -194,6 +184,7 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the uRL
     */
+   @SuppressWarnings("unused")
    private URL buildLircRESTUrl(String restAPIUrl, String ids) {
       URL lircUrl;
       try {
@@ -781,16 +772,16 @@ public class ResourceServiceImpl implements ResourceService {
 
       PathConfig pathConfig = PathConfig.getInstance(configuration);
 //      File sessionFolder = new File(pathConfig.userFolder(sessionId));
-      File sessionFolder = new File(pathConfig.userFolder(userService.getAccount()));
-      if (!sessionFolder.exists()) {
-         sessionFolder.mkdirs();
+      File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
+      if (!userFolder.exists()) {
+         userFolder.mkdirs();
       }
       
       /*
        * down load the default image.
        */
       File defaultImage = new File(pathConfig.getWebRootFolder() + UIImage.DEFAULT_IMAGE_URL);
-      FileUtilsExt.copyFile(defaultImage, new File(sessionFolder, defaultImage.getName()));
+      FileUtilsExt.copyFile(defaultImage, new File(userFolder, defaultImage.getName()));
       
       File panelXMLFile = new File(pathConfig.panelXmlFilePath(userService.getAccount()));
       File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(userService.getAccount()));
@@ -801,7 +792,7 @@ public class ResourceServiceImpl implements ResourceService {
        * validate and output panel.xml.
        */
       String newIphoneXML = XmlParser.validateAndOutputXML(new File(getClass().getResource(
-            configuration.getPanelXsdPath()).getPath()), panelXmlContent, sessionFolder);
+            configuration.getPanelXsdPath()).getPath()), panelXmlContent, userFolder);
       controllerXmlContent = XmlParser.validateAndOutputXML(new File(getClass().getResource(
             configuration.getControllerXsdPath()).getPath()), controllerXmlContent);
       /*
@@ -818,13 +809,14 @@ public class ResourceServiceImpl implements ResourceService {
          // FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
 
          if (sectionIds != "") {
-            FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
+//            FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
          }
          if (lircdFile.exists() && lircdFile.length() == 0) {
             lircdFile.delete();
          }
          
          serialize(panels,maxOid);
+         saveResourcesToBeehive();
       } catch (IOException e) {
          LOGGER.error("Compress zip file occur IOException", e);
          throw new FileOperationException("Compress zip file occur IOException", e);
@@ -888,10 +880,119 @@ public class ResourceServiceImpl implements ResourceService {
       return panelsAndMaxOid;
    }
 
+   @SuppressWarnings("all")
+   public void saveResourcesToBeehive() {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = new HttpPost();
+      String beehiveRootRestURL = configuration.getBeehiveRESTRootUrl();
+      try {
+         httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid() + "/resource/"));
+         FileBody resource = new FileBody(getExportResource());
+         MultipartEntity entity = new MultipartEntity();
+         entity.addPart("resource", resource);
+         httpPost.setEntity(entity);
+         httpClient.execute(httpPost);
+      } catch (Exception e) {
+         LOGGER.error("failed to save resource to beehive", e);
+      }
+   }
+   
+   public void saveTemplateResourcesToBeehive(Template template) {
+      boolean share = template.getShareTo() == Template.PUBLIC;
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = new HttpPost();
+      String beehiveRootRestURL = configuration.getBeehiveRESTRootUrl();
+      try {
+         if (!share) {
+            httpPost
+                  .setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid() + "/resource/template/"+template.getOid()));
+         } else {
+            httpPost.setURI(new URI(beehiveRootRestURL + "account/0/resource/template/"+template.getOid()));
+         }
+         
+         FileBody resource = new FileBody(getTemplateZipResource());
+         MultipartEntity entity = new MultipartEntity();
+         entity.addPart("resource", resource);
+
+         httpPost.setEntity(entity);
+
+         httpClient.execute(httpPost);
+      } catch (Exception e) {
+         LOGGER.error("failed to save resource to beehive", e);
+      }
+   }
    @Override
    public boolean canRestore() {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File panelsObjFile = new File(pathConfig.getSerizalizedPanelsFile(userService.getAccount()));
       return panelsObjFile.exists();
+   }
+
+   @Override
+   public void downloadResourcesForTemplate(long templateOid) {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTRootUrl() + "account/"
+            + userService.getAccount().getOid() + "/template/resource/" + templateOid);
+      InputStream inputStream = null;
+      FileOutputStream fos = null;
+      try {
+         HttpResponse response = httpClient.execute(httpGet);
+         if(200 == response.getStatusLine().getStatusCode()){
+            LOGGER.error("failed to save resource to beehive");
+            inputStream = response.getEntity().getContent();
+            File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
+            userFolder.mkdirs();
+            File outPut = new File(userFolder, "template.zip");
+            FileUtilsExt.deleteQuietly(outPut);
+            fos = new FileOutputStream(outPut);
+            byte[] buffer = new byte[1024];
+            int len = 0;
+            while ((len = inputStream.read(buffer)) != -1) {
+               fos.write(buffer, 0, len);
+            }
+            ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
+            FileUtilsExt.deleteQuietly(outPut);
+         }
+      } catch (Exception e) {
+         LOGGER.error("failed to down load resource from beehive!", e);
+      } finally {
+         if (inputStream != null) {
+            try {
+               inputStream.close();
+            } catch (IOException e) {
+               e.printStackTrace();
+            }
+         }
+      }
+   }
+   
+   private File getResourceZipFile(List<String> ignoreExtentions) {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
+      File[] filesInAccountFolder = userFolder.listFiles();
+      File[] filesInZip = new File[filesInAccountFolder.length];
+      int i = 0;
+      for (File file : filesInAccountFolder) {
+         if (file.exists() && !file.getPath().equals(pathConfig.getSerizalizedPanelsFile(userService.getAccount()))) {
+            filesInZip[i++] = file;
+         }
+      }
+      File zipFile = compressFilesToZip(filesInZip, pathConfig.openremoteZipFilePath(userService.getAccount()),
+            ignoreExtentions);
+      return zipFile;
+
+   }
+   
+   private File getTemplateZipResource(){
+      List<String> ignoreExtentions = new ArrayList<String>();
+      ignoreExtentions.add("zip");
+      ignoreExtentions.add("xml");
+      return getResourceZipFile(ignoreExtentions);
+   }
+   private File getExportResource() {
+      List<String> ignoreExtentions = new ArrayList<String>();
+      return getResourceZipFile(ignoreExtentions);
    }
 }

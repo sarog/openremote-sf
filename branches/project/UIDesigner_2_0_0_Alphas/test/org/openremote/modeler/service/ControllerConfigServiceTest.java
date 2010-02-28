@@ -56,7 +56,9 @@ public class ControllerConfigServiceTest {
       Set<Config> cfgs = configService.listAllConfigByCategoryForCurrentAccount("advance");
       Assert.assertTrue(cfgs.size()>0);
       for(Config cfg : cfgs){
-         cfg.setHint(cfg.getHint()+addStr);
+         if(cfg.getOptions().equals("")&&(addStr+cfg.getValue()).matches(cfg.getValidation())){
+            cfg.setValue(cfg.getValue()+addStr);
+         }
       }
       
       configService.saveAll(cfgs);
@@ -64,7 +66,9 @@ public class ControllerConfigServiceTest {
       Collection<Config> cfgs2 = configService.listAllConfigByCategoryForCurrentAccount("advance");
       Assert.assertTrue(cfgs2.size()>0);
       for(Config cfg : cfgs2){
-         Assert.assertTrue(cfg.getHint().contains(addStr));
+         if(cfg.getValue().endsWith(addStr)){
+            Assert.assertTrue(cfg.getValue().substring(0,cfg.getValue().indexOf(addStr)-1).matches(cfg.getValidation()));
+         }
       }
    }
 }

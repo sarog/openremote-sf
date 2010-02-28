@@ -28,6 +28,7 @@ import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.Template;
 
 /**
  * The Interface ResourceService.
@@ -94,4 +95,8 @@ public interface ResourceService {
    PanelsAndMaxOid restore();
    
    boolean canRestore();
+   
+   void saveResourcesToBeehive();
+   void saveTemplateResourcesToBeehive(Template Template);
+   void downloadResourcesForTemplate(long templateOid); 
 }

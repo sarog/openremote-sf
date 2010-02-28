@@ -83,6 +83,8 @@ public class ResourceServiceImplTest {
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
       deviceMacroService = (DeviceMacroService) SpringTestContext.getInstance().getBean("deviceMacroService");
       userService = (UserService) SpringTestContext.getInstance().getBean("userService");
+      userService.createAccount("test", "test", "role_bm");
+      SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("test", "test"));
       /*------------xml validation-------------*/
       configuration = (Configuration) SpringTestContext.getInstance().getBean("configuration");
    }

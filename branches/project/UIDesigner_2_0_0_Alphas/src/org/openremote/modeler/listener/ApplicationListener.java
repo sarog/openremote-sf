@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.listener;
 
+import java.io.File;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -45,7 +47,10 @@ public class ApplicationListener implements ServletContextListener {
    public void contextInitialized(ServletContextEvent event) {
       // set web root, eg: "E:\apache-tomcat-5.5.28\webapps\modeler\".
       PathConfig.WEBROOTPATH = event.getServletContext().getRealPath("/");
-      
+      File tempFolder = new File(PathConfig.WEBROOTPATH + File.separator + PathConfig.RESOURCEFOLDER);
+      if (!tempFolder.exists()) {
+         tempFolder.mkdirs();
+      }
       userService.initRoles();
    }
 

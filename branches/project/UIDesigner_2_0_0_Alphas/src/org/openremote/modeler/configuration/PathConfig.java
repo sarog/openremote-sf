@@ -42,7 +42,7 @@ public class PathConfig {
    private static final PathConfig myInstance = new PathConfig();
    
    /** The Constant RESOURCEFOLDER. */
-   private static final String RESOURCEFOLDER = "modeler_tmp";
+   public static final String RESOURCEFOLDER = "modeler_tmp";
    
    /** The configuration. */
    private Configuration configuration;
@@ -79,12 +79,7 @@ public class PathConfig {
          throw new IllegalStateException("Can't find modeler.root in system property, please check web.xml.");
       }
       if ("".equals(ROOTPATH)) {
-         File webRootFolder = new File(WEBROOTPATH);
-         ROOTPATH = webRootFolder.getParent() + File.separator;
-         File tempFolder = new File(ROOTPATH + RESOURCEFOLDER);
-         if (!tempFolder.exists()) {
-            tempFolder.mkdirs();
-         }
+         ROOTPATH = WEBROOTPATH + File.separator;
       }
       return  ROOTPATH + RESOURCEFOLDER + File.separator;
    }
@@ -156,7 +151,8 @@ public class PathConfig {
    }
    
    public String openremoteZipFilePath(Account account) {
-      return userFolder(account) + "openremote." + UUID.randomUUID() + ".zip";
+//      return userFolder(account) + "openremote." + UUID.randomUUID() + ".zip";
+      return userFolder(account) + "openremote.zip";
    }
    
    /**
@@ -212,7 +208,7 @@ public class PathConfig {
    }
    
    public String getRelativeResourcePath(String fileName, Account account) {
-      return "../" + RESOURCEFOLDER + "/" + account.getOid() + "/" + fileName;
+      return RESOURCEFOLDER + "/" + account.getOid() + "/" + fileName;
    }
    
    /**
