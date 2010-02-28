@@ -115,7 +115,11 @@ public class ScreenTab extends TabPanel {
                   if (!screen.getName().equals(screenTabItem.getText())) {
                      screenTabItem.setText(screen.getName());
                   }
+                	  
                   ScreenCanvas screenCanvas = screenTabItem.getScreenCanvas();
+                  if (screen.isHasTabbar()) {
+                	  screenCanvas.addTabbar();
+                  }
                   screenCanvas.setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
                   setSelection(screenTabItem);
                }
