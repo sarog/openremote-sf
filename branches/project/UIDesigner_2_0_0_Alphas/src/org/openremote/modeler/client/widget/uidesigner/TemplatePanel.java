@@ -64,7 +64,7 @@ public class TemplatePanel extends ContentPanel {
     */
    public TemplatePanel() {
       setHeading("Template");
-      setIcon(icon.panelIcon());
+      setIcon(icon.templateIcon());
       setLayout(new FitLayout());
       createMenu();
       buildTemplateList();
@@ -124,8 +124,8 @@ public class TemplatePanel extends ContentPanel {
 
 
    private Button createNewTemplateMenuItem() {
-      Button newPanelItem = new Button("New Template");
-      newPanelItem.setIcon(icon.panelIcon());
+      Button newPanelItem = new Button("New");
+      newPanelItem.setIcon(icon.add());
       newPanelItem.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
             final TemplateCreateWindow templateCreateWindow = new TemplateCreateWindow();
@@ -133,7 +133,9 @@ public class TemplatePanel extends ContentPanel {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   Template template = be.getData();
-                  templateView.getStore().add(template.getBeanModel());
+                  if(template.getShareTo() != Template.PUBLIC){
+                     templateView.getStore().add(template.getBeanModel());
+                  }
                }
 
             });

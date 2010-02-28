@@ -22,14 +22,12 @@ package org.openremote.modeler.client.widget;
 import java.util.List;
 import java.util.Set;
 
-import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.ConfigCategoryBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
-import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.buildingmodeler.ControllerConfigTabItem;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
@@ -48,7 +46,6 @@ import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
-import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIGrid;
@@ -57,18 +54,11 @@ import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
 
-import com.extjs.gxt.ui.client.data.BaseListLoader;
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.data.DataField;
-import com.extjs.gxt.ui.client.data.ListLoadResult;
-import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
-import com.extjs.gxt.ui.client.data.ModelType;
 import com.extjs.gxt.ui.client.data.RpcProxy;
-import com.extjs.gxt.ui.client.data.ScriptTagProxy;
 import com.extjs.gxt.ui.client.data.TreeLoader;
-import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
@@ -455,7 +445,7 @@ public class TreePanelBuilder {
       TreePanel<BeanModel> panelTree = new TreePanel<BeanModel>(panelTreeStore) {
          @Override
          public void onBrowserEvent(Event event) {
-            if (event.getTypeInt() == Event.ONDBLCLICK) {
+            if (event.getTypeInt() == Event.ONCLICK) {
                BeanModel beanModel = this.getSelectionModel().getSelectedItem();
                if (beanModel.getBean() instanceof ScreenRef) {
                   Screen screen = ((ScreenRef) beanModel.getBean()).getScreen();

@@ -96,7 +96,7 @@ public class FileUploadController extends MultiActionController {
          return;
       }
 
-      long maxImageSize = 1024 * 1024;
+      long maxImageSize = 1024 * 1024 * 5;
       MultipartFile multipartFile = MultipartFileUtil.getMultipartFileFromRequest(request, uploadFieldName);
       if (multipartFile.getSize() == 0 || multipartFile.getSize() > maxImageSize) {
          return;

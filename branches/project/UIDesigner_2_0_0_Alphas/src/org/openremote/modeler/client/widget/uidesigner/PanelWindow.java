@@ -244,7 +244,7 @@ public class PanelWindow extends FormWindow {
    }
 
    private void addListenersToForm() {
-      form.addListener(Events.Submit, new Listener<FormEvent>() {
+      form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          @SuppressWarnings("unchecked")
          @Override
          public void handleEvent(FormEvent be) {

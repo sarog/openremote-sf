@@ -19,7 +19,9 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,7 @@ import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Template;
+import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.TemplateService;
 import org.openremote.modeler.service.UserService;
 
@@ -59,6 +62,7 @@ public class TemplateServiceImpl implements TemplateService {
 
    private Configuration configuration;
    private UserService userService ;
+   private ResourceService resourceService ;
 
    @Override
    public Template saveTemplate(Template screenTemplate) {
@@ -70,27 +74,42 @@ public class TemplateServiceImpl implements TemplateService {
       params.add(new BasicNameValuePair("content", screenTemplate.getContent()));
 
       log.debug("TemplateContent" + screenTemplate.getContent());
-
       try {
-         String saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid()+ "/template/";
-         if(screenTemplate.getShareTo() == Template.PUBLIC){
+         String saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid()
+               + "/template/";
+         if (screenTemplate.getShareTo() == Template.PUBLIC) {
             saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/0" + "/template/";
          }
          HttpPost httpPost = new HttpPost(saveRestUrl);
          UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(params, "UTF-8");
          httpPost.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
-            + encode(userService.getAccount().getUser().getUsername()+":"+userService.getAccount().getUser().getPassword()));
+               + encode(userService.getAccount().getUser().getUsername() + ":"
+                     + userService.getAccount().getUser().getPassword()));
          httpPost.setEntity(formEntity);
-         ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+         HttpClient httpClient = new DefaultHttpClient();
+
+         String result = httpClient.execute(httpPost, new ResponseHandler<String>() {
 
             @Override
-            public String handleResponse(HttpResponse arg0) throws ClientProtocolException, IOException {
-               return null;
+            public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+               
+               InputStreamReader reader = new InputStreamReader(response.getEntity().getContent());
+               BufferedReader buffReader = new BufferedReader(reader);
+               StringBuilder sb = new StringBuilder();
+               String line = "";
+               while ((line = buffReader.readLine()) != null) {
+                  sb.append(line);
+                  sb.append("\n");
+               }
+               return sb.toString();
             }
 
-         };
-         HttpClient httpClient = new DefaultHttpClient();
-         httpClient.execute(httpPost, responseHandler);
+         });
+         long templateOid = Long.parseLong(result.substring(result.indexOf("<id>") + "<id>".length(), result
+               .indexOf("</id>")));
+         screenTemplate.setOid(templateOid);
+         // save the resources (eg:images) to beehive.
+         resourceService.saveTemplateResourcesToBeehive(screenTemplate);
       } catch (Exception e) {
          log.error("faild to save a screen to a template", e);
       }
@@ -99,15 +118,10 @@ public class TemplateServiceImpl implements TemplateService {
       return screenTemplate;
    }
 
-   private String getTemplateContent(Screen screen){
+   private String getTemplateContent(Screen screen) {
       try {
-         String[] includedPropertyNames = { 
-               "absolutes.uiComponent.uiCommand",
-               "absolutes.uiComponent.commands",
-               "grids.cells.uiComponent",
-               "grids.cells.uiComponent.uiCommand",
-               "grids.cells.uiComponent.commands",
-               };
+         String[] includedPropertyNames = { "absolutes.uiComponent.uiCommand", "absolutes.uiComponent.commands",
+               "grids.cells.uiComponent", "grids.cells.uiComponent.uiCommand", "grids.cells.uiComponent.commands", };
          String[] excludePropertyNames = { "grid", "*.touchPanelDefinition", "*.refCount", "*.displayName", "*.oid",
                "*.proxyInformations", "*.proxyInformation", "gestures", "*.panelXml", "*.navigate" };
          return new JSONSerializer().include(includedPropertyNames).exclude(excludePropertyNames).deepSerialize(screen);
@@ -120,38 +134,39 @@ public class TemplateServiceImpl implements TemplateService {
    @Override
    public Screen buildScreenFromTemplate(Template template) {
       String screenJson = template.getContent();
-      return new JSONDeserializer<Screen>().use(null, Screen.class).use("absolutes.values.uiComponent",
+      Screen screen = new JSONDeserializer<Screen>().use(null, Screen.class).use("absolutes.values.uiComponent",
             new SimpleClassLocator()).use("grids.values.cells.values.uiComponent", new SimpleClassLocator())
             .deserialize(screenJson);
+      // download resources (eg:images) from beehive.
+      resourceService.downloadResourcesForTemplate(template.getOid());
+
+      return screen;
    }
 
    @Override
-   public boolean deleteTemplate(long templateOid){
+   public boolean deleteTemplate(long templateOid) {
       log.debug("------------------------------------------------------delete template-------------------------- --------------");
       log.info("Template id: " + templateOid);
-      String deleteRestUrl = configuration.getBeehiveRESTRootUrl()+"account/"+userService.getAccount().getOid()+"/template/"+templateOid;
-      
+      String deleteRestUrl = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid()
+            + "/template/" + templateOid;
+
       HttpDelete httpDelete = new HttpDelete();
       httpDelete.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
-            + encode(userService.getAccount().getUser().getUsername()+":"+userService.getAccount().getUser().getPassword()));
-      ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-
-         @Override
-         public String handleResponse(HttpResponse arg0) throws ClientProtocolException, IOException {
-            return null;
-         }
-
-      };
+            + encode(userService.getAccount().getUser().getUsername() + ":"
+                  + userService.getAccount().getUser().getPassword()));
       try {
          httpDelete.setURI(new URI(deleteRestUrl));
          HttpClient httpClient = new DefaultHttpClient();
-         httpClient.execute(httpDelete, responseHandler);
+         HttpResponse response = httpClient.execute(httpDelete);
+         if (200 == response.getStatusLine().getStatusCode()) {
+            return true;
+         }
       } catch (Exception e) {
          log.error("failed to delete template", e);
-         return false;
-      } 
-      return true;
+      }
+      return false;
    }
+
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
@@ -159,11 +174,16 @@ public class TemplateServiceImpl implements TemplateService {
    public void setUserService(UserService userService) {
       this.userService = userService;
    }
-   
+
+   public void setResourceService(ResourceService resourceService) {
+      this.resourceService = resourceService;
+   }
+
    /**
-    * A class to help flexjson to deserialize a UIComponent 
+    * A class to help flexjson to deserialize a UIComponent
+    * 
     * @author javen
-    *
+    * 
     */
    private static class SimpleClassLocator implements ClassLocator {
       @SuppressWarnings("unchecked")
@@ -171,9 +191,9 @@ public class TemplateServiceImpl implements TemplateService {
          return Class.forName(map.get("class").toString());
       }
    }
-   
-   private String encode(String namePassword){
+
+   private String encode(String namePassword) {
       if (namePassword == null) return null;
-      return (new sun.misc.BASE64Encoder()).encode( namePassword.getBytes() ); 
+      return (new sun.misc.BASE64Encoder()).encode(namePassword.getBytes());
    }
 }
