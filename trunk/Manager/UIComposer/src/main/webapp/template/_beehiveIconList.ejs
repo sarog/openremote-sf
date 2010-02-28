@@ -1,6 +1,0 @@
-<% for (var index in icons.icon) {%>
-<% var icon = icons.icon[index];%>
-<% if (index > 29) { break;} //TODO %>
-<label for="icon<%=icon.id %>"><input type="radio" name="icon" id="icon<%=icon.id %>" class="hidden"><img src="<%=icon.fileName %>" alt="<%=icon.name %>"></label>
-
-<% } %>
