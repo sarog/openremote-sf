@@ -461,7 +461,7 @@ public class ScreenCanvas extends ComponentContainer {
 			tabbarContainer.setHeight(44);
 			tabbarContainer.setWidth(screen.getTouchPanelDefinition()
 					.getCanvas().getWidth());
-			tabbarContainer.setBorders(true);
+			tabbarContainer.addStyleName("tabbar-background");
 			tabbarContainer.setPosition(0, screen.getTouchPanelDefinition()
 					.getCanvas().getHeight() - 44);
 			tabbarContainer.setStyleAttribute("position", "absolute");
