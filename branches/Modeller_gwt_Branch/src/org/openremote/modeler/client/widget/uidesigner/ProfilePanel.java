@@ -555,15 +555,15 @@ public class ProfilePanel extends ContentPanel {
                   tabbarWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                      @Override
                      public void afterSubmit(SubmitEvent be) {
-                    	List<UITabbarItem> tabbarItems = be.<List<UITabbarItem>>getData();
-                    	if (tabbarItems.size() > 0) {
-                    		group.setTabbarItems(tabbarItems);
-                    		for (ScreenRef screenRef : group.getScreenRefs()) {
-								screenRef.getScreen().setHasTabbar(true);
-								BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
-							}
-                    	}
-                        
+                        List<UITabbarItem> tabbarItems = be.<List<UITabbarItem>> getData();
+                        if (tabbarItems.size() > 0) {
+                           group.setTabbarItems(tabbarItems);
+                           for (ScreenRef screenRef : group.getScreenRefs()) {
+                              screenRef.getScreen().setHasTabbar(true);
+                              BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
+                           }
+                        }
+
                         tabbarWindow.hide();
                      }
                   });
