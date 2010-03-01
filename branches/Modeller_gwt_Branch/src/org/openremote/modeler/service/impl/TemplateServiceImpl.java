@@ -47,7 +47,6 @@ import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.TemplateService;
 import org.openremote.modeler.service.UserService;
-import org.openremote.modeler.utils.TemplateUtil;
 
 import flexjson.ClassLocator;
 import flexjson.JSONDeserializer;
@@ -147,7 +146,7 @@ public class TemplateServiceImpl implements TemplateService {
             .deserialize(screenJson);
       // download resources (eg:images) from beehive.
       resourceService.downloadResourcesForTemplate(template.getOid());
-      TemplateUtil.rebuildScreen(screen);
+//      TemplateUtil.rebuildScreen(screen);
       return screen;
    }
 
