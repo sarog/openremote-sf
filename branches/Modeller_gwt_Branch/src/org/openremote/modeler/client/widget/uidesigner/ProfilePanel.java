@@ -231,8 +231,10 @@ public class ProfilePanel extends ContentPanel {
       Menu newMenu = new Menu();
       newMenu.add(createNewPanelMenuItem());
       newMenu.add(createCustomPanelMenuItem());
-      newMenu.add(createNewGroupMenuItem());
-      newMenu.add(createNewScreenMenuItem());
+      final MenuItem newGroupMenu = createNewGroupMenuItem();
+      newMenu.add(newGroupMenu);
+      final MenuItem newScreenMenu = createNewScreenMenuItem();
+      newMenu.add(newScreenMenu);
       final MenuItem configTabbarItem = createConfigTabbarMenuItem();
       newMenu.add(configTabbarItem);
       newMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
@@ -244,6 +246,16 @@ public class ProfilePanel extends ContentPanel {
                enabled = true;
             }
             configTabbarItem.setEnabled(enabled);
+            if (BeanModelDataBase.panelTable.loadAll().size() > 0) {
+               newGroupMenu.setEnabled(true);
+            } else {
+               newGroupMenu.setEnabled(false);
+            }
+            if (BeanModelDataBase.groupTable.loadAll().size() > 0) {
+               newScreenMenu.setEnabled(true);
+            } else {
+               newScreenMenu.setEnabled(false);
+            }
          }
          
       });
