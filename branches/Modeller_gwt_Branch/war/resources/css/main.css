@@ -300,6 +300,6 @@ table.screen-btn-cont td.br-c{
 }
 
 .tabbar-background {
-   background-color: gray;
+   background-image: url('../../resources/images/iphone_tabbar_bg.png');
    z-index: 10000;
 }

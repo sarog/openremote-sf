@@ -21,9 +21,11 @@
 package org.openremote.modeler.action;
 
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -104,8 +106,13 @@ public class FileUploadController extends MultiActionController {
       /*File file = resourceService.uploadImage(multipartFile.getInputStream(), multipartFile.getOriginalFilename(),
             sessionId);*/
       File file = resourceService.uploadImage(multipartFile.getInputStream(), multipartFile.getOriginalFilename());
+      if ("panelImage".equals(uploadFieldName) && file.exists()){
+         BufferedImage buff = ImageIO.read(file);
+         response.getWriter().print("{\"name\": \"" + resourceService.getRelativeResourcePathByCurrentAccount(file.getName()) + "\",\"width\":" + buff.getWidth() + ",\"height\":" + buff.getHeight() + "}");
+      } else {
+         response.getWriter().print(resourceService.getRelativeResourcePathByCurrentAccount(file.getName()));
+      }
 //      response.getWriter().print(resourceService.getRelativeResourcePath(sessionId,file.getName()));
-      response.getWriter().print(resourceService.getRelativeResourcePathByCurrentAccount(file.getName()));
    }
 
 }
