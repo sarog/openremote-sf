@@ -230,6 +230,7 @@ public class ProfilePanel extends ContentPanel {
       newButton.setIcon(icon.add());
       Menu newMenu = new Menu();
       newMenu.add(createNewPanelMenuItem());
+      newMenu.add(createCustomPanelMenuItem());
       newMenu.add(createNewGroupMenuItem());
       newMenu.add(createNewScreenMenuItem());
       final MenuItem configTabbarItem = createConfigTabbarMenuItem();
@@ -428,6 +429,25 @@ public class ProfilePanel extends ContentPanel {
       return newPanelItem;
    }
    
+   private MenuItem createCustomPanelMenuItem() {
+      MenuItem customPanelItem = new MenuItem("Custom Panel");
+      customPanelItem.setIcon(icon.panelIcon());
+      customPanelItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+         public void componentSelected(MenuEvent ce) {
+            final CustomPanelWindow customPanelWindow = new CustomPanelWindow();
+            customPanelWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+               @Override
+               public void afterSubmit(SubmitEvent be) {
+                  customPanelWindow.hide();
+                  afterCreatePanel(be.<Panel> getData());
+               }
+
+            });
+            
+         }
+      });
+      return customPanelItem;
+   }
    private MenuItem createNewGroupMenuItem() {
       MenuItem newGroupItem = new MenuItem("New Group");
       newGroupItem.setIcon(icon.activityIcon());
