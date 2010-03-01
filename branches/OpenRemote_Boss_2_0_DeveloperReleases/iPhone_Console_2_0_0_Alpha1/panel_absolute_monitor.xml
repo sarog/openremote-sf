@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/controller.xsd">
+	<screens>
+		<screen id="5" name="basement" background="basement.png">		  	
+		  	<absolute left="20" top="320" width="100" height="100" >
+				<monitor id="59" />
+			</absolute>
+			<absolute left="20" top="320" width="100" height="100" >
+				<monitor id="60" />
+			</absolute>
+		</screen>
+	  <screen id="6" name="floor" background="basement.png">		  	
+		  	<absolute left="20" top="320" width="100" height="100" >
+				<monitor id="61" />
+			</absolute>
+		</screen>
+	<screens>
+	<groups>
+	  <group id="1" name="All rooms">
+	    <include type="screen" ref="5" />
+	  </group>
+	  <group id="2" name="living room">
+	    <include type="screen" ref="6" />
+	  </group>
+	</groups>
+</openremote>
