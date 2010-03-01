@@ -29,6 +29,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.utils.MultipartFileUtil;
@@ -82,15 +83,13 @@ public class FileUploadController extends MultiActionController {
    /**
     * upload an image.<br />
     * your action should be : fileUploadController.htm?method=uploadImage&uploadFieldName=<b>your
-    * upload Field Name</b> .you can find the image in {os.webapps.root}/../tmp/[user_session_id].<br />
-    * {os.webapps.root} is defined in /config/config.properties.
+    * upload Field Name</b> .
     * 
     * @param request
     * @param response
     * @throws IOException
     */
    public void uploadImage(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//      String sessionId = request.getSession().getId();
       String uploadFieldName = request.getParameter("uploadFieldName");
 
       if (uploadFieldName == null || uploadFieldName.trim().length() == 0) {
@@ -103,16 +102,28 @@ public class FileUploadController extends MultiActionController {
       if (multipartFile.getSize() == 0 || multipartFile.getSize() > maxImageSize) {
          return;
       }
-      /*File file = resourceService.uploadImage(multipartFile.getInputStream(), multipartFile.getOriginalFilename(),
-            sessionId);*/
+
       File file = resourceService.uploadImage(multipartFile.getInputStream(), multipartFile.getOriginalFilename());
-      if ("panelImage".equals(uploadFieldName) && file.exists()){
-         BufferedImage buff = ImageIO.read(file);
-         response.getWriter().print("{\"name\": \"" + resourceService.getRelativeResourcePathByCurrentAccount(file.getName()) + "\",\"width\":" + buff.getWidth() + ",\"height\":" + buff.getHeight() + "}");
+      String delimiter = "|";
+      String escapedChar = "[ \\+\\-\\*%\\!\\(\\\"')_#;/?:&;=$,#<>]";
+      String fileName = file.getName();
+      fileName = fileName.replaceAll(escapedChar, delimiter);
+      String extension = FilenameUtils.getExtension(fileName);
+      fileName = fileName.replace("." + extension, "");
+      fileName += System.currentTimeMillis();
+      fileName += "." + extension;
+
+      File newFile = new File(file.getParent() + File.separator + fileName);
+      file.renameTo(newFile);
+
+      if ("panelImage".equals(uploadFieldName) && newFile.exists()) {
+         BufferedImage buff = ImageIO.read(newFile);
+         response.getWriter().print(
+               "{\"name\": \"" + resourceService.getRelativeResourcePathByCurrentAccount(newFile.getName())
+                     + "\",\"width\":" + buff.getWidth() + ",\"height\":" + buff.getHeight() + "}");
       } else {
-         response.getWriter().print(resourceService.getRelativeResourcePathByCurrentAccount(file.getName()));
+         response.getWriter().print(resourceService.getRelativeResourcePathByCurrentAccount(newFile.getName()));
       }
-//      response.getWriter().print(resourceService.getRelativeResourcePath(sessionId,file.getName()));
    }
 
 }
