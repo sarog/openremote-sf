@@ -26,6 +26,11 @@ package org.openremote.modeler.exception;
  */
 @SuppressWarnings("serial")
 public class BeehiveNotAvailableException extends RuntimeException {
+
+   public BeehiveNotAvailableException() {
+      super();
+   }
+
    public BeehiveNotAvailableException(String s) {
       super(s);
    }
