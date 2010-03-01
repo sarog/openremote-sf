@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>	
+	<dict> <!-- Auto Discovery switch, section 0 -->
+		<key>header</key>
+		<string></string>
+		<key>item</key>
+		<dict>
+			<key>name</key>
+			<string>Auto Discovery</string>
+			<key>value</key>
+			<false/>
+		</dict>
+		<key>footer</key>
+		<string>Turn off auto-discovery to input controller URL manually.</string>
+	</dict>
+	<dict> <!-- Auto Discovery server URLs, section 1 -->
+		<key>header</key>
+		<string>Choose Controller:</string>
+		<key>servers</key>
+		<array/>
+		<key>footer</key>
+		<string></string>
+	</dict>
+	<dict> <!-- Customized server URLs, section 2 -->
+		<key>header</key>
+		<string>Choose Controller:</string>
+		<key>servers</key>
+		<array>
+			<dict>
+				<key>choose</key>
+				<true/>
+				<key>url</key>
+				<string>http://0.0.0.0:8080/controller</string>
+			</dict>
+		</array>
+		<key>footer</key>
+		<string></string>
+	</dict>
+	<dict> <!-- Panel Identity, section 3 -->
+		<key>header</key>
+		<string>Choose Panel Identity:</string>
+		<key>item</key>
+		<dict>
+			<key>name</key>
+			<string>Panel</string>
+			<key>identity</key>
+			<string>None</string>
+		</dict>
+		<key>footer</key>
+		<string></string>
+	</dict>
+</array>
+</plist>
