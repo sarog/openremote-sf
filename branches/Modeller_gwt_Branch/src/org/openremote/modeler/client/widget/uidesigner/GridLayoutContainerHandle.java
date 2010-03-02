@@ -44,6 +44,7 @@ public class GridLayoutContainerHandle extends ScreenComponent {
       handle.addStyleName("move-cursor");
       add(handle);
       gridlayoutContainer.setPosition(DEFALUT_HANDLE_WIDTH, DEFAULT_HANDLE_HEIGHT);
+      gridlayoutContainer.addStyleName("cursor-move");
       add(gridlayoutContainer);
    }
 
