@@ -21,10 +21,9 @@ package org.openremote.beehive.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import org.openremote.beehive.Constant;
 
 /**
  * Defines UI templating functionality in the UI designer.
@@ -51,7 +50,9 @@ public class Template extends BusinessEntity {
       this.name = name;
    }
    
-   @Column(nullable = false, columnDefinition = Constant.TEXT_COLUMN_DEFINITION)
+//   @Column(nullable = false, columnDefinition = Constant.TEXT_COLUMN_DEFINITION)
+   @Column(nullable = false )
+   @Lob
    public String getContent() {
       return content;
    }
