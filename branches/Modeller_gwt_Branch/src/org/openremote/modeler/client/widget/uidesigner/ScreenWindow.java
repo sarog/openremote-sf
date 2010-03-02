@@ -211,6 +211,12 @@ public class ScreenWindow extends FormWindow {
                      ScreenWindow.this.unmask();
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));
                   }
+
+                  @Override
+                  public void onFailure(Throwable caught) {
+                     MessageBox.alert("Error", "failed to create screen by template.", null);
+                  }
+                  
                   
                });
             }
