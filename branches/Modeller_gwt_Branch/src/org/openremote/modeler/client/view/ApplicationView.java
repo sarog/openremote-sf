@@ -212,7 +212,7 @@ public class ApplicationView implements View {
       saveMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          @Override
          public void componentSelected(MenuEvent ce) {
-            uiDesignerView.autoSaveUiDesignerLayout();
+            uiDesignerView.saveUiDesignerLayout();
          }
       });
       return saveMenuItem;
