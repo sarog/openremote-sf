@@ -192,9 +192,20 @@ public class ScreenCanvas extends ComponentContainer {
             } else if (data instanceof LayoutContainer) {
                if (data instanceof GridLayoutContainerHandle) {
                   GridLayoutContainerHandle gridContainer = (GridLayoutContainerHandle) data;
-                  gridContainer.setPosition(e.getClientX() - absolutePosition.x - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, e
-                        .getClientY()
-                        - absolutePosition.y - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
+                  int gridX = e.getClientX() - absolutePosition.x;
+                  int gridY = e.getClientY() - absolutePosition.y;
+                  if (gridX < 0) {
+                     gridX = 0;
+                  } else if (gridX > getWidth() - moveBackGround.getWidth()) {
+                     gridX = getWidth() - moveBackGround.getWidth();
+                  }
+                  if (gridY < 0) {
+                     gridY = 0;
+                  } else if(gridY > getHeight() - moveBackGround.getHeight()) {
+                     gridY = getHeight() - moveBackGround.getHeight();
+                  }
+                  gridContainer.setPosition(gridX - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, gridY
+                        - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
                   WidgetSelectionUtil.setSelectWidget(gridContainer);
                } else {
                   Point position = getPosition(e);
