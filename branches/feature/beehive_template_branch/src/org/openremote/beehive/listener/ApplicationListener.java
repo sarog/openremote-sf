@@ -71,7 +71,9 @@ public class ApplicationListener implements ServletContextListener {
       SVNUrl svnUrl = null;
       File workCopyDir = new File(configuration.getWorkCopyDir());
       svnUrl = checkRepoExists(svnDir, svnRepo, svnUrl, workCopyDir);
-      checkWorkCopyExists(svnUrl, workCopyDir);
+      if (svnUrl != null) {
+         checkWorkCopyExists(svnUrl, workCopyDir);
+      }
    }
 
    private SVNUrl checkRepoExists(String svnDir, File svnRepo, SVNUrl svnUrl, File workCopyDir) {
@@ -79,9 +81,9 @@ public class ApplicationListener implements ServletContextListener {
          svnUrl = new SVNUrl(svnDir);
          svnClient.getInfo(svnUrl);
       } catch (MalformedURLException e) {
-         logger.error("Create SVNUrl from " + svnDir + " error!", e);
+         logger.error("Create SVNUrl from " + svnDir + " failed!");
       } catch (NullPointerException e) {
-         logger.error("Create svn client from " + svnUrl + " error!", e);
+         logger.error("Create svn client from " + svnUrl + " failed!");
       } catch (SVNClientException e) {
          try {
             if (svnRepo.exists()) {
@@ -107,10 +109,11 @@ public class ApplicationListener implements ServletContextListener {
             svnClient.checkout(svnUrl, workCopyDir, SVNRevision.HEAD, true);
             logger.info("Checkout " + svnUrl + " to " + workCopyDir + " success.");
          } catch (SVNClientException e1) {
-            logger
-                  .error("Create svn repository " + svnDir + " failure! Maybe you have not install the svn server.", e1);
+            logger.error("Unable to create local repository '" + svnDir
+                  + "', please install svn server to sync with LIRC.");
+            return null;
          } catch (IOException e2) {
-            logger.error("Can't clean dir " + svnRepo + " or " + workCopyDir, e2);
+            logger.error("Can't clean dir " + svnRepo + " or " + workCopyDir);
          }
       }
       return svnUrl;
@@ -120,7 +123,7 @@ public class ApplicationListener implements ServletContextListener {
       try {
          svnClient.getInfo(workCopyDir);
       } catch (NullPointerException e) {
-         logger.error("Create svn client from " + svnUrl + " error!", e);
+         logger.error("Create svn client from " + svnUrl + " failed!");
       } catch (SVNClientException e) {
          try {
             if (workCopyDir.exists()) {
@@ -135,9 +138,9 @@ public class ApplicationListener implements ServletContextListener {
             svnClient.checkout(svnUrl, workCopyDir, SVNRevision.HEAD, true);
             logger.info("Checkout " + svnUrl + " to " + workCopyDir + " success.");
          } catch (SVNClientException e1) {
-            logger.error("Can't checkout " + svnUrl + " to " + workCopyDir, e1);
+            logger.error("Can't checkout " + svnUrl + " to " + workCopyDir);
          } catch (IOException e1) {
-            logger.error("Can't clean dir " + workCopyDir, e1);
+            logger.error("Can't clean dir " + workCopyDir);
          }
       }
    }
