@@ -73,6 +73,16 @@ public class HTTPUtil {
         int code = response.getStatusLine().getStatusCode();
         return code;
     }
+    
+    public static int sendCommand(String url, int id, String command)
+    throws ClientProtocolException, IOException {
+       String connectString = url + "/rest/control/" + id + "/" + command;
+       HttpClient client = new DefaultHttpClient();
+       HttpPost post = new HttpPost(connectString);
+       HttpResponse response = client.execute(post);
+       int code = response.getStatusLine().getStatusCode();
+       return code;
+    }
 
     public static List<String> getPanels(String serverUrl){
        List<String> panelList = new ArrayList<String>();

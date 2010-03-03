@@ -19,13 +19,22 @@
 */
 package org.openremote.android.console.view;
 
-import org.openremote.android.console.bindings.XButton;
+import java.io.IOException;
+import java.util.Timer;
+
+import org.apache.http.client.ClientProtocolException;
+import org.openremote.android.console.HTTPUtil;
 import org.openremote.android.console.bindings.Control;
+import org.openremote.android.console.bindings.XButton;
+import org.openremote.android.console.model.AppSettingsModel;
 
 import android.content.Context;
+import android.util.Log;
 
 public class ControlView extends ComponentView {
 
+   private Timer timer;
+   
    protected ControlView(Context context) {
       super(context);
    }
@@ -37,4 +46,28 @@ public class ControlView extends ComponentView {
       }
       return controlView;
    }
+   
+   public void sendCommandRequest(String commandType) {
+      try {
+         int responseCode = HTTPUtil.sendCommand(AppSettingsModel.getCurrentServer(getContext()), getComponent().getComponentId(), commandType);
+         Log.e("response code", ""+responseCode);
+      } catch (ClientProtocolException e) {
+         e.printStackTrace();
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+      
+   }
+   
+   public void cancelTimer() {
+      if(timer != null) {
+         timer.cancel();
+      }
+      timer = null;
+   }
+
+   public void setTimer(Timer timer) {
+      this.timer = timer;
+   }
+   
 }

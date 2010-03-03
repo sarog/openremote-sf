@@ -24,6 +24,7 @@ import org.w3c.dom.Node;
 @SuppressWarnings("serial")
 public class Component extends BusinessEntity {
 
+   private int componentId;
    public static Component buildWithXML(Node node) {
       if ("label".equals(node.getNodeName())) {
       } else if("image".equals(node.getNodeName())) {
@@ -31,6 +32,12 @@ public class Component extends BusinessEntity {
          return Control.buildWithXML(node);
       }
       return null;
+   }
+   public int getComponentId() {
+      return componentId;
+   }
+   public void setComponentId(int componentId) {
+      this.componentId = componentId;
    }
 
 }
