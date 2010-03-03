@@ -27,6 +27,8 @@ import org.openremote.android.console.HTTPUtil;
 import org.openremote.android.console.bindings.Control;
 import org.openremote.android.console.bindings.XButton;
 import org.openremote.android.console.model.AppSettingsModel;
+import org.openremote.android.console.model.ControllerException;
+import org.openremote.android.console.model.ViewHelper;
 
 import android.content.Context;
 import android.util.Log;
@@ -50,11 +52,11 @@ public class ControlView extends ComponentView {
    public void sendCommandRequest(String commandType) {
       try {
          int responseCode = HTTPUtil.sendCommand(AppSettingsModel.getCurrentServer(getContext()), getComponent().getComponentId(), commandType);
-         Log.e("response code", ""+responseCode);
+         handleServerErrorWithStatusCode(responseCode);
       } catch (ClientProtocolException e) {
-         e.printStackTrace();
+         cancelTimer();
       } catch (IOException e) {
-         e.printStackTrace();
+         cancelTimer();
       }
       
    }
@@ -70,4 +72,16 @@ public class ControlView extends ComponentView {
       this.timer = timer;
    }
    
+   public void handleServerErrorWithStatusCode(int statusCode) {
+      if (statusCode != 200) {
+//         if (statusCode != 401) {
+//            [[DataBaseService sharedDataBaseService] saveCurrentUser];
+//         } else {
+//            [Definition sharedDefinition].password = nil;
+//         }
+
+         cancelTimer();
+         ViewHelper.showAlertViewWithTitle(getContext(), "Send Request Error", ControllerException.exceptionMessageOfCode(statusCode));
+      }
+   }
 }
