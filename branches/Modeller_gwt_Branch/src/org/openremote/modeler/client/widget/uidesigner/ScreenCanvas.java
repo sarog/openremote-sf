@@ -167,6 +167,10 @@ public class ScreenCanvas extends ComponentContainer {
          @Override
          public void dragLeave(DNDEvent e) {
             moveBackGround.hide();
+            if (e.getData() instanceof GridLayoutContainerHandle) {
+               GridLayoutContainerHandle gridContainer = (GridLayoutContainerHandle)e.getData();
+               gridContainer.show();
+            }
             super.dragLeave(e);
          }
 
@@ -221,9 +225,9 @@ public class ScreenCanvas extends ComponentContainer {
                   BeanModel dataModel = models.get(0).get("model");
                   ComponentContainer componentContainer = new ComponentContainer(ScreenCanvas.this);
                   if (dataModel.getBean() instanceof UIGrid) {
-                     UIGrid grid = new UIGrid(e.getXY().x - getAbsoluteLeft() + GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, e
-                           .getXY().y
-                           - getAbsoluteTop() + GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT, UIGrid.DEFALUT_WIDTH,
+                     UIGrid grid = new UIGrid(e.getXY().x - getAbsoluteLeft()
+                           + GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, e.getXY().y - getAbsoluteTop()
+                           + GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT, UIGrid.DEFALUT_WIDTH,
                            UIGrid.DEFAULT_HEIGHT, UIGrid.DEFALUT_ROW_COUNT, UIGrid.DEFAULT_COL_COUNT);
                      screen.addGrid(grid);
                      componentContainer = createGridLayoutContainer(grid);
@@ -433,7 +437,6 @@ public class ScreenCanvas extends ComponentContainer {
    public Screen getScreen() {
       return screen;
    }
-   
    
    public LayoutContainer getMoveBackGround() {
       return moveBackGround;
