@@ -19,6 +19,9 @@
 */
 package org.openremote.android.console.view;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.bindings.XButton;
 
@@ -32,8 +35,12 @@ import android.widget.FrameLayout;
 public class ButtonView extends ControlView {
 
    private Button uiButton;
+   private Drawable defaultImage;
+   private Drawable pressedImage;
+   public final static long REPEAT_CMD_INTERVAL = 300;
    public ButtonView(Context context, XButton button) {
       super(context);
+      setComponent(button);
       if (button != null) {
          uiButton  = new Button(context);
          initButton(button);
@@ -41,11 +48,11 @@ public class ButtonView extends ControlView {
    }
    
    private void initButton(final XButton button) {
-      uiButton.setId(button.getButtonId());
+      uiButton.setId(button.getComponentId());
       uiButton.setText(button.getName());
       uiButton.setTextSize(10);
       if (button.getDefaultImage() != null) {
-         final Drawable defaultImage = Drawable.createFromPath(Constants.FILE_FOLDER_PATH
+         defaultImage = Drawable.createFromPath(Constants.FILE_FOLDER_PATH
                + button.getDefaultImage().getSrc());
          if (defaultImage != null) {
             uiButton.setText(null);
@@ -53,32 +60,48 @@ public class ButtonView extends ControlView {
             uiButton.setLayoutParams(new FrameLayout.LayoutParams(defaultImage.getIntrinsicWidth(), defaultImage
                   .getIntrinsicHeight()));
          }
-         View.OnTouchListener touchListener = new OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-               if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                  if (button.getPressedImage() != null) {
-                     Drawable pressedImage = Drawable.createFromPath(Constants.FILE_FOLDER_PATH
-                           + button.getPressedImage().getSrc());
-                     if (pressedImage != null) {
-                        uiButton.setBackgroundDrawable(pressedImage);
-                     } else {
-                        defaultImage.setAlpha(200);
-                        uiButton.setBackgroundDrawable(defaultImage);
-                     }
-                  } else {
-                     defaultImage.setAlpha(200);
-                     uiButton.setBackgroundDrawable(defaultImage);
+      }
+      if (button.getPressedImage() != null) {
+         pressedImage = Drawable.createFromPath(Constants.FILE_FOLDER_PATH + button.getPressedImage().getSrc());
+      }
+      View.OnTouchListener touchListener = new OnTouchListener() {
+         public boolean onTouch(View v, MotionEvent event) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+               cancelTimer();
+               if (pressedImage != null) {
+                  uiButton.setBackgroundDrawable(pressedImage);
+               } else if (defaultImage != null) {
+                  defaultImage.setAlpha(200);
+                  uiButton.setBackgroundDrawable(defaultImage);
+               }
+               if (button.isHasControlCommand()) {
+                  sendCommand();
+                  if (button.isRepeat()) {
+                     Timer timer = new Timer();
+                     timer.schedule(new TimerTask() {
+                        public void run() {
+                           sendCommand();
+                        }
+                     }, REPEAT_CMD_INTERVAL, REPEAT_CMD_INTERVAL);
+                     setTimer(timer);
                   }
-               } else if (event.getAction() == MotionEvent.ACTION_UP) {
+               }
+            } else if (event.getAction() == MotionEvent.ACTION_UP) {
+               cancelTimer();
+               if (defaultImage != null) {
                   defaultImage.setAlpha(255);
                   uiButton.setBackgroundDrawable(defaultImage);
                }
-               return false;
             }
-         };
-         uiButton.setOnTouchListener(touchListener);
-      }
+            return false;
+         }
+      };
+      uiButton.setOnTouchListener(touchListener);
+      
       addView(uiButton);
    }
 
+   private void sendCommand() {
+      sendCommandRequest("click");
+   }
 }

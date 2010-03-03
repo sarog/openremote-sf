@@ -27,6 +27,8 @@ import android.widget.FrameLayout;
 
 public class ComponentView extends FrameLayout {
 
+   private Component component;
+   
    protected ComponentView(Context context) {
       super(context);
    }
@@ -37,6 +39,14 @@ public class ComponentView extends FrameLayout {
          componentView = ControlView.buildWithControl(context, (Control)component);
       }
       return componentView;
+   }
+
+   public Component getComponent() {
+      return component;
+   }
+
+   public void setComponent(Component component) {
+      this.component = component;
    }
 
 }
