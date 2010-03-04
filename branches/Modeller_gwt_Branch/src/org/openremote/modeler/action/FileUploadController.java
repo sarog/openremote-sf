@@ -104,7 +104,7 @@ public class FileUploadController extends MultiActionController {
       }
 
       File file = resourceService.uploadImage(multipartFile.getInputStream(), multipartFile.getOriginalFilename());
-      String delimiter = "|";
+      String delimiter = "";
       String escapedChar = "[ \\+\\-\\*%\\!\\(\\\"')_#;/?:&;=$,#<>]";
       String fileName = file.getName();
       fileName = fileName.replaceAll(escapedChar, delimiter);
