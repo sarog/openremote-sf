@@ -230,8 +230,11 @@ public class ProfilePanel extends ContentPanel {
       newButton.setIcon(icon.add());
       Menu newMenu = new Menu();
       newMenu.add(createNewPanelMenuItem());
-      newMenu.add(createNewGroupMenuItem());
-      newMenu.add(createNewScreenMenuItem());
+      newMenu.add(createCustomPanelMenuItem());
+      final MenuItem newGroupMenu = createNewGroupMenuItem();
+      newMenu.add(newGroupMenu);
+      final MenuItem newScreenMenu = createNewScreenMenuItem();
+      newMenu.add(newScreenMenu);
       final MenuItem configTabbarItem = createConfigTabbarMenuItem();
       newMenu.add(configTabbarItem);
       newMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
@@ -243,6 +246,16 @@ public class ProfilePanel extends ContentPanel {
                enabled = true;
             }
             configTabbarItem.setEnabled(enabled);
+            if (BeanModelDataBase.panelTable.loadAll().size() > 0) {
+               newGroupMenu.setEnabled(true);
+            } else {
+               newGroupMenu.setEnabled(false);
+            }
+            if (BeanModelDataBase.groupTable.loadAll().size() > 0) {
+               newScreenMenu.setEnabled(true);
+            } else {
+               newScreenMenu.setEnabled(false);
+            }
          }
          
       });
@@ -428,6 +441,25 @@ public class ProfilePanel extends ContentPanel {
       return newPanelItem;
    }
    
+   private MenuItem createCustomPanelMenuItem() {
+      MenuItem customPanelItem = new MenuItem("Custom Panel");
+      customPanelItem.setIcon(icon.panelIcon());
+      customPanelItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+         public void componentSelected(MenuEvent ce) {
+            final CustomPanelWindow customPanelWindow = new CustomPanelWindow();
+            customPanelWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+               @Override
+               public void afterSubmit(SubmitEvent be) {
+                  customPanelWindow.hide();
+                  afterCreatePanel(be.<Panel> getData());
+               }
+
+            });
+            
+         }
+      });
+      return customPanelItem;
+   }
    private MenuItem createNewGroupMenuItem() {
       MenuItem newGroupItem = new MenuItem("New Group");
       newGroupItem.setIcon(icon.activityIcon());
@@ -523,15 +555,15 @@ public class ProfilePanel extends ContentPanel {
                   tabbarWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                      @Override
                      public void afterSubmit(SubmitEvent be) {
-                    	List<UITabbarItem> tabbarItems = be.<List<UITabbarItem>>getData();
-                    	if (tabbarItems.size() > 0) {
-                    		group.setTabbarItems(tabbarItems);
-                    		for (ScreenRef screenRef : group.getScreenRefs()) {
-								screenRef.getScreen().setHasTabbar(true);
-								BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
-							}
-                    	}
-                        
+                        List<UITabbarItem> tabbarItems = be.<List<UITabbarItem>> getData();
+                        if (tabbarItems.size() > 0) {
+                           group.setTabbarItems(tabbarItems);
+                           for (ScreenRef screenRef : group.getScreenRefs()) {
+                              screenRef.getScreen().setHasTabbar(true);
+                              BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
+                           }
+                        }
+
                         tabbarWindow.hide();
                      }
                   });

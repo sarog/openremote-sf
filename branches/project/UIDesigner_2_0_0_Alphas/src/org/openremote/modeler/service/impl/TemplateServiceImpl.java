@@ -67,8 +67,7 @@ public class TemplateServiceImpl implements TemplateService {
 
    @Override
    public Template saveTemplate(Template screenTemplate) {
-      log.debug("------------------------------------------------------save template-------------------------- --------------");
-      log.info("Template Name: " + screenTemplate.getName());
+      log.debug("save Template Name: " + screenTemplate.getName());
       screenTemplate.setContent(getTemplateContent(screenTemplate.getScreen()));
       List<NameValuePair> params = new ArrayList<NameValuePair>();
       params.add(new BasicNameValuePair("name", screenTemplate.getName()));
@@ -93,7 +92,7 @@ public class TemplateServiceImpl implements TemplateService {
 
             @Override
             public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-               
+
                InputStreamReader reader = new InputStreamReader(response.getEntity().getContent());
                BufferedReader buffReader = new BufferedReader(reader);
                StringBuilder sb = new StringBuilder();
@@ -106,14 +105,18 @@ public class TemplateServiceImpl implements TemplateService {
             }
 
          });
-         long templateOid = Long.parseLong(result.substring(result.indexOf("<id>") + "<id>".length(), result
-               .indexOf("</id>")));
-         screenTemplate.setOid(templateOid);
-         // save the resources (eg:images) to beehive.
-         resourceService.saveTemplateResourcesToBeehive(screenTemplate);
+         if (result.indexOf("<id>") != -1 && result.indexOf("</id>") != -1) {
+            long templateOid = Long.parseLong(result.substring(result.indexOf("<id>") + "<id>".length(), result
+                  .indexOf("</id>")));
+            screenTemplate.setOid(templateOid);
+            // save the resources (eg:images) to beehive.
+            resourceService.saveTemplateResourcesToBeehive(screenTemplate);
+         } else {
+            throw new BeehiveNotAvailableException();
+         }
       } catch (Exception e) {
          log.error("faild to save a screen to a template", e);
-         throw new RuntimeException("faild to save a screen to a template",e);
+         throw new BeehiveNotAvailableException("faild to save a screen to a template", e);
       }
 
       log.debug("save Template Ok!");
@@ -138,17 +141,18 @@ public class TemplateServiceImpl implements TemplateService {
       String screenJson = template.getContent();
       Screen screen = new JSONDeserializer<Screen>().use(null, Screen.class).use("absolutes.values.uiComponent",
             new SimpleClassLocator()).use("grids.values.cells.values.uiComponent", new SimpleClassLocator())
+            .use("absolutes.values.uiComponent.uiCommand",new SimpleClassLocator())
+            .use("grids.values.cells.values.uiComponent.uiCommand",new SimpleClassLocator())
             .deserialize(screenJson);
       // download resources (eg:images) from beehive.
       resourceService.downloadResourcesForTemplate(template.getOid());
-
+//      TemplateUtil.rebuildScreen(screen);
       return screen;
    }
 
    @Override
    public boolean deleteTemplate(long templateOid) {
-      log.debug("------------------------------------------------------delete template-------------------------- --------------");
-      log.info("Template id: " + templateOid);
+      log.debug("Delete Template id: " + templateOid);
       String deleteRestUrl = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid()
             + "/template/" + templateOid;
 
@@ -167,7 +171,7 @@ public class TemplateServiceImpl implements TemplateService {
          }
       } catch (Exception e) {
          log.error("failed to delete template", e);
-         throw new BeehiveNotAvailableException("failed to delete template ",e);
+         throw new BeehiveNotAvailableException("failed to delete template ", e);
       }
    }
 

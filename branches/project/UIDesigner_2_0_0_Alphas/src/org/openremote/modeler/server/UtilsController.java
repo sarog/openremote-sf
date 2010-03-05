@@ -37,6 +37,7 @@ import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.TemplateService;
+import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.XmlParser;
 
 /**
@@ -51,6 +52,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    /** The resource service. */
    private ResourceService resourceService;
    private TemplateService screenTemplateService;
+   private UserService userService;
    
    /** The configuration. */
    private Configuration configuration;
@@ -118,6 +120,15 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
     */
    public String beehiveRestIconUrl() {
       return configuration.getBeehiveRestIconUrl();
+   }
+
+   
+   public UserService getUserService() {
+      return userService;
+   }
+
+   public void setUserService(UserService userService) {
+      this.userService = userService;
    }
 
    /**
@@ -189,7 +200,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    @Override
    public void downLoadImage(String url) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File sessionFolder = new File(pathConfig.userFolder(this.getThreadLocalRequest().getSession().getId()));
+      File sessionFolder = new File(pathConfig.userFolder(userService.getAccount()));
       if (!sessionFolder.exists()) {
          sessionFolder.mkdirs();
       }
