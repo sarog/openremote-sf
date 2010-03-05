@@ -622,6 +622,7 @@ public class ResourceServiceImpl implements ResourceService {
       this.userService = userService;
    }
 
+   @SuppressWarnings("unchecked")
    public String getControllerXML(Collection<Screen> screens,long maxOid) {
       
       /*
@@ -638,12 +639,12 @@ public class ResourceServiceImpl implements ResourceService {
       ProtocolCommandContainer eventContainer = new ProtocolCommandContainer();
       ProtocolContainer protocolContainer = ProtocolContainer.getInstance();
       Collection<Sensor> sensors = getAllSensorWithoutDuplicate(screens,maxId);
-      Collection<UIComponent> switchs = uiComponentBox.getUIComponentsByType(UISwitch.class);
-      Collection<UIComponent> buttons = uiComponentBox.getUIComponentsByType(UIButton.class);
-      Collection<UIComponent> gestures = uiComponentBox.getUIComponentsByType(Gesture.class);
-      Collection<UIComponent> uiSliders = uiComponentBox.getUIComponentsByType(UISlider.class);
-      Collection<UIComponent> uiImages = uiComponentBox.getUIComponentsByType(UIImage.class);
-      Collection<UIComponent> uiLabels = uiComponentBox.getUIComponentsByType(UILabel.class);
+      Collection<UISwitch> switchs = (Collection<UISwitch>) uiComponentBox.getUIComponentsByType(UISwitch.class);
+      Collection<UIComponent> buttons = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIButton.class);
+      Collection<UIComponent> gestures = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(Gesture.class);
+      Collection<UIComponent> uiSliders = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UISlider.class);
+      Collection<UIComponent> uiImages = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIImage.class);
+      Collection<UIComponent> uiLabels = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UILabel.class);
       Collection<Config> configs = controllerConfigService.listAllForCurrentAccount();
       
       context.put("switchs", switchs);
@@ -808,7 +809,7 @@ public class ResourceServiceImpl implements ResourceService {
          FileUtilsExt.writeStringToFile(controllerXMLFile, controllerXmlContent);
          // FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
 
-         if (sectionIds != "") {
+         if (sectionIds!=null && sectionIds != "") {
             FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
          }
          if (lircdFile.exists() && lircdFile.length() == 0) {
@@ -999,10 +1000,12 @@ public class ResourceServiceImpl implements ResourceService {
       List<String> ignoreExtentions = new ArrayList<String>();
       ignoreExtentions.add("zip");
       ignoreExtentions.add("xml");
+      ignoreExtentions.add("obj");
       return getResourceZipFile(ignoreExtentions);
    }
    private File getExportResource() {
       List<String> ignoreExtentions = new ArrayList<String>();
+      ignoreExtentions.add("zip");
       return getResourceZipFile(ignoreExtentions);
    }
 }
