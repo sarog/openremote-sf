@@ -73,7 +73,7 @@ import com.extjs.gxt.ui.client.widget.layout.FillLayout;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 /**
- * A wizard for creating a new screen from existed groups.
+ * A wizard for creating a new screen from existing groups.
  *
  * @author Javen
  * @author <a href = "mailto:juha@openremote.org">Juha Lindfors</a>
