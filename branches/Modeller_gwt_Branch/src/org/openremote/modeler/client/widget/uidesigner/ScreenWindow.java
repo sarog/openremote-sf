@@ -73,8 +73,10 @@ import com.extjs.gxt.ui.client.widget.layout.FillLayout;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 /**
- * A wizard for creating a new screen from existed groups. 
+ * A wizard for creating a new screen from existed groups.
+ *
  * @author Javen
+ * @author <a href = "mailto:juha@openremote.org">Juha Lindfors</a>
  *
  */
 public class ScreenWindow extends FormWindow {
@@ -394,7 +396,7 @@ public class ScreenWindow extends FormWindow {
 
          @Override
          public void onFailure(Throwable caught) {
-            MessageBox.alert("falid", "unable to load the template information from beehive", null);
+            MessageBox.alert("Error", "Unable to load template information from Beehive", null);
          }
 
       });
@@ -413,7 +415,7 @@ public class ScreenWindow extends FormWindow {
          }
          @Override
          public void onFailure(Throwable caught) {
-            MessageBox.alert("falid", "unable to load the template information from beehive", null);
+            MessageBox.alert("Error", "Unable to load template information from Beehive", null);
          }
       });
       ScreenWindow.this.mask("loading ...");
