@@ -212,6 +212,11 @@ public class UtilsProxy {
          public void onSuccess(String result) {
            callback.onSuccess(result);
          }
+
+         @Override
+         public void onFailure(Throwable caught) {
+            callback.onFailure(caught);
+         }
          
       });
    }
