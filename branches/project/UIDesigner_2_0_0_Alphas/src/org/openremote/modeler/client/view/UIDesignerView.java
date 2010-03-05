@@ -47,6 +47,7 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
+import com.extjs.gxt.ui.client.widget.InfoConfig;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
@@ -106,7 +107,7 @@ public class UIDesignerView extends TabItem implements View {
          @Override
          public void onFailure(Throwable caught) {
             timer.cancel();
-            MessageBox.alert("ERROR", "Server error, UI designer layout save failed.", null);
+            Info.display(new InfoConfig("Error","failed to save UI information "+DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
          }
          
       });
@@ -123,7 +124,7 @@ public class UIDesignerView extends TabItem implements View {
          @Override
          public void onFailure(Throwable caught) {
             timer.cancel();
-            MessageBox.alert("ERROR", "Server error, UI designer layout save failed.", null);
+            Info.display(new InfoConfig("Error","failed to save UI information "+DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
          }
          
       });
