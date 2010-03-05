@@ -195,7 +195,7 @@ public class ScreenWindow extends FormWindow {
          private void buildScreenFromTemplate(FormEvent be, final GroupRef groupRef) {
             ModelData templateModelData = templateView.getSelectionModel().getSelectedItem();
             if (templateModelData == null) {
-               MessageBox.alert("Error", "Please select a Template.", null);
+               MessageBox.alert("Error", "Please select a template.", null);
                be.cancelBubble();
             } else {
                Long oid = templateModelData.get("id");
@@ -230,14 +230,14 @@ public class ScreenWindow extends FormWindow {
 
                   @Override
                   public void onFailure(Throwable caught) {
-                     MessageBox.alert("Error", "failed to create screen by template.", null);
+                     MessageBox.alert("Error", "Failed to create screen from template.", null);
                      ScreenWindow.this.unmask();
                   }
                   
                   
                });
             }
-            ScreenWindow.this.mask("Download resources for this template... ");
+            ScreenWindow.this.mask("Downloading resources for this template... ");
          }
 
       });
