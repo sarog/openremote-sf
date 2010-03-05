@@ -106,6 +106,8 @@ import org.springframework.ui.velocity.VelocityEngineUtils;
  * The Class ResourceServiceImpl.
  * 
  * @author Allen, Handy, Javen
+ * @author <a href = "mailto:juha@openremote.org">Juha Lindfors</a>
+ *
  */
 public class ResourceServiceImpl implements ResourceService {
 
@@ -190,7 +192,6 @@ public class ResourceServiceImpl implements ResourceService {
       try {
          lircUrl = new URL(restAPIUrl + "?ids=" + ids);
       } catch (MalformedURLException e) {
-         LOGGER.error("Lirc file url is invalid", e);
          throw new IllegalArgumentException("Lirc file url is invalid", e);
       }
       return lircUrl;
@@ -205,7 +206,6 @@ public class ResourceServiceImpl implements ResourceService {
          try {
             FileUtils.deleteDirectory(tmpDir);
          } catch (IOException e) {
-            LOGGER.error("Delete temp dir Occur IOException", e);
             throw new FileOperationException("Delete temp dir Occur IOException", e);
          }
       }
@@ -241,7 +241,6 @@ public class ResourceServiceImpl implements ResourceService {
 
          }
       } catch (IOException e) {
-         LOGGER.error("Get import file from zip file Occur IOException", e);
          throw new FileOperationException("Get import file from zip file Occur IOException", e);
       } finally {
          try {
@@ -310,7 +309,6 @@ public class ResourceServiceImpl implements ResourceService {
          fileOutputStream = new FileOutputStream(file);
          IOUtils.copy(inputStream, fileOutputStream);
       } catch (IOException e) {
-         LOGGER.error("Save uploaded image to file occur IOException.", e);
          throw new FileOperationException("Save uploaded image to file occur IOException.", e);
       } finally {
          try {
@@ -608,8 +606,7 @@ public class ResourceServiceImpl implements ResourceService {
          context.put("screens", screens);
          return VelocityEngineUtils.mergeTemplateIntoString(velocity, PANEL_XML_TEMPLATE, context);
       } catch (Exception e) {
-         e.printStackTrace();
-         throw new RuntimeException("faild when get panel.xml by template", e);
+         throw new RuntimeException("Failed to get panel.xml", e);
       }
 
    }
@@ -824,7 +821,6 @@ public class ResourceServiceImpl implements ResourceService {
          serialize(panels,maxOid);
          saveResourcesToBeehive();
       } catch (IOException e) {
-         LOGGER.error("Compress zip file occur IOException", e);
          throw new FileOperationException("Compress zip file occur IOException", e);
       }
    }
@@ -903,7 +899,6 @@ public class ResourceServiceImpl implements ResourceService {
             throw new BeehiveNotAvailableException("failed to save resource to beehive,The status code is: "+response.getStatusLine().getStatusCode());
          }
       } catch (Exception e) {
-         LOGGER.error("failed to save resource to beehive", e);
          throw new BeehiveNotAvailableException(e.getMessage(), e);
       } 
    }
@@ -932,7 +927,6 @@ public class ResourceServiceImpl implements ResourceService {
             throw new BeehiveNotAvailableException("failed to save template resource to beehive,The status code is: "+response.getStatusLine().getStatusCode());
          }
       } catch (Exception e) {
-         LOGGER.error("failed to save resource to beehive", e);
          throw new BeehiveNotAvailableException("failed to save template resource to beehive", e);
       }
    }
@@ -971,7 +965,6 @@ public class ResourceServiceImpl implements ResourceService {
             throw new BeehiveNotAvailableException("failed to download resources for template, The status code is: "+response.getStatusLine().getStatusCode());
          }
       } catch (Exception e) {
-         LOGGER.error("failed to down load resource from beehive!", e);
          throw new BeehiveNotAvailableException(e.getMessage(),e);
       } finally {
          if (inputStream != null) {
