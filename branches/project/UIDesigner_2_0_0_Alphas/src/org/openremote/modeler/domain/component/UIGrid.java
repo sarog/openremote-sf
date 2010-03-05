@@ -147,5 +147,36 @@ public class UIGrid extends UIComponent {
    public String getName() {
      return "Grid";
    }
-   
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+         return true;
+      }
+      if (obj == null) {
+         return false;
+      }
+      if (getClass() != obj.getClass()) {
+         return false;
+      }
+      UIGrid other = (UIGrid) obj;
+      if (left == other.left) {
+         return true;
+      }
+      if (top == other.top) {
+         return true;
+      }
+      if (width == other.width) {
+         return true;
+      }
+      if (height == other.height) {
+         return true;
+      }
+      if (columnCount == other.columnCount) {
+         return true;
+      }
+      if (rowCount == other.rowCount) {
+         return true;
+      }
+      return false;
+   }
 }
