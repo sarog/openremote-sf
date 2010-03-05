@@ -19,6 +19,7 @@
 */
 package org.openremote.beehive.rest;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -74,6 +75,13 @@ public class TemplateRESTService {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
    }
 
+   @GET
+   @Produces( { "application/zip"})
+   @Path("template/resource/{template_id}")
+   public File getTemplateResources(@PathParam("template_id") long templateId) {
+      return getTemplateService().getTemplateResourceZip(templateId);
+   }
+
    @Path("template/{template_id}")
    @GET
    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -90,7 +98,6 @@ public class TemplateRESTService {
    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
    public TemplateDTO addTemplateIntoAccount(@PathParam("account_id") long accountId, @FormParam("name") String name,
          @FormParam("content") String content, @HeaderParam(Constant.HTTP_BASIC_AUTH_HEADER_NAME) String credentials) {
-
       authorize(credentials);
       Template t = new Template();
       if (accountId > 0) {
@@ -157,7 +164,7 @@ public class TemplateRESTService {
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
    }
    
-   @Path("resources")
+   @Path("openremote.zip")
    @POST
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    public boolean saveResource(@PathParam("account_id") long accountId, MultipartFormDataInput input) {
