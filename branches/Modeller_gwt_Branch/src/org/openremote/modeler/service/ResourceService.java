@@ -99,4 +99,6 @@ public interface ResourceService {
    void saveResourcesToBeehive();
    void saveTemplateResourcesToBeehive(Template Template);
    void downloadResourcesForTemplate(long templateOid); 
+   
+   File getTemplateResource(Template template); 
 }

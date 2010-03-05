@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
@@ -109,7 +110,7 @@ public class TemplateServiceImpl implements TemplateService {
       List<NameValuePair> params = new ArrayList<NameValuePair>();
       params.add(new BasicNameValuePair("name", screenTemplate.getName()));
       params.add(new BasicNameValuePair("content", screenTemplate.getContent()));
-
+      
       log.debug("TemplateContent" + screenTemplate.getContent());
       try {
          String saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid()
@@ -119,7 +120,7 @@ public class TemplateServiceImpl implements TemplateService {
          }
          HttpPost httpPost = new HttpPost(saveRestUrl);
          UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(params, "UTF-8");
-         httpPost.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
+         httpPost.addHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
                + encode(userService.getAccount().getUser().getUsername() + ":"
                      + userService.getAccount().getUser().getPassword()));
          httpPost.setEntity(formEntity);
@@ -160,6 +161,14 @@ public class TemplateServiceImpl implements TemplateService {
       return screenTemplate;
    }
 
+   /*private HttpEntity getTemplateFormEntity(Template template) throws Exception {
+      File file = resourceService.getTemplateResource(template);
+      FileBody fileBody = new FileBody(file);
+      MultipartEntity entity = new MultipartEntity();
+      entity.addPart("template.zip", fileBody);
+      return entity;
+   }*/
+   
    private String getTemplateContent(Screen screen) {
       try {
          String[] includedPropertyNames = { 
@@ -556,6 +565,6 @@ public class TemplateServiceImpl implements TemplateService {
 
    private String encode(String namePassword) {
       if (namePassword == null) return null;
-      return (new sun.misc.BASE64Encoder()).encode(namePassword.getBytes());
+      return new String(Base64.encodeBase64(namePassword.getBytes()));
    }
 }
