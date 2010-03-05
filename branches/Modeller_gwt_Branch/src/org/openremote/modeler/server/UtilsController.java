@@ -30,6 +30,7 @@ import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.rpc.UtilsRPCService;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
+import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
@@ -147,7 +148,8 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
             getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
             getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
             autoSaveResponse.setUpdated(true);
-            resourceService.updateResources(panels, maxID);
+            resourceService.initResources(panels, maxID);
+            LOGGER.info("Auto save UI designerLayout sucessfully");
          }
       }
       return autoSaveResponse;
@@ -161,8 +163,10 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
          getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
          getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
          autoSaveResponse.setUpdated(true);
-         resourceService.updateResources(panels, maxID);
+         resourceService.initResources(panels, maxID);
+         LOGGER.info("manual save UI DesingerLayout successfully");
       }
+      autoSaveResponse.setUpdated(true);
       return autoSaveResponse;
    }
 
@@ -229,7 +233,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       return resourceService.canRestore();
    }
    
-   public Screen buildScreenFromTemplate(Template template){
-      return screenTemplateService.buildScreenFromTemplate(template);
+   public ScreenFromTemplate buildScreenFromTemplate(Template template){
+      return screenTemplateService.buildFromTemplate(template);
    }
 }

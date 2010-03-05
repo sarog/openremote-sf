@@ -114,10 +114,20 @@ public class UISwitch extends UIControl implements SensorOwner {
    }
 
    @Override
+   @JSON(include=false)
    public Sensor getSensor() {
       if (switchCommand != null && switchCommand.getSwitchSensorRef() != null) {
          return switchCommand.getSwitchSensorRef().getSensor();
       }
       return null;
    }
+
+   @Override
+   public void setSensor(Sensor sensor) {
+      if (switchCommand != null && switchCommand.getSwitchSensorRef() != null) {
+         switchCommand.getSwitchSensorRef().setSensor(sensor);
+      }
+   }
+   
+   
 }

@@ -136,7 +136,7 @@ public class ResourceServiceImpl implements ResourceService {
     * {@inheritDoc}
     */
    public String downloadZipResource(long maxOid, String sessionId, List<Panel> panels) {
-      updateResources(panels, maxOid);
+      initResources(panels, maxOid);
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File zipFile = this.getExportResource();
       return pathConfig.getZipUrl(userService.getAccount())+zipFile.getName();
@@ -341,32 +341,37 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the controller xml segment content
     */
-   public List<Command> getCommandOwnerByUICommand(UICommand command,
-         ProtocolCommandContainer protocolEventContainer,MaxId  maxId) {
+   public List<Command> getCommandOwnerByUICommand(UICommand command, ProtocolCommandContainer protocolEventContainer,
+         MaxId maxId) {
       List<Command> oneUIButtonEventList = new ArrayList<Command>();
-      if (command instanceof DeviceMacroItem) {
-         if (command instanceof DeviceCommandRef) {
-            DeviceCommand deviceCommand = deviceCommandService.loadById(((DeviceCommandRef) command).getDeviceCommand()
-                  .getOid());
-            addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand,maxId);
-         } else if (command instanceof DeviceMacroRef) {
-            DeviceMacro deviceMacro = ((DeviceMacroRef) command).getTargetDeviceMacro();
-            deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
-            for (DeviceMacroItem tempDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
-               oneUIButtonEventList.addAll(getCommandOwnerByUICommand(tempDeviceMacroItem, protocolEventContainer,maxId));
+      try {
+         if (command instanceof DeviceMacroItem) {
+            if (command instanceof DeviceCommandRef) {
+               DeviceCommand deviceCommand = deviceCommandService.loadById(((DeviceCommandRef) command)
+                     .getDeviceCommand().getOid());
+               addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand, maxId);
+            } else if (command instanceof DeviceMacroRef) {
+               DeviceMacro deviceMacro = ((DeviceMacroRef) command).getTargetDeviceMacro();
+               deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
+               for (DeviceMacroItem tempDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
+                  oneUIButtonEventList.addAll(getCommandOwnerByUICommand(tempDeviceMacroItem, protocolEventContainer,
+                        maxId));
+               }
+            } else if (command instanceof CommandDelay) {
+               CommandDelay delay = (CommandDelay) command;
+               Command uiButtonEvent = new Command();
+               uiButtonEvent.setId(maxId.maxId());
+               uiButtonEvent.setDelay(delay.getDelaySecond());
+               oneUIButtonEventList.add(uiButtonEvent);
             }
-         } else if (command instanceof CommandDelay) {
-            CommandDelay delay = (CommandDelay) command;
-            Command uiButtonEvent = new Command();
-            uiButtonEvent.setId(maxId.maxId());
-            uiButtonEvent.setDelay(delay.getDelaySecond());
-            oneUIButtonEventList.add(uiButtonEvent);
+         } else if (command instanceof CommandRefItem) {
+            DeviceCommand deviceCommand = deviceCommandService.loadById(((CommandRefItem) command).getDeviceCommand()
+                  .getOid());
+            addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand, maxId);
+         } else {
+            return new ArrayList<Command>();
          }
-      } else if (command instanceof CommandRefItem) {
-         DeviceCommand deviceCommand = deviceCommandService.loadById(((CommandRefItem) command).getDeviceCommand()
-               .getOid());
-         addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand,maxId);
-      } else {
+      } catch (Exception e) {
          return new ArrayList<Command>();
       }
       return oneUIButtonEventList;
@@ -756,7 +761,7 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    @Override
-   public void updateResources(Collection<Panel> panels,long maxOid) {
+   public void initResources(Collection<Panel> panels,long maxOid) {
       Set<Group> groups = new LinkedHashSet<Group>();
       Set<Screen> screens = new LinkedHashSet<Screen>();
       /*

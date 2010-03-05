@@ -90,7 +90,7 @@ public interface ResourceService {
    
    String getScreensJson(Collection<Screen> screens);
    
-   void updateResources(Collection<Panel> panels,long maxOid);
+   void initResources(Collection<Panel> panels,long maxOid);
    
    PanelsAndMaxOid restore();
    
