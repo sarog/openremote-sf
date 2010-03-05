@@ -206,7 +206,7 @@ public class ResourceServiceImpl implements ResourceService {
          try {
             FileUtils.deleteDirectory(tmpDir);
          } catch (IOException e) {
-            throw new FileOperationException("Error in delete temp dir", e);
+            throw new FileOperationException("Error in deleting temp dir", e);
          }
       }
       new File(PathConfig.getInstance(configuration).userFolder(sessionId)).mkdirs();
@@ -249,7 +249,7 @@ public class ResourceServiceImpl implements ResourceService {
                fileOutputStream.close();
             }
          } catch (IOException e) {
-            LOGGER.warn("Failed to close import file resoruces", e);
+            LOGGER.warn("Failed to close import file resources", e);
          }
 
       }
