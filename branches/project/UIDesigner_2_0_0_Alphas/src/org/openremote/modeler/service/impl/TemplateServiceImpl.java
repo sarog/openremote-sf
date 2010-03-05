@@ -43,6 +43,7 @@ import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Template;
+import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.TemplateService;
 import org.openremote.modeler.service.UserService;
@@ -161,11 +162,13 @@ public class TemplateServiceImpl implements TemplateService {
          HttpResponse response = httpClient.execute(httpDelete);
          if (200 == response.getStatusLine().getStatusCode()) {
             return true;
+         } else {
+            throw new BeehiveNotAvailableException("failed to delete template ");
          }
       } catch (Exception e) {
          log.error("failed to delete template", e);
+         throw new BeehiveNotAvailableException("failed to delete template ",e);
       }
-      return false;
    }
 
    public void setConfiguration(Configuration configuration) {

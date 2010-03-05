@@ -173,6 +173,9 @@ public class ScreenWindow extends FormWindow {
                case NEW:
                   screenRef = createScreen(groupRef);
                   screen.setName(nameField.getValue());
+                  if (groupRef.getGroup().getTabbarItems().size() > 0 || groupRef.getPanel().getTabbarItems().size() > 0){
+                	  screen.setHasTabbar(true);
+                  }
                   BeanModelDataBase.screenTable.insert(screen.getBeanModel());
                   break;
                }
