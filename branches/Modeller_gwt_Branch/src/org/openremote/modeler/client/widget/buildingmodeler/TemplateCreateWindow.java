@@ -54,7 +54,8 @@ import com.extjs.gxt.ui.client.widget.layout.FormData;
  * @author <a href = "mailto:juha@openremote.org">Juha Lindfors</a>
  *
  */
-public class TemplateCreateWindow extends FormWindow {
+public class TemplateCreateWindow extends FormWindow
+{
    public static final String TEMPLATE_NAME_FIELD = "name";
    public static final String TEMPLATE_CONTENT_FIELD = "content";
 
