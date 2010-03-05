@@ -112,6 +112,7 @@ public class TemplateServiceImpl implements TemplateService {
          resourceService.saveTemplateResourcesToBeehive(screenTemplate);
       } catch (Exception e) {
          log.error("faild to save a screen to a template", e);
+         throw new RuntimeException("faild to save a screen to a template",e);
       }
 
       log.debug("save Template Ok!");
