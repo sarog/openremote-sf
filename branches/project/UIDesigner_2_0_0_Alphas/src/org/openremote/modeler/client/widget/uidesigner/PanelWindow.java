@@ -123,6 +123,7 @@ public class PanelWindow extends FormWindow {
       predefinedPanel.setFieldLabel("Panel type");
       predefinedPanel.setName("predefine");
       predefinedPanel.setAllowBlank(false);
+      predefinedPanel.setEditable(false);
       ComboBoxDataModel<TouchPanelDefinition> iphoneData = null;
       for (String key : predefinedPanels.keySet()) {
          for (TouchPanelDefinition touchPanel : predefinedPanels.get(key)) {
