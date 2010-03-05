@@ -383,13 +383,16 @@ public class TemplateServiceImpl implements TemplateService {
          UIComponent component = absolute.getUiComponent();
          if (component instanceof SensorOwner) {
             SensorOwner sensorOwner = (SensorOwner) component;
-            for(Sensor sensor: sensors) {
-               if(sensor.equals(sensorOwner.getSensor())) {
-                  sensorOwner.setSensor(sensor);
+            Sensor s = sensorOwner.getSensor();
+            if(s != null) {
+               for(Sensor sensor: sensors) {
+                  if(sensor.equals(sensorOwner.getSensor())) {
+                     sensorOwner.setSensor(sensor);
+                  }
                }
+               initSensorLinker(component,sensorOwner);
+               sensors.add(s);
             }
-            initSensorLinker(component,sensorOwner);
-            sensors.add(sensorOwner.getSensor());
          }
       }
       for (UIGrid grid : screen.getGrids()) {
