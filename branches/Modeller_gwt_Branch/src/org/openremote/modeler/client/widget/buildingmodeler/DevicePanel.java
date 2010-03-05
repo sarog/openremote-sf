@@ -79,6 +79,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class DevicePanel extends ContentPanel {
 
+   private static final DevicePanel devicePanel = new DevicePanel();
+   
+   
    /** The tree. */
    private TreePanel<BeanModel> tree;
    
@@ -93,7 +96,7 @@ public class DevicePanel extends ContentPanel {
    /**
     * Instantiates a new device panel.
     */
-   public DevicePanel() {
+   private DevicePanel() {
       setHeading("Device");
       setIcon(icon.device());
       setLayout(new FitLayout());
@@ -690,5 +693,18 @@ public class DevicePanel extends ContentPanel {
       }
       return changeListener;
    }
+   
+   public static DevicePanel getInstance() {
+      return devicePanel;
+   }
+
+   public TreePanel<BeanModel> getTree() {
+      return tree;
+   }
+
+   public void setTree(TreePanel<BeanModel> tree) {
+      this.tree = tree;
+   }
+   
 }
 

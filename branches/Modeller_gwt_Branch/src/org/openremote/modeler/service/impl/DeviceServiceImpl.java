@@ -39,6 +39,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
     */
    /** The device macro item service. */
    private DeviceMacroItemService deviceMacroItemService;
+   
 
    /**
     * Sets the device macro item service.
@@ -55,6 +56,14 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
     */
    public Device saveDevice(Device device) {
       genericDAO.save(device);
+      Hibernate.initialize(device.getSensors());
+      Hibernate.initialize(device.getSwitchs());
+      List<DeviceCommand> deviceCommands = device.getDeviceCommands();
+      for(DeviceCommand cmd : deviceCommands ) {
+         Hibernate.initialize(cmd.getProtocol().getAttributes());
+      }
+      Hibernate.initialize(device.getSliders());
+      Hibernate.initialize(device.getDeviceAttrs());
       return device;
    }
 
@@ -93,10 +102,12 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
     */
    public Device loadById(long id) {
       Device device = super.loadById(id);
+      Hibernate.initialize(device.getAccount().getConfigs());
       Hibernate.initialize(device.getDeviceCommands());
       Hibernate.initialize(device.getSensors());
       Hibernate.initialize(device.getSliders());
       Hibernate.initialize(device.getSwitchs());
       return device;
    }
+
 }

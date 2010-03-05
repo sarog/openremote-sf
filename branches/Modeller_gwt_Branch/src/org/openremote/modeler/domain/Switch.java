@@ -108,4 +108,28 @@ public class Switch extends BusinessEntity {
    public String getDisplayName() {
       return getName();
    }
+
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((name == null) ? 0 : name.hashCode());
+      return result^0xFFFF+(int)getOid();
+   }
+
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
+      Switch other = (Switch) obj;
+      if (name == null) {
+         if (other.name != null) return false;
+      } else if (!name.equals(other.name)) return false;
+      return other.getOid() == getOid();
+   }
+   
+   
 }

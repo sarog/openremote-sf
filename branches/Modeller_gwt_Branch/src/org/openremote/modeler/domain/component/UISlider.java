@@ -162,4 +162,13 @@ public class UISlider extends UIControl implements SensorOwner {
       }
       return null;
    }
+
+   @Override
+   public void setSensor(Sensor sensor) {
+      if(slider!= null && slider.getSliderSensorRef()!=null){
+         slider.getSliderSensorRef().setSensor(sensor);
+      }
+   }
+   
+   
 }

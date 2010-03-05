@@ -48,6 +48,7 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
    @Override
    public Switch save(Switch switchToggle) {
       genericDAO.save(switchToggle);
+      Hibernate.initialize(switchToggle.getSwitchSensorRef().getSensor());
       return switchToggle;
    }
 

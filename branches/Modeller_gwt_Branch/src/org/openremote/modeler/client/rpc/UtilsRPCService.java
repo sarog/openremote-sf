@@ -28,7 +28,6 @@ import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.Template;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -89,5 +88,4 @@ public interface UtilsRPCService extends RemoteService {
 
    void downLoadImage(String url);
    
-   Screen buildScreenFromTemplate(Template template);
 }
