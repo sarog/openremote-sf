@@ -746,16 +746,6 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
    
-   static class MaxId{
-      Long maxId = 0L;
-      public MaxId(Long maxId){
-         this.maxId = maxId;
-      }
-      
-      public Long maxId(){
-         return maxId++;
-      }
-   }
 
    @Override
    public void initResources(Collection<Panel> panels,long maxOid) {
@@ -869,7 +859,8 @@ public class ResourceServiceImpl implements ResourceService {
          panelsAndMaxOid = new PanelsAndMaxOid(panels,maxOid);
          
       } catch(Exception e){
-         LOGGER.fatal("restore failed from server", e);
+         LOGGER.error("restore failed from server");
+         throw new RuntimeException(e);
       } finally {
          try {
             if(ois!=null){
@@ -888,27 +879,22 @@ public class ResourceServiceImpl implements ResourceService {
       HttpClient httpClient = new DefaultHttpClient();
       HttpPost httpPost = new HttpPost();
       String beehiveRootRestURL = configuration.getBeehiveRESTRootUrl();
-      try
-      {
-         httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid() + "/resource/"));
+      try {
+         httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid()
+               + "/openremote.zip"));
          FileBody resource = new FileBody(getExportResource());
          MultipartEntity entity = new MultipartEntity();
          entity.addPart("resource", resource);
          httpPost.setEntity(entity);
          HttpResponse response = httpClient.execute(httpPost);
 
-         if(200 != response.getStatusLine().getStatusCode())
-         {
-            throw new BeehiveNotAvailableException(
-                "Failed to save resource to Beehive, status code: " +
-                response.getStatusLine().getStatusCode()
-            );
+         if (200 != response.getStatusLine().getStatusCode()) {
+            throw new BeehiveNotAvailableException("Failed to save resource to Beehive, status code: "
+                  + response.getStatusLine().getStatusCode());
          }
-      }
-      catch (Exception e)
-      {
+      } catch (Exception e) {
          throw new BeehiveNotAvailableException(e.getMessage(), e);
-      } 
+      }
    }
    
    public void saveTemplateResourcesToBeehive(Template template) {
@@ -916,16 +902,14 @@ public class ResourceServiceImpl implements ResourceService {
       HttpClient httpClient = new DefaultHttpClient();
       HttpPost httpPost = new HttpPost();
       String beehiveRootRestURL = configuration.getBeehiveRESTRootUrl();
-
-      try
-      {
-         if (!share)
-         {
-            httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid() + "/resource/template/"+template.getOid()));
+      try {
+         if (!share) {
+            httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid()
+                  + "/resource/template/" + template.getOid()));
          } else {
-            httpPost.setURI(new URI(beehiveRootRestURL + "account/0/resource/template/"+template.getOid()));
+            httpPost.setURI(new URI(beehiveRootRestURL + "account/0/template/" + template.getOid() + "/resource/"));
          }
-         
+
          FileBody resource = new FileBody(getTemplateZipResource());
          MultipartEntity entity = new MultipartEntity();
          entity.addPart("resource", resource);
@@ -934,16 +918,11 @@ public class ResourceServiceImpl implements ResourceService {
 
          HttpResponse response = httpClient.execute(httpPost);
 
-         if(200 != response.getStatusLine().getStatusCode())
-         {
-            throw new BeehiveNotAvailableException(
-                "Failed to save template to Beehive, status code: " +
-                response.getStatusLine().getStatusCode()
-            );
+         if (200 != response.getStatusLine().getStatusCode()) {
+            throw new BeehiveNotAvailableException("Failed to save template to Beehive, status code: "
+                  + response.getStatusLine().getStatusCode());
          }
-      }
-      catch (Exception e)
-      {
+      } catch (Exception e) {
          throw new BeehiveNotAvailableException("Failed to save template to Beehive", e);
       }
    }
@@ -963,12 +942,10 @@ public class ResourceServiceImpl implements ResourceService {
       InputStream inputStream = null;
       FileOutputStream fos = null;
 
-      try
-      {
+      try {
          HttpResponse response = httpClient.execute(httpGet);
 
-         if(200 == response.getStatusLine().getStatusCode())
-         {
+         if (200 == response.getStatusLine().getStatusCode()) {
             inputStream = response.getEntity().getContent();
             File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
             userFolder.mkdirs();
@@ -978,42 +955,35 @@ public class ResourceServiceImpl implements ResourceService {
             byte[] buffer = new byte[1024];
             int len = 0;
 
-            while ((len = inputStream.read(buffer)) != -1)
-            {
+            while ((len = inputStream.read(buffer)) != -1) {
                fos.write(buffer, 0, len);
             }
 
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
+         } else {
+            throw new BeehiveNotAvailableException("Failed to download resources for template, status code: "
+                  + response.getStatusLine().getStatusCode());
          }
-         else
-         {
-            throw new BeehiveNotAvailableException(
-                "Failed to download resources for template, status code: " +
-                response.getStatusLine().getStatusCode()
-            );
-         }
-      }
-      catch (Exception e)
-      {
+      } catch (Exception e) {
          throw new BeehiveNotAvailableException(e.getMessage(), e);
-      }
-      finally
-      {
-         if (inputStream != null)
-         {
-            try
-            {
+      } finally {
+         if (inputStream != null) {
+            try {
                inputStream.close();
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                e.printStackTrace();
             }
          }
       }
    }
    
+   @Override
+   public File getTemplateResource(Template template) {
+      //TODO ---------just include the resource which is necessary for this template.
+      //     ---------Now, All the resources in the user folder is included! 
+      return this.getTemplateZipResource();
+   }
    private File getResourceZipFile(List<String> ignoreExtentions) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
@@ -1042,5 +1012,16 @@ public class ResourceServiceImpl implements ResourceService {
       List<String> ignoreExtentions = new ArrayList<String>();
       ignoreExtentions.add("zip");
       return getResourceZipFile(ignoreExtentions);
+   }
+   
+   static class MaxId{
+      Long maxId = 0L;
+      public MaxId(Long maxId){
+         this.maxId = maxId;
+      }
+      
+      public Long maxId(){
+         return maxId++;
+      }
    }
 }
