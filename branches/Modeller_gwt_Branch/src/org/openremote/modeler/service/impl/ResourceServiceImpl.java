@@ -206,7 +206,7 @@ public class ResourceServiceImpl implements ResourceService {
          try {
             FileUtils.deleteDirectory(tmpDir);
          } catch (IOException e) {
-            throw new FileOperationException("Delete temp dir Occur IOException", e);
+            throw new FileOperationException("Error in delete temp dir", e);
          }
       }
       new File(PathConfig.getInstance(configuration).userFolder(sessionId)).mkdirs();
@@ -221,9 +221,9 @@ public class ResourceServiceImpl implements ResourceService {
                   dotImportFileContent = IOUtils.toString(zipInputStream);
                }
                if (!checkXML(zipInputStream, zipEntry, "iphone")) {
-                  throw new XmlParserException("The iphone.xml schema validation fail, please check it");
+                  throw new XmlParserException("The iphone.xml schema validation failed, please check it");
                } else if (!checkXML(zipInputStream, zipEntry, "controller")) {
-                  throw new XmlParserException("The controller.xml schema validation fail, please check it");
+                  throw new XmlParserException("The controller.xml schema validation failed, please check it");
                }
 
                if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|import|conf)")) {
@@ -241,7 +241,7 @@ public class ResourceServiceImpl implements ResourceService {
 
          }
       } catch (IOException e) {
-         throw new FileOperationException("Get import file from zip file Occur IOException", e);
+         throw new FileOperationException("Error in reading import file from zip", e);
       } finally {
          try {
             zipInputStream.closeEntry();
@@ -249,7 +249,7 @@ public class ResourceServiceImpl implements ResourceService {
                fileOutputStream.close();
             }
          } catch (IOException e) {
-            LOGGER.error("Clean Resource used occured IOException when import a file", e);
+            LOGGER.warn("Failed to close import file resoruces", e);
          }
 
       }
@@ -309,14 +309,14 @@ public class ResourceServiceImpl implements ResourceService {
          fileOutputStream = new FileOutputStream(file);
          IOUtils.copy(inputStream, fileOutputStream);
       } catch (IOException e) {
-         throw new FileOperationException("Save uploaded image to file occur IOException.", e);
+         throw new FileOperationException("Failed to save uploaded image", e);
       } finally {
          try {
             if (fileOutputStream != null) {
                fileOutputStream.close();
             }
          } catch (IOException e) {
-            LOGGER.error("Close FileOutputStream Occur IOException while save a uploaded image.", e);
+            LOGGER.warn("Failed to close resources on uploaded file", e);
          }
 
       }
@@ -606,7 +606,7 @@ public class ResourceServiceImpl implements ResourceService {
          context.put("screens", screens);
          return VelocityEngineUtils.mergeTemplateIntoString(velocity, PANEL_XML_TEMPLATE, context);
       } catch (Exception e) {
-         throw new RuntimeException("Failed to get panel.xml", e);
+         throw new RuntimeException("Failed to read panel.xml", e);
       }
 
    }
@@ -821,7 +821,7 @@ public class ResourceServiceImpl implements ResourceService {
          serialize(panels,maxOid);
          saveResourcesToBeehive();
       } catch (IOException e) {
-         throw new FileOperationException("Compress zip file occur IOException", e);
+         throw new FileOperationException("Failed to write resource: " + e.getMessage(), e);
       }
    }
    
@@ -888,17 +888,25 @@ public class ResourceServiceImpl implements ResourceService {
       HttpClient httpClient = new DefaultHttpClient();
       HttpPost httpPost = new HttpPost();
       String beehiveRootRestURL = configuration.getBeehiveRESTRootUrl();
-      try {
+      try
+      {
          httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid() + "/resource/"));
          FileBody resource = new FileBody(getExportResource());
          MultipartEntity entity = new MultipartEntity();
          entity.addPart("resource", resource);
          httpPost.setEntity(entity);
          HttpResponse response = httpClient.execute(httpPost);
-         if(200 != response.getStatusLine().getStatusCode()){
-            throw new BeehiveNotAvailableException("failed to save resource to beehive,The status code is: "+response.getStatusLine().getStatusCode());
+
+         if(200 != response.getStatusLine().getStatusCode())
+         {
+            throw new BeehiveNotAvailableException(
+                "Failed to save resource to Beehive, status code: " +
+                response.getStatusLine().getStatusCode()
+            );
          }
-      } catch (Exception e) {
+      }
+      catch (Exception e)
+      {
          throw new BeehiveNotAvailableException(e.getMessage(), e);
       } 
    }
@@ -908,10 +916,12 @@ public class ResourceServiceImpl implements ResourceService {
       HttpClient httpClient = new DefaultHttpClient();
       HttpPost httpPost = new HttpPost();
       String beehiveRootRestURL = configuration.getBeehiveRESTRootUrl();
-      try {
-         if (!share) {
-            httpPost
-                  .setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid() + "/resource/template/"+template.getOid()));
+
+      try
+      {
+         if (!share)
+         {
+            httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid() + "/resource/template/"+template.getOid()));
          } else {
             httpPost.setURI(new URI(beehiveRootRestURL + "account/0/resource/template/"+template.getOid()));
          }
@@ -923,11 +933,18 @@ public class ResourceServiceImpl implements ResourceService {
          httpPost.setEntity(entity);
 
          HttpResponse response = httpClient.execute(httpPost);
-         if(200 != response.getStatusLine().getStatusCode()){
-            throw new BeehiveNotAvailableException("failed to save template resource to beehive,The status code is: "+response.getStatusLine().getStatusCode());
+
+         if(200 != response.getStatusLine().getStatusCode())
+         {
+            throw new BeehiveNotAvailableException(
+                "Failed to save template to Beehive, status code: " +
+                response.getStatusLine().getStatusCode()
+            );
          }
-      } catch (Exception e) {
-         throw new BeehiveNotAvailableException("failed to save template resource to beehive", e);
+      }
+      catch (Exception e)
+      {
+         throw new BeehiveNotAvailableException("Failed to save template to Beehive", e);
       }
    }
    @Override
@@ -945,9 +962,13 @@ public class ResourceServiceImpl implements ResourceService {
             + userService.getAccount().getOid() + "/template/resource/" + templateOid);
       InputStream inputStream = null;
       FileOutputStream fos = null;
-      try {
+
+      try
+      {
          HttpResponse response = httpClient.execute(httpGet);
-         if(200 == response.getStatusLine().getStatusCode()){
+
+         if(200 == response.getStatusLine().getStatusCode())
+         {
             inputStream = response.getEntity().getContent();
             File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
             userFolder.mkdirs();
@@ -956,21 +977,37 @@ public class ResourceServiceImpl implements ResourceService {
             fos = new FileOutputStream(outPut);
             byte[] buffer = new byte[1024];
             int len = 0;
-            while ((len = inputStream.read(buffer)) != -1) {
+
+            while ((len = inputStream.read(buffer)) != -1)
+            {
                fos.write(buffer, 0, len);
             }
+
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
-         } else {
-            throw new BeehiveNotAvailableException("failed to download resources for template, The status code is: "+response.getStatusLine().getStatusCode());
          }
-      } catch (Exception e) {
-         throw new BeehiveNotAvailableException(e.getMessage(),e);
-      } finally {
-         if (inputStream != null) {
-            try {
+         else
+         {
+            throw new BeehiveNotAvailableException(
+                "Failed to download resources for template, status code: " +
+                response.getStatusLine().getStatusCode()
+            );
+         }
+      }
+      catch (Exception e)
+      {
+         throw new BeehiveNotAvailableException(e.getMessage(), e);
+      }
+      finally
+      {
+         if (inputStream != null)
+         {
+            try
+            {
                inputStream.close();
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                e.printStackTrace();
             }
          }
