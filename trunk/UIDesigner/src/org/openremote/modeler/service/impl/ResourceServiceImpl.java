@@ -84,6 +84,7 @@ import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
+import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.XmlParserException;
 import org.openremote.modeler.protocol.ProtocolContainer;
@@ -184,7 +185,6 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the uRL
     */
-   @SuppressWarnings("unused")
    private URL buildLircRESTUrl(String restAPIUrl, String ids) {
       URL lircUrl;
       try {
@@ -622,6 +622,7 @@ public class ResourceServiceImpl implements ResourceService {
       this.userService = userService;
    }
 
+   @SuppressWarnings("unchecked")
    public String getControllerXML(Collection<Screen> screens,long maxOid) {
       
       /*
@@ -638,12 +639,12 @@ public class ResourceServiceImpl implements ResourceService {
       ProtocolCommandContainer eventContainer = new ProtocolCommandContainer();
       ProtocolContainer protocolContainer = ProtocolContainer.getInstance();
       Collection<Sensor> sensors = getAllSensorWithoutDuplicate(screens,maxId);
-      Collection<UIComponent> switchs = uiComponentBox.getUIComponentsByType(UISwitch.class);
-      Collection<UIComponent> buttons = uiComponentBox.getUIComponentsByType(UIButton.class);
-      Collection<UIComponent> gestures = uiComponentBox.getUIComponentsByType(Gesture.class);
-      Collection<UIComponent> uiSliders = uiComponentBox.getUIComponentsByType(UISlider.class);
-      Collection<UIComponent> uiImages = uiComponentBox.getUIComponentsByType(UIImage.class);
-      Collection<UIComponent> uiLabels = uiComponentBox.getUIComponentsByType(UILabel.class);
+      Collection<UISwitch> switchs = (Collection<UISwitch>) uiComponentBox.getUIComponentsByType(UISwitch.class);
+      Collection<UIComponent> buttons = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIButton.class);
+      Collection<UIComponent> gestures = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(Gesture.class);
+      Collection<UIComponent> uiSliders = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UISlider.class);
+      Collection<UIComponent> uiImages = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIImage.class);
+      Collection<UIComponent> uiLabels = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UILabel.class);
       Collection<Config> configs = controllerConfigService.listAllForCurrentAccount();
       
       context.put("switchs", switchs);
@@ -808,8 +809,8 @@ public class ResourceServiceImpl implements ResourceService {
          FileUtilsExt.writeStringToFile(controllerXMLFile, controllerXmlContent);
          // FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
 
-         if (sectionIds != "") {
-//            FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
+         if (sectionIds!=null && sectionIds != "") {
+            FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
          }
          if (lircdFile.exists() && lircdFile.length() == 0) {
             lircdFile.delete();
@@ -892,10 +893,14 @@ public class ResourceServiceImpl implements ResourceService {
          MultipartEntity entity = new MultipartEntity();
          entity.addPart("resource", resource);
          httpPost.setEntity(entity);
-         httpClient.execute(httpPost);
+         HttpResponse response = httpClient.execute(httpPost);
+         if(200 != response.getStatusLine().getStatusCode()){
+            throw new BeehiveNotAvailableException("failed to save resource to beehive,The status code is: "+response.getStatusLine().getStatusCode());
+         }
       } catch (Exception e) {
          LOGGER.error("failed to save resource to beehive", e);
-      }
+         throw new BeehiveNotAvailableException(e.getMessage(), e);
+      } 
    }
    
    public void saveTemplateResourcesToBeehive(Template template) {
@@ -917,9 +922,13 @@ public class ResourceServiceImpl implements ResourceService {
 
          httpPost.setEntity(entity);
 
-         httpClient.execute(httpPost);
+         HttpResponse response = httpClient.execute(httpPost);
+         if(200 != response.getStatusLine().getStatusCode()){
+            throw new BeehiveNotAvailableException("failed to save template resource to beehive,The status code is: "+response.getStatusLine().getStatusCode());
+         }
       } catch (Exception e) {
          LOGGER.error("failed to save resource to beehive", e);
+         throw new BeehiveNotAvailableException("failed to save template resource to beehive", e);
       }
    }
    @Override
@@ -940,7 +949,6 @@ public class ResourceServiceImpl implements ResourceService {
       try {
          HttpResponse response = httpClient.execute(httpGet);
          if(200 == response.getStatusLine().getStatusCode()){
-            LOGGER.error("failed to save resource to beehive");
             inputStream = response.getEntity().getContent();
             File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
             userFolder.mkdirs();
@@ -954,9 +962,12 @@ public class ResourceServiceImpl implements ResourceService {
             }
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
+         } else {
+            throw new BeehiveNotAvailableException("failed to download resources for template, The status code is: "+response.getStatusLine().getStatusCode());
          }
       } catch (Exception e) {
          LOGGER.error("failed to down load resource from beehive!", e);
+         throw new BeehiveNotAvailableException(e.getMessage(),e);
       } finally {
          if (inputStream != null) {
             try {
@@ -989,10 +1000,12 @@ public class ResourceServiceImpl implements ResourceService {
       List<String> ignoreExtentions = new ArrayList<String>();
       ignoreExtentions.add("zip");
       ignoreExtentions.add("xml");
+      ignoreExtentions.add("obj");
       return getResourceZipFile(ignoreExtentions);
    }
    private File getExportResource() {
       List<String> ignoreExtentions = new ArrayList<String>();
+      ignoreExtentions.add("zip");
       return getResourceZipFile(ignoreExtentions);
    }
 }

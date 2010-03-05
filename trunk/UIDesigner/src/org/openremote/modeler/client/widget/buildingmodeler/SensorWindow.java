@@ -105,7 +105,7 @@ public class SensorWindow extends FormWindow {
       if(device==null){
          throw new RuntimeException("A sensor must belong to a device!");
       }
-      setHeading("Edit sensor");
+      setHeading("New sensor");
       init();
       show();
    }

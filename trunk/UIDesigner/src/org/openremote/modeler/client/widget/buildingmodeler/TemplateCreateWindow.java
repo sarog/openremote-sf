@@ -168,11 +168,20 @@ public class TemplateCreateWindow extends FormWindow {
             @Override
             public void onSuccess(Template result) {
                Info.display("Success", "template saved successfully:" + result.getOid());
+               TemplateCreateWindow.this.unmask();
+               result.getBeanModel().set("id", result.getOid());
                fireEvent(SubmitEvent.SUBMIT,new SubmitEvent(result));
                hide();
             }
 
+            @Override
+            public void onFailure(Throwable caught) {
+               MessageBox.alert("error","The beehive may be not avaliable now! ",null);
+            }
+            
+            
          });
+         TemplateCreateWindow.this.mask("The template is in creating... ");
       }
 
    }
