@@ -88,9 +88,11 @@ import flexjson.Path;
 /**
  * 
  * @author javen
+ * @author <a href = "mailto:juha@openremote.org">Juha Lindfors</a>
  *
  */
-public class TemplateServiceImpl implements TemplateService {
+public class TemplateServiceImpl implements TemplateService
+{
    private static Log log = LogFactory.getLog(TemplateService.class);
 
    private Configuration configuration;
@@ -153,8 +155,7 @@ public class TemplateServiceImpl implements TemplateService {
             throw new BeehiveNotAvailableException();
          }
       } catch (Exception e) {
-         log.error("faild to save a screen to a template", e);
-         throw new BeehiveNotAvailableException("faild to save a screen to a template", e);
+         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + e.getMessage(), e);
       }
 
       log.debug("save Template Ok!");
@@ -229,11 +230,10 @@ public class TemplateServiceImpl implements TemplateService {
          if (200 == response.getStatusLine().getStatusCode()) {
             return true;
          } else {
-            throw new BeehiveNotAvailableException("failed to delete template ");
+            throw new BeehiveNotAvailableException("Failed to delete template");
          }
       } catch (Exception e) {
-         log.error("failed to delete template", e);
-         throw new BeehiveNotAvailableException("failed to delete template ", e);
+         throw new BeehiveNotAvailableException("Failed to delete template: " + e.getMessage(), e);
       }
    }
 
