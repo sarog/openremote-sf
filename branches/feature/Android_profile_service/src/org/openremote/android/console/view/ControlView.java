@@ -24,7 +24,8 @@ import java.util.Timer;
 
 import org.apache.http.client.ClientProtocolException;
 import org.openremote.android.console.HTTPUtil;
-import org.openremote.android.console.bindings.Control;
+import org.openremote.android.console.bindings.Component;
+import org.openremote.android.console.bindings.Switch;
 import org.openremote.android.console.bindings.XButton;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
@@ -41,24 +42,32 @@ public class ControlView extends ComponentView {
       super(context);
    }
    
-   public static ControlView buildWithControl(Context context, Control control) {
+   public static ControlView buildWithControl(Context context, Component control) {
       ControlView controlView = null;
       if (control instanceof XButton) {
          controlView = new ButtonView(context, (XButton)control);
+      } else if (control instanceof Switch) {
+         controlView = new SwitchView(context, (Switch)control);
       }
       return controlView;
    }
    
-   public void sendCommandRequest(String commandType) {
+   public boolean sendCommandRequest(String commandType) {
       try {
          int responseCode = HTTPUtil.sendCommand(AppSettingsModel.getCurrentServer(getContext()), getComponent().getComponentId(), commandType);
-         handleServerErrorWithStatusCode(responseCode);
+         Log.e("send command:", ""+responseCode);
+         if (responseCode != 200) {
+            handleServerErrorWithStatusCode(responseCode);
+            return false;
+         }
       } catch (ClientProtocolException e) {
          cancelTimer();
+         return false;
       } catch (IOException e) {
          cancelTimer();
+         return false;
       }
-      
+      return true;
    }
    
    public void cancelTimer() {

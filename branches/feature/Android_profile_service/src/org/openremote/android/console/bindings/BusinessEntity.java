@@ -26,4 +26,50 @@ import org.openremote.android.console.Constants;
 public class BusinessEntity implements Serializable {
    private static final long serialVersionUID = Constants.BINDING_VERSION;
 
+   public static final String ID = "id";
+   public static final String REF = "ref";
+
+   public static final String SWITCH = "switch";
+   public static final String ON = "on";
+   public static final String OFF = "off";
+
+   public static final String SENSOR = "sensor";
+   public static final String LINK = "link";
+   public static final String TYPE = "type";
+   public static final String INCLUDE = "include";
+
+   public static final String STATE = "state";
+   public static final String NAME = "name";
+   public static final String VALUE = "value";
+
+   public static final String SLIDER = "slider";
+   public static final String THUMB_IMAGE = "thumbImage";
+   public static final String VERTICAL = "vertical";
+   public static final String PASSIVE = "passive";
+   public static final String MIN_VALUE = "min";
+   public static final String MAX_VALUE = "max";
+   public static final String IMAGE = "image";
+   public static final String TRACK_IMAGE = "trackImage";
+
+   public static final String LABEL = "label";
+   public static final String FONT_SIZE = "font-size";
+   public static final String COLOR = "color";
+   public static final String TEXT = "text";
+
+   public static final String BUTTON = "button";
+   public static final String DEFAULT = "default";
+   public static final String PRESSED = "pressed";
+
+   public static final String SRC = "src";
+   public static final String STYLE = "style";
+
+   public static final String BG_IMAGE_RELATIVE_POSITION_LEFT = "LEFT";
+   public static final String BG_IMAGE_RELATIVE_POSITION_RIGHT = "RIGHT";
+   public static final String BG_IMAGE_RELATIVE_POSITION_TOP = "TOP";
+   public static final String BG_IMAGE_RELATIVE_POSITION_BOTTOM = "BOTTOM";
+   public static final String BG_IMAGE_RELATIVE_POSITION_TOP_LEFT = "TOP_LEFT";
+   public static final String BG_IMAGE_RELATIVE_POSITION_BOTTOM_LEFT = "BOTTOM_LEFT";
+   public static final String BG_IMAGE_RELATIVE_POSITION_TOP_RIGHT = "TOP_RIGHT";
+   public static final String BG_IMAGE_RELATIVE_POSITION_BOTTOM_RIGHT = "BOTTOM_RIGHT";
+   public static final String BG_IMAGE_RELATIVE_POSITION_CENTER = "CENTER";
 }

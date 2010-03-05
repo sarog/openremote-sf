@@ -17,37 +17,23 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.android.console.bindings;
+package org.openremote.android.console.model;
 
-import org.openremote.android.console.model.XMLEntityDataBase;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
+import java.io.Serializable;
 
-@SuppressWarnings("serial")
-public class Image extends SensorComponent {
+public class OREvent  implements Serializable{
 
-   private String src;
-   private String style;
+   private static final long serialVersionUID = -6105383614180080369L;
    
-   public Image(Node node) {
-      NamedNodeMap nodeMap = node.getAttributes();
-      if (nodeMap.getNamedItem("src") != null) {
-         this.src = nodeMap.getNamedItem("src").getNodeValue();
-         XMLEntityDataBase.imageSet.add(src);
-      }
-      // TODO: parse sub nodes(sensory/include).
-   }
+   private Object data;
    
-   public Image(String src) {
-      this.src = src;
-      XMLEntityDataBase.imageSet.add(src);
+   public OREvent(Object data) {
+      if (data != null) {
+         this.data = data;
+     }
    }
-   public String getSrc() {
-      return src;
-   }
-   public String getStyle() {
-      return style;
-   }
-   
-   
+
+   public Object getData() {
+      return data;
+  }
 }

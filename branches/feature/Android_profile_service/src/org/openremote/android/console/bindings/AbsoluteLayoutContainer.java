@@ -19,6 +19,8 @@
 */
 package org.openremote.android.console.bindings;
 
+import java.util.HashSet;
+
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -46,5 +48,14 @@ public class AbsoluteLayoutContainer extends LayoutContainer {
    
    public Component getComponent() {
       return component;
+   }
+   
+   @Override
+   public HashSet<Integer> getPollingComponentsIds() {
+      HashSet<Integer> ids = new HashSet<Integer>();
+      if (component instanceof SensorComponent) {
+         ids.add(((SensorComponent)component).getSensor().getSensorId());
+      }
+      return ids;
    }
 }

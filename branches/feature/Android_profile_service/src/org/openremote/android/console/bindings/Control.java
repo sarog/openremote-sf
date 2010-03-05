@@ -25,11 +25,13 @@ import org.w3c.dom.Node;
 @SuppressWarnings("serial")
 public class Control extends Component {
 
-   public static Control buildWithXML(Node node) {
-      Control control = null;
-      if ("button".equals(node.getNodeName())) {
-         control =  new XButton(node);
+   public static Component buildWithXML(Node node) {
+      Component component = null;
+      if (BUTTON.equals(node.getNodeName())) {
+         component =  new XButton(node);
+      } else if (SWITCH.equals(node.getNodeName())) {
+         component = new Switch(node);
       }
-      return control;
+      return component;
    }
 }

@@ -17,37 +17,9 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.android.console.bindings;
+package org.openremote.android.console.model;
 
-import org.openremote.android.console.model.XMLEntityDataBase;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
+public interface OREventListener {
 
-@SuppressWarnings("serial")
-public class Image extends SensorComponent {
-
-   private String src;
-   private String style;
-   
-   public Image(Node node) {
-      NamedNodeMap nodeMap = node.getAttributes();
-      if (nodeMap.getNamedItem("src") != null) {
-         this.src = nodeMap.getNamedItem("src").getNodeValue();
-         XMLEntityDataBase.imageSet.add(src);
-      }
-      // TODO: parse sub nodes(sensory/include).
-   }
-   
-   public Image(String src) {
-      this.src = src;
-      XMLEntityDataBase.imageSet.add(src);
-   }
-   public String getSrc() {
-      return src;
-   }
-   public String getStyle() {
-      return style;
-   }
-   
-   
+   void handleEvent(OREvent event);
 }

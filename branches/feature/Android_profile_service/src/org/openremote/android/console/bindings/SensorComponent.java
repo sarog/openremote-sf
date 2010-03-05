@@ -19,35 +19,21 @@
 */
 package org.openremote.android.console.bindings;
 
-import org.openremote.android.console.model.XMLEntityDataBase;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 @SuppressWarnings("serial")
-public class Image extends SensorComponent {
+public class SensorComponent extends Component {
 
-   private String src;
-   private String style;
-   
-   public Image(Node node) {
-      NamedNodeMap nodeMap = node.getAttributes();
-      if (nodeMap.getNamedItem("src") != null) {
-         this.src = nodeMap.getNamedItem("src").getNodeValue();
-         XMLEntityDataBase.imageSet.add(src);
+   private Sensor sensor;
+
+   public void parser(Node node) {
+      if (LINK.equals(node.getNodeName()) && SENSOR.equals(node.getAttributes().getNamedItem(TYPE).getNodeValue())) {
+         sensor = new Sensor(node);
       }
-      // TODO: parse sub nodes(sensory/include).
    }
    
-   public Image(String src) {
-      this.src = src;
-      XMLEntityDataBase.imageSet.add(src);
+   public Sensor getSensor() {
+      return sensor;
    }
-   public String getSrc() {
-      return src;
-   }
-   public String getStyle() {
-      return style;
-   }
-   
    
 }
