@@ -107,7 +107,7 @@ public class ButtonPropertyForm extends PropertyForm {
          @Override
          public void handleEvent(FieldSetEvent be) {
             if (!navigate.isSet()) {
-               navigate.setToLogical(ToLogicalType.setting);
+               navigate.setToLogical(ToLogicalType.login);
             }
             navigateSet.update(navigate);
          }

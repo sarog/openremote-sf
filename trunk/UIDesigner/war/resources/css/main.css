@@ -298,3 +298,8 @@ table.screen-btn-cont td.br-c{
 	top:0px;
 	width:90%;
 }
+
+.tabbar-background {
+   background-image: url('../../resources/images/iphone_tabbar_bg.png');
+   z-index: 10000;
+}

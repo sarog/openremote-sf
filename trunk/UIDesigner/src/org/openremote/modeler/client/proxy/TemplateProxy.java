@@ -50,6 +50,12 @@ public class TemplateProxy {
             callback.onSuccess(result);
          }
 
+         @Override
+         public void onFailure(Throwable caught) {
+            callback.onFailure(caught);
+         }
+
+        
       });
    }
    /**
@@ -68,6 +74,12 @@ public class TemplateProxy {
                   callback.onSuccess(screen);
                }
 
+               @Override
+               public void onFailure(Throwable caught) {
+                  callback.onFailure(caught);
+               }
+               
+               
             });
    }
    
@@ -78,6 +90,12 @@ public class TemplateProxy {
          public void onSuccess(Boolean result) {
            callback.onSuccess(result);
          }
+
+         @Override
+         public void onFailure(Throwable caught) {
+            callback.onFailure(caught);
+         }
+         
          
       });
    }

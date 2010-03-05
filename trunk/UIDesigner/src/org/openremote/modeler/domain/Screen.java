@@ -58,11 +58,21 @@ public class Screen extends RefedEntity {
 
    private List<Gesture> gestures = new ArrayList<Gesture>();
 
+   private boolean hasTabbar;
+   
    public Screen() {
       this.background = new Background();
    }
 
-   /**
+	public boolean isHasTabbar() {
+		return hasTabbar;
+	}
+
+	public void setHasTabbar(boolean hasTabbar) {
+		this.hasTabbar = hasTabbar;
+	}
+
+/**
     * Gets the name.
     * 
     * @return the name

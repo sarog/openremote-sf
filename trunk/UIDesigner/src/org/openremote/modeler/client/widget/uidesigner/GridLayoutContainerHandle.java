@@ -30,7 +30,7 @@ public class GridLayoutContainerHandle extends ScreenComponent {
    
    public static final int DEFALUT_HANDLE_WIDTH = 16;
    public static final int DEFAULT_HANDLE_HEIGHT = 16;
-   
+   public static final String GRID_DISTANCE_NAME = "gridDistance";
    private GridLayoutContainer gridlayoutContainer = null;
 
    public GridLayoutContainerHandle(ScreenCanvas canvas, GridLayoutContainer gridlayoutContainer) {
@@ -44,6 +44,7 @@ public class GridLayoutContainerHandle extends ScreenComponent {
       handle.addStyleName("move-cursor");
       add(handle);
       gridlayoutContainer.setPosition(DEFALUT_HANDLE_WIDTH, DEFAULT_HANDLE_HEIGHT);
+      gridlayoutContainer.addStyleName("cursor-move");
       add(gridlayoutContainer);
    }
 

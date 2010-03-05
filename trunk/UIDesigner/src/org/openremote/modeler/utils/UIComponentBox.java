@@ -71,7 +71,7 @@ public class UIComponentBox {
     * @return A set with the same kind of UIComponent.
     */
    @SuppressWarnings("unchecked")
-   public Set<UIComponent> getUIComponentsByType(Class type) {
+   public Set<? extends UIComponent> getUIComponentsByType(Class type) {
       Set<UIComponent> uiComponents = uiComponentsMap.get(type);
       if (uiComponents == null) {
          uiComponents = new HashSet<UIComponent>();
