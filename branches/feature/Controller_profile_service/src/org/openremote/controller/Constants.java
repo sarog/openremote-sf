@@ -77,6 +77,9 @@ public class Constants {
    
    /** The Constant XML_TAIL of composed xml-formatted status results. */
    public static final String STATUS_XML_TAIL = "</openremote>";
-   /**##*/
+
+   public static final String HTTP_BASIC_AUTH_HEADER_NAME = "Authorization";
+
+   public static final String HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX = "Basic ";
 
 }

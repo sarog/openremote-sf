@@ -30,6 +30,7 @@
         <property name="resourcePath" value="${resource.path}" />
         <property name="resourceUpload" value="${resource.upload.enable}" />
         <property name="macroIRExecutionDelay" value="${Macro.IR.Execution.Delay}" />
+        <property name="beehiveRESTRootUrl" value="${beehive.REST.Root.Url}" />
     </bean>
     
     
