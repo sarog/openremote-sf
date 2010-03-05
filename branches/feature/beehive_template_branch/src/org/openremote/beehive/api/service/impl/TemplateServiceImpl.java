@@ -46,7 +46,10 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
    @Override
    public List<TemplateDTO> loadAllTemplatesByAccountOid(long accountOid) {
       List<TemplateDTO> templateDTOs = new ArrayList<TemplateDTO>();
-      Account account = genericDAO.loadById(Account.class, accountOid);
+      Account account = genericDAO.getById(Account.class, accountOid);
+      if (account == null) {
+         return null;
+      }
       for (Template template : account.getTemplates()) {
          TemplateDTO t = new TemplateDTO();
          t.setName(template.getName());
@@ -76,7 +79,10 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
 
    @Override
    public TemplateDTO loadTemplateByOid(long templateOid) {
-      Template template = genericDAO.loadById(Template.class, templateOid);
+      Template template = genericDAO.getById(Template.class, templateOid);
+      if (template == null) {
+         return null;
+      }
       TemplateDTO t = new TemplateDTO();
       t.setName(template.getName());
       t.setOid(template.getOid());
@@ -97,7 +103,7 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
 
    @Override
    public boolean delete(long templateOid) {
-      Template t = genericDAO.loadById(Template.class, templateOid);
+      Template t = genericDAO.getById(Template.class, templateOid);
       if (t != null) {
          genericDAO.delete(t);
          return true;
