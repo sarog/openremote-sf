@@ -19,6 +19,8 @@
 */
 package org.openremote.android.console.bindings;
 
+import java.util.HashSet;
+
 @SuppressWarnings("serial")
 public class LayoutContainer extends BusinessEntity {
 
@@ -43,5 +45,7 @@ public class LayoutContainer extends BusinessEntity {
       return height;
    }
 
-   
+   public HashSet<Integer> getPollingComponentsIds() {
+      return null;
+   }
 }

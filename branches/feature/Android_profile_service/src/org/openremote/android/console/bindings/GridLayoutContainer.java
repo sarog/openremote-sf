@@ -20,6 +20,7 @@
 package org.openremote.android.console.bindings;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -60,5 +61,19 @@ public class GridLayoutContainer extends LayoutContainer {
    
    public ArrayList<GridCell> getCells() {
       return cells;
+   }
+   
+   @Override
+   public HashSet<Integer> getPollingComponentsIds() {
+      HashSet<Integer> ids = new HashSet<Integer>();
+      for (GridCell cell : cells) {
+         if (cell.getComponent() instanceof SensorComponent) {
+            Sensor sensor = ((SensorComponent)cell.getComponent()).getSensor();
+            if (sensor != null) {
+               ids.add(sensor.getSensorId());
+            }
+         }
+      }
+      return ids;
    }
 }

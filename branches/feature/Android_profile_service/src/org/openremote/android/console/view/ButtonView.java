@@ -52,8 +52,7 @@ public class ButtonView extends ControlView {
       uiButton.setText(button.getName());
       uiButton.setTextSize(10);
       if (button.getDefaultImage() != null) {
-         defaultImage = Drawable.createFromPath(Constants.FILE_FOLDER_PATH
-               + button.getDefaultImage().getSrc());
+         defaultImage = Drawable.createFromPath(Constants.FILE_FOLDER_PATH + button.getDefaultImage().getSrc());
          if (defaultImage != null) {
             uiButton.setText(null);
             uiButton.setBackgroundDrawable(defaultImage);

@@ -19,35 +19,33 @@
 */
 package org.openremote.android.console.bindings;
 
-import org.openremote.android.console.model.XMLEntityDataBase;
-import org.w3c.dom.NamedNodeMap;
+import java.util.ArrayList;
+
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 @SuppressWarnings("serial")
-public class Image extends SensorComponent {
+public class Sensor extends BusinessEntity {
 
-   private String src;
-   private String style;
-   
-   public Image(Node node) {
-      NamedNodeMap nodeMap = node.getAttributes();
-      if (nodeMap.getNamedItem("src") != null) {
-         this.src = nodeMap.getNamedItem("src").getNodeValue();
-         XMLEntityDataBase.imageSet.add(src);
+   private int sensorId;
+   private ArrayList<SensorState> states;
+
+   public Sensor(Node node) {
+      this.sensorId = Integer.valueOf(node.getAttributes().getNamedItem(REF).getNodeValue());
+      states = new ArrayList<SensorState>();
+      NodeList childNodes = node.getChildNodes();
+      int nodeNum = childNodes.getLength();
+      for (int i = 0; i < nodeNum; i++) {
+         if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE && STATE.equals(childNodes.item(i).getNodeName())) {
+            states.add(new SensorState(childNodes.item(i)));
+         }
       }
-      // TODO: parse sub nodes(sensory/include).
    }
-   
-   public Image(String src) {
-      this.src = src;
-      XMLEntityDataBase.imageSet.add(src);
+   public int getSensorId() {
+      return sensorId;
    }
-   public String getSrc() {
-      return src;
+   public ArrayList<SensorState> getStates() {
+      return states;
    }
-   public String getStyle() {
-      return style;
-   }
-   
    
 }

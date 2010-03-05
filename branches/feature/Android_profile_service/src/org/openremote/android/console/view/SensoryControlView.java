@@ -19,37 +19,15 @@
 */
 package org.openremote.android.console.view;
 
-import org.openremote.android.console.bindings.Component;
-import org.openremote.android.console.bindings.Image;
-import org.openremote.android.console.bindings.Label;
-
 import android.content.Context;
-import android.widget.FrameLayout;
 
-public class ComponentView extends FrameLayout {
+public class SensoryControlView extends ControlView implements SensoryDelegate {
 
-   private Component component;
-   
-   protected ComponentView(Context context) {
+   protected SensoryControlView(Context context) {
       super(context);
    }
-   
-   public static ComponentView buildWithComponent(Context context, Component component) {
-      ComponentView componentView = null;
-      if (component instanceof Label) {
-      } else if (component instanceof Image) {
-      } else {
-         componentView = ControlView.buildWithControl(context, component);
-      }
-      return componentView;
-   }
 
-   public Component getComponent() {
-      return component;
-   }
-
-   public void setComponent(Component component) {
-      this.component = component;
+   public void addPollingSensoryListener(int sensorId) {
    }
 
 }
