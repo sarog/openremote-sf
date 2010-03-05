@@ -54,8 +54,10 @@ public class Configuration {
    
    private String webappIp;
    
+   private String beehiveRESTRootUrl;
+   
    /**
-    * Gets the irsend path.
+    * Gets the irsend cmd path.
     * 
     * @return the irsend path
     */
@@ -63,29 +65,19 @@ public class Configuration {
       return irsendPath;
    }
 
-   /**
-    * Sets the irsend path.
-    * 
-    * @param irsendPath the new irsend path
-    */
    public void setIrsendPath(String irsendPath) {
       this.irsendPath = irsendPath;
    }
 
    /**
-    * Gets the lircdconf path.
+    * Gets the lircd.conf path.
     * 
-    * @return the lircdconf path
+    * @return the lircd.conf path
     */
    public String getLircdconfPath() {
       return lircdconfPath;
    }
 
-   /**
-    * Sets the lircdconf path.
-    * 
-    * @param lircdconfPath the new lircdconf path
-    */
    public void setLircdconfPath(String lircdconfPath) {
       this.lircdconfPath = lircdconfPath;
    }
@@ -100,7 +92,7 @@ public class Configuration {
    }
 
    /**
-    * Sets the copy lircdconf.
+    * Sets whether copying lircdconf is enabled.
     * 
     * @param copyLircdconf the new copy lircdconf
     */
@@ -108,92 +100,47 @@ public class Configuration {
       this.copyLircdconf = copyLircdconf;
    }
 
-   /**
-    * Gets the webapp port.
-    * 
-    * @return the webapp port
-    */
    public int getWebappPort() {
       return webappPort;
    }
 
-   /**
-    * Sets the webapp port.
-    * 
-    * @param webappPort the new webapp port
-    */
    public void setWebappPort(int webappPort) {
       this.webappPort = webappPort;
    }
 
-   /**
-    * Gets the multicast address.
-    * 
-    * @return the multicast address
-    */
    public String getMulticastAddress() {
       return multicastAddress;
    }
 
-   /**
-    * Sets the multicast address.
-    * 
-    * @param multicastAddress the new multicast address
-    */
    public void setMulticastAddress(String multicastAddress) {
       this.multicastAddress = multicastAddress;
    }
 
-   /**
-    * Gets the multicast port.
-    * 
-    * @return the multicast port
-    */
    public int getMulticastPort() {
       return multicastPort;
    }
 
-   /**
-    * Sets the multicast port.
-    * 
-    * @param multicastPort the new multicast port
-    */
    public void setMulticastPort(int multicastPort) {
       this.multicastPort = multicastPort;
    }
 
-   /**
-    * Gets the resource path.
-    * 
-    * @return the resource path
-    */
    public String getResourcePath() {
       return resourcePath;
    }
 
-   /**
-    * Sets the resource path.
-    * 
-    * @param resourcePath the new resource path
-    */
    public void setResourcePath(String resourcePath) {
       this.resourcePath = resourcePath;
    }
 
    /**
-    * Checks if is resource upload.
+    * Checks if is resource upload is enabled.
     * 
-    * @return true, if is resource upload
+    * @return true, if is resource upload is enabled.
     */
    public boolean isResourceUpload() {
       return resourceUpload;
    }
 
-   /**
-    * Sets the resource upload.
-    * 
-    * @param resourceUpload the new resource upload
-    */
    public void setResourceUpload(boolean resourceUpload) {
       this.resourceUpload = resourceUpload;
    }
@@ -213,5 +160,15 @@ public class Configuration {
    public void setWebappIp(String webappIp) {
       this.webappIp = webappIp;
    }
+
+   public String getBeehiveRESTRootUrl() {
+      return beehiveRESTRootUrl;
+   }
+
+   public void setBeehiveRESTRootUrl(String beehiveRESTRootUrl) {
+      this.beehiveRESTRootUrl = beehiveRESTRootUrl;
+   }
+   
+   
    
 }

@@ -1,11 +1,11 @@
 BODY {
     FONT-SIZE: 12px;
-    FONT-FAMILY: Tahoma
+    font-family:'Lucida Grande',Geneva,Verdana,Arial,sans-serif;
 }
 
 TD {
     FONT-SIZE: 12px;
-    FONT-FAMILY: Tahoma
+    FONT-FAMILY: inherit;
 }
 a img{
     border:none;
@@ -29,7 +29,7 @@ BODY {
     BACKGROUND-COLOR: #cccccc;
 }
 .welcome{
-    font-family:georgia,serif;
+    font-family:inherit;
     color:#4B4742;
     margin-top:10px;
 }
@@ -45,4 +45,13 @@ BODY {
 }
 .msg{
     color:green;
+}
+
+#offline-cont {
+	display: none;
+}
+
+#online-cont p {
+	text-align: right;
+	width:230px;
 }

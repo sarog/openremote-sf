@@ -20,6 +20,7 @@
 package org.openremote.controller.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -82,6 +83,25 @@ public class ZipUtil {
 
       }
       return true;
+   }
+   
+   public static boolean unzip(File zipFile, String targetDir) {
+      InputStream inputStream = null;
+      try {
+         inputStream = new FileInputStream(zipFile);
+         return unzip(inputStream, targetDir);
+      } catch (Exception e) {
+         throw new RuntimeException("falied to unzip file" + zipFile.getName(), e);
+      } finally {
+         try {
+            if (inputStream != null) {
+               inputStream.close();
+            }
+         } catch (IOException e) {
+            logger.error("Error while closing stream.", e);
+         }
+
+      }
    }
 
 }

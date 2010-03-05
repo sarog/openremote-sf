@@ -22,16 +22,27 @@ package org.openremote.controller.service.impl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.openremote.controller.Configuration;
 import org.openremote.controller.Constants;
+import org.openremote.controller.exception.BeehiveNotAvailableException;
+import org.openremote.controller.exception.ForbiddenException;
+import org.openremote.controller.exception.ResourceNotFoundException;
 import org.openremote.controller.service.FileService;
 import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.utils.ZipUtil;
+import org.springframework.security.providers.encoding.Md5PasswordEncoder;
+
 
 /**
  * The implementation for FileService interface.
@@ -60,18 +71,23 @@ public class FileServiceImpl implements FileService {
       String resourcePath = configuration.getResourcePath();
       try {
          FileUtils.forceDeleteOnExit(new File(resourcePath));
-      } catch (IOException e1) {
-         logger.error("Can't delete" + resourcePath, e1);
+      } catch (IOException e) {
+         logger.error("Can't delete" + resourcePath, e);
       }
       if (!unzip(inputStream, resourcePath)){
          return false; 
       }
+      copyLircdConf(resourcePath);
+      return true;
+   }
+
+   private void copyLircdConf(String resourcePath) {
       File lircdConfFile = new File(resourcePath + Constants.LIRCD_CONF);
       File lircdconfDir = new File(configuration.getLircdconfPath().replaceAll(Constants.LIRCD_CONF, ""));
       try {
-         if(lircdconfDir.exists() && lircdConfFile.exists()){
-            //this needs root user to put lircd.conf into /etc.
-            //because it's readonly, or it won't be modified.
+         if (lircdconfDir.exists() && lircdConfFile.exists()) {
+            // this needs root user to put lircd.conf into /etc.
+            // because it's readonly, or it won't be modified.
             if (configuration.isCopyLircdconf()) {
                FileUtils.copyFileToDirectory(lircdConfFile, lircdconfDir);
             }
@@ -79,15 +95,52 @@ public class FileServiceImpl implements FileService {
          logger.info("copy lircd.conf to" + configuration.getLircdconfPath());
       } catch (IOException e) {
          logger.error("Can't copy lircd.conf to " + configuration.getLircdconfPath(), e);
-         return false;
       }
       logger.info("uploaded config zip to " + resourcePath);
+   }
+
+   private boolean writeZipAndUnzip(InputStream inputStream) {
+      String resourcePath = configuration.getResourcePath();
+      File zip = new File(resourcePath, "openremote.zip");
+      FileOutputStream fos = null;
+      try {
+         FileUtils.forceDeleteOnExit(zip);
+         fos = new FileOutputStream(zip);
+         byte[] buffer = new byte[1024];
+         int len = 0;
+         while ((len = inputStream.read(buffer)) != -1) {
+            fos.write(buffer, 0, len);
+            System.out.println(len);
+         }
+         if (!ZipUtil.unzip(zip, resourcePath)) {
+            return false;
+         }
+         FileUtils.forceDeleteOnExit(zip);
+      } catch (IOException e) {
+         logger.error("Can't write openremote.zip to " + resourcePath);
+      } finally {
+         if (inputStream != null) {
+            try {
+               inputStream.close();
+            } catch (IOException e) {
+               e.printStackTrace();
+            }
+         }
+         if (fos != null) {
+            try {
+               fos.close();
+            } catch (IOException e) {
+               e.printStackTrace();
+            }
+         }
+      }
+      
+      copyLircdConf(resourcePath);
       return true;
    }
 
-
-   /* (non-Javadoc)
-    * @see org.openremote.controller.service.FileService#findResource(java.lang.String)
+   /**
+    * {@inheritDoc}
     */
    public InputStream findResource(String relativePath) {
       File file = new File(PathUtil.removeSlashSuffix(configuration.getResourcePath()) + relativePath);
@@ -102,10 +155,57 @@ public class FileServiceImpl implements FileService {
    }
    
    /**
-    * Sets the configuration.
-    * 
-    * @param configuration the new configuration
+    * {@inheritDoc}
     */
+   public boolean syncConfigurationWithModeler(String username, String password) {
+      return downloadOpenremoteZipFromBeehiveAndUnzip(username, password);
+   }
+   
+   private boolean downloadOpenremoteZipFromBeehiveAndUnzip(String username, String password) {
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpGet httpGet = new HttpGet(PathUtil.addSlashSuffix(configuration.getBeehiveRESTRootUrl()) + "user/" + username
+            + "/openremote.zip");
+      
+      httpGet.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
+            + encode(username, password));
+      InputStream inputStream = null;
+      try {
+         HttpResponse response = httpClient.execute(httpGet);
+         if (200 == response.getStatusLine().getStatusCode()) {
+            inputStream = response.getEntity().getContent();
+            return writeZipAndUnzip(inputStream);
+         } else if (401 == response.getStatusLine().getStatusCode()) {
+            throw new ForbiddenException();
+         } else if (404 == response.getStatusLine().getStatusCode()) {
+            throw new ResourceNotFoundException();
+         } else {
+            throw new BeehiveNotAvailableException("failed to download resources for template, The status code is: "
+                  + response.getStatusLine().getStatusCode());
+         }
+      } catch (IOException e) {
+         logger.error("failed to connect to Beehive.", e);
+      } finally {
+         if (inputStream != null) {
+            try {
+               inputStream.close();
+            } catch (IOException e) {
+               e.printStackTrace();
+            }
+         }
+      }
+      return false;
+
+   }
+   
+   private String encode(String username, String password) {
+      Md5PasswordEncoder encoder = new Md5PasswordEncoder();
+      String encodedPwd = encoder.encodePassword(password, username);
+      if (username == null || encodedPwd == null) {
+         return null;
+      }
+      return new String(Base64.encodeBase64((username + ":" + encodedPwd).getBytes()));
+   }
+
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }

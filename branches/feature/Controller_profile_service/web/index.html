@@ -37,17 +37,44 @@
 					</TR>
 					<TR>
 						<TD align=left colSpan=5 height=80>
-							<h1 class="welcome">Welcome to Controller!</h1>
-							<p>To update the configuration of Controller, upload the <b>openremote.zip</b>.</p>
-							<form id="uploadForm" action="config.htm?method=uploadZip" method="post" enctype="multipart/form-data">
-								<label for="zip">zip : </label>
-								<input id="zip" name="zip_file" type="file" />
-								<input id="uploadSubmit"type="submit" value="Upload" />
-								<p id="errMsg" class="errMsg" />
-								<p id="msg" class="msg"/>
+						<h1 class="welcome">Welcome to Controller!</h1>
+						<div class="config-div">
+							<span>configuration update :</span>
+							<input id="online" type="radio" value="online" name="mode" checked>
+							<label for="online">online</label>
+							<input id="offline" type="radio" value="offline" name="mode">
+							<label for="offline">offline</label>
+							<img id="update_indicator" style="display:none" title="updating" src="image/progress.gif">
+						</div>
+						<p id="errMsg" class="errMsg" />
+						<p id="msg" class="msg" />
+						<div id="online-cont">
+							<p>Login with your <b>Modeler</b> account.</p>
+							<form id="syncForm" action="config.htm?method=syncOnline" 
+							method="post" enctype="multipart/form-data">
+								<p>
+									<label for="username">username : </label> <input id="username" name="username" type="text" />
+								</p>
+								<p> 
+									<label for="password">password : </label> <input id="password" name="password" type="password" />
+								</p>
+								<p>
+									<input id="syncSubmit" type="submit" value="Sync with Modeler" />
+								</p> 
 							</form>
-							<p>Click <a href="http://composer.openremote.org/demo/">here</a> to get the zip from Modeler if necessary.</p>
-
+							<span>Don't have a Modeler account? <a href="http://composer.openremote.org/demo/">Create account now!</a></span>
+						</div>
+						<div id="offline-cont">
+							<p>upload the <b>openremote.zip</b>.</p>
+							<form id="uploadForm" action="config.htm?method=uploadZip" 
+							method="post" enctype="multipart/form-data">
+							<label for="zip">zip : </label> 
+							<input id="zip" name="zip_file" type="file" /> 
+							<input id="uploadSubmit" type="submit" value="Upload" />
+							</form>
+							<p>Don't have openremote.zip? <a href="http://composer.openremote.org/demo/">Get it from Modeler now!</a></p>
+						</div>
+						
 						</TD>
 					</TR>
 					<TR>
@@ -57,7 +84,7 @@
 					</TR>
 				</TBODY>
 			</TABLE>
-			<span class="copyright">Copyright &copy; 2008-2009 OpenRemote.
+			<span class="copyright">Copyright &copy; 2008-2010 OpenRemote.
 			All rights reserved.</span> <span id="version" class="version">Version:</span></TD>
 		</TR>
 	</TBODY>

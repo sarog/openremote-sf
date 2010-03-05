@@ -26,6 +26,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.openremote.controller.Configuration;
 import org.openremote.controller.Constants;
+import org.openremote.controller.exception.BeehiveNotAvailableException;
+import org.openremote.controller.exception.ForbiddenException;
+import org.openremote.controller.exception.ResourceNotFoundException;
 import org.openremote.controller.service.FileService;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -66,6 +69,24 @@ public class ConfigManageController extends MultiActionController {
       } else {
          response.getWriter().print("disabled");
       }
+      return null;
+   }
+   
+   public ModelAndView syncOnline(HttpServletRequest request, HttpServletResponse response) throws IOException,
+         ServletRequestBindingException {
+      String username = request.getParameter("username");
+      String password = request.getParameter("password");
+      boolean success = false;
+      try {
+         success = fileService.syncConfigurationWithModeler(username, password);
+         response.getWriter().print(success ? Constants.OK : null);
+      } catch (ForbiddenException e) {
+         response.getWriter().print("forbidden");
+      } catch (BeehiveNotAvailableException e) {
+         response.getWriter().print("n/a");
+      } catch (ResourceNotFoundException e) {
+         response.getWriter().print("missing");
+      } 
       return null;
    }
 
