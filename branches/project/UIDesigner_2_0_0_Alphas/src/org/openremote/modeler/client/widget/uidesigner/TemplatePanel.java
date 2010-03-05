@@ -103,8 +103,10 @@ public class TemplatePanel extends ContentPanel {
                MessageBox.alert("Error", "Please select a Template.", null);
                ce.cancelBubble();
             } else {
-               long oid = templateModelData.get("id");
-
+               Long oid = templateModelData.get("id");
+               if (oid == null) {
+                  oid = templateModelData.get("oid");
+               }
                TemplateProxy.deleteTemplateById(oid, new AsyncSuccessCallback<Boolean>() {
 
                   @Override
@@ -115,6 +117,12 @@ public class TemplatePanel extends ContentPanel {
                      }
                   }
 
+                  @Override
+                  public void onFailure(Throwable caught) {
+                     MessageBox.alert("Error","failed to delete the template.The beehive may be not avaliable now ",null);
+                  }
+                  
+                  
                });
             }
          }

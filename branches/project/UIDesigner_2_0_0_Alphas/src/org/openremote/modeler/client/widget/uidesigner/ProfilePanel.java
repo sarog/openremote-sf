@@ -503,7 +503,16 @@ public class ProfilePanel extends ContentPanel {
                   tabbarWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                      @Override
                      public void afterSubmit(SubmitEvent be) {
-                        ((Panel) selectItem.getBean()).setTabbarItems(be.<List<UITabbarItem>> getData());
+                    	 List<UITabbarItem> tabbarItems = be.<List<UITabbarItem>>getData();
+                    	 if (tabbarItems.size() > 0) {
+                    		 ((Panel) selectItem.getBean()).setTabbarItems(tabbarItems);
+                    		 for (GroupRef groupRef : ((Panel) selectItem.getBean()).getGroupRefs()) {
+								for (ScreenRef screenRef : groupRef.getGroup().getScreenRefs()) {
+									screenRef.getScreen().setHasTabbar(true);
+									BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
+								}
+							}
+                    	 }
                         tabbarWindow.hide();
                      }
                   });
@@ -514,7 +523,15 @@ public class ProfilePanel extends ContentPanel {
                   tabbarWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                      @Override
                      public void afterSubmit(SubmitEvent be) {
-                        group.setTabbarItems(be.<List<UITabbarItem>>getData());
+                    	List<UITabbarItem> tabbarItems = be.<List<UITabbarItem>>getData();
+                    	if (tabbarItems.size() > 0) {
+                    		group.setTabbarItems(tabbarItems);
+                    		for (ScreenRef screenRef : group.getScreenRefs()) {
+								screenRef.getScreen().setHasTabbar(true);
+								BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
+							}
+                    	}
+                        
                         tabbarWindow.hide();
                      }
                   });

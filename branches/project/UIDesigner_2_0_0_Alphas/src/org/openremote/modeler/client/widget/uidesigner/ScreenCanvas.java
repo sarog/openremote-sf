@@ -63,6 +63,7 @@ public class ScreenCanvas extends ComponentContainer {
 
    private Screen screen = null;
 
+   private boolean hasTabbar;
    /**
     * Instantiates a new screen canvas.
     * 
@@ -110,6 +111,9 @@ public class ScreenCanvas extends ComponentContainer {
       setStyleAttribute("overflow", "hidden");
       updateGround();
       new DragSource(this);
+      if (screen.isHasTabbar()) {
+    	  addTabbar();
+      }
    }
 
    public void updateGround() {
@@ -450,5 +454,19 @@ public class ScreenCanvas extends ComponentContainer {
       return new ScreenPropertyForm(this);
    }
    
-   
+	public void addTabbar() {
+		if (!hasTabbar) {
+			hasTabbar = true;
+			LayoutContainer tabbarContainer = new LayoutContainer();
+			tabbarContainer.setHeight(44);
+			tabbarContainer.setWidth(screen.getTouchPanelDefinition()
+					.getCanvas().getWidth());
+			tabbarContainer.addStyleName("tabbar-background");
+			tabbarContainer.setPosition(0, screen.getTouchPanelDefinition()
+					.getCanvas().getHeight() - 44);
+			tabbarContainer.setStyleAttribute("position", "absolute");
+			this.add(tabbarContainer);
+			layout();
+		}
+	}
 }

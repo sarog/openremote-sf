@@ -298,3 +298,8 @@ table.screen-btn-cont td.br-c{
 	top:0px;
 	width:90%;
 }
+
+.tabbar-background {
+   background-color: gray;
+   z-index: 10000;
+}
