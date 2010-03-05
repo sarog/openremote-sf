@@ -21,20 +21,27 @@ package org.openremote.beehive.api.service.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openremote.beehive.Configuration;
+import org.openremote.beehive.api.service.AccountService;
 import org.openremote.beehive.api.service.ResourceService;
+import org.openremote.beehive.domain.User;
 import org.openremote.beehive.utils.FileUtil;
 /**
  * 
- * @author javen
+ * Account resources service, such as openremote.zip etc.
+ * 
+ * @author javen, Dan
  *
  */
 public class ResourceServiceImpl implements ResourceService {
    private static final Log logger = LogFactory.getLog(ResourceService.class);
+   
+   private AccountService accountService;
    
    protected Configuration configuration = null;
 
@@ -63,10 +70,35 @@ public class ResourceServiceImpl implements ResourceService {
       }
       return false;
    }
+   
+   public File getResourceZip(String username) {
+      
+      User user = accountService.loadByUsername(username);
+      if (user == null) {
+         return null;
+      }
+      
+      File[] files = getDirByAccountOid(user.getAccount().getOid()).listFiles(new FilenameFilter() {
+
+         @Override
+         public boolean accept(File dir, String name) {
+            return name.equalsIgnoreCase(ZIP_FILE_NAME);
+         }
+
+      });
+      if (files != null && files.length != 0) {
+         return files[0];
+      }
+      return null;
+   }
 
    
+   private File getDirByAccountOid(long accountOid) {
+      return new File(configuration.getModelerResourcesDir() + File.separator + accountOid);
+   }
+   
    private File makeSureDir(long accountOid) {
-      File dir = new File(configuration.getModelerResourcesDir() + File.separator + accountOid);
+      File dir = getDirByAccountOid(accountOid);
       if (!dir.exists()) {
          dir.mkdirs();
       }
@@ -76,6 +108,11 @@ public class ResourceServiceImpl implements ResourceService {
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
+
+   public void setAccountService(AccountService accountService) {
+      this.accountService = accountService;
+   }
+   
    
    
 }

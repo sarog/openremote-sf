@@ -19,7 +19,6 @@
 */
 package org.openremote.beehive.rest;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -58,18 +57,10 @@ import org.openremote.beehive.spring.SpringContext;
 @Path("/account/{account_id}")
 public class TemplateRESTService {
    
-   protected TemplateService getTemplateService() {
-      return (TemplateService) SpringContext.getInstance().getBean("templateService");
-   }
-   
-   protected AccountService getAccountService() {
-      return (AccountService) SpringContext.getInstance().getBean("accountService");
-   }
-   
 
-   @GET
-   @Produces( { "application/xml", "application/json" })
    @Path("templates")
+   @GET
+   @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
    public TemplateListing getTemplates(@PathParam("account_id") long accountId) {
       List<TemplateDTO> list = null;
       if (accountId == Template.PUBLIC_ACCOUNT_OID) {
@@ -77,15 +68,15 @@ public class TemplateRESTService {
       } else {
          list = getTemplateService().loadAllTemplatesByAccountOid(accountId);
       }
-      if (list.size() > 0) {
+      if (list != null) {
          return new TemplateListing(list);
       }
       throw new WebApplicationException(Response.Status.NOT_FOUND);
    }
 
-   @GET
-   @Produces( { "application/xml", "application/json" })
    @Path("template/{template_id}")
+   @GET
+   @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
    public TemplateDTO getTemplateById(@PathParam("template_id") long templateId) {
       TemplateDTO t = getTemplateService().loadTemplateByOid(templateId);
       if (t != null) {
@@ -94,21 +85,13 @@ public class TemplateRESTService {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
    }
 
-   @GET
-   @Produces( { "application/zip"})
-   @Path("template/resource/{template_id}")
-   public File getTemplateResources(@PathParam("template_id") long templateId) {
-      return getTemplateService().getTemplateResourceZip(templateId);
-   }
-   @POST
-   @Produces( { "application/xml", "application/json" })
    @Path("template")
+   @POST
+   @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
    public TemplateDTO addTemplateIntoAccount(@PathParam("account_id") long accountId, @FormParam("name") String name,
          @FormParam("content") String content, @HeaderParam(Constant.HTTP_BASIC_AUTH_HEADER_NAME) String credentials) {
 
-      if (!getAccountService().isHTTPBasicAuthorized(credentials)) {
-         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-      }
+      authorize(credentials);
       Template t = new Template();
       if (accountId > 0) {
          Account a = new Account();
@@ -126,54 +109,39 @@ public class TemplateRESTService {
 
    }
    
-   @DELETE
+   /**
+    * Deletes a template.
+    * 
+    * This requires web server to support HTTP delete method.
+    * 
+    * @param templateId
+    *           template id
+    * @param credentials
+    *           HTTP Basic Auth credentials
+    * @return ture if success.
+    */
+   
    @Path("template/{template_id}")
+   @DELETE
    public boolean deleteTemplate(@PathParam("template_id") long templateId,
          @HeaderParam(Constant.HTTP_BASIC_AUTH_HEADER_NAME) String credentials) {
       
-      if (!getAccountService().isHTTPBasicAuthorized(credentials)) {
-         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-      }
+      authorize(credentials);
       if (templateId > 0) {
          return getTemplateService().delete(templateId);
       }
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
    }
 
-   protected ResourceService resourceService = (ResourceService) SpringContext.getInstance().getBean("resourceService");
-   @Path("resource")
-   @POST
-   @Consumes(MediaType.MULTIPART_FORM_DATA)
-   public boolean saveResource(@PathParam("account_id") long accountId, MultipartFormDataInput input) {
-      List<InputPart> parts = input.getParts();
-      InputStream in = null;
-      try {
-            in = parts.get(0).getBody(new GenericType<InputStream>() {
-            });
-            return resourceService.saveResource(accountId, in);
-      } catch (IOException e) {
-         e.printStackTrace();
-      } finally {
-         if (in != null) {
-            try {
-               in.close();
-            } catch (Exception e) {
-            }
-         }
-      }
-      throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
-   }
-   
-   @Path("resource/template/{templateId}")
+   @Path("template/{template_id}/resource")
    @POST
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    public boolean saveTemplateResource(@PathParam("account_id") long accountId,
-         @PathParam("templateId") long templateId, MultipartFormDataInput input) {
+         @PathParam("template_id") long templateId, MultipartFormDataInput input) {
       List<InputPart> parts = input.getParts();
       InputStream in = null;
       try {
-         in = parts.get(0).getBody(new GenericType<InputStream>() {
-         });
+         in = parts.get(0).getBody(new GenericType<InputStream>() {});
          return getTemplateService().saveTemplateResourceZip(templateId, in);
       } catch (IOException e) {
          e.printStackTrace();
@@ -182,9 +150,55 @@ public class TemplateRESTService {
             try {
                in.close();
             } catch (Exception e) {
+               e.printStackTrace();
             }
          }
       }
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
    }
+   
+   @Path("resources")
+   @POST
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   public boolean saveResource(@PathParam("account_id") long accountId, MultipartFormDataInput input) {
+      List<InputPart> parts = input.getParts();
+      InputStream in = null;
+      try {
+            in = parts.get(0).getBody(new GenericType<InputStream>() {});
+            return getResourceService().saveResource(accountId, in);
+      } catch (IOException e) {
+         e.printStackTrace();
+      } finally {
+         if (in != null) {
+            try {
+               in.close();
+            } catch (Exception e) {
+               e.printStackTrace();
+            }
+         }
+      }
+      throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+   }
+   
+   
+   private void authorize(String credentials) {
+      if (!getAccountService().isHTTPBasicAuthorized(credentials)) {
+         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+      }
+   }
+   
+   
+   protected ResourceService getResourceService() {
+      return (ResourceService) SpringContext.getInstance().getBean("resourceService");
+   }
+   
+   protected TemplateService getTemplateService() {
+      return (TemplateService) SpringContext.getInstance().getBean("templateService");
+   }
+   
+   protected AccountService getAccountService() {
+      return (AccountService) SpringContext.getInstance().getBean("accountService");
+   }
+   
+   
 }
