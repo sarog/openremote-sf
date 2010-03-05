@@ -49,7 +49,9 @@ import com.extjs.gxt.ui.client.widget.layout.FormData;
 
 /**
  * A window for creating a Template.
+ *
  * @author javen
+ * @author <a href = "mailto:juha@openremote.org">Juha Lindfors</a>
  *
  */
 public class TemplateCreateWindow extends FormWindow {
@@ -157,7 +159,7 @@ public class TemplateCreateWindow extends FormWindow {
          }
          List<BeanModel> screenBeanModels = screenList.getSelectionModel().getSelectedItems();
          if (screenBeanModels == null || screenBeanModels.size() != 1) {
-            MessageBox.alert("Error", "One (and only one)screen must be selected", null);
+            MessageBox.alert("Error", "One (and only one) screen must be selected", null);
             return;
          }
          Screen screen = screenBeanModels.get(0).getBean();
@@ -167,7 +169,7 @@ public class TemplateCreateWindow extends FormWindow {
 
             @Override
             public void onSuccess(Template result) {
-               Info.display("Success", "template saved successfully:(id,name)(" + result.getOid()+","+result.getName()+")");
+               Info.display("Success", "Template saved successfully:(id,name)(" + result.getOid()+","+result.getName()+")");
                TemplateCreateWindow.this.unmask();
                result.getBeanModel().set("id", result.getOid());
                fireEvent(SubmitEvent.SUBMIT,new SubmitEvent(result));
@@ -176,13 +178,13 @@ public class TemplateCreateWindow extends FormWindow {
 
             @Override
             public void onFailure(Throwable caught) {
-               MessageBox.alert("error","The beehive may be not avaliable now! ",null);
+               MessageBox.alert("error","Beehive database not available at the moment.",null);
                TemplateCreateWindow.this.unmask();
             }
             
             
          });
-         TemplateCreateWindow.this.mask("The template is in creating... ");
+         TemplateCreateWindow.this.mask("The template is being created... ");
       }
 
    }
