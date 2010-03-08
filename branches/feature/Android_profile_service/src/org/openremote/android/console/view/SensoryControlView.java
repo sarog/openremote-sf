@@ -27,7 +27,7 @@ public class SensoryControlView extends ControlView implements SensoryDelegate {
       super(context);
    }
 
-   public void addPollingSensoryListener(int sensorId) {
+   public void addPollingSensoryListener() {
    }
 
 }

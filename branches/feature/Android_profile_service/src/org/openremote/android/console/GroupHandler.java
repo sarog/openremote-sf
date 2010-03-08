@@ -51,6 +51,7 @@ public class GroupHandler extends Activity implements OnGestureListener {
 //   private ImageLoader imageLoader;
    private Group group;
    private ViewFlipper vf;
+   private int screenSize;
 
    private static final int SWIPE_MIN_DISTANCE = 120;
    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
@@ -68,6 +69,7 @@ public class GroupHandler extends Activity implements OnGestureListener {
 //       this.activity = (ORActivity) getIntent().getExtras().get("activity");
 //       startLoadingImages(activity);
        this.group = XMLEntityDataBase.getFirstGroup();
+       screenSize = group.getScreens().size();
        LinearLayout ll = new LinearLayout(this);
        vf = new ViewFlipper(this);
        vf.setInAnimation(AnimationUtils.loadAnimation(this,R.anim.fade));
@@ -76,6 +78,7 @@ public class GroupHandler extends Activity implements OnGestureListener {
        ll.addView(vf);
        this.setContentView(ll);
        constructScreens(vf, group);
+       ((ScreenView) vf.getCurrentView()).startPolling();
 
    }
 
@@ -131,7 +134,6 @@ public class GroupHandler extends Activity implements OnGestureListener {
        for (int i = 0; i < screenSize; i++) {
            vf.addView(new ScreenView(this, screens.get(i)));
        }
-
    }
 
 //   private AbsoluteLayout constructScreen(int col, int row,
@@ -287,14 +289,22 @@ public class GroupHandler extends Activity implements OnGestureListener {
    private void moveRight() {
        Log.d(this.toString(), "MoveRight");
        ViewFlipper vf = (ViewFlipper) findViewById(FLIPPER);
-       vf.showNext();
+       if (vf.getDisplayedChild() < screenSize - 1) {
+          ((ScreenView) vf.getCurrentView()).cancelPolling();
+          vf.showNext();
+          ((ScreenView) vf.getCurrentView()).startPolling();
+       }
    }
 
    private void moveLeft() {
 
        Log.d(this.toString(), "MoveLeft");
        ViewFlipper vf = (ViewFlipper) findViewById(FLIPPER);
-       vf.showPrevious();
+       if (vf.getDisplayedChild() > 0) {
+          ((ScreenView) vf.getCurrentView()).cancelPolling();
+          vf.showPrevious();
+          ((ScreenView) vf.getCurrentView()).startPolling();
+       }
    }
 
    @Override

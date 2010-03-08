@@ -21,10 +21,11 @@ package org.openremote.android.console.view;
 
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.bindings.Switch;
+import org.openremote.android.console.model.ListenerConstant;
 import org.openremote.android.console.model.OREvent;
 import org.openremote.android.console.model.OREventListener;
 import org.openremote.android.console.model.ORListenerManager;
-import org.openremote.android.console.model.ListenerConstant;
+import org.openremote.android.console.model.PollingStatusParser;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -41,14 +42,15 @@ public class SwitchView extends SensoryControlView {
    private Drawable offImage;
    private boolean isOn;
    private boolean canUseImage;
-   
    public SwitchView(Context context, Switch switchComponent) {
       super(context);
       setComponent(switchComponent);
       if (switchComponent != null) {
          button = new ToggleButton(context);
          initSwitch(switchComponent);
-         addPollingSensoryListener(switchComponent.getSensor().getSensorId());
+         if (switchComponent.getSensor() != null) {
+            addPollingSensoryListener();
+         }
       }
    }
 
@@ -99,11 +101,19 @@ public class SwitchView extends SensoryControlView {
    }
    
    @Override
-   public void addPollingSensoryListener(int sensorId) {
+   public void addPollingSensoryListener() {
+      final Integer sensorId = ((Switch)getComponent()).getSensor().getSensorId();
       if (sensorId > 0) {
          ORListenerManager.getInstance().addOREventListener(ListenerConstant.ListenerPollingStatusIdFormat + sensorId, new OREventListener() {
             public void handleEvent(OREvent event) {
-               
+               Log.e("polling", "sensorid:"+sensorId);
+               String value = PollingStatusParser.statusMap.get(sensorId.toString()).toLowerCase();
+               if (isOn && Switch.OFF.equals(value)) {
+                  isOn = false;
+               } else if (!isOn && Switch.ON.equals(value)) {
+                  isOn = true;
+               }
+               button.setChecked(isOn);
             }
             
          });
