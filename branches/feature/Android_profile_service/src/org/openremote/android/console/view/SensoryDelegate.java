@@ -19,6 +19,6 @@ package org.openremote.android.console.view;
 
 public interface SensoryDelegate {
 
-   void addPollingSensoryListener(int sensorId);
+   void addPollingSensoryListener();
 
 }

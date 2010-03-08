@@ -55,7 +55,6 @@ public class ControlView extends ComponentView {
    public boolean sendCommandRequest(String commandType) {
       try {
          int responseCode = HTTPUtil.sendCommand(AppSettingsModel.getCurrentServer(getContext()), getComponent().getComponentId(), commandType);
-         Log.e("send command:", ""+responseCode);
          if (responseCode != 200) {
             handleServerErrorWithStatusCode(responseCode);
             return false;
