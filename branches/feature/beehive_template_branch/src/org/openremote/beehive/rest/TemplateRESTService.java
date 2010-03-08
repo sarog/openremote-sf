@@ -77,7 +77,7 @@ public class TemplateRESTService {
 
    @GET
    @Produces( { "application/zip"})
-   @Path("template/resource/{template_id}")
+   @Path("template/{template_id}/resource")
    public File getTemplateResources(@PathParam("template_id") long templateId) {
       return getTemplateService().getTemplateResourceZip(templateId);
    }
