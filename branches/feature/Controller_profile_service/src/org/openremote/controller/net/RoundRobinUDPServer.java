@@ -46,9 +46,9 @@ public class RoundRobinUDPServer implements Runnable {
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
-   private Configuration configuration = ConfigFactory.getConfig();
+   private Configuration configuration = ConfigFactory.getCustomBasicConfigFromDefaultControllerXML();
    
-   private RoundRobinConfig roundRobinConfig = ConfigFactory.getRoundRobinConfig();
+   private RoundRobinConfig roundRobinConfig = ConfigFactory.getCustomRoundRobinConfigFromDefaultControllerXML();
    
    private static final String SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME = RoundRobinClient.SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME;
    

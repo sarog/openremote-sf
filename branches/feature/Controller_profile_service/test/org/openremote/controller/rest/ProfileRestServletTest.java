@@ -46,7 +46,7 @@ public class ProfileRestServletTest {
    public void setup() {
       String panelXmlFixturePath = this.getClass().getClassLoader().getResource(
             TestConstraint.FIXTURE_DIR + Constants.PANEL_XML).getFile();
-      panelXmlPath = PathUtil.addSlashSuffix(ConfigFactory.getConfig().getResourcePath()) + Constants.PANEL_XML;
+      panelXmlPath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML().getResourcePath()) + Constants.PANEL_XML;
       if (new File(panelXmlPath).exists()) {
          new File(panelXmlPath).renameTo(new File(panelXmlPath + ".bak"));
       }

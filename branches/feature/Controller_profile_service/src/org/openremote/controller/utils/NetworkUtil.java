@@ -37,7 +37,7 @@ import org.openremote.controller.Configuration;
  */
 public class NetworkUtil {
    public static final Log logger = LogFactory.getLog(NetworkUtil.class);
-   private static Configuration configuration = ConfigFactory.getConfig();
+   private static Configuration configuration = ConfigFactory.getCustomBasicConfigFromDefaultControllerXML();
    
    private NetworkUtil(){}
    

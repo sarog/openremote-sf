@@ -44,7 +44,7 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
    private ChangedStatusTable changedStatusTable = (ChangedStatusTable) SpringContext.getInstance().getBean("changedStatusTable");
    private StatusCacheService statusCacheService = (StatusCacheService) SpringContext.getInstance().getBean("statusCacheService");
 
-   private static Configuration configuration = ConfigFactory.getConfig();
+   private static Configuration configuration = ConfigFactory.getCustomBasicConfigFromDefaultControllerXML();
    private static  String ServerIP = NetworkUtil.getLocalhostIP();
    
    private static  String webAppName = "controller";

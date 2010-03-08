@@ -27,6 +27,7 @@
 				<xsd:element ref="components" />
 				<xsd:element ref="sensors" />
 				<xsd:element ref="commands" />
+				<xsd:element ref="config" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -359,6 +360,12 @@
 			<xsd:element ref="include"  minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:choice>
 	</xsd:group>
-	
-	
+	<!-- ###############  cotrollerConfig  ################ -->
+	<xsd:element name="config">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="property" minOccurs="1" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
 </xsd:schema>

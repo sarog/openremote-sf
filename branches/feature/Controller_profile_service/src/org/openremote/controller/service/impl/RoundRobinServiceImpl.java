@@ -53,11 +53,11 @@ public class RoundRobinServiceImpl implements RoundRobinService {
     */
    @Override
    public Set<String> discoverGroupMembersAppURL() {
-      if (roundRobinConfig.getIsRoundRobinOn()) {
+      if (roundRobinConfig.getIsGroupMemberAutoDetectOn()) {
          RoundRobinClient roundRobinClient = new RoundRobinClient();
          return roundRobinClient.getGroupMemberURLsSet();
       } else {
-         return roundRobinConfig.getGroupMembersURLsSet();
+         return roundRobinConfig.getGroupMemberCandidateURLsSet();
       }
    }
 
