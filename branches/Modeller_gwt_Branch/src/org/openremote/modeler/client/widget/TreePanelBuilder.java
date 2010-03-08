@@ -403,16 +403,7 @@ public class TreePanelBuilder {
       widgetTreeStore.add(new UIImage().getBeanModel(), true);
       widgetTreeStore.add(new UIButton().getBeanModel(), true);
       widgetTreeStore.add(new UISwitch().getBeanModel(), true);
-      /*
-       * add a horizontal slider
-       */
       widgetTreeStore.add(new UISlider().getBeanModel(), true);
-      /*
-       * add a vertical slider
-       */
-      UISlider vSlider = new UISlider();
-      vSlider.setVertical(true);
-      widgetTreeStore.add(vSlider.getBeanModel(), true);
       
       widgetTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
@@ -425,8 +416,7 @@ public class TreePanelBuilder {
             } else if (thisModel.getBean() instanceof UIImage) {
                return ICON.imageIcon();
             } else if (thisModel.getBean() instanceof UISlider) {
-               UISlider slider = thisModel.getBean();
-               return slider.isVertical()?ICON.vsliderIcon():ICON.sliderIcon();
+               return ICON.sliderIcon();
             } else if (thisModel.getBean() instanceof UIGrid) {
                return ICON.gridIcon();
             } else {
