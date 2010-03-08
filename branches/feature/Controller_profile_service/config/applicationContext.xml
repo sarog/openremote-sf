@@ -31,17 +31,18 @@
         <property name="resourceUpload" value="${resource.upload.enable}" />
         <property name="macroIRExecutionDelay" value="${Macro.IR.Execution.Delay}" />
         <property name="beehiveRESTRootUrl" value="${beehive.REST.Root.Url}" />
+        <property name="webappName" value="${controller.applicationname}" />
     </bean>
     
     
     <bean id="roundRobinConfig" class="org.openremote.controller.RoundRobinConfig">
-    	<property name="isRoundRobinOn" value="${controller.roundrobin.on}" />
+    	<property name="isGroupMemberAutoDetectOn" value="${controller.groupmember.autodetect.on}" />
         <property name="roundRobinMulticastAddress" value="${controller.roundrobin.multicast.address}" />
         <property name="roundRobinMulticastPort" value="${controller.roundrobin.multicast.port}" />
         <property name="controllerGroupName" value="${controller.groupname}" />
         <property name="controllerApplicationName" value="${controller.applicationname}" />
         <property name="roundRobinTCPServerSocketPort" value="${controller.roundrobin.tcpserver.port}" />
-        <property name="groupMembersURLs" value="${controller.groupmembers.urls}" />
+        <property name="groupMemberCandidateURLs" value="${controller.groupmember.candidate.urls}" />
     </bean>
     
     <!-- service for button command from iPhone -->

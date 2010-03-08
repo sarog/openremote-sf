@@ -51,7 +51,7 @@ public class MacrosIrDelayUtil {
       if (irCmdIndex == null) {
          return;
       }
-      long minDelaySeconds = ConfigFactory.getConfig().getMacroIRExecutionDelay();
+      long minDelaySeconds = ConfigFactory.getCustomBasicConfigFromDefaultControllerXML().getMacroIRExecutionDelay();
       Map<Integer, DelayCommand> delays = getDelayForIrCommand(commands, irCmdIndex, minDelaySeconds);
 
       int addTimes = 0;

@@ -37,7 +37,7 @@ import org.openremote.controller.utils.ConfigFactory;
  */
 public class MulticastAutoDiscoveryTest {
 
-   private Configuration configuration = ConfigFactory.getConfig();
+   private Configuration configuration = ConfigFactory.getCustomBasicConfigFromDefaultControllerXML();
 
    @Test
    public void getMulticastSocketIP() {

@@ -19,17 +19,31 @@
 */
 package org.openremote.controller;
 
+
 /**
- * The Class Configuration.
+ * Basic Configuration.
  * 
  * @author Dan 2009-6-1
  */
-public class Configuration {
+public class Configuration extends CustomConfiguration {
+   
+   /* the following constants are the keys from config.properties */
+   public static final String RESOURCE_UPLOAD_ENABLE = "resource.upload.enable";
+   public static final String RESOURCE_PATH = "resource.path";
+   public static final String IRSEND_PATH = "irsend.path";
+   public static final String MULTICAST_PORT = "multicast.port";
+   public static final String MULTICAST_ADDRESS = "multicast.address";
+   public static final String WEBAPP_PORT = "webapp.port";
+   public static final String COPY_LIRCD_CONF_ON = "copy.lircd.conf.on";
+   public static final String LIRCD_CONF_PATH = "lircd.conf.path";
+   public static final String WEBAPP_IP = "webapp.ip";
+   public static final String BEEHIVE_REST_ROOT_URL = "beehive.REST.Root.Url";
+   public static final String CONTROLLER_APPLICATIONNAME = "controller.applicationname";
    
    /** The irsend path. */
    private String irsendPath;
    
-   /** The lircdconf path. */
+   /** The lircd.conf path. */
    private String lircdconfPath;
    
    /** Whether copy lircd.conf for user. */
@@ -56,13 +70,22 @@ public class Configuration {
    
    private String beehiveRESTRootUrl;
    
+   private String webappName;
+   
+   public static Configuration parseFromControllerXML() {
+      
+      return null;
+   }
+   
+   /* attributes getter/setter begin */
+   
    /**
     * Gets the irsend cmd path.
     * 
     * @return the irsend path
     */
    public String getIrsendPath() {
-      return irsendPath;
+      return preferAttrCustomValue(IRSEND_PATH, irsendPath);
    }
 
    public void setIrsendPath(String irsendPath) {
@@ -75,7 +98,7 @@ public class Configuration {
     * @return the lircd.conf path
     */
    public String getLircdconfPath() {
-      return lircdconfPath;
+      return preferAttrCustomValue(LIRCD_CONF_PATH, lircdconfPath);
    }
 
    public void setLircdconfPath(String lircdconfPath) {
@@ -88,7 +111,7 @@ public class Configuration {
     * @return true, if is copy lircdconf
     */
    public boolean isCopyLircdconf() {
-      return copyLircdconf;
+      return preferAttrCustomValue(COPY_LIRCD_CONF_ON, copyLircdconf);
    }
 
    /**
@@ -101,7 +124,7 @@ public class Configuration {
    }
 
    public int getWebappPort() {
-      return webappPort;
+      return preferAttrCustomValue(WEBAPP_PORT, webappPort);
    }
 
    public void setWebappPort(int webappPort) {
@@ -109,7 +132,7 @@ public class Configuration {
    }
 
    public String getMulticastAddress() {
-      return multicastAddress;
+      return preferAttrCustomValue(MULTICAST_ADDRESS, multicastAddress);
    }
 
    public void setMulticastAddress(String multicastAddress) {
@@ -117,7 +140,7 @@ public class Configuration {
    }
 
    public int getMulticastPort() {
-      return multicastPort;
+      return preferAttrCustomValue(MULTICAST_PORT, multicastPort);
    }
 
    public void setMulticastPort(int multicastPort) {
@@ -125,7 +148,7 @@ public class Configuration {
    }
 
    public String getResourcePath() {
-      return resourcePath;
+      return preferAttrCustomValue(RESOURCE_PATH, resourcePath);
    }
 
    public void setResourcePath(String resourcePath) {
@@ -138,7 +161,7 @@ public class Configuration {
     * @return true, if is resource upload is enabled.
     */
    public boolean isResourceUpload() {
-      return resourceUpload;
+      return preferAttrCustomValue(RESOURCE_UPLOAD_ENABLE, resourceUpload);
    }
 
    public void setResourceUpload(boolean resourceUpload) {
@@ -146,7 +169,7 @@ public class Configuration {
    }
 
    public long getMacroIRExecutionDelay() {
-      return macroIRExecutionDelay;
+      return preferAttrCustomValue("Macro.IR.Execution.Delay", macroIRExecutionDelay);
    }
 
    public void setMacroIRExecutionDelay(long macroIRExecutionDelay) {
@@ -154,7 +177,7 @@ public class Configuration {
    }
 
    public String getWebappIp() {      
-      return webappIp;
+      return preferAttrCustomValue(WEBAPP_IP, webappIp);
    }
 
    public void setWebappIp(String webappIp) {
@@ -162,13 +185,19 @@ public class Configuration {
    }
 
    public String getBeehiveRESTRootUrl() {
-      return beehiveRESTRootUrl;
+      return preferAttrCustomValue(BEEHIVE_REST_ROOT_URL, beehiveRESTRootUrl);
    }
 
    public void setBeehiveRESTRootUrl(String beehiveRESTRootUrl) {
       this.beehiveRESTRootUrl = beehiveRESTRootUrl;
    }
    
+   public String getWebappName() {
+      return preferAttrCustomValue(CONTROLLER_APPLICATIONNAME, webappName);
+   }
    
+   public void setWebappName(String webappName) {
+      this.webappName = webappName;
+   }
    
 }
