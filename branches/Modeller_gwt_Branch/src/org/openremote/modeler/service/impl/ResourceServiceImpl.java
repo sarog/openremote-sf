@@ -907,7 +907,7 @@ public class ResourceServiceImpl implements ResourceService {
       try {
          if (!share) {
             httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid()
-                  + "/resource/template/" + template.getOid()));
+                  + "/template/" + template.getOid()+"/resource/"));
          } else {
             httpPost.setURI(new URI(beehiveRootRestURL + "account/0/template/" + template.getOid() + "/resource/"));
          }
