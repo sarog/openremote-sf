@@ -24,8 +24,9 @@ import javax.persistence.Transient;
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.domain.Sensor;
 
-@SuppressWarnings("serial")
 public class UIImage extends UIComponent implements SensorOwner {
+
+   private static final long serialVersionUID = -4114009124680167066L;
 
    public static String DEFAULT_IMAGE_URL = "image/OpenRemote.Logo.30x32.png";
    

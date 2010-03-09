@@ -29,11 +29,12 @@ import javax.persistence.Transient;
 /**
  * The Class DeviceMacroRef.
  */
-@SuppressWarnings("serial")
 @Entity
 @DiscriminatorValue("DEVICE_MACRO_REF")
 public class DeviceMacroRef extends DeviceMacroItem {
 
+   private static final long serialVersionUID = 266287402505655375L;
+   
    /** The target device macro. */
    private DeviceMacro targetDeviceMacro;
    

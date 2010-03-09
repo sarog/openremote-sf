@@ -26,8 +26,12 @@ import org.openremote.modeler.domain.UICommand;
 /**
  * UIControl act as all domain component's super class.
  */
-@SuppressWarnings("serial")
 public abstract class UIControl extends UIComponent {
+
+   /**
+    * 
+    */
+   private static final long serialVersionUID = 2629776331131648211L;
 
    public UIControl() {
       super();

@@ -25,9 +25,10 @@ import org.openremote.modeler.domain.BusinessEntity;
 /**
  * The Class UImage.
  */
-@SuppressWarnings("serial")
 public class ImageSource extends BusinessEntity {
 
+   private static final long serialVersionUID = 641025600256733725L;
+   
    private String src;
    public ImageSource() {
    }

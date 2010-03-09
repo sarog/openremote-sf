@@ -35,10 +35,11 @@ import flexjson.JSON;
  * @author javen
  *
  */
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "config")
 public class Config extends BusinessEntity{
+   private static final long serialVersionUID = -6443368320902438959L;
+   
    public static final String NAME_XML_ATTRIBUTE_NAME = "name";
    public static final String VALUE_XML_ATTRIBUTE_NAME = "value";
    public static final String VALIDATION_XML_ATTRIBUTE_NAME = "validation";
