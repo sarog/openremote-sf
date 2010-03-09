@@ -28,8 +28,9 @@ import org.openremote.modeler.domain.UICommand;
 
 import flexjson.JSON;
 
-@SuppressWarnings("serial")
 public class UIButton extends UIControl {
+   
+   private static final long serialVersionUID = 2511411866454281810L;
 
    /** The label. */
    private String name = "Button";

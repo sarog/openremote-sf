@@ -31,9 +31,10 @@ import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 /**
  * The Panel define the different device touch panel, such as iPhone panel, wall panel etc.
  */
-@SuppressWarnings("serial")
 public class Panel extends BusinessEntity {
 
+   private static final long serialVersionUID = 6122936524433692761L;
+   
    private static int defaultNameIndex = 1;
    private String name;
    private List<GroupRef> groupRefs = new ArrayList<GroupRef>();

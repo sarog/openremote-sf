@@ -32,13 +32,14 @@ import javax.persistence.Transient;
 /**
  * The Class CommandRefItem is for reference the device command by sensor, switch, slider and other components.
  */
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "command_ref_item")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type")
 @DiscriminatorValue("COMMAND_REF_ITEM")
 public class CommandRefItem extends UICommand {
+
+   private static final long serialVersionUID = -7718538501310557635L;
 
    private DeviceCommand deviceCommand;
 

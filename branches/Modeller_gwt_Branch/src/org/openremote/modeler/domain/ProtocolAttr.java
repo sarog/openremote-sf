@@ -32,10 +32,11 @@ import javax.persistence.Table;
  * 
  * @author Dan 2009-7-6
  */
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "protocol_attr")
 public class ProtocolAttr extends BusinessEntity {
+
+   private static final long serialVersionUID = 7659446044086879559L;
 
    /** The name. */
    private String name;
