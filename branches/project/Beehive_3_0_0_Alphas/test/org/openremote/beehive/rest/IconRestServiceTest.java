@@ -26,6 +26,7 @@ import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.openremote.beehive.TemplateTestBase;
 import org.openremote.beehive.rest.service.IconRESTTestService;
+import org.openremote.beehive.utils.RESTTestUtils;
 
 /**
  * @author Tomsky, Dan Cong

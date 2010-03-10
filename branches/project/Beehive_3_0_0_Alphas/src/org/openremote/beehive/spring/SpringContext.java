@@ -28,7 +28,7 @@ import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
  * 
  * @author Dan 2009-2-16
  */
-public class SpringContext {
+public class SpringContext implements ISpringContext {
 
    private static SpringContext m_instance;
 

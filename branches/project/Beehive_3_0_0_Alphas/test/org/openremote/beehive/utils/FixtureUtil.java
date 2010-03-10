@@ -20,6 +20,7 @@
 package org.openremote.beehive.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
 
 import org.openremote.beehive.TestConstraint;
 /**
@@ -34,12 +35,21 @@ public class FixtureUtil {
    private FixtureUtil() {
    }
 
+   
+   public static File getFile(String fileName) {
+      return new File(path() + fileName);
+      
+   }
    public static String path() {
       return FixtureUtil.class.getClassLoader().getResource(TestConstraint.FIXTURE_DIR).getFile();
    }
 
    public static String getFileContent(String fileName) {
       return FileUtil.readFileToString(new File(FixtureUtil.path() + fileName)).toString().trim();
+   }
+   
+   public static FileInputStream getFileInputstream(String fileName) {
+      return FileUtil.readStream(FixtureUtil.path() + fileName);
    }
 
 }

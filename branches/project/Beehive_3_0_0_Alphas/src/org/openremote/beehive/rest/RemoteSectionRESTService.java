@@ -29,13 +29,12 @@ import javax.ws.rs.core.Response;
 import org.openremote.beehive.api.dto.ModelDTO;
 import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.api.service.RemoteSectionService;
-import org.openremote.beehive.spring.SpringContext;
 
 /**
  * Exports restful service of <code>RemoteSection</code> User: allenwei Date: 2009-2-10
  */
 @Path("/lirc/{vendor_name}/{model_name}")
-public class RemoteSectionRESTService {
+public class RemoteSectionRESTService extends RESTBaseService {
 
    /**
     * Shows remoteSecrtions by {vendor_name} and {model_name} Visits @ url "/lirc/{vendor_name}/{model_name}"
@@ -61,7 +60,7 @@ public class RemoteSectionRESTService {
     * @return ModelService instance
     */
    public ModelService getModelService() {
-      return (ModelService) SpringContext.getInstance().getBean("modelService");
+      return (ModelService) getSpringContextInstance().getBean("modelService");
    }
 
    /**
@@ -70,6 +69,6 @@ public class RemoteSectionRESTService {
     * @return RemoteSectionService instance
     */
    public RemoteSectionService getRemoteSectionService() {
-      return (RemoteSectionService) SpringContext.getInstance().getBean("remoteSectionService");
+      return (RemoteSectionService) getSpringContextInstance().getBean("remoteSectionService");
    }
 }
