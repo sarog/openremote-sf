@@ -34,7 +34,6 @@ import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
-import org.openremote.modeler.client.widget.buildingmodeler.DevicePanel;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
@@ -218,13 +217,9 @@ public class ScreenWindow extends FormWindow {
                      ScreenWindow.this.unmask();
                      //----------rebuild command 
                      Set<Device> devices = result.getDevices();
-                     DevicePanel devicePanel = DevicePanel.getInstance();
-                     TreePanel<BeanModel> deviceTree = devicePanel.getTree();
                      for(Device device: devices) {
-                        deviceTree.getStore().add(device.getBeanModel(), false);
                         BeanModelDataBase.deviceTable.insert(device.getBeanModel());
                      }
-                     devicePanel.layout();
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));
                   }
 

@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.Constants;
@@ -47,6 +48,25 @@ import com.extjs.gxt.ui.client.store.TreeStoreEvent;
  * @author allen.wei
  */
 public class DeviceBeanModelTable extends BeanModelTable {
+   
+   private List<DeviceInsertListener<BeanModel>> deviceInsertListener = new ArrayList<DeviceInsertListener<BeanModel>> ();
+   
+   public void addDeviceInsertListener(DeviceInsertListener<BeanModel> insertListener){
+      deviceInsertListener.add(insertListener);
+   }
+   
+   public void removeInsertListener(DeviceInsertListener<BeanModel> insertListener){
+      deviceInsertListener.remove(insertListener);
+   }
+   
+   
+   @Override
+   public void insert(BeanModel beanModel) {
+      super.insert(beanModel);
+      for(DeviceInsertListener<BeanModel> listener : deviceInsertListener) {
+         listener.handleInsert(beanModel);
+      }
+   }
 
    /**
     * Instantiates a new bean model table.
@@ -144,5 +164,9 @@ public class DeviceBeanModelTable extends BeanModelTable {
             changeListener.modelChanged(evt);
          }
       }
+   }
+   
+   public static interface DeviceInsertListener<T> {
+      void handleInsert(T beanModel);
    }
 }

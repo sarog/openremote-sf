@@ -24,11 +24,14 @@ import java.util.Set;
 
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.model.TreeFolderBean;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.ConfigCategoryBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.utils.DeviceBeanModelTable;
+import org.openremote.modeler.client.utils.DeviceBeanModelTable.DeviceInsertListener;
 import org.openremote.modeler.client.widget.buildingmodeler.ControllerConfigTabItem;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTabItem;
@@ -171,6 +174,17 @@ public class TreePanelBuilder {
         deviceTreeStore = new TreeStore<BeanModel>(loadDeviceTreeLoader);
       }
       final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceTreeStore);
+      ((DeviceBeanModelTable)BeanModelDataBase.deviceTable).addDeviceInsertListener(new DeviceInsertListener<BeanModel> (){
+
+         @Override
+         public void handleInsert(BeanModel beanModel) {
+            if(beanModel != null && beanModel.getBean() instanceof Device) {
+               deviceTreeStore.add(beanModel, false);
+               tree.getSelectionModel().select(beanModel, true);
+            }
+         }
+           
+        });
 
       tree.setBorders(false);
       tree.setStateful(true);
