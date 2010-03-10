@@ -32,23 +32,33 @@ import javax.ws.rs.core.Response;
 import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.service.AccountService;
 import org.openremote.beehive.api.service.ResourceService;
-import org.openremote.beehive.spring.SpringContext;
 
 /**
- * Resource restful service.
+ * Resource (openremote.zip) restful service. 
+ * This openremote.zip is used for <code>OpenRemote Controller</code>.
  * 
  * @author Dan Cong
- *
  */
 
 @Path("/user/{username}")
-public class ResourceRESTService {
+public class ResourceRESTService extends RESTBaseService{
    
-   @Path("openremote.zip")
+   
+   /**
+    * Controller will use this method to download openremote.zip online.
+    * 
+    * @param username
+    *           Beehive username
+    * @param credentials
+    *           HTTP basic header credentials : "Basic base64(username:md5(password,username))"
+    * @return openremote.zip file
+    */
+   @Path(Constant.ACCOUNT_RESOURCE_ZIP_NAME)
    @GET
    @Produces( { "application/zip" })
-   public File getControllerResources(@PathParam("username") String username, 
-         @HeaderParam(Constant.HTTP_BASIC_AUTH_HEADER_NAME) String credentials) {
+   public File getResourcesForController(@PathParam("username") String username, 
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      
       authorize(credentials);
       File file = getResourceService().getResourceZip(username);
       if (file != null) {
@@ -57,6 +67,13 @@ public class ResourceRESTService {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
    }
    
+   /*
+    * If the user was not validated, fail with a
+    * 401 status code (UNAUTHORIZED) and
+    * pass back a WWW-Authenticate header for
+    * this servlet.
+    *  
+    */
    private void authorize(String credentials) {
       if (!getAccountService().isHTTPBasicAuthorized(credentials)) {
          throw new WebApplicationException(Response.Status.UNAUTHORIZED);
@@ -64,11 +81,11 @@ public class ResourceRESTService {
    }
    
    protected ResourceService getResourceService() {
-      return (ResourceService) SpringContext.getInstance().getBean("resourceService");
+      return (ResourceService) getSpringContextInstance().getBean("resourceService");
    }
    
    protected AccountService getAccountService() {
-      return (AccountService) SpringContext.getInstance().getBean("accountService");
+      return (AccountService) getSpringContextInstance().getBean("accountService");
    }
 
 }

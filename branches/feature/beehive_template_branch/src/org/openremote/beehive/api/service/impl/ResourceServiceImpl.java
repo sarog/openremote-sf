@@ -27,6 +27,7 @@ import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openremote.beehive.Configuration;
+import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.service.AccountService;
 import org.openremote.beehive.api.service.ResourceService;
 import org.openremote.beehive.domain.User;
@@ -49,7 +50,7 @@ public class ResourceServiceImpl implements ResourceService {
    public boolean saveResource(long accountOid,InputStream input) {
       logger.debug("save resource from modeler to beehive");
       File dir = makeSureDir(accountOid);
-      File zipFile = new File(dir,ZIP_FILE_NAME);
+      File zipFile = new File(dir, Constant.ACCOUNT_RESOURCE_ZIP_NAME);
       FileOutputStream fos = null;
       try {
          FileUtil.deleteFileOnExist(zipFile);
@@ -77,12 +78,12 @@ public class ResourceServiceImpl implements ResourceService {
       if (user == null) {
          return null;
       }
-      
+      System.out.println(getDirByAccountOid(user.getAccount().getOid()).getAbsolutePath());
       File[] files = getDirByAccountOid(user.getAccount().getOid()).listFiles(new FilenameFilter() {
 
          @Override
          public boolean accept(File dir, String name) {
-            return name.equalsIgnoreCase(ZIP_FILE_NAME);
+            return name.equalsIgnoreCase(Constant.ACCOUNT_RESOURCE_ZIP_NAME);
          }
 
       });

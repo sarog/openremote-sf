@@ -29,13 +29,12 @@ import javax.ws.rs.core.Response;
 
 import org.openremote.beehive.api.dto.VendorDTO;
 import org.openremote.beehive.api.service.VendorService;
-import org.openremote.beehive.spring.SpringContext;
 
 /**
  * Exports restful service of <code>Vendor</code> User: allenwei Date: 2009-2-9
  */
 @Path("/lirc")
-public class VendorRESTService {
+public class VendorRESTService extends RESTBaseService {
 
    /**
     * Shows all vendors Visits @ url "/lirc"
@@ -58,7 +57,7 @@ public class VendorRESTService {
     * @return VendorService instance
     */
    protected VendorService getVendorService() {
-      return (VendorService) SpringContext.getInstance().getBean("vendorService");
-
+         return (VendorService) getSpringContextInstance().getBean("vendorService");
    }
+   
 }

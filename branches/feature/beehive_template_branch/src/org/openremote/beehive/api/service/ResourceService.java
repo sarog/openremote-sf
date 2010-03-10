@@ -27,7 +27,6 @@ import java.io.InputStream;
  *
  */
 public interface ResourceService {
-   String ZIP_FILE_NAME = "openremote.zip";
    /**
     * save resource for an account whose oid is accouontOid
     * @param accountOid The oid for an account

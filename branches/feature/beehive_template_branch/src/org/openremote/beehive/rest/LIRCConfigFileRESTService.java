@@ -27,7 +27,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
 import org.openremote.beehive.api.service.RemoteSectionService;
-import org.openremote.beehive.spring.SpringContext;
 import org.openremote.beehive.utils.StringUtil;
 
 /**
@@ -36,7 +35,7 @@ import org.openremote.beehive.utils.StringUtil;
  * @author allen.wei 2009-2-15
  */
 @Path("/lirc.conf")
-public class LIRCConfigFileRESTService {
+public class LIRCConfigFileRESTService extends RESTBaseService {
 
    /**
     * Shows lirc config file according to vendor name and model name Visits @ url "/{vendor_name}/{model_name}"
@@ -66,6 +65,6 @@ public class LIRCConfigFileRESTService {
     * @return RemoteSectionService instance
     */
    private RemoteSectionService getRemoteSectionService() {
-      return (RemoteSectionService) SpringContext.getInstance().getBean("remoteSectionService");
+      return (RemoteSectionService) getSpringContextInstance().getBean("remoteSectionService");
    }
 }
