@@ -22,11 +22,12 @@ package org.openremote.beehive.rest.service;
 import javax.ws.rs.Path;
 
 import org.openremote.beehive.SpringTestContext;
-import org.openremote.beehive.rest.TemplateRESTService;
+import org.openremote.beehive.rest.RemoteOptionRESTService;
 import org.openremote.beehive.spring.ISpringContext;
 
-@Path("/account/{account_id}")
-public class TemplateRESTTestService extends TemplateRESTService {
+
+@Path("/lirc/{vendor_name}/{model_name}/{section_id}/options")
+public class RemoteOptionRESTTestService extends RemoteOptionRESTService {
    
    @Override
    protected Class<? extends ISpringContext> getSpringContextClass() {

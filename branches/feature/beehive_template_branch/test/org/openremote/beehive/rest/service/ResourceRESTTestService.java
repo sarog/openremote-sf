@@ -22,15 +22,18 @@ package org.openremote.beehive.rest.service;
 import javax.ws.rs.Path;
 
 import org.openremote.beehive.SpringTestContext;
-import org.openremote.beehive.rest.TemplateRESTService;
+import org.openremote.beehive.rest.ResourceRESTService;
 import org.openremote.beehive.spring.ISpringContext;
 
-@Path("/account/{account_id}")
-public class TemplateRESTTestService extends TemplateRESTService {
-   
+@Path("/user/{username}")
+public class ResourceRESTTestService extends ResourceRESTService{
+
+
    @Override
    protected Class<? extends ISpringContext> getSpringContextClass() {
       return SpringTestContext.class;
    }
+   
+   
 
 }

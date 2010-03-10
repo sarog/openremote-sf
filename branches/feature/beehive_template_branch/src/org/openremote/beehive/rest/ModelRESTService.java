@@ -30,13 +30,12 @@ import javax.ws.rs.core.Response;
 
 import org.openremote.beehive.api.dto.ModelDTO;
 import org.openremote.beehive.api.service.ModelService;
-import org.openremote.beehive.spring.SpringContext;
 
 /**
  * Exports restful service of <code>Model</code> User: allenwei Date: 2009-2-10
  */
 @Path("/lirc/{vendor_name}")
-public class ModelRESTService {
+public class ModelRESTService extends RESTBaseService {
 
 
    /**
@@ -64,6 +63,6 @@ public class ModelRESTService {
     * @return ModelService instance
     */
    public ModelService getModelService() {
-      return (ModelService) SpringContext.getInstance().getBean("modelService");
+      return (ModelService) getSpringContextInstance().getBean("modelService");
    }
 }
