@@ -22,8 +22,8 @@ package org.openremote.beehive.rest.service;
 import javax.ws.rs.Path;
 
 import org.openremote.beehive.SpringTestContext;
-import org.openremote.beehive.api.service.ModelService;
 import org.openremote.beehive.rest.ModelRESTService;
+import org.openremote.beehive.spring.ISpringContext;
 
 /**
  * ModelRESTService for test.
@@ -32,8 +32,9 @@ import org.openremote.beehive.rest.ModelRESTService;
 @Path("/lirc/{vendor_name}")
 public class ModelRESTTestService extends ModelRESTService {
    
-   public ModelService getModelService() {
-      return (ModelService) SpringTestContext.getInstance().getBean("modelService");
+   @Override
+   protected Class<? extends ISpringContext> getSpringContextClass() {
+      return SpringTestContext.class;
    }
 
 }

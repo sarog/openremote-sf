@@ -30,13 +30,12 @@ import javax.ws.rs.core.Response;
 
 import org.openremote.beehive.api.dto.RemoteOptionDTO;
 import org.openremote.beehive.api.service.RemoteOptionService;
-import org.openremote.beehive.spring.SpringContext;
 
 /**
  * Exports restful service of <code>RemoteOption</code> User: allenwei Date: 2009-2-10
  */
 @Path("/lirc/{vendor_name}/{model_name}/{section_id}/options")
-public class RemoteOptionRESTService {
+public class RemoteOptionRESTService extends RESTBaseService {
 
    /**
     * Shows remoteSecrtions by {section_id} Visits @ url "/lirc/{vendor_name}/{model_name}/{section_id}/options"
@@ -63,6 +62,6 @@ public class RemoteOptionRESTService {
     * @return getRemoteOptionService instance
     */
    public RemoteOptionService getRemoteOptionService() {
-      return (RemoteOptionService) SpringContext.getInstance().getBean("remoteOptionService");
+      return (RemoteOptionService) getSpringContextInstance().getBean("remoteOptionService");
    }
 }

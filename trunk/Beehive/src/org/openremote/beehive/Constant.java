@@ -35,29 +35,25 @@ public final class Constant {
    /** Compatibility for MySQL 5.0.x and HSQLDB (UTF-8) */
    public static final String TEXT_COLUMN_DEFINITION = "VARCHAR(10000)";
    
-   /** The value for the progress file. */
    public static final String SYNC_PROGRESS_FILE = "syncProgress.txt";
    
-   /** The Constant COMMIT_PROGRESS_FILE. */
    public static final String COMMIT_PROGRESS_FILE = "commitProgress.txt";
    
-   /** The Constant LIRC_ROOT_URL. */
    public static final String LIRC_ROOT_URL = "http://lirc.sourceforge.net/remotes/";
    
    /** The value for svn repo and workCopy root directory. */
    public static final String ROOT_PATH = "";
    
-   /** The Constant WORK_COPY. */
+   /** work copy dir name. */
    public static final String WORK_COPY = "workCopy";
    
-   /** The Constant SYNC_HISTORY. */
+   /** sync history dir name. */
    public static final String SYNC_HISTORY = "syncHistory";
    
-   public static final String HTTP_BASIC_AUTH_HEADER_NAME= "Authorization";
+   public static final String HTTP_AUTH_HEADER_NAME= "Authorization";
    
    public static final String HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX= "Basic ";
    
-   
-   
+   public static final String ACCOUNT_RESOURCE_ZIP_NAME= "openremote.zip";
    
 }

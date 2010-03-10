@@ -21,52 +21,112 @@ package org.openremote.beehive.api.service.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.InputStream;
+import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openremote.beehive.Configuration;
+import org.openremote.beehive.Constant;
+import org.openremote.beehive.api.service.AccountService;
 import org.openremote.beehive.api.service.ResourceService;
+import org.openremote.beehive.domain.User;
 import org.openremote.beehive.utils.FileUtil;
+
 /**
  * 
- * @author javen
+ * Account resources service, such as openremote.zip etc.
+ * 
+ * @author javen, Dan
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  *
  */
-public class ResourceServiceImpl implements ResourceService {
+public class ResourceServiceImpl implements ResourceService
+{
    private static final Log logger = LogFactory.getLog(ResourceService.class);
+   
+   private AccountService accountService;
    
    protected Configuration configuration = null;
 
    @Override
-   public boolean saveResource(long accountOid,InputStream input) {
+   public boolean saveResource(long accountOid,InputStream input)
+   {
       logger.debug("save resource from modeler to beehive");
+
       File dir = makeSureDir(accountOid);
-      File zipFile = new File(dir,ZIP_FILE_NAME);
+      File zipFile = new File(dir, Constant.ACCOUNT_RESOURCE_ZIP_NAME);
       FileOutputStream fos = null;
-      try {
+
+      try
+      {
          FileUtil.deleteFileOnExist(zipFile);
          fos = new FileOutputStream(zipFile);
          byte[] buffer = new byte[1024];
          int length = 0;
-         while ((length = input.read(buffer)) != -1) {
+
+         while ((length = input.read(buffer)) != -1)
+         {
             fos.write(buffer, 0, length);
          }
+
          logger.info("save resource success!");
+
          return true;
-      }catch(Exception e){
-         logger.error("falied to save resource from modeler to beehive", e);
-      } finally {
-         if(fos != null){
-            try{fos.close();}catch(Exception e){}
+      }
+      catch (IOException e)
+      {
+         logger.error("failed to save resource from modeler to beehive", e);
+      }
+      finally
+      {
+         if (fos != null)
+         {
+            try
+            {
+              fos.close();
+            }
+            catch (IOException ioException)
+            {
+              logger.warn(
+                  "Error in closing file output stream to '" + Constant.ACCOUNT_RESOURCE_ZIP_NAME +
+                  "': " + ioException.getMessage(), ioException
+              );
+            }
          }
       }
       return false;
    }
+   
+   public File getResourceZip(String username) {
+      
+      User user = accountService.loadByUsername(username);
+      if (user == null) {
+         return null;
+      }
+      System.out.println(getDirByAccountOid(user.getAccount().getOid()).getAbsolutePath());
+      File[] files = getDirByAccountOid(user.getAccount().getOid()).listFiles(new FilenameFilter() {
+
+         @Override
+         public boolean accept(File dir, String name) {
+            return name.equalsIgnoreCase(Constant.ACCOUNT_RESOURCE_ZIP_NAME);
+         }
+
+      });
+      if (files != null && files.length != 0) {
+         return files[0];
+      }
+      return null;
+   }
 
    
+   private File getDirByAccountOid(long accountOid) {
+      return new File(configuration.getModelerResourcesDir() + File.separator + accountOid);
+   }
+   
    private File makeSureDir(long accountOid) {
-      File dir = new File(configuration.getModelerResourcesDir() + File.separator + accountOid);
+      File dir = getDirByAccountOid(accountOid);
       if (!dir.exists()) {
          dir.mkdirs();
       }
@@ -76,6 +136,11 @@ public class ResourceServiceImpl implements ResourceService {
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
+
+   public void setAccountService(AccountService accountService) {
+      this.accountService = accountService;
+   }
+   
    
    
 }

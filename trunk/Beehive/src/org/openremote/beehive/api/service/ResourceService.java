@@ -19,18 +19,26 @@
 */
 package org.openremote.beehive.api.service;
 
+import java.io.File;
 import java.io.InputStream;
 /**
  * Service for manage resources for modeler.
- * @author javen
+ * @author javen, Dan
  *
  */
 public interface ResourceService {
-   String ZIP_FILE_NAME = "openremote.zip";
    /**
     * save resource for an account whose oid is accouontOid
     * @param accountOid The oid for an account
     * @param input
     */
    boolean saveResource(long accountOid,InputStream input);
+   
+   /**
+    * get openremote.zip
+    * 
+    * @param accountOid account id
+    * @return openremote.zip
+    */
+   File getResourceZip(String username);
 }
