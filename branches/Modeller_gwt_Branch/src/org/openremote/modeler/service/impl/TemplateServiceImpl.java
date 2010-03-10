@@ -50,7 +50,7 @@ import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Cell;
-import org.openremote.modeler.domain.Config;
+import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
@@ -526,7 +526,7 @@ public class TemplateServiceImpl implements TemplateService
         deviceCommand.getProtocol().setAttributes(attrs);
         
       }
-      account.setConfigs(new ArrayList<Config>());
+      account.setConfigs(new ArrayList<ControllerConfig>());
       account.setDeviceMacros(new ArrayList<DeviceMacro>());
       account.setSensors(new ArrayList<Sensor>());
       account.setSliders(new ArrayList<Slider>());
