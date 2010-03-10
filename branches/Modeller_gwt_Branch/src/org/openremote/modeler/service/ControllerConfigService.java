@@ -3,7 +3,7 @@ package org.openremote.modeler.service;
 import java.util.Set;
 
 import org.openremote.modeler.domain.Account;
-import org.openremote.modeler.domain.Config;
+import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.ConfigCategory;
 
 public interface ControllerConfigService {
@@ -17,14 +17,14 @@ public interface ControllerConfigService {
     * @param account The current account. 
     * @return all configuration item under a category. 
     */
-   Set<Config> listAllConfigByCategoryNameForAccouont(String categoryName,Account account);
+   Set<ControllerConfig> listAllConfigByCategoryNameForAccouont(String categoryName,Account account);
    
    /**
     * Update a configuration . 
     * @param config The configuration you want to update
     * @return A configuration after being updated. 
     */
-   Config update(Config config);
+   ControllerConfig update(ControllerConfig config);
    
    /**
     * Save all the configuration 
@@ -32,13 +32,13 @@ public interface ControllerConfigService {
     * @param configs The configurations you want to save. 
     * @return The configuration s you have saved. 
     */
-   Set<Config> saveAll(Set<Config> configs);
+   Set<ControllerConfig> saveAll(Set<ControllerConfig> configs);
    
-   Set<Config> listAllConfigByCategoryForCurrentAccount(String categoryName);
+   Set<ControllerConfig> listAllConfigByCategoryForCurrentAccount(String categoryName);
    
-   Set<Config> listAllForCurrentAccount();
+   Set<ControllerConfig> listAllForCurrentAccount();
    
-   Set<Config> listAllByAccount(Account account);
+   Set<ControllerConfig> listAllByAccount(Account account);
    
    Set<ConfigCategory> listAllCategory();
    

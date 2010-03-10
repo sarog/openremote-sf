@@ -60,7 +60,7 @@ import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.CommandRefItem;
-import org.openremote.modeler.domain.Config;
+import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -648,7 +648,7 @@ public class ResourceServiceImpl implements ResourceService {
       Collection<UIComponent> uiSliders = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UISlider.class);
       Collection<UIComponent> uiImages = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIImage.class);
       Collection<UIComponent> uiLabels = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UILabel.class);
-      Collection<Config> configs = controllerConfigService.listAllForCurrentAccount();
+      Collection<ControllerConfig> configs = controllerConfigService.listAllForCurrentAccount();
       
       context.put("switchs", switchs);
       context.put("buttons", buttons);
