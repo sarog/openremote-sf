@@ -50,11 +50,14 @@ import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Cell;
+import org.openremote.modeler.domain.Config;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
+import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.ProtocolAttr;
+import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
@@ -176,11 +179,12 @@ public class TemplateServiceImpl implements TemplateService
                "absolutes.uiComponent.oid",
                "grids.cells.uiComponent.oid",
                "absolutes.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs",
-               "absolutes.uiComponent.commands", "grids.cells.uiComponent",
+               "absolutes.uiComponent.commands",
                "absolutes.uiComponent.slider.sliderSensorRef.sensor",
                "absolutes.uiComponent.switchCommand.switchSensorRef.sensor",
+               "grids.cells.uiComponent",
                "grids.cells.uiComponent.slider.sliderSensorRef.sensor",
-               "grids.cells..uiComponent.switchCommand.switchSensorRef.sensor",
+               "grids.cells.uiComponent.switchCommand.switchSensorRef.sensor",
                "grids.cells.uiComponent.uiCommand",
                "grids.cells.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs",
                "grids.cells.uiComponent.commands", "*.deviceCommand", "*.protocol", "*.attributes" };
@@ -207,8 +211,22 @@ public class TemplateServiceImpl implements TemplateService
       String screenJson = template.getContent();
       Screen screen = new JSONDeserializer<Screen>().use(null, Screen.class).use("absolutes.values.uiComponent",
             new SimpleClassLocator()).use("grids.values.cells.values.uiComponent", new SimpleClassLocator())
+            //1,absolutes
+            //    1.1, uiCommand
             .use("absolutes.values.uiComponent.uiCommand",new SimpleClassLocator())
+            //    1.2, sensor 
+            .use("absolutes.values.uiComponent.sensor",new SimpleClassLocator())
+            .use("absolutes.values.uiComponent.slider.sliderSensorRef.sensor",new SimpleClassLocator())
+            .use("absolutes.values.uiComponent.switchCommand.switchCommandOnRef.sensor",new SimpleClassLocator())
+            .use("absolutes.values.uiComponent.switchCommand.switchCommandOffRef.sensor",new SimpleClassLocator())
+            //2,grids
+            //    2.1 uiCommand
             .use("grids.values.cells.values.uiComponent.uiCommand",new SimpleClassLocator())
+            //    2.2 sensor 
+            .use("grids.values.cells.values.uiComponent.sensor",new SimpleClassLocator())
+            .use("grids.values.cells.values.uiComponent.slider.sliderSensorRef.sensor",new SimpleClassLocator())
+            .use("grids.values.cells.values.uiComponent.switchCommand.switchCommandOnRef.sensor",new SimpleClassLocator())
+            .use("grids.values.cells.values.uiComponent.switchCommand.switchCommandOffRef.sensor",new SimpleClassLocator())
             .deserialize(screenJson);
       return screen;
    }
@@ -446,7 +464,7 @@ public class TemplateServiceImpl implements TemplateService
       return macros;
    }*/
 
-   private  void reBuild(Collection<Device> devices,Collection<DeviceCommand> deviceCommands, Collection<Sensor> sensors,Collection<Switch> switchs,Collection<Slider> sliders){
+   private void reBuild(Collection<Device> devices,Collection<DeviceCommand> deviceCommands, Collection<Sensor> sensors,Collection<Switch> switchs,Collection<Slider> sliders){
       Account account = userService.getAccount();
      
       //1, build devices. 
@@ -471,7 +489,7 @@ public class TemplateServiceImpl implements TemplateService
          sensor.getSensorCommandRef().setSensor(sensor);
          sensor.setDevice(sensor.getSensorCommandRef().getDeviceCommand().getDevice());
          sensorService.saveSensor(sensor);
-         sensor.setAccount(null);
+//         sensor.setAccount(null);
       }
       //4, build switch. 
       for(Switch switchToggle : switchs) {
@@ -481,7 +499,7 @@ public class TemplateServiceImpl implements TemplateService
          switchToggle.setDevice(switchToggle.getSwitchCommandOffRef().getDeviceCommand().getDevice());
          switchToggle.getSwitchSensorRef().setSwitchToggle(switchToggle);
          switchService.save(switchToggle);
-         switchToggle.setAccount(null);
+//         switchToggle.setAccount(null);
       }
       //5, build slider. 
       for(Slider slider : sliders) {
@@ -490,7 +508,7 @@ public class TemplateServiceImpl implements TemplateService
          slider.getSliderSensorRef().setSlider(slider);
          slider.getSetValueCmd().setSlider(slider);
          sliderService.save(slider);
-         slider.setAccount(null);
+//         slider.setAccount(null);
       }
       //prepare to send to client. 
       for(DeviceCommand deviceCommand : deviceCommands) {
@@ -508,6 +526,13 @@ public class TemplateServiceImpl implements TemplateService
         deviceCommand.getProtocol().setAttributes(attrs);
         
       }
+      account.setConfigs(new ArrayList<Config>());
+      account.setDeviceMacros(new ArrayList<DeviceMacro>());
+      account.setSensors(new ArrayList<Sensor>());
+      account.setSliders(new ArrayList<Slider>());
+      account.setSwitches(new ArrayList<Switch>());
+      account.setDevices(new ArrayList<Device>());
+      account.getUser().setRoles(new ArrayList<Role>());
       for(Device device : devices ) {
          device.setAccount(null);
          device.setSensors(new HashSet<Sensor>());

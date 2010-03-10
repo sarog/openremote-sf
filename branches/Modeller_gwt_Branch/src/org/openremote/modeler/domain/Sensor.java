@@ -115,6 +115,7 @@ public class Sensor extends BusinessEntity {
       if (obj == null) return false;
       if (getClass() != obj.getClass()) return false;
       Sensor other = (Sensor) obj;
+      if (! getType().equals(other.getType()))return false;
       return getOid() == other.getOid();
    }
 }
