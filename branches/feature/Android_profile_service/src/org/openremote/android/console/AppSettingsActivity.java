@@ -54,9 +54,11 @@ public class AppSettingsActivity extends Activity{
    private ListView customeListView;
    private Button choosePanelButton;
    private int currentCustomServerIndex = -1;
+   private boolean autoMode;
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
+      this.autoMode = AppSettingsModel.isAutoMode(AppSettingsActivity.this);
       setTitle(R.string.settings);
       ScrollView scroll = new ScrollView(this);
       scroll.setVerticalScrollBarEnabled(false);
@@ -66,67 +68,84 @@ public class AppSettingsActivity extends Activity{
       appSettingsView.setBackgroundColor(0);
       appSettingsView.setTag(R.string.settings);
       appSettingsView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-//      DisplayMetrics dm = new DisplayMetrics();
-//      dm = getApplicationContext().getResources().getDisplayMetrics();
-//      appSettingsView.setLayoutParams(new LinearLayout.LayoutParams(dm.widthPixels, dm.heightPixels));
       appSettingsView.setOrientation(LinearLayout.VERTICAL);
       
-      RelativeLayout autoLayout = new RelativeLayout(this);
-      autoLayout.setPadding(10, 5, 10, 10);
-      autoLayout.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, 80));
-//      autoLayout.setOrientation(LinearLayout.HORIZONTAL);
-      TextView autoText = new TextView(this);
-      RelativeLayout.LayoutParams autoTextLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-      autoTextLayout.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-      autoTextLayout.addRule(RelativeLayout.CENTER_VERTICAL);
-      autoText.setLayoutParams(autoTextLayout);
-      autoText.setText("Auto Discovery");
+      initialChosePanelButton();
+      
+      appSettingsView.addView(createAutoLayout());
+      appSettingsView.addView(createChooseControllerLabel());
+      if (autoMode) {
+         appSettingsView.addView(constructAutoServersView());
+      } else {
+         appSettingsView.addView(constructCustomeServersView());
+      }
+      appSettingsView.addView(createChoosePanelLabel());
+      appSettingsView.addView(choosePanelButton);
+      appSettingsView.addView(createDoneAndCancelLayout());
+      scroll.addView(appSettingsView);
+      
+      setContentView(scroll);
+      addOnclickListenerOnDoneButton();
+   }
 
-      ToggleButton autoButton = new ToggleButton(this);
-      autoButton.setWidth(100);
-      RelativeLayout.LayoutParams autoButtonLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-      autoButtonLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-      autoButtonLayout.addRule(RelativeLayout.CENTER_VERTICAL);
-      autoButton.setLayoutParams(autoButtonLayout);
-      boolean autoMode = AppSettingsModel.isAutoMode(AppSettingsActivity.this);
-      autoButton.setChecked(autoMode);
-      autoButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (isChecked) {
-               appSettingsView.removeViewAt(2);
-               appSettingsView.addView(constructAutoServersView(), 2);
-            } else {
-               appSettingsView.removeViewAt(2);
-               appSettingsView.addView(constructCustomeServersView(), 2);
-            }
-            AppSettingsModel.setAutoMode(AppSettingsActivity.this, isChecked);
-         }
-      });
-      
-      TextView infoText = new TextView(this);
-      RelativeLayout.LayoutParams infoTextLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-      infoTextLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-      infoTextLayout.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-      infoText.setLayoutParams(infoTextLayout);
-      infoText.setTextSize(10);
-      infoText.setText("Turn off auto-discovery to input controller url manually.");
-      
-      autoLayout.addView(autoText);
-      autoLayout.addView(autoButton);
-      autoLayout.addView(infoText);
-
-      TextView csText = new TextView(this);
-      csText.setText("Choose Controller:");
-      csText.setPadding(10, 5, 0, 5);
-      csText.setBackgroundColor(Color.DKGRAY);
-      
+   /**
+    * @return
+    */
+   private TextView createChoosePanelLabel() {
       TextView choosePanelInfo = new TextView(this);
       choosePanelInfo.setPadding(10, 10, 0, 5);
       choosePanelInfo.setText("Choose Panel Identity:");
       choosePanelInfo.setBackgroundColor(Color.DKGRAY);
-      
+      return choosePanelInfo;
+   }
+
+   /**
+    * @return
+    */
+   private TextView createChooseControllerLabel() {
+      TextView chooseControllerLabel = new TextView(this);
+      chooseControllerLabel.setText("Choose Controller:");
+      chooseControllerLabel.setPadding(10, 5, 0, 5);
+      chooseControllerLabel.setBackgroundColor(Color.DKGRAY);
+      return chooseControllerLabel;
+   }
+
+   /**
+    * @return
+    */
+   private LinearLayout createDoneAndCancelLayout() {
+      LayoutInflater inflater = (AppSettingsActivity.this).getLayoutInflater();
+      LinearLayout saveAndCancelLayout = (LinearLayout)inflater.inflate(R.layout.bottom_button_bar, null);
+      return saveAndCancelLayout;
+   }
+
+   /**
+    * 
+    */
+   private void addOnclickListenerOnDoneButton() {
+      Button doneButton = (Button)findViewById(R.id.done);
+      doneButton.setOnClickListener(new OnClickListener() {
+         public void onClick(View v) {
+            String serverUrl = AppSettingsModel.getCurrentServer(AppSettingsActivity.this);
+            String panelName = AppSettingsModel.getCurrentPanelIdentity(AppSettingsActivity.this);
+            HTTPUtil.downLoadPanelXml(AppSettingsActivity.this, serverUrl, panelName);
+            FileUtil.parsePanelXML(AppSettingsActivity.this);
+            Iterator<String> images = XMLEntityDataBase.imageSet.iterator();
+            while (images.hasNext()) {
+               HTTPUtil.downLoadImage(AppSettingsActivity.this, AppSettingsModel.getCurrentServer(AppSettingsActivity.this), images.next());
+            }
+            Intent intent = new Intent();
+            intent.setClass(AppSettingsActivity.this, GroupHandler.class);
+            startActivity(intent);
+         }
+      });
+   }
+
+   /**
+    * 
+    */
+   private void initialChosePanelButton() {
       choosePanelButton = new Button(this);
-//      choosePanelButton.setPadding(10, 10, 5, 20);
       choosePanelButton.setText("choose panel");
       String currentPanel = AppSettingsModel.getCurrentPanelIdentity(AppSettingsActivity.this);
       if (!TextUtils.isEmpty(currentPanel)) {
@@ -144,39 +163,53 @@ public class AppSettingsActivity extends Activity{
             }
          }
       });
-      
-      LayoutInflater inflater = (AppSettingsActivity.this).getLayoutInflater();
-      LinearLayout saveAndCancelLayout = (LinearLayout)inflater.inflate(R.layout.bottom_button_bar, null);
-      
-      appSettingsView.addView(autoLayout);
-      appSettingsView.addView(csText);
-      if (autoMode) {
-         appSettingsView.addView(constructAutoServersView());
-      } else {
-         appSettingsView.addView(constructCustomeServersView());
-      }
-      appSettingsView.addView(choosePanelInfo);
-      appSettingsView.addView(choosePanelButton);
-      appSettingsView.addView(saveAndCancelLayout);
-      scroll.addView(appSettingsView);
-      
-      setContentView(scroll);
-      Button doneButton = (Button)findViewById(R.id.done);
-      doneButton.setOnClickListener(new OnClickListener() {
-         public void onClick(View v) {
-            String serverUrl = AppSettingsModel.getCurrentServer(AppSettingsActivity.this);
-            String panelName = AppSettingsModel.getCurrentPanelIdentity(AppSettingsActivity.this);
-            HTTPUtil.downLoadPanelXml(AppSettingsActivity.this, serverUrl, panelName);
-            FileUtil.parsePanelXML(AppSettingsActivity.this);
-            Iterator<String> images = XMLEntityDataBase.imageSet.iterator();
-            while (images.hasNext()) {
-               HTTPUtil.downLoadImage(AppSettingsActivity.this, AppSettingsModel.getCurrentServer(AppSettingsActivity.this), images.next());
+   }
+
+   /**
+    * @return
+    */
+   private RelativeLayout createAutoLayout() {
+      RelativeLayout autoLayout = new RelativeLayout(this);
+      autoLayout.setPadding(10, 5, 10, 10);
+      autoLayout.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, 80));
+      TextView autoText = new TextView(this);
+      RelativeLayout.LayoutParams autoTextLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+      autoTextLayout.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+      autoTextLayout.addRule(RelativeLayout.CENTER_VERTICAL);
+      autoText.setLayoutParams(autoTextLayout);
+      autoText.setText("Auto Discovery");
+
+      ToggleButton autoButton = new ToggleButton(this);
+      autoButton.setWidth(100);
+      RelativeLayout.LayoutParams autoButtonLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+      autoButtonLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+      autoButtonLayout.addRule(RelativeLayout.CENTER_VERTICAL);
+      autoButton.setLayoutParams(autoButtonLayout);
+      autoButton.setChecked(autoMode);
+      autoButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            appSettingsView.removeViewAt(2);
+            if (isChecked) {
+               appSettingsView.addView(constructAutoServersView(), 2);
+            } else {
+               appSettingsView.addView(constructCustomeServersView(), 2);
             }
-            Intent intent = new Intent();
-            intent.setClass(AppSettingsActivity.this, GroupHandler.class);
-            startActivity(intent);
+            AppSettingsModel.setAutoMode(AppSettingsActivity.this, isChecked);
          }
       });
+      
+      TextView infoText = new TextView(this);
+      RelativeLayout.LayoutParams infoTextLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+      infoTextLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+      infoTextLayout.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+      infoText.setLayoutParams(infoTextLayout);
+      infoText.setTextSize(10);
+      infoText.setText("Turn off auto-discovery to input controller url manually.");
+      
+      autoLayout.addView(autoText);
+      autoLayout.addView(autoButton);
+      autoLayout.addView(infoText);
+      return autoLayout;
    }
 
    private void getCustomServersFromFile(ArrayList<String> customServers) {

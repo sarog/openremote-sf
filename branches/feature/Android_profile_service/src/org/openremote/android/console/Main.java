@@ -32,7 +32,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.openremote.android.console.bindings.Button;
 import org.openremote.android.console.bindings.ORActivity;
 import org.openremote.android.console.bindings.Screen;
+import org.openremote.android.console.bindings.XScreen;
 import org.openremote.android.console.image.ImageLoader;
+import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.xml.SimpleBinder;
 import org.xml.sax.SAXException;
 
@@ -339,14 +341,14 @@ public class Main extends Activity {
     private void judgeNetType() {
        ConnectivityManager conn = (ConnectivityManager)(Main.this).getSystemService(Context.CONNECTIVITY_SERVICE);
        if ("mobile".equals(conn.getActiveNetworkInfo().getTypeName().toLowerCase())) {
-          Constants.IS_LOCAL = true;
+          IPAutoDiscoveryClient.IS_EMULATOR = true;
        }
     }
     
     private void readDisplayMetrics() {
       DisplayMetrics dm = new DisplayMetrics();
       dm = getApplicationContext().getResources().getDisplayMetrics();
-      Constants.SCREEN_WIDTH = dm.widthPixels;
-      Constants.SCREEN_HEIGHT = dm.heightPixels;
+      XScreen.SCREEN_WIDTH = dm.widthPixels;
+      XScreen.SCREEN_HEIGHT = dm.heightPixels;
    }
 }

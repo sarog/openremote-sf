@@ -29,15 +29,17 @@ import org.openremote.android.console.model.PollingStatusParser;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
-import android.widget.CompoundButton;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ToggleButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class SwitchView extends SensoryControlView {
 
-   private ToggleButton button;
+   private Button button;
    private Drawable onImage;
    private Drawable offImage;
    private boolean isOn;
@@ -46,7 +48,7 @@ public class SwitchView extends SensoryControlView {
       super(context);
       setComponent(switchComponent);
       if (switchComponent != null) {
-         button = new ToggleButton(context);
+         button = new Button(context);
          initSwitch(switchComponent);
          if (switchComponent.getSensor() != null) {
             addPollingSensoryListener();
@@ -63,8 +65,6 @@ public class SwitchView extends SensoryControlView {
       }
       if (onImage != null && offImage != null) {
          canUseImage = true;
-         button.setTextOn(null);
-         button.setTextOff(null);
          button.setText(null);
          if (isOn) {
             button.setBackgroundDrawable(onImage);
@@ -73,30 +73,45 @@ public class SwitchView extends SensoryControlView {
          }
          button.setLayoutParams(new FrameLayout.LayoutParams(onImage.getIntrinsicWidth(), onImage
                .getIntrinsicHeight()));
+      } else {
+         if (isOn) {
+            button.setText("ON");
+         } else {
+            button.setText("OFF");
+         }
       }
-      button.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (isChecked) {
-               if (!sendCommandRequest("on")) {
-                  return;
-               }
-               isOn = true;
+      button.setOnTouchListener(new OnTouchListener() {
+         public boolean onTouch(View v, MotionEvent event) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
                if (canUseImage) {
-                  button.setBackgroundDrawable(onImage);
+                  if (isOn) {
+                     onImage.setAlpha(200);
+                     button.setBackgroundDrawable(onImage);
+                  } else {
+                     offImage.setAlpha(200);
+                     button.setBackgroundDrawable(offImage);
+                  }
                }
-            } else {
-               if (!sendCommandRequest("off")) {
-                  return;
-               }
-               isOn = false;
+            } else if (event.getAction() == MotionEvent.ACTION_UP) {
                if (canUseImage) {
-                  button.setBackgroundDrawable(offImage);
+                  if (isOn) {
+                     onImage.setAlpha(255);
+                     button.setBackgroundDrawable(onImage);
+                  } else {
+                     offImage.setAlpha(255);
+                     button.setBackgroundDrawable(offImage);
+                  }
+               }
+               if (isOn) {
+                  sendCommandRequest(Switch.OFF);
+               } else {
+                  sendCommandRequest(Switch.ON);
                }
             }
+            return false;
          }
-         
-      });
-      button.setChecked(isOn);
+        
+     });
       addView(button);
    }
    
@@ -113,10 +128,30 @@ public class SwitchView extends SensoryControlView {
                } else if (!isOn && Switch.ON.equals(value)) {
                   isOn = true;
                }
-               button.setChecked(isOn);
+               handler.sendEmptyMessage(0);
             }
-            
          });
       }
    }
+   
+   private Handler handler = new Handler() {
+      @Override
+      public void handleMessage(Message msg) {
+         if (canUseImage) {
+            if (isOn) {
+               button.setBackgroundDrawable(onImage);
+            } else {
+               button.setBackgroundDrawable(offImage);
+            }
+         } else {
+            if (isOn) {
+               button.setText("ON");
+            } else {
+               button.setText("OFF");
+            }
+         }
+         super.handleMessage(msg);
+      }
+  };
+  
 }
