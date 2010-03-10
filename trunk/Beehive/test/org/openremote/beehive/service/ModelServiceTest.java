@@ -22,7 +22,7 @@ package org.openremote.beehive.service;
 import org.openremote.beehive.LIRCTestBase;
 import org.openremote.beehive.SpringTestContext;
 import org.openremote.beehive.api.service.ModelService;
-import org.openremote.beehive.file.LircConfFileScraper;
+import org.openremote.beehive.file.LircConfFileTestScraper;
 import org.openremote.beehive.utils.FileUtil;
 import org.openremote.beehive.utils.FixtureUtil;
 
@@ -38,7 +38,7 @@ public class ModelServiceTest extends LIRCTestBase {
    }
 
    public void testScrap() {
-      LircConfFileScraper.scrapDir(FixtureUtil.path() + "/remotes");
+      LircConfFileTestScraper.scrapDir(FixtureUtil.path() + "/remotes");
    }
 
    public void testExportText() {
@@ -64,7 +64,7 @@ public class ModelServiceTest extends LIRCTestBase {
    }
 
    public void testCount() {
-      assertEquals(9, service.count());
+      assertEquals(24, service.count());
    }
 
    public void testSync() {

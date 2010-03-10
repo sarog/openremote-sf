@@ -30,7 +30,6 @@ import javax.ws.rs.core.Response;
 
 import org.openremote.beehive.api.dto.IconDTO;
 import org.openremote.beehive.api.service.IconService;
-import org.openremote.beehive.spring.SpringContext;
 
 /**
  * Exports restful service of <code>Icon</code>
@@ -40,7 +39,7 @@ import org.openremote.beehive.spring.SpringContext;
  */
 
 @Path("/icons")
-public class IconRESTService {
+public class IconRESTService extends RESTBaseService {
    
    /**
     * Shows icons identified by iconName Visits @ url "/icons/{icon_name}"
@@ -81,6 +80,6 @@ public class IconRESTService {
    }
 
    public IconService getIconService() {
-      return (IconService) SpringContext.getInstance().getBean("iconService");
+      return (IconService) getSpringContextInstance().getBean("iconService");
    }
 }

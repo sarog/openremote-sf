@@ -30,13 +30,12 @@ import javax.ws.rs.core.Response;
 
 import org.openremote.beehive.api.dto.CodeDTO;
 import org.openremote.beehive.api.service.CodeService;
-import org.openremote.beehive.spring.SpringContext;
 
 /**
  * Exports restful service of <code>Code</code> User: allenwei Date: 2009-2-10
  */
 @Path("/lirc/{vendor_name}/{model_name}/{section_id}/codes")
-public class CodeRESTService {
+public class CodeRESTService extends RESTBaseService {
 
    /**
     * Shows codes by {section_id} Visits @ url "/lirc/{vendor_name}/{model_name}/{section_id}/codes"
@@ -63,6 +62,6 @@ public class CodeRESTService {
     * @return CodeService instance
     */
    public CodeService getCodeService() {
-      return (CodeService) SpringContext.getInstance().getBean("codeService");
+      return (CodeService) getSpringContextInstance().getBean("codeService");
    }
 }

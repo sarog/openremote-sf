@@ -31,7 +31,6 @@ import org.openremote.beehive.api.service.VendorService;
 import org.openremote.beehive.domain.Vendor;
 import org.openremote.beehive.utils.FileUtil;
 
-// TODO: Auto-generated Javadoc
 /**
  * {@inheritDoc}.
  * 

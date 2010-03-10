@@ -22,8 +22,8 @@ package org.openremote.beehive.rest.service;
 import javax.ws.rs.Path;
 
 import org.openremote.beehive.SpringTestContext;
-import org.openremote.beehive.api.service.VendorService;
 import org.openremote.beehive.rest.VendorRESTService;
+import org.openremote.beehive.spring.ISpringContext;
 
 /**
  * VendorRESTService for Test.
@@ -32,9 +32,8 @@ import org.openremote.beehive.rest.VendorRESTService;
 public class VendorRESTTestService extends VendorRESTService {
    
    @Override
-   protected VendorService getVendorService() {
-      return (VendorService) SpringTestContext.getInstance().getBean("vendorService");
-
+   protected Class<? extends ISpringContext> getSpringContextClass() {
+      return SpringTestContext.class;
    }
 
 }

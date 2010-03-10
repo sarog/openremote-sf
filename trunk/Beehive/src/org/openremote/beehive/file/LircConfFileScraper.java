@@ -37,22 +37,11 @@ import org.openremote.beehive.utils.FileUtil;
  */
 public class LircConfFileScraper {
 
-   private static ModelService modelService = (ModelService) SpringContext.getInstance().getBean("modelService");
 
-   /*
-    * public static void scrap(String strPath) { File dir = new File(strPath); File[] files = dir.listFiles(); if (files
-    * == null) { return; } for (int i = 0; i < files.length; i++) { if (files[i].isDirectory()) {
-    * scrap(files[i].getAbsolutePath()); } else { new LircConfFile(files[i]).discoverOptions(); } } }
-    */
-
-   /*
-    * public static void scrapDir(String strPath) { File dir = new File(strPath); File[] files = dir.listFiles(); if
-    * (files == null) { return; } for (int i = 0; i < files.length; i++) { if (files[i].isDirectory()) {
-    * scrapDir(files[i].getAbsolutePath()); } else { String path = files[i].getAbsolutePath();
-    * if(FileUtil.isImage(files[i])){ continue; } System.out.println(path); String[] arr = path.split("\\\\"); String
-    * vendorName = arr[arr.length - 2]; String modelName = arr[arr.length - 1];
-    * lircConfFileService.add(FileUtil.readStream(files[i].getAbsolutePath()),vendorName,modelName); } } }
-    */
+   protected static ModelService getModelService() {
+      return (ModelService) SpringContext.getInstance().getBean("modelService");
+   }
+   
    /**
     * Scraps a directory in file system containing LIRC configuration files.
     */
@@ -83,7 +72,7 @@ public class LircConfFileScraper {
 
    private static void importFile(String vendorName, String modelName, File subModel) {
       if (!FileUtil.isIgnored(subModel)) {
-         modelService.add(FileUtil.readStream(subModel.getAbsolutePath()), vendorName, modelName);
+         getModelService().add(FileUtil.readStream(subModel.getAbsolutePath()), vendorName, modelName);
       }
    }
 

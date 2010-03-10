@@ -19,6 +19,7 @@
 */
 package org.openremote.beehive;
 
+import org.openremote.beehive.spring.ISpringContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
@@ -28,7 +29,7 @@ import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
  * 
  * @author Dan 2009-2-16
  */
-public class SpringTestContext {
+public class SpringTestContext implements ISpringContext {
 
    /** The m_instance. */
    private static SpringTestContext instance;
@@ -58,9 +59,9 @@ public class SpringTestContext {
    }
 
    /**
-    * Gets a instance of <code>SpringContext</code>.
+    * Gets a instance of <code>SpringTestContext</code>.
     * 
-    * @return the instance of <code>SpringContext</code>
+    * @return the instance of <code>SpringTestContext</code>
     */
    public static synchronized SpringTestContext getInstance() {
       if (instance == null) {
