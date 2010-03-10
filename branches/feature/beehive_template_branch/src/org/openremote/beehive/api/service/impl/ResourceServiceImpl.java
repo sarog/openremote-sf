@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
+import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,14 +33,17 @@ import org.openremote.beehive.api.service.AccountService;
 import org.openremote.beehive.api.service.ResourceService;
 import org.openremote.beehive.domain.User;
 import org.openremote.beehive.utils.FileUtil;
+
 /**
  * 
  * Account resources service, such as openremote.zip etc.
  * 
  * @author javen, Dan
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  *
  */
-public class ResourceServiceImpl implements ResourceService {
+public class ResourceServiceImpl implements ResourceService
+{
    private static final Log logger = LogFactory.getLog(ResourceService.class);
    
    private AccountService accountService;
@@ -47,26 +51,49 @@ public class ResourceServiceImpl implements ResourceService {
    protected Configuration configuration = null;
 
    @Override
-   public boolean saveResource(long accountOid,InputStream input) {
+   public boolean saveResource(long accountOid,InputStream input)
+   {
       logger.debug("save resource from modeler to beehive");
+
       File dir = makeSureDir(accountOid);
       File zipFile = new File(dir, Constant.ACCOUNT_RESOURCE_ZIP_NAME);
       FileOutputStream fos = null;
-      try {
+
+      try
+      {
          FileUtil.deleteFileOnExist(zipFile);
          fos = new FileOutputStream(zipFile);
          byte[] buffer = new byte[1024];
          int length = 0;
-         while ((length = input.read(buffer)) != -1) {
+
+         while ((length = input.read(buffer)) != -1)
+         {
             fos.write(buffer, 0, length);
          }
+
          logger.info("save resource success!");
+
          return true;
-      }catch(Exception e){
-         logger.error("falied to save resource from modeler to beehive", e);
-      } finally {
-         if(fos != null){
-            try{fos.close();}catch(Exception e){}
+      }
+      catch (IOException e)
+      {
+         logger.error("failed to save resource from modeler to beehive", e);
+      }
+      finally
+      {
+         if (fos != null)
+         {
+            try
+            {
+              fos.close();
+            }
+            catch (IOException ioException)
+            {
+              logger.warn(
+                  "Error in closing file output stream to '" + Constant.ACCOUNT_RESOURCE_ZIP_NAME +
+                  "': " + ioException.getMessage(), ioException
+              );
+            }
          }
       }
       return false;

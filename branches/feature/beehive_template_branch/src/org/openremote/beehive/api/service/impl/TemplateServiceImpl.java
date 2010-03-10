@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +39,8 @@ import org.openremote.beehive.domain.Template;
 import org.openremote.beehive.utils.FileUtil;
 
 
-public class TemplateServiceImpl extends BaseAbstractService<Template> implements TemplateService {
+public class TemplateServiceImpl extends BaseAbstractService<Template> implements TemplateService
+{
    private static final Log logger = LogFactory.getLog(TemplateService.class);
 
    protected Configuration configuration = null;
@@ -136,28 +138,50 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
       return templateFolderFile;
    }
 
-   public boolean saveTemplateResourceZip(long templateOid, InputStream input) {
+   public boolean saveTemplateResourceZip(long templateOid, InputStream input)
+   {
       File templateFolder = createTemplateFolder(templateOid);
       File zipFile = new File(templateFolder, TEMPLATE_RESOURCE_ZIP_FILE_NAME);
       FileOutputStream fos = null;
-      try {
+
+      try
+      {
          FileUtil.deleteFileOnExist(zipFile);
          fos = new FileOutputStream(zipFile);
          byte[] buffer = new byte[1024];
          int length = 0;
-         while ((length = input.read(buffer)) != -1) {
+
+         while ((length = input.read(buffer)) != -1)
+         {
             fos.write(buffer, 0, length);
          }
+
          logger.info("save resource success!");
+
          return true;
-      } catch (Exception e) {
-         logger.error("falied to save resource from modeler to beehive", e);
-         throw new RuntimeException("falied to save resource from modeler to beehive",e);
-      } finally {
-         if (fos != null) {
-            try {
+      }
+      catch (Exception e)
+      {
+         logger.error("failed to save resource from modeler to beehive", e);
+
+         // TODO : FIXME - don't log and then rethrow, probably should just log and return false
+
+         throw new RuntimeException("falied to save resource from modeler to beehive", e);
+      }
+      finally
+      {
+         if (fos != null)
+         {
+            try
+            {
                fos.close();
-            } catch (Exception e) {
+            }
+            catch (IOException ioException)
+            {
+              logger.warn(
+                  "Error in closing the file output stream (" + TEMPLATE_RESOURCE_ZIP_FILE_NAME +
+                  "): " + ioException.getMessage(), ioException
+              );
             }
          }
       }
