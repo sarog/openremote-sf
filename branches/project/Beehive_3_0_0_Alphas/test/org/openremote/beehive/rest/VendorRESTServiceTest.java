@@ -26,6 +26,7 @@ import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.openremote.beehive.LIRCTestBase;
 import org.openremote.beehive.rest.service.VendorRESTTestService;
+import org.openremote.beehive.utils.RESTTestUtils;
 
 /**
  * Author: Allen Wei, Dan Cong

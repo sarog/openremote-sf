@@ -51,7 +51,7 @@ public class GenericDAOTest extends LIRCTestBase {
    
    public void testLoadAll() {
       List<Vendor> vs = genericDAO.loadAll(Vendor.class);
-      assertEquals(4, vs.size());
+      assertEquals(3, vs.size());
    }
    
    

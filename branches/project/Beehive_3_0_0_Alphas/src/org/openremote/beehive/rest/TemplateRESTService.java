@@ -47,46 +47,83 @@ import org.openremote.beehive.api.service.ResourceService;
 import org.openremote.beehive.api.service.TemplateService;
 import org.openremote.beehive.domain.Account;
 import org.openremote.beehive.domain.Template;
-import org.openremote.beehive.spring.SpringContext;
 /**
- * UI Template restful service.
+ * Panel UI Template restful service.
+ * 
+ * UI designer can save some common screens of a panel as a template. 
+ * Other UI designers can use this template to reuse UI.
  * 
  * @author Dan Cong
  *
  */
 
 @Path("/account/{account_id}")
-public class TemplateRESTService {
+public class TemplateRESTService extends RESTBaseService {
    
-   protected TemplateService getTemplateService() {
-      return (TemplateService) SpringContext.getInstance().getBean("templateService");
-   }
-   
-   protected AccountService getAccountService() {
-      return (AccountService) SpringContext.getInstance().getBean("accountService");
-   }
-   
-
-   @GET
-   @Produces( { "application/xml", "application/json" })
+   /**
+    * Get all templates by account id.
+    * 
+    * @param accountId
+    *           account id
+    * @param credentials
+    *           HTTP basic header credentials : "Basic base64(username:md5(password,username))"
+    * 
+    * @return template list
+    */
    @Path("templates")
-   public TemplateListing getTemplates(@PathParam("account_id") long accountId) {
+   @GET
+   @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+   public TemplateListing getTemplates(@PathParam("account_id") long accountId,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      
+      authorize(credentials);
       List<TemplateDTO> list = null;
       if (accountId == Template.PUBLIC_ACCOUNT_OID) {
          list = getTemplateService().loadAllPublicTemplate();
       } else {
          list = getTemplateService().loadAllTemplatesByAccountOid(accountId);
       }
-      if (list.size() > 0) {
+      if (list != null) {
          return new TemplateListing(list);
       }
       throw new WebApplicationException(Response.Status.NOT_FOUND);
    }
 
+   /**
+    * Get template resources : template.zip (images included).
+    * 
+    * @param templateId
+    *           template id
+    * @param credentials
+    *           HTTP basic header credentials : "Basic base64(username:md5(password,username))"
+    * @return template.zip
+    */
    @GET
-   @Produces( { "application/xml", "application/json" })
+   @Produces( { "application/zip"})
+   @Path("template/{template_id}/resource")
+   public File getTemplateResources(@PathParam("template_id") long templateId,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      
+      authorize(credentials);
+      return getTemplateService().getTemplateResourceZip(templateId);
+   }
+   
+   /**
+    * Get template UI component info.
+    * 
+    * @param templateId
+    *           template id
+    * @param credentials
+    *           HTTP basic header credentials : "Basic base64(username:md5(password,username))"
+    * @return template UI component info
+    */
    @Path("template/{template_id}")
-   public TemplateDTO getTemplateById(@PathParam("template_id") long templateId) {
+   @GET
+   @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+   public TemplateDTO getTemplateById(@PathParam("template_id") long templateId, 
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      
+      authorize(credentials);
       TemplateDTO t = getTemplateService().loadTemplateByOid(templateId);
       if (t != null) {
          return t;
@@ -94,21 +131,26 @@ public class TemplateRESTService {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
    }
 
-   @GET
-   @Produces( { "application/zip"})
-   @Path("template/resource/{template_id}")
-   public File getTemplateResources(@PathParam("template_id") long templateId) {
-      return getTemplateService().getTemplateResourceZip(templateId);
-   }
-   @POST
-   @Produces( { "application/xml", "application/json" })
+   /**
+    * Save a template.
+    * 
+    * @param accountId
+    *           account id.
+    * @param name
+    *           template name
+    * @param content
+    *           template content (XML or JSON string)
+    * @param credentials
+    *           HTTP basic header credentials : "Basic base64(username:md5(password,username))"
+    * @return new template
+    */
    @Path("template")
+   @POST
+   @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
    public TemplateDTO addTemplateIntoAccount(@PathParam("account_id") long accountId, @FormParam("name") String name,
-         @FormParam("content") String content, @HeaderParam(Constant.HTTP_BASIC_AUTH_HEADER_NAME) String credentials) {
-
-      if (!getAccountService().isHTTPBasicAuthorized(credentials)) {
-         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-      }
+         @FormParam("content") String content, @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      
+      authorize(credentials);
       Template t = new Template();
       if (accountId > 0) {
          Account a = new Account();
@@ -126,31 +168,60 @@ public class TemplateRESTService {
 
    }
    
-   @DELETE
+   /**
+    * Deletes a template.
+    * 
+    * This requires web server to support HTTP DELETE method.
+    * 
+    * @param templateId
+    *           template id
+    * @param credentials
+    *           HTTP basic header credentials : "Basic base64(username:md5(password,username))"
+    * @return ture if success.
+    */
+   
    @Path("template/{template_id}")
+   @DELETE
    public boolean deleteTemplate(@PathParam("template_id") long templateId,
-         @HeaderParam(Constant.HTTP_BASIC_AUTH_HEADER_NAME) String credentials) {
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
-      if (!getAccountService().isHTTPBasicAuthorized(credentials)) {
-         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-      }
+      authorize(credentials);
       if (templateId > 0) {
          return getTemplateService().delete(templateId);
       }
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
    }
 
-   protected ResourceService resourceService = (ResourceService) SpringContext.getInstance().getBean("resourceService");
-   @Path("resource")
+   /**
+    * Save related resources(images, icons) into the template.
+    * 
+    * @param accountId
+    *           account id.
+    * @param templateId
+    *           template id.
+    * @param input
+    *           Multipart Form Data Input
+    * @param credentials
+    *           HTTP basic header credentials : "Basic base64(username:md5(password,username))"
+    * @return true if success.
+    */
+   @Path("template/{template_id}/resource")
    @POST
    @Consumes(MediaType.MULTIPART_FORM_DATA)
-   public boolean saveResource(@PathParam("account_id") long accountId, MultipartFormDataInput input) {
+   public boolean saveTemplateResource(@PathParam("account_id") long accountId,
+         @PathParam("template_id") long templateId, MultipartFormDataInput input, 
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      
+      authorize(credentials);
       List<InputPart> parts = input.getParts();
       InputStream in = null;
       try {
-            in = parts.get(0).getBody(new GenericType<InputStream>() {
-            });
-            return resourceService.saveResource(accountId, in);
+         if (parts.size() > 0) {
+            in = parts.get(0).getBody(new GenericType<InputStream>() {});
+            return getTemplateService().saveTemplateResourceZip(templateId, in);
+         } else {
+            throw new WebApplicationException(Response.Status.NO_CONTENT);
+         }
       } catch (IOException e) {
          e.printStackTrace();
       } finally {
@@ -158,23 +229,41 @@ public class TemplateRESTService {
             try {
                in.close();
             } catch (Exception e) {
+               e.printStackTrace();
             }
          }
       }
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
    }
    
-   @Path("resource/template/{templateId}")
+   /**
+    * Save account resources (openremote.zip).
+    * 
+    * @param accountId
+    *           account id.
+    * @param input
+    *           Multipart Form Data Input
+    * @param credentials
+    *           HTTP basic header credentials : "Basic base64(username:md5(password,username))"
+    * @return true if success.
+    */
+   @Path(Constant.ACCOUNT_RESOURCE_ZIP_NAME)
    @POST
    @Consumes(MediaType.MULTIPART_FORM_DATA)
-   public boolean saveTemplateResource(@PathParam("account_id") long accountId,
-         @PathParam("templateId") long templateId, MultipartFormDataInput input) {
+   public boolean saveResource(@PathParam("account_id") long accountId, 
+         MultipartFormDataInput input,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      
+      authorize(credentials);
       List<InputPart> parts = input.getParts();
       InputStream in = null;
       try {
-         in = parts.get(0).getBody(new GenericType<InputStream>() {
-         });
-         return getTemplateService().saveTemplateResourceZip(templateId, in);
+         if (parts.size() > 0) {
+            in = parts.get(0).getBody(new GenericType<InputStream>() {});
+            return getResourceService().saveResource(accountId, in);
+         } else {
+            throw new WebApplicationException(Response.Status.NO_CONTENT);
+         }
       } catch (IOException e) {
          e.printStackTrace();
       } finally {
@@ -182,9 +271,38 @@ public class TemplateRESTService {
             try {
                in.close();
             } catch (Exception e) {
+               e.printStackTrace();
             }
          }
       }
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
    }
+   
+   /*
+    * If the user was not validated, fail with a
+    * 401 status code (UNAUTHORIZED) and
+    * pass back a WWW-Authenticate header for
+    * this servlet.
+    *  
+    */
+   private void authorize(String credentials) {
+      if (!getAccountService().isHTTPBasicAuthorized(credentials)) {
+         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+      }
+   }
+   
+   
+   protected ResourceService getResourceService() {
+      return (ResourceService) getSpringContextInstance().getBean("resourceService");
+   }
+   
+   protected TemplateService getTemplateService() {
+      return (TemplateService) getSpringContextInstance().getBean("templateService");
+   }
+   
+   protected AccountService getAccountService() {
+      return (AccountService) getSpringContextInstance().getBean("accountService");
+   }
+   
+   
 }

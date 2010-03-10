@@ -17,20 +17,11 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.beehive.rest.service;
+package org.openremote.beehive.spring;
 
-import javax.ws.rs.Path;
 
-import org.openremote.beehive.SpringTestContext;
-import org.openremote.beehive.rest.TemplateRESTService;
-import org.openremote.beehive.spring.ISpringContext;
-
-@Path("/account/{account_id}")
-public class TemplateRESTTestService extends TemplateRESTService {
+public interface ISpringContext {
    
-   @Override
-   protected Class<? extends ISpringContext> getSpringContextClass() {
-      return SpringTestContext.class;
-   }
+   Object getBean(String beanId);
 
 }
