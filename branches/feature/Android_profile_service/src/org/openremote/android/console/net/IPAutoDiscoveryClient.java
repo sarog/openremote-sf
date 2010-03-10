@@ -26,18 +26,25 @@ import java.net.InetAddress;
 import org.openremote.android.console.Constants;
 
 public class IPAutoDiscoveryClient implements Runnable {
-
+   
+   public static boolean IS_EMULATOR;
    public void run() {
       try {
          DatagramSocket socket = new DatagramSocket();
          byte[] b = new byte[512];
          DatagramPacket dgram;
-         dgram = new DatagramPacket(b, b.length, InetAddress.getByName(Constants.getMulticastAddress()), Constants.MULTICAST_PORT);
+         dgram = new DatagramPacket(b, b.length, InetAddress.getByName(getMulticastAddress()), Constants.MULTICAST_PORT);
          socket.send(dgram);
       } catch (Exception e) {
          e.printStackTrace();
       }
 
    }
-
+   
+   public static String getMulticastAddress() {
+      if (IS_EMULATOR) {
+         return Constants.EMULATOR_MULTICAST_ADDRESS;
+      }
+      return Constants.MULTICAST_ADDRESS;
+   }
 }

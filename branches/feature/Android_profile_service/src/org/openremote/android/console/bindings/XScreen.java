@@ -25,7 +25,14 @@ import org.w3c.dom.NodeList;
 
 @SuppressWarnings("serial")
 public class XScreen extends BusinessEntity {
-
+   /**
+    * Screen width and height may be different in different device, 
+    *  so they can be changed when the application start at runtime.
+   */
+   public static int SCREEN_WIDTH = 320;
+   public static int SCREEN_HEIGHT = 480;
+   public static int SCREEN_STATUS_BAR_HEIGHT = 20;
+   
    private int screenId;
    private String name;
    private ArrayList<LayoutContainer> layouts;

@@ -19,16 +19,15 @@ package org.openremote.android.console.view;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-import org.openremote.android.console.Constants;
 import org.openremote.android.console.bindings.Background;
 import org.openremote.android.console.bindings.LayoutContainer;
 import org.openremote.android.console.bindings.XScreen;
-import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.PollingHelper;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.AbsoluteLayout;
 import android.widget.ImageView;
@@ -67,7 +66,7 @@ public class ScreenView extends AbsoluteLayout {
          }
       }
       if (!screen.getPollingComponentsIds().isEmpty()) {
-         polling = new PollingHelper(screen.getPollingComponentsIds());
+         polling = new PollingHelper(screen.getPollingComponentsIds(), getContext());
       }
    }
 
@@ -78,8 +77,8 @@ public class ScreenView extends AbsoluteLayout {
       ImageView backgroudView = new ImageView(this.getContext());
       int left = 0;
       int top = 0;
-      int screenWidth = Constants.SCREEN_WIDTH;
-      int screenHeight = Constants.SCREEN_HEIGHT - Constants.SCREEN_STATUS_BAR_HEIGHT;
+      int screenWidth = XScreen.SCREEN_WIDTH;
+      int screenHeight = XScreen.SCREEN_HEIGHT - XScreen.SCREEN_STATUS_BAR_HEIGHT;
       try {
          Bitmap backgroudBitMap = BitmapFactory
                .decodeStream(this.getContext().openFileInput(screen.getBackgroundSrc()));
@@ -125,13 +124,21 @@ public class ScreenView extends AbsoluteLayout {
 
    public void startPolling() {
       if (polling != null) {
-         polling.requestCurrentStatusAndStartPolling(AppSettingsModel.getCurrentServer(getContext()));
+         new AsyncLoader().execute((Void)null);
       }
    }
    
    public void cancelPolling() {
       if (polling != null) {
          polling.cancelPolling();
+      }
+   }
+   
+   class AsyncLoader extends AsyncTask<Void, Void, Integer>{
+      @Override
+      protected Integer doInBackground(Void... params) {
+         polling.requestCurrentStatusAndStartPolling();
+         return null;
       }
    }
 }
