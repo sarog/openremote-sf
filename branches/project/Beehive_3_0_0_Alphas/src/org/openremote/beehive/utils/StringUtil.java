@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
  * Utility class for String
  * 
  * @author Dan 2009-2-16
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * 
  */
 public class StringUtil {
@@ -165,7 +166,8 @@ public class StringUtil {
    }
 
    /**
-    * Parse a String contrain some long to array. If some of long parse fail, this method will ignore it can continue.
+    * Parse a String contrain some long to array. If some of long parse fail, this method will
+    * ignore it can continue.
     * 
     * @param str
     *           String
@@ -181,7 +183,7 @@ public class StringUtil {
          try {
             l = Long.parseLong(id);
          } catch (NumberFormatException e) {
-            LOGGER.error("Parse String " + id + " to long type occur error.");
+            LOGGER.warn("Error in parsing string '" + id + "' to long (" + e.getMessage() + ")", e);
             continue;
          }
          result.add(l);
