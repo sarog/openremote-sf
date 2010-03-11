@@ -882,6 +882,7 @@ public class ResourceServiceImpl implements ResourceService {
       HttpClient httpClient = new DefaultHttpClient();
       HttpPost httpPost = new HttpPost();
       String beehiveRootRestURL = configuration.getBeehiveRESTRootUrl();
+      this.addAuthentication(httpPost);
       try {
          httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid()
                + "/openremote.zip"));
