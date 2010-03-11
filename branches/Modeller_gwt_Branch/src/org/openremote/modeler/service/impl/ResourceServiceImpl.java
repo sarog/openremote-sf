@@ -49,6 +49,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.AbstractHttpMessage;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.openremote.modeler.client.Configuration;
@@ -846,7 +847,7 @@ public class ResourceServiceImpl implements ResourceService {
    @SuppressWarnings("unchecked")
    public PanelsAndMaxOid restore(){
       //First, try to down openremote.zip from beehive.
-      downOpenRemoteZip();
+      downloadOpenRemoteZip();
       //Restore panels and max oid. 
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File panelsObjFile = new File(pathConfig.getSerizalizedPanelsFile(userService.getAccount()));
@@ -916,9 +917,7 @@ public class ResourceServiceImpl implements ResourceService {
          MultipartEntity entity = new MultipartEntity();
          entity.addPart("resource", resource);
 
-         httpPost.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
-               + encode(userService.getAccount().getUser().getUsername() + ":"
-                     + userService.getAccount().getUser().getPassword()));
+         this.addAuthentication(httpPost);
          httpPost.setEntity(entity);
 
          HttpResponse response = httpClient.execute(httpPost);
@@ -946,7 +945,7 @@ public class ResourceServiceImpl implements ResourceService {
             + userService.getAccount().getOid() + "/template/" + templateOid+"/resource");
       InputStream inputStream = null;
       FileOutputStream fos = null;
-
+      this.addAuthentication(httpGet);
       try {
          HttpResponse response = httpClient.execute(httpGet);
 
@@ -982,7 +981,7 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
    
-   private void downOpenRemoteZip() {
+   private void downloadOpenRemoteZip() {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
       HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTRootUrl() + "user/"
@@ -991,9 +990,7 @@ public class ResourceServiceImpl implements ResourceService {
       FileOutputStream fos = null;
 
       try {
-         httpGet.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
-               + encode(userService.getAccount().getUser().getUsername() + ":"
-                     + userService.getAccount().getUser().getPassword()));
+         this.addAuthentication(httpGet);
          HttpResponse response = httpClient.execute(httpGet);
          if (200 == response.getStatusLine().getStatusCode()) {
             inputStream = response.getEntity().getContent();
@@ -1081,5 +1078,11 @@ public class ResourceServiceImpl implements ResourceService {
       public Long maxId(){
          return maxId++;
       }
+   }
+   
+   private void addAuthentication(AbstractHttpMessage httpMessage) {
+      httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
+            + encode(userService.getAccount().getUser().getUsername() + ":"
+                  + userService.getAccount().getUser().getPassword()));
    }
 }

@@ -42,6 +42,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.AbstractHttpMessage;
 import org.apache.http.message.BasicNameValuePair;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
@@ -124,10 +125,8 @@ public class TemplateServiceImpl implements TemplateService
             saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/0" + "/template/";
          }
          HttpPost httpPost = new HttpPost(saveRestUrl);
+         addAuthentication(httpPost);
          UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(params, "UTF-8");
-         httpPost.addHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
-               + encode(userService.getAccount().getUser().getUsername() + ":"
-                     + userService.getAccount().getUser().getPassword()));
          httpPost.setEntity(formEntity);
          HttpClient httpClient = new DefaultHttpClient();
 
@@ -238,9 +237,7 @@ public class TemplateServiceImpl implements TemplateService
             + "/template/" + templateOid;
 
       HttpDelete httpDelete = new HttpDelete();
-      httpDelete.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
-            + encode(userService.getAccount().getUser().getUsername() + ":"
-                  + userService.getAccount().getUser().getPassword()));
+      addAuthentication(httpDelete);
       try {
          httpDelete.setURI(new URI(deleteRestUrl));
          HttpClient httpClient = new DefaultHttpClient();
@@ -591,5 +588,11 @@ public class TemplateServiceImpl implements TemplateService
    private String encode(String namePassword) {
       if (namePassword == null) return null;
       return new String(Base64.encodeBase64(namePassword.getBytes()));
+   }
+   
+   private void addAuthentication(AbstractHttpMessage httpMessage) {
+      httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
+            + encode(userService.getAccount().getUser().getUsername() + ":"
+                  + userService.getAccount().getUser().getPassword()));
    }
 }
