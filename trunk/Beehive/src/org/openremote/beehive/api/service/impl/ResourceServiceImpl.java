@@ -51,48 +51,35 @@ public class ResourceServiceImpl implements ResourceService
    protected Configuration configuration = null;
 
    @Override
-   public boolean saveResource(long accountOid,InputStream input)
-   {
+   public boolean saveResource(long accountOid, InputStream input) {
       logger.debug("save resource from modeler to beehive");
 
       File dir = makeSureDir(accountOid);
       File zipFile = new File(dir, Constant.ACCOUNT_RESOURCE_ZIP_NAME);
       FileOutputStream fos = null;
 
-      try
-      {
+      try {
          FileUtil.deleteFileOnExist(zipFile);
          fos = new FileOutputStream(zipFile);
          byte[] buffer = new byte[1024];
          int length = 0;
 
-         while ((length = input.read(buffer)) != -1)
-         {
+         while ((length = input.read(buffer)) != -1) {
             fos.write(buffer, 0, length);
          }
-
+         fos.flush();
          logger.info("save resource success!");
 
          return true;
-      }
-      catch (IOException e)
-      {
+      } catch (IOException e) {
          logger.error("failed to save resource from modeler to beehive", e);
-      }
-      finally
-      {
-         if (fos != null)
-         {
-            try
-            {
-              fos.close();
-            }
-            catch (IOException ioException)
-            {
-              logger.warn(
-                  "Error in closing file output stream to '" + Constant.ACCOUNT_RESOURCE_ZIP_NAME +
-                  "': " + ioException.getMessage(), ioException
-              );
+      } finally {
+         if (fos != null) {
+            try {
+               fos.close();
+            } catch (IOException ioException) {
+               logger.warn("Error in closing file output stream to '" + Constant.ACCOUNT_RESOURCE_ZIP_NAME + "': "
+                     + ioException.getMessage(), ioException);
             }
          }
       }
@@ -105,7 +92,6 @@ public class ResourceServiceImpl implements ResourceService
       if (user == null) {
          return null;
       }
-      System.out.println(getDirByAccountOid(user.getAccount().getOid()).getAbsolutePath());
       File[] files = getDirByAccountOid(user.getAccount().getOid()).listFiles(new FilenameFilter() {
 
          @Override
