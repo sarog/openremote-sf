@@ -26,6 +26,8 @@ import java.util.Set;
 
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.Sensor;
+
+import flexjson.JSON;
 /**
  * This class is used for record the property for a sensor 
  * A sensor is defined in the build modeler, include the state, state name... But we can only set the value for the state in the UI designer.
@@ -73,6 +75,7 @@ public class SensorLink extends BusinessEntity {
    /**
     * Get the XML string 
     */
+   @JSON(include=false)
    public String getXMLString() {
       StringBuilder sb = new StringBuilder();
       sb.append("<link type=\"sensor\" ref=\"" + sensor.getOid() + "\">");

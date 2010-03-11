@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.service;
 
+import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Template;
 
@@ -39,9 +40,30 @@ public interface TemplateService {
    /**
     * Build a screen from a template. 
     * @param template The template you want to use to build a screen. 
-    * @return A screen builded from the template. 
+    * @return A wrap class consist of screen and its device set.  
+    */
+   ScreenFromTemplate buildFromTemplate(Template template);
+   
+   /**
+    * Delete a template by template's oid.
+    * @param templateOid
+    * @return <tt>true</tt> if success ,<tt>false</tt> if not. 
+    */
+   boolean deleteTemplate(long templateOid);
+   
+   /**
+    * Build a screen from template. The command information is not rebuild to DB. 
+    * </br> This method is invoked by the service itself. 
+    * @param template
+    * @return screen build from template. 
     */
    Screen buildScreenFromTemplate(Template template);
    
-   boolean deleteTemplate(long templateOid);
+   /**
+    * ReBuild Device, DeviceCommand, Sensor, Switch, Slider... for a screen. 
+    * </br> This method is invoked by the service itself. 
+    * @param screen 
+    * @return A wrap class consist of screen and its device set.   
+    */
+   ScreenFromTemplate reBuildCommand(Screen screen);
 }
