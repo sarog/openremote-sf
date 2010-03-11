@@ -128,6 +128,7 @@ public class UIButton extends UIControl {
    }
 
    @Override
+   @JSON(include=false)
    public List<UICommand> getCommands() {
       List<UICommand> commands = new ArrayList<UICommand>();
       if (uiCommand != null) {

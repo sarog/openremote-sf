@@ -28,4 +28,5 @@ import org.openremote.modeler.domain.Sensor;
  */
 public interface SensorOwner {
    Sensor getSensor();
+   void setSensor(Sensor sensor);
 }

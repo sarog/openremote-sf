@@ -22,6 +22,8 @@ package org.openremote.modeler.client;
 import org.openremote.modeler.client.view.ApplicationView;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * The EntryPoint of GWT application. all the code must put into {@link #onModuleLoad()} method.
@@ -39,6 +41,7 @@ public class Modeler implements EntryPoint {
     * Inits the application.
     */
    private void init() {
+      DOM.setStyleAttribute(RootPanel.get("loading-cont").getElement(), "display", "none");
       ApplicationView appView = new ApplicationView();
       appView.initialize();
    }

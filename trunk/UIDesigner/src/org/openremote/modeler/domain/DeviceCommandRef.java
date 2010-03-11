@@ -25,6 +25,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
+import flexjson.JSON;
+
 
 /**
  * The Class Device Command Reference.
@@ -103,6 +105,7 @@ public class DeviceCommandRef extends DeviceMacroItem {
     */
    @Override
    @Transient
+   @JSON(include=false)
    public String getDisplayName() {
       this.deviceName = (this.deviceName == null || "".equals(this.deviceName)) ? getDeviceCommand().getDevice().getName() : this.deviceName;
       return getDeviceCommand().getName() + " (" + this.deviceName + ")";

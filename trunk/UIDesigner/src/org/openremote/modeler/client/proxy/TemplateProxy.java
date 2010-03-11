@@ -22,6 +22,7 @@ package org.openremote.modeler.client.proxy;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.IDUtil;
+import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.Screen;
@@ -64,14 +65,15 @@ public class TemplateProxy {
     * @param template
     * @param callback
     */
-   public static void buildScreenFromTemplate(final Template template, final AsyncCallback<Screen> callback) {
+   public static void buildScreenFromTemplate(final Template template, final AsyncCallback<ScreenFromTemplate> callback) {
       AsyncServiceFactory.getTemplateRPCServiceAsync().buildScreeFromTemplate(template,
-            new AsyncSuccessCallback<Screen>() {
+            new AsyncSuccessCallback<ScreenFromTemplate>() {
 
                @Override
-               public void onSuccess(Screen screen) {
+               public void onSuccess(ScreenFromTemplate screenFromTemplate) {
+                  Screen screen = screenFromTemplate.getScreen();
                   initOid(screen);
-                  callback.onSuccess(screen);
+                  callback.onSuccess(screenFromTemplate);
                }
 
                @Override
