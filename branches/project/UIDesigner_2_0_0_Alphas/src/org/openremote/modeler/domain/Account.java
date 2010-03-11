@@ -53,6 +53,8 @@ public class Account extends BusinessEntity {
    private List<Switch> switches;
    
    private List<Config> configs;
+   
+   private List<Slider> sliders;
 
    /**
     * Instantiates a new account.
@@ -148,6 +150,16 @@ public class Account extends BusinessEntity {
    public void setSwitches(List<Switch> switches) {
       this.switches = switches;
    }
+   
+   @OneToMany(mappedBy = "account")
+   public List<Slider> getSliders() {
+      return sliders;
+   }
+
+   public void setSliders(List<Slider> sliders) {
+      this.sliders = sliders;
+   }
+
    @OneToMany(mappedBy = "account")
    public List<Config> getConfigs() {
       return configs;

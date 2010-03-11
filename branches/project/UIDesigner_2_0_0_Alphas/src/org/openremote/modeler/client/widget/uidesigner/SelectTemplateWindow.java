@@ -24,7 +24,7 @@ import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
 import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.domain.Template;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -173,11 +173,11 @@ public class SelectTemplateWindow extends Dialog{
                template.setContent(content);
                template.setOid(oid);
                template.setName(name);
-               TemplateProxy.buildScreenFromTemplate(template, new AsyncSuccessCallback<Screen>(){
+               TemplateProxy.buildScreenFromTemplate(template, new AsyncSuccessCallback<ScreenFromTemplate>(){
 
                   @Override
-                  public void onSuccess(Screen result) {
-                     fireEvent(SubmitEvent.SUBMIT,new SubmitEvent(result.getBeanModel()));
+                  public void onSuccess(ScreenFromTemplate result) {
+                     fireEvent(SubmitEvent.SUBMIT,new SubmitEvent(result.getScreen().getBeanModel()));
                   }
                   
                });

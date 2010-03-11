@@ -36,8 +36,8 @@ import flexjson.JSON;
 /**
  * The Class Screen.
  */
-@SuppressWarnings("serial")
 public class Screen extends RefedEntity {
+   private static final long serialVersionUID = -4133577592315343274L;
 
    /** The default name index. */
    private static int defaultNameIndex = 1;
@@ -100,10 +100,12 @@ public class Screen extends RefedEntity {
     * 
     * @return the touch panel definition
     */
+   @JSON(include=false)
    public TouchPanelDefinition getTouchPanelDefinition() {
       return touchPanelDefinition;
    }
 
+   @JSON(include=false)
    public String getCSSBackground() {
       return background.getImageSource().getSrc().replaceAll(" ", "%20");
    }

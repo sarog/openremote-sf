@@ -20,6 +20,7 @@
 package org.openremote.modeler.client.widget.uidesigner;
 
 import java.util.List;
+import java.util.Set;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
@@ -30,8 +31,11 @@ import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.IDUtil;
+import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
+import org.openremote.modeler.client.widget.buildingmodeler.DevicePanel;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
@@ -69,8 +73,10 @@ import com.extjs.gxt.ui.client.widget.layout.FillLayout;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 /**
- * A wizard for creating a new screen from existed groups. 
+ * A wizard for creating a new screen from existing groups.
+ *
  * @author Javen
+ * @author <a href = "mailto:juha@openremote.org">Juha Lindfors</a>
  *
  */
 public class ScreenWindow extends FormWindow {
@@ -189,7 +195,7 @@ public class ScreenWindow extends FormWindow {
          private void buildScreenFromTemplate(FormEvent be, final GroupRef groupRef) {
             ModelData templateModelData = templateView.getSelectionModel().getSelectedItem();
             if (templateModelData == null) {
-               MessageBox.alert("Error", "Please select a Template.", null);
+               MessageBox.alert("Error", "Please select a template.", null);
                be.cancelBubble();
             } else {
                Long oid = templateModelData.get("id");
@@ -200,27 +206,38 @@ public class ScreenWindow extends FormWindow {
                template.setContent(content);
                template.setOid(oid);
                template.setName(name);
-               TemplateProxy.buildScreenFromTemplate(template, new AsyncSuccessCallback<Screen>(){
+               TemplateProxy.buildScreenFromTemplate(template, new AsyncSuccessCallback<ScreenFromTemplate>(){
 
                   @Override
-                  public void onSuccess(Screen result) {
-                     screen = result;
+                  public void onSuccess(ScreenFromTemplate result) {
+                     screen = result.getScreen();
+                     screen.setOid(IDUtil.nextID());
                      screen.setName(nameField.getValue());
                      ScreenRef screenRef = createScreenFromTemplate(groupRef);
                      BeanModelDataBase.screenTable.insert(screen.getBeanModel());
                      ScreenWindow.this.unmask();
+                     //----------rebuild command 
+                     Set<Device> devices = result.getDevices();
+                     DevicePanel devicePanel = DevicePanel.getInstance();
+                     TreePanel<BeanModel> deviceTree = devicePanel.getTree();
+                     for(Device device: devices) {
+                        deviceTree.getStore().add(device.getBeanModel(), false);
+                        BeanModelDataBase.deviceTable.insert(device.getBeanModel());
+                     }
+                     devicePanel.layout();
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));
                   }
 
                   @Override
                   public void onFailure(Throwable caught) {
-                     MessageBox.alert("Error", "failed to create screen by template.", null);
+                     MessageBox.alert("Error", "Failed to create screen from template.", null);
+                     ScreenWindow.this.unmask();
                   }
                   
                   
                });
             }
-            ScreenWindow.this.mask("Download resources for this template... ");
+            ScreenWindow.this.mask("Downloading resources for this template... ");
          }
 
       });
@@ -236,11 +253,11 @@ public class ScreenWindow extends FormWindow {
    }
    
    private ScreenRef createScreenFromTemplate(GroupRef selectedGroup) {
-//      templateView.getSelectionModel().getSelectedItem();
       screen.setTouchPanelDefinition(selectedGroup.getPanel().getTouchPanelDefinition());
-      BeanModelDataBase.screenTable.insert(screen.getBeanModel());
       ScreenRef screenRef = new ScreenRef(screen);
       selectedGroup.getGroup().addScreenRef(screenRef);
+      screenRef.setGroup(selectedGroup.getGroup());
+      BeanModelDataBase.screenTable.insert(screen.getBeanModel());
       return screenRef;
    }
    private ContentPanel createGroupTreeView(ScreenTab screenTab) {
@@ -379,7 +396,7 @@ public class ScreenWindow extends FormWindow {
 
          @Override
          public void onFailure(Throwable caught) {
-            MessageBox.alert("falid", "unable to load the template information from beehive", null);
+            MessageBox.alert("Error", "Unable to load template information from Beehive", null);
          }
 
       });
@@ -398,7 +415,7 @@ public class ScreenWindow extends FormWindow {
          }
          @Override
          public void onFailure(Throwable caught) {
-            MessageBox.alert("falid", "unable to load the template information from beehive", null);
+            MessageBox.alert("Error", "Unable to load template information from Beehive", null);
          }
       });
       ScreenWindow.this.mask("loading ...");

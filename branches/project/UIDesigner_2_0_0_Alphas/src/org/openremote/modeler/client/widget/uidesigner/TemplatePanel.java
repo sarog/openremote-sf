@@ -52,13 +52,17 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 
 /**
- * The Template panel. 
+ * The Template panel.
+ *
  * @author Javen
+ * @author <a href = "mailto:juha@openremote.org">Juha Lindfors</a>
+ *
  */
 public class TemplatePanel extends ContentPanel {
 
    private ListView<ModelData> templateView;
    private Icons icon = GWT.create(Icons.class);
+
    /**
     * Instantiates a new profile panel.
     */
@@ -88,38 +92,53 @@ public class TemplatePanel extends ContentPanel {
 
 
    /**
-    * Creates the delete btn.
+    * Creates the delete button.
     * 
     * @return the button
     */
    private Button createDeleteBtn() {
       Button deleteBtn = new Button("Delete");
       deleteBtn.setIcon(icon.delete());
-      deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
-         @Override
-         public void onDelete(ButtonEvent ce) {
+
+      deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>()
+      {
+         @Override public void onDelete(ButtonEvent ce)
+         {
             final ModelData templateModelData = templateView.getSelectionModel().getSelectedItem();
-            if (templateModelData == null) {
-               MessageBox.alert("Error", "Please select a Template.", null);
+
+            if (templateModelData == null)
+            {
+               MessageBox.alert("Error", "Please select a template.", null);
                ce.cancelBubble();
-            } else {
+            }
+
+            else
+            {
                Long oid = templateModelData.get("id");
-               if (oid == null) {
+
+               if (oid == null)
+               {
                   oid = templateModelData.get("oid");
                }
-               TemplateProxy.deleteTemplateById(oid, new AsyncSuccessCallback<Boolean>() {
 
-                  @Override
-                  public void onSuccess(Boolean success) {
-                     if (success) {
+               TemplateProxy.deleteTemplateById(oid, new AsyncSuccessCallback<Boolean>()
+               {
+                  @Override public void onSuccess(Boolean success)
+                  {
+                     if (success)
+                     {
                         templateView.getStore().remove(templateModelData);
-                        Info.display("delete template", "template delete successfully");
+                        Info.display("Delete Template", "Template deleted successfully.");
                      }
                   }
 
-                  @Override
-                  public void onFailure(Throwable caught) {
-                     MessageBox.alert("Error","failed to delete the template.The beehive may be not avaliable now ",null);
+                  @Override public void onFailure(Throwable caught)
+                  {
+                     MessageBox.alert(
+                         "Error",
+                         "Failed to delete template. Beehive not currently available.",
+                         null
+                     );
                   }
                   
                   

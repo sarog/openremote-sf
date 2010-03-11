@@ -20,7 +20,7 @@
 package org.openremote.modeler.server;
 
 import org.openremote.modeler.client.rpc.TemplateRPCService;
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.service.TemplateService;
 
@@ -35,8 +35,8 @@ public class TemplateController extends BaseGWTSpringController implements Templ
    private TemplateService templateService = null;
    
    @Override
-   public Screen buildScreeFromTemplate(Template template) {
-      return templateService.buildScreenFromTemplate(template);
+   public ScreenFromTemplate buildScreeFromTemplate(Template template) {
+      return templateService.buildFromTemplate(template);
    }
 
    /*@Override
