@@ -70,10 +70,9 @@ public class BuildingModelerView extends TabItem implements View {
       ContentPanel west = new ContentPanel();
       BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 200);
       westData.setSplit(true);
-      westData.setCollapsible(true);
       west.setLayout(new AccordionLayout());
       west.setBodyBorder(false);
-      west.setHeading("Explorer");
+      west.setHeaderVisible(false);
       west.add(new DevicePanel());
       west.add(new MacroPanel());
       west.add(new ConfigPanel(this));
