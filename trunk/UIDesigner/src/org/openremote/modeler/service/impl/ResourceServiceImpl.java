@@ -106,6 +106,8 @@ import org.springframework.ui.velocity.VelocityEngineUtils;
  * The Class ResourceServiceImpl.
  * 
  * @author Allen, Handy, Javen
+ * @author <a href = "mailto:juha@openremote.org">Juha Lindfors</a>
+ *
  */
 public class ResourceServiceImpl implements ResourceService {
 
@@ -136,7 +138,7 @@ public class ResourceServiceImpl implements ResourceService {
     * {@inheritDoc}
     */
    public String downloadZipResource(long maxOid, String sessionId, List<Panel> panels) {
-      updateResources(panels, maxOid);
+      initResources(panels, maxOid);
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File zipFile = this.getExportResource();
       return pathConfig.getZipUrl(userService.getAccount())+zipFile.getName();
@@ -190,7 +192,6 @@ public class ResourceServiceImpl implements ResourceService {
       try {
          lircUrl = new URL(restAPIUrl + "?ids=" + ids);
       } catch (MalformedURLException e) {
-         LOGGER.error("Lirc file url is invalid", e);
          throw new IllegalArgumentException("Lirc file url is invalid", e);
       }
       return lircUrl;
@@ -205,8 +206,7 @@ public class ResourceServiceImpl implements ResourceService {
          try {
             FileUtils.deleteDirectory(tmpDir);
          } catch (IOException e) {
-            LOGGER.error("Delete temp dir Occur IOException", e);
-            throw new FileOperationException("Delete temp dir Occur IOException", e);
+            throw new FileOperationException("Error in deleting temp dir", e);
          }
       }
       new File(PathConfig.getInstance(configuration).userFolder(sessionId)).mkdirs();
@@ -221,9 +221,9 @@ public class ResourceServiceImpl implements ResourceService {
                   dotImportFileContent = IOUtils.toString(zipInputStream);
                }
                if (!checkXML(zipInputStream, zipEntry, "iphone")) {
-                  throw new XmlParserException("The iphone.xml schema validation fail, please check it");
+                  throw new XmlParserException("The iphone.xml schema validation failed, please check it");
                } else if (!checkXML(zipInputStream, zipEntry, "controller")) {
-                  throw new XmlParserException("The controller.xml schema validation fail, please check it");
+                  throw new XmlParserException("The controller.xml schema validation failed, please check it");
                }
 
                if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|import|conf)")) {
@@ -241,8 +241,7 @@ public class ResourceServiceImpl implements ResourceService {
 
          }
       } catch (IOException e) {
-         LOGGER.error("Get import file from zip file Occur IOException", e);
-         throw new FileOperationException("Get import file from zip file Occur IOException", e);
+         throw new FileOperationException("Error in reading import file from zip", e);
       } finally {
          try {
             zipInputStream.closeEntry();
@@ -250,7 +249,7 @@ public class ResourceServiceImpl implements ResourceService {
                fileOutputStream.close();
             }
          } catch (IOException e) {
-            LOGGER.error("Clean Resource used occured IOException when import a file", e);
+            LOGGER.warn("Failed to close import file resources", e);
          }
 
       }
@@ -310,15 +309,14 @@ public class ResourceServiceImpl implements ResourceService {
          fileOutputStream = new FileOutputStream(file);
          IOUtils.copy(inputStream, fileOutputStream);
       } catch (IOException e) {
-         LOGGER.error("Save uploaded image to file occur IOException.", e);
-         throw new FileOperationException("Save uploaded image to file occur IOException.", e);
+         throw new FileOperationException("Failed to save uploaded image", e);
       } finally {
          try {
             if (fileOutputStream != null) {
                fileOutputStream.close();
             }
          } catch (IOException e) {
-            LOGGER.error("Close FileOutputStream Occur IOException while save a uploaded image.", e);
+            LOGGER.warn("Failed to close resources on uploaded file", e);
          }
 
       }
@@ -341,32 +339,37 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the controller xml segment content
     */
-   public List<Command> getCommandOwnerByUICommand(UICommand command,
-         ProtocolCommandContainer protocolEventContainer,MaxId  maxId) {
+   public List<Command> getCommandOwnerByUICommand(UICommand command, ProtocolCommandContainer protocolEventContainer,
+         MaxId maxId) {
       List<Command> oneUIButtonEventList = new ArrayList<Command>();
-      if (command instanceof DeviceMacroItem) {
-         if (command instanceof DeviceCommandRef) {
-            DeviceCommand deviceCommand = deviceCommandService.loadById(((DeviceCommandRef) command).getDeviceCommand()
-                  .getOid());
-            addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand,maxId);
-         } else if (command instanceof DeviceMacroRef) {
-            DeviceMacro deviceMacro = ((DeviceMacroRef) command).getTargetDeviceMacro();
-            deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
-            for (DeviceMacroItem tempDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
-               oneUIButtonEventList.addAll(getCommandOwnerByUICommand(tempDeviceMacroItem, protocolEventContainer,maxId));
+      try {
+         if (command instanceof DeviceMacroItem) {
+            if (command instanceof DeviceCommandRef) {
+               DeviceCommand deviceCommand = deviceCommandService.loadById(((DeviceCommandRef) command)
+                     .getDeviceCommand().getOid());
+               addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand, maxId);
+            } else if (command instanceof DeviceMacroRef) {
+               DeviceMacro deviceMacro = ((DeviceMacroRef) command).getTargetDeviceMacro();
+               deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
+               for (DeviceMacroItem tempDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
+                  oneUIButtonEventList.addAll(getCommandOwnerByUICommand(tempDeviceMacroItem, protocolEventContainer,
+                        maxId));
+               }
+            } else if (command instanceof CommandDelay) {
+               CommandDelay delay = (CommandDelay) command;
+               Command uiButtonEvent = new Command();
+               uiButtonEvent.setId(maxId.maxId());
+               uiButtonEvent.setDelay(delay.getDelaySecond());
+               oneUIButtonEventList.add(uiButtonEvent);
             }
-         } else if (command instanceof CommandDelay) {
-            CommandDelay delay = (CommandDelay) command;
-            Command uiButtonEvent = new Command();
-            uiButtonEvent.setId(maxId.maxId());
-            uiButtonEvent.setDelay(delay.getDelaySecond());
-            oneUIButtonEventList.add(uiButtonEvent);
+         } else if (command instanceof CommandRefItem) {
+            DeviceCommand deviceCommand = deviceCommandService.loadById(((CommandRefItem) command).getDeviceCommand()
+                  .getOid());
+            addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand, maxId);
+         } else {
+            return new ArrayList<Command>();
          }
-      } else if (command instanceof CommandRefItem) {
-         DeviceCommand deviceCommand = deviceCommandService.loadById(((CommandRefItem) command).getDeviceCommand()
-               .getOid());
-         addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand,maxId);
-      } else {
+      } catch (Exception e) {
          return new ArrayList<Command>();
       }
       return oneUIButtonEventList;
@@ -603,8 +606,7 @@ public class ResourceServiceImpl implements ResourceService {
          context.put("screens", screens);
          return VelocityEngineUtils.mergeTemplateIntoString(velocity, PANEL_XML_TEMPLATE, context);
       } catch (Exception e) {
-         e.printStackTrace();
-         throw new RuntimeException("faild when get panel.xml by template", e);
+         throw new RuntimeException("Failed to read panel.xml", e);
       }
 
    }
@@ -744,19 +746,9 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
    
-   static class MaxId{
-      Long maxId = 0L;
-      public MaxId(Long maxId){
-         this.maxId = maxId;
-      }
-      
-      public Long maxId(){
-         return maxId++;
-      }
-   }
 
    @Override
-   public void updateResources(Collection<Panel> panels,long maxOid) {
+   public void initResources(Collection<Panel> panels,long maxOid) {
       Set<Group> groups = new LinkedHashSet<Group>();
       Set<Screen> screens = new LinkedHashSet<Screen>();
       /*
@@ -819,8 +811,7 @@ public class ResourceServiceImpl implements ResourceService {
          serialize(panels,maxOid);
          saveResourcesToBeehive();
       } catch (IOException e) {
-         LOGGER.error("Compress zip file occur IOException", e);
-         throw new FileOperationException("Compress zip file occur IOException", e);
+         throw new FileOperationException("Failed to write resource: " + e.getMessage(), e);
       }
    }
    
@@ -868,7 +859,8 @@ public class ResourceServiceImpl implements ResourceService {
          panelsAndMaxOid = new PanelsAndMaxOid(panels,maxOid);
          
       } catch(Exception e){
-         LOGGER.fatal("restore failed from server", e);
+         LOGGER.error("restore failed from server");
+         throw new RuntimeException(e);
       } finally {
          try {
             if(ois!=null){
@@ -888,19 +880,21 @@ public class ResourceServiceImpl implements ResourceService {
       HttpPost httpPost = new HttpPost();
       String beehiveRootRestURL = configuration.getBeehiveRESTRootUrl();
       try {
-         httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid() + "/resource/"));
+         httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid()
+               + "/openremote.zip"));
          FileBody resource = new FileBody(getExportResource());
          MultipartEntity entity = new MultipartEntity();
          entity.addPart("resource", resource);
          httpPost.setEntity(entity);
          HttpResponse response = httpClient.execute(httpPost);
-         if(200 != response.getStatusLine().getStatusCode()){
-            throw new BeehiveNotAvailableException("failed to save resource to beehive,The status code is: "+response.getStatusLine().getStatusCode());
+
+         if (200 != response.getStatusLine().getStatusCode()) {
+            throw new BeehiveNotAvailableException("Failed to save resource to Beehive, status code: "
+                  + response.getStatusLine().getStatusCode());
          }
       } catch (Exception e) {
-         LOGGER.error("failed to save resource to beehive", e);
          throw new BeehiveNotAvailableException(e.getMessage(), e);
-      } 
+      }
    }
    
    public void saveTemplateResourcesToBeehive(Template template) {
@@ -910,12 +904,12 @@ public class ResourceServiceImpl implements ResourceService {
       String beehiveRootRestURL = configuration.getBeehiveRESTRootUrl();
       try {
          if (!share) {
-            httpPost
-                  .setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid() + "/resource/template/"+template.getOid()));
+            httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid()
+                  + "/resource/template/" + template.getOid()));
          } else {
-            httpPost.setURI(new URI(beehiveRootRestURL + "account/0/resource/template/"+template.getOid()));
+            httpPost.setURI(new URI(beehiveRootRestURL + "account/0/template/" + template.getOid() + "/resource/"));
          }
-         
+
          FileBody resource = new FileBody(getTemplateZipResource());
          MultipartEntity entity = new MultipartEntity();
          entity.addPart("resource", resource);
@@ -923,12 +917,13 @@ public class ResourceServiceImpl implements ResourceService {
          httpPost.setEntity(entity);
 
          HttpResponse response = httpClient.execute(httpPost);
-         if(200 != response.getStatusLine().getStatusCode()){
-            throw new BeehiveNotAvailableException("failed to save template resource to beehive,The status code is: "+response.getStatusLine().getStatusCode());
+
+         if (200 != response.getStatusLine().getStatusCode()) {
+            throw new BeehiveNotAvailableException("Failed to save template to Beehive, status code: "
+                  + response.getStatusLine().getStatusCode());
          }
       } catch (Exception e) {
-         LOGGER.error("failed to save resource to beehive", e);
-         throw new BeehiveNotAvailableException("failed to save template resource to beehive", e);
+         throw new BeehiveNotAvailableException("Failed to save template to Beehive", e);
       }
    }
    @Override
@@ -946,9 +941,11 @@ public class ResourceServiceImpl implements ResourceService {
             + userService.getAccount().getOid() + "/template/resource/" + templateOid);
       InputStream inputStream = null;
       FileOutputStream fos = null;
+
       try {
          HttpResponse response = httpClient.execute(httpGet);
-         if(200 == response.getStatusLine().getStatusCode()){
+
+         if (200 == response.getStatusLine().getStatusCode()) {
             inputStream = response.getEntity().getContent();
             File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
             userFolder.mkdirs();
@@ -957,17 +954,19 @@ public class ResourceServiceImpl implements ResourceService {
             fos = new FileOutputStream(outPut);
             byte[] buffer = new byte[1024];
             int len = 0;
+
             while ((len = inputStream.read(buffer)) != -1) {
                fos.write(buffer, 0, len);
             }
+
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
          } else {
-            throw new BeehiveNotAvailableException("failed to download resources for template, The status code is: "+response.getStatusLine().getStatusCode());
+            throw new BeehiveNotAvailableException("Failed to download resources for template, status code: "
+                  + response.getStatusLine().getStatusCode());
          }
       } catch (Exception e) {
-         LOGGER.error("failed to down load resource from beehive!", e);
-         throw new BeehiveNotAvailableException(e.getMessage(),e);
+         throw new BeehiveNotAvailableException(e.getMessage(), e);
       } finally {
          if (inputStream != null) {
             try {
@@ -979,6 +978,12 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
    
+   @Override
+   public File getTemplateResource(Template template) {
+      //TODO ---------just include the resource which is necessary for this template.
+      //     ---------Now, All the resources in the user folder is included! 
+      return this.getTemplateZipResource();
+   }
    private File getResourceZipFile(List<String> ignoreExtentions) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
@@ -1007,5 +1012,16 @@ public class ResourceServiceImpl implements ResourceService {
       List<String> ignoreExtentions = new ArrayList<String>();
       ignoreExtentions.add("zip");
       return getResourceZipFile(ignoreExtentions);
+   }
+   
+   static class MaxId{
+      Long maxId = 0L;
+      public MaxId(Long maxId){
+         this.maxId = maxId;
+      }
+      
+      public Long maxId(){
+         return maxId++;
+      }
    }
 }

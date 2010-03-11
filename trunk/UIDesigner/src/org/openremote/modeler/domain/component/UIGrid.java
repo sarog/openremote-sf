@@ -159,22 +159,8 @@ public class UIGrid extends UIComponent {
          return false;
       }
       UIGrid other = (UIGrid) obj;
-      if (left == other.left) {
-         return true;
-      }
-      if (top == other.top) {
-         return true;
-      }
-      if (width == other.width) {
-         return true;
-      }
-      if (height == other.height) {
-         return true;
-      }
-      if (columnCount == other.columnCount) {
-         return true;
-      }
-      if (rowCount == other.rowCount) {
+      if (left == other.left && top == other.top && width == other.width && height == other.height
+            && columnCount == other.columnCount && rowCount == other.rowCount && cells.equals(other.cells)) {
          return true;
       }
       return false;

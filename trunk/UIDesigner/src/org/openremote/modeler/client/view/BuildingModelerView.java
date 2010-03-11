@@ -74,7 +74,7 @@ public class BuildingModelerView extends TabItem implements View {
       west.setLayout(new AccordionLayout());
       west.setBodyBorder(false);
       west.setHeading("Explorer");
-      west.add(new DevicePanel());
+      west.add(DevicePanel.getInstance());
       west.add(new MacroPanel());
       west.add(new ConfigPanel(this));
 

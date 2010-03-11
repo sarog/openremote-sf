@@ -19,7 +19,7 @@
 */
 package org.openremote.modeler.client.rpc;
 
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.domain.Template;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -42,7 +42,7 @@ public interface TemplateRPCService extends RemoteService {
     * @param template
     * @return
     */
-   Screen buildScreeFromTemplate(Template template);
+   ScreenFromTemplate buildScreeFromTemplate(Template template);
    
    Boolean deleteTemplate(long templateId);
 }

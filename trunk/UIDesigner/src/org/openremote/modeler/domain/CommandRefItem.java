@@ -29,8 +29,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import flexjson.JSON;
-
 /**
  * The Class CommandRefItem is for reference the device command by sensor, switch, slider and other components.
  */
@@ -48,7 +46,6 @@ public class CommandRefItem extends UICommand {
    
    @ManyToOne
    @JoinColumn(name = "target_device_command_oid")
-   @JSON(include = false)
    public DeviceCommand getDeviceCommand() {
       return deviceCommand;
    }
