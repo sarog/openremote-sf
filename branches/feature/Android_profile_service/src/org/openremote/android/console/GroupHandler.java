@@ -78,7 +78,7 @@ public class GroupHandler extends Activity implements OnGestureListener {
        ll.addView(vf);
        this.setContentView(ll);
        constructScreens(vf, group);
-//       ((ScreenView) vf.getCurrentView()).startPolling();
+       ((ScreenView) vf.getCurrentView()).startPolling();
 
    }
 

@@ -36,7 +36,7 @@ public class ScreenView extends AbsoluteLayout {
 
    private XScreen screen;
    private PollingHelper polling;
-
+   private AsyncLoader pollingTask;
    /**
     * Instantiates a new screen view.
     * 
@@ -124,13 +124,17 @@ public class ScreenView extends AbsoluteLayout {
 
    public void startPolling() {
       if (polling != null) {
-         new AsyncLoader().execute((Void)null);
+         pollingTask = new AsyncLoader();
+         pollingTask.execute((Void)null);
       }
    }
    
    public void cancelPolling() {
       if (polling != null) {
          polling.cancelPolling();
+         if (pollingTask != null) {
+            pollingTask.cancel(true);
+         }
       }
    }
    

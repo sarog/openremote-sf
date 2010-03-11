@@ -3,30 +3,26 @@ package org.openremote.android.console.model;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 import android.content.Context;
-import android.os.AsyncTask;
 
 public class PollingHelper {
 
    private String pollingStatusIds;
    private boolean isPolling;
-   private boolean isError;
    private HttpClient client;
-   private HttpPost post;
+   private HttpGet httpGet;
    private String serverUrl;
    private Context context;
-
    public PollingHelper(HashSet<Integer> ids, Context context) {
       this.context = context;
       this.serverUrl = AppSettingsModel.getCurrentServer(context);
@@ -49,6 +45,9 @@ public class PollingHelper {
       }
       isPolling = true;
       handleRequest(serverUrl + "/rest/status/" + pollingStatusIds);
+      while (isPolling) {
+         doPolling();
+      }
    }
 
    private void doPolling() {
@@ -57,34 +56,40 @@ public class PollingHelper {
    }
 
    private void handleRequest(String requestUrl) {
-      post = new HttpPost(requestUrl);
-      try {
-         HttpResponse response = client.execute(post);
-         int statusCode = response.getStatusLine().getStatusCode();
-         if (statusCode == 200) {
-            PollingStatusParser.parse(response.getEntity().getContent());
+      httpGet = new HttpGet(requestUrl);
+      if (!httpGet.isAborted()) {
+         try {
+            HttpResponse response = client.execute(httpGet);
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == 200) {
+               PollingStatusParser.parse(response.getEntity().getContent());
+            }
+            handleServerErrorWithStatusCode(statusCode);
+         } catch (ClientProtocolException e) {
+            if (!isPolling) {
+               return;
+            }
+            e.printStackTrace();
+         } catch (IOException e) {
+            if (!isPolling) {
+               return;
+            }
+            e.printStackTrace();
          }
-         handleServerErrorWithStatusCode(statusCode);
-      } catch (ClientProtocolException e) {
-         isError = true;
-         e.printStackTrace();
-      } catch (IOException e) {
-         isError = true;
-         e.printStackTrace();
       }
    }
    
    public void cancelPolling() {
       isPolling = false;
-      if (post != null) {
-         post.abort();
+      if (httpGet != null) {
+         httpGet.abort();
+         httpGet = null;
       }
-      client.getConnectionManager().closeIdleConnections(0, TimeUnit.MICROSECONDS);
+//      client.getConnectionManager().shutdown();
    }
 
    private void handleServerErrorWithStatusCode(int statusCode) {
       if (statusCode != 200) {
-         isError = true;
          String errorMessage = null;
          switch (statusCode) {
          case 404:
@@ -97,10 +102,10 @@ public class PollingHelper {
             errorMessage = "Controller is not currently available.";
             break;
          case 504:// polling timeout, need to refresh
-            isError = false;
-            if (isPolling) {
-               doPolling();
-            }
+//            if (isPolling) {
+//               return;
+//            }
+            httpGet = null;
             return;
          }
 
@@ -110,10 +115,11 @@ public class PollingHelper {
          ViewHelper.showAlertViewWithTitle(context, "Send Request Error", errorMessage);
          isPolling = false;
       } else {
-         isError = false;
-         if (isPolling) {
-            doPolling();
-         }
+         httpGet = null;
+//         if (isPolling) {
+//            doPolling();
+//         }
+         return;
       }
    }
 
