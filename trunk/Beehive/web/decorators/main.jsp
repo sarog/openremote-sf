@@ -64,7 +64,7 @@
          <tr>
             <td valign="bottom"><table class="footer" style="border-width: 1px 0pt 0pt; border-top: 1px solid black;" width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="padding-left: 10px; padding-right: 5px;" align="left" nowrap="true"><a class="footer" href="http://www.openremote.org/" target="_blank">© OpenRemote Software 2008</a> </td>
+                    <td style="padding-left: 10px; padding-right: 5px;" align="left" nowrap="true"><a class="footer" href="http://www.openremote.org/" target="_blank">© OpenRemote Inc. 2008-2010</a> </td>
                     <td style="padding-left: 5px; padding-right: 5px;" width="100%" align="center" nowrap="true"><a class="footer" href="http://www.openremote.org/" target="_blank">Powered by OpenRemote Beehive</a> </td>
                     <td style="padding-left: 5px; padding-right: 10px;" align="right" nowrap="true">Version: <%@ include file="../common/version.jsp" %> </td>
                   </tr>
