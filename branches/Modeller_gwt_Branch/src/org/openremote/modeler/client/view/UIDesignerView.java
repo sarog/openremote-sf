@@ -178,7 +178,6 @@ public class UIDesignerView extends TabItem {
     */
    private void createEast() {
       BorderLayoutData eastLayout = new BorderLayoutData(LayoutRegion.EAST, 300);
-      eastLayout.setSplit(true);
       eastLayout.setMargins(new Margins(0, 2, 0, 2));
       add(createWidgetAndPropertyContainer(), eastLayout);
    }
@@ -214,6 +213,7 @@ public class UIDesignerView extends TabItem {
    private void createCenter() {
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setMargins(new Margins(0, 2, 0, 2));
+      screenTab.setBorderStyle(false);
       add(screenTab, centerData);
    }
 
@@ -239,6 +239,8 @@ public class UIDesignerView extends TabItem {
    private ContentPanel createWidgetAndPropertyContainer() {
       ContentPanel widgetAndPropertyContainer = new ContentPanel(new BorderLayout());
       widgetAndPropertyContainer.setHeaderVisible(false);
+      widgetAndPropertyContainer.setBorders(false);
+      widgetAndPropertyContainer.setBodyBorder(false);
 
       WidgetPanel widgetPanel = new WidgetPanel();
       BorderLayoutData northData = new BorderLayoutData(LayoutRegion.NORTH);

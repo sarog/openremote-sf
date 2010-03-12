@@ -42,10 +42,10 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.Viewport;
 import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.button.ToggleButton;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
-import com.extjs.gxt.ui.client.widget.layout.TableLayout;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.SeparatorToolItem;
@@ -78,7 +78,10 @@ public class ApplicationView implements View {
    /** The ui designer view. */
    private UIDesignerView uiDesignerView;
 
-   private LayoutContainer uiDesignerButtonContainer;
+   private Button saveButton;
+   
+   private Button exportButton;
+   
    /**
     * Initialize.
     * 
@@ -120,20 +123,22 @@ public class ApplicationView implements View {
     * Creates the north.
     */
    private void createNorth() {
-
       ToolBar applicationToolBar = new ToolBar();
       List<String> roles = authority.getRoles();
       if (roles.contains("ROLE_MODELER") && roles.contains("ROLE_DESIGNER")) {
-         applicationToolBar.add(createSwitchButton());
+         applicationToolBar.add(createBMButton());
+         applicationToolBar.add(createUDButton());
          SeparatorToolItem separatorItem = new SeparatorToolItem();
-         separatorItem.setWidth("10");
+         separatorItem.setWidth("20");
          applicationToolBar.add(separatorItem);
       }
       if (roles.contains("ROLE_DESIGNER")) {
-         uiDesignerButtonContainer = createUIDesignerButtons();
-         applicationToolBar.add(uiDesignerButtonContainer);
+         initSaveAndExportButtons();
+         applicationToolBar.add(saveButton);
+         applicationToolBar.add(exportButton);
          if (roles.contains("ROLE_MODELER")) {
-            uiDesignerButtonContainer.setVisible(false);
+            saveButton.setVisible(false);
+            exportButton.setVisible(false);
          }
       }
       applicationToolBar.add(new FillToolItem());
@@ -144,60 +149,72 @@ public class ApplicationView implements View {
       viewport.add(applicationToolBar, data);
    }
 
-   private Button createSwitchButton() {
-      final Button switchButton = new Button();
-      switchButton.setWidth(56);
-      switchButton.setIcon(icons.udIcon());
-      switchButton.setToolTip("Switch to UD");
-      switchButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+   private ToggleButton createBMButton() {
+      final ToggleButton bmButton = new ToggleButton();
+      bmButton.setToolTip("Building Modeler");
+      bmButton.setIcon(icons.bmIcon());
+      bmButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
-            String toolTip = switchButton.getToolTip().getToolTipConfig().getText();
-            if (toolTip.equals("Switch to UD")) {
-               uiDesignerButtonContainer.setVisible(true);
-               switchButton.setIcon(icons.bmIcon());
-               switchButton.setToolTip("Switch to BM");
-               modelerContainer.remove(buildingModelerView);
-               modelerContainer.add(uiDesignerView);
-            } else if (toolTip.equals("Switch to BM")) {
-               uiDesignerButtonContainer.setVisible(false);
-               switchButton.setIcon(icons.udIcon());
-               switchButton.setToolTip("Switch to UD");
+            if (!bmButton.isPressed()) {
+               bmButton.toggle(true);
+            } else {
+               saveButton.setVisible(false);
+               exportButton.setVisible(false);
                modelerContainer.remove(uiDesignerView);
                modelerContainer.add(buildingModelerView);
+               modelerContainer.layout();
             }
-            modelerContainer.layout();
          }
       });
-      return switchButton;
+      bmButton.setToggleGroup("modeler-switch");
+      bmButton.toggle(true);
+      return bmButton;
    }
-
-   private LayoutContainer createUIDesignerButtons() {
-      LayoutContainer uiDesignerButtons = new LayoutContainer();
-      uiDesignerButtons.setLayout(new TableLayout(2));
-      
-      Button saveButton = new Button();
+   
+   private ToggleButton createUDButton() {
+      final ToggleButton udButton = new ToggleButton();
+      udButton.setToolTip("UIDesigner");
+      udButton.setIcon(icons.udIcon());
+      udButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+         public void componentSelected(ButtonEvent ce) {
+            if (!udButton.isPressed()) {
+               udButton.toggle(true);
+            } else {
+               saveButton.setVisible(true);
+               exportButton.setVisible(true);
+               modelerContainer.remove(buildingModelerView);
+               modelerContainer.add(uiDesignerView);
+               modelerContainer.layout();
+            }
+         }
+      });
+      udButton.setToggleGroup("modeler-switch");
+      return udButton;
+   }
+   
+   private void initSaveAndExportButtons() {
+      saveButton = new Button();
       saveButton.setIcon(icons.saveIcon());
       saveButton.setToolTip("Save");
       saveButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             if (!isExportedDataValid()) {
-               MessageBox.info("Info", "Sorry, the data you want to save is invalid.", null);
+               MessageBox.info("Info", "Nothing to save.", null);
                return;
             }
             uiDesignerView.saveUiDesignerLayout();
          }
       });
-      uiDesignerButtons.add(saveButton);
       
-      Button exportButton = new Button();
-      exportButton.setIcon(icons.exportIcon());
-      exportButton.setToolTip("Export");
+      exportButton = new Button();
+      exportButton.setIcon(icons.exportAsZipIcon());
+      exportButton.setToolTip("Export as zip");
       exportButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             if (!isExportedDataValid()) {
-               MessageBox.info("Info", "Sorry, the data you want to export is invalid.", null);
+               MessageBox.info("Info", "Nothing to export.", null);
                return;
             }
             viewport.mask("Exporting, please wait.");
@@ -211,9 +228,6 @@ public class ApplicationView implements View {
                   });
          }
       });
-      uiDesignerButtons.add(exportButton);
-      
-      return uiDesignerButtons;
    }
 
    private Button createLogoutButton() {
