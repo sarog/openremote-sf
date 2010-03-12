@@ -39,7 +39,6 @@ import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.Template;
 
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
@@ -239,7 +238,8 @@ public class ScreenWindow extends FormWindow {
       groupTreeContainer.setHeaderVisible(false);
       groupTreeContainer.setSize(210, 150);
       groupTreeContainer.setLayout(new FitLayout());
-      groupTreeContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      groupTreeContainer.addStyleName("overflow-auto");
       List<BeanModel> panels = BeanModelDataBase.panelTable.loadAll();
       groupSelectTree = buildGroupSelectTree(panels);
       groupTreeContainer.add(groupSelectTree);

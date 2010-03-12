@@ -47,7 +47,8 @@ public class WidgetPanel extends ContentPanel {
             add(widgetTree);
          }
       };
-      treeContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      treeContainer.addStyleName("overflow-auto");
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
       add(treeContainer);

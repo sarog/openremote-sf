@@ -134,6 +134,7 @@ public class AutoListenableTreePanelBuilder {
       devicesAndMacrosTree.setBorders(false);
       devicesAndMacrosTree.setStateful(true);
       devicesAndMacrosTree.setDisplayProperty("displayName");
+      devicesAndMacrosTree.setStyleAttribute("overflow", "auto");
       devicesAndMacrosTree.setHeight("100%");
       devicesAndMacrosTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel beanModel) {

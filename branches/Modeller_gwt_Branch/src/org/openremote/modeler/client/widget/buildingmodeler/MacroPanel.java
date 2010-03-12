@@ -170,7 +170,8 @@ public class MacroPanel extends ContentPanel {
             add(macroTree);
          }
       };
-      macroListContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      macroListContainer.addStyleName("overflow-auto");
       macroListContainer.setStyleAttribute("backgroundColor", "white");
       macroListContainer.setBorders(false);
       macroListContainer.setLayoutOnChange(true);
