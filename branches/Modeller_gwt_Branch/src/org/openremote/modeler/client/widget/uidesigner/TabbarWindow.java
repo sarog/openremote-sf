@@ -120,7 +120,8 @@ public class TabbarWindow extends CommonWindow {
       tabbarItemsContainer.setWidth(260);
       tabbarItemsContainer.setHeight(130);
       tabbarItemsContainer.setLayout(new FitLayout());
-      tabbarItemsContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      tabbarItemsContainer.addStyleName("overflow-auto");
       
       tabbarItemListView = new ListView<BeanModel>();
       
@@ -130,6 +131,7 @@ public class TabbarWindow extends CommonWindow {
       }
       tabbarItemListView.setStore(store);
       tabbarItemListView.setDisplayProperty("displayName");
+      tabbarItemListView.setStyleAttribute("overflow", "auto");
       tabbarItemsContainer.add(tabbarItemListView);
       
       LayoutContainer buttonsContainer = new LayoutContainer();

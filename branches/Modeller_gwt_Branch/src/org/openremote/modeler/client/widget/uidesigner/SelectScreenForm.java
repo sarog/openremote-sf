@@ -32,7 +32,6 @@ import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
@@ -98,12 +97,14 @@ public class SelectScreenForm extends CommonForm {
       screenContainer.setWidth(280);
       screenContainer.setHeight(150);
       screenContainer.setLayout(new FitLayout());
-      screenContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      screenContainer.addStyleName("overflow-auto");
       
       screenListView = new CheckBoxListView<BeanModel>();
       ListStore<BeanModel> store = new ListStore<BeanModel>();
       screenListView.setStore(store);
       screenListView.setDisplayProperty("panelName");
+      screenListView.setStyleAttribute("overflow", "auto");
       screenListView.setSelectStyle("screen-view-item-sel");
       screenContainer.add(screenListView);
       return screenContainer;

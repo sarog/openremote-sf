@@ -235,7 +235,8 @@ public class MacroWindow extends FormWindow {
     */
    private LayoutContainer createDeviceCommandTree() {
       LayoutContainer treeContainer = new LayoutContainer();
-      treeContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      treeContainer.addStyleName("overflow-auto");
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
 
@@ -271,7 +272,8 @@ public class MacroWindow extends FormWindow {
     */
    private LayoutContainer createLeftMacroTree() {
       LayoutContainer leftMacroListContainer = new LayoutContainer();
-      leftMacroListContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      leftMacroListContainer.addStyleName("overflow-auto");
       leftMacroListContainer.setStyleAttribute("backgroundColor", "white");
       leftMacroListContainer.setBorders(false);
 

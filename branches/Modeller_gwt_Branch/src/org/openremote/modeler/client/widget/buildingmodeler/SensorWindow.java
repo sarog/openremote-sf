@@ -214,7 +214,8 @@ public class SensorWindow extends FormWindow {
       deviceCommandTreeContainer.setHeaderVisible(false);
       deviceCommandTreeContainer.setSize(230, 120);
       deviceCommandTreeContainer.setLayout(new FitLayout());
-      deviceCommandTreeContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      deviceCommandTreeContainer.addStyleName("overflow-auto");
       deviceCommandTreeContainer.setStyleAttribute("backgroundColor", "white");
       
       commandSelectTree = TreePanelBuilder.buildCommandTree(device!=null?device:((Sensor)sensorModel.getBean()).getDevice());

@@ -28,7 +28,6 @@ import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -68,12 +67,14 @@ public class SelectSensorWindow extends Dialog {
       sensorListContainer.setBorders(false);
       sensorListContainer.setBodyBorder(false);
       sensorListContainer.setHeaderVisible(false);
-      sensorListContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      sensorListContainer.addStyleName("overflow-auto");
       
       ListStore<BeanModel> store = new ListStore<BeanModel>();
       store.add(BeanModelDataBase.sensorTable.loadAll());
       sensorList.setStore(store);
       sensorList.setDisplayProperty("displayName");
+      sensorList.setStyleAttribute("overflow", "auto");
       sensorList.setBorders(false);
       sensorListContainer.add(sensorList);
       add(sensorListContainer, new RowData(1, -1, new Margins(4)));

@@ -27,7 +27,6 @@ import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
@@ -92,7 +91,8 @@ public class SelectPanelForm extends CommonForm {
       panelListContainer.setWidth(210);
       panelListContainer.setHeight(150);
       panelListContainer.setLayout(new FitLayout());
-      panelListContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      panelListContainer.addStyleName("overflow-auto");
       
       panelListView = new ListView<BeanModel>();
       
@@ -103,6 +103,7 @@ public class SelectPanelForm extends CommonForm {
       }
       panelListView.setStore(store);
       panelListView.setDisplayProperty("displayName");
+      panelListView.setStyleAttribute("overflow", "auto");
       panelListContainer.add(panelListView);
       
       if (groupRef.getPanel() != null) {

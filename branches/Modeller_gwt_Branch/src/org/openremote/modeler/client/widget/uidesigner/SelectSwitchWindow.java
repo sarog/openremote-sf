@@ -24,7 +24,6 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.domain.Switch;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -64,12 +63,14 @@ public class SelectSwitchWindow extends Dialog {
       switchListContainer.setBorders(false);
       switchListContainer.setBodyBorder(false);
       switchListContainer.setHeaderVisible(false);
-      switchListContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      switchListContainer.addStyleName("overflow-auto");
       
       ListStore<BeanModel> store = new ListStore<BeanModel>();
       store.add(BeanModelDataBase.switchTable.loadAll());
       switchList.setStore(store);
       switchList.setDisplayProperty("displayName");
+      switchList.setStyleAttribute("overflow", "auto");
       switchList.setBorders(false);
       switchListContainer.add(switchList);
       add(switchListContainer, new RowData(1, -1, new Margins(4)));
