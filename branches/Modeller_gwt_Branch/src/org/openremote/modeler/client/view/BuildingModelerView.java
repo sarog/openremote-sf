@@ -1,22 +1,19 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.modeler.client.view;
 
 import org.openremote.modeler.client.widget.buildingmodeler.ConfigPanel;
@@ -33,24 +30,21 @@ import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 
-
 /**
  * The Class BuildingModelerView.
  */
-public class BuildingModelerView extends TabItem implements View {
+public class BuildingModelerView extends TabItem {
 
    private TabPanel configTabPanel = new TabPanel();
-   /**
-    * @see org.openremote.modeler.client.view.View#initialize()
-    */
-   public void initialize() {
+
+   public BuildingModelerView() {
       setText("Building Modeler");
       setLayout(new BorderLayout());
-//      createNorth();
+      // createNorth();
       createWest();
       createCenter();
    }
-   
+
    /**
     * Creates the north.
     */
@@ -62,7 +56,7 @@ public class BuildingModelerView extends TabItem implements View {
       northData.setMargins(new Margins(0, 2, 0, 2));
       add(north, northData);
    }
-   
+
    /**
     * Creates the west.
     */
@@ -77,19 +71,19 @@ public class BuildingModelerView extends TabItem implements View {
       west.add(new MacroPanel());
       west.add(new ConfigPanel(this));
 
-      westData.setMargins(new Margins(2));
+      westData.setMargins(new Margins(0, 2, 0, 0));
       add(west, westData);
    }
-   
+
    /**
     * Creates the center.
     */
    private void createCenter() {
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
-      centerData.setMargins(new Margins(2));
+      centerData.setMargins(new Margins(0, 2, 0, 2));
       configTabPanel.setTabScroll(true);
       configTabPanel.setAnimScroll(true);
-      add(configTabPanel,centerData);
+      add(configTabPanel, centerData);
    }
 
    public TabPanel getConfigTabPanel() {
@@ -99,6 +93,5 @@ public class BuildingModelerView extends TabItem implements View {
    public void setConfigTabPanel(TabPanel configTabPanel) {
       this.configTabPanel = configTabPanel;
    }
-   
-   
+
 }
