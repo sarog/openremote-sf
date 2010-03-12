@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.client.proxy;
 
+import java.util.List;
+
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.IDUtil;
@@ -102,6 +104,26 @@ public class TemplateProxy {
       });
    }
    /**
+    * get all templates by shared type. 
+    * @param isFromPrivate
+    * @param callback
+    */
+   public static void getTemplates(final boolean isFromPrivate, final AsyncCallback<List<Template>> callback) {
+      AsyncServiceFactory.getTemplateRPCServiceAsync().getTemplates(isFromPrivate, new AsyncCallback<List<Template>>() {
+
+         @Override
+         public void onFailure(Throwable caught) {
+           callback.onFailure(caught);
+         }
+
+         @Override
+         public void onSuccess(List<Template> result) {
+           callback.onSuccess(result);
+         }
+         
+      });
+   }
+   /**
     * initialize the oid for every BusinessEntity.
     * @param screen
     */
@@ -121,5 +143,4 @@ public class TemplateProxy {
          }
       }
    }
-   
 }

@@ -40,6 +40,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.AbstractHttpMessage;
@@ -74,6 +75,7 @@ import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
+import org.openremote.modeler.exception.NotAuthenticatedException;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.ResourceService;
@@ -164,14 +166,6 @@ public class TemplateServiceImpl implements TemplateService
       return screenTemplate;
    }
 
-   /*private HttpEntity getTemplateFormEntity(Template template) throws Exception {
-      File file = resourceService.getTemplateResource(template);
-      FileBody fileBody = new FileBody(file);
-      MultipartEntity entity = new MultipartEntity();
-      entity.addPart("template.zip", fileBody);
-      return entity;
-   }*/
-   
    private String getTemplateContent(Screen screen) {
       try {
          String[] includedPropertyNames = { 
@@ -252,6 +246,44 @@ public class TemplateServiceImpl implements TemplateService
       }
    }
 
+   public List<Template> getTemplates(boolean fromPrivate) {
+      List<Template> templates = new ArrayList<Template>();
+      String restURL = configuration.getBeehiveRESTRootUrl() + "account/"
+            + (fromPrivate ? userService.getAccount().getOid() : 0) + "/templates";
+
+      HttpGet httpGet = new HttpGet(restURL);
+      httpGet.setHeader("Accept", "application/json");
+      this.addAuthentication(httpGet);
+      HttpClient httpClient = new DefaultHttpClient();
+      try {
+         HttpResponse response = httpClient.execute(httpGet);
+         if (response.getStatusLine().getStatusCode() != 200) {
+            if (response.getStatusLine().getStatusCode() == 401) {
+               throw new NotAuthenticatedException();
+            }
+            throw new BeehiveNotAvailableException();
+         }
+         InputStreamReader reader = new InputStreamReader(response.getEntity().getContent());
+         BufferedReader buffReader = new BufferedReader(reader);
+         StringBuilder sb = new StringBuilder();
+         String line = "";
+         while ((line = buffReader.readLine()) != null) {
+            sb.append(line);
+            sb.append("\n");
+         }
+         String result = sb.toString();
+         TemplateList templateList = buildTemplateListFromJson(result);
+         List<TemplateDTO> dtoes = templateList.getTemplates();
+         for (TemplateDTO dto : dtoes) {
+            templates.add(dto.toTemplate());
+         }
+      } catch (IOException e) {
+         log.error("Error when get template list");
+         throw new BeehiveNotAvailableException("Failed to get template list", e);
+      }
+
+      return templates;
+   }
    
    @SuppressWarnings("unchecked")
    @Override
@@ -571,6 +603,29 @@ public class TemplateServiceImpl implements TemplateService
    }
 
 
+   private String encode(String namePassword) {
+      if (namePassword == null) return null;
+      return new String(Base64.encodeBase64(namePassword.getBytes()));
+   }
+   
+   private void addAuthentication(AbstractHttpMessage httpMessage) {
+      httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
+            + encode(userService.getAccount().getUser().getUsername() + ":"
+                  + userService.getAccount().getUser().getPassword()));
+   }
+   
+   private TemplateList buildTemplateListFromJson(String templatesJson) {
+      TemplateList result = new TemplateList();
+      //The json string from beehive is not easy to be convert to java object by FlexJson, so we remove the unnecessary characters. 
+      try {
+         String canResotoreJson = templatesJson.replaceFirst("\\{\"template\":", "").replace("\\}", "");
+         result = new JSONDeserializer<TemplateList>().use(null, TemplateList.class).use("templates", ArrayList.class)
+               .deserialize(canResotoreJson);
+      } catch (RuntimeException e) {
+         log.warn("Can not convert json string to a template list! ");
+      }
+      return result;
+   }
 
    /**
     * A class to help flexjson to deserialize a UIComponent
@@ -584,15 +639,61 @@ public class TemplateServiceImpl implements TemplateService
          return Class.forName(map.get("class").toString());
       }
    }
+   /**
+    * A class used to help flexjson convert json string to a template list. 
+    * flexjson need a java class to map a json string. 
+    * @author javen
+    *
+    */
+   public static class TemplateList {
+      private List<TemplateDTO> templates = new ArrayList<TemplateDTO> ();
 
-   private String encode(String namePassword) {
-      if (namePassword == null) return null;
-      return new String(Base64.encodeBase64(namePassword.getBytes()));
+      public List<TemplateDTO> getTemplates() {
+         return templates;
+      }
+
+      public void setTemplates(List<TemplateDTO> templates) {
+         this.templates = templates;
+      }
+      
+   }
+   /**
+    * A class used to help flexjson convert json string to template list. 
+    * The class Template need a property <b>oid</b>, but in json string it is mapped to <b>id</b>,therefore at first we need convert the string to TemplateDTO and then 
+    * convert it to Template later.  
+    * @author javen
+    *
+    */
+   public static class TemplateDTO {
+      private int id;
+      private String content;
+      private String name;
+      public int getId() {
+         return id;
+      }
+      public void setId(int id) {
+         this.id = id;
+      }
+      public String getContent() {
+         return content;
+      }
+      public void setContent(String content) {
+         this.content = content;
+      }
+      public String getName() {
+         return name;
+      }
+      public void setName(String name) {
+         this.name = name;
+      }
+      
+      public Template toTemplate() {
+         Template template = new Template();
+         template.setName(name);
+         template.setContent(content);
+         template.setOid(id);
+         return template;
+      }
    }
    
-   private void addAuthentication(AbstractHttpMessage httpMessage) {
-      httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
-            + encode(userService.getAccount().getUser().getUsername() + ":"
-                  + userService.getAccount().getUser().getPassword()));
-   }
 }
