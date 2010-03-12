@@ -622,7 +622,7 @@ public class TemplateServiceImpl implements TemplateService
          result = new JSONDeserializer<TemplateList>().use(null, TemplateList.class).use("templates", ArrayList.class)
                .deserialize(canResotoreJson);
       } catch (RuntimeException e) {
-         log.warn("Can not convert json string to a template list! ");
+         log.warn("Faild to get template list, there are no templats in beehive ");
       }
       return result;
    }
