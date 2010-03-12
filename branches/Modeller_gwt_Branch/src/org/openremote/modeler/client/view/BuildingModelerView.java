@@ -83,6 +83,7 @@ public class BuildingModelerView extends TabItem {
       centerData.setMargins(new Margins(0, 2, 0, 2));
       configTabPanel.setTabScroll(true);
       configTabPanel.setAnimScroll(true);
+      configTabPanel.setBorderStyle(false);
       add(configTabPanel, centerData);
    }
 

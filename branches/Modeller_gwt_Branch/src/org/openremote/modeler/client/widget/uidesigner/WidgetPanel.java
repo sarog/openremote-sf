@@ -23,7 +23,6 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.gxtextends.TreePanelDragSourceMacroDragExt;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -50,7 +49,6 @@ public class WidgetPanel extends ContentPanel {
       // overflow-auto style is for IE hack.
       treeContainer.addStyleName("overflow-auto");
       treeContainer.setStyleAttribute("backgroundColor", "white");
-      treeContainer.setBorders(false);
       add(treeContainer);
    }
    
