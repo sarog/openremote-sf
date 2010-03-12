@@ -23,12 +23,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
 import org.openremote.modeler.client.listener.FormResetListener;
 import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.TemplateProxy;
-import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
@@ -42,20 +40,12 @@ import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.Template;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
-import com.extjs.gxt.ui.client.data.BaseListLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.data.DataField;
-import com.extjs.gxt.ui.client.data.ListLoadResult;
-import com.extjs.gxt.ui.client.data.LoadEvent;
-import com.extjs.gxt.ui.client.data.ModelData;
-import com.extjs.gxt.ui.client.data.ModelType;
-import com.extjs.gxt.ui.client.data.ScriptTagProxy;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.FieldSetEvent;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.LoadListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
@@ -71,6 +61,7 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FillLayout;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 /**
  * A wizard for creating a new screen from existing groups.
  *
@@ -87,8 +78,7 @@ public class ScreenWindow extends FormWindow {
    
    private Operation operation = Operation.NEW;
    private TreePanel<BeanModel> groupSelectTree = null;
-//   private TreePanel<BeanModel> templateSelectTree = null;
-   private ListView<ModelData> templateView = null;
+   private ListView<BeanModel> templateView = null;
    
    private Text hintText = new Text();
    
@@ -140,12 +130,9 @@ public class ScreenWindow extends FormWindow {
    private void createButtons() {
       Button submitBtn = new Button("Submit");
       Button resetBtn = new Button("Reset");
-//      Button templateSelectBtn = new Button("from template");
-//      templateSelectBtn.addSelectionListener(new TemplateSelectLisntener());
       submitBtn.addSelectionListener(new FormSubmitListener(form));
       resetBtn.addSelectionListener(new FormResetListener(form));
       
-//      form.addButton(templateSelectBtn);
       form.addButton(submitBtn);
       form.addButton(resetBtn);
    }
@@ -192,19 +179,12 @@ public class ScreenWindow extends FormWindow {
          }
 
          private void buildScreenFromTemplate(FormEvent be, final GroupRef groupRef) {
-            ModelData templateModelData = templateView.getSelectionModel().getSelectedItem();
-            if (templateModelData == null) {
+            BeanModel templateBeanModel = templateView.getSelectionModel().getSelectedItem();
+            if (templateBeanModel == null) {
                MessageBox.alert("Error", "Please select a template.", null);
                be.cancelBubble();
             } else {
-               Long oid = templateModelData.get("id");
-               String content = templateModelData.get("content");
-               String name = templateModelData.get("name");
-               
-               Template template = new Template();
-               template.setContent(content);
-               template.setOid(oid);
-               template.setName(name);
+               Template template = templateBeanModel.getBean();
                TemplateProxy.buildScreenFromTemplate(template, new AsyncSuccessCallback<ScreenFromTemplate>(){
 
                   @Override
@@ -225,10 +205,9 @@ public class ScreenWindow extends FormWindow {
 
                   @Override
                   public void onFailure(Throwable caught) {
-                     MessageBox.alert("Error", "Failed to create screen from template.", null);
+                     MessageBox.alert("Error", "Failed to create screen from template,error message: "+caught.getMessage(), null);
                      ScreenWindow.this.unmask();
                   }
-                  
                   
                });
             }
@@ -305,7 +284,7 @@ public class ScreenWindow extends FormWindow {
             public void handleEvent(FieldSetEvent be) {
                operation = Operation.CREATE_BY_TEMPLATE;
                if(templateView.getStore().getCount() == 0){
-                  hintText.setText("No template");
+                  hintText.setText("There are no private template in beehive! ");
                   hintText.show();
                }
             }
@@ -328,12 +307,7 @@ public class ScreenWindow extends FormWindow {
             @Override
             public void handleEvent(FieldEvent be) {
                Boolean showPrivate = (Boolean) be.getValue();
-               if(showPrivate) {
-                  createPriviteTemplateListView();
-               } else {
-                  createPublicTemplateListView();
-               }
-               
+               initTemplateView(showPrivate);
             }
             
          });
@@ -350,122 +324,47 @@ public class ScreenWindow extends FormWindow {
          form.add(templateFieldSet);
       }
    }
-   public BeanModel getSelectItem() {
-      return selectItem;
-   }
-
-   public void setSelectItem(BeanModel selectItem) {
-      this.selectItem = selectItem;
-   }
 
    public BeanModel getSelectedGroupRefModel() {
       return (BeanModel) groupSelectTree.getSelectionModel().getSelectedItem();
    }
-   public TreePanel<BeanModel> getGroupSelectTree() {
-      return groupSelectTree;
-   }
   
    private void buildTemplateList() {
-      templateView = new ListView<ModelData>();
+      templateView = new ListView<BeanModel>();
       templateView.setStateful(true);
       templateView.setBorders(false);
       templateView.setHeight("100%");      
       templateView.setDisplayProperty("name");
-      UtilsProxy.getTemplatesListRestUrl(new AsyncSuccessCallback<String> (){
-         public void onSuccess(String result){
-            createView(result);
-         }
-      });
+      initTemplateView(true);
    }
    
-   private void createPriviteTemplateListView(){
-      UtilsProxy.getTemplatesListRestUrl(new AsyncSuccessCallback<String>() {
-
-         @Override
-         public void onSuccess(String result) {
-            createView(result);
-            layout();
-            ScreenWindow.this.unmask();
-//            updateHintText();
-         }
+   
+   private void initTemplateView(final boolean isFromPrivate) {
+      templateView.mask();
+      TemplateProxy.getTemplates(isFromPrivate, new AsyncCallback<List<Template>> () {
 
          @Override
          public void onFailure(Throwable caught) {
-            MessageBox.alert("Error", "Unable to load template information from Beehive", null);
-         }
-
-      });
-      ScreenWindow.this.mask("loading ...");
-   }
-   
-   private void createPublicTemplateListView(){
-      UtilsProxy.getAllPublicTemplateRestURL(new AsyncSuccessCallback<String>(){
-
-         @Override
-         public void onSuccess(String result) {
-            createView(result);
-            layout();
-            ScreenWindow.this.unmask();
-//            updateHintText();
-         }
-         @Override
-         public void onFailure(Throwable caught) {
-            MessageBox.alert("Error", "Unable to load template information from Beehive", null);
-         }
-      });
-      ScreenWindow.this.mask("loading ...");
-   }
-   private void createView(String restURL){
-      /*
-       * parse template from json. 
-       */
-      ModelType templateType = new ModelType();
-      templateType.setRoot("templates.template");
-      DataField idField = new DataField("id");
-      idField.setType(Long.class);
-      templateType.addField(idField);
-      templateType.addField("content");
-      templateType.addField("name");
-      ScriptTagProxy<ListLoadResult<ModelData>> scriptTagProxy = new ScriptTagProxy<ListLoadResult<ModelData>>(restURL);
-      NestedJsonLoadResultReader<ListLoadResult<ModelData>> reader = new NestedJsonLoadResultReader<ListLoadResult<ModelData>>(
-            templateType);
-      final BaseListLoader<ListLoadResult<ModelData>> loader = new BaseListLoader<ListLoadResult<ModelData>>(scriptTagProxy, reader);
-      loader.setReuseLoadConfig(false);
-      ListStore<ModelData> store = new ListStore<ModelData>(loader);
-      loader.addLoadListener(new LoadListener(){
-
-         
-         @Override
-         public void loaderBeforeLoad(LoadEvent le) {
-            super.loaderBeforeLoad(le);
-            hintText.setText("No template");
+            templateView.unmask();
+            hintText.setText("Faild to get templates,error message: "+caught.getMessage());
             hintText.show();
          }
 
          @Override
-         public void loaderLoad(LoadEvent le) {
-            super.loaderLoad(le);
+         public void onSuccess(List<Template> result) {
+            templateView.unmask();
             hintText.hide();
+            if (result.size() == 0) {
+               hintText.setText("There are no " +(isFromPrivate?"private ":"public ") +"templates in beehive. ");
+               hintText.show();
+            } 
+            ListStore<BeanModel> store = new ListStore<BeanModel> ();
+            store.add(Template.createModels(result));
+            templateView.setStore(store);
          }
          
       });
-      loader.load();
-      //loader.
-      templateView.setStore(store);
    }
-   
-   /*private void updateHintText(){
-      if (operation == Operation.CREATE_BY_TEMPLATE) {
-         if (templateView.getStore().getModels().size() == 0) {
-            hintText.show();
-            hintText.setText("No Templates");
-         } else {
-            hintText.hide();
-         }
-      } else {
-         hintText.hide();
-      }
-   }*/
    public static enum Operation{
       NEW,EDIT,CREATE_BY_TEMPLATE;
    }
