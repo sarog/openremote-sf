@@ -53,7 +53,7 @@
 	}
 	p.input {
 		text-align: right;
-		width: 280px;
+		width: 290px;
 	}
 	a, a:hover {
 		color:#225E8A;
