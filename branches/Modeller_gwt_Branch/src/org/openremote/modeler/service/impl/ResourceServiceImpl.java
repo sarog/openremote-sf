@@ -1088,6 +1088,7 @@ public class ResourceServiceImpl implements ResourceService {
       //     ---------Now, All the resources in the user folder is included! 
       return this.getTemplateZipResource();
    }
+
    private File getResourceZipFile(List<String> ignoreExtentions) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
@@ -1099,9 +1100,11 @@ public class ResourceServiceImpl implements ResourceService {
             filesInZip[i++] = file;
          }
       }
-      File zipFile = compressFilesToZip(filesInZip, pathConfig.openremoteZipFilePath(userService.getAccount()),
-            ignoreExtentions);
-      return zipFile;
+      return compressFilesToZip(
+          filesInZip,
+          pathConfig.openremoteZipFilePath(userService.getAccount()),
+          ignoreExtentions
+      );
 
    }
    
