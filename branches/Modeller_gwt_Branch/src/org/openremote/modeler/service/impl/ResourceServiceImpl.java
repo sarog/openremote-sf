@@ -1000,10 +1000,26 @@ public class ResourceServiceImpl implements ResourceService {
          this.addAuthentication(httpGet);
          HttpResponse response = httpClient.execute(httpGet);
 
+         if (404 == response.getStatusLine().getStatusCode()) {
+            LOGGER.warn("Failed to download openremote.zip from Beehive. Status code: 404");
+            return;
+         }
+
          if (200 == response.getStatusLine().getStatusCode()) {
             inputStream = response.getEntity().getContent();
             File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
-            userFolder.mkdirs();
+
+            // TODO : Unhandled security exception in mkdirs() call
+
+            boolean success = userFolder.mkdirs();
+
+            if (!success)
+            {
+              throw new BeehiveNotAvailableException(
+                  "Failed to create the required directories for path '" + userFolder + "'."
+              );
+            }
+
             File outPut = new File(userFolder, "openremote.zip");
             FileUtilsExt.deleteQuietly(outPut);
             fos = new FileOutputStream(outPut);
@@ -1017,16 +1033,21 @@ public class ResourceServiceImpl implements ResourceService {
             fos.flush();
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
-         } else if (404 == response.getStatusLine().getStatusCode()) {
-            LOGGER.warn("Failed to download openremote.zip from Beehive. Status code: 404");
-            return;
          }
-         else {
-            throw new BeehiveNotAvailableException("Failed to download resources for template, status code: "
-                  + response.getStatusLine().getStatusCode());
+         else
+         {
+            throw new BeehiveNotAvailableException(
+                "Failed to download resources for template, status code: "
+                 + response.getStatusLine().getStatusCode()
+            );
          }
-      } catch (Exception e) {
-         throw new BeehiveNotAvailableException(e.getMessage(), e);
+      }
+      catch (IOException ioException)
+      {
+         throw new BeehiveNotAvailableException(
+             "I/O exception in openremote.zip file handling: " +
+             ioException.getMessage(), ioException
+         );
       }
       finally
       {
@@ -1050,7 +1071,7 @@ public class ResourceServiceImpl implements ResourceService {
             {
               fos.close();
             }
-            catch(IOException ioException)
+            catch (IOException ioException)
             {
               LOGGER.warn(
                   "Failed to close output stream to user's openremote.zip file: " +
