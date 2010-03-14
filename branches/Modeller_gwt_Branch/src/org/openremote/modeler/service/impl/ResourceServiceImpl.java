@@ -821,28 +821,28 @@ public class ResourceServiceImpl implements ResourceService {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File panelsObjFile = new File(pathConfig.getSerizalizedPanelsFile(userService.getAccount()));
       ObjectOutputStream oos = null;
+
       try {
          FileUtilsExt.deleteQuietly(panelsObjFile);
-         if(panels==null || panels.size()<1){
+
+         if (panels==null || panels.size()<1) {
             return;
          }
+
          oos = new ObjectOutputStream(new FileOutputStream(panelsObjFile));
          oos.writeObject(panels);
          oos.writeLong(maxOid);
       } catch (FileNotFoundException e) {
-        // TODO: needs proper logging
-         e.printStackTrace();
+        LOGGER.error(e.getMessage(), e);
       } catch (IOException e) {
-        // TODO: needs proper logging
-         e.printStackTrace();
+        LOGGER.error(e.getMessage(), e);
       } finally {
          try {
             if (oos != null) {
                oos.close();
             }
          } catch (IOException e) {
-           // TODO: needs proper logging
-            e.printStackTrace();
+           LOGGER.warn("Unable to close output stream to '" + panelsObjFile + "'.");
          }
       }
    }
