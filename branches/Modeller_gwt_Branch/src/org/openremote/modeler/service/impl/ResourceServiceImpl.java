@@ -950,13 +950,25 @@ public class ResourceServiceImpl implements ResourceService {
       InputStream inputStream = null;
       FileOutputStream fos = null;
       this.addAuthentication(httpGet);
+
       try {
          HttpResponse response = httpClient.execute(httpGet);
 
          if (200 == response.getStatusLine().getStatusCode()) {
             inputStream = response.getEntity().getContent();
             File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
-            userFolder.mkdirs();
+
+            // TODO: handle security exceptions from mkdirs() call
+           
+            boolean success = userFolder.mkdirs();
+
+            if (!success)
+            {
+              throw new BeehiveNotAvailableException(
+                  "Unable to create directories for path '" + userFolder + "'."
+              );
+            }
+
             File outPut = new File(userFolder, "template.zip");
             FileUtilsExt.deleteQuietly(outPut);
             fos = new FileOutputStream(outPut);
@@ -966,21 +978,56 @@ public class ResourceServiceImpl implements ResourceService {
             while ((len = inputStream.read(buffer)) != -1) {
                fos.write(buffer, 0, len);
             }
+
             fos.flush();
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
-         } else {
-            throw new BeehiveNotAvailableException("Failed to download resources for template, status code: "
-                  + response.getStatusLine().getStatusCode());
          }
-      } catch (Exception e) {
-         throw new BeehiveNotAvailableException(e.getMessage(), e);
-      } finally {
-         if (inputStream != null) {
-            try {inputStream.close();}catch(IOException e){}
+         else
+         {
+            throw new BeehiveNotAvailableException(
+                "Failed to download resources for template, status code: " +
+                 response.getStatusLine().getStatusCode()
+            );
          }
-         if(fos!=null) {
-            try {fos.close();}catch(IOException e){}
+      }
+      catch (IOException ioException)
+      {
+         throw new BeehiveNotAvailableException(
+             "I/O exception in handling user's template.zip file: " +
+             ioException.getMessage(), ioException
+         );
+      }
+      finally
+      {
+         if (inputStream != null)
+         {
+            try
+            {
+              inputStream.close();
+            }
+            catch (IOException ioException)
+            {
+              LOGGER.warn(
+                  "Failed to close input stream from '" + httpGet.getURI() +
+                  "': " + ioException.getMessage(), ioException
+              );
+            }
+         }
+
+         if (fos != null)
+         {
+            try
+            {
+              fos.close();
+            }
+            catch (IOException ioException)
+            {
+              LOGGER.warn(
+                  "Failed to close file output stream to user's template.zip file: " +
+                  ioException.getMessage(), ioException
+              );
+            }
          }
       }
    }
