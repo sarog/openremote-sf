@@ -3,16 +3,16 @@
  * 
  * See the contributors.txt file in the distribution for a full listing of individual contributors.
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
- * details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
  * 
- * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this
+ * program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.openremote.modeler.service.impl;
 
@@ -830,8 +830,10 @@ public class ResourceServiceImpl implements ResourceService {
          oos.writeObject(panels);
          oos.writeLong(maxOid);
       } catch (FileNotFoundException e) {
+        // TODO: needs proper logging
          e.printStackTrace();
       } catch (IOException e) {
+        // TODO: needs proper logging
          e.printStackTrace();
       } finally {
          try {
@@ -839,6 +841,7 @@ public class ResourceServiceImpl implements ResourceService {
                oos.close();
             }
          } catch (IOException e) {
+           // TODO: needs proper logging
             e.printStackTrace();
          }
       }
@@ -987,12 +990,16 @@ public class ResourceServiceImpl implements ResourceService {
       HttpClient httpClient = new DefaultHttpClient();
       HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTRootUrl() + "user/"
             + userService.getAccount().getUser().getUsername()+"/openremote.zip");
+
+      LOGGER.debug("Attempting to fetch account configuration from: " + httpGet.getURI());
+
       InputStream inputStream = null;
       FileOutputStream fos = null;
 
       try {
          this.addAuthentication(httpGet);
          HttpResponse response = httpClient.execute(httpGet);
+
          if (200 == response.getStatusLine().getStatusCode()) {
             inputStream = response.getEntity().getContent();
             File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
@@ -1006,11 +1013,12 @@ public class ResourceServiceImpl implements ResourceService {
             while ((len = inputStream.read(buffer)) != -1) {
                fos.write(buffer, 0, len);
             }
+
             fos.flush();
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
-         } else if(404 == response.getStatusLine().getStatusCode()) {
-            LOGGER.warn("Failed to download openremote.zip from beehive. Status code: 404");
+         } else if (404 == response.getStatusLine().getStatusCode()) {
+            LOGGER.warn("Failed to download openremote.zip from Beehive. Status code: 404");
             return;
          }
          else {
@@ -1019,12 +1027,36 @@ public class ResourceServiceImpl implements ResourceService {
          }
       } catch (Exception e) {
          throw new BeehiveNotAvailableException(e.getMessage(), e);
-      } finally {
-         if (inputStream != null) {
-            try {inputStream.close();}catch(IOException e){}
+      }
+      finally
+      {
+         if (inputStream != null)
+         {
+            try
+            {
+              inputStream.close();
+            }
+            catch (IOException ioException)
+            {
+              LOGGER.warn(
+                  "Failed to close input stream from " + httpGet.getURI() +
+                  " (" + ioException.getMessage() + ")", ioException
+              );
+            }
          }
-         if(fos!=null) {
-            try {fos.close();}catch(IOException e){}
+         if (fos != null)
+         {
+            try
+            {
+              fos.close();
+            }
+            catch(IOException ioException)
+            {
+              LOGGER.warn(
+                  "Failed to close output stream to user's openremote.zip file: " +
+                  ioException.getMessage()
+              );
+            }
          }
       }
    }
