@@ -207,18 +207,19 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    }
 
    @Override
-   public void downLoadImage(String url) {
+   public String downLoadImage(String url) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File sessionFolder = new File(pathConfig.userFolder(userService.getAccount()));
-      if (!sessionFolder.exists()) {
-         sessionFolder.mkdirs();
+      File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
+      if (!userFolder.exists()) {
+         userFolder.mkdirs();
       }
-      File imageFile = new File(sessionFolder, url.substring(url.lastIndexOf("/") + 1));
+      File imageFile = new File(userFolder, url.substring(url.lastIndexOf("/") + 1));
       try {
          XmlParser.downloadFile(url, imageFile);
       } catch (IOException e) {
          LOGGER.error("Download image " + url + " occur IOException.", e);
       }
+      return resourceService.getRelativeResourcePathByCurrentAccount(imageFile.getName());
    }
 
    @Override

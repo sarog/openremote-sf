@@ -47,6 +47,7 @@ import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.util.Padding;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.ListView;
 import com.extjs.gxt.ui.client.widget.MessageBox;
@@ -62,6 +63,7 @@ import com.extjs.gxt.ui.client.widget.layout.VBoxLayout;
 import com.extjs.gxt.ui.client.widget.layout.VBoxLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.BoxLayout.BoxLayoutPack;
 import com.extjs.gxt.ui.client.widget.layout.VBoxLayout.VBoxLayoutAlign;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * The Class ChangeIconWindow.
@@ -146,9 +148,20 @@ public class ChangeIconWindow extends Dialog {
                setImageURL();
                if (imageURL != null) {
                   if (imageURL.startsWith("http")) {
-                     UtilsProxy.downLoadImage(imageURL, null);
+                     UtilsProxy.downLoadImage(imageURL, new AsyncCallback<String> () {
+
+                        @Override
+                        public void onFailure(Throwable caught) {
+                          Info.display("Error","Failed to download image from: " +imageURL);
+                        }
+
+                        @Override
+                        public void onSuccess(String result) {
+                           fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result));
+                        }
+                        
+                     });
                   }
-                  fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(imageURL));
                } else {
                   MessageBox.alert("Error", "Please select a image.", null);
                }
