@@ -946,7 +946,7 @@ public class ResourceServiceImpl implements ResourceService {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
       HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTRootUrl() + "account/"
-            + userService.getAccount().getOid() + "/template/" + templateOid+"/resource");
+            + userService.getAccount().getOid() + "/template/" + templateOid + "/resource");
       InputStream inputStream = null;
       FileOutputStream fos = null;
       this.addAuthentication(httpGet);
@@ -957,18 +957,12 @@ public class ResourceServiceImpl implements ResourceService {
          if (200 == response.getStatusLine().getStatusCode()) {
             inputStream = response.getEntity().getContent();
             File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
-
-            // TODO: handle security exceptions from mkdirs() call
-           
-            boolean success = userFolder.mkdirs();
-
-            if (!success)
-            {
-              throw new BeehiveNotAvailableException(
-                  "Unable to create directories for path '" + userFolder + "'."
-              );
+            if (! userFolder.exists()) {
+               boolean success = userFolder.mkdirs();
+               if (!success) {
+                  throw new BeehiveNotAvailableException("Unable to create directories for path '" + userFolder + "'.");
+               }
             }
-
             File outPut = new File(userFolder, "template.zip");
             FileUtilsExt.deleteQuietly(outPut);
             fos = new FileOutputStream(outPut);
@@ -982,51 +976,29 @@ public class ResourceServiceImpl implements ResourceService {
             fos.flush();
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
+         } else {
+            throw new BeehiveNotAvailableException("Failed to download resources for template, status code: "
+                  + response.getStatusLine().getStatusCode());
          }
-         else
-         {
-            throw new BeehiveNotAvailableException(
-                "Failed to download resources for template, status code: " +
-                 response.getStatusLine().getStatusCode()
-            );
-         }
-      }
-      catch (IOException ioException)
-      {
-         throw new BeehiveNotAvailableException(
-             "I/O exception in handling user's template.zip file: " +
-             ioException.getMessage(), ioException
-         );
-      }
-      finally
-      {
-         if (inputStream != null)
-         {
-            try
-            {
-              inputStream.close();
-            }
-            catch (IOException ioException)
-            {
-              LOGGER.warn(
-                  "Failed to close input stream from '" + httpGet.getURI() +
-                  "': " + ioException.getMessage(), ioException
-              );
+      } catch (IOException ioException) {
+         throw new BeehiveNotAvailableException("I/O exception in handling user's template.zip file: "
+               + ioException.getMessage(), ioException);
+      } finally {
+         if (inputStream != null) {
+            try {
+               inputStream.close();
+            } catch (IOException ioException) {
+               LOGGER.warn("Failed to close input stream from '" + httpGet.getURI() + "': " + ioException.getMessage(),
+                     ioException);
             }
          }
 
-         if (fos != null)
-         {
-            try
-            {
-              fos.close();
-            }
-            catch (IOException ioException)
-            {
-              LOGGER.warn(
-                  "Failed to close file output stream to user's template.zip file: " +
-                  ioException.getMessage(), ioException
-              );
+         if (fos != null) {
+            try {
+               fos.close();
+            } catch (IOException ioException) {
+               LOGGER.warn("Failed to close file output stream to user's template.zip file: "
+                     + ioException.getMessage(), ioException);
             }
          }
       }
@@ -1036,7 +1008,7 @@ public class ResourceServiceImpl implements ResourceService {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
       HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTRootUrl() + "user/"
-            + userService.getAccount().getUser().getUsername()+"/openremote.zip");
+            + userService.getAccount().getUser().getUsername() + "/openremote.zip");
 
       LOGGER.debug("Attempting to fetch account configuration from: " + httpGet.getURI());
 
@@ -1056,17 +1028,13 @@ public class ResourceServiceImpl implements ResourceService {
             inputStream = response.getEntity().getContent();
             File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
 
-            // TODO : Unhandled security exception in mkdirs() call
-
-            boolean success = userFolder.mkdirs();
-
-            if (!success)
-            {
-              throw new BeehiveNotAvailableException(
-                  "Failed to create the required directories for path '" + userFolder + "'."
-              );
+            if (!userFolder.exists()) {
+               boolean success = userFolder.mkdirs();
+               if (!success) {
+                  throw new BeehiveNotAvailableException("Failed to create the required directories for path '"
+                        + userFolder + "'.");
+               }
             }
-
             File outPut = new File(userFolder, "openremote.zip");
             FileUtilsExt.deleteQuietly(outPut);
             fos = new FileOutputStream(outPut);
@@ -1080,50 +1048,27 @@ public class ResourceServiceImpl implements ResourceService {
             fos.flush();
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
+         } else {
+            throw new BeehiveNotAvailableException("Failed to download resources for template, status code: "
+                  + response.getStatusLine().getStatusCode());
          }
-         else
-         {
-            throw new BeehiveNotAvailableException(
-                "Failed to download resources for template, status code: "
-                 + response.getStatusLine().getStatusCode()
-            );
-         }
-      }
-      catch (IOException ioException)
-      {
-         throw new BeehiveNotAvailableException(
-             "I/O exception in openremote.zip file handling: " +
-             ioException.getMessage(), ioException
-         );
-      }
-      finally
-      {
-         if (inputStream != null)
-         {
-            try
-            {
-              inputStream.close();
-            }
-            catch (IOException ioException)
-            {
-              LOGGER.warn(
-                  "Failed to close input stream from " + httpGet.getURI() +
-                  " (" + ioException.getMessage() + ")", ioException
-              );
+      } catch (IOException ioException) {
+         throw new BeehiveNotAvailableException("I/O exception in openremote.zip file handling: "
+               + ioException.getMessage(), ioException);
+      } finally {
+         if (inputStream != null) {
+            try {
+               inputStream.close();
+            } catch (IOException ioException) {
+               LOGGER.warn("Failed to close input stream from " + httpGet.getURI() + " (" + ioException.getMessage()
+                     + ")", ioException);
             }
          }
-         if (fos != null)
-         {
-            try
-            {
-              fos.close();
-            }
-            catch (IOException ioException)
-            {
-              LOGGER.warn(
-                  "Failed to close output stream to user's openremote.zip file: " +
-                  ioException.getMessage()
-              );
+         if (fos != null) {
+            try {
+               fos.close();
+            } catch (IOException ioException) {
+               LOGGER.warn("Failed to close output stream to user's openremote.zip file: " + ioException.getMessage());
             }
          }
       }
