@@ -769,7 +769,14 @@ public class ResourceServiceImpl implements ResourceService {
 //      File sessionFolder = new File(pathConfig.userFolder(sessionId));
       File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
       if (!userFolder.exists()) {
-         userFolder.mkdirs();
+         boolean success = userFolder.mkdirs();
+
+         if (!success)
+         {
+           throw new FileOperationException(
+               "Failed to create directory path to user folder '" + userFolder + "'."
+           );
+         }
       }
       
       /*
@@ -803,11 +810,17 @@ public class ResourceServiceImpl implements ResourceService {
          FileUtilsExt.writeStringToFile(controllerXMLFile, controllerXmlContent);
          // FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
 
-         if (sectionIds != null && sectionIds != "") {
+         if (sectionIds != null && !sectionIds.equals("")) {
             FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
          }
          if (lircdFile.exists() && lircdFile.length() == 0) {
-            lircdFile.delete();
+            boolean success = lircdFile.delete();
+
+           if (!success)
+           {
+             LOGGER.error("Failed to delete '" + lircdFile + "'.");
+           }
+
          }
          
          serialize(panels,maxOid);
