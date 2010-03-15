@@ -24,11 +24,11 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
-@SuppressWarnings("serial")
 @Entity
 @DiscriminatorValue("SWITCH_CMD_OFF_REF")
 public class SwitchCommandOffRef extends CommandRefItem {
 
+   private static final long serialVersionUID = 4753744091660751074L;
    private Switch offSwitch;
 
    @OneToOne

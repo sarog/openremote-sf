@@ -31,11 +31,12 @@ import javax.persistence.Table;
  * 
  * @author Dan 2009-7-7
  */
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "role")
 public class Role extends BusinessEntity {
    
+   private static final long serialVersionUID = 3075074829017736369L;
+
    /** The Constant ROLE_MODELER. */
    public static final String ROLE_MODELER = "ROLE_MODELER";
    

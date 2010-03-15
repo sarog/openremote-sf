@@ -38,10 +38,11 @@ import javax.persistence.Table;
  * 
  * @author Dan 2009-7-7
  */
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "user")
 public class User extends BusinessEntity {
+
+   private static final long serialVersionUID = 6064996041309363949L;
 
    /** The username. */
    private String username;

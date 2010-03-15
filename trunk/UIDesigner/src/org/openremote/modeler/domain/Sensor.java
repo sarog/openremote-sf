@@ -31,7 +31,6 @@ import javax.persistence.Transient;
 import flexjson.JSON;
 
 
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "sensor")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -39,6 +38,7 @@ import flexjson.JSON;
 @DiscriminatorValue("SIMPLE_SENSOR")
 public class Sensor extends BusinessEntity {
 
+   private static final long serialVersionUID = 7762063535155846996L;
    private String name;
    private SensorCommandRef sensorCommandRef;
    private SensorType type;
@@ -115,6 +115,7 @@ public class Sensor extends BusinessEntity {
       if (obj == null) return false;
       if (getClass() != obj.getClass()) return false;
       Sensor other = (Sensor) obj;
+      if (! getType().equals(other.getType()))return false;
       return getOid() == other.getOid();
    }
 }

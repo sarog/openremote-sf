@@ -22,6 +22,7 @@ package org.openremote.modeler.domain;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -32,10 +33,11 @@ import javax.persistence.Table;
  * 
  * @author Dan 2009-7-6
  */
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "protocol_attr")
 public class ProtocolAttr extends BusinessEntity {
+
+   private static final long serialVersionUID = 7659446044086879559L;
 
    /** The name. */
    private String name;
@@ -71,6 +73,7 @@ public class ProtocolAttr extends BusinessEntity {
     * @return the value
     */
    @Column(nullable = false)
+   @Lob
    public String getValue() {
       return value;
    }

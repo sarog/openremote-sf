@@ -25,8 +25,9 @@ import java.util.List;
 /**
  * The Class Grid.
  */
-@SuppressWarnings("serial")
 public class Grid extends BusinessEntity {
+
+   private static final long serialVersionUID = 1151373704125427323L;
 
    /** The left. */
    private int left;

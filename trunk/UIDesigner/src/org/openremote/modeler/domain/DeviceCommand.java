@@ -35,11 +35,12 @@ import javax.persistence.Transient;
  * 
  * @author Dan 2009-7-6
  */
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "device_command")
 public class DeviceCommand extends BusinessEntity {
    
+   private static final long serialVersionUID = -3654650649337382535L;
+
    /** The device. */
    private Device device;
    

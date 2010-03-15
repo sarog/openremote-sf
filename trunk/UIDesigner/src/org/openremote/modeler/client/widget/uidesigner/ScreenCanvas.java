@@ -360,6 +360,7 @@ public class ScreenCanvas extends ComponentContainer {
          }
          
       } .bind(controlContainer);
+      absolute.setBelongsTo(controlContainer);
       return controlContainer;
    }
 
@@ -511,5 +512,14 @@ public class ScreenCanvas extends ComponentContainer {
 			this.add(tabbarContainer);
 			layout();
 		}
+	}
+	
+	public void setSizeToDefault(UIComponent component) {
+	   for(Absolute absolute : screen.getAbsolutes()) {
+	      if(absolute.getUiComponent().equals(component)) {
+	         absolute.getBelongsTo().setSize(component.getPreferredWidth(), component.getPreferredHeight());
+	      }
+	   }
+	   this.layout();
 	}
 }

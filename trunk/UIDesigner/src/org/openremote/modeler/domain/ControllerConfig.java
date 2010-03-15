@@ -35,10 +35,11 @@ import flexjson.JSON;
  * @author javen
  *
  */
-@SuppressWarnings("serial")
 @Entity
-@Table(name = "config")
-public class Config extends BusinessEntity{
+@Table(name = "controller_config")
+public class ControllerConfig extends BusinessEntity{
+   private static final long serialVersionUID = -6443368320902438959L;
+   
    public static final String NAME_XML_ATTRIBUTE_NAME = "name";
    public static final String VALUE_XML_ATTRIBUTE_NAME = "value";
    public static final String VALIDATION_XML_ATTRIBUTE_NAME = "validation";
@@ -57,10 +58,10 @@ public class Config extends BusinessEntity{
    
    private Account account = null;
    
-   public Config(){}
+   public ControllerConfig(){}
    
    
-   public Config(String category, String name, String value, String hint, Account account) {
+   public ControllerConfig(String category, String name, String value, String hint, Account account) {
       this.category = category;
       this.name = name;
       this.value = value;

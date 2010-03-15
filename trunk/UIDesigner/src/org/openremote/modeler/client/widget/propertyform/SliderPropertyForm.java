@@ -28,9 +28,13 @@ import org.openremote.modeler.domain.Slider;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.FieldEvent;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
+import com.extjs.gxt.ui.client.widget.form.CheckBox;
 
 public class SliderPropertyForm extends PropertyForm {
    private ScreenSlider screenSlider = null;
@@ -42,6 +46,25 @@ public class SliderPropertyForm extends PropertyForm {
    }
    
    private void addFields() {
+      final CheckBox vertical = new CheckBox();
+      vertical.setValue(false);
+//      vertical.setFieldLabel("Vertical");
+      vertical.setBoxLabel("Vertical");
+      vertical.setHideLabel(true);
+      vertical.setValue(false);
+      vertical.addListener(Events.Change, new Listener<FieldEvent>() {
+
+         @Override
+         public void handleEvent(FieldEvent be) {
+            boolean isVertical = vertical.getValue();
+            
+            if(isVertical != screenSlider.getUiSlider().isVertical()) {
+               screenSlider.setVertical(isVertical);
+               screenSlider.getScreenCanvas().layout();
+            }
+         }
+         
+      });
       final Button command = new Button("Select");
       command.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
@@ -154,6 +177,7 @@ public class SliderPropertyForm extends PropertyForm {
       AdapterField adapterMaxTrackImageBtn = new AdapterField(maxTrackImageBtn);
       adapterMaxTrackImageBtn.setFieldLabel("TrackImage(max)");
 
+      add(vertical);
       add(adapterCommand);
       add(adapterMinImageBtn);
       add(adapterMinTrackImageBtn);

@@ -34,10 +34,11 @@ import javax.persistence.Table;
  * 
  * @author Dan 2009-7-7
  */
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "account")
 public class Account extends BusinessEntity {
+
+   private static final long serialVersionUID = 4565186362957664336L;
 
    /** The user. */
    private User user;
@@ -52,7 +53,7 @@ public class Account extends BusinessEntity {
    
    private List<Switch> switches;
    
-   private List<Config> configs;
+   private List<ControllerConfig> configs;
    
    private List<Slider> sliders;
 
@@ -63,7 +64,7 @@ public class Account extends BusinessEntity {
       devices = new ArrayList<Device>();
       deviceMacros = new ArrayList<DeviceMacro>();
       sensors = new ArrayList<Sensor>();
-      configs = new ArrayList<Config>();
+      configs = new ArrayList<ControllerConfig>();
    }
 
    /**
@@ -161,11 +162,11 @@ public class Account extends BusinessEntity {
    }
 
    @OneToMany(mappedBy = "account")
-   public List<Config> getConfigs() {
+   public List<ControllerConfig> getConfigs() {
       return configs;
    }
 
-   public void setConfigs(List<Config> configs) {
+   public void setConfigs(List<ControllerConfig> configs) {
       this.configs = configs;
    }
    

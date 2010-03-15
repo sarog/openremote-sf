@@ -24,8 +24,9 @@ import org.openremote.modeler.domain.component.UIComponent;
 /**
  * The Class Cell.
  */
-@SuppressWarnings("serial")
 public class Cell extends BusinessEntity {
+   
+   private static final long serialVersionUID = 8546485217603756988L;
 
    public Cell() {
    }
