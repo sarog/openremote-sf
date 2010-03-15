@@ -44,7 +44,7 @@ public class ScreenTabItem extends TabItem {
       setText(screen.getName());
       setClosable(true);
       setLayout(new FlowLayout());
-      setStyleAttribute("overflowY", "auto");
+      setStyleAttribute("overflow", "auto");
       addScreenContainer();
    }
 

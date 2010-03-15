@@ -70,7 +70,8 @@ public class GridLayoutContainer extends ComponentContainer {
    private FlexTable screenTable = new FlexTable();
    
    private List<GridCellContainer> cellContainers = new ArrayList<GridCellContainer>();
-   
+   private int cellWidth = 0;
+   private int cellHeight = 0;
    public GridLayoutContainer(ScreenCanvas screenCanvas, UIGrid grid) {
       super(screenCanvas);
       this.grid = grid;
@@ -118,8 +119,8 @@ public class GridLayoutContainer extends ComponentContainer {
       }
       int gridWidth = grid.getWidth();
       int gridHeight = grid.getHeight();
-      final int cellWidth = (gridWidth - (grid.getColumnCount() + 1)) / grid.getColumnCount();
-      final int cellHeight = (gridHeight - (grid.getRowCount() + 1)) / grid.getRowCount();
+      cellWidth = (gridWidth - (grid.getColumnCount() + 1)) / grid.getColumnCount();
+      cellHeight = (gridHeight - (grid.getRowCount() + 1)) / grid.getRowCount();
       DNDListener dndListener = new DNDListener() {
          @Override
          public void dragEnter(DNDEvent e) {
@@ -537,4 +538,17 @@ public class GridLayoutContainer extends ComponentContainer {
       this.screenTable = screenTable;
    }
 
+   public void addGridCellContainer(GridCellContainer cellContainer) {
+      GridCellBounds recorder = cellContainer.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
+      GridCellContainer container = cloneCellContainer(cellContainer);
+      container.setScreenComponent(ScreenComponent.build(getScreenCanvas(), cellContainer.getCell().getUiComponent()));
+      container.setBounds(recorder.getBounds());
+      container.layout();
+      add(container);
+      createDragSource(container);
+      container.fillArea(btnInArea);
+      WidgetSelectionUtil.setSelectWidget(container);
+      makeCellContainerResizable(cellWidth, cellHeight, container);
+      layout();
+   }
 }
