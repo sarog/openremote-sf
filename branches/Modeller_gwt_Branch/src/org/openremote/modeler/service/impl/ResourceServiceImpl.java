@@ -467,14 +467,20 @@ public class ResourceServiceImpl implements ResourceService {
     */
    private Set<String> getDeviceMacroItemSectionIds(DeviceMacroItem deviceMacroItem) {
       Set<String> deviceMacroRefSectionIds = new HashSet<String>();
-      if (deviceMacroItem instanceof DeviceCommandRef) {
-         deviceMacroRefSectionIds.add(((DeviceCommandRef) deviceMacroItem).getDeviceCommand().getSectionId());
-      } else if (deviceMacroItem instanceof DeviceMacroRef) {
-         DeviceMacro deviceMacro = ((DeviceMacroRef) deviceMacroItem).getTargetDeviceMacro();
-         deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
-         for (DeviceMacroItem nextDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
-            deviceMacroRefSectionIds.addAll(getDeviceMacroItemSectionIds(nextDeviceMacroItem));
+      try {
+         if (deviceMacroItem instanceof DeviceCommandRef) {
+            deviceMacroRefSectionIds.add(((DeviceCommandRef) deviceMacroItem).getDeviceCommand().getSectionId());
+         } else if (deviceMacroItem instanceof DeviceMacroRef) {
+            DeviceMacro deviceMacro = ((DeviceMacroRef) deviceMacroItem).getTargetDeviceMacro();
+            if (deviceMacro != null) {
+               deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
+               for (DeviceMacroItem nextDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
+                  deviceMacroRefSectionIds.addAll(getDeviceMacroItemSectionIds(nextDeviceMacroItem));
+               }
+            }
          }
+      } catch (Exception e) {
+         LOGGER.warn("Some components referenced a removed DeviceMacro!");
       }
       return deviceMacroRefSectionIds;
    }
@@ -770,11 +776,8 @@ public class ResourceServiceImpl implements ResourceService {
       if (!userFolder.exists()) {
          boolean success = userFolder.mkdirs();
 
-         if (!success)
-         {
-           throw new FileOperationException(
-               "Failed to create directory path to user folder '" + userFolder + "'."
-           );
+         if (!success) {
+            throw new FileOperationException("Failed to create directory path to user folder '" + userFolder + "'.");
          }
       }
       
@@ -815,10 +818,9 @@ public class ResourceServiceImpl implements ResourceService {
          if (lircdFile.exists() && lircdFile.length() == 0) {
             boolean success = lircdFile.delete();
 
-           if (!success)
-           {
-             LOGGER.error("Failed to delete '" + lircdFile + "'.");
-           }
+            if (!success) {
+               LOGGER.error("Failed to delete '" + lircdFile + "'.");
+            }
 
          }
          
