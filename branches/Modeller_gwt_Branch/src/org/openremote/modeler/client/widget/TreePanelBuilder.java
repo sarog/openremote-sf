@@ -31,7 +31,9 @@ import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable;
+import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable.DeviceInsertListener;
+import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable.DeviceMacroInsertListener;
 import org.openremote.modeler.client.widget.buildingmodeler.ControllerConfigTabItem;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTabItem;
@@ -292,6 +294,17 @@ public class TreePanelBuilder {
       }
 
       final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(macroTreeStore);
+      ((DeviceMacroBeanModelTable)BeanModelDataBase.deviceMacroTable).addDeviceMacroInsertListener(new DeviceMacroInsertListener<BeanModel> (){
+
+         @Override
+         public void handleInsert(BeanModel beanModel) {
+            if(beanModel != null && beanModel.getBean() instanceof DeviceMacro) {
+               macroTreeStore.add(beanModel, false);
+               tree.getSelectionModel().select(beanModel, true);
+            }
+         }
+           
+        });
       tree.setStateful(true);
       tree.setBorders(false);
       tree.setHeight("100%");
