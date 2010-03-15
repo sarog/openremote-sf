@@ -512,6 +512,7 @@ public class ProfilePanel extends ContentPanel {
                   panelTree.getStore().add(screenWindow.getSelectedGroupRefModel(), screenRef.getBeanModel(), false);
                   panelTree.setExpanded(screenWindow.getSelectedGroupRefModel(), true);
                   panelTree.getSelectionModel().select(screenRef.getBeanModel(), false);
+                  screenWindow.hide();
                }
 
             });

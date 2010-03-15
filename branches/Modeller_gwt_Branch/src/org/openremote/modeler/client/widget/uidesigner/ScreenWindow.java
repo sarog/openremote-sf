@@ -33,6 +33,7 @@ import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
@@ -191,14 +192,19 @@ public class ScreenWindow extends FormWindow {
                      screen.setName(nameField.getValue());
                      ScreenRef screenRef = createScreenFromTemplate(groupRef);
                      BeanModelDataBase.screenTable.insert(screen.getBeanModel());
+                     
                      ScreenWindow.this.unmask();
                      //----------rebuild command 
                      Set<Device> devices = result.getDevices();
                      for(Device device: devices) {
                         BeanModelDataBase.deviceTable.insert(device.getBeanModel());
                      }
+                     
+                     Set<DeviceMacro> macros = result.getMacros();
+                     for (DeviceMacro macro : macros) {
+                        BeanModelDataBase.deviceMacroTable.insert(macro.getBeanModel());
+                     }
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));
-                     ScreenWindow.this.hide();
                   }
 
                   @Override
