@@ -20,7 +20,9 @@
 package org.openremote.modeler.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -119,5 +121,42 @@ public class DeviceMacro extends BusinessEntity {
    public String getDisplayName() {
       return getName();
    }
+   @JSON(include=false)
+   @Transient
+   public Set<DeviceMacro> getSubMacros() {
+      Set<DeviceMacro> macros = new HashSet<DeviceMacro>();
+      for (DeviceMacroItem item : deviceMacroItems) {
+         if (item instanceof DeviceMacroRef) {
+            DeviceMacroRef macroRef = (DeviceMacroRef) item;
+            DeviceMacro dvcMacro = macroRef.getTargetDeviceMacro();
+            macros.add(dvcMacro);
+            macros.addAll(dvcMacro.getSubMacros());
+         } else if (item instanceof DeviceCommandRef) {
+            item.setParentDeviceMacro(this);
+         }
+      }
+      return macros;
+   }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((name == null) ? 0 : name.hashCode());
+      return (int) (result^0xFFFF^getOid());
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
+      DeviceMacro other = (DeviceMacro) obj;
+      if (name == null) {
+         if (other.name != null) return false;
+      } else if (!name.equals(other.name)) return false;
+      return this.getOid() == other.getOid();
+   }
+   
    
 }

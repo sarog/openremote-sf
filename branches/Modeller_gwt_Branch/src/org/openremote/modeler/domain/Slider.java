@@ -110,6 +110,12 @@ public class Slider extends BusinessEntity {
       if (name == null) {
          if (other.name != null) return false;
       } else if (!name.equals(other.name)) return false;
+      
+      if (this.device!=null && other.device != null) {
+         if (!this.device.equals(other.device)){
+            return false;
+         }
+      }
       return other.getOid() == getOid();
    }
    
