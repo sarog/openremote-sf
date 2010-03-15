@@ -301,5 +301,11 @@ table.screen-btn-cont td.br-c{
 
 .tabbar-background {
    background-image: url('../../resources/images/iphone_tabbar_bg.png');
-   z-index: 10000;
+}
+
+/**
+   only for IE scroll TreePanel.
+**/
+.overflow-auto {
+   *overflow: auto;
 }

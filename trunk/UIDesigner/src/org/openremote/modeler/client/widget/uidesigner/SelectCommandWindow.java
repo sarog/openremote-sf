@@ -24,7 +24,6 @@ import org.openremote.modeler.client.utils.DeviceAndMacroTree;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceMacro;
 
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -62,7 +61,8 @@ public class SelectCommandWindow extends Dialog {
          devicesAndMacrosTree = DeviceAndMacroTree.getInstance();
          devicesAndMacrosTreeContainer.add(devicesAndMacrosTree);
       }
-      devicesAndMacrosTreeContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      devicesAndMacrosTreeContainer.addStyleName("overflow-auto");
       add(devicesAndMacrosTreeContainer);
    }
    

@@ -42,7 +42,6 @@ import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.selenium.DebugId;
 
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.dnd.ListViewDragSource;
 import com.extjs.gxt.ui.client.dnd.DND.Feedback;
@@ -235,7 +234,8 @@ public class MacroWindow extends FormWindow {
     */
    private LayoutContainer createDeviceCommandTree() {
       LayoutContainer treeContainer = new LayoutContainer();
-      treeContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      treeContainer.addStyleName("overflow-auto");
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
 
@@ -271,7 +271,8 @@ public class MacroWindow extends FormWindow {
     */
    private LayoutContainer createLeftMacroTree() {
       LayoutContainer leftMacroListContainer = new LayoutContainer();
-      leftMacroListContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      leftMacroListContainer.addStyleName("overflow-auto");
       leftMacroListContainer.setStyleAttribute("backgroundColor", "white");
       leftMacroListContainer.setBorders(false);
 

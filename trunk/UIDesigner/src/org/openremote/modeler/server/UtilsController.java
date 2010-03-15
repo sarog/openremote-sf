@@ -36,9 +36,12 @@ import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Template;
+import org.openremote.modeler.domain.component.ImageSource;
+import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.TemplateService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.utils.ImageRotateUtil;
 import org.openremote.modeler.utils.XmlParser;
 
 /**
@@ -48,6 +51,8 @@ import org.openremote.modeler.utils.XmlParser;
  */
 @SuppressWarnings("serial")
 public class UtilsController extends BaseGWTSpringController implements UtilsRPCService {
+   
+   private static final String ROTATED_FLAG = "ROTATE";
    
    private static final Logger LOGGER = Logger.getLogger(UtilsController.class);
    /** The resource service. */
@@ -235,5 +240,53 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    
    public ScreenFromTemplate buildScreenFromTemplate(Template template){
       return screenTemplateService.buildFromTemplate(template);
+   }
+
+   @Override
+   public UISlider rotateImage(UISlider uiSlider) {
+      // TODO Auto-generated method stub
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      String userFolderPath = pathConfig.userFolder(userService.getAccount());
+      
+      File userFolder = new File(userFolderPath);
+      
+      File minImageFile = new File(uiSlider.getMinImage().getSrc());
+      File minTrackImageFile = new File(uiSlider.getMinTrackImage().getSrc());
+      File thumbImageFile = new File(uiSlider.getThumbImage().getSrc());
+      File maxTrackImageFile = new File(uiSlider.getMaxTrackImage().getSrc());
+      File maxImageFile = new File(uiSlider.getMaxImage().getSrc());
+      
+      File minImageFileInUserFolder = new File(userFolderPath + minImageFile.getName());
+      File minTrackImageFileInUserFolder = new File(userFolderPath + minTrackImageFile.getName());
+      File thumbImageFileInUserFolder = new File(userFolderPath + thumbImageFile.getName());
+      File maxTrackImageFileInUserFolder = new File(userFolderPath + maxTrackImageFile.getName());
+      File maxImageFileInUserFolder = new File(userFolderPath + maxImageFile.getName());
+      double degree = uiSlider.isVertical()?90:-90;
+      for (File f : userFolder.listFiles()) {
+         if (f.equals(minImageFileInUserFolder)) {
+            uiSlider.setMinImage(new ImageSource(minImageFile.getParent() + File.separator +imageNameAfterRotate(minImageFileInUserFolder,degree)));
+         } else if (f.equals(minTrackImageFileInUserFolder)) {
+            uiSlider.setMinTrackImage(new ImageSource(minTrackImageFile.getParent() + File.separator +imageNameAfterRotate(minTrackImageFileInUserFolder,degree)));
+         } else if (f.equals(thumbImageFileInUserFolder)) {
+            uiSlider.setThumbImage(new ImageSource(thumbImageFile.getParent() + File.separator +imageNameAfterRotate(thumbImageFileInUserFolder,degree)));
+         } else if (f.equals(maxTrackImageFileInUserFolder)) {
+            uiSlider.setMaxTrackImage(new ImageSource(maxTrackImageFile.getParent() + File.separator +imageNameAfterRotate(maxTrackImageFileInUserFolder,degree)));
+         } else if (f.equals(maxImageFileInUserFolder)) {
+            uiSlider.setMaxImage(new ImageSource(maxImageFile.getParent() + File.separator +imageNameAfterRotate(maxImageFileInUserFolder,degree)));
+         }
+      }
+      return uiSlider;
+   }
+   
+   private String imageNameAfterRotate(File imageFileInUserFolder,double degree) {
+      if (imageFileInUserFolder.getName().contains(ROTATED_FLAG)) {
+         File beforeRotatedFile = new File(imageFileInUserFolder.getParent()+File.separator+(imageFileInUserFolder.getName().replace(ROTATED_FLAG, "")));
+         if (beforeRotatedFile.exists()) {
+            return beforeRotatedFile.getName();
+         }
+      }
+      File fileAfterRotated = ImageRotateUtil.rotate(imageFileInUserFolder, imageFileInUserFolder.getParent() + File.separator + ROTATED_FLAG
+            +imageFileInUserFolder.getName(), degree);
+      return fileAfterRotated.getName();
    }
 }
