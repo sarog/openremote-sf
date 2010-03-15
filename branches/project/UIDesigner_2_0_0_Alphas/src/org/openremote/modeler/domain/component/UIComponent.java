@@ -82,11 +82,7 @@ public abstract class UIComponent extends BusinessEntity {
          } else if (uiComponent instanceof UISwitch) {
             result = new UISwitch();
          } else if (uiComponent instanceof UISlider) {
-            UISlider slider = uiComponent.getBeanModel().getBean();
             result = new UISlider();
-            if(slider.isVertical()){
-               ((UISlider)result).setVertical(true);
-            }
          } else if (uiComponent instanceof UILabel) {
             result = new UILabel();
          } else if (uiComponent instanceof UIImage) {

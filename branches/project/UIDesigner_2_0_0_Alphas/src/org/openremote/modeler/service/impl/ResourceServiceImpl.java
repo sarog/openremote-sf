@@ -3,16 +3,16 @@
  * 
  * See the contributors.txt file in the distribution for a full listing of individual contributors.
  * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
- * details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
  * 
- * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this
+ * program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.openremote.modeler.service.impl;
 
@@ -336,7 +336,7 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @param command
     *           the device command item
-    * @param protocolEventContaine
+    * @param protocolEventContainer
     *           the protocol event container
     * 
     * @return the controller xml segment content
@@ -372,6 +372,7 @@ public class ResourceServiceImpl implements ResourceService {
             return new ArrayList<Command>();
          }
       } catch (Exception e) {
+         LOGGER.warn(e.getMessage(), e);
          return new ArrayList<Command>();
       }
       return oneUIButtonEventList;
@@ -450,21 +451,21 @@ public class ResourceServiceImpl implements ResourceService {
     */
    private void addSectionIds(Set<String> sectionIds, UICommand command) {
       if (command instanceof DeviceMacroItem) {
-         sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem) command));
+         sectionIds.addAll(getDeviceMacroItemSectionIds((DeviceMacroItem) command));
       } else if (command instanceof CommandRefItem) {
          sectionIds.add(((CommandRefItem) command).getDeviceCommand().getSectionId());
       }
    }
 
    /**
-    * Gets the devcie macro item section ids.
+    * Gets the device macro item section ids.
     * 
     * @param deviceMacroItem
     *           the device macro item
     * 
-    * @return the devcie macro item section ids
+    * @return the device macro item section ids
     */
-   private Set<String> getDevcieMacroItemSectionIds(DeviceMacroItem deviceMacroItem) {
+   private Set<String> getDeviceMacroItemSectionIds(DeviceMacroItem deviceMacroItem) {
       Set<String> deviceMacroRefSectionIds = new HashSet<String>();
       if (deviceMacroItem instanceof DeviceCommandRef) {
          deviceMacroRefSectionIds.add(((DeviceCommandRef) deviceMacroItem).getDeviceCommand().getSectionId());
@@ -472,7 +473,7 @@ public class ResourceServiceImpl implements ResourceService {
          DeviceMacro deviceMacro = ((DeviceMacroRef) deviceMacroItem).getTargetDeviceMacro();
          deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
          for (DeviceMacroItem nextDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
-            deviceMacroRefSectionIds.addAll(getDevcieMacroItemSectionIds(nextDeviceMacroItem));
+            deviceMacroRefSectionIds.addAll(getDeviceMacroItemSectionIds(nextDeviceMacroItem));
          }
       }
       return deviceMacroRefSectionIds;
@@ -547,10 +548,9 @@ public class ResourceServiceImpl implements ResourceService {
       try {
          String[] includedPropertyNames = {"screenRefs"};
          String[] excludePropertyNames = {};
-         String groupsJson = JsonGenerator.serializerObjectInclude(groups, includedPropertyNames, excludePropertyNames);
-         return groupsJson;
+         return JsonGenerator.serializerObjectInclude(groups, includedPropertyNames, excludePropertyNames);
       } catch (Exception e) {
-         e.printStackTrace();
+         LOGGER.error(e);
          return "";
       }
    }
@@ -561,11 +561,10 @@ public class ResourceServiceImpl implements ResourceService {
          String[] includedPropertyNames = {"absolutes", "absolutes.uiComponent", "grid", "grid.cells",
                "grid.cells.uiComponent"};
          String[] excludePropertyNames = {"absolutes.uiComponent.panelXml", "grid.cells.uiComponent.panelXml"};
-         String groupsJson = JsonGenerator
+         return JsonGenerator
                .serializerObjectInclude(screens, includedPropertyNames, excludePropertyNames);
-         return groupsJson;
       } catch (Exception e) {
-         e.printStackTrace();
+         LOGGER.error(e);
          return "";
       }
    }
@@ -585,10 +584,9 @@ public class ResourceServiceImpl implements ResourceService {
                "groupRefs.group.screenRefs.screen.grids.uiComponent.sensor",
                "groupRefs.group.screenRefs.screen.grids.cells.uiComponent.sensor" };
          String[] excludePropertyNames = {"panelName"};
-         String panelsJson = JsonGenerator.serializerObjectInclude(panels, includedPropertyNames, excludePropertyNames);
-         return panelsJson;
+         return JsonGenerator.serializerObjectInclude(panels, includedPropertyNames, excludePropertyNames);
       } catch (Exception e) {
-         e.printStackTrace();
+         LOGGER.error(e);
          return "";
       }
    }
@@ -608,6 +606,7 @@ public class ResourceServiceImpl implements ResourceService {
          context.put("screens", screens);
          return VelocityEngineUtils.mergeTemplateIntoString(velocity, PANEL_XML_TEMPLATE, context);
       } catch (Exception e) {
+        // TODO: this exception use looks suspicious
          throw new RuntimeException("Failed to read panel.xml", e);
       }
 
@@ -750,7 +749,7 @@ public class ResourceServiceImpl implements ResourceService {
    
 
    @Override
-   public void initResources(Collection<Panel> panels,long maxOid) {
+   public void initResources(Collection<Panel> panels, long maxOid) {
       Set<Group> groups = new LinkedHashSet<Group>();
       Set<Screen> screens = new LinkedHashSet<Screen>();
       /*
@@ -769,7 +768,14 @@ public class ResourceServiceImpl implements ResourceService {
 //      File sessionFolder = new File(pathConfig.userFolder(sessionId));
       File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
       if (!userFolder.exists()) {
-         userFolder.mkdirs();
+         boolean success = userFolder.mkdirs();
+
+         if (!success)
+         {
+           throw new FileOperationException(
+               "Failed to create directory path to user folder '" + userFolder + "'."
+           );
+         }
       }
       
       /*
@@ -803,11 +809,17 @@ public class ResourceServiceImpl implements ResourceService {
          FileUtilsExt.writeStringToFile(controllerXMLFile, controllerXmlContent);
          // FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
 
-         if (sectionIds!=null && sectionIds != "") {
+         if (sectionIds != null && !sectionIds.equals("")) {
             FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
          }
          if (lircdFile.exists() && lircdFile.length() == 0) {
-            lircdFile.delete();
+            boolean success = lircdFile.delete();
+
+           if (!success)
+           {
+             LOGGER.error("Failed to delete '" + lircdFile + "'.");
+           }
+
          }
          
          serialize(panels,maxOid);
@@ -821,25 +833,28 @@ public class ResourceServiceImpl implements ResourceService {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File panelsObjFile = new File(pathConfig.getSerizalizedPanelsFile(userService.getAccount()));
       ObjectOutputStream oos = null;
+
       try {
          FileUtilsExt.deleteQuietly(panelsObjFile);
-         if(panels==null || panels.size()<1){
+
+         if (panels==null || panels.size()<1) {
             return;
          }
+
          oos = new ObjectOutputStream(new FileOutputStream(panelsObjFile));
          oos.writeObject(panels);
          oos.writeLong(maxOid);
       } catch (FileNotFoundException e) {
-         e.printStackTrace();
+        LOGGER.error(e.getMessage(), e);
       } catch (IOException e) {
-         e.printStackTrace();
+        LOGGER.error(e.getMessage(), e);
       } finally {
          try {
             if (oos != null) {
                oos.close();
             }
          } catch (IOException e) {
-            e.printStackTrace();
+           LOGGER.warn("Unable to close output stream to '" + panelsObjFile + "'.");
          }
       }
    }
@@ -862,15 +877,19 @@ public class ResourceServiceImpl implements ResourceService {
          Long maxOid = ois.readLong();
          panelsAndMaxOid = new PanelsAndMaxOid(panels, maxOid);
       } catch (Exception e) {
-         LOGGER.error("restore failed from server");
-         throw new RuntimeException(e);
+         // TODO: this exception use looks very suspicious -- unhandled, one failure from single
+         //       user may impact the entire app
+         throw new RuntimeException("restore failed from server", e);
       } finally {
          try {
             if (ois != null) {
                ois.close();
             }
-         } catch (IOException e) {
-            e.printStackTrace();
+         } catch (IOException ioException) {
+            LOGGER.warn(
+                "Failed to close input stream from '" + panelsObjFile + "': " +
+                ioException.getMessage(), ioException
+            );
          }
       }
       return panelsAndMaxOid;
@@ -943,17 +962,23 @@ public class ResourceServiceImpl implements ResourceService {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
       HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTRootUrl() + "account/"
-            + userService.getAccount().getOid() + "/template/" + templateOid+"/resource");
+            + userService.getAccount().getOid() + "/template/" + templateOid + "/resource");
       InputStream inputStream = null;
       FileOutputStream fos = null;
       this.addAuthentication(httpGet);
+
       try {
          HttpResponse response = httpClient.execute(httpGet);
 
          if (200 == response.getStatusLine().getStatusCode()) {
             inputStream = response.getEntity().getContent();
             File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
-            userFolder.mkdirs();
+            if (! userFolder.exists()) {
+               boolean success = userFolder.mkdirs();
+               if (!success) {
+                  throw new BeehiveNotAvailableException("Unable to create directories for path '" + userFolder + "'.");
+               }
+            }
             File outPut = new File(userFolder, "template.zip");
             FileUtilsExt.deleteQuietly(outPut);
             fos = new FileOutputStream(outPut);
@@ -963,6 +988,7 @@ public class ResourceServiceImpl implements ResourceService {
             while ((len = inputStream.read(buffer)) != -1) {
                fos.write(buffer, 0, len);
             }
+
             fos.flush();
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
@@ -970,14 +996,26 @@ public class ResourceServiceImpl implements ResourceService {
             throw new BeehiveNotAvailableException("Failed to download resources for template, status code: "
                   + response.getStatusLine().getStatusCode());
          }
-      } catch (Exception e) {
-         throw new BeehiveNotAvailableException(e.getMessage(), e);
+      } catch (IOException ioException) {
+         throw new BeehiveNotAvailableException("I/O exception in handling user's template.zip file: "
+               + ioException.getMessage(), ioException);
       } finally {
          if (inputStream != null) {
-            try {inputStream.close();}catch(IOException e){}
+            try {
+               inputStream.close();
+            } catch (IOException ioException) {
+               LOGGER.warn("Failed to close input stream from '" + httpGet.getURI() + "': " + ioException.getMessage(),
+                     ioException);
+            }
          }
-         if(fos!=null) {
-            try {fos.close();}catch(IOException e){}
+
+         if (fos != null) {
+            try {
+               fos.close();
+            } catch (IOException ioException) {
+               LOGGER.warn("Failed to close file output stream to user's template.zip file: "
+                     + ioException.getMessage(), ioException);
+            }
          }
       }
    }
@@ -986,17 +1024,33 @@ public class ResourceServiceImpl implements ResourceService {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
       HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTRootUrl() + "user/"
-            + userService.getAccount().getUser().getUsername()+"/openremote.zip");
+            + userService.getAccount().getUser().getUsername() + "/openremote.zip");
+
+      LOGGER.debug("Attempting to fetch account configuration from: " + httpGet.getURI());
+
       InputStream inputStream = null;
       FileOutputStream fos = null;
 
       try {
          this.addAuthentication(httpGet);
          HttpResponse response = httpClient.execute(httpGet);
+
+         if (404 == response.getStatusLine().getStatusCode()) {
+            LOGGER.warn("Failed to download openremote.zip from Beehive. Status code: 404");
+            return;
+         }
+
          if (200 == response.getStatusLine().getStatusCode()) {
             inputStream = response.getEntity().getContent();
             File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
-            userFolder.mkdirs();
+
+            if (!userFolder.exists()) {
+               boolean success = userFolder.mkdirs();
+               if (!success) {
+                  throw new BeehiveNotAvailableException("Failed to create the required directories for path '"
+                        + userFolder + "'.");
+               }
+            }
             File outPut = new File(userFolder, "openremote.zip");
             FileUtilsExt.deleteQuietly(outPut);
             fos = new FileOutputStream(outPut);
@@ -1006,25 +1060,32 @@ public class ResourceServiceImpl implements ResourceService {
             while ((len = inputStream.read(buffer)) != -1) {
                fos.write(buffer, 0, len);
             }
+
             fos.flush();
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
-         } else if(404 == response.getStatusLine().getStatusCode()) {
-            LOGGER.warn("Failed to download openremote.zip from beehive. Status code: 404");
-            return;
-         }
-         else {
+         } else {
             throw new BeehiveNotAvailableException("Failed to download resources for template, status code: "
                   + response.getStatusLine().getStatusCode());
          }
-      } catch (Exception e) {
-         throw new BeehiveNotAvailableException(e.getMessage(), e);
+      } catch (IOException ioException) {
+         throw new BeehiveNotAvailableException("I/O exception in openremote.zip file handling: "
+               + ioException.getMessage(), ioException);
       } finally {
          if (inputStream != null) {
-            try {inputStream.close();}catch(IOException e){}
+            try {
+               inputStream.close();
+            } catch (IOException ioException) {
+               LOGGER.warn("Failed to close input stream from " + httpGet.getURI() + " (" + ioException.getMessage()
+                     + ")", ioException);
+            }
          }
-         if(fos!=null) {
-            try {fos.close();}catch(IOException e){}
+         if (fos != null) {
+            try {
+               fos.close();
+            } catch (IOException ioException) {
+               LOGGER.warn("Failed to close output stream to user's openremote.zip file: " + ioException.getMessage());
+            }
          }
       }
    }
@@ -1035,6 +1096,7 @@ public class ResourceServiceImpl implements ResourceService {
       //     ---------Now, All the resources in the user folder is included! 
       return this.getTemplateZipResource();
    }
+
    private File getResourceZipFile(List<String> ignoreExtentions) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
@@ -1046,9 +1108,11 @@ public class ResourceServiceImpl implements ResourceService {
             filesInZip[i++] = file;
          }
       }
-      File zipFile = compressFilesToZip(filesInZip, pathConfig.openremoteZipFilePath(userService.getAccount()),
-            ignoreExtentions);
-      return zipFile;
+      return compressFilesToZip(
+          filesInZip,
+          pathConfig.openremoteZipFilePath(userService.getAccount()),
+          ignoreExtentions
+      );
 
    }
    
@@ -1069,8 +1133,8 @@ public class ResourceServiceImpl implements ResourceService {
       if (namePassword == null) return null;
       return new String(Base64.encodeBase64(namePassword.getBytes()));
    }
-   
-   static class MaxId{
+
+  static class MaxId{
       Long maxId = 0L;
       public MaxId(Long maxId){
          this.maxId = maxId;

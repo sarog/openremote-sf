@@ -21,10 +21,12 @@ package org.openremote.modeler.client.widget.propertyform;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
+import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.widget.component.ScreenSlider;
 import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
 import org.openremote.modeler.client.widget.uidesigner.SelectSliderWindow;
 import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.component.UISlider;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -32,9 +34,11 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.CheckBox;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SliderPropertyForm extends PropertyForm {
    private ScreenSlider screenSlider = null;
@@ -48,19 +52,35 @@ public class SliderPropertyForm extends PropertyForm {
    private void addFields() {
       final CheckBox vertical = new CheckBox();
       vertical.setValue(false);
-//      vertical.setFieldLabel("Vertical");
       vertical.setBoxLabel("Vertical");
       vertical.setHideLabel(true);
-      vertical.setValue(false);
+      vertical.setValue(screenSlider.isVertical());
       vertical.addListener(Events.Change, new Listener<FieldEvent>() {
 
          @Override
          public void handleEvent(FieldEvent be) {
-            boolean isVertical = vertical.getValue();
+            final boolean isVertical = vertical.getValue();
             
             if(isVertical != screenSlider.getUiSlider().isVertical()) {
-               screenSlider.setVertical(isVertical);
-               screenSlider.getScreenCanvas().layout();
+               UtilsProxy.roteImages(screenSlider.getUiSlider(), new AsyncCallback<UISlider>(){
+
+                  @Override
+                  public void onFailure(Throwable caught) {
+                     Info.display("Error", "falid to rotate images");
+                  }
+
+                  @Override
+                  public void onSuccess(UISlider result) {
+                     screenSlider.setMinImage(result.getMinImage().getSrc());
+                     screenSlider.setMinTrackImage(result.getMinTrackImage().getSrc());
+                     screenSlider.setThumbImage(result.getThumbImage().getSrc());
+                     screenSlider.setMaxTrackImage(result.getMaxTrackImage().getSrc());
+                     screenSlider.setMaxImage(result.getMaxImage().getSrc());
+                     screenSlider.setVertical(isVertical);
+                     screenSlider.getScreenCanvas().layout();
+                  }
+                  
+               });
             }
          }
          

@@ -134,6 +134,7 @@ public class TreePanelBuilder {
       tree.setBorders(false);
       tree.setStateful(true);
       tree.setDisplayProperty("displayName");
+      tree.setStyleAttribute("overflow", "auto");
       tree.setHeight("100%");
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
@@ -189,6 +190,7 @@ public class TreePanelBuilder {
       tree.setBorders(false);
       tree.setStateful(true);
       tree.setDisplayProperty("displayName");
+      tree.setStyleAttribute("overflow", "auto");
       tree.setHeight("100%");
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
@@ -243,6 +245,7 @@ public class TreePanelBuilder {
       tree.setBorders(false);
       tree.setStateful(true);
       tree.setDisplayProperty("displayName");
+      tree.setStyleAttribute("overflow", "auto");
       tree.setHeight("100%");
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
@@ -293,6 +296,7 @@ public class TreePanelBuilder {
       tree.setBorders(false);
       tree.setHeight("100%");
       tree.setDisplayProperty("displayName");
+      tree.setStyleAttribute("overflow", "auto");
       
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
@@ -411,6 +415,7 @@ public class TreePanelBuilder {
       widgetTree.setBorders(false);
       widgetTree.setHeight("100%");
       widgetTree.setDisplayProperty("name");
+      widgetTree.setStyleAttribute("overflow", "auto");
       
       widgetTreeStore.add(new UIGrid().getBeanModel(), true);
       widgetTreeStore.add(new UILabel().getBeanModel(), true);
@@ -478,6 +483,7 @@ public class TreePanelBuilder {
       panelTree.setBorders(false);
       panelTree.setHeight("100%");
       panelTree.setDisplayProperty("displayName");
+      panelTree.setStyleAttribute("overflow", "auto");
 
       panelTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
@@ -502,7 +508,8 @@ public class TreePanelBuilder {
       panelTree.setBorders(false);
       panelTree.setHeight("100%");
       panelTree.setDisplayProperty("displayName");
-
+      panelTree.setStyleAttribute("overflow", "auto");
+      
       panelTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
             if (thisModel.getBean() instanceof Panel) {
