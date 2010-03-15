@@ -85,7 +85,7 @@ public class ImageRotateUtil {
       BufferedImage outImage = doRotate(sourceImageFile, degree, gc);
 
       File targetFile = new File(targetName);
-      ImageIO.write(outImage, "png", targetFile);
+      ImageIO.write(outImage, getExtentionName(sourceImageFile.getName()), targetFile);
       return targetFile;
    }
 
