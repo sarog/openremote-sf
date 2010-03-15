@@ -75,6 +75,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 
 - (void)initGroups {
 	NSArray *groups = [[Definition sharedDefinition] groups];
+	NSLog(@"groups count is %d",groups.count);
 	
 	if (groups.count > 0) {
 		
@@ -236,13 +237,12 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 }
 
 - (BOOL)navigateToGroup:(int)groupId toScreen:(int)screenId {
-	GroupController *targetGroupController = nil;	
+	GroupController *targetGroupController = nil;
 	BOOL notItSelf = groupId != [currentGroupController groupId];
 	
 	//if screenId is specified, and is not current group, jump to that group
 	if (groupId > 0 && notItSelf) {
 		//find in cache first
-		NSLog(@"groupControllers size = %d",groupControllers.count);
 		for (GroupController *gc in groupControllers) {
 			if ([gc groupId] == groupId) {
 				targetGroupController = gc;
@@ -274,6 +274,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		// begin tabBar and view(local or global)
 		//if global tabbar exists
 		if (globalTabBarController) {
+			[globalTabBarController updateGroupController:targetGroupController];
 			view = globalTabBarController.view;
 			tabBarScale = TABBAR_SCALE_GLOBAL;
 		}		
@@ -299,7 +300,6 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		
 		[currentGroupController stopPolling];
 		[targetGroupController startPolling];
-		
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:1];
 		
@@ -315,14 +315,14 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 				targetIndex = i;
 			}			
 		}
-		BOOL forward = targetIndex > currentIndex;
+		//BOOL forward = targetIndex > currentIndex;
 		
-		if (forward) {
-			[UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:self.view cache:YES];
-		} else {
-			[UIView setAnimationTransition:UIViewAnimationTransitionCurlDown forView:self.view cache:YES];
-		}
-		
+		//if (forward) {
+//			[UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:self.view cache:YES];
+//		} else {
+//			[UIView setAnimationTransition:UIViewAnimationTransitionCurlDown forView:self.view cache:YES];
+//		}
+		[UIView setAnimationTransition:UIViewAnimationTransitionNone forView:self.view cache:YES];
 		[self.view addSubview:view];
 		
 		[UIView commitAnimations];
