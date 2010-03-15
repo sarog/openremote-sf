@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.server;
 
+import java.util.List;
+
 import org.openremote.modeler.client.rpc.TemplateRPCService;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.domain.Template;
@@ -39,10 +41,10 @@ public class TemplateController extends BaseGWTSpringController implements Templ
       return templateService.buildFromTemplate(template);
    }
 
-   /*@Override
-   public List<Template> getTemplateList() {
-      return null;
-   }*/
+   @Override
+   public List<Template> getTemplates(boolean isFromPrivate) {
+      return templateService.getTemplates(isFromPrivate);
+   }
 
    @Override
    public Template saveTemplate(Template template) {

@@ -23,22 +23,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.TemplateProxy;
-import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.buildingmodeler.TemplateCreateWindow;
 import org.openremote.modeler.domain.Template;
 
-import com.extjs.gxt.ui.client.data.BaseListLoader;
-import com.extjs.gxt.ui.client.data.DataField;
-import com.extjs.gxt.ui.client.data.ListLoadResult;
-import com.extjs.gxt.ui.client.data.ModelData;
-import com.extjs.gxt.ui.client.data.ModelType;
-import com.extjs.gxt.ui.client.data.ScriptTagProxy;
+import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
@@ -50,6 +43,7 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * The Template panel.
@@ -60,7 +54,7 @@ import com.google.gwt.core.client.GWT;
  */
 public class TemplatePanel extends ContentPanel {
 
-   private ListView<ModelData> templateView;
+   private ListView<BeanModel> templateView;
    private Icons icon = GWT.create(Icons.class);
 
    /**
@@ -100,55 +94,40 @@ public class TemplatePanel extends ContentPanel {
       Button deleteBtn = new Button("Delete");
       deleteBtn.setIcon(icon.delete());
 
-      deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>()
-      {
-         @Override public void onDelete(ButtonEvent ce)
-         {
-            final ModelData templateModelData = templateView.getSelectionModel().getSelectedItem();
-
-            if (templateModelData == null)
-            {
+      deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
+         @Override
+         public void onDelete(ButtonEvent ce) {
+            final BeanModel templateBeanModel = templateView.getSelectionModel().getSelectedItem();
+            
+            if (templateBeanModel == null) {
                MessageBox.alert("Error", "Please select a template.", null);
                ce.cancelBubble();
             }
 
-            else
-            {
-               Long oid = templateModelData.get("id");
+            else {
+               Template template = templateBeanModel.getBean();
+               Long oid = template.getOid();
 
-               if (oid == null)
-               {
-                  oid = templateModelData.get("oid");
-               }
-
-               TemplateProxy.deleteTemplateById(oid, new AsyncSuccessCallback<Boolean>()
-               {
-                  @Override public void onSuccess(Boolean success)
-                  {
-                     if (success)
-                     {
-                        templateView.getStore().remove(templateModelData);
+               TemplateProxy.deleteTemplateById(oid, new AsyncSuccessCallback<Boolean>() {
+                  @Override
+                  public void onSuccess(Boolean success) {
+                     if (success) {
+                        templateView.getStore().remove(templateBeanModel);
                         Info.display("Delete Template", "Template deleted successfully.");
                      }
                   }
 
-                  @Override public void onFailure(Throwable caught)
-                  {
-                     MessageBox.alert(
-                         "Error",
-                         "Failed to delete template. Beehive not currently available.",
-                         null
-                     );
+                  @Override
+                  public void onFailure(Throwable caught) {
+                     MessageBox.alert("Error", "Failed to delete template. Beehive not currently available. Error message :"+caught.getMessage(), null);
                   }
-                  
-                  
+
                });
             }
          }
       });
       return deleteBtn;
    }
-
 
    private Button createNewTemplateMenuItem() {
       Button newPanelItem = new Button("New");
@@ -173,30 +152,28 @@ public class TemplatePanel extends ContentPanel {
    }
 
    private void buildTemplateList() {
-      this.templateView = new ListView<ModelData>();
+      this.templateView = new ListView<BeanModel>();
       templateView.setStateful(true);
       templateView.setBorders(false);
       templateView.setHeight("100%");      
       templateView.setDisplayProperty("name");
-      UtilsProxy.getTemplatesListRestUrl(new AsyncSuccessCallback<String> (){
-         public void onSuccess(String result){
-            ModelType templateType = new ModelType();
-            templateType.setRoot("templates.template");
-            DataField idField = new DataField("id");
-            idField.setType(Long.class);
-            templateType.addField(idField);
-            templateType.addField("content");
-            templateType.addField("name");
-            ScriptTagProxy<ListLoadResult<ModelData>> scriptTagProxy = new ScriptTagProxy<ListLoadResult<ModelData>>(result);
-            NestedJsonLoadResultReader<ListLoadResult<ModelData>> reader = new NestedJsonLoadResultReader<ListLoadResult<ModelData>>(
-                  templateType);
-            final BaseListLoader<ListLoadResult<ModelData>> loader = new BaseListLoader<ListLoadResult<ModelData>>(scriptTagProxy, reader);
+      TemplateProxy.getTemplates(true, new AsyncCallback<List<Template>>(){
 
-            ListStore<ModelData> store = new ListStore<ModelData>(loader);
-            loader.load();
-            templateView.setStore(store);
-            layout();
+         @Override
+         public void onFailure(Throwable caught) {
+            Info.display("Error", "Failed to get your templates, error message: "+caught.getMessage());
          }
+
+         @Override
+         public void onSuccess(List<Template> result) {
+            if (result.size() > 0) {
+               ListStore<BeanModel> store = new ListStore<BeanModel> ();
+               store.add(Template.createModels(result));
+               templateView.setStore(store);
+               layout();
+            }
+         }
+         
       });
       add(templateView);
    }

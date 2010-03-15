@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.client.rpc;
 
+import java.util.List;
+
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.domain.Template;
 
@@ -32,7 +34,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("template.smvc")
 public interface TemplateRPCService extends RemoteService {
-//   List<Template> getTemplateList();
+   List<Template> getTemplates(boolean isFromPrivate);
    /**
     * save a template to the beehive.
     */
