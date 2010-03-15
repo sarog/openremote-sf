@@ -57,6 +57,8 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
+import org.openremote.modeler.domain.DeviceMacroItem;
+import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.Role;
@@ -77,6 +79,7 @@ import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.NotAuthenticatedException;
 import org.openremote.modeler.service.DeviceCommandService;
+import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.SensorService;
@@ -110,8 +113,10 @@ public class TemplateServiceImpl implements TemplateService
    private SwitchService switchService ;
    private SliderService sliderService ;
    private SensorService sensorService ;
+   private DeviceMacroService deviceMacroService ; 
 
    @Override
+
    public Template saveTemplate(Template screenTemplate) {
       log.debug("save Template Name: " + screenTemplate.getName());
       screenTemplate.setContent(getTemplateContent(screenTemplate.getScreen()));
@@ -295,10 +300,10 @@ public class TemplateServiceImpl implements TemplateService
       Set<Slider> sliders = getSliders((Collection<UISlider>) (box.getUIComponentsByType(UISlider.class)));
       Set<Switch> switchs = getSwitchs((Collection<UISwitch>) box.getUIComponentsByType(UISwitch.class));
       Set<Sensor> sensors = getSensors(screen);
+      Set<DeviceMacro> macros = getMacors(box);
+      reBuild(devices, commands, sensors, switchs, sliders, macros);
 
-      reBuild(devices, commands, sensors, switchs, sliders);
-
-      return new ScreenFromTemplate(devices, screen);
+      return new ScreenFromTemplate(devices, screen,macros);
    }
 
 
@@ -316,21 +321,67 @@ public class TemplateServiceImpl implements TemplateService
       return box;
    }
 
-   @SuppressWarnings("unchecked")
    private Set<DeviceCommand> getDeviceCommands(Screen screen) {
       UIComponentBox box = initUIComponentBox(screen);
       Set<DeviceCommand> uiCmds = new HashSet<DeviceCommand>();
-      //get device commands from slider :
-      Collection<Slider> sliders = getSliders((Collection<UISlider>) box.getUIComponentsByType(UISlider.class));
-      for(Slider slider : sliders) {
-         for(DeviceCommand cmd : uiCmds) {
-            if(cmd.equals(slider.getSetValueCmd().getDeviceCommand())) {
-               slider.getSetValueCmd().setDeviceCommand(cmd);
+      
+      getDeviceCommandsFromSlider(box, uiCmds);
+      getDeviceCommandsFromSwitch(box, uiCmds);
+      getDeviceCommandsFromButton(box, uiCmds);
+      getDeviceCommandsFromSensor(screen, uiCmds);
+      
+      return uiCmds;
+   }
+
+   private void getDeviceCommandsFromSensor(Screen screen, Set<DeviceCommand> uiCmds) {
+      Collection<Sensor> sensors = getSensors(screen);
+      for(Sensor sensor: sensors) {
+         for (DeviceCommand cmd : uiCmds) {
+            if(cmd.equals(sensor.getSensorCommandRef().getDeviceCommand())) {
+               sensor.getSensorCommandRef().setDeviceCommand(cmd);
+               sensor.setDevice(cmd.getDevice());
             }
          }
-         uiCmds.add(slider.getSetValueCmd().getDeviceCommand());
+         uiCmds.add(sensor.getSensorCommandRef().getDeviceCommand());
       }
-      //get device commands from switch
+   }
+
+   @SuppressWarnings("unchecked")
+   private void getDeviceCommandsFromButton(UIComponentBox box, Set<DeviceCommand> uiCmds) {
+      Collection<UIButton> buttons = (Collection<UIButton>) box.getUIComponentsByType(UIButton.class);
+      for(UIButton btn : buttons ) {
+         UICommand cmd = btn.getUiCommand();
+         if(cmd != null) {
+            if(cmd instanceof DeviceCommandRef) {
+               DeviceCommandRef cmdRef = (DeviceCommandRef) cmd;
+               for(DeviceCommand tmpCmd : uiCmds) {
+                  if(tmpCmd.equals(cmdRef.getDeviceCommand())) {
+                     cmdRef.setDeviceCommand(tmpCmd);
+                  }
+               }
+               uiCmds.add(cmdRef.getDeviceCommand());
+               
+            } else if(cmd instanceof DeviceMacroRef){
+               DeviceMacroRef macroRef = (DeviceMacroRef) cmd;
+               DeviceMacro macro = macroRef.getTargetDeviceMacro();
+               if(macro !=null) {
+                  Collection<DeviceCommandRef> cmds = getDeviceCommandsRefsFromMacro(macro);
+                  for (DeviceCommandRef cmdFromMacro : cmds) {
+                     for(DeviceCommand cmdInCommandSet : uiCmds) {
+                        if (cmdFromMacro.getDeviceCommand().equals(cmdInCommandSet)) {
+                           cmdFromMacro.setDeviceCommand(cmdInCommandSet);
+                        }
+                     }
+                     uiCmds.add(cmdFromMacro.getDeviceCommand());
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   @SuppressWarnings("unchecked")
+   private void getDeviceCommandsFromSwitch(UIComponentBox box, Set<DeviceCommand> uiCmds) {
       Collection<Switch> switchs = getSwitchs((Collection<UISwitch>) box.getUIComponentsByType(UISwitch.class));
       for (Switch switchToggle : switchs) {
          DeviceCommand onCmd = switchToggle.getSwitchCommandOnRef().getDeviceCommand();
@@ -349,37 +400,19 @@ public class TemplateServiceImpl implements TemplateService
          uiCmds.add(offCmd);
 
       }
-      //get device command from button 
-      Collection<UIButton> buttons = (Collection<UIButton>) box.getUIComponentsByType(UIButton.class);
-      for(UIButton btn : buttons ) {
-         UICommand cmd = btn.getUiCommand();
-         if(cmd != null) {
-            if(cmd instanceof DeviceCommandRef) {
-               DeviceCommandRef cmdRef = (DeviceCommandRef) cmd;
-               for(DeviceCommand tmpCmd : uiCmds) {
-                  if(tmpCmd.equals(cmdRef.getDeviceCommand())) {
-                     cmdRef.setDeviceCommand(tmpCmd);
-                  }
-               }
-               uiCmds.add(cmdRef.getDeviceCommand());
-               
-            } else {
-//TODO Rebuild macro for a button. 
+   }
+
+   @SuppressWarnings("unchecked")
+   private void getDeviceCommandsFromSlider(UIComponentBox box, Set<DeviceCommand> uiCmds) {
+      Collection<Slider> sliders = getSliders((Collection<UISlider>) box.getUIComponentsByType(UISlider.class));
+      for(Slider slider : sliders) {
+         for(DeviceCommand cmd : uiCmds) {
+            if(cmd.equals(slider.getSetValueCmd().getDeviceCommand())) {
+               slider.getSetValueCmd().setDeviceCommand(cmd);
             }
          }
+         uiCmds.add(slider.getSetValueCmd().getDeviceCommand());
       }
-      //get device command from sensors. 
-      Collection<Sensor> sensors = getSensors(screen);
-      for(Sensor sensor: sensors) {
-         for (DeviceCommand cmd : uiCmds) {
-            if(cmd.equals(sensor.getSensorCommandRef().getDeviceCommand())) {
-               sensor.getSensorCommandRef().setDeviceCommand(cmd);
-               sensor.setDevice(cmd.getDevice());
-            }
-         }
-         uiCmds.add(sensor.getSensorCommandRef().getDeviceCommand());
-      }
-      return uiCmds;
    }
 
    private Set<Device> getDevices(Screen screen) {
@@ -480,20 +513,64 @@ public class TemplateServiceImpl implements TemplateService
          }
       }
    }
-   /*@SuppressWarnings("unchecked")
-   private static Set<DeviceMacro> getMacors(UIComponentBox box) {
+   @SuppressWarnings("unchecked")
+   private Set<DeviceMacro> getMacors(UIComponentBox box) {
       Set<DeviceMacro> macros = new HashSet<DeviceMacro>();
       Collection<UIButton> uiButtons = (Collection<UIButton>) box.getUIComponentsByType(UIButton.class);
       for(UIButton btn : uiButtons) {
          if(btn.getUiCommand() instanceof DeviceMacroRef){
-            DeviceMacroRef macroItem = (DeviceMacroRef) btn.getUiCommand();
-            macros.add(macroItem.getTargetDeviceMacro());
+            DeviceMacroRef macroRef = (DeviceMacroRef) btn.getUiCommand();
+            if (macroRef.getTargetDeviceMacro() !=null) {
+               DeviceMacro macro = macroRef.getTargetDeviceMacro();
+               macros.add(macro);
+               macros.addAll(macro.getSubMacros());
+            }
+         }
+      }
+      return macros;
+   }
+
+   /*private  Set<DeviceMacro> getSubMacrosForMacro(DeviceMacro macro) {
+      Set<DeviceMacro> macros = new HashSet<DeviceMacro> ();
+      if (macro != null && macro.getDeviceMacroItems() != null) {
+         List<DeviceMacroItem> macroItems = macro.getDeviceMacroItems();
+         for (DeviceMacroItem item : macroItems) {
+            if (item instanceof DeviceMacroRef) {
+               DeviceMacroRef macroRef = (DeviceMacroRef) item;
+               DeviceMacro dvcMacro = macroRef.getTargetDeviceMacro();
+               macros.add(dvcMacro);
+               macros.addAll(getSubMacrosForMacro(dvcMacro));
+            } else if (item instanceof DeviceCommandRef) {
+               item.setParentDeviceMacro(macro);
+            }
          }
       }
       return macros;
    }*/
+   private Collection<DeviceCommandRef> getDeviceCommandsRefsFromMacro(DeviceMacro deviceMacro) {
+      Collection<DeviceCommandRef> deviceCommands = new ArrayList<DeviceCommandRef> ();
+      if (deviceMacro != null) {
+         List<DeviceMacroItem> macroRefs = deviceMacro.getDeviceMacroItems();
+         if (macroRefs != null && macroRefs.size() >0) {
+            for (DeviceMacroItem macroItem : macroRefs) {
+               if (macroItem instanceof DeviceCommandRef) {
+                  DeviceCommandRef cmdRef = (DeviceCommandRef) macroItem;
+                  deviceCommands.add(cmdRef);
+               } else if (macroItem instanceof DeviceMacroRef) {
+                  DeviceMacroRef macroRef = (DeviceMacroRef) macroItem;
+                  if (macroRef.getTargetDeviceMacro() != null) {
+                     Collection<DeviceCommandRef> cmds = getDeviceCommandsRefsFromMacro(macroRef.getTargetDeviceMacro());
+                     deviceCommands.addAll(cmds);
+                  }
+               }
+            }
+         }
+      }
+      return deviceCommands;
+   }
 
-   private void reBuild(Collection<Device> devices,Collection<DeviceCommand> deviceCommands, Collection<Sensor> sensors,Collection<Switch> switchs,Collection<Slider> sliders){
+   private void reBuild(Collection<Device> devices, Collection<DeviceCommand> deviceCommands, Collection<Sensor> sensors,
+         Collection<Switch> switchs,Collection<Slider> sliders,Collection<DeviceMacro> macros){
       Account account = userService.getAccount();
      
       //1, build devices. 
@@ -518,7 +595,6 @@ public class TemplateServiceImpl implements TemplateService
          sensor.getSensorCommandRef().setSensor(sensor);
          sensor.setDevice(sensor.getSensorCommandRef().getDeviceCommand().getDevice());
          sensorService.saveSensor(sensor);
-//         sensor.setAccount(null);
       }
       //4, build switch. 
       for(Switch switchToggle : switchs) {
@@ -528,7 +604,6 @@ public class TemplateServiceImpl implements TemplateService
          switchToggle.setDevice(switchToggle.getSwitchCommandOffRef().getDeviceCommand().getDevice());
          switchToggle.getSwitchSensorRef().setSwitchToggle(switchToggle);
          switchService.save(switchToggle);
-//         switchToggle.setAccount(null);
       }
       //5, build slider. 
       for(Slider slider : sliders) {
@@ -537,9 +612,22 @@ public class TemplateServiceImpl implements TemplateService
          slider.getSliderSensorRef().setSlider(slider);
          slider.getSetValueCmd().setSlider(slider);
          sliderService.save(slider);
-//         slider.setAccount(null);
       }
-      //prepare to send to client. 
+      //6, build macro. 
+      for (DeviceMacro macro : macros) {
+         macro.setAccount(account);
+         saveMacro(macro);
+      }
+      //7, prepare to send to client.
+      prepareToSendToClient(devices, deviceCommands, macros, account);
+   }
+
+   private void prepareToSendToClient(Collection<Device> devices, Collection<DeviceCommand> deviceCommands,
+         Collection<DeviceMacro> macros, Account account) {
+      // Because some of the domain classes are lazy loaded by hibernate, 
+      // we need replace some hibernate proxy classes with the class declared in their own class. 
+      // (for example we may need replace PersistentBag with ArrayList.)
+      // so that they can be serialized by GWT. 
       for(DeviceCommand deviceCommand : deviceCommands) {
          Protocol protocol = deviceCommand.getProtocol();
          if(protocol.getAttributes() !=null) {
@@ -553,7 +641,6 @@ public class TemplateServiceImpl implements TemplateService
         }
         
         deviceCommand.getProtocol().setAttributes(attrs);
-        
       }
       account.setConfigs(new ArrayList<ControllerConfig>());
       account.setDeviceMacros(new ArrayList<DeviceMacro>());
@@ -569,7 +656,65 @@ public class TemplateServiceImpl implements TemplateService
          device.setSliders(new HashSet<Slider>());
          device.setDeviceCommands(new ArrayList<DeviceCommand>());
       }
+      for (DeviceMacro macro : macros) {
+         macro.setAccount(null);
+         macro.setDeviceMacroItems(new ArrayList<DeviceMacroItem>());
+      }
    }
+   
+   private void saveMacro(DeviceMacro macro) {
+      if (null != macro) {
+         List<DeviceMacroItem> items = macro.getDeviceMacroItems();
+         // first, save the macros belongs to it. 
+         if (null != items) {
+            for (DeviceMacroItem item : items) {
+               if (item instanceof DeviceMacroRef) {
+                  DeviceMacroRef macroRef = (DeviceMacroRef) item;
+                  DeviceMacro subMacro = macroRef.getTargetDeviceMacro();
+                  saveMacro(subMacro);
+               }
+               item.setParentDeviceMacro(macro);
+            }
+         }
+         // second, save the macro itself. 
+         this.deviceMacroService.saveDeviceMacro(macro);
+      }
+   }
+   
+   
+   private String encode(String namePassword) {
+      if (namePassword == null) return null;
+      return new String(Base64.encodeBase64(namePassword.getBytes()));
+   }
+   
+   private void addAuthentication(AbstractHttpMessage httpMessage) {
+      httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
+            + encode(userService.getAccount().getUser().getUsername() + ":"
+                  + userService.getAccount().getUser().getPassword()));
+   }
+   
+   private TemplateList buildTemplateListFromJson(String templatesJson) {
+      TemplateList result = new TemplateList();
+      //The json string from beehive is not easy to be convert to java object by FlexJson, so we remove and replace the unnecessary characters. 
+      try {
+         String validTemplatesJson = "";
+         if (templatesJson.contains("{\"template\":")) {
+            if (templatesJson.contains("{\"template\":[")) {
+               String tempString =  templatesJson.replaceFirst("\\{\"template\":", "");
+               validTemplatesJson = tempString.substring(0, tempString.lastIndexOf("}}")) + "}";
+            } else {
+               String tempString = templatesJson.replaceFirst("\\{\"template\":", "[");
+               validTemplatesJson = tempString.substring(0, tempString.lastIndexOf("}}")) + "]}";
+            }
+            result = new JSONDeserializer<TemplateList>().use(null, TemplateList.class).use("templates",
+                  ArrayList.class).deserialize(validTemplatesJson);
+         }
+      } catch (RuntimeException e) {
+         log.warn("Faild to get template list, there are no templats in beehive ");
+      }
+      return result;
+   }
+
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
@@ -602,29 +747,8 @@ public class TemplateServiceImpl implements TemplateService
       this.sensorService = sensorService;
    }
 
-
-   private String encode(String namePassword) {
-      if (namePassword == null) return null;
-      return new String(Base64.encodeBase64(namePassword.getBytes()));
-   }
-   
-   private void addAuthentication(AbstractHttpMessage httpMessage) {
-      httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
-            + encode(userService.getAccount().getUser().getUsername() + ":"
-                  + userService.getAccount().getUser().getPassword()));
-   }
-   
-   private TemplateList buildTemplateListFromJson(String templatesJson) {
-      TemplateList result = new TemplateList();
-      //The json string from beehive is not easy to be convert to java object by FlexJson, so we remove the unnecessary characters. 
-      try {
-         String canResotoreJson = templatesJson.replaceFirst("\\{\"template\":", "").replace("\\}", "");
-         result = new JSONDeserializer<TemplateList>().use(null, TemplateList.class).use("templates", ArrayList.class)
-               .deserialize(canResotoreJson);
-      } catch (RuntimeException e) {
-         log.warn("Faild to get template list, there are no templats in beehive ");
-      }
-      return result;
+   public void setDeviceMacroService(DeviceMacroService deviceMacroService) {
+      this.deviceMacroService = deviceMacroService;
    }
 
    /**
@@ -695,5 +819,4 @@ public class TemplateServiceImpl implements TemplateService
          return template;
       }
    }
-   
 }
