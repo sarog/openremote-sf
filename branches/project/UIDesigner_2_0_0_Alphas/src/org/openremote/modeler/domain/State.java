@@ -29,10 +29,11 @@ import javax.persistence.Transient;
 /**
  * The Class State.
  */
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "state")
 public class State extends BusinessEntity {
+   private static final long serialVersionUID = -4878125106767971531L;
+   
    private String name = "state1";
    private CustomSensor sensor;
    

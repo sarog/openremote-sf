@@ -348,4 +348,9 @@ public interface Icons extends ImageBundle {
    
    @Resource("template.gif")
    AbstractImagePrototype templateIcon();
+   
+   @Resource("switch_to_bm.png")
+   AbstractImagePrototype bmIcon();
+   @Resource("switch_to_ud.png")
+   AbstractImagePrototype udIcon();
 }

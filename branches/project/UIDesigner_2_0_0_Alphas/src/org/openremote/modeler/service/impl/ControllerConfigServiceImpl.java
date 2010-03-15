@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.openremote.modeler.domain.Account;
-import org.openremote.modeler.domain.Config;
+import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.XmlParser;
 
-public class ControllerConfigServiceImpl extends BaseAbstractService<Config> implements ControllerConfigService {
+public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerConfig> implements ControllerConfigService {
   /*
    private static final Map<String,Set<Config>> defaultConfigs = new HashMap<String,Set<Config>>(); 
    static {
@@ -34,19 +34,19 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<Config> imp
    
    @SuppressWarnings("unchecked")
    @Override
-   public Set<Config>listAllConfigByCategoryNameForAccouont(String categoryName,Account account) {
-      String hql = "select cfg from Config cfg where cfg.category like ? and cfg.account.oid=?";
+   public Set<ControllerConfig>listAllConfigByCategoryNameForAccouont(String categoryName,Account account) {
+      String hql = "select cfg from ControllerConfig cfg where cfg.category like ? and cfg.account.oid=?";
       Object[] args = new Object[]{categoryName,account.getOid()};
-      List<Config> configs = genericDAO.getHibernateTemplate().find(hql, args);
-      Set<Config> configSet = new LinkedHashSet<Config>();
+      List<ControllerConfig> configs = genericDAO.getHibernateTemplate().find(hql, args);
+      Set<ControllerConfig> configSet = new LinkedHashSet<ControllerConfig>();
       configSet.addAll(configs);
       initializeConfigs(configSet);
       return configSet;
    }
 
    @Override
-   public Config update(Config config) {
-      Config cfg = genericDAO.loadById(Config.class, config.getOid());
+   public ControllerConfig update(ControllerConfig config) {
+      ControllerConfig cfg = genericDAO.loadById(ControllerConfig.class, config.getOid());
       cfg.setCategory(config.getCategory());
       cfg.setHint(config.getHint());
       cfg.setName(config.getName());
@@ -56,9 +56,9 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<Config> imp
       return config;
    }
    
-   public Set<Config> saveAll(Set<Config> configs) {
-      Set<Config> cfgs = new LinkedHashSet<Config>();
-      for (Config cfg : configs) {
+   public Set<ControllerConfig> saveAll(Set<ControllerConfig> configs) {
+      Set<ControllerConfig> cfgs = new LinkedHashSet<ControllerConfig>();
+      for (ControllerConfig cfg : configs) {
          if (cfg.getAccount() == null) {
             cfg.setAccount(userService.getAccount());
             genericDAO.save(cfg);
@@ -77,12 +77,12 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<Config> imp
 
    @SuppressWarnings("unchecked")
    @Override
-   public Set<Config> listAllConfigByCategoryForCurrentAccount(String categoryName) {
-      String hql = "select cfg from Config cfg where cfg.category =? and cfg.account.oid=?";
+   public Set<ControllerConfig> listAllConfigByCategoryForCurrentAccount(String categoryName) {
+      String hql = "select cfg from ControllerConfig cfg where cfg.category =? and cfg.account.oid=?";
       Account account = userService.getAccount();
       Object[] args = new Object[]{categoryName,account.getOid()};
-      List<Config> configs = genericDAO.getHibernateTemplate().find(hql, args);
-      Set<Config> configSet = new LinkedHashSet<Config>();
+      List<ControllerConfig> configs = genericDAO.getHibernateTemplate().find(hql, args);
+      Set<ControllerConfig> configSet = new LinkedHashSet<ControllerConfig>();
       configSet.addAll(configs);
       initializeConfigs(configSet);
       return configSet;
@@ -90,10 +90,10 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<Config> imp
 
    @SuppressWarnings("unchecked")
    @Override
-   public Set<Config> listAllByAccount(Account account) {
-      String hql = "select cfg from Config cfg where cfg.account.oid=?";
-      List<Config> configs = genericDAO.getHibernateTemplate().find(hql, account.getOid());
-      Set<Config> configSet = new LinkedHashSet<Config>();
+   public Set<ControllerConfig> listAllByAccount(Account account) {
+      String hql = "select cfg from ControllerConfig cfg where cfg.account.oid=?";
+      List<ControllerConfig> configs = genericDAO.getHibernateTemplate().find(hql, account.getOid());
+      Set<ControllerConfig> configSet = new LinkedHashSet<ControllerConfig>();
       configSet.addAll(configs);
       initializeConfigs(configSet);
       return configSet;
@@ -101,10 +101,10 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<Config> imp
 
    @SuppressWarnings("unchecked")
    @Override
-   public Set<Config> listAllForCurrentAccount() {
-      String hql = "select cfg from Config cfg where cfg.account.oid=?";
-      List<Config> configs = genericDAO.getHibernateTemplate().find(hql, userService.getAccount().getOid());
-      Set<Config> configSet = new LinkedHashSet<Config>();
+   public Set<ControllerConfig> listAllForCurrentAccount() {
+      String hql = "select cfg from ControllerConfig cfg where cfg.account.oid=?";
+      List<ControllerConfig> configs = genericDAO.getHibernateTemplate().find(hql, userService.getAccount().getOid());
+      Set<ControllerConfig> configSet = new LinkedHashSet<ControllerConfig>();
       configSet.addAll(configs);
       initializeConfigs(configSet);
       return configSet;
@@ -113,7 +113,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<Config> imp
    @Override
    public Set<ConfigCategory> listAllCategory() {
       Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
-      Set<Config> allDefaultConfigs = new HashSet<Config>();
+      Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
       XmlParser.initControllerConfig(categories, allDefaultConfigs);
       return categories;
    }
@@ -129,13 +129,13 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<Config> imp
       return configs;
    }*/
    
-   private static void initializeConfigs(Set<Config> configs){
+   private static void initializeConfigs(Set<ControllerConfig> configs){
       Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
-      Set<Config> allDefaultConfigs = new HashSet<Config>();
+      Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
       XmlParser.initControllerConfig(categories, allDefaultConfigs);
-      for(Config cfg : configs){
-         Config oldCfg = cfg;
-         for(Config tmp: allDefaultConfigs){
+      for(ControllerConfig cfg : configs){
+         ControllerConfig oldCfg = cfg;
+         for(ControllerConfig tmp: allDefaultConfigs){
             if(tmp.getName().equals(cfg.getName())&& tmp.getCategory().equals(cfg.getCategory())){
                oldCfg = tmp;
                break;

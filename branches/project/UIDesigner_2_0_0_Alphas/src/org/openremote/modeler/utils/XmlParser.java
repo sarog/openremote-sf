@@ -41,7 +41,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
 import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.domain.Config;
+import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.exception.XmlParserException;
 import org.openremote.modeler.service.ControllerConfigService;
@@ -218,21 +218,21 @@ public class XmlParser {
    }
    
    @SuppressWarnings("unchecked")
-   public static Config buildFromXml(Element ele,String categoryName){
-      Config cfg = new Config();
+   public static ControllerConfig buildFromXml(Element ele,String categoryName){
+      ControllerConfig cfg = new ControllerConfig();
       List<Attribute> attributes = ele.getAttributes();
       for(Attribute attr : attributes){
-         if(Config.NAME_XML_ATTRIBUTE_NAME.equals(attr.getName())){
+         if(ControllerConfig.NAME_XML_ATTRIBUTE_NAME.equals(attr.getName())){
             cfg.setName(attr.getValue());
-         } else if(Config.VALUE_XML_ATTRIBUTE_NAME.equals(attr.getName())){
+         } else if(ControllerConfig.VALUE_XML_ATTRIBUTE_NAME.equals(attr.getName())){
             cfg.setValue(attr.getValue());
-         } else if(Config.VALIDATION_XML_ATTRIBUTE_NAME.equals(attr.getName())){
+         } else if(ControllerConfig.VALIDATION_XML_ATTRIBUTE_NAME.equals(attr.getName())){
             cfg.setValidation(attr.getValue());
-         } else if(Config.OPTION_XML_ATTRIBUTE_NAME.equals(attr.getName())){
+         } else if(ControllerConfig.OPTION_XML_ATTRIBUTE_NAME.equals(attr.getName())){
             cfg.setOptions(attr.getValue());
          }
       }
-      Element hintEle = ele.getChild(Config.HINT_XML_NODE_NAME,ele.getNamespace());
+      Element hintEle = ele.getChild(ControllerConfig.HINT_XML_NODE_NAME,ele.getNamespace());
       String hint = hintEle == null ?"":hintEle.getTextNormalize();
       cfg.setHint(hint);
       cfg.setCategory(categoryName==null?"":categoryName);
@@ -240,7 +240,7 @@ public class XmlParser {
    }
    
    @SuppressWarnings("unchecked")
-   public static void initControllerConfig(Set<ConfigCategory> categories,Collection<Config> defaultConfigs){
+   public static void initControllerConfig(Set<ConfigCategory> categories,Collection<ControllerConfig> defaultConfigs){
       Document doc = XmlParser.getDocument(ControllerConfigService.CONTROLLER_CONFIG_XML_FILE);
       Element root = doc.getRootElement();
       List<Element> categorys = root.getChildren(ConfigCategory.XML_NODE_NAME,root.getNamespace());
@@ -257,9 +257,9 @@ public class XmlParser {
          /*
           * initialize configuration
           */
-         List<Element> configEles = categoryEle.getChildren(Config.XML_NODE_NAME, categoryEle.getNamespace());
+         List<Element> configEles = categoryEle.getChildren(ControllerConfig.XML_NODE_NAME, categoryEle.getNamespace());
          for(Element configEle : configEles){
-            Config config = XmlParser.buildFromXml(configEle,categoryName);
+            ControllerConfig config = XmlParser.buildFromXml(configEle,categoryName);
             defaultConfigs.add(config);
          }
       }

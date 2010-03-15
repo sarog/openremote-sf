@@ -29,8 +29,9 @@ import org.openremote.modeler.domain.component.ImageSource;
  * @author Javen
  *
  */
-@SuppressWarnings("serial")
 public class Background extends BusinessEntity {
+   
+   private static final long serialVersionUID = 6464353679677279776L;
    
    private ImageSource imageSource = null;
    private boolean fillScreen = true;

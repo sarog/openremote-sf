@@ -27,9 +27,9 @@ import org.openremote.modeler.domain.UICommand;
 
 import flexjson.JSON;
 
-@SuppressWarnings("serial")
 public class UISwitch extends UIControl implements SensorOwner {
-
+   
+   private static final long serialVersionUID = 8617346306578381074L;
    private ImageSource onImage;
    private ImageSource offImage;
    private Switch switchCommand;

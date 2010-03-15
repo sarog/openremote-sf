@@ -38,8 +38,10 @@ import flexjson.JSON;
  * @author Javen
  *
  */
-@SuppressWarnings("serial")
 public class SensorLink extends BusinessEntity {
+   
+   private static final long serialVersionUID = 4070183628030926123L;
+   
    private Sensor sensor = null;
    private Set<LinkerChild> linkerChildren = new HashSet<LinkerChild>(5);
    
@@ -115,6 +117,9 @@ public class SensorLink extends BusinessEntity {
     *
     */
    public static class LinkerChild extends BusinessEntity {
+      
+      private static final long serialVersionUID = 7295371507206111361L;
+      
       String childName = "";
       Map<String,String> attributes = new HashMap<String,String>();
       

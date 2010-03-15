@@ -33,11 +33,12 @@ import flexjson.JSON;
  * 
  * @author Dan 2009-7-6
  */
-@SuppressWarnings("serial")
 @Entity
 @DiscriminatorValue("DEVICE_CMD_REF")
 public class DeviceCommandRef extends DeviceMacroItem {
    
+   private static final long serialVersionUID = 3969930759279661982L;
+
    /** The device command. */
    private DeviceCommand deviceCommand;
    

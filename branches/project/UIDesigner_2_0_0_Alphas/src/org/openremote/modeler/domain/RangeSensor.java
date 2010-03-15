@@ -25,12 +25,13 @@ import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 
-@SuppressWarnings("serial")
 @Entity
 @DiscriminatorValue("RANGE_SENSOR")
 @SecondaryTable(name = "range_sensor", pkJoinColumns = @PrimaryKeyJoinColumn(name = "oid"))
 public class RangeSensor extends Sensor {
 
+   private static final long serialVersionUID = 8187543869104066750L;
+   
    private int min;
    private int max;
 

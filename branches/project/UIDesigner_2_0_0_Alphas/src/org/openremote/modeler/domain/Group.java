@@ -29,8 +29,9 @@ import org.openremote.modeler.domain.component.UITabbarItem;
 /**
  * The Class Group.
  */
-@SuppressWarnings("serial")
 public class Group extends RefedEntity {
+
+   private static final long serialVersionUID = -9043041127351437532L;
 
    /** The default name index. */
    private static int defaultNameIndex = 1;

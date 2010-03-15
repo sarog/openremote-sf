@@ -24,11 +24,12 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
-@SuppressWarnings("serial")
 @Entity
 @DiscriminatorValue("SENSOR_CMD_REF")
 public class SensorCommandRef extends CommandRefItem {
 
+   private static final long serialVersionUID = 2310916896667009631L;
+   
    private Sensor sensor;
    
    @OneToOne

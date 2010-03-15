@@ -23,9 +23,10 @@ import org.openremote.modeler.domain.BusinessEntity;
 
 import flexjson.JSON;
 
-@SuppressWarnings("serial")
 public class Navigate extends BusinessEntity {
 
+   private static final long serialVersionUID = 4180916727141357903L;
+   
    private long toScreen = -1L;
    private long toGroup = -1L;
    private ToLogicalType toLogical = null;

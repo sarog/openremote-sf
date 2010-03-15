@@ -1,7 +1,8 @@
 package org.openremote.modeler.domain;
 
-@SuppressWarnings("serial")
 public class Template extends BusinessEntity {
+   private static final long serialVersionUID = -4719734393235222900L;
+   
    public static final long PRIVATE = -1L;
    public static final long PUBLIC = 0L;
    

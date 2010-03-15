@@ -21,9 +21,10 @@ package org.openremote.modeler.domain;
 
 import javax.persistence.Transient;
 
-@SuppressWarnings("serial")
 public class GroupRef extends BusinessEntity {
 
+   private static final long serialVersionUID = -8454086925745873969L;
+   
    private Group group;
    private Panel panel;
    
