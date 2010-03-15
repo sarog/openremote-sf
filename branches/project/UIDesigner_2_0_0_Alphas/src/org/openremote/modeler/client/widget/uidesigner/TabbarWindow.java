@@ -36,7 +36,6 @@ import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -120,7 +119,8 @@ public class TabbarWindow extends CommonWindow {
       tabbarItemsContainer.setWidth(260);
       tabbarItemsContainer.setHeight(130);
       tabbarItemsContainer.setLayout(new FitLayout());
-      tabbarItemsContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      tabbarItemsContainer.addStyleName("overflow-auto");
       
       tabbarItemListView = new ListView<BeanModel>();
       
@@ -130,6 +130,7 @@ public class TabbarWindow extends CommonWindow {
       }
       tabbarItemListView.setStore(store);
       tabbarItemListView.setDisplayProperty("displayName");
+      tabbarItemListView.setStyleAttribute("overflow", "auto");
       tabbarItemsContainer.add(tabbarItemListView);
       
       LayoutContainer buttonsContainer = new LayoutContainer();

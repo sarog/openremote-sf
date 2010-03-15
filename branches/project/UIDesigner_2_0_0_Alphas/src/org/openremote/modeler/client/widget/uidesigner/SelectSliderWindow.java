@@ -24,7 +24,6 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.domain.Slider;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -64,12 +63,14 @@ public class SelectSliderWindow extends Dialog {
       sliderListContainer.setBorders(false);
       sliderListContainer.setBodyBorder(false);
       sliderListContainer.setHeaderVisible(false);
-      sliderListContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      sliderListContainer.addStyleName("overflow-auto");
       
       ListStore<BeanModel> store = new ListStore<BeanModel>();
       store.add(BeanModelDataBase.sliderTable.loadAll());
       sliderList.setStore(store);
       sliderList.setDisplayProperty("displayName");
+      sliderList.setStyleAttribute("overflow", "auto");
       sliderList.setBorders(false);
       sliderListContainer.add(sliderList);
       add(sliderListContainer, new RowData(1, -1, new Margins(4)));

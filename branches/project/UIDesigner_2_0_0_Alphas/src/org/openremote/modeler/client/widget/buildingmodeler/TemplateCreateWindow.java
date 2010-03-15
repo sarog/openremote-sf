@@ -29,7 +29,6 @@ import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Template;
 
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -45,7 +44,6 @@ import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.Radio;
 import com.extjs.gxt.ui.client.widget.form.RadioGroup;
 import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.extjs.gxt.ui.client.widget.layout.FormData;
 
 /**
  * A window for creating a Template.
@@ -67,10 +65,8 @@ public class TemplateCreateWindow extends FormWindow
    
    public TemplateCreateWindow(){
       setPlain(true);  
-      setSize(500, 300);  
-//      setLayout(new FitLayout());  
+      setSize(350, 300);  
       setHeading("New Template");
-      setSize(500,300);
       setBodyBorder(true);
       createField();
       initScreenList();
@@ -89,7 +85,6 @@ public class TemplateCreateWindow extends FormWindow
       form.setLabelWidth(55);  
       form.setPadding(5);  
       form.setHeaderVisible(false); 
-      form.setScrollMode(Scroll.AUTOY);
       
       Button submitBtn = new Button();
       submitBtn.setText("Submit");
@@ -98,8 +93,8 @@ public class TemplateCreateWindow extends FormWindow
       submitBtn.addSelectionListener(new SubmitListener());
       cancleBtn.addSelectionListener(new CancleListener());
       
-      form.add(templateName,new FormData("100%"));
-      form.add(createShareView(),new FormData("100%"));
+      form.add(templateName);
+      form.add(createShareView());
       form.addButton(submitBtn);
       form.addButton(cancleBtn);
       add(form);
@@ -111,12 +106,14 @@ public class TemplateCreateWindow extends FormWindow
       store.add(BeanModelDataBase.screenTable.loadAll());
       screenList.setStore(store);
       screenList.setDisplayProperty("displayName");
-      screenList.setAutoHeight(true);
-      screenList.setDeferHeight(false);
+      screenList.setHeight(100);
+      screenList.setStyleAttribute("overflow", "auto");
       FieldSet screenListGroup = new FieldSet();
+      // overflow-auto style is for IE hack.
+      screenListGroup.addStyleName("overflow-auto");
       screenListGroup.setHeading("Select a screen");
       screenListGroup.add(screenList);
-      form.add(screenListGroup,new FormData("100% -53"));
+      form.add(screenListGroup);
    }
 
    private RadioGroup createShareView(){

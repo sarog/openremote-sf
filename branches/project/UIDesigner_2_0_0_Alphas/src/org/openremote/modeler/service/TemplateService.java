@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.service;
 
+import java.util.List;
+
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Template;
@@ -66,4 +68,6 @@ public interface TemplateService {
     * @return A wrap class consist of screen and its device set.   
     */
    ScreenFromTemplate reBuildCommand(Screen screen);
+   
+   List<Template> getTemplates(boolean isFromPrivate);
 }

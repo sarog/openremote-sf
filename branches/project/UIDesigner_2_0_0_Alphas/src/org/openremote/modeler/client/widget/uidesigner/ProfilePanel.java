@@ -49,7 +49,6 @@ import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.component.UITabbarItem;
 
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeListener;
@@ -142,7 +141,8 @@ public class ProfilePanel extends ContentPanel {
          }
       };
       initTreeWithAutoSavedPanels();
-      treeContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      treeContainer.addStyleName("overflow-auto");
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
       add(treeContainer);
