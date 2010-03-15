@@ -5,9 +5,10 @@ import java.util.Collection;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.Panel;
 
-@SuppressWarnings("serial")
 public class PanelsAndMaxOid extends BusinessEntity{
  
+   private static final long serialVersionUID = 2451009088912750552L;
+   
    private Collection<Panel> panels ;
    private long maxOid;
    

@@ -40,11 +40,12 @@ import flexjson.JSON;
  * 
  * @author Dan 2009-7-6
  */
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "device")
 public class Device extends BusinessEntity {
    
+   private static final long serialVersionUID = 2591003357551228807L;
+
    /** The name. */
    private String name;
    

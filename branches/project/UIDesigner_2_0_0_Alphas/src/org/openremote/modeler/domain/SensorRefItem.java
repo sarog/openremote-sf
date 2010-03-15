@@ -31,7 +31,6 @@ import javax.persistence.Transient;
 
 import flexjson.JSON;
 
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "sensor_ref_item")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -39,6 +38,8 @@ import flexjson.JSON;
 @DiscriminatorValue("SENSOR_REF_ITEM")
 public class SensorRefItem extends BusinessEntity {
 
+   private static final long serialVersionUID = 6345154064811943808L;
+   
    private Sensor sensor;
    
    @OneToOne

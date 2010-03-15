@@ -29,9 +29,10 @@ import flexjson.JSON;
 /**
  * The Gesture defined the gesture on screen.
  */
-@SuppressWarnings("serial")
 public class Gesture extends UIControl {
 
+   private static final long serialVersionUID = -6553735205979965418L;
+   
    private GestureType type;
    private Navigate navigate = new Navigate();
    private UICommand uiCommand;
@@ -90,6 +91,7 @@ public class Gesture extends UIControl {
       XMLContent.append("</gesture>");
       return XMLContent.toString();
    }
+   @SuppressWarnings("serial")
    @JSON(include=false)
    @Override
    public List<UICommand> getCommands() {

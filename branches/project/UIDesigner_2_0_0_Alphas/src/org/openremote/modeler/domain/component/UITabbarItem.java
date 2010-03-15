@@ -21,9 +21,10 @@ package org.openremote.modeler.domain.component;
 
 import javax.persistence.Transient;
 
-@SuppressWarnings("serial")
 public class UITabbarItem extends UIComponent {
 
+   private static final long serialVersionUID = -3815544266807672929L;
+   
    private String name = "TabbarItem";
    private ImageSource image;
    private Navigate navigate = new Navigate();

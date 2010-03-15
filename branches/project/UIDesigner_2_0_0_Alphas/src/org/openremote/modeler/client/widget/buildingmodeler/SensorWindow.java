@@ -349,7 +349,6 @@ public class SensorWindow extends FormWindow {
          public void handleEvent(FormEvent be) {
             if (null == sensorModel) {
                Sensor sensor = new Sensor();
-               sensor.setDevice(device);
                if (typeList.getValue() != null) {
                   SensorType type = ((ComboBoxDataModel<SensorType>) typeList.getValue()).getData();
                   if (type == SensorType.RANGE) {
@@ -371,6 +370,7 @@ public class SensorWindow extends FormWindow {
                   typeList.focus();
                   return;
                }
+               sensor.setDevice(device);
                sensor.setName(nameField.getValue());
                BeanModel selectedCommand = commandSelectTree.getSelectionModel().getSelectedItem();
                if (selectedCommand != null && selectedCommand.getBean() instanceof DeviceCommand) {

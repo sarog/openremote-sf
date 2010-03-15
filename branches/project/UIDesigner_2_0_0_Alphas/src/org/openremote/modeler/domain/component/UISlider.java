@@ -8,9 +8,10 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.UICommand;
 
-@SuppressWarnings("serial")
 public class UISlider extends UIControl implements SensorOwner {
-
+   
+   private static final long serialVersionUID = 4821886776184406692L;
+   
    private boolean vertical = false;
    private ImageSource thumbImage;
    private ImageSource minImage;
@@ -144,15 +145,17 @@ public class UISlider extends UIControl implements SensorOwner {
 
    @Override
    public String getName() {
-      return "Slider("+(vertical?"Vertical":"Horizontal")+")";
+      return "Slider";
    }
-   
-   public @Override int getPreferredWidth(){
-      return vertical?44:198;
+
+   @Override
+   public int getPreferredWidth() {
+      return vertical ? 44 : 198;
    }
-   
-   public @Override int getPreferredHeight(){
-      return vertical?198:44;
+
+   @Override
+   public int getPreferredHeight() {
+      return vertical ? 198 : 44;
    }
 
    @Override

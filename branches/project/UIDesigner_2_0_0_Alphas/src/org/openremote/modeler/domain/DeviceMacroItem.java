@@ -39,7 +39,6 @@ import flexjson.JSON;
  * 
  * @author Dan 2009-7-6
  */
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "device_macro_item")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -47,6 +46,8 @@ import flexjson.JSON;
 @DiscriminatorValue("DEVICE_MACRO_ITEM")
 public class DeviceMacroItem extends UICommand {
 
+   private static final long serialVersionUID = 493702462609922642L;
+   
    /** The parent device macro. */
    private DeviceMacro parentDeviceMacro;
 

@@ -31,11 +31,12 @@ import javax.persistence.OrderBy;
 /**
  * The Class CustomSensor.
  */
-@SuppressWarnings("serial")
 @Entity
 @DiscriminatorValue("CUSTOM_SENSOR")
 public class CustomSensor extends Sensor {
 
+   private static final long serialVersionUID = 8005062021509479312L;
+   
    private List<State> states = new ArrayList<State>();
    
    public CustomSensor() {

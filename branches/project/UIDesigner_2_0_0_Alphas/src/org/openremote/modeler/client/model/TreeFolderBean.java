@@ -24,8 +24,9 @@ import org.openremote.modeler.domain.BusinessEntity;
 /**
  * The Class TreeFolderBean.
  */
-@SuppressWarnings("serial")
 public class TreeFolderBean extends BusinessEntity {
+
+   private static final long serialVersionUID = -8480046408027493475L;
 
    /**
     * Gets the type.
