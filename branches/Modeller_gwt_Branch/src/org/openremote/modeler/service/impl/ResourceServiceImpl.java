@@ -336,7 +336,7 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @param command
     *           the device command item
-    * @param protocolEventContaine
+    * @param protocolEventContainer
     *           the protocol event container
     * 
     * @return the controller xml segment content
@@ -372,6 +372,7 @@ public class ResourceServiceImpl implements ResourceService {
             return new ArrayList<Command>();
          }
       } catch (Exception e) {
+         LOGGER.warn(e.getMessage(), e);
          return new ArrayList<Command>();
       }
       return oneUIButtonEventList;
@@ -457,12 +458,12 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    /**
-    * Gets the devcie macro item section ids.
+    * Gets the device macro item section ids.
     * 
     * @param deviceMacroItem
     *           the device macro item
     * 
-    * @return the devcie macro item section ids
+    * @return the device macro item section ids
     */
    private Set<String> getDeviceMacroItemSectionIds(DeviceMacroItem deviceMacroItem) {
       Set<String> deviceMacroRefSectionIds = new HashSet<String>();
