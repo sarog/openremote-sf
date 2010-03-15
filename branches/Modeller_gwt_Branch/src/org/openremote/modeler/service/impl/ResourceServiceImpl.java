@@ -803,7 +803,7 @@ public class ResourceServiceImpl implements ResourceService {
          FileUtilsExt.writeStringToFile(controllerXMLFile, controllerXmlContent);
          // FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
 
-         if (sectionIds!=null && sectionIds != "") {
+         if (sectionIds != null && sectionIds != "") {
             FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
          }
          if (lircdFile.exists() && lircdFile.length() == 0) {
@@ -865,15 +865,19 @@ public class ResourceServiceImpl implements ResourceService {
          Long maxOid = ois.readLong();
          panelsAndMaxOid = new PanelsAndMaxOid(panels, maxOid);
       } catch (Exception e) {
-         LOGGER.error("restore failed from server");
-         throw new RuntimeException(e);
+         // TODO: this exception use looks very suspicious -- unhandled, one failure from single
+         //       user may impact the entire app
+         throw new RuntimeException("restore failed from server", e);
       } finally {
          try {
             if (ois != null) {
                ois.close();
             }
-         } catch (IOException e) {
-            e.printStackTrace();
+         } catch (IOException ioException) {
+            LOGGER.warn(
+                "Failed to close input stream from '" + panelsObjFile + "': " +
+                ioException.getMessage(), ioException
+            );
          }
       }
       return panelsAndMaxOid;
