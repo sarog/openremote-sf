@@ -158,9 +158,7 @@ public class ScreenWindow extends FormWindow {
                   break;
                case CREATE_BY_TEMPLATE:
                   buildScreenFromTemplate(be, groupRef);
-                  if (screen == null) {
-                    return;
-                  }
+                  return;
                case NEW:
                   screenRef = createScreen(groupRef);
                   screen.setName(nameField.getValue());
@@ -200,6 +198,7 @@ public class ScreenWindow extends FormWindow {
                         BeanModelDataBase.deviceTable.insert(device.getBeanModel());
                      }
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));
+                     ScreenWindow.this.hide();
                   }
 
                   @Override
