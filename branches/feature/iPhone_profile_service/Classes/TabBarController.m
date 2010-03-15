@@ -38,35 +38,54 @@
 			[self.view setFrame:CGRectMake(0, 0, 320, 460)];			
 			self.groupController = groupControllerParam;
 			NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
+			int i = 0;
+			int selected = i;
 			for (TabBarItem *tabBarItem in customziedTabBar.tabBarItems) {
+				
 				UIViewController *itemController = [[UIViewController alloc] init];
 				itemController.view = groupController.view;
-				NSLog(@"before title is : %@", [tabBarItem tabBarItemName]);
 				itemController.tabBarItem.title = tabBarItem.tabBarItemName;
 				UIImage *image = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:tabBarItem.tabBarItemImage.src]];
 				itemController.tabBarItem.image = image;
-				NSLog(@"after title is : %@", itemController.tabBarItem.title);
 				
 				[viewControllers addObject:itemController];
+				
+				if (tabBarItem.navigate && groupController.group.groupId == tabBarItem.navigate.toGroup) {
+					selected = i;
+				}
+				i++;
 			}
 			self.viewControllers = viewControllers;
+			//set selected index after viewControllers have been added, or it won't work
+			//otherwise must set selected index in viewDidLoad
+			[self setSelectedIndex:selected];
 		}
 	}
 	return self;
 	
 }
 
+- (void)updateGroupController:(GroupController *)groupControllerParam {
+	self.groupController = groupControllerParam;
+	NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
+	for (TabBarItem *tabBarItem in customziedTabBar.tabBarItems) {
+		UIViewController *itemController = [[UIViewController alloc] init];
+		itemController.view = groupController.view;
+		itemController.tabBarItem.title = tabBarItem.tabBarItemName;
+		UIImage *image = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:tabBarItem.tabBarItemImage.src]];
+		itemController.tabBarItem.image = image;
+		
+		[viewControllers addObject:itemController];
+	}
+	self.viewControllers = viewControllers;
+}
+
 #pragma mark Delegate method of UITabBarController
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
 	NSString *selectedViewControllerTitle = viewController.tabBarItem.title;
 	for (TabBarItem *tabBarItem in customziedTabBar.tabBarItems) {
-		NSLog(@"tabBarItem name is %@", tabBarItem.tabBarItemName);
-		NSLog(@"selectedViewControllerTitle is %@", selectedViewControllerTitle);
 		if ([selectedViewControllerTitle isEqualToString:tabBarItem.tabBarItemName]) {
 			if (tabBarItem.navigate) {
-				NSLog(@"navigate isPreviousScreen is: %d", tabBarItem.navigate.isPreviousScreen);
-				NSLog(@"navigate isNextScreen is: %d", tabBarItem.navigate.isNextScreen);
-				NSLog(@"navigate isSetting is: %d", tabBarItem.navigate.isSetting);
 				[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
 			}
 		}

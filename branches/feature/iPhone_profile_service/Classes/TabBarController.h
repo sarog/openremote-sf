@@ -29,6 +29,7 @@
 }
 
 - (id) initWithGroupController:(GroupController *)groupControllerParam tabBar:(TabBar *)tabBar;
+- (void)updateGroupController:(GroupController *)groupControllerParam;
 
 @property (nonatomic, retain) TabBar *customziedTabBar;
 @property (nonatomic, retain) GroupController *groupController;
