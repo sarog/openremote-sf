@@ -547,10 +547,9 @@ public class ResourceServiceImpl implements ResourceService {
       try {
          String[] includedPropertyNames = {"screenRefs"};
          String[] excludePropertyNames = {};
-         String groupsJson = JsonGenerator.serializerObjectInclude(groups, includedPropertyNames, excludePropertyNames);
-         return groupsJson;
+         return JsonGenerator.serializerObjectInclude(groups, includedPropertyNames, excludePropertyNames);
       } catch (Exception e) {
-         e.printStackTrace();
+         LOGGER.error(e);
          return "";
       }
    }
@@ -561,11 +560,10 @@ public class ResourceServiceImpl implements ResourceService {
          String[] includedPropertyNames = {"absolutes", "absolutes.uiComponent", "grid", "grid.cells",
                "grid.cells.uiComponent"};
          String[] excludePropertyNames = {"absolutes.uiComponent.panelXml", "grid.cells.uiComponent.panelXml"};
-         String groupsJson = JsonGenerator
+         return JsonGenerator
                .serializerObjectInclude(screens, includedPropertyNames, excludePropertyNames);
-         return groupsJson;
       } catch (Exception e) {
-         e.printStackTrace();
+         LOGGER.error(e);
          return "";
       }
    }
@@ -585,10 +583,9 @@ public class ResourceServiceImpl implements ResourceService {
                "groupRefs.group.screenRefs.screen.grids.uiComponent.sensor",
                "groupRefs.group.screenRefs.screen.grids.cells.uiComponent.sensor" };
          String[] excludePropertyNames = {"panelName"};
-         String panelsJson = JsonGenerator.serializerObjectInclude(panels, includedPropertyNames, excludePropertyNames);
-         return panelsJson;
+         return JsonGenerator.serializerObjectInclude(panels, includedPropertyNames, excludePropertyNames);
       } catch (Exception e) {
-         e.printStackTrace();
+         LOGGER.error(e);
          return "";
       }
    }
@@ -608,6 +605,7 @@ public class ResourceServiceImpl implements ResourceService {
          context.put("screens", screens);
          return VelocityEngineUtils.mergeTemplateIntoString(velocity, PANEL_XML_TEMPLATE, context);
       } catch (Exception e) {
+        // TODO: this exception use looks suspicious
          throw new RuntimeException("Failed to read panel.xml", e);
       }
 
@@ -750,7 +748,7 @@ public class ResourceServiceImpl implements ResourceService {
    
 
    @Override
-   public void initResources(Collection<Panel> panels,long maxOid) {
+   public void initResources(Collection<Panel> panels, long maxOid) {
       Set<Group> groups = new LinkedHashSet<Group>();
       Set<Screen> screens = new LinkedHashSet<Screen>();
       /*
