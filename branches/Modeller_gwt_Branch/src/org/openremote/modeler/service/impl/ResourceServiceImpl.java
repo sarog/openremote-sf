@@ -450,7 +450,7 @@ public class ResourceServiceImpl implements ResourceService {
     */
    private void addSectionIds(Set<String> sectionIds, UICommand command) {
       if (command instanceof DeviceMacroItem) {
-         sectionIds.addAll(getDevcieMacroItemSectionIds((DeviceMacroItem) command));
+         sectionIds.addAll(getDeviceMacroItemSectionIds((DeviceMacroItem) command));
       } else if (command instanceof CommandRefItem) {
          sectionIds.add(((CommandRefItem) command).getDeviceCommand().getSectionId());
       }
@@ -464,7 +464,7 @@ public class ResourceServiceImpl implements ResourceService {
     * 
     * @return the devcie macro item section ids
     */
-   private Set<String> getDevcieMacroItemSectionIds(DeviceMacroItem deviceMacroItem) {
+   private Set<String> getDeviceMacroItemSectionIds(DeviceMacroItem deviceMacroItem) {
       Set<String> deviceMacroRefSectionIds = new HashSet<String>();
       if (deviceMacroItem instanceof DeviceCommandRef) {
          deviceMacroRefSectionIds.add(((DeviceCommandRef) deviceMacroItem).getDeviceCommand().getSectionId());
@@ -472,7 +472,7 @@ public class ResourceServiceImpl implements ResourceService {
          DeviceMacro deviceMacro = ((DeviceMacroRef) deviceMacroItem).getTargetDeviceMacro();
          deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
          for (DeviceMacroItem nextDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
-            deviceMacroRefSectionIds.addAll(getDevcieMacroItemSectionIds(nextDeviceMacroItem));
+            deviceMacroRefSectionIds.addAll(getDeviceMacroItemSectionIds(nextDeviceMacroItem));
          }
       }
       return deviceMacroRefSectionIds;
@@ -1132,8 +1132,8 @@ public class ResourceServiceImpl implements ResourceService {
       if (namePassword == null) return null;
       return new String(Base64.encodeBase64(namePassword.getBytes()));
    }
-   
-   static class MaxId{
+
+  static class MaxId{
       Long maxId = 0L;
       public MaxId(Long maxId){
          this.maxId = maxId;
