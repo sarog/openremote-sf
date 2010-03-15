@@ -27,9 +27,11 @@ import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UISlider;
 
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 
 
-public abstract class ScreenSlider extends ScreenComponent {
+public class ScreenSlider extends ScreenComponent {
+   private boolean imagesUpdated = false;
 
    private UISlider uiSlider;
 
@@ -41,12 +43,17 @@ public abstract class ScreenSlider extends ScreenComponent {
 
    public ScreenSlider(ScreenCanvas screenCanvas) {
       super(screenCanvas);
+      setLayout(new FlowLayout());
    }
 
    public ScreenSlider(ScreenCanvas screenCanvas, UISlider uiSlider) {
       this(screenCanvas);
       this.uiSlider = uiSlider;
-      setDefault();
+//      setDefault();
+      toHorizontal();
+      if(!imagesUpdated) {
+         setHorizontalDefaultImages();
+      }
       add(minImage);
       add(minTrackImage);
       add(thumbImage);
@@ -81,33 +88,36 @@ public abstract class ScreenSlider extends ScreenComponent {
       return new SliderPropertyForm(this);
    }
 
-   public abstract void setDefault();
-
    public void setMinImage(String imageURL) {
       ImageSource minImageSource = new ImageSource();
       minImageSource.setSrc(imageURL);
       uiSlider.setMinImage(minImageSource);
       minImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
+      imagesUpdated = true;
    }
 
    public void setMinTrackImage(String imageURL) {
       uiSlider.setMinTrackImage(new ImageSource(imageURL));
       minTrackImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
+      imagesUpdated = true;
    }
 
    public void setThumbImage(String imageURL) {
       uiSlider.setThumbImage(new ImageSource(imageURL));
       thumbImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
+      imagesUpdated = true;
    }
 
    public void setMaxTrackImage(String imageURL) {
       uiSlider.setMaxTrackImage(new ImageSource(imageURL));
       maxTrackImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
+      imagesUpdated = true;
    }
 
    public void setMaxImage(String imageURL) {
       uiSlider.setMaxImage(new ImageSource(imageURL));
       maxImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
+      imagesUpdated = true;
    }
 
    public void setSlider(Slider slider) {
@@ -116,5 +126,73 @@ public abstract class ScreenSlider extends ScreenComponent {
 
    public Slider getSlider() {
       return uiSlider.getSlider();
+   }
+   
+   public void setVertical(boolean isVertical) {
+      uiSlider.setVertical(isVertical);
+      if(isVertical) {
+         toVertical();
+         if(!imagesUpdated) {
+            setVerticalDefaultImages();
+         }
+      } else {
+        toHorizontal();
+         if(!imagesUpdated) {
+            setHorizontalDefaultImages();
+         }
+      }
+//      setWidth(uiSlider.getPreferredWidth());
+//      setHeight(uiSlider.getPreferredHeight());
+//      setSize(uiSlider.getPreferredWidth(),uiSlider.getPreferredHeight());
+      this.getScreenCanvas().setSizeToDefault(uiSlider);
+      this.layout();
+   }
+   
+   private void toVertical() {
+      //1, remove the style for horizontal slider. 
+      minImage.removeStyleName("sliderMinImage");
+      minTrackImage.removeStyleName("sliderMinTrackImage");
+      thumbImage.removeStyleName("sliderThumbImage");
+      maxTrackImage.removeStyleName("sliderMaxTrackImage");
+      maxImage.removeStyleName("sliderMaxImage");
+      //2, add the style for vertical slider. 
+      minImage.addStyleName("vsliderMinImage");
+      minTrackImage.addStyleName("vsliderMinTrackImage");
+      thumbImage.addStyleName("vsliderThumbImage");
+      maxTrackImage.addStyleName("vsliderMaxTrackImage");
+      maxImage.addStyleName("vsliderMaxImage");
+   }
+   
+   private void toHorizontal() {
+      //1, remove the style for vertical slider.
+      minImage.removeStyleName("vsliderMinImage");
+      minTrackImage.removeStyleName("vsliderMinTrackImage");
+      thumbImage.removeStyleName("vsliderThumbImage");
+      maxTrackImage.removeStyleName("vsliderMaxTrackImage");
+      maxImage.removeStyleName("vsliderMaxImage");
+      //2, add the style for horizontal slider.
+      minImage.addStyleName("sliderMinImage");
+      minTrackImage.addStyleName("sliderMinTrackImage");
+      thumbImage.addStyleName("sliderThumbImage");
+      maxTrackImage.addStyleName("sliderMaxTrackImage");
+      maxImage.addStyleName("sliderMaxImage");
+   }
+   
+   private void setVerticalDefaultImages() {
+      setMinImage("./resources/images/custom/slider/vmin.png");
+      setMinTrackImage("./resources/images/custom/slider/vminTrack.png");
+      setThumbImage("./resources/images/custom/slider/vthumb.png");
+      setMaxTrackImage("./resources/images/custom/slider/vmaxTrack.png");
+      setMaxImage("./resources/images/custom/slider/vmax.png");
+      imagesUpdated = false;
+   }
+   
+   private void setHorizontalDefaultImages() {
+      setMinImage("./resources/images/custom/slider/min.png");
+      setMinTrackImage("./resources/images/custom/slider/minTrack.png");
+      setThumbImage("./resources/images/custom/slider/thumb.png");
+      setMaxTrackImage("./resources/images/custom/slider/maxTrack.png");
+      setMaxImage("./resources/images/custom/slider/max.png");
+      imagesUpdated = false;
    }
 }

@@ -26,9 +26,10 @@ import org.openremote.modeler.domain.Sensor;
  * @author Javen
  * 
  */
-@SuppressWarnings("serial")
 public class UILabel extends UIComponent implements SensorOwner {
 
+   private static final long serialVersionUID = 1170515762454958893L;
+   
    private String text = "Label Text";
    private String color = "FFFFFF";
    private int fontSize = 10;

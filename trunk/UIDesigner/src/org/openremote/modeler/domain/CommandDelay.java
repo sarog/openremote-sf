@@ -26,11 +26,12 @@ import javax.persistence.Transient;
 /**
  * The Class CommandDelay.
  */
-@SuppressWarnings("serial")
 @Entity
 @DiscriminatorValue("CMD_DELAY")
 public class CommandDelay extends DeviceMacroItem {
 
+   private static final long serialVersionUID = -6381795078683635947L;
+   
    /** The delay second. */
    private String delaySecond;
    

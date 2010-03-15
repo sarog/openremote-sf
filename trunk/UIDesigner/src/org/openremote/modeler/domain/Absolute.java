@@ -19,13 +19,17 @@
 */
 package org.openremote.modeler.domain;
 
+import org.openremote.modeler.client.widget.uidesigner.AbsoluteLayoutContainer;
 import org.openremote.modeler.domain.component.UIComponent;
+
+import flexjson.JSON;
 
 /**
  * The Class Absolute.
  */
-@SuppressWarnings("serial")
 public class Absolute extends BusinessEntity {
+
+   private static final long serialVersionUID = -114340249340271840L;
 
    /** The left. */
    private int left;
@@ -41,6 +45,8 @@ public class Absolute extends BusinessEntity {
    
    /** The ui control. */
    private UIComponent uiComponent;
+   
+   private transient AbsoluteLayoutContainer belongsTo= null;
    
    public Absolute() {
       super();
@@ -149,4 +155,15 @@ public class Absolute extends BusinessEntity {
       this.left = left;
       this.top = top;
    }
+
+   @JSON(include=false)
+   public AbsoluteLayoutContainer getBelongsTo() {
+      return belongsTo;
+   }
+
+   public void setBelongsTo(AbsoluteLayoutContainer belongsTo) {
+      this.belongsTo = belongsTo;
+   }
+   
+   
 }

@@ -24,11 +24,12 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
-@SuppressWarnings("serial")
 @Entity
 @DiscriminatorValue("SLIDER_CMD_REF")
 public class SliderCommandRef extends CommandRefItem {
 
+   private static final long serialVersionUID = 3523042607397517095L;
+   
    private Slider slider;
 
    public SliderCommandRef() {

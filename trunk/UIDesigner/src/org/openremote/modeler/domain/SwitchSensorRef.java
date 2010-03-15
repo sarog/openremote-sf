@@ -24,11 +24,12 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
-@SuppressWarnings("serial")
 @Entity
 @DiscriminatorValue("SWITCH_SENSOR_REF")
 public class SwitchSensorRef extends SensorRefItem {
 
+   private static final long serialVersionUID = -4636324663189338051L;
+   
    private Switch switchToggle;
 
    @OneToOne

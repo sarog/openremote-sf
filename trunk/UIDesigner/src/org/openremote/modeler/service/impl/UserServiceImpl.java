@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openremote.modeler.domain.Account;
-import org.openremote.modeler.domain.Config;
+import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.User;
@@ -117,9 +117,9 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     
     private void setDefaultConfigsForAccount(Account account){
        Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
-       Set<Config> allDefaultConfigs = new HashSet<Config>();
+       Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
        XmlParser.initControllerConfig(categories, allDefaultConfigs);
-       for(Config cfg : allDefaultConfigs){
+       for(ControllerConfig cfg : allDefaultConfigs){
           cfg.setAccount(account);
        }
        genericDAO.getHibernateTemplate().saveOrUpdateAll(allDefaultConfigs);

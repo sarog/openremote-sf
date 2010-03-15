@@ -22,9 +22,10 @@ package org.openremote.modeler.domain;
 /**
  * The Class RefedEntity defined refCount.
  */
-@SuppressWarnings("serial")
 public class RefedEntity extends BusinessEntity {
 
+   private static final long serialVersionUID = -7357154193810808172L;
+   
    private int refCount = 0;
    
    public void ref() {

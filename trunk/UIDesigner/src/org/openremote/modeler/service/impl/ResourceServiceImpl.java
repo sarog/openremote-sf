@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -48,6 +49,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.AbstractHttpMessage;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.openremote.modeler.client.Configuration;
@@ -59,7 +61,7 @@ import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.CommandRefItem;
-import org.openremote.modeler.domain.Config;
+import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -647,7 +649,7 @@ public class ResourceServiceImpl implements ResourceService {
       Collection<UIComponent> uiSliders = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UISlider.class);
       Collection<UIComponent> uiImages = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIImage.class);
       Collection<UIComponent> uiLabels = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UILabel.class);
-      Collection<Config> configs = controllerConfigService.listAllForCurrentAccount();
+      Collection<ControllerConfig> configs = controllerConfigService.listAllForCurrentAccount();
       
       context.put("switchs", switchs);
       context.put("buttons", buttons);
@@ -844,26 +846,27 @@ public class ResourceServiceImpl implements ResourceService {
 
    @SuppressWarnings("unchecked")
    public PanelsAndMaxOid restore(){
+      //First, try to down openremote.zip from beehive.
+      downloadOpenRemoteZip();
+      //Restore panels and max oid. 
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File panelsObjFile = new File(pathConfig.getSerizalizedPanelsFile(userService.getAccount()));
-      if(!panelsObjFile.exists()){
+      if (!panelsObjFile.exists()) {
          return null;
       }
       ObjectInputStream ois = null;
       PanelsAndMaxOid panelsAndMaxOid = null;
-      try{
-         
+      try {
          ois = new ObjectInputStream(new FileInputStream(panelsObjFile));
          Collection<Panel> panels = (Collection<Panel>) ois.readObject();
          Long maxOid = ois.readLong();
-         panelsAndMaxOid = new PanelsAndMaxOid(panels,maxOid);
-         
-      } catch(Exception e){
+         panelsAndMaxOid = new PanelsAndMaxOid(panels, maxOid);
+      } catch (Exception e) {
          LOGGER.error("restore failed from server");
          throw new RuntimeException(e);
       } finally {
          try {
-            if(ois!=null){
+            if (ois != null) {
                ois.close();
             }
          } catch (IOException e) {
@@ -879,6 +882,7 @@ public class ResourceServiceImpl implements ResourceService {
       HttpClient httpClient = new DefaultHttpClient();
       HttpPost httpPost = new HttpPost();
       String beehiveRootRestURL = configuration.getBeehiveRESTRootUrl();
+      this.addAuthentication(httpPost);
       try {
          httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid()
                + "/openremote.zip"));
@@ -905,7 +909,7 @@ public class ResourceServiceImpl implements ResourceService {
       try {
          if (!share) {
             httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid()
-                  + "/resource/template/" + template.getOid()));
+                  + "/template/" + template.getOid()+"/resource/"));
          } else {
             httpPost.setURI(new URI(beehiveRootRestURL + "account/0/template/" + template.getOid() + "/resource/"));
          }
@@ -914,6 +918,7 @@ public class ResourceServiceImpl implements ResourceService {
          MultipartEntity entity = new MultipartEntity();
          entity.addPart("resource", resource);
 
+         this.addAuthentication(httpPost);
          httpPost.setEntity(entity);
 
          HttpResponse response = httpClient.execute(httpPost);
@@ -938,10 +943,10 @@ public class ResourceServiceImpl implements ResourceService {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
       HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTRootUrl() + "account/"
-            + userService.getAccount().getOid() + "/template/resource/" + templateOid);
+            + userService.getAccount().getOid() + "/template/" + templateOid+"/resource");
       InputStream inputStream = null;
       FileOutputStream fos = null;
-
+      this.addAuthentication(httpGet);
       try {
          HttpResponse response = httpClient.execute(httpGet);
 
@@ -958,7 +963,7 @@ public class ResourceServiceImpl implements ResourceService {
             while ((len = inputStream.read(buffer)) != -1) {
                fos.write(buffer, 0, len);
             }
-
+            fos.flush();
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
          } else {
@@ -969,11 +974,57 @@ public class ResourceServiceImpl implements ResourceService {
          throw new BeehiveNotAvailableException(e.getMessage(), e);
       } finally {
          if (inputStream != null) {
-            try {
-               inputStream.close();
-            } catch (IOException e) {
-               e.printStackTrace();
+            try {inputStream.close();}catch(IOException e){}
+         }
+         if(fos!=null) {
+            try {fos.close();}catch(IOException e){}
+         }
+      }
+   }
+   
+   private void downloadOpenRemoteZip() {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTRootUrl() + "user/"
+            + userService.getAccount().getUser().getUsername()+"/openremote.zip");
+      InputStream inputStream = null;
+      FileOutputStream fos = null;
+
+      try {
+         this.addAuthentication(httpGet);
+         HttpResponse response = httpClient.execute(httpGet);
+         if (200 == response.getStatusLine().getStatusCode()) {
+            inputStream = response.getEntity().getContent();
+            File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
+            userFolder.mkdirs();
+            File outPut = new File(userFolder, "openremote.zip");
+            FileUtilsExt.deleteQuietly(outPut);
+            fos = new FileOutputStream(outPut);
+            byte[] buffer = new byte[1024];
+            int len = 0;
+
+            while ((len = inputStream.read(buffer)) != -1) {
+               fos.write(buffer, 0, len);
             }
+            fos.flush();
+            ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
+            FileUtilsExt.deleteQuietly(outPut);
+         } else if(404 == response.getStatusLine().getStatusCode()) {
+            LOGGER.warn("Failed to download openremote.zip from beehive. Status code: 404");
+            return;
+         }
+         else {
+            throw new BeehiveNotAvailableException("Failed to download resources for template, status code: "
+                  + response.getStatusLine().getStatusCode());
+         }
+      } catch (Exception e) {
+         throw new BeehiveNotAvailableException(e.getMessage(), e);
+      } finally {
+         if (inputStream != null) {
+            try {inputStream.close();}catch(IOException e){}
+         }
+         if(fos!=null) {
+            try {fos.close();}catch(IOException e){}
          }
       }
    }
@@ -1005,13 +1056,18 @@ public class ResourceServiceImpl implements ResourceService {
       List<String> ignoreExtentions = new ArrayList<String>();
       ignoreExtentions.add("zip");
       ignoreExtentions.add("xml");
-      ignoreExtentions.add("obj");
+//      ignoreExtentions.add("obj");
       return getResourceZipFile(ignoreExtentions);
    }
    private File getExportResource() {
       List<String> ignoreExtentions = new ArrayList<String>();
       ignoreExtentions.add("zip");
       return getResourceZipFile(ignoreExtentions);
+   }
+   
+   private String encode(String namePassword) {
+      if (namePassword == null) return null;
+      return new String(Base64.encodeBase64(namePassword.getBytes()));
    }
    
    static class MaxId{
@@ -1023,5 +1079,11 @@ public class ResourceServiceImpl implements ResourceService {
       public Long maxId(){
          return maxId++;
       }
+   }
+   
+   private void addAuthentication(AbstractHttpMessage httpMessage) {
+      httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
+            + encode(userService.getAccount().getUser().getUsername() + ":"
+                  + userService.getAccount().getUser().getPassword()));
    }
 }

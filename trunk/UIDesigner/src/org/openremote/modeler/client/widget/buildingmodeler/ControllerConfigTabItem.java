@@ -24,7 +24,7 @@ import java.util.Set;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.proxy.ControllerConfigBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.Config;
+import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.ConfigCategory;
 
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
@@ -56,7 +56,7 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 public class ControllerConfigTabItem extends TabItem {
 
    private ConfigCategory category;
-   private Set<Config> configs = null;
+   private Set<ControllerConfig> configs = null;
    private TextArea hintArea = new TextArea();
    private FormPanel configContainer = new FormPanel();
    private FieldSet hintFieldSet = new FieldSet();
@@ -106,12 +106,12 @@ public class ControllerConfigTabItem extends TabItem {
    
    private void initForm() {
       if (configs == null) {
-         ControllerConfigBeanModelProxy.getConfigs(category, new AsyncSuccessCallback<Set<Config>>() {
+         ControllerConfigBeanModelProxy.getConfigs(category, new AsyncSuccessCallback<Set<ControllerConfig>>() {
 
             @Override
-            public void onSuccess(Set<Config> result) {
+            public void onSuccess(Set<ControllerConfig> result) {
                configs = result;
-               for (Config config : configs) {
+               for (ControllerConfig config : configs) {
                   createProperty(config);
                }
                hintFieldSet.add(hintArea);
@@ -132,7 +132,7 @@ public class ControllerConfigTabItem extends TabItem {
       this.category = category;
    }
    
-   private void createProperty(Config config) {
+   private void createProperty(ControllerConfig config) {
       if (config.getOptions().trim().length() == 0) {
          TextField<String> configValueField = new TextField<String>();
          configValueField.setFieldLabel(config.getName());
@@ -161,7 +161,7 @@ public class ControllerConfigTabItem extends TabItem {
       }
    }
    
-   private void addUpdateListenerToTextField(final Config config,final TextField<String> configValueField){
+   private void addUpdateListenerToTextField(final ControllerConfig config,final TextField<String> configValueField){
       configValueField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
@@ -179,7 +179,7 @@ public class ControllerConfigTabItem extends TabItem {
       });
    }
    
-   private void addUpdateListenerToComboBox(final Config config,final ComboBox<ModelData> configValueComboBox){
+   private void addUpdateListenerToComboBox(final ControllerConfig config,final ComboBox<ModelData> configValueComboBox){
       configValueComboBox.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
 
          @SuppressWarnings("unchecked")
@@ -209,10 +209,10 @@ public class ControllerConfigTabItem extends TabItem {
  class SaveListener extends SelectionListener<ButtonEvent>{
    @Override
    public void componentSelected(ButtonEvent ce) {
-      ControllerConfigBeanModelProxy.saveAllConfigs(configs, new AsyncSuccessCallback<Set<Config>>(){
+      ControllerConfigBeanModelProxy.saveAllConfigs(configs, new AsyncSuccessCallback<Set<ControllerConfig>>(){
 
          @Override
-         public void onSuccess(Set<Config> result) {
+         public void onSuccess(Set<ControllerConfig> result) {
             configs = result;
             Info.display("save", "Property saved successfully");
          }
