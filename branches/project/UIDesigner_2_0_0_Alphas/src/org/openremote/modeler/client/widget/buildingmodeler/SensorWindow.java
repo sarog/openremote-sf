@@ -103,7 +103,7 @@ public class SensorWindow extends FormWindow {
    public SensorWindow(Device device){
       this.device = device;
       if(device==null){
-         throw new RuntimeException("A sensor must belong to a device!");
+         throw new NullPointerException("A sensor must belong to a device!");
       }
       setHeading("New sensor");
       init();

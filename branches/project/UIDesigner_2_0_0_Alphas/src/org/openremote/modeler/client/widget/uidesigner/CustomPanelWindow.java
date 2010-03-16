@@ -49,6 +49,7 @@ import com.google.gwt.json.client.JSONParser;
 public class CustomPanelWindow extends FormWindow {
 
    private static final String PANEL_NAME = "panelName";
+   private Panel panel = null;
    private TextField<String> panelNameField = null;
    private TextField<Integer> screenWidthField = null;
    private TextField<Integer> screenHeightField = null;
@@ -64,6 +65,12 @@ public class CustomPanelWindow extends FormWindow {
       show();
    }
 
+   public CustomPanelWindow(Panel panel) {
+      super();
+      this.panel = panel;
+      initial("Edit Custom Panel");
+      show();
+   }
    private void initial(String heading) {
       setWidth(380);
       setAutoHeight(true);
@@ -83,7 +90,11 @@ public class CustomPanelWindow extends FormWindow {
       panelNameField.setName(PANEL_NAME);
       panelNameField.setFieldLabel("Name");
       panelNameField.setAllowBlank(false);
-      panelNameField.setValue(Panel.getNewDefaultName());
+      if (panel != null) {
+         panelNameField.setValue(panel.getName());
+      } else {
+         panelNameField.setValue(Panel.getNewDefaultName());
+      }
       
       form.add(panelNameField);
       form.add(createTypeField());
@@ -128,6 +139,14 @@ public class CustomPanelWindow extends FormWindow {
       panelPaddingTopField.setRegex(Constants.REG_NONNEGATIVEINT);
       panelPaddingTopField.getMessages().setRegexText("The padding top must be a nonnegative integer");
       
+      if (panel != null) {
+         TouchPanelDefinition touchPanelDefinition = panel.getTouchPanelDefinition();
+         screenWidthField.setValue(touchPanelDefinition.getCanvas().getWidth());
+         screenHeightField.setValue(touchPanelDefinition.getCanvas().getHeight());
+         panelPaddingLeftField.setValue(touchPanelDefinition.getPaddingLeft());
+         panelPaddingTopField.setValue(touchPanelDefinition.getPaddingTop());
+         panelImage.setValue(touchPanelDefinition.getBgImage());
+      }
       initIntegerFieldStyle(panelPaddingLeftField, panelPaddingTopField, panelImage,
             screenWidthField, screenHeightField);
       
@@ -155,45 +174,44 @@ public class CustomPanelWindow extends FormWindow {
       form.addListener(Events.Submit, new Listener<FormEvent>() {
          @Override
          public void handleEvent(FormEvent be) {
-            Panel panel = new Panel();
-            panel.setOid(IDUtil.nextID());
-            Panel.increaseDefaultNameIndex();
-            TouchPanelDefinition customPanel = new TouchPanelDefinition();
-            
             String panelImageURL = be.getResultHtml();
-            if (panelImageURL != null && !"".equals(panelImageURL)) {
-               JSONObject jsonObj = JSONParser.parse(panelImageURL).isObject();
-               customPanel.setBgImage(jsonObj.get("name").toString());
-               customPanel.setWidth(Integer.valueOf(jsonObj.get("width").toString()));
-               customPanel.setHeight(Integer.valueOf(jsonObj.get("height").toString()));
+            TouchPanelDefinition customPanel;
+            if (panel == null) {
+               panel = new Panel();
+               panel.setOid(IDUtil.nextID());
+               Panel.increaseDefaultNameIndex();
+               customPanel = new TouchPanelDefinition();
+               customPanel.setCanvas(new TouchPanelCanvasDefinition(Integer.valueOf(screenWidthField.getRawValue()),
+                     Integer.valueOf(screenHeightField.getRawValue())));
+               customPanel.setType(Constants.CUSTOM_PANEL);
+               customPanel.setName(Constants.CUSTOM_PANEL);
+               initCustomPanelDefinition(panelImageURL, customPanel);
+               panel.setTouchPanelDefinition(customPanel);
+               
+               Group defaultGroup = new Group();
+               defaultGroup.setOid(IDUtil.nextID());
+               defaultGroup.setName(Constants.DEFAULT_GROUP);
+               GroupRef groupRef = new GroupRef(defaultGroup);
+               panel.addGroupRef(groupRef);
+               groupRef.setPanel(panel);
+               
+               Screen defaultScreen = new Screen();
+               defaultScreen.setOid(IDUtil.nextID());
+               defaultScreen.setName(Constants.DEFAULT_SCREEN);
+               defaultScreen.setTouchPanelDefinition(panel.getTouchPanelDefinition());
+               ScreenRef screenRef = new ScreenRef(defaultScreen);
+               screenRef.setGroup(defaultGroup);
+               defaultGroup.addScreenRef(screenRef);
+               BeanModelDataBase.screenTable.insert(defaultScreen.getBeanModel());
+               BeanModelDataBase.groupTable.insert(defaultGroup.getBeanModel());
+               
+            } else {
+               customPanel = panel.getTouchPanelDefinition();
+               customPanel.getCanvas().setWidth(Integer.valueOf(screenWidthField.getRawValue()));
+               customPanel.getCanvas().setHeight(Integer.valueOf(screenHeightField.getRawValue()));
+               initCustomPanelDefinition(panelImageURL, customPanel);
             }
-            customPanel.setCanvas(new TouchPanelCanvasDefinition(Integer.valueOf(screenWidthField.getRawValue()),
-                  Integer.valueOf(screenHeightField.getRawValue())));
-            customPanel.setType(Constants.CUSTOM_PANEL);
-            customPanel.setName(Constants.CUSTOM_PANEL);
-            if (!"".equals(panelPaddingLeftField.getRawValue())) {
-               customPanel.setPaddingLeft(Integer.valueOf(panelPaddingLeftField.getRawValue()));
-            }
-            if (!"".equals(panelPaddingTopField.getRawValue())) {
-               customPanel.setPaddingTop(Integer.valueOf(panelPaddingTopField.getRawValue()));
-            }
-            panel.setTouchPanelDefinition(customPanel);
-            Group defaultGroup = new Group();
-            defaultGroup.setOid(IDUtil.nextID());
-            defaultGroup.setName(Constants.DEFAULT_GROUP);
-            GroupRef groupRef = new GroupRef(defaultGroup);
-            panel.addGroupRef(groupRef);
-            groupRef.setPanel(panel);
-
-            Screen defaultScreen = new Screen();
-            defaultScreen.setOid(IDUtil.nextID());
-            defaultScreen.setName(Constants.DEFAULT_SCREEN);
-            defaultScreen.setTouchPanelDefinition(panel.getTouchPanelDefinition());
-            ScreenRef screenRef = new ScreenRef(defaultScreen);
-            screenRef.setGroup(defaultGroup);
-            defaultGroup.addScreenRef(screenRef);
-            BeanModelDataBase.screenTable.insert(defaultScreen.getBeanModel());
-            BeanModelDataBase.groupTable.insert(defaultGroup.getBeanModel());
+            
             panel.setName(panelNameField.getValue());
             BeanModelDataBase.panelTable.insert(panel.getBeanModel());
             fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(panel));
@@ -204,6 +222,25 @@ public class CustomPanelWindow extends FormWindow {
    private void initIntegerFieldStyle(TextField<?>... fields) {
       for (TextField<?> field : fields) {
          field.setLabelStyle("text-align:right;");
+      }
+   }
+
+   /**
+    * @param panelImageURL
+    * @param customPanel
+    */
+   private void initCustomPanelDefinition(String panelImageURL, TouchPanelDefinition customPanel) {
+      if (panelImageURL != null && !"".equals(panelImageURL)) {
+         JSONObject jsonObj = JSONParser.parse(panelImageURL).isObject();
+         customPanel.setBgImage(jsonObj.get("name").isString().stringValue());
+         customPanel.setWidth(Integer.valueOf(jsonObj.get("width").toString()));
+         customPanel.setHeight(Integer.valueOf(jsonObj.get("height").toString()));
+      }
+      if (!"".equals(panelPaddingLeftField.getRawValue())) {
+         customPanel.setPaddingLeft(Integer.valueOf(panelPaddingLeftField.getRawValue()));
+      }
+      if (!"".equals(panelPaddingTopField.getRawValue())) {
+         customPanel.setPaddingTop(Integer.valueOf(panelPaddingTopField.getRawValue()));
       }
    }
    

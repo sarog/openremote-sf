@@ -47,18 +47,16 @@ public class ImageRotateUtil {
 
       String extentionName = getExtentionName(sourceImage.getName());
 
-      if (extentionName == null) {
-         throw new RuntimeException("It is not a image: " + sourceImage);
-      }
-      if (!beSupported(extentionName)) {
-         throw new RuntimeException("Unsupported format" + extentionName);
-
-      }
-      try {
-         return doRotate(sourceImage, targetImageName, Math.toRadians(degree));
-      } catch (IOException e) {
-         log.error("Error when try to rotate a image :"+ sourceImage.getName());
-         throw new RuntimeException(e);
+      if (extentionName != null && isASupportedImageType(extentionName)) {
+         try {
+            return doRotate(sourceImage, targetImageName, Math.toRadians(degree));
+         } catch (IOException e) {
+            log.error("Error when try to rotate a image :" + sourceImage.getName(), e);
+            return null;
+         }
+      } else {
+         log.warn("The image can not be rotated  "+ sourceImage.getName());
+         return null;
       }
    }
 
@@ -76,7 +74,8 @@ public class ImageRotateUtil {
          g.drawRenderedImage(image, null);
          return result;
       } catch (IOException e) {
-         throw new RuntimeException(e);
+         log.error("Error when try to rotate a image "+sourceImageFile ,e);
+         return null;
       }
    }
 
@@ -104,7 +103,7 @@ public class ImageRotateUtil {
       return null;
    }
 
-   private static boolean beSupported(String extentionName) {
+   private static boolean isASupportedImageType(String extentionName) {
       return SUPPORT_IMAGE_TYPE.contains(extentionName);
    }
 }

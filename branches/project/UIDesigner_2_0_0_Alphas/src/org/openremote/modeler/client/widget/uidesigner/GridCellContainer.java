@@ -45,7 +45,7 @@ public class GridCellContainer extends ComponentContainer {
       this.gridContainer = gridContainer;
       addStyleName("cursor-move");
       setStyleAttribute("position", "absolute");
-      add(screenComponent);
+      add(this.screenComponent);
    }
 
    public Cell getCell() {
@@ -107,5 +107,13 @@ public class GridCellContainer extends ComponentContainer {
    @Override
    public PropertyForm getPropertiesForm() {
      return this.screenComponent.getPropertiesForm();
+   }
+   
+   public void setScreenComponent(ScreenComponent screenComponent) {
+      if (this.screenComponent != null) {
+         remove(this.screenComponent);
+      }
+      this.screenComponent = screenComponent;
+      add(this.screenComponent);
    }
 }

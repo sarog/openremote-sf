@@ -120,6 +120,8 @@ public class ScreenTab extends TabPanel {
                   if (screen.isHasTabbar()) {
                 	  screenCanvas.addTabbar();
                   }
+                  screenTabItem.updateTouchPanel();
+                  screenCanvas.setSize(screen.getTouchPanelDefinition().getCanvas().getWidth(), screen.getTouchPanelDefinition().getCanvas().getHeight());
                   screenCanvas.setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
                   setSelection(screenTabItem);
                }
