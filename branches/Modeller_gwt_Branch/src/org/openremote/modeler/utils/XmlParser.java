@@ -41,8 +41,8 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
 import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.ConfigCategory;
+import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.exception.XmlParserException;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.xml.sax.InputSource;
@@ -123,10 +123,8 @@ public class XmlParser {
          XMLOutputter outp = new XMLOutputter(format);
          result = outp.outputString(doc);
       } catch (JDOMException e) {
-          LOGGER.error("Parser XML occur JDOMException", e);
           throw new XmlParserException("Parser XML occur JDOMException", e);
       } catch (IOException e) {
-         LOGGER.error("Parser XML occur IOException", e);
          throw new XmlParserException("Parser XML occur IOException", e);
       }
       return result;
@@ -199,7 +197,7 @@ public class XmlParser {
       try {
          doc = builder.build(XmlParser.class.getClassLoader().getResourceAsStream(ControllerConfigService.CONTROLLER_CONFIG_XML_FILE));
       } catch (Exception e) {
-         throw new RuntimeException(e);
+         throw new XmlParserException("Failed to parse "+ControllerConfigService.CONTROLLER_CONFIG_XML_FILE, e);
       }
 
       return doc;
@@ -213,7 +211,7 @@ public class XmlParser {
          List<Element> elements = xPath.selectNodes(doc);
          return elements;
       } catch (JDOMException e) {
-         throw new RuntimeException(e);
+         throw new XmlParserException(e);
       }
    }
    

@@ -52,6 +52,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.exception.VelocityException;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.Command;
@@ -88,6 +89,7 @@ import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.FileOperationException;
+import org.openremote.modeler.exception.XmlExportException;
 import org.openremote.modeler.exception.XmlParserException;
 import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.service.ControllerConfigService;
@@ -300,7 +302,6 @@ public class ResourceServiceImpl implements ResourceService {
    }
    
    private File uploadFile(InputStream inputStream, File file) {
-//      File file = new File(PathConfig.getInstance(configuration).userFolder(prefix) + File.separator + fileName);
       FileOutputStream fileOutputStream = null;
       try {
          File dir = file.getParentFile();
@@ -611,9 +612,8 @@ public class ResourceServiceImpl implements ResourceService {
          context.put("groups", groups);
          context.put("screens", screens);
          return VelocityEngineUtils.mergeTemplateIntoString(velocity, PANEL_XML_TEMPLATE, context);
-      } catch (Exception e) {
-        // TODO: this exception use looks suspicious
-         throw new RuntimeException("Failed to read panel.xml", e);
+      } catch (VelocityException e) {
+         throw new XmlExportException("Failed to read panel.xml", e);
       }
 
    }
@@ -978,7 +978,7 @@ public class ResourceServiceImpl implements ResourceService {
             if (! userFolder.exists()) {
                boolean success = userFolder.mkdirs();
                if (!success) {
-                  throw new BeehiveNotAvailableException("Unable to create directories for path '" + userFolder + "'.");
+                  throw new FileOperationException("Unable to create directories for path '" + userFolder + "'.");
                }
             }
             File outPut = new File(userFolder, "template.zip");
@@ -1049,7 +1049,7 @@ public class ResourceServiceImpl implements ResourceService {
             if (!userFolder.exists()) {
                boolean success = userFolder.mkdirs();
                if (!success) {
-                  throw new BeehiveNotAvailableException("Failed to create the required directories for path '"
+                  throw new FileOperationException("Failed to create the required directories for path '"
                         + userFolder + "'.");
                }
             }

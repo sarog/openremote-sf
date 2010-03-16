@@ -38,6 +38,7 @@ import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UISlider;
+import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.TemplateService;
 import org.openremote.modeler.service.UserService;
@@ -211,7 +212,9 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
       if (!userFolder.exists()) {
-         userFolder.mkdirs();
+         if (! userFolder.mkdirs()) {
+            throw new FileOperationException("Can't create user folder for user: "+userService.getAccount().getUser().getUsername());
+         }
       }
       File imageFile = new File(userFolder, url.substring(url.lastIndexOf("/") + 1));
       try {
@@ -245,7 +248,6 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
 
    @Override
    public UISlider rotateImage(UISlider uiSlider) {
-      // TODO Auto-generated method stub
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       String userFolderPath = pathConfig.userFolder(userService.getAccount());
       
@@ -265,21 +267,21 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       double degree = uiSlider.isVertical()?90:-90;
       for (File f : userFolder.listFiles()) {
          if (f.equals(minImageFileInUserFolder)) {
-            uiSlider.setMinImage(new ImageSource(minImageFile.getParent() + File.separator +imageNameAfterRotate(minImageFileInUserFolder,degree)));
+            uiSlider.setMinImage(new ImageSource(minImageFile.getParent() + File.separator +getImageNameAfterRotate(minImageFileInUserFolder,degree)));
          } else if (f.equals(minTrackImageFileInUserFolder)) {
-            uiSlider.setMinTrackImage(new ImageSource(minTrackImageFile.getParent() + File.separator +imageNameAfterRotate(minTrackImageFileInUserFolder,degree)));
+            uiSlider.setMinTrackImage(new ImageSource(minTrackImageFile.getParent() + File.separator +getImageNameAfterRotate(minTrackImageFileInUserFolder,degree)));
          } else if (f.equals(thumbImageFileInUserFolder)) {
-            uiSlider.setThumbImage(new ImageSource(thumbImageFile.getParent() + File.separator +imageNameAfterRotate(thumbImageFileInUserFolder,degree)));
+            uiSlider.setThumbImage(new ImageSource(thumbImageFile.getParent() + File.separator +getImageNameAfterRotate(thumbImageFileInUserFolder,degree)));
          } else if (f.equals(maxTrackImageFileInUserFolder)) {
-            uiSlider.setMaxTrackImage(new ImageSource(maxTrackImageFile.getParent() + File.separator +imageNameAfterRotate(maxTrackImageFileInUserFolder,degree)));
+            uiSlider.setMaxTrackImage(new ImageSource(maxTrackImageFile.getParent() + File.separator +getImageNameAfterRotate(maxTrackImageFileInUserFolder,degree)));
          } else if (f.equals(maxImageFileInUserFolder)) {
-            uiSlider.setMaxImage(new ImageSource(maxImageFile.getParent() + File.separator +imageNameAfterRotate(maxImageFileInUserFolder,degree)));
+            uiSlider.setMaxImage(new ImageSource(maxImageFile.getParent() + File.separator +getImageNameAfterRotate(maxImageFileInUserFolder,degree)));
          }
       }
       return uiSlider;
    }
    
-   private String imageNameAfterRotate(File imageFileInUserFolder,double degree) {
+   private String getImageNameAfterRotate(File imageFileInUserFolder,double degree) {
       if (imageFileInUserFolder.getName().contains(ROTATED_FLAG)) {
          File beforeRotatedFile = new File(imageFileInUserFolder.getParent()+File.separator+(imageFileInUserFolder.getName().replace(ROTATED_FLAG, "")));
          if (beforeRotatedFile.exists()) {
@@ -288,6 +290,6 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       }
       File fileAfterRotated = ImageRotateUtil.rotate(imageFileInUserFolder, imageFileInUserFolder.getParent() + File.separator + ROTATED_FLAG
             +imageFileInUserFolder.getName(), degree);
-      return fileAfterRotated.getName();
+      return fileAfterRotated==null?imageFileInUserFolder.getName():fileAfterRotated.getName();
    }
 }
