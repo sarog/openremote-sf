@@ -64,13 +64,6 @@ private List<DeviceMacroInsertListener<BeanModel>> deviceMacroInsertListeners = 
    }
    
    
-   @Override
-   public void insert(BeanModel beanModel) {
-      super.insert(beanModel);
-      for(DeviceMacroInsertListener<BeanModel> listener : deviceMacroInsertListeners) {
-         listener.handleInsert(beanModel);
-      }
-   }
    /**
     * Instantiates a new bean model table.
     */
@@ -78,6 +71,12 @@ private List<DeviceMacroInsertListener<BeanModel>> deviceMacroInsertListeners = 
       super();
    }
 
+   public void insertAndNotifyMacroInsertListener (BeanModel beanModel) {
+      insert(beanModel);
+      for(DeviceMacroInsertListener<BeanModel> listener : deviceMacroInsertListeners) {
+         listener.handleInsert(beanModel);
+      }
+   }
    /**
     * {@inheritDoc}
     */

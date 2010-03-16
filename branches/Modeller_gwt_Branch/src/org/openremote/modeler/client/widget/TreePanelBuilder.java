@@ -177,17 +177,20 @@ public class TreePanelBuilder {
         deviceTreeStore = new TreeStore<BeanModel>(loadDeviceTreeLoader);
       }
       final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceTreeStore);
-      ((DeviceBeanModelTable)BeanModelDataBase.deviceTable).addDeviceInsertListener(new DeviceInsertListener<BeanModel> (){
+      ((DeviceBeanModelTable) BeanModelDataBase.deviceTable)
+            .addDeviceInsertListener(new DeviceInsertListener<BeanModel>() {
 
-         @Override
-         public void handleInsert(BeanModel beanModel) {
-            if(beanModel != null && beanModel.getBean() instanceof Device) {
-               deviceTreeStore.add(beanModel, false);
-               tree.getSelectionModel().select(beanModel, true);
-            }
-         }
-           
-        });
+               @Override
+               public void handleInsert(BeanModel beanModel) {
+                  if (beanModel != null && beanModel.getBean() instanceof Device) {
+                     if (!deviceTreeStore.contains(beanModel)) {
+                        deviceTreeStore.add(beanModel, false);
+                        tree.getSelectionModel().select(beanModel, true);
+                     }
+                  }
+               }
+
+            });
 
       tree.setBorders(false);
       tree.setStateful(true);
@@ -297,13 +300,15 @@ public class TreePanelBuilder {
       ((DeviceMacroBeanModelTable)BeanModelDataBase.deviceMacroTable).addDeviceMacroInsertListener(new DeviceMacroInsertListener<BeanModel> (){
 
          @Override
-         public void handleInsert(BeanModel beanModel) {
-            if(beanModel != null && beanModel.getBean() instanceof DeviceMacro) {
-               macroTreeStore.add(beanModel, false);
-               tree.getSelectionModel().select(beanModel, true);
-            }
-         }
-           
+               public void handleInsert(BeanModel beanModel) {
+                  if (beanModel != null && beanModel.getBean() instanceof DeviceMacro) {
+                     if (!macroTreeStore.contains(beanModel)) {
+                        macroTreeStore.add(beanModel, false);
+                        tree.getSelectionModel().select(beanModel, true);
+                     }
+                  }
+               }
+
         });
       tree.setStateful(true);
       tree.setBorders(false);
