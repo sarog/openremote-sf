@@ -168,7 +168,7 @@ public class ZipUtils {
          InputStream inputStream = new FileInputStream(zipFile);
          return unzip(inputStream, targetDir);
       } catch (Exception e) {
-         throw new RuntimeException("falied to unzip file" + zipFile.getName(), e);
+         throw new FileOperationException("Failed to unzip file" + zipFile.getName(), e);
       }
    }
 }

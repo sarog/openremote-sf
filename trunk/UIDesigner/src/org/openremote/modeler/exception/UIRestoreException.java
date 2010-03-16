@@ -20,33 +20,22 @@
 package org.openremote.modeler.exception;
 
 /**
- * Custom Exception when parser xml faild.
+ * If the request doesn't pass the Basic Http Authentication, this exception will be thrown. 
  * 
- * @author Tomsky
+ * @author javen 
  */
 @SuppressWarnings("serial")
-public class XmlParserException extends RuntimeException {
-   
-   /**
-    * Instantiates a new xml parser exception.
-    * 
-    * @param s the s
-    */
-   public XmlParserException(String s) {
+public class UIRestoreException extends RuntimeException {
+
+   public UIRestoreException() {
+      super();
+   }
+
+   public UIRestoreException(String s) {
       super(s);
    }
 
-   /**
-    * Instantiates a new xml parser exception.
-    * 
-    * @param s the s
-    * @param throwable the throwable
-    */
-   public XmlParserException(String s, Throwable throwable) {
+   public UIRestoreException(String s, Throwable throwable) {
       super(s, throwable);
-   }
-   
-   public XmlParserException(Throwable throwable) {
-      super(throwable);
    }
 }

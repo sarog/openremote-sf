@@ -52,6 +52,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.exception.VelocityException;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.Command;
@@ -88,6 +89,8 @@ import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.FileOperationException;
+import org.openremote.modeler.exception.UIRestoreException;
+import org.openremote.modeler.exception.XmlExportException;
 import org.openremote.modeler.exception.XmlParserException;
 import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.service.ControllerConfigService;
@@ -300,7 +303,6 @@ public class ResourceServiceImpl implements ResourceService {
    }
    
    private File uploadFile(InputStream inputStream, File file) {
-//      File file = new File(PathConfig.getInstance(configuration).userFolder(prefix) + File.separator + fileName);
       FileOutputStream fileOutputStream = null;
       try {
          File dir = file.getParentFile();
@@ -372,7 +374,7 @@ public class ResourceServiceImpl implements ResourceService {
             return new ArrayList<Command>();
          }
       } catch (Exception e) {
-         LOGGER.warn(e.getMessage(), e);
+         LOGGER.warn("Some components referenced a removed object! ", e);
          return new ArrayList<Command>();
       }
       return oneUIButtonEventList;
@@ -467,14 +469,20 @@ public class ResourceServiceImpl implements ResourceService {
     */
    private Set<String> getDeviceMacroItemSectionIds(DeviceMacroItem deviceMacroItem) {
       Set<String> deviceMacroRefSectionIds = new HashSet<String>();
-      if (deviceMacroItem instanceof DeviceCommandRef) {
-         deviceMacroRefSectionIds.add(((DeviceCommandRef) deviceMacroItem).getDeviceCommand().getSectionId());
-      } else if (deviceMacroItem instanceof DeviceMacroRef) {
-         DeviceMacro deviceMacro = ((DeviceMacroRef) deviceMacroItem).getTargetDeviceMacro();
-         deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
-         for (DeviceMacroItem nextDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
-            deviceMacroRefSectionIds.addAll(getDeviceMacroItemSectionIds(nextDeviceMacroItem));
+      try {
+         if (deviceMacroItem instanceof DeviceCommandRef) {
+            deviceMacroRefSectionIds.add(((DeviceCommandRef) deviceMacroItem).getDeviceCommand().getSectionId());
+         } else if (deviceMacroItem instanceof DeviceMacroRef) {
+            DeviceMacro deviceMacro = ((DeviceMacroRef) deviceMacroItem).getTargetDeviceMacro();
+            if (deviceMacro != null) {
+               deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
+               for (DeviceMacroItem nextDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
+                  deviceMacroRefSectionIds.addAll(getDeviceMacroItemSectionIds(nextDeviceMacroItem));
+               }
+            }
          }
+      } catch (Exception e) {
+         LOGGER.warn("Some components referenced a removed DeviceMacro!");
       }
       return deviceMacroRefSectionIds;
    }
@@ -605,9 +613,8 @@ public class ResourceServiceImpl implements ResourceService {
          context.put("groups", groups);
          context.put("screens", screens);
          return VelocityEngineUtils.mergeTemplateIntoString(velocity, PANEL_XML_TEMPLATE, context);
-      } catch (Exception e) {
-        // TODO: this exception use looks suspicious
-         throw new RuntimeException("Failed to read panel.xml", e);
+      } catch (VelocityException e) {
+         throw new XmlExportException("Failed to read panel.xml", e);
       }
 
    }
@@ -770,11 +777,8 @@ public class ResourceServiceImpl implements ResourceService {
       if (!userFolder.exists()) {
          boolean success = userFolder.mkdirs();
 
-         if (!success)
-         {
-           throw new FileOperationException(
-               "Failed to create directory path to user folder '" + userFolder + "'."
-           );
+         if (!success) {
+            throw new FileOperationException("Failed to create directory path to user folder '" + userFolder + "'.");
          }
       }
       
@@ -815,10 +819,9 @@ public class ResourceServiceImpl implements ResourceService {
          if (lircdFile.exists() && lircdFile.length() == 0) {
             boolean success = lircdFile.delete();
 
-           if (!success)
-           {
-             LOGGER.error("Failed to delete '" + lircdFile + "'.");
-           }
+            if (!success) {
+               LOGGER.error("Failed to delete '" + lircdFile + "'.");
+            }
 
          }
          
@@ -877,9 +880,7 @@ public class ResourceServiceImpl implements ResourceService {
          Long maxOid = ois.readLong();
          panelsAndMaxOid = new PanelsAndMaxOid(panels, maxOid);
       } catch (Exception e) {
-         // TODO: this exception use looks very suspicious -- unhandled, one failure from single
-         //       user may impact the entire app
-         throw new RuntimeException("restore failed from server", e);
+         throw new UIRestoreException("restore failed from server", e);
       } finally {
          try {
             if (ois != null) {
@@ -976,7 +977,7 @@ public class ResourceServiceImpl implements ResourceService {
             if (! userFolder.exists()) {
                boolean success = userFolder.mkdirs();
                if (!success) {
-                  throw new BeehiveNotAvailableException("Unable to create directories for path '" + userFolder + "'.");
+                  throw new FileOperationException("Unable to create directories for path '" + userFolder + "'.");
                }
             }
             File outPut = new File(userFolder, "template.zip");
@@ -1047,7 +1048,7 @@ public class ResourceServiceImpl implements ResourceService {
             if (!userFolder.exists()) {
                boolean success = userFolder.mkdirs();
                if (!success) {
-                  throw new BeehiveNotAvailableException("Failed to create the required directories for path '"
+                  throw new FileOperationException("Failed to create the required directories for path '"
                         + userFolder + "'.");
                }
             }

@@ -101,7 +101,7 @@ public class SliderWindow extends FormWindow {
          edit = false;
       }
       if(device==null){
-         throw new RuntimeException("A slider must belong to a device!");
+         throw new NullPointerException("A slider must belong to a device!");
       }
       this.slider.setDevice(device);
       this.setHeading(edit ? "Edit Slider" : "New Slider");

@@ -105,7 +105,8 @@ public class GestureWindow extends Dialog {
       ContentPanel gestureTypesContainer = new ContentPanel();
       gestureTypesContainer.setHeaderVisible(false);
       gestureTypesContainer.setLayout(new FitLayout());
-      gestureTypesContainer.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      gestureTypesContainer.addStyleName("overflow-auto");
       gestureTypesContainer.setBorders(false);
       gestureTypesContainer.setBodyBorder(false);
       
@@ -127,6 +128,7 @@ public class GestureWindow extends Dialog {
       }
       gestureTypeListView.setStore(gestureStore);
       gestureTypeListView.setDisplayProperty("type");
+      gestureTypeListView.setStyleAttribute("overflow", "auto");
       gestureTypesContainer.add(gestureTypeListView);
       
       BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 150);
