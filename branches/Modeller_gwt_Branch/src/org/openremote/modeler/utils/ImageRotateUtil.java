@@ -47,7 +47,7 @@ public class ImageRotateUtil {
 
       String extentionName = getExtentionName(sourceImage.getName());
 
-      if (extentionName != null && isSupportImageType(extentionName)) {
+      if (extentionName != null && isASupportedImageType(extentionName)) {
          try {
             return doRotate(sourceImage, targetImageName, Math.toRadians(degree));
          } catch (IOException e) {
@@ -103,7 +103,7 @@ public class ImageRotateUtil {
       return null;
    }
 
-   private static boolean isSupportImageType(String extentionName) {
+   private static boolean isASupportedImageType(String extentionName) {
       return SUPPORT_IMAGE_TYPE.contains(extentionName);
    }
 }
