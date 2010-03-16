@@ -31,6 +31,8 @@ public class ScreenTabItem extends TabItem {
    /** The screen. */
    private Screen screen;
 
+   private LayoutContainer screenContainer;
+   
    private ScreenCanvas screenCanvas;
 
    /**
@@ -52,21 +54,29 @@ public class ScreenTabItem extends TabItem {
     * Adds the screen container.
     */
    private void addScreenContainer() {
-      LayoutContainer screenContainer = new LayoutContainer();
-      TouchPanelDefinition touchPanelDefinition = screen.getTouchPanelDefinition();
+      screenContainer = new LayoutContainer();
       screenContainer.addStyleName("screen-background");
-      if (touchPanelDefinition.getWidth() > 0 && touchPanelDefinition.getHeight() > 0) {
-         screenContainer.setSize(touchPanelDefinition.getWidth(), touchPanelDefinition.getHeight());
-      }
-      if (!(touchPanelDefinition.getBgImage() == null)) {
-         screenContainer.setStyleAttribute("backgroundImage", "url(" + touchPanelDefinition.getBgImage() + ")");
-      }
-      screenContainer.setStyleAttribute("paddingLeft", String.valueOf(touchPanelDefinition.getPaddingLeft()));
-      screenContainer.setStyleAttribute("paddingTop", String.valueOf(touchPanelDefinition.getPaddingTop()));
+      updateTouchPanel();
       screenCanvas = new ScreenCanvas(screen);
       screenContainer.add(screenCanvas);
       screenContainer.setBorders(false);
       add(screenContainer);
+   }
+
+   /**
+    * @param screenContainer
+    * @param touchPanelDefinition
+    */
+   public void updateTouchPanel() {
+      TouchPanelDefinition touchPanelDefinition = screen.getTouchPanelDefinition();
+      if (touchPanelDefinition.getWidth() > 0 && touchPanelDefinition.getHeight() > 0) {
+         screenContainer.setSize(touchPanelDefinition.getWidth(), touchPanelDefinition.getHeight());
+      }
+      if (touchPanelDefinition.getBgImage() != null) {
+         screenContainer.setStyleAttribute("backgroundImage", "url(" + touchPanelDefinition.getBgImage() + ")");
+      }
+      screenContainer.setStyleAttribute("paddingLeft", String.valueOf(touchPanelDefinition.getPaddingLeft()));
+      screenContainer.setStyleAttribute("paddingTop", String.valueOf(touchPanelDefinition.getPaddingTop()));
    }
 
    /**
