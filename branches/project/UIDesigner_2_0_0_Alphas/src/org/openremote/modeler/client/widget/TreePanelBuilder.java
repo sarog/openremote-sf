@@ -31,7 +31,9 @@ import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable;
+import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable.DeviceInsertListener;
+import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable.DeviceMacroInsertListener;
 import org.openremote.modeler.client.widget.buildingmodeler.ControllerConfigTabItem;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTabItem;
@@ -175,17 +177,20 @@ public class TreePanelBuilder {
         deviceTreeStore = new TreeStore<BeanModel>(loadDeviceTreeLoader);
       }
       final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceTreeStore);
-      ((DeviceBeanModelTable)BeanModelDataBase.deviceTable).addDeviceInsertListener(new DeviceInsertListener<BeanModel> (){
+      ((DeviceBeanModelTable) BeanModelDataBase.deviceTable)
+            .addDeviceInsertListener(new DeviceInsertListener<BeanModel>() {
 
-         @Override
-         public void handleInsert(BeanModel beanModel) {
-            if(beanModel != null && beanModel.getBean() instanceof Device) {
-               deviceTreeStore.add(beanModel, false);
-               tree.getSelectionModel().select(beanModel, true);
-            }
-         }
-           
-        });
+               @Override
+               public void handleInsert(BeanModel beanModel) {
+                  if (beanModel != null && beanModel.getBean() instanceof Device) {
+                     if (!deviceTreeStore.contains(beanModel)) {
+                        deviceTreeStore.add(beanModel, false);
+                        tree.getSelectionModel().select(beanModel, true);
+                     }
+                  }
+               }
+
+            });
 
       tree.setBorders(false);
       tree.setStateful(true);
@@ -292,6 +297,19 @@ public class TreePanelBuilder {
       }
 
       final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(macroTreeStore);
+      ((DeviceMacroBeanModelTable)BeanModelDataBase.deviceMacroTable).addDeviceMacroInsertListener(new DeviceMacroInsertListener<BeanModel> (){
+
+         @Override
+               public void handleInsert(BeanModel beanModel) {
+                  if (beanModel != null && beanModel.getBean() instanceof DeviceMacro) {
+                     if (!macroTreeStore.contains(beanModel)) {
+                        macroTreeStore.add(beanModel, false);
+                        tree.getSelectionModel().select(beanModel, true);
+                     }
+                  }
+               }
+
+        });
       tree.setStateful(true);
       tree.setBorders(false);
       tree.setHeight("100%");

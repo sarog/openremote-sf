@@ -87,7 +87,7 @@ public interface UtilsRPCService extends RemoteService {
     */
    Long loadMaxID();
 
-   void downLoadImage(String url);
+   String downLoadImage(String url);
    
    UISlider rotateImage(UISlider uiSlider);
    

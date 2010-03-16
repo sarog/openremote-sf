@@ -95,10 +95,11 @@ public class Slider extends BusinessEntity {
 
    @Override
    public int hashCode() {
-      final int prime = 31;
+      /*final int prime = 31;
       int result = 1;
       result = prime * result + ((name == null) ? 0 : name.hashCode());
-      return result^0xFFFF+(int) getOid();
+      return result^0xFFFF+(int) getOid();*/
+      return (int) getOid();
    }
 
    @Override
@@ -110,6 +111,12 @@ public class Slider extends BusinessEntity {
       if (name == null) {
          if (other.name != null) return false;
       } else if (!name.equals(other.name)) return false;
+      
+      if (this.device!=null && other.device != null) {
+         if (!this.device.equals(other.device)){
+            return false;
+         }
+      }
       return other.getOid() == getOid();
    }
    

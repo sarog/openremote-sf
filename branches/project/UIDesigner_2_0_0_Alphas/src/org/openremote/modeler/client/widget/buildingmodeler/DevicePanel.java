@@ -87,7 +87,7 @@ public class DevicePanel extends ContentPanel {
    /** The icon. */
    private Icons icon = GWT.create(Icons.class);
    
-   private Map<BeanModel, ChangeListener> changeListenerMap = null;
+   private Map<BeanModel, ChangeListener> changeListenerMap = new HashMap<BeanModel,ChangeListener>();
 
    /**
     * Instantiates a new device panel.
