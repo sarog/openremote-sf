@@ -66,7 +66,8 @@ public class DeviceCommandSelectWindow extends Dialog{
          deviceCommandTree = TreePanelBuilder.buildCommandTree(device);
          deviceCommandPanel.add(deviceCommandTree);
       }
-      deviceCommandPanel.setScrollMode(Scroll.AUTO);
+      // overflow-auto style is for IE hack.
+      deviceCommandPanel.addStyleName("overflow-auto");
       add(deviceCommandPanel);
    }
    

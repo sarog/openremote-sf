@@ -295,18 +295,36 @@ public class ProfilePanel extends ContentPanel {
     * @param panelBeanModel
     *           the group bean model
     */
-   private void editPanel(final BeanModel panelBeanModel) {
-      final PanelWindow panelWindow = new PanelWindow(panelBeanModel);
-      panelWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-         @Override
-         public void afterSubmit(SubmitEvent be) {
-            panelWindow.hide();
-            Panel panel = be.<Panel> getData();
-            panelTree.getStore().update(panel.getBeanModel());
-            Info.display("Info", "Edit panel " + panel.getName() + " success.");
-         }
-         
-      });
+   private void editPanel(BeanModel panelBeanModel) {
+      Panel panel = panelBeanModel.getBean();
+      if (Constants.CUSTOM_PANEL.equals(panel.getType())) {
+         final CustomPanelWindow editCustomPanelWindow = new CustomPanelWindow(panel);
+         editCustomPanelWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+            @Override
+            public void afterSubmit(SubmitEvent be) {
+               editCustomPanelWindow.hide();
+               Panel panel = be.<Panel> getData();
+               panelTree.getStore().update(panel.getBeanModel());
+               for (GroupRef groupRef : panel.getGroupRefs()) {
+                  for (ScreenRef screenRef : groupRef.getGroup().getScreenRefs()) {
+                     BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
+                  }
+               }
+               Info.display("Info", "Edit panel " + panel.getName() + " success.");
+            }
+         });
+      } else {
+         final PanelWindow panelWindow = new PanelWindow(panelBeanModel);
+         panelWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+            @Override
+            public void afterSubmit(SubmitEvent be) {
+               panelWindow.hide();
+               Panel panel = be.<Panel> getData();
+               panelTree.getStore().update(panel.getBeanModel());
+               Info.display("Info", "Edit panel " + panel.getName() + " success.");
+            }
+         });
+      }
    }
    private void editGroup(final BeanModel groupRefBeanModel) {
       final GroupWizardWindow groupWindow = new GroupWizardWindow(groupRefBeanModel, true);
