@@ -89,6 +89,7 @@ import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.FileOperationException;
+import org.openremote.modeler.exception.UIRestoreException;
 import org.openremote.modeler.exception.XmlExportException;
 import org.openremote.modeler.exception.XmlParserException;
 import org.openremote.modeler.protocol.ProtocolContainer;
@@ -879,9 +880,7 @@ public class ResourceServiceImpl implements ResourceService {
          Long maxOid = ois.readLong();
          panelsAndMaxOid = new PanelsAndMaxOid(panels, maxOid);
       } catch (Exception e) {
-         // TODO: this exception use looks very suspicious -- unhandled, one failure from single
-         //       user may impact the entire app
-         throw new RuntimeException("restore failed from server", e);
+         throw new UIRestoreException("restore failed from server", e);
       } finally {
          try {
             if (ois != null) {

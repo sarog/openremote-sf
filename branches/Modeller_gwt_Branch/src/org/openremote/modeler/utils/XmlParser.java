@@ -99,10 +99,8 @@ public class XmlParser {
          XMLOutputter outp = new XMLOutputter(format);
          result = outp.outputString(doc);
       } catch (JDOMException e) {
-          LOGGER.error("Parser XML occur JDOMException", e);
           throw new XmlParserException("Parser XML occur JDOMException", e);
       } catch (IOException e) {
-         LOGGER.error("Parser XML occur IOException", e);
          throw new XmlParserException("Parser XML occur IOException", e);
       }
       return result;
