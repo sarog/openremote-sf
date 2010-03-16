@@ -186,11 +186,11 @@ public class UtilsProxy {
       });
    }
    
-   public static void downLoadImage(String url, final AsyncSuccessCallback<Void> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().downLoadImage(url, new AsyncSuccessCallback<Void>() {
+   public static void downLoadImage(String url, final AsyncCallback<String> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().downLoadImage(url, new AsyncSuccessCallback<String>() {
          @Override
-         public void onSuccess(Void result) {
-            return;
+         public void onSuccess(String result) {
+            callback.onSuccess(result);
          }
       });
    }
