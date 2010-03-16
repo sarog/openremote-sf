@@ -60,14 +60,13 @@ public class DeviceBeanModelTable extends BeanModelTable {
    }
    
    
-   @Override
-   public void insert(BeanModel beanModel) {
-      super.insert(beanModel);
+
+   public void insertAndNotifyDeviceInsertListener(BeanModel beanModel) {
+      insert(beanModel);
       for(DeviceInsertListener<BeanModel> listener : deviceInsertListener) {
          listener.handleInsert(beanModel);
       }
    }
-
    /**
     * Instantiates a new bean model table.
     */

@@ -28,6 +28,8 @@ import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.utils.DeviceBeanModelTable;
+import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.client.widget.FormWindow;
@@ -197,12 +199,12 @@ public class ScreenWindow extends FormWindow {
                      //----------rebuild command 
                      Set<Device> devices = result.getDevices();
                      for(Device device: devices) {
-                        BeanModelDataBase.deviceTable.insert(device.getBeanModel());
+                        ((DeviceBeanModelTable)BeanModelDataBase.deviceTable).insertAndNotifyDeviceInsertListener(device.getBeanModel());
                      }
                      
                      Set<DeviceMacro> macros = result.getMacros();
                      for (DeviceMacro macro : macros) {
-                        BeanModelDataBase.deviceMacroTable.insert(macro.getBeanModel());
+                        ((DeviceMacroBeanModelTable)BeanModelDataBase.deviceMacroTable).insertAndNotifyMacroInsertListener(macro.getBeanModel());
                      }
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));
                   }
