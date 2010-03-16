@@ -112,10 +112,11 @@ public class Switch extends BusinessEntity {
 
    @Override
    public int hashCode() {
-      final int prime = 31;
+      /*final int prime = 31;
       int result = 1;
       result = prime * result + ((name == null) ? 0 : name.hashCode());
-      return result^0xFFFF+(int)getOid();
+      return result^0xFFFF+(int)getOid();*/
+      return (int) getOid();
    }
 
 

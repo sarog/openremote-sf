@@ -140,10 +140,11 @@ public class DeviceMacro extends BusinessEntity {
 
    @Override
    public int hashCode() {
-      final int prime = 31;
+      /*final int prime = 31;
       int result = 1;
       result = prime * result + ((name == null) ? 0 : name.hashCode());
-      return (int) (result^0xFFFF^getOid());
+      return (int) (result^0xFFFF^getOid());*/
+      return (int) getOid();
    }
 
    @Override
