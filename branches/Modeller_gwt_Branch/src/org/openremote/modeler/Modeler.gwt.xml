@@ -23,6 +23,7 @@
 	<source path='touchpanel'/>
 	<source path='auth'/>
 	<source path='selenium'/>
+	<source path="exception" />
   <!-- Other module inherits                                      -->
 
   <!-- Specify the app entry point class.                         -->
