@@ -84,7 +84,7 @@ public class ResourceServiceImplTest {
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
       deviceMacroService = (DeviceMacroService) SpringTestContext.getInstance().getBean("deviceMacroService");
       userService = (UserService) SpringTestContext.getInstance().getBean("userService");
-      userService.createAccount("test", "test", "role_bm");
+      userService.createUserAccount("test", "test", "test", "role_bm");
       SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("test", "test"));
       /*------------xml validation-------------*/
       configuration = (Configuration) SpringTestContext.getInstance().getBean("configuration");
@@ -642,7 +642,7 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
 //      u.setOid(4);
       userService.saveUser(u);*/
       
-      userService.createAccount("testMacro", "testMacro", "role_bm");
+      userService.createUserAccount("testMacro", "testMacro", "test", "role_bm");
       
       DeviceMacro deviceMacro = new DeviceMacro();
       deviceMacro.setName("testMacro");

@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.domain;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 
 
@@ -44,16 +46,21 @@ public class User extends BusinessEntity {
 
    private static final long serialVersionUID = 6064996041309363949L;
 
-   /** The username. */
    private String username;
    
-   /** The password. */
    private String password;
    
-   /** The account. */
+   private String rawPassword;
+   
+   private String email;
+   
+   private boolean valid;
+   
+   private Timestamp registerTime;
+   
+   /** The account containing all business entities. */
    private Account account;
    
-   /** The roles. */
    private List<Role> roles;
    
    
@@ -61,6 +68,9 @@ public class User extends BusinessEntity {
     * Instantiates a new user.
     */
    public User() {
+      account  = new Account();
+      valid = false;// need to be activated by email
+      registerTime = new Timestamp(System.currentTimeMillis());
       roles = new ArrayList<Role>();
    }
 
@@ -119,6 +129,7 @@ public class User extends BusinessEntity {
     */
    public void setAccount(Account account) {
       this.account = account;
+      account.setUser(this);
    }
    
    /**
@@ -149,5 +160,46 @@ public class User extends BusinessEntity {
    public void addRole(Role role) {
       roles.add(role);
    }
+
+   public String getEmail() {
+      return email;
+   }
+
+   public void setEmail(String email) {
+      this.email = email;
+   }
+
+   public boolean isValid() {
+      return valid;
+   }
+
+   public void setValid(boolean valid) {
+      this.valid = valid;
+   }
+
+
+   @Transient
+   public String getRegisterTimeAsString() {
+      return registerTime.toString().replaceAll("\\.\\d+", "");
+   }
    
+   public Timestamp getRegisterTime() {
+      return registerTime;
+   }
+
+   public void setRegisterTime(Timestamp registerTime) {
+      this.registerTime = registerTime;
+   }
+
+   @Transient
+   public String getRawPassword() {
+      return rawPassword;
+   }
+
+   public void setRawPassword(String rawPassword) {
+      this.rawPassword = rawPassword;
+   }
+   
+   
+
 }

@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.openremote.modeler.SpringTestContext;
-import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.ConfigCategory;
+import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.utils.XmlParser;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
@@ -24,7 +24,7 @@ public class ControllerConfigServiceTest {
    @BeforeClass
    public void saveFromDefault(){
             
-      userService.createAccount("test", "test", "role_bm");
+      userService.createUserAccount("test", "test", "test", "role_bm");
       SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("test", "test"));
       XmlParser.initControllerConfig(categories, configs);
       configService.saveAll(configs);

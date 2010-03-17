@@ -1,0 +1,45 @@
+<html>
+<body>
+<h3>Welcome to OpenRemote Modeler!</h3>
+Dear ${user.username},<br />
+This email has been sent from ${webapp}.<br />
+<br />
+You have received this email because this email address<br />
+was used during registration for OpenRemote Modeler.<br />
+If you did not register at OpenRemote Modeler, please disregard this<br />
+email. You do not need to unsubscribe or take any further action.<br />
+<br />
+<hr />
+Activation Instructions<br />
+<hr />
+<br />
+Thank you for registering.<br />
+We require that you "validate" your registration to ensure that<br />
+the email address you entered was correct. This protects against<br />
+unwanted spam and malicious abuse.<br />
+<br />
+To activate your account, simply click on the following link:<br />
+<br />
+${webapp}/account.htm?method=activate&uid=${user.oid}&aid=${aid}<br />
+<br />
+(Some Email users may need to copy and paste the link into your web<br />
+browser).<br />
+<br />
+<hr />
+Thank you for using OpenRemote Modeler.<br />
+<br />
+Your username is : ${user.username}<br />
+Your password is : ${user.rawPassword}<br />
+Register at ${user.registerTimeAsString}<br />
+<br />
+For questions or concerns about your account, please use public IRC on:<br />
+http://www.openremote.org/<br /> 
+or visit the OpenRemote forum:<br />  
+http://www.openremote.org/display/forums/OpenRemote+Forums<br />
+<br />
+This is a post-only mailing.  Replies to this message are not monitored<br />
+or answered.<br />
+<br />
+The OpenRemote Team.<br />
+</body>
+</html>

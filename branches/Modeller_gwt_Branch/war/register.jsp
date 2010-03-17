@@ -36,6 +36,7 @@
     }
     p.fail{
         color:red;
+        text-align: center;
     }
     p.pass{
         color:green;
@@ -75,6 +76,12 @@
 		            <c:if test="${success ne null and not success}">
 		                <p class="fail"><b>${username}</b> is not available, choose another.</p>
 	                </c:if>
+		            <c:if test="${username_invalid ne null}">
+		                <p class="fail">Sorry, only letters, numbers and periods are allowed.</p>
+	                </c:if>
+		            <c:if test="${username_length ne null}">
+		                <p class="fail">Sorry, your username must be between 4 and 30 characters long.</p>
+	                </c:if>
 	                <c:if test="${username_blank ne null}">
 		                <p class="fail">Required field cannot be left blank.</p>
 	                </c:if>
@@ -85,21 +92,44 @@
 	                <c:if test="${password_blank ne null}">
 		                <p class="fail">Required field cannot be left blank.</p>
 	                </c:if>
+	                <c:if test="${password_length ne null}">
+		                <p class="fail">Password must be between 6 and 16 characters long.</p>
+	                </c:if>
 		            <p class="input"><b class="form_label">Re-type password</b><input id="r_password" style="width:150px" type="password" name="r_password" value="${r_password}"></p>
 	                <c:if test="${r_password_blank ne null}">
 		                <p class="fail">Required field cannot be left blank.</p>
 	                </c:if>
+	                <p class="input"><b class="form_label">Email</b><input id="email" style="width:150px" type="text" name="email" value="${email}"></p>
+	                <c:if test="${email_blank ne null}">
+		                <p class="fail">Required field cannot be left blank.</p>
+	                </c:if>
+	                <c:if test="${email_invalid ne null}">
+		                <p class="fail">Invalid email format.</p>
+	                </c:if>
 	                <p>
-	                	<b class="form_label">Choose your role</b>
-	                	<input id="role_bm" type="checkbox" name="role" value="role_bm" checked><label for="role_bm">Building Modeler</label>
-	                	<input id="role_ud" type="checkbox" name="role" value="role_ud" checked><label for="role_ud">UI Designer</label>
+	                	<b class="form_label">Choose your role(s)</b>
+	                	<input id="role_bm" type="checkbox" name="role" value="role_bm" checked>
+	                	<label title="An installer who models the building automation setup" for="role_bm" style="cursor:help">Building Modeler</label>
+	                	<input id="role_ud" type="checkbox" name="role" value="role_ud" checked>
+	                	<label title="A user interface designer who uses this model to create different types of panel and console applications" for="role_ud" style="cursor:help">UI Designer</label>
 	                </p>
 	                <c:if test="${role_blank ne null}">
 		                <p class="fail">You must choose at least one role.</p>
 	                </c:if>
+	                <p class="input"><b class="form_label">Type the code below</b><input name="code" style="width:150px" /> </p>
+	                <c:if test="${code_dismatch ne null}">
+		                <p class="fail">The code you entered didn't match the verification.</p>
+	                </c:if>
+	                <p class="input"><img title="click to try a new code" src="captchaImg" onclick="refresh(this);" style="cursor:pointer" alt="loading code..."/> </p>
+	                <script type="text/javascript">
+	                 function refresh(that) {
+	                	 that.setAttribute("src","captchaImg?" + Math.floor(Math.random()*9999999));
+	                 }
+	                </script>
 					<div><input class="register_submit" type="submit" value="Create my account"></div>
 	            </div>                       
-		        <p class="copyright">Copyright &copy; 2008-<fmt:formatDate value="${now}"pattern="yyyy" />  <a href="http://www.openremote.org">OpenRemote</a>. All rights reserved.</p>            
+		        <p class="copyright">Copyright &copy; 2008-<fmt:formatDate value="${now}"pattern="yyyy" />
+		        <a href="http://www.openremote.org">OpenRemote</a>. All rights reserved.</p>            
 			</div>
 		</div>
 	</form>

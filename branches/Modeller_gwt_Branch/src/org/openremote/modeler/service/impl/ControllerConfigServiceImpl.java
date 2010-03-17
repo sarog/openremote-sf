@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.openremote.modeler.domain.Account;
-import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.ConfigCategory;
+import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.UserService;

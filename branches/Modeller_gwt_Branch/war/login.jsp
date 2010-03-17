@@ -36,9 +36,11 @@
     }
     p.fail{
         color:red;
+        text-align: center;
     }
     p.pass{
         color:green;
+        text-align: center;
     }
     .register_btn{
     	margin-left: 40px;
@@ -68,13 +70,22 @@
 		<div class="inner-boundary">
 		  <div class="inner-border">
             <a href="http://www.openremote.org" ><img src="image/global.logo.png" /></a>
+            <c:if test="${isActivated ne null and isActivated}">
+                <p class="pass"><b>${username}</b> has been activated, please login.</p>
+            </c:if>
+            <c:if test="${isActivated ne null and not isActivated}">
+                <p class="fail">Invalid activation credentials, activation failed.</p>
+            </c:if>
+            <c:if test="${needActivation ne null}">
+                <p class="pass">We have sent you an activation email to <b>${email}</b>,
+                 please check it out to finish your registration.</p>
+            </c:if>
             <div style="padding-left:110px">
 	            <h3>Login to Modeler</h3>
-	            <p class="input"><b class="form_label">Username</b><input id="username" style="width:150px" type="text" name="j_username" value="${username}"></p>
-	            <c:if test="${success ne null and success}">
-	                <p class="pass"><b>${username}</b> has been created.</p>
-                </c:if>
-	            <p class="input"><b class="form_label">Password</b><input id="password" style="width:150px" type="password" name="j_password" value=""></p>
+	            <p class="input"><b class="form_label">Username</b>
+	            <input id="username" style="width:150px" type="text" name="j_username" value="${username}"></p>
+	            <p class="input"><b class="form_label">Password</b>
+	            <input id="password" style="width:150px" type="password" name="j_password" value=""></p>
                 <c:if test="${param.fail ne null }">
 	                <p class="fail">The username or password you entered is incorrect.</p>
                 </c:if>
@@ -84,7 +95,8 @@
                 </p> 
 	            <div><input class="login_submit" type="submit" value="Login"></div>
             </div>                       
-	        <p class="copyright">Copyright &copy; 2008-<fmt:formatDate value="${now}"pattern="yyyy" />  <a href="http://www.openremote.org">OpenRemote</a>. All rights reserved.</p>            
+	        <p class="copyright">Copyright &copy; 2008-<fmt:formatDate value="${now}"pattern="yyyy" /> 
+	        <a href="http://www.openremote.org">OpenRemote</a>. All rights reserved.</p>            
 		  </div>
 		</div>
 	</form>
