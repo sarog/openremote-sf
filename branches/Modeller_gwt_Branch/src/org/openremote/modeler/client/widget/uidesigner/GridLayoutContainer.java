@@ -189,7 +189,7 @@ public class GridLayoutContainer extends ComponentContainer {
             cellContainer.setPosition(cellWidth * cell.getPosX() + cell.getPosX() + 1, cellHeight * cell.getPosY()
                   + cell.getPosY() + 1);
             cellContainer.setName(cell.getUiComponent().getName());
-            cellContainer.setCellSpan(1, 1);
+            cellContainer.setCellSpan(cell.getColspan(), cell.getRowspan());
             add(cellContainer);
             cellContainer.setBorders(false);
             cellContainer.fillArea(btnInArea);
