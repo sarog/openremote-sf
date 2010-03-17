@@ -19,14 +19,19 @@
 */
 package org.openremote.modeler.exception;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
- * If the request doesn't pass the Basic Http Authentication, this exception will be thrown. 
+ * If it is failed to export panel.xml and controller.xml, this exception will be thrown.   
  * 
  * @author javen 
  */
 @SuppressWarnings("serial")
-public class XmlExportException extends RuntimeException {
+public class XmlExportException extends RuntimeException implements IsSerializable{
 
+   /**
+    * This constructor is necessary for GWT to serialize to client. 
+    */
    public XmlExportException() {
       super();
    }

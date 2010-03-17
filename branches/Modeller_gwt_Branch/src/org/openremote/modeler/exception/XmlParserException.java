@@ -19,13 +19,15 @@
 */
 package org.openremote.modeler.exception;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
  * Custom Exception when parser xml faild.
  * 
  * @author Tomsky
  */
 @SuppressWarnings("serial")
-public class XmlParserException extends RuntimeException {
+public class XmlParserException extends RuntimeException implements IsSerializable{
    
    /**
     * Instantiates a new xml parser exception.
@@ -48,5 +50,12 @@ public class XmlParserException extends RuntimeException {
    
    public XmlParserException(Throwable throwable) {
       super(throwable);
+   }
+   
+   /**
+    * This constructor is necessary for GWT to serialize to client. 
+    */
+   public XmlParserException() {
+      
    }
 }
