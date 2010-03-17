@@ -617,6 +617,7 @@ public class ResourceServiceImpl implements ResourceService {
          context.put("panels", panels);
          context.put("groups", groups);
          context.put("screens", screens);
+         context.put("stringUtils", StringUtils.class);
          return VelocityEngineUtils.mergeTemplateIntoString(velocity, PANEL_XML_TEMPLATE, context);
       } catch (VelocityException e) {
          throw new XmlExportException("Failed to read panel.xml", e);
@@ -675,7 +676,7 @@ public class ResourceServiceImpl implements ResourceService {
       context.put("images", uiImages);
       context.put("maxId", maxId);
       context.put("configs", configs);
-
+      context.put("stringUtils", StringUtils.class);
 
       return VelocityEngineUtils.mergeTemplateIntoString(velocity, CONTROLLER_XML_TEMPLATE, context);
    }

@@ -56,4 +56,18 @@ public class StringUtils {
       }
       return parts[parts.length - 1];
    }
+   
+   public static String escapeXml(String input) {
+      if (input == null) {
+         return input;
+      }
+      return input.replace("&", "&amp;").replace("\"", "&quot;").replace("<", "&lt;").replace(">", "&gt;");
+   }
+   
+   public static String unescapeXml(String input) {
+      if (input == null) {
+         return input;
+      }
+      return input.replace("&quot;", "\"").replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&");
+   }
 }
