@@ -51,6 +51,6 @@ public class ComponentContainer extends LayoutContainer {
       screenCanvas.hideBackground();
    }
    public PropertyForm getPropertiesForm() {
-      return new PropertyForm();
+      return new PropertyForm(this);
    }
 }

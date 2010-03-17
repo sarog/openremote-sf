@@ -19,6 +19,7 @@ package org.openremote.modeler.client.widget.uidesigner;
 import java.util.List;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.event.WidgetDeleteEvent;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
@@ -407,7 +408,7 @@ public class ScreenCanvas extends ComponentContainer {
       return new Point(left, top);
    }
 
-   private AbsoluteLayoutContainer createAbsoluteLayoutContainer(final Screen screen, Absolute absolute,
+   private AbsoluteLayoutContainer createAbsoluteLayoutContainer(final Screen screen, final Absolute absolute,
          ScreenComponent screenControl) {
       final AbsoluteLayoutContainer controlContainer = new AbsoluteLayoutContainer(this, absolute, screenControl) {
          @Override
@@ -418,8 +419,15 @@ public class ScreenCanvas extends ComponentContainer {
             event.stopPropagation();
             super.onBrowserEvent(event);
          }
-
+         
       };
+      controlContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
+         public void handleEvent(WidgetDeleteEvent be) {
+            screen.removeAbsolute(absolute);
+            controlContainer.removeFromParent();
+         }
+         
+      });
       new KeyNav<ComponentEvent>() {
          @Override
          public void onDelete(ComponentEvent ce) {
@@ -496,6 +504,13 @@ public class ScreenCanvas extends ComponentContainer {
             super.onBrowserEvent(event);
          }
       };
+      gridContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
+         public void handleEvent(WidgetDeleteEvent be) {
+            screen.removeGrid(grid);
+            gridContainer.removeFromParent();
+         }
+         
+      });
       new KeyNav<ComponentEvent>(gridContainer) {
          @Override
          public void onDelete(ComponentEvent ce) {

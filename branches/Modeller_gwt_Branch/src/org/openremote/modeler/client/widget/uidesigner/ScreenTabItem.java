@@ -48,6 +48,7 @@ public class ScreenTabItem extends TabItem {
       setLayout(new FlowLayout());
       setStyleAttribute("overflow", "auto");
       addScreenContainer();
+      layout();
    }
 
    /**
@@ -71,6 +72,8 @@ public class ScreenTabItem extends TabItem {
       TouchPanelDefinition touchPanelDefinition = screen.getTouchPanelDefinition();
       if (touchPanelDefinition.getWidth() > 0 && touchPanelDefinition.getHeight() > 0) {
          screenContainer.setSize(touchPanelDefinition.getWidth(), touchPanelDefinition.getHeight());
+      } else {
+         screenContainer.setSize(touchPanelDefinition.getCanvas().getWidth(), touchPanelDefinition.getCanvas().getHeight());
       }
       if (touchPanelDefinition.getBgImage() != null) {
          screenContainer.setStyleAttribute("backgroundImage", "url(" + touchPanelDefinition.getBgImage() + ")");
