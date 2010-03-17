@@ -5,7 +5,7 @@
 		<attr name="url" label="URL">
 			<validations>
 				<allowBlank>false</allowBlank>
-				<maxLength>125</maxLength>
+				<maxLength>254</maxLength>
 				<regex>(http|https|ftp)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*</regex>
 			</validations>
 		</attr>
