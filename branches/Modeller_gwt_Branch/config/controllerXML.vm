@@ -133,7 +133,7 @@
 					<state name="off"/>
 				#elseif(${sensor.getType().toString().equals("custom")})
 					#foreach($state in $sensor.getStates())
-						<state name="${state.getName()}" />
+						<state name="${stringUtils.escapeXml($state.getName())}" />
 					#end
 				#end
   			#end
@@ -145,11 +145,11 @@
     #foreach($protocolDisplayName in $eventContainer.getProtocolEvents().keySet())
     	#set($protocalTagName=${protocolContainer.findTagName($protocolDisplayName)})
     	#foreach($uiButtonEvent in $eventContainer.getProtocolEvents().get($protocolDisplayName))
-    		<command id="${uiButtonEvent.getId()}" protocol="${protocalTagName}" value="$!{uiButtonEvent.getProtocolAttrs().get("command")}">
+    		<command id="${uiButtonEvent.getId()}" protocol="${protocalTagName}" value="$!{stringUtils.escapeXml($uiButtonEvent.getProtocolAttrs().get("command"))}">
     		#set($protocoAttrKeySet=${uiButtonEvent.getProtocolAttrs().keySet()})
     		#foreach($property in $protocoAttrKeySet)
     			#if(${property.equals("command").toString()}=="false")
-    				<property name="${property}" value="${uiButtonEvent.getProtocolAttrs().get(${property})}" />
+    				<property name="${property}" value="$!{stringUtils.escapeXml($uiButtonEvent.getProtocolAttrs().get(${property}))}" />
     			#end
     		#end
     		</command>

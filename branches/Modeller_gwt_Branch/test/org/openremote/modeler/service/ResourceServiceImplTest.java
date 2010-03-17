@@ -42,6 +42,7 @@ import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Protocol;
+import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.Sensor;
@@ -538,6 +539,14 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
       
       Protocol protocol = new Protocol();
       protocol.setType(Constants.INFRARED_TYPE);
+      List<ProtocolAttr> attrs = new ArrayList<ProtocolAttr>();
+      ProtocolAttr attr1 = new ProtocolAttr();
+      attr1.setName("command");
+      attr1.setValue("\"nameValue");
+      attr1.setProtocol(protocol);
+      attrs.add(attr1);
+     
+      protocol.setAttributes(attrs);
       
       DeviceCommand cmd = new DeviceCommand();
       cmd.setProtocol(protocol);
