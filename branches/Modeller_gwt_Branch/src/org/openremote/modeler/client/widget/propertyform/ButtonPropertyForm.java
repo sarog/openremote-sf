@@ -56,7 +56,7 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 public class ButtonPropertyForm extends PropertyForm {
 
    public ButtonPropertyForm(ScreenButton screenButton, UIButton uiButton) {
-      super();
+      super(screenButton);
       addFields(screenButton, uiButton);
    }
    private void addFields(final ScreenButton screenButton, final UIButton uiButton) {

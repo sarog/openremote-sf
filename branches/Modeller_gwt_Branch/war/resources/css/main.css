@@ -309,3 +309,7 @@ table.screen-btn-cont td.br-c{
 .overflow-auto {
    *overflow: auto;
 }
+
+.zero-padding {
+   padding: 0px;
+}

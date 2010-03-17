@@ -68,7 +68,7 @@ public class ImagePropertyForm extends PropertyForm {
    private State customSensorState = null;
    
    public ImagePropertyForm(ScreenImage screenImage) {
-      super();
+      super(screenImage);
       this.screenImage = screenImage;
       addFields(screenImage);
       addListenersToForm();

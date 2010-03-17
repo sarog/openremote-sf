@@ -40,7 +40,7 @@ import com.extjs.gxt.ui.client.widget.form.AdapterField;
 public class SwitchPropertyForm extends PropertyForm {
 
    public SwitchPropertyForm(ScreenSwitch screenSwitch, UISwitch uiSwitch) {
-      super();
+      super(screenSwitch);
       setLabelWidth(90);
       addFields(screenSwitch, uiSwitch);
    }
