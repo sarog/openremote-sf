@@ -84,7 +84,7 @@
                 </p> 
 	            <div><input class="login_submit" type="submit" value="Login"></div>
             </div>                       
-	        <p class="copyright">Copyright &copy; 2008-<fmt:formatDate value="${now}"pattern="yyyy" />  <a href="http://www.openremote.org">OpenRemote</a>. All rights reserved.</p>            
+	        <p class="copyright">Copyright &copy; 2008-<fmt:formatDate value="${now}"pattern="yyyy" />  <a href="http://www.openremote.org">OpenRemote</a>.</p>
 		  </div>
 		</div>
 	</form>
