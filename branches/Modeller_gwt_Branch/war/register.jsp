@@ -129,7 +129,7 @@
 					<div><input class="register_submit" type="submit" value="Create my account"></div>
 	            </div>                       
 		        <p class="copyright">Copyright &copy; 2008-<fmt:formatDate value="${now}"pattern="yyyy" />
-		        <a href="http://www.openremote.org">OpenRemote</a>. All rights reserved.</p>            
+		        <a href="http://www.openremote.org">OpenRemote</a>.</p>            
 			</div>
 		</div>
 	</form>
