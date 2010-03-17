@@ -485,7 +485,7 @@ public class ProfilePanel extends ContentPanel {
    }
    private MenuItem createNewGroupMenuItem() {
       MenuItem newGroupItem = new MenuItem("New Group");
-      newGroupItem.setIcon(icon.activityIcon());
+      newGroupItem.setIcon(icon.groupIcon());
       newGroupItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          @Override
          public void componentSelected(MenuEvent ce) {

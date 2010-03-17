@@ -3,8 +3,8 @@ package org.openremote.modeler.service;
 import java.util.Set;
 
 import org.openremote.modeler.domain.Account;
-import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.ConfigCategory;
+import org.openremote.modeler.domain.ControllerConfig;
 
 public interface ControllerConfigService {
    

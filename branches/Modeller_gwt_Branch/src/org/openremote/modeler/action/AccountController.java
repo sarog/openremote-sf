@@ -24,6 +24,11 @@ package org.openremote.modeler.action;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nl.captcha.Captcha;
+
+import org.apache.commons.lang.StringUtils;
+import org.openremote.modeler.domain.User;
+import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.service.impl.UserServiceImpl;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -35,12 +40,10 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
  */
 public class AccountController extends MultiActionController {
    
-   /** The user service. */
-   private UserServiceImpl userService;
+   private UserService userService;
    
-
    /**
-    * Creates the.
+    * Creates the account.
     * 
     * @param request the request
     * @param response the response
@@ -53,9 +56,11 @@ public class AccountController extends MultiActionController {
       String username = request.getParameter("username");
       String password = request.getParameter("password");
       String password2 = request.getParameter("r_password");
+      String email = request.getParameter("email");
       registerMav.addObject("username", username);
       registerMav.addObject("password", password);
       registerMav.addObject("r_password", password2);
+      registerMav.addObject("email", email);
       String roleStr = "";
       String[] roles = request.getParameterValues("role");
       if (roles != null) {
@@ -63,15 +68,27 @@ public class AccountController extends MultiActionController {
             roleStr += role;
          }
       }
-      if ("".equals(username)) {
+      if (StringUtils.isEmpty(username)) {
          registerMav.addObject("username_blank", true);
          return registerMav;
       }
-      if ("".equals(password)) {
+      if (!username.matches("^[A-Za-z0-9\\.]+$")) {
+         registerMav.addObject("username_invalid", true);
+         return registerMav;
+      }
+      if (username.length() < 4 || username.length() > 30) {
+         registerMav.addObject("username_length", true);
+         return registerMav;
+      }
+      if (StringUtils.isEmpty(password)) {
          registerMav.addObject("password_blank", true);
          return registerMav;
       }
-      if ("".equals(password2)) {
+      if (password.length() < 6 || password.length() > 16) {
+         registerMav.addObject("password_length", true);
+         return registerMav;
+      }
+      if (StringUtils.isEmpty(password2)) {
          registerMav.addObject("r_password_blank", true);
          return registerMav;
       }
@@ -79,28 +96,57 @@ public class AccountController extends MultiActionController {
          registerMav.addObject("password_error", true);
          return registerMav;
       }
-      if ("".equals(roleStr)) {
+      if (StringUtils.isEmpty(email)) {
+         registerMav.addObject("email_blank", true);
+         return registerMav;
+      }
+      if (!email.matches("^[a-zA-Z0-9_\\.]+@[a-zA-Z0-9-]+\\.[a-zA-Z]+$")) {
+         registerMav.addObject("email_invalid", true);
+         return registerMav;
+      }
+      if (StringUtils.isEmpty(roleStr)) {
          registerMav.addObject("role_blank", true);
          return registerMav;
       }
-      boolean success = userService.createAccount(username, password, roleStr);
+      
+      //Captcha help us prevent spam and fake registrations
+      Captcha captcha = (Captcha) request.getSession().getAttribute(Captcha.NAME);
+      //request.setCharacterEncoding("UTF-8"); // Do this so we can capture non-Latin chars
+      String code = request.getParameter("code");
+      if (code == null || !captcha.isCorrect(code)) { 
+         registerMav.addObject("code_dismatch", true);
+         return registerMav;
+      }
+      
+      boolean success = userService.createUserAccount(username, password, email, roleStr);
       if (success) {
-         loginMav.addObject("success", success);
+         loginMav.addObject("needActivation", true);
          loginMav.addObject("username", username);
+         loginMav.addObject("email", email);
          return loginMav;
       } else {
          registerMav.addObject("success", success);
          return registerMav;
       }
    }
+   
+   public ModelAndView activate(HttpServletRequest request, HttpServletResponse response) {
+      ModelAndView loginMav = new ModelAndView("login");
+      String userOid = request.getParameter("uid");
+      String aid = request.getParameter("aid");
+      
+      boolean success = userService.activateUser(userOid, aid);
+      if (success) {
+         User u = userService.getUserById(Long.valueOf(userOid));
+         loginMav.addObject("username", u.getUsername());
+      }
+      loginMav.addObject("isActivated", success);
+      return loginMav;
+   }
+   
 
-
-   /**
-    * Sets the user service.
-    * 
-    * @param userService the new user service
-    */
    public void setUserService(UserServiceImpl userService) {
       this.userService = userService;
    }
+
 }
