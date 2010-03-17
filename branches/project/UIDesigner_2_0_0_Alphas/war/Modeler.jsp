@@ -75,7 +75,7 @@
 	<!-- The loading message container div -->
 	<div id="loading-cont">
 	    <div class="loading-indicator-img">
-		    <img width="32" height="32" src="resources/images/large-loading.gif" />OpenRemote Modeler 2.0<br>
+		    <img width="32" height="32" src="resources/images/large-loading.gif" />OpenRemote Boss 2.0 Online Tools<br>
 		    <span id="loading-msg">Loading application, please wait...</span>
 	    </div>
 	</div>
