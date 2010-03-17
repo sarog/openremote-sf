@@ -26,6 +26,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -89,6 +90,7 @@ import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.FileOperationException;
+import org.openremote.modeler.exception.IllegalRestUrlException;
 import org.openremote.modeler.exception.UIRestoreException;
 import org.openremote.modeler.exception.XmlExportException;
 import org.openremote.modeler.exception.XmlParserException;
@@ -146,6 +148,9 @@ public class ResourceServiceImpl implements ResourceService {
       initResources(panels, maxOid);
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File zipFile = this.getExportResource();
+      if (zipFile == null) {
+         throw new XmlExportException("Failed to export! User folder is empty!");
+      }
       return pathConfig.getZipUrl(userService.getAccount())+zipFile.getName();
 
    }
@@ -903,9 +908,12 @@ public class ResourceServiceImpl implements ResourceService {
       HttpPost httpPost = new HttpPost();
       String beehiveRootRestURL = configuration.getBeehiveRESTRootUrl();
       this.addAuthentication(httpPost);
+      
+      String url = beehiveRootRestURL + "account/" + userService.getAccount().getOid()
+      + "/openremote.zip";
+      
       try {
-         httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid()
-               + "/openremote.zip"));
+         httpPost.setURI(new URI(url));
          FileBody resource = new FileBody(getExportResource());
          MultipartEntity entity = new MultipartEntity();
          entity.addPart("resource", resource);
@@ -916,8 +924,12 @@ public class ResourceServiceImpl implements ResourceService {
             throw new BeehiveNotAvailableException("Failed to save resource to Beehive, status code: "
                   + response.getStatusLine().getStatusCode());
          }
-      } catch (Exception e) {
+      } catch (NullPointerException e) {
+         LOGGER.warn("There no resource to upload to beehive at this time. ");
+      } catch (IOException e) {
          throw new BeehiveNotAvailableException(e.getMessage(), e);
+      } catch (URISyntaxException e) {
+         throw new IllegalRestUrlException("Invalid Rest URL: "+url+" to save modeler resource to beehive! ",e);
       }
    }
    
@@ -926,14 +938,15 @@ public class ResourceServiceImpl implements ResourceService {
       HttpClient httpClient = new DefaultHttpClient();
       HttpPost httpPost = new HttpPost();
       String beehiveRootRestURL = configuration.getBeehiveRESTRootUrl();
+      String url = "";
+      if (!share) {
+         url = beehiveRootRestURL + "account/" + userService.getAccount().getOid()
+         + "/template/" + template.getOid()+"/resource/";
+      } else {
+         url = beehiveRootRestURL + "account/0/template/" + template.getOid() + "/resource/";
+      } 
       try {
-         if (!share) {
-            httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid()
-                  + "/template/" + template.getOid()+"/resource/"));
-         } else {
-            httpPost.setURI(new URI(beehiveRootRestURL + "account/0/template/" + template.getOid() + "/resource/"));
-         }
-
+         httpPost.setURI(new URI(url));
          FileBody resource = new FileBody(getTemplateZipResource());
          MultipartEntity entity = new MultipartEntity();
          entity.addPart("resource", resource);
@@ -947,8 +960,12 @@ public class ResourceServiceImpl implements ResourceService {
             throw new BeehiveNotAvailableException("Failed to save template to Beehive, status code: "
                   + response.getStatusLine().getStatusCode());
          }
-      } catch (Exception e) {
+      } catch (NullPointerException e){
+         LOGGER.warn("There are no template resources for template \"" + template.getName()+ "\"to save to beehive!");
+      } catch (IOException e) {
          throw new BeehiveNotAvailableException("Failed to save template to Beehive", e);
+      } catch (URISyntaxException e) {
+         throw new IllegalRestUrlException("Invalid Rest URL: "+url+" to save template resource to beehive! ",e);
       }
    }
    @Override
@@ -993,6 +1010,9 @@ public class ResourceServiceImpl implements ResourceService {
             fos.flush();
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
+         } else if (404 == response.getStatusLine().getStatusCode()) {
+            LOGGER.warn("There are no resources for this template, ID:" + templateOid);
+            return;
          } else {
             throw new BeehiveNotAvailableException("Failed to download resources for template, status code: "
                   + response.getStatusLine().getStatusCode());
@@ -1102,6 +1122,9 @@ public class ResourceServiceImpl implements ResourceService {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
       File[] filesInAccountFolder = userFolder.listFiles();
+      if (filesInAccountFolder == null || filesInAccountFolder.length == 0) {
+         return null;
+      }
       File[] filesInZip = new File[filesInAccountFolder.length];
       int i = 0;
       for (File file : filesInAccountFolder) {
