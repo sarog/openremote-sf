@@ -12,15 +12,15 @@
 		<attr name="port" label="Port">
 			<validations>
 				<allowBlank>false</allowBlank>
-				<maxLength>10</maxLength>
+				<maxLength>5</maxLength>
 				<regex>\d+</regex>
 			</validations>
 		</attr>
 		<attr name="command" label="Command">
 			<validations>
 				<allowBlank>false</allowBlank>
-				<maxLength>10</maxLength>
-				<regex>\w*</regex>
+				<maxLength>254</maxLength>
+				<regex>.*</regex>
 			</validations>
 		</attr>
 	</protocol>
