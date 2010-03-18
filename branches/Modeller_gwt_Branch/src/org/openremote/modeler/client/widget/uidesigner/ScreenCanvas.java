@@ -22,7 +22,9 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.WidgetDeleteEvent;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
+import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.propertyform.ScreenPropertyForm;
 import org.openremote.modeler.domain.Absolute;
@@ -368,6 +370,11 @@ public class ScreenCanvas extends ComponentContainer {
             event.getStatus().setStatus(true);
             event.getStatus().update("drop here");
             event.cancelBubble();
+            ScreenComponent screenComponent = ((AbsoluteLayoutContainer)layoutContainer).getScreenComponent();
+            if (screenComponent instanceof ScreenButton) {
+               ((ScreenButton)screenComponent).setDefaultImage();
+            }
+            
          }
       };
       source.setGroup(Constants.CONTROL_DND_GROUP);
@@ -409,18 +416,27 @@ public class ScreenCanvas extends ComponentContainer {
    }
 
    private AbsoluteLayoutContainer createAbsoluteLayoutContainer(final Screen screen, final Absolute absolute,
-         ScreenComponent screenControl) {
+         final ScreenComponent screenControl) {
       final AbsoluteLayoutContainer controlContainer = new AbsoluteLayoutContainer(this, absolute, screenControl) {
          @Override
-         public void onBrowserEvent(Event event) {
-            if (event.getTypeInt() == Event.ONMOUSEDOWN) {
+         public void onComponentEvent(ComponentEvent ce) {
+            if (ce.getEventTypeInt() == Event.ONMOUSEDOWN) {
                WidgetSelectionUtil.setSelectWidget(this);
+               if (screenControl instanceof ScreenButton) {
+                  ((ScreenButton)screenControl).setPressedImage();
+               } else if (screenControl instanceof ScreenSwitch) {
+                  ((ScreenSwitch)screenControl).onStateChange();
+               }
+            } else if (ce.getEventTypeInt() == Event.ONMOUSEUP){
+               if (screenControl instanceof ScreenButton) {
+                  ((ScreenButton)screenControl).setDefaultImage();
+               }
             }
-            event.stopPropagation();
-            super.onBrowserEvent(event);
+            ce.cancelBubble();
+            super.onComponentEvent(ce);
          }
-         
       };
+      controlContainer.sinkEvents(Event.ONMOUSEUP);
       controlContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
          public void handleEvent(WidgetDeleteEvent be) {
             screen.removeAbsolute(absolute);

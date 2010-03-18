@@ -145,4 +145,16 @@ public class ScreenButton extends ScreenComponent {
          }
       }
    }
+
+   public void setDefaultImage() {
+      if (uiButton.getImage() != null) {
+         setIcon(uiButton.getImage().getSrc());
+      }
+   }
+   
+   public void setPressedImage() {
+      if (uiButton.getPressImage() != null && uiButton.getImage() != null) {
+         setIcon(uiButton.getPressImage().getSrc());
+      }
+   }
 }
