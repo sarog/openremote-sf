@@ -55,16 +55,23 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
    @Override
    public Switch update(Switch switchToggle) {
       Switch old = genericDAO.loadById(Switch.class, switchToggle.getOid());
-      genericDAO.delete(old.getSwitchCommandOffRef());
-      genericDAO.delete(old.getSwitchCommandOnRef());
-      genericDAO.delete(old.getSwitchSensorRef());
+      if (old.getSwitchCommandOffRef().getOid() != switchToggle.getSwitchCommandOffRef().getOid()) {
+         genericDAO.delete(old.getSwitchCommandOffRef());
+         old.setSwitchCommandOffRef(switchToggle.getSwitchCommandOffRef());
+      }
+      if (old.getSwitchCommandOnRef().getOid() != switchToggle.getSwitchCommandOnRef().getOid()) {
+         genericDAO.delete(old.getSwitchCommandOnRef());
+         switchToggle.getSwitchCommandOnRef().setOnSwitch(old);
+      }
+      if (old.getSwitchSensorRef().getOid() != switchToggle.getSwitchSensorRef().getOid()) {
+         genericDAO.delete(old.getSwitchSensorRef());
+         old.setSwitchSensorRef(switchToggle.getSwitchSensorRef());
+      }
       old.setName(switchToggle.getName());
       switchToggle.getSwitchCommandOffRef().setOffSwitch(old);
       switchToggle.getSwitchCommandOnRef().setOnSwitch(old);
       switchToggle.getSwitchSensorRef().setSwitchToggle(old);
-      old.setSwitchCommandOffRef(switchToggle.getSwitchCommandOffRef());
       old.setSwitchCommandOnRef(switchToggle.getSwitchCommandOnRef());
-      old.setSwitchSensorRef(switchToggle.getSwitchSensorRef());
       return old;
    }
    
