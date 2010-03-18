@@ -27,7 +27,9 @@ import org.openremote.modeler.client.event.WidgetDeleteEvent;
 import org.openremote.modeler.client.gxtextends.ScreenDropTarget;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
+import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.GridCellBounds;
 import org.openremote.modeler.domain.component.UIComponent;
@@ -208,17 +210,27 @@ public class GridLayoutContainer extends ComponentContainer {
     * 
     */
    private GridCellContainer createCellContainer(final UIGrid grid, Cell cell, int cellWidth, int cellHeight) {
-      final GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(), cell, ScreenComponent.build(this.getScreenCanvas(), cell
-            .getUiComponent()), this) {
+      final ScreenComponent screenComponent = ScreenComponent.build(this.getScreenCanvas(), cell.getUiComponent());
+      final GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(), cell, screenComponent, this) {
          @Override
-         public void onBrowserEvent(Event event) {
-            if (event.getTypeInt() == Event.ONMOUSEDOWN) {
+         public void onComponentEvent(ComponentEvent ce) {
+            if (ce.getEventTypeInt() == Event.ONMOUSEDOWN) {
                WidgetSelectionUtil.setSelectWidget((GridCellContainer) this);
+               if (screenComponent instanceof ScreenButton) {
+                  ((ScreenButton)screenComponent).setPressedImage();
+               } else if (screenComponent instanceof ScreenSwitch) {
+                  ((ScreenSwitch)screenComponent).onStateChange();
+               }
+            } else if (ce.getEventTypeInt() == Event.ONMOUSEUP){
+               if (screenComponent instanceof ScreenButton) {
+                  ((ScreenButton)screenComponent).setDefaultImage();
+               }
             }
-            event.stopPropagation();
-            super.onBrowserEvent(event);
+            ce.cancelBubble();
+            super.onComponentEvent(ce);
          }
       };
+      cellContainer.sinkEvents(Event.ONMOUSEUP);
       cellContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
          public void handleEvent(WidgetDeleteEvent be) {
             grid.removeCell(cellContainer.getCell());
@@ -258,16 +270,27 @@ public class GridLayoutContainer extends ComponentContainer {
    
    private GridCellContainer cloneCellContainer(GridCellContainer container) {
       final Cell cell = container.getCell();
+      final ScreenComponent screenComponent = container.getScreenComponent();
       final GridCellContainer cellContainer =  new GridCellContainer(getScreenCanvas(), cell, container.getScreenComponent(), this) {
          @Override
-         public void onBrowserEvent(Event event) {
-            if (event.getTypeInt() == Event.ONMOUSEDOWN) {
+         public void onComponentEvent(ComponentEvent ce) {
+            if (ce.getEventTypeInt() == Event.ONMOUSEDOWN) {
                WidgetSelectionUtil.setSelectWidget((GridCellContainer) this);
+               if (screenComponent instanceof ScreenButton) {
+                  ((ScreenButton)screenComponent).setPressedImage();
+               } else if (screenComponent instanceof ScreenSwitch) {
+                  ((ScreenSwitch)screenComponent).onStateChange();
+               }
+            } else if (ce.getEventTypeInt() == Event.ONMOUSEUP){
+               if (screenComponent instanceof ScreenButton) {
+                  ((ScreenButton)screenComponent).setDefaultImage();
+               }
             }
-            event.stopPropagation();
-            super.onBrowserEvent(event);
+            ce.cancelBubble();
+            super.onComponentEvent(ce);
          }
       };
+      cellContainer.sinkEvents(Event.ONMOUSEUP);
       cellContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
          public void handleEvent(WidgetDeleteEvent be) {
             grid.removeCell(cell);
@@ -397,6 +420,10 @@ public class GridLayoutContainer extends ComponentContainer {
             event.getStatus().setStatus(true);
             event.getStatus().update("1 item selected");
             event.cancelBubble();
+            ScreenComponent screenComponent = cellContainer.getScreenComponent();
+            if (screenComponent instanceof ScreenButton) {
+               ((ScreenButton)screenComponent).setDefaultImage();
+            }
          }
       };
       source.setGroup(Constants.CONTROL_DND_GROUP);
