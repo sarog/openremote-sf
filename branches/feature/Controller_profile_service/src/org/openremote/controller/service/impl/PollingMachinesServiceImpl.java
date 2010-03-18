@@ -35,7 +35,6 @@ import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.statuscache.PollingMachineThread;
 
 /**
- * {@inheritDoc}
  * 
  * @author Handy.Wang 2010-03-17
  *

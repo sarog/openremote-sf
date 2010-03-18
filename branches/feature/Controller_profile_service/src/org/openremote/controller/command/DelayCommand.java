@@ -42,10 +42,11 @@ public class DelayCommand implements ExecutableCommand {
       super();
    }
 
+
    /**
-    * Instantiates a new delay event.
+    * Instantiates a new delay command.
     * 
-    * @param delaySeconds the delay seconds
+    * @param delaySecondsStr the delay seconds str
     */
    public DelayCommand(String delaySecondsStr) {
       super();

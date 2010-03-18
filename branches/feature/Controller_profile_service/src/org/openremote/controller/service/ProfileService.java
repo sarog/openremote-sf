@@ -37,7 +37,7 @@ public interface ProfileService {
     * This method is used to get a xml string which contains the UI information. 
     * This string contains all the information for a panel whose id is panelId.
     * This method can get the information from your panel.xml. 
-    * @param panelId the id of your panel. 
+    * @param panelID the id of your panel. 
     * @param xmlPath The path of file panel.xml. 
     * @return an xml string which contains all the panel information.
     */

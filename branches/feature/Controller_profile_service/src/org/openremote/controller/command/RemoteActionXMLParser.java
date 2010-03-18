@@ -76,22 +76,11 @@ public class RemoteActionXMLParser {
       return queryElementFromXML("//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName);
    }
    
-   /**
-    * Query elements with name of element and document context.
-    * @param doc
-    * @param elementName
-    * @return
-    */
    public List<Element> queryElementsFromXMLByName(Document doc, String elementName) {
       String xPathStr = "//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName;
       return queryElementsFromXML(doc, xPathStr);
    }
    
-   /**
-    * Query elements with name of element.
-    * @param elementName
-    * @return
-    */
    public List<Element> queryElementsFromXMLByName(String elementName) {
 	  String xPath = "//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName;
 	  SAXBuilder sb = new SAXBuilder();
