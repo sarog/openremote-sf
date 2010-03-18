@@ -7,7 +7,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
        default-autowire="byName">
-
     <bean id="propertyConfigurer"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
@@ -45,12 +44,6 @@
         <property name="groupMemberCandidateURLs" value="${controller.groupmember.candidate.urls}" />
     </bean>
     
-    <!-- service for button command from iPhone -->
-    <!-- bean id="buttonCommandService" class="org.openremote.controller.service.impl.ButtonCommandServiceImpl">
-        <property name="macroCmdExecutionDelay" value="${Macro.Execution.Delay}" />
-    </bean>
--->
-    
     <!-- service for status command from iPhone -->
     <bean id="statusCommandService" class="org.openremote.controller.service.impl.StatusCommandServiceImpl" />
     
@@ -80,6 +73,9 @@
     <!-- roundrobin service -->
     <bean id="roundRobinService" class="org.openremote.controller.service.impl.RoundRobinServiceImpl" />
     
+    <!-- polling machine sevice -->
+    <bean id="pollingMachinesService" class="org.openremote.controller.service.impl.PollingMachinesServiceImpl" />
+
     <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
 		<property name = "commandBuilders">
 		    <props>
@@ -89,11 +85,10 @@
             	<prop key = "tcpSocket">tcpSocketCommandBuilder</prop>
             	<prop key = "telnet">telnetCommandBuilder</prop>
             	<prop key = "httpGet">httpGetCommandBuilder</prop>
-            	<prop key = "test">testCommandBuilder</prop>
+            	<prop key = "mockup">mockupCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
-
 
 	<!-- COMMAND BUILDERS ============================================================================
 	 |
@@ -123,7 +118,7 @@
   <bean id = "httpGetCommandBuilder" class = "org.openremote.controller.protocol.http.HttpGetCommandBuilder"
         scope = "prototype" />
         
-  <bean id = "testCommandBuilder" class = "org.openremote.controller.protocol.test.TestCommandBuilder"
+  <bean id = "mockupCommandBuilder" class = "org.openremote.controller.protocol.test.mockup.MockupCommandBuilder"
         scope = "prototype" />
         
   <bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">

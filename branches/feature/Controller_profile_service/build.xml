@@ -128,10 +128,10 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		<mkdir dir="${classes.dir}" />
 		<copy todir="${classes.dir}">
 			<fileset dir="${config.dir}">
-				<include name="**.*"/>
+				<include name="**.*" />
 			</fileset>
 			<fileset dir="${src.dir}">
-				<include name="**/*.xml"/>
+				<include name="**/*.xml" />
 			</fileset>
 		</copy>
 		<copy todir="${webapp.classes.dir}">
@@ -139,7 +139,16 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 				<include name="**.*" />
 			</fileset>
 		</copy>
-		<javac destdir="${classes.dir}" classpathref="compile.path.id" debug="${build.debug}" >
+		<copy todir="${classes.dir}">
+			<fileset dir="${test.dir}">
+				<include name="**/*.xml" />
+				<include name="**/*.properties" />
+			</fileset>
+			<fileset dir="${test.dir}">
+				<include name="**/*.xml" />
+			</fileset>
+		</copy>
+		<javac destdir="${classes.dir}" classpathref="compile.path.id" debug="${build.debug}">
 			<src path="${src.dir}"/>
 		</javac>
 	</target>

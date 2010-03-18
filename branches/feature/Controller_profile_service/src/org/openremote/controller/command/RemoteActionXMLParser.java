@@ -76,6 +76,71 @@ public class RemoteActionXMLParser {
       return queryElementFromXML("//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName);
    }
    
+   /**
+    * Query elements with name of element and document context.
+    * @param doc
+    * @param elementName
+    * @return
+    */
+   public List<Element> queryElementsFromXMLByName(Document doc, String elementName) {
+      String xPathStr = "//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName;
+      return queryElementsFromXML(doc, xPathStr);
+   }
+   
+   /**
+    * Query elements with name of element.
+    * @param elementName
+    * @return
+    */
+   public List<Element> queryElementsFromXMLByName(String elementName) {
+	  String xPath = "//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName;
+	  SAXBuilder sb = new SAXBuilder();
+      sb.setValidation(true);
+      File xsdfile = new File(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath());
+
+      sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
+      sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+      String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.CONTROLLER_XML;
+      if (!new File(xmlPath).exists()) {
+         throw new ControllerXMLNotFoundException(" Make sure it's in " + configuration.getResourcePath());
+      }
+      try {
+         Document doc = sb.build(new File(xmlPath));
+         return queryElementsFromXML(doc, xPath);
+      } catch (JDOMException e) {
+         logger.error("JDOMException occurs when parsing controller.xml.", e);
+         throw new InvalidControllerXMLException(e.getMessage() + 
+               " check the version of schema or structure of controller.xml with "
+               + Constants.CONTROLLER_XSD_PATH);
+      } catch (IOException e) {
+         String msg = " An I/O error prevents a controller.xml from being fully parsed";
+         logger.error(msg, e);
+         throw new ControllerXMLNotFoundException(msg);
+      }
+   }   
+   /**
+    * Basic method for query element with document context and xPath string.
+    * @param doc
+    * @param xPath
+    * @return
+    */
+   @SuppressWarnings("unchecked")
+   private List<Element> queryElementsFromXML(Document doc, String xPath) {
+      try {
+         XPath xpath = XPath.newInstance(xPath);
+         xpath.addNamespace(Constants.OPENREMOTE_NAMESPACE, Constants.OPENREMOTE_WEBSITE);
+         List<Element> elements = xpath.selectNodes(doc);
+         if (!elements.isEmpty()) {
+            return elements;
+         }
+      } catch (JDOMException e) {
+         logger.error("JDOMException occurs when parsing controller.xml.", e);
+         throw new InvalidControllerXMLException("check the version of schema or structure of controller.xml with "
+               + Constants.CONTROLLER_XSD_PATH);
+      }
+      return null;
+   }
+   
    public Element queryElementFromXMLByName(Document doc, String elementName) {
       return queryElementFromXML(doc, "//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName);
    }
