@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.ConfigCategoryBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
@@ -43,7 +42,6 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
-import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
@@ -94,11 +92,6 @@ public class TreePanelBuilder {
    /** The macro tree store. */
    private static TreeStore<BeanModel> macroTreeStore = null;
    
-   /** The screen tree store. */
-   private static TreeStore<BeanModel> screenTreeStore = null;
-   
-   /** The group tree store. */
-   private static TreeStore<BeanModel> groupTreeStore = null;
    private static TreeStore<BeanModel> widgetTreeStore = null;
    private static TreeStore<BeanModel> panelTreeStore = null;
    private static TreeStore<BeanModel> controllerConfigCategoryTreeStore = null;
@@ -331,92 +324,6 @@ public class TreePanelBuilder {
          }
       });
       return tree;
-   }
-   
-   /**
-    * Builds the screen tree.
-    * 
-    * @return the tree panel< bean model>
-    */
-   public static TreePanel<BeanModel> buildScreenTree(final ScreenTab screenTab) {
-      if (screenTreeStore == null) {
-         screenTreeStore = new TreeStore<BeanModel>();
-      }
-      TreePanel<BeanModel> screenTree = new TreePanel<BeanModel>(screenTreeStore) {
-         @Override
-         public void onBrowserEvent(Event event) {
-            if (event.getTypeInt() == Event.ONDBLCLICK) {
-               BeanModel beanModel = this.getSelectionModel().getSelectedItem();
-               if (beanModel.getBean() instanceof Screen) {
-                  Screen screen = beanModel.getBean();
-                  ScreenTabItem screenTabItem = null;
-                  for (TabItem tabPanel : screenTab.getItems()) {
-                     screenTabItem = (ScreenTabItem) tabPanel;
-                     if (screen == screenTabItem.getScreen()) {
-                        screenTab.setSelection(screenTabItem);
-                        return;
-                     } else {
-                        screenTabItem = null;
-                     }
-                  }
-                  if (screenTabItem == null) {
-                     screenTabItem = new ScreenTabItem(screen);
-                     screenTab.add(screenTabItem);
-                     screenTab.setSelection(screenTabItem);
-                  }
-               }
-            }
-            
-            super.onBrowserEvent(event);
-         }
-         
-      
-      };
-      screenTree.setStateful(true);
-      screenTree.setBorders(false);
-      screenTree.setHeight("100%");      
-      screenTree.setDisplayProperty("displayName");
-      
-      screenTree.setIconProvider(new ModelIconProvider<BeanModel>() {
-         public AbstractImagePrototype getIcon(BeanModel thisModel) {
-            return ICON.screenIcon();
-         }
-      });
-      
-      return screenTree;
-   }
-   
-   /**
-    * Builds the group tree.
-    * 
-    * @return the tree panel< bean model>
-    */
-   public static TreePanel<BeanModel> buildGroupTree() {
-      if (groupTreeStore == null) {
-         groupTreeStore = new TreeStore<BeanModel>();
-      }
-      TreePanel<BeanModel> groupTree = new TreePanel<BeanModel>(groupTreeStore);
-      groupTree.setStateful(true);
-      groupTree.setBorders(false);
-      groupTree.setHeight("100%");
-      groupTree.setDisplayProperty("displayName");
-      TreeFolderBean folderBean = new TreeFolderBean();
-      folderBean.setDisplayName("groups");
-      groupTreeStore.add(folderBean.getBeanModel(), true);
-      
-      groupTree.setIconProvider(new ModelIconProvider<BeanModel>() {
-         public AbstractImagePrototype getIcon(BeanModel thisModel) {
-            if (thisModel.getBean() instanceof Group) {
-               return ICON.groupIcon();
-            } else if (thisModel.getBean() instanceof ScreenRef) {
-               return ICON.screenIcon();
-            } else {
-               return ICON.groupIcon();
-            }
-         }
-      });
-
-      return groupTree;
    }
    
    /**
