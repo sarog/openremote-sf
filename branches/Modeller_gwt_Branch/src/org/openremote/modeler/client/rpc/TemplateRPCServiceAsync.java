@@ -31,7 +31,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  *
  */
 public interface TemplateRPCServiceAsync {
-   void getTemplates(final boolean isFromPrivate,AsyncCallback<List<Template>> callback);
+   void getTemplates(final boolean isFromPrivate,AsyncCallback<List<Template>> callback) /*throws TestException*/;
    void saveTemplate(final Template template,AsyncCallback<Template> callback);
    void buildScreeFromTemplate(final Template template,AsyncCallback<ScreenFromTemplate> callback);
    void deleteTemplate(final long templateId,AsyncCallback<Boolean> callback);
