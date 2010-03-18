@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -170,7 +172,7 @@ public class TemplateServiceImpl implements TemplateService {
             throw new BeehiveNotAvailableException();
          }
       } catch (Exception e) {
-         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + e.getMessage(), e);
+         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + (e.getLocalizedMessage()==null?"":e.getLocalizedMessage()), e);
       }
 
       log.debug("save Template Ok!");
@@ -276,11 +278,11 @@ public class TemplateServiceImpl implements TemplateService {
       try {
          HttpResponse response = httpClient.execute(httpGet);
 
-         if (response.getStatusLine().getStatusCode() != 200) {
-            if (response.getStatusLine().getStatusCode() == 401) {
-               throw new NotAuthenticatedException();
+         if (response.getStatusLine().getStatusCode() != HttpServletResponse.SC_OK) {
+            if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_UNAUTHORIZED) {
+               throw new NotAuthenticatedException("User "+userService.getAccount().getUser().getUsername() + " not authenticated! ");
             }
-            throw new BeehiveNotAvailableException();
+            throw new BeehiveNotAvailableException("Beehive is not available right now! ");
          }
 
          InputStreamReader reader = new InputStreamReader(response.getEntity().getContent());
@@ -301,7 +303,7 @@ public class TemplateServiceImpl implements TemplateService {
             templates.add(dto.toTemplate());
          }
       } catch (IOException e) {
-         throw new BeehiveNotAvailableException("Failed to get template list", e);
+         throw new BeehiveNotAvailableException("Failed to get template list, The beehive is not available right now ", e);
       }
 
       return templates;
@@ -371,7 +373,7 @@ public class TemplateServiceImpl implements TemplateService {
    private void getDeviceCommandsFromButton(UIComponentBox box, Set<DeviceCommand> uiCmds) {
       Collection<UIButton> buttons = (Collection<UIButton>) box.getUIComponentsByType(UIButton.class);
 
-      for (UIButton btn : buttons ) {
+      for (UIButton btn : buttons) {
          UICommand cmd = btn.getUiCommand();
 
          if (cmd != null) {
@@ -385,7 +387,7 @@ public class TemplateServiceImpl implements TemplateService {
                }
 
                uiCmds.add(cmdRef.getDeviceCommand());
-               
+
             } else if (cmd instanceof DeviceMacroRef) {
                DeviceMacroRef macroRef = (DeviceMacroRef) cmd;
                DeviceMacro macro = macroRef.getTargetDeviceMacro();
@@ -775,7 +777,7 @@ public class TemplateServiceImpl implements TemplateService {
 
          if (templatesJson.contains("{\"template\":")) {
             if (templatesJson.contains("{\"template\":[")) {
-               String tempString =  templatesJson.replaceFirst("\\{\"template\":", "");
+               String tempString = templatesJson.replaceFirst("\\{\"template\":", "");
                validTemplatesJson = tempString.substring(0, tempString.lastIndexOf("}}")) + "}";
             } else {
                String tempString = templatesJson.replaceFirst("\\{\"template\":", "[");

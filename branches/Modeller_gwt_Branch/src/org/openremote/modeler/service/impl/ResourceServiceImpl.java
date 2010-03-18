@@ -39,6 +39,8 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -832,7 +834,7 @@ public class ResourceServiceImpl implements ResourceService {
          }
          
          serialize(panels,maxOid);
-         saveResourcesToBeehive();
+//         saveResourcesToBeehive();
       } catch (IOException e) {
          throw new FileOperationException("Failed to write resource: " + e.getMessage(), e);
       }
@@ -886,7 +888,7 @@ public class ResourceServiceImpl implements ResourceService {
          Long maxOid = ois.readLong();
          panelsAndMaxOid = new PanelsAndMaxOid(panels, maxOid);
       } catch (Exception e) {
-         throw new UIRestoreException("restore failed from server", e);
+         throw new UIRestoreException("UIDesigner restore failed, incompatible data can not be restore to panels. ", e);
       } finally {
          try {
             if (ois != null) {
@@ -1057,8 +1059,10 @@ public class ResourceServiceImpl implements ResourceService {
          this.addAuthentication(httpGet);
          HttpResponse response = httpClient.execute(httpGet);
 
-         if (404 == response.getStatusLine().getStatusCode()) {
-            LOGGER.warn("Failed to download openremote.zip from Beehive. Status code: 404");
+         if (HttpServletResponse.SC_NOT_FOUND == response.getStatusLine().getStatusCode()) {
+            LOGGER.warn("Failed to download openremote.zip for user "
+                  + userService.getAccount().getUser().getUsername()
+                  + " from Beehive. Status code is 404. Will try to restore panels from local resource! ");
             return;
          }
 
@@ -1069,8 +1073,8 @@ public class ResourceServiceImpl implements ResourceService {
             if (!userFolder.exists()) {
                boolean success = userFolder.mkdirs();
                if (!success) {
-                  throw new FileOperationException("Failed to create the required directories for path '"
-                        + userFolder + "'.");
+                  throw new FileOperationException("Failed to create the required directories for path '" + userFolder
+                        + "'.");
                }
             }
             File outPut = new File(userFolder, "openremote.zip");
@@ -1087,12 +1091,12 @@ public class ResourceServiceImpl implements ResourceService {
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
          } else {
-            throw new BeehiveNotAvailableException("Failed to download resources for template, status code: "
+            throw new BeehiveNotAvailableException("Failed to download resources, status code: "
                   + response.getStatusLine().getStatusCode());
          }
       } catch (IOException ioException) {
-         throw new BeehiveNotAvailableException("I/O exception in openremote.zip file handling: "
-               + ioException.getMessage(), ioException);
+         throw new BeehiveNotAvailableException("Failed to download user resource: " + ioException.getMessage(),
+               ioException);
       } finally {
          if (inputStream != null) {
             try {

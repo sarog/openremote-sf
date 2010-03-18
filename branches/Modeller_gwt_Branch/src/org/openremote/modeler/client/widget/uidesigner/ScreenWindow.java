@@ -195,7 +195,7 @@ public class ScreenWindow extends FormWindow {
 
                   @Override
                   public void onFailure(Throwable caught) {
-                     MessageBox.alert("Error", "Failed to create screen from template,error message: "+caught.getMessage(), null);
+                     MessageBox.alert("Error", "Failed to create screen from template: \""+caught.getMessage()+"\"", null);
                      ScreenWindow.this.unmask();
                   }
                   
@@ -318,6 +318,8 @@ public class ScreenWindow extends FormWindow {
       templateView.setBorders(false);
       templateView.setHeight("100%");      
       templateView.setDisplayProperty("name");
+      ListStore<BeanModel> store = new ListStore<BeanModel>();
+      templateView.setStore(store);
       initTemplateView(true);
    }
    
@@ -329,21 +331,21 @@ public class ScreenWindow extends FormWindow {
          @Override
          public void onFailure(Throwable caught) {
             templateView.unmask();
-            hintText.setText("Failed to get templates: " + caught.getMessage());
+            templateView.getStore().removeAll();
+            hintText.setText(caught.getMessage());
             hintText.show();
          }
 
          @Override
          public void onSuccess(List<Template> result) {
             templateView.unmask();
+            templateView.getStore().removeAll();
             hintText.hide();
             if (result.size() == 0) {
                hintText.setText("No " +(isFromPrivate?"private":"public") +" templates found.");
                hintText.show();
             } 
-            ListStore<BeanModel> store = new ListStore<BeanModel> ();
-            store.add(Template.createModels(result));
-            templateView.setStore(store);
+            templateView.getStore().add(Template.createModels(result));
          }
          
       });
