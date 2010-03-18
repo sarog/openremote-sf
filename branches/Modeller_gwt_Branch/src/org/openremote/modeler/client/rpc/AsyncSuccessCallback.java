@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.client.rpc;
 
+import org.openremote.modeler.exception.BeehiveNotAvailableException;
+
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -39,6 +41,10 @@ public abstract class AsyncSuccessCallback<T> implements AsyncCallback<T> {
     * @see com.google.gwt.user.client.rpc.AsyncCallback#onFailure(java.lang.Throwable)
     */
    public void onFailure(Throwable caught) {
+      if (caught instanceof BeehiveNotAvailableException) {
+         MessageBox.alert("ERROR", "Beehive is not available right now! ", null);
+         return ;
+      }
       MessageBox.alert("ERROR", caught.getLocalizedMessage(), null);
    }
 
