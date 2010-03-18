@@ -104,6 +104,7 @@ public class IRCommandImportWizardForm extends IRCommandImportForm {
             
             } else {
                MessageBox.alert("Warn", "Please select vendor, model first.", null);
+               wrapper.unmask();
             }
          }
          
