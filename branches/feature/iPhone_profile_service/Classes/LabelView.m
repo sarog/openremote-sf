@@ -60,6 +60,10 @@
 			break;
 		}
 	}
+	if(!changeText && ![newStatus isEqualToString:@""] && newStatus != nil) {
+		uiLabel.text = newStatus;
+		changeText = YES;
+	}
 	if (!changeText) {
 		uiLabel.text = labelModel.text;
 	}
