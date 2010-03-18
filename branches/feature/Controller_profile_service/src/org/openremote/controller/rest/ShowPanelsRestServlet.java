@@ -29,8 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
@@ -41,7 +40,7 @@ import org.openremote.controller.spring.SpringContext;
  */
 public class ShowPanelsRestServlet extends HttpServlet {
    
-   private static final Log logger = LogFactory.getLog(ShowPanelsRestServlet.class);
+   private static final Logger logger = Logger.getLogger(ShowPanelsRestServlet.class);
    private static final ProfileService profileService = (ProfileService) SpringContext.getInstance().getBean(
          "profileService");
 

@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.openremote.controller.command.DelayCommand;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.protocol.infrared.IRCommand;
@@ -37,7 +36,7 @@ import org.openremote.controller.protocol.infrared.IRCommand;
  *
  */
 public class MacrosIrDelayUtil {
-   private static Log logger = LogFactory.getLog(MacrosIrDelayUtil.class);
+   private static Logger logger = Logger.getLogger(MacrosIrDelayUtil.class);
    /**
     * The infrared command can be send very quickly but it is executed very slowly,If the infrared commands are
     * send very frequently, some commands may not be executed. as a result, we need to make sure at least there be

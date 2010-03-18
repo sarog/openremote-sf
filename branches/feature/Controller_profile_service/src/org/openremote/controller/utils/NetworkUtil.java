@@ -26,8 +26,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.openremote.controller.Configuration;
 
 /**
@@ -36,7 +35,7 @@ import org.openremote.controller.Configuration;
  *
  */
 public class NetworkUtil {
-   public static final Log logger = LogFactory.getLog(NetworkUtil.class);
+   public static final Logger logger = Logger.getLogger(NetworkUtil.class);
    private static Configuration configuration = ConfigFactory.getCustomBasicConfigFromDefaultControllerXML();
    
    private NetworkUtil(){}
