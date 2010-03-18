@@ -28,8 +28,7 @@ import java.util.Set;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
@@ -57,7 +56,7 @@ import org.springframework.ui.velocity.VelocityEngineUtils;
 public class UserServiceImpl extends BaseAbstractService<User> implements UserService {
    
    
-   private static Log log = LogFactory.getLog(UserServiceImpl.class);
+   private static Logger log = Logger.getLogger(UserServiceImpl.class);
    
    private JavaMailSenderImpl mailSender;
    
@@ -120,7 +119,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       user.setRawPassword(password);
       user.setPassword(new Md5PasswordEncoder().encodePassword(password, username));
       user.setEmail(email);
-      if (genericDAO.getByNonIdField(User.class, "username", username) == null) {
+      if (isUsernameAvailable(username)) {
          List<Role> allRoles = genericDAO.loadAll(Role.class);
          for (Role r : allRoles) {
             if (r.getName().equals(Role.ROLE_DESIGNER) && roleStr.indexOf("role_ud") != -1) {
@@ -129,7 +128,6 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
                user.addRole(r);
             }
          }
-         user.setValid(false);
          saveUser(user);
          return sendRegisterActivationEmail(user);
       } else {
@@ -216,6 +214,10 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
          }
       }
       return false;
+   }
+   
+   public boolean isUsernameAvailable(String username) {
+      return genericDAO.getByNonIdField(User.class, "username", username) == null;
    }
 
    public void setMailSender(JavaMailSenderImpl mailSender) {

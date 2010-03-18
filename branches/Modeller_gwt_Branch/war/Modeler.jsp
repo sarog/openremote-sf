@@ -7,9 +7,15 @@
 <!-- but may lead to some differences in layout.   -->
 
 <html>
+	
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <meta content="openremote, knx, iphone, insteon, x10, infrared, crestron, zigbee, opensource, gpl, iknx, lirc, beehive, modeler, uicomposer" name="KEYWORDS"/>
+    <link href="image/OpenRemote.Logo.16x16.png" rel="shortcut icon"/>
+	<link href="image/OpenRemote.Logo.16x16.png" type="image/png" rel="icon"/>
     <!--                                                               -->
     <!-- Consider inlining CSS to reduce the number of requested files -->
     <!--                                                               -->
@@ -83,12 +89,5 @@
 	<div id="main"></div>
 	
   </body>
-<head>
-	<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-	<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
-    <META HTTP-EQUIV="EXPIRES" CONTENT="0">
-    <meta content="openremote, knx, iphone, insteon, x10, infrared, crestron, zigbee, opensource, gpl, iknx, lirc, beehive, modeler, uicomposer" name="KEYWORDS"/>
-	<link href="http://community.openremote.org/download/attachments/295282/OpenRemote+Logo+16x16.png" rel="shortcut icon"/>
-	<link href="http://community.openremote.org/download/attachments/295282/OpenRemote+Logo+16x16.png" type="image/png" rel="icon"/>
-</head>
+
 </html>

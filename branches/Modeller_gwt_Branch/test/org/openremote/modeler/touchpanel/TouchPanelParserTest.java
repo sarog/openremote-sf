@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openremote.modeler.exception.ParseTouchPanelException;
 import org.openremote.modeler.service.TouchPanelParser;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -38,9 +39,9 @@ public class TouchPanelParserTest {
     * Test parse xmls.
     */
    @Test
-   public void testParseXmls() {
+   public void testParseXmlsSuccess() {
       TouchPanelParser panelParser = new TouchPanelParser();
-      panelParser.setPath(getClass().getResource("testXml").getPath());
+      panelParser.setPath(getClass().getResource("fixture").getPath());
       
       Map<String, List<TouchPanelDefinition>> panels = new HashMap<String, List<TouchPanelDefinition>>();
       List<TouchPanelDefinition> iphonePanels = new ArrayList<TouchPanelDefinition>();
@@ -70,4 +71,12 @@ public class TouchPanelParserTest {
       panelDefinition.setCanvas(grid);
       return panelDefinition;
    }
+   
+   @Test(expectedExceptions = { ParseTouchPanelException.class })
+   public void testSchemaValidateFail() {
+      TouchPanelParser panelParser = new TouchPanelParser();
+      panelParser.setPath(getClass().getResource("fixture").getPath() + "/fail");
+      panelParser.parseXmls();
+   }
+   
 }
