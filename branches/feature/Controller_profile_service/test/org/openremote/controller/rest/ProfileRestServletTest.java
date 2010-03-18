@@ -58,7 +58,6 @@ public class ProfileRestServletTest {
    public void tearDown() {
       if (new File(panelXmlPath + ".bak").exists()) {
          new File(panelXmlPath + ".bak").renameTo(new File(panelXmlPath));
-         deleteFile(panelXmlPath + ".bak");
       } else {
          deleteFile(panelXmlPath);
       }

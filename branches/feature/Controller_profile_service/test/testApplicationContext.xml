@@ -10,8 +10,11 @@
 
     <bean id="propertyConfigurer"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location">
-            <value>classpath:config.properties</value>
+        <property name="locations">
+            <list>
+            	<value>classpath:config_test.properties</value>
+            	<value>classpath:roundrobin.properties</value>
+            </list>
         </property>
     </bean>
     
@@ -26,12 +29,6 @@
         <property name="resourcePath" value="${resource.path}" />
         <property name="resourceUpload" value="${resource.upload.enable}" />
     </bean>
-    
-    <!-- service for button command from iPhone -->
-    <!-- bean id="buttonCommandService" class="org.openremote.controller.service.impl.ButtonCommandServiceImpl">
-        <property name="macroCmdExecutionDelay" value="${Macro.Execution.Delay}" />
-    </bean>
--->
     
     <!-- service for status command from iPhone -->
     <bean id="statusCommandService" class="org.openremote.controller.service.impl.StatusCommandServiceImpl" />
@@ -58,6 +55,9 @@
     <bean id="profileService" class="org.openremote.controller.service.impl.ProfileServiceImpl" >
     	<property name="configuration" ref="configuration"></property>
     </bean>
+    
+   <!-- polling machine sevice -->
+    <bean id="pollingMachinesService" class="org.openremote.controller.service.impl.PollingMachinesServiceImpl" />
 
     <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
 		<property name = "commandBuilders">
