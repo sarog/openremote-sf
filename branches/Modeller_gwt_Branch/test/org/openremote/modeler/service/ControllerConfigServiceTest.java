@@ -24,7 +24,7 @@ public class ControllerConfigServiceTest {
    @BeforeClass
    public void saveFromDefault(){
             
-      userService.createUserAccount("test", "test", "test", "role_bm");
+      userService.createUserAccount("test", "test", UserServiceTest.TEST_EMAIL, "role_bm");
       SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("test", "test"));
       XmlParser.initControllerConfig(categories, configs);
       configService.saveAll(configs);

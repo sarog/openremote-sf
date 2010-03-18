@@ -33,7 +33,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -42,7 +41,7 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.SAXValidator;
 import org.dom4j.io.XMLWriter;
 import org.dom4j.util.XMLErrorHandler;
-import org.openremote.modeler.exception.XmlParserException;
+import org.openremote.modeler.exception.ParseTouchPanelException;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 import org.xml.sax.SAXException;
@@ -52,9 +51,6 @@ import org.xml.sax.SAXException;
  */
 @SuppressWarnings("unchecked")
 public class TouchPanelParser {
-
-   /** The logger. */
-   private static Logger logger = Logger.getLogger(TouchPanelParser.class);
    
    /** The Constant PANEL_DIR. */
    private static final String PANEL_DIR = "/touchpanels";
@@ -191,27 +187,21 @@ public class TouchPanelParser {
 
          if (errorHandler.getErrors().hasContent()) {
             writer.write(errorHandler.getErrors());
-            logger.error("validate xml schema on File " + file.getAbsolutePath() + " fail.");
-            throw new XmlParserException("validate xml schema on File " + file.getAbsolutePath() + " fail.");
+            throw new ParseTouchPanelException("validate xml schema on File " + file.getAbsolutePath() + " fail.");
          }
       } catch (ParserConfigurationException e) {
-         logger.error("Read xml From File " + file.getAbsolutePath() + " occur ParserConfigurationException.", e);
-         throw new XmlParserException("Read xml From File " + file.getAbsolutePath()
+         throw new ParseTouchPanelException("Read xml From File " + file.getAbsolutePath()
                + " occur ParserConfigurationException.", e);
       } catch (SAXException e) {
-         logger.error("Read xml From File " + file.getAbsolutePath() + " occur SAXException.", e);
-         throw new XmlParserException("Read xml From File " + file.getAbsolutePath() + " occur SAXException.", e);
+         throw new ParseTouchPanelException("Read xml From File " + file.getAbsolutePath() + " occur SAXException.", e);
       } catch (UnsupportedEncodingException e) {
-         logger.error("Read xml From File " + file.getAbsolutePath() + " occur UnsupportedEncodingException.", e);
-         throw new XmlParserException("Read xml From File " + file.getAbsolutePath()
+         throw new ParseTouchPanelException("Read xml From File " + file.getAbsolutePath()
                + " occur UnsupportedEncodingException.", e);
       } catch (IOException e) {
-         logger.error("Read xml From File " + file.getAbsolutePath() + " occur IOException.", e);
-         throw new XmlParserException("Read xml From File " + file.getAbsolutePath() + " occur IOException.", e);
+         throw new ParseTouchPanelException("Read xml From File " + file.getAbsolutePath() + " occur IOException.", e);
       } catch (DocumentException e) {
-         logger.error("Read xml From File " + file.getAbsolutePath() + " occur DocumentException.", e);
-         throw new XmlParserException("Read xml From File " + file.getAbsolutePath() + " occur DocumentException.",
-               e);
+         throw new ParseTouchPanelException("Read xml From File " + file.getAbsolutePath()
+               + " occur DocumentException.", e);
       }
       return panelDoc;
    }

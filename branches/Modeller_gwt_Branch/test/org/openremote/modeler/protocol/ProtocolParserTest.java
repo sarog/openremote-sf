@@ -39,7 +39,7 @@ public class ProtocolParserTest {
    @Test(expectedExceptions = { ParseProtocolException.class })
    public void testSchemaValidateFail() {
       ProtocolParser protocolParser = new ProtocolParser();
-      protocolParser.setPath(getClass().getResource("testXml").getPath() + "/schemaValidateFail");
+      protocolParser.setPath(getClass().getResource("fixture").getPath() + "/fail");
       protocolParser.parseXmls();
    }
 
@@ -49,7 +49,7 @@ public class ProtocolParserTest {
    @Test
    public void testParseXmls() {
       ProtocolParser protocolParser = new ProtocolParser();
-      protocolParser.setPath(getClass().getResource("testXml").getPath());
+      protocolParser.setPath(getClass().getResource("fixture").getPath());
       Map<String, ProtocolDefinition> pros = new HashMap<String, ProtocolDefinition>();
       ProtocolDefinition definition = getCorrectProtocolDefinition();
       pros.put(definition.getDisplayName(), definition);
@@ -65,6 +65,7 @@ public class ProtocolParserTest {
    private ProtocolDefinition getCorrectProtocolDefinition() {
       ProtocolDefinition definition = new ProtocolDefinition();
       definition.setDisplayName("KNX");
+      definition.setTagName("knx");
 
       ProtocolAttrDefinition groupAddressAttr = new ProtocolAttrDefinition();
       groupAddressAttr.setName("groupAddress");

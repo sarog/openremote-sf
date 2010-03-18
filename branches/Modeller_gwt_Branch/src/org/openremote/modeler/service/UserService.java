@@ -70,5 +70,7 @@ public interface UserService {
     * @return true, if success
     */
    boolean sendRegisterActivationEmail(User user);
+   
+   boolean isUsernameAvailable(String username);
 
 }

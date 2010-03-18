@@ -34,7 +34,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -59,9 +58,6 @@ public class ProtocolParser {
 
    /** The Constant PROTOCOL_ELEMENT_NAME. */
    private static final String PROTOCOL_ELEMENT_NAME = "protocol";
-
-   /** The logger. */
-   private static Logger logger = Logger.getLogger(ProtocolParser.class);
 
    /** The Constant PROTOCOLS_DIR. */
    private static final String PROTOCOLS_DIR = "/protocols";
@@ -184,7 +180,6 @@ public class ProtocolParser {
       for (Iterator<Element> validationsItr = validationsElement.elementIterator(); validationsItr.hasNext();) {
          Element validatorElement = validationsItr.next();
          if (getValidatorType(validatorElement.getName()) == -1) {
-            logger.error("Can't find validator " + validatorElement.getName());
             throw new ParseProtocolException("Can't find validator " + validatorElement.getName());
          }
          ProtocolValidator protocolValidator = new ProtocolValidator(getValidatorType(validatorElement.getName()),
@@ -245,25 +240,19 @@ public class ProtocolParser {
 
          if (errorHandler.getErrors().hasContent()) {
             writer.write(errorHandler.getErrors());
-            logger.error("validate xml schema on File " + file.getAbsolutePath() + " fail.");
             throw new ParseProtocolException("validate xml schema on File " + file.getAbsolutePath() + " fail.");
          }
       } catch (ParserConfigurationException e) {
-         logger.error("Read xml From File " + file.getAbsolutePath() + " occur ParserConfigurationException.", e);
          throw new ParseProtocolException("Read xml From File " + file.getAbsolutePath()
                + " occur ParserConfigurationException.", e);
       } catch (SAXException e) {
-         logger.error("Read xml From File " + file.getAbsolutePath() + " occur SAXException.", e);
          throw new ParseProtocolException("Read xml From File " + file.getAbsolutePath() + " occur SAXException.", e);
       } catch (UnsupportedEncodingException e) {
-         logger.error("Read xml From File " + file.getAbsolutePath() + " occur UnsupportedEncodingException.", e);
          throw new ParseProtocolException("Read xml From File " + file.getAbsolutePath()
                + " occur UnsupportedEncodingException.", e);
       } catch (IOException e) {
-         logger.error("Read xml From File " + file.getAbsolutePath() + " occur IOException.", e);
          throw new ParseProtocolException("Read xml From File " + file.getAbsolutePath() + " occur IOException.", e);
       } catch (DocumentException e) {
-         logger.error("Read xml From File " + file.getAbsolutePath() + " occur DocumentException.", e);
          throw new ParseProtocolException("Read xml From File " + file.getAbsolutePath() + " occur DocumentException.",
                e);
       }
