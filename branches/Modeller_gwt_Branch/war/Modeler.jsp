@@ -25,7 +25,7 @@
     <!--                                           -->
     <!-- Any title is fine                         -->
     <!--                                           -->
-    <title>OpenRemote Modeler</title>
+    <title>OpenRemote Boss 2.0 Online Tools</title>
     
     <!--                                           -->
     <!-- This script loads your compiled module.   -->
