@@ -183,6 +183,7 @@ public class UIDesignerView extends TabItem {
     */
    private void createEast() {
       BorderLayoutData eastLayout = new BorderLayoutData(LayoutRegion.EAST, 300);
+      eastLayout.setSplit(true);
       eastLayout.setMargins(new Margins(0, 2, 0, 2));
       add(createWidgetAndPropertyContainer(), eastLayout);
    }
