@@ -8,7 +8,7 @@
 <meta content="openremote, knx, iphone, insteon, x10, infrared, crestron, zigbee, opensource, gpl, iknx, lirc, beehive, modeler, uicomposer" name="KEYWORDS"/>
 <link href="image/OpenRemote.Logo.16x16.png" rel="shortcut icon"/>
 <link href="image/OpenRemote.Logo.16x16.png" type="image/png" rel="icon"/>
-<title>Register - Modeler</title>
+<title>Register - OpenRemote Boss 2.0 Online</title>
 <style type="text/css">
     body{
         line-height:100%;
@@ -69,8 +69,8 @@
 			  <div class="inner-border">
 	            <a href="http://www.openremote.org" ><img src="image/global.logo.png" /></a>
 	            <div style="padding-left:70px">
-		            <h3>Create a Modeler Account</h3>
-		            <p>If you already have a Modeler Account, you can <a href="login.jsp">login here</a>.</p>
+		            <h3>Create OpenRemote Boss 2.0 Online Account</h3>
+		            <p>If you already have an account, you can <a href="login.jsp">login here</a>.</p>
 		            <p class="input"><b class="form_label">Desired username</b><input id="username" style="width:150px" type="text" name="username" value="${username}"></p>
 		            <c:if test="${success ne null and not success}">
 		                <p class="fail"><b>${username}</b> is not available, choose another.</p>

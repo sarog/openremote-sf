@@ -8,7 +8,7 @@
 <meta content="openremote, knx, iphone, insteon, x10, infrared, crestron, zigbee, opensource, gpl, iknx, lirc, beehive, modeler, uicomposer" name="KEYWORDS"/>
 <link href="image/OpenRemote.Logo.16x16.png" rel="shortcut icon"/>
 <link href="image/OpenRemote.Logo.16x16.png" type="image/png" rel="icon"/>
-<title>Login - Modeler</title>
+<title>Login - OpenRemote Boss 2.0 Online</title>
 <style type="text/css">
     body{
         line-height:100%;
@@ -69,18 +69,18 @@
 		  <div class="inner-border">
             <a href="http://www.openremote.org" ><img src="image/global.logo.png" /></a>
             <div style="padding-left:110px">
-	            <h3>Login to Modeler</h3>
+	            <h3>Login to OpenRemote Boss 2.0 Online</h3>
 	            <p class="input"><b class="form_label">Username</b><input id="username" style="width:150px" type="text" name="j_username" value="${username}"></p>
 	            <c:if test="${success ne null and success}">
-	                <p class="pass"><b>${username}</b> has been created.</p>
+	                <p class="pass">New account <b>${username}</b> has been created.</p>
                 </c:if>
 	            <p class="input"><b class="form_label">Password</b><input id="password" style="width:150px" type="password" name="j_password" value=""></p>
                 <c:if test="${param.fail ne null }">
 	                <p class="fail">The username or password you entered is incorrect.</p>
                 </c:if>
                 <p>
-                	<input id="rememberme" type="checkbox" name="_spring_security_remember_me"><label for="rememberme">remember me</label>
-                	<a class="register_btn" href="register.jsp">Create an account</a>
+                	<input id="rememberme" type="checkbox" name="_spring_security_remember_me"><label for="rememberme">Remember Me</label>
+                	<a class="register_btn" href="register.jsp">Create a New Account</a>
                 </p> 
 	            <div><input class="login_submit" type="submit" value="Login"></div>
             </div>                       
