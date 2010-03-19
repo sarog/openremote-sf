@@ -26,6 +26,7 @@ import java.net.URL;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.EnumSensorType;
 
 /**
  * 
@@ -38,7 +39,7 @@ public class MockupStatusCommand extends MockupCommand implements StatusCommand 
    
    @SuppressWarnings("finally")
    @Override
-   public String read() {
+   public String read(EnumSensorType sensorType) {
       BufferedReader in = null;
       StringBuffer result = new StringBuffer();
       try {

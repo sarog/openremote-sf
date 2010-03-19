@@ -20,15 +20,15 @@
 package org.openremote.controller.service.impl;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.openremote.controller.Constants;
 import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.command.NoStatusCommand;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.Sensor;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.PollingMachinesService;
 import org.openremote.controller.service.StatusCacheService;
@@ -48,7 +48,7 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
     * {@inheritDoc}
     */
    @Override
-   public void initStatusCacheWithControllerXML(Document document, Map<String, StatusCommand> sensorIdAndStatusCommandsMap) {
+   public void initStatusCacheWithControllerXML(Document document, List<Sensor> sensors) {
       List<Element> sensorElements = null;
       if (document == null) {
          sensorElements = remoteActionXMLParser.queryElementsFromXMLByName("sensor");
@@ -57,7 +57,8 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
       }
       for (Element sensorElement : sensorElements) {
         String sensorID = sensorElement.getAttributeValue("id");
-        sensorIdAndStatusCommandsMap.put(sensorID, getStatusCommand(document, sensorID));
+        Sensor sensor = new Sensor(Integer.parseInt(sensorID), sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE), getStatusCommand(document, sensorID));
+        sensors.add(sensor);
         statusCacheService.saveOrUpdateStatus(Integer.parseInt(sensorID), "noStatus");
       }
    }
@@ -66,11 +67,9 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
     * {@inheritDoc}
     */
    @Override
-   public void startPollingMachineMultiThread(Map<String, StatusCommand> sensorIdAndStatusCommandsMap) {
-      Set<String> sensorIDs = sensorIdAndStatusCommandsMap.keySet();
-      for (String sensorID : sensorIDs) {
-         StatusCommand statusCommand = sensorIdAndStatusCommandsMap.get(sensorID);
-         Thread pollingMachineThread = new Thread(new PollingMachineThread(sensorID, statusCommand, statusCacheService));
+   public void startPollingMachineMultiThread(List<Sensor> sensors) {
+      for (Sensor sensor : sensors) {
+         Thread pollingMachineThread = new Thread(new PollingMachineThread(sensor, statusCacheService));
          pollingMachineThread.start();
          nap(3);
       }
