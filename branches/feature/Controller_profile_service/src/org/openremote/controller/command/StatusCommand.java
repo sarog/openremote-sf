@@ -19,6 +19,8 @@
 */
 package org.openremote.controller.command;
 
+import org.openremote.controller.component.EnumSensorType;
+
 
 /**
  * interface command
@@ -28,10 +30,13 @@ package org.openremote.controller.command;
 public interface StatusCommand extends Command {
 
    /**
-    * Read status from device.
+    * Read raw status from device and return it.<br />
+    * 
+    * And you also can translate the raw status to readable string with sensoryType and then return it.
     * 
     * @return the string
     */
-   public String read();
+   public String read(EnumSensorType sensoryType);
+   
     
 }

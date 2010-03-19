@@ -19,7 +19,8 @@
 */
 package org.openremote.controller.statuscache;
 
-import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.component.Sensor;
 import org.openremote.controller.service.StatusCacheService;
 
 /**
@@ -27,28 +28,26 @@ import org.openremote.controller.service.StatusCacheService;
  * @author Handy.Wang 2009-03-17
  */
 public class PollingMachineThread extends Thread { 
-	private String sensorID;
-	private StatusCommand statusCommand;
+   private Sensor sensor;
 	private StatusCacheService statusCacheService;
 	private static final long INTERVAL = 500;	
 	/** milliseconds */
 	private long pollingMachineInterval;
 	
-   public PollingMachineThread(String sensorID, StatusCommand statusCommand, StatusCacheService statusCacheService) {
-      this(INTERVAL, sensorID, statusCommand, statusCacheService);
+   public PollingMachineThread(Sensor sensor, StatusCacheService statusCacheService) {
+      this(INTERVAL, sensor, statusCacheService);
    }
 	
-	public PollingMachineThread(long pollingMachineInterval, String sensorID, StatusCommand statusCommand, StatusCacheService statusCacheService) {
+	public PollingMachineThread(long pollingMachineInterval, Sensor sensor, StatusCacheService statusCacheService) {
       this.pollingMachineInterval = pollingMachineInterval;
-      this.sensorID = sensorID;
-      this.statusCommand = statusCommand;
+      this.sensor = sensor;
       this.statusCacheService = statusCacheService;
    }
 	
 	@Override
 	public void run() {
 		while (true) {
-			statusCacheService.saveOrUpdateStatus(Integer.parseInt(this.sensorID), statusCommand.read());
+			statusCacheService.saveOrUpdateStatus(sensor.getSensorID(), sensor.getStatusCommand().read(EnumSensorType.enumValueOf(sensor.getSensorType())));
 			try {
 				Thread.sleep(pollingMachineInterval);
 			} catch (InterruptedException e) {

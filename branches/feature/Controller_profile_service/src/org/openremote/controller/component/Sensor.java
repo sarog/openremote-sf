@@ -32,6 +32,8 @@ public class Sensor {
    
    private int sensorID;
    
+   private String sensorType;
+   
    private StatusCommand statusCommand;
    
    public Sensor() {
@@ -39,6 +41,13 @@ public class Sensor {
       this.statusCommand = new NoStatusCommand();
    }
 
+   public Sensor(int sensorID, String sensorType, StatusCommand statusCommand) {
+      super();
+      this.sensorID = sensorID;
+      this.sensorType = sensorType;
+      this.statusCommand = statusCommand;
+   }
+   
    public Sensor(StatusCommand statusCommand) {
       super();
       this.statusCommand = statusCommand;
@@ -59,4 +68,13 @@ public class Sensor {
    public void setStatusCommand(StatusCommand statusCommand) {
       this.statusCommand = statusCommand;
    }
+
+   public String getSensorType() {
+      return sensorType;
+   }
+
+   public void setSensorType(String sensorType) {
+      this.sensorType = sensorType;
+   }
+
 }
