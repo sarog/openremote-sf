@@ -21,6 +21,7 @@ package org.openremote.controller.service.impl;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.openremote.controller.Constants;
@@ -29,6 +30,7 @@ import org.openremote.controller.command.NoStatusCommand;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.Sensor;
+import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.PollingMachinesService;
 import org.openremote.controller.service.StatusCacheService;
@@ -40,6 +42,8 @@ import org.openremote.controller.statuscache.PollingMachineThread;
  *
  */
 public class PollingMachinesServiceImpl implements PollingMachinesService {
+   
+   private static Logger log = Logger.getLogger(PollingMachinesServiceImpl.class);
    private StatusCacheService statusCacheService;
    private RemoteActionXMLParser remoteActionXMLParser;
    private CommandFactory commandFactory;
@@ -50,11 +54,17 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
    @Override
    public void initStatusCacheWithControllerXML(Document document, List<Sensor> sensors) {
       List<Element> sensorElements = null;
-      if (document == null) {
-         sensorElements = remoteActionXMLParser.queryElementsFromXMLByName("sensor");
-      } else {
-         sensorElements = remoteActionXMLParser.queryElementsFromXMLByName(document, "sensor");
+      try {
+         if (document == null) {
+            sensorElements = remoteActionXMLParser.queryElementsFromXMLByName("sensor");
+         } else {
+            sensorElements = remoteActionXMLParser.queryElementsFromXMLByName(document, "sensor");
+         }
+      } catch (ControllerXMLNotFoundException e) {
+         log.warn("No sensor to init, controller.xml not found.");
+         return;
       }
+      
       for (Element sensorElement : sensorElements) {
         String sensorID = sensorElement.getAttributeValue("id");
         Sensor sensor = new Sensor(Integer.parseInt(sensorID), sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE), getStatusCommand(document, sensorID));
