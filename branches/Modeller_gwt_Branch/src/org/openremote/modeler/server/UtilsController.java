@@ -56,12 +56,10 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    private static final String ROTATED_FLAG = "ROTATE";
    
    private static final Logger LOGGER = Logger.getLogger(UtilsController.class);
-   /** The resource service. */
    private ResourceService resourceService;
    private TemplateService screenTemplateService;
    private UserService userService;
    
-   /** The configuration. */
    private Configuration configuration;
    
    private static final String UI_DESIGNER_LAYOUT_PANEL_KEY = "panelList";
