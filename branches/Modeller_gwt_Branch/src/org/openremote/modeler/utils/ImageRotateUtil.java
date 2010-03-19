@@ -29,7 +29,9 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.testng.log4testng.Logger;
+import org.apache.log4j.Logger;
+
+
 /**
  * A utility class for rotate an image. 
  * @author javen
