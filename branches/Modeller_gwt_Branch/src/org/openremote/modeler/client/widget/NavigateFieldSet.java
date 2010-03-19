@@ -64,7 +64,7 @@ public class NavigateFieldSet extends FieldSet {
    }
    private void init() {
       setLayout(new ColumnLayout());
-      setHeading("Navigate");
+      setHeading("Add Button Navigation");
    }
    
    private void createLeftContainer() {
@@ -73,8 +73,8 @@ public class NavigateFieldSet extends FieldSet {
       RadioGroup radioGroup = new RadioGroup();
       radioGroup.setOrientation(Orientation.VERTICAL);
       
-      toLogical.setBoxLabel("ToLogical");
-      toGroup.setBoxLabel("ToGroup");
+      toLogical.setBoxLabel("Action");
+      toGroup.setBoxLabel("Screen");
       toGroup.addListener(Events.Change, new Listener<FieldEvent>() {
        @Override
        public void handleEvent(FieldEvent be) {
@@ -101,11 +101,11 @@ public class NavigateFieldSet extends FieldSet {
       radioGroup.add(toLogical);
       radioGroup.add(toGroup);
 
-      Text toScreen = new Text("ToScreen");
-      toScreen.setStyleAttribute("textAlign", "center");
+      //Text toScreen = new Text("ToScreen");
+      //toScreen.setStyleAttribute("textAlign", "center");
       
       leftContainer.add(radioGroup);
-      leftContainer.add(toScreen);
+      //leftContainer.add(toScreen);
       add(leftContainer);
    }
    
