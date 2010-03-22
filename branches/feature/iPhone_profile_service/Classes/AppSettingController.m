@@ -226,6 +226,9 @@
 		[ViewHelper showAlertViewWithTitle:@"Warning" 
 								   Message:@"No Controller. Please configure Controller URL manually."];
 	} else {
+		done.enabled = NO;
+		cancel.enabled = NO;
+		
 		[[AppSettingsDefinition getAutoDiscoveryDic] setValue:[NSNumber numberWithBool:autoDiscovery] forKey:@"value"];
 		[AppSettingsDefinition writeToFile];
 		if (updateController) {
