@@ -200,6 +200,7 @@ public class GridLayoutContainer extends ComponentContainer {
 
          }
       }
+      screenTable.setPixelSize(gridWidth, gridHeight);
       setSize(gridWidth, gridHeight);
       setBorders(false);
       layout();
