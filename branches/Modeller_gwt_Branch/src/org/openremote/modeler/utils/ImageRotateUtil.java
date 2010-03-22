@@ -28,7 +28,7 @@ import javax.imageio.ImageIO;
 
 
 /**
- * A utility class for rotate an image. 
+ * A utility class for rotating an image. 
  * @author javen
  *
  */
