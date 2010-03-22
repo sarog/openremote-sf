@@ -24,6 +24,11 @@ public class StatusCacheServiceImpl implements StatusCacheService{
    public void saveOrUpdateStatus(Integer sensorId, String newStatus) {
       cache.saveOrUpdateStatus(sensorId, newStatus);
    }
+   
+   @Override
+   public void clearAllStatusCache() {
+      cache.clear();
+   }
 
    public void setCache(StatusCache cache) {
       this.cache = cache;

@@ -1,0 +1,175 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+package org.openremote.controller.service.impl;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+import org.jdom.Element;
+import org.openremote.controller.Constants;
+import org.openremote.controller.command.CommandFactory;
+import org.openremote.controller.command.RemoteActionXMLParser;
+import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.Sensor;
+import org.openremote.controller.config.ControllerXMLListenSharingData;
+import org.openremote.controller.service.ControllerXMLChangeService;
+import org.openremote.controller.service.StatusCacheService;
+import org.openremote.controller.statuscache.ChangedStatusTable;
+import org.openremote.controller.statuscache.PollingMachineThread;
+import org.openremote.controller.utils.ConfigFactory;
+import org.openremote.controller.utils.PathUtil;
+
+/**
+ * 
+ * @author handy.wang 2010-03-19
+ *
+ */
+public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeService {
+
+   private ControllerXMLListenSharingData controllerXMLListenSharingData;
+   private RemoteActionXMLParser remoteActionXMLParser;
+   private CommandFactory commandFactory;
+   private StatusCacheService statusCacheService;
+   private ChangedStatusTable changedStatusTable;
+   
+   private Logger logger = Logger.getLogger(this.getClass().getName());
+   
+   public boolean isControllerXMLContentChanged() {
+      //if changed, save the latest controller.xml.
+      String controllerXMLPath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML().getResourcePath()) + Constants.CONTROLLER_XML;
+      File controllerXMLFile = new File(controllerXMLPath);
+      StringBuffer fileContent = new StringBuffer();
+      String oldControllerXMLFileContent = controllerXMLListenSharingData.getControllerXMLFileContent();
+      try {
+         fileContent.append(FileUtils.readFileToString(controllerXMLFile, "utf-8"));
+      } catch (IOException ioe) {
+         logger.error("Read the content of controller.xml error while restoring controller.xml.", ioe);
+         ioe.printStackTrace();
+         return false;
+      }
+      if (oldControllerXMLFileContent == null || "".equals(oldControllerXMLFileContent) || "".equals(fileContent.toString()) || oldControllerXMLFileContent.equals(fileContent.toString())) {
+         return false;
+      }
+      controllerXMLListenSharingData.setControllerXMLFileContent(fileContent);
+      return true;
+   }
+   
+   @Override
+   public void freshController() {
+      logger.info("Controller.xml of Controller changed, refreshing controller.xml");
+      tagControllerXMLChanged(true);
+      killAndClearPollingMachineThreads();
+      clearChangedStatusTable();
+      clearStatusCache();
+      clearAndReloadSensors();
+      
+      restartPollingMachineThreads();
+      tagControllerXMLChanged(false);
+      logger.info("Finished refreshing controller.xml");
+   }
+   
+   private void tagControllerXMLChanged(boolean isChanged) {
+      controllerXMLListenSharingData.setIsControllerXMLChanged(isChanged);
+   }
+   
+   private void killAndClearPollingMachineThreads() {
+      List<PollingMachineThread> pollingMachineThreads = controllerXMLListenSharingData.getPollingMachineThreads();
+      for (PollingMachineThread pollingMachineThread : pollingMachineThreads) {
+         pollingMachineThread.kill();
+      }
+      nap(10); // Just give the theads some times to get the timeslice and really stop.
+      pollingMachineThreads.clear();
+   }
+   
+   private void clearChangedStatusTable() {
+      List<Sensor> sensors= controllerXMLListenSharingData.getSensors();
+      for (Sensor sensor : sensors) {
+         // Just wake up all the records, acturelly, the status didn't change.
+         changedStatusTable.updateStatusChangedIDs(sensor.getSensorID());
+      }
+      changedStatusTable.clearAllRecords();
+   }
+   
+   private void clearStatusCache() {
+      statusCacheService.clearAllStatusCache();
+   }
+   
+   @SuppressWarnings("unchecked")
+   private void clearAndReloadSensors() {
+      controllerXMLListenSharingData.getSensors().clear();
+      
+      // follings are re-parse sensors and it's included statuscommand.
+      Element sensorsElement = remoteActionXMLParser.queryElementFromXMLByName(Constants.SENSORS_ELEMENT_NAME);
+      List<Element> sensorElements = sensorsElement.getChildren();
+      for (Element sensorElement : sensorElements) {
+         Sensor sensor = new Sensor();
+         sensor.setSensorID(Integer.parseInt(sensorElement.getAttributeValue(Constants.ID_ATTRIBUTE_NAME)));
+         sensor.setSensorType(sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME));
+         
+         Element includeElement = sensorElement.getChild(Constants.INCLUDE_ELEMENT_NAME, sensorElement.getNamespace());
+         String statusCommandID = includeElement.getAttributeValue(Constants.REF_ATTRIBUTE_NAME);
+         Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(statusCommandID);
+         StatusCommand statusCommand = (StatusCommand)commandFactory.getCommand(statusCommandElement);
+         sensor.setStatusCommand(statusCommand);
+         
+         controllerXMLListenSharingData.addSensor(sensor);
+      }
+   }
+   
+   private void restartPollingMachineThreads() {
+      for (Sensor sensor : controllerXMLListenSharingData.getSensors()) {
+         PollingMachineThread pollingMachineThread = new PollingMachineThread(sensor, statusCacheService);
+         pollingMachineThread.start();
+         nap(3);
+      }
+   }
+   
+   public void setControllerXMLListenSharingData(ControllerXMLListenSharingData controllerXMLListenSharingData) {
+      this.controllerXMLListenSharingData = controllerXMLListenSharingData;
+   }
+   
+   public void setRemoteActionXMLParser(RemoteActionXMLParser remoteActionXMLParser) {
+      this.remoteActionXMLParser = remoteActionXMLParser;
+   }
+
+   public void setCommandFactory(CommandFactory commandFactory) {
+      this.commandFactory = commandFactory;
+   }
+   
+   public void setStatusCacheService(StatusCacheService statusCacheService) {
+      this.statusCacheService = statusCacheService;
+   }
+   
+   public void setChangedStatusTable(ChangedStatusTable changedStatusTable) {
+      this.changedStatusTable = changedStatusTable;
+   }
+
+   private void nap(long milliseconds) {
+      try {
+         Thread.sleep(milliseconds);
+      } catch (InterruptedException e) {
+         e.printStackTrace();
+      }
+   }
+   
+}

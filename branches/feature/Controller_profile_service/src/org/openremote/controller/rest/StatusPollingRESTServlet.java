@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControlCommandException;
+import org.openremote.controller.exception.ControllerException;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusPollingService;
@@ -100,7 +101,7 @@ public class StatusPollingRESTServlet extends HttpServlet {
                }
             }
             logger.info("Finished polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
-         } catch (ControlCommandException e) {
+         } catch (ControllerException e) {
             response.sendError(e.getErrorCode(), e.getMessage());
          } 
       } else {
