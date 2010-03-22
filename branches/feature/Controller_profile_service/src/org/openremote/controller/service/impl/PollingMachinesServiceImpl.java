@@ -19,8 +19,11 @@
 */
 package org.openremote.controller.service.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -30,11 +33,14 @@ import org.openremote.controller.command.NoStatusCommand;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.Sensor;
+import org.openremote.controller.config.ControllerXMLListenSharingData;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.PollingMachinesService;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.statuscache.PollingMachineThread;
+import org.openremote.controller.utils.ConfigFactory;
+import org.openremote.controller.utils.PathUtil;
 
 /**
  * 
@@ -47,6 +53,8 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
    private StatusCacheService statusCacheService;
    private RemoteActionXMLParser remoteActionXMLParser;
    private CommandFactory commandFactory;
+   private ControllerXMLListenSharingData controllerXMLListenSharingData;
+   private Logger logger = Logger.getLogger(this.getClass().getName());
    
    /**
     * {@inheritDoc}
@@ -67,8 +75,9 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
       
       for (Element sensorElement : sensorElements) {
         String sensorID = sensorElement.getAttributeValue("id");
-        Sensor sensor = new Sensor(Integer.parseInt(sensorID), sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE), getStatusCommand(document, sensorID));
+        Sensor sensor = new Sensor(Integer.parseInt(sensorID), sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME), getStatusCommand(document, sensorID));
         sensors.add(sensor);
+        controllerXMLListenSharingData.addSensor(sensor);
         statusCacheService.saveOrUpdateStatus(Integer.parseInt(sensorID), "noStatus");
       }
    }
@@ -79,9 +88,24 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
    @Override
    public void startPollingMachineMultiThread(List<Sensor> sensors) {
       for (Sensor sensor : sensors) {
-         Thread pollingMachineThread = new Thread(new PollingMachineThread(sensor, statusCacheService));
+         PollingMachineThread pollingMachineThread = new PollingMachineThread(sensor, statusCacheService);
          pollingMachineThread.start();
          nap(3);
+         controllerXMLListenSharingData.addPollingMachineThread(pollingMachineThread);
+      }
+      
+      storeControllerXMLContent();
+   }
+   
+   private void storeControllerXMLContent() {
+      String controllerXMLPath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML().getResourcePath()) + Constants.CONTROLLER_XML;
+      File controllerXMLFile = new File(controllerXMLPath);
+      try {
+         StringBuffer fileContent = new StringBuffer(FileUtils.readFileToString(controllerXMLFile, "utf-8"));
+         controllerXMLListenSharingData.setControllerXMLFileContent(fileContent);
+      } catch (IOException ioe) {
+         logger.error("Read the content of controller.xml error while restoring controller.xml.", ioe);
+         ioe.printStackTrace();
       }
    }
    
@@ -138,4 +162,9 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
    public void setCommandFactory(CommandFactory commandFactory) {
       this.commandFactory = commandFactory;
    }
+
+   public void setControllerXMLListenSharingData(ControllerXMLListenSharingData controllerXMLListenSharingData) {
+      this.controllerXMLListenSharingData = controllerXMLListenSharingData;
+   }
+   
 }

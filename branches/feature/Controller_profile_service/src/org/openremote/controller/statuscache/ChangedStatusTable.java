@@ -116,4 +116,11 @@ public class ChangedStatusTable {
       skippedStatusRecord.setStatusChangedSensorIDs(new HashSet<Integer>());
    }
 
+   /**
+    * Clear all records
+    */
+   public void clearAllRecords() {
+      this.recordList.clear();
+   }
+
 }
