@@ -117,11 +117,13 @@ public class ScreenWindow extends FormWindow {
       nameField.setName("name");
       form.add(nameField);
       
-      if (!(operation == Operation.EDIT)) {
+      if (operation == Operation.NEW) {
          AdapterField adapterField = new AdapterField(createGroupTreeView(screenTab));
          adapterField.setFieldLabel("Group");
          adapterField.setBorders(true);
          form.add(adapterField);
+      } else if (operation == Operation.EDIT){
+         nameField.setValue(((ScreenRef) selectItem.getBean()).getScreen().getName());
       }
       addBeforHideListener(screenTab);
    }
