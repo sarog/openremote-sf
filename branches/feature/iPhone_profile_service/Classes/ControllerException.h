@@ -27,6 +27,7 @@
 #define SERVER_ERROR              500
 #define NA_SERVICE                503
 #define GATEWAY_TIMEOUT           504
+#define CONTROLLER_CONFIG_CHANGE  506
 
 #define CMD_BUILDER_ERROR         418
 #define NO_SUCH_COMPONENT         419
