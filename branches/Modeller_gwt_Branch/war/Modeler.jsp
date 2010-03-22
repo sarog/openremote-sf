@@ -37,8 +37,8 @@
 		#loading-cont {
 			border: 1px solid #CCCCCC;
 			height: auto;
-			left: 45%;
-			margin-left: -45px;
+			left: 50%;
+			margin-left: -147px;
 			padding: 2px;
 			position: absolute;
 			top: 40%;

@@ -183,6 +183,7 @@ public class User extends BusinessEntity {
       return registerTime.toString().replaceAll("\\.\\d+", "");
    }
    
+   @Column(name = "register_time")
    public Timestamp getRegisterTime() {
       return registerTime;
    }
