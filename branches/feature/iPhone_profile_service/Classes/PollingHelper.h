@@ -21,6 +21,7 @@
 
 #import <Foundation/Foundation.h>
 #import "URLConnectionHelper.h"
+#import "UpdateController.h"
 
 //Setup a polling connection to detect the component status changes and 
 //notificate the new status to component on screen.
@@ -31,6 +32,7 @@
 	BOOL isPolling;
 	BOOL isError;
 	URLConnectionHelper *connection;
+	UpdateController *updateController;
 }
 
 - (id) initWithComponentIds:(NSString *)ids;

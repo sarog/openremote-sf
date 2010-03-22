@@ -23,6 +23,7 @@
 #import "PollingStatusParserDelegate.h"
 #import "ServerDefinition.h"
 #import "ViewHelper.h"
+#import "NotificationConstant.h"
 
 @implementation PollingHelper
 
@@ -102,6 +103,10 @@
 			case 503:
 				errorMessage = [NSString stringWithString:@"Controller is not currently available."];
 				break;
+			case 506://controller config changed
+				updateController = [[UpdateController alloc] initWithDelegate:self];
+				[updateController checkConfigAndUpdate];
+				return;
 			case 504://polling timeout, need to refresh
 				isError = NO;
 
@@ -158,9 +163,31 @@
 	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
 }
 
+#pragma mark Delegate method of UpdateController
+- (void)didUpadted {
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
+}
+
+- (void)didUseLocalCache:(NSString *)errorMessage {
+	if ([errorMessage isEqualToString:@"401"]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+	} else {
+		[ViewHelper showAlertViewWithTitle:@"Use Local Cache" Message:errorMessage];
+	}
+}
+
+- (void)didUpdateFail:(NSString *)errorMessage {
+	if ([errorMessage isEqualToString:@"401"]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+	} else {
+		[ViewHelper showAlertViewWithTitle:@"Update Failed" Message:errorMessage];
+	}
+}
+
 - (void)dealloc {
 	[connection release];
 	[pollingStatusIds release];
+	[updateController release];
 	[super dealloc];
 }
 

@@ -70,6 +70,9 @@
 			case SERVER_ERROR://500
 				errorMessage = @"Error in controller. Please check controller log.";
 				break;
+			case CONTROLLER_CONFIG_CHANGE://506
+				errorMessage = @"Configuration of controller changed.";
+				break;
 			case UNAUTHORIZED://401
 				errorMessage = @"You can't execute a protected command without authentication.";
 				break;
