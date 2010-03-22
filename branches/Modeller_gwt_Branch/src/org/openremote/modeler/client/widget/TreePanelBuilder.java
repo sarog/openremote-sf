@@ -379,6 +379,7 @@ public class TreePanelBuilder {
       TreePanel<BeanModel> panelTree = new TreePanel<BeanModel>(panelTreeStore) {
          @Override
          public void onBrowserEvent(Event event) {
+            super.onBrowserEvent(event);
             if (event.getTypeInt() == Event.ONCLICK) {
                BeanModel beanModel = this.getSelectionModel().getSelectedItem();
                if (beanModel != null && beanModel.getBean() instanceof ScreenRef) {
@@ -401,7 +402,6 @@ public class TreePanelBuilder {
                }
             }
             
-            super.onBrowserEvent(event);
          }
       };
       panelTree.setStateful(true);
