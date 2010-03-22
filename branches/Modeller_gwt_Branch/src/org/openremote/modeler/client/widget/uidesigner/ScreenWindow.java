@@ -84,11 +84,12 @@ public class ScreenWindow extends FormWindow {
       this.operation = operation;
       this.selectItem = selectItem;
       
-      setSize(350, 300);
-      if(operation == Operation.NEW){
-         setSize(350, 450);
-      }
+      setSize(350, 450);
       setHeading("New Screen");
+      if(operation == Operation.EDIT){
+         setSize(350, 150);
+         setHeading("Edit Screen");
+      }
       setLayout(new FillLayout());
       setModal(true);
       createButtons();
@@ -114,13 +115,14 @@ public class ScreenWindow extends FormWindow {
       nameField.setAllowBlank(false);
       nameField.setFieldLabel("Name");
       nameField.setName("name");
-      
-      AdapterField adapterField = new AdapterField(createGroupTreeView(screenTab));
-      adapterField.setFieldLabel("Group");
-      adapterField.setBorders(true);
-      
       form.add(nameField);
-      form.add(adapterField);
+      
+      if (!(operation == Operation.EDIT)) {
+         AdapterField adapterField = new AdapterField(createGroupTreeView(screenTab));
+         adapterField.setFieldLabel("Group");
+         adapterField.setBorders(true);
+         form.add(adapterField);
+      }
       addBeforHideListener(screenTab);
    }
    
@@ -138,38 +140,40 @@ public class ScreenWindow extends FormWindow {
 
          @Override
          public void handleEvent(FormEvent be) {
-            BeanModel groupModel = groupSelectTree.getSelectionModel().getSelectedItem();
-            if (groupModel == null || !(groupModel.getBean() instanceof GroupRef)) {
-               MessageBox.alert("New Screen Error", "Please select a group.", null);
-               be.cancelBubble();
-               return;
-            }
-            Object bean = groupModel.getBean();
-            if (bean != null && bean instanceof GroupRef) {
-               final GroupRef groupRef = (GroupRef) bean;
-               ScreenRef screenRef = null;
-               switch (operation) {
-
-               case EDIT:
-                  screenRef = (ScreenRef) selectItem.getBean();
-                  screen = screenRef.getScreen();
-                  break;
-               case CREATE_BY_TEMPLATE:
-                  buildScreenFromTemplate(be, groupRef);
+            ScreenRef screenRef = null;
+            if (operation == Operation.EDIT) {
+               screenRef = (ScreenRef) selectItem.getBean();
+               screenRef.getScreen().setName(nameField.getValue());
+            } else {
+               BeanModel groupModel = groupSelectTree.getSelectionModel().getSelectedItem();
+               if (groupModel == null || !(groupModel.getBean() instanceof GroupRef)) {
+                  MessageBox.alert("New Screen Error", "Please select a group.", null);
+                  be.cancelBubble();
                   return;
-               case NEW:
-                  screenRef = createScreenRef(groupRef);
-                  screen.setName(nameField.getValue());
-                  if (groupRef.getGroup().getTabbarItems().size() > 0 || groupRef.getPanel().getTabbarItems().size() > 0){
-                	  screen.setHasTabbar(true);
-                  }
-                  BeanModelDataBase.screenTable.insert(screen.getBeanModel());
-                  break;
                }
-               screen.setName(nameField.getValue());
-               screenRef.setGroup(groupRef.getGroup());
-               fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));
+               Object bean = groupModel.getBean();
+               if (bean != null && bean instanceof GroupRef) {
+                  final GroupRef groupRef = (GroupRef) bean;
+                  switch (operation) {
+                  case CREATE_BY_TEMPLATE:
+                     buildScreenFromTemplate(be, groupRef);
+                     return;
+                  case NEW:
+                     screenRef = createScreenRef(groupRef);
+                     screen.setName(nameField.getValue());
+                     if (groupRef.getGroup().getTabbarItems().size() > 0
+                           || groupRef.getPanel().getTabbarItems().size() > 0) {
+                        screen.setHasTabbar(true);
+                     }
+                     BeanModelDataBase.screenTable.insert(screen.getBeanModel());
+                     break;
+                  }
+                  screen.setName(nameField.getValue());
+                  screenRef.setGroup(groupRef.getGroup());
+
+               }
             }
+            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));
            
          }
 
@@ -232,12 +236,13 @@ public class ScreenWindow extends FormWindow {
       if (null != this.selectItem) {
          if (this.selectItem.getBean() instanceof GroupRef && (operation==Operation.NEW || operation==Operation.CREATE_BY_TEMPLATE)) {
             groupSelectTree.getSelectionModel().select(selectItem, false);
-         } else if (selectItem.getBean() instanceof ScreenRef && operation == Operation.EDIT) {
-            ScreenRef screenRef = (ScreenRef) selectItem.getBean();
-            nameField.setValue(screenRef.getScreen().getName());
-            BeanModel selectedGroup = TreePanelBuilder.buildPanelTree(screenTab).getStore().getParent(selectItem);
-            groupSelectTree.getSelectionModel().select(selectedGroup, false);
-         }
+         } 
+//         else if (selectItem.getBean() instanceof ScreenRef && operation == Operation.EDIT) {
+//            ScreenRef screenRef = (ScreenRef) selectItem.getBean();
+//            nameField.setValue(screenRef.getScreen().getName());
+//            BeanModel selectedGroup = TreePanelBuilder.buildPanelTree(screenTab).getStore().getParent(selectItem);
+//            groupSelectTree.getSelectionModel().select(selectedGroup, false);
+//         }
       }
       return groupTreeContainer;
    }
