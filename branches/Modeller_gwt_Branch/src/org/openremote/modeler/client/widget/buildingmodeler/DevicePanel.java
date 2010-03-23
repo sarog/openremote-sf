@@ -42,6 +42,7 @@ import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
@@ -402,7 +403,12 @@ public class DevicePanel extends ContentPanel {
     * @param selectedModel the selected model
     */
    private void editCommand(BeanModel selectedModel) {
-      final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow((DeviceCommand) selectedModel.getBean());
+      DeviceCommand cmd = selectedModel.getBean();
+      if (cmd.getProtocol().getType().equalsIgnoreCase(Protocol.INFRARED_TYPE)) {
+         MessageBox.alert("Warn", "Infrared command can not be edited", null);
+         return;
+      }
+      final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(cmd);
       deviceCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
@@ -498,9 +504,11 @@ public class DevicePanel extends ContentPanel {
     * @param deviceModel the device model
     */
    private void deleteDevice(final BeanModel deviceModel) {
+      mask("Delete device...");
       DeviceBeanModelProxy.deleteDevice(deviceModel, new AsyncSuccessCallback<Void>() {
          @Override
          public void onSuccess(Void result) {
+            unmask();
             tree.getStore().remove(deviceModel);
             Info.display("Info", "Delete success.");
          }
