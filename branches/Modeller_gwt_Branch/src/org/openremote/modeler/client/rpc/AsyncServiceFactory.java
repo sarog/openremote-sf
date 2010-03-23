@@ -56,7 +56,7 @@ public class AsyncServiceFactory {
    
    private static SliderRPCServiceAsync sliderRPCServiceAsync = null;
    
-   private static ControllerConfigPRCServiceAsync controllerConfigPRCServiceAsync = null;
+   private static ControllerConfigRPCServiceAsync controllerConfigPRCServiceAsync = null;
    
    private static ConfigCategoryRPCServiceAsync configCategoryRPCServiceAsync = null;
    
@@ -146,9 +146,9 @@ public class AsyncServiceFactory {
       return sliderRPCServiceAsync;
    }
    
-   public static ControllerConfigPRCServiceAsync getControllerConfigPRCServiceAsync(){
+   public static ControllerConfigRPCServiceAsync getControllerConfigPRCServiceAsync(){
       if(controllerConfigPRCServiceAsync == null){
-         controllerConfigPRCServiceAsync = GWT.create(ControllerConfigPRCService.class);
+         controllerConfigPRCServiceAsync = GWT.create(ControllerConfigRPCService.class);
       }
       
       return controllerConfigPRCServiceAsync;
