@@ -169,6 +169,7 @@ public class DeviceCommandWindow extends FormWindow {
       nameField.ensureDebugId(DebugId.DEVICE_COMMAND_NAME_FIELD);
 
       ComboBox<ModelData> protocol = new ComboBox<ModelData>();
+      protocol.setEditable(false);
       ListStore<ModelData> store = new ListStore<ModelData>();
       protocol.setStore(store);
       protocol.setFieldLabel("Protocol");
