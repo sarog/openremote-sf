@@ -75,7 +75,8 @@ public class ImagePropertyForm extends PropertyForm {
       createSensorStates();
    }
    private void addFields(final ScreenImage screenImage) {
-      this.setFieldWidth(213);
+      this.setLabelWidth(70);
+      this.setFieldWidth(150);
       final UIImage uiImage = screenImage.getUiImage();
       
       final Button sensorSelectBtn = new Button("Select");
@@ -136,7 +137,8 @@ public class ImagePropertyForm extends PropertyForm {
       
       statesPanel = new FieldSet();
       FormLayout layout = new FormLayout();
-      layout.setDefaultWidth(178);
+      layout.setLabelWidth(65);
+      layout.setDefaultWidth(145);
       statesPanel.setLayout(layout);
       statesPanel.setHeading("Sensor State");
       add(statesPanel);
@@ -246,7 +248,7 @@ public class ImagePropertyForm extends PropertyForm {
             }
          };
          
-         onImageUpload.setFieldLabel("on:");
+         onImageUpload.setFieldLabel("on");
          
          ImageUploadField offImageUpload = new ImageUploadField("switchOffImage") {
             @Override
@@ -261,7 +263,7 @@ public class ImagePropertyForm extends PropertyForm {
                screenImage.getScreenCanvas().mask("Uploading image...");
             }
          };
-         offImageUpload.setFieldLabel("off:");
+         offImageUpload.setFieldLabel("off");
          if(sensorLink!=null){
             onImageUpload.setValue(sensorLink.getStateValueByStateName("on"));
             offImageUpload.setValue(sensorLink.getStateValueByStateName("off"));
