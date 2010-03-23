@@ -6,7 +6,7 @@
 			<validations>
 				<allowBlank>false</allowBlank>
 				<maxLength>254</maxLength>
-				<regex message="URL should start with http(https,ftp):// just like 'http://www.google.com' ">(http|https|ftp)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*</regex>
+				<regex message="URL should start with http(https,ftp):// just like 'http://www.google.com' ">(http|https|ftp)\://[a-zA-Z0-9\-\.]+(\.[a-zA-Z]{2,3})?(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*</regex>
 			</validations>
 		</attr>
 	</protocol>
