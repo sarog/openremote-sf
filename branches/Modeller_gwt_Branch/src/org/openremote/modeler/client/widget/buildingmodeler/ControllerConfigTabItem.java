@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.openremote.modeler.client.model.ComboBoxDataModel;
@@ -40,14 +41,16 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.TabItem;
+import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
-import com.extjs.gxt.ui.client.widget.form.TextArea;
+import com.extjs.gxt.ui.client.widget.form.LabelField;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 /**
  * A tab item for configuring the controller under a specific category. 
  * @author javen
@@ -57,7 +60,8 @@ public class ControllerConfigTabItem extends TabItem {
 
    private ConfigCategory category;
    private Set<ControllerConfig> configs = null;
-   private TextArea hintArea = new TextArea();
+   private Set<ControllerConfig> newConfigs = null;               //new configurations after the Controller-Config-2.0-M7.xml updated. 
+   private Text hintArea = new Text();
    private FormPanel configContainer = new FormPanel();
    private FieldSet hintFieldSet = new FieldSet();
    
@@ -95,10 +99,10 @@ public class ControllerConfigTabItem extends TabItem {
       hintFieldSet.setHeading("Hint");
       
       
-      hintArea.setValue(category.getDescription());
+      hintArea.setText(category.getDescription());
       hintArea.setWidth("100%");
       hintArea.setHeight("34%");
-      hintArea.setEnabled(false);
+      hintArea.setStyleAttribute("font-size", "11px");
       setStyleAttribute("overflowY", "auto");
       initForm();
    }
@@ -112,10 +116,40 @@ public class ControllerConfigTabItem extends TabItem {
             public void onSuccess(Set<ControllerConfig> result) {
                configs = result;
                for (ControllerConfig config : configs) {
-                  createProperty(config);
+                  createProperty(config,false);
                }
-               hintFieldSet.add(hintArea);
-               configContainer.add(hintFieldSet);
+
+               if (newConfigs == null) {
+                  ControllerConfigBeanModelProxy.listAllMissingConfigs(category.getName(),
+                        new AsyncCallback<Set<ControllerConfig>>() {
+
+                           @Override
+                           public void onFailure(Throwable caught) {
+                              Info.display("Error", "Failed to load new controller configuration. ");
+                           }
+
+                           @Override
+                           public void onSuccess(Set<ControllerConfig> result) {
+                              newConfigs = result;
+                              for (ControllerConfig config : newConfigs) {
+                                 createProperty(config, true);
+                              }
+                              if (newConfigs.size() > 0) {
+                                 LabelField label = new LabelField();
+                                 label.setHideLabel(true);
+                                 label.setText("(new configuration is marked as red)");
+                                 label.setStyleAttribute("font-size", "11px");
+                                 configContainer.add(label);
+                              }
+                              hintFieldSet.add(hintArea);
+                              configContainer.add(hintFieldSet);
+                              layout();
+                              Info.display("Info",
+                                    "The controller has be updated, you need to update your configurations.");
+                           }
+
+                        });
+               }
                layout();
             }
          });
@@ -132,10 +166,14 @@ public class ControllerConfigTabItem extends TabItem {
       this.category = category;
    }
    
-   private void createProperty(ControllerConfig config) {
+   private void createProperty(ControllerConfig config,boolean isNewConfig) {
       if (config.getOptions().trim().length() == 0) {
          TextField<String> configValueField = new TextField<String>();
-         configValueField.setFieldLabel(config.getName());
+         if (isNewConfig) {
+            configValueField.setFieldLabel("<font color=\"red\">"+config.getName()+"</font>");
+         } else {
+            configValueField.setFieldLabel(config.getName());
+         }
          configValueField.setName(config.getName());
          configValueField.setValue(config.getValue());
          configValueField.setRegex(config.getValidation());
@@ -167,14 +205,14 @@ public class ControllerConfigTabItem extends TabItem {
          public void handleEvent(BaseEvent be) {
             if(configValueField.isValid()){
                config.setValue(configValueField.getValue());
-               hintArea.setValue(category.getDescription());
+               hintArea.setText(category.getDescription());
             }
          }
       });
       configValueField.addListener(Events.Focus, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
-            hintArea.setValue(config.getHint());
+            hintArea.setText(config.getHint());
          }
       });
    }
@@ -194,14 +232,14 @@ public class ControllerConfigTabItem extends TabItem {
       configValueComboBox.addListener(Events.Focus, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
-            hintArea.setValue(config.getHint());
+            hintArea.setText(config.getHint());
          }
       });
       
       configValueComboBox.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
-            hintArea.setValue(category.getDescription());
+            hintArea.setText(category.getDescription());
          }
       });
    }
@@ -209,7 +247,10 @@ public class ControllerConfigTabItem extends TabItem {
  class SaveListener extends SelectionListener<ButtonEvent>{
    @Override
    public void componentSelected(ButtonEvent ce) {
-      ControllerConfigBeanModelProxy.saveAllConfigs(configs, new AsyncSuccessCallback<Set<ControllerConfig>>(){
+      Set<ControllerConfig> allConfigs = new LinkedHashSet<ControllerConfig>();
+      allConfigs.addAll(configs);
+      allConfigs.addAll(newConfigs);
+      ControllerConfigBeanModelProxy.saveAllConfigs(allConfigs, new AsyncSuccessCallback<Set<ControllerConfig>>(){
 
          @Override
          public void onSuccess(Set<ControllerConfig> result) {

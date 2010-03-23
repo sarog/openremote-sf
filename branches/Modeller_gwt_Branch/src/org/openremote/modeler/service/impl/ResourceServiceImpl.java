@@ -663,7 +663,8 @@ public class ResourceServiceImpl implements ResourceService {
       Collection<UIComponent> uiSliders = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UISlider.class);
       Collection<UIComponent> uiImages = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIImage.class);
       Collection<UIComponent> uiLabels = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UILabel.class);
-      Collection<ControllerConfig> configs = controllerConfigService.listAllForCurrentAccount();
+      Collection<ControllerConfig> configs = controllerConfigService.listAll();
+      configs.addAll(controllerConfigService.listAllMissingConfigs());
       
       context.put("switchs", switchs);
       context.put("buttons", buttons);
