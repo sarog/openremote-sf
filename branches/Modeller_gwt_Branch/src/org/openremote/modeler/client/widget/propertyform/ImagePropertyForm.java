@@ -140,7 +140,10 @@ public class ImagePropertyForm extends PropertyForm {
       statesPanel.setLayout(layout);
       statesPanel.setHeading("Sensor State");
       add(statesPanel);
-      if (screenImage.getUiImage().getSensor() ==null) {
+      Sensor sensor = screenImage.getUiImage().getSensor();
+      if (sensor == null) {
+         statesPanel.hide();
+      } else if (sensor.getType() != SensorType.SWITCH && sensor.getType() != SensorType.CUSTOM) {
          statesPanel.hide();
       }
    }
