@@ -103,6 +103,6 @@ public class Constants {
    
    public static final String REGISTRATION_ACTIVATION_EMAIL_VM_NAME= "registration-activation-email.vm";
    
-   
+   public static final String DEFAULT_FONT_FAMILY = "tahoma,arial,verdana,sans-serif";
    
 }

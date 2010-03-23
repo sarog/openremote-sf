@@ -22,6 +22,7 @@ package org.openremote.modeler.client.widget.buildingmodeler;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.proxy.ControllerConfigBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
@@ -61,7 +62,7 @@ public class ControllerConfigTabItem extends TabItem {
    private ConfigCategory category;
    private Set<ControllerConfig> configs = null;
    private Set<ControllerConfig> newConfigs = null;               //new configurations after the Controller-Config-2.0-M7.xml updated. 
-   private Text hintArea = new Text();
+   private Text hintContent = new Text();
    private FormPanel configContainer = new FormPanel();
    private FieldSet hintFieldSet = new FieldSet();
    
@@ -99,10 +100,11 @@ public class ControllerConfigTabItem extends TabItem {
       hintFieldSet.setHeading("Hint");
       
       
-      hintArea.setText(category.getDescription());
-      hintArea.setWidth("100%");
-      hintArea.setHeight("34%");
-      hintArea.setStyleAttribute("fontSize", "11px");
+      hintContent.setText(category.getDescription());
+      hintContent.setWidth("100%");
+      hintContent.setHeight("34%");
+      hintContent.setStyleAttribute("fontSize", "11px");
+      hintContent.setStyleAttribute("fontFamily", Constants.DEFAULT_FONT_FAMILY);
       setStyleAttribute("overflowY", "auto");
       initForm();
    }
@@ -138,13 +140,13 @@ public class ControllerConfigTabItem extends TabItem {
                                  LabelField label = new LabelField();
                                  label.setHideLabel(true);
                                  label.setText("(new configuration is marked as red)");
-                                 label.setStyleAttribute("font-size", "11px");
+                                 label.setStyleAttribute("fontSize", "11px");
                                  configContainer.add(label);
                                  
                                  Info.display("Info",
                                  "The controller has be updated, you need to update your configurations.");
                               }
-                              hintFieldSet.add(hintArea);
+                              hintFieldSet.add(hintContent);
                               configContainer.add(hintFieldSet);
                               layout();
                            }
@@ -206,14 +208,14 @@ public class ControllerConfigTabItem extends TabItem {
          public void handleEvent(BaseEvent be) {
             if(configValueField.isValid()){
                config.setValue(configValueField.getValue());
-               hintArea.setText(category.getDescription());
+               hintContent.setText(category.getDescription());
             }
          }
       });
       configValueField.addListener(Events.Focus, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
-            hintArea.setText(config.getHint());
+            hintContent.setText(config.getHint());
          }
       });
    }
@@ -233,14 +235,14 @@ public class ControllerConfigTabItem extends TabItem {
       configValueComboBox.addListener(Events.Focus, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
-            hintArea.setText(config.getHint());
+            hintContent.setText(config.getHint());
          }
       });
       
       configValueComboBox.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
-            hintArea.setText(category.getDescription());
+            hintContent.setText(category.getDescription());
          }
       });
    }
