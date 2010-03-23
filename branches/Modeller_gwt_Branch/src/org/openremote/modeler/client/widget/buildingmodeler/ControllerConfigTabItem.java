@@ -140,12 +140,13 @@ public class ControllerConfigTabItem extends TabItem {
                                  label.setText("(new configuration is marked as red)");
                                  label.setStyleAttribute("font-size", "11px");
                                  configContainer.add(label);
+                                 
+                                 Info.display("Info",
+                                 "The controller has be updated, you need to update your configurations.");
                               }
                               hintFieldSet.add(hintArea);
                               configContainer.add(hintFieldSet);
                               layout();
-                              Info.display("Info",
-                                    "The controller has be updated, you need to update your configurations.");
                            }
 
                         });

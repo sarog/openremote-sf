@@ -96,8 +96,8 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
 
    @Override
    public Set<ConfigCategory> listAllCategory() {
-      Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
-      Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
+      Set<ConfigCategory> categories = new LinkedHashSet<ConfigCategory>();
+      Set<ControllerConfig> allDefaultConfigs = new LinkedHashSet<ControllerConfig>();
       XmlParser.initControllerConfig(categories, allDefaultConfigs);
       return categories;
    }
