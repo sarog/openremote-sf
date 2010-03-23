@@ -34,6 +34,7 @@ import org.openremote.modeler.client.utils.Protocols;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.protocol.ProtocolAttrDefinition;
 import org.openremote.modeler.protocol.ProtocolDefinition;
@@ -178,8 +179,10 @@ public class DeviceCommandWindow extends FormWindow {
       protocol.ensureDebugId(DebugId.DEVICE_COMMAND_PROTOCOL_FIELD);
       
       for (String key : protocols.keySet()) {
-         ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(key, protocols.get(key));
-         store.add(data);
+         if (!key.equalsIgnoreCase(Protocol.INFRARED_TYPE)) {
+            ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(key, protocols.get(key));
+            store.add(data);
+         }
       }
 
       protocol.setDisplayField(ComboBoxDataModel.getDisplayProperty());
