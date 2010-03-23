@@ -165,6 +165,7 @@ public class ChangeIconWindow extends Dialog {
                         
                      });
                   }
+                  fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(imageURL));
                } else {
                   MessageBox.alert("Error", "Please select an image.", null);
                }
