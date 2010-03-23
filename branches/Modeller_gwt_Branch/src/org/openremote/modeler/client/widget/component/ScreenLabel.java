@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.component;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.widget.propertyform.LabelPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
@@ -57,7 +58,7 @@ public class ScreenLabel extends ScreenComponent {
       center.setStyleAttribute("textAlign", "center");
       center.setStyleAttribute("color", uiLabel.getColor());
       center.setStyleAttribute("fontSize", uiLabel.getFontSize() + "px");
-      center.setStyleAttribute("fontFamily", "tahoma,arial,verdana,sans-serif");
+      center.setStyleAttribute("fontFamily", Constants.DEFAULT_FONT_FAMILY);
       add(center);
       layout();
    }
