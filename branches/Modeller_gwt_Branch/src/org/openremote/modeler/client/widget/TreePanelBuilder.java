@@ -384,10 +384,12 @@ public class TreePanelBuilder {
                BeanModel beanModel = this.getSelectionModel().getSelectedItem();
                if (beanModel != null && beanModel.getBean() instanceof ScreenRef) {
                   Screen screen = ((ScreenRef) beanModel.getBean()).getScreen();
+                  screen.setTouchPanelDefinition(((ScreenRef) beanModel.getBean()).getTouchPanelDefinition());
                   ScreenTabItem screenTabItem = null;
                   for (TabItem tabPanel : screenTab.getItems()) {
                      screenTabItem = (ScreenTabItem) tabPanel;
                      if (screen == screenTabItem.getScreen()) {
+                        screenTabItem.updateTouchPanel();
                         screenTab.setSelection(screenTabItem);
                         return;
                      } else {
@@ -417,6 +419,9 @@ public class TreePanelBuilder {
             } else if (thisModel.getBean() instanceof GroupRef) {
                return ICON.groupIcon();
             } else if (thisModel.getBean() instanceof ScreenRef) {
+               if (((ScreenRef)thisModel.getBean()).getScreen().getRefCount() >1) {
+                  return ICON.screenLinkIcon();
+               }
                return ICON.screenIcon();
             } else {
                return ICON.panelIcon();

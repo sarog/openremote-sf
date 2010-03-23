@@ -21,6 +21,8 @@ package org.openremote.modeler.domain;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.touchpanel.TouchPanelDefinition;
+
 /**
  * The Class ScreenRef.
  */
@@ -32,6 +34,8 @@ public class ScreenRef extends BusinessEntity {
    
    /** The group. */
    private Group group;
+
+   private TouchPanelDefinition touchPanelDefinition;
    
    public ScreenRef() {
    }
@@ -87,8 +91,14 @@ public class ScreenRef extends BusinessEntity {
    public void setGroup(Group group) {
       this.group = group;
    }
-
-
+   
+   @Transient
+   public TouchPanelDefinition getTouchPanelDefinition() {
+      return touchPanelDefinition;
+   }
+   public void setTouchPanelDefinition(TouchPanelDefinition touchPanelDefinition) {
+      this.touchPanelDefinition = touchPanelDefinition;
+   }
    /**
     * {@inheritDoc}
     * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()

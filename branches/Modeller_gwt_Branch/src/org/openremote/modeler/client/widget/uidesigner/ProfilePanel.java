@@ -161,6 +161,7 @@ public class ProfilePanel extends ContentPanel {
             if (panels.size() > 0) {
                initModelDataBase(panels);
                panelTree.getStore().removeAll();
+               new PanelTreeStoreChangeListener(panelTree);
                for (Panel panel : panels) {
                   BeanModel panelBeanModel = panel.getBeanModel();
                   panelTree.getStore().add(panelBeanModel, false);
@@ -331,23 +332,27 @@ public class ProfilePanel extends ContentPanel {
          });
       }
    }
-   private void editGroup(final BeanModel groupRefBeanModel) {
-      final GroupWizardWindow groupWindow = new GroupWizardWindow(groupRefBeanModel, true);
-      groupWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+   private void editGroup(BeanModel groupRefBeanModel) {
+      final GroupEditWindow groupEditWindow = new GroupEditWindow(groupRefBeanModel);
+      groupEditWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
-            groupWindow.hide();
+            groupEditWindow.hide();
             BeanModel groupRefModel = be.getData();
             GroupRef groupRef = groupRefModel.getBean();
             panelTree.getStore().removeAll(groupRefModel);
             for (ScreenRef screenRef : groupRef.getGroup().getScreenRefs()) {
+               if (screenRef.getScreen().getRefCount() > 1) {
+                  BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
+               }
                panelTree.getStore().add(groupRefModel, screenRef.getBeanModel(), false);
             }
             panelTree.getStore().update(groupRefModel);
             BeanModelDataBase.groupTable.update(groupRef.getGroup().getBeanModel());
             panelTree.setExpanded(groupRefModel, true);
             panelTree.getSelectionModel().select(groupRefModel, false);
-            Info.display("Info", "Add Group " + groupRef.getGroup().getName() + " success.");
+            BeanModelDataBase.screenTable.clearUnuseData();
+            Info.display("Info", "Edit Group " + groupRef.getGroup().getName() + " success.");
          }
       });
    }
@@ -397,6 +402,8 @@ public class ProfilePanel extends ContentPanel {
                         screenRef.getScreen().releaseRef();
                         if (screenRef.getScreen().getRefCount() == 0) {
                            BeanModelDataBase.screenTable.delete(screenRef.getScreenId());
+                        } else if (screenRef.getScreen().getRefCount() == 1) {
+                           BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
                         }
                      }
                   }
@@ -413,6 +420,8 @@ public class ProfilePanel extends ContentPanel {
                      screenRef.getScreen().releaseRef();
                      if (screenRef.getScreen().getRefCount() == 0) {
                         BeanModelDataBase.screenTable.delete(screenRef.getScreenId());
+                     } else if (screenRef.getScreen().getRefCount() == 1) {
+                        BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
                      }
                   }
                } else if (selectedModel != null && selectedModel.getBean() instanceof ScreenRef) {
@@ -422,6 +431,8 @@ public class ProfilePanel extends ContentPanel {
                   screenRef.getScreen().releaseRef();
                   if (screenRef.getScreen().getRefCount() == 0) {
                      BeanModelDataBase.screenTable.delete(screenRef.getScreenId());
+                  } else if (screenRef.getScreen().getRefCount() == 1) {
+                     BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
                   }
                }
             }
@@ -496,7 +507,7 @@ public class ProfilePanel extends ContentPanel {
             if (selectedBeanModel != null && selectedBeanModel.getBean() instanceof Panel) {
                groupRef.setPanel((Panel) selectedBeanModel.getBean());
             }
-            final GroupWizardWindow  groupWizardWindow = new GroupWizardWindow(groupRef.getBeanModel(), false);
+            final GroupWizardWindow  groupWizardWindow = new GroupWizardWindow(groupRef.getBeanModel());
             groupWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -505,6 +516,9 @@ public class ProfilePanel extends ContentPanel {
                   GroupRef groupRef = groupRefModel.getBean();
                   panelTree.getStore().add(groupRef.getPanel().getBeanModel(), groupRefModel, false);
                   for (ScreenRef screenRef : groupRef.getGroup().getScreenRefs()) {
+                     if (screenRef.getScreen().getRefCount() > 1) {
+                        BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
+                     }
                      panelTree.getStore().add(groupRefModel, screenRef.getBeanModel(), false);
                   }
                   BeanModelDataBase.groupTable.insert(groupRef.getGroup().getBeanModel());
@@ -539,6 +553,7 @@ public class ProfilePanel extends ContentPanel {
                      ScreenFromTemplate screenFromTemplate = be.<ScreenFromTemplate>getData();
                      Screen screen = screenFromTemplate.getScreen();
                      screenRef = new ScreenRef(screen);
+                     screenRef.setTouchPanelDefinition(screen.getTouchPanelDefinition());
                      screenRef.setOid(IDUtil.nextID());
                      GroupRef groupRef = screenWindow.getSelectedGroupRefModel().getBean();
                      groupRef.getGroup().addScreenRef(screenRef);

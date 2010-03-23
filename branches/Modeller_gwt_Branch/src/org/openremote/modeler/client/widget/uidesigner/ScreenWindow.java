@@ -218,6 +218,7 @@ public class ScreenWindow extends FormWindow {
       screen.setOid(IDUtil.nextID());
       screen.setTouchPanelDefinition(selectedGroup.getPanel().getTouchPanelDefinition());
       ScreenRef screenRef = new ScreenRef(screen);
+      screenRef.setTouchPanelDefinition(selectedGroup.getPanel().getTouchPanelDefinition());
       selectedGroup.getGroup().addScreenRef(screenRef);
       return screenRef;
    }
