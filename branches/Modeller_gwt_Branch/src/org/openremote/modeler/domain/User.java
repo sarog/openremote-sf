@@ -56,7 +56,7 @@ public class User extends BusinessEntity {
    
    private boolean valid;
    
-   private Timestamp registerTime;
+   private transient Timestamp registerTime;
    
    /** The account containing all business entities. */
    private Account account;
