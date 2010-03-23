@@ -130,9 +130,9 @@ public class UILabel extends UIComponent implements SensorOwner {
 
    @Transient
    public String getDisplayName() {
-      int maxLength = 10;
+      int maxLength = 20;
       if (text.length() > maxLength) {
-         return text.substring(0, text.length() - maxLength) + "...";
+         return text.substring(0, maxLength) + "...";
       }
       return text;
    }
