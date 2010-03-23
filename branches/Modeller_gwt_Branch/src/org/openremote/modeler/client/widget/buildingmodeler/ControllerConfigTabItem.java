@@ -102,7 +102,7 @@ public class ControllerConfigTabItem extends TabItem {
       hintArea.setText(category.getDescription());
       hintArea.setWidth("100%");
       hintArea.setHeight("34%");
-      hintArea.setStyleAttribute("font-size", "11px");
+      hintArea.setStyleAttribute("fontSize", "11px");
       setStyleAttribute("overflowY", "auto");
       initForm();
    }
