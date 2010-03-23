@@ -67,11 +67,11 @@ public class SelectScreenForm extends CommonForm {
    
    private void createFields() {
       AdapterField screenField = new AdapterField(createScreenList());
-      screenField.setFieldLabel("Screen");
+      screenField.setFieldLabel("Screens with the same dimension");
       
       showAll = new CheckBox();
       showAll.setHideLabel(true);
-      showAll.setBoxLabel("show all same dimension screens");
+      showAll.setBoxLabel("show other panel type");
       showAll.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
