@@ -75,8 +75,9 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
    }
    
    @Override
-   public void freshController() {
+   public boolean freshController() {
       logger.info("Controller.xml of Controller changed, refreshing controller.xml");
+      boolean success = false;
       tagControllerXMLChanged(true);
       killAndClearPollingMachineThreads();
       clearChangedStatusTable();
@@ -85,7 +86,9 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
       
       restartPollingMachineThreads();
       tagControllerXMLChanged(false);
+      success = true;
       logger.info("Finished refreshing controller.xml");
+      return success;
    }
    
    private void tagControllerXMLChanged(boolean isChanged) {
