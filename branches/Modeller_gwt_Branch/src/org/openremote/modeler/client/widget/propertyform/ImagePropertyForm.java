@@ -75,6 +75,7 @@ public class ImagePropertyForm extends PropertyForm {
       createSensorStates();
    }
    private void addFields(final ScreenImage screenImage) {
+      this.setFieldWidth(213);
       final UIImage uiImage = screenImage.getUiImage();
       
       final Button sensorSelectBtn = new Button("Select");
@@ -92,8 +93,12 @@ public class ImagePropertyForm extends PropertyForm {
                   Sensor sensor = dataModel.getBean();
                   uiImage.setSensor(sensor);
                   sensorSelectBtn.setText(sensor.getDisplayName());
-
-                  createSensorStates();
+                  if (sensor.getType() == SensorType.SWITCH || sensor.getType()==SensorType.CUSTOM) {
+                     statesPanel.show();
+                     createSensorStates();
+                  } else {
+                     statesPanel.hide();
+                  }
                }
             });
          }
@@ -131,16 +136,18 @@ public class ImagePropertyForm extends PropertyForm {
       
       statesPanel = new FieldSet();
       FormLayout layout = new FormLayout();
-      layout.setLabelWidth(80);
-      layout.setDefaultWidth(80);
+      layout.setDefaultWidth(178);
       statesPanel.setLayout(layout);
       statesPanel.setHeading("Sensor State");
       add(statesPanel);
+      if (screenImage.getUiImage().getSensor() ==null) {
+         statesPanel.hide();
+      }
    }
    @SuppressWarnings("unchecked")
    private ComboBox<ModelData> createLabelSelector() {
       ComboBox<ModelData> labelBox = new SimpleComboBox();
-      labelBox.setFieldLabel("Label");
+      labelBox.setFieldLabel("FallbackLabel");
       Collection<UILabel> labelsonScreen = (Collection<UILabel>) screenImage.getScreenCanvas().getScreen().getAllUIComponentByType(UILabel.class);
       ListStore<ModelData> labelStore = new ListStore<ModelData>();
       for (UILabel label : labelsonScreen) {
