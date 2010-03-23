@@ -66,6 +66,21 @@ $(document).ready(function() {
 			return false;
 		}
 	});
+	$('#refresh').click(function() {
+		clearMessage();
+		showRefreshIndicator();
+		$.get("config.htm?method=refreshController",
+			function(msg){
+				if (msg == 'OK') {
+					message("Finished reloading configuration.");
+				} else if (msg == 'latest') {
+					message("The cache is up to date.");
+				} else {
+					error("Failed to reload configuration and clear cache.");
+				}
+			}
+		 );
+	});
 	$("#version").append(getVersionLabel());
 });
 function showOnline() {
@@ -101,6 +116,15 @@ function showUpdateIndicator() {
 function hideUpdateIndicator() {
 	$('#update_indicator').hide();
 }
+
+function showRefreshIndicator() {
+	$('#refresh_indicator').show();
+}
+
+function hideUpdateIndicator() {
+	$('#refresh_indicator').hide();
+}
+
 function getVersionLabel(){
 	var headUrl = "$HeadURL$";
 	var revision = "$Revision$";
