@@ -95,12 +95,14 @@ function showOffline() {
 }
 function message(msg){
 	hideUpdateIndicator();
+	hideRefreshIndicator();
 	$('#errMsg').text("");
 	$('#msg').hide().show().text(msg);
 }
 
 function error(msg){
 	hideUpdateIndicator();
+	hideRefreshIndicator();
 	$('#errMsg').hide().show().text(msg);
 	$('#msg').text("");
 }
@@ -121,7 +123,7 @@ function showRefreshIndicator() {
 	$('#refresh_indicator').show();
 }
 
-function hideUpdateIndicator() {
+function hideRefreshIndicator() {
 	$('#refresh_indicator').hide();
 }
 
