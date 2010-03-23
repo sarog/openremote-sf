@@ -39,5 +39,7 @@ public interface ControllerConfigPRCServiceAsync {
    
    public void update(ControllerConfig config,AsyncCallback<ControllerConfig> callback);
    
+   public void listAllMissedConfigsByCategoryName(String categoryName,AsyncCallback<Set<ControllerConfig>> callback);
+   
 //   public void getCategories(AsyncCallback<Set<ConfigCategory>> callback);
 }

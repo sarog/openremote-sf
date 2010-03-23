@@ -32,5 +32,6 @@ public interface ControllerConfigPRCService extends RemoteService{
    public Set<ControllerConfig> getConfigsByCategoryForCurrentAccount(String categoryName);
    public Set<ControllerConfig> getConfigsByCategory(String categoryName,Account account);
    public ControllerConfig update(ControllerConfig config);
+   public Set<ControllerConfig> listAllMissedConfigsByCategoryName(String categoryName);
 //   public Set<ConfigCategory> getCategories(); 
 }
