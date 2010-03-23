@@ -30,7 +30,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author javen
  *
  */
-public interface ControllerConfigPRCServiceAsync {
+public interface ControllerConfigRPCServiceAsync {
    public void saveAll(Set<ControllerConfig> configs,AsyncCallback<Set<ControllerConfig>>callback);
    
    public void getConfigsByCategoryForCurrentAccount(String categoryName,AsyncCallback<Set<ControllerConfig>>callback);

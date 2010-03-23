@@ -27,7 +27,7 @@ import org.openremote.modeler.domain.ControllerConfig;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("controllerConfig.smvc")
-public interface ControllerConfigPRCService extends RemoteService{
+public interface ControllerConfigRPCService extends RemoteService{
    public Set<ControllerConfig> saveAll(Set<ControllerConfig> cfgs);
    public Set<ControllerConfig> getConfigsByCategoryForCurrentAccount(String categoryName);
    public Set<ControllerConfig> getConfigsByCategory(String categoryName,Account account);
