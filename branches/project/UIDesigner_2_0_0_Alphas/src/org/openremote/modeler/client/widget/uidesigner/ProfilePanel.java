@@ -40,8 +40,13 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.BeanModelTable;
+import org.openremote.modeler.client.utils.DeviceBeanModelTable;
+import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.IDUtil;
+import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
+import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
@@ -526,11 +531,36 @@ public class ProfilePanel extends ContentPanel {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   screenWindow.hide();
-                  ScreenRef screenRef = be.<ScreenRef>getData();
+                  ScreenRef screenRef = null;
+                  if (be.getData() instanceof ScreenRef) {
+                     screenRef = be.<ScreenRef>getData();
+                     updatePanelTree(screenRef);
+                  } else if (be.getData() instanceof ScreenFromTemplate) {
+                     ScreenFromTemplate screenFromTemplate = be.<ScreenFromTemplate>getData();
+                     Screen screen = screenFromTemplate.getScreen();
+                     screenRef = new ScreenRef(screen);
+                     screenRef.setOid(IDUtil.nextID());
+                     GroupRef groupRef = screenWindow.getSelectedGroupRefModel().getBean();
+                     groupRef.getGroup().addScreenRef(screenRef);
+                     screenRef.setGroup(groupRef.getGroup());
+                     updatePanelTree(screenRef);
+                   //----------rebuild command 
+                     Set<Device> devices = screenFromTemplate.getDevices();
+                     for(Device device: devices) {
+                        ((DeviceBeanModelTable)BeanModelDataBase.deviceTable).insertAndNotifyDeviceInsertListener(device.getBeanModel());
+                     }
+                     
+                     Set<DeviceMacro> macros = screenFromTemplate.getMacros();
+                     for (DeviceMacro macro : macros) {
+                        ((DeviceMacroBeanModelTable)BeanModelDataBase.deviceMacroTable).insertAndNotifyMacroInsertListener(macro.getBeanModel());
+                     }
+                  }
+               }
+               
+               private void updatePanelTree(ScreenRef screenRef) {
                   panelTree.getStore().add(screenWindow.getSelectedGroupRefModel(), screenRef.getBeanModel(), false);
                   panelTree.setExpanded(screenWindow.getSelectedGroupRefModel(), true);
                   panelTree.getSelectionModel().select(screenRef.getBeanModel(), false);
-                  screenWindow.hide();
                }
 
             });

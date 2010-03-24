@@ -31,8 +31,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -45,6 +43,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.log4j.Logger;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
@@ -100,9 +99,8 @@ import flexjson.Path;
  * @author <a href = "mailto:juha@openremote.org">Juha Lindfors</a>
  *
  */
-public class TemplateServiceImpl implements TemplateService
-{
-   private static Log log = LogFactory.getLog(TemplateService.class);
+public class TemplateServiceImpl implements TemplateService {
+   private static Logger log = Logger.getLogger(TemplateServiceImpl.class);;
 
    private Configuration configuration;
    private UserService userService;

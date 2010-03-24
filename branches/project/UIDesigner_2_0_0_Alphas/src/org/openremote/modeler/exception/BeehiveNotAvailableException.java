@@ -19,14 +19,19 @@
 */
 package org.openremote.modeler.exception;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
  * If the web application beehive is not available, or the returned  status code is not 200 when modeler access beehive, this exception will be thrown. 
  * 
  * @author javen 
  */
 @SuppressWarnings("serial")
-public class BeehiveNotAvailableException extends RuntimeException {
+public class BeehiveNotAvailableException extends RuntimeException implements IsSerializable{
 
+   /**
+    * This constructor is necessary for GWT to serialize to client. 
+    */
    public BeehiveNotAvailableException() {
       super();
    }
