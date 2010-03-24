@@ -22,7 +22,7 @@
   ##-----------------------------------------------------------------panels---------------------------------------------------------------------------
   <panels>
   #foreach ($panel in $panels)
-  	<panel id="${panel.getOid()}" name="${panel.getName()}">
+  	<panel id="${panel.getOid()}" name="${stringUtils.escapeXml($panel.getName())}">
   		##<-------tabbar---------->##
 		#if($panel.getTabbarItems().size()>0)
 	  		#getTabbarXML($panel.getTabbarItems())

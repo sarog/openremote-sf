@@ -29,15 +29,14 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.testng.log4testng.Logger;
 /**
  * A utility class for rotate an image. 
  * @author javen
  *
  */
 public class ImageRotateUtil {
-   private static final Log log = LogFactory.getLog(ImageRotateUtil.class);
+   private static final Logger log = Logger.getLogger(ImageRotateUtil.class);
    /**
     * The image type supported by this class. 
     */

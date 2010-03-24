@@ -58,7 +58,7 @@ public class LabelPropertyForm extends PropertyForm {
    
    
    public LabelPropertyForm(ScreenLabel screenLabel) {
-      super();
+      super(screenLabel);
       this.screenLabel = screenLabel;
       addFields();
       createSensorStates();

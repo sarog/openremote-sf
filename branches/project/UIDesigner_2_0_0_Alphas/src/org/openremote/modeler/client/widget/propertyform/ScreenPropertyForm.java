@@ -79,7 +79,7 @@ public class ScreenPropertyForm extends PropertyForm {
    private ScreenCanvas canvas = null;
   
    public ScreenPropertyForm(ScreenCanvas canvas) {
-      super();
+      super(canvas);
       this.canvas = canvas;
       createFields();
    }

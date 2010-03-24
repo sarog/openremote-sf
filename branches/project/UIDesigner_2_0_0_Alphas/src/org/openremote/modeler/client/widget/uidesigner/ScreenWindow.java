@@ -20,7 +20,6 @@
 package org.openremote.modeler.client.widget.uidesigner;
 
 import java.util.List;
-import java.util.Set;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormResetListener;
@@ -28,14 +27,10 @@ import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.utils.DeviceBeanModelTable;
-import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
@@ -163,7 +158,7 @@ public class ScreenWindow extends FormWindow {
                   buildScreenFromTemplate(be, groupRef);
                   return;
                case NEW:
-                  screenRef = createScreen(groupRef);
+                  screenRef = createScreenRef(groupRef);
                   screen.setName(nameField.getValue());
                   if (groupRef.getGroup().getTabbarItems().size() > 0 || groupRef.getPanel().getTabbarItems().size() > 0){
                 	  screen.setHasTabbar(true);
@@ -189,24 +184,13 @@ public class ScreenWindow extends FormWindow {
 
                   @Override
                   public void onSuccess(ScreenFromTemplate result) {
+                     ScreenWindow.this.unmask();
                      screen = result.getScreen();
                      screen.setOid(IDUtil.nextID());
                      screen.setName(nameField.getValue());
-                     ScreenRef screenRef = createScreenFromTemplate(groupRef);
+                     screen.setTouchPanelDefinition(groupRef.getPanel().getTouchPanelDefinition());
                      BeanModelDataBase.screenTable.insert(screen.getBeanModel());
-                     
-                     ScreenWindow.this.unmask();
-                     //----------rebuild command 
-                     Set<Device> devices = result.getDevices();
-                     for(Device device: devices) {
-                        ((DeviceBeanModelTable)BeanModelDataBase.deviceTable).insertAndNotifyDeviceInsertListener(device.getBeanModel());
-                     }
-                     
-                     Set<DeviceMacro> macros = result.getMacros();
-                     for (DeviceMacro macro : macros) {
-                        ((DeviceMacroBeanModelTable)BeanModelDataBase.deviceMacroTable).insertAndNotifyMacroInsertListener(macro.getBeanModel());
-                     }
-                     fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(screenRef));
+                     fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result));
                   }
 
                   @Override
@@ -223,7 +207,7 @@ public class ScreenWindow extends FormWindow {
       });
    }
 
-   private ScreenRef createScreen(GroupRef selectedGroup) {
+   private ScreenRef createScreenRef(GroupRef selectedGroup) {
       screen = new Screen();
       screen.setOid(IDUtil.nextID());
       screen.setTouchPanelDefinition(selectedGroup.getPanel().getTouchPanelDefinition());
@@ -232,14 +216,6 @@ public class ScreenWindow extends FormWindow {
       return screenRef;
    }
    
-   private ScreenRef createScreenFromTemplate(GroupRef selectedGroup) {
-      screen.setTouchPanelDefinition(selectedGroup.getPanel().getTouchPanelDefinition());
-      ScreenRef screenRef = new ScreenRef(screen);
-      selectedGroup.getGroup().addScreenRef(screenRef);
-      screenRef.setGroup(selectedGroup.getGroup());
-      BeanModelDataBase.screenTable.insert(screen.getBeanModel());
-      return screenRef;
-   }
    private ContentPanel createGroupTreeView(ScreenTab screenTab) {
       ContentPanel groupTreeContainer = new ContentPanel();
       groupTreeContainer.setHeaderVisible(false);

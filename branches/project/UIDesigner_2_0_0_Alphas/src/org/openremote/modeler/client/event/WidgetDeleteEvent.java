@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -17,30 +17,20 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.exception;
+package org.openremote.modeler.client.event;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import com.extjs.gxt.ui.client.event.BaseEvent;
+import com.extjs.gxt.ui.client.event.EventType;
 
 /**
- * If the request doesn't pass the Basic Http Authentication, this exception will be thrown. 
- * 
- * @author javen 
+ * The Event is fire to delete the screen's widget.
  */
-@SuppressWarnings("serial")
-public class NotAuthenticatedException extends RuntimeException implements IsSerializable{
-
-   /**
-    * This constructor is necessary for GWT to serialize to client. 
-    */
-   public NotAuthenticatedException() {
-      super();
+public class WidgetDeleteEvent extends BaseEvent {
+   
+   public static final EventType WIDGETDELETE = new EventType();
+   
+   public WidgetDeleteEvent() {
+      super(WIDGETDELETE);
    }
 
-   public NotAuthenticatedException(String s) {
-      super(s);
-   }
-
-   public NotAuthenticatedException(String s, Throwable throwable) {
-      super(s, throwable);
-   }
 }

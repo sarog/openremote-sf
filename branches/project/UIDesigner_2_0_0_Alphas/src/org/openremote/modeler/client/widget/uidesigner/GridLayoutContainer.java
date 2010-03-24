@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.event.WidgetDeleteEvent;
 import org.openremote.modeler.client.gxtextends.ScreenDropTarget;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
@@ -153,6 +154,7 @@ public class GridLayoutContainer extends ComponentContainer {
                      cellContainer);
             } else if (data instanceof GridLayoutContainerHandle) {
                ((ComponentContainer) data).hideBackground();
+               ((ComponentContainer) data).show();
                e.setCancelled(true);
                return;
             }
@@ -187,7 +189,7 @@ public class GridLayoutContainer extends ComponentContainer {
             cellContainer.setPosition(cellWidth * cell.getPosX() + cell.getPosX() + 1, cellHeight * cell.getPosY()
                   + cell.getPosY() + 1);
             cellContainer.setName(cell.getUiComponent().getName());
-            cellContainer.setCellSpan(1, 1);
+            cellContainer.setCellSpan(cell.getColspan(), cell.getRowspan());
             add(cellContainer);
             cellContainer.setBorders(false);
             cellContainer.fillArea(btnInArea);
@@ -217,6 +219,13 @@ public class GridLayoutContainer extends ComponentContainer {
             super.onBrowserEvent(event);
          }
       };
+      cellContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
+         public void handleEvent(WidgetDeleteEvent be) {
+            grid.removeCell(cellContainer.getCell());
+            cellContainer.removeFromParent();
+         }
+         
+      });
       new KeyNav<ComponentEvent>() {
          @Override
          public void onDelete(ComponentEvent ce) {
@@ -248,7 +257,7 @@ public class GridLayoutContainer extends ComponentContainer {
    }
    
    private GridCellContainer cloneCellContainer(GridCellContainer container) {
-      Cell cell = container.getCell();
+      final Cell cell = container.getCell();
       final GridCellContainer cellContainer =  new GridCellContainer(getScreenCanvas(), cell, container.getScreenComponent(), this) {
          @Override
          public void onBrowserEvent(Event event) {
@@ -259,6 +268,13 @@ public class GridLayoutContainer extends ComponentContainer {
             super.onBrowserEvent(event);
          }
       };
+      cellContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
+         public void handleEvent(WidgetDeleteEvent be) {
+            grid.removeCell(cell);
+            cellContainer.removeFromParent();
+         }
+         
+      });
       new KeyNav<ComponentEvent>() {
          @Override
          public void onDelete(ComponentEvent ce) {

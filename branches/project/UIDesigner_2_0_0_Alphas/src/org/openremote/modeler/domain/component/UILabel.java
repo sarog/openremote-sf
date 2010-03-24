@@ -20,6 +20,7 @@ import javax.persistence.Transient;
 
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.utils.StringUtils;
 
 /**
  * 
@@ -113,7 +114,7 @@ public class UILabel extends UIComponent implements SensorOwner {
    @Override
    public String getPanelXml() {
       StringBuilder sb = new StringBuilder();
-      sb.append("<label id=\"" + getOid() + "\" font-size=\"" + fontSize + "\" color=\"#" + color + "\" text=\"" + text
+      sb.append("<label id=\"" + getOid() + "\" font-size=\"" + fontSize + "\" color=\"#" + color + "\" text=\"" + StringUtils.escapeXml(text)
             + "\">\n");
       if (sensor != null) {
          sb.append(sensorLinker.getXMLString());
