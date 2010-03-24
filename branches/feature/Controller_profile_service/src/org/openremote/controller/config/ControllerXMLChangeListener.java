@@ -38,7 +38,7 @@ public class ControllerXMLChangeListener extends QuartzJobBean {
    @Override
    protected void executeInternal(JobExecutionContext arg0) throws JobExecutionException {
       if (controllerXMLChangeService.isControllerXMLContentChanged()) {
-         controllerXMLChangeService.freshController();
+         controllerXMLChangeService.refreshController();
       }
    }
    
