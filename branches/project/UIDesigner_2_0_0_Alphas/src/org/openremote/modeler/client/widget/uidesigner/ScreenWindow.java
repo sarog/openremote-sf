@@ -291,7 +291,7 @@ public class ScreenWindow extends FormWindow {
             public void handleEvent(FieldSetEvent be) {
                operation = Operation.CREATE_BY_TEMPLATE;
                if(templateView.getStore().getCount() == 0){
-                  hintText.setText("There are no private template in beehive! ");
+                  hintText.setText("No private templates found.");
                   hintText.show();
                }
             }
@@ -353,7 +353,7 @@ public class ScreenWindow extends FormWindow {
          @Override
          public void onFailure(Throwable caught) {
             templateView.unmask();
-            hintText.setText("Faild to get templates,error message: "+caught.getMessage());
+            hintText.setText("Failed to get templates: " + caught.getMessage());
             hintText.show();
          }
 
@@ -362,7 +362,7 @@ public class ScreenWindow extends FormWindow {
             templateView.unmask();
             hintText.hide();
             if (result.size() == 0) {
-               hintText.setText("There are no " +(isFromPrivate?"private ":"public ") +"templates in beehive. ");
+               hintText.setText("No " +(isFromPrivate?"private":"public") +" templates found.");
                hintText.show();
             } 
             ListStore<BeanModel> store = new ListStore<BeanModel> ();
