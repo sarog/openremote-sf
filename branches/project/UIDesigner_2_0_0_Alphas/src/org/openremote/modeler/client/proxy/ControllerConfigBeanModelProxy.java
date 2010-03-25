@@ -6,8 +6,8 @@ import java.util.Set;
 
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.ConfigCategory;
+import org.openremote.modeler.domain.ControllerConfig;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
