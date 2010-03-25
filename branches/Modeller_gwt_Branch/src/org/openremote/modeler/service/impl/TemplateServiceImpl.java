@@ -923,6 +923,7 @@ public class TemplateServiceImpl implements TemplateService {
       private int id;
       private String content;
       private String name;
+      private String keywords;
 
       public int getId() {
          return id;
@@ -948,11 +949,21 @@ public class TemplateServiceImpl implements TemplateService {
          this.name = name;
       }
       
+      
+      public String getKeywords() {
+         return keywords;
+      }
+
+      public void setKeywords(String keywords) {
+         this.keywords = keywords;
+      }
+
       public Template toTemplate() {
          Template template = new Template();
          template.setName(name);
          template.setContent(content);
          template.setOid(id);
+         template.setKeywords(keywords);
          return template;
       }
    }
