@@ -76,7 +76,7 @@ public class ControllerConfigTabItem extends TabItem {
       setLayout(new FitLayout());  
       
       FormLayout layout = new FormLayout();
-      layout.setLabelWidth(150);
+      layout.setLabelWidth(200);
       layout.setDefaultWidth(400);
       
       configContainer.setLayout(layout);
@@ -194,7 +194,7 @@ public class ControllerConfigTabItem extends TabItem {
          optionComboBox.setValue(new ComboBoxDataModel<String>(config.getValue(),config.getValue()));
          optionComboBox.setStore(store);
          optionComboBox.setDisplayField(ComboBoxDataModel.getDisplayProperty());
-         optionComboBox.setFieldLabel("options");
+         optionComboBox.setFieldLabel(config.getName());
          optionComboBox.setName(config.getName() + "Options");
          optionComboBox.setAllowBlank(false);
          addUpdateListenerToComboBox(config,optionComboBox);
