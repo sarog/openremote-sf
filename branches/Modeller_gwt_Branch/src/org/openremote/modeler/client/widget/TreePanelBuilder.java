@@ -383,13 +383,24 @@ public class TreePanelBuilder {
             if (event.getTypeInt() == Event.ONCLICK) {
                BeanModel beanModel = this.getSelectionModel().getSelectedItem();
                if (beanModel != null && beanModel.getBean() instanceof ScreenRef) {
+                  GroupRef groupRef = (GroupRef)this.getStore().getParent(beanModel).getBean();
                   Screen screen = ((ScreenRef) beanModel.getBean()).getScreen();
+                  if (groupRef.getPanel().getTabbarItems().size() >0 || groupRef.getGroup().getTabbarItems().size() >0) {
+                     screen.setHasTabbar(true);
+                  } else {
+                     screen.setHasTabbar(false);
+                  }
                   screen.setTouchPanelDefinition(((ScreenRef) beanModel.getBean()).getTouchPanelDefinition());
                   ScreenTabItem screenTabItem = null;
                   for (TabItem tabPanel : screenTab.getItems()) {
                      screenTabItem = (ScreenTabItem) tabPanel;
                      if (screen == screenTabItem.getScreen()) {
                         screenTabItem.updateTouchPanel();
+                        if (screen.isHasTabbar()) {
+                           screenTabItem.getScreenCanvas().addTabbar();
+                        } else {
+                           screenTabItem.getScreenCanvas().removeTabbar();
+                        }
                         screenTab.setSelection(screenTabItem);
                         return;
                      } else {
