@@ -33,7 +33,10 @@ import org.openremote.beehive.domain.Template;
  *
  */
 public interface TemplateService {
+   String KEYWORDS_SEPERATOR = ",";
+   String NO_KEYWORDS = "any"; 
    String TEMPLATE_RESOURCE_ZIP_FILE_NAME = "template.zip";
+   int TEMPLATE_SIZE_PER_PAGE = 5;
    
    long save(Template t);
    
@@ -48,4 +51,6 @@ public interface TemplateService {
    File getTemplateResourceZip(long templateOid);
    
    boolean saveTemplateResourceZip(long templateOid,InputStream input);
+   
+   List<TemplateDTO> loadPublicTemplatesByKeywordsAndPage(String keywords,int page);
 }

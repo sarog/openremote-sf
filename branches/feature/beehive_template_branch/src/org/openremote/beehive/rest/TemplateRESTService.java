@@ -152,7 +152,7 @@ public class TemplateRESTService extends RESTBaseService {
    @POST
    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
    public TemplateDTO addTemplateIntoAccount(@PathParam("account_id") long accountId, @FormParam("name") String name,
-         @FormParam("content") String content, @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+         @FormParam("content") String content, @FormParam("keywords") String keywords,@FormParam("shared") boolean shared,@HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
       authorize(credentials);
       Template t = new Template();
@@ -163,6 +163,8 @@ public class TemplateRESTService extends RESTBaseService {
       } 
       t.setName(name);
       t.setContent(content);
+      t.setKeywords(keywords);
+      t.setShared(shared);
       long newId = getTemplateService().save(t);
       TemplateDTO newTemp = getTemplateService().loadTemplateByOid(newId);
       if (newTemp != null) {
