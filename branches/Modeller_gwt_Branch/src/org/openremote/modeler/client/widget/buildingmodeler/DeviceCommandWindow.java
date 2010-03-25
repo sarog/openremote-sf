@@ -136,7 +136,9 @@ public class DeviceCommandWindow extends FormWindow {
                   attrMap.put(DEVICE_COMMAND_PROTOCOL, p.getValue().get(ComboBoxDataModel.getDisplayProperty())
                         .toString());
                } else {
-                  attrMap.put(f.getName(), f.getValue().toString());
+                  if (f.getValue() != null && !"".equals(f.getValue().toString())) {
+                     attrMap.put(f.getName(), f.getValue().toString());
+                  }
                }
             }
             AsyncSuccessCallback<BeanModel> callback = new AsyncSuccessCallback<BeanModel>() {
@@ -258,8 +260,8 @@ public class DeviceCommandWindow extends FormWindow {
                attrFile.setAllowBlank(true);
             } else {
                attrFile.setAllowBlank(false);
+               messages.setBlankText(protocolValidator.getMessage());
             }
-            messages.setBlankText(protocolValidator.getMessage());
          } else if (protocolValidator.getType() == ProtocolValidator.MAX_LENGTH_TYPE) {
             attrFile.setMaxLength(Integer.valueOf(protocolValidator.getValue()));
             messages.setMaxLengthText(protocolValidator.getMessage());
