@@ -188,6 +188,15 @@ public class ProfilePanel extends ContentPanel {
 
                });
             }
+            UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>() {
+               @Override
+               public void onSuccess(Long maxID) {
+                  if (maxID > 0) {              // set the layout component's max id after refresh page.
+                     IDUtil.setCurrentID(maxID.longValue());
+                  }
+               }
+               
+            });
          }
          
          private void initModelDataBase(Collection<Panel> panels) {
@@ -214,15 +223,6 @@ public class ProfilePanel extends ContentPanel {
             }
             
          }
-      });
-      UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>() {
-         @Override
-         public void onSuccess(Long maxID) {
-            if (maxID > 0) {              // set the layout component's max id after refresh page.
-               IDUtil.setCurrentID(maxID.longValue());
-            }
-         }
-         
       });
       
    }
