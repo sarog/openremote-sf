@@ -882,7 +882,7 @@ public class ResourceServiceImpl implements ResourceService {
          return null;
       }
       ObjectInputStream ois = null;
-      PanelsAndMaxOid panelsAndMaxOid = null;
+      PanelsAndMaxOid panelsAndMaxOid = new PanelsAndMaxOid(new ArrayList<Panel>(),0);
       try {
          ois = new ObjectInputStream(new FileInputStream(panelsObjFile));
          Collection<Panel> panels = (Collection<Panel>) ois.readObject();
