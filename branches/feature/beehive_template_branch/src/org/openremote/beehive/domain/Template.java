@@ -41,6 +41,8 @@ public class Template extends BusinessEntity {
    private String name;
    private String content;
    private Account account;
+   private String keywords = "";
+   private boolean shared = false;
 
    public String getName() {
       return name;
@@ -69,6 +71,20 @@ public class Template extends BusinessEntity {
    public void setAccount(Account account) {
       this.account = account;
    }
-   
 
+   public String getKeywords() {
+      return keywords;
+   }
+
+   public void setKeywords(String keywords) {
+      this.keywords = keywords;
+   }
+
+   public boolean isShared() {
+      return shared;
+   }
+
+   public void setShared(boolean shared) {
+      this.shared = shared;
+   }
 }

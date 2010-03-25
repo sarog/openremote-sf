@@ -41,6 +41,7 @@ public class BeehiveApplication extends Application {
       singletons.add(new IconRESTService());
       singletons.add(new TemplateRESTService());
       singletons.add(new ResourceRESTService());
+      singletons.add(new PublicTemplatesRestService());
       
    }
 

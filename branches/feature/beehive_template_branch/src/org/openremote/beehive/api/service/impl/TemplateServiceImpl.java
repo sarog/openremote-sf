@@ -22,14 +22,15 @@ package org.openremote.beehive.api.service.impl;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.beehive.Configuration;
 import org.openremote.beehive.api.dto.TemplateDTO;
@@ -79,6 +80,29 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
       return templatesDTOs;
    }
 
+   public List<TemplateDTO> loadPublicTemplatesByKeywordsAndPage(String keywords,int page) {
+      List<TemplateDTO> templateDTOs = new ArrayList<TemplateDTO>();
+      DetachedCriteria critera = DetachedCriteria.forClass(Template.class);
+      if (keywords != null && keywords.trim().length() > 0) {
+         String[] kwords = keywords.split(KEYWORDS_SEPERATOR);
+         for (String keyword : kwords) {
+            critera.add(Restrictions.eq("shared", true));
+            critera.add(Restrictions.like("keywords", keyword,MatchMode.ANYWHERE));
+         }
+      }
+      genericDAO.loadAll(Template.class);
+      List<Template> templates = genericDAO.findPagedDateByDetachedCriteria(critera, TEMPLATE_SIZE_PER_PAGE, (TEMPLATE_SIZE_PER_PAGE)*page);
+      if (templates != null && templates.size() > 0) {
+         for (Template template : templates) {
+            TemplateDTO dto = new TemplateDTO();
+            dto.setOid(template.getOid());
+            dto.setContent(template.getContent());
+            dto.setName(template.getName());
+            templateDTOs.add(dto);
+         }
+      }
+      return templateDTOs;
+   }
    @Override
    public TemplateDTO loadTemplateByOid(long templateOid) {
       Template template = genericDAO.getById(Template.class, templateOid);
