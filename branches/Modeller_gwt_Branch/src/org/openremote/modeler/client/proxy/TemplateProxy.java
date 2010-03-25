@@ -123,6 +123,22 @@ public class TemplateProxy {
          
       });
    }
+   
+   public static void searchTemplates(final String keywords, final int page, final AsyncCallback<List<Template>> callback) {
+      AsyncServiceFactory.getTemplateRPCServiceAsync().searchTemplates (keywords, page,new AsyncCallback<List<Template>>() {
+
+         @Override
+         public void onFailure(Throwable caught) {
+           callback.onFailure(caught);
+         }
+
+         @Override
+         public void onSuccess(List<Template> result) {
+           callback.onSuccess(result);
+         }
+         
+      });
+   }
    /**
     * initialize the oid for every BusinessEntity.
     * @param screen

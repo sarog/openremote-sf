@@ -41,8 +41,10 @@ import com.extjs.gxt.ui.client.widget.ListView;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
+import com.extjs.gxt.ui.client.widget.form.LabelField;
 import com.extjs.gxt.ui.client.widget.form.Radio;
 import com.extjs.gxt.ui.client.widget.form.RadioGroup;
+import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 
 /**
@@ -60,12 +62,19 @@ public class TemplateCreateWindow extends FormWindow
    private ListView<BeanModel> screenList = new ListView<BeanModel>();
 
    private TextField<String> templateName = new TextField<String>();
+//   private TextField<String> templateModel = new TextField<String> ();
+//   private TextField<String> templateType = new TextField<String> ();
+//   private TextField<String> templateVendor = new TextField<String> ();
+   private TextArea templateKeywords = new TextArea();
+   
+   private Radio notShare = new Radio();
+   private Radio share = new Radio();
    
    private long shareInfo = Template.PRIVATE;
    
    public TemplateCreateWindow(){
       setPlain(true);  
-      setSize(350, 300);  
+      setSize(350, 450);  
       setHeading("New Template");
       setBodyBorder(true);
       createField();
@@ -74,11 +83,26 @@ public class TemplateCreateWindow extends FormWindow
    }
    
    private void createField(){
-      templateName = new TextField<String>();
       templateName.setName(TEMPLATE_NAME_FIELD);
       templateName.setFieldLabel("Name");
       templateName.setAllowBlank(false);
       templateName.setValidateOnBlur(true);
+      
+//      templateModel.setName(TEMPLATE_NAME_FIELD);
+//      templateModel.setFieldLabel("Model");
+//      
+//      templateType.setName(TEMPLATE_NAME_FIELD);
+//      templateType.setFieldLabel("Type");
+//      
+//      templateVendor.setName(TEMPLATE_NAME_FIELD);
+//      templateVendor.setFieldLabel("Vendor");
+      
+      LabelField keywordsLabel = new LabelField();
+      keywordsLabel.setText("Keywords(split with \",\"):");
+      keywordsLabel.setHideLabel(true);
+      templateKeywords.setName(TEMPLATE_NAME_FIELD);
+      templateKeywords.setLabelSeparator("");
+//      templateKeywords.setHideLabel(true);
       
       form.setBorders(false);  
       form.setBodyBorder(false);  
@@ -94,6 +118,11 @@ public class TemplateCreateWindow extends FormWindow
       cancleBtn.addSelectionListener(new CancleListener());
       
       form.add(templateName);
+//      form.add(templateModel);
+//      form.add(templateType);
+//      form.add(templateVendor);
+      form.add(keywordsLabel);
+      form.add(templateKeywords);
       form.add(createShareView());
       form.addButton(submitBtn);
       form.addButton(cancleBtn);
@@ -118,12 +147,10 @@ public class TemplateCreateWindow extends FormWindow
 
    private RadioGroup createShareView(){
       RadioGroup shareRadioGroup = new RadioGroup();
-      
-      Radio shareNoneRadio = new Radio();
-      shareNoneRadio.setName("Private");
-      shareNoneRadio.setBoxLabel("Private");
-      shareNoneRadio.setValue(true);
-      shareNoneRadio.addListener(Events.Change, new Listener<FieldEvent>(){
+      notShare.setName("Private");
+      notShare.setBoxLabel("Private");
+      notShare.setValue(true);
+      notShare.addListener(Events.Change, new Listener<FieldEvent>(){
 
          @Override
          public void handleEvent(FieldEvent be) {
@@ -138,15 +165,37 @@ public class TemplateCreateWindow extends FormWindow
          
       });
       
-      Radio shareToAllRadio = new Radio();
-      shareToAllRadio.setName("Public");
-      shareToAllRadio.setBoxLabel("Public");
+      share.setName("Public");
+      share.setBoxLabel("Public");
       
-      shareRadioGroup.add(shareNoneRadio);
-      shareRadioGroup.add(shareToAllRadio);
+      shareRadioGroup.add(notShare);
+      shareRadioGroup.add(share);
       shareRadioGroup.setFieldLabel("Share to");
       
       return shareRadioGroup;
+   }
+   
+   private void assembleTemplate(Template template) {
+      boolean shared = share.getValue();
+      template.setShared(shared);
+      
+      /*String model = templateModel.getValue();
+      if (model != null && model.trim().length() > 0) {
+         template.setModel(model);
+      }
+      String type = templateType.getValue();
+      if (type !=null && type.trim().length() >0 ) {
+         template.setType(type);
+      }
+      String vendor = templateVendor.getValue();
+      if (vendor != null && vendor.trim().length() >0 ) {
+         template.setVendor(vendor);
+      }*/
+      
+      String keywords = templateKeywords.getValue();
+      if (keywords != null && keywords.trim().length() >0 ) {
+         template.setKeywords(keywords);
+      }
    }
    class SubmitListener extends SelectionListener<ButtonEvent> {
 
@@ -162,6 +211,7 @@ public class TemplateCreateWindow extends FormWindow
          }
          Screen screen = screenBeanModels.get(0).getBean();
          Template template = new Template(templateName.getValue(), screen);
+         assembleTemplate(template);
          template.setShareTo(shareInfo);
          TemplateProxy.saveTemplate(template, new AsyncSuccessCallback<Template>() {
 

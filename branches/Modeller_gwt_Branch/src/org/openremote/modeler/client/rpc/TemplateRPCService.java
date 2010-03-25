@@ -48,4 +48,6 @@ public interface TemplateRPCService extends RemoteService {
    ScreenFromTemplate buildScreeFromTemplate(Template template) throws BeehiveNotAvailableException;
    
    Boolean deleteTemplate(long templateId) throws BeehiveNotAvailableException;
+   
+   List<Template> searchTemplates(String keywords,int page);
 }
