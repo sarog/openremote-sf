@@ -98,6 +98,7 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
             dto.setOid(template.getOid());
             dto.setContent(template.getContent());
             dto.setName(template.getName());
+            dto.setKeywords(template.getKeywords());
             templateDTOs.add(dto);
          }
       }
