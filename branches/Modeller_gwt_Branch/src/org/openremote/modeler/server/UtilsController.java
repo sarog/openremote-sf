@@ -204,6 +204,9 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    @Override
    public Long loadMaxID() {
       Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_MAXID);
+      if (obj == null) {
+         obj = this.restore().getMaxOid();
+      }
       return (obj == null) ? 0 : (Long)obj;
    }
 
