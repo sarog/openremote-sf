@@ -40,6 +40,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       List<ControllerConfig> configs = genericDAO.getHibernateTemplate().find(hql, args);
       Set<ControllerConfig> configSet = new LinkedHashSet<ControllerConfig>();
       configSet.addAll(configs);
+      configSet.removeAll(listAllexpiredConfigs());
       initializeConfigs(configSet);
       return configSet;
    }
@@ -89,7 +90,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
    }
 
    @Override
-   public Set<ControllerConfig> listAll() {
+   public Set<ControllerConfig> listAllConfigs() {
      Account account = userService.getAccount();
      return listAllByAccount(account);
    }
@@ -122,7 +123,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
       XmlParser.initControllerConfig(categories, allDefaultConfigs);
       
-      Set<ControllerConfig> unMissedConfigs = this.listAll();
+      Set<ControllerConfig> unMissedConfigs = this.listAllConfigs();
       Set<ControllerConfig> missedConfigs = new HashSet<ControllerConfig> ();
       for (ControllerConfig cfg : allDefaultConfigs) {
          if (!unMissedConfigs.contains(cfg)) {
@@ -132,6 +133,19 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       return missedConfigs;
    }
    
+   public Set<ControllerConfig> listAllexpiredConfigs() {
+      Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
+      XmlParser.initControllerConfig(new HashSet<ConfigCategory>(), allDefaultConfigs);
+      Set<ControllerConfig> allSavedConfigs = this.listAllConfigs();
+      Set<ControllerConfig> expiredConfigs = new HashSet<ControllerConfig>();
+      for (ControllerConfig config: allSavedConfigs) {
+         if (!allDefaultConfigs.contains(config)) {
+            expiredConfigs.add(config);
+         }
+      }
+      
+      return expiredConfigs;
+   }
    public void setUserService(UserService userService) {
       this.userService = userService;
    }

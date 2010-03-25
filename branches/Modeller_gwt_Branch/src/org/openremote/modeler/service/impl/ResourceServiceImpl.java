@@ -635,7 +635,6 @@ public class ResourceServiceImpl implements ResourceService {
       this.velocity = velocity;
    }
    
-   
    public void setUserService(UserService userService) {
       this.userService = userService;
    }
@@ -663,7 +662,8 @@ public class ResourceServiceImpl implements ResourceService {
       Collection<UIComponent> uiSliders = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UISlider.class);
       Collection<UIComponent> uiImages = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIImage.class);
       Collection<UIComponent> uiLabels = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UILabel.class);
-      Collection<ControllerConfig> configs = controllerConfigService.listAll();
+      Collection<ControllerConfig> configs = controllerConfigService.listAllConfigs();
+      configs.removeAll(controllerConfigService.listAllexpiredConfigs());
       configs.addAll(controllerConfigService.listAllMissingConfigs());
       
       context.put("switchs", switchs);
