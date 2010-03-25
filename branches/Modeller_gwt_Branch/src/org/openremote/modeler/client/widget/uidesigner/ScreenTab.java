@@ -119,6 +119,8 @@ public class ScreenTab extends TabPanel {
                   ScreenCanvas screenCanvas = screenTabItem.getScreenCanvas();
                   if (screen.isHasTabbar()) {
                 	  screenCanvas.addTabbar();
+                  } else {
+                     screenCanvas.removeTabbar();
                   }
                   screenTabItem.updateTouchPanel();
                   screenCanvas.setSize(screen.getTouchPanelDefinition().getCanvas().getWidth(), screen.getTouchPanelDefinition().getCanvas().getHeight());

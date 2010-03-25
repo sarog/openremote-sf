@@ -639,6 +639,12 @@ public class ScreenCanvas extends ComponentContainer {
          layout();
       }
    }
+   
+   public void removeTabbar() {
+      if (tabbarContainer != null) {
+         tabbarContainer.removeFromParent();
+      }
+   }
 
    public void setSizeToDefault(UIComponent component) {
       for (Absolute absolute : screen.getAbsolutes()) {
