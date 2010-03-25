@@ -407,11 +407,11 @@ public class TreePanelBuilder {
       groupTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
             if (thisModel.getBean() instanceof Group) {
-               return ICON.activityIcon();
+               return ICON.groupIcon();
             } else if (thisModel.getBean() instanceof ScreenRef) {
                return ICON.screenIcon();
             } else {
-               return ICON.activityIcon();
+               return ICON.groupIcon();
             }
          }
       });
@@ -508,7 +508,7 @@ public class TreePanelBuilder {
             if (thisModel.getBean() instanceof Panel) {
                return ICON.panelIcon();
             } else if (thisModel.getBean() instanceof GroupRef) {
-               return ICON.activityIcon();
+               return ICON.groupIcon();
             } else if (thisModel.getBean() instanceof ScreenRef) {
                return ICON.screenIcon();
             } else {
@@ -533,7 +533,7 @@ public class TreePanelBuilder {
             if (thisModel.getBean() instanceof Panel) {
                return ICON.panelIcon();
             } else if (thisModel.getBean() instanceof GroupRef) {
-               return ICON.activityIcon();
+               return ICON.groupIcon();
             } else if (thisModel.getBean() instanceof ScreenRef) {
                return ICON.screenIcon();
             } else {

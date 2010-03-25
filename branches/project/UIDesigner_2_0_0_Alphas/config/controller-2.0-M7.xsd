@@ -335,7 +335,7 @@
 	
 	<!-- ###############  delay  ################ -->
 	
-	<xsd:element name="delay" type="xsd:float" >
+	<xsd:element name="delay" type="xsd:int" >
 		<xsd:annotation>
 			<xsd:documentation>
 				<![CDATA[

@@ -101,4 +101,8 @@ public class Constants {
    
    public static final String HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX= "Basic ";
    
+   public static final String REGISTRATION_ACTIVATION_EMAIL_VM_NAME= "registration-activation-email.vm";
+   
+   
+   
 }

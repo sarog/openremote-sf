@@ -193,7 +193,7 @@ public class DevicePanel extends ContentPanel {
    private MenuItem createNewDeviceMenuItem() {
       MenuItem newDeviceItem = new MenuItem("New Device");
       newDeviceItem.ensureDebugId(DebugId.NEW_DEVICE_MENU_ITEM);
-      newDeviceItem.setIcon(icon.addDevice());
+      newDeviceItem.setIcon(icon.device());
       newDeviceItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             final DeviceWizardWindow deviceWindow = new DeviceWizardWindow(new Device().getBeanModel());
@@ -229,7 +229,7 @@ public class DevicePanel extends ContentPanel {
    private MenuItem createNewCommandMenu() {
       MenuItem newCommandItem = new MenuItem("New Command");
       newCommandItem.ensureDebugId(DebugId.NEW_COMMAND_ITEM);
-      newCommandItem.setIcon(icon.addCmd());
+      newCommandItem.setIcon(icon.deviceCmd());
       newCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             createDeviceCommand();
@@ -241,7 +241,7 @@ public class DevicePanel extends ContentPanel {
    
    private MenuItem createNewSensorMenu() {
       MenuItem newCommandItem = new MenuItem("New Sensor");
-      newCommandItem.setIcon(icon.sensorAddIcon());
+      newCommandItem.setIcon(icon.sensorIcon());
       newCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             createSensor();
@@ -253,7 +253,7 @@ public class DevicePanel extends ContentPanel {
    
    private MenuItem createNewSliderMenu() {
       MenuItem newCommandItem = new MenuItem("New Slider");
-      newCommandItem.setIcon(icon.sliderAddIcon());
+      newCommandItem.setIcon(icon.sliderIcon());
       newCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             createSlider();
@@ -265,7 +265,7 @@ public class DevicePanel extends ContentPanel {
    
    private MenuItem createNewSwitchMenu() {
       MenuItem newCommandItem = new MenuItem("New Switch");
-      newCommandItem.setIcon(icon.switchAddIcon());
+      newCommandItem.setIcon(icon.switchIcon());
       newCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             createSwitch();
