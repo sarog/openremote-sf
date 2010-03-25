@@ -84,6 +84,7 @@ public class TemplateServiceTest extends TemplateTestBase {
          template.setKeywords(keywords[i]);
          template.setContent("content"+i);
          template.setName("template"+i);
+         template.setShared(true);
          a.addTemplate(template);
          template.setAccount(a);
          service.save(template);
