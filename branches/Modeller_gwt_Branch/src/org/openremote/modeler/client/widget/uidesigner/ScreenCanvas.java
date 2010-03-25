@@ -643,6 +643,7 @@ public class ScreenCanvas extends ComponentContainer {
    public void removeTabbar() {
       if (tabbarContainer != null) {
          tabbarContainer.removeFromParent();
+         hasTabbar = false;
       }
    }
 
