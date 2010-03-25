@@ -19,9 +19,9 @@
 */
 package org.openremote.controller.protocol.test.mockup;
 
-import java.security.InvalidParameterException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
@@ -34,28 +34,39 @@ import org.openremote.controller.command.CommandBuilder;
 public class MockupCommandBuilder implements CommandBuilder {
 
    private final static String STATUS_COMMAND = "STATUS";
-   private final static String EXECUTE_COMMAND = "EXCUTE";
+   private final static String EXECUTE_COMMAND = "EXECUTE";
+   private Logger logger = Logger.getLogger(this.getClass().getName());
    
+   @SuppressWarnings("unchecked")
    @Override
    public Command build(Element element) {
-      String commandStr = element.getAttributeValue("value");
-      
-      MockupCommand mockupCommand = null;
-      if (STATUS_COMMAND.equals(commandStr)) {
-         mockupCommand = new MockupStatusCommand();
-         initProperties(element, mockupCommand);
-      } else if (EXECUTE_COMMAND.equals(commandStr)) {
-         mockupCommand = new MockupExecutableCommand();
-         initProperties(element, mockupCommand);
-      } else if (isNumber(commandStr)) {
-         mockupCommand = new MockupExecutableCommand();
-         initProperties(element, mockupCommand);
-         mockupCommand.setUrl(mockupCommand.getUrl().replaceAll("placeholder", commandStr));
-         
-      } else {
-         throw new InvalidParameterException("No such command parameter value : " + commandStr);
+      if (element.getChildren() != null && element.getChildren().size() != 0) {
+         Element commandTypePropertyElement = null;
+         List<Element> commandPropertyElements = element.getChildren("property", element.getNamespace());
+         for (Element commandPropertyElement : commandPropertyElements) {
+            if ("type".equals(commandPropertyElement.getAttributeValue("name"))) {
+               commandTypePropertyElement = commandPropertyElement;
+            }
+         }         
+         if (commandTypePropertyElement != null) {
+            String commandStr = commandTypePropertyElement.getAttributeValue("value");
+            MockupCommand mockupCommand = null;
+            if (STATUS_COMMAND.equals(commandStr)) {
+               mockupCommand = new MockupStatusCommand();
+               initProperties(element, mockupCommand);
+            } else if (EXECUTE_COMMAND.equals(commandStr)) {
+               mockupCommand = new MockupExecutableCommand();
+               initProperties(element, mockupCommand);
+               
+               String dynamicCommandForSlider = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
+               if (dynamicCommandForSlider != null && !"".equals(dynamicCommandForSlider) && isNumber(dynamicCommandForSlider)) {
+                  mockupCommand.setUrl(mockupCommand.getUrl().replaceAll("placeholder", dynamicCommandForSlider));
+               }
+            }
+            return mockupCommand;
+         }
       }
-      return mockupCommand;
+      return null;
    }
    
    @SuppressWarnings("unchecked")
@@ -72,6 +83,7 @@ public class MockupCommandBuilder implements CommandBuilder {
       try {
          Integer.parseInt(commandStr);
       } catch (NumberFormatException e) {
+         logger.error("Invalid dynamicCommand : " + commandStr);
          return false;
       }
       return true;

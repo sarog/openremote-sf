@@ -19,6 +19,8 @@
 */
 package org.openremote.controller.protocol.test;
 
+import java.util.List;
+
 import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
@@ -28,32 +30,48 @@ public class TestCommandBuilder implements CommandBuilder {
    
    private final static String STATUS_COMMAND = "STATUS";
 
+   @SuppressWarnings("unchecked")
    @Override
    public Command build(Element element) {
-//      String commandStr = element.getTextTrim();
-      String commandStr = element.getAttributeValue("value");
-
-      TestCommandType testCommand = null;
-
-      if (TestCommandType.SWITCH_ON.isEqual(commandStr))
-         testCommand = TestCommandType.SWITCH_ON;
-      else if (TestCommandType.SWITCH_OFF.isEqual(commandStr))
-         testCommand = TestCommandType.SWITCH_OFF;
-      else if (TestCommandType.STATUS.isEqual(commandStr)) {
-         testCommand = TestCommandType.STATUS;
-      } else if (Integer.parseInt(commandStr) >= 0 && Integer.parseInt(commandStr) <= 100) {
-         testCommand = TestCommandType.NUMBER_COMAND;
-      }else {
-         throw new NoSuchCommandException("Couldn't find command " + commandStr + " in TestCommandType.");
+      Element commandPropertyElement = null;
+      
+      List<Element> commandProperyElements = (List<Element>) element.getChildren("property", element.getNamespace());
+      for (Element propertyElement : commandProperyElements) {
+         if ("command".equals(propertyElement.getAttributeValue("name"))) {
+            commandPropertyElement = propertyElement;
+         }
       }
-
-      Command command = null;
-      if (commandStr != null && !"".equals(commandStr.trim()) && commandStr.equalsIgnoreCase(STATUS_COMMAND)) {
-         command =  new TestStatusCommand();
-      } else {
-         command = new TestExecutableCommand(testCommand);
+      
+      if (commandPropertyElement != null) {       
+         String commandStr = commandPropertyElement.getAttributeValue("value");
+         
+         TestCommandType testCommandType = null;
+         
+         if (TestCommandType.SWITCH_ON.isEqual(commandStr))
+            testCommandType = TestCommandType.SWITCH_ON;
+         else if (TestCommandType.SWITCH_OFF.isEqual(commandStr))
+            testCommandType = TestCommandType.SWITCH_OFF;
+         else if (TestCommandType.STATUS.isEqual(commandStr)) {
+            testCommandType = TestCommandType.STATUS;
+         } else if (TestCommandType.NUMBER_COMAND.isEqual(commandStr)) {
+            String dynamicCommandValueForSlider = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
+            commandStr = dynamicCommandValueForSlider;
+//            Integer.parseInt(commandStr) >= 0 && Integer.parseInt(commandStr) <= 100
+            testCommandType = TestCommandType.NUMBER_COMAND;
+         }else {
+            throw new NoSuchCommandException("Couldn't find command " + commandStr + " in TestCommandType.");
+         }
+         
+         TestCommand testCommand = null;
+         if (commandStr != null && !"".equals(commandStr.trim()) && commandStr.equalsIgnoreCase(STATUS_COMMAND)) {
+            testCommand =  new TestStatusCommand();
+         } else {
+            testCommand = new TestExecutableCommand(testCommandType);
+            testCommand.setCommandValue(commandStr);
+         }
+         return (Command) testCommand;
       }
-      return command;
+      return null;
    }
 
 }

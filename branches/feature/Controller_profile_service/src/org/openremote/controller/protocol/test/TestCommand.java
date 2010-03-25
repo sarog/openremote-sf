@@ -5,6 +5,8 @@ public class TestCommand {
    
    private TestCommandType command;
    
+   private String commandValue;
+   
    public TestCommand() {
       super();
    }
@@ -20,6 +22,14 @@ public class TestCommand {
 
    public void setCommand(TestCommandType command) {
       this.command = command;
+   }
+
+   public String getCommandValue() {
+      return commandValue;
+   }
+
+   public void setCommandValue(String commandValue) {
+      this.commandValue = commandValue;
    }
    
 }
