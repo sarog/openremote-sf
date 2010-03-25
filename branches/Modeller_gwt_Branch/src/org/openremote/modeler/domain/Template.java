@@ -8,8 +8,13 @@ public class Template extends BusinessEntity {
    
    private long shareTo = PRIVATE ;
    
-   private String name;
-   private String content;
+   private String name = "";
+   private String content = "";
+//   private String model = "";
+//   private String type = "";
+//   private String vendor = "";
+   private String keywords = "";
+   private boolean shared = false;
    
    private Screen screen;
    
@@ -34,6 +39,47 @@ public class Template extends BusinessEntity {
 
    public void setContent(String content) {
       this.content = content;
+   }
+
+   
+   /*public String getModel() {
+      return model;
+   }
+
+   public void setModel(String model) {
+      this.model = model;
+   }
+
+   public String getType() {
+      return type;
+   }
+
+   public void setType(String type) {
+      this.type = type;
+   }
+
+   public String getVendor() {
+      return vendor;
+   }
+
+   public void setVendor(String vendor) {
+      this.vendor = vendor;
+   }*/
+
+   public String getKeywords() {
+      return keywords;
+   }
+
+   public void setKeywords(String keywords) {
+      this.keywords = keywords;
+   }
+
+   public boolean isShared() {
+      return shared;
+   }
+
+   public void setShared(boolean shared) {
+      this.shared = shared;
    }
 
    public Screen getScreen() {

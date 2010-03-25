@@ -65,6 +65,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
@@ -241,6 +242,8 @@ public class ProfilePanel extends ContentPanel {
       newMenu.add(newGroupMenu);
       final MenuItem newScreenMenu = createNewScreenMenuItem();
       newMenu.add(newScreenMenu);
+      final MenuItem newScreenFromTemplateMenu = createNewScreenFromTemplateMenuItem();
+      newMenu.add(newScreenFromTemplateMenu);
       final MenuItem configTabbarItem = createConfigTabbarMenuItem();
       newMenu.add(configTabbarItem);
       newMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
@@ -533,7 +536,61 @@ public class ProfilePanel extends ContentPanel {
       });
       return newGroupItem;
    }
-   
+
+   private MenuItem createNewScreenFromTemplateMenuItem() {
+      MenuItem newScreenItem = new MenuItem("New screen from template");
+      newScreenItem.setIcon(icon.screenIcon());
+      newScreenItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+         public void componentSelected(MenuEvent ce) {
+            BeanModel selectedItem = panelTree.getSelectionModel().getSelectedItem();
+            if (selectedItem == null || !(selectedItem.getBean() instanceof GroupRef)) {
+               MessageBox.alert("Warn", "A group must be selected! ", null);
+               return;
+            }
+            final GroupRef groupRef = selectedItem.getBean();
+            final NewScreenFromTemplateWindow screenWindow = new NewScreenFromTemplateWindow(screenTab);
+            screenWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+               @Override
+               public void afterSubmit(SubmitEvent be) {
+                  screenWindow.hide();
+                  ScreenRef screenRef = null;
+                  if (be.getData() instanceof ScreenFromTemplate) {
+                     ScreenFromTemplate screenFromTemplate = be.<ScreenFromTemplate> getData();
+                     Screen screen = screenFromTemplate.getScreen();
+                     screen.setTouchPanelDefinition(groupRef.getPanel().getTouchPanelDefinition());
+                     BeanModelDataBase.screenTable.insert(screen.getBeanModel());
+                     screenRef = new ScreenRef(screen);
+                     screenRef.setTouchPanelDefinition(screen.getTouchPanelDefinition());
+                     screenRef.setOid(IDUtil.nextID());
+                     groupRef.getGroup().addScreenRef(screenRef);
+                     screenRef.setGroup(groupRef.getGroup());
+                     updatePanelTree(screenRef);
+                     // ----------rebuild command
+                     Set<Device> devices = screenFromTemplate.getDevices();
+                     for (Device device : devices) {
+                        ((DeviceBeanModelTable) BeanModelDataBase.deviceTable)
+                              .insertAndNotifyDeviceInsertListener(device.getBeanModel());
+                     }
+
+                     Set<DeviceMacro> macros = screenFromTemplate.getMacros();
+                     for (DeviceMacro macro : macros) {
+                        ((DeviceMacroBeanModelTable) BeanModelDataBase.deviceMacroTable)
+                              .insertAndNotifyMacroInsertListener(macro.getBeanModel());
+                     }
+                  }
+               }
+
+               private void updatePanelTree(ScreenRef screenRef) {
+                  panelTree.getStore().add(groupRef.getBeanModel(), screenRef.getBeanModel(), false);
+                  panelTree.setExpanded(groupRef.getBeanModel(), true);
+                  panelTree.getSelectionModel().select(screenRef.getBeanModel(), false);
+               }
+
+            });
+         }
+      });
+      return newScreenItem;
+   }
    private MenuItem createNewScreenMenuItem() {
       MenuItem newScreenItem = new MenuItem("New Screen");
       newScreenItem.setIcon(icon.screenIcon());
