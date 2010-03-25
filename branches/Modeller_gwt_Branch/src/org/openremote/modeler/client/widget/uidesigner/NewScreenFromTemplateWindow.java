@@ -240,7 +240,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       templateView.setBorders(false);
       templateView.setHeight("150px");
       templateView.setWidth("300px");
-      templateView.setDisplayProperty("name");
+      templateView.setDisplayProperty("displayName");
       ListStore<BeanModel> store = new ListStore<BeanModel>();
       templateView.setStore(store);
       initTemplateView(true);

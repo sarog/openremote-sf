@@ -98,5 +98,7 @@ public class Template extends BusinessEntity {
       this.shareTo = shareTo;
    }
    
-   
+   public String getDisplayName() {
+      return name + "( " +keywords +" )";
+   }
 }
