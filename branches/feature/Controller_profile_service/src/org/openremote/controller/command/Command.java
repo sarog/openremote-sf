@@ -31,4 +31,13 @@ public interface Command {
     
     /** The Constant STATUS_COMMAND. */
     public final static String STATUS_COMMAND = "status";
+    
+    /** 
+     * Attribute name of dynamic command value for slider, colorpicker.<br />
+     * This attribute is temporary for holding dynamic control command value from REST API. <br />
+     * Take slider for example: <br />
+     * REST API: http://localhost:8080/controller/rest/control/{slider_id}/10 <br />
+     * <b>10</b> means control command value of slider, which will be stored into the attribute named <b>DYNAMIC_VALUE_ATTR_NAME</b> of Command DOM element.
+     */
+    public static final String DYNAMIC_VALUE_ATTR_NAME = "dynamicValue";
 }
