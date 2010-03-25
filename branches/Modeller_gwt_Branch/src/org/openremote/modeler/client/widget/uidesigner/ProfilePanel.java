@@ -359,19 +359,13 @@ public class ProfilePanel extends ContentPanel {
          }
       });
    }
-   private void editScreen(final BeanModel panelBeanModel) {
-      final ScreenWindow screenWizard = new ScreenWindow(screenTab, panelBeanModel, ScreenWindow.Operation.EDIT);
+   private void editScreen(final BeanModel screenRefBeanModel) {
+      final ScreenWindow screenWizard = new ScreenWindow(screenTab, screenRefBeanModel, ScreenWindow.Operation.EDIT);
       screenWizard.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
-            ScreenRef screenRef = be.<ScreenRef> getData();
-           /* BeanModel oldGroupBeanModel = screenWizard.getSelectedGroupRefModel();
-            BeanModel newGroupBeanModel = panelTree.getStore().getParent(screenWizard.getSelectItem());
-            if(!oldGroupBeanModel.equals(newGroupBeanModel)){
-               panelTree.getStore().remove(screenRef.getBeanModel());
-               panelTree.getStore().add(newGroupBeanModel, screenRef.getBeanModel(),false);
-            }*/
             screenWizard.hide();
+            ScreenRef screenRef = be.<ScreenRef> getData();
             panelTree.getStore().update(screenRef.getBeanModel());
             BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
             Info.display("Info", "Edit screen " + screenRef.getScreen().getName() + " success.");
@@ -538,7 +532,7 @@ public class ProfilePanel extends ContentPanel {
    }
 
    private MenuItem createNewScreenFromTemplateMenuItem() {
-      MenuItem newScreenItem = new MenuItem("New screen from template");
+      MenuItem newScreenItem = new MenuItem("New Screen From Template ");
       newScreenItem.setIcon(icon.screenIcon());
       newScreenItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
@@ -606,26 +600,7 @@ public class ProfilePanel extends ContentPanel {
                   if (be.getData() instanceof ScreenRef) {
                      screenRef = be.<ScreenRef>getData();
                      updatePanelTree(screenRef);
-                  } else if (be.getData() instanceof ScreenFromTemplate) {
-                     ScreenFromTemplate screenFromTemplate = be.<ScreenFromTemplate>getData();
-                     Screen screen = screenFromTemplate.getScreen();
-                     screenRef = new ScreenRef(screen);
-                     screenRef.setTouchPanelDefinition(screen.getTouchPanelDefinition());
-                     screenRef.setOid(IDUtil.nextID());
-                     GroupRef groupRef = screenWindow.getSelectedGroupRefModel().getBean();
-                     groupRef.getGroup().addScreenRef(screenRef);
-                     screenRef.setGroup(groupRef.getGroup());
-                     updatePanelTree(screenRef);
-                   //----------rebuild command 
-                     Set<Device> devices = screenFromTemplate.getDevices();
-                     for(Device device: devices) {
-                        ((DeviceBeanModelTable)BeanModelDataBase.deviceTable).insertAndNotifyDeviceInsertListener(device.getBeanModel());
-                     }
-                     
-                     Set<DeviceMacro> macros = screenFromTemplate.getMacros();
-                     for (DeviceMacro macro : macros) {
-                        ((DeviceMacroBeanModelTable)BeanModelDataBase.deviceMacroTable).insertAndNotifyMacroInsertListener(macro.getBeanModel());
-                     }
+                     BeanModelDataBase.screenTable.insert(screenRef.getScreen().getBeanModel());
                   }
                }
                
