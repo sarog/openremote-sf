@@ -49,7 +49,9 @@ public class ConfigManageController extends MultiActionController {
    
    private Configuration configuration;
    
-   private ControllerXMLChangeService controllerXMLChangeService = (ControllerXMLChangeService)SpringContext.getInstance().getBean("controllerXMLChangeService");
+   /** MUST use <code>SpringContext</code> to keep the same context as <code>InitCachedStatusDBListener</code> */
+   private ControllerXMLChangeService controllerXMLChangeService = (ControllerXMLChangeService) SpringContext
+         .getInstance().getBean("controllerXMLChangeService");
 
    /**
     * Upload zip.

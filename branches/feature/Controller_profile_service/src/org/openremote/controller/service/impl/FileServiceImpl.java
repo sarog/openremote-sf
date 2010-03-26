@@ -96,14 +96,17 @@ public class FileServiceImpl implements FileService {
       } catch (IOException e) {
          logger.error("Can't copy lircd.conf to " + configuration.getLircdconfPath(), e);
       }
-      logger.info("uploaded config zip to " + resourcePath);
    }
 
    private boolean writeZipAndUnzip(InputStream inputStream) {
       String resourcePath = configuration.getResourcePath();
       File zip = new File(resourcePath, "openremote.zip");
+      
       FileOutputStream fos = null;
       try {
+         if (!zip.getParentFile().exists()) {
+            FileUtils.forceMkdir(zip);
+         }
          FileUtils.forceDeleteOnExit(zip);
          fos = new FileOutputStream(zip);
          byte[] buffer = new byte[1024];
@@ -114,22 +117,23 @@ public class FileServiceImpl implements FileService {
          if (!ZipUtil.unzip(zip, resourcePath)) {
             return false;
          }
+         logger.info("unzip " + zip.getAbsolutePath() + "success.");
          FileUtils.forceDeleteOnExit(zip);
       } catch (IOException e) {
-         logger.error("Can't write openremote.zip to " + resourcePath);
+         logger.error("Can't write openremote.zip to " + resourcePath, e);
       } finally {
          if (inputStream != null) {
             try {
                inputStream.close();
             } catch (IOException e) {
-               e.printStackTrace();
+               logger.debug("failed to  close input stream of " + zip.getAbsolutePath());
             }
          }
          if (fos != null) {
             try {
                fos.close();
             } catch (IOException e) {
-               e.printStackTrace();
+               logger.debug("failed to  close file output stream of " + zip.getAbsolutePath());
             }
          }
       }
@@ -171,6 +175,7 @@ public class FileServiceImpl implements FileService {
       try {
          HttpResponse response = httpClient.execute(httpGet);
          if (200 == response.getStatusLine().getStatusCode()) {
+            logger.info(httpGet.getURI() + " is available.");
             inputStream = response.getEntity().getContent();
             return writeZipAndUnzip(inputStream);
          } else if (401 == response.getStatusLine().getStatusCode()) {
@@ -182,13 +187,13 @@ public class FileServiceImpl implements FileService {
                   + response.getStatusLine().getStatusCode());
          }
       } catch (IOException e) {
-         logger.error("failed to connect to Beehive.", e);
+         logger.error("failed to connect to Beehive.");
       } finally {
          if (inputStream != null) {
             try {
                inputStream.close();
             } catch (IOException e) {
-               e.printStackTrace();
+               logger.error("failed to close input stream while downloading " + httpGet.getURI());
             }
          }
       }
