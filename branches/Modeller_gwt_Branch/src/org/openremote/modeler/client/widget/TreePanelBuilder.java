@@ -22,6 +22,7 @@ package org.openremote.modeler.client.widget;
 import java.util.List;
 import java.util.Set;
 
+import org.openremote.modeler.client.event.DoubleClickEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.ConfigCategoryBeanModelProxy;
@@ -62,6 +63,7 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.data.RpcProxy;
 import com.extjs.gxt.ui.client.data.TreeLoader;
+import com.extjs.gxt.ui.client.event.TreePanelEvent;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
@@ -169,7 +171,15 @@ public class TreePanelBuilder {
         };
         deviceTreeStore = new TreeStore<BeanModel>(loadDeviceTreeLoader);
       }
-      final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceTreeStore);
+      final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceTreeStore){
+         @SuppressWarnings("unchecked")
+         @Override
+         protected void onDoubleClick(TreePanelEvent tpe) {
+            super.onDoubleClick(tpe);
+            this.fireEvent(DoubleClickEvent.DOUBLECLICK, new DoubleClickEvent());
+         }
+         
+      };
       ((DeviceBeanModelTable) BeanModelDataBase.deviceTable)
             .addDeviceInsertListener(new DeviceInsertListener<BeanModel>() {
 
@@ -289,7 +299,14 @@ public class TreePanelBuilder {
          macroTreeStore = new TreeStore<BeanModel>(loadDeviceMacroTreeLoader);
       }
 
-      final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(macroTreeStore);
+      final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(macroTreeStore) {
+         @SuppressWarnings("unchecked")
+         @Override
+         protected void onDoubleClick(TreePanelEvent tpe) {
+            super.onDoubleClick(tpe);
+            this.fireEvent(DoubleClickEvent.DOUBLECLICK, new DoubleClickEvent());
+         }
+      };
       ((DeviceMacroBeanModelTable)BeanModelDataBase.deviceMacroTable).addDeviceMacroInsertListener(new DeviceMacroInsertListener<BeanModel> (){
 
          @Override
@@ -377,45 +394,51 @@ public class TreePanelBuilder {
          panelTreeStore = new TreeStore<BeanModel>();
       }
       TreePanel<BeanModel> panelTree = new TreePanel<BeanModel>(panelTreeStore) {
+         @SuppressWarnings("unchecked")
          @Override
-         public void onBrowserEvent(Event event) {
-            super.onBrowserEvent(event);
-            if (event.getTypeInt() == Event.ONCLICK) {
-               BeanModel beanModel = this.getSelectionModel().getSelectedItem();
-               if (beanModel != null && beanModel.getBean() instanceof ScreenRef) {
-                  GroupRef groupRef = (GroupRef)this.getStore().getParent(beanModel).getBean();
-                  Screen screen = ((ScreenRef) beanModel.getBean()).getScreen();
-                  if (groupRef.getPanel().getTabbarItems().size() >0 || groupRef.getGroup().getTabbarItems().size() >0) {
-                     screen.setHasTabbar(true);
-                  } else {
-                     screen.setHasTabbar(false);
-                  }
-                  screen.setTouchPanelDefinition(((ScreenRef) beanModel.getBean()).getTouchPanelDefinition());
-                  ScreenTabItem screenTabItem = null;
-                  for (TabItem tabPanel : screenTab.getItems()) {
-                     screenTabItem = (ScreenTabItem) tabPanel;
-                     if (screen == screenTabItem.getScreen()) {
-                        screenTabItem.updateTouchPanel();
-                        if (screen.isHasTabbar()) {
-                           screenTabItem.getScreenCanvas().addTabbar();
-                        } else {
-                           screenTabItem.getScreenCanvas().removeTabbar();
-                        }
-                        screenTab.setSelection(screenTabItem);
-                        return;
+         protected void onClick(TreePanelEvent tpe) {
+            super.onClick(tpe);
+            BeanModel beanModel = this.getSelectionModel().getSelectedItem();
+            if (beanModel != null && beanModel.getBean() instanceof ScreenRef) {
+               GroupRef groupRef = (GroupRef)this.getStore().getParent(beanModel).getBean();
+               Screen screen = ((ScreenRef) beanModel.getBean()).getScreen();
+               if (groupRef.getPanel().getTabbarItems().size() >0 || groupRef.getGroup().getTabbarItems().size() >0) {
+                  screen.setHasTabbar(true);
+               } else {
+                  screen.setHasTabbar(false);
+               }
+               screen.setTouchPanelDefinition(((ScreenRef) beanModel.getBean()).getTouchPanelDefinition());
+               ScreenTabItem screenTabItem = null;
+               for (TabItem tabPanel : screenTab.getItems()) {
+                  screenTabItem = (ScreenTabItem) tabPanel;
+                  if (screen == screenTabItem.getScreen()) {
+                     screenTabItem.updateTouchPanel();
+                     if (screen.isHasTabbar()) {
+                        screenTabItem.getScreenCanvas().addTabbar();
                      } else {
-                        screenTabItem = null;
+                        screenTabItem.getScreenCanvas().removeTabbar();
                      }
-                  }
-                  if (screenTabItem == null) {
-                     screenTabItem = new ScreenTabItem(screen);
-                     screenTab.add(screenTabItem);
                      screenTab.setSelection(screenTabItem);
+                     return;
+                  } else {
+                     screenTabItem = null;
                   }
                }
+               if (screenTabItem == null) {
+                  screenTabItem = new ScreenTabItem(screen);
+                  screenTab.add(screenTabItem);
+                  screenTab.setSelection(screenTabItem);
+               }
             }
-            
          }
+
+         @SuppressWarnings("unchecked")
+         @Override
+         protected void onDoubleClick(TreePanelEvent tpe) {
+            super.onDoubleClick(tpe);
+            this.fireEvent(DoubleClickEvent.DOUBLECLICK, new DoubleClickEvent());
+         }
+         
       };
       panelTree.setStateful(true);
       panelTree.setBorders(false);
