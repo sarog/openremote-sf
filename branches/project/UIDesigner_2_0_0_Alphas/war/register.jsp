@@ -28,11 +28,16 @@
         border:none;
     }
     .register_submit{
-		margin-left:70px;
+		margin-left:84px;
 		width:150px;
     }
     .copyright{
         text-align: center;
+    }
+    p.title {
+    	text-align: center; 
+    	font-weight: bold; 
+    	font-size: 13px;
     }
     p.fail{
         color:red;
@@ -40,9 +45,6 @@
     }
     p.pass{
         color:green;
-    }
-    .register_btn{
-    	margin-left: 40px;
     }
     div.inner-boundary {
 		border:1px solid #A6A6A6;
@@ -69,8 +71,8 @@
 		<div class="inner-boundary">
 			  <div class="inner-border">
 	            <a href="http://www.openremote.org" ><img src="image/global.logo.png" /></a>
+	            <p class="title">Create OpenRemote Boss 2.0 Online Account</p>
 	            <div style="padding-left:70px">
-		            <h3>Create OpenRemote Boss 2.0 Online Account</h3>
 		            <p>If you already have an account, you can <a href="login.jsp">login here</a>.</p>
 		            <p class="input"><b class="form_label">Desired username</b><input id="username" style="width:150px" type="text" name="username" value="${username}"></p>
 		            <c:if test="${success ne null and not success}">
@@ -116,7 +118,7 @@
 	                <c:if test="${role_blank ne null}">
 		                <p class="fail">You must choose at least one role.</p>
 	                </c:if>
-	                <p class="input"><b class="form_label">Type the code below</b><input name="code" style="width:150px" /> </p>
+	                <p class="input"><b class="form_label">Type code below</b><input name="code" style="width:150px" /> </p>
 	                <c:if test="${code_dismatch ne null}">
 		                <p class="fail">The code you entered didn't match the verification.</p>
 	                </c:if>

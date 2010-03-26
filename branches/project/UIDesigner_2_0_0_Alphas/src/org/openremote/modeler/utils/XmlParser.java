@@ -29,6 +29,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
@@ -156,9 +158,12 @@ public class XmlParser {
       GetMethod get = new GetMethod(srcUrl);
       client.executeMethod(get);
       FileOutputStream output = new FileOutputStream(destFile);
-
-      output.write(get.getResponseBody());
-      output.close();
+      if (HttpServletResponse.SC_OK == get.getStatusCode()) {
+         output.write(get.getResponseBody());
+         output.close();
+      } else {
+         throw new IOException("Can not download file from :"+ srcUrl);
+      }
    }
    
    /**

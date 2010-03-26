@@ -33,7 +33,7 @@ public class UILabel extends UIComponent implements SensorOwner {
    
    private String text = "Label Text";
    private String color = "FFFFFF";
-   private int fontSize = 10;
+   private int fontSize = 14;
 
    private Sensor sensor;
 
@@ -130,9 +130,9 @@ public class UILabel extends UIComponent implements SensorOwner {
 
    @Transient
    public String getDisplayName() {
-      int maxLength = 10;
+      int maxLength = 20;
       if (text.length() > maxLength) {
-         return text.substring(0, text.length() - maxLength) + "...";
+         return text.substring(0, maxLength) + "...";
       }
       return text;
    }

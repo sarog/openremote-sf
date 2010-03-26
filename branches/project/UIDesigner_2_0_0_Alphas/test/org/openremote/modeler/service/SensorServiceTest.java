@@ -22,7 +22,6 @@ package org.openremote.modeler.service;
 import java.util.List;
 
 import org.openremote.modeler.SpringTestContext;
-import org.openremote.modeler.TestNGBase;
 import org.openremote.modeler.dao.GenericDAO;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.CustomSensor;
@@ -38,7 +37,7 @@ import org.openremote.modeler.domain.User;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class SensorServiceTest extends TestNGBase {
+public class SensorServiceTest {
 
    private SensorService sensorService =
       (SensorService) SpringTestContext.getInstance().getBean("sensorService");
@@ -51,6 +50,8 @@ public class SensorServiceTest extends TestNGBase {
    
    private UserService userService =
       (UserService) SpringTestContext.getInstance().getBean("userService");
+   
+   
    @Test
    public void save() {
       DeviceCommand deviceCommand = new DeviceCommand();
@@ -183,9 +184,11 @@ public class SensorServiceTest extends TestNGBase {
    
    @Test(dependsOnMethods = "update")
    public void delete() {
-      Sensor sensor = genericDAO.loadAll(Sensor.class).get(0);
-      sensorService.deleteSensor(sensor.getOid());
       List<Sensor> sensors = genericDAO.loadAll(Sensor.class);
+      for (Sensor sensor : sensors) {
+         sensorService.deleteSensor(sensor.getOid());
+      }
+      sensors = genericDAO.loadAll(Sensor.class);
       Assert.assertEquals(sensors.size(), 0);
    }
 }

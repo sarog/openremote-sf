@@ -29,6 +29,11 @@ import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.component.UISlider;
+import org.openremote.modeler.exception.BeehiveNotAvailableException;
+import org.openremote.modeler.exception.FileOperationException;
+import org.openremote.modeler.exception.IllegalRestUrlException;
+import org.openremote.modeler.exception.UIRestoreException;
+import org.openremote.modeler.exception.XmlExportException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -51,7 +56,7 @@ public interface UtilsRPCService extends RemoteService {
     * 
     * @return the string
     */
-   String exportFiles(long maxId, List<Panel> panelList);
+   String exportFiles(long maxId, List<Panel> panelList) throws XmlExportException,FileOperationException;
    
    /**
     * Beehive rest icon url.
@@ -67,15 +72,15 @@ public interface UtilsRPCService extends RemoteService {
     * 
     * @return the auto save response
     */
-   AutoSaveResponse autoSaveUiDesignerLayout(Collection<Panel> panels, long maxID);
+   AutoSaveResponse autoSaveUiDesignerLayout(Collection<Panel> panels, long maxID) throws BeehiveNotAvailableException,FileOperationException,IllegalRestUrlException;
    
-   AutoSaveResponse saveUiDesignerLayout(Collection<Panel> panels, long maxID);
+   AutoSaveResponse saveUiDesignerLayout(Collection<Panel> panels, long maxID) throws BeehiveNotAvailableException,FileOperationException,IllegalRestUrlException;
    
-   PanelsAndMaxOid restore();
+   PanelsAndMaxOid restore() throws UIRestoreException,BeehiveNotAvailableException;
    
    boolean canRestore();
    
-   Collection<Panel> loadPanelsFromSession();
+   Collection<Panel> loadPanelsFromSession() throws UIRestoreException,BeehiveNotAvailableException;
    
    List<Group> loadGroupsFromSession();
    

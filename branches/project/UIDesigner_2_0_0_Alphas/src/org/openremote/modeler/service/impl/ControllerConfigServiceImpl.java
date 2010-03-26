@@ -34,12 +34,13 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
    
    @SuppressWarnings("unchecked")
    @Override
-   public Set<ControllerConfig>listAllConfigByCategoryNameForAccouont(String categoryName,Account account) {
+   public Set<ControllerConfig>listAllConfigsByCategoryNameForAccount(String categoryName,Account account) {
       String hql = "select cfg from ControllerConfig cfg where cfg.category like ? and cfg.account.oid=?";
       Object[] args = new Object[]{categoryName,account.getOid()};
       List<ControllerConfig> configs = genericDAO.getHibernateTemplate().find(hql, args);
       Set<ControllerConfig> configSet = new LinkedHashSet<ControllerConfig>();
       configSet.addAll(configs);
+      configSet.removeAll(listAllexpiredConfigs());
       initializeConfigs(configSet);
       return configSet;
    }
@@ -71,21 +72,10 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       return configs;
    }
 
-   public void setUserService(UserService userService) {
-      this.userService = userService;
-   }
-
-   @SuppressWarnings("unchecked")
    @Override
-   public Set<ControllerConfig> listAllConfigByCategoryForCurrentAccount(String categoryName) {
-      String hql = "select cfg from ControllerConfig cfg where cfg.category =? and cfg.account.oid=?";
+   public Set<ControllerConfig> listAllConfigsByCategory(String categoryName) {
       Account account = userService.getAccount();
-      Object[] args = new Object[]{categoryName,account.getOid()};
-      List<ControllerConfig> configs = genericDAO.getHibernateTemplate().find(hql, args);
-      Set<ControllerConfig> configSet = new LinkedHashSet<ControllerConfig>();
-      configSet.addAll(configs);
-      initializeConfigs(configSet);
-      return configSet;
+      return this.listAllConfigsByCategoryNameForAccount(categoryName, account);
    }
 
    @SuppressWarnings("unchecked")
@@ -99,36 +89,66 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       return configSet;
    }
 
-   @SuppressWarnings("unchecked")
    @Override
-   public Set<ControllerConfig> listAllForCurrentAccount() {
-      String hql = "select cfg from ControllerConfig cfg where cfg.account.oid=?";
-      List<ControllerConfig> configs = genericDAO.getHibernateTemplate().find(hql, userService.getAccount().getOid());
-      Set<ControllerConfig> configSet = new LinkedHashSet<ControllerConfig>();
-      configSet.addAll(configs);
-      initializeConfigs(configSet);
-      return configSet;
+   public Set<ControllerConfig> listAllConfigs() {
+     Account account = userService.getAccount();
+     return listAllByAccount(account);
    }
 
    @Override
    public Set<ConfigCategory> listAllCategory() {
-      Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
-      Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
+      Set<ConfigCategory> categories = new LinkedHashSet<ConfigCategory>();
+      Set<ControllerConfig> allDefaultConfigs = new LinkedHashSet<ControllerConfig>();
       XmlParser.initControllerConfig(categories, allDefaultConfigs);
       return categories;
    }
-
-   /*@Override
-   public Collection<Config> updateAll(Collection<Config> configs) {
-     for(Config cfg : configs){
-        if(cfg.getAccount()==null){
-           cfg.setAccount(userService.getAccount());
-        }
-     }
-     genericDAO.getHibernateTemplate().saveOrUpdateAll(configs);
-      return configs;
-   }*/
+   @Override
+   public Set<ControllerConfig> listMissedConfigsByCategoryName(String categoryName) {
+      Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
+      Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
+      XmlParser.initControllerConfig(categories, allDefaultConfigs);
+      
+      Set<ControllerConfig> unMissedConfigs = this.listAllConfigsByCategory(categoryName);
+      Set<ControllerConfig> missedConfigs = new HashSet<ControllerConfig> ();
+      for (ControllerConfig cfg : allDefaultConfigs) {
+         if (cfg.getCategory().equals(categoryName) && !unMissedConfigs.contains(cfg)) {
+            missedConfigs.add(cfg);
+         }
+      }
+      return missedConfigs;
+   }
+   @Override
+   public Set<ControllerConfig> listAllMissingConfigs() {
+      Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
+      Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
+      XmlParser.initControllerConfig(categories, allDefaultConfigs);
+      
+      Set<ControllerConfig> unMissedConfigs = this.listAllConfigs();
+      Set<ControllerConfig> missedConfigs = new HashSet<ControllerConfig> ();
+      for (ControllerConfig cfg : allDefaultConfigs) {
+         if (!unMissedConfigs.contains(cfg)) {
+            missedConfigs.add(cfg);
+         }
+      }
+      return missedConfigs;
+   }
    
+   public Set<ControllerConfig> listAllexpiredConfigs() {
+      Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
+      XmlParser.initControllerConfig(new HashSet<ConfigCategory>(), allDefaultConfigs);
+      Set<ControllerConfig> allSavedConfigs = this.listAllConfigs();
+      Set<ControllerConfig> expiredConfigs = new HashSet<ControllerConfig>();
+      for (ControllerConfig config: allSavedConfigs) {
+         if (!allDefaultConfigs.contains(config)) {
+            expiredConfigs.add(config);
+         }
+      }
+      
+      return expiredConfigs;
+   }
+   public void setUserService(UserService userService) {
+      this.userService = userService;
+   }
    private static void initializeConfigs(Set<ControllerConfig> configs){
       Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
       Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();

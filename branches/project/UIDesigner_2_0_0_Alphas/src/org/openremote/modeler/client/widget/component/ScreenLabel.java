@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.component;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.widget.propertyform.LabelPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
@@ -28,18 +29,18 @@ import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.layout.CenterLayout;
 
 /**
- * The Class ScreenButton. It display as a style box, can be adjust size.
+ * Label on Screen.
+ * 
+ * @author Javen Zhang, Dan Cong
+ *
  */
 public class ScreenLabel extends ScreenComponent {
 
 
-   /** The btnTable center text. */
-   protected Text center = new Text("The text of the label");
-
+   protected Text center = new Text();
 
    private UILabel uiLabel = new UILabel();
 
-   
    public ScreenLabel(ScreenCanvas canvas, UILabel uiLabel) {
       super(canvas);
       this.uiLabel = uiLabel;
@@ -56,20 +57,22 @@ public class ScreenLabel extends ScreenComponent {
       setLayout(new CenterLayout());
       center.setStyleAttribute("textAlign", "center");
       center.setStyleAttribute("color", uiLabel.getColor());
-      center.setStyleAttribute("fontSize", uiLabel.getFontSize()+"");
+      center.setStyleAttribute("fontSize", uiLabel.getFontSize() + "px");
+      center.setStyleAttribute("fontFamily", Constants.DEFAULT_FONT_FAMILY);
       add(center);
       layout();
    }
 
-   public void setText(String text){
+   public void setText(String text) {
       uiLabel.setText(text);
       adjustTextLength();
    }
+
    @Override
    public void setName(String name) {
       return;
    }
-   
+
    public UILabel getUiLabel() {
       return uiLabel;
    }
@@ -77,21 +80,21 @@ public class ScreenLabel extends ScreenComponent {
    public void setUiLabel(UILabel uiLabel) {
       this.uiLabel = uiLabel;
    }
-   
-   public void setColor(String color){
+
+   public void setColor(String color) {
       uiLabel.setColor(color);
       center.setStyleAttribute("color", color);
    }
-   
-   public void setFontSize(int size){
+
+   public void setFontSize(int size) {
       uiLabel.setFontSize(size);
-      center.setStyleAttribute("fontSize", size+"");
+      center.setStyleAttribute("fontSize", size + "px");
    }
+
    @Override
    public String getName() {
       return uiLabel.getName();
    }
-
 
    @Override
    public PropertyForm getPropertiesForm() {

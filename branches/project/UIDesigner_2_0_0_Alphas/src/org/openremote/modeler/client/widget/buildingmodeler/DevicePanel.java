@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openremote.modeler.client.event.DoubleClickEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
 import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
@@ -42,9 +43,11 @@ import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -124,7 +127,12 @@ public class DevicePanel extends ContentPanel {
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
       add(treeContainer);
-      
+      tree.addListener(DoubleClickEvent.DOUBLECLICK, new Listener<DoubleClickEvent>() {
+         public void handleEvent(DoubleClickEvent be) {
+            editSelectedModel();
+         }
+         
+      });
    }
    
    /**
@@ -155,7 +163,7 @@ public class DevicePanel extends ContentPanel {
          public void handleEvent(MenuEvent be) {
             boolean enabled = false;
             BeanModel selectedBeanModel = tree.getSelectionModel().getSelectedItem();
-            if (selectedBeanModel != null && selectedBeanModel.getBean() instanceof Device) {
+            if (selectedBeanModel != null) {
                enabled = true;
             }
             newCommandMemuItem.setEnabled(enabled);
@@ -278,7 +286,7 @@ public class DevicePanel extends ContentPanel {
     * Creates the device command.
     */
    private void createDeviceCommand() {
-      final BeanModel deviceModel = tree.getSelectionModel().getSelectedItem();
+      final BeanModel deviceModel = getDeviceModel();
       if (deviceModel != null && deviceModel.getBean() instanceof Device) {
          final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow((Device) deviceModel.getBean());
          deviceCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
@@ -290,13 +298,27 @@ public class DevicePanel extends ContentPanel {
                deviceCommandWindow.hide();
             }
          });
-      } else {
-         MessageBox.info("Error", "Please select a device", null);
       }
    }
    
+   private BeanModel getDeviceModel() {
+      BeanModel selectedModel = tree.getSelectionModel().getSelectedItem();
+      if (selectedModel != null) {
+         Object obj = selectedModel.getBean();
+         if (obj instanceof Device) {
+            return selectedModel;
+         } else if (obj instanceof DeviceCommand || obj instanceof Sensor || obj instanceof Switch || obj instanceof Slider) {
+            selectedModel = tree.getStore().getParent(selectedModel);
+         } else if (obj instanceof UICommand) {
+            selectedModel = tree.getStore().getParent(tree.getStore().getParent(selectedModel));
+         }
+      } else {
+         MessageBox.info("Warn", "Please select a device", null);
+      }
+      return selectedModel;
+   }
    private void createSensor() {
-      final BeanModel deviceModel = tree.getSelectionModel().getSelectedItem();
+      final BeanModel deviceModel = getDeviceModel();
       if (deviceModel != null && deviceModel.getBean() instanceof Device) {
          final SensorWindow sensorWindow = new SensorWindow((Device) deviceModel.getBean());
          sensorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
@@ -308,13 +330,11 @@ public class DevicePanel extends ContentPanel {
                sensorWindow.hide();
             }
          });
-      } else {
-         MessageBox.info("Error", "Please select a device", null);
       }
    }
    
    private void createSlider() {
-      final BeanModel deviceModel = tree.getSelectionModel().getSelectedItem();
+      final BeanModel deviceModel = getDeviceModel();
       if (deviceModel != null && deviceModel.getBean() instanceof Device) {
          final SliderWindow sliderWindow = new SliderWindow(null,(Device) deviceModel.getBean());
          sliderWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
@@ -326,13 +346,11 @@ public class DevicePanel extends ContentPanel {
                sliderWindow.hide();
             }
          });
-      } else {
-         MessageBox.info("Error", "Please select a device", null);
       }
    }
    
    private void createSwitch() {
-      final BeanModel deviceModel = tree.getSelectionModel().getSelectedItem();
+      final BeanModel deviceModel = getDeviceModel();
       if (deviceModel != null && deviceModel.getBean() instanceof Device) {
          final SwitchWindow switchWindow = new SwitchWindow(null,(Device) deviceModel.getBean());
          switchWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
@@ -344,8 +362,6 @@ public class DevicePanel extends ContentPanel {
                switchWindow.hide();
             }
          });
-      } else {
-         MessageBox.info("Error", "Please select a device", null);
       }
    }
    /**
@@ -360,18 +376,7 @@ public class DevicePanel extends ContentPanel {
       editBtn.setIcon(icon.edit());
       editBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
-            BeanModel selectedModel = tree.getSelectionModel().getSelectedItem();
-            if (selectedModel != null && selectedModel.getBean() instanceof Device) {
-               editDevice(selectedModel);
-            } else if (selectedModel != null && selectedModel.getBean() instanceof DeviceCommand) {
-               editCommand(selectedModel);
-            } else if (selectedModel != null && selectedModel.getBean() instanceof Sensor){
-               editSensor(selectedModel);
-            } else if (selectedModel != null && selectedModel.getBean() instanceof Slider){
-               editSlider(selectedModel);
-            } else if (selectedModel != null && selectedModel.getBean() instanceof Switch){
-               editSwitch(selectedModel);
-            } 
+            editSelectedModel(); 
             
          }
       });
@@ -402,7 +407,12 @@ public class DevicePanel extends ContentPanel {
     * @param selectedModel the selected model
     */
    private void editCommand(BeanModel selectedModel) {
-      final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow((DeviceCommand) selectedModel.getBean());
+      DeviceCommand cmd = selectedModel.getBean();
+      if (cmd.getProtocol().getType().equalsIgnoreCase(Protocol.INFRARED_TYPE)) {
+         MessageBox.alert("Warn", "Infrared command can not be edited", null);
+         return;
+      }
+      final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(cmd);
       deviceCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
@@ -498,9 +508,11 @@ public class DevicePanel extends ContentPanel {
     * @param deviceModel the device model
     */
    private void deleteDevice(final BeanModel deviceModel) {
+      mask("Delete device...");
       DeviceBeanModelProxy.deleteDevice(deviceModel, new AsyncSuccessCallback<Void>() {
          @Override
          public void onSuccess(Void result) {
+            unmask();
             tree.getStore().remove(deviceModel);
             Info.display("Info", "Delete success.");
          }
@@ -591,7 +603,7 @@ public class DevicePanel extends ContentPanel {
     * Import ir command.
     */
    private void importIRCommand() {
-      final BeanModel deviceModel = tree.getSelectionModel().getSelectedItem();
+      final BeanModel deviceModel = getDeviceModel();
       if (deviceModel != null && deviceModel.getBean() instanceof Device) {
          final IRCommandImportWindow selectIRWindow = new IRCommandImportWindow(deviceModel);
          selectIRWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
@@ -605,8 +617,6 @@ public class DevicePanel extends ContentPanel {
                selectIRWindow.hide();
             }
          });
-      } else {
-         MessageBox.alert("Notice", "You must select a device first.", null);
       }
    }
    
@@ -697,6 +707,21 @@ public class DevicePanel extends ContentPanel {
 
    public void setTree(TreePanel<BeanModel> tree) {
       this.tree = tree;
+   }
+
+   private void editSelectedModel() {
+      BeanModel selectedModel = tree.getSelectionModel().getSelectedItem();
+      if (selectedModel != null && selectedModel.getBean() instanceof Device) {
+         editDevice(selectedModel);
+      } else if (selectedModel != null && selectedModel.getBean() instanceof DeviceCommand) {
+         editCommand(selectedModel);
+      } else if (selectedModel != null && selectedModel.getBean() instanceof Sensor){
+         editSensor(selectedModel);
+      } else if (selectedModel != null && selectedModel.getBean() instanceof Slider){
+         editSlider(selectedModel);
+      } else if (selectedModel != null && selectedModel.getBean() instanceof Switch){
+         editSwitch(selectedModel);
+      }
    }
    
 }

@@ -168,7 +168,10 @@ public class IRCommandImportForm extends CommonForm {
                importButton.setEnabled(false);
             }
             if (codeGrid != null) {
-               List<ModelData> modelDatas = codeGrid.getStore().getModels();
+               List<ModelData> modelDatas = codeGrid.getSelectionModel().getSelectedItems();
+               if (modelDatas.isEmpty()) {
+                  modelDatas = codeGrid.getStore().getModels();
+               }
                for (ModelData modelData : modelDatas) {
                   modelData.set("sectionId", sectionId);
                }

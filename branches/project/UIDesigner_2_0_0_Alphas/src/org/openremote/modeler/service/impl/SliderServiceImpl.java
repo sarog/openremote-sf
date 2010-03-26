@@ -26,8 +26,8 @@ import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SliderService;
 
-public class SliderServiceImpl extends BaseAbstractService<Slider>implements SliderService {
-   
+public class SliderServiceImpl extends BaseAbstractService<Slider> implements SliderService {
+
    @Override
    public void delete(long id) {
       Slider slider = super.loadById(id);
@@ -50,16 +50,18 @@ public class SliderServiceImpl extends BaseAbstractService<Slider>implements Sli
    @Override
    public Slider update(Slider slider) {
       Slider oldSlider = genericDAO.loadById(Slider.class, slider.getOid());
-      genericDAO.delete(oldSlider.getSliderSensorRef());
-      genericDAO.delete(oldSlider.getSetValueCmd());
+      if (oldSlider.getSliderSensorRef() != null) {
+         genericDAO.delete(oldSlider.getSliderSensorRef());
+         if (slider.getSliderSensorRef().getOid() != oldSlider.getSliderSensorRef().getOid()) {
+            slider.getSliderSensorRef().setSlider(oldSlider);
+            oldSlider.setSliderSensorRef(slider.getSliderSensorRef());
+         }
+      }
       oldSlider.setName(slider.getName());
-      if(slider.getSetValueCmd().getOid()!=oldSlider.getSetValueCmd().getOid()){
+      if (slider.getSetValueCmd().getOid() != oldSlider.getSetValueCmd().getOid()) {
+         genericDAO.delete(oldSlider.getSetValueCmd());
          slider.getSetValueCmd().setSlider(oldSlider);
          oldSlider.setSetValueCmd(slider.getSetValueCmd());
-      }
-      if(slider.getSliderSensorRef().getOid()!=oldSlider.getSliderSensorRef().getOid()){
-         slider.getSliderSensorRef().setSlider(oldSlider);
-         oldSlider.setSliderSensorRef(slider.getSliderSensorRef());
       }
       return oldSlider;
    }

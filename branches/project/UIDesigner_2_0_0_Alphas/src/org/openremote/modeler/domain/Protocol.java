@@ -41,6 +41,8 @@ import javax.persistence.Table;
 public class Protocol extends BusinessEntity {
    
    private static final long serialVersionUID = 4999701342536209123L;
+   
+   public static final String INFRARED_TYPE = "Infrared";
 
    /** The type. */
    private String type;

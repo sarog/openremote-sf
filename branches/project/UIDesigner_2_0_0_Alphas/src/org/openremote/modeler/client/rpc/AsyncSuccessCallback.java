@@ -19,6 +19,9 @@
 */
 package org.openremote.modeler.client.rpc;
 
+import org.openremote.modeler.exception.BeehiveNotAvailableException;
+
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -32,13 +35,20 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public abstract class AsyncSuccessCallback<T> implements AsyncCallback<T> {
 
    /**
-    * On failure.
+    * Because If the beehive is not available, this exception will be thrown many times because of initializing template
+    * list, downloading user resources etc.  That means there will be a lot of alert windows show to user. Therefore,
+    * we can replace most of alert information with silent "Info". If you want to let user know what the error
+    * information is, you can just override this method in its subclass.
     * 
     * @param caught the caught
     * 
     * @see com.google.gwt.user.client.rpc.AsyncCallback#onFailure(java.lang.Throwable)
     */
    public void onFailure(Throwable caught) {
+      if (caught instanceof BeehiveNotAvailableException) {
+         Info.display("ERROR", "Beehive is not available right now! ");
+         return ;
+      }
       MessageBox.alert("ERROR", caught.getLocalizedMessage(), null);
    }
 

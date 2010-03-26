@@ -46,7 +46,7 @@ public class PropertyForm extends FormPanel {
       setHeaderVisible(false);
       setBorders(false);
       setBodyBorder(false);
-      setPadding(0);
+      setPadding(2);
       setLabelWidth(60);
       setFieldWidth(100);
       setScrollMode(Scroll.AUTO);

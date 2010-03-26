@@ -29,10 +29,15 @@
     }
     .login_submit{
         width:70px;
-        margin-left: 70px;
+        margin-left: 80px;
     }
     .copyright{
         text-align: center;
+    }
+    p.title {
+    	text-align: center; 
+    	font-weight: bold; 
+    	font-size: 13px;
     }
     p.fail{
         color:red;
@@ -61,6 +66,10 @@
 		color:#225E8A;
 		text-decoration:none;
 	}
+	.incorrect {
+		color:red;
+		text-align: left;
+	}
 </style>
 </head>
 <body>
@@ -70,6 +79,8 @@
 		<div class="inner-boundary">
 		  <div class="inner-border">
             <a href="http://www.openremote.org" ><img src="image/global.logo.png" /></a>
+            <p class="title">Login to OpenRemote Boss 2.0 Online</p>
+            
             <c:if test="${isActivated ne null and isActivated}">
                 <p class="pass"><b>${username}</b> has been activated, please login.</p>
             </c:if>
@@ -81,13 +92,12 @@
                  please check it out to finish your registration.</p>
             </c:if>
             <div style="padding-left:110px">
-	            <h3>Login to OpenRemote Boss 2.0 Online</h3>
 	            <p class="input"><b class="form_label">Username</b>
 	            <input id="username" style="width:150px" type="text" name="j_username" value="${username}"></p>
 	            <p class="input"><b class="form_label">Password</b>
 	            <input id="password" style="width:150px" type="password" name="j_password" value=""></p>
                 <c:if test="${param.fail ne null }">
-	                <p class="fail">The username or password you entered is incorrect.</p>
+	                <p class="incorrect">The username or password you entered is incorrect.</p>
                 </c:if>
                 <p>
                 	<input id="rememberme" type="checkbox" name="_spring_security_remember_me"><label for="rememberme">Remember Me</label>

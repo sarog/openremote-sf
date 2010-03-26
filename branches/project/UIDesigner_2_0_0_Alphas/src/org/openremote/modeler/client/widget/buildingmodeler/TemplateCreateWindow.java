@@ -31,9 +31,6 @@ import org.openremote.modeler.domain.Template;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
-import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.FieldEvent;
-import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.Info;
@@ -41,8 +38,10 @@ import com.extjs.gxt.ui.client.widget.ListView;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
+import com.extjs.gxt.ui.client.widget.form.LabelField;
 import com.extjs.gxt.ui.client.widget.form.Radio;
 import com.extjs.gxt.ui.client.widget.form.RadioGroup;
+import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 
 /**
@@ -60,12 +59,21 @@ public class TemplateCreateWindow extends FormWindow
    private ListView<BeanModel> screenList = new ListView<BeanModel>();
 
    private TextField<String> templateName = new TextField<String>();
+//   private TextField<String> templateModel = new TextField<String> ();
+//   private TextField<String> templateType = new TextField<String> ();
+//   private TextField<String> templateVendor = new TextField<String> ();
+   private TextArea templateKeywords = new TextArea();
    
-   private long shareInfo = Template.PRIVATE;
+   private Radio notShare = new Radio();
+   private Radio share = new Radio();
+   
+   
+   
+   private Template template = null;
    
    public TemplateCreateWindow(){
       setPlain(true);  
-      setSize(350, 300);  
+      setSize(350, 450);  
       setHeading("New Template");
       setBodyBorder(true);
       createField();
@@ -73,12 +81,44 @@ public class TemplateCreateWindow extends FormWindow
       show();
    }
    
+   public TemplateCreateWindow(Template template) {
+      this.template = template;
+      setPlain(true);  
+      setSize(350, 450); 
+      setHeading("Edit Template");
+      setBodyBorder(true);
+      createField();
+      initScreenList();
+      show();
+   }
+   
    private void createField(){
-      templateName = new TextField<String>();
       templateName.setName(TEMPLATE_NAME_FIELD);
       templateName.setFieldLabel("Name");
       templateName.setAllowBlank(false);
       templateName.setValidateOnBlur(true);
+      if (template != null) {
+         templateName.setValue(template.getName());
+      }
+      
+//      templateModel.setName(TEMPLATE_NAME_FIELD);
+//      templateModel.setFieldLabel("Model");
+//      
+//      templateType.setName(TEMPLATE_NAME_FIELD);
+//      templateType.setFieldLabel("Type");
+//      
+//      templateVendor.setName(TEMPLATE_NAME_FIELD);
+//      templateVendor.setFieldLabel("Vendor");
+      
+      LabelField keywordsLabel = new LabelField();
+      keywordsLabel.setText("Keywords(split with \",\"):");
+      keywordsLabel.setHideLabel(true);
+      templateKeywords.setName(TEMPLATE_NAME_FIELD);
+      templateKeywords.setLabelSeparator("");
+      if(template!=null ) {
+         templateKeywords.setValue(template.getKeywords());
+      }
+//      templateKeywords.setHideLabel(true);
       
       form.setBorders(false);  
       form.setBodyBorder(false);  
@@ -94,9 +134,15 @@ public class TemplateCreateWindow extends FormWindow
       cancleBtn.addSelectionListener(new CancleListener());
       
       form.add(templateName);
-      form.add(createShareView());
+//      form.add(templateModel);
+//      form.add(templateType);
+//      form.add(templateVendor);
+      form.add(keywordsLabel);
+      form.add(templateKeywords);
       form.addButton(submitBtn);
       form.addButton(cancleBtn);
+      
+      form.add(this.createShareView());
       add(form);
       
    }
@@ -104,10 +150,15 @@ public class TemplateCreateWindow extends FormWindow
    private void initScreenList() {
       ListStore<BeanModel> store = new ListStore<BeanModel>();
       store.add(BeanModelDataBase.screenTable.loadAll());
+      
       screenList.setStore(store);
       screenList.setDisplayProperty("displayName");
       screenList.setHeight(100);
       screenList.setStyleAttribute("overflow", "auto");
+      if (template != null && template.getScreen() != null) {
+         store.add(template.getScreen().getBeanModel());
+         screenList.getSelectionModel().select(template.getScreen().getBeanModel(), true);
+      }
       FieldSet screenListGroup = new FieldSet();
       // overflow-auto style is for IE hack.
       screenListGroup.addStyleName("overflow-auto");
@@ -118,73 +169,118 @@ public class TemplateCreateWindow extends FormWindow
 
    private RadioGroup createShareView(){
       RadioGroup shareRadioGroup = new RadioGroup();
+      notShare.setName("Private");
+      notShare.setBoxLabel("Private");
+      notShare.setValue(true);
+      share.setName("Public");
+      share.setBoxLabel("Public");
       
-      Radio shareNoneRadio = new Radio();
-      shareNoneRadio.setName("Private");
-      shareNoneRadio.setBoxLabel("Private");
-      shareNoneRadio.setValue(true);
-      shareNoneRadio.addListener(Events.Change, new Listener<FieldEvent>(){
-
-         @Override
-         public void handleEvent(FieldEvent be) {
-            Boolean noShare = (Boolean) be.getValue();
-            if(noShare) {
-               shareInfo = Template.PRIVATE;
-            } else {
-               shareInfo = Template.PUBLIC;
-            }
-            
-         }
-         
-      });
-      
-      Radio shareToAllRadio = new Radio();
-      shareToAllRadio.setName("Public");
-      shareToAllRadio.setBoxLabel("Public");
-      
-      shareRadioGroup.add(shareNoneRadio);
-      shareRadioGroup.add(shareToAllRadio);
+      if(template != null) {
+         notShare.setValue(!template.isShared());
+         share.setValue(template.isShared());
+      }
+      shareRadioGroup.add(notShare);
+      shareRadioGroup.add(share);
       shareRadioGroup.setFieldLabel("Share to");
       
       return shareRadioGroup;
    }
+   
+   private void assembleTemplate(Template template) {
+      boolean shared = share.getValue();
+      template.setShared(shared);
+      
+      /*String model = templateModel.getValue();
+      if (model != null && model.trim().length() > 0) {
+         template.setModel(model);
+      }
+      String type = templateType.getValue();
+      if (type !=null && type.trim().length() >0 ) {
+         template.setType(type);
+      }
+      String vendor = templateVendor.getValue();
+      if (vendor != null && vendor.trim().length() >0 ) {
+         template.setVendor(vendor);
+      }*/
+      
+      String keywords = templateKeywords.getValue();
+      if (keywords != null && keywords.trim().length() >0 ) {
+         template.setKeywords(keywords);
+      }
+//      template.setShared(isShared);
+   }
+   
+   private void submitToCreateTemplate() {
+      if(templateName.getValue()==null || templateName.getValue().trim().length()==0){
+         return;
+      }
+      List<BeanModel> screenBeanModels = screenList.getSelectionModel().getSelectedItems();
+      if (screenBeanModels == null || screenBeanModels.size() != 1) {
+         MessageBox.alert("Error", "One (and only one) screen must be selected", null);
+         return;
+      }
+      Screen screen = screenBeanModels.get(0).getBean();
+      Template template = new Template(templateName.getValue(), screen);
+      assembleTemplate(template);
+      TemplateProxy.saveTemplate(template, new AsyncSuccessCallback<Template>() {
+
+         @Override
+         public void onSuccess(Template result) {
+            Info.display("Success", "Template is saved successfully:(id: " + result.getOid()+")");
+            TemplateCreateWindow.this.unmask();
+            result.getBeanModel().set("id", result.getOid());
+            fireEvent(SubmitEvent.SUBMIT,new SubmitEvent(result));
+            hide();
+         }
+
+         @Override
+         public void onFailure(Throwable caught) {
+            MessageBox.alert("Error","Beehive database not available at the moment. Error message: " + caught.getLocalizedMessage(),null);
+            TemplateCreateWindow.this.unmask();
+         }
+         
+         
+      });
+      TemplateCreateWindow.this.mask("The template is being created... ");
+   }
+   
+   private void submitToEditTemplate() {
+      if(templateName.getValue()==null || templateName.getValue().trim().length()==0){
+         return;
+      }
+      assembleTemplate(template);
+      template.setName(templateName.getValue());
+      TemplateProxy.updateTemplate(template, new AsyncSuccessCallback<Template>() {
+
+         @Override
+         public void onSuccess(Template result) {
+            Info.display("Success", "Template is updated successfully:(id: " + result.getOid()+")");
+            TemplateCreateWindow.this.unmask();
+            fireEvent(SubmitEvent.SUBMIT,new SubmitEvent(result));
+            hide();
+         }
+
+         @Override
+         public void onFailure(Throwable caught) {
+            MessageBox.alert("Error","Beehive not available at the moment. Error message: " + caught.getLocalizedMessage(),null);
+            TemplateCreateWindow.this.unmask();
+         }
+         
+         
+      });
+      TemplateCreateWindow.this.mask("The template is being created... ");
+   }
+   
    class SubmitListener extends SelectionListener<ButtonEvent> {
 
       @Override
       public void componentSelected(ButtonEvent ce) {
-         if(templateName.getValue()==null || templateName.getValue().trim().length()==0){
-            return;
+         if (template == null) {
+            submitToCreateTemplate();
+         } else {
+            submitToEditTemplate();
          }
-         List<BeanModel> screenBeanModels = screenList.getSelectionModel().getSelectedItems();
-         if (screenBeanModels == null || screenBeanModels.size() != 1) {
-            MessageBox.alert("Error", "One (and only one) screen must be selected", null);
-            return;
-         }
-         Screen screen = screenBeanModels.get(0).getBean();
-         Template template = new Template(templateName.getValue(), screen);
-         template.setShareTo(shareInfo);
-         TemplateProxy.saveTemplate(template, new AsyncSuccessCallback<Template>() {
-
-            @Override
-            public void onSuccess(Template result) {
-               Info.display("Success", "Template saved successfully:(id,name)(" + result.getOid()+","+result.getName()+")");
-               TemplateCreateWindow.this.unmask();
-               result.getBeanModel().set("id", result.getOid());
-               fireEvent(SubmitEvent.SUBMIT,new SubmitEvent(result));
-               hide();
-            }
-
-            @Override
-            public void onFailure(Throwable caught) {
-               MessageBox.alert("error","Beehive database not available at the moment.",null);
-               TemplateCreateWindow.this.unmask();
-            }
-            
-            
-         });
-         TemplateCreateWindow.this.mask("The template is being created... ");
       }
-
    }
 
    class CancleListener extends SelectionListener<ButtonEvent> {

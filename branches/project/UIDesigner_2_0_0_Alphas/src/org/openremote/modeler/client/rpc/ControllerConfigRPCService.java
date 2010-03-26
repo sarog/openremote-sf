@@ -24,20 +24,14 @@ import java.util.Set;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.ControllerConfig;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-/**
- * 
- * @author javen
- *
- */
-public interface ControllerConfigPRCServiceAsync {
-   public void saveAll(Set<ControllerConfig> configs,AsyncCallback<Set<ControllerConfig>>callback);
-   
-   public void getConfigsByCategoryForCurrentAccount(String categoryName,AsyncCallback<Set<ControllerConfig>>callback);
-   
-   public void getConfigsByCategory(String categoryName,Account accouont,AsyncCallback<Set<ControllerConfig>>callback);
-   
-   public void update(ControllerConfig config,AsyncCallback<ControllerConfig> callback);
-   
-//   public void getCategories(AsyncCallback<Set<ConfigCategory>> callback);
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+@RemoteServiceRelativePath("controllerConfig.smvc")
+public interface ControllerConfigRPCService extends RemoteService{
+   public Set<ControllerConfig> saveAll(Set<ControllerConfig> cfgs);
+   public Set<ControllerConfig> getConfigsByCategoryForCurrentAccount(String categoryName);
+   public Set<ControllerConfig> getConfigsByCategory(String categoryName,Account account);
+   public ControllerConfig update(ControllerConfig config);
+   public Set<ControllerConfig> listAllMissedConfigsByCategoryName(String categoryName);
+//   public Set<ConfigCategory> getCategories(); 
 }
