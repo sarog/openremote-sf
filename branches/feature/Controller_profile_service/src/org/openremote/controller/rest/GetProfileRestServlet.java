@@ -42,7 +42,7 @@ public class GetProfileRestServlet extends HttpServlet {
             out.flush();
             out.close();
          } catch (NoSuchPanelException e) {
-            logger.error("failed to extract panel.xml for panel : " + e.getLocalizedMessage(), e);
+            logger.error("failed to extract panel.xml for panel : " + e.getLocalizedMessage());
             response.sendError(e.getErrorCode(),e.getMessage());
          }
       } else {
