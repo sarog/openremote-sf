@@ -52,7 +52,7 @@ public interface DeviceCommandRPCServiceAsync {
     * @param deviceCommand the device command
     * @param callback the callback
     */
-   void update(DeviceCommand deviceCommand, AsyncCallback<Void> callback);
+   void update(DeviceCommand deviceCommand, AsyncCallback<DeviceCommand> callback);
    
    /**
     * Load by id.

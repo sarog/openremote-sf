@@ -93,8 +93,13 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#update(org.openremote.modeler.domain.DeviceCommand)
     */
-   public void update(DeviceCommand deviceCommand) {
-      genericDAO.saveOrUpdate(deviceCommand);
+   public DeviceCommand update(DeviceCommand deviceCommand) {
+      DeviceCommand old = loadById(deviceCommand.getOid());
+      genericDAO.delete(old.getProtocol());
+      old.setName(deviceCommand.getName());
+      old.setProtocol(deviceCommand.getProtocol());
+//      genericDAO.saveOrUpdate(deviceCommand);
+      return old;
 
    }
 

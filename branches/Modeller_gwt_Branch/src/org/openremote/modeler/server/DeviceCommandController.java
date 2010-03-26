@@ -79,8 +79,8 @@ public class DeviceCommandController extends BaseGWTSpringControllerWithHibernat
     * 
     * @see org.openremote.modeler.client.rpc.DeviceCommandRPCService#update(org.openremote.modeler.domain.DeviceCommand)
     */
-   public void update(DeviceCommand deviceCommand) {
-      deviceCommandService.update(deviceCommand);
+   public DeviceCommand update(DeviceCommand deviceCommand) {
+      return deviceCommandService.update(deviceCommand);
    }
 
    /**
