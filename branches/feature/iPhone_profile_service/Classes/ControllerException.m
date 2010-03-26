@@ -62,7 +62,12 @@
 				errorMessage = @"Invalid panel.xml.";
 				break;
 			case NO_SUCH_PANEL://428
-				errorMessage = [NSString stringWithFormat:@"Current panel identity ‘%@’ isn't available. Please rechoose in Settings.", [AppSettingsDefinition getCurrentPanelIdentity]];
+				if ([@"None" isEqualToString:[AppSettingsDefinition getCurrentPanelIdentity]]) {
+					errorMessage = @"You haven't chosen panel identity in Setting";
+				} else {
+					errorMessage = [NSString stringWithFormat:@"Current panel identity ‘%@’ isn't available. Please rechoose in Settings.", 
+														[AppSettingsDefinition getCurrentPanelIdentity]];
+				}				
 				break;
 			case INVALID_ELEMENT://429
 				errorMessage = @"Invalid XML element.";
