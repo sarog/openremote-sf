@@ -26,6 +26,7 @@ import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.component.ComponentFactory;
 import org.openremote.controller.component.control.Control;
+import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.ControlCommandService;
 import org.openremote.controller.utils.MacrosIrDelayUtil;
@@ -51,7 +52,11 @@ public class ControlCommandServiceImpl implements ControlCommandService {
       List<ExecutableCommand> executableCommands = control.getExecutableCommands();
       MacrosIrDelayUtil.ensureDelayForIrCommand(executableCommands);
       for (ExecutableCommand executableCommand : executableCommands) {
-         executableCommand.send();
+         if (executableCommand != null) {
+            executableCommand.send();
+         } else {
+            throw new NoSuchCommandException("ExecutableCommand is null");
+         }
       }
       
    }

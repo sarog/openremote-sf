@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.exception.ControlCommandException;
+import org.openremote.controller.exception.NoSuchPanelException;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -26,7 +26,6 @@ public class GetProfileRestServlet extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	   logger.info("user want to get all the panels.....");
       PrintWriter out = response.getWriter();
       String url = request.getRequestURL().toString().trim();
       String regexp = "rest\\/panel\\/(.*)";
@@ -36,13 +35,14 @@ public class GetProfileRestServlet extends HttpServlet {
       if(matcher.find()){
          try{
             String panelName = matcher.group(1);
-            panelName =  URLDecoder.decode(panelName,"UTF-8");
-            String panleXML = profileService.getProfileByPanelName(panelName);
+            String decodedPanelName = panelName;
+            decodedPanelName = URLDecoder.decode(panelName, "UTF-8");
+            String panleXML = profileService.getProfileByPanelName(decodedPanelName);
             out.print(panleXML);
             out.flush();
             out.close();
-         } catch(ControlCommandException e){
-            logger.error("failed to get all the panels : " + e.getLocalizedMessage(),e);
+         } catch (NoSuchPanelException e) {
+            logger.error("failed to extract panel.xml for panel : " + e.getLocalizedMessage(), e);
             response.sendError(e.getErrorCode(),e.getMessage());
          }
       } else {

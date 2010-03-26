@@ -43,6 +43,7 @@ import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.PathUtil;
 
 /**
+ * Polling status from devices by sensor status command. 
  * 
  * @author Handy.Wang 2010-03-17
  *
@@ -73,13 +74,17 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
          return;
       }
       
-      for (Element sensorElement : sensorElements) {
-        String sensorID = sensorElement.getAttributeValue("id");
-        Sensor sensor = new Sensor(Integer.parseInt(sensorID), sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME), getStatusCommand(document, sensorID));
-        sensors.add(sensor);
-        controllerXMLListenSharingData.addSensor(sensor);
-        statusCacheService.saveOrUpdateStatus(Integer.parseInt(sensorID), "noStatus");
+      if (sensorElements != null) {
+         for (Element sensorElement : sensorElements) {
+            String sensorID = sensorElement.getAttributeValue("id");
+            Sensor sensor = new Sensor(Integer.parseInt(sensorID), sensorElement
+                  .getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME), getStatusCommand(document, sensorID));
+            sensors.add(sensor);
+            controllerXMLListenSharingData.addSensor(sensor);
+            statusCacheService.saveOrUpdateStatus(Integer.parseInt(sensorID), "noStatus");
+         }
       }
+      
    }
 
    /**
@@ -104,8 +109,7 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
          StringBuffer fileContent = new StringBuffer(FileUtils.readFileToString(controllerXMLFile, "utf-8"));
          controllerXMLListenSharingData.setControllerXMLFileContent(fileContent);
       } catch (IOException ioe) {
-         logger.error("Read the content of controller.xml error while restoring controller.xml.", ioe);
-         ioe.printStackTrace();
+         logger.warn("Skipped controller.xml change check, Failed to read " + controllerXMLFile.getAbsolutePath());
       }
    }
    
@@ -147,7 +151,7 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
       try {
          Thread.sleep(sec);
       } catch (InterruptedException e) {
-         e.printStackTrace();
+         logger.error("Failed to sleep");
       }
    }
 

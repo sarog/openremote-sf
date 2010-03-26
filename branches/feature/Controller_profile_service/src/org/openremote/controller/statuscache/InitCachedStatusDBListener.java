@@ -25,7 +25,9 @@ import java.util.List;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.apache.log4j.Logger;
 import org.openremote.controller.component.Sensor;
+import org.openremote.controller.exception.ControllerException;
 import org.openremote.controller.service.PollingMachinesService;
 import org.openremote.controller.spring.SpringContext;
 import org.springframework.context.support.ApplicationObjectSupport;
@@ -39,14 +41,24 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
 
    private PollingMachinesService pollingMachinesService = (PollingMachinesService)SpringContext.getInstance().getBean("pollingMachinesService");
    
+   private Logger logger = Logger.getLogger(this.getClass().getName());
+   
    /* (non-Javadoc)
     * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
     */
    @Override
    public void contextInitialized(ServletContextEvent event) {
       List<Sensor> sensors = new ArrayList<Sensor>();
-      pollingMachinesService.initStatusCacheWithControllerXML(null, sensors);
-      pollingMachinesService.startPollingMachineMultiThread(sensors);
+      try {
+         pollingMachinesService.initStatusCacheWithControllerXML(null, sensors);
+      } catch (ControllerException e) {
+         logger.error("Failed to init statusCache with controller.xml ." + e.getMessage());
+      }
+      try {
+         pollingMachinesService.startPollingMachineMultiThread(sensors);
+      } catch (ControllerException e) {
+         logger.error("Failed to start polling multiThread ." + e.getMessage());
+      }
    }
    
    /* (non-Javadoc)

@@ -45,7 +45,7 @@ $(document).ready(function() {
     	} else if (result == 'n/a') {
     		error("can't connect to Beehive.");
     	} else if (result == 'missing') {
-    		error("openremote.zip not found.");
+    		error("openremote.zip not found in account, please edit UI and save.");
 		} else {
 			error("sync failed!");
 		}

@@ -22,8 +22,11 @@ package org.openremote.controller.service.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -49,6 +52,7 @@ public class ProfileServiceImpl implements ProfileService {
 
    private static final String TABBAR_ELEMENT_NAME = "tabbar";
    private Configuration configuration;
+   private static Logger log = Logger.getLogger(ProfileServiceImpl.class);
 
    @Override
    public String getProfileByPanelID(String panelID) {
@@ -116,7 +120,7 @@ public class ProfileServiceImpl implements ProfileService {
 
    @SuppressWarnings("unchecked")
    private Document getProfileDocumentByPanelID(String xmlPath, String panelID) {
-
+      
       Document doc = buildXML(xmlPath);
       Element root = (Element) doc.getRootElement();
       Element newRoot = new Element(root.getName());
@@ -156,6 +160,8 @@ public class ProfileServiceImpl implements ProfileService {
 
    @SuppressWarnings("unchecked")
    private Document getProfileDocumentByPanelName(String xmlPath, String name) {
+  
+      
       Document doc = buildXML(xmlPath);
       Element root = (Element) doc.getRootElement();
       Element newRoot = new Element(root.getName());
@@ -231,7 +237,7 @@ public class ProfileServiceImpl implements ProfileService {
 
    private void setNamespace(Element root, Element newRoot, Element... elements) {
       Namespace ns1 = Namespace.getNamespace("xsi", "htt//www.w3.org/2001/XMLSchema-instance");
-      Namespace ns2 = Namespace.getNamespace("schemaLocation", "htt//www.openremote.org ihpone.xsd");
+      Namespace ns2 = Namespace.getNamespace("schemaLocation", "htt//www.openremote.org panel.xsd");
       newRoot.setNamespace(root.getNamespace());
       newRoot.addNamespaceDeclaration(ns1);
       newRoot.addNamespaceDeclaration(ns2);
@@ -286,6 +292,7 @@ public class ProfileServiceImpl implements ProfileService {
 
    private Element queryElementFromXML(String xmlPath, String xPath) {
       Document doc = buildXML(xmlPath);
+      log.info("xPath = " + xPath);
       List<Element> results = queryElementFromDocument(doc, xPath);
       return results.size() > 0 ? results.get(0) : null;
    }

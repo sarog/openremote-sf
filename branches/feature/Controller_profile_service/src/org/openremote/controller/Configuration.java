@@ -148,7 +148,8 @@ public class Configuration extends CustomConfiguration {
    }
 
    public String getResourcePath() {
-      return preferAttrCustomValue(RESOURCE_PATH, resourcePath);
+//      return preferAttrCustomValue(RESOURCE_PATH, resourcePath);
+      return resourcePath;
    }
 
    public void setResourcePath(String resourcePath) {

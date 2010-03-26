@@ -40,6 +40,7 @@ import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.PathUtil;
 
 /**
+ * Controller.xml monitoring service.
  * 
  * @author handy.wang 2010-03-19
  *
@@ -56,18 +57,19 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
    
    public boolean isControllerXMLContentChanged() {
       //if changed, save the latest controller.xml.
-      String controllerXMLPath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML().getResourcePath()) + Constants.CONTROLLER_XML;
+      String controllerXMLPath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML()
+            .getResourcePath()) + Constants.CONTROLLER_XML;
       File controllerXMLFile = new File(controllerXMLPath);
       StringBuffer fileContent = new StringBuffer();
       String oldControllerXMLFileContent = controllerXMLListenSharingData.getControllerXMLFileContent();
       try {
          fileContent.append(FileUtils.readFileToString(controllerXMLFile, "utf-8"));
       } catch (IOException ioe) {
-         logger.error("Read the content of controller.xml error while restoring controller.xml.", ioe);
-         ioe.printStackTrace();
+         logger.warn("Skipped controller.xml change check, Failed to read " + controllerXMLFile.getAbsolutePath());
          return false;
       }
-      if (oldControllerXMLFileContent == null || "".equals(oldControllerXMLFileContent) || "".equals(fileContent.toString()) || oldControllerXMLFileContent.equals(fileContent.toString())) {
+      if (oldControllerXMLFileContent == null || "".equals(oldControllerXMLFileContent)
+            || "".equals(fileContent.toString()) || oldControllerXMLFileContent.equals(fileContent.toString())) {
          return false;
       }
       controllerXMLListenSharingData.setControllerXMLFileContent(fileContent);
@@ -120,7 +122,7 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
    @SuppressWarnings("unchecked")
    private void clearAndReloadSensors() {
       controllerXMLListenSharingData.getSensors().clear();
-      
+
       // follings are re-parse sensors and it's included statuscommand.
       Element sensorsElement = remoteActionXMLParser.queryElementFromXMLByName(Constants.SENSORS_ELEMENT_NAME);
       List<Element> sensorElements = sensorsElement.getChildren();
@@ -128,13 +130,13 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
          Sensor sensor = new Sensor();
          sensor.setSensorID(Integer.parseInt(sensorElement.getAttributeValue(Constants.ID_ATTRIBUTE_NAME)));
          sensor.setSensorType(sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME));
-         
+
          Element includeElement = sensorElement.getChild(Constants.INCLUDE_ELEMENT_NAME, sensorElement.getNamespace());
          String statusCommandID = includeElement.getAttributeValue(Constants.REF_ATTRIBUTE_NAME);
          Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(statusCommandID);
-         StatusCommand statusCommand = (StatusCommand)commandFactory.getCommand(statusCommandElement);
+         StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
          sensor.setStatusCommand(statusCommand);
-         
+
          controllerXMLListenSharingData.addSensor(sensor);
       }
    }
@@ -146,7 +148,7 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
          nap(3);
       }
    }
-   
+
    public void setControllerXMLListenSharingData(ControllerXMLListenSharingData controllerXMLListenSharingData) {
       this.controllerXMLListenSharingData = controllerXMLListenSharingData;
    }

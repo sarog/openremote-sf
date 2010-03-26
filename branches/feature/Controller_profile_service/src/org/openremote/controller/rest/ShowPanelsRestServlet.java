@@ -51,7 +51,6 @@ public class ShowPanelsRestServlet extends HttpServlet {
    }
 
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-      logger.info("user want to get all the panels.....");
       PrintWriter out = response.getWriter();
       String url = request.getRequestURL().toString();
       String regexp = "rest\\/panels";
