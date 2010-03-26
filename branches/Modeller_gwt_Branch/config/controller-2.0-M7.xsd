@@ -179,7 +179,7 @@
 	        </xsd:sequence>
 				<xsd:attribute name="id" type="idType" use="required" />
 				<xsd:attribute name="protocol" type="xsd:string" use="required"/>
-				<xsd:attribute name="value" type="xsd:string" use="required"/>
+				<!--  xsd:attribute name="value" type="xsd:string" use="required"/>-->
 		</xsd:complexType>
 	</xsd:element>
 
