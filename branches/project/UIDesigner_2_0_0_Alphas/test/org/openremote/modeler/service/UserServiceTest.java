@@ -40,7 +40,7 @@ public class UserServiceTest {
    private UserService userService = (UserService) SpringTestContext.getInstance().getBean("userService");
    private GenericDAO genericDAO = (GenericDAO) SpringTestContext.getInstance().getBean("genericDAO");
    
-   public static String TEST_EMAIL = "dan.cong@finalist.hk";
+   public static final String TEST_EMAIL = "openremote@163.com";
    
    @Test
    public void initRoles() {
@@ -63,6 +63,7 @@ public class UserServiceTest {
       user.setOid(11111);
       user.setUsername("dan.cong");
       user.setPassword("finalist");
+      user.setRawPassword("finalist");
       user.setEmail(TEST_EMAIL);
       Assert.assertTrue(userService.sendRegisterActivationEmail(user));
    }
@@ -115,10 +116,7 @@ public class UserServiceTest {
    
    @Test
    public void createAccountSuccessfully() {
-      Assert.assertTrue(userService.createUserAccount("dan", "cong", TEST_EMAIL, "role_bm"));
-      User u = userService.getUserById(1L);
-      Assert.assertEquals("dan", u.getUsername());
-      Assert.assertEquals(new Md5PasswordEncoder().encodePassword("cong", "dan"), u.getPassword());
+      Assert.assertTrue(userService.createUserAccount("dan.cong", "finalist", TEST_EMAIL, "role_bm,role_ud"));
    }
    
    @Test(dependsOnMethods = { "createAccountSuccessfully" })

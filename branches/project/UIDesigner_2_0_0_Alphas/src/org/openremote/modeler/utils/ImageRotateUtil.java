@@ -20,23 +20,19 @@
 package org.openremote.modeler.utils;
 
 import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.testng.log4testng.Logger;
+
 /**
- * A utility class for rotate an image. 
+ * A utility class for rotating an image. 
  * @author javen
  *
  */
 public class ImageRotateUtil {
-   private static final Logger log = Logger.getLogger(ImageRotateUtil.class);
    /**
     * The image type supported by this class. 
     */
@@ -50,48 +46,40 @@ public class ImageRotateUtil {
          try {
             return doRotate(sourceImage, targetImageName, Math.toRadians(degree));
          } catch (IOException e) {
-            log.error("Error when try to rotate a image :" + sourceImage.getName(), e);
             return null;
          }
       } else {
-         log.warn("The image can not be rotated  "+ sourceImage.getName());
          return null;
       }
    }
 
-   private static BufferedImage doRotate(File sourceImageFile, double angle, GraphicsConfiguration gc) {
+   private static BufferedImage doRotate(File sourceImageFile, double angle) {
       try {
          BufferedImage image = ImageIO.read(sourceImageFile);
          double sin = Math.abs(Math.sin(angle)), cos = Math.abs(Math.cos(angle));
          int w = image.getWidth(), h = image.getHeight();
          int neww = (int) Math.floor(w * cos + h * sin), newh = (int) Math.floor(h * cos + w * sin);
          int transparency = image.getColorModel().getTransparency();
-         BufferedImage result = gc.createCompatibleImage(neww, newh, transparency);
+         BufferedImage result = new BufferedImage(image.getHeight(null),image.getWidth(null),transparency);
          Graphics2D g = result.createGraphics();
          g.translate((neww - w) / 2, (newh - h) / 2);
          g.rotate(angle, w / 2, h / 2);
          g.drawRenderedImage(image, null);
          return result;
       } catch (IOException e) {
-         log.error("Error when try to rotate a image "+sourceImageFile ,e);
          return null;
       }
    }
 
    private static File doRotate(File sourceImageFile, String targetName, double degree) throws IOException {
-      GraphicsConfiguration gc = getDefaultConfiguration();
-      BufferedImage outImage = doRotate(sourceImageFile, degree, gc);
+      
+      BufferedImage outImage = doRotate(sourceImageFile, degree);
 
       File targetFile = new File(targetName);
       ImageIO.write(outImage, getExtentionName(sourceImageFile.getName()), targetFile);
       return targetFile;
    }
 
-   private static GraphicsConfiguration getDefaultConfiguration() {
-      GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-      GraphicsDevice gd = ge.getDefaultScreenDevice();
-      return gd.getDefaultConfiguration();
-   }
 
    private static String getExtentionName(String fileName) {
       int pointIndex = fileName.lastIndexOf(".");
@@ -106,4 +94,3 @@ public class ImageRotateUtil {
       return SUPPORT_IMAGE_TYPE.contains(extentionName);
    }
 }
-

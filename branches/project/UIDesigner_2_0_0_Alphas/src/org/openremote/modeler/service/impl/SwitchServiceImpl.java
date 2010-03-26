@@ -48,23 +48,34 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
    @Override
    public Switch save(Switch switchToggle) {
       genericDAO.save(switchToggle);
-      Hibernate.initialize(switchToggle.getSwitchSensorRef().getSensor());
+      if (switchToggle.getSwitchSensorRef() != null) {
+         Hibernate.initialize(switchToggle.getSwitchSensorRef().getSensor());
+      }
       return switchToggle;
    }
 
    @Override
    public Switch update(Switch switchToggle) {
       Switch old = genericDAO.loadById(Switch.class, switchToggle.getOid());
-      genericDAO.delete(old.getSwitchCommandOffRef());
-      genericDAO.delete(old.getSwitchCommandOnRef());
-      genericDAO.delete(old.getSwitchSensorRef());
       old.setName(switchToggle.getName());
-      switchToggle.getSwitchCommandOffRef().setOffSwitch(old);
-      switchToggle.getSwitchCommandOnRef().setOnSwitch(old);
-      switchToggle.getSwitchSensorRef().setSwitchToggle(old);
-      old.setSwitchCommandOffRef(switchToggle.getSwitchCommandOffRef());
-      old.setSwitchCommandOnRef(switchToggle.getSwitchCommandOnRef());
-      old.setSwitchSensorRef(switchToggle.getSwitchSensorRef());
+      if (switchToggle.getSwitchCommandOffRef() != null
+            && old.getSwitchCommandOffRef().getOid() != switchToggle.getSwitchCommandOffRef().getOid()) {
+         genericDAO.delete(old.getSwitchCommandOffRef());
+         old.setSwitchCommandOffRef(switchToggle.getSwitchCommandOffRef());
+         switchToggle.getSwitchCommandOffRef().setOffSwitch(old);
+      }
+      if (switchToggle.getSwitchCommandOnRef() != null
+            && old.getSwitchCommandOnRef().getOid() != switchToggle.getSwitchCommandOnRef().getOid()) {
+         genericDAO.delete(old.getSwitchCommandOnRef());
+         old.setSwitchCommandOnRef(switchToggle.getSwitchCommandOnRef());
+         switchToggle.getSwitchCommandOnRef().setOnSwitch(old);
+      }
+      if (old.getSwitchSensorRef() != null
+            && old.getSwitchSensorRef().getOid() != switchToggle.getSwitchSensorRef().getOid()) {
+         genericDAO.delete(old.getSwitchSensorRef());
+         old.setSwitchSensorRef(switchToggle.getSwitchSensorRef());
+         switchToggle.getSwitchSensorRef().setSwitchToggle(old);
+      }
       return old;
    }
    

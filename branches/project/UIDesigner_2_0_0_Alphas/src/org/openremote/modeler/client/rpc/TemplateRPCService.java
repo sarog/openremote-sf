@@ -22,7 +22,9 @@ package org.openremote.modeler.client.rpc;
 import java.util.List;
 
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Template;
+import org.openremote.modeler.exception.BeehiveNotAvailableException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -34,17 +36,23 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("template.smvc")
 public interface TemplateRPCService extends RemoteService {
-   List<Template> getTemplates(boolean isFromPrivate);
+   List<Template> getTemplates(boolean isFromPrivate) throws BeehiveNotAvailableException;
    /**
     * save a template to the beehive.
     */
-   Template saveTemplate(Template template);
+   Template saveTemplate(Template template) throws BeehiveNotAvailableException;
    /**
     * build a screen from template.
     * @param template
     * @return
     */
-   ScreenFromTemplate buildScreeFromTemplate(Template template);
+   ScreenFromTemplate buildScreeFromTemplate(Template template) throws BeehiveNotAvailableException;
    
-   Boolean deleteTemplate(long templateId);
+   Template updateTemplate(Template template) throws BeehiveNotAvailableException;
+   
+   Screen buildScreen(Template template);
+   
+   Boolean deleteTemplate(long templateId) throws BeehiveNotAvailableException;
+   
+   List<Template> searchTemplates(String keywords,int page);
 }

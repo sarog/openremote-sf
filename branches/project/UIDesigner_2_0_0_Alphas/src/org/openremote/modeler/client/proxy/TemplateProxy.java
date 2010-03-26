@@ -87,6 +87,24 @@ public class TemplateProxy {
             });
    }
    
+   public static void buildScreen(final Template template, final AsyncCallback<Screen> callback) {
+      AsyncServiceFactory.getTemplateRPCServiceAsync().buildScreen(template, 
+            new AsyncSuccessCallback<Screen>() {
+
+               @Override
+               public void onSuccess(Screen screen) {
+                  initOid(screen);
+                  callback.onSuccess(screen);
+               }
+
+               @Override
+               public void onFailure(Throwable caught) {
+                  callback.onFailure(caught);
+               }
+               
+               
+            });
+   }
    public static void deleteTemplateById(final long templateId, final AsyncCallback<Boolean> callback){
       AsyncServiceFactory.getTemplateRPCServiceAsync().deleteTemplate(templateId,new AsyncSuccessCallback<Boolean>(){
 
@@ -121,6 +139,39 @@ public class TemplateProxy {
            callback.onSuccess(result);
          }
          
+      });
+   }
+   
+   public static void searchTemplates(final String keywords, final int page, final AsyncCallback<List<Template>> callback) {
+      AsyncServiceFactory.getTemplateRPCServiceAsync().searchTemplates (keywords, page,new AsyncCallback<List<Template>>() {
+
+         @Override
+         public void onFailure(Throwable caught) {
+           callback.onFailure(caught);
+         }
+
+         @Override
+         public void onSuccess(List<Template> result) {
+           callback.onSuccess(result);
+         }
+         
+      });
+   }
+   
+   public static void updateTemplate(final Template template, final AsyncCallback<Template> callback) {
+      AsyncServiceFactory.getTemplateRPCServiceAsync().updateTemplate(template, new AsyncSuccessCallback<Template>() {
+
+         @Override
+         public void onSuccess(Template result) {
+            callback.onSuccess(result);
+         }
+
+         @Override
+         public void onFailure(Throwable caught) {
+            callback.onFailure(caught);
+         }
+
+        
       });
    }
    /**

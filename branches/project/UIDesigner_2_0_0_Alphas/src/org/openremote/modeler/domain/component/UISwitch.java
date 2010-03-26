@@ -129,5 +129,7 @@ public class UISwitch extends UIControl implements SensorOwner {
       }
    }
    
-   
+   public boolean canUseImage(){
+      return onImage != null && offImage != null;
+   }
 }

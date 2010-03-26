@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -23,79 +23,69 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.listener.FormResetListener;
+import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.client.widget.CommonForm;
+import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
-import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.CheckBoxListView;
-import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.Window;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
-import com.extjs.gxt.ui.client.widget.form.CheckBox;
+import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 
-public class SelectScreenForm extends CommonForm {
+public class GroupEditWindow extends FormWindow {
 
+   private TextField<String> nameField = null;
    private CheckBoxListView<BeanModel> screenListView = null;
-   private CheckBox showAll = null;
-   protected BeanModel groupRefBeanModel = null;
-   protected Component wrapper;
-   private List<BeanModel> otherModels = new ArrayList<BeanModel>();
-   private Boolean oldValue = false;
-   public SelectScreenForm(Component wrapper, BeanModel groupRefBeanModel) {
-      super();
-      this.wrapper = wrapper;
+   private BeanModel groupRefBeanModel = null;
+   public GroupEditWindow(BeanModel groupRefBeanModel) {
       this.groupRefBeanModel = groupRefBeanModel;
-      setLabelAlign(LabelAlign.TOP);
+      setHeading("Edit Group");
+      setSize(370, 260);
       createFields();
-      addBeforeSubmitListener();
-      setFieldWidth(280);
+      createButtons();
+      add(form);
+      form.setLabelWidth(50);
+      form.setFieldWidth(260);
+      show();
    }
-   
    
    private void createFields() {
-      AdapterField screenField = new AdapterField(createScreenList());
-      screenField.setFieldLabel("Screens with the same dimension");
+      GroupRef groupRef = (GroupRef) groupRefBeanModel.getBean();
       
-      showAll = new CheckBox();
-      showAll.setHideLabel(true);
-      showAll.setBoxLabel("show other panel type");
-      showAll.addListener(Events.Change, new Listener<FieldEvent>() {
-         @Override
-         public void handleEvent(FieldEvent be) {
-            if (!oldValue.toString().equals(be.getValue().toString())) {
-               if ("true".equals(be.getValue().toString())) {
-                  screenListView.getStore().add(otherModels);
-               } else if ("false".equals(be.getValue().toString())) {
-                  for (BeanModel otherModel : otherModels) {
-                     screenListView.getStore().remove(otherModel);
-                  }
-               }
-            }
-            oldValue = new Boolean(be.getValue().toString());
-         }
-         
-      });
-      add(screenField);
-      add(showAll);
+      nameField = new TextField<String>();
+      nameField.setName("name");
+      nameField.setFieldLabel("Name");
+      nameField.setAllowBlank(false);
+      if (groupRef.getGroup().getName() != null) {
+         nameField.setValue(groupRef.getGroup().getName());
+      }
+      
+      AdapterField screenField = new AdapterField(createScreenList(groupRef));
+      screenField.setFieldLabel("Screen");
+      form.add(nameField);
+      form.add(screenField);
+      
    }
    
-   private ContentPanel createScreenList() {
+   private ContentPanel createScreenList(GroupRef groupRef) {
+      TouchPanelDefinition touchPanel = groupRef.getPanel().getTouchPanelDefinition();
+      
       ContentPanel screenContainer = new ContentPanel();
       screenContainer.setHeaderVisible(false);
-      screenContainer.setWidth(280);
+      screenContainer.setWidth(260);
       screenContainer.setHeight(150);
       screenContainer.setLayout(new FitLayout());
       // overflow-auto style is for IE hack.
@@ -103,30 +93,13 @@ public class SelectScreenForm extends CommonForm {
       
       screenListView = new CheckBoxListView<BeanModel>();
       ListStore<BeanModel> store = new ListStore<BeanModel>();
-      screenListView.setStore(store);
-      screenListView.setDisplayProperty("panelName");
-      screenListView.setStyleAttribute("overflow", "auto");
-      screenListView.setSelectStyle("screen-view-item-sel");
-      screenContainer.add(screenListView);
-      return screenContainer;
-   }
-   @Override
-   public boolean isNoButton() {
-      return true;
-   }
-   
-   @Override
-   public void show() {
-      super.show();
-      ((Window) wrapper).setSize(360, 200);
-   }
-   
-   public void update(Panel panel) {
-      TouchPanelDefinition touchPanel = panel.getTouchPanelDefinition();
-      ListStore<BeanModel> store = screenListView.getStore();
-      store.removeAll();
-      otherModels.clear();
+      
+      List<BeanModel> otherModels = new ArrayList<BeanModel>();
       List<BeanModel> screenModels = BeanModelDataBase.screenTable.loadAll();
+      List<BeanModel> selectedModels = new ArrayList<BeanModel>();
+      for (ScreenRef screenRef: groupRef.getGroup().getScreenRefs()) {
+         selectedModels.add(screenRef.getScreen().getBeanModel());
+      }
       for (BeanModel screenModel : screenModels) {
          if (((Screen) screenModel.getBean()).getTouchPanelDefinition().equals(touchPanel)) {
             store.add(screenModel);
@@ -135,12 +108,31 @@ public class SelectScreenForm extends CommonForm {
             otherModels.add(screenModel);
          }
       }
-      showAll.setValue(false);
-         
+      
+      store.add(otherModels);
+      for (BeanModel selectedModel : selectedModels) {
+         screenListView.setChecked(selectedModel, true);
+      }
+      screenListView.setStore(store);
+      screenListView.setDisplayProperty("panelName");
+      screenListView.setStyleAttribute("overflow", "auto");
+      screenListView.setSelectStyle("screen-view-item-sel");
+      screenContainer.add(screenListView);
+      return screenContainer;
    }
    
-   private void addBeforeSubmitListener() {
-      addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
+   private void createButtons() {
+      Button submitBtn = new Button("Submit");
+      Button resetBtn = new Button("Reset");
+      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      resetBtn.addSelectionListener(new FormResetListener(form));
+      
+      form.addButton(submitBtn);
+      form.addButton(resetBtn);
+      addBeforSubmitListener();
+   }
+   private void addBeforSubmitListener() {
+      form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             Group group = ((GroupRef) groupRefBeanModel.getBean()).getGroup();
             TouchPanelDefinition touchPanelDefinition = ((GroupRef) groupRefBeanModel.getBean()).getPanel().getTouchPanelDefinition();
@@ -157,9 +149,8 @@ public class SelectScreenForm extends CommonForm {
                   group.addScreenRef(screenRef);
                }
             }
-            wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(groupRefBeanModel));
+            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(groupRefBeanModel));
          }
-
       });
    }
 }

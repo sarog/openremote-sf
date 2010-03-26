@@ -31,6 +31,9 @@ import org.openremote.modeler.domain.Template;
  *
  */
 public interface TemplateService {
+   
+   String NO_KEYWORDS = "any"; 
+   
    /**
     * Save a template to the beehive.
     * @param template The template you want to save. 
@@ -59,7 +62,7 @@ public interface TemplateService {
     * @param template
     * @return screen build from template. 
     */
-   Screen buildScreenFromTemplate(Template template);
+   Screen buildScreen(Template template);
    
    /**
     * ReBuild Device, DeviceCommand, Sensor, Switch, Slider... for a screen. 
@@ -69,5 +72,12 @@ public interface TemplateService {
     */
    ScreenFromTemplate reBuildCommand(Screen screen);
    
+   
+   Template updateTemplate(Template template);
+   
+   String getTemplateContent(Screen screen);
+   
    List<Template> getTemplates(boolean isFromPrivate);
+   
+   List<Template> getTemplatesByKeywordsAndPage(String keywords,int page);
 }

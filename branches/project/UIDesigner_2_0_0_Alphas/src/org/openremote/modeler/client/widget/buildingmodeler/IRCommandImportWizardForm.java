@@ -82,7 +82,10 @@ public class IRCommandImportWizardForm extends IRCommandImportForm {
          public void handleEvent(FormEvent be) {
             wrapper.mask("Please Wait...");
             if (codeGrid != null) {
-               List<ModelData> modelDatas = codeGrid.getStore().getModels();
+               List<ModelData> modelDatas = codeGrid.getSelectionModel().getSelectedItems();
+               if (modelDatas.isEmpty()) {
+                  modelDatas = codeGrid.getStore().getModels();
+               }
                for (ModelData modelData : modelDatas) {
                   modelData.set("sectionId", getSectionId());
                }
@@ -101,6 +104,7 @@ public class IRCommandImportWizardForm extends IRCommandImportForm {
             
             } else {
                MessageBox.alert("Warn", "Please select vendor, model first.", null);
+               wrapper.unmask();
             }
          }
          
