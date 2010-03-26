@@ -28,6 +28,8 @@
 @interface SliderView : SensoryControlView {
 	UISlider *uiSlider;
 	int currentValue;
+	
+	UIImageView *sliderTip;
 }
 
 @property(nonatomic, retain)UISlider *uiSlider;

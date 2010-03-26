@@ -27,6 +27,9 @@
 
 @interface SliderView(Private)
 - (void) afterSlide:(UISlider *)sender;
+-(void) releaseSlider;
+-(void) showTip:(UIImageView *)tip ofSlider:(UISlider *)uiSliderParam withSender:(UISlider *)sender;
+-(void) clearSliderTipSubviews:(UIImageView *)sliderTipParam;
 @end
 
 @implementation SliderView
@@ -77,14 +80,20 @@
 		[uiSlider setThumbImage: thumbImage forState:UIControlStateNormal];
 	}
 	
-	//uiSlider.continuous = NO;
-	uiSlider.value = 0;
-	currentValue = 0;
+	sliderTip = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"slider_tip.png"]];
+	[sliderTip setFrame:CGRectMake(uiSlider.frame.origin.x, uiSlider.frame.origin.y - 50, 80, 80)];
+	sliderTip.hidden = YES;
+	[self addSubview:sliderTip];
+	
+	uiSlider.continuous = YES;
+	uiSlider.value = 0.0;
+	currentValue = 0.0;
 	
 	[self addSubview:uiSlider];
 	
 	if (!sliderModel.passive) {
 		[uiSlider addTarget:self action:@selector(afterSlide:) forControlEvents:UIControlEventValueChanged];
+		[uiSlider addTarget:self action:@selector(releaseSlider) forControlEvents:UIControlEventTouchUpInside];
 	} else {
 		UIView *cover = [[UIView alloc] initWithFrame:self.bounds];
 		[cover setBackgroundColor:[UIColor colorWithRed:255.0 green:255.0 blue:255.0 alpha:0.0]];
@@ -107,9 +116,36 @@
 	int afterSlideValue = (int)[sender value];
 	if (currentValue >= 0 && abs(currentValue-afterSlideValue) > MIN_SLIDE_VARIANT) {
 		NSLog(@"The value sent is : %d", afterSlideValue);
+		[self showTip:sliderTip ofSlider:uiSlider withSender:sender];
 		[self sendCommandRequest: [NSString stringWithFormat:@"%d", afterSlideValue]];
 	} else {
 		NSLog(@"The min slide variant value less than %d", MIN_SLIDE_VARIANT);
+	}
+}
+
+-(void) releaseSlider {
+	sliderTip.hidden = YES;
+	[self clearSliderTipSubviews:sliderTip];
+	
+}
+
+-(void) showTip:(UIImageView *)tip ofSlider:(UISlider *)uiSliderParam withSender:(UISlider *)sender {
+	tip.hidden = NO;
+	[self clearSliderTipSubviews:tip];
+	CGFloat x = ((sender.value - uiSliderParam.minimumValue)/(uiSliderParam.maximumValue - uiSliderParam.minimumValue)) * (uiSliderParam.frame.size.width) + uiSliderParam.frame.origin.x;
+	CGFloat y = uiSliderParam.frame.origin.y + uiSliderParam.frame.size.height / 2;	
+	tip.frame = CGRectMake(x - 40, y - 100, 80, 80);
+	UILabel *tipText = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 80, 80)];
+	tipText.font = [UIFont systemFontOfSize:40];
+	tipText.backgroundColor = [UIColor clearColor];
+	tipText.textAlignment = UITextAlignmentCenter;
+	tipText.text = [NSString stringWithFormat:@"%d",(int)[sender value]];
+	[tip addSubview:tipText];
+}
+
+-(void) clearSliderTipSubviews:(UIImageView *)sliderTipParam {
+	for(UIView *view in sliderTipParam.subviews) {
+		[view removeFromSuperview];
 	}
 }
 
