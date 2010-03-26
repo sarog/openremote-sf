@@ -370,6 +370,9 @@ static Definition *myInstance = nil;
 	if (imageNames) {
 		[imageNames removeAllObjects];
 	}
+	if (tabBar) {
+		tabBar = nil;
+	}
 }
 
 #pragma mark override methods to keep this class instance

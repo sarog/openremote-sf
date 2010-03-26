@@ -398,6 +398,10 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	[groupViewMap removeAllObjects];
 	[tabBarControllers removeAllObjects];
 	[tabBarControllerViewMap removeAllObjects];
+	tabBarScale = TABBAR_SCALE_NONE;
+	globalTabBarController = nil;
+	localTabBarController = nil;
+	
 	if (currentGroupController) {
 		[currentGroupController stopPolling];
 	}
