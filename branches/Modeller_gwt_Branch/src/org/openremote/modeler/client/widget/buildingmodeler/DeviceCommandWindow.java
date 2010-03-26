@@ -206,10 +206,12 @@ public class DeviceCommandWindow extends FormWindow {
       if (deviceCommand != null) {
          String protocolName = deviceCommand.getProtocol().getType();
          nameField.setValue(deviceCommand.getName());
-         ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(protocolName, protocols
-               .get(protocolName));
-         protocol.setValue(data);
-         protocol.disable();
+         if (protocols.containsKey(protocolName)) {
+            ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(protocolName, protocols
+                  .get(protocolName));
+            protocol.setValue(data);
+         }
+//         protocol.disable();
       }
       form.layout();
    }
