@@ -42,7 +42,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.http.message.BasicNameValuePair;
@@ -135,9 +134,9 @@ public class TemplateServiceImpl implements TemplateService {
          String saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid()
                + "/template/";
 
-         /*if (screenTemplate.getShareTo() == Template.PUBLIC) {
+         if (screenTemplate.getShareTo() == Template.PUBLIC) {
             saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/0" + "/template/";
-         }*/
+         }
 
          HttpPost httpPost = new HttpPost(saveRestUrl);
          addAuthentication(httpPost);
@@ -182,7 +181,7 @@ public class TemplateServiceImpl implements TemplateService {
       return screenTemplate;
    }
 
-   public String getTemplateContent(Screen screen) {
+   private String getTemplateContent(Screen screen) {
       try {
          String[] includedPropertyNames = { 
                "absolutes.uiComponent.oid",
@@ -197,7 +196,7 @@ public class TemplateServiceImpl implements TemplateService {
                "grids.cells.uiComponent.uiCommand",
                "grids.cells.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs",
                "grids.cells.uiComponent.commands", "*.deviceCommand", "*.protocol", "*.attributes" };
-         String[] excludePropertyNames = { "grid", /*"*.touchPanelDefinition",*/ "*.refCount", "*.displayName", "*.oid",
+         String[] excludePropertyNames = { "grid", "*.touchPanelDefinition", "*.refCount", "*.displayName", "*.oid",
                "*.proxyInformations", "*.proxyInformation", "gestures", "*.panelXml", "*.navigate","*.deviceCommands","*.sensors","*.sliders","*.configs","*.switchs","DeviceMacros" };
          return new JSONSerializer().include(includedPropertyNames).exclude(excludePropertyNames).deepSerialize(screen);
       } catch (Exception e) {
@@ -210,7 +209,7 @@ public class TemplateServiceImpl implements TemplateService {
 
    @Override
    public ScreenFromTemplate buildFromTemplate(Template template) {
-      Screen screen = buildScreen(template);
+      Screen screen = buildScreenFromTemplate(template);
       
       // ---------------download resources (eg:images) from beehive.
       resourceService.downloadResourcesForTemplate(template.getOid());
@@ -218,7 +217,7 @@ public class TemplateServiceImpl implements TemplateService {
    }
 
    @Override
-   public Screen buildScreen(Template template) {
+   public Screen buildScreenFromTemplate(Template template) {
       String screenJson = template.getContent();
       Screen screen = new JSONDeserializer<Screen>().use(null, Screen.class).use("absolutes.values.uiComponent",
             new SimpleClassLocator()).use("grids.values.cells.values.uiComponent", new SimpleClassLocator())
@@ -269,10 +268,9 @@ public class TemplateServiceImpl implements TemplateService {
    }
 
    public List<Template> getTemplates(boolean fromPrivate) {
-      boolean shared = ! fromPrivate;
       List<Template> templates = new ArrayList<Template>();
       String restURL = configuration.getBeehiveRESTRootUrl() + "account/"
-            + userService.getAccount().getOid() + "/templates/from/"+shared;
+            + (fromPrivate ? userService.getAccount().getOid() : 0) + "/templates";
 
       HttpGet httpGet = new HttpGet(restURL);
       httpGet.setHeader("Accept", "application/json");
@@ -968,69 +966,5 @@ public class TemplateServiceImpl implements TemplateService {
          template.setKeywords(keywords);
          return template;
       }
-   }
-
-   @Override
-   public Template updateTemplate(Template template) {
-      log.debug("update Template Name: " + template.getName());
-
-      template.setContent(getTemplateContent(template.getScreen()));
-      List<NameValuePair> params = new ArrayList<NameValuePair>();
-      params.add(new BasicNameValuePair("name", template.getName()));
-      params.add(new BasicNameValuePair("content", template.getContent()));
-      params.add(new BasicNameValuePair("shared",template.isShared()+""));
-      params.add(new BasicNameValuePair("keywords",template.getKeywords()));
-      
-      log.debug("TemplateContent" + template.getContent());
-
-      try {
-         String saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid()
-               + "/template/"+template.getOid();
-
-         /*if (screenTemplate.getShareTo() == Template.PUBLIC) {
-            saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/0" + "/template/";
-         }*/
-
-         HttpPut httpPut = new HttpPut(saveRestUrl);
-         addAuthentication(httpPut);
-         UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(params, "UTF-8");
-         httpPut.setEntity(formEntity);
-         HttpClient httpClient = new DefaultHttpClient();
-
-         String result = httpClient.execute(httpPut, new ResponseHandler<String>() {
-
-            @Override
-            public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-
-               InputStreamReader reader = new InputStreamReader(response.getEntity().getContent());
-               BufferedReader buffReader = new BufferedReader(reader);
-               StringBuilder sb = new StringBuilder();
-               String line = "";
-
-               while ((line = buffReader.readLine()) != null) {
-                  sb.append(line);
-                  sb.append("\n");
-               }
-
-               return sb.toString();
-            }
-
-         });
-
-         if (result.indexOf("<id>") != -1 && result.indexOf("</id>") != -1) {
-            long templateOid = Long.parseLong(result.substring(result.indexOf("<id>") + "<id>".length(), result
-                  .indexOf("</id>")));
-            template.setOid(templateOid);
-            // save the resources (eg:images) to beehive.
-            resourceService.saveTemplateResourcesToBeehive(template);
-         } else {
-            throw new BeehiveNotAvailableException();
-         }
-      } catch (Exception e) {
-         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + (e.getLocalizedMessage()==null?"":e.getLocalizedMessage()), e);
-      }
-
-      log.debug("update Template Ok!");
-      return template;
    }
 }
