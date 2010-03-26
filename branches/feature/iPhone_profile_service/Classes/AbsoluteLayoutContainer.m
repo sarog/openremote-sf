@@ -42,8 +42,12 @@
 
 - (NSArray *)pollingComponentsIds {
 	NSMutableArray *ids = [[NSMutableArray alloc] init];
-	if ([component isKindOfClass:SensorComponent.class]){		
-		[ids addObject:[NSString stringWithFormat:@"%d",((SensorComponent *)component).sensor.sensorId]];
+	if ([component isKindOfClass:SensorComponent.class]){	
+		Sensor *sensor = ((SensorComponent *)component).sensor;
+		if (sensor) {
+			[ids addObject:[NSString stringWithFormat:@"%d", sensor.sensorId]];
+		}
+		
 	} 
 	
 	return ids;
