@@ -23,6 +23,7 @@
 #import "URLConnectionHelper.h"
 #import "ServerDefinition.h"
 #import "AppSettingsDefinition.h"
+#import "ControllerException.h"
 
 @implementation ChoosePanelViewController
 
@@ -116,30 +117,7 @@
 
 - (void)handleServerErrorWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
-		NSString *errorMessage = nil;
-		switch (statusCode) {
-			case 404:
-				errorMessage = [NSString stringWithString:@"The command was sent to an invalid URL."];
-				break;
-			case 500:
-				errorMessage = [NSString stringWithString:@"Error in controller. Please check controller log."];
-				break;
-			case 503:
-				errorMessage = [NSString stringWithString:@"Controller is not currently available."];
-				break;
-			case 401:
-				errorMessage = [NSString stringWithString:@"User credential is required."];
-				break;
-			case 428:
-				errorMessage = [NSString stringWithString:@"No panel identity found. Please check your panel.xml"];
-				break;
-		} 
-		
-		if (!errorMessage) {
-			errorMessage = [NSString stringWithFormat:@"Unknown error occured , satus code is %d",statusCode];
-		}
-		[ViewHelper showAlertViewWithTitle:@"Request Failed" Message:errorMessage];
-		
+		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
 	} 
 	
 }
