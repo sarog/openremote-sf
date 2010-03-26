@@ -69,11 +69,7 @@ public class FileServiceImpl implements FileService {
     */
    public boolean uploadConfigZip(InputStream inputStream) {
       String resourcePath = configuration.getResourcePath();
-      try {
-         FileUtils.forceDeleteOnExit(new File(resourcePath));
-      } catch (IOException e) {
-         logger.error("Can't delete" + resourcePath, e);
-      }
+      
       if (!unzip(inputStream, resourcePath)){
          return false; 
       }
@@ -90,9 +86,9 @@ public class FileServiceImpl implements FileService {
             // because it's readonly, or it won't be modified.
             if (configuration.isCopyLircdconf()) {
                FileUtils.copyFileToDirectory(lircdConfFile, lircdconfDir);
+               logger.info("copy lircd.conf to" + configuration.getLircdconfPath());
             }
          }
-         logger.info("copy lircd.conf to" + configuration.getLircdconfPath());
       } catch (IOException e) {
          logger.error("Can't copy lircd.conf to " + configuration.getLircdconfPath(), e);
       }
@@ -101,7 +97,6 @@ public class FileServiceImpl implements FileService {
    private boolean writeZipAndUnzip(InputStream inputStream) {
       String resourcePath = configuration.getResourcePath();
       File zip = new File(resourcePath, "openremote.zip");
-      
       FileOutputStream fos = null;
       try {
          if (!zip.getParentFile().exists()) {

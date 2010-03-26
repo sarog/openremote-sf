@@ -22,11 +22,8 @@ package org.openremote.controller.service.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -52,7 +49,6 @@ public class ProfileServiceImpl implements ProfileService {
 
    private static final String TABBAR_ELEMENT_NAME = "tabbar";
    private Configuration configuration;
-   private static Logger log = Logger.getLogger(ProfileServiceImpl.class);
 
    @Override
    public String getProfileByPanelID(String panelID) {
@@ -292,7 +288,6 @@ public class ProfileServiceImpl implements ProfileService {
 
    private Element queryElementFromXML(String xmlPath, String xPath) {
       Document doc = buildXML(xmlPath);
-      log.info("xPath = " + xPath);
       List<Element> results = queryElementFromDocument(doc, xPath);
       return results.size() > 0 ? results.get(0) : null;
    }

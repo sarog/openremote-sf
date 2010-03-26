@@ -30,24 +30,24 @@ $(document).ready(function() {
 	});
     $('#uploadForm').ajaxForm(function(result) {
     	if (result == 'OK') {
-			message("upload successful");
+			message("Upload complete!");
 		} else if (result == 'disabled') {
-			error("upload is disabled");
+			error("Upload is disabled");
 		} else {
-			error("upload failed");
+			error("Upload failed");
 		}
     }); 
     $('#syncForm').ajaxForm(function(result) {
     	if (result == 'OK') {
-			message("configuration is up to date!");
+			message("Sync complete!");
     	} else if (result == 'forbidden') {
-			error("the username or password you entered is incorrect.");
+			error("The username or password you entered is incorrect.");
     	} else if (result == 'n/a') {
-    		error("can't connect to Beehive.");
+    		error("Can't connect to Beehive.");
     	} else if (result == 'missing') {
     		error("openremote.zip not found in account, please edit UI and save.");
 		} else {
-			error("sync failed!");
+			error("Sync failed! try again.");
 		}
     }); 
     $('#syncSubmit').click(function(){
@@ -74,7 +74,7 @@ $(document).ready(function() {
 				if (msg == 'OK') {
 					message("Finished reloading configuration.");
 				} else if (msg == 'latest') {
-					message("The cache is up to date.");
+					message("The cache is already up to date.");
 				} else {
 					error("Failed to reload configuration and clear cache.");
 				}
@@ -96,15 +96,23 @@ function showOffline() {
 function message(msg){
 	hideUpdateIndicator();
 	hideRefreshIndicator();
-	$('#errMsg').text("");
-	$('#msg').hide().show().text(msg);
+	$('#errMsg').text("").hide();
+	if (msg == '') {
+		$('#msg').hide().text(msg);
+	} else {
+		$('#msg').hide().show().text(msg);
+	}
 }
 
 function error(msg){
 	hideUpdateIndicator();
 	hideRefreshIndicator();
-	$('#errMsg').hide().show().text(msg);
-	$('#msg').text("");
+	$('#msg').text("").hide();
+	if (msg == '') {
+		$('#errMsg').hide().text(msg);
+	} else {
+		$('#errMsg').hide().show().text(msg);
+	}
 }
 
 function clearMessage() {
