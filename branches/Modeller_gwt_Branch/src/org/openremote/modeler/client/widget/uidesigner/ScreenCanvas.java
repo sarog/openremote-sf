@@ -48,6 +48,7 @@ import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.fx.Resizable;
 import com.extjs.gxt.ui.client.util.KeyNav;
 import com.extjs.gxt.ui.client.util.Point;
+import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
@@ -519,6 +520,13 @@ public class ScreenCanvas extends ComponentContainer {
             event.stopPropagation();
             super.onBrowserEvent(event);
          }
+
+         @Override
+         protected void afterRender() {
+            super.afterRender();
+            this.setZIndex(100); // set z-index to make drop widget on grid cell is possible(after reopen the screen).
+         }
+         
       };
       gridContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
          public void handleEvent(WidgetDeleteEvent be) {
@@ -655,4 +663,5 @@ public class ScreenCanvas extends ComponentContainer {
       }
       this.layout();
    }
+
 }
