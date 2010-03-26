@@ -38,23 +38,17 @@ public class TemplateServiceTest extends TemplateTestBase {
    private GenericDAO genericDAO = (GenericDAO) SpringTestContext.getInstance().getBean("genericDAO");
    
    public void testGetTemplatesByAccountOid() {
-      List<TemplateDTO> templates = service.loadAllTemplatesByAccountOid(1L);
+      List<TemplateDTO> templates = service.loadAllPrivateTemplatesByAccountOid(1L);
       Assert.assertEquals(2, templates.size());
       Assert.assertEquals("t1", templates.get(0).getName());
       Assert.assertEquals("t2", templates.get(1).getName());
    }
    
    public void testGetAllPublicTemplate() {
-      Template t = new Template();
-      t.setName("public");
-      t.setContent("public");
-      t.setAccount(null);
-      service.save(t);
-      
-      List<TemplateDTO> templates = service.loadAllPublicTemplate();
+      List<TemplateDTO> templates = service.loadAllPublicTemplatesByAccountOid(1L);
       Assert.assertEquals(1, templates.size());
-      Assert.assertEquals("public", templates.get(0).getName());
-      Assert.assertEquals("public", templates.get(0).getContent());
+      Assert.assertEquals("t3", templates.get(0).getName());
+      Assert.assertEquals("content", templates.get(0).getContent());
    }
    public void testSave() {
       Account a = genericDAO.getByMaxId(Account.class);

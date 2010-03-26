@@ -58,5 +58,4 @@ public class TemplateDTO extends BusinessEntityDTO {
    public void setKeywords(String keywords) {
       this.keywords = keywords;
    }
-
 }
