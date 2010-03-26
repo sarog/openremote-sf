@@ -22,13 +22,14 @@ package org.openremote.modeler.client.widget;
 import java.util.List;
 import java.util.Set;
 
-import org.openremote.modeler.client.event.DoubleClickEvent;
 import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.ConfigCategoryBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
+import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
@@ -37,6 +38,7 @@ import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable.DeviceMacro
 import org.openremote.modeler.client.widget.buildingmodeler.ControllerConfigTabItem;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTabItem;
+import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.Device;
@@ -50,6 +52,7 @@ import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIGrid;
@@ -69,6 +72,7 @@ import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -97,6 +101,7 @@ public class TreePanelBuilder {
    private static TreeStore<BeanModel> widgetTreeStore = null;
    private static TreeStore<BeanModel> panelTreeStore = null;
    private static TreeStore<BeanModel> controllerConfigCategoryTreeStore = null;
+   private static TreeStore<BeanModel> templateTreeStore = null;
    
    /**
     * Builds a device command tree.
@@ -531,44 +536,93 @@ public class TreePanelBuilder {
       return tree;
    }
    
-   /*public static TreePanel<BeanModel> buildTemplateTree(){
-      final TreeStore<BeanModel> treeStore = new TreeStore<BeanModel>();
-      UtilsProxy.getTemplatesListRestUrl(new AsyncSuccessCallback<String> (){
-         public void onSuccess(String result){
-            ModelType templateType = new ModelType();
-            templateType.setRoot("templates.template");
-            DataField idField = new DataField("id");
-            idField.setType(Long.class);
-            templateType.addField(idField);
-            templateType.addField("content");
-            templateType.addField("name");
-            ScriptTagProxy<ListLoadResult<ModelData>> scriptTagProxy = new ScriptTagProxy<ListLoadResult<ModelData>>(result);
-            NestedJsonLoadResultReader<ListLoadResult<ModelData>> reader = new NestedJsonLoadResultReader<ListLoadResult<ModelData>>(
-                  templateType);
-            final BaseListLoader<ListLoadResult<ModelData>> loader = new BaseListLoader<ListLoadResult<ModelData>>(scriptTagProxy, reader);
+public static TreePanel<BeanModel> buildTemplateTree(final TemplatePanel templatePanel){
+      
+      TreeFolderBean privateTemplatesBean = new TreeFolderBean();
+      privateTemplatesBean.setDisplayName("Private templates");
+      
+      TreeFolderBean publicTemplatesBean = new TreeFolderBean();
+      publicTemplatesBean.setDisplayName("Public templates");
+      
+      
+      
+      RpcProxy<List<BeanModel>> loadTemplateRPCProxy = new RpcProxy<List<BeanModel>>() {
 
-            ListStore<ModelData> store = new ListStore<ModelData>(loader);
-            loader.load();
-            for(ModelData data : store.getModels()){
-               Template template = new Template();
-               template.setOid((Long) data.get("id"));
-               template.setContent((String) data.get("content"));
-               template.setName((String) data.get("name"));
-               treeStore.add(template.getBeanModel(), false);
+         @Override
+         protected void load(Object loadConfig, final AsyncCallback<List<BeanModel>> callback) {
+            if (loadConfig != null && loadConfig instanceof BeanModel) {
+               BeanModel model = (BeanModel) loadConfig;
+               if (model.getBean() instanceof TreeFolderBean) {
+                  TreeFolderBean folderBean = model.getBean();
+                  if (folderBean.getDisplayName().contains("Private")) {
+                     TemplateProxy.getTemplates(true, new AsyncSuccessCallback<List<Template>>(){
+
+                        @Override
+                        public void onSuccess(List<Template> result) {
+                           callback.onSuccess(Template.createModels(result));
+                        }
+                        
+                     });
+                  } else {
+                     TemplateProxy.getTemplates(false, new AsyncSuccessCallback<List<Template>>(){
+
+                        @Override
+                        public void onSuccess(List<Template> result) {
+                           callback.onSuccess(Template.createModels(result));
+                        }
+                        
+                     });
+                  }
+               }
             }
          }
-      });
-      TreePanel<BeanModel> tree = new TreePanel<BeanModel> (treeStore);
+         
+      };
+      
+      TreeLoader<BeanModel> templateLoader = new BaseTreeLoader<BeanModel> (loadTemplateRPCProxy) {
+         @Override
+         public boolean hasChildren(BeanModel beanModel) {
+             if (beanModel.getBean() instanceof TreeFolderBean) {
+                 return true;
+             }
+             return false;
+         }
+      };
+      
+      if (templateTreeStore == null) {
+         templateTreeStore = new TreeStore<BeanModel>(templateLoader);
+      }
+      templateTreeStore.add(privateTemplatesBean.getBeanModel(), false);
+      templateTreeStore.add(publicTemplatesBean.getBeanModel(), false);
+      TreePanel<BeanModel> tree = new TreePanel<BeanModel> (templateTreeStore){
+         @Override
+         public void onBrowserEvent(Event event) {
+            super.onBrowserEvent(event);
+            if (event.getTypeInt() == Event.ONCLICK) {
+               BeanModel beanModel = this.getSelectionModel().getSelectedItem();
+               if (beanModel != null && beanModel.getBean() instanceof Template) {
+                  Template template = beanModel.getBean();
+                  if (! template.equals(templatePanel.getTemplateInEditing())) {
+                     templatePanel.setTemplateInEditing(template);
+                  }
+               }
+            }
+         }
+      };
+      
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
-            return ICON.configIcon();
+            if(thisModel.getBean() instanceof TreeFolderBean) {
+               return ICON.folder();
+            } 
+            return ICON.templateIcon();
          }
       });
       
       tree.setStateful(true);
       tree.setBorders(false);
       tree.setHeight("100%");
-      tree.setDisplayProperty("name");
+      tree.setDisplayProperty("displayName");
       return tree;
-   }*/
+   }
 }
