@@ -26,6 +26,7 @@
 #import "ViewHelper.h"
 #import "DataBaseService.h"
 #import "ViewHelper.h"
+#import "ControllerException.h"
 
 @interface LogoutHelper (Private)
 
@@ -57,17 +58,7 @@
 
 - (void)handleServerErrorWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
-		NSString *errorMessage = nil;
 		switch (statusCode) {
-			case 404:
-				errorMessage = [NSString stringWithString:@"The command was sent to an invalid URL."];
-				break;
-			case 500:
-				errorMessage = [NSString stringWithString:@"Error in controller. Please check controller log."];
-				break;
-			case 503:
-				errorMessage = [NSString stringWithString:@"Controller is not currently available."];
-				break;
 			case 401://logout succuessful 
 				NSLog(@"%@ logged out successfully", [Definition sharedDefinition].username);
 				[ViewHelper showAlertViewWithTitle:@"" Message:[NSString stringWithFormat:@"%@ logged out successfully", [Definition sharedDefinition].username]];
@@ -77,10 +68,7 @@
 				return;
 		} 
 		
-		if (!errorMessage) {
-			errorMessage = [NSString stringWithFormat:@"Unknown error occured , satus code is %d",statusCode];
-		}
-		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:errorMessage];
+		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
 
 	} 
 	

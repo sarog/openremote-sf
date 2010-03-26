@@ -49,8 +49,8 @@ NSFileManager *fileManager;
 	[self makeSurePathExists:p];
 	NSError *error = nil;
 	NSURLResponse *response = nil;
-	url = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)url, NULL, (CFStringRef)@"", kCFStringEncodingUTF8);
-	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc]initWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:DOWNLOAD_TIMEOUT_INTERVAL];
+	NSString *encodedUrl = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)url, NULL, (CFStringRef)@"", kCFStringEncodingUTF8);
+	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc]initWithString:encodedUrl] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:DOWNLOAD_TIMEOUT_INTERVAL];
 	[CredentialUtil addCredentialToNSMutableURLRequest:request];
 	NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
 	
@@ -70,7 +70,7 @@ NSFileManager *fileManager;
 	
 	[fileManager createFileAtPath:filePathToSave contents:data attributes:nil];
 	[request release];
-	[url release];
+	
 }
 
 + (void)makeSurePathExists:(NSString *)path {

@@ -211,6 +211,7 @@ static Definition *myInstance = nil;
 - (void)downloadXml {
 	NSLog(@"start download xml");
 	[self changeLoadingMessage:@"download panel.xml ..."];
+	NSLog(@"download panel.xml from %@",[ServerDefinition panelXmlRESTUrl]);
 	[FileUtils downloadFromURL:[ServerDefinition panelXmlRESTUrl]  path:[DirectoryDefinition xmlCacheFolder]];
 	NSLog(@"xml file downloaded.");
 }

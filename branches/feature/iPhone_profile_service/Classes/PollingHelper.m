@@ -24,6 +24,7 @@
 #import "ServerDefinition.h"
 #import "ViewHelper.h"
 #import "NotificationConstant.h"
+#import "ControllerException.h"
 
 @implementation PollingHelper
 
@@ -92,17 +93,8 @@
 - (void)handleServerErrorWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
 		isError = YES;
-		NSString *errorMessage = nil;
 		switch (statusCode) {
-			case 404:
-				errorMessage = [NSString stringWithString:@"The command was sent to an invalid URL."];
-				break;
-			case 500:
-				errorMessage = [NSString stringWithString:@"Error in controller. Please check controller log."];
-				break;
-			case 503:
-				errorMessage = [NSString stringWithString:@"Controller is not currently available."];
-				break;
+
 			case 506://controller config changed
 				updateController = [[UpdateController alloc] initWithDelegate:self];
 				[updateController checkConfigAndUpdate];
@@ -118,10 +110,7 @@
 				return;
 		} 
 		
-		if (!errorMessage) {
-			errorMessage = [NSString stringWithFormat:@"Unknown error occured , satus code is %d",statusCode];
-		}
-		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:errorMessage];
+		[ViewHelper showAlertViewWithTitle:@"Polling Failed" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
 		isPolling = NO;
 	} else {
 		isError = NO;

@@ -89,7 +89,7 @@
 
 	NSHTTPURLResponse *resp = nil;
 	NSError *error = nil;
-	NSURL *url = [NSURL URLWithString:[ServerDefinition panelXmlRESTUrl]]; 
+	NSURL *url = [NSURL URLWithString:[[ServerDefinition panelXmlRESTUrl] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]; 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
 	[CredentialUtil addCredentialToNSMutableURLRequest:request];
 
