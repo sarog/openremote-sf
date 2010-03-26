@@ -21,6 +21,7 @@ package org.openremote.controller.service.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -55,24 +56,31 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
-   public boolean isControllerXMLContentChanged() {
+   public boolean isObservedXMLContentChanged(String observedXMLFileName) {
       //if changed, save the latest controller.xml.
-      String controllerXMLPath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML()
-            .getResourcePath()) + Constants.CONTROLLER_XML;
-      File controllerXMLFile = new File(controllerXMLPath);
+      String observedXMLFilePath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML().getResourcePath()) + observedXMLFileName;
+      File observedXMLFile = new File(observedXMLFilePath);
       StringBuffer fileContent = new StringBuffer();
-      String oldControllerXMLFileContent = controllerXMLListenSharingData.getControllerXMLFileContent();
+      String oldXMLFileContent = new String();
+      if (Constants.CONTROLLER_XML.equals(observedXMLFileName)) {
+         oldXMLFileContent = controllerXMLListenSharingData.getControllerXMLFileContent();
+      } else if (Constants.PANEL_XML.equals(observedXMLFileName)) {
+         oldXMLFileContent = controllerXMLListenSharingData.getPanelXMLFileContent();
+      }
       try {
-         fileContent.append(FileUtils.readFileToString(controllerXMLFile, "utf-8"));
+         fileContent.append(FileUtils.readFileToString(observedXMLFile, "utf-8"));
       } catch (IOException ioe) {
-         logger.warn("Skipped controller.xml change check, Failed to read " + controllerXMLFile.getAbsolutePath());
+         logger.warn("Skipped " + observedXMLFileName + " change check, Failed to read " + observedXMLFile.getAbsolutePath());
          return false;
       }
-      if (oldControllerXMLFileContent == null || "".equals(oldControllerXMLFileContent)
-            || "".equals(fileContent.toString()) || oldControllerXMLFileContent.equals(fileContent.toString())) {
+      if (oldXMLFileContent.equals(fileContent.toString())) {
          return false;
       }
-      controllerXMLListenSharingData.setControllerXMLFileContent(fileContent);
+      if (Constants.CONTROLLER_XML.equals(observedXMLFileName)) {
+         controllerXMLListenSharingData.setControllerXMLFileContent(fileContent);
+      } else if (Constants.PANEL_XML.equals(observedXMLFileName)) {
+         controllerXMLListenSharingData.setPanelXMLFileContent(fileContent);
+      }
       return true;
    }
    
@@ -142,7 +150,9 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
    }
    
    private void restartPollingMachineThreads() {
-      for (Sensor sensor : controllerXMLListenSharingData.getSensors()) {
+      Iterator<Sensor> sensorIterator = controllerXMLListenSharingData.getSensors().iterator();
+      while (sensorIterator.hasNext()) {
+         Sensor sensor = sensorIterator.next();
          PollingMachineThread pollingMachineThread = new PollingMachineThread(sensor, statusCacheService);
          pollingMachineThread.start();
          nap(3);

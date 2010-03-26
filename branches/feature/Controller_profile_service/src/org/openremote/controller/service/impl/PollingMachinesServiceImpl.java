@@ -99,17 +99,22 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
          controllerXMLListenSharingData.addPollingMachineThread(pollingMachineThread);
       }
       
-      storeControllerXMLContent();
+      storeXMLContent(Constants.CONTROLLER_XML);
+      storeXMLContent(Constants.PANEL_XML);
    }
    
-   private void storeControllerXMLContent() {
-      String controllerXMLPath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML().getResourcePath()) + Constants.CONTROLLER_XML;
-      File controllerXMLFile = new File(controllerXMLPath);
+   private void storeXMLContent(String xmlFileName) {
+      String xmlFilePath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML().getResourcePath()) + xmlFileName;
+      File xmlFile = new File(xmlFilePath);
       try {
-         StringBuffer fileContent = new StringBuffer(FileUtils.readFileToString(controllerXMLFile, "utf-8"));
-         controllerXMLListenSharingData.setControllerXMLFileContent(fileContent);
+         StringBuffer fileContent = new StringBuffer(FileUtils.readFileToString(xmlFile, "utf-8"));
+         if (Constants.CONTROLLER_XML.equals(xmlFileName)) {
+            controllerXMLListenSharingData.setControllerXMLFileContent(fileContent);
+         } else if (Constants.PANEL_XML.equals(xmlFileName)) {
+            controllerXMLListenSharingData.setPanelXMLFileContent(fileContent);
+         }
       } catch (IOException ioe) {
-         logger.warn("Skipped controller.xml change check, Failed to read " + controllerXMLFile.getAbsolutePath());
+         logger.warn("Skipped " + xmlFileName + " change check, Failed to read " + xmlFile.getAbsolutePath());
       }
    }
    

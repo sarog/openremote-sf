@@ -69,6 +69,9 @@ public class ConfigManageController extends MultiActionController {
       if (configuration.isResourceUpload()) {
          MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
          boolean success = fileService.uploadConfigZip(multipartRequest.getFile("zip_file").getInputStream());
+         if (success) {
+            controllerXMLChangeService.refreshController();
+         } 
          response.getWriter().print(success ? Constants.OK : null);
       } else {
          response.getWriter().print("disabled");
@@ -83,6 +86,9 @@ public class ConfigManageController extends MultiActionController {
       boolean success = false;
       try {
          success = fileService.syncConfigurationWithModeler(username, password);
+         if (success) {
+            controllerXMLChangeService.refreshController();
+         }
          response.getWriter().print(success ? Constants.OK : null);
       } catch (ForbiddenException e) {
          response.getWriter().print("forbidden");
@@ -95,7 +101,7 @@ public class ConfigManageController extends MultiActionController {
    }
    
    public ModelAndView refreshController(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletRequestBindingException {
-      if (controllerXMLChangeService.isControllerXMLContentChanged()) {
+      if (controllerXMLChangeService.isObservedXMLContentChanged(Constants.CONTROLLER_XML) || controllerXMLChangeService.isObservedXMLContentChanged(Constants.PANEL_XML)) {
          response.getWriter().print(controllerXMLChangeService.refreshController() ? Constants.OK : "failed");
       } else {
          response.getWriter().print("latest");

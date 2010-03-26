@@ -36,6 +36,7 @@ public class ControllerXMLListenSharingData {
    private List<PollingMachineThread> pollingMachineThreads = new ArrayList<PollingMachineThread>();
    private List<Sensor> sensors = new ArrayList<Sensor>();
    private StringBuffer controllerXMLFileContent = new StringBuffer();
+   private StringBuffer panelXMLFileContent = new StringBuffer();
    
    public void addPollingMachineThread(PollingMachineThread pollingMachineThread) {
       this.pollingMachineThreads.add(pollingMachineThread);
@@ -54,11 +55,19 @@ public class ControllerXMLListenSharingData {
    }
 
    public void setControllerXMLFileContent(StringBuffer controllerXMLFileContent) {
-      this.controllerXMLFileContent = new StringBuffer(controllerXMLFileContent);
+      this.controllerXMLFileContent = controllerXMLFileContent;
    }
 
    public String getControllerXMLFileContent() {
       return controllerXMLFileContent.toString();
+   }
+
+   public String getPanelXMLFileContent() {
+      return panelXMLFileContent.toString();
+   }
+
+   public void setPanelXMLFileContent(StringBuffer panelXMLFileContent) {
+      this.panelXMLFileContent = panelXMLFileContent;
    }
 
    public Boolean getIsControllerXMLChanged() {
