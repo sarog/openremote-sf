@@ -40,17 +40,19 @@ public interface TemplateService {
    
    long save(Template t);
    
-   List<TemplateDTO> loadAllTemplatesByAccountOid(long accountOid);
+   List<TemplateDTO> loadAllPrivateTemplatesByAccountOid(long accountOid);
    
    TemplateDTO loadTemplateByOid(long templateOid);
    
    boolean delete(long templateOid);
 
-   List<TemplateDTO> loadAllPublicTemplate();
+   List<TemplateDTO> loadAllPublicTemplatesByAccountOid(long accountOid);
    
    File getTemplateResourceZip(long templateOid);
    
    boolean saveTemplateResourceZip(long templateOid,InputStream input);
    
    List<TemplateDTO> loadPublicTemplatesByKeywordsAndPage(String keywords,int page);
+   
+   TemplateDTO updateTemplate(Template t);
 }

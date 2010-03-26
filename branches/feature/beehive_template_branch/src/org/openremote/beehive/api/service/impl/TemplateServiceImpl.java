@@ -40,91 +40,55 @@ import org.openremote.beehive.domain.Template;
 import org.openremote.beehive.utils.FileUtil;
 
 
-public class TemplateServiceImpl extends BaseAbstractService<Template> implements TemplateService
-{
+public class TemplateServiceImpl extends BaseAbstractService<Template> implements TemplateService {
    private static final Log logger = LogFactory.getLog(TemplateService.class);
 
    protected Configuration configuration = null;
 
    @Override
-   public List<TemplateDTO> loadAllTemplatesByAccountOid(long accountOid) {
-      List<TemplateDTO> templateDTOs = new ArrayList<TemplateDTO>();
-      Account account = genericDAO.getById(Account.class, accountOid);
-      if (account == null) {
-         return null;
-      }
-      for (Template template : account.getTemplates()) {
-         TemplateDTO t = new TemplateDTO();
-         t.setName(template.getName());
-         t.setOid(template.getOid());
-         t.setContent(template.getContent());
-         templateDTOs.add(t);
-      }
-      return templateDTOs;
+   public List<TemplateDTO> loadAllPrivateTemplatesByAccountOid(long accountOid) {
+      return loadAllTemplatesByAccountOidAndSharedType(accountOid,false);
    }
 
    @Override
-   public List<TemplateDTO> loadAllPublicTemplate() {
-      List<TemplateDTO> templatesDTOs = new ArrayList<TemplateDTO>();
-
-      DetachedCriteria criteria = DetachedCriteria.forClass(Template.class);
-      criteria.add(Restrictions.isNull("account"));
-      List<Template> templates = genericDAO.findByDetachedCriteria(criteria);
-      for (Template template : templates) {
-         TemplateDTO templateDTO = new TemplateDTO();
-         templateDTO.setName(template.getName());
-         templateDTO.setContent(template.getContent());
-         templateDTO.setOid(template.getOid());
-         templatesDTOs.add(templateDTO);
-      }
-      return templatesDTOs;
+   public List<TemplateDTO> loadAllPublicTemplatesByAccountOid(long accountOid) {
+      return loadAllTemplatesByAccountOidAndSharedType(accountOid,true);
    }
 
-   public List<TemplateDTO> loadPublicTemplatesByKeywordsAndPage(String keywords,int page) {
+   public List<TemplateDTO> loadPublicTemplatesByKeywordsAndPage(String keywords, int page) {
       List<TemplateDTO> templateDTOs = new ArrayList<TemplateDTO>();
       DetachedCriteria critera = DetachedCriteria.forClass(Template.class);
       if (keywords != null && keywords.trim().length() > 0) {
          String[] kwords = keywords.split(KEYWORDS_SEPERATOR);
          for (String keyword : kwords) {
             critera.add(Restrictions.eq("shared", true));
-            critera.add(Restrictions.like("keywords", keyword,MatchMode.ANYWHERE));
+            critera.add(Restrictions.like("keywords", keyword, MatchMode.ANYWHERE));
          }
       }
       genericDAO.loadAll(Template.class);
-      List<Template> templates = genericDAO.findPagedDateByDetachedCriteria(critera, TEMPLATE_SIZE_PER_PAGE, (TEMPLATE_SIZE_PER_PAGE)*page);
+      List<Template> templates = genericDAO.findPagedDateByDetachedCriteria(critera, TEMPLATE_SIZE_PER_PAGE,
+            (TEMPLATE_SIZE_PER_PAGE) * page);
       if (templates != null && templates.size() > 0) {
          for (Template template : templates) {
-            TemplateDTO dto = new TemplateDTO();
-            dto.setOid(template.getOid());
-            dto.setContent(template.getContent());
-            dto.setName(template.getName());
-            dto.setKeywords(template.getKeywords());
-            templateDTOs.add(dto);
+            templateDTOs.add(template.toDTO());
          }
       }
       return templateDTOs;
    }
+
    @Override
    public TemplateDTO loadTemplateByOid(long templateOid) {
       Template template = genericDAO.getById(Template.class, templateOid);
       if (template == null) {
          return null;
       }
-      TemplateDTO t = new TemplateDTO();
-      t.setName(template.getName());
-      t.setOid(template.getOid());
-      t.setContent(template.getContent());
-      return t;
+      return template.toDTO();
    }
 
    @Override
    public long save(Template t) {
       long templateOid = (Long) genericDAO.save(t);
-      if (t.getAccount() == null) {
-         createTemplateFolder(Template.PUBLIC_ACCOUNT_OID);
-      } else {
-         createTemplateFolder(templateOid);
-      }
+      createTemplateFolder(templateOid);
       return templateOid;
    }
 
@@ -155,6 +119,19 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
       return null;
    }
 
+   private List<TemplateDTO> loadAllTemplatesByAccountOidAndSharedType(long accountOid,boolean shared) {
+      List<TemplateDTO> templateDTOs = new ArrayList<TemplateDTO>();
+      Account account = genericDAO.getById(Account.class, accountOid);
+      if (account == null) {
+         return null;
+      }
+      for (Template template : account.getTemplates()) {
+         if (template.isShared() == shared) {
+            templateDTOs.add(template.toDTO());
+         }
+      }
+      return templateDTOs;
+   }
    private File createTemplateFolder(long templateOid) {
       String templateFolder = configuration.getTemplateResourcesDir() + File.separator + templateOid;
 
@@ -198,6 +175,18 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
 
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
+   }
+
+   @Override
+   public TemplateDTO updateTemplate(Template t) {
+      Template oldTemplate = genericDAO.loadById(Template.class, t.getOid());
+      oldTemplate.setContent(t.getContent());
+      oldTemplate.setName(t.getName());
+      oldTemplate.setKeywords(t.getKeywords());
+      oldTemplate.setShared(t.isShared());
+      
+      return oldTemplate.toDTO();
+      
    }
 
 }
