@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.event.DoubleClickEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
 import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
@@ -144,6 +145,12 @@ public class ProfilePanel extends ContentPanel {
 //            addTreeStoreEventListener();
             new PanelTreeStoreChangeListener(panelTree);
             add(panelTree);
+            panelTree.addListener(DoubleClickEvent.DOUBLECLICK, new Listener<DoubleClickEvent>() {
+               public void handleEvent(DoubleClickEvent be) {
+                  editSelectedModel();
+               }
+               
+            });
          }
       };
       initTreeWithAutoSavedPanels();
@@ -283,16 +290,7 @@ public class ProfilePanel extends ContentPanel {
       editBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            BeanModel selectedModel = panelTree.getSelectionModel().getSelectedItem();
-            if (selectedModel != null) {
-               if (selectedModel.getBean() instanceof Panel) {
-                  editPanel(selectedModel);
-               } else if (selectedModel.getBean() instanceof GroupRef) {
-                  editGroup(selectedModel);
-               } else if (selectedModel.getBean() instanceof ScreenRef) {
-                  editScreen(selectedModel);
-               }
-            }
+            editSelectedModel();
          }
       });
       return editBtn;
@@ -696,6 +694,22 @@ public class ProfilePanel extends ContentPanel {
 
    public void setScreenTab(ScreenTab screenTab) {
       this.screenTab = screenTab;
+   }
+
+   /**
+    * 
+    */
+   private void editSelectedModel() {
+      BeanModel selectedModel = panelTree.getSelectionModel().getSelectedItem();
+      if (selectedModel != null) {
+         if (selectedModel.getBean() instanceof Panel) {
+            editPanel(selectedModel);
+         } else if (selectedModel.getBean() instanceof GroupRef) {
+            editGroup(selectedModel);
+         } else if (selectedModel.getBean() instanceof ScreenRef) {
+            editScreen(selectedModel);
+         }
+      }
    }   
    
 }
