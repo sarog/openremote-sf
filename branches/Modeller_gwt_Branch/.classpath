@@ -60,6 +60,6 @@
 	<classpathentry kind="lib" path="lib/core/httpclient/apache-mime4j-0.6.jar"/>
 	<classpathentry kind="lib" path="lib/core/httpclient/httpmime-4.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/simplecaptcha/SimpleCaptcha-1.1.1.jar" sourcepath="/simple"/>
-	<classpathentry kind="lib" path="lib/core/mail/mail.jar"/>
+	<classpathentry kind="lib" path="lib/core/mail/mail-1.4.3.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
