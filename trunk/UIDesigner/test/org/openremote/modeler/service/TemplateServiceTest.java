@@ -94,7 +94,7 @@ public class TemplateServiceTest {
 
       templateService.saveTemplate(template);
       System.out.println(template.getContent());
-      Screen screen2 = templateService.buildScreenFromTemplate(template);
+      Screen screen2 = templateService.buildScreen(template);
 
       Assert.assertTrue(screen2.getGrids().size() == 1);
       Assert.assertTrue(screen.getGrid(0).getCells().get(0).getUiComponent().getClass() == UISwitch.class);

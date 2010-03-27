@@ -26,23 +26,30 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.SubmitListener;
+import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.client.widget.buildingmodeler.TemplateCreateWindow;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Template;
+import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
-import com.extjs.gxt.ui.client.widget.ListView;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * The Template panel.
@@ -52,19 +59,31 @@ import com.google.gwt.core.client.GWT;
  *
  */
 public class TemplatePanel extends ContentPanel {
+   private TreePanel<BeanModel> templateTree = TreePanelBuilder.buildTemplateTree(this);
+   
+   private ScreenTab templateEditTab = null;
+   
+   private Template templateInEditing = null;
+   
+   private ScreenTabItem editTabItem = null;
+   
+   private static final int AUTO_SAVE_INTERVAL_MS = 30000;
 
-   private ListView<BeanModel> templateView;
+   private Timer timer;
+
    private Icons icon = GWT.create(Icons.class);
 
    /**
     * Instantiates a new profile panel.
     */
-   public TemplatePanel() {
+   public TemplatePanel(ScreenTab templateEditTab) {
+      this.templateEditTab = templateEditTab;
       setHeading("Template");
       setIcon(icon.templateIcon());
       setLayout(new FitLayout());
       createMenu();
-      buildTemplateList();
+      createTreeContainer();
+      createAutoSaveTimer();
    }
 
    /**
@@ -72,14 +91,18 @@ public class TemplatePanel extends ContentPanel {
     */
    private void createMenu() {
       ToolBar toolBar = new ToolBar();
-      List<Button> editDelBtns = new ArrayList<Button>();
+      List<Button> menuButtons = new ArrayList<Button>();
       toolBar.add(createNewTemplateMenuItem());
 
+      Button editBtn = createEditTemplateMenuItem();
+      editBtn.setEnabled(true);
+      
       Button deleteBtn = createDeleteBtn();
       deleteBtn.setEnabled(true);
+      toolBar.add(editBtn);
       
       toolBar.add(deleteBtn);
-      editDelBtns.add(deleteBtn);
+      menuButtons.add(deleteBtn);
       setTopComponent(toolBar);
    }
 
@@ -96,7 +119,7 @@ public class TemplatePanel extends ContentPanel {
       deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
          @Override
          public void onDelete(ButtonEvent ce) {
-            final BeanModel templateBeanModel = templateView.getSelectionModel().getSelectedItem();
+            final BeanModel templateBeanModel = templateTree.getSelectionModel().getSelectedItem();
             
             if (templateBeanModel == null) {
                MessageBox.alert("Error", "Please select a template.", null);
@@ -111,7 +134,7 @@ public class TemplatePanel extends ContentPanel {
                   @Override
                   public void onSuccess(Boolean success) {
                      if (success) {
-                        templateView.getStore().remove(templateBeanModel);
+                        templateTree.getStore().remove(templateBeanModel);
                         Info.display("Delete Template", "Template deleted successfully.");
                      }
                   }
@@ -128,19 +151,94 @@ public class TemplatePanel extends ContentPanel {
       return deleteBtn;
    }
 
+   private Button createEditTemplateMenuItem() {
+      Button editTempalteMenuItem = new Button("Edit");
+      editTempalteMenuItem.setIcon(icon.edit());
+      editTempalteMenuItem.addSelectionListener(new SelectionListener<ButtonEvent>() {
+         public void componentSelected(ButtonEvent ce) {
+            BeanModel selectedBean= templateTree.getSelectionModel().getSelectedItem();
+            if( selectedBean == null || !(selectedBean.getBean() instanceof Template)) {
+               MessageBox.alert("Warn","A template must be selected!",null);
+               return;
+            }
+            //remember the share type information before being updated. 
+            final Template template = selectedBean.getBean();
+            final boolean shareType = template.isShared();
+            
+            List<BeanModel> topNode = templateTree.getStore().getRootItems();
+            TreeFolderBean tmpPublicTemplateParentNode = topNode.get(0).getBean();
+            TreeFolderBean tmpPrivateTemplateParentNode = topNode.get(1).getBean();
+            for(BeanModel beanModel : topNode) {
+               TreeFolderBean folderBean = beanModel.getBean();
+               if(folderBean.getDisplayName().contains("Public") ) {
+                  tmpPublicTemplateParentNode = folderBean;
+               } else {
+                  tmpPrivateTemplateParentNode = folderBean;
+               }
+            }
+            final BeanModel privateTemplateTopNode = tmpPrivateTemplateParentNode.getBeanModel();
+            final BeanModel publicTemplateTopNode = tmpPublicTemplateParentNode.getBeanModel();
+            final TemplateCreateWindow templateCreateWindow = new TemplateCreateWindow(template);
+            
+            templateCreateWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+               @Override
+               public void afterSubmit(SubmitEvent be) {
+                  Template t = be.getData();
+                  template.setContent(t.getContent());
+                  template.setScreen(t.getScreen());
+                  template.setKeywords(t.getKeywords());
+                  template.setShared(t.isShared());
+                  if (t.isShared() == shareType) {
+                     templateTree.getStore().update(template.getBeanModel());
+                  } else {
+                     templateTree.getStore().remove(template.getBeanModel());
+                     BeanModel parentNode = template.isShared()?publicTemplateTopNode:privateTemplateTopNode;
+                     templateTree.getStore().add(parentNode, template.getBeanModel(),false);
+                  }
+                  if ( editTabItem != null) {
+                     try{templateEditTab.remove(editTabItem);}catch(RuntimeException e){}
+                  } 
+                  editTabItem = new ScreenTabItem(template.getScreen());
+                  editTabItem.setText("Template: "+templateInEditing.getName());
+                  templateEditTab.add(editTabItem);
+                  templateEditTab.setSelection(editTabItem);
+               }
+
+            });
+
+         }
+      });
+      return editTempalteMenuItem;
+   }
    private Button createNewTemplateMenuItem() {
       Button newPanelItem = new Button("New");
       newPanelItem.setIcon(icon.add());
       newPanelItem.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
+            List<BeanModel> topNode = templateTree.getStore().getRootItems();
+            TreeFolderBean tmpPublicTemplateParentNode = topNode.get(0).getBean();
+            TreeFolderBean tmpPrivateTemplateParentNode = topNode.get(1).getBean();
+            for(BeanModel beanModel : topNode) {
+               TreeFolderBean folderBean = beanModel.getBean();
+               if(folderBean.getDisplayName().contains("Public") ) {
+                  tmpPublicTemplateParentNode = folderBean;
+               } else {
+                  tmpPrivateTemplateParentNode = folderBean;
+               }
+            }
+            final BeanModel privateTemplateTopNode = tmpPrivateTemplateParentNode.getBeanModel();
+            final BeanModel publicTemplateTopNode = tmpPublicTemplateParentNode.getBeanModel();
             final TemplateCreateWindow templateCreateWindow = new TemplateCreateWindow();
             templateCreateWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   Template template = be.getData();
-                  if(template.getShareTo() != Template.PUBLIC){
-                     templateView.getStore().add(template.getBeanModel());
+                  if (template.isShared()) {
+                     templateTree.getStore().add(publicTemplateTopNode, template.getBeanModel(),false);
+                  } else {
+                     templateTree.getStore().add(privateTemplateTopNode, template.getBeanModel(),false);
                   }
+                  layout();
                }
 
             });
@@ -150,24 +248,90 @@ public class TemplatePanel extends ContentPanel {
       return newPanelItem;
    }
 
-   private void buildTemplateList() {
-      this.templateView = new ListView<BeanModel>();
-      templateView.setStateful(true);
-      templateView.setBorders(false);
-      templateView.setHeight("100%");      
-      templateView.setDisplayProperty("name");
-      final ListStore<BeanModel> store = new ListStore<BeanModel> ();
-      templateView.setStore(store);
-      TemplateProxy.getTemplates(true, new AsyncSuccessCallback<List<Template>>(){
+   
+   private void createTreeContainer() {
+      LayoutContainer treeContainer = new LayoutContainer() {
          @Override
-         public void onSuccess(List<Template> result) {
-            if (result.size() > 0) {
-               store.add(Template.createModels(result));
-               layout();
-            }
+         protected void onRender(Element parent, int index) {
+            super.onRender(parent, index);
+            add(templateTree);
          }
          
-      });
-      add(templateView);
+      };
+      treeContainer.ensureDebugId(DebugId.DEVICE_TREE_CONTAINER);
+   // overflow-auto style is for IE hack.
+      treeContainer.addStyleName("overflow-auto");
+      treeContainer.setStyleAttribute("backgroundColor", "white");
+      treeContainer.setBorders(false);
+      add(treeContainer);
+      
    }
+   
+   
+   private void createAutoSaveTimer() {
+      timer = new Timer() {
+         @Override
+         public void run() {
+            saveTemplateUpdates();
+         }
+      };
+      timer.scheduleRepeating(AUTO_SAVE_INTERVAL_MS);
+      
+   }
+   
+   private void saveTemplateUpdates() {
+      if (templateInEditing != null) {
+         TemplateProxy.updateTemplate(templateInEditing, new AsyncCallback<Template>(){
+
+            @Override
+            public void onFailure(Throwable caught) {
+               Info.display("Error","Update template: "+templateInEditing.getName()+"failed");
+            }
+
+            @Override
+            public void onSuccess(Template result) {
+               Info.display("Success", "auto save template" + templateInEditing.getName()+" successfully !");
+            }
+            
+         });
+      }
+   }
+
+   public Template getTemplateInEditing() {
+      return templateInEditing;
+   }
+
+   public void setTemplateInEditing(final Template templateInEditing) {
+      if (templateInEditing != null &&templateInEditing.equals(this.templateInEditing)) return;
+      //-----------------------------
+      // 1, save previous template.
+      //      saveTemplateUpdates();
+      //------------------------------
+      // 2, edit another template.
+      TemplateProxy.buildScreen(templateInEditing, new AsyncCallback<Screen>() {
+
+         @Override
+         public void onFailure(Throwable caught) {
+            MessageBox.alert("Error", "Failed to preview Template: " + templateInEditing.getName(), null);
+         }
+
+         @Override
+         public void onSuccess(Screen screen) {
+            // try to close previous template editing tab item.
+            if ( editTabItem != null) {
+               try{templateEditTab.remove(editTabItem);}catch(RuntimeException e){}
+            } 
+            editTabItem = new ScreenTabItem(screen);
+            editTabItem.setText("Template: "+templateInEditing.getName());
+            templateEditTab.add(editTabItem);
+            templateEditTab.setSelection(editTabItem);
+            templateInEditing.setScreen(screen);
+         }
+
+      });
+
+      this.templateInEditing = templateInEditing;
+
+   }
+   
 }
