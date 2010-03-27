@@ -62,7 +62,7 @@ public interface TemplateService {
     * @param template
     * @return screen build from template. 
     */
-   Screen buildScreen(Template template);
+   Screen buildScreenFromTemplate(Template template);
    
    /**
     * ReBuild Device, DeviceCommand, Sensor, Switch, Slider... for a screen. 
@@ -71,11 +71,6 @@ public interface TemplateService {
     * @return A wrap class consist of screen and its device set.   
     */
    ScreenFromTemplate reBuildCommand(Screen screen);
-   
-   
-   Template updateTemplate(Template template);
-   
-   String getTemplateContent(Screen screen);
    
    List<Template> getTemplates(boolean isFromPrivate);
    
