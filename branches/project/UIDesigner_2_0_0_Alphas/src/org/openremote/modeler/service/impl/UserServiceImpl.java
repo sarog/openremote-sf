@@ -176,6 +176,14 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
              message.setFrom(mailSender.getUsername());
              Map model = new HashMap();
              model.put("user", user);
+             String rpwd = user.getRawPassword();
+             StringBuffer maskPwd = new StringBuffer();
+             maskPwd.append(rpwd.substring(0, 1));
+             for (int i = 0; i < rpwd.length() - 2; i++) {
+               maskPwd.append("*");
+             }
+             maskPwd.append(rpwd.substring(rpwd.length() - 1));
+             model.put("maskPassword", maskPwd.toString());
              model.put("webapp", configuration.getWebappServerRoot());
              model.put("aid", new Md5PasswordEncoder().encodePassword(user.getUsername(), user.getPassword()));
              String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
