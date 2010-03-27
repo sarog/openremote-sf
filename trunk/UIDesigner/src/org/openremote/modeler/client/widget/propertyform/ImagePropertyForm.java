@@ -68,13 +68,15 @@ public class ImagePropertyForm extends PropertyForm {
    private State customSensorState = null;
    
    public ImagePropertyForm(ScreenImage screenImage) {
-      super();
+      super(screenImage);
       this.screenImage = screenImage;
       addFields(screenImage);
       addListenersToForm();
       createSensorStates();
    }
    private void addFields(final ScreenImage screenImage) {
+      this.setLabelWidth(70);
+      this.setFieldWidth(150);
       final UIImage uiImage = screenImage.getUiImage();
       
       final Button sensorSelectBtn = new Button("Select");
@@ -92,8 +94,12 @@ public class ImagePropertyForm extends PropertyForm {
                   Sensor sensor = dataModel.getBean();
                   uiImage.setSensor(sensor);
                   sensorSelectBtn.setText(sensor.getDisplayName());
-
-                  createSensorStates();
+                  if (sensor.getType() == SensorType.SWITCH || sensor.getType()==SensorType.CUSTOM) {
+                     statesPanel.show();
+                     createSensorStates();
+                  } else {
+                     statesPanel.hide();
+                  }
                }
             });
          }
@@ -131,16 +137,22 @@ public class ImagePropertyForm extends PropertyForm {
       
       statesPanel = new FieldSet();
       FormLayout layout = new FormLayout();
-      layout.setLabelWidth(80);
-      layout.setDefaultWidth(80);
+      layout.setLabelWidth(65);
+      layout.setDefaultWidth(145);
       statesPanel.setLayout(layout);
       statesPanel.setHeading("Sensor State");
       add(statesPanel);
+      Sensor sensor = screenImage.getUiImage().getSensor();
+      if (sensor == null) {
+         statesPanel.hide();
+      } else if (sensor.getType() != SensorType.SWITCH && sensor.getType() != SensorType.CUSTOM) {
+         statesPanel.hide();
+      }
    }
    @SuppressWarnings("unchecked")
    private ComboBox<ModelData> createLabelSelector() {
       ComboBox<ModelData> labelBox = new SimpleComboBox();
-      labelBox.setFieldLabel("Label");
+      labelBox.setFieldLabel("FallbackLabel");
       Collection<UILabel> labelsonScreen = (Collection<UILabel>) screenImage.getScreenCanvas().getScreen().getAllUIComponentByType(UILabel.class);
       ListStore<ModelData> labelStore = new ListStore<ModelData>();
       for (UILabel label : labelsonScreen) {
@@ -236,7 +248,7 @@ public class ImagePropertyForm extends PropertyForm {
             }
          };
          
-         onImageUpload.setFieldLabel("on:");
+         onImageUpload.setFieldLabel("on");
          
          ImageUploadField offImageUpload = new ImageUploadField("switchOffImage") {
             @Override
@@ -251,7 +263,7 @@ public class ImagePropertyForm extends PropertyForm {
                screenImage.getScreenCanvas().mask("Uploading image...");
             }
          };
-         offImageUpload.setFieldLabel("off:");
+         offImageUpload.setFieldLabel("off");
          if(sensorLink!=null){
             onImageUpload.setValue(sensorLink.getStateValueByStateName("on"));
             offImageUpload.setValue(sensorLink.getStateValueByStateName("off"));

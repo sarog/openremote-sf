@@ -25,6 +25,7 @@ import java.util.List;
 import javax.persistence.Transient;
 
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.utils.StringUtils;
 
 import flexjson.JSON;
 
@@ -143,7 +144,7 @@ public class UIButton extends UIControl {
    @Override
    public String getPanelXml() {
       StringBuffer xmlContent = new StringBuffer();
-      xmlContent.append("        <button id=\"" + getOid() + "\" name=\"" + getName() + "\"");
+      xmlContent.append("        <button id=\"" + getOid() + "\" name=\"" + StringUtils.escapeXml(getName()) + "\"");
       if (uiCommand != null) {
          xmlContent.append(" hasControlCommand=\"true\"");
       }

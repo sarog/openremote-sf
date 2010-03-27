@@ -14,15 +14,15 @@ Device configurations can be retrieved from Beehive database and scenes and even
 II. Requirements
 ================
 The "Modeler" requires this 3rd party software:
-1) GWT 1.6.4 or above
+1) GWT 1.6.4
 2) JBoss 4.2.3 GA or above, Tomcat 5.5.26 or above
-3) Java 1.5 or above
+3) Java 1.6 or above
 4) MySQL 5.0 or above
 5) Ant 1.7.1 or above
 
 III. "Modeler" site deployment
 ==============================================
-1) create a database named 'modeler' in MySQL.
+1) share a database named 'beehive' with Beehive in MySQL.
 2) modify following configuration variables in "%PROJECT_ROOT%/config/config.properties"
     file (see comments inside this file for details):
     a) set "jdbc.url" parameter value to MySQL URL 
@@ -35,11 +35,19 @@ III. "Modeler" site deployment
     h) set "webapp.server.root" parameter value to your web server root (eg: http://localhost:8080)
     i) set "controller.config.path" parameter value to your controller config xml descriptor file path
     
+    j) set "mail.sender.host" to your mail host (eg: smtp.163.com)
+    k) set "mail.sender.port" to your mail port (eg: 25)
+    l) set "mail.sender.username" to your mail username (eg: openremote@163.com)
+    m) set "mail.sender.password" to your mail password 
+    n) set "mail.smtp.auth.on" to true if your mail service needs auth.
+    o) set "mail.smtp.timeout" to your mail timeout in millisecond. (eg: 25000)
+
+    
 3) modify following configuration variables in "%PROJECT_ROOT%/build.properties"
     a) set parameter 'gwt.sdk' in build.properties to your GWT SDK home. This is required by GWT build.
     b) set parameter 'deploy.dir' in build.properties to your webapps folder of Tomcat.
      
-4) run 'ant deploy' in command line. 
+4) run 'ant deploy' in command line under project dir. 
 
    
 IV. Supported functions

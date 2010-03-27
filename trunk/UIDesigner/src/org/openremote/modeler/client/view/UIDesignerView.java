@@ -114,7 +114,7 @@ public class UIDesignerView extends TabItem {
                @Override
                public void onFailure(Throwable caught) {
                   timer.cancel();
-                  Info.display(new InfoConfig("Error", "failed to save UI information "
+                  Info.display(new InfoConfig("Error", caught.getLocalizedMessage()
                         + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
                }
 
@@ -131,12 +131,12 @@ public class UIDesignerView extends TabItem {
             }
          }
 
-         @Override
+         /*@Override
          public void onFailure(Throwable caught) {
             timer.cancel();
             Info.display(new InfoConfig("Error", "failed to save UI information "
                   + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
-         }
+         }*/
 
       });
    }
@@ -168,7 +168,12 @@ public class UIDesignerView extends TabItem {
 
          @Override
          public void onFailure(Throwable caught) {
-            MessageBox.alert("Fail", "Server error, UI designer restore failed.", null);
+            /*
+             * if (caught instanceof BeehiveNotAvailableException) {
+             * 
+             * } MessageBox.alert("Fail", "Server error, UI designer restore failed.", null);
+             */
+            MessageBox.alert("Error", "UI designer restore failed: " + caught.getLocalizedMessage(), null);
          }
       });
    }
@@ -178,6 +183,7 @@ public class UIDesignerView extends TabItem {
     */
    private void createEast() {
       BorderLayoutData eastLayout = new BorderLayoutData(LayoutRegion.EAST, 300);
+      eastLayout.setSplit(true);
       eastLayout.setMargins(new Margins(0, 2, 0, 2));
       add(createWidgetAndPropertyContainer(), eastLayout);
    }

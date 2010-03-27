@@ -19,13 +19,15 @@
 */
 package org.openremote.modeler.exception;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
  * Custom Exception when operate file faild.
  * 
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */
 @SuppressWarnings("serial")
-public class FileOperationException extends RuntimeException {
+public class FileOperationException extends RuntimeException implements IsSerializable{
    
    /**
     * Instantiates a new file operation exception.
@@ -44,5 +46,11 @@ public class FileOperationException extends RuntimeException {
     */
    public FileOperationException(String s, Throwable throwable) {
       super(s, throwable);
+   }
+   
+   /**
+    * This constructor is necessary for GWT to serialize to client. 
+    */
+   public FileOperationException() {
    }
 }

@@ -43,7 +43,6 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * The Template panel.
@@ -119,7 +118,7 @@ public class TemplatePanel extends ContentPanel {
 
                   @Override
                   public void onFailure(Throwable caught) {
-                     MessageBox.alert("Error", "Failed to delete template. Beehive not currently available. Error message :"+caught.getMessage(), null);
+                     MessageBox.alert("Error", "Failed to delete template :\""+caught.getMessage()+"\"", null);
                   }
 
                });
@@ -157,19 +156,13 @@ public class TemplatePanel extends ContentPanel {
       templateView.setBorders(false);
       templateView.setHeight("100%");      
       templateView.setDisplayProperty("name");
-      TemplateProxy.getTemplates(true, new AsyncCallback<List<Template>>(){
-
-         @Override
-         public void onFailure(Throwable caught) {
-            Info.display("Error", "Failed to get your templates, error message: "+caught.getMessage());
-         }
-
+      final ListStore<BeanModel> store = new ListStore<BeanModel> ();
+      templateView.setStore(store);
+      TemplateProxy.getTemplates(true, new AsyncSuccessCallback<List<Template>>(){
          @Override
          public void onSuccess(List<Template> result) {
             if (result.size() > 0) {
-               ListStore<BeanModel> store = new ListStore<BeanModel> ();
                store.add(Template.createModels(result));
-               templateView.setStore(store);
                layout();
             }
          }

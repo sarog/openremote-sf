@@ -19,15 +19,17 @@
 */
 package org.openremote.modeler.exception;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 
 /**
  * If the parse protocol XMLs procedure occurr error, application will throw this exception.
  */
 @SuppressWarnings("serial")
-public class ParseProtocolException extends RuntimeException {
+public class ParseProtocolException extends RuntimeException implements IsSerializable{
 
    /**
-    * Instantiates a new parses the protocol exception.
+    * This constructor is necessary for GWT to serialize to client. 
     */
    public ParseProtocolException() {
       super();

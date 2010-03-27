@@ -26,6 +26,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +38,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -89,6 +92,7 @@ import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.FileOperationException;
+import org.openremote.modeler.exception.IllegalRestUrlException;
 import org.openremote.modeler.exception.UIRestoreException;
 import org.openremote.modeler.exception.XmlExportException;
 import org.openremote.modeler.exception.XmlParserException;
@@ -146,6 +150,9 @@ public class ResourceServiceImpl implements ResourceService {
       initResources(panels, maxOid);
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File zipFile = this.getExportResource();
+      if (zipFile == null) {
+         throw new XmlExportException("Failed to export! User folder is empty!");
+      }
       return pathConfig.getZipUrl(userService.getAccount())+zipFile.getName();
 
    }
@@ -612,6 +619,7 @@ public class ResourceServiceImpl implements ResourceService {
          context.put("panels", panels);
          context.put("groups", groups);
          context.put("screens", screens);
+         context.put("stringUtils", StringUtils.class);
          return VelocityEngineUtils.mergeTemplateIntoString(velocity, PANEL_XML_TEMPLATE, context);
       } catch (VelocityException e) {
          throw new XmlExportException("Failed to read panel.xml", e);
@@ -626,7 +634,6 @@ public class ResourceServiceImpl implements ResourceService {
    public void setVelocity(VelocityEngine velocity) {
       this.velocity = velocity;
    }
-   
    
    public void setUserService(UserService userService) {
       this.userService = userService;
@@ -655,7 +662,9 @@ public class ResourceServiceImpl implements ResourceService {
       Collection<UIComponent> uiSliders = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UISlider.class);
       Collection<UIComponent> uiImages = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIImage.class);
       Collection<UIComponent> uiLabels = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UILabel.class);
-      Collection<ControllerConfig> configs = controllerConfigService.listAllForCurrentAccount();
+      Collection<ControllerConfig> configs = controllerConfigService.listAllConfigs();
+      configs.removeAll(controllerConfigService.listAllexpiredConfigs());
+      configs.addAll(controllerConfigService.listAllMissingConfigs());
       
       context.put("switchs", switchs);
       context.put("buttons", buttons);
@@ -670,7 +679,7 @@ public class ResourceServiceImpl implements ResourceService {
       context.put("images", uiImages);
       context.put("maxId", maxId);
       context.put("configs", configs);
-
+      context.put("stringUtils", StringUtils.class);
 
       return VelocityEngineUtils.mergeTemplateIntoString(velocity, CONTROLLER_XML_TEMPLATE, context);
    }
@@ -826,7 +835,7 @@ public class ResourceServiceImpl implements ResourceService {
          }
          
          serialize(panels,maxOid);
-         saveResourcesToBeehive();
+//         saveResourcesToBeehive();
       } catch (IOException e) {
          throw new FileOperationException("Failed to write resource: " + e.getMessage(), e);
       }
@@ -873,14 +882,14 @@ public class ResourceServiceImpl implements ResourceService {
          return null;
       }
       ObjectInputStream ois = null;
-      PanelsAndMaxOid panelsAndMaxOid = null;
+      PanelsAndMaxOid panelsAndMaxOid = new PanelsAndMaxOid(new ArrayList<Panel>(),0);
       try {
          ois = new ObjectInputStream(new FileInputStream(panelsObjFile));
          Collection<Panel> panels = (Collection<Panel>) ois.readObject();
          Long maxOid = ois.readLong();
          panelsAndMaxOid = new PanelsAndMaxOid(panels, maxOid);
       } catch (Exception e) {
-         throw new UIRestoreException("restore failed from server", e);
+         throw new UIRestoreException("UIDesigner restore failed, incompatible data can not be restore to panels. ", e);
       } finally {
          try {
             if (ois != null) {
@@ -903,9 +912,12 @@ public class ResourceServiceImpl implements ResourceService {
       HttpPost httpPost = new HttpPost();
       String beehiveRootRestURL = configuration.getBeehiveRESTRootUrl();
       this.addAuthentication(httpPost);
+      
+      String url = beehiveRootRestURL + "account/" + userService.getAccount().getOid()
+      + "/openremote.zip";
+      
       try {
-         httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid()
-               + "/openremote.zip"));
+         httpPost.setURI(new URI(url));
          FileBody resource = new FileBody(getExportResource());
          MultipartEntity entity = new MultipartEntity();
          entity.addPart("resource", resource);
@@ -916,8 +928,12 @@ public class ResourceServiceImpl implements ResourceService {
             throw new BeehiveNotAvailableException("Failed to save resource to Beehive, status code: "
                   + response.getStatusLine().getStatusCode());
          }
-      } catch (Exception e) {
+      } catch (NullPointerException e) {
+         LOGGER.warn("There no resource to upload to beehive at this time. ");
+      } catch (IOException e) {
          throw new BeehiveNotAvailableException(e.getMessage(), e);
+      } catch (URISyntaxException e) {
+         throw new IllegalRestUrlException("Invalid Rest URL: "+url+" to save modeler resource to beehive! ",e);
       }
    }
    
@@ -926,14 +942,15 @@ public class ResourceServiceImpl implements ResourceService {
       HttpClient httpClient = new DefaultHttpClient();
       HttpPost httpPost = new HttpPost();
       String beehiveRootRestURL = configuration.getBeehiveRESTRootUrl();
+      String url = "";
+      if (!share) {
+         url = beehiveRootRestURL + "account/" + userService.getAccount().getOid()
+         + "/template/" + template.getOid()+"/resource/";
+      } else {
+         url = beehiveRootRestURL + "account/0/template/" + template.getOid() + "/resource/";
+      } 
       try {
-         if (!share) {
-            httpPost.setURI(new URI(beehiveRootRestURL + "account/" + userService.getAccount().getOid()
-                  + "/template/" + template.getOid()+"/resource/"));
-         } else {
-            httpPost.setURI(new URI(beehiveRootRestURL + "account/0/template/" + template.getOid() + "/resource/"));
-         }
-
+         httpPost.setURI(new URI(url));
          FileBody resource = new FileBody(getTemplateZipResource());
          MultipartEntity entity = new MultipartEntity();
          entity.addPart("resource", resource);
@@ -947,8 +964,12 @@ public class ResourceServiceImpl implements ResourceService {
             throw new BeehiveNotAvailableException("Failed to save template to Beehive, status code: "
                   + response.getStatusLine().getStatusCode());
          }
-      } catch (Exception e) {
+      } catch (NullPointerException e){
+         LOGGER.warn("There are no template resources for template \"" + template.getName()+ "\"to save to beehive!");
+      } catch (IOException e) {
          throw new BeehiveNotAvailableException("Failed to save template to Beehive", e);
+      } catch (URISyntaxException e) {
+         throw new IllegalRestUrlException("Invalid Rest URL: "+url+" to save template resource to beehive! ",e);
       }
    }
    @Override
@@ -993,6 +1014,9 @@ public class ResourceServiceImpl implements ResourceService {
             fos.flush();
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
+         } else if (404 == response.getStatusLine().getStatusCode()) {
+            LOGGER.warn("There are no resources for this template, ID:" + templateOid);
+            return;
          } else {
             throw new BeehiveNotAvailableException("Failed to download resources for template, status code: "
                   + response.getStatusLine().getStatusCode());
@@ -1036,8 +1060,10 @@ public class ResourceServiceImpl implements ResourceService {
          this.addAuthentication(httpGet);
          HttpResponse response = httpClient.execute(httpGet);
 
-         if (404 == response.getStatusLine().getStatusCode()) {
-            LOGGER.warn("Failed to download openremote.zip from Beehive. Status code: 404");
+         if (HttpServletResponse.SC_NOT_FOUND == response.getStatusLine().getStatusCode()) {
+            LOGGER.warn("Failed to download openremote.zip for user "
+                  + userService.getAccount().getUser().getUsername()
+                  + " from Beehive. Status code is 404. Will try to restore panels from local resource! ");
             return;
          }
 
@@ -1048,8 +1074,8 @@ public class ResourceServiceImpl implements ResourceService {
             if (!userFolder.exists()) {
                boolean success = userFolder.mkdirs();
                if (!success) {
-                  throw new FileOperationException("Failed to create the required directories for path '"
-                        + userFolder + "'.");
+                  throw new FileOperationException("Failed to create the required directories for path '" + userFolder
+                        + "'.");
                }
             }
             File outPut = new File(userFolder, "openremote.zip");
@@ -1066,12 +1092,12 @@ public class ResourceServiceImpl implements ResourceService {
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
          } else {
-            throw new BeehiveNotAvailableException("Failed to download resources for template, status code: "
+            throw new BeehiveNotAvailableException("Failed to download resources, status code: "
                   + response.getStatusLine().getStatusCode());
          }
       } catch (IOException ioException) {
-         throw new BeehiveNotAvailableException("I/O exception in openremote.zip file handling: "
-               + ioException.getMessage(), ioException);
+         throw new BeehiveNotAvailableException("Failed to download user resource: " + ioException.getMessage(),
+               ioException);
       } finally {
          if (inputStream != null) {
             try {
@@ -1102,6 +1128,9 @@ public class ResourceServiceImpl implements ResourceService {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
       File[] filesInAccountFolder = userFolder.listFiles();
+      if (filesInAccountFolder == null || filesInAccountFolder.length == 0) {
+         return null;
+      }
       File[] filesInZip = new File[filesInAccountFolder.length];
       int i = 0;
       for (File file : filesInAccountFolder) {

@@ -54,9 +54,11 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
  * A panel for display screen button properties.
  */
 public class ButtonPropertyForm extends PropertyForm {
-
+   private CheckBox repeat = new CheckBox();
+   private NavigateFieldSet navigateSet = null;
+   
    public ButtonPropertyForm(ScreenButton screenButton, UIButton uiButton) {
-      super();
+      super(screenButton);
       addFields(screenButton, uiButton);
    }
    private void addFields(final ScreenButton screenButton, final UIButton uiButton) {
@@ -101,11 +103,13 @@ public class ButtonPropertyForm extends PropertyForm {
       
       // initial navigate properties
       final Navigate navigate = uiButton.getNavigate();
-      final NavigateFieldSet navigateSet = new NavigateFieldSet(navigate, BeanModelDataBase.groupTable.loadAll());
+      navigateSet = new NavigateFieldSet(navigate, BeanModelDataBase.groupTable.loadAll());
       navigateSet.setCheckboxToggle(true);
       navigateSet.addListener(Events.BeforeExpand, new Listener<FieldSetEvent>() {
          @Override
          public void handleEvent(FieldSetEvent be) {
+            uiButton.setRepeate(false);
+            repeat.setValue(false);
             if (!navigate.isSet()) {
                navigate.setToLogical(ToLogicalType.login);
             }
@@ -170,22 +174,28 @@ public class ButtonPropertyForm extends PropertyForm {
       AdapterField adapterOnPressImageBtn = new AdapterField(onPressImageBtn);
       adapterOnPressImageBtn.setFieldLabel("PressImage");
       
-      CheckBoxGroup repeat = new CheckBoxGroup();
-      repeat.setFieldLabel("Repeat");
-      final CheckBox check = new CheckBox();
-      check.setValue(uiButton.isRepeate());
-      check.addListener(Events.Blur, new Listener<FieldEvent>() {
+      CheckBoxGroup repeatCheckBoxGroup = new CheckBoxGroup();
+      repeatCheckBoxGroup.setFieldLabel("Repeat");
+      repeat.setValue(uiButton.isRepeate());
+      repeat.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
-            uiButton.setRepeate(check.getValue());
+            if (repeat.getValue() == true) {
+               if (uiButton.getNavigate() != null) {
+                  uiButton.getNavigate().setToGroup(-1L);
+                  uiButton.getNavigate().setToLogical(null);
+               }
+            }
+            navigateSet.collapse();
+            uiButton.setRepeate(repeat.getValue());
          }
       });
-      repeat.add(check); 
+      repeatCheckBoxGroup.add(repeat); 
       add(name);
       add(adapterCommand);
       add(adapterImageBtn);
       add(adapterOnPressImageBtn);
-      add(repeat);
+      add(repeatCheckBoxGroup);
       add(navigateSet);
       
    }

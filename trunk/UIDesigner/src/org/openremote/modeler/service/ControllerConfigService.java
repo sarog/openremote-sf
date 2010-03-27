@@ -3,8 +3,8 @@ package org.openremote.modeler.service;
 import java.util.Set;
 
 import org.openremote.modeler.domain.Account;
-import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.ConfigCategory;
+import org.openremote.modeler.domain.ControllerConfig;
 
 public interface ControllerConfigService {
    
@@ -17,7 +17,7 @@ public interface ControllerConfigService {
     * @param account The current account. 
     * @return all configuration item under a category. 
     */
-   Set<ControllerConfig> listAllConfigByCategoryNameForAccouont(String categoryName,Account account);
+   Set<ControllerConfig> listAllConfigsByCategoryNameForAccount(String categoryName,Account account);
    
    /**
     * Update a configuration . 
@@ -34,12 +34,41 @@ public interface ControllerConfigService {
     */
    Set<ControllerConfig> saveAll(Set<ControllerConfig> configs);
    
-   Set<ControllerConfig> listAllConfigByCategoryForCurrentAccount(String categoryName);
+   /**
+    * This method is used to get all missing configurations under a 
+    * category. 
+    * Sometime there are some new configurations may be added, 
+    * but always all the configurations will be saved to user's 
+    * account as soon as this user is created. Therefore there some 
+    * configurations which are not saved to user if the default 
+    * configurations is changed. 
+    * @param categoryName
+    * @return
+    */
+   Set<ControllerConfig> listMissedConfigsByCategoryName(String categoryName);
    
-   Set<ControllerConfig> listAllForCurrentAccount();
+   /**
+    * This method is used to get all missing controller configurations 
+    * without caring about configuration's category.  
+    * 
+    * Sometime there are some new configurations may be added, 
+    * but always all the configurations will be saved to user's 
+    * account as soon as this user is created. Therefore there some 
+    * configurations which are not saved to user if the default 
+    * configurations is changed. 
+    * @return
+    */
+   Set<ControllerConfig> listAllMissingConfigs();
+   
+   Set<ControllerConfig> listAllexpiredConfigs();
+   
+   Set<ControllerConfig> listAllConfigsByCategory(String categoryName);
+   
+   Set<ControllerConfig> listAllConfigs();
    
    Set<ControllerConfig> listAllByAccount(Account account);
    
    Set<ConfigCategory> listAllCategory();
+   
    
 }

@@ -19,9 +19,12 @@ package org.openremote.modeler.client.widget.uidesigner;
 import java.util.List;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.event.WidgetDeleteEvent;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
+import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.propertyform.ScreenPropertyForm;
 import org.openremote.modeler.domain.Absolute;
@@ -45,6 +48,7 @@ import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.fx.Resizable;
 import com.extjs.gxt.ui.client.util.KeyNav;
 import com.extjs.gxt.ui.client.util.Point;
+import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
@@ -367,6 +371,11 @@ public class ScreenCanvas extends ComponentContainer {
             event.getStatus().setStatus(true);
             event.getStatus().update("drop here");
             event.cancelBubble();
+            ScreenComponent screenComponent = ((AbsoluteLayoutContainer)layoutContainer).getScreenComponent();
+            if (screenComponent instanceof ScreenButton) {
+               ((ScreenButton)screenComponent).setDefaultImage();
+            }
+            
          }
       };
       source.setGroup(Constants.CONTROL_DND_GROUP);
@@ -407,19 +416,35 @@ public class ScreenCanvas extends ComponentContainer {
       return new Point(left, top);
    }
 
-   private AbsoluteLayoutContainer createAbsoluteLayoutContainer(final Screen screen, Absolute absolute,
-         ScreenComponent screenControl) {
+   private AbsoluteLayoutContainer createAbsoluteLayoutContainer(final Screen screen, final Absolute absolute,
+         final ScreenComponent screenControl) {
       final AbsoluteLayoutContainer controlContainer = new AbsoluteLayoutContainer(this, absolute, screenControl) {
          @Override
-         public void onBrowserEvent(Event event) {
-            if (event.getTypeInt() == Event.ONMOUSEDOWN) {
+         public void onComponentEvent(ComponentEvent ce) {
+            if (ce.getEventTypeInt() == Event.ONMOUSEDOWN) {
                WidgetSelectionUtil.setSelectWidget(this);
+               if (screenControl instanceof ScreenButton) {
+                  ((ScreenButton)screenControl).setPressedImage();
+               } else if (screenControl instanceof ScreenSwitch) {
+                  ((ScreenSwitch)screenControl).onStateChange();
+               }
+            } else if (ce.getEventTypeInt() == Event.ONMOUSEUP){
+               if (screenControl instanceof ScreenButton) {
+                  ((ScreenButton)screenControl).setDefaultImage();
+               }
             }
-            event.stopPropagation();
-            super.onBrowserEvent(event);
+            ce.cancelBubble();
+            super.onComponentEvent(ce);
          }
-
       };
+      controlContainer.sinkEvents(Event.ONMOUSEUP);
+      controlContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
+         public void handleEvent(WidgetDeleteEvent be) {
+            screen.removeAbsolute(absolute);
+            controlContainer.removeFromParent();
+         }
+         
+      });
       new KeyNav<ComponentEvent>() {
          @Override
          public void onDelete(ComponentEvent ce) {
@@ -495,7 +520,21 @@ public class ScreenCanvas extends ComponentContainer {
             event.stopPropagation();
             super.onBrowserEvent(event);
          }
+
+         @Override
+         protected void afterRender() {
+            super.afterRender();
+            this.setZIndex(100); // set z-index to make drop widget on grid cell is possible(after reopen the screen).
+         }
+         
       };
+      gridContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
+         public void handleEvent(WidgetDeleteEvent be) {
+            screen.removeGrid(grid);
+            gridContainer.removeFromParent();
+         }
+         
+      });
       new KeyNav<ComponentEvent>(gridContainer) {
          @Override
          public void onDelete(ComponentEvent ce) {
@@ -608,6 +647,13 @@ public class ScreenCanvas extends ComponentContainer {
          layout();
       }
    }
+   
+   public void removeTabbar() {
+      if (tabbarContainer != null) {
+         tabbarContainer.removeFromParent();
+         hasTabbar = false;
+      }
+   }
 
    public void setSizeToDefault(UIComponent component) {
       for (Absolute absolute : screen.getAbsolutes()) {
@@ -617,4 +663,5 @@ public class ScreenCanvas extends ComponentContainer {
       }
       this.layout();
    }
+
 }

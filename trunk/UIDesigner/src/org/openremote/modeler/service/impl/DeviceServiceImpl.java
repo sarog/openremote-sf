@@ -29,15 +29,8 @@ import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.service.DeviceService;
 
-/**
- * The Class DeviceServiceImpl.
- */
 public class DeviceServiceImpl extends BaseAbstractService<Device> implements DeviceService {
 
-   /* (non-Javadoc)
-    * @see org.openremote.modeler.client.rpc.DeviceRPCService#saveDevice(java.util.Map)
-    */
-   /** The device macro item service. */
    private DeviceMacroItemService deviceMacroItemService;
    
 
@@ -52,7 +45,6 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
 
    /**
     * {@inheritDoc}
-    * @see org.openremote.modeler.service.DeviceService#saveDevice(org.openremote.modeler.domain.Device)
     */
    public Device saveDevice(Device device) {
       genericDAO.save(device);
@@ -69,7 +61,6 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
 
    /**
     * {@inheritDoc}
-    * @see org.openremote.modeler.client.rpc.DeviceRPCService#removeDevice(org.openremote.modeler.domain.Device)
     */
    public void deleteDevice(long id) {
       Device device = loadById(id);
@@ -81,7 +72,6 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
 
    /**
     * {@inheritDoc}
-    * @see org.openremote.modeler.client.rpc.DeviceRPCService#loadAll(org.openremote.modeler.domain.Account)
     */
    public List<Device> loadAll(Account account) {
       List<Device> devices = account.getDevices();
@@ -90,7 +80,6 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
 
    /**
     * {@inheritDoc}
-    * @see org.openremote.modeler.service.DeviceService#updateDevice(org.openremote.modeler.domain.Device)
     */
    public void updateDevice(Device device) {
       genericDAO.saveOrUpdate(device);
@@ -98,11 +87,12 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
 
    /**
     * {@inheritDoc}
-    * @see org.openremote.modeler.service.BaseAbstractService#loadById(long)
     */
    public Device loadById(long id) {
       Device device = super.loadById(id);
-      Hibernate.initialize(device.getAccount().getConfigs());
+      if (device.getAccount() != null) {
+         Hibernate.initialize(device.getAccount().getConfigs());
+      }
       Hibernate.initialize(device.getDeviceCommands());
       Hibernate.initialize(device.getSensors());
       Hibernate.initialize(device.getSliders());

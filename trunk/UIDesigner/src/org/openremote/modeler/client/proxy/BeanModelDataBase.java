@@ -79,7 +79,7 @@ public class BeanModelDataBase {
    public static final BeanModelTable groupTable = new GroupTable();
 
    /** The Constant screenTable. */
-   public static final BeanModelTable screenTable = new ScreenTable();
+   public static final ScreenTable screenTable = new ScreenTable();
    
    public static final BeanModelTable panelTable = new BeanModelTable();
    

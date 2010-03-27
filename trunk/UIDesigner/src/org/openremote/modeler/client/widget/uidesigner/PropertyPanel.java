@@ -36,6 +36,9 @@ public class PropertyPanel extends ContentPanel {
    private FormPanel currentPropertyForm;
 //   private static PropertyPanel propertyPanel;
    public PropertyPanel() {
+      setBorders(false);
+      setFooter(false);
+      setBodyStyleName("zero-padding");
       setBodyBorder(false);
       setHeading("Properties");
       setLayout(new FitLayout());

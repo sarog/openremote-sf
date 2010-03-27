@@ -61,16 +61,17 @@ public class SelectScreenForm extends CommonForm {
       setLabelAlign(LabelAlign.TOP);
       createFields();
       addBeforeSubmitListener();
+      setFieldWidth(280);
    }
    
    
    private void createFields() {
       AdapterField screenField = new AdapterField(createScreenList());
-      screenField.setFieldLabel("Screen");
+      screenField.setFieldLabel("Screens with the same dimension");
       
       showAll = new CheckBox();
       showAll.setHideLabel(true);
-      showAll.setBoxLabel("show all screens");
+      showAll.setBoxLabel("show other panel type");
       showAll.addListener(Events.Change, new Listener<FieldEvent>() {
          @Override
          public void handleEvent(FieldEvent be) {
@@ -126,17 +127,11 @@ public class SelectScreenForm extends CommonForm {
       store.removeAll();
       otherModels.clear();
       List<BeanModel> screenModels = BeanModelDataBase.screenTable.loadAll();
-      Group group = ((GroupRef) groupRefBeanModel.getBean()).getGroup();
       for (BeanModel screenModel : screenModels) {
          if (((Screen) screenModel.getBean()).getTouchPanelDefinition().equals(touchPanel)) {
             store.add(screenModel);
             screenListView.getSelectionModel().select(screenModel, true);
-            for (ScreenRef screenRef : group.getScreenRefs()) {
-               if (((Screen) screenModel.getBean()).getOid() == screenRef.getScreenId()) {
-                  screenListView.setChecked(screenModel, true);
-               }
-            }
-         } else {
+         } else if (((Screen) screenModel.getBean()).getTouchPanelDefinition().getCanvas().equals(touchPanel.getCanvas())){
             otherModels.add(screenModel);
          }
       }
@@ -148,6 +143,7 @@ public class SelectScreenForm extends CommonForm {
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             Group group = ((GroupRef) groupRefBeanModel.getBean()).getGroup();
+            TouchPanelDefinition touchPanelDefinition = ((GroupRef) groupRefBeanModel.getBean()).getPanel().getTouchPanelDefinition();
             for (ScreenRef screenRef : group.getScreenRefs()) {
                screenRef.getScreen().releaseRef();
             }
@@ -156,6 +152,7 @@ public class SelectScreenForm extends CommonForm {
             if (screenModels.size() > 0) {
                for (BeanModel screenModel : screenModels) {
                   ScreenRef screenRef = new ScreenRef((Screen) screenModel.getBean());
+                  screenRef.setTouchPanelDefinition(touchPanelDefinition);
                   screenRef.setGroup(group);
                   group.addScreenRef(screenRef);
                }
