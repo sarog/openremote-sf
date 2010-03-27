@@ -97,12 +97,44 @@ public class DeviceCommandBeanModelProxy {
          final AsyncSuccessCallback<BeanModel> callback) {
       deviceCommand.setName(map.get(DeviceCommandWindow.DEVICE_COMMAND_NAME));
       List<ProtocolAttr> attrs = deviceCommand.getProtocol().getAttributes();
-      for (int i = 0; i < attrs.size(); i++) { 
-         deviceCommand.getProtocol().getAttributes().get(i).setValue(map.get(attrs.get(i).getName()));
+      boolean isSameProtocol = true;
+      if ( !map.get(DeviceCommandWindow.DEVICE_COMMAND_PROTOCOL).equals(deviceCommand.getProtocol().getType())) {
+         isSameProtocol = false;
+      } else if (!(map.size() == attrs.size() + 2)) {
+         isSameProtocol = false;
+      } else {
+         for (ProtocolAttr protocolAttr : attrs) {
+            if (!map.containsKey(protocolAttr.getName())) {
+               isSameProtocol = false;
+               break;
+            }
+         }
       }
-      AsyncServiceFactory.getDeviceCommandServiceAsync().update(deviceCommand, new AsyncSuccessCallback<Void>() {
-         public void onSuccess(Void result) {
-            BeanModel deviceCommandModel = deviceCommand.getBeanModel();
+      if (isSameProtocol) {
+         for (int i = 0; i < attrs.size(); i++) { 
+            deviceCommand.getProtocol().getAttributes().get(i).setValue(map.get(attrs.get(i).getName()));
+         }
+      } else {
+         Protocol protocol = new Protocol();
+         protocol.setType(map.get(DeviceCommandWindow.DEVICE_COMMAND_PROTOCOL));
+         protocol.setDeviceCommand(deviceCommand);
+         
+         for (String key : map.keySet()) {
+            if (DeviceCommandWindow.DEVICE_COMMAND_NAME.equals(key) || DeviceCommandWindow.DEVICE_COMMAND_PROTOCOL.equals(key)) {
+               continue;
+            }
+            ProtocolAttr protocolAttr = new ProtocolAttr();
+            protocolAttr.setName(key);
+            protocolAttr.setValue((map.get(key)));
+            protocolAttr.setProtocol(protocol);
+            protocol.getAttributes().add(protocolAttr);
+         }
+         
+         deviceCommand.setProtocol(protocol);
+      }
+      AsyncServiceFactory.getDeviceCommandServiceAsync().update(deviceCommand, new AsyncSuccessCallback<DeviceCommand>() {
+         public void onSuccess(DeviceCommand result) {
+            BeanModel deviceCommandModel = result.getBeanModel();
             BeanModelDataBase.deviceCommandTable.update(deviceCommandModel);
             callback.onSuccess(deviceCommandModel);
          }

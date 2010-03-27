@@ -42,6 +42,7 @@ import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
@@ -193,7 +194,7 @@ public class DevicePanel extends ContentPanel {
    private MenuItem createNewDeviceMenuItem() {
       MenuItem newDeviceItem = new MenuItem("New Device");
       newDeviceItem.ensureDebugId(DebugId.NEW_DEVICE_MENU_ITEM);
-      newDeviceItem.setIcon(icon.addDevice());
+      newDeviceItem.setIcon(icon.device());
       newDeviceItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             final DeviceWizardWindow deviceWindow = new DeviceWizardWindow(new Device().getBeanModel());
@@ -229,7 +230,7 @@ public class DevicePanel extends ContentPanel {
    private MenuItem createNewCommandMenu() {
       MenuItem newCommandItem = new MenuItem("New Command");
       newCommandItem.ensureDebugId(DebugId.NEW_COMMAND_ITEM);
-      newCommandItem.setIcon(icon.addCmd());
+      newCommandItem.setIcon(icon.deviceCmd());
       newCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             createDeviceCommand();
@@ -241,7 +242,7 @@ public class DevicePanel extends ContentPanel {
    
    private MenuItem createNewSensorMenu() {
       MenuItem newCommandItem = new MenuItem("New Sensor");
-      newCommandItem.setIcon(icon.sensorAddIcon());
+      newCommandItem.setIcon(icon.sensorIcon());
       newCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             createSensor();
@@ -253,7 +254,7 @@ public class DevicePanel extends ContentPanel {
    
    private MenuItem createNewSliderMenu() {
       MenuItem newCommandItem = new MenuItem("New Slider");
-      newCommandItem.setIcon(icon.sliderAddIcon());
+      newCommandItem.setIcon(icon.sliderIcon());
       newCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             createSlider();
@@ -265,7 +266,7 @@ public class DevicePanel extends ContentPanel {
    
    private MenuItem createNewSwitchMenu() {
       MenuItem newCommandItem = new MenuItem("New Switch");
-      newCommandItem.setIcon(icon.switchAddIcon());
+      newCommandItem.setIcon(icon.switchIcon());
       newCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             createSwitch();
@@ -402,7 +403,12 @@ public class DevicePanel extends ContentPanel {
     * @param selectedModel the selected model
     */
    private void editCommand(BeanModel selectedModel) {
-      final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow((DeviceCommand) selectedModel.getBean());
+      DeviceCommand cmd = selectedModel.getBean();
+      if (cmd.getProtocol().getType().equalsIgnoreCase(Protocol.INFRARED_TYPE)) {
+         MessageBox.alert("Warn", "Infrared command can not be edited", null);
+         return;
+      }
+      final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(cmd);
       deviceCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
@@ -498,9 +504,11 @@ public class DevicePanel extends ContentPanel {
     * @param deviceModel the device model
     */
    private void deleteDevice(final BeanModel deviceModel) {
+      mask("Delete device...");
       DeviceBeanModelProxy.deleteDevice(deviceModel, new AsyncSuccessCallback<Void>() {
          @Override
          public void onSuccess(Void result) {
+            unmask();
             tree.getStore().remove(deviceModel);
             Info.display("Info", "Delete success.");
          }

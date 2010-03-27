@@ -19,28 +19,54 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import javax.mail.internet.MimeMessage;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.apache.velocity.app.VelocityEngine;
+import org.openremote.modeler.client.Configuration;
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.Account;
-import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.ConfigCategory;
+import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.XmlParser;
+import org.springframework.mail.MailException;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.encoding.Md5PasswordEncoder;
+import org.springframework.ui.velocity.VelocityEngineUtils;
 
 /**
- * The service for User.
+ * The service implementation for UserService.
  * 
  * @author Dan 2009-7-14
  */
 public class UserServiceImpl extends BaseAbstractService<User> implements UserService {
    
+   
+   private static Logger log = Logger.getLogger(UserServiceImpl.class);
+   
+   private JavaMailSenderImpl mailSender;
+   
+   private VelocityEngine velocityEngine;
+   
+   private Configuration configuration;
+   
+   /**
+    * {@inheritDoc}
+    */
    public void initRoles() {
       boolean hasDesignerRole = false;
       boolean hasModelerRole = false;
@@ -64,30 +90,36 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       }
       
    }
-    /**
-     * Gets the current account.
-     * 
-     * @return the account
-     */
+   
+   /**
+    * {@inheritDoc}
+    */
+   public User getUserById(long id) {
+      return genericDAO.getById(User.class, id);
+   }
+   
+   /**
+    * {@inheritDoc}
+    */
     public Account getAccount() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return genericDAO.getByNonIdField(User.class, "username", username).getAccount();
     }
     
     /**
-     * Creates the account.
-     * 
-     * @param username the username
-     * @param password the password
-     * @param roleStr the role string
-     * 
-     * @return true, if successful
+     * {@inheritDoc}
      */
-    public boolean createAccount(String username, String password, String roleStr) {
+    public boolean createUserAccount(String username, String password, String email, String roleStr) {
+      if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password) || StringUtils.isEmpty(email)
+            || StringUtils.isEmpty(roleStr)) {
+         return false;
+      }
       User user = new User();
       user.setUsername(username);
+      user.setRawPassword(password);
       user.setPassword(new Md5PasswordEncoder().encodePassword(password, username));
-      if (genericDAO.getByNonIdField(User.class, "username", username) == null) {
+      user.setEmail(email);
+      if (isUsernameAvailable(username)) {
          List<Role> allRoles = genericDAO.loadAll(Role.class);
          for (Role r : allRoles) {
             if (r.getName().equals(Role.ROLE_DESIGNER) && roleStr.indexOf("role_ud") != -1) {
@@ -96,23 +128,24 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
                user.addRole(r);
             }
          }
-         Account acc = new Account();
-         acc.setUser(user);
-         user.setAccount(acc);
-         genericDAO.save(user);
-         setDefaultConfigsForAccount(acc);
-         return true;
+         saveUser(user);
+         return sendRegisterActivationEmail(user);
       } else {
          return false;
       }
    }
 
     /**
-     * {@inheritDoc}
-    * @see org.openremote.modeler.client.rpc.UserRPCService#saveUser(org.openremote.modeler.domain.User)
+    * {@inheritDoc}
     */
     public void saveUser(User user) {
         genericDAO.save(user);
+    }
+    /**
+     * {@inheritDoc}
+     */
+    public void updateUser(User user) {
+       genericDAO.update(user);
     }
     
     private void setDefaultConfigsForAccount(Account account){
@@ -124,4 +157,79 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
        }
        genericDAO.getHibernateTemplate().saveOrUpdateAll(allDefaultConfigs);
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public boolean sendRegisterActivationEmail(final User user) {
+       if (user == null || user.getOid() == 0 || StringUtils.isEmpty(user.getEmail())
+            || StringUtils.isEmpty(user.getUsername()) || StringUtils.isEmpty(user.getPassword())) {
+         return false;
+       }
+       
+       MimeMessagePreparator preparator = new MimeMessagePreparator() {
+          @SuppressWarnings("unchecked")
+          public void prepare(MimeMessage mimeMessage) throws Exception {
+             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+             message.setSubject("OpenRemote Modeler Account Registration Confirmation");
+             message.setTo(user.getEmail());
+             message.setFrom(mailSender.getUsername());
+             Map model = new HashMap();
+             model.put("user", user);
+             model.put("webapp", configuration.getWebappServerRoot());
+             model.put("aid", new Md5PasswordEncoder().encodePassword(user.getUsername(), user.getPassword()));
+             String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
+                  Constants.REGISTRATION_ACTIVATION_EMAIL_VM_NAME, "UTF-8", model);
+             message.setText(text, true);
+          }
+       };
+       try {
+          this.mailSender.send(preparator);
+          log.info("Sent 'Modeler Account Registration Confirmation' email to " + user.getEmail());
+          return true;
+       } catch (MailException e) {
+          log.error("Can't send 'Modeler Account Registration Confirmation' email", e);
+          return false;
+       }
+   }
+
+    /**
+    * {@inheritDoc}
+    */
+   @Override
+   public boolean activateUser(String userOid, String aid) {
+      long id = 0;
+      try {
+         id = Long.valueOf(userOid);
+      } catch (NumberFormatException e) {
+         return false;
+      }
+      User user = getUserById(id);
+      if (user != null && aid != null) {
+         if (new Md5PasswordEncoder().encodePassword(user.getUsername(), user.getPassword()).equals(aid)) {
+            user.setValid(true);
+            updateUser(user);
+            setDefaultConfigsForAccount(user.getAccount());
+            return true;
+         }
+      }
+      return false;
+   }
+   
+   public boolean isUsernameAvailable(String username) {
+      return genericDAO.getByNonIdField(User.class, "username", username) == null;
+   }
+
+   public void setMailSender(JavaMailSenderImpl mailSender) {
+      this.mailSender = mailSender;
+   }
+
+   public void setVelocityEngine(VelocityEngine velocityEngine) {
+      this.velocityEngine = velocityEngine;
+   }
+
+   public void setConfiguration(Configuration configuration) {
+      this.configuration = configuration;
+   }
+   
 }

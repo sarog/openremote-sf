@@ -23,7 +23,6 @@ import junit.framework.Assert;
 
 import org.hibernate.ObjectNotFoundException;
 import org.openremote.modeler.SpringTestContext;
-import org.openremote.modeler.TestNGBase;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.User;
@@ -35,7 +34,7 @@ import org.testng.annotations.Test;
  * 
  * @author Tomsky, Dan 2009-7-10
  */
-public class DeviceServiceTest extends TestNGBase {
+public class DeviceServiceTest {
    
    /** The device service. */
    private DeviceService deviceService =
@@ -55,7 +54,7 @@ public class DeviceServiceTest extends TestNGBase {
       device.setModel("tv");
       device.setVendor("sony");
       deviceService.saveDevice(device);
-      Device deviceInDB = deviceService.loadById(device.getOid());
+      Device deviceInDB = deviceService.loadById(1L);
       Assert.assertEquals(deviceInDB.getName(), device.getName());
       
    }

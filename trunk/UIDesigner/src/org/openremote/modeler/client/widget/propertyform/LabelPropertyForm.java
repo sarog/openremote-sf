@@ -58,12 +58,14 @@ public class LabelPropertyForm extends PropertyForm {
    
    
    public LabelPropertyForm(ScreenLabel screenLabel) {
-      super();
+      super(screenLabel);
       this.screenLabel = screenLabel;
       addFields();
       createSensorStates();
    }
    private void addFields() {
+      this.setLabelWidth(70);
+      this.setFieldWidth(150);
       final TextField<String> textField = new TextField<String>();
       textField.setFieldLabel("Text");
       textField.setAllowBlank(false);
@@ -102,7 +104,12 @@ public class LabelPropertyForm extends PropertyForm {
                   Sensor sensor = dataModel.getBean();
                   uiLabel.setSensor(sensor);
                   sensorSelectBtn.setText(sensor.getDisplayName());
-                  createSensorStates();
+                  if (sensor.getType() == SensorType.SWITCH || sensor.getType() == SensorType.CUSTOM) {
+                     statesPanel.show();
+                     createSensorStates();
+                  } else {
+                     statesPanel.hide();
+                  }
                }
             });
          }
@@ -140,11 +147,18 @@ public class LabelPropertyForm extends PropertyForm {
       
       statesPanel = new FieldSet();
       FormLayout layout = new FormLayout();
-      layout.setLabelWidth(80);
-      layout.setDefaultWidth(80);
+      layout.setLabelWidth(65);
+      layout.setDefaultWidth(145);
       statesPanel.setLayout(layout);
       statesPanel.setHeading("Sensor State");
       add(statesPanel);
+      
+      Sensor sensor = screenLabel.getUiLabel().getSensor();
+      if (sensor == null) {
+         statesPanel.hide();
+      } else if (sensor.getType() != SensorType.SWITCH && sensor.getType() != SensorType.CUSTOM) {
+         statesPanel.hide();
+      }
       
    }
    

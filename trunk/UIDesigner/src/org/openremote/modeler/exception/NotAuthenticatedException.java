@@ -19,14 +19,19 @@
 */
 package org.openremote.modeler.exception;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
  * If the request doesn't pass the Basic Http Authentication, this exception will be thrown. 
  * 
  * @author javen 
  */
 @SuppressWarnings("serial")
-public class NotAuthenticatedException extends RuntimeException {
+public class NotAuthenticatedException extends RuntimeException implements IsSerializable{
 
+   /**
+    * This constructor is necessary for GWT to serialize to client. 
+    */
    public NotAuthenticatedException() {
       super();
    }

@@ -112,27 +112,28 @@ public class ChangeIconWindow extends Dialog {
    
    /** The window. */
    private ChangeIconWindow window;
+
    /**
     * Instantiates a new change icon window.
-    * 
-    * @param screenButton the screen button
+    *
+    * @param  screenControl  TODO
+    * @param  uImage         TODO
     */
    public ChangeIconWindow(ScreenComponent screenControl, ImageSource uImage) {
       ScreenCanvas canvas = screenControl.getScreenCanvas();
       createScreenControl(canvas, screenControl, uImage);
       window = this;
+
       if (screenControl.getWidth() > 90) {
          setMinWidth(400 + screenControl.getWidth() + 16);
       } else {
          setMinWidth(500);
       }
+
       initial();
       show();
    }
    
-   /**
-    * Initial.
-    */
    private void initial() {
       setMinHeight(350);
       setHeading("Change Icon");
@@ -144,15 +145,17 @@ public class ChangeIconWindow extends Dialog {
       
       addListener(Events.BeforeHide, new Listener<WindowEvent>() {
          public void handleEvent(WindowEvent be) {
+
             if (be.getButtonClicked() == getButtonById("ok")) {
                setImageURL();
+
                if (imageURL != null) {
                   if (imageURL.startsWith("http")) {
                      UtilsProxy.downLoadImage(imageURL, new AsyncCallback<String> () {
 
                         @Override
                         public void onFailure(Throwable caught) {
-                          Info.display("Error","Failed to download image from: " +imageURL);
+                          Info.display("Error","Failed to download image from: " + imageURL);
                         }
 
                         @Override
@@ -162,16 +165,20 @@ public class ChangeIconWindow extends Dialog {
                         
                      });
                   }
+                  fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(imageURL));
                } else {
-                  MessageBox.alert("Error", "Please select a image.", null);
+                  MessageBox.alert("Error", "Please select an image.", null);
                }
             }
          }
-      }); 
+      });
+
       createRadioContainer();
       
       if (beehiveRestIconUrl == null) {
+
          UtilsProxy.getBeehiveRestIconUrl(new AsyncSuccessCallback<String>() {
+
             @Override
             public void onSuccess(String result) {
                beehiveRestIconUrl = result;
@@ -195,9 +202,11 @@ public class ChangeIconWindow extends Dialog {
    private void createRadioContainer() {
       LayoutContainer radioContainer = new LayoutContainer();
       Radio beehiveRadio = new Radio() {
+
          @Override
          protected void onClick(ComponentEvent be) {
             super.onClick(be);
+
             if (FROM_BEEHIVE.equals(group.getValue().getValueAttribute())) {
                imageURL = null;
                beehiveIconsView.show();
@@ -209,40 +218,50 @@ public class ChangeIconWindow extends Dialog {
             }
          }
       };
+
       beehiveRadio.setBoxLabel("Select from beehive");
       beehiveRadio.setValueAttribute(FROM_BEEHIVE);
       beehiveRadio.setValue(true);
       
       Radio fromURL = new Radio() {
+
          @Override
          protected void onClick(ComponentEvent be) {
             super.onClick(be);
+
             if (FROM_URL.equals(group.getValue().getValueAttribute())) {
                imageURL = null;
                urlPanel.show();
                beehiveIconsView.hide();
                uploadPanel.hide();
+
                if (previewIconContainer.getItemCount() == 0) {
                   initPreviewContainer();
                }
+
                previewIconContainer.show();
                layout();
             }
          }
       };
+
       fromURL.setBoxLabel("From a URL");
       fromURL.setValueAttribute(FROM_URL);
       
       Radio uploadIcon = new Radio() {
+
          @Override
          protected void onClick(ComponentEvent be) {
             super.onClick(be);
+
             if (FROM_LOCAL.equals(group.getValue().getValueAttribute())) {
                imageURL = null;
                uploadPanel.show();
+
                if (previewIconContainer.getItemCount() == 0) {
                   initPreviewContainer();
                }
+
                previewIconContainer.show();
                beehiveIconsView.hide();
                urlPanel.hide();
@@ -251,6 +270,7 @@ public class ChangeIconWindow extends Dialog {
          }
          
       };
+
       uploadIcon.setValueAttribute(FROM_LOCAL);
       uploadIcon.setBoxLabel("Upload an Image");
 
@@ -288,17 +308,21 @@ public class ChangeIconWindow extends Dialog {
       iconContainer.add(urlPanel);
       
       ImageUploadField imageUpload = new ImageUploadField(null) {
+
          @Override
          protected void onChange(ComponentEvent ce) {
             super.onChange(ce);
+
             if (!uploadPanel.isValid()) {
 //               uploadPanel.reset();
                return;
             }
+
             uploadPanel.submit();
             window.mask("Uploading image...");
          }
       };
+
       imageUpload.setActionToForm(uploadPanel);
       uploadPanel.setSize(320, 80);
       uploadPanel.setLabelWidth(45);
@@ -312,6 +336,7 @@ public class ChangeIconWindow extends Dialog {
             window.unmask();
          }
       });
+
       iconContainer.add(uploadPanel);
       beehiveIconsView.show();
       beehiveIconsView.getSelectionModel().select(0, false);
@@ -336,16 +361,18 @@ public class ChangeIconWindow extends Dialog {
       previewIconContainer.setStyleAttribute("backgroundColor", "white");
       Button preview = new Button("Preview");
       preview.addSelectionListener(new SelectionListener<ButtonEvent>() {
+
          @Override
          public void componentSelected(ButtonEvent ce) {
-            setImageURL(); 
+            setImageURL();
+
             if (imageURL != null) {
 //               previewImage.setUrl(imageURL);
 //               previewImage.setSize("46px", "46px");
                screenButton.setIcon(imageURL);
                layout();
             } else {
-               MessageBox.alert("Error", "Please input a image URL.", null);
+               MessageBox.alert("Error", "Please input an image URL.", null);
             }
          }
       });
@@ -422,7 +449,8 @@ public class ChangeIconWindow extends Dialog {
    
    /**
     * Creates the screen control as a screen button to preview the image.
-    * 
+    *
+    * @param canvas TODO
     * @param screenControl the screen control
     * @param uImage the u image
     */

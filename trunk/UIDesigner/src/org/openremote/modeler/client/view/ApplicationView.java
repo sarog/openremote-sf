@@ -254,7 +254,7 @@ public class ApplicationView implements View {
    private MenuItem createImportMenuItem() {
       MenuItem importMenuItem = new MenuItem("Import");
       importMenuItem.ensureDebugId(DebugId.IMPORT);
-      importMenuItem.setIcon(icons.importIcon());
+      //importMenuItem.setIcon(icons.importIcon());
       final ApplicationView that = this;
       importMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          @Override

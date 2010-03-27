@@ -31,22 +31,16 @@ public interface UserService {
    
    void initRoles();
 
-   /**
-    * Save user.
-    * 
-    * @param user the user
-    */
    void saveUser(User user);
    
-   /**
-    * Gets the account.
-    * 
-    * @return the account
-    */
+   void updateUser(User user);
+   
+   User getUserById(long id);
+   
    Account getAccount();
    
    /**
-    * Creates the account.
+    * Creates the user and its account, set disabled by default.
     * 
     * @param username the username
     * @param password the password
@@ -54,6 +48,29 @@ public interface UserService {
     * 
     * @return true, if successful
     */
-   boolean createAccount(String username, String password, String roleStr);
+   boolean createUserAccount(String username, String password, String email, String roleStr);
+   
+   /**
+    * Activate user, then user can login.
+    * 
+    * @param userOid
+    *           user oid
+    * @param aid
+    *           activation id
+    * @return true if success
+    */
+   boolean activateUser(String userOid, String aid);
+   
+   /**
+    * Send register activation email.
+    * 
+    * @param user
+    *           the user
+    * 
+    * @return true, if success
+    */
+   boolean sendRegisterActivationEmail(User user);
+   
+   boolean isUsernameAvailable(String username);
 
 }

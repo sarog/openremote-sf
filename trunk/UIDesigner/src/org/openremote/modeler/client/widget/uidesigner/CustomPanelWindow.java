@@ -200,6 +200,7 @@ public class CustomPanelWindow extends FormWindow {
                defaultScreen.setName(Constants.DEFAULT_SCREEN);
                defaultScreen.setTouchPanelDefinition(panel.getTouchPanelDefinition());
                ScreenRef screenRef = new ScreenRef(defaultScreen);
+               screenRef.setTouchPanelDefinition(panel.getTouchPanelDefinition());
                screenRef.setGroup(defaultGroup);
                defaultGroup.addScreenRef(screenRef);
                BeanModelDataBase.screenTable.insert(defaultScreen.getBeanModel());

@@ -206,36 +206,64 @@ public class ScreenSlider extends ScreenComponent {
    private void updateVerticalImages() {
       if(!isMinImageUploaded()) {
          setMinImage(DEFAULT_VERTICAL_MIN_IMAGE);
+      } else {
+         setMinImage(uiSlider.getMinImage().getSrc());
       }
+      
       if(!isMinTrackImageUploaded()) {
          setMinTrackImage(DEFAULT_VERTICAL_MINTRACK_IMAGE);
+      } else {
+         setMinTrackImage(uiSlider.getMinTrackImage().getSrc());
       }
+      
       if(!isThumbUploaded()) {
          setThumbImage(DEFAULT_VERTICAL_THUMB_IMAGE);
+      } else {
+         setThumbImage(uiSlider.getThumbImage().getSrc());
       }
+      
       if(!isMaxTrackImageUploaded()) {
          setMaxTrackImage(DEFAULT_VERTICAL_MAXTRACK_IMAGE);
+      } else {
+         setMaxTrackImage(uiSlider.getMaxTrackImage().getSrc());
       }
+      
       if(!isMaxImageUploaded()) {
          setMaxImage(DEFAULT_VERTICAL_MAX_IMAGE);
+      } else {
+         setMaxImage(uiSlider.getMaxImage().getSrc());
       }
    }
    
    private void updateHorizontaoImages() {
       if(!isMinImageUploaded()) {
          setMinImage(DEFAULT_HORIZONTAL_MIN_IMAGE);
+      } else {
+         setMinImage(uiSlider.getMinImage().getSrc());
       }
+      
       if(!isMinTrackImageUploaded()) {
          setMinTrackImage(DEFAULT_HORIZONTAL_MINTRACK_IMAGE);
+      } else {
+         setMinTrackImage(uiSlider.getMinTrackImage().getSrc());
       }
+      
       if(!isThumbUploaded()) {
          setThumbImage(DEFAULT_HORIZONTAL_THUMB_IMAGE);
+      } else {
+         setThumbImage(uiSlider.getThumbImage().getSrc());
       }
+      
       if(!isMaxTrackImageUploaded()) {
          setMaxTrackImage(DEFAULT_HORIZONTAL_MAXTRACK_IMAGE);
+      } else {
+         setMaxTrackImage(uiSlider.getMaxTrackImage().getSrc());
       }
+      
       if(!isMaxImageUploaded()) {
          setMaxImage(DEFAULT_HORIZONTAL_MAX_IMAGE);
+      } else {
+         setMaxImage(uiSlider.getMaxImage().getSrc());
       }
    }
    

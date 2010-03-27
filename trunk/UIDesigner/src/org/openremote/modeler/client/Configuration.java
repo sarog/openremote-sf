@@ -25,139 +25,64 @@ package org.openremote.modeler.client;
  */
 public class Configuration {
 
-   /** The beehive rest root url. */
    private String beehiveRESTRootUrl;
 
-   /** The beehive lircd.conf rest url. */
    private String beehiveLircdConfRESTUrl;
 
-   /** The beehive rest icon url. */
    private String beehiveRestIconUrl;
-   
-   /** The iphone xsd path. */
+
    private String panelXsdPath;
 
-   /** The controller xsd path. */
    private String controllerXsdPath;
 
-   /** The webapp server root. */
    private String webappServerRoot;
-   
+
    private String controllerConfigPath;
 
-   /**
-    * Gets the iphone xsd path.
-    * 
-    * @return the iphone xsd path
-    */
    public String getPanelXsdPath() {
       return panelXsdPath;
    }
 
-   /**
-    * Gets the controller xsd path.
-    * 
-    * @return the controller xsd path
-    */
    public String getControllerXsdPath() {
       return controllerXsdPath;
    }
 
-   /**
-    * Gets the beehive rest url.
-    * 
-    * @param iphoneXsdPath the iphone xsd path
-    * 
-    * @return the beehive rest url
-    */
-
-   /**
-    * Sets the iphone xsd path.
-    * 
-    * @param iphoneXsdPath
-    *           the new iphone xsd path
-    */
    public void setPanelXsdPath(String panelXsdPath) {
       this.panelXsdPath = panelXsdPath;
    }
 
-   /**
-    * Sets the controller xsd path.
-    * 
-    * @param controllerXsdPath the new controller xsd path
-    */
    public void setControllerXsdPath(String controllerXsdPath) {
       this.controllerXsdPath = controllerXsdPath;
    }
 
-   /**
-    * Gets the webapp server root.
-    * 
-    * @return the webapp server root
-    */
    public String getWebappServerRoot() {
       return webappServerRoot;
    }
 
-   /**
-    * Sets the webapp server root.
-    * 
-    * @param webappServerRoot the new webapp server root
-    */
    public void setWebappServerRoot(String webappServerRoot) {
       this.webappServerRoot = webappServerRoot;
    }
 
-   /**
-    * Gets the beehive rest root url.
-    * 
-    * @return the beehive rest root url
-    */
    public String getBeehiveRESTRootUrl() {
       return beehiveRESTRootUrl;
    }
 
-   /**
-    * Sets the beehive rest root url.
-    * 
-    * @param beehiveRESTRootUrl the new beehive rest root url
-    */
    public void setBeehiveRESTRootUrl(String beehiveRESTRootUrl) {
       this.beehiveRESTRootUrl = beehiveRESTRootUrl;
    }
 
-   /**
-    * Gets the beehive lircd conf rest url.
-    * 
-    * @return the beehive lircd conf rest url
-    */
    public String getBeehiveLircdConfRESTUrl() {
       return beehiveLircdConfRESTUrl;
    }
 
-   /**
-    * Sets the beehive lircd conf rest url.
-    * 
-    * @param beehiveLircdConfRESTUrl the new beehive lircd conf rest url
-    */
    public void setBeehiveLircdConfRESTUrl(String beehiveLircdConfRESTUrl) {
       this.beehiveLircdConfRESTUrl = beehiveLircdConfRESTUrl;
    }
 
-   /**
-    * Gets the beehive rest icon url.
-    * 
-    * @return the beehive rest icon url
-    */
    public String getBeehiveRestIconUrl() {
       return beehiveRestIconUrl;
    }
 
-   /**
-    * Sets the beehive rest icon url.
-    * 
-    * @param beehiveRestIconUrl the new beehive rest icon url
-    */
    public void setBeehiveRestIconUrl(String beehiveRestIconUrl) {
       this.beehiveRestIconUrl = beehiveRestIconUrl;
    }
@@ -169,6 +94,5 @@ public class Configuration {
    public void setControllerConfigPath(String controllerConfigPath) {
       this.controllerConfigPath = controllerConfigPath;
    }
-   
-   
+
 }

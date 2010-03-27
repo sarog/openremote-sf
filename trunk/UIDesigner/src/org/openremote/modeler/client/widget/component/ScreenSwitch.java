@@ -38,7 +38,7 @@ public class ScreenSwitch extends ScreenComponent {
    private Text center = new Text("Switch");
    private UISwitch uiSwitch;
    protected Image image = new Image();
-
+   private boolean isOn = true;
    /**
     * Instantiates a new screen button.
     */
@@ -83,5 +83,17 @@ public class ScreenSwitch extends ScreenComponent {
       image.setUrl(icon);
       switchTable.removeStyleName("screen-btn-cont");
       switchTable.setWidget(1, 1, image);
+   }
+   
+   public void onStateChange() {
+      if (uiSwitch.canUseImage()) {
+         if (isOn) {
+            isOn = false;
+            image.setUrl(uiSwitch.getOffImage().getSrc());
+         } else {
+            isOn = true;
+            image.setUrl(uiSwitch.getOnImage().getSrc());
+         }
+      }
    }
 }

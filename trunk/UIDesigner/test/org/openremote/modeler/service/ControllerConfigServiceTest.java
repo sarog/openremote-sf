@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.openremote.modeler.SpringTestContext;
-import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.ConfigCategory;
+import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.utils.XmlParser;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
@@ -24,7 +24,7 @@ public class ControllerConfigServiceTest {
    @BeforeClass
    public void saveFromDefault(){
             
-      userService.createAccount("test", "test", "role_bm");
+      userService.createUserAccount("test", "test", UserServiceTest.TEST_EMAIL, "role_bm");
       SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("test", "test"));
       XmlParser.initControllerConfig(categories, configs);
       configService.saveAll(configs);
@@ -38,7 +38,7 @@ public class ControllerConfigServiceTest {
       }
       Assert.assertTrue(categoryNames.size()>0);
       for(String categoryName : categoryNames){
-         Collection<ControllerConfig> cfgs = configService.listAllConfigByCategoryNameForAccouont(categoryName, userService.getAccount());
+         Collection<ControllerConfig> cfgs = configService.listAllConfigsByCategoryNameForAccount(categoryName, userService.getAccount());
          Assert.assertTrue(cfgs.size()>=1);
          for(ControllerConfig cfg : cfgs){
             Assert.assertNotNull(cfg.getName());
@@ -53,7 +53,7 @@ public class ControllerConfigServiceTest {
    @Test
    public void update(){
       String addStr = "...updated";
-      Set<ControllerConfig> cfgs = configService.listAllConfigByCategoryForCurrentAccount("advance");
+      Set<ControllerConfig> cfgs = configService.listAllConfigsByCategory("advance");
       Assert.assertTrue(cfgs.size()>0);
       for(ControllerConfig cfg : cfgs){
          if(cfg.getOptions().equals("")&&(addStr+cfg.getValue()).matches(cfg.getValidation())){
@@ -63,7 +63,7 @@ public class ControllerConfigServiceTest {
       
       configService.saveAll(cfgs);
       
-      Collection<ControllerConfig> cfgs2 = configService.listAllConfigByCategoryForCurrentAccount("advance");
+      Collection<ControllerConfig> cfgs2 = configService.listAllConfigsByCategory("advance");
       Assert.assertTrue(cfgs2.size()>0);
       for(ControllerConfig cfg : cfgs2){
          if(cfg.getValue().endsWith(addStr)){

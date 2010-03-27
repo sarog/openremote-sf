@@ -34,6 +34,7 @@ import org.openremote.modeler.client.utils.Protocols;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.protocol.ProtocolAttrDefinition;
 import org.openremote.modeler.protocol.ProtocolDefinition;
@@ -135,7 +136,9 @@ public class DeviceCommandWindow extends FormWindow {
                   attrMap.put(DEVICE_COMMAND_PROTOCOL, p.getValue().get(ComboBoxDataModel.getDisplayProperty())
                         .toString());
                } else {
-                  attrMap.put(f.getName(), f.getValue().toString());
+                  if (f.getValue() != null && !"".equals(f.getValue().toString())) {
+                     attrMap.put(f.getName(), f.getValue().toString());
+                  }
                }
             }
             AsyncSuccessCallback<BeanModel> callback = new AsyncSuccessCallback<BeanModel>() {
@@ -169,6 +172,7 @@ public class DeviceCommandWindow extends FormWindow {
       nameField.ensureDebugId(DebugId.DEVICE_COMMAND_NAME_FIELD);
 
       ComboBox<ModelData> protocol = new ComboBox<ModelData>();
+      protocol.setEditable(false);
       ListStore<ModelData> store = new ListStore<ModelData>();
       protocol.setStore(store);
       protocol.setFieldLabel("Protocol");
@@ -177,8 +181,10 @@ public class DeviceCommandWindow extends FormWindow {
       protocol.ensureDebugId(DebugId.DEVICE_COMMAND_PROTOCOL_FIELD);
       
       for (String key : protocols.keySet()) {
-         ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(key, protocols.get(key));
-         store.add(data);
+         if (!key.equalsIgnoreCase(Protocol.INFRARED_TYPE)) {
+            ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(key, protocols.get(key));
+            store.add(data);
+         }
       }
 
       protocol.setDisplayField(ComboBoxDataModel.getDisplayProperty());
@@ -200,10 +206,12 @@ public class DeviceCommandWindow extends FormWindow {
       if (deviceCommand != null) {
          String protocolName = deviceCommand.getProtocol().getType();
          nameField.setValue(deviceCommand.getName());
-         ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(protocolName, protocols
-               .get(protocolName));
-         protocol.setValue(data);
-         protocol.disable();
+         if (protocols.containsKey(protocolName)) {
+            ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(protocolName, protocols
+                  .get(protocolName));
+            protocol.setValue(data);
+         }
+//         protocol.disable();
       }
       form.layout();
    }
@@ -254,8 +262,8 @@ public class DeviceCommandWindow extends FormWindow {
                attrFile.setAllowBlank(true);
             } else {
                attrFile.setAllowBlank(false);
+               messages.setBlankText(protocolValidator.getMessage());
             }
-            messages.setBlankText(protocolValidator.getMessage());
          } else if (protocolValidator.getType() == ProtocolValidator.MAX_LENGTH_TYPE) {
             attrFile.setMaxLength(Integer.valueOf(protocolValidator.getValue()));
             messages.setMaxLengthText(protocolValidator.getMessage());

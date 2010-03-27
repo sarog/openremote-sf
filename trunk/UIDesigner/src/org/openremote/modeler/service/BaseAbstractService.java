@@ -49,6 +49,7 @@ public abstract class BaseAbstractService<T extends BusinessEntity> {
 
    /**
     * Return the persistent instance of the given entity class with the given identifier.
+    * throw exception if not found.
     * 
     * @param id the identifier of the persistent instance
     * 
@@ -57,6 +58,20 @@ public abstract class BaseAbstractService<T extends BusinessEntity> {
    @SuppressWarnings("unchecked")
    public T loadById(long id) {
       return (T) genericDAO.loadById(GenericUtil.getClassForGenericType(this.getClass()), id);
+   }
+   
+   
+   /**
+    * Get the persistent instance of the given entity class with the given identifier.
+    * return null if not found.
+    * 
+    * @param id the identifier of the persistent instance
+    * 
+    * @return the persistent instance
+    */
+   @SuppressWarnings("unchecked")
+   public T getById(long id) {
+      return (T) genericDAO.getById(GenericUtil.getClassForGenericType(this.getClass()), id);
    }
 
    /**
