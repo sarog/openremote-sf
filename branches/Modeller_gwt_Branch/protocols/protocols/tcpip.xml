@@ -19,7 +19,7 @@
 		<attr name="command" label="Command">
 			<validations>
 				<allowBlank>false</allowBlank>
-				<maxLength>10</maxLength>
+				<maxLength>254</maxLength>
 				<regex message="Command is necessary. ">\w+</regex>
 			</validations>
 		</attr>
