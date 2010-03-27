@@ -1,12 +1,12 @@
 <html>
 <body>
-<h3>Welcome to OpenRemote Modeler!</h3>
+<h3>Welcome to OpenRemote Boss 2.0 Online!</h3>
 Dear ${user.username},<br />
 This email has been sent from ${webapp}.<br />
 <br />
 You have received this email because this email address<br />
-was used during registration for OpenRemote Modeler.<br />
-If you did not register at OpenRemote Modeler, please disregard this<br />
+was used during registration for OpenRemote Boss 2.0 Online.<br />
+If you did not register at OpenRemote Boss 2.0 Online, please disregard this<br />
 email. You do not need to unsubscribe or take any further action.<br />
 <br />
 <hr />
@@ -26,10 +26,10 @@ ${webapp}/account.htm?method=activate&uid=${user.oid}&aid=${aid}<br />
 browser).<br />
 <br />
 <hr />
-Thank you for using OpenRemote Modeler.<br />
+Thank you for using OpenRemote Boss 2.0 Online.<br />
 <br />
 Your username is : ${user.username}<br />
-Your password is : ${user.rawPassword}<br />
+Your password is : ${maskPassword}<br />
 Register at ${user.registerTimeAsString}<br />
 <br />
 For questions or concerns about your account, please use public IRC on:<br />
