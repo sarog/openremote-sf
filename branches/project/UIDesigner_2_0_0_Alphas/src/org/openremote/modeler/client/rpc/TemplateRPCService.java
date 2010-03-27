@@ -22,6 +22,7 @@ package org.openremote.modeler.client.rpc;
 import java.util.List;
 
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 
@@ -46,6 +47,10 @@ public interface TemplateRPCService extends RemoteService {
     * @return
     */
    ScreenFromTemplate buildScreeFromTemplate(Template template) throws BeehiveNotAvailableException;
+   
+   Template updateTemplate(Template template) throws BeehiveNotAvailableException;
+   
+   Screen buildScreen(Template template);
    
    Boolean deleteTemplate(long templateId) throws BeehiveNotAvailableException;
    

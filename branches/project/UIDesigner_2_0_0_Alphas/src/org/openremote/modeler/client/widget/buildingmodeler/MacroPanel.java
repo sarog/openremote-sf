@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openremote.modeler.client.event.DoubleClickEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
 import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
@@ -167,6 +168,12 @@ public class MacroPanel extends ContentPanel {
                macroListContainer.add(macroTree);
             }
             add(macroTree);
+            macroTree.addListener(DoubleClickEvent.DOUBLECLICK, new Listener<DoubleClickEvent>() {
+               public void handleEvent(DoubleClickEvent be) {
+                  onEditDeviceMacroBtnClicked();
+               }
+               
+            });
          }
       };
       // overflow-auto style is for IE hack.
@@ -266,7 +273,7 @@ public class MacroPanel extends ContentPanel {
     * On edit device macro btn clicked.
     */
    private void onEditDeviceMacroBtnClicked() {
-      if (macroTree.getSelectionModel().getSelectedItem() != null) {
+      if (macroTree.getSelectionModel().getSelectedItem() != null && macroTree.getSelectionModel().getSelectedItem().getBean() instanceof DeviceMacro) {
          final BeanModel oldModel = macroTree.getSelectionModel().getSelectedItem();
          final MacroWindow macroWindow = new MacroWindow(macroTree.getSelectionModel().getSelectedItem());
          macroWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
