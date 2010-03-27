@@ -171,7 +171,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
           @SuppressWarnings("unchecked")
           public void prepare(MimeMessage mimeMessage) throws Exception {
              MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-             message.setSubject("OpenRemote Modeler Account Registration Confirmation");
+             message.setSubject("OpenRemote Boss 2.0 Account Registration Confirmation");
              message.setTo(user.getEmail());
              message.setFrom(mailSender.getUsername());
              Map model = new HashMap();
