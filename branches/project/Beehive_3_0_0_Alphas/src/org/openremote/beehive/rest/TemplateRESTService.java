@@ -30,6 +30,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -70,18 +71,18 @@ public class TemplateRESTService extends RESTBaseService {
     * 
     * @return template list
     */
-   @Path("templates")
+   @Path("templates/from/{shared}")
    @GET
    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-   public TemplateListing getTemplates(@PathParam("account_id") long accountId,
+   public TemplateListing getTemplates(@PathParam("account_id") long accountId,@PathParam("shared") boolean shared, 
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
       authorize(credentials);
       List<TemplateDTO> list = null;
-      if (accountId == Template.PUBLIC_ACCOUNT_OID) {
-         list = getTemplateService().loadAllPublicTemplate();
+      if (shared) {
+         list = getTemplateService().loadAllPublicTemplatesByAccountOid(accountId);
       } else {
-         list = getTemplateService().loadAllTemplatesByAccountOid(accountId);
+         list = getTemplateService().loadAllPrivateTemplatesByAccountOid(accountId);
       }
       if (list != null) {
          return new TemplateListing(list);
@@ -152,8 +153,7 @@ public class TemplateRESTService extends RESTBaseService {
    @POST
    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
    public TemplateDTO addTemplateIntoAccount(@PathParam("account_id") long accountId, @FormParam("name") String name,
-         @FormParam("content") String content, @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
-      
+         @FormParam("content") String content, @FormParam("keywords") String keywords,@FormParam("shared") boolean shared,@HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       authorize(credentials);
       Template t = new Template();
       if (accountId > 0) {
@@ -163,6 +163,8 @@ public class TemplateRESTService extends RESTBaseService {
       } 
       t.setName(name);
       t.setContent(content);
+      t.setKeywords(keywords);
+      t.setShared(shared);
       long newId = getTemplateService().save(t);
       TemplateDTO newTemp = getTemplateService().loadTemplateByOid(newId);
       if (newTemp != null) {
@@ -172,6 +174,30 @@ public class TemplateRESTService extends RESTBaseService {
 
    }
    
+   @Path("template/{template_id}")
+   @PUT
+   @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+   public TemplateDTO updateTemplate(@PathParam("account_id") long accountId,@PathParam("template_id") long templateID, @FormParam("name") String name,
+         @FormParam("content") String content, @FormParam("keywords") String keywords,@FormParam("shared") boolean shared,@HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      authorize(credentials);
+      Template t = new Template();
+      if (templateID > 0) {
+         Account a = new Account();
+         a.setOid(accountId);
+         t.setAccount(a);
+         t.setOid(templateID);
+         t.setContent(content);
+         t.setKeywords(keywords);
+         t.setName(name);
+         t.setShared(shared);
+      } 
+      TemplateDTO newTemplate = getTemplateService().updateTemplate(t);
+      if (newTemplate != null) {
+         return newTemplate;
+      }
+      throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+
+   }
    /**
     * Deletes a template.
     * 

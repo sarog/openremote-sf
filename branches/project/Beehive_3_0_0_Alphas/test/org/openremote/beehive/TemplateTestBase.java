@@ -43,6 +43,12 @@ public class TemplateTestBase extends TestBase {
       t2.setName("t2");
       t2.setContent("content");
       a.addTemplate(t2);
+      Template t3 = new Template();
+      t3.setAccount(a);
+      t3.setName("t3");
+      t3.setContent("content");
+      t3.setShared(true);
+      a.addTemplate(t3);
       accountService.save(a);
       
       Icon i = new Icon();
