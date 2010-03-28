@@ -33,6 +33,7 @@ public class TemplateDTO extends BusinessEntityDTO {
 
    private String name;
    private String content;
+   private String keywords;
 
    public String getName() {
       return name;
@@ -50,4 +51,11 @@ public class TemplateDTO extends BusinessEntityDTO {
       this.content = content;
    }
 
+   public String getKeywords() {
+      return keywords;
+   }
+
+   public void setKeywords(String keywords) {
+      this.keywords = keywords;
+   }
 }
