@@ -42,6 +42,8 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
+import org.openremote.modeler.SpringContext;
+import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.ControllerConfig;
@@ -194,8 +196,14 @@ public class XmlParser {
       return true;
    }
    
-   public static Document getDocument(String xmlPath) {
+   public static Document getDocument(String xmlPath,String xsdPath) {
       SAXBuilder builder = new SAXBuilder();
+      builder.setValidation(true);
+      
+      File xsdfile = new File(xsdPath);
+
+      builder.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
+      builder.setProperty(SCHEMA_SOURCE, xsdfile);
       Document doc = null;
       try {
          doc = builder.build(XmlParser.class.getClassLoader().getResourceAsStream(ControllerConfigService.CONTROLLER_CONFIG_XML_FILE));
@@ -242,7 +250,9 @@ public class XmlParser {
    
    @SuppressWarnings("unchecked")
    public static void initControllerConfig(Set<ConfigCategory> categories,Collection<ControllerConfig> defaultConfigs){
-      Document doc = XmlParser.getDocument(ControllerConfigService.CONTROLLER_CONFIG_XML_FILE);
+      Configuration configuration = (Configuration) SpringContext.getInstance().getBean("configuration");
+      String xsdPath = XmlParser.class.getResource(configuration.getControllerConfigXsdPath()).getPath();
+      Document doc = XmlParser.getDocument(ControllerConfigService.CONTROLLER_CONFIG_XML_FILE,xsdPath);
       Element root = doc.getRootElement();
       List<Element> categorys = root.getChildren(ConfigCategory.XML_NODE_NAME,root.getNamespace());
       for(Element categoryEle : categorys){
