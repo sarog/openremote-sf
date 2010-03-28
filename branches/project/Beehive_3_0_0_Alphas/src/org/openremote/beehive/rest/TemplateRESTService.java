@@ -105,7 +105,11 @@ public class TemplateRESTService extends RESTBaseService {
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
       authorize(credentials);
-      return getTemplateService().getTemplateResourceZip(templateId);
+      File templateZip = getTemplateService().getTemplateResourceZip(templateId);
+      if (templateZip != null) {
+         return templateZip;
+      }
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
    }
    
    /**
