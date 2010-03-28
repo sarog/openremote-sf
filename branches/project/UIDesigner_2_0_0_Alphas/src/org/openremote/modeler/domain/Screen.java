@@ -100,7 +100,7 @@ public class Screen extends RefedEntity {
     * 
     * @return the touch panel definition
     */
-   @JSON(include=false)
+//   @JSON(include=false)
    public TouchPanelDefinition getTouchPanelDefinition() {
       return touchPanelDefinition;
    }
@@ -167,7 +167,7 @@ public class Screen extends RefedEntity {
     */
    @Transient
    public String getDisplayName() {
-      return name;
+      return getPanelName();
    }
 
    @Transient
