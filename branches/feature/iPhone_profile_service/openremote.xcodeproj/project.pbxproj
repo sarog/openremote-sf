@@ -1238,8 +1238,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Ryan Cai (695MJVJYMM)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Cai (695MJVJYMM)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Zhijie Chen";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Zhijie Chen";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1257,8 +1257,8 @@
 					"-lgcov",
 				);
 				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "1293DEDF-55DA-416B-A45B-558D225896D4";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "1293DEDF-55DA-416B-A45B-558D225896D4";
+				PROVISIONING_PROFILE = "D6954B63-4D47-4092-A6BC-097B30D34A64";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D6954B63-4D47-4092-A6BC-097B30D34A64";
 				SDKROOT = iphoneos2.2.1;
 			};
 			name = Debug;
@@ -1268,8 +1268,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Ryan Cai (695MJVJYMM)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Cai (695MJVJYMM)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Zhijie Chen";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Zhijie Chen";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1280,8 +1280,8 @@
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "B3DB6719-5E12-4E1E-A68A-CEDA20A5833C";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "B3DB6719-5E12-4E1E-A68A-CEDA20A5833C";
+				PROVISIONING_PROFILE = "D6954B63-4D47-4092-A6BC-097B30D34A64";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D6954B63-4D47-4092-A6BC-097B30D34A64";
 				SDKROOT = iphoneos2.2.1;
 			};
 			name = Release;
@@ -1401,8 +1401,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Ryan Cai (695MJVJYMM)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Cai (695MJVJYMM)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Zhijie Chen";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Zhijie Chen";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1414,8 +1414,8 @@
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "B3DB6719-5E12-4E1E-A68A-CEDA20A5833C";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "B3DB6719-5E12-4E1E-A68A-CEDA20A5833C";
+				PROVISIONING_PROFILE = "D6954B63-4D47-4092-A6BC-097B30D34A64";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D6954B63-4D47-4092-A6BC-097B30D34A64";
 				SDKROOT = iphoneos3.0;
 			};
 			name = Distribution;
@@ -1439,8 +1439,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Ryan Cai (695MJVJYMM)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Cai (695MJVJYMM)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Zhijie Chen";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Zhijie Chen";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1458,8 +1458,8 @@
 					"-lgcov",
 				);
 				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "1293DEDF-55DA-416B-A45B-558D225896D4";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "1293DEDF-55DA-416B-A45B-558D225896D4";
+				PROVISIONING_PROFILE = "D6954B63-4D47-4092-A6BC-097B30D34A64";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D6954B63-4D47-4092-A6BC-097B30D34A64";
 				SDKROOT = iphoneos2.2.1;
 			};
 			name = GCov_Build;
