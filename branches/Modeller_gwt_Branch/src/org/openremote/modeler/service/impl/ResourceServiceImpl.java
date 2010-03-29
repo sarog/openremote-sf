@@ -722,10 +722,9 @@ public class ResourceServiceImpl implements ResourceService {
        */
 
       for (Sensor sensor : sensorWithoutDuplicate) {
-         long sensorOid = sensor.getOid();
          long currentSensorId = maxId.maxId();
          for (Sensor s : allSensors) {
-            if (s.getOid() == sensorOid) {
+            if (s.equals(sensor)) {
                s.setOid(currentSensorId);
             }
          }
