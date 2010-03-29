@@ -136,10 +136,6 @@ public class ApplicationView implements View {
          initSaveAndExportButtons();
          applicationToolBar.add(saveButton);
          applicationToolBar.add(exportButton);
-         if (roles.contains("ROLE_MODELER")) {
-            saveButton.setVisible(false);
-            exportButton.setVisible(false);
-         }
       }
       applicationToolBar.add(new FillToolItem());
       applicationToolBar.add(createLogoutButton());
@@ -158,8 +154,6 @@ public class ApplicationView implements View {
             if (!bmButton.isPressed()) {
                bmButton.toggle(true);
             } else {
-               saveButton.setVisible(false);
-               exportButton.setVisible(false);
                modelerContainer.remove(uiDesignerView);
                modelerContainer.add(buildingModelerView);
                modelerContainer.layout();
@@ -180,8 +174,6 @@ public class ApplicationView implements View {
             if (!udButton.isPressed()) {
                udButton.toggle(true);
             } else {
-               saveButton.setVisible(true);
-               exportButton.setVisible(true);
                modelerContainer.remove(buildingModelerView);
                modelerContainer.add(uiDesignerView);
                modelerContainer.layout();
