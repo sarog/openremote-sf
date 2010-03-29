@@ -602,9 +602,9 @@ public static TreePanel<BeanModel> buildTemplateTree(final TemplatePanel templat
                BeanModel beanModel = this.getSelectionModel().getSelectedItem();
                if (beanModel != null && beanModel.getBean() instanceof Template) {
                   Template template = beanModel.getBean();
-                  if (! template.equals(templatePanel.getTemplateInEditing())) {
+//                  if (! template.equals(templatePanel.getTemplateInEditing())) {
                      templatePanel.setTemplateInEditing(template);
-                  }
+//                  }
                }
             }
          }
