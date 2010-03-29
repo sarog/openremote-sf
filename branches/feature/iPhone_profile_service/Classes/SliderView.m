@@ -116,7 +116,7 @@
 // This method will be executed after slide action finished.
 - (void) afterSlide:(UISlider *)sender {
 	int afterSlideValue = (int)[sender value];
-	if (currentValue >= 0 && abs(currentValue-afterSlideValue) > MIN_SLIDE_VARIANT) {
+	if (currentValue >= 0 && abs(currentValue-afterSlideValue) >= MIN_SLIDE_VARIANT) {
 		NSLog(@"The value sent is : %d", afterSlideValue);
 		[self showTip:sliderTip ofSlider:uiSlider withSender:sender];
 		[self sendCommandRequest: [NSString stringWithFormat:@"%d", afterSlideValue]];
