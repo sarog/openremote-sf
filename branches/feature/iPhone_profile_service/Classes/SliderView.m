@@ -28,6 +28,7 @@
 @interface SliderView(Private)
 - (void) afterSlide:(UISlider *)sender;
 -(void) releaseSlider;
+-(void) touchDownSlider:(UISlider *)sender;
 -(void) showTip:(UIImageView *)tip ofSlider:(UISlider *)uiSliderParam withSender:(UISlider *)sender;
 -(void) clearSliderTipSubviews:(UIImageView *)sliderTipParam;
 @end
@@ -85,7 +86,7 @@
 	sliderTip.hidden = YES;
 	[self addSubview:sliderTip];
 	
-	uiSlider.continuous = YES;
+//	uiSlider.continuous = YES;
 	uiSlider.value = 0.0;
 	currentValue = 0.0;
 	
@@ -93,6 +94,7 @@
 	
 	if (!sliderModel.passive) {
 		[uiSlider addTarget:self action:@selector(afterSlide:) forControlEvents:UIControlEventValueChanged];
+		[uiSlider addTarget:self action:@selector(touchDownSlider:) forControlEvents:UIControlEventTouchDown];
 		[uiSlider addTarget:self action:@selector(releaseSlider) forControlEvents:UIControlEventTouchUpInside];
 	} else {
 		UIView *cover = [[UIView alloc] initWithFrame:self.bounds];
@@ -127,6 +129,10 @@
 	sliderTip.hidden = YES;
 	[self clearSliderTipSubviews:sliderTip];
 	
+}
+
+-(void) touchDownSlider:(UISlider *)sender {
+	[self showTip:sliderTip ofSlider:uiSlider withSender:sender];
 }
 
 -(void) showTip:(UIImageView *)tip ofSlider:(UISlider *)uiSliderParam withSender:(UISlider *)sender {
