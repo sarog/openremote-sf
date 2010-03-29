@@ -305,8 +305,8 @@ public class TemplatePanel extends ContentPanel {
 
    public void setTemplateInEditing(final Template templateInEditing) {
       if (editTabItem != null) {
+         //reopen template tab item close by user. 
          if (templateEditTab.indexOf(editTabItem) == -1 ) {
-//            editTabItem = new ScreenTabItem(templateInEditing.getScreen());
             editTabItem.setText("Template: "+templateInEditing.getName());
             templateEditTab.add(editTabItem);
             templateEditTab.setSelection(editTabItem);
@@ -314,11 +314,39 @@ public class TemplatePanel extends ContentPanel {
          }
       }
       if (templateInEditing != null &&templateInEditing.equals(this.templateInEditing)) return;
-      //-----------------------------
-      // 1, save previous template.
-      //      saveTemplateUpdates();
-      //------------------------------
-      // 2, edit another template.
+      
+      if (this.templateInEditing != null) {
+         //-----------------------------
+         // 1, save previous template.
+         //------------------------------
+         TemplateProxy.updateTemplate(this.templateInEditing, new AsyncCallback<Template>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+               Info.display("Error", "Update template: " + TemplatePanel.this.templateInEditing.getName() + "failed");
+            }
+
+            @Override
+            public void onSuccess(Template result) {
+               //--------------------------
+               // 2, edit another template.
+               //--------------------------
+               buildScreen(templateInEditing);
+               Info.display("Success", "auto save template" + templateInEditing.getName() + " successfully !");
+            }
+
+            
+         });
+      } else {
+         buildScreen(templateInEditing);
+      }
+      
+
+      //this.templateInEditing = templateInEditing;
+
+   }
+   
+   private void buildScreen(final Template templateInEditing) {
       TemplateProxy.buildScreen(templateInEditing, new AsyncCallback<Screen>() {
 
          @Override
@@ -329,11 +357,14 @@ public class TemplatePanel extends ContentPanel {
          @Override
          public void onSuccess(Screen screen) {
             // try to close previous template editing tab item.
-            if ( editTabItem != null) {
-               try{templateEditTab.remove(editTabItem);}catch(RuntimeException e){}
-            } 
+            if (editTabItem != null) {
+               try {
+                  templateEditTab.remove(editTabItem);
+               } catch (RuntimeException e) {
+               }
+            }
             editTabItem = new ScreenTabItem(screen);
-            editTabItem.setText("Template: "+templateInEditing.getName());
+            editTabItem.setText("Template: " + templateInEditing.getName());
             templateEditTab.add(editTabItem);
             templateEditTab.setSelection(editTabItem);
             templateInEditing.setScreen(screen);
@@ -341,9 +372,6 @@ public class TemplatePanel extends ContentPanel {
          }
 
       });
-
-      //this.templateInEditing = templateInEditing;
-
    }
-   
+
 }
