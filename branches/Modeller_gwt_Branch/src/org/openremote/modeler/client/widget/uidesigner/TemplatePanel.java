@@ -61,7 +61,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class TemplatePanel extends ContentPanel {
    private TreePanel<BeanModel> templateTree = TreePanelBuilder.buildTemplateTree(this);
    
-   private ScreenTab templateEditTab = null;
+   private ScreenPanel templateEditPanel = null;
    
    private Template templateInEditing = null;
    
@@ -76,8 +76,8 @@ public class TemplatePanel extends ContentPanel {
    /**
     * Instantiates a new profile panel.
     */
-   public TemplatePanel(ScreenTab templateEditTab) {
-      this.templateEditTab = templateEditTab;
+   public TemplatePanel(ScreenPanel templateEditPanel) {
+      this.templateEditPanel = templateEditPanel;
       setHeading("Template");
       setIcon(icon.templateIcon());
       setLayout(new FitLayout());
@@ -195,13 +195,12 @@ public class TemplatePanel extends ContentPanel {
                      BeanModel parentNode = template.isShared()?publicTemplateTopNode:privateTemplateTopNode;
                      templateTree.getStore().add(parentNode, template.getBeanModel(),false);
                   }
-                  if ( editTabItem != null) {
-                     try{templateEditTab.remove(editTabItem);}catch(RuntimeException e){}
-                  } 
+//                  if ( editTabItem != null) {
+//                     try{templateEditTab.remove(editTabItem);}catch(RuntimeException e){}
+//                  } 
                   editTabItem = new ScreenTabItem(template.getScreen());
                   editTabItem.setText("Template: "+templateInEditing.getName());
-                  templateEditTab.add(editTabItem);
-                  templateEditTab.setSelection(editTabItem);
+                  templateEditPanel.setScreenItem(editTabItem);
                }
 
             });
@@ -306,10 +305,9 @@ public class TemplatePanel extends ContentPanel {
    public void setTemplateInEditing(final Template templateInEditing) {
       if (editTabItem != null) {
          //reopen template tab item close by user. 
-         if (templateEditTab.indexOf(editTabItem) == -1 ) {
+         if (templateEditPanel.indexOf(editTabItem) == -1 ) {
             editTabItem.setText("Template: "+templateInEditing.getName());
-            templateEditTab.add(editTabItem);
-            templateEditTab.setSelection(editTabItem);
+            templateEditPanel.setScreenItem(editTabItem);
             templateInEditing.setScreen(templateInEditing.getScreen());
          }
       }
@@ -357,16 +355,15 @@ public class TemplatePanel extends ContentPanel {
          @Override
          public void onSuccess(Screen screen) {
             // try to close previous template editing tab item.
-            if (editTabItem != null) {
-               try {
-                  templateEditTab.remove(editTabItem);
-               } catch (RuntimeException e) {
-               }
-            }
+//            if (editTabItem != null) {
+//               try {
+//                  templateEditTab.remove(editTabItem);
+//               } catch (RuntimeException e) {
+//               }
+//            }
             editTabItem = new ScreenTabItem(screen);
             editTabItem.setText("Template: " + templateInEditing.getName());
-            templateEditTab.add(editTabItem);
-            templateEditTab.setSelection(editTabItem);
+            templateEditPanel.setScreenItem(editTabItem);
             templateInEditing.setScreen(screen);
             TemplatePanel.this.templateInEditing = templateInEditing;
          }

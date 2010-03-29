@@ -140,6 +140,7 @@ public class GroupEditWindow extends FormWindow {
                screenRef.getScreen().releaseRef();
             }
             group.getScreenRefs().clear();
+            group.setName(nameField.getValue());
             List<BeanModel> screenModels = screenListView.getChecked();
             if (screenModels.size() > 0) {
                for (BeanModel screenModel : screenModels) {

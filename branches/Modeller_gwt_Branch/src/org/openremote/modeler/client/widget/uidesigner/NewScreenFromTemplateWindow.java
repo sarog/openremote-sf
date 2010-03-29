@@ -86,21 +86,21 @@ public class NewScreenFromTemplateWindow extends FormWindow {
    
    private Button nextPage = new Button();
 
-   public NewScreenFromTemplateWindow(ScreenTab screenTab) {
+   public NewScreenFromTemplateWindow() {
       super();
       setSize(400, 450);
       setHeading("New Screen From Template");
       setLayout(new FillLayout());
       setModal(true);
       createFormButtons();
-      createFields(screenTab);
+      createFields();
       createTemplateView();
       setBodyBorder(false);
       add(form);
       show();
    }
 
-   public void createFields(final ScreenTab screenTab) {
+   public void createFields() {
       form.setHeaderVisible(false);
       form.setBorders(false);
       form.setBodyBorder(true);
@@ -111,7 +111,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       nameField.setFieldLabel("Name");
       nameField.setName("name");
       form.add(nameField);
-      addBeforHideListener(screenTab);
+      addBeforHideListener();
    }
 
    private void createFormButtons() {
@@ -131,7 +131,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       form.addButton(resetBtn);
    }
 
-   private void addBeforHideListener(final ScreenTab screenTab) {
+   private void addBeforHideListener() {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          @Override
          public void handleEvent(FormEvent be) {

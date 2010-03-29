@@ -98,7 +98,6 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
       genericDAO.delete(old.getProtocol());
       old.setName(deviceCommand.getName());
       old.setProtocol(deviceCommand.getProtocol());
-//      genericDAO.saveOrUpdate(deviceCommand);
       return old;
 
    }

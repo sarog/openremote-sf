@@ -84,18 +84,18 @@ public class ProfilePanel extends ContentPanel {
    private TreePanel<BeanModel> panelTree;
    private Icons icon = GWT.create(Icons.class);
    private SelectionServiceExt<BeanModel> selectionService;
-   private ScreenTab screenTab = null;
+   private ScreenPanel screenPanel = null;
    /**
     * Instantiates a new profile panel.
     */
-   public ProfilePanel(ScreenTab screenTab) {
-      this.screenTab = screenTab;
+   public ProfilePanel(ScreenPanel screenPanel) {
+      this.screenPanel = screenPanel;
       selectionService = new SelectionServiceExt<BeanModel>();
       setHeading("Panel");
       setIcon(icon.panelIcon());
       setLayout(new FitLayout());
       createMenu();
-      createPanelTree(screenTab);
+      createPanelTree(screenPanel);
       new TreePanelDragSourcePanelTreeExt(panelTree);
       new TreePanelDropTargetPanelTreeExt(panelTree);
    }
@@ -134,8 +134,8 @@ public class ProfilePanel extends ContentPanel {
    /**
     * Creates the screen tree.
     */
-   private void createPanelTree(ScreenTab screenTab) {
-      panelTree = TreePanelBuilder.buildPanelTree(screenTab);
+   private void createPanelTree(ScreenPanel screenPanel) {
+      panelTree = TreePanelBuilder.buildPanelTree(screenPanel);
       selectionService.addListener(new SourceSelectionChangeListenerExt(panelTree.getSelectionModel()));
       selectionService.register(panelTree.getSelectionModel());
       LayoutContainer treeContainer = new LayoutContainer() {
@@ -186,9 +186,7 @@ public class ProfilePanel extends ContentPanel {
                      if (event.getType() == BeanModelTable.ADD) {
                         BeanModel beanModel = (BeanModel) event.getItem();
                         if (beanModel.getBean() instanceof Screen) {
-                           ScreenTabItem screenTabItem = new ScreenTabItem((Screen) beanModel.getBean());
-                           screenTab.add(screenTabItem);
-                           screenTab.setSelection(screenTabItem);
+                           screenPanel.setScreenItem(new ScreenTabItem((Screen) beanModel.getBean()));
                         }
                      }
                   }
@@ -358,7 +356,7 @@ public class ProfilePanel extends ContentPanel {
       });
    }
    private void editScreen(final BeanModel screenRefBeanModel) {
-      final ScreenWindow screenWizard = new ScreenWindow(screenTab, screenRefBeanModel, ScreenWindow.Operation.EDIT);
+      final ScreenWindow screenWizard = new ScreenWindow(screenRefBeanModel, ScreenWindow.Operation.EDIT);
       screenWizard.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
@@ -540,7 +538,7 @@ public class ProfilePanel extends ContentPanel {
                return;
             }
             final GroupRef groupRef = selectedItem.getBean();
-            final NewScreenFromTemplateWindow screenWindow = new NewScreenFromTemplateWindow(screenTab);
+            final NewScreenFromTemplateWindow screenWindow = new NewScreenFromTemplateWindow();
             screenWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -589,7 +587,7 @@ public class ProfilePanel extends ContentPanel {
       newScreenItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             BeanModel selectItem = panelTree.getSelectionModel().getSelectedItem();
-            final ScreenWindow screenWindow = new ScreenWindow(screenTab, selectItem);
+            final ScreenWindow screenWindow = new ScreenWindow(selectItem);
             screenWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -686,14 +684,6 @@ public class ProfilePanel extends ContentPanel {
 
    public void setPanelTree(TreePanel<BeanModel> panelTree) {
       this.panelTree = panelTree;
-   }
-
-   public ScreenTab getScreenTab() {
-      return screenTab;
-   }
-
-   public void setScreenTab(ScreenTab screenTab) {
-      this.screenTab = screenTab;
    }
 
    /**

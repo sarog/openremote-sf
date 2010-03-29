@@ -64,7 +64,7 @@ public class ScreenWindow extends FormWindow {
    private TreePanel<BeanModel> groupSelectTree = null;
    
    
-   public ScreenWindow(ScreenTab screenTab, BeanModel selectItem, Operation operation) {
+   public ScreenWindow(BeanModel selectItem, Operation operation) {
       super();
       this.operation = operation;
       this.selectItem = selectItem;
@@ -78,18 +78,18 @@ public class ScreenWindow extends FormWindow {
       setLayout(new FillLayout());
       setModal(true);
       createButtons();
-      createFields(screenTab);
+      createFields();
       setBodyBorder(false);
       add(form);
       show();
    }
 
-   public ScreenWindow(ScreenTab screenTab, BeanModel selectItem) {
-      this(screenTab, selectItem, Operation.NEW);
+   public ScreenWindow(BeanModel selectItem) {
+      this(selectItem, Operation.NEW);
    }
    
    
-   public void createFields(final ScreenTab screenTab) {
+   public void createFields() {
       form.setHeaderVisible(false);
       form.setBorders(false);
       form.setBodyBorder(true);
@@ -101,14 +101,14 @@ public class ScreenWindow extends FormWindow {
       form.add(nameField);
       
       if (operation == Operation.NEW) {
-         AdapterField adapterField = new AdapterField(createGroupTreeView(screenTab));
+         AdapterField adapterField = new AdapterField(createGroupTreeView());
          adapterField.setFieldLabel("Group");
          adapterField.setBorders(true);
          form.add(adapterField);
       } else if (operation == Operation.EDIT){
          nameField.setValue(((ScreenRef) selectItem.getBean()).getScreen().getName());
       }
-      addBeforHideListener(screenTab);
+      addBeforHideListener();
    }
    
    private void createButtons() {
@@ -120,7 +120,7 @@ public class ScreenWindow extends FormWindow {
       form.addButton(submitBtn);
       form.addButton(resetBtn);
    }
-   private void addBeforHideListener(final ScreenTab screenTab) {
+   private void addBeforHideListener() {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
 
          @Override
@@ -169,7 +169,7 @@ public class ScreenWindow extends FormWindow {
       return screenRef;
    }
    
-   private ContentPanel createGroupTreeView(ScreenTab screenTab) {
+   private ContentPanel createGroupTreeView() {
       ContentPanel groupTreeContainer = new ContentPanel();
       groupTreeContainer.setHeaderVisible(false);
       groupTreeContainer.setSize(210, 150);

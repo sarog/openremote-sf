@@ -30,7 +30,7 @@ import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.client.utils.TouchPanels;
 import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
-import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
+import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
 import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
 import org.openremote.modeler.client.widget.uidesigner.WidgetPanel;
 import org.openremote.modeler.domain.Group;
@@ -60,7 +60,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class UIDesignerView extends TabItem {
 
    /** The screen tab. */
-   private ScreenTab screenTab = new ScreenTab();
+   private ScreenPanel screenPanel = new ScreenPanel();
 
    /** The auto_save_interval millisecond. */
    private static final int AUTO_SAVE_INTERVAL_MS = 30000;
@@ -193,8 +193,8 @@ public class UIDesignerView extends TabItem {
     */
    private ProfilePanel createWest() {
       ContentPanel west = new ContentPanel();
-      ProfilePanel result = new ProfilePanel(screenTab);
-      TemplatePanel templatePanel = new TemplatePanel(screenTab);
+      ProfilePanel result = new ProfilePanel(screenPanel);
+      TemplatePanel templatePanel = new TemplatePanel(screenPanel);
       BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 200);
       westData.setSplit(true);
       west.setLayout(new AccordionLayout());
@@ -219,8 +219,7 @@ public class UIDesignerView extends TabItem {
    private void createCenter() {
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setMargins(new Margins(0, 2, 0, 2));
-      screenTab.setBorderStyle(false);
-      add(screenTab, centerData);
+      add(screenPanel, centerData);
    }
 
    /**
@@ -228,15 +227,6 @@ public class UIDesignerView extends TabItem {
     */
    private void prepareData() {
       TouchPanels.load();
-   }
-
-   /**
-    * Gets the screen tab.
-    * 
-    * @return the screen tab
-    */
-   public ScreenTab getScreenTab() {
-      return screenTab;
    }
 
    /**
