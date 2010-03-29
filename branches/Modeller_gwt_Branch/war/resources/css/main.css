@@ -313,3 +313,7 @@ table.screen-btn-cont td.br-c{
 .zero-padding {
    padding: 0px;
 }
+
+.zero-border-top {
+   border-top-width: 0px;
+}

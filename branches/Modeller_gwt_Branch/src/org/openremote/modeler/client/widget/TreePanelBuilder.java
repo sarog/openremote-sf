@@ -37,7 +37,7 @@ import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable.DeviceInsertListener;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable.DeviceMacroInsertListener;
 import org.openremote.modeler.client.widget.buildingmodeler.ControllerConfigTabItem;
-import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
+import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTabItem;
 import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
 import org.openremote.modeler.domain.CommandDelay;
@@ -69,7 +69,6 @@ import com.extjs.gxt.ui.client.data.RpcProxy;
 import com.extjs.gxt.ui.client.data.TreeLoader;
 import com.extjs.gxt.ui.client.event.TreePanelEvent;
 import com.extjs.gxt.ui.client.store.TreeStore;
-import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
@@ -394,7 +393,7 @@ public class TreePanelBuilder {
       return widgetTree;
    }
    
-   public static TreePanel<BeanModel> buildPanelTree(final ScreenTab screenTab) {
+   public static TreePanel<BeanModel> buildPanelTree(final ScreenPanel screenPanel) {
       if (panelTreeStore == null) {
          panelTreeStore = new TreeStore<BeanModel>();
       }
@@ -413,9 +412,9 @@ public class TreePanelBuilder {
                   screen.setHasTabbar(false);
                }
                screen.setTouchPanelDefinition(((ScreenRef) beanModel.getBean()).getTouchPanelDefinition());
-               ScreenTabItem screenTabItem = null;
-               for (TabItem tabPanel : screenTab.getItems()) {
-                  screenTabItem = (ScreenTabItem) tabPanel;
+               
+               ScreenTabItem screenTabItem = screenPanel.getScreenItem();
+               if (screenTabItem != null) {
                   if (screen == screenTabItem.getScreen()) {
                      screenTabItem.updateTouchPanel();
                      if (screen.isHasTabbar()) {
@@ -423,16 +422,11 @@ public class TreePanelBuilder {
                      } else {
                         screenTabItem.getScreenCanvas().removeTabbar();
                      }
-                     screenTab.setSelection(screenTabItem);
-                     return;
                   } else {
-                     screenTabItem = null;
+                     screenPanel.setScreenItem(new ScreenTabItem(screen));
                   }
-               }
-               if (screenTabItem == null) {
-                  screenTabItem = new ScreenTabItem(screen);
-                  screenTab.add(screenTabItem);
-                  screenTab.setSelection(screenTabItem);
+               } else {
+                  screenPanel.setScreenItem(new ScreenTabItem(screen));
                }
             }
          }
