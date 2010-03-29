@@ -290,6 +290,8 @@ public class TemplatePanel extends ContentPanel {
 
             @Override
             public void onSuccess(Template result) {
+               templateInEditing.setContent(result.getContent());
+               templateInEditing.setScreen(result.getScreen());
                Info.display("Success", "auto save template" + templateInEditing.getName()+" successfully !");
             }
             
@@ -302,6 +304,15 @@ public class TemplatePanel extends ContentPanel {
    }
 
    public void setTemplateInEditing(final Template templateInEditing) {
+      if (editTabItem != null) {
+         if (templateEditTab.indexOf(editTabItem) == -1 ) {
+//            editTabItem = new ScreenTabItem(templateInEditing.getScreen());
+            editTabItem.setText("Template: "+templateInEditing.getName());
+            templateEditTab.add(editTabItem);
+            templateEditTab.setSelection(editTabItem);
+            templateInEditing.setScreen(templateInEditing.getScreen());
+         }
+      }
       if (templateInEditing != null &&templateInEditing.equals(this.templateInEditing)) return;
       //-----------------------------
       // 1, save previous template.
@@ -326,11 +337,12 @@ public class TemplatePanel extends ContentPanel {
             templateEditTab.add(editTabItem);
             templateEditTab.setSelection(editTabItem);
             templateInEditing.setScreen(screen);
+            TemplatePanel.this.templateInEditing = templateInEditing;
          }
 
       });
 
-      this.templateInEditing = templateInEditing;
+      //this.templateInEditing = templateInEditing;
 
    }
    
