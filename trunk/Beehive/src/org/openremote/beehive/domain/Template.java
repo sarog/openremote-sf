@@ -25,6 +25,8 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.openremote.beehive.api.dto.TemplateDTO;
+
 /**
  * Defines UI templating functionality in the UI designer.
  * one screen design can be set as a template and base other screens on this template design.
@@ -41,6 +43,8 @@ public class Template extends BusinessEntity {
    private String name;
    private String content;
    private Account account;
+   private String keywords = "";
+   private boolean shared = false;
 
    public String getName() {
       return name;
@@ -69,6 +73,29 @@ public class Template extends BusinessEntity {
    public void setAccount(Account account) {
       this.account = account;
    }
-   
 
+   public String getKeywords() {
+      return keywords;
+   }
+
+   public void setKeywords(String keywords) {
+      this.keywords = keywords;
+   }
+
+   public boolean isShared() {
+      return shared;
+   }
+
+   public void setShared(boolean shared) {
+      this.shared = shared;
+   }
+   
+   public TemplateDTO toDTO() {
+      TemplateDTO dto = new TemplateDTO();
+      dto.setContent(content);
+      dto.setKeywords(keywords);
+      dto.setName(name);
+      dto.setOid(getOid());
+      return dto;
+   }
 }
