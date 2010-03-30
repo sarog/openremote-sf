@@ -33,6 +33,7 @@ import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.Sensor;
 import org.openremote.controller.config.ControllerXMLListenSharingData;
+import org.openremote.controller.exception.ControllerException;
 import org.openremote.controller.service.ControllerXMLChangeService;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.statuscache.ChangedStatusTable;
@@ -89,12 +90,15 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
       logger.info("Controller.xml of Controller changed, refreshing controller.xml");
       boolean success = false;
       tagControllerXMLChanged(true);
-      killAndClearPollingMachineThreads();
-      clearChangedStatusTable();
-      clearStatusCache();
-      clearAndReloadSensors();
-      
-      restartPollingMachineThreads();
+      try {
+         killAndClearPollingMachineThreads();
+         clearChangedStatusTable();
+         clearStatusCache();
+         clearAndReloadSensors();
+         restartPollingMachineThreads();
+      } catch (ControllerException e) {
+         logger.error("Error occured while refreshing controller.", e);
+      }
       tagControllerXMLChanged(false);
       success = true;
       logger.info("Finished refreshing controller.xml");
