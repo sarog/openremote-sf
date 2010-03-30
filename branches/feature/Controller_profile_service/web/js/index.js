@@ -34,7 +34,7 @@ $(document).ready(function() {
 		} else if (result == 'disabled') {
 			error("Upload is disabled");
 		} else {
-			error("Upload failed");
+			error("Upload failed! " + result);
 		}
     }); 
     $('#syncForm').ajaxForm(function(result) {
@@ -47,7 +47,7 @@ $(document).ready(function() {
     	} else if (result == 'missing') {
     		error("openremote.zip not found in account, please edit UI and save.");
 		} else {
-			error("Sync failed! try again.");
+			error("Sync failed! " + result);
 		}
     }); 
     $('#syncSubmit').click(function(){
@@ -76,7 +76,7 @@ $(document).ready(function() {
 				} else if (msg == 'latest') {
 					message("The cache is already up to date.");
 				} else {
-					error("Failed to reload configuration and clear cache.");
+					error("Failed to reload configuration and clear cache! " + msg);
 				}
 			}
 		 );
