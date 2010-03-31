@@ -34,6 +34,7 @@ import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.Sensor;
 import org.openremote.controller.config.ControllerXMLListenSharingData;
 import org.openremote.controller.exception.ControllerException;
+import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.ControllerXMLChangeService;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.statuscache.ChangedStatusTable;
@@ -135,10 +136,19 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
    private void clearAndReloadSensors() {
       controllerXMLListenSharingData.getSensors().clear();
 
-      // follings are re-parse sensors and it's included statuscommand.
+      // followings are re-parse sensors and their included statuscommand.
       Element sensorsElement = remoteActionXMLParser.queryElementFromXMLByName(Constants.SENSORS_ELEMENT_NAME);
+      if (sensorsElement == null) {
+         throw new NoSuchComponentException("DOM element " + Constants.SENSORS_ELEMENT_NAME + " doesn't exist in " + Constants.CONTROLLER_XML);
+      }
       List<Element> sensorElements = sensorsElement.getChildren();
-      for (Element sensorElement : sensorElements) {
+      if (sensorElements == null) {
+         throw new ControllerException("There is no sub DOM elements in " + Constants.SENSORS_ELEMENT_NAME + " in " + Constants.CONTROLLER_XML);
+      }
+      Iterator<Element> sensorElementIterator = sensorElements.iterator();
+      while(sensorElementIterator.hasNext()) {
+         Element sensorElement = sensorElementIterator.next();
+//         for (Element sensorElement : sensorElements) {
          Sensor sensor = new Sensor();
          sensor.setSensorID(Integer.parseInt(sensorElement.getAttributeValue(Constants.ID_ATTRIBUTE_NAME)));
          sensor.setSensorType(sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME));
