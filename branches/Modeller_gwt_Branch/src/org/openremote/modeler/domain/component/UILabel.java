@@ -114,7 +114,7 @@ public class UILabel extends UIComponent implements SensorOwner {
    @Override
    public String getPanelXml() {
       StringBuilder sb = new StringBuilder();
-      sb.append("<label id=\"" + getOid() + "\" font-size=\"" + fontSize + "\" color=\"#" + color + "\" text=\"" + StringUtils.escapeXml(text)
+      sb.append("<label id=\"" + getOid() + "\" fontSize=\"" + fontSize + "\" color=\"#" + color + "\" text=\"" + StringUtils.escapeXml(text)
             + "\">\n");
       if (sensor != null) {
          sb.append(sensorLinker.getXMLString());
