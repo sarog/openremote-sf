@@ -269,10 +269,10 @@ public class TemplateServiceImpl implements TemplateService {
    }
 
    public List<Template> getTemplates(boolean fromPrivate) {
-      boolean shared = ! fromPrivate;
+      String shared = fromPrivate ? "private" : "public";
       List<Template> templates = new ArrayList<Template>();
-      String restURL = configuration.getBeehiveRESTRootUrl() + "account/"
-            + userService.getAccount().getOid() + "/templates/from/"+shared;
+      String restURL = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid()
+            + "/templates/" + shared;
 
       HttpGet httpGet = new HttpGet(restURL);
       httpGet.setHeader("Accept", "application/json");
