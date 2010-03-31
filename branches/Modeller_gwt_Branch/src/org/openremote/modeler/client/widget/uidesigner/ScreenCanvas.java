@@ -21,7 +21,6 @@ import java.util.List;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.WidgetDeleteEvent;
 import org.openremote.modeler.client.utils.IDUtil;
-import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
@@ -60,7 +59,7 @@ import com.google.gwt.user.client.Event;
 /**
  * A layout container for create and dnd components.
  */
-public class ScreenCanvas extends ComponentContainer implements PropertyEditable{
+public class ScreenCanvas extends ComponentContainer {
 
    /** The absolute position. */
    private Point absolutePosition = null;
