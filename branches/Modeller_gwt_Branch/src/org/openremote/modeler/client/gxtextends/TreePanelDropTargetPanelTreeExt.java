@@ -118,10 +118,12 @@ public class TreePanelDropTargetPanelTreeExt extends TreePanelDropTarget {
       targetGroupRef.getGroup().addScreenRef(sourceScreenRef);
       GroupRef sourceGroupRef = sourceGroupRefBeanModel.getBean();
       sourceGroupRef.getGroup().removeScreenRef(sourceScreenRef);
+      sourceScreenRef.getScreen().setParentGroup(targetGroupRef.getGroup());
+      sourceScreenRef.setGroup(targetGroupRef.getGroup());
    }
    private void reorderScreen(BeanModel sourceGroupRefBean, BeanModel fromBean, BeanModel toBean) {
       Group sourceGroup = ((GroupRef) sourceGroupRefBean.getBean()).getGroup();
-      Group targetGroup = sourceGroup;
+      Group targetGroup = ((ScreenRef) toBean.getBean()).getGroup();
       ScreenRef from = fromBean.getBean();
       ScreenRef to = toBean.getBean();
       if (!sourceGroup.equals(to.getGroup())) {
