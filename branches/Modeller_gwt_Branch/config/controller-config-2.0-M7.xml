@@ -141,13 +141,6 @@ existing lircd.conf file.
                ]]>
             </hint>
 		</config>
-		<config name="controller.service.test" value="test">
-			<hint>
-               <![CDATA[
-                  Just a test 
-               ]]>
-            </hint>
-		</config>
 	</category>
 
 	<category name="roundrobin">
