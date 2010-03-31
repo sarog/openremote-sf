@@ -726,6 +726,7 @@ public class ResourceServiceImpl implements ResourceService {
          for (Sensor s : allSensors) {
             if (s.equals(sensor)) {
                s.setOid(currentSensorId);
+               sensor.setOid(currentSensorId);
             }
          }
       }
