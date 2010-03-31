@@ -24,7 +24,10 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
+
+import flexjson.JSON;
 
 /**
  * The Class Group.
@@ -44,6 +47,11 @@ public class Group extends RefedEntity {
 
    private List<UITabbarItem> tabbarItems = new ArrayList<UITabbarItem>();
    
+   private UITabbar tabbar = null;
+   
+   private Panel parentPanel = null;
+   
+   public Group() {}
    /**
     * Gets the name.
     * 
@@ -96,6 +104,8 @@ public class Group extends RefedEntity {
    
    public void insertScreenRef(ScreenRef before, ScreenRef target) {
       int index = screenRefs.indexOf(before);
+      target.setGroup(this);
+      target.getScreen().setParentGroup(this);
       screenRefs.add(index, target);
    }
    public List<UITabbarItem> getTabbarItems() {
@@ -132,4 +142,20 @@ public class Group extends RefedEntity {
    public static void increaseDefaultNameIndex() {
       defaultNameIndex++;
    }
+
+   @JSON(include = false)
+   public Panel getParentPanel() {
+      return parentPanel;
+   }
+
+   public void setParentPanel(Panel belongsTo) {
+      this.parentPanel = belongsTo;
+   }
+   public UITabbar getTabbar() {
+      return tabbar;
+   }
+   public void setTabbar(UITabbar tabbar) {
+      this.tabbar = tabbar;
+   }
+   
 }
