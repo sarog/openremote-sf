@@ -61,6 +61,8 @@ import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
+import org.openremote.modeler.domain.component.UITabbar;
+import org.openremote.modeler.domain.component.UITabbarItem;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -369,6 +371,8 @@ public class TreePanelBuilder {
       widgetTreeStore.add(new UIButton().getBeanModel(), true);
       widgetTreeStore.add(new UISwitch().getBeanModel(), true);
       widgetTreeStore.add(new UISlider().getBeanModel(), true);
+      widgetTreeStore.add(new UITabbar().getBeanModel(), true);
+      widgetTreeStore.add(new UITabbarItem().getBeanModel(), true);
       
       widgetTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
@@ -384,12 +388,16 @@ public class TreePanelBuilder {
                return ICON.sliderIcon();
             } else if (thisModel.getBean() instanceof UIGrid) {
                return ICON.gridIcon();
+            } else if (thisModel.getBean() instanceof UITabbar) {
+               return ICON.tabbarConfigIcon();
+            } else if (thisModel.getBean() instanceof UITabbarItem) {
+               return ICON.tabbarConfigIcon();
             } else {
                return ICON.buttonIcon();
             }
          }
       });
-      
+
       return widgetTree;
    }
    
@@ -404,29 +412,28 @@ public class TreePanelBuilder {
             super.onClick(tpe);
             BeanModel beanModel = this.getSelectionModel().getSelectedItem();
             if (beanModel != null && beanModel.getBean() instanceof ScreenRef) {
-               GroupRef groupRef = (GroupRef)this.getStore().getParent(beanModel).getBean();
+//               GroupRef groupRef = (GroupRef)this.getStore().getParent(beanModel).getBean();
                Screen screen = ((ScreenRef) beanModel.getBean()).getScreen();
-               if (groupRef.getPanel().getTabbarItems().size() >0 || groupRef.getGroup().getTabbarItems().size() >0) {
+               /*if (groupRef.getPanel().getTabbarItems().size() >0 || groupRef.getGroup().getTabbarItems().size() >0) {
                   screen.setHasTabbar(true);
                } else {
                   screen.setHasTabbar(false);
-               }
+               }*/
                screen.setTouchPanelDefinition(((ScreenRef) beanModel.getBean()).getTouchPanelDefinition());
                
                ScreenTabItem screenTabItem = screenPanel.getScreenItem();
                if (screenTabItem != null) {
                   if (screen == screenTabItem.getScreen()) {
                      screenTabItem.updateTouchPanel();
-                     if (screen.isHasTabbar()) {
-                        screenTabItem.getScreenCanvas().addTabbar();
-                     } else {
-                        screenTabItem.getScreenCanvas().removeTabbar();
-                     }
+                     screenTabItem.upDateTabbarForScreenCanvas((ScreenRef) beanModel.getBean());
                   } else {
                      screenPanel.setScreenItem(new ScreenTabItem(screen));
                   }
                } else {
-                  screenPanel.setScreenItem(new ScreenTabItem(screen));
+                  ScreenTabItem item = new ScreenTabItem(screen);
+                  item.upDateTabbarForScreenCanvas((ScreenRef) beanModel.getBean());
+                  screenPanel.setScreenItem(item);
+                  
                }
             }
          }

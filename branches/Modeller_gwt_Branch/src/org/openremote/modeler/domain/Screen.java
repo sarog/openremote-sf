@@ -57,6 +57,8 @@ public class Screen extends RefedEntity {
    private Background background = null;
 
    private List<Gesture> gestures = new ArrayList<Gesture>();
+   
+   private Group parentGroup = null;
 
    private boolean hasTabbar;
    
@@ -258,4 +260,13 @@ public class Screen extends RefedEntity {
       }
       return uiComponents;
    }
+   @JSON(include = false)
+   public Group getParentGroup() {
+      return parentGroup;
+   }
+
+   public void setParentGroup(Group belongTo) {
+      this.parentGroup = belongTo;
+   }
+   
 }

@@ -16,7 +16,11 @@
  */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import org.openremote.modeler.client.widget.component.ScreenTabbar;
+import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenRef;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -60,6 +64,7 @@ public class ScreenTabItem extends TabItem {
       screenContainer.addStyleName("screen-background");
       updateTouchPanel();
       screenCanvas = new ScreenCanvas(screen);
+      initTabbarForScreenCanvas();
       screenContainer.add(screenCanvas);
       screenContainer.setBorders(false);
       add(screenContainer);
@@ -96,4 +101,43 @@ public class ScreenTabItem extends TabItem {
       return screenCanvas;
    }
 
+   public void upDateTabbarForScreenCanvas(ScreenRef screenRef) {
+      Group screenGroup = screenRef.getGroup();
+      if (screenGroup != null) {
+         Panel groupPanel = screenGroup.getParentPanel();
+         ScreenTabbar tabbar = null;
+         if (screenGroup.getTabbar() != null) {
+            tabbar = new ScreenTabbar(screenCanvas,screenGroup.getTabbar());
+         } else if (groupPanel != null && groupPanel.getTabbar()!= null) {
+            tabbar = new ScreenTabbar(screenCanvas,groupPanel.getTabbar());
+            tabbar.setToPanel();
+         }
+         
+         if (tabbar != null) {
+            screenCanvas.addTabbar(tabbar);
+         } else {
+            screenCanvas.removeTabbar();
+         }
+      }
+   }
+   
+   public void initTabbarForScreenCanvas() {
+      if (screen != null) {
+         Group screenGroup = screen.getParentGroup();
+         if (screenGroup != null) {
+            Panel groupPanel = screenGroup.getParentPanel();
+            ScreenTabbar tabbar = null;
+            if (screenGroup.getTabbar() != null) {
+               tabbar = new ScreenTabbar(screenCanvas,screenGroup.getTabbar());
+            } else if (groupPanel != null && groupPanel.getTabbar()!= null) {
+               tabbar = new ScreenTabbar(screenCanvas,groupPanel.getTabbar());
+               tabbar.setToPanel();
+            }
+            
+            if (tabbar != null) {
+               screenCanvas.addTabbar(tabbar);
+            }
+         }
+      }
+   }
 }

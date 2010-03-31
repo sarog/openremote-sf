@@ -19,6 +19,8 @@ package org.openremote.modeler.client.widget.propertyform;
 import org.openremote.modeler.client.event.WidgetDeleteEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.client.widget.component.ScreenTabbar;
+import org.openremote.modeler.client.widget.component.ScreenTabbarItem;
 import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
 import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
@@ -56,25 +58,31 @@ public class PropertyForm extends FormPanel {
    }
 
    private void addDeleteButton() {
-      Button deleteButton = new Button("Delete");
-      deleteButton.setIcon(((Icons) GWT.create(Icons.class)).delete());
-      deleteButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         public void componentSelected(ButtonEvent ce) {
-            MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
-               public void handleEvent(MessageBoxEvent be) {
-                  if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                     if (componentContainer instanceof GridLayoutContainerHandle) {
-                        componentContainer.fireEvent(WidgetDeleteEvent.WIDGETDELETE,new WidgetDeleteEvent());
-                     } else {
-                        ((ComponentContainer)componentContainer.getParent()).fireEvent(WidgetDeleteEvent.WIDGETDELETE,new WidgetDeleteEvent());
+      if (componentContainer instanceof ComponentContainer) {
+         final ComponentContainer componentContainer = (ComponentContainer) this.componentContainer;
+         Button deleteButton = new Button("Delete");
+         deleteButton.setIcon(((Icons) GWT.create(Icons.class)).delete());
+         deleteButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+            public void componentSelected(ButtonEvent ce) {
+               MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
+                  public void handleEvent(MessageBoxEvent be) {
+                     if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
+                        if (componentContainer instanceof GridLayoutContainerHandle
+                              || componentContainer instanceof ScreenTabbarItem
+                              || componentContainer instanceof ScreenTabbar) {
+                           componentContainer.fireEvent(WidgetDeleteEvent.WIDGETDELETE, new WidgetDeleteEvent());
+                        } else {
+                           ((ComponentContainer) componentContainer.getParent()).fireEvent(
+                                 WidgetDeleteEvent.WIDGETDELETE, new WidgetDeleteEvent());
+                        }
+                        WidgetSelectionUtil.setSelectWidget(null);
                      }
-                     WidgetSelectionUtil.setSelectWidget(null);
                   }
-               }
-            });
-         }
+               });
+            }
 
-      });
-      add(deleteButton);
+         });
+         add(deleteButton);
+      }
    }
 }

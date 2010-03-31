@@ -21,10 +21,12 @@ import java.util.List;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.WidgetDeleteEvent;
 import org.openremote.modeler.client.utils.IDUtil;
+import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
+import org.openremote.modeler.client.widget.component.ScreenTabbar;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.propertyform.ScreenPropertyForm;
 import org.openremote.modeler.domain.Absolute;
@@ -34,6 +36,8 @@ import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Background.RelativeType;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIGrid;
+import org.openremote.modeler.domain.component.UITabbar;
+import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -56,7 +60,7 @@ import com.google.gwt.user.client.Event;
 /**
  * A layout container for create and dnd components.
  */
-public class ScreenCanvas extends ComponentContainer {
+public class ScreenCanvas extends ComponentContainer implements PropertyEditable{
 
    /** The absolute position. */
    private Point absolutePosition = null;
@@ -66,9 +70,9 @@ public class ScreenCanvas extends ComponentContainer {
 
    private Screen screen = null;
 
-   private boolean hasTabbar;
+//   private boolean hasTabbar;
 
-   private LayoutContainer tabbarContainer;
+   private ScreenTabbar tabbarContainer;
 
    /**
     * Instantiates a new screen canvas.
@@ -117,8 +121,11 @@ public class ScreenCanvas extends ComponentContainer {
       setStyleAttribute("overflow", "hidden");
       updateGround();
       new DragSource(this);
-      if (screen.isHasTabbar()) {
+      /*if (screen.isHasTabbar()) {
          addTabbar();
+      }*/
+      if (this.tabbarContainer != null) {
+         add(tabbarContainer);
       }
    }
 
@@ -317,7 +324,17 @@ public class ScreenCanvas extends ComponentContainer {
                            UIGrid.DEFAULT_HEIGHT, UIGrid.DEFALUT_ROW_COUNT, UIGrid.DEFAULT_COL_COUNT);
                      screen.addGrid(grid);
                      componentContainer = createGridLayoutContainer(grid);
-                     createGridDragSource(componentContainer, canvas);
+                     createGridDragSource(componentContainer, canvas);  
+                  } else if (dataModel.getBean() instanceof UITabbar) {
+                     //TODO
+                     addTabbar(new ScreenTabbar(ScreenCanvas.this,new UITabbar()));
+                     WidgetSelectionUtil.setSelectWidget(tabbarContainer);
+                     return;
+//                     componentContainer = tabbarContainer;
+                     
+                  } else if (dataModel.getBean() instanceof UITabbarItem){
+                     addTabItemToTabbar();
+                     return ;
                   } else {
                      componentContainer = createNewAbsoluteLayoutContainer(screen, (UIComponent) dataModel.getBean());
                      createDragSource(canvas, componentContainer);
@@ -327,8 +344,11 @@ public class ScreenCanvas extends ComponentContainer {
                   }
                   WidgetSelectionUtil.setSelectWidget(componentContainer);
                   canvas.add(componentContainer);
-                  componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
+                  Object model = dataModel.getBean();
+                  if (!(model instanceof UITabbar) && !(model instanceof UITabbarItem)) {
+                     componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
                         - absolutePosition.y);
+                  }
                }
             }
 
@@ -628,7 +648,7 @@ public class ScreenCanvas extends ComponentContainer {
    }
 
    public void addTabbar() {
-      if (!hasTabbar) {
+      /*if (!hasTabbar) {
          hasTabbar = true;
          tabbarContainer = new LayoutContainer() {
             protected void afterRender() {
@@ -644,14 +664,7 @@ public class ScreenCanvas extends ComponentContainer {
          tabbarContainer.setStyleAttribute("position", "absolute");
          this.add(tabbarContainer);
          layout();
-      }
-   }
-   
-   public void removeTabbar() {
-      if (tabbarContainer != null) {
-         tabbarContainer.removeFromParent();
-         hasTabbar = false;
-      }
+      }*/
    }
 
    public void setSizeToDefault(UIComponent component) {
@@ -663,4 +676,43 @@ public class ScreenCanvas extends ComponentContainer {
       this.layout();
    }
 
+   public void addTabbar(ScreenTabbar screenTabbar) {
+      if (tabbarContainer != null) {
+         tabbarContainer.removeFromParent();
+      }
+      this.tabbarContainer = screenTabbar;
+      this.add(tabbarContainer);
+      tabbarContainer.addStyleName("move-cursor");
+      tabbarContainer.sinkEvents(Event.ONMOUSEDOWN);
+      this.layout();
+   }
+
+   /*public void setTabbarContainer(ScreenTabbar tabbarContainer) {
+      this.tabbarContainer = tabbarContainer;
+   }*/
+
+   public ScreenTabbar getTabbarContainer() {
+      return tabbarContainer;
+   }
+   
+   private void addTabItemToTabbar() {
+      if (this.tabbarContainer.getTabbarItemCount() == UITabbar.MAX_TABBARITEM_COUNT) {
+         MessageBox.alert("Warn", "Sory, a tabbar can not have more than "+UITabbar.MAX_TABBARITEM_COUNT+"tabbarItems", null);
+         return ;
+      }
+      if (this.tabbarContainer == null) {
+         MessageBox.alert("Error", "You must add a tabbar at first!", null);
+         return; 
+      }
+      UITabbarItem tabItem = new UITabbarItem();
+      tabbarContainer.addTabbarItem(tabItem);
+      layout();
+   }
+   
+   public void removeTabbar() {
+      if (this.tabbarContainer != null) {
+         tabbarContainer.removeFromParent();
+         layout();
+      }
+   }
 }

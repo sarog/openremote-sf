@@ -167,6 +167,7 @@ public class PanelWindow extends FormWindow {
                      .getValue();
                panel.setTouchPanelDefinition(prededinedPanel.getData());
                Group defaultGroup = new Group();
+               defaultGroup.setParentPanel(panel);
                defaultGroup.setOid(IDUtil.nextID());
                defaultGroup.setName(Constants.DEFAULT_GROUP);
                GroupRef groupRef = new GroupRef(defaultGroup);
@@ -174,6 +175,7 @@ public class PanelWindow extends FormWindow {
                groupRef.setPanel(panel);
 //               if (createScreen.getValue()) {
                   Screen defaultScreen = new Screen();
+                  defaultScreen.setParentGroup(defaultGroup);
                   defaultScreen.setOid(IDUtil.nextID());
                   defaultScreen.setName(Constants.DEFAULT_SCREEN);
                   defaultScreen.setTouchPanelDefinition(panel.getTouchPanelDefinition());

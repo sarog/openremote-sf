@@ -493,12 +493,13 @@ public class ProfilePanel extends ContentPanel {
       newGroupItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          @Override
          public void componentSelected(MenuEvent ce) {
-            Group group = new Group();
+            final Group group = new Group();
             group.setOid(IDUtil.nextID());
             GroupRef groupRef = new GroupRef(group);
             BeanModel selectedBeanModel = panelTree.getSelectionModel().getSelectedItem();
             if (selectedBeanModel != null && selectedBeanModel.getBean() instanceof Panel) {
                groupRef.setPanel((Panel) selectedBeanModel.getBean());
+               group.setParentPanel((Panel) selectedBeanModel.getBean());
             }
             final GroupWizardWindow  groupWizardWindow = new GroupWizardWindow(groupRef.getBeanModel());
             groupWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
@@ -507,6 +508,7 @@ public class ProfilePanel extends ContentPanel {
                   groupWizardWindow.hide();
                   BeanModel groupRefModel = be.getData();
                   GroupRef groupRef = groupRefModel.getBean();
+                  group.setParentPanel(groupRef.getPanel());
                   panelTree.getStore().add(groupRef.getPanel().getBeanModel(), groupRefModel, false);
                   for (ScreenRef screenRef : groupRef.getGroup().getScreenRefs()) {
                      if (screenRef.getScreen().getRefCount() > 1) {
