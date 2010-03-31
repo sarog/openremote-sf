@@ -303,6 +303,11 @@ table.screen-btn-cont td.br-c{
    background-image: url('../../resources/images/iphone_tabbar_bg.png');
 }
 
+.tabbaritem-background {
+	background-image: url('../../resources/images/tabbarItem.png');
+	background-position:center center;
+}
+
 /**
    only for IE scroll TreePanel.
 **/
