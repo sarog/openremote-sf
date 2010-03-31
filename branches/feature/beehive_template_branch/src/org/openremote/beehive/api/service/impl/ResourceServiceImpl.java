@@ -22,11 +22,10 @@ package org.openremote.beehive.api.service.impl;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.openremote.beehive.Configuration;
 import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.service.AccountService;
@@ -44,7 +43,7 @@ import org.openremote.beehive.utils.FileUtil;
  */
 public class ResourceServiceImpl implements ResourceService
 {
-   private static final Log logger = LogFactory.getLog(ResourceService.class);
+   private static final Logger logger = Logger.getLogger(ResourceService.class);
    
    private AccountService accountService;
    
