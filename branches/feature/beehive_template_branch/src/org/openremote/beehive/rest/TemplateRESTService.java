@@ -60,28 +60,30 @@ import org.openremote.beehive.domain.Template;
 
 @Path("/account/{account_id}")
 public class TemplateRESTService extends RESTBaseService {
-   
+
    /**
     * Get all templates by account id.
     * 
     * @param accountId
     *           account id
+    * @param shared
+    *           public or private
     * @param credentials
     *           HTTP basic header credentials : "Basic base64(username:md5(password,username))"
     * 
     * @return template list
     */
-   @Path("templates/from/{shared}")
+   @Path("templates/{shared}")
    @GET
    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-   public TemplateListing getTemplates(@PathParam("account_id") long accountId,@PathParam("shared") boolean shared, 
+   public TemplateListing getTemplates(@PathParam("account_id") long accountId,@PathParam("shared") String shared, 
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
       authorize(credentials);
       List<TemplateDTO> list = null;
-      if (shared) {
+      if ("public".equalsIgnoreCase(shared)) {
          list = getTemplateService().loadAllPublicTemplatesByAccountOid(accountId);
-      } else {
+      } else if ("private".equalsIgnoreCase(shared)) {
          list = getTemplateService().loadAllPrivateTemplatesByAccountOid(accountId);
       }
       if (list != null) {
