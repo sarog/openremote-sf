@@ -38,7 +38,6 @@ import com.google.gwt.user.client.Event;
  *
  */
 public class ScreenTabbarItem extends ScreenComponent {
-   public static final int TABBAR_ITEM_MARGIN = 5;
    private UITabbarItem uiTabbarItem = null;
    protected Text center = new Text("item");
    
