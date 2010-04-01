@@ -51,6 +51,8 @@ import com.google.gwt.user.client.ui.FlexTable;
 public class ScreenTabbar extends ScreenComponent {
    public static final int PADDING = 5;
    
+   private int defaultHeight = 44;
+   
    private List<ScreenTabbarItem> screenTabbarItems = new ArrayList<ScreenTabbarItem>();
    
    private FlexTable tabItemContainer = new FlexTable();
@@ -67,15 +69,15 @@ public class ScreenTabbar extends ScreenComponent {
       setToGroup();
       Screen screen = this.getScreenCanvas().getScreen();
       
-      setHeight(44-2*PADDING);
-      setWidth(screen.getTouchPanelDefinition().getCanvas().getWidth()-2*PADDING);
+      setHeight(defaultHeight/*-2*PADDING*/);
+      setWidth(screen.getTouchPanelDefinition().getCanvas().getWidth()/*-2*PADDING*/);
       addStyleName("tabbar-background");
-      setPosition(0, screen.getTouchPanelDefinition().getCanvas().getHeight() - (44-2*PADDING));
-      tabItemContainer.setSize(screen.getTouchPanelDefinition().getCanvas().getWidth()+"", 44+"");
+      setPosition(0, screen.getTouchPanelDefinition().getCanvas().getHeight() - (defaultHeight/*-2*PADDING*/));
+      tabItemContainer.setSize(screen.getTouchPanelDefinition().getCanvas().getWidth()+"", defaultHeight+"");
       add(tabItemContainer);
       setStyleAttribute("position", "absolute");
-      setStyleAttribute("leftPadding", PADDING+"px");
-      setStyleAttribute("rightPadding", PADDING+"px");
+//      setStyleAttribute("leftPadding", PADDING+"px");
+//      setStyleAttribute("rightPadding", PADDING+"px");
       initTabbar();
       addDeleteListener();
    }
@@ -184,7 +186,7 @@ public class ScreenTabbar extends ScreenComponent {
          this.setLayout(new AbsoluteLayout());
          for(ScreenTabbarItem item : getScreenTabbarItems()) {
             item.setWidth(width);
-            item.setHeight(44-2*PADDING);
+            item.setHeight(defaultHeight/*-2*PADDING*/);
             item.setPosition(index*width+PADDING, 0);
 //            makeTabItemDragable(item);
             add(item);
@@ -209,8 +211,8 @@ public class ScreenTabbar extends ScreenComponent {
          this.setLayout(new AbsoluteLayout());
          for(ScreenTabbarItem item : getScreenTabbarItems()) {
             item.setWidth(width);
-            item.setHeight(44-2*PADDING);
-            item.setPosition(index*width+PADDING, 0);
+            item.setHeight(defaultHeight/*-2*PADDING*/);
+            item.setPosition(index*width+PADDING/*+ScreenTabbarItem.TABBAR_ITEM_MARGIN*/, 0);
             add(item);
             index++;
          }

@@ -215,7 +215,7 @@ public class TemplateServiceImpl implements TemplateService {
       ScreenPair screen = buildScreen(template);
       
       // ---------------download resources (eg:images) from beehive.
-//      resourceService.downloadResourcesForTemplate(template.getOid());
+      resourceService.downloadResourcesForTemplate(template.getOid());
       return reBuildCommand(screen);
    }
 

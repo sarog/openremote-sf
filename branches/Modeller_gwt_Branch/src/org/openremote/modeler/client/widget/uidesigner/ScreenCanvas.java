@@ -681,7 +681,6 @@ public class ScreenCanvas extends ComponentContainer {
       }
       this.tabbarContainer = screenTabbar;
       this.add(tabbarContainer);
-      tabbarContainer.addStyleName("move-cursor");
       tabbarContainer.sinkEvents(Event.ONMOUSEDOWN);
       this.layout();
    }
