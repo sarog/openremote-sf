@@ -588,7 +588,7 @@ public class DevicePanel extends ContentPanel {
     * @return the menu item
     */
    private MenuItem createImportMenuItem() {
-      MenuItem importCommandItem = new MenuItem("Import Commands");
+      MenuItem importCommandItem = new MenuItem("Import IR Commands");
       importCommandItem.setIcon(icon.importFromDB());
       importCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
