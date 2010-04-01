@@ -98,6 +98,9 @@ public interface Icons extends ImageBundle {
 
    @Resource("tabbar_config.png")
    AbstractImagePrototype tabbarConfigIcon();
+   
+   @Resource("tabbar_item.png")
+   AbstractImagePrototype tabbarItemIcon();
 
    @Resource("slider.png")
    AbstractImagePrototype sliderIcon();

@@ -391,7 +391,7 @@ public class TreePanelBuilder {
             } else if (thisModel.getBean() instanceof UITabbar) {
                return ICON.tabbarConfigIcon();
             } else if (thisModel.getBean() instanceof UITabbarItem) {
-               return ICON.tabbarConfigIcon();
+               return ICON.tabbarItemIcon();
             } else {
                return ICON.buttonIcon();
             }
