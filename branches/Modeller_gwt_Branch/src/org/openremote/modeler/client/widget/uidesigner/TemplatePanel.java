@@ -31,7 +31,7 @@ import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.client.widget.buildingmodeler.TemplateCreateWindow;
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.selenium.DebugId;
 
@@ -65,7 +65,7 @@ public class TemplatePanel extends ContentPanel {
    
    private Template templateInEditing = null;
    
-   private ScreenTabItem editTabItem = null;
+   private ScreenTab editTabItem = null;
    
    private static final int AUTO_SAVE_INTERVAL_MS = 30000;
 
@@ -198,8 +198,8 @@ public class TemplatePanel extends ContentPanel {
 //                  if ( editTabItem != null) {
 //                     try{templateEditTab.remove(editTabItem);}catch(RuntimeException e){}
 //                  } 
-                  editTabItem = new ScreenTabItem(template.getScreen());
-                  editTabItem.setText("Template: "+templateInEditing.getName());
+                  editTabItem = new ScreenTab(template.getScreen());
+//                  editTabItem.setText("Template: "+templateInEditing.getName());
                   templateEditPanel.setScreenItem(editTabItem);
                }
 
@@ -306,7 +306,7 @@ public class TemplatePanel extends ContentPanel {
       if (editTabItem != null) {
          //reopen template tab item close by user. 
          if (templateEditPanel.indexOf(editTabItem) == -1 ) {
-            editTabItem.setText("Template: "+templateInEditing.getName());
+//            editTabItem.setText("Template: "+templateInEditing.getName());
             templateEditPanel.setScreenItem(editTabItem);
             templateInEditing.setScreen(templateInEditing.getScreen());
          }
@@ -345,7 +345,7 @@ public class TemplatePanel extends ContentPanel {
    }
    
    private void buildScreen(final Template templateInEditing) {
-      TemplateProxy.buildScreen(templateInEditing, new AsyncCallback<Screen>() {
+      TemplateProxy.buildScreen(templateInEditing, new AsyncCallback<ScreenPair>() {
 
          @Override
          public void onFailure(Throwable caught) {
@@ -353,7 +353,7 @@ public class TemplatePanel extends ContentPanel {
          }
 
          @Override
-         public void onSuccess(Screen screen) {
+         public void onSuccess(ScreenPair screen) {
             // try to close previous template editing tab item.
 //            if (editTabItem != null) {
 //               try {
@@ -361,8 +361,8 @@ public class TemplatePanel extends ContentPanel {
 //               } catch (RuntimeException e) {
 //               }
 //            }
-            editTabItem = new ScreenTabItem(screen);
-            editTabItem.setText("Template: " + templateInEditing.getName());
+            editTabItem = new ScreenTab(screen);
+//            editTabItem.setText("Template: " + templateInEditing.getName());
             templateEditPanel.setScreenItem(editTabItem);
             templateInEditing.setScreen(screen);
             TemplatePanel.this.templateInEditing = templateInEditing;

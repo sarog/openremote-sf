@@ -26,9 +26,8 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenPair;
 
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeListener;
@@ -36,16 +35,15 @@ import com.extjs.gxt.ui.client.event.ContainerEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 
 public class ScreenPanel extends LayoutContainer {
 
-   private Map<ScreenTabItem, ChangeListener> changeListenerMap = null;
-   private ScreenTabItem screenItem = null;
+   private Map<ScreenTab, ChangeListener> changeListenerMap = null;
+   private ScreenTab screenItem = null;
    public ScreenPanel() {
-      setBorders(true);
+      setLayout(new FitLayout());
       setStyleAttribute("backgroundColor", "white");
-      addStyleName("zero-border-top");
-      setScrollMode(Scroll.AUTO);
       addListeners();
       addInsertListener();
    }
@@ -66,47 +64,48 @@ public class ScreenPanel extends LayoutContainer {
       });
       addListener(Events.Add, new Listener<ContainerEvent>() {
          public void handleEvent(ContainerEvent be) {
-            final ScreenTabItem screenTabItem = (ScreenTabItem) be.getItem();
-            BeanModelDataBase.screenTable.addChangeListener(screenTabItem.getScreen().getOid(),
-                  getScreenChangeListener(screenTabItem));
+            final ScreenTab screenTab = (ScreenTab) be.getItem();
+            BeanModelDataBase.screenTable.addChangeListener(screenTab.getScreenPair().getOid(),
+                  getScreenChangeListener(screenTab));
          }
       });
       addListener(Events.Remove, new Listener<ContainerEvent>() {                
          public void handleEvent(ContainerEvent be) {
-            final ScreenTabItem screenTabItem = (ScreenTabItem) be.getItem();
-            BeanModelDataBase.screenTable.removeChangeListener(screenTabItem.getScreen().getOid(),
-                  getScreenChangeListener(screenTabItem));
+            final ScreenTab screenTab = (ScreenTab) be.getItem();
+            BeanModelDataBase.screenTable.removeChangeListener(screenTab.getScreenPair().getOid(),
+                  getScreenChangeListener(screenTab));
          }
       });
    }
    
-   private ChangeListener getScreenChangeListener(final ScreenTabItem screenTabItem) {
+   private ChangeListener getScreenChangeListener(final ScreenTab screenTab) {
       if (changeListenerMap == null) {
-         changeListenerMap = new HashMap<ScreenTabItem, ChangeListener>();
+         changeListenerMap = new HashMap<ScreenTab, ChangeListener>();
       }
-      ChangeListener changeListener = changeListenerMap.get(screenTabItem);
+      ChangeListener changeListener = changeListenerMap.get(screenTab);
 
       if (changeListener == null) {
          changeListener = new ChangeListener() {
             public void modelChanged(ChangeEvent event) {
-               Screen screen = screenTabItem.getScreen();
+//               ScreenPair screen = screenTabItem.getScreenPair();
                if (event.getType() == BeanModelTable.REMOVE) {
-                  remove(screenTabItem);
+                  remove(screenTab);
                   screenItem = null;
                } else if (event.getType() == BeanModelTable.UPDATE) {
-                  ScreenCanvas screenCanvas = screenTabItem.getScreenCanvas();
-                  if (screen.isHasTabbar()) {
-                    screenCanvas.addTabbar();
-                  } else {
-                     screenCanvas.removeTabbar();
-                  }
-                  screenTabItem.updateTouchPanel();
-                  screenCanvas.setSize(screen.getTouchPanelDefinition().getCanvas().getWidth(), screen.getTouchPanelDefinition().getCanvas().getHeight());
-                  screenCanvas.setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
+                  screenTab.updateTouchPanel();
+//                  ScreenCanvas screenCanvas = screenTabItem.getScreenCanvas();
+//                  if (screen.isHasTabbar()) {
+//                    screenCanvas.addTabbar();
+//                  } else {
+//                     screenCanvas.removeTabbar();
+//                  }
+//                  screenTabItem.updateTouchPanel();
+//                  screenCanvas.setSize(screen.getTouchPanelDefinition().getCanvas().getWidth(), screen.getTouchPanelDefinition().getCanvas().getHeight());
+//                  screenCanvas.setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
                }
             }
          };
-         changeListenerMap.put(screenTabItem, changeListener);
+         changeListenerMap.put(screenTab, changeListener);
       }
       return changeListener;
    }
@@ -119,8 +118,8 @@ public class ScreenPanel extends LayoutContainer {
          public void modelChanged(ChangeEvent event) {
             if (event.getType() == BeanModelTable.ADD) {
                BeanModel beanModel = (BeanModel) event.getItem();
-               if (beanModel.getBean() instanceof Screen) {
-                  setScreenItem(new ScreenTabItem((Screen) beanModel.getBean()));
+               if (beanModel.getBean() instanceof ScreenPair) {
+                  setScreenItem(new ScreenTab((ScreenPair) beanModel.getBean()));
                }
             }
          }
@@ -128,11 +127,11 @@ public class ScreenPanel extends LayoutContainer {
       });
    }
    
-   public ScreenTabItem getScreenItem() {
+   public ScreenTab getScreenItem() {
       return screenItem;
    }
    
-   public void setScreenItem(ScreenTabItem screenItem) {
+   public void setScreenItem(ScreenTab screenItem) {
       if (this.screenItem != null) {
          remove(this.screenItem);
       }

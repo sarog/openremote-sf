@@ -16,11 +16,11 @@ public class Template extends BusinessEntity {
    private String keywords = "";
    private boolean shared = false;
    
-   private Screen screen;
+   private ScreenPair screen;
    
    public Template(){}
    
-   public Template(String name,Screen screen){
+   public Template(String name,ScreenPair screen){
       this.name = name;
       this.screen = screen;
    }
@@ -82,11 +82,11 @@ public class Template extends BusinessEntity {
       this.shared = shared;
    }
 
-   public Screen getScreen() {
+   public ScreenPair getScreen() {
       return screen;
    }
 
-   public void setScreen(Screen screen) {
+   public void setScreen(ScreenPair screen) {
       this.screen = screen;
    }
 

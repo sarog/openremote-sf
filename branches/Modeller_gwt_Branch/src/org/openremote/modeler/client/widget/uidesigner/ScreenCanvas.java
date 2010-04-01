@@ -352,9 +352,9 @@ public class ScreenCanvas extends ComponentContainer {
             }
 
             moveBackGround.hide();
-            if (screen.isHasTabbar()) {
-               tabbarContainer.el().updateZIndex(1);
-            }
+//            if (screen.isHasTabbar()) {
+//               tabbarContainer.el().updateZIndex(1);
+//            }
             layout();
             super.dragDrop(e);
          }

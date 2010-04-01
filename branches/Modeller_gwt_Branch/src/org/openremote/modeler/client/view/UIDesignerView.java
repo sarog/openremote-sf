@@ -37,7 +37,8 @@ import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -156,8 +157,8 @@ public class UIDesignerView extends TabItem {
                for (GroupRef groupRef : panel.getGroupRefs()) {
                   Group group = groupRef.getGroup();
                   BeanModelDataBase.groupTable.insert(group.getBeanModel());
-                  for (ScreenRef screenRef : group.getScreenRefs()) {
-                     Screen screen = screenRef.getScreen();
+                  for (ScreenPairRef screenRef : group.getScreenRefs()) {
+                     ScreenPair screen = screenRef.getScreen();
                      BeanModelDataBase.screenTable.insert(screen.getBeanModel());
                   }
                }
@@ -253,14 +254,6 @@ public class UIDesignerView extends TabItem {
 
       widgetAndPropertyContainer.add(propertyPanel, centerData);
       return widgetAndPropertyContainer;
-   }
-
-   List<Screen> getAllScreens() {
-      List<Screen> screenList = new ArrayList<Screen>();
-      for (BeanModel screenBeanModel : BeanModelDataBase.screenTable.loadAll()) {
-         screenList.add((Screen) screenBeanModel.getBean());
-      }
-      return screenList;
    }
 
    List<Panel> getAllPanels() {

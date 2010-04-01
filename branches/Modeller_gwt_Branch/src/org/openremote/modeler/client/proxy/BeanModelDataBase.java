@@ -42,7 +42,7 @@ import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.GroupRef;
-import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
@@ -200,8 +200,8 @@ public class BeanModelDataBase {
       if (beanModel == null) {
          return 0;
       }
-      if (beanModel.getBean() instanceof ScreenRef) {
-         ScreenRef screenRef = (ScreenRef) beanModel.getBean();
+      if (beanModel.getBean() instanceof ScreenPairRef) {
+         ScreenPairRef screenRef = (ScreenPairRef) beanModel.getBean();
          return screenRef.getScreenId();
       } else if (beanModel.getBean() instanceof GroupRef) {
          GroupRef groupRef = (GroupRef) beanModel.getBean();

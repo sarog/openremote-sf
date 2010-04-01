@@ -24,7 +24,9 @@ import java.util.List;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPairRef;
+import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
 
@@ -168,11 +170,31 @@ public class NavigateFieldSet extends FieldSet {
       navigate.setToGroup(selectedGroup.getOid());
       screenList.clearSelections();
       screenList.getStore().removeAll();
-      for (ScreenRef screenRef : selectedGroup.getScreenRefs()) {
-         ComboBoxDataModel<Screen> data = new ComboBoxDataModel<Screen>(screenRef.getDisplayName(), screenRef.getScreen());
-         screenList.getStore().add(data);
-         if (navigate.getToScreen() == screenRef.getScreenId()) {
-            screenList.setValue(data);
+      for (ScreenPairRef screenRef : selectedGroup.getScreenRefs()) {
+         ScreenPair screenPair = screenRef.getScreen();
+         if (OrientationType.PORTRAIT.equals(screenPair.getOrientation())) {
+            ComboBoxDataModel<Screen> data = new ComboBoxDataModel<Screen>(screenPair.getPortraitScreen().getNameWithOrientation(), screenPair.getPortraitScreen());
+            screenList.getStore().add(data);
+            if (navigate.getToScreen() == screenPair.getPortraitScreen().getOid()) {
+               screenList.setValue(data);
+            }
+         } else if(OrientationType.LANDSCAPE.equals(screenPair.getOrientation())) {
+            ComboBoxDataModel<Screen> data = new ComboBoxDataModel<Screen>(screenPair.getLandscapeScreen().getNameWithOrientation(), screenPair.getLandscapeScreen());
+            screenList.getStore().add(data);
+            if (navigate.getToScreen() == screenPair.getLandscapeScreen().getOid()) {
+               screenList.setValue(data);
+            }
+         } else if (OrientationType.BOTH.equals(screenPair.getOrientation())) {
+            ComboBoxDataModel<Screen> data1 = new ComboBoxDataModel<Screen>(screenPair.getPortraitScreen().getNameWithOrientation(), screenPair.getPortraitScreen());
+            screenList.getStore().add(data1);
+            if (navigate.getToScreen() == screenPair.getPortraitScreen().getOid()) {
+               screenList.setValue(data1);
+            }
+            ComboBoxDataModel<Screen> data2 = new ComboBoxDataModel<Screen>(screenPair.getLandscapeScreen().getNameWithOrientation(), screenPair.getLandscapeScreen());
+            screenList.getStore().add(data2);
+            if (navigate.getToScreen() == screenPair.getLandscapeScreen().getOid()) {
+               screenList.setValue(data2);
+            }
          }
       }
       if (screenList.getValue() == null) {

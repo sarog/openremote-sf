@@ -25,7 +25,7 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
-import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -67,7 +67,7 @@ public class TreePanelDropTargetPanelTreeExt extends TreePanelDropTarget {
             handleAppendDrop(event, activeItem);
             doAppend(sourceParentNode, sourceNode, targetNode);
             successed = true;
-         } else if (sourceNode.getBean() instanceof ScreenRef && targetNode.getBean() instanceof GroupRef
+         } else if (sourceNode.getBean() instanceof ScreenPairRef && targetNode.getBean() instanceof GroupRef
                && inSamePanel(sourceParentNode, targetNode) && canMove(sourceNode, targetNode)) {
             tree.getStore().remove(sourceNode);
             handleAppendDrop(event, activeItem);
@@ -79,7 +79,7 @@ public class TreePanelDropTargetPanelTreeExt extends TreePanelDropTarget {
          handleInsertDrop(event, activeItem, status);
          doInsert(sourceParentNode, sourceNode, targetNode);
          successed = true;
-      } else if (sourceNode.getBean() instanceof ScreenRef && targetParentNode.getBean() instanceof GroupRef
+      } else if (sourceNode.getBean() instanceof ScreenPairRef && targetParentNode.getBean() instanceof GroupRef
             && inSamePanel(sourceParentNode, targetParentNode) && canMove(sourceNode, targetParentNode)) {
          tree.getStore().remove(sourceNode);
          handleInsertDrop(event, activeItem, status);
@@ -97,9 +97,9 @@ public class TreePanelDropTargetPanelTreeExt extends TreePanelDropTarget {
    }
    private boolean canMove(BeanModel scrRefBean, BeanModel groupRefBean) {
       GroupRef groupRef = groupRefBean.getBean();
-      ScreenRef scrRef = scrRefBean.getBean();
-      List<ScreenRef> screenRefs = groupRef.getGroup().getScreenRefs();
-      for (ScreenRef ref : screenRefs) {
+      ScreenPairRef scrRef = scrRefBean.getBean();
+      List<ScreenPairRef> screenRefs = groupRef.getGroup().getScreenRefs();
+      for (ScreenPairRef ref : screenRefs) {
          if (ref.getScreenId() == scrRef.getScreenId()) {
             return false;
          }
@@ -113,7 +113,7 @@ public class TreePanelDropTargetPanelTreeExt extends TreePanelDropTarget {
    }
    private void appendScreen(BeanModel sourceGroupRefBeanModel, BeanModel sourceScreenRefBeanModel,
          BeanModel targetGroupRefBeanModel) {
-      ScreenRef sourceScreenRef = sourceScreenRefBeanModel.getBean();
+      ScreenPairRef sourceScreenRef = sourceScreenRefBeanModel.getBean();
       GroupRef targetGroupRef = targetGroupRefBeanModel.getBean();
       targetGroupRef.getGroup().addScreenRef(sourceScreenRef);
       GroupRef sourceGroupRef = sourceGroupRefBeanModel.getBean();
@@ -123,9 +123,9 @@ public class TreePanelDropTargetPanelTreeExt extends TreePanelDropTarget {
    }
    private void reorderScreen(BeanModel sourceGroupRefBean, BeanModel fromBean, BeanModel toBean) {
       Group sourceGroup = ((GroupRef) sourceGroupRefBean.getBean()).getGroup();
-      Group targetGroup = ((ScreenRef) toBean.getBean()).getGroup();
-      ScreenRef from = fromBean.getBean();
-      ScreenRef to = toBean.getBean();
+      Group targetGroup = ((ScreenPairRef) toBean.getBean()).getGroup();
+      ScreenPairRef from = fromBean.getBean();
+      ScreenPairRef to = toBean.getBean();
       if (!sourceGroup.equals(to.getGroup())) {
          targetGroup = to.getGroup();
       }
@@ -134,7 +134,7 @@ public class TreePanelDropTargetPanelTreeExt extends TreePanelDropTarget {
    }
 
    private void doAppend(BeanModel sourceParent, BeanModel source, BeanModel target) {
-      if (sourceParent.getBean() instanceof GroupRef && source.getBean() instanceof ScreenRef
+      if (sourceParent.getBean() instanceof GroupRef && source.getBean() instanceof ScreenPairRef
             && target.getBean() instanceof GroupRef) {
          appendScreen(sourceParent, source, target);
       } else if (sourceParent.getBean() instanceof Panel && source.getBean() instanceof GroupRef
@@ -144,8 +144,8 @@ public class TreePanelDropTargetPanelTreeExt extends TreePanelDropTarget {
    }
 
    private void doInsert(BeanModel sourceParent, BeanModel source, BeanModel insertTo) {
-      if (sourceParent.getBean() instanceof GroupRef && source.getBean() instanceof ScreenRef
-            && insertTo.getBean() instanceof ScreenRef) {
+      if (sourceParent.getBean() instanceof GroupRef && source.getBean() instanceof ScreenPairRef
+            && insertTo.getBean() instanceof ScreenPairRef) {
          reorderScreen(sourceParent, source, insertTo);
       } else if (sourceParent.getBean() instanceof Panel && source.getBean() instanceof GroupRef
             && insertTo.getBean() instanceof GroupRef) {

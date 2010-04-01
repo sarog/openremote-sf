@@ -44,7 +44,8 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorCommandRef;
 import org.openremote.modeler.domain.SensorType;
@@ -60,6 +61,7 @@ import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISwitch;
+import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.domain.component.Gesture.GestureType;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
@@ -96,7 +98,7 @@ public class ResourceServiceImplTest {
    }
    @Test
    public void testPanelHasGroupScreenControl()throws Exception {
-      List<ScreenRef> screenRefs = new ArrayList<ScreenRef>();
+      List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
       List<GroupRef> groupRefs = new ArrayList<GroupRef>();
       List<Panel> panels = new ArrayList<Panel>();
       
@@ -184,8 +186,16 @@ public class ResourceServiceImplTest {
       screen1.addGrid(grid1);
       screen2.addGrid(grid2);
       
-      screenRefs.add(new ScreenRef(screen1));
-      screenRefs.add(new ScreenRef(screen2));
+      ScreenPair screenPair1 = new ScreenPair();
+      screenPair1.setOid(IDUtil.nextID());
+      screenPair1.setPortraitScreen(screen1);
+      
+      ScreenPair screenPair2 = new ScreenPair();
+      screenPair2.setOid(IDUtil.nextID());
+      screenPair2.setPortraitScreen(screen2);
+      
+      screenRefs.add(new ScreenPairRef(screenPair1));
+      screenRefs.add(new ScreenPairRef(screenPair2));
       /*---------------group-------------------*/
       Group group1 = new Group();
       group1.setOid(IDUtil.nextID());
@@ -230,14 +240,16 @@ public class ResourceServiceImplTest {
       p.setName("panel has a navigate");
       List<UITabbarItem> items = new ArrayList<UITabbarItem>();
       items.add(item);
-      p.setTabbarItems(items);
+      UITabbar tabbar = new UITabbar();
+      tabbar.setTabbarItems(items);
+      p.setTabbar(tabbar);
       panelWithJustOneNavigate.add(p);
       outputPanelXML(panelWithJustOneNavigate);
    }
 @Test
 public void testScreenHasGesture() {
    Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
-   List<ScreenRef> screenRefs = new ArrayList<ScreenRef>();
+   List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
    List<GroupRef> groupRefs = new ArrayList<GroupRef>();
    
    List<Gesture> gestures = new ArrayList<Gesture>();
@@ -260,7 +272,10 @@ public void testScreenHasGesture() {
    screen1.setOid(IDUtil.nextID());
    screen1.setName("screen1");
    screen1.setGestures(gestures);
-   screenRefs.add(new ScreenRef(screen1));
+   ScreenPair screenPair = new ScreenPair();
+   screenPair.setOid(IDUtil.nextID());
+   screenPair.setPortraitScreen(screen1);
+   screenRefs.add(new ScreenPairRef(screenPair));
    
    Group group1 = new Group();
    group1.setOid(IDUtil.nextID());
@@ -289,7 +304,9 @@ public void testScreenHasGesture() {
       p.setName("panel has a navigate");
       List<UITabbarItem> items = new ArrayList<UITabbarItem>();
       items.add(item);
-      p.setTabbarItems(items);
+      UITabbar tabbar = new UITabbar();
+      tabbar.setTabbarItems(items);
+      p.setTabbar(tabbar);
       panelWithJustOneNavigate.add(p);
       outputPanelXML(panelWithJustOneNavigate);
    }
@@ -362,8 +379,11 @@ public void testScreenHasGesture() {
       Group group = new Group();
       group.setName("groupName");
       group.setOid(IDUtil.nextID());
+      ScreenPair screenPair = new ScreenPair();
+      screenPair.setOid(IDUtil.nextID());
+      screenPair.setPortraitScreen(screen);
       
-      group.addScreenRef(new ScreenRef(screen));
+      group.addScreenRef(new ScreenPairRef(screenPair));
       
       p.addGroupRef(new GroupRef(group));
       panel.add(p);

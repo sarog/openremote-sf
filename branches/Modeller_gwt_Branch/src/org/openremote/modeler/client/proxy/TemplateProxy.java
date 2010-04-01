@@ -28,7 +28,9 @@ import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Template;
+import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.UIGrid;
 
@@ -73,7 +75,7 @@ public class TemplateProxy {
 
                @Override
                public void onSuccess(ScreenFromTemplate screenFromTemplate) {
-                  Screen screen = screenFromTemplate.getScreen();
+                  ScreenPair screen = screenFromTemplate.getScreen();
                   initOid(screen);
                   callback.onSuccess(screenFromTemplate);
                }
@@ -87,12 +89,12 @@ public class TemplateProxy {
             });
    }
    
-   public static void buildScreen(final Template template, final AsyncCallback<Screen> callback) {
+   public static void buildScreen(final Template template, final AsyncCallback<ScreenPair> callback) {
       AsyncServiceFactory.getTemplateRPCServiceAsync().buildScreen(template, 
-            new AsyncSuccessCallback<Screen>() {
+            new AsyncSuccessCallback<ScreenPair>() {
 
                @Override
-               public void onSuccess(Screen screen) {
+               public void onSuccess(ScreenPair screen) {
                   initOid(screen);
                   callback.onSuccess(screen);
                }
@@ -178,7 +180,21 @@ public class TemplateProxy {
     * initialize the oid for every BusinessEntity.
     * @param screen
     */
-   private static void initOid(Screen screen) {
+   private static void initOid(ScreenPair screenPair) {
+      if (screenPair != null) {
+         screenPair.setOid(IDUtil.nextID());
+         if (screenPair.getOrientation().equals(OrientationType.PORTRAIT)) {
+            initScreenOid(screenPair.getPortraitScreen());
+         } else if (screenPair.getOrientation().equals(OrientationType.LANDSCAPE)) {
+            initScreenOid(screenPair.getLandscapeScreen());
+         } else if (screenPair.getOrientation().equals(OrientationType.BOTH)) {
+            initScreenOid(screenPair.getPortraitScreen());
+            initScreenOid(screenPair.getLandscapeScreen());
+         }
+      }
+   }
+   
+   private static void initScreenOid(Screen screen) {
       if (screen != null) {
          screen.setOid(IDUtil.nextID());
          for (Absolute abs : screen.getAbsolutes()) {

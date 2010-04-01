@@ -58,7 +58,7 @@ public final class JsonGenerator {
     */
    public static String serializerObjectInclude(Object object, String[] includedPropertyNames, String[] excludedPropertyNames) {
       JSONSerializer serializer = new JSONSerializer();
-      return serializer.exclude("*.class").include(includedPropertyNames).exclude(excludedPropertyNames).serialize(object);
+      return serializer.exclude("*.class").include(includedPropertyNames).exclude(excludedPropertyNames).deepSerialize(object);
    }
    
 }
