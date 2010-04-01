@@ -86,10 +86,6 @@ public interface ResourceService {
    
    String getPanelsJson(Collection<Panel> panels);
    
-   String getGroupsJson(Collection<Group> groups);
-   
-   String getScreensJson(Collection<Screen> screens);
-   
    void initResources(Collection<Panel> panels,long maxOid);
    
    PanelsAndMaxOid restore();

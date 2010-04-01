@@ -141,6 +141,8 @@
 			</xsd:sequence>
 			<xsd:attribute name="name" type="xsd:string" use="required" />
 			<xsd:attribute name="id" type="idType" use="required" />
+			<xsd:attribute name="landscape" type="xsd:boolean" use="optional" />
+			<xsd:attribute name="inverseScreenId" type="idType" use="optional" />
 		</xsd:complexType>
 	</xsd:element>
 
@@ -467,7 +469,7 @@
 				<xsd:element ref="link" minOccurs="0" maxOccurs="1"/>
 			</xsd:sequence>
 			<xsd:attribute name="id" type="idType" use="required"/>
-			<xsd:attribute name="font-size" type="xsd:int" use="optional"/>
+			<xsd:attribute name="fontSize" type="xsd:int" use="optional"/>
 			<xsd:attribute name="color" type="xsd:string" use="optional"/>
 			<xsd:attribute name="text" type="xsd:string" use="required"/>
 		</xsd:complexType>

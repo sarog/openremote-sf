@@ -36,7 +36,7 @@ import flexjson.JSON;
 /**
  * The Class Screen.
  */
-public class Screen extends RefedEntity {
+public class Screen extends BusinessEntity {
    private static final long serialVersionUID = -4133577592315343274L;
 
    /** The default name index. */
@@ -58,10 +58,13 @@ public class Screen extends RefedEntity {
 
    private List<Gesture> gestures = new ArrayList<Gesture>();
    
-   private Group parentGroup = null;
-
    private boolean hasTabbar;
    
+   private boolean isLandscape;
+   
+   private long inverseScreenId = 0;
+   
+   private ScreenPair screenPair;
    public Screen() {
       this.background = new Background();
    }
@@ -168,6 +171,7 @@ public class Screen extends RefedEntity {
     * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()
     */
    @Transient
+   @JSON(include=false)
    public String getDisplayName() {
       return getPanelName();
    }
@@ -237,6 +241,23 @@ public class Screen extends RefedEntity {
    public void addGesture(Gesture gesture){
       gestures.add(gesture);
    }
+   
+   public boolean isLandscape() {
+      return isLandscape;
+   }
+
+   public void setLandscape(boolean isLandscape) {
+      this.isLandscape = isLandscape;
+   }
+
+   public long getInverseScreenId() {
+      return inverseScreenId;
+   }
+
+   public void setInverseScreenId(long inverseScreenId) {
+      this.inverseScreenId = inverseScreenId;
+   }
+
    /**
     * get all the UIComponent by the component's class. for example, if you want to get all the UIButton on the screen.
     * you can invoke this method like this: <code>getAllUIComponentByType(UIButton.class)</code>
@@ -260,13 +281,20 @@ public class Screen extends RefedEntity {
       }
       return uiComponents;
    }
+
    @JSON(include = false)
-   public Group getParentGroup() {
-      return parentGroup;
+   public ScreenPair getScreenPair() {
+      return screenPair;
    }
 
-   public void setParentGroup(Group belongTo) {
-      this.parentGroup = belongTo;
+   public void setScreenPair(ScreenPair screenPair) {
+      this.screenPair = screenPair;
    }
    
+   public String getNameWithOrientation() {
+      if (isLandscape) {
+         return name + "_landscape";
+      }
+      return name;
+   }
 }

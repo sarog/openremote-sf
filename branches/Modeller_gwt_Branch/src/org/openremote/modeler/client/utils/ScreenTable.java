@@ -20,7 +20,7 @@
 package org.openremote.modeler.client.utils;
 
 import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenPair;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
@@ -51,9 +51,9 @@ public class ScreenTable extends BeanModelTable {
    
    public void clearUnuseData() {
       for (BeanModel screenModel : loadAll()) {
-         if (((Screen)screenModel.getBean()).getRefCount() == 0) {
+         if (((ScreenPair)screenModel.getBean()).getRefCount() == 0) {
             delete(screenModel);
-         } else if (((Screen)screenModel.getBean()).getRefCount() == 1) {
+         } else if (((ScreenPair)screenModel.getBean()).getRefCount() == 1) {
             update(screenModel);
          }
       }

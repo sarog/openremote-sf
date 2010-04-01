@@ -24,6 +24,7 @@ import org.openremote.modeler.client.widget.component.ScreenTabbarItem;
 import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
 import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
+import org.openremote.modeler.client.widget.uidesigner.ScreenTabItem;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -52,7 +53,7 @@ public class PropertyForm extends FormPanel {
       setLabelWidth(60);
       setFieldWidth(100);
       setScrollMode(Scroll.AUTO);
-      if (!(componentContainer instanceof ScreenCanvas)) {
+      if (!(componentContainer instanceof ScreenCanvas) && !(componentContainer.getParent() instanceof ScreenTabItem)) {
          addDeleteButton();
       }
    }

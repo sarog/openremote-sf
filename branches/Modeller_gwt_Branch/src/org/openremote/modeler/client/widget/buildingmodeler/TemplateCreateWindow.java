@@ -26,7 +26,7 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.FormWindow;
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Template;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -219,7 +219,7 @@ public class TemplateCreateWindow extends FormWindow
          MessageBox.alert("Error", "One (and only one) screen must be selected", null);
          return;
       }
-      Screen screen = screenBeanModels.get(0).getBean();
+      ScreenPair screen = screenBeanModels.get(0).getBean();
       Template template = new Template(templateName.getValue(), screen);
       assembleTemplate(template);
       TemplateProxy.saveTemplate(template, new AsyncSuccessCallback<Template>() {

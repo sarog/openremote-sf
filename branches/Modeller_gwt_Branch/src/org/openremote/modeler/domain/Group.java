@@ -43,7 +43,7 @@ public class Group extends RefedEntity {
    private String name;
    
    /** The screen refs. */
-   private List<ScreenRef> screenRefs = new ArrayList<ScreenRef>();
+   private List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
 
    private List<UITabbarItem> tabbarItems = new ArrayList<UITabbarItem>();
    
@@ -76,7 +76,7 @@ public class Group extends RefedEntity {
     * 
     * @return the screen refs
     */
-   public List<ScreenRef> getScreenRefs() {
+   public List<ScreenPairRef> getScreenRefs() {
       return screenRefs;
    }
 
@@ -85,7 +85,7 @@ public class Group extends RefedEntity {
     * 
     * @param screenRefs the new screen refs
     */
-   public void setScreenRefs(List<ScreenRef> screenRefs) {
+   public void setScreenRefs(List<ScreenPairRef> screenRefs) {
       this.screenRefs = screenRefs;
    }
 
@@ -94,15 +94,15 @@ public class Group extends RefedEntity {
     * 
     * @param screen the screen
     */
-   public void addScreenRef(ScreenRef screenRef) {
+   public void addScreenRef(ScreenPairRef screenRef) {
       screenRefs.add(screenRef);
    }
    
-   public void removeScreenRef(ScreenRef screenRef) {
+   public void removeScreenRef(ScreenPairRef screenRef) {
       screenRefs.remove(screenRef);
    }
    
-   public void insertScreenRef(ScreenRef before, ScreenRef target) {
+   public void insertScreenRef(ScreenPairRef before, ScreenPairRef target) {
       int index = screenRefs.indexOf(before);
       target.setGroup(this);
       target.getScreen().setParentGroup(this);

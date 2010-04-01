@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.openremote.modeler.client.rpc.TemplateRPCService;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.service.TemplateService;
@@ -68,7 +68,7 @@ public class TemplateController extends BaseGWTSpringController implements Templ
    }
 
    @Override
-   public Screen buildScreen(Template template) {
+   public ScreenPair buildScreen(Template template) {
       return templateService.buildScreen(template);
    }
 

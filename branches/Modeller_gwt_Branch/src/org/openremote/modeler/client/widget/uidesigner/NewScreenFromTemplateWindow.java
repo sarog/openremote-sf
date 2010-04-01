@@ -29,7 +29,7 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.client.widget.FormWindow;
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Template;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -67,7 +67,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
    
    private int currentPage = 0;
 
-   private Screen screen = null;
+   private ScreenPair screen = null;
 
    private TextField<String> nameField = null;
 

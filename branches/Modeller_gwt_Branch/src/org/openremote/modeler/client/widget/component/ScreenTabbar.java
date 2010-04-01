@@ -120,25 +120,25 @@ public class ScreenTabbar extends ScreenComponent {
       uiTabbar.setScope(Scope.GROUP);
       
       //1, remove tabbar from panel:
-      Panel panel = getScreenCanvas().getScreen().getParentGroup().getParentPanel();
+      Panel panel = getScreenCanvas().getScreen().getScreenPair().getParentGroup().getParentPanel();
       if (panel.getTabbar()==this.uiTabbar){
          panel.setTabbar(null);
       }
       
       //2, add tabbar to group
-      Group group = getScreenCanvas().getScreen().getParentGroup();
+      Group group = getScreenCanvas().getScreen().getScreenPair().getParentGroup();
       group.setTabbar(this.uiTabbar);
    }
    
    public void setToPanel() {
       uiTabbar.setScope(Scope.PANEL);
       //1, remove tabbar from group
-      Group group = getScreenCanvas().getScreen().getParentGroup();
+      Group group = getScreenCanvas().getScreen().getScreenPair().getParentGroup();
       if (group.getTabbar() == this.uiTabbar){
          group.setTabbar(null);
       }
       //2, add tabbar from panel:
-      Panel panel = getScreenCanvas().getScreen().getParentGroup().getParentPanel();
+      Panel panel = getScreenCanvas().getScreen().getScreenPair().getParentGroup().getParentPanel();
       panel.setTabbar(this.uiTabbar);
    }
    
@@ -258,7 +258,7 @@ public class ScreenTabbar extends ScreenComponent {
    }
    
    private void removeItself () {
-      Group group = this.getScreenCanvas().getScreen().getParentGroup();
+      Group group = this.getScreenCanvas().getScreen().getScreenPair().getParentGroup();
       if (group.getTabbar() != null && group.getTabbar().equals(uiTabbar)) {
          group.setTabbar(null);
       } 

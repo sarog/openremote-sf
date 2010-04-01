@@ -76,10 +76,12 @@ import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.SensorOwner;
 import org.openremote.modeler.domain.component.UIButton;
@@ -559,36 +561,10 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    @Override
-   public String getGroupsJson(Collection<Group> groups) {
-      try {
-         String[] includedPropertyNames = {"screenRefs"};
-         String[] excludePropertyNames = {};
-         return JsonGenerator.serializerObjectInclude(groups, includedPropertyNames, excludePropertyNames);
-      } catch (Exception e) {
-         LOGGER.error(e);
-         return "";
-      }
-   }
-
-   @Override
-   public String getScreensJson(Collection<Screen> screens) {
-      try {
-         String[] includedPropertyNames = {"absolutes", "absolutes.uiComponent", "grid", "grid.cells",
-               "grid.cells.uiComponent"};
-         String[] excludePropertyNames = {"absolutes.uiComponent.panelXml", "grid.cells.uiComponent.panelXml"};
-         return JsonGenerator
-               .serializerObjectInclude(screens, includedPropertyNames, excludePropertyNames);
-      } catch (Exception e) {
-         LOGGER.error(e);
-         return "";
-      }
-   }
-
-   @Override
    public String getPanelsJson(Collection<Panel> panels) {
       try {
-         String[] includedPropertyNames = { "groupRefs", "tabbarItems", "tabbarItems.navigate",
-               "groupRefs.group.tabbarItems", "groupRefs.group.tabbarItems.navigate", "groupRefs.group.screenRefs",
+         String[] includedPropertyNames = { "groupRefs", "tabbar.tabbarItems", "tabbar.tabbarItems.navigate",
+               "groupRefs.group.tabbar.tabbarItems", "groupRefs.group.tabbar.tabbarItems.navigate", "groupRefs.group.screenRefs",
                "groupRefs.group.screenRefs.screen.absolutes.uiComponent", "groupRefs.group.screenRefs.screen.gestures",
                "groupRefs.group.screenRefs.screen.gestures.navigate",
                "groupRefs.group.screenRefs.screen.absolutes.uiComponent.uiCommand",
@@ -598,7 +574,7 @@ public class ResourceServiceImpl implements ResourceService {
                "groupRefs.group.screenRefs.screen.grids.cells.uiComponent.commands",
                "groupRefs.group.screenRefs.screen.grids.uiComponent.sensor",
                "groupRefs.group.screenRefs.screen.grids.cells.uiComponent.sensor" };
-         String[] excludePropertyNames = {"panelName"};
+         String[] excludePropertyNames = {"panelName", "*.displayName"};
          return JsonGenerator.serializerObjectInclude(panels, includedPropertyNames, excludePropertyNames);
       } catch (Exception e) {
          LOGGER.error(e);
@@ -693,9 +669,18 @@ public class ResourceServiceImpl implements ResourceService {
       }
 
       for (Group group : groups) {
-         List<ScreenRef> screenRefs = group.getScreenRefs();
-         for (ScreenRef screenRef : screenRefs) {
-            screens.add(screenRef.getScreen());
+         List<ScreenPairRef> screenRefs = group.getScreenRefs();
+         for (ScreenPairRef screenRef : screenRefs) {
+            ScreenPair screenPair = screenRef.getScreen();
+            if (OrientationType.PORTRAIT.equals(screenPair.getOrientation())) {
+               screens.add(screenPair.getPortraitScreen());
+            } else if (OrientationType.LANDSCAPE.equals(screenPair.getOrientation())) {
+               screens.add(screenPair.getLandscapeScreen());
+            } else if (OrientationType.BOTH.equals(screenPair.getOrientation())) {
+               screenPair.setInverseScreenIds();
+               screens.add(screenPair.getPortraitScreen());
+               screens.add(screenPair.getLandscapeScreen());
+            }
          }
       }
    }

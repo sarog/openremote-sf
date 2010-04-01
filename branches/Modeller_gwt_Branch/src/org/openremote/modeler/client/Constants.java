@@ -105,4 +105,8 @@ public class Constants {
    
    public static final String DEFAULT_FONT_FAMILY = "tahoma,arial,verdana,sans-serif";
    
+   public static final String PORTRAIT = "portrait";
+   
+   public static final String LANDSCAPE = "landscape";
+   
 }

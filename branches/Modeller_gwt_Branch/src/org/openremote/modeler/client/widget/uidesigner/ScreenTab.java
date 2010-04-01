@@ -19,21 +19,10 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.client.utils.BeanModelTable;
-import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPairRef;
 
-import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.data.ChangeEvent;
-import com.extjs.gxt.ui.client.data.ChangeListener;
-import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.TabPanelEvent;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 
 /**
@@ -41,115 +30,35 @@ import com.extjs.gxt.ui.client.widget.TabPanel;
  */
 public class ScreenTab extends TabPanel {
    
-   /** The change listener map. */
-   private Map<ScreenTabItem, ChangeListener> changeListenerMap = null;
-   /**
-    * Instantiates a new screen tab.
-    */
-   public ScreenTab() {
-      setTabScroll(true);
-      setAnimScroll(true);
-      addListener(Events.BeforeAdd, new Listener<TabPanelEvent>() {
-         @Override
-         public void handleEvent(TabPanelEvent be) {
-            WidgetSelectionUtil.setSelectWidget(null);
-         }
-      });
-      addListener(Events.BeforeRemove, new Listener<TabPanelEvent>() {
-         @Override
-         public void handleEvent(TabPanelEvent be) {
-            WidgetSelectionUtil.setSelectWidget(null);
-         }
-      });
-      addListener(Events.Select, new Listener<TabPanelEvent>() {
-         @Override
-         public void handleEvent(TabPanelEvent be) {
-            WidgetSelectionUtil.setSelectWidget(null);
-         }
-      });
-      addListener(Events.Add, new Listener<TabPanelEvent>() {
-         public void handleEvent(TabPanelEvent be) {
-            final ScreenTabItem screenTabItem = (ScreenTabItem) be.getItem();
-            BeanModelDataBase.screenTable.addChangeListener(screenTabItem.getScreen().getOid(),
-                  getScreenChangeListener(screenTabItem));
-         }
-      });
-      addListener(Events.Remove, new Listener<TabPanelEvent>() {                
-         public void handleEvent(TabPanelEvent be) {
-            final ScreenTabItem screenTabItem = (ScreenTabItem) be.getItem();
-            BeanModelDataBase.screenTable.removeChangeListener(screenTabItem.getScreen().getOid(),
-                  getScreenChangeListener(screenTabItem));
-         }
-      });
-      addInsertListener();
+   private ScreenPair screenPair;
+   
+   public ScreenTab(ScreenPair screenPair) {
+      setTabPosition(TabPosition.BOTTOM);
+      this.screenPair = screenPair;
+      if (screenPair.getPortraitScreen() != null) {
+         add(new ScreenTabItem(screenPair.getPortraitScreen()));
+      }
+      if (screenPair.getLandscapeScreen() != null) {
+         add(new ScreenTabItem(screenPair.getLandscapeScreen()));
+      }
    }
    
-   /**
-    * Gets the screen change listener.
-    * 
-    * @param screenTabItem the screen tab item
-    * 
-    * @return the screen change listener
-    */
-   private ChangeListener getScreenChangeListener(final ScreenTabItem screenTabItem) {
-      if (changeListenerMap == null) {
-         changeListenerMap = new HashMap<ScreenTabItem, ChangeListener>();
-      }
-      ChangeListener changeListener = changeListenerMap.get(screenTabItem);
-
-      if (changeListener == null) {
-         changeListener = new ChangeListener() {
-            public void modelChanged(ChangeEvent event) {
-               Screen screen = screenTabItem.getScreen();
-               if (event.getType() == BeanModelTable.REMOVE) {
-                  remove(screenTabItem);
-               } else if (event.getType() == BeanModelTable.UPDATE) {
-//                  if (screenTabItem.getRow() != screen.getRowCount()
-//                        || screenTabItem.getColumn() != screen.getColumnCount()) {
-//                     remove(screenTabItem);
-//                     ScreenTabItem newScreenTabItem = new ScreenTabItem(screen);
-//                     add(newScreenTabItem);
-//                     setSelection(newScreenTabItem);
-//                     return;
-//                  }
-                  if (!screen.getName().equals(screenTabItem.getText())) {
-                     screenTabItem.setText(screen.getName());
-                  }
-                	  
-                  ScreenCanvas screenCanvas = screenTabItem.getScreenCanvas();
-                  if (screen.isHasTabbar()) {
-                	  screenCanvas.addTabbar();
-                  } else {
-                     screenCanvas.removeTabbar();
-                  }
-                  screenTabItem.updateTouchPanel();
-                  screenCanvas.setSize(screen.getTouchPanelDefinition().getCanvas().getWidth(), screen.getTouchPanelDefinition().getCanvas().getHeight());
-                  screenCanvas.setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
-                  setSelection(screenTabItem);
-               }
-            }
-         };
-         changeListenerMap.put(screenTabItem, changeListener);
-      }
-      return changeListener;
+   public ScreenPair getScreenPair() {
+      return screenPair;
    }
    
-   /**
-    * Adds the insert listener.
-    */
-   private void addInsertListener() {
-      BeanModelDataBase.screenTable.addInsertListener(Constants.SCREEN_TABLE_OID, new ChangeListener() {
-         public void modelChanged(ChangeEvent event) {
-            if (event.getType() == BeanModelTable.ADD) {
-               BeanModel beanModel = (BeanModel) event.getItem();
-               if (beanModel.getBean() instanceof Screen) {
-                  ScreenTabItem screenTabItem = new ScreenTabItem((Screen) beanModel.getBean());
-                  add(screenTabItem);
-                  setSelection(screenTabItem);
-               }
-            }
-         }
-
-      });
+   public void updateTouchPanel() {
+      if (this.getItemByItemId(Constants.PORTRAIT) != null) {
+         ((ScreenTabItem)this.getItemByItemId(Constants.PORTRAIT)).updateTouchPanel();
+      }
+      if (this.getItemByItemId(Constants.LANDSCAPE) != null) {
+         ((ScreenTabItem)this.getItemByItemId(Constants.LANDSCAPE)).updateTouchPanel();
+      }
+   }
+   
+   public void updateTabbarForScreenCanvas(ScreenPairRef screenRef) {
+      if (this.getItemByItemId(Constants.PORTRAIT) != null) {
+         ((ScreenTabItem)this.getItemByItemId(Constants.PORTRAIT)).updateTabbarForScreenCanvas(screenRef);
+      }
    }
 }
