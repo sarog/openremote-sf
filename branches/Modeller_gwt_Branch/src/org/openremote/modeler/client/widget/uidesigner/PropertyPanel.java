@@ -70,7 +70,13 @@ public class PropertyPanel extends ContentPanel {
       }
       if (!component.equals(currentLayoutContainer)) {
          currentLayoutContainer =  component;
-         if (component instanceof AbsoluteLayoutContainer) {
+         if (component instanceof GridLayoutContainer) {
+            addPropertiesForm(component);
+            currentLayoutContainer = null;
+         } else {
+            addPropertiesForm(component);
+         }
+         /*if (component instanceof AbsoluteLayoutContainer) {
             addPropertiesForm(((AbsoluteLayoutContainer) component).getScreenComponent());
          } else if (component instanceof GridCellContainer) {
             addPropertiesForm(((GridCellContainer) component).getScreenComponent());
@@ -79,7 +85,7 @@ public class PropertyPanel extends ContentPanel {
             currentLayoutContainer = null;
          } else if (component instanceof ScreenCanvas) {
             addPropertiesForm(component);
-         }
+         }*/
          layout();
       }
 
