@@ -38,7 +38,7 @@ import com.google.gwt.user.client.Event;
  *
  */
 public class ScreenTabbarItem extends ScreenComponent {
-   
+   public static final int TABBAR_ITEM_MARGIN = 5;
    private UITabbarItem uiTabbarItem = null;
    protected Text center = new Text("item");
    
@@ -51,6 +51,7 @@ public class ScreenTabbarItem extends ScreenComponent {
       this.uiTabbarItem = uiTabbarItem;
       
       addStyleName("tabbaritem-background");
+      setStyleAttribute("margin","TABBAR_ITEM_MARGIN");
       setStyleAttribute("position", "absolute");
       addStyleName("move-cursor");
       
