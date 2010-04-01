@@ -69,15 +69,13 @@ public class ScreenTabbar extends ScreenComponent {
       setToGroup();
       Screen screen = this.getScreenCanvas().getScreen();
       
-      setHeight(defaultHeight/*-2*PADDING*/);
-      setWidth(screen.getTouchPanelDefinition().getCanvas().getWidth()/*-2*PADDING*/);
+      setHeight(defaultHeight);
+      setWidth(screen.getTouchPanelDefinition().getCanvas().getWidth());
       addStyleName("tabbar-background");
-      setPosition(0, screen.getTouchPanelDefinition().getCanvas().getHeight() - (defaultHeight/*-2*PADDING*/));
+      setPosition(0, screen.getTouchPanelDefinition().getCanvas().getHeight() - (defaultHeight));
       tabItemContainer.setSize(screen.getTouchPanelDefinition().getCanvas().getWidth()+"", defaultHeight+"");
       add(tabItemContainer);
       setStyleAttribute("position", "absolute");
-//      setStyleAttribute("leftPadding", PADDING+"px");
-//      setStyleAttribute("rightPadding", PADDING+"px");
       initTabbar();
       addDeleteListener();
    }
@@ -161,14 +159,6 @@ public class ScreenTabbar extends ScreenComponent {
       
       final ScreenTabbarItem screenTabbarItem = new ScreenTabbarItem(this.getScreenCanvas(),uiTabbarItem);
       
-      /*screenTabbarItem.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
-         public void handleEvent(WidgetDeleteEvent be) {
-            uiTabbar.removeTabarItem(uiTabbarItem);
-            screenTabbarItem.removeFromParent();
-            getScreenCanvas().layout();
-         }
-         
-      });*/
       addDeleteListenerToTabItem(screenTabbarItem);
       
       this.getScreenTabbarItems().add(screenTabbarItem);
@@ -186,9 +176,8 @@ public class ScreenTabbar extends ScreenComponent {
          this.setLayout(new AbsoluteLayout());
          for(ScreenTabbarItem item : getScreenTabbarItems()) {
             item.setWidth(width);
-            item.setHeight(defaultHeight/*-2*PADDING*/);
+            item.setHeight(defaultHeight);
             item.setPosition(index*width+PADDING, 0);
-//            makeTabItemDragable(item);
             add(item);
             index++;
          }
@@ -211,8 +200,8 @@ public class ScreenTabbar extends ScreenComponent {
          this.setLayout(new AbsoluteLayout());
          for(ScreenTabbarItem item : getScreenTabbarItems()) {
             item.setWidth(width);
-            item.setHeight(defaultHeight/*-2*PADDING*/);
-            item.setPosition(index*width+PADDING/*+ScreenTabbarItem.TABBAR_ITEM_MARGIN*/, 0);
+            item.setHeight(defaultHeight);
+            item.setPosition(index*width+PADDING, 0);
             add(item);
             index++;
          }
