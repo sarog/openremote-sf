@@ -109,4 +109,10 @@ public class Constants {
    
    public static final String LANDSCAPE = "landscape";
    
+   public static final String ROLE_DESIGNER = "ROLE_DESIGNER";
+   
+   public static final String ROLE_MODELER = "ROLE_MODELER";
+   
+   public static final String CURRETN_ROLE = "currentRole";
+   
 }
