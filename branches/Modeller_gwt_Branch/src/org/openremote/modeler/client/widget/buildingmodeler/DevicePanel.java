@@ -648,11 +648,24 @@ public class DevicePanel extends ContentPanel {
          return;
       }
       for (BeanModel beanModel : models) {
+         Object o = beanModel.getBean();
          if (beanModel.getBean() instanceof CommandRefItem) {
             BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase
                   .getOriginalCommandRefItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
             BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel),
                   getDragSourceBeanModelChangeListener(beanModel));
+         } else if (o instanceof Slider) {
+            Slider slider = (Slider)o;
+            if (slider.getSliderSensorRef() != null) {
+               Sensor s = slider.getSliderSensorRef().getSensor();
+               BeanModelDataBase.sensorTable.addChangeListener(s.getOid(), getDragSourceBeanModelChangeListener(beanModel));
+            }
+         } else if (o instanceof Switch) {
+            Switch swh = (Switch)o;
+            if (swh.getSwitchSensorRef() != null) {
+               Sensor s = swh.getSwitchSensorRef().getSensor();
+               BeanModelDataBase.sensorTable.addChangeListener(s.getOid(), getDragSourceBeanModelChangeListener(beanModel));
+            }
          }
       }
    }
@@ -687,10 +700,20 @@ public class DevicePanel extends ContentPanel {
                      DeviceCommand deviceCommand = (DeviceCommand) source.getBean();
                      CommandRefItem cmdRefItem = target.getBean();
                      cmdRefItem.setDeviceCommand(deviceCommand);
-                  } else if (source.getBean() instanceof Device) {
+                  } /*else if (source.getBean() instanceof Device) {
                      Device device = (Device) source.getBean();
                      CommandRefItem targetCmdRefItem = target.getBean();
                      targetCmdRefItem.setDeviceName(device.getName());
+                  }*/
+                  else if (source.getBean() instanceof Sensor) {
+                     Sensor s = source.getBean();
+                     if (target.getBean() instanceof Switch) {
+                        Switch swh = target.getBean();
+                        swh.getSwitchSensorRef().setSensor(s);
+                     } else if (target.getBean() instanceof Slider) {
+                        Slider sld = target.getBean();
+                        sld.getSliderSensorRef().setSensor(s);
+                     }
                   }
                   tree.getStore().update(target);
                }
