@@ -164,7 +164,7 @@ public class LabelPropertyForm extends PropertyForm {
    
    private void createSensorStates(){
       statesPanel.removeAll();
-      SensorLink sensorLink = screenLabel.getUiLabel().getSensorLinker();
+      SensorLink sensorLink = screenLabel.getUiLabel().getSensorLink();
       final Map<String,String> sensorAttrs = new HashMap<String,String>();
       if(screenLabel.getUiLabel().getSensor()!=null && screenLabel.getUiLabel().getSensor().getType()==SensorType.SWITCH){
         final TextField<String> onField = new TextField<String>();
@@ -186,7 +186,7 @@ public class LabelPropertyForm extends PropertyForm {
                if (onText != null && onText.trim().length() != 0) {
                   sensorAttrs.put("name", "on");
                   sensorAttrs.put("value", onText);
-                  screenLabel.getUiLabel().getSensorLinker().addOrUpdateChildForSensorLinker("state", sensorAttrs);
+                  screenLabel.getUiLabel().getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
             }
         });
@@ -198,7 +198,7 @@ public class LabelPropertyForm extends PropertyForm {
                if (offText != null && offText.trim().length() != 0) {
                   sensorAttrs.put("name", "off");
                   sensorAttrs.put("value", offText);
-                  screenLabel.getUiLabel().getSensorLinker().addOrUpdateChildForSensorLinker("state", sensorAttrs);
+                  screenLabel.getUiLabel().getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
             }
         });
@@ -223,7 +223,7 @@ public class LabelPropertyForm extends PropertyForm {
                if(stateText!=null&&!stateText.trim().isEmpty()){
                   sensorAttrs.put("name", state.getName());
                   sensorAttrs.put("value", stateText);
-                  screenLabel.getUiLabel().getSensorLinker().addOrUpdateChildForSensorLinker("state", sensorAttrs);
+                  screenLabel.getUiLabel().getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
             }
               

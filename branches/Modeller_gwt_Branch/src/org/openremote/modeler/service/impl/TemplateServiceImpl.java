@@ -187,7 +187,10 @@ public class TemplateServiceImpl implements TemplateService {
    public String getTemplateContent(ScreenPair screen) {
       try {
          String[] includedPropertyNames = { 
+               /*"*.absolutes.uiComponent.sensorLink.linkerChildren.attributes",*/
+               "*.absolutes.uiComponent.sensorLink",
                "*.absolutes.uiComponent.oid",
+               "*.grids.cells.uiComponent.sensorLink",
                "*.grids.cells.uiComponent.oid",
                "*.absolutes.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs",
                "*.absolutes.uiComponent.commands",
@@ -643,14 +646,19 @@ public class TemplateServiceImpl implements TemplateService {
    }
 
    private void initSensorLinker(UIComponent component,SensorOwner sensorOwner) {
-
       if (component != null ) {
          if(component instanceof UILabel ) {
             UILabel uiLabel = (UILabel) component;
-            uiLabel.setSensorLinker(new SensorLink(sensorOwner.getSensor()));
+            if (uiLabel.getSensorLink() == null) {
+               uiLabel.setSensorLink(new SensorLink(sensorOwner.getSensor()));
+            }
+            uiLabel.getSensorLink().setSensor(sensorOwner.getSensor());
          } else if (component instanceof UIImage) {
             UIImage uiImage = (UIImage) component;
-            uiImage.setSensorLinker(new SensorLink(sensorOwner.getSensor()));
+            if (uiImage.getSensorLink() == null) {
+               uiImage.setSensorLink(new SensorLink(sensorOwner.getSensor()));
+            }
+            uiImage.getSensorLink().setSensor(sensorOwner.getSensor());
          }
       }
    }

@@ -101,7 +101,7 @@ public class SensorLink extends BusinessEntity {
       }
       linkerChildren.add(child);
    }
-   
+   @JSON(include = false)
    public Sensor getSensor() {
       return sensor;
    }
@@ -110,6 +110,17 @@ public class SensorLink extends BusinessEntity {
    public void setSensor(Sensor sensor) {
       this.sensor = sensor;
    }
+
+   
+   public Set<LinkerChild> getLinkerChildren() {
+      return linkerChildren;
+   }
+
+
+   public void setLinkerChildren(Set<LinkerChild> linkerChildren) {
+      this.linkerChildren = linkerChildren;
+   }
+
 
    /**
     * A class for storing the property for a sensor linker child
@@ -170,6 +181,17 @@ public class SensorLink extends BusinessEntity {
          sb.append("</" + childName + ">");
          return sb.toString();
       }
+      public String getChildName() {
+         return childName;
+      }
+      public void setChildName(String childName) {
+         this.childName = childName;
+      }
+      public Map<String, String> getAttributes() {
+         return attributes;
+      }
+      
+      
    }
    
    
