@@ -135,6 +135,13 @@ public class TemplatePanel extends ContentPanel {
                   public void onSuccess(Boolean success) {
                      if (success) {
                         templateTree.getStore().remove(templateBeanModel);
+                        if (editTabItem != null) {
+                           templateInEditing = null;
+                           templateEditPanel.remove(editTabItem);
+                           templateEditPanel.closeCurrentScreenTab();
+                           editTabItem = null;
+                           templateEditPanel.layout();
+                        }
                         Info.display("Delete Template", "Template deleted successfully.");
                      }
                   }
@@ -306,7 +313,6 @@ public class TemplatePanel extends ContentPanel {
       if (editTabItem != null) {
          //reopen template tab item close by user. 
          if (templateEditPanel.indexOf(editTabItem) == -1 ) {
-//            editTabItem.setText("Template: "+templateInEditing.getName());
             templateEditPanel.setScreenItem(editTabItem);
             templateInEditing.setScreen(templateInEditing.getScreen());
          }
@@ -321,7 +327,7 @@ public class TemplatePanel extends ContentPanel {
 
             @Override
             public void onFailure(Throwable caught) {
-               Info.display("Error", "Update template: " + TemplatePanel.this.templateInEditing.getName() + "failed");
+               Info.display("Error", "Update template: " + TemplatePanel.this.templateInEditing.getName() + " failed");
             }
 
             @Override
