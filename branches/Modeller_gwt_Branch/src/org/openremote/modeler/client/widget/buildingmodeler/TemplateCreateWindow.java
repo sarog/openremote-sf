@@ -66,12 +66,13 @@ public class TemplateCreateWindow extends FormWindow
    
    private Radio notShare = new Radio();
    private Radio share = new Radio();
-   
+   private boolean isShare;
    
    
    private Template template = null;
    
-   public TemplateCreateWindow(){
+   public TemplateCreateWindow(boolean isShare){
+      this.isShare = isShare;
       setPlain(true);  
       setSize(350, 450);  
       setHeading("New Template");
@@ -178,6 +179,9 @@ public class TemplateCreateWindow extends FormWindow
       if(template != null) {
          notShare.setValue(!template.isShared());
          share.setValue(template.isShared());
+      } else {
+         notShare.setValue(!isShare);
+         share.setValue(isShare);
       }
       shareRadioGroup.add(notShare);
       shareRadioGroup.add(share);
