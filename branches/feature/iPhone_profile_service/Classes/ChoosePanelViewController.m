@@ -24,6 +24,7 @@
 #import "ServerDefinition.h"
 #import "AppSettingsDefinition.h"
 #import "ControllerException.h"
+#import "CredentialUtil.h"
 
 @implementation ChoosePanelViewController
 
@@ -34,11 +35,13 @@
 		chosenPanel = [[AppSettingsDefinition getPanelIdentityDic] objectForKey:@"identity"];
 		NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition panelsRESTUrl]];
 		NSURL *url = [[NSURL alloc]initWithString:location];
+		NSLog(@"panels:%@",location);
 		
 		//assemble put request 
 		NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
 		[request setURL:url];
-		[request setHTTPMethod:@"POST"];
+		[request setHTTPMethod:@"GET"];
+		[CredentialUtil addCredentialToNSMutableURLRequest:request];
 		
 		URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
 		
@@ -117,7 +120,7 @@
 
 - (void)handleServerErrorWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
-		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
+		[ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
 	} 
 	
 }
