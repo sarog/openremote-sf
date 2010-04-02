@@ -63,7 +63,7 @@ public class ScreenPair extends RefedEntity {
          portraitScreen.setTouchPanelDefinition(touchPanelDefinition);
       }
       if (landscapeScreen != null) {
-         landscapeScreen.setTouchPanelDefinition(touchPanelDefinition);
+         landscapeScreen.setTouchPanelDefinition(touchPanelDefinition.getHorizontalDefinition());
       }
    }
    public OrientationType getOrientation() {

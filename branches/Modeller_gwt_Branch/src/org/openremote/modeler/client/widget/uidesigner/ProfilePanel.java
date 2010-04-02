@@ -249,17 +249,17 @@ public class ProfilePanel extends ContentPanel {
       newMenu.add(newScreenMenu);
       final MenuItem newScreenFromTemplateMenu = createNewScreenFromTemplateMenuItem();
       newMenu.add(newScreenFromTemplateMenu);
-      final MenuItem configTabbarItem = createConfigTabbarMenuItem();
-      newMenu.add(configTabbarItem);
+//      final MenuItem configTabbarItem = createConfigTabbarMenuItem();
+//      newMenu.add(configTabbarItem);
       newMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
          @Override
          public void handleEvent(MenuEvent be) {
-            boolean enabled = false;
-            BeanModel selectedBeanModel = panelTree.getSelectionModel().getSelectedItem();
-            if (selectedBeanModel != null && !(selectedBeanModel.getBean() instanceof ScreenPairRef)) {
-               enabled = true;
-            }
-            configTabbarItem.setEnabled(enabled);
+//            boolean enabled = false;
+//            BeanModel selectedBeanModel = panelTree.getSelectionModel().getSelectedItem();
+//            if (selectedBeanModel != null && !(selectedBeanModel.getBean() instanceof ScreenPairRef)) {
+//               enabled = true;
+//            }
+//            configTabbarItem.setEnabled(enabled);
             if (BeanModelDataBase.panelTable.loadAll().size() > 0) {
                newGroupMenu.setEnabled(true);
             } else {
@@ -635,6 +635,7 @@ public class ProfilePanel extends ContentPanel {
       return newScreenItem;
    }
 
+   @SuppressWarnings("unused")
    private MenuItem createConfigTabbarMenuItem() {
       MenuItem configTabbarItem = new MenuItem("Config tabbar");
       configTabbarItem.setIcon(icon.tabbarConfigIcon());
