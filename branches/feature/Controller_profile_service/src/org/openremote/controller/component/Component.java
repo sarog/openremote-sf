@@ -22,6 +22,7 @@ package org.openremote.controller.component;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.controller.command.NoStatusCommand;
 import org.openremote.controller.command.StatusCommand;
 
 /**
@@ -53,7 +54,7 @@ public abstract class Component {
     */
    public Component() {
        super();
-       sensor = new Sensor();
+       setSensor(new Sensor(new NoStatusCommand()));
        availableActions = new ArrayList<String>();
        availableActions.addAll(getAvailableActions());
    }
