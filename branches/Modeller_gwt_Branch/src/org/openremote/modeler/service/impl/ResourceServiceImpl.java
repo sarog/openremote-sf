@@ -574,7 +574,7 @@ public class ResourceServiceImpl implements ResourceService {
                "groupRefs.group.screenRefs.screen.grids.cells.uiComponent.commands",
                "groupRefs.group.screenRefs.screen.grids.uiComponent.sensor",
                "groupRefs.group.screenRefs.screen.grids.cells.uiComponent.sensor" };
-         String[] excludePropertyNames = {"panelName", "*.displayName"};
+         String[] excludePropertyNames = {"panelName", "*.displayName","*.panelXml"};
          return JsonGenerator.serializerObjectInclude(panels, includedPropertyNames, excludePropertyNames);
       } catch (Exception e) {
          LOGGER.error(e);
