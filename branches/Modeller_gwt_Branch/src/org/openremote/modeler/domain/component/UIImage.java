@@ -36,7 +36,7 @@ public class UIImage extends UIComponent implements SensorOwner {
 
    private UILabel label = null;
 
-   private SensorLink sensorLinker;
+   private SensorLink sensorLink;
 
    public UIImage() {
    }
@@ -67,9 +67,9 @@ public class UIImage extends UIComponent implements SensorOwner {
    public void setSensor(Sensor sensor) {
       this.sensor = sensor;
       if (sensor != null) {
-         this.sensorLinker = new SensorLink(sensor);
+         this.sensorLink = new SensorLink(sensor);
       } else {
-         sensorLinker.clear();
+         sensorLink.clear();
       }
    }
 
@@ -81,12 +81,12 @@ public class UIImage extends UIComponent implements SensorOwner {
       this.label = label;
    }
 
-   public SensorLink getSensorLinker() {
-      return sensorLinker;
+   public SensorLink getSensorLink() {
+      return sensorLink;
    }
 
-   public void setSensorLinker(SensorLink sensorLinker) {
-      this.sensorLinker = sensorLinker;
+   public void setSensorLink(SensorLink sensorLinker) {
+      this.sensorLink = sensorLinker;
    }
 
    @Override
@@ -100,7 +100,7 @@ public class UIImage extends UIComponent implements SensorOwner {
       StringBuilder sb = new StringBuilder();
       sb.append("<image id=\"" + getOid() + "\" src=\"" + imageSource.getImageFileName() + "\"> ");
       if (sensor != null) {
-         sb.append(sensorLinker.getXMLString());
+         sb.append(sensorLink.getXMLString());
       }
       if (label != null && label.isRemoved()==false) {
          sb.append("<include type=\"label\" ref=\"" + label.getOid() + "\"/>\n");

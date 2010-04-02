@@ -37,7 +37,7 @@ public class UILabel extends UIComponent implements SensorOwner {
 
    private Sensor sensor;
 
-   private SensorLink sensorLinker;
+   private SensorLink sensorLink;
 
    public UILabel(long oid) {
       super(oid);
@@ -52,9 +52,9 @@ public class UILabel extends UIComponent implements SensorOwner {
       this.fontSize = fontSize;
       this.sensor = sensor;
       if (sensor != null) {
-         this.sensorLinker = new SensorLink(sensor);
+         this.sensorLink = new SensorLink(sensor);
       } else {
-         sensorLinker.clear();
+         sensorLink.clear();
       }
    }
 
@@ -96,18 +96,18 @@ public class UILabel extends UIComponent implements SensorOwner {
    public void setSensor(Sensor sensor) {
       this.sensor = sensor;
       if (sensor != null) {
-         this.sensorLinker = new SensorLink(sensor);
+         this.sensorLink = new SensorLink(sensor);
       } else {
-         sensorLinker.clear();
+         sensorLink.clear();
       }
    }
 
-   public SensorLink getSensorLinker() {
-      return sensorLinker;
+   public SensorLink getSensorLink() {
+      return sensorLink;
    }
 
-   public void setSensorLinker(SensorLink sensorLinker) {
-      this.sensorLinker = sensorLinker;
+   public void setSensorLink(SensorLink sensorLinker) {
+      this.sensorLink = sensorLinker;
    }
 
    @Transient
@@ -117,7 +117,7 @@ public class UILabel extends UIComponent implements SensorOwner {
       sb.append("<label id=\"" + getOid() + "\" fontSize=\"" + fontSize + "\" color=\"#" + color + "\" text=\"" + StringUtils.escapeXml(text)
             + "\">\n");
       if (sensor != null) {
-         sb.append(sensorLinker.getXMLString());
+         sb.append(sensorLink.getXMLString());
       }
       sb.append("</label>");
       return sb.toString();

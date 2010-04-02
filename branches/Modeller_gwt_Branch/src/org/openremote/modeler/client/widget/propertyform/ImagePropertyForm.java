@@ -203,7 +203,7 @@ public class ImagePropertyForm extends PropertyForm {
          @Override
          public void handleEvent(FormEvent be) {
             String imageURL = be.getResultHtml();
-            SensorLink sensorLink = screenImage.getUiImage().getSensorLinker();
+            SensorLink sensorLink = screenImage.getUiImage().getSensorLink();
             Map<String,String> sensorAttrMap = new HashMap<String,String>();
             
             if (!"".equals(imageURL)) {
@@ -232,7 +232,7 @@ public class ImagePropertyForm extends PropertyForm {
    }
    private void createSensorStates(){
       statesPanel.removeAll();
-      SensorLink sensorLink = screenImage.getUiImage().getSensorLinker();
+      SensorLink sensorLink = screenImage.getUiImage().getSensorLink();
       if(screenImage.getUiImage().getSensor()!=null && screenImage.getUiImage().getSensor().getType()==SensorType.SWITCH){
          ImageUploadField onImageUpload = new ImageUploadField("switchOnImage") {
             @Override
