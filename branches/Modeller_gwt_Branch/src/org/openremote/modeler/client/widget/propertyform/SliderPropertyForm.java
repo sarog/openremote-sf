@@ -22,10 +22,12 @@ package org.openremote.modeler.client.widget.propertyform;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.UtilsProxy;
+import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.component.ScreenSlider;
 import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
 import org.openremote.modeler.client.widget.uidesigner.SelectSliderWindow;
 import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UISlider;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -111,7 +113,7 @@ public class SliderPropertyForm extends PropertyForm {
       minImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenSlider, null);
+            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSlider.getUiSlider().getMinImage()), screenSlider.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -129,7 +131,7 @@ public class SliderPropertyForm extends PropertyForm {
       minTrackImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenSlider, null);
+            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSlider.getUiSlider().getMinTrackImage()), screenSlider.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -147,7 +149,7 @@ public class SliderPropertyForm extends PropertyForm {
       thumbImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenSlider, null);
+            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSlider.getUiSlider().getThumbImage()), screenSlider.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -165,7 +167,7 @@ public class SliderPropertyForm extends PropertyForm {
       maxImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenSlider, null);
+            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSlider.getUiSlider().getMaxImage()), screenSlider.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -183,7 +185,7 @@ public class SliderPropertyForm extends PropertyForm {
       maxTrackImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenSlider, null);
+            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSlider.getUiSlider().getMaxTrackImage()), screenSlider.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -204,5 +206,19 @@ public class SliderPropertyForm extends PropertyForm {
       add(adapterThumbImageBtn);
       add(adapterMaxTrackImageBtn);
       add(adapterMaxImageBtn);
+   }
+
+   /**
+    * @param imageSource
+    * @return IconPreviewWidget
+    */
+   private IconPreviewWidget createIconPreviewWidget(ImageSource imageSource) {
+      IconPreviewWidget previewWidget = new IconPreviewWidget(screenSlider.getWidth(), screenSlider.getHeight());
+      if (imageSource != null) {
+         previewWidget.setIcon(imageSource.getSrc());
+      } else {
+         previewWidget.setIcon(null);
+      }
+      return previewWidget;
    }
 }
