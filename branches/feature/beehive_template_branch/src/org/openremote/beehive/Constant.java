@@ -56,4 +56,19 @@ public final class Constant {
    
    public static final String ACCOUNT_RESOURCE_ZIP_NAME= "openremote.zip";
    
+
+   public final static String PANEL_XSD_PATH = "/panel-2.0-M7.xsd";
+
+   public final static String PANEL_XML = "panel.xml";
+
+   public final static String OPENREMOTE_WEBSITE = "http://www.openremote.org";
+   
+   public final static String OPENREMOTE_NAMESPACE= "or";
+   
+   public final static String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+   
+   public final static String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+   
+   public final static String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
+   
 }

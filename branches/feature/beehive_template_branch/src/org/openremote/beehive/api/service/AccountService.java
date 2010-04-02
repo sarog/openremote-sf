@@ -30,5 +30,9 @@ public interface AccountService {
    User loadByUsername(String username);
    
    boolean isHTTPBasicAuthorized(String credentials);
+   
+   boolean isHTTPBasicAuthorized(String credentials, boolean isPasswordEncoded);
+   
+   long queryAccountIdByUsername(String username);
 
 }
