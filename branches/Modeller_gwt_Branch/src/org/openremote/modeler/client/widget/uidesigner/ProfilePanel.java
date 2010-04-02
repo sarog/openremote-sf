@@ -51,7 +51,6 @@ import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
-import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.component.UITabbarItem;
@@ -500,9 +499,17 @@ public class ProfilePanel extends ContentPanel {
             group.setOid(IDUtil.nextID());
             GroupRef groupRef = new GroupRef(group);
             BeanModel selectedBeanModel = panelTree.getSelectionModel().getSelectedItem();
-            if (selectedBeanModel != null && selectedBeanModel.getBean() instanceof Panel) {
-               groupRef.setPanel((Panel) selectedBeanModel.getBean());
-               group.setParentPanel((Panel) selectedBeanModel.getBean());
+            if (selectedBeanModel != null) {
+               Panel panel = null;
+               if (selectedBeanModel.getBean() instanceof Panel) {
+                  panel = (Panel) selectedBeanModel.getBean();
+               } else if (selectedBeanModel.getBean() instanceof GroupRef) {
+                  panel = (Panel) panelTree.getStore().getParent(selectedBeanModel).getBean();
+               } else if (selectedBeanModel.getBean() instanceof ScreenPairRef) {
+                  panel = (Panel) panelTree.getStore().getParent(panelTree.getStore().getParent(selectedBeanModel)).getBean();
+               }
+               groupRef.setPanel(panel);
+               group.setParentPanel(panel);
             }
             final GroupWizardWindow  groupWizardWindow = new GroupWizardWindow(groupRef.getBeanModel());
             groupWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
@@ -538,9 +545,12 @@ public class ProfilePanel extends ContentPanel {
       newScreenItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             BeanModel selectedItem = panelTree.getSelectionModel().getSelectedItem();
-            if (selectedItem == null || !(selectedItem.getBean() instanceof GroupRef)) {
+            
+            if (selectedItem == null || (selectedItem.getBean() instanceof Panel)) {
                MessageBox.alert("Warn", "A group must be selected! ", null);
                return;
+            } else if (selectedItem.getBean() instanceof ScreenPairRef) {
+               selectedItem = panelTree.getStore().getParent(selectedItem);
             }
             final GroupRef groupRef = selectedItem.getBean();
             final NewScreenFromTemplateWindow screenWindow = new NewScreenFromTemplateWindow();
@@ -592,6 +602,13 @@ public class ProfilePanel extends ContentPanel {
       newScreenItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             BeanModel selectItem = panelTree.getSelectionModel().getSelectedItem();
+            if (selectItem != null) {
+               if (selectItem.getBean() instanceof ScreenPairRef) {
+                  selectItem = panelTree.getStore().getParent(selectItem);
+               } else if (selectItem.getBean() instanceof Panel) {
+                  selectItem = panelTree.getStore().getChild(selectItem, 0);
+               }
+            }
             final ScreenWindow screenWindow = new ScreenWindow(selectItem);
             screenWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
