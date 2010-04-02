@@ -19,6 +19,7 @@ package org.openremote.modeler.client.view;
 import java.util.List;
 
 import org.openremote.modeler.auth.Authority;
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.ResponseJSONEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ResponseJSONListener;
@@ -51,6 +52,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.SeparatorToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -125,14 +127,14 @@ public class ApplicationView implements View {
    private void createNorth() {
       ToolBar applicationToolBar = new ToolBar();
       List<String> roles = authority.getRoles();
-      if (roles.contains("ROLE_MODELER") && roles.contains("ROLE_DESIGNER")) {
+      if (roles.contains(Constants.ROLE_MODELER) && roles.contains(Constants.ROLE_DESIGNER)) {
          applicationToolBar.add(createBMButton());
          applicationToolBar.add(createUDButton());
          SeparatorToolItem separatorItem = new SeparatorToolItem();
          separatorItem.setWidth("20");
          applicationToolBar.add(separatorItem);
       }
-      if (roles.contains("ROLE_DESIGNER")) {
+      if (roles.contains(Constants.ROLE_DESIGNER)) {
          initSaveAndExportButtons();
          applicationToolBar.add(saveButton);
          applicationToolBar.add(exportButton);
@@ -156,12 +158,15 @@ public class ApplicationView implements View {
             } else {
                modelerContainer.remove(uiDesignerView);
                modelerContainer.add(buildingModelerView);
+               Cookies.setCookie(Constants.CURRETN_ROLE, Constants.ROLE_MODELER);
                modelerContainer.layout();
             }
          }
       });
       bmButton.setToggleGroup("modeler-switch");
-      bmButton.toggle(true);
+      if (Cookies.getCookie(Constants.CURRETN_ROLE) == null || Constants.ROLE_MODELER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
+         bmButton.toggle(true);
+      }
       return bmButton;
    }
    
@@ -176,11 +181,15 @@ public class ApplicationView implements View {
             } else {
                modelerContainer.remove(buildingModelerView);
                modelerContainer.add(uiDesignerView);
+               Cookies.setCookie(Constants.CURRETN_ROLE, Constants.ROLE_DESIGNER);
                modelerContainer.layout();
             }
          }
       });
       udButton.setToggleGroup("modeler-switch");
+      if (Constants.ROLE_DESIGNER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
+         udButton.toggle(true);
+      }
       return udButton;
    }
    
@@ -288,13 +297,19 @@ public class ApplicationView implements View {
       List<String> roles = authority.getRoles();
       modelerContainer = new LayoutContainer();
       modelerContainer.setLayout(new FitLayout());
-      if (roles.contains("ROLE_MODELER")) {
+      if (roles.contains(Constants.ROLE_MODELER)) {
          this.buildingModelerView = new BuildingModelerView();
          modelerContainer.add(buildingModelerView);
       }
-      if (roles.contains("ROLE_DESIGNER")) {
+      if (roles.contains(Constants.ROLE_DESIGNER)) {
          this.uiDesignerView = new UIDesignerView();
-         if (!roles.contains("ROLE_MODELER")) {
+         if (!roles.contains(Constants.ROLE_MODELER)) {
+            modelerContainer.add(uiDesignerView);
+         }
+      }
+      if (roles.contains(Constants.ROLE_MODELER) && roles.contains(Constants.ROLE_MODELER)) {
+         if (Constants.ROLE_DESIGNER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
+            modelerContainer.remove(buildingModelerView);
             modelerContainer.add(uiDesignerView);
          }
       }
