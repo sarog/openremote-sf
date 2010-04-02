@@ -756,6 +756,10 @@ public class ResourceServiceImpl implements ResourceService {
 
    @Override
    public void initResources(Collection<Panel> panels, long maxOid) {
+      //1, we must serialize panels at first, otherwise after integrating panel's ui component and commands(such as device command, sensor ...)
+      //the oid would be changed, that is not ought to happen. for example : after we restore panels, we create a component with same sensor (like we did last time), the two 
+      //sensors will have different oid, if so, when we export controller.xml we my find that there are two (or more sensors) with all the same property except oid. 
+      serializePanels(panels);
       Set<Group> groups = new LinkedHashSet<Group>();
       Set<Screen> screens = new LinkedHashSet<Screen>();
       /*
@@ -824,14 +828,14 @@ public class ResourceServiceImpl implements ResourceService {
 
          }
          
-         serialize(panels,maxOid);
+         serializeMaxId(maxOid);
 //         saveResourcesToBeehive();
       } catch (IOException e) {
          throw new FileOperationException("Failed to write resource: " + e.getMessage(), e);
       }
    }
    
-   private void serialize(Collection<Panel> panels, long maxOid) {
+   private void serializePanels(Collection<Panel> panels) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File panelsObjFile = new File(pathConfig.getSerizalizedPanelsFile(userService.getAccount()));
       ObjectOutputStream oos = null;
@@ -845,7 +849,6 @@ public class ResourceServiceImpl implements ResourceService {
 
          oos = new ObjectOutputStream(new FileOutputStream(panelsObjFile));
          oos.writeObject(panels);
-         oos.writeLong(maxOid);
       } catch (FileNotFoundException e) {
         LOGGER.error(e.getMessage(), e);
       } catch (IOException e) {
@@ -861,23 +864,52 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
 
-   @SuppressWarnings("unchecked")
+   private void serializeMaxId(long maxOid) {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      File panelsObjFile = new File(pathConfig.getSerializedMaxIdField(userService.getAccount()));
+      ObjectOutputStream oos = null;
+
+      try {
+         FileUtilsExt.deleteQuietly(panelsObjFile);
+         oos = new ObjectOutputStream(new FileOutputStream(panelsObjFile));
+         oos.writeLong(maxOid);
+      } catch (FileNotFoundException e) {
+        LOGGER.error(e.getMessage(), e);
+      } catch (IOException e) {
+        LOGGER.error(e.getMessage(), e);
+      } finally {
+         try {
+            if (oos != null) {
+               oos.close();
+            }
+         } catch (IOException e) {
+           LOGGER.warn("Unable to close output stream to '" + panelsObjFile + "'.");
+         }
+      }
+   }
+   
    public PanelsAndMaxOid restore(){
       //First, try to down openremote.zip from beehive.
       downloadOpenRemoteZip();
       //Restore panels and max oid. 
+      
+      Collection<Panel> panels = restorePanels();
+      long maxOid = restoreMaxOid();
+      return  new PanelsAndMaxOid(panels,maxOid);
+   }
+
+   @SuppressWarnings("unchecked")
+   private Collection<Panel> restorePanels() {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File panelsObjFile = new File(pathConfig.getSerizalizedPanelsFile(userService.getAccount()));
       if (!panelsObjFile.exists()) {
-         return null;
+         return new ArrayList<Panel>();
       }
       ObjectInputStream ois = null;
-      PanelsAndMaxOid panelsAndMaxOid = new PanelsAndMaxOid(new ArrayList<Panel>(),0);
       try {
          ois = new ObjectInputStream(new FileInputStream(panelsObjFile));
          Collection<Panel> panels = (Collection<Panel>) ois.readObject();
-         Long maxOid = ois.readLong();
-         panelsAndMaxOid = new PanelsAndMaxOid(panels, maxOid);
+         return panels;
       } catch (Exception e) {
          throw new UIRestoreException("UIDesigner restore failed, incompatible data can not be restore to panels. ", e);
       } finally {
@@ -892,9 +924,34 @@ public class ResourceServiceImpl implements ResourceService {
             );
          }
       }
-      return panelsAndMaxOid;
    }
-
+   
+   private long restoreMaxOid() {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      File panelsObjFile = new File(pathConfig.getSerializedMaxIdField(userService.getAccount()));
+      if (!panelsObjFile.exists()) {
+         return 0l;
+      }
+      ObjectInputStream ois = null;
+      try {
+         ois = new ObjectInputStream(new FileInputStream(panelsObjFile));
+         long maxOid = ois.readLong();
+         return maxOid;
+      } catch (Exception e) {
+         throw new UIRestoreException("UIDesigner restore failed, incompatible data can not be restore to panels. ", e);
+      } finally {
+         try {
+            if (ois != null) {
+               ois.close();
+            }
+         } catch (IOException ioException) {
+            LOGGER.warn(
+                "Failed to close input stream from '" + panelsObjFile + "': " +
+                ioException.getMessage(), ioException
+            );
+         }
+      }
+   }
    @SuppressWarnings("all")
    public void saveResourcesToBeehive() {
       PathConfig pathConfig = PathConfig.getInstance(configuration);

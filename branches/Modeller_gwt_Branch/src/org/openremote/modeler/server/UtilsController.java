@@ -176,15 +176,14 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       return autoSaveResponse;
    }
 
-   @SuppressWarnings("unchecked")
    @Override
    public Collection<Panel> loadPanelsFromSession() {
-      Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
-      if(obj == null){
+//      Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
+//      if(obj == null){
          PanelsAndMaxOid panelsAndMaxOid = restore();
-         obj = panelsAndMaxOid !=null ? panelsAndMaxOid.getPanels(): null; 
-      }
-      return (obj == null) ? new ArrayList<Panel>() : (Collection<Panel>)obj;
+//         obj = panelsAndMaxOid !=null ? panelsAndMaxOid.getPanels(): null; 
+//      }
+      return panelsAndMaxOid.getPanels();
    }
    
    @SuppressWarnings("unchecked")
