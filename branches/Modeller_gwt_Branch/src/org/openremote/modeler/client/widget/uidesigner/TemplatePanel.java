@@ -232,9 +232,18 @@ public class TemplatePanel extends ContentPanel {
                   tmpPrivateTemplateParentNode = folderBean;
                }
             }
+            BeanModel selectedModel = templateTree.getSelectionModel().getSelectedItem();
+            boolean isShare = false;
+            if (selectedModel != null) {
+               if (selectedModel.getBean() instanceof TreeFolderBean && tmpPublicTemplateParentNode == selectedModel.getBean()) {
+                  isShare = true;
+               } else if (selectedModel.getBean() instanceof Template && ((Template) selectedModel.getBean()).isShared()) {
+                  isShare = true;
+               }
+            }
             final BeanModel privateTemplateTopNode = tmpPrivateTemplateParentNode.getBeanModel();
             final BeanModel publicTemplateTopNode = tmpPublicTemplateParentNode.getBeanModel();
-            final TemplateCreateWindow templateCreateWindow = new TemplateCreateWindow();
+            final TemplateCreateWindow templateCreateWindow = new TemplateCreateWindow(isShare);
             templateCreateWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
