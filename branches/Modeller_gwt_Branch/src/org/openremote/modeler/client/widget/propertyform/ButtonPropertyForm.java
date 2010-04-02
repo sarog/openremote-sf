@@ -22,6 +22,7 @@ package org.openremote.modeler.client.widget.propertyform;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
 import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
@@ -134,7 +135,7 @@ public class ButtonPropertyForm extends PropertyForm {
          @Override
          public void componentSelected(ButtonEvent ce) {
             final ImageSource image = uiButton.getImage();
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenButton, image);
+            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenButton, image), screenButton.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -157,7 +158,7 @@ public class ButtonPropertyForm extends PropertyForm {
          @Override
          public void componentSelected(ButtonEvent ce) {
             final ImageSource onPressImage = uiButton.getPressImage();
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenButton, onPressImage);
+            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenButton, onPressImage), screenButton.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -198,5 +199,18 @@ public class ButtonPropertyForm extends PropertyForm {
       add(repeatCheckBoxGroup);
       add(navigateSet);
       
+   }
+   /**
+    * @param screenButton
+    * @param imageSource
+    * @return
+    */
+   private IconPreviewWidget createIconPreviewWidget(final ScreenButton screenButton, final ImageSource imageSource) {
+      IconPreviewWidget previewWidget = new IconPreviewWidget(screenButton.getWidth(), screenButton.getHeight());
+      previewWidget.setText(screenButton.getName());
+      if (imageSource != null) {
+         previewWidget.setIcon(imageSource.getSrc());
+      }
+      return previewWidget;
    }
 }

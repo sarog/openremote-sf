@@ -21,6 +21,7 @@ package org.openremote.modeler.client.widget.propertyform;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
+import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
 import org.openremote.modeler.client.widget.uidesigner.SelectSwitchWindow;
@@ -51,7 +52,7 @@ public class SwitchPropertyForm extends PropertyForm {
          @Override
          public void componentSelected(ButtonEvent ce) {
             final ImageSource onImage = uiSwitch.getOnImage();
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenSwitch, onImage);
+            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSwitch, onImage), screenSwitch.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -74,7 +75,7 @@ public class SwitchPropertyForm extends PropertyForm {
          @Override
          public void componentSelected(ButtonEvent ce) {
             final ImageSource offImage = uiSwitch.getOffImage();
-            ChangeIconWindow selectImageOFFWindow = new ChangeIconWindow(screenSwitch, offImage);
+            ChangeIconWindow selectImageOFFWindow = new ChangeIconWindow(createIconPreviewWidget(screenSwitch, offImage), screenSwitch.getWidth());
             selectImageOFFWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -130,5 +131,19 @@ public class SwitchPropertyForm extends PropertyForm {
          
          }
       };
+   }
+
+   /**
+    * @param screenSwitch
+    * @param imageSource
+    * @return
+    */
+   private IconPreviewWidget createIconPreviewWidget(ScreenSwitch screenSwitch, ImageSource imageSource) {
+      IconPreviewWidget previewWidget = new IconPreviewWidget(screenSwitch.getWidth(), screenSwitch.getHeight());
+      previewWidget.setText("Switch");
+      if (imageSource != null) {
+         previewWidget.setIcon(imageSource.getSrc());
+      }
+      return previewWidget;
    }
 }

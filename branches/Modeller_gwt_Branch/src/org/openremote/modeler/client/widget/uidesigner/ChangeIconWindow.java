@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -23,10 +23,8 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.ImageUploadField;
-import org.openremote.modeler.client.widget.component.ScreenButton;
-import org.openremote.modeler.client.widget.component.ScreenComponent;
-import org.openremote.modeler.domain.component.ImageSource;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BaseListLoader;
@@ -104,11 +102,8 @@ public class ChangeIconWindow extends Dialog {
    /** The upload image url. */
    private String uploadImageURL = null;
    
-   /** The screen button. */
-   private ScreenButton screenButton;
-   
-   /** The preview image. */
-//   private Image previewImage = ((UIDesignerImages) GWT.create(UIDesignerImages.class)).iphoneBtn().createImage();
+   /** The preview widget. */
+   private IconPreviewWidget previewWidget;
    
    /** The window. */
    private ChangeIconWindow window;
@@ -116,16 +111,15 @@ public class ChangeIconWindow extends Dialog {
    /**
     * Instantiates a new change icon window.
     *
-    * @param  screenControl  TODO
-    * @param  uImage         TODO
+    * @param  previewWidget  the icon preview container.
+    * 
+    * @param  previewWidth   the preview container width.
     */
-   public ChangeIconWindow(ScreenComponent screenControl, ImageSource uImage) {
-      ScreenCanvas canvas = screenControl.getScreenCanvas();
-      createScreenControl(canvas, screenControl, uImage);
+   public ChangeIconWindow(IconPreviewWidget previewWidget, int previewWidth) {
+      this.previewWidget = previewWidget;
       window = this;
-
-      if (screenControl.getWidth() > 90) {
-         setMinWidth(400 + screenControl.getWidth() + 16);
+      if (previewWidth > 90) {
+         setMinWidth(400 + previewWidth + 16);
       } else {
          setMinWidth(500);
       }
@@ -369,7 +363,7 @@ public class ChangeIconWindow extends Dialog {
             if (imageURL != null) {
 //               previewImage.setUrl(imageURL);
 //               previewImage.setSize("46px", "46px");
-               screenButton.setIcon(imageURL);
+               previewWidget.setIcon(imageURL);
                layout();
             } else {
                MessageBox.alert("Error", "Please input an image URL.", null);
@@ -381,7 +375,7 @@ public class ChangeIconWindow extends Dialog {
 //         previewImage.setUrl(imageURL);
 //         previewImage.setSize("46px", "46px");
 //      }
-      previewIconContainer.add(screenButton, new VBoxLayoutData(new Margins(0, 0, 5, 0)));
+      previewIconContainer.add(previewWidget, new VBoxLayoutData(new Margins(0, 0, 5, 0)));
       previewIconContainer.add(preview, new VBoxLayoutData(new Margins(5, 0, 5, 0)));
    }
    
@@ -454,14 +448,14 @@ public class ChangeIconWindow extends Dialog {
     * @param screenControl the screen control
     * @param uImage the u image
     */
-   private void createScreenControl(ScreenCanvas canvas, ScreenComponent screenControl, ImageSource uImage) {
-      screenButton = new ScreenButton(canvas, screenControl.getWidth(), screenControl.getHeight());
-      screenButton.setName(screenControl.getName());
-      if (uImage != null) {
-         imageURL = uImage.getSrc();
-         screenButton.setIcon(imageURL);
-      }
-      screenButton.addStyleName("button-border");
-      screenButton.layout();
-   }
+//   private void createScreenControl(ScreenCanvas canvas, ScreenComponent screenControl, ImageSource uImage) {
+//      screenButton = new ScreenButton(canvas, screenControl.getWidth(), screenControl.getHeight());
+//      screenButton.setName(screenControl.getName());
+//      if (uImage != null) {
+//         imageURL = uImage.getSrc();
+//         screenButton.setIcon(imageURL);
+//      }
+//      screenButton.addStyleName("button-border");
+//      screenButton.layout();
+//   }
 }
