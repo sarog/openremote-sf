@@ -704,15 +704,20 @@ public class ResourceServiceImpl implements ResourceService {
 
       /*
        * reset sensor oid, avoid duplicated id in export xml.
+       * make sure same sensors have same oid. 
        */
 
       for (Sensor sensor : sensorWithoutDuplicate) {
          long currentSensorId = maxId.maxId();
+         Collection<Sensor> sensorsWithSameOid = new ArrayList<Sensor>();
+         sensorsWithSameOid.add(sensor);
          for (Sensor s : allSensors) {
             if (s.equals(sensor)) {
-               s.setOid(currentSensorId);
-               sensor.setOid(currentSensorId);
+               sensorsWithSameOid.add(s);
             }
+         }
+         for(Sensor s: sensorsWithSameOid) {
+            s.setOid(currentSensorId);
          }
       }
       return sensorWithoutDuplicate;
