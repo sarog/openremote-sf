@@ -65,19 +65,19 @@ public class ProfileServiceImpl implements ProfileService {
    @Override
    public String getAllPanels() {
       String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.PANEL_XML;
-      Document doc = getPanelDocument(xmlPath);
+      Document doc = getAllPanelsDocument(xmlPath);
       return output(doc);
    }
    
    @Override
    public String getAllPanels(String panleXMLPath) {
-      Document doc = getPanelDocument(panleXMLPath);
+      Document doc = getAllPanelsDocument(panleXMLPath);
       return output(doc);
    }
 
    @Override
    public String getPanelsXML(String xmlPath) {
-      Document doc = getPanelDocument(xmlPath);
+      Document doc = getAllPanelsDocument(xmlPath);
       return output(doc);
    }
 
@@ -94,7 +94,7 @@ public class ProfileServiceImpl implements ProfileService {
       return output(doc);
    }
 
-   private Document getPanelDocument(String xmlPath) {
+   private Document getAllPanelsDocument(String xmlPath) {
       Document doc = buildXML(xmlPath);
       Element root = (Element) doc.getRootElement();
       Element newRoot = new Element(root.getName());
@@ -103,7 +103,7 @@ public class ProfileServiceImpl implements ProfileService {
       setNamespace(root, newRoot);
       List<Element> panels = queryElementByElementName(doc, "panel");
       if (panels == null || panels.size() == 0) {
-         throw new NoSuchPanelException("No panel in panels.xml");
+         throw new NoSuchPanelException("No panel in panel.xml");
       }
       for (Element tmpPanel : panels) {
          Element panel = (Element) tmpPanel.clone();
@@ -264,7 +264,7 @@ public class ProfileServiceImpl implements ProfileService {
          return elements;
       } catch (JDOMException e) {
          throw new InvalidPanelXMLException("check the version of schema or structure of " + Constants.PANEL_XML
-               + " with " + Constants.CONTROLLER_XSD_PATH);
+               + " with " + Constants.PANEL_XSD_PATH);
       }
    }
 
