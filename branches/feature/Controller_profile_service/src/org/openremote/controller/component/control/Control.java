@@ -23,9 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.command.NoStatusCommand;
 import org.openremote.controller.component.Component;
-import org.openremote.controller.component.Sensor;
 
 /**
  * The Class Control.
