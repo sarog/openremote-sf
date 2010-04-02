@@ -288,7 +288,7 @@ public class ScreenTabbar extends ScreenComponent {
          public void handleEvent(WidgetDeleteEvent be) {
             uiTabbar.removeTabarItem(screenTabbarItem.getUITabbarIem());
             screenTabbarItem.removeFromParent();
-            getScreenCanvas().layout();
+            initTabbar();
          }
          
       });
