@@ -139,4 +139,12 @@ public class ScreenPanel extends LayoutContainer {
       this.screenItem = screenItem;
       layout();
    }
+   
+   public void closeCurrentScreenTab() {
+      if (this.indexOf(screenItem) != -1) {
+         remove(this.screenItem);
+      }
+//      this.removeAll();
+      this.screenItem = null;
+   }
 }
