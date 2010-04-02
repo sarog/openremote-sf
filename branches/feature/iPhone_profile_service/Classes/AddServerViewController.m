@@ -53,7 +53,7 @@
 }
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 	NSLog(@"text field is %@",serverUrlFieldCell.textField.text);
-	NSString *url = [NSString stringWithFormat:@"http://%@/controller",serverUrlFieldCell.textField.text];
+	NSString *url = [NSString stringWithFormat:@"http://%@/",serverUrlFieldCell.textField.text];
 	NSLog(@"set url to %@",url);
 	[editingItem setValue:url forKey:@"url"];
 	if (newItem) {
@@ -105,7 +105,7 @@
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
-	return @"Sample:192.168.1.2:8080";
+	return @"Sample:192.168.1.2:8080/controller";
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
