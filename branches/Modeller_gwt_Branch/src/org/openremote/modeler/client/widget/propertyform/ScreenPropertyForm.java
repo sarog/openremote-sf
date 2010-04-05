@@ -226,6 +226,7 @@ public class ScreenPropertyForm extends PropertyForm {
       relative.setFieldLabel("relative");
       relative.setName(SCREEN_RELETIVE);
       relative.setAllowBlank(false);
+      relative.setEditable(false);
       relative.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
 
          @SuppressWarnings("unchecked")
