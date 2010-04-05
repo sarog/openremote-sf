@@ -72,6 +72,8 @@ import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.ScreenPair.OrientationType;
+import org.openremote.modeler.domain.component.Gesture;
+import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.SensorOwner;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
@@ -187,7 +189,7 @@ public class TemplateServiceImpl implements TemplateService {
    public String getTemplateContent(ScreenPair screen) {
       try {
          String[] includedPropertyNames = { 
-               /*"*.absolutes.uiComponent.sensorLink.linkerChildren.attributes",*/
+               "*.gestures.uiCommand",
                "*.absolutes.uiComponent.sensorLink",
                "*.absolutes.uiComponent.oid",
                "*.grids.cells.uiComponent.sensorLink",
@@ -202,8 +204,10 @@ public class TemplateServiceImpl implements TemplateService {
                "*.grids.cells.uiComponent.uiCommand",
                "*.grids.cells.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs",
                "*.grids.cells.uiComponent.commands", "*.deviceCommand", "*.protocol", "*.attributes" };
-         String[] excludePropertyNames = { "grid", /*"*.touchPanelDefinition",*/ "*.refCount", "*.displayName", "*.oid",
-               "*.proxyInformations", "*.proxyInformation", "gestures", "*.panelXml", "*.navigate","*.deviceCommands","*.sensors","*.sliders","*.configs","*.switchs","DeviceMacros" };
+         String[] excludePropertyNames = { "grid", /* "*.touchPanelDefinition", */"*.refCount", "*.displayName",
+               "*.oid", "*.proxyInformations", "*.proxyInformation", /* "gestures", */"*.panelXml", /* "*.navigate", */
+               "*.deviceCommands", "*.sensors", "*.sliders", "*.configs", "*.switchs", "DeviceMacros" ,
+               };
          return new JSONSerializer().include(includedPropertyNames).exclude(excludePropertyNames).deepSerialize(screen);
       } catch (Exception e) {
 
@@ -225,7 +229,7 @@ public class TemplateServiceImpl implements TemplateService {
    @Override
    public ScreenPair buildScreen(Template template) {
       String screenJson = template.getContent();
-      ScreenPair screen = new JSONDeserializer<ScreenPair>()
+      ScreenPair screenPair = new JSONDeserializer<ScreenPair>()
             .use(null, ScreenPair.class)
             // portraitScreen
             .use("portraitScreen.absolutes.values.uiComponent", new SimpleClassLocator())
@@ -233,6 +237,7 @@ public class TemplateServiceImpl implements TemplateService {
             //1,absolutes
             //    1.1, uiCommand
             .use("portraitScreen.absolutes.values.uiComponent.uiCommand",new SimpleClassLocator())
+            .use("portraitScreen.gestures.values.uiCommand",new SimpleClassLocator())
             //    1.2, sensor 
             .use("portraitScreen.absolutes.values.uiComponent.sensor",new SimpleClassLocator())
             .use("portraitScreen.absolutes.values.uiComponent.slider.sliderSensorRef.sensor",new SimpleClassLocator())
@@ -252,6 +257,7 @@ public class TemplateServiceImpl implements TemplateService {
             //1,absolutes
             //    1.1, uiCommand
             .use("landscapeScreen.absolutes.values.uiComponent.uiCommand",new SimpleClassLocator())
+            .use("landscapeScreen.gestures.values.uiCommand",new SimpleClassLocator())
             //    1.2, sensor 
             .use("landscapeScreen.absolutes.values.uiComponent.sensor",new SimpleClassLocator())
             .use("landscapeScreen.absolutes.values.uiComponent.slider.sliderSensorRef.sensor",new SimpleClassLocator())
@@ -266,7 +272,8 @@ public class TemplateServiceImpl implements TemplateService {
             .use("landscapeScreen.grids.values.cells.values.uiComponent.switchCommand.switchCommandOnRef.sensor",new SimpleClassLocator())
             .use("landscapeScreen.grids.values.cells.values.uiComponent.switchCommand.switchCommandOffRef.sensor",new SimpleClassLocator())
             .deserialize(screenJson);
-      return screen;
+      resetGestureForScreenPair(screenPair);
+      return screenPair;
    }
    
    @Override
@@ -406,8 +413,14 @@ public class TemplateServiceImpl implements TemplateService {
       Set<DeviceCommand> commands = getDeviceCommands(screens);
       Set<Slider> sliders = getSliders((Collection<UISlider>) (box.getUIComponentsByType(UISlider.class)));
       Set<Switch> switchs = getSwitches((Collection<UISwitch>) box.getUIComponentsByType(UISwitch.class));
+      Set<UIButton> uiButtons = (Set<UIButton>) box.getUIComponentsByType(UIButton.class);
       Set<Sensor> sensors = getSensors(screens);
-      Set<DeviceMacro> macros = getMacros(box);
+      
+      Collection<Gesture> gestures = getGestures(screens);
+      Set<DeviceMacro> macros = getMacros(box,gestures);
+      
+      this.resetNavigateForButtons(uiButtons);
+      
       rebuild(devices, commands, sensors, switchs, sliders, macros);
 
       return new ScreenFromTemplate(devices, screenPair,macros);
@@ -440,6 +453,8 @@ public class TemplateServiceImpl implements TemplateService {
       getDeviceCommandsFromSlider(box, uiCmds);
       getDeviceCommandsFromSwitch(box, uiCmds);
       getDeviceCommandsFromButton(box, uiCmds);
+      Collection<Gesture> gestures = getGestures(screens);
+      getDeviceCommandsFromGesture(gestures,uiCmds);
       getDeviceCommandsFromSensor(screens, uiCmds);
       
       return uiCmds;
@@ -664,7 +679,7 @@ public class TemplateServiceImpl implements TemplateService {
    }
 
    @SuppressWarnings("unchecked")
-   private Set<DeviceMacro> getMacros(UIComponentBox box) {
+   private Set<DeviceMacro> getMacros(UIComponentBox box,Collection<Gesture> gestures) {
       Set<DeviceMacro> macros = new HashSet<DeviceMacro>();
       Collection<UIButton> uiButtons = (Collection<UIButton>) box.getUIComponentsByType(UIButton.class);
 
@@ -679,7 +694,19 @@ public class TemplateServiceImpl implements TemplateService {
             }
          }
       }
-
+      if (gestures != null && gestures.size() >0) {
+         for (Gesture gesture : gestures) {
+            if (gesture.getUiCommand() !=null && gesture.getUiCommand() instanceof DeviceMacroRef) {
+               DeviceMacroRef macroRef = (DeviceMacroRef) gesture.getUiCommand();
+   
+               if (macroRef.getTargetDeviceMacro() != null) {
+                  DeviceMacro macro = macroRef.getTargetDeviceMacro();
+                  macros.add(macro);
+                  macros.addAll(macro.getSubMacros());
+               }
+            }
+         }
+      }
       return macros;
    }
 
@@ -1077,5 +1104,94 @@ public class TemplateServiceImpl implements TemplateService {
 
       log.debug("update Template Ok!");
       return template;
+   }
+   
+   private void resetGestureForScreen(Screen screen) {
+      List<Gesture> gestures = screen.getGestures();
+      if (gestures != null && gestures.size()>0 ) {
+         for (Gesture gesture : gestures) {
+            Navigate navigate = gesture.getNavigate();
+            // make sure not navigate to a new group. 
+            if(navigate.getToGroup() != -1L) {
+               gesture.setNavigate(new Navigate());
+            }
+         }
+      }
+   }
+   
+   private void resetGestureForScreenPair(ScreenPair screenPair) {
+      if (screenPair.getLandscapeScreen() != null) {
+         resetGestureForScreen(screenPair.getLandscapeScreen());
+      }
+      
+      if(screenPair.getPortraitScreen() != null) {
+         resetGestureForScreen(screenPair.getPortraitScreen());
+      }
+   }
+   
+   private void resetNavigateForButton(UIButton uiBtn) {
+      Navigate navigate = uiBtn.getNavigate();
+      if (navigate != null) {
+         if (navigate.getToGroup() != -1L) {
+            uiBtn.setNavigate(new Navigate());
+         }
+      }
+   }
+   
+   private void resetNavigateForButtons(Collection<UIButton> uiBtns) {
+      if (uiBtns != null && uiBtns.size() >0 ) {
+         for(UIButton uiBtn : uiBtns) {
+            resetNavigateForButton(uiBtn);
+         }
+      }
+   }
+   
+   private void getDeviceCommandsFromGesture(Collection<Gesture> gestures,Set<DeviceCommand> uiCmds) {
+      if (gestures != null && gestures.size() >0 ) {
+         for (Gesture gesture : gestures) {
+            UICommand cmd = gesture.getUiCommand();
+            if (cmd != null) {
+               if (cmd instanceof DeviceCommandRef) {
+                  DeviceCommandRef cmdRef = (DeviceCommandRef) cmd;
+
+                  for (DeviceCommand tmpCmd : uiCmds) {
+                     if (tmpCmd.equals(cmdRef.getDeviceCommand())) {
+                        cmdRef.setDeviceCommand(tmpCmd);
+                     }
+                  }
+
+                  uiCmds.add(cmdRef.getDeviceCommand());
+
+               } else if (cmd instanceof DeviceMacroRef) {
+                  DeviceMacroRef macroRef = (DeviceMacroRef) cmd;
+                  DeviceMacro macro = macroRef.getTargetDeviceMacro();
+
+                  if (macro != null) {
+                     Collection<DeviceCommandRef> cmds = getDeviceCommandsRefsFromMacro(macro);
+
+                     for (DeviceCommandRef cmdFromMacro : cmds) {
+                        for (DeviceCommand cmdInCommandSet : uiCmds) {
+                           if (cmdFromMacro.getDeviceCommand().equals(cmdInCommandSet)) {
+                              cmdFromMacro.setDeviceCommand(cmdInCommandSet);
+                           }
+                        }
+                        uiCmds.add(cmdFromMacro.getDeviceCommand());
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
+   
+   private Collection<Gesture> getGestures(Collection<Screen> screens) {
+      Collection<Gesture> gestures = new ArrayList<Gesture>();
+      for(Screen screen: screens) {
+         Collection<Gesture> gstures  = screen.getGestures();
+         if (gstures != null && gstures.size() > 0) {
+            gestures.addAll(gstures);
+         }
+      }
+      return gestures;
    }
 }
