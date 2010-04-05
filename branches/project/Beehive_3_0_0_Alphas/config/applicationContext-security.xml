@@ -10,6 +10,8 @@
     <security:http lowercase-comparisons="false">
         <security:intercept-url pattern="/login.jsp" filters="none"/>
         <security:intercept-url pattern="/changes.htm" access="ROLE_ADMIN"/>
+        <security:intercept-url pattern="/sync.htm" access="ROLE_ADMIN"/>
+        <security:intercept-url pattern="/history.htm" access="ROLE_ADMIN"/>
         <security:form-login login-page="/login.jsp" default-target-url="/changes.htm" login-processing-url="/j_security_check" authentication-failure-url="/login.jsp?fail=true"/>
         <security:logout logout-success-url="/login.jsp" logout-url="/j_security_logout" invalidate-session="true"/>
     </security:http>
