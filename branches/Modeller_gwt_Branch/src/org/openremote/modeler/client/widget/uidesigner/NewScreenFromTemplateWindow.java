@@ -182,7 +182,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       searchBtn.addSelectionListener(new SearchListener());
       searchBtn.setText("Search");
       
-      ContentPanel searchContainer = new ContentPanel();
+      final ContentPanel searchContainer = new ContentPanel();
       searchContainer.setScrollMode(Scroll.NONE);
       searchContainer.setHeaderVisible(false);
       FormLayout searchContainerLayout = new FormLayout();
@@ -193,7 +193,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
 //      searchContainer.setButtonAlign(HorizontalAlignment.RIGHT);
       searchContainer.add(keywordsField);
       searchContainer.addButton(searchBtn);
-      
+      searchContainer.hide();
       
       templateFieldSet.add(searchContainer);
       
@@ -213,7 +213,20 @@ public class NewScreenFromTemplateWindow extends FormWindow {
 
       shareNoneRadio.setBoxLabel("Private");
       shareNoneRadio.setValue(true);
-      shareNoneRadio.addListener(Events.Change,shareRadioChangeListener);
+      shareNoneRadio.addListener(Events.Change,new ShareRadioChangeListener(){
+
+         @Override
+         public void handleEvent(FieldEvent be) {
+            super.handleEvent(be);
+            boolean showPrivate = shareNoneRadio.getValue();
+            if (showPrivate) {
+               searchContainer.hide();
+            } else {
+               searchContainer.show();
+            }
+         }
+         
+      });
 
       shareToAllRadio.setName("Public");
       shareToAllRadio.setBoxLabel("Public");
