@@ -237,11 +237,11 @@ public class PathConfig {
       return  WEBROOTPATH;
    }
    
-   public String getSerizalizedPanelsFile(Account account){
+   public String getSerializedPanelsFile(Account account){
       return userFolder(account)+"panels.obj";
    }
    
-   public String getSerializedMaxIdField(Account account) {
+   public String getSerializedMaxIdFile(Account account) {
       return userFolder(account)+"maxID.obj";
    }
    public String getControllerConfigPath(){

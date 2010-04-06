@@ -1,6 +1,7 @@
 package org.openremote.modeler.domain.component;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.openremote.modeler.domain.RangeSensor;
@@ -8,7 +9,9 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.UICommand;
 
-public class UISlider extends UIControl implements SensorOwner {
+import flexjson.JSON;
+
+public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner {
    
    private static final long serialVersionUID = 4821886776184406692L;
    
@@ -171,6 +174,32 @@ public class UISlider extends UIControl implements SensorOwner {
       if(slider!= null && slider.getSliderSensorRef()!=null){
          slider.getSliderSensorRef().setSensor(sensor);
       }
+   }
+
+   @Override
+   @JSON(include = false)
+   public Collection<ImageSource> getImageSources() {
+      Collection<ImageSource> imageSources = new ArrayList<ImageSource>(2);
+      if (this.minImage != null && !this.minImage.isEmpty()) {
+         imageSources.add(minImage);
+      }
+      
+      if (this.minTrackImage != null && ! this.minTrackImage.isEmpty()) {
+         imageSources.add(minTrackImage);
+      }
+      
+      if (this.thumbImage != null && ! this.thumbImage.isEmpty()) {
+         imageSources.add(thumbImage);
+      }
+      
+      if (this.maxTrackImage != null && ! this.maxTrackImage.isEmpty()) {
+         imageSources.add(maxTrackImage);
+      }
+      
+      if (this.maxImage != null && ! this.maxImage.isEmpty()) {
+         imageSources.add(maxImage);
+      }
+      return imageSources;
    }
    
    
