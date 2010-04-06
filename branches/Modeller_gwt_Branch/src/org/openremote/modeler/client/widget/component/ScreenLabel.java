@@ -19,10 +19,18 @@
 */
 package org.openremote.modeler.client.widget.component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.widget.propertyform.LabelPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
+import org.openremote.modeler.domain.CustomSensor;
+import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorType;
+import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.UILabel;
 
 import com.extjs.gxt.ui.client.widget.Text;
@@ -41,6 +49,10 @@ public class ScreenLabel extends ScreenComponent {
 
    private UILabel uiLabel = new UILabel();
 
+   private int stateIndex = -1;
+   
+   private List<String> states = new ArrayList<String>();
+   
    public ScreenLabel(ScreenCanvas canvas, UILabel uiLabel) {
       super(canvas);
       this.uiLabel = uiLabel;
@@ -118,7 +130,11 @@ public class ScreenLabel extends ScreenComponent {
     *           the length
     */
    private void adjustTextLength() {
-      adjustTextLength(getWidth());
+      if (stateIndex == -1) {
+         adjustTextLength(getWidth());
+      } else {
+         setState(states.get(stateIndex));
+      }
    }
 
    private void adjustTextLength(int width) {
@@ -132,7 +148,49 @@ public class ScreenLabel extends ScreenComponent {
       }
    }
    
+   public void clearSensorStates() {
+      stateIndex = -1;
+      states.clear();
+      setText(uiLabel.getText());
+   }
    public void onStateChange() {
+      Sensor sensor = uiLabel.getSensor();
+      if (sensor != null && states.isEmpty()) {
+         if (sensor.getType() == SensorType.SWITCH) {
+            if (!"".equals(uiLabel.getSensorLink().getStateValueByStateName("on"))) {
+               states.add(uiLabel.getSensorLink().getStateValueByStateName("on"));
+            }
+            if (!"".equals(uiLabel.getSensorLink().getStateValueByStateName("off"))) {
+               states.add(uiLabel.getSensorLink().getStateValueByStateName("off"));
+            }
+         } else if (sensor.getType() == SensorType.CUSTOM) {
+            SensorLink sensorLink = uiLabel.getSensorLink();
+            for (State state : ((CustomSensor)sensor).getStates()) {
+               if (!"".equals(uiLabel.getSensorLink().getStateValueByStateName(state.getName()))) {
+                  states.add(sensorLink.getStateValueByStateName(state.getName()));
+               }
+            }
+         }
+      }
       
+      if (!states.isEmpty()) {
+         if (stateIndex < states.size() - 1) {
+            stateIndex = stateIndex + 1;
+         } else if (stateIndex == states.size() - 1) {
+            stateIndex = 0;
+         }
+         setState(states.get(stateIndex));
+      }
+   }
+   
+   private void setState(String state) {
+      if (center.isVisible()) {
+         int ajustLength = (getWidth() - 6) / 6;
+         if (ajustLength < state.length()) {
+            center.setText(state.substring(0, ajustLength) + "..");
+         } else {
+            center.setText(state);
+         }
+      }
    }
 }

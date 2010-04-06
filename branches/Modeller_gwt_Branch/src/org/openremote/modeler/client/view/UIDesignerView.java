@@ -21,9 +21,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
+import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
@@ -36,7 +38,6 @@ import org.openremote.modeler.client.widget.uidesigner.WidgetPanel;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
-import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 
@@ -52,6 +53,7 @@ import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -77,6 +79,15 @@ public class UIDesignerView extends TabItem {
       super();
       setText("UI Designer");
 
+      AsyncServiceFactory.getUtilsRPCServiceAsync().getAccountPath(new AsyncCallback <String>() {
+         public void onFailure(Throwable caught) {
+            Info.display("Error", "falid to get account path.");
+         }
+         public void onSuccess(String result) {
+            Cookies.setCookie(Constants.CURRETN_RESOURCE_PATH, result);
+         }
+         
+      });
       setLayout(new BorderLayout());
       profilePanel = createWest();
       createCenter();

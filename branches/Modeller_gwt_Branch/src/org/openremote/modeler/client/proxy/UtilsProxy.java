@@ -238,4 +238,16 @@ public class UtilsProxy {
       });
    }
 
+   public static void getAccountRelativePath(final AsyncCallback <String> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().getAccountPath(new AsyncCallback <String>() {
+         public void onFailure(Throwable caught) {
+            callback.onFailure(caught);
+         }
+
+         public void onSuccess(String result) {
+            callback.onSuccess(result);
+         }
+         
+      });
+   }
 }
