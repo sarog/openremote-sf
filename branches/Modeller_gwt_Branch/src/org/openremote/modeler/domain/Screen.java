@@ -26,6 +26,8 @@ import java.util.List;
 import javax.persistence.Transient;
 
 import org.openremote.modeler.domain.component.Gesture;
+import org.openremote.modeler.domain.component.ImageSource;
+import org.openremote.modeler.domain.component.ImageSourceOwner;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
@@ -296,5 +298,30 @@ public class Screen extends BusinessEntity {
          return name + "_landscape";
       }
       return name;
+   }
+   
+   @JSON(include = false)
+   public Collection<ImageSource> getAllImageSources() {
+      Collection<ImageSource> imageSources = new ArrayList<ImageSource> ();
+      for (Absolute absolute : absolutes) {
+         if (absolute.getUiComponent() instanceof ImageSourceOwner) {
+            ImageSourceOwner imageSourceOwner = (ImageSourceOwner) absolute.getUiComponent();
+            imageSources.addAll(imageSourceOwner.getImageSources());
+         }
+      }
+      for (UIGrid grid : grids) {
+         for (Cell cell : grid.getCells()) {
+            if (cell.getUiComponent() instanceof ImageSourceOwner) {
+               ImageSourceOwner imageSourceOwner = (ImageSourceOwner) cell.getUiComponent();
+               imageSources.addAll(imageSourceOwner.getImageSources());
+            }
+         }
+      }
+      
+      //add background image source 
+      if (this.background != null && background.getImageSource()!=null && !background.getImageSource().isEmpty()) {
+         imageSources.add(this.background.getImageSource());
+      }
+      return imageSources;
    }
 }
