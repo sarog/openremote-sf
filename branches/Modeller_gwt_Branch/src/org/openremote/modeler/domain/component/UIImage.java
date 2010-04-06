@@ -19,12 +19,17 @@
 */
 package org.openremote.modeler.domain.component;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.persistence.Transient;
 
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.domain.Sensor;
 
-public class UIImage extends UIComponent implements SensorOwner {
+import flexjson.JSON;
+
+public class UIImage extends UIComponent implements SensorOwner, ImageSourceOwner {
 
    private static final long serialVersionUID = -4114009124680167066L;
 
@@ -117,5 +122,15 @@ public class UIImage extends UIComponent implements SensorOwner {
    @Override
    public int getPreferredHeight() {
       return 32;
+   }
+
+   @Override
+   @JSON(include = false)
+   public Collection<ImageSource> getImageSources() {
+      Collection<ImageSource> imageSources = new ArrayList<ImageSource>(2);
+      if (this.imageSource != null && !this.imageSource.isEmpty()) {
+         imageSources.add(imageSource);
+      }
+      return imageSources;
    }
 }

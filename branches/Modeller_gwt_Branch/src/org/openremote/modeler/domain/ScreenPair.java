@@ -19,8 +19,12 @@
 */
 package org.openremote.modeler.domain;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.persistence.Transient;
 
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
@@ -146,5 +150,20 @@ public class ScreenPair extends RefedEntity {
 
    public void setParentGroup(Group belongTo) {
       this.parentGroup = belongTo;
+   }
+   
+   public Collection<ImageSource> getAllImageSources() {
+      if (orientation.equals(OrientationType.PORTRAIT)) {
+         return this.portraitScreen.getAllImageSources();
+      } else if (orientation.equals(OrientationType.LANDSCAPE)) {
+         return this.landscapeScreen.getAllImageSources();
+      } else if (orientation.equals(OrientationType.BOTH)) {
+         Collection<ImageSource> imageSources = new ArrayList<ImageSource>();
+         imageSources.addAll(this.portraitScreen.getAllImageSources());
+         imageSources.addAll(this.landscapeScreen.getAllImageSources());
+         return imageSources;
+      }
+
+      return new ArrayList<ImageSource>();
    }
 }

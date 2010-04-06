@@ -153,7 +153,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
             getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
             autoSaveResponse.setUpdated(true);
             resourceService.initResources(panels, maxID);
-            resourceService.saveResourcesToBeehive();
+            resourceService.saveResourcesToBeehive(panels);
             LOGGER.info("Auto save UI designerLayout sucessfully");
          }
       }
@@ -169,7 +169,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
          getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
          autoSaveResponse.setUpdated(true);
          resourceService.initResources(panels, maxID);
-         resourceService.saveResourcesToBeehive();
+         resourceService.saveResourcesToBeehive(panels);
          LOGGER.info("manual save UI DesingerLayout successfully");
       }
       autoSaveResponse.setUpdated(true);
