@@ -25,6 +25,7 @@ import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.component.ScreenSlider;
 import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
+import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectSliderWindow;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.component.ImageSource;
@@ -220,5 +221,11 @@ public class SliderPropertyForm extends PropertyForm {
          previewWidget.setIcon(null);
       }
       return previewWidget;
+   }
+   
+   @Override
+   protected void afterRender() {
+      super.afterRender();
+      ((PropertyPanel)this.getParent()).setHeading("Slider properties");
    }
 }

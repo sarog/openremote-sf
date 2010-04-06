@@ -24,6 +24,7 @@ import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
+import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectSwitchWindow;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.component.ImageSource;
@@ -145,5 +146,11 @@ public class SwitchPropertyForm extends PropertyForm {
          previewWidget.setIcon(imageSource.getSrc());
       }
       return previewWidget;
+   }
+   
+   @Override
+   protected void afterRender() {
+      super.afterRender();
+      ((PropertyPanel)this.getParent()).setHeading("Switch properties");
    }
 }

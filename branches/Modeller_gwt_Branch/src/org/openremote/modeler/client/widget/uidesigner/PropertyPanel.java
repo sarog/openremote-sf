@@ -66,6 +66,7 @@ public class PropertyPanel extends ContentPanel {
    public void update(ComponentContainer component) {
       if (component == null) {
          removePropertiesForm();
+         setHeading("Properties");
          layout();
          return;
       }

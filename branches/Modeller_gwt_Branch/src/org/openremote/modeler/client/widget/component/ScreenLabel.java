@@ -131,4 +131,8 @@ public class ScreenLabel extends ScreenComponent {
          }
       }
    }
+   
+   public void onStateChange() {
+      
+   }
 }
