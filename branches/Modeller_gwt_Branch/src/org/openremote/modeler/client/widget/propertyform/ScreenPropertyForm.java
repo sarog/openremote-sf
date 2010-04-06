@@ -27,6 +27,7 @@ import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.widget.ImageUploadField;
 import org.openremote.modeler.client.widget.uidesigner.GestureWindow;
+import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.Background;
 import org.openremote.modeler.domain.Screen;
@@ -385,5 +386,11 @@ public class ScreenPropertyForm extends PropertyForm {
       adapterConfigGesture.setFieldLabel("Gestures");
       adapterConfigGesture.setAutoWidth(true);
       return adapterConfigGesture;
+   }
+   
+   @Override
+   protected void afterRender() {
+      super.afterRender();
+      ((PropertyPanel)this.getParent()).setHeading("Screen properties");
    }
 }

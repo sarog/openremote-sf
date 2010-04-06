@@ -31,6 +31,7 @@ import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.widget.ImageUploadField;
 import org.openremote.modeler.client.widget.SimpleComboBox;
 import org.openremote.modeler.client.widget.component.ScreenImage;
+import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectSensorWindow;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Sensor;
@@ -311,4 +312,10 @@ public class ImagePropertyForm extends PropertyForm {
       setEncoding(Encoding.MULTIPART);
       setMethod(Method.POST);
    }*/
+   
+   @Override
+   protected void afterRender() {
+      super.afterRender();
+      ((PropertyPanel)this.getParent()).setHeading("Image properties");
+   }
 }

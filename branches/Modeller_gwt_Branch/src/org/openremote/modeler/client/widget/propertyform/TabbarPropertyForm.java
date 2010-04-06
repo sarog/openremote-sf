@@ -20,6 +20,7 @@
 package org.openremote.modeler.client.widget.propertyform;
 
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
+import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
@@ -70,5 +71,11 @@ public class TabbarPropertyForm extends PropertyForm {
       scopeCheckGroup.add(panelScopeRadio);
       
       add(scopeCheckGroup);
+   }
+   
+   @Override
+   protected void afterRender() {
+      super.afterRender();
+      ((PropertyPanel)this.getParent()).setHeading("Tabbar properties");
    }
 }

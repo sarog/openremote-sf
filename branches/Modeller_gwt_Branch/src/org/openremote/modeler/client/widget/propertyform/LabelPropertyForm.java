@@ -27,6 +27,7 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.widget.component.ScreenLabel;
+import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectColorWindow;
 import org.openremote.modeler.client.widget.uidesigner.SelectSensorWindow;
 import org.openremote.modeler.domain.CustomSensor;
@@ -234,4 +235,9 @@ public class LabelPropertyForm extends PropertyForm {
       statesPanel.layout();
    }
    
+   @Override
+   protected void afterRender() {
+      super.afterRender();
+      ((PropertyPanel)this.getParent()).setHeading("Label properties");
+   }
 }

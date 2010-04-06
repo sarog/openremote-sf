@@ -20,6 +20,7 @@
 package org.openremote.modeler.client.widget.propertyform;
 
 import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle;
+import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.component.UIGrid;
 
@@ -164,5 +165,11 @@ public class GridPropertyForm extends PropertyForm {
       }
 
       gridContainer.update();
+   }
+   
+   @Override
+   protected void afterRender() {
+      super.afterRender();
+      ((PropertyPanel)this.getParent()).setHeading("Grid properties");
    }
 }
