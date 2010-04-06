@@ -189,12 +189,16 @@ public class TemplateServiceImpl implements TemplateService {
    public String getTemplateContent(ScreenPair screen) {
       try {
          String[] includedPropertyNames = { 
+               "*.protocol.oid",
                "*.gestures.uiCommand",
+               "*.absolutes.uiComponent.sensor.sensorCommandRef.oid",
                "*.absolutes.uiComponent.sensorLink",
                "*.absolutes.uiComponent.oid",
                "*.grids.cells.uiComponent.sensorLink",
                "*.grids.cells.uiComponent.oid",
+               "*.absolutes.uiComponent.uiCommand.deviceCommand.protocol.oid",
                "*.absolutes.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs",
+               "*.absolutes.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs.oid",
                "*.absolutes.uiComponent.commands",
                "*.absolutes.uiComponent.slider.sliderSensorRef.sensor",
                "*.absolutes.uiComponent.switchCommand.switchSensorRef.sensor",
@@ -202,7 +206,9 @@ public class TemplateServiceImpl implements TemplateService {
                "*.grids.cells.uiComponent.slider.sliderSensorRef.sensor",
                "*.grids.cells.uiComponent.switchCommand.switchSensorRef.sensor",
                "*.grids.cells.uiComponent.uiCommand",
+               "*.grids.cells.uiComponent.uiCommand.deviceCommand.protocol.oid",
                "*.grids.cells.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs",
+               "*.grids.cells.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs.oid",
                "*.grids.cells.uiComponent.commands", "*.deviceCommand", "*.protocol", "*.attributes" };
          String[] excludePropertyNames = { "grid", /* "*.touchPanelDefinition", */"*.refCount", "*.displayName",
                "*.oid", "*.proxyInformations", "*.proxyInformation", /* "gestures", */"*.panelXml", /* "*.navigate", */
@@ -421,7 +427,7 @@ public class TemplateServiceImpl implements TemplateService {
       
       this.resetNavigateForButtons(uiButtons);
       
-      rebuild(devices, commands, sensors, switchs, sliders, macros);
+      rebuild(devices, commands, sensors, switchs, sliders, macros,false);
 
       return new ScreenFromTemplate(devices, screenPair,macros);
    }
@@ -752,15 +758,26 @@ public class TemplateServiceImpl implements TemplateService {
       return deviceCommands;
    }
 
-   private void rebuild(Collection<Device> devices, Collection<DeviceCommand> deviceCommands, Collection<Sensor> sensors,
-         Collection<Switch> switches,Collection<Slider> sliders,Collection<DeviceMacro> macros) {
-
+   private boolean rebuild(Collection<Device> devices, Collection<DeviceCommand> deviceCommands, Collection<Sensor> sensors,
+         Collection<Switch> switches,Collection<Slider> sliders,Collection<DeviceMacro> macros,boolean createNew) {
+      boolean isHasNewCmd = false;
       Account account = userService.getAccount();
      
       //1, build devices. 
       for (Device device : devices) {
          device.setAccount(account);
-         deviceService.saveDevice(device);
+         List<Device> sameDevices = deviceService.loadSameDevices(device);
+         if (! createNew) {
+            if (sameDevices != null && sameDevices.size() >0) {
+               device.setOid(sameDevices.get(0).getOid());
+            } else {
+               deviceService.saveDevice(device);
+               isHasNewCmd = true;
+            }
+         } else {
+            deviceService.saveDevice(device);
+            isHasNewCmd = true;
+         }
       }
       
       //2, build DeviceCommands. 
@@ -771,8 +788,18 @@ public class TemplateServiceImpl implements TemplateService {
                attr.setProtocol(protocol);
             }
          }
-
-         deviceCommandService.save(deviceCommand);
+         if (! createNew) {
+            List<DeviceCommand> sameCmds = deviceCommandService.loadSameCommands(deviceCommand);
+            if (sameCmds != null && sameCmds.size() >0) {
+               deviceCommand.setOid(sameCmds.get(0).getOid());
+            } else {
+               deviceCommandService.save(deviceCommand);
+               isHasNewCmd = true;
+            }
+         } else {
+            deviceCommandService.save(deviceCommand);
+            isHasNewCmd = true;
+         }
       }
 
       //3, build sensors. 
@@ -780,7 +807,18 @@ public class TemplateServiceImpl implements TemplateService {
          sensor.setAccount(account);
          sensor.getSensorCommandRef().setSensor(sensor);
          sensor.setDevice(sensor.getSensorCommandRef().getDeviceCommand().getDevice());
-         sensorService.saveSensor(sensor);
+         if (! createNew) {
+            List<Sensor> sameSensors = sensorService.loadSameSensors(sensor);
+            if (sameSensors != null && sameSensors.size() >0) {
+               sensor.setOid(sameSensors.get(0).getOid());
+            } else {
+               sensorService.saveSensor(sensor);
+               isHasNewCmd = true;
+            }
+         } else {
+            sensorService.saveSensor(sensor);
+            isHasNewCmd = true;
+         }
       }
 
       //4, build switch. 
@@ -790,7 +828,16 @@ public class TemplateServiceImpl implements TemplateService {
          switchToggle.getSwitchCommandOnRef().setOnSwitch(switchToggle);
          switchToggle.setDevice(switchToggle.getSwitchCommandOffRef().getDeviceCommand().getDevice());
          switchToggle.getSwitchSensorRef().setSwitchToggle(switchToggle);
-         switchService.save(switchToggle);
+         if (! createNew) {
+            List<Switch> swhs = switchService.loadSameSwitchs(switchToggle);
+            if (swhs !=null && swhs.size() >0) {
+               switchToggle.setOid(swhs.get(0).getOid());
+            } else {
+               switchService.save(switchToggle);
+            }
+         } else {
+            switchService.save(switchToggle);
+         }
       }
 
       //5, build slider. 
@@ -799,17 +846,27 @@ public class TemplateServiceImpl implements TemplateService {
          slider.setDevice(slider.getSetValueCmd().getDeviceCommand().getDevice());
          slider.getSliderSensorRef().setSlider(slider);
          slider.getSetValueCmd().setSlider(slider);
-         sliderService.save(slider);
+         if (! createNew) {
+            List<Slider> sameSliders = sliderService.loadSameSliders(slider);
+            if (sameSliders != null && sameSliders.size() >0) {
+               slider.setOid(sameSliders.get(0).getOid());
+            } else {
+               sliderService.save(slider);
+            }
+         } else {
+            sliderService.save(slider);
+         }
       }
 
       //6, build macro. 
       for (DeviceMacro macro : macros) {
          macro.setAccount(account);
-         saveMacro(macro);
+         saveMacro(macro,createNew);
       }
 
       //7, prepare to send to client.
       prepareToSendToClient(devices, deviceCommands, macros, account);
+      return isHasNewCmd;
    }
 
    private void prepareToSendToClient(Collection<Device> devices, Collection<DeviceCommand> deviceCommands,
@@ -858,7 +915,7 @@ public class TemplateServiceImpl implements TemplateService {
       }
    }
    
-   private void saveMacro(DeviceMacro macro) {
+   private void saveMacro(DeviceMacro macro,boolean createNew) {
 
       if (null != macro) {
          List<DeviceMacroItem> items = macro.getDeviceMacroItems();
@@ -869,14 +926,23 @@ public class TemplateServiceImpl implements TemplateService {
                if (item instanceof DeviceMacroRef) {
                   DeviceMacroRef macroRef = (DeviceMacroRef) item;
                   DeviceMacro subMacro = macroRef.getTargetDeviceMacro();
-                  saveMacro(subMacro);
+                  saveMacro(subMacro,createNew);
                }
                item.setParentDeviceMacro(macro);
             }
          }
 
          // second, save the macro itself. 
-         this.deviceMacroService.saveDeviceMacro(macro);
+         if (! createNew) {
+            List<DeviceMacro> sameMacro = deviceMacroService.loadSameMacro(macro);
+            if (sameMacro != null && sameMacro.size() >0) {
+               macro.setOid(sameMacro.get(0).getOid());
+            } else {
+               this.deviceMacroService.saveDeviceMacro(macro);
+            }
+         } else {
+            this.deviceMacroService.saveDeviceMacro(macro);
+         }
       }
    }
    

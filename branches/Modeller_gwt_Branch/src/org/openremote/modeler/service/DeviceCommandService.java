@@ -77,4 +77,6 @@ public interface DeviceCommandService {
     * @return the list< device command>
     */
    List<DeviceCommand> loadByDevice(long id);
+   
+   List<DeviceCommand> loadSameCommands(DeviceCommand deviceCommand);
 }

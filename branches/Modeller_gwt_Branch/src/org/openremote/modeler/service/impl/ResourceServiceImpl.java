@@ -386,7 +386,7 @@ public class ResourceServiceImpl implements ResourceService {
             return new ArrayList<Command>();
          }
       } catch (Exception e) {
-         LOGGER.warn("Some components referenced a removed object! ", e);
+         LOGGER.warn("Some components referenced a removed object:  "+e.getMessage());
          return new ArrayList<Command>();
       }
       return oneUIButtonEventList;
@@ -1201,14 +1201,19 @@ public class ResourceServiceImpl implements ResourceService {
    }
    
    private File getTemplateZipResource(Template template){
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
       List<String> ignoreExtentions = new ArrayList<String>();
       ignoreExtentions.add("zip");
       ignoreExtentions.add("xml");
       ScreenPair sp = template.getScreen();
       Collection<ImageSource> images = sp.getAllImageSources();
-      Collection<File> imageFiles = getAllImageFiles(images);
+      Collection<File> templateRelatedFiles = getAllImageFiles(images);
+      
+      File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
+      File defaultImage = new File(userFolder, new File(UIImage.DEFAULT_IMAGE_URL).getName());
+      templateRelatedFiles.add(defaultImage);
 //      ignoreExtentions.add("obj");
-      return getResourceZipFile(ignoreExtentions,imageFiles);
+      return getResourceZipFile(ignoreExtentions,templateRelatedFiles);
    }
    private File getExportResource(Collection<Panel> panels) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);

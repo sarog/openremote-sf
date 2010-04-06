@@ -166,7 +166,7 @@ public class TreePanelBuilder {
                 });
             }
         };
-        TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy) {
+        final TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy) {
            @Override
            public boolean hasChildren(BeanModel beanModel) {
                if (beanModel.getBean() instanceof DeviceCommand || beanModel.getBean() instanceof UICommand) {
@@ -192,10 +192,13 @@ public class TreePanelBuilder {
                @Override
                public void handleInsert(BeanModel beanModel) {
                   if (beanModel != null && beanModel.getBean() instanceof Device) {
-                     if (!deviceTreeStore.contains(beanModel)) {
-                        deviceTreeStore.add(beanModel, false);
-                        tree.getSelectionModel().select(beanModel, true);
-                     }
+                     if (deviceTreeStore.contains(beanModel)) {
+                        tree.getStore().removeAll(beanModel);
+                        tree.getStore().remove(beanModel);
+                     } 
+                     deviceTreeStore.add(beanModel, false);
+                     tree.getSelectionModel().select(beanModel, true);
+                     tree.getStore().getLoader().load();
                   }
                }
 

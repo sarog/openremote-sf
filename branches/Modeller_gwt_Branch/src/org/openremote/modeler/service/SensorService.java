@@ -36,5 +36,6 @@ public interface SensorService {
    
    Sensor loadById(long id);
    
+   List<Sensor> loadSameSensors(Sensor sensor) ;
 //   List<Sensor> loadByDevice(Device device);
 }
