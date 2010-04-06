@@ -101,6 +101,7 @@ public class ImagePropertyForm extends PropertyForm {
                   } else {
                      statesPanel.hide();
                   }
+                  screenImage.clearSensorStates();
                }
             });
          }
@@ -223,6 +224,7 @@ public class ImagePropertyForm extends PropertyForm {
                   }
                   sensorAttrMap.put("value", imageURL.substring(imageURL.lastIndexOf("/")+1));
                   sensorLink.addOrUpdateChildForSensorLinker("state", sensorAttrMap);
+                  screenImage.clearSensorStates();
                }
             }
             screenImage.getScreenCanvas().unmask();

@@ -111,6 +111,7 @@ public class LabelPropertyForm extends PropertyForm {
                   } else {
                      statesPanel.hide();
                   }
+                  screenLabel.clearSensorStates();
                }
             });
          }
@@ -189,6 +190,7 @@ public class LabelPropertyForm extends PropertyForm {
                   sensorAttrs.put("value", onText);
                   screenLabel.getUiLabel().getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
+               screenLabel.clearSensorStates();
             }
         });
         
@@ -201,6 +203,7 @@ public class LabelPropertyForm extends PropertyForm {
                   sensorAttrs.put("value", offText);
                   screenLabel.getUiLabel().getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
+               screenLabel.clearSensorStates();
             }
         });
        
@@ -226,6 +229,7 @@ public class LabelPropertyForm extends PropertyForm {
                   sensorAttrs.put("value", stateText);
                   screenLabel.getUiLabel().getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
+               screenLabel.clearSensorStates();
             }
               
            });

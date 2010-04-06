@@ -115,4 +115,6 @@ public class Constants {
    
    public static final String CURRETN_ROLE = "currentRole";
    
+   public static final String CURRETN_RESOURCE_PATH = "currentResourcePath";
+   
 }

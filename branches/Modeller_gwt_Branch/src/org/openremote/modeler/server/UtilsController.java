@@ -293,4 +293,10 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
             +imageFileInUserFolder.getName(), degree);
       return fileAfterRotated==null?imageFileInUserFolder.getName():fileAfterRotated.getName();
    }
+
+   public String getAccountPath() {
+      String accountPath = resourceService.getRelativeResourcePathByCurrentAccount("account");
+      return accountPath.substring(0, accountPath.lastIndexOf("/") + 1);
+   }
+   
 }

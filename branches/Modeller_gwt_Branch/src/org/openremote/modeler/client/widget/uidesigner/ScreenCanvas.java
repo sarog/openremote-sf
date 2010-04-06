@@ -24,6 +24,8 @@ import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
+import org.openremote.modeler.client.widget.component.ScreenImage;
+import org.openremote.modeler.client.widget.component.ScreenLabel;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
@@ -445,6 +447,10 @@ public class ScreenCanvas extends ComponentContainer {
                   ((ScreenButton)screenControl).setPressedImage();
                } else if (screenControl instanceof ScreenSwitch) {
                   ((ScreenSwitch)screenControl).onStateChange();
+               } else if (screenControl instanceof ScreenLabel) {
+                  ((ScreenLabel)screenControl).onStateChange();
+               } else if (screenControl instanceof ScreenImage) {
+                  ((ScreenImage)screenControl).onStateChange();
                }
             } else if (ce.getEventTypeInt() == Event.ONMOUSEUP){
                if (screenControl instanceof ScreenButton) {
