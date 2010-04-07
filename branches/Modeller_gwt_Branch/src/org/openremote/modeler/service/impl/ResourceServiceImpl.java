@@ -1211,7 +1211,9 @@ public class ResourceServiceImpl implements ResourceService {
       
       File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
       File defaultImage = new File(userFolder, new File(UIImage.DEFAULT_IMAGE_URL).getName());
-      templateRelatedFiles.add(defaultImage);
+      if (! templateRelatedFiles.contains(defaultImage)) {
+         templateRelatedFiles.add(defaultImage);
+      }
 //      ignoreExtentions.add("obj");
       return getResourceZipFile(ignoreExtentions,templateRelatedFiles);
    }
@@ -1226,7 +1228,7 @@ public class ResourceServiceImpl implements ResourceService {
       File defaultImage = new File(userFolder, new File(UIImage.DEFAULT_IMAGE_URL).getName());
       File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));
       File maxOidObjFile = new File(pathConfig.getSerializedMaxIdFile(userService.getAccount()));
-      Collection<File> exportFile = new ArrayList<File>();
+      Collection<File> exportFile = new HashSet<File>();
       exportFile.addAll(imageFiles);
       exportFile.add(panelXMLFile);
       exportFile.add(controllerXMLFile);
