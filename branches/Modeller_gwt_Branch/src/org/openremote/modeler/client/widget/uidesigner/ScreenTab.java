@@ -20,10 +20,14 @@
 package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.ScreenPair.OrientationType;
 
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.TabPanelEvent;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 
@@ -45,6 +49,12 @@ public class ScreenTab extends TabPanel {
          add(new ScreenTabItem(screenPair.getPortraitScreen()));
          add(new ScreenTabItem(screenPair.getLandscapeScreen()));
       }
+      this.addListener(Events.Select, new Listener<TabPanelEvent>(){
+         public void handleEvent(TabPanelEvent be) {
+            WidgetSelectionUtil.setSelectWidget(null);
+         }
+         
+      });
    }
    
    public ScreenPair getScreenPair() {
