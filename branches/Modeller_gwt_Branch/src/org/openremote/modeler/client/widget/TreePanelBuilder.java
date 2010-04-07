@@ -184,7 +184,12 @@ public class TreePanelBuilder {
             super.onDoubleClick(tpe);
             this.fireEvent(DoubleClickEvent.DOUBLECLICK, new DoubleClickEvent());
          }
-         
+
+         @Override
+         protected void afterRender() {
+            super.afterRender();
+            mask("Loading devices...");
+         }
       };
       ((DeviceBeanModelTable) BeanModelDataBase.deviceTable)
             .addDeviceInsertListener(new DeviceInsertListener<BeanModel>() {
@@ -443,6 +448,12 @@ public class TreePanelBuilder {
             this.fireEvent(DoubleClickEvent.DOUBLECLICK, new DoubleClickEvent());
          }
          
+         @Override
+         protected void afterRender() {
+            super.afterRender();
+            mask("Loading panels...");
+         }
+
       };
       panelTree.setStateful(true);
       panelTree.setBorders(false);
