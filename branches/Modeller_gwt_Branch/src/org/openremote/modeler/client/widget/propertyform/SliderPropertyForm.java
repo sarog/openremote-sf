@@ -110,7 +110,10 @@ public class SliderPropertyForm extends PropertyForm {
       AdapterField adapterCommand = new AdapterField(command);
       adapterCommand.setFieldLabel("SliderCommand");
 
-      Button minImageBtn = new Button("Select");
+      final Button minImageBtn = new Button("Select");
+      if (screenSlider.getUiSlider().getMinImage() != null) {
+         minImageBtn.setText(screenSlider.getUiSlider().getMinImage().getImageFileName());
+      }
       minImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
@@ -120,6 +123,7 @@ public class SliderPropertyForm extends PropertyForm {
                public void afterSubmit(SubmitEvent be) {
                   String minImageUrl = be.getData();
                   screenSlider.setMinImage(minImageUrl);
+                  minImageBtn.setText(screenSlider.getUiSlider().getMinImage().getImageFileName());
                   screenSlider.layout();
                }
             });
@@ -128,7 +132,10 @@ public class SliderPropertyForm extends PropertyForm {
       AdapterField adapterMinImageBtn = new AdapterField(minImageBtn);
       adapterMinImageBtn.setFieldLabel("MinImage");
 
-      Button minTrackImageBtn = new Button("Select");
+      final Button minTrackImageBtn = new Button("Select");
+      if (screenSlider.getUiSlider().getMinTrackImage() != null) {
+         minTrackImageBtn.setText(screenSlider.getUiSlider().getMinTrackImage().getImageFileName());
+      }
       minTrackImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
@@ -138,6 +145,7 @@ public class SliderPropertyForm extends PropertyForm {
                public void afterSubmit(SubmitEvent be) {
                   String minTrackImageUrl = be.getData();
                   screenSlider.setMinTrackImage(minTrackImageUrl);
+                  minTrackImageBtn.setText(screenSlider.getUiSlider().getMinTrackImage().getImageFileName());
                   screenSlider.layout();
                }
             });
@@ -146,7 +154,10 @@ public class SliderPropertyForm extends PropertyForm {
       AdapterField adapterMinTrackImageBtn = new AdapterField(minTrackImageBtn);
       adapterMinTrackImageBtn.setFieldLabel("TrackImage(min)");
 
-      Button thumbImageBtn = new Button("Select");
+      final Button thumbImageBtn = new Button("Select");
+      if (screenSlider.getUiSlider().getThumbImage() != null) {
+         thumbImageBtn.setText(screenSlider.getUiSlider().getThumbImage().getImageFileName());
+      }
       thumbImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
@@ -156,6 +167,7 @@ public class SliderPropertyForm extends PropertyForm {
                public void afterSubmit(SubmitEvent be) {
                   String thumbImageUrl = be.getData();
                   screenSlider.setThumbImage(thumbImageUrl);
+                  thumbImageBtn.setText(screenSlider.getUiSlider().getThumbImage().getImageFileName());
                   screenSlider.layout();
                }
             });
@@ -164,7 +176,10 @@ public class SliderPropertyForm extends PropertyForm {
       AdapterField adapterThumbImageBtn = new AdapterField(thumbImageBtn);
       adapterThumbImageBtn.setFieldLabel("ThumbImage");
 
-      Button maxImageBtn = new Button("Select");
+      final Button maxImageBtn = new Button("Select");
+      if (screenSlider.getUiSlider().getMaxImage() != null) {
+         maxImageBtn.setText(screenSlider.getUiSlider().getMaxImage().getImageFileName());
+      }
       maxImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
@@ -174,6 +189,7 @@ public class SliderPropertyForm extends PropertyForm {
                public void afterSubmit(SubmitEvent be) {
                   String maxImageUrl = be.getData();
                   screenSlider.setMaxImage(maxImageUrl);
+                  maxImageBtn.setText(screenSlider.getUiSlider().getMaxImage().getImageFileName());
                   screenSlider.layout();
                }
             });
@@ -182,7 +198,10 @@ public class SliderPropertyForm extends PropertyForm {
       AdapterField adapterMaxImageBtn = new AdapterField(maxImageBtn);
       adapterMaxImageBtn.setFieldLabel("MaxImage");
 
-      Button maxTrackImageBtn = new Button("Select");
+      final Button maxTrackImageBtn = new Button("Select");
+      if (screenSlider.getUiSlider().getMaxTrackImage() != null) {
+         maxTrackImageBtn.setText(screenSlider.getUiSlider().getMaxTrackImage().getImageFileName());
+      }
       maxTrackImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
@@ -192,6 +211,7 @@ public class SliderPropertyForm extends PropertyForm {
                public void afterSubmit(SubmitEvent be) {
                   String maxTrackImageUrl = be.getData();
                   screenSlider.setMaxTrackImage(maxTrackImageUrl);
+                  maxTrackImageBtn.setText(screenSlider.getUiSlider().getMaxTrackImage().getImageFileName());
                   screenSlider.layout();
                }
             });
