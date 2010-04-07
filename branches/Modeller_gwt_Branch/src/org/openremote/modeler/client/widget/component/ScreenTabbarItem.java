@@ -115,9 +115,7 @@ public class ScreenTabbarItem extends ScreenComponent {
       if (this.uiTabbarItem.getImage() != null && this.uiTabbarItem.getImage().getSrc() != null) {
          String imageURL = this.uiTabbarItem.getImage().getSrc();
          if (imageURL.trim().length() > 0) {
-//            setStyleAttribute("backgroundRepeat", "no-repeat");
             setStyleAttribute("overflow", "hidden");
-//            setStyleAttribute("backgroundPosition", "top center");
             this.setStyleAttribute("background", "url("+imageURL+") top center no-repeat");
             layout();
          }
