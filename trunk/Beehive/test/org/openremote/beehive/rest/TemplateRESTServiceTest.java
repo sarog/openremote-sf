@@ -37,7 +37,7 @@ public class TemplateRESTServiceTest  extends TemplateTestBase {
 
    public void testGetTemplatesByAccountInXML() throws URISyntaxException {
       Dispatcher dispatcher = RESTTestUtils.createDispatcher(TemplateRESTTestService.class);
-      MockHttpRequest mockHttpRequest = MockHttpRequest.get("/account/1/templates");
+      MockHttpRequest mockHttpRequest = MockHttpRequest.get("/account/1/templates/private");
       mockHttpRequest.accept(MediaType.APPLICATION_XML);
       addCredential(mockHttpRequest);
       MockHttpResponse mockHttpResponse = new MockHttpResponse();
@@ -47,7 +47,7 @@ public class TemplateRESTServiceTest  extends TemplateTestBase {
    }
    public void testGetAllPublicTemplateInXML() throws URISyntaxException {
       Dispatcher dispatcher = RESTTestUtils.createDispatcher(TemplateRESTTestService.class);
-      MockHttpRequest mockHttpRequest = MockHttpRequest.get("/account/0/templates");
+      MockHttpRequest mockHttpRequest = MockHttpRequest.get("/account/1/templates/public");
       mockHttpRequest.accept(MediaType.APPLICATION_XML);
       addCredential(mockHttpRequest);
       MockHttpResponse mockHttpResponse = new MockHttpResponse();
@@ -57,7 +57,7 @@ public class TemplateRESTServiceTest  extends TemplateTestBase {
    }
    public void testGetTemplatesByAccountInXMLWithInvalidAccountId() throws URISyntaxException {
       Dispatcher dispatcher = RESTTestUtils.createDispatcher(TemplateRESTTestService.class);
-      MockHttpRequest mockHttpRequest = MockHttpRequest.get("/account/1a/templates");
+      MockHttpRequest mockHttpRequest = MockHttpRequest.get("/account/1a/templates/public");
       mockHttpRequest.accept(MediaType.APPLICATION_XML);
       addCredential(mockHttpRequest);
       MockHttpResponse mockHttpResponse = new MockHttpResponse();
@@ -66,7 +66,7 @@ public class TemplateRESTServiceTest  extends TemplateTestBase {
 
    public void testGetTemplatesByAccountInJSON() throws URISyntaxException {
       Dispatcher dispatcher = RESTTestUtils.createDispatcher(TemplateRESTTestService.class);
-      MockHttpRequest mockHttpRequest = MockHttpRequest.get("/account/1/templates");
+      MockHttpRequest mockHttpRequest = MockHttpRequest.get("/account/1/templates/private");
       mockHttpRequest.accept(MediaType.APPLICATION_JSON);
       addCredential(mockHttpRequest);
       MockHttpResponse mockHttpResponse = new MockHttpResponse();
@@ -76,7 +76,7 @@ public class TemplateRESTServiceTest  extends TemplateTestBase {
    }
    public void testGetTemplatesByAccountInJSONWithInvalidAccountId() throws URISyntaxException {
       Dispatcher dispatcher = RESTTestUtils.createDispatcher(TemplateRESTTestService.class);
-      MockHttpRequest mockHttpRequest = MockHttpRequest.get("/account/1a/templates");
+      MockHttpRequest mockHttpRequest = MockHttpRequest.get("/account/1a/templates/public");
       mockHttpRequest.accept(MediaType.APPLICATION_JSON);
       addCredential(mockHttpRequest);
       MockHttpResponse mockHttpResponse = new MockHttpResponse();
