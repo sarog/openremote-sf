@@ -24,6 +24,7 @@ import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.ScreenPair.OrientationType;
 
+import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 
 /**
@@ -62,6 +63,22 @@ public class ScreenTab extends TabPanel {
    public void updateTabbarForScreenCanvas(ScreenPairRef screenRef) {
       if (this.getItemByItemId(Constants.PORTRAIT) != null) {
          ((ScreenTabItem)this.getItemByItemId(Constants.PORTRAIT)).updateTabbarForScreenCanvas(screenRef);
+      } if (this.getItemByItemId(Constants.LANDSCAPE) != null) {
+         ((ScreenTabItem)this.getItemByItemId(Constants.LANDSCAPE)).updateTabbarForScreenCanvas(screenRef);
       }
    }
+
+   public void updateScreenTabItems() {
+      ScreenPairRef spRef = new ScreenPairRef();
+      spRef.setScreen(this.screenPair);
+      spRef.setGroup(this.screenPair.getParentGroup());
+      updateTabbarForScreenCanvas(spRef);
+   }
+
+   @Override
+   public void setSelection(TabItem item) {
+      super.setSelection(item);
+      updateScreenTabItems();
+   }
+   
 }
