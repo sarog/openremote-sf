@@ -17,36 +17,26 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.beehive.api.service;
+package org.openremote.beehive.exception;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-/**
- * Service for manage resources for modeler.
- * @author javen, Dan
- *
- */
-public interface ResourceService {
-   /**
-    * save resource for an account whose oid is accouontOid
-    * @param accountOid The oid for an account
-    * @param input
-    */
-   boolean saveResource(long accountOid,InputStream input);
+public class PanelXMLNotFoundException extends RuntimeException {
+
+   private static final long serialVersionUID = -533850838250541605L;
+
+   public PanelXMLNotFoundException() {
+      super();
+   }
+
+   public PanelXMLNotFoundException(String message, Throwable cause) {
+      super(message, cause);
+   }
+
+   public PanelXMLNotFoundException(String message) {
+      super(message);
+   }
+
+   public PanelXMLNotFoundException(Throwable cause) {
+      super(cause);
+   }
    
-   /**
-    * get openremote.zip
-    * 
-    * @param accountOid account id
-    * @return openremote.zip
-    */
-   File getResourceZip(String username);
-   
-   
-   String getAllPanelsXMLFromAccount(String username);
-   
-   String getPanelXMLByPanelNameFromAccount(String username, String panelName);
-   
-   File getResource(String username, String fileName) throws FileNotFoundException;
 }
