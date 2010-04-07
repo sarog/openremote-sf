@@ -131,7 +131,10 @@ public class ButtonPropertyForm extends PropertyForm {
          navigateSet.collapse();
       }
       
-      Button imageBtn = new Button("Select");
+      final Button imageBtn = new Button("Select");
+      if (uiButton.getImage() != null) {
+         imageBtn.setText(uiButton.getImage().getImageFileName());
+      }
       imageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
@@ -147,6 +150,7 @@ public class ButtonPropertyForm extends PropertyForm {
                   } else {
                      uiButton.setImage(new ImageSource(imageUrl));
                   }
+                  imageBtn.setText(uiButton.getImage().getImageFileName());
                }
             });
          }
@@ -154,7 +158,10 @@ public class ButtonPropertyForm extends PropertyForm {
       AdapterField adapterImageBtn = new AdapterField(imageBtn);
       adapterImageBtn.setFieldLabel("Image");
       
-      Button onPressImageBtn = new Button("Select");
+      final Button onPressImageBtn = new Button("Select");
+      if (uiButton.getPressImage() != null) {
+         onPressImageBtn.setText(uiButton.getPressImage().getImageFileName());
+      }
       onPressImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
@@ -169,6 +176,7 @@ public class ButtonPropertyForm extends PropertyForm {
                   } else {
                      uiButton.setPressImage(new ImageSource(onPressImageUrl));
                   }
+                  onPressImageBtn.setText(uiButton.getPressImage().getImageFileName());
                }
             });
          }

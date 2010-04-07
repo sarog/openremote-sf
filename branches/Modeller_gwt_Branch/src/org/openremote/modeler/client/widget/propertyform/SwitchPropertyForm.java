@@ -48,7 +48,10 @@ public class SwitchPropertyForm extends PropertyForm {
    }
    
    private void addFields(final ScreenSwitch screenSwitch, final UISwitch uiSwitch) {
-      Button imageON = new Button("Select");
+      final Button imageON = new Button("Select");
+      if (uiSwitch.getOnImage() != null) {
+         imageON.setText(uiSwitch.getOnImage().getImageFileName());
+      }
       imageON.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
@@ -63,6 +66,7 @@ public class SwitchPropertyForm extends PropertyForm {
                   } else {
                      uiSwitch.setOnImage(new ImageSource(imageOnUrl));
                   }
+                  imageON.setText(uiSwitch.getOnImage().getImageFileName());
                   screenSwitch.setIcon(imageOnUrl);
                }
             });
@@ -71,7 +75,10 @@ public class SwitchPropertyForm extends PropertyForm {
       AdapterField adapterImageON = new AdapterField(imageON);
       adapterImageON.setFieldLabel("Image(ON)");
 
-      Button imageOFF = new Button("Select");
+      final Button imageOFF = new Button("Select");
+      if (uiSwitch.getOffImage() != null) {
+         imageOFF.setText(uiSwitch.getOffImage().getImageFileName());
+      }
       imageOFF.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
@@ -86,6 +93,7 @@ public class SwitchPropertyForm extends PropertyForm {
                   } else {
                      uiSwitch.setOffImage(new ImageSource(imageOffUrl));
                   }
+                  imageOFF.setText(uiSwitch.getOffImage().getImageFileName());
                }
             });
 
