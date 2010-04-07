@@ -893,7 +893,11 @@ public class ResourceServiceImpl implements ResourceService {
    
    public PanelsAndMaxOid restore(){
       //First, try to down openremote.zip from beehive.
-      downloadOpenRemoteZip();
+      try {
+         downloadOpenRemoteZip();
+      } catch (IOException e) {
+         LOGGER.error("Beehive no available !" + e.getLocalizedMessage());
+      }
       //Restore panels and max oid. 
       
       Collection<Panel> panels = restorePanels();
@@ -1095,7 +1099,7 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
    
-   private void downloadOpenRemoteZip() {
+   private void downloadOpenRemoteZip() throws IOException {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
       HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTRootUrl() + "user/"
@@ -1145,9 +1149,6 @@ public class ResourceServiceImpl implements ResourceService {
             throw new BeehiveNotAvailableException("Failed to download resources, status code: "
                   + response.getStatusLine().getStatusCode());
          }
-      } catch (IOException ioException) {
-         throw new BeehiveNotAvailableException("Failed to download user resource: " + ioException.getMessage(),
-               ioException);
       } finally {
          if (inputStream != null) {
             try {
