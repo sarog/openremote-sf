@@ -145,6 +145,7 @@ public class ProfilePanel extends ContentPanel {
 //            addTreeStoreEventListener();
             new PanelTreeStoreChangeListener(panelTree);
             add(panelTree);
+            initTreeWithAutoSavedPanels();
             panelTree.addListener(DoubleClickEvent.DOUBLECLICK, new Listener<DoubleClickEvent>() {
                public void handleEvent(DoubleClickEvent be) {
                   editSelectedModel();
@@ -153,7 +154,6 @@ public class ProfilePanel extends ContentPanel {
             });
          }
       };
-      initTreeWithAutoSavedPanels();
       // overflow-auto style is for IE hack.
       treeContainer.addStyleName("overflow-auto");
       treeContainer.setStyleAttribute("backgroundColor", "white");
@@ -192,6 +192,8 @@ public class ProfilePanel extends ContentPanel {
                   }
 
                });
+            } else {
+               panelTree.unmask();
             }
             UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>() {
                @Override
@@ -203,7 +205,12 @@ public class ProfilePanel extends ContentPanel {
                
             });
          }
-         
+         @Override
+         public void onFailure(Throwable caught) {
+            panelTree.unmask();
+            super.onFailure(caught);
+         }
+
          private void initModelDataBase(Collection<Panel> panels) {
             BeanModelDataBase.panelTable.clear();
             BeanModelDataBase.groupTable.clear();
