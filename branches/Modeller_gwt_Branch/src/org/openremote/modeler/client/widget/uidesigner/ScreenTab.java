@@ -81,6 +81,7 @@ public class ScreenTab extends TabPanel {
    public void updateScreenTabItems() {
       ScreenPairRef spRef = new ScreenPairRef();
       spRef.setScreen(this.screenPair);
+      this.screenPair.releaseRef();
       spRef.setGroup(this.screenPair.getParentGroup());
       updateTabbarForScreenCanvas(spRef);
    }
