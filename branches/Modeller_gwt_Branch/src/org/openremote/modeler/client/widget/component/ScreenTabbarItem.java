@@ -50,11 +50,9 @@ public class ScreenTabbarItem extends ScreenComponent {
       this.uiTabbarItem = uiTabbarItem;
       
       addStyleName("tabbaritem-background");
-      setStyleAttribute("margin","TABBAR_ITEM_MARGIN");
       setStyleAttribute("position", "absolute");
       addStyleName("move-cursor");
       
-//      sinkEvents(Event.ONMOUSEDOWN);
       center.setStyleAttribute("color", "white");
       center.setStyleAttribute("bottom", "0");
       center.setStyleAttribute("width","100%");
@@ -80,8 +78,8 @@ public class ScreenTabbarItem extends ScreenComponent {
    
    @Override
    protected void afterRender() {
-      super.el().updateZIndex(1);
       super.afterRender();
+      super.el().updateZIndex(1);
    }
 
    @Override
@@ -117,10 +115,10 @@ public class ScreenTabbarItem extends ScreenComponent {
       if (this.uiTabbarItem.getImage() != null && this.uiTabbarItem.getImage().getSrc() != null) {
          String imageURL = this.uiTabbarItem.getImage().getSrc();
          if (imageURL.trim().length() > 0) {
-            setStyleAttribute("backgroundRepeat", "no-repeat");
+//            setStyleAttribute("backgroundRepeat", "no-repeat");
             setStyleAttribute("overflow", "hidden");
-            setStyleAttribute("backgroundPosition", "center center");
-            this.setStyleAttribute("backgroundImage", "url("+imageURL+")");
+//            setStyleAttribute("backgroundPosition", "top center");
+            this.setStyleAttribute("background", "url("+imageURL+") top center no-repeat");
             layout();
          }
       }

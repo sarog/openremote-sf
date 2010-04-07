@@ -105,8 +105,8 @@ public class ScreenTabbar extends ScreenComponent {
    }
    @Override
    protected void afterRender() {
-      super.el().updateZIndex(1);
       super.afterRender();
+      super.el().updateZIndex(1);
    }
    public List<ScreenTabbarItem> getScreenTabbarItems() {
       return screenTabbarItems;
