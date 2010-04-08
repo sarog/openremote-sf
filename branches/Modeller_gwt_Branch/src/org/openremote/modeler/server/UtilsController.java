@@ -149,11 +149,13 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       }
       if (panels != null) {
          if (!resourceService.getPanelsJson(panels).equals(resourceService.getPanelsJson(oldPanels))) {
-            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
-            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
-            autoSaveResponse.setUpdated(true);
-            resourceService.initResources(panels, maxID);
-            resourceService.saveResourcesToBeehive(panels);
+            synchronized (getThreadLocalRequest().getSession()) {
+               getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
+               getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
+               autoSaveResponse.setUpdated(true);
+               resourceService.initResources(panels, maxID);
+               resourceService.saveResourcesToBeehive(panels);
+            }
             LOGGER.info("Auto save UI designerLayout sucessfully");
          }
       }
@@ -165,11 +167,13 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       AutoSaveResponse autoSaveResponse = new AutoSaveResponse();
 
       if (panels != null) {
-//         getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
-         getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
-         autoSaveResponse.setUpdated(true);
-         resourceService.initResources(panels, maxID);
-         resourceService.saveResourcesToBeehive(panels);
+         synchronized (getThreadLocalRequest().getSession()) {
+            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
+            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
+            autoSaveResponse.setUpdated(true);
+            resourceService.initResources(panels, maxID);
+            resourceService.saveResourcesToBeehive(panels);
+         }
          LOGGER.info("manual save UI DesingerLayout successfully");
       }
       autoSaveResponse.setUpdated(true);
