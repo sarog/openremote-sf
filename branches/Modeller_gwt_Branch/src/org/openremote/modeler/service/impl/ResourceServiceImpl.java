@@ -941,7 +941,12 @@ public class ResourceServiceImpl implements ResourceService {
       } 
       try {
          httpPost.setURI(new URI(url));
-         FileBody resource = new FileBody(getTemplateZipResource(template));
+         File templateZip = getTemplateZipResource(template);
+         if (templateZip == null) {
+            LOGGER.warn("There are no template resources for template \"" + template.getName()+ "\"to save to beehive!");
+            return ;
+         }
+         FileBody resource = new FileBody(templateZip);
          MultipartEntity entity = new MultipartEntity();
          entity.addPart("resource", resource);
 
@@ -1138,20 +1143,13 @@ public class ResourceServiceImpl implements ResourceService {
    }
    
    private File getTemplateZipResource(Template template){
-      PathConfig pathConfig = PathConfig.getInstance(configuration);
       List<String> ignoreExtentions = new ArrayList<String>();
       ignoreExtentions.add("zip");
       ignoreExtentions.add("xml");
       ScreenPair sp = template.getScreen();
       Collection<ImageSource> images = sp.getAllImageSources();
       Collection<File> templateRelatedFiles = getAllImageFiles(images);
-      
-      File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
-      File defaultImage = new File(userFolder, new File(UIImage.DEFAULT_IMAGE_URL).getName());
-      if (! templateRelatedFiles.contains(defaultImage)) {
-         templateRelatedFiles.add(defaultImage);
-      }
-//      ignoreExtentions.add("obj");
+      if (templateRelatedFiles.size() ==0 ) return null;
       return getResourceZipFile(ignoreExtentions,templateRelatedFiles);
    }
    private File getExportResource(Collection<Panel> panels) {
@@ -1161,14 +1159,11 @@ public class ResourceServiceImpl implements ResourceService {
       Collection<File> imageFiles = getAllImageFiles(images);
       File panelXMLFile = new File(pathConfig.panelXmlFilePath(userService.getAccount()));
       File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(userService.getAccount()));
-      File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
-      File defaultImage = new File(userFolder, new File(UIImage.DEFAULT_IMAGE_URL).getName());
       File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));
       Collection<File> exportFile = new HashSet<File>();
       exportFile.addAll(imageFiles);
       exportFile.add(panelXMLFile);
       exportFile.add(controllerXMLFile);
-      exportFile.add(defaultImage);
       exportFile.add(panelsObjFile);
       
       ignoreExtentions.add("zip");
