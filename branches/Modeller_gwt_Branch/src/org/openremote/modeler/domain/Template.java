@@ -101,4 +101,25 @@ public class Template extends BusinessEntity {
    public String getDisplayName() {
       return name + "( " +keywords +" )";
    }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
+      Template other = (Template) obj;
+      if (content == null) {
+         if (other.content != null) return false;
+      } else if (!content.equals(other.content)) return false;
+      if (keywords == null) {
+         if (other.keywords != null) return false;
+      } else if (!keywords.equals(other.keywords)) return false;
+      if (name == null) {
+         if (other.name != null) return false;
+      } else if (!name.equals(other.name)) return false;
+      if (shared != other.shared) return false;
+      return true;
+   }
+   
+   
 }
