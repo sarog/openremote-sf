@@ -21,6 +21,7 @@ package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.event.WidgetSelectChangeEvent;
 import org.openremote.modeler.client.listener.WidgetSelectChangeListener;
+import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.propertyform.ScreenPairPropertyForm;
 
@@ -93,6 +94,14 @@ public class PropertyPanel extends ContentPanel {
          layout();
       }
 
+   }
+   
+   public void setPropertyForm(PropertyEditable propertyEditable) {
+      removePropertiesForm();
+      currentPropertyForm = propertyEditable.getPropertiesForm();
+      add(currentPropertyForm);
+      this.setHeading(propertyEditable.getTitle());
+      layout();
    }
 
    /**

@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.DoubleClickEvent;
+import org.openremote.modeler.client.event.PropertyEditEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
 import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
@@ -149,6 +150,13 @@ public class ProfilePanel extends ContentPanel {
             panelTree.addListener(DoubleClickEvent.DOUBLECLICK, new Listener<DoubleClickEvent>() {
                public void handleEvent(DoubleClickEvent be) {
                   editSelectedModel();
+               }
+               
+            });
+            
+            panelTree.addListener(PropertyEditEvent.PropertyEditEvent, new Listener<PropertyEditEvent>() {
+               public void handleEvent(PropertyEditEvent be) {
+                  ProfilePanel.this.fireEvent(PropertyEditEvent.PropertyEditEvent,be);
                }
                
             });
