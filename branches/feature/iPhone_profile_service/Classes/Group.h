@@ -37,4 +37,7 @@
 @property (nonatomic,readonly) NSMutableArray *screens;
 @property (nonatomic,readonly) TabBar *tabBar;
 
+- (NSArray *) getPortraitScreens;
+- (NSArray *) getLandscapeScreens;
+
 @end

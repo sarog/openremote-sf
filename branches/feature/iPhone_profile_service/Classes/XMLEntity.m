@@ -78,6 +78,20 @@ NSString *const BG_IMAGE_RELATIVE_POSITION_TOP_RIGHT = @"TOP_RIGHT";
 NSString *const BG_IMAGE_RELATIVE_POSITION_BOTTOM_RIGHT = @"BOTTOM_RIGHT";
 NSString *const BG_IMAGE_RELATIVE_POSITION_CENTER = @"CENTER";
 
+NSString *const SCREEN = @"screen";
+NSString *const BACKGROUND = @"background";
+NSString *const INVERSE_SCREEN_ID = @"inverseScreenId";
+NSString *const LANDSCAPE = @"landscape";
+
+NSString *const ABSOLUTE = @"absolute";
+NSString *const GRID = @"grid";
+NSString *const GESTURE = @"gesture";
+
+NSString *const GROUP = @"group";
+NSString *const TABBAR = @"tabbar";
+
+
+
 // NOTE: This is an abstract method, must be implemented in subclass
 - (NSString *) elementName {
 	[self doesNotRecognizeSelector:_cmd];

@@ -29,27 +29,30 @@
 
 @implementation Screen
  
-@synthesize screenId,name,background,layouts,gestures;
+@synthesize screenId,name,background,layouts,gestures,landscape,inverseScreenId;
 
 #pragma mark constructor
 //Initialize itself accoding to xml parser
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {
-		screenId = [[attributeDict objectForKey:@"id"] intValue];
-		name = [[attributeDict objectForKey:@"name"] copy];
+		screenId = [[attributeDict objectForKey:ID] intValue];
+		name = [[attributeDict objectForKey:NAME] copy];
 		layouts = [[NSMutableArray alloc] init];
 		gestures = [[NSMutableArray alloc] init];
+		
+		landscape = [@"TRUE" isEqualToString:[[attributeDict objectForKey:LANDSCAPE] uppercaseString]] ? YES : NO;
+		inverseScreenId = [[attributeDict objectForKey:INVERSE_SCREEN_ID] intValue];		
 		
 		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];
 	}
-	NSLog(@"screen %@",[attributeDict objectForKey:@"name"]);
+	NSLog(@"screen %@",[attributeDict objectForKey:NAME]);
 	return self;
 }
 
 // get element name, must be overriden in subclass
 - (NSString *) elementName {
-	return @"screen";
+	return SCREEN;
 }
 
 - (NSArray *)pollingComponentsIds {
@@ -65,23 +68,23 @@
 //Parse sub element in screen 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
 
-	if ([elementName isEqualToString:@"absolute"]) {
+	if ([elementName isEqualToString:ABSOLUTE]) {
 		// Call AbsoluteLayoutContainer's initialize method to parse xml using NSXMLParser
 		AbsoluteLayoutContainer *absolute = [[AbsoluteLayoutContainer alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 		[layouts addObject:absolute];
 		[absolute release];
-	} else if ([elementName isEqualToString:@"grid"]) {
+	} else if ([elementName isEqualToString:GRID]) {
 		// Call GridLayoutContainer's initialize method to parse xml using NSXMLParser
 		GridLayoutContainer *grid = [[GridLayoutContainer alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 		[layouts addObject:grid];
 		[grid release];
-	} else if ([elementName isEqualToString:@"gesture"]) {
+	} else if ([elementName isEqualToString:GESTURE]) {
 		NSLog(@"start gesture");
 		// Call Gesture's initialize method to parse xml using NSXMLParser
 		Gesture *gesture = [[Gesture alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 		[gestures addObject:gesture];
 		[gesture release];
-	} else if ([elementName isEqualToString:@"background"]) {
+	} else if ([elementName isEqualToString:BACKGROUND]) {
 		NSLog(@"start background in screen");
 		// Call Background's initialize method to parse xml using NSXMLParser
 		background = [[Background alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];

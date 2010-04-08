@@ -55,12 +55,18 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
 	[uiView release];
 }
 
+- (UIImage *) readUIImage:(NSString *) fileName {
+	NSBundle *thisBundle = [NSBundle bundleForClass:[self class]];
+	NSString *filePath = [thisBundle pathForResource:fileName ofType:@"png"];
+  return [[UIImage alloc] initWithContentsOfFile:filePath];
+}
+
 /**
  * The width and height of uiImage are both great than uiView's.
  * uiImageWidth > uiViewWidth, uiImageHeight > uiViewHeight
  */
 - (void) testUImageWidthAndHeightBothGreatThanUIView {
-	uiImage = [[UIImage alloc] initWithContentsOfFile:@"500X500.png"];
+	uiImage = [self readUIImage:@"500X500"];
 	float expectedOriginalImageWidth = 500.0;
 	float expectedOriginalImageHeight = 500.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
@@ -75,7 +81,7 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
  * uiImageWidth > uiViewWidth, uiImageHeight = uiViewHeight
  */
 - (void) testUImageWidthGreatThanAndHeightEqualToUIView {
-	uiImage = [[UIImage alloc] initWithContentsOfFile:@"500X480.png"];
+	uiImage = [self readUIImage:@"500X480"];
 	float expectedOriginalImageWidth = 500.0;
 	float expectedOriginalImageHeight = 480.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
@@ -90,7 +96,7 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
  * uiImageWidth > uiViewWidth, uiImageHeight < uiViewHeight
  */
 - (void) testUImageWidthGreatThanAndHeightLessThanUIView {
-	uiImage = [[UIImage alloc] initWithContentsOfFile:@"500X320.png"];
+	uiImage = [self readUIImage:@"500X320"];
 	float expectedOriginalImageWidth = 500.0;
 	float expectedOriginalImageHeight = 320.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
@@ -105,7 +111,7 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
  * uiImageWidth = uiViewWidth, uiImageHeight > uiViewHeight
  */
 - (void) testUImageWidthEqualToAndHeightGreatThanUIView {
-	uiImage = [[UIImage alloc] initWithContentsOfFile:@"320X500.png"];
+	uiImage = [self readUIImage:@"320X500"];
 	float expectedOriginalImageWidth = 320.0;
 	float expectedOriginalImageHeight = 500.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
@@ -120,7 +126,7 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
  * uiImageWidth = uiViewWidth, uiImageHeight = uiViewHeight
  */
 - (void) testUImageWidthAndHeightBothEqualToUIView {
-	uiImage = [[UIImage alloc] initWithContentsOfFile:@"320X480.png"];
+	uiImage = [self readUIImage:@"320X480"];
 	float expectedOriginalImageWidth = 320.0;
 	float expectedOriginalImageHeight = 480.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
@@ -135,7 +141,7 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
  * uiImageWidth = uiViewWidth, uiImageHeight < uiViewHeight
  */
 - (void) testUImageWidthEqualToAndHeightLessThanUIView {
-	uiImage = [[UIImage alloc] initWithContentsOfFile:@"320X320.png"];
+	uiImage = [self readUIImage:@"320X320"];
 	float expectedOriginalImageWidth = 320.0;
 	float expectedOriginalImageHeight = 320.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
@@ -150,7 +156,7 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
  * uiImageWidth < uiViewWidth, uiImageHeight > uiViewHeight
  */
 - (void) testUImageWidthLessThanAndHeightGreatThanUIView {
-	uiImage = [[UIImage alloc] initWithContentsOfFile:@"300X500.png"];
+	uiImage = [self readUIImage:@"300X500"];
 	float expectedOriginalImageWidth = 300.0;
 	float expectedOriginalImageHeight = 500.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
@@ -165,7 +171,7 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
  * uiImageWidth < uiViewWidth, uiImageHeight = uiViewHeight
  */
 - (void	) testUImageWidthLessThanAndHeightEqualToUIView {
-	uiImage = [[UIImage alloc] initWithContentsOfFile:@"300X480.png"];
+	uiImage = [self readUIImage:@"300X480"];
 	float expectedOriginalImageWidth = 300.0;
 	float expectedOriginalImageHeight = 480.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
@@ -180,7 +186,7 @@ static NSString *assertImageHeightString = @"expected image height is %f, but ac
  * uiImageWidth < uiViewWidth, uiImageHeight < uiViewHeight
  */
 - (void) testUImageWidthLessThanAndHeightLessThanUIView {
-	uiImage = [[UIImage alloc] initWithContentsOfFile:@"300X300.png"];
+	uiImage = [self readUIImage:@"300X300"];
 	float expectedOriginalImageWidth = 300.0;
 	float expectedOriginalImageHeight = 300.0;
 	STAssertTrue(uiImage.size.width == expectedOriginalImageWidth, assertImageWidthString, expectedOriginalImageWidth, uiImage.size.width);
