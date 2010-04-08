@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openremote.modeler.client.event.DoubleClickEvent;
+import org.openremote.modeler.client.event.PropertyEditEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
@@ -34,6 +35,7 @@ import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
+import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable.DeviceInsertListener;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable.DeviceMacroInsertListener;
 import org.openremote.modeler.client.widget.buildingmodeler.ControllerConfigTabItem;
@@ -439,6 +441,7 @@ public class TreePanelBuilder {
                   screenPanel.setScreenItem(screenTabItem);
                }
             }
+            this.fireEvent(PropertyEditEvent.PropertyEditEvent, new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(beanModel,this)));
          }
 
          @SuppressWarnings("unchecked")
@@ -477,6 +480,7 @@ public class TreePanelBuilder {
             }
          }
       });
+      
       return panelTree;
    }
    

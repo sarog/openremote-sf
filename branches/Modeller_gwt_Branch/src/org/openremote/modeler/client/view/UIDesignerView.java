@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.event.PropertyEditEvent;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
@@ -43,6 +44,7 @@ import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
@@ -71,6 +73,8 @@ public class UIDesignerView extends TabItem {
    private Timer timer;
 
    private ContentPanel profilePanel = null;
+   
+   private PropertyPanel propertyPanel = null;
 
    /**
     * Instantiates a new uI designer view.
@@ -180,11 +184,6 @@ public class UIDesignerView extends TabItem {
 
          @Override
          public void onFailure(Throwable caught) {
-            /*
-             * if (caught instanceof BeehiveNotAvailableException) {
-             * 
-             * } MessageBox.alert("Fail", "Server error, UI designer restore failed.", null);
-             */
             MessageBox.alert("Error", "UI designer restore failed: " + caught.getLocalizedMessage(), null);
          }
       });
@@ -206,6 +205,12 @@ public class UIDesignerView extends TabItem {
    private ProfilePanel createWest() {
       ContentPanel west = new ContentPanel();
       ProfilePanel result = new ProfilePanel(screenPanel);
+      result.addListener(PropertyEditEvent.PropertyEditEvent, new Listener<PropertyEditEvent>() {
+         public void handleEvent(PropertyEditEvent be) {
+            propertyPanel.setPropertyForm(be.getPropertyEditable());
+         }
+         
+      });
       TemplatePanel templatePanel = new TemplatePanel(screenPanel);
       BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 200);
       westData.setSplit(true);
@@ -257,7 +262,7 @@ public class UIDesignerView extends TabItem {
       widgetPanel.setSize("100%", "50%");
       widgetAndPropertyContainer.add(widgetPanel, northData);
 
-      PropertyPanel propertyPanel = new PropertyPanel();
+      propertyPanel = new PropertyPanel();
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setSplit(true);
       centerData.setMargins(new Margins(2));
