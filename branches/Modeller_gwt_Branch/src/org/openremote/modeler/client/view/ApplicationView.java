@@ -138,6 +138,7 @@ public class ApplicationView implements View {
          initSaveAndExportButtons();
          applicationToolBar.add(saveButton);
          applicationToolBar.add(exportButton);
+         applicationToolBar.add(createOnLineTestBtn());
       }
       applicationToolBar.add(new FillToolItem());
       applicationToolBar.add(createLogoutButton());
@@ -193,6 +194,27 @@ public class ApplicationView implements View {
       return udButton;
    }
    
+   private ToggleButton createOnLineTestBtn() {
+      final ToggleButton showDemoBtn = new ToggleButton();
+      showDemoBtn.setToolTip("Test UI online. ");
+      showDemoBtn.setIcon(icons.onLineTestIcon());
+      showDemoBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+         public void componentSelected(ButtonEvent ce) {
+            UtilsProxy.getOnTestLineURL(new AsyncSuccessCallback<String> () {
+               @Override
+               public void onSuccess(String result) {
+                  MessageBox.info("Test UI Online", "To test your UI without installing any Controller or deploying configuration, " +
+                  		"type the following URL into your panel setting as Controller URL :\n"+result, null);
+               }
+            });
+         }
+      });
+      showDemoBtn.setToggleGroup("modeler-switch");
+      if (Constants.ROLE_DESIGNER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
+         showDemoBtn.toggle(true);
+      }
+      return showDemoBtn;
+   }
    private void initSaveAndExportButtons() {
       saveButton = new Button();
       saveButton.setIcon(icons.saveIcon());
