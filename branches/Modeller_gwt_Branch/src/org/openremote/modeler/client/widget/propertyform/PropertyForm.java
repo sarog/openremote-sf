@@ -18,6 +18,7 @@ package org.openremote.modeler.client.widget.propertyform;
 
 import org.openremote.modeler.client.event.WidgetDeleteEvent;
 import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
 import org.openremote.modeler.client.widget.component.ScreenTabbarItem;
@@ -85,5 +86,16 @@ public class PropertyForm extends FormPanel {
          });
          add(deleteButton);
       }
+   }
+   
+   public PropertyForm(PropertyEditable componentContainer) {
+      setFrame(true);
+      setHeaderVisible(false);
+      setBorders(false);
+      setBodyBorder(false);
+      setPadding(2);
+      setLabelWidth(60);
+      setFieldWidth(100);
+      setScrollMode(Scroll.AUTO);
    }
 }
