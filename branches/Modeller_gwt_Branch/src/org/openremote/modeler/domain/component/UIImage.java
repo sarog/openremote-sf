@@ -131,6 +131,8 @@ public class UIImage extends UIComponent implements SensorOwner, ImageSourceOwne
       Collection<ImageSource> imageSources = new ArrayList<ImageSource>(2);
       if (this.imageSource != null && !this.imageSource.isEmpty()) {
          imageSources.add(imageSource);
+      } else {
+         imageSources.add(new ImageSource(DEFAULT_IMAGE_URL));
       }
       return imageSources;
    }
