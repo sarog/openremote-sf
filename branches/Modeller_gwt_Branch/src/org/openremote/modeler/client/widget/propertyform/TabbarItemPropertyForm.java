@@ -49,6 +49,7 @@ public class TabbarItemPropertyForm extends PropertyForm {
       this.screenTabbarItem = screenTabbarItem;
       addFields();
       addSubmitListenersToForm();
+      super.addDeleteButton();
    }
    private void addFields() {
       // initial name field.

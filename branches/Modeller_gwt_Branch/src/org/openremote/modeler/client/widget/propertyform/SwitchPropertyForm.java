@@ -45,6 +45,7 @@ public class SwitchPropertyForm extends PropertyForm {
       super(screenSwitch);
       setLabelWidth(90);
       addFields(screenSwitch, uiSwitch);
+      super.addDeleteButton();
    }
    
    private void addFields(final ScreenSwitch screenSwitch, final UISwitch uiSwitch) {

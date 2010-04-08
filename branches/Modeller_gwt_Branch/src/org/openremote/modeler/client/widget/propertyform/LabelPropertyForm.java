@@ -63,6 +63,7 @@ public class LabelPropertyForm extends PropertyForm {
       this.screenLabel = screenLabel;
       addFields();
       createSensorStates();
+      super.addDeleteButton();
    }
    private void addFields() {
       this.setLabelWidth(70);

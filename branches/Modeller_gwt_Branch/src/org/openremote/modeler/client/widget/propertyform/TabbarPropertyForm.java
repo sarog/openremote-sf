@@ -41,6 +41,7 @@ public class TabbarPropertyForm extends PropertyForm {
       this.tabbar = tabbar;
       setLayout(new FormLayout());
       addFields();
+      super.addDeleteButton();
    }
    private void addFields(){
       RadioGroup scopeCheckGroup = new RadioGroup();
