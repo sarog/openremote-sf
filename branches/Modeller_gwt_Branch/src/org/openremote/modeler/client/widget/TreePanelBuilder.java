@@ -441,7 +441,9 @@ public class TreePanelBuilder {
                   screenPanel.setScreenItem(screenTabItem);
                }
             }
-            this.fireEvent(PropertyEditEvent.PropertyEditEvent, new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(beanModel,this)));
+            if (beanModel != null) {
+               this.fireEvent(PropertyEditEvent.PropertyEditEvent, new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(beanModel,this)));
+            }
          }
 
          @SuppressWarnings("unchecked")
