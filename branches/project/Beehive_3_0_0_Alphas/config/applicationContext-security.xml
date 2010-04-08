@@ -37,7 +37,7 @@
 <!--
 
     Atlassian Crowd SSO based security
-    ----------------------------------------------
+    ==================================
 
 	<security:global-method-security secured-annotations="enabled">
 		<!- AspectJ pointcut expression that locates our "post" method and applies security that way
