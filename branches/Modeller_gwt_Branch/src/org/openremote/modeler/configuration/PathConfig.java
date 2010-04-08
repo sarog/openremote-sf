@@ -241,9 +241,6 @@ public class PathConfig {
       return userFolder(account)+"panels.obj";
    }
    
-   public String getSerializedMaxIdFile(Account account) {
-      return userFolder(account)+"maxID.obj";
-   }
    public String getControllerConfigPath(){
       return configuration.getControllerConfigPath();
    }
