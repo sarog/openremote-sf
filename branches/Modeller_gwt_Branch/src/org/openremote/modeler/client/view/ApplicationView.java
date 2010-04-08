@@ -210,9 +210,6 @@ public class ApplicationView implements View {
          }
       });
       showDemoBtn.setToggleGroup("modeler-switch");
-      if (Constants.ROLE_DESIGNER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
-         showDemoBtn.toggle(true);
-      }
       return showDemoBtn;
    }
    private void initSaveAndExportButtons() {
