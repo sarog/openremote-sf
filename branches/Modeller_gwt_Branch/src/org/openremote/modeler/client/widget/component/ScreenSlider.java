@@ -268,7 +268,7 @@ public class ScreenSlider extends ScreenComponent {
    }
    
    
-   private boolean isMinImageUploaded() {
+   public boolean isMinImageUploaded() {
       ImageSource minImageSource = uiSlider.getMinImage();
       if (minImageSource != null && minImageSource.getSrc() != null) {
          String imageURL = uiSlider.getMinImage().getSrc();
@@ -277,7 +277,7 @@ public class ScreenSlider extends ScreenComponent {
       return false;
    }
    
-   private boolean isMinTrackImageUploaded() {
+   public boolean isMinTrackImageUploaded() {
       ImageSource minTrackImageSource = uiSlider.getMinTrackImage();
          if (minTrackImageSource != null && minTrackImageSource.getSrc() != null) {
          String imageURL = uiSlider.getMinTrackImage().getSrc();
@@ -286,7 +286,7 @@ public class ScreenSlider extends ScreenComponent {
       return false;
    }
    
-   private boolean isThumbUploaded() {
+   public boolean isThumbUploaded() {
       ImageSource thumbImageSource = uiSlider.getThumbImage();
       if (thumbImageSource !=null && thumbImageSource.getSrc() != null) {
          String imageURL = uiSlider.getThumbImage().getSrc();
@@ -295,7 +295,7 @@ public class ScreenSlider extends ScreenComponent {
       return false;
    }
    
-   private boolean isMaxTrackImageUploaded() {
+   public boolean isMaxTrackImageUploaded() {
       ImageSource maxTrackImageSource = uiSlider.getMaxTrackImage();
       if (maxTrackImageSource != null && maxTrackImageSource.getSrc() != null) {
          String imageURL = uiSlider.getMaxTrackImage().getSrc();
@@ -304,7 +304,7 @@ public class ScreenSlider extends ScreenComponent {
       return false;
    }
    
-   private boolean isMaxImageUploaded() {
+   public boolean isMaxImageUploaded() {
       ImageSource maxImageSource = uiSlider.getMaxImage();
       if (maxImageSource != null && maxImageSource.getSrc() != null) {
          String imageURL = uiSlider.getMaxImage().getSrc();
@@ -316,4 +316,5 @@ public class ScreenSlider extends ScreenComponent {
    public Boolean isVertical() {
       return uiSlider.isVertical();
    }
+   
 }

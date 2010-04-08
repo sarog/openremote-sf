@@ -111,7 +111,7 @@ public class SliderPropertyForm extends PropertyForm {
       adapterCommand.setFieldLabel("SliderCommand");
 
       final Button minImageBtn = new Button("Select");
-      if (screenSlider.getUiSlider().getMinImage() != null) {
+      if (screenSlider.isMinImageUploaded()) {
          minImageBtn.setText(screenSlider.getUiSlider().getMinImage().getImageFileName());
       }
       minImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -133,7 +133,7 @@ public class SliderPropertyForm extends PropertyForm {
       adapterMinImageBtn.setFieldLabel("MinImage");
 
       final Button minTrackImageBtn = new Button("Select");
-      if (screenSlider.getUiSlider().getMinTrackImage() != null) {
+      if (screenSlider.isMinTrackImageUploaded()) {
          minTrackImageBtn.setText(screenSlider.getUiSlider().getMinTrackImage().getImageFileName());
       }
       minTrackImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -155,7 +155,7 @@ public class SliderPropertyForm extends PropertyForm {
       adapterMinTrackImageBtn.setFieldLabel("TrackImage(min)");
 
       final Button thumbImageBtn = new Button("Select");
-      if (screenSlider.getUiSlider().getThumbImage() != null) {
+      if (screenSlider.isThumbUploaded()) {
          thumbImageBtn.setText(screenSlider.getUiSlider().getThumbImage().getImageFileName());
       }
       thumbImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -177,7 +177,7 @@ public class SliderPropertyForm extends PropertyForm {
       adapterThumbImageBtn.setFieldLabel("ThumbImage");
 
       final Button maxImageBtn = new Button("Select");
-      if (screenSlider.getUiSlider().getMaxImage() != null) {
+      if (screenSlider.isMaxImageUploaded()) {
          maxImageBtn.setText(screenSlider.getUiSlider().getMaxImage().getImageFileName());
       }
       maxImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -199,7 +199,7 @@ public class SliderPropertyForm extends PropertyForm {
       adapterMaxImageBtn.setFieldLabel("MaxImage");
 
       final Button maxTrackImageBtn = new Button("Select");
-      if (screenSlider.getUiSlider().getMaxTrackImage() != null) {
+      if (screenSlider.isMaxTrackImageUploaded()) {
          maxTrackImageBtn.setText(screenSlider.getUiSlider().getMaxTrackImage().getImageFileName());
       }
       maxTrackImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
