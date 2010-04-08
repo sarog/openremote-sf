@@ -48,6 +48,8 @@ NSString *const IMAGE_ABSOLUTE_ALIGN_TO_VIEW = @"ABSOLUTE";
 }
 
 - (CGPoint) clippedPointDependingOnUIView:(UIView *)uiView alignToViewPattern:(NSString *)align {
+
+	align = [align uppercaseString];
 	
 	if ([@"ABSOLUTE" isEqualToString:align] || align == nil || [@"" isEqualToString:align]) {
 		return CGPointMake(0, 0);

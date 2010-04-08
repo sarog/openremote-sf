@@ -30,7 +30,7 @@
 	Group *group;
 	PaginationController *paginationController;
 	ErrorViewController *errorViewController;
-	
+	UIInterfaceOrientation currentOrientation;
 }
 
 - (id)initWithGroup:(Group *)newGroup;
@@ -39,6 +39,7 @@
 - (BOOL)switchToScreen:(int)screenId;
 - (BOOL)previousScreen;
 - (BOOL)nextScreen;
+- (Screen *)currentScreen;
 - (int)currentScreenId;
 - (int)groupId;
 - (void)performGesture:(Gesture *)gesture;

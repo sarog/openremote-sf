@@ -26,6 +26,14 @@
 #import "ScreenViewController.h"
 
 
+@interface GroupController (Private)
+
+- (NSMutableArray *)initScreenViewControllers:(NSArray *)screens;
+- (void)showErrorView;
+
+@end
+
+
 
 @implementation GroupController
 
@@ -37,9 +45,11 @@
 			group = [newGroup retain];// must retain newGroup here!!!
 			[self setTitle:group.name];
 		}
-		
-		paginationController = [[PaginationController alloc] init];
-				
+		if (UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation)) {
+			currentOrientation = UIInterfaceOrientationLandscapeLeft;
+		} else {
+			currentOrientation = UIInterfaceOrientationPortrait;
+		}
 	}
 	return self;
 }
@@ -48,78 +58,122 @@
 	return group.groupId;
 }
 
+- (NSMutableArray *)initScreenViewControllers:(NSArray *)screens {
+	NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
+	
+	for (Screen *screen in screens) {
+		NSLog(@"screen = %@", screen.name);
+		ScreenViewController *viewController = [[ScreenViewController alloc]init];
+		[viewController setScreen:screen];
+		[viewControllers addObject:viewController];
+		[viewController release];
+	}
+	return viewControllers;
+}
+
+- (PaginationController *)currentPaginationController {	
+	return paginationController;
+}
+
+- (void)showPortrait {
+	if ([group getPortraitScreens].count > 0) {
+		[paginationController release];
+		paginationController = nil;
+		paginationController = [[PaginationController alloc] init];
+		NSMutableArray *viewControllers = [self initScreenViewControllers:[group getPortraitScreens]];
+		[paginationController setViewControllers:viewControllers isLandscape:NO];
+		[viewControllers release];
+		[self setView:paginationController.view];
+	} else {
+		[self showErrorView];
+	}
+}
+
+- (void)showLandscape {
+	if ([group getLandscapeScreens].count > 0) {
+		[paginationController release];
+		paginationController = nil;
+		paginationController = [[PaginationController alloc] init];
+		NSMutableArray *viewControllers = [self initScreenViewControllers:[group getLandscapeScreens]];
+		[paginationController setViewControllers:viewControllers isLandscape:YES];
+		[viewControllers release];
+		[self setView:paginationController.view];
+	} else {
+		[self showErrorView];
+	}
+}
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	[self.navigationController setNavigationBarHidden:YES];
-	
-	NSArray *screens = [group screens];
-	if (screens.count > 0) {
-		// Get array of screens
-		// Build array of UIViewControllers for each screen
-		NSMutableArray  *viewControllers = [[NSMutableArray alloc] init];
-		
-		for (Screen *screen in screens) {
-			NSLog(@"screen = %@", screen.name);
-			ScreenViewController *viewController = [[ScreenViewController alloc]init];
-			[viewController setScreen:screen];
-			[viewControllers addObject:viewController];
-			[viewController release];
-		}
-		[paginationController setViewControllers:viewControllers];
-		//[paginationController setTitle:[group name]];
-		[self setView:paginationController.view];
-		[viewControllers release];
-	
-	} else {
-		errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Screen Found" message:@"Please associate screens with group or reset setting."];
-		[self setView:errorViewController.view];	
-	}
-	//[paginationController release];	
-	
+	[self showPortrait];
+}
+
+- (void)showErrorView {
+	errorViewController = [[ErrorViewController alloc] 
+												 initWithErrorTitle:@"No Screen Found" 
+												 message:@"Please associate screens with group or reset setting."];
+	[self setView:errorViewController.view];	
+}
+
+- (ScreenViewController *)currentScreenViewController {
+	return [[self currentPaginationController] currentScreenViewController]; 
+}
+
+- (Screen *)currentScreen {
+	return [self currentScreenViewController].screen;
+}
+
+- (int)currentScreenId {
+	return [self currentScreen].screenId;
 }
 
 - (void)startPolling {
-	if (paginationController.viewControllers.count > 0) {
-		ScreenViewController *svc = (ScreenViewController *)[paginationController.viewControllers objectAtIndex:0];
-		[svc startPolling];
+	if ([self currentPaginationController].viewControllers.count > 0) {
+		[[self currentScreenViewController] startPolling];
+		NSLog(@"start polling screen_id=%d",[self currentScreenId]);
 	}
 }
 
 - (void)stopPolling {
-	for (ScreenViewController *svc in paginationController.viewControllers) {
-		NSLog(@"stop polling %d",svc.screen.screenId);
+	for (ScreenViewController *svc in [self currentPaginationController].viewControllers) {
+		NSLog(@"stop polling screen_id=%d",svc.screen.screenId);
 		[svc stopPolling];
 	}
 }
 
 - (BOOL)switchToScreen:(int)screenId {
-	return [paginationController switchToScreen:screenId];
+	NSLog(@"to screen %d", screenId);
+	return [[self currentPaginationController] switchToScreen:screenId];
 }
 
 - (BOOL)previousScreen {
-	return [paginationController previousScreen];
+	return [[self currentPaginationController] previousScreen];
 }
 
 - (BOOL)nextScreen {
-	return [paginationController nextScreen];
-}
-
-- (int)currentScreenId {
-	return ((ScreenViewController *)[paginationController.viewControllers objectAtIndex:paginationController.selectedIndex]).screen.screenId;
+	return [[self currentPaginationController] nextScreen];
 }
 
 - (void)performGesture:(Gesture *)gesture {
-	return [(ScreenViewController *)[paginationController.viewControllers objectAtIndex:paginationController.selectedIndex] performGesture:gesture];
+	return [[self currentScreenViewController] performGesture:gesture];
 }
 
-/*
-// Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+	int inverseScreenId = [self currentScreen].inverseScreenId;
+	NSLog(@"switch screen from %d - > %d", [self currentScreenId], inverseScreenId);
+	currentOrientation = toInterfaceOrientation;
+	
+	if (UIInterfaceOrientationIsPortrait(currentOrientation)) {
+		[self showPortrait];
+		[self switchToScreen:inverseScreenId];
+	} else {
+		[self showLandscape];
+		[self switchToScreen:inverseScreenId];
+	}
 }
-*/
+
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -132,6 +186,8 @@
 	// Release any retained subviews of the main view.
 	// e.g. self.myOutlet = nil;
 }
+
+
 
 
 - (void)dealloc {

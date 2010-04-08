@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/controller.xsd">
 	<screens>
-		<screen id="5" name="basement" background="basement.png">		  	
+		<screen id="5" name="basement" >		  	
 		  	<absolute left="20" top="320" width="100" height="100" >
 			   <switch id="59" >
 							<link type="sensor" ref="59">
@@ -19,7 +19,7 @@
 				</switch>
 			</absolute>
 		</screen>
-	  <screen id="6" name="floor" background="basement.png">		  	
+	  <screen id="6" name="floor" >		  	
 		  	<absolute left="20" top="320" width="100" height="100" >
 					<switch id="61" >
 							<link type="sensor" ref="61">

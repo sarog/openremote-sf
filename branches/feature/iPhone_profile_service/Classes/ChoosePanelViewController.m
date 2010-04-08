@@ -25,36 +25,47 @@
 #import "AppSettingsDefinition.h"
 #import "ControllerException.h"
 #import "CredentialUtil.h"
+#import "Definition.h"
+#import "DataBaseService.h"
+
+@interface ChoosePanelViewController (Private)
+
+- (void)requestPanelList;
+
+@end
+
 
 @implementation ChoosePanelViewController
 
 
 - (id)init {
 	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
+		[self setTitle:@"Panel List"];
 		panels = [[NSMutableArray alloc] init];
 		chosenPanel = [[AppSettingsDefinition getPanelIdentityDic] objectForKey:@"identity"];
-		NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition panelsRESTUrl]];
-		NSURL *url = [[NSURL alloc]initWithString:location];
-		NSLog(@"panels:%@",location);
-		
-		//assemble put request 
-		NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-		[request setURL:url];
-		[request setHTTPMethod:@"GET"];
-		[CredentialUtil addCredentialToNSMutableURLRequest:request];
-		
-		URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
-		
-		[location release];
-		[url	 release];
-		[request release];
-		[connection autorelease];	
-		
-		
+		[self requestPanelList];
 	}
 	return self;
 }
 
+- (void)requestPanelList {
+	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition panelsRESTUrl]];
+	NSURL *url = [[NSURL alloc]initWithString:location];
+	NSLog(@"panels:%@",location);
+	
+	//assemble put request 
+	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+	[request setURL:url];
+	[request setHTTPMethod:@"GET"];
+	[CredentialUtil addCredentialToNSMutableURLRequest:request];
+	
+	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
+	
+	[location release];
+	[url	 release];
+	[request release];
+	[connection autorelease];	
+}
 
 #pragma mark Table view methods
 
@@ -117,13 +128,54 @@
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
+- (void)showLoginAlert {
+	
+	UIAlertView *prompt = [[UIAlertView alloc] initWithTitle:@"Please Sign In" 
+																									 message:@"\n\n\n" // IMPORTANT
+																									delegate:self 
+																				 cancelButtonTitle:@"Cancel" 
+																				 otherButtonTitles:@"OK", nil];
+	
+	textField = [[UITextField alloc] initWithFrame:CGRectMake(22.0, 50.0, 240.0, 25.0)]; 
+	[textField setBackgroundColor:[UIColor whiteColor]];
+	[textField setPlaceholder:@"username"];
+	[prompt addSubview:textField];
+	
+	textField2 = [[UITextField alloc] initWithFrame:CGRectMake(22.0, 85.0, 240.0, 25.0)]; 
+	[textField2 setBackgroundColor:[UIColor whiteColor]];
+	[textField2 setPlaceholder:@"password"];
+	[textField2 setSecureTextEntry:YES];
+	[prompt addSubview:textField2];
+	
+	// set place
+	[prompt setTransform:CGAffineTransformMakeTranslation(0.0, 110.0)];
+	[prompt show];
+	[prompt release];
+	
+	// set cursor and show keyboard
+	[textField becomeFirstResponder];
+	
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (buttonIndex == 1) {
+		[Definition sharedDefinition].username = textField.text;
+		[Definition sharedDefinition].password = textField2.text;
+		[[DataBaseService sharedDataBaseService] saveCurrentUser];
+		[self requestPanelList];
+	} 
+}
 
 - (void)handleServerErrorWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
-		[ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
+		if (statusCode == 401) {
+			[self showLoginAlert];
+		} else {
+			[ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
+		}
 	} 
-	
 }
+
 
 - (void)updateTableView {
 	UITableView *tv = (UITableView *)self.view;

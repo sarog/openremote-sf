@@ -69,7 +69,8 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	// Create a default view that won't be overlapped by status bar.
 	// status bar is 20px high and on the top of window.
 	// all the visible view contents will be shown inside this container.
-	[self setView:[[UIView alloc] initWithFrame:CGRectMake(0, 20, 320, 460) ]];
+	CGSize size = [UIScreen mainScreen].bounds.size;
+	[self setView:[[UIView alloc] initWithFrame:CGRectMake(0, STATUS_BAR_HEIGHT, size.width, size.height - STATUS_BAR_HEIGHT) ]];
 }
 
 
@@ -429,6 +430,13 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	[currentGroupController performGesture:gesture];
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	return groupControllers.count > 0 && [[currentGroupController currentScreen] inverseScreenId] > 0;
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+	[currentGroupController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
 
 - (void)dealloc {
 	[groupViewMap release];

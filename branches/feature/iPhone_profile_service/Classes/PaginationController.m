@@ -43,7 +43,13 @@
 	[super dealloc];
 }
 
-- (void)setViewControllers:(NSArray *)newViewControllers {
+- (void)setViewControllers:(NSArray *)newViewControllers isLandscape:(BOOL)isLandscapeOrientation {
+	
+	isLandscape = isLandscapeOrientation;
+	CGSize size = [UIScreen mainScreen].bounds.size;
+	frameWidth = isLandscape ? size.height : size.width;
+	frameHeight = isLandscape ? size.width : size.height;
+	
 	for (UIView *view in [scrollView subviews]) {
 		[view removeFromSuperview];
 	}
@@ -54,8 +60,9 @@
 	//Recover last screen
 	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 	int lastScreenId = [[userDefaults objectForKey:@"lastScreenId"] intValue];
+	NSLog(@"last screen id =%d", lastScreenId);
 	if (lastScreenId > 0) {
-		for (int i=0; i<[viewControllers count]; i++) {
+		for (int i = 0; i < [viewControllers count]; i++) {
 			if (lastScreenId == [[[viewControllers objectAtIndex:i] screen] screenId]) {
 				selectedIndex = i;
 				break;
@@ -68,8 +75,12 @@
 	//[self updateView];
 }
 
+- (ScreenViewController *)currentScreenViewController {
+	return [viewControllers objectAtIndex:selectedIndex]; 
+}
+
 - (void)updateView {
-	[scrollView setContentSize:CGSizeMake(scrollView.bounds.size.width * [viewControllers count], scrollView.bounds.size.height)];
+	[scrollView setContentSize:CGSizeMake(frameWidth * [viewControllers count], frameHeight)];
 	[pageControl setNumberOfPages:[viewControllers count]];
 	
 	[self updateViewForCurrentPageAndBothSides];
@@ -83,7 +94,7 @@
 //Return YES if succuess
 - (BOOL)switchToScreen:(int)screenId withAnimation:(BOOL) withAnimation {
 	int index = -1;
-	for (int i = 0; i<viewControllers.count; i++) {
+	for (int i = 0; i< viewControllers.count; i++) {
 		ScreenViewController *svc = (ScreenViewController *)[viewControllers objectAtIndex:i];
 		if (svc.screen.screenId == screenId) {
 			index = i;
@@ -130,22 +141,24 @@
 	
 	[pageControl setCurrentPage:selectedIndex];
 	
-	int lastScreenId = ((ScreenViewController *)[viewControllers objectAtIndex:selectedIndex]).screen.screenId;
-	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-	[userDefaults setObject:[NSString stringWithFormat:@"%d",lastScreenId] forKey:@"lastScreenId"];
+	if (selectedIndex < viewControllers.count && selectedIndex >= 0) {
+		int lastScreenId = ((ScreenViewController *)[viewControllers objectAtIndex:selectedIndex]).screen.screenId;
+		NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+		[userDefaults setObject:[NSString stringWithFormat:@"%d",lastScreenId] forKey:@"lastScreenId"];
+	}
 }
 
 - (void)updateViewForPage:(NSUInteger)page {
 	if (page < 0) return;
 	if (page >= [viewControllers count]) return;
 	
-	UIViewController *controller = [viewControllers objectAtIndex:page];
+	UIViewController *controller = [viewControllers objectAtIndex:page];	
+	
 	if (controller.view.superview != scrollView) {
 		[scrollView addSubview:controller.view];
 	}
-	
 	CGRect frame = scrollView.bounds;
-	frame.origin.x = frame.size.width * page;
+	frame.origin.x = frameWidth * page;
 	[controller.view setFrame:frame];
 	
 	if (page == selectedIndex) {
@@ -153,22 +166,37 @@
 	} else {
 		[((ScreenViewController *)controller) stopPolling];
 	}
-
 	
 }
 
 //if you have changed *selectedIndex* then calling this method will scroll to that seleted view immediately
 - (void)scrollToSelectedViewWithAnimation:(BOOL)withAnimation {
+	[self updateViewForCurrentPageAndBothSides];
 	CGRect frame = scrollView.bounds;
-	frame.origin.x = frame.size.width * selectedIndex;
+	
+	if (selectedIndex == pageControl.numberOfPages - 1) {
+		[scrollView setContentSize:CGSizeMake(frameWidth * (pageControl.numberOfPages + 0.5), frameHeight)];
+	} 
+
+	frame.origin.x = frameWidth * selectedIndex;
 	frame.origin.y = 0;
 	[scrollView scrollRectToVisible:frame animated:withAnimation];
+
 }
 
 - (void)loadView {
 	[super loadView];
-	//[self.view setFrame:CGRectMake(0, 0, 320, 416)];
-	[self.view setFrame:CGRectMake(0, 0, 320, 460)];
+	
+	CGSize size = [UIScreen mainScreen].bounds.size;
+	
+	CGFloat availableScreenWidth = isLandscape ? size.height : size.width;
+	CGFloat availableScreenHeight = isLandscape ? size.width : size.height;
+	CGFloat statusBarHeight = 20;
+	CGFloat pageControlHeight = 20;
+	CGFloat availableScrollHeight = availableScreenHeight - statusBarHeight - pageControlHeight;
+	
+	[self.view setFrame:CGRectMake(0, 0, availableScreenWidth, availableScreenHeight - statusBarHeight)];
+	
 	scrollView = [[UIScrollView alloc] init];
 	[scrollView setDelegate:self];
 	[scrollView setPagingEnabled:YES];
@@ -178,15 +206,13 @@
 	[scrollView setBackgroundColor:[UIColor blackColor]];
 	[scrollView setOpaque:YES];
 	[scrollView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
-	//[scrollView setFrame:CGRectMake(0, 0, 320, 396)];
-	[scrollView setFrame:CGRectMake(0, 0, 320, 440)];
+	[scrollView setFrame:CGRectMake(0, 0, availableScreenWidth, availableScrollHeight)];
 	[self.view addSubview:scrollView];
 	[scrollView release];
 	
 	pageControl = [[UIPageControl alloc] init];
 	[pageControl setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth];
-	//[pageControl setFrame:CGRectMake(0, 396, 320, 20)];
-	[pageControl setFrame:CGRectMake(0, 440, 320, 20)];
+	[pageControl setFrame:CGRectMake(0, availableScrollHeight, availableScreenWidth, pageControlHeight)];
 	[pageControl setBackgroundColor:[UIColor blackColor]];
 	[pageControl setOpaque:YES];
 	[pageControl addTarget:self action:@selector(pageControlValueDidChange:) forControlEvents:UIControlEventValueChanged];
@@ -210,9 +236,12 @@
 	if (pageControlUsed) return;
 
 	// Switch the indicator when more than 50% of the previous/next page is visible
-	CGFloat pageWidth = scrollView.bounds.size.width;
-	selectedIndex = floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
+	selectedIndex = floor((scrollView.contentOffset.x - frameWidth / 2) / frameWidth) + 1;
 	[self updateViewForCurrentPageAndBothSides];
+}
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)s {
+	[scrollView setContentSize:CGSizeMake(frameWidth * pageControl.numberOfPages, frameHeight)];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)s {
@@ -224,7 +253,7 @@
 	[self updateViewForCurrentPageAndBothSides];
 	
 	CGRect frame = scrollView.bounds;
-	frame.origin.x = frame.size.width * selectedIndex;
+	frame.origin.x = frameWidth * selectedIndex;
 	frame.origin.y = 0;
 	[scrollView scrollRectToVisible:frame animated:YES];
 
@@ -233,17 +262,6 @@
 	pageControlUsed = YES;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return NO;
-}
-
-- (void)willAnimateSecondHalfOfRotationFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation duration:(NSTimeInterval)duration {
-	[self updateView];
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-	[self updateView];
-}
 
 - (void)viewWillAppear:(BOOL)animated {
 	[self updateView];

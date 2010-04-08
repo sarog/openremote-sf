@@ -21,6 +21,7 @@
 
 
 #import <UIKit/UIKit.h>
+#import "ScreenViewController.h"
 
 #define kMinimumGestureLength       25
 #define kMaximumVariance            5
@@ -32,7 +33,12 @@
 	UIScrollView *scrollView;
 	UIPageControl *pageControl;
 	
+	BOOL isLandscape;
+	BOOL isGrinding;
 	BOOL pageControlUsed;
+	
+	CGFloat frameWidth;
+	CGFloat frameHeight;
 	
 }
 
@@ -42,5 +48,8 @@
 - (BOOL)switchToScreen:(int)screenId;
 - (BOOL)previousScreen;
 - (BOOL)nextScreen;
+- (void)setViewControllers:(NSArray *)newViewControllers isLandscape:(BOOL)isLandscapeOrientation;
+- (ScreenViewController *)currentScreenViewController;
+- (void)updateView;
 
 @end

@@ -51,7 +51,7 @@
 }
 
 //Set screen *and* render its layout 
-- (void)setScreen:(Screen *)s {
+- (void)setScreen:(Screen *)s{
 	[s retain];
 	[screen release];
 	screen = s;
@@ -66,7 +66,6 @@
 		LayoutContainerView *layoutView = [LayoutContainerView buildWithLayoutContainer:layout];
 		[self addSubview:layoutView];
 	}
-	
 
 }
 
@@ -80,9 +79,18 @@
 - (void)layoutBackground {
 	if ([[[screen background] backgroundImage] src] && [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:[[[screen background] backgroundImage] src]]]) {
 		UIImage *backgroundImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:[[[screen background] backgroundImage] src]]];
-		int screenBackgroundImageViewWidth = IPHONE_SCREEN_WIDTH;
-		int screenBackgroundImageViewHeight = IPHONE_SCREEN_HEIGHT - IPHONE_SCREEN_STATUS_BAR_HEIGHT - IPHONE_SCREEN_BOTTOM_PAGE_SWITCH_CONTROL_HEIGHT;
+		int screenBackgroundImageViewWidth = 0;
+		int screenBackgroundImageViewHeight = 0;
 		
+		if (screen.landscape) {
+			screenBackgroundImageViewWidth = [UIScreen mainScreen].bounds.size.height;
+			screenBackgroundImageViewHeight = [UIScreen mainScreen].bounds.size.width;
+		} else {
+			screenBackgroundImageViewWidth = [UIScreen mainScreen].bounds.size.width;
+			screenBackgroundImageViewHeight = [UIScreen mainScreen].bounds.size.height;
+		}
+		screenBackgroundImageViewHeight -= IPHONE_SCREEN_STATUS_BAR_HEIGHT + IPHONE_SCREEN_BOTTOM_PAGE_CONTROL_HEIGHT;
+
 		UIImageView *backgroundImageView = [[UIImageView alloc] init];
 		// fillscreen is false
 		if (![[screen background] fillScreen]) {
