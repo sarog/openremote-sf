@@ -50,14 +50,17 @@ public class SliderPropertyForm extends PropertyForm {
       this.screenSlider = screenSlider;
       setLabelWidth(100);
       addFields();
+      super.addDeleteButton();
    }
    
    private void addFields() {
       final CheckBox vertical = new CheckBox();
       vertical.setValue(false);
-      vertical.setBoxLabel("Vertical");
-      vertical.setHideLabel(true);
+      vertical.setFieldLabel("Vertical");
+//      vertical.setBoxLabel("Vertical");
+//      vertical.setHideLabel(true);
       vertical.setValue(screenSlider.isVertical());
+      vertical.setStyleName("left:0px");
       vertical.addListener(Events.Change, new Listener<FieldEvent>() {
 
          @Override

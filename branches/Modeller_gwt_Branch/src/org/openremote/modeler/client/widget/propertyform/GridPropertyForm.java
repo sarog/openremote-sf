@@ -39,6 +39,7 @@ public class GridPropertyForm extends PropertyForm {
       super(gridContainer);
       this.gridContainer = gridContainer;
       initForm();
+      super.addDeleteButton();
    }
 
    protected void initForm() {
