@@ -97,4 +97,6 @@ public interface UtilsRPCService extends RemoteService {
    UISlider rotateImage(UISlider uiSlider);
    
    String getAccountPath();
+   
+   String getOnLineTestURL ();
 }

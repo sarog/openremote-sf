@@ -86,4 +86,6 @@ public interface UtilsRPCServiceAsync {
    void rotateImage(UISlider uiSlider,AsyncCallback<UISlider> callback);
    
    void getAccountPath(AsyncCallback<String> callback);
+   
+   void getOnLineTestURL (AsyncCallback<String> callback);
 }

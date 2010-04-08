@@ -165,7 +165,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       AutoSaveResponse autoSaveResponse = new AutoSaveResponse();
 
       if (panels != null) {
-         getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
+//         getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
          getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
          autoSaveResponse.setUpdated(true);
          resourceService.initResources(panels, maxID);
@@ -299,4 +299,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       return accountPath.substring(0, accountPath.lastIndexOf("/") + 1);
    }
    
+   public String getOnLineTestURL () {
+      return configuration.getBeehiveRESTRootUrl()+"user/"+userService.getAccount().getUser().getUsername();
+   }
 }

@@ -152,6 +152,12 @@ public class UtilsProxy {
          public void onSuccess(Collection<Panel> panels) {
             callback.onSuccess(panels);
          }
+
+         @Override
+         public void onFailure(Throwable caught) {
+            callback.onFailure(caught);
+         }
+         
       });
    }
    
@@ -240,6 +246,19 @@ public class UtilsProxy {
 
    public static void getAccountRelativePath(final AsyncCallback <String> callback) {
       AsyncServiceFactory.getUtilsRPCServiceAsync().getAccountPath(new AsyncCallback <String>() {
+         public void onFailure(Throwable caught) {
+            callback.onFailure(caught);
+         }
+
+         public void onSuccess(String result) {
+            callback.onSuccess(result);
+         }
+         
+      });
+   }
+   
+   public static void getOnTestLineURL(final AsyncCallback<String> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().getOnLineTestURL(new AsyncCallback <String>() {
          public void onFailure(Throwable caught) {
             callback.onFailure(caught);
          }
