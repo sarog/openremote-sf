@@ -19,12 +19,22 @@
 */
 package org.openremote.modeler.client.widget.component;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.widget.propertyform.ImagePropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
+import org.openremote.modeler.domain.CustomSensor;
+import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorType;
+import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UIImage;
 
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.Image;
 
 /**
@@ -38,6 +48,10 @@ public class ScreenImage extends ScreenComponent {
 
    private UIImage uiImage = new UIImage();
 
+   private int stateIndex = -1;
+   
+   private List<String> states = new ArrayList<String>();
+   
    public ScreenImage(ScreenCanvas canvas, UIImage uiImage) {
       super(canvas);
       this.uiImage = uiImage;
@@ -85,4 +99,42 @@ public class ScreenImage extends ScreenComponent {
       return new ImagePropertyForm(this);
    }
 
+   public void clearSensorStates() {
+      stateIndex = -1;
+      states.clear();
+      image.setUrl(uiImage.getImageSource().getSrc());
+   }
+   
+   public void onStateChange() {
+      Sensor sensor = uiImage.getSensor();
+      if (sensor != null && states.isEmpty()) {
+         String resourcePath = Cookies.getCookie(Constants.CURRETN_RESOURCE_PATH);
+         if (resourcePath != null) {
+            if (sensor.getType() == SensorType.SWITCH) {
+               if (!"".equals(uiImage.getSensorLink().getStateValueByStateName("on"))) {
+                  states.add(resourcePath + uiImage.getSensorLink().getStateValueByStateName("on"));
+               }
+               if (!"".equals(uiImage.getSensorLink().getStateValueByStateName("off"))) {
+                  states.add(resourcePath + uiImage.getSensorLink().getStateValueByStateName("off"));
+               }
+            } else if (sensor.getType() == SensorType.CUSTOM) {
+               SensorLink sensorLink = uiImage.getSensorLink();
+               for (State state : ((CustomSensor)sensor).getStates()) {
+                  if (!"".equals(uiImage.getSensorLink().getStateValueByStateName(state.getName()))) {
+                     states.add(resourcePath + sensorLink.getStateValueByStateName(state.getName()));
+                  }
+               }
+            }
+         }
+      }
+      
+      if (!states.isEmpty()) {
+         if (stateIndex < states.size() - 1) {
+            stateIndex = stateIndex + 1;
+         } else if (stateIndex == states.size() - 1) {
+            stateIndex = 0;
+         }
+         image.setUrl(states.get(stateIndex));
+      }
+   }
 }

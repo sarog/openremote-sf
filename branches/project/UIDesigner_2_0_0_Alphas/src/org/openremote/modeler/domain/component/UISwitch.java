@@ -17,6 +17,7 @@
 package org.openremote.modeler.domain.component;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Transient;
@@ -27,7 +28,7 @@ import org.openremote.modeler.domain.UICommand;
 
 import flexjson.JSON;
 
-public class UISwitch extends UIControl implements SensorOwner {
+public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner {
    
    private static final long serialVersionUID = 8617346306578381074L;
    private ImageSource onImage;
@@ -131,5 +132,19 @@ public class UISwitch extends UIControl implements SensorOwner {
    
    public boolean canUseImage(){
       return onImage != null && offImage != null;
+   }
+
+   @Override
+   @JSON(include = false)
+   public Collection<ImageSource> getImageSources() {
+      Collection<ImageSource> imageSources = new ArrayList<ImageSource>(2);
+      if (this.onImage != null && !this.onImage.isEmpty()) {
+         imageSources.add(onImage);
+      }
+      
+      if (this.offImage != null && ! this.offImage.isEmpty()) {
+         imageSources.add(offImage);
+      }
+      return imageSources;
    }
 }

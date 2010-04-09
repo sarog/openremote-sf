@@ -31,6 +31,7 @@ import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.widget.ImageUploadField;
 import org.openremote.modeler.client.widget.SimpleComboBox;
 import org.openremote.modeler.client.widget.component.ScreenImage;
+import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectSensorWindow;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Sensor;
@@ -73,6 +74,7 @@ public class ImagePropertyForm extends PropertyForm {
       addFields(screenImage);
       addListenersToForm();
       createSensorStates();
+      super.addDeleteButton();
    }
    private void addFields(final ScreenImage screenImage) {
       this.setLabelWidth(70);
@@ -100,6 +102,7 @@ public class ImagePropertyForm extends PropertyForm {
                   } else {
                      statesPanel.hide();
                   }
+                  screenImage.clearSensorStates();
                }
             });
          }
@@ -203,7 +206,7 @@ public class ImagePropertyForm extends PropertyForm {
          @Override
          public void handleEvent(FormEvent be) {
             String imageURL = be.getResultHtml();
-            SensorLink sensorLink = screenImage.getUiImage().getSensorLinker();
+            SensorLink sensorLink = screenImage.getUiImage().getSensorLink();
             Map<String,String> sensorAttrMap = new HashMap<String,String>();
             
             if (!"".equals(imageURL)) {
@@ -222,6 +225,7 @@ public class ImagePropertyForm extends PropertyForm {
                   }
                   sensorAttrMap.put("value", imageURL.substring(imageURL.lastIndexOf("/")+1));
                   sensorLink.addOrUpdateChildForSensorLinker("state", sensorAttrMap);
+                  screenImage.clearSensorStates();
                }
             }
             screenImage.getScreenCanvas().unmask();
@@ -232,7 +236,7 @@ public class ImagePropertyForm extends PropertyForm {
    }
    private void createSensorStates(){
       statesPanel.removeAll();
-      SensorLink sensorLink = screenImage.getUiImage().getSensorLinker();
+      SensorLink sensorLink = screenImage.getUiImage().getSensorLink();
       if(screenImage.getUiImage().getSensor()!=null && screenImage.getUiImage().getSensor().getType()==SensorType.SWITCH){
          ImageUploadField onImageUpload = new ImageUploadField("switchOnImage") {
             @Override
@@ -288,7 +292,6 @@ public class ImagePropertyForm extends PropertyForm {
                   screenImage.getScreenCanvas().mask("Uploading image...");
                }
             };
-//            imageUploader.setName(state.getName());
             imageUploader.setFieldLabel(state.getName());
             if(sensorLink!=null){
                imageUploader.setValue(sensorLink.getStateValueByStateName(state.getName()));
@@ -304,11 +307,10 @@ public class ImagePropertyForm extends PropertyForm {
       UPLOAD_IMAGE,UPLOAD_SWITCH_ON_IMAGE,UPLOAD_SWITCH_OFF_IMAGE,OTHER;
    }
    
-   /*private void setImageUploadAction(String ImageFieldName){
-      String action = GWT.getModuleBaseURL() + "fileUploadController.htm?method=uploadImage&uploadFieldName="
-            + (ImageFieldName == null ? ImageUploadField.IMAGEUPLOADFIELD : ImageFieldName);
-      setAction(action);
-      setEncoding(Encoding.MULTIPART);
-      setMethod(Method.POST);
-   }*/
+   
+   @Override
+   protected void afterRender() {
+      super.afterRender();
+      ((PropertyPanel)this.getParent()).setHeading("Image properties");
+   }
 }

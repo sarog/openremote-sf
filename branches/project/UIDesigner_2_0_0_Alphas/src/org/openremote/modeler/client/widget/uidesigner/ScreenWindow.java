@@ -31,7 +31,8 @@ import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
@@ -64,7 +65,7 @@ public class ScreenWindow extends FormWindow {
    private TreePanel<BeanModel> groupSelectTree = null;
    
    
-   public ScreenWindow(ScreenTab screenTab, BeanModel selectItem, Operation operation) {
+   public ScreenWindow(BeanModel selectItem, Operation operation) {
       super();
       this.operation = operation;
       this.selectItem = selectItem;
@@ -78,18 +79,18 @@ public class ScreenWindow extends FormWindow {
       setLayout(new FillLayout());
       setModal(true);
       createButtons();
-      createFields(screenTab);
+      createFields();
       setBodyBorder(false);
       add(form);
       show();
    }
 
-   public ScreenWindow(ScreenTab screenTab, BeanModel selectItem) {
-      this(screenTab, selectItem, Operation.NEW);
+   public ScreenWindow(BeanModel selectItem) {
+      this(selectItem, Operation.NEW);
    }
    
    
-   public void createFields(final ScreenTab screenTab) {
+   public void createFields() {
       form.setHeaderVisible(false);
       form.setBorders(false);
       form.setBodyBorder(true);
@@ -101,14 +102,14 @@ public class ScreenWindow extends FormWindow {
       form.add(nameField);
       
       if (operation == Operation.NEW) {
-         AdapterField adapterField = new AdapterField(createGroupTreeView(screenTab));
+         AdapterField adapterField = new AdapterField(createGroupTreeView());
          adapterField.setFieldLabel("Group");
          adapterField.setBorders(true);
          form.add(adapterField);
       } else if (operation == Operation.EDIT){
-         nameField.setValue(((ScreenRef) selectItem.getBean()).getScreen().getName());
+         nameField.setValue(((ScreenPairRef) selectItem.getBean()).getScreen().getName());
       }
-      addBeforHideListener(screenTab);
+      addBeforHideListener();
    }
    
    private void createButtons() {
@@ -120,14 +121,14 @@ public class ScreenWindow extends FormWindow {
       form.addButton(submitBtn);
       form.addButton(resetBtn);
    }
-   private void addBeforHideListener(final ScreenTab screenTab) {
+   private void addBeforHideListener() {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
 
          @Override
          public void handleEvent(FormEvent be) {
-            ScreenRef screenRef = null;
+            ScreenPairRef screenRef = null;
             if (operation == Operation.EDIT) {
-               screenRef = (ScreenRef) selectItem.getBean();
+               screenRef = (ScreenPairRef) selectItem.getBean();
                screenRef.getScreen().setName(nameField.getValue());
             } else {
                BeanModel groupModel = groupSelectTree.getSelectionModel().getSelectedItem();
@@ -145,7 +146,7 @@ public class ScreenWindow extends FormWindow {
                         || groupRef.getPanel().getTabbarItems().size() > 0) {
                      screen.setHasTabbar(true);
                   }
-                  BeanModelDataBase.screenTable.insert(screen.getBeanModel());
+                  BeanModelDataBase.screenTable.insert(screenRef.getScreen().getBeanModel());
                   screen.setName(nameField.getValue());
                   screenRef.setGroup(groupRef.getGroup());
 
@@ -159,17 +160,23 @@ public class ScreenWindow extends FormWindow {
       });
    }
 
-   private ScreenRef createScreenRef(GroupRef selectedGroup) {
+   private ScreenPairRef createScreenRef(GroupRef selectedGroup) {
       screen = new Screen();
       screen.setOid(IDUtil.nextID());
       screen.setTouchPanelDefinition(selectedGroup.getPanel().getTouchPanelDefinition());
-      ScreenRef screenRef = new ScreenRef(screen);
+      ScreenPair screenPair = new ScreenPair();
+      screenPair.setOid(IDUtil.nextID());
+      screenPair.setTouchPanelDefinition(selectedGroup.getPanel().getTouchPanelDefinition());
+      screenPair.setPortraitScreen(screen);
+      screenPair.setParentGroup(selectedGroup.getGroup());
+      
+      ScreenPairRef screenRef = new ScreenPairRef(screenPair);
       screenRef.setTouchPanelDefinition(selectedGroup.getPanel().getTouchPanelDefinition());
       selectedGroup.getGroup().addScreenRef(screenRef);
       return screenRef;
    }
    
-   private ContentPanel createGroupTreeView(ScreenTab screenTab) {
+   private ContentPanel createGroupTreeView() {
       ContentPanel groupTreeContainer = new ContentPanel();
       groupTreeContainer.setHeaderVisible(false);
       groupTreeContainer.setSize(210, 150);

@@ -25,8 +25,8 @@ import java.util.Map;
 
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.domain.Group;
-import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
@@ -86,7 +86,7 @@ public class PanelTreeStoreChangeListener {
          return;
       }
       for (BeanModel beanModel : models) {
-         if (beanModel.getBean() instanceof ScreenRef) {
+         if (beanModel.getBean() instanceof ScreenPairRef) {
             BeanModelDataBase.screenTable.addChangeListener(BeanModelDataBase
                   .getOriginalDesignerRefBeanModelId(beanModel), getSourceBeanModelChangeListener(beanModel));
          }
@@ -103,7 +103,7 @@ public class PanelTreeStoreChangeListener {
          return;
       }
       for (BeanModel beanModel : models) {
-         if (beanModel.getBean() instanceof ScreenRef) {
+         if (beanModel.getBean() instanceof ScreenPairRef) {
             BeanModelDataBase.screenTable.removeChangeListener(BeanModelDataBase
                   .getOriginalDesignerRefBeanModelId(beanModel), getSourceBeanModelChangeListener(beanModel));
          }
@@ -129,8 +129,8 @@ public class PanelTreeStoreChangeListener {
          changeListener = new ChangeListener() {
             public void modelChanged(ChangeEvent changeEvent) {
                if (changeEvent.getType() == ChangeEventSupport.Remove) {
-                  if (target.getBean() instanceof ScreenRef) {
-                     ScreenRef screenRef = (ScreenRef) target.getBean();
+                  if (target.getBean() instanceof ScreenPairRef) {
+                     ScreenPairRef screenRef = (ScreenPairRef) target.getBean();
                      Group group = screenRef.getGroup();
                      group.removeScreenRef(screenRef);
                   }
@@ -138,9 +138,9 @@ public class PanelTreeStoreChangeListener {
                }
                if (changeEvent.getType() == ChangeEventSupport.Update) {
                   BeanModel source = (BeanModel) changeEvent.getItem();
-                  if (source.getBean() instanceof Screen) {
-                     Screen screen = (Screen) source.getBean();
-                     ScreenRef screenRef = (ScreenRef) target.getBean();
+                  if (source.getBean() instanceof ScreenPair) {
+                     ScreenPair screen = (ScreenPair) source.getBean();
+                     ScreenPairRef screenRef = (ScreenPairRef) target.getBean();
                      screenRef.setScreen(screen);
                   }
                   panelTree.getStore().update(target);

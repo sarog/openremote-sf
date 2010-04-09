@@ -20,6 +20,7 @@
 package org.openremote.modeler.domain.component;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Transient;
@@ -29,7 +30,7 @@ import org.openremote.modeler.utils.StringUtils;
 
 import flexjson.JSON;
 
-public class UIButton extends UIControl {
+public class UIButton extends UIControl implements ImageSourceOwner{
    
    private static final long serialVersionUID = 2511411866454281810L;
 
@@ -176,6 +177,19 @@ public class UIButton extends UIControl {
       }
       xmlContent.append("        </button>\n");
       return xmlContent.toString();
+   }
+   @Override
+   @JSON(include = false)
+   public Collection<ImageSource> getImageSources() {
+      Collection<ImageSource> imageSources = new ArrayList<ImageSource>(2);
+      if (this.pressImage != null && !this.pressImage.isEmpty()) {
+         imageSources.add(pressImage);
+      }
+      
+      if (this.image != null && ! this.image.isEmpty()) {
+         imageSources.add(image);
+      }
+      return imageSources;
    }
 
 }

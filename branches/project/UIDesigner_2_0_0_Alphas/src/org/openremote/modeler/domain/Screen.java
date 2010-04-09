@@ -26,6 +26,8 @@ import java.util.List;
 import javax.persistence.Transient;
 
 import org.openremote.modeler.domain.component.Gesture;
+import org.openremote.modeler.domain.component.ImageSource;
+import org.openremote.modeler.domain.component.ImageSourceOwner;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
@@ -36,7 +38,7 @@ import flexjson.JSON;
 /**
  * The Class Screen.
  */
-public class Screen extends RefedEntity {
+public class Screen extends BusinessEntity {
    private static final long serialVersionUID = -4133577592315343274L;
 
    /** The default name index. */
@@ -57,9 +59,14 @@ public class Screen extends RefedEntity {
    private Background background = null;
 
    private List<Gesture> gestures = new ArrayList<Gesture>();
-
+   
    private boolean hasTabbar;
    
+   private boolean isLandscape;
+   
+   private long inverseScreenId = 0;
+   
+   private ScreenPair screenPair;
    public Screen() {
       this.background = new Background();
    }
@@ -166,6 +173,7 @@ public class Screen extends RefedEntity {
     * @see org.openremote.modeler.domain.BusinessEntity#getDisplayName()
     */
    @Transient
+   @JSON(include=false)
    public String getDisplayName() {
       return getPanelName();
    }
@@ -235,6 +243,23 @@ public class Screen extends RefedEntity {
    public void addGesture(Gesture gesture){
       gestures.add(gesture);
    }
+   
+   public boolean isLandscape() {
+      return isLandscape;
+   }
+
+   public void setLandscape(boolean isLandscape) {
+      this.isLandscape = isLandscape;
+   }
+
+   public long getInverseScreenId() {
+      return inverseScreenId;
+   }
+
+   public void setInverseScreenId(long inverseScreenId) {
+      this.inverseScreenId = inverseScreenId;
+   }
+
    /**
     * get all the UIComponent by the component's class. for example, if you want to get all the UIButton on the screen.
     * you can invoke this method like this: <code>getAllUIComponentByType(UIButton.class)</code>
@@ -257,5 +282,46 @@ public class Screen extends RefedEntity {
          }
       }
       return uiComponents;
+   }
+
+   @JSON(include = false)
+   public ScreenPair getScreenPair() {
+      return screenPair;
+   }
+
+   public void setScreenPair(ScreenPair screenPair) {
+      this.screenPair = screenPair;
+   }
+   
+   public String getNameWithOrientation() {
+      if (isLandscape) {
+         return name + "_landscape";
+      }
+      return name;
+   }
+   
+   @JSON(include = false)
+   public Collection<ImageSource> getAllImageSources() {
+      Collection<ImageSource> imageSources = new ArrayList<ImageSource> ();
+      for (Absolute absolute : absolutes) {
+         if (absolute.getUiComponent() instanceof ImageSourceOwner) {
+            ImageSourceOwner imageSourceOwner = (ImageSourceOwner) absolute.getUiComponent();
+            imageSources.addAll(imageSourceOwner.getImageSources());
+         }
+      }
+      for (UIGrid grid : grids) {
+         for (Cell cell : grid.getCells()) {
+            if (cell.getUiComponent() instanceof ImageSourceOwner) {
+               ImageSourceOwner imageSourceOwner = (ImageSourceOwner) cell.getUiComponent();
+               imageSources.addAll(imageSourceOwner.getImageSources());
+            }
+         }
+      }
+      
+      //add background image source 
+      if (this.background != null && background.getImageSource()!=null && !background.getImageSource().isEmpty()) {
+         imageSources.add(this.background.getImageSource());
+      }
+      return imageSources;
    }
 }

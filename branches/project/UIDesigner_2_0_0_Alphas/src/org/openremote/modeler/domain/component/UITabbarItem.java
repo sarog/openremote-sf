@@ -25,7 +25,7 @@ public class UITabbarItem extends UIComponent {
 
    private static final long serialVersionUID = -3815544266807672929L;
    
-   private String name = "TabbarItem";
+   private String name = "Tab Bar Item";
    private ImageSource image;
    private Navigate navigate = new Navigate();
    

@@ -23,15 +23,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
+import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
+import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.client.widget.buildingmodeler.TemplateCreateWindow;
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.selenium.DebugId;
 
@@ -61,23 +64,23 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class TemplatePanel extends ContentPanel {
    private TreePanel<BeanModel> templateTree = TreePanelBuilder.buildTemplateTree(this);
    
-   private ScreenTab templateEditTab = null;
+   private ScreenPanel templateEditPanel = null;
    
    private Template templateInEditing = null;
    
-   private ScreenTabItem editTabItem = null;
+   private ScreenTab editTabItem = null;
    
    private static final int AUTO_SAVE_INTERVAL_MS = 30000;
 
    private Timer timer;
 
    private Icons icon = GWT.create(Icons.class);
-
-   /**
-    * Instantiates a new profile panel.
-    */
-   public TemplatePanel(ScreenTab templateEditTab) {
-      this.templateEditTab = templateEditTab;
+   
+   private SelectionServiceExt<BeanModel> selectionService;
+   
+   public TemplatePanel(ScreenPanel templateEditPanel) {
+      this.templateEditPanel = templateEditPanel;
+      selectionService = new SelectionServiceExt<BeanModel>();
       setHeading("Template");
       setIcon(icon.templateIcon());
       setLayout(new FitLayout());
@@ -95,12 +98,27 @@ public class TemplatePanel extends ContentPanel {
       toolBar.add(createNewTemplateMenuItem());
 
       Button editBtn = createEditTemplateMenuItem();
-      editBtn.setEnabled(true);
+      editBtn.setEnabled(false);
       
       Button deleteBtn = createDeleteBtn();
-      deleteBtn.setEnabled(true);
-      toolBar.add(editBtn);
       
+      List<Button> editDelBtns = new ArrayList<Button>();
+      editDelBtns.add(editBtn);
+      editDelBtns.add(deleteBtn);
+      deleteBtn.setEnabled(false); 
+      
+      selectionService.addListener(new EditDelBtnSelectionListener(editDelBtns) {
+         @Override
+         protected boolean isEditableAndDeletable(List<BeanModel> sels) {
+            BeanModel selectModel = sels.get(0);
+            if (selectModel != null && selectModel.getBean() instanceof Template) {
+               return true;
+            }
+            return false;
+         }
+      });
+      
+      toolBar.add(editBtn);
       toolBar.add(deleteBtn);
       menuButtons.add(deleteBtn);
       setTopComponent(toolBar);
@@ -135,6 +153,13 @@ public class TemplatePanel extends ContentPanel {
                   public void onSuccess(Boolean success) {
                      if (success) {
                         templateTree.getStore().remove(templateBeanModel);
+                        if (editTabItem != null) {
+                           templateInEditing = null;
+                           templateEditPanel.remove(editTabItem);
+                           templateEditPanel.closeCurrentScreenTab();
+                           editTabItem = null;
+                           templateEditPanel.layout();
+                        }
                         Info.display("Delete Template", "Template deleted successfully.");
                      }
                   }
@@ -195,13 +220,12 @@ public class TemplatePanel extends ContentPanel {
                      BeanModel parentNode = template.isShared()?publicTemplateTopNode:privateTemplateTopNode;
                      templateTree.getStore().add(parentNode, template.getBeanModel(),false);
                   }
-                  if ( editTabItem != null) {
-                     try{templateEditTab.remove(editTabItem);}catch(RuntimeException e){}
-                  } 
-                  editTabItem = new ScreenTabItem(template.getScreen());
-                  editTabItem.setText("Template: "+templateInEditing.getName());
-                  templateEditTab.add(editTabItem);
-                  templateEditTab.setSelection(editTabItem);
+//                  if ( editTabItem != null) {
+//                     try{templateEditTab.remove(editTabItem);}catch(RuntimeException e){}
+//                  } 
+                  editTabItem = new ScreenTab(template.getScreen());
+//                  editTabItem.setText("Template: "+templateInEditing.getName());
+                  templateEditPanel.setScreenItem(editTabItem);
                }
 
             });
@@ -226,9 +250,18 @@ public class TemplatePanel extends ContentPanel {
                   tmpPrivateTemplateParentNode = folderBean;
                }
             }
+            BeanModel selectedModel = templateTree.getSelectionModel().getSelectedItem();
+            boolean isShare = false;
+            if (selectedModel != null) {
+               if (selectedModel.getBean() instanceof TreeFolderBean && tmpPublicTemplateParentNode == selectedModel.getBean()) {
+                  isShare = true;
+               } else if (selectedModel.getBean() instanceof Template && ((Template) selectedModel.getBean()).isShared()) {
+                  isShare = true;
+               }
+            }
             final BeanModel privateTemplateTopNode = tmpPrivateTemplateParentNode.getBeanModel();
             final BeanModel publicTemplateTopNode = tmpPublicTemplateParentNode.getBeanModel();
-            final TemplateCreateWindow templateCreateWindow = new TemplateCreateWindow();
+            final TemplateCreateWindow templateCreateWindow = new TemplateCreateWindow(isShare);
             templateCreateWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -265,6 +298,9 @@ public class TemplatePanel extends ContentPanel {
       treeContainer.setBorders(false);
       add(treeContainer);
       
+      selectionService.addListener(new SourceSelectionChangeListenerExt(templateTree.getSelectionModel()));
+      selectionService.register(templateTree.getSelectionModel());
+      
    }
    
    
@@ -290,6 +326,8 @@ public class TemplatePanel extends ContentPanel {
 
             @Override
             public void onSuccess(Template result) {
+               templateInEditing.setContent(result.getContent());
+               templateInEditing.setScreen(result.getScreen());
                Info.display("Success", "auto save template" + templateInEditing.getName()+" successfully !");
             }
             
@@ -302,13 +340,48 @@ public class TemplatePanel extends ContentPanel {
    }
 
    public void setTemplateInEditing(final Template templateInEditing) {
+      if (editTabItem != null) {
+         //reopen template tab item close by user. 
+         if (templateEditPanel.indexOf(editTabItem) == -1 ) {
+            templateEditPanel.setScreenItem(editTabItem);
+            templateInEditing.setScreen(templateInEditing.getScreen());
+         }
+      }
       if (templateInEditing != null &&templateInEditing.equals(this.templateInEditing)) return;
-      //-----------------------------
-      // 1, save previous template.
-      //      saveTemplateUpdates();
-      //------------------------------
-      // 2, edit another template.
-      TemplateProxy.buildScreen(templateInEditing, new AsyncCallback<Screen>() {
+      
+      if (this.templateInEditing != null) {
+         //-----------------------------
+         // 1, save previous template.
+         //------------------------------
+         TemplateProxy.updateTemplate(this.templateInEditing, new AsyncCallback<Template>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+               Info.display("Error", "Update template: " + TemplatePanel.this.templateInEditing.getName() + " failed");
+            }
+
+            @Override
+            public void onSuccess(Template result) {
+               //--------------------------
+               // 2, edit another template.
+               //--------------------------
+               buildScreen(templateInEditing);
+               Info.display("Success", "auto save template" + templateInEditing.getName() + " successfully !");
+            }
+
+            
+         });
+      } else {
+         buildScreen(templateInEditing);
+      }
+      
+
+      //this.templateInEditing = templateInEditing;
+
+   }
+   
+   private void buildScreen(final Template templateInEditing) {
+      TemplateProxy.buildScreen(templateInEditing, new AsyncCallback<ScreenPair>() {
 
          @Override
          public void onFailure(Throwable caught) {
@@ -316,22 +389,22 @@ public class TemplatePanel extends ContentPanel {
          }
 
          @Override
-         public void onSuccess(Screen screen) {
+         public void onSuccess(ScreenPair screen) {
             // try to close previous template editing tab item.
-            if ( editTabItem != null) {
-               try{templateEditTab.remove(editTabItem);}catch(RuntimeException e){}
-            } 
-            editTabItem = new ScreenTabItem(screen);
-            editTabItem.setText("Template: "+templateInEditing.getName());
-            templateEditTab.add(editTabItem);
-            templateEditTab.setSelection(editTabItem);
+//            if (editTabItem != null) {
+//               try {
+//                  templateEditTab.remove(editTabItem);
+//               } catch (RuntimeException e) {
+//               }
+//            }
+            editTabItem = new ScreenTab(screen);
+//            editTabItem.setText("Template: " + templateInEditing.getName());
+            templateEditPanel.setScreenItem(editTabItem);
             templateInEditing.setScreen(screen);
+            TemplatePanel.this.templateInEditing = templateInEditing;
          }
 
       });
-
-      this.templateInEditing = templateInEditing;
-
    }
-   
+
 }

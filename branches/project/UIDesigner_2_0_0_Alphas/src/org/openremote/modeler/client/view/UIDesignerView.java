@@ -21,26 +21,30 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.event.PropertyEditEvent;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
+import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.client.utils.TouchPanels;
 import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
-import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
+import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
 import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
 import org.openremote.modeler.client.widget.uidesigner.WidgetPanel;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
-import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
@@ -51,6 +55,7 @@ import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -60,7 +65,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class UIDesignerView extends TabItem {
 
    /** The screen tab. */
-   private ScreenTab screenTab = new ScreenTab();
+   private ScreenPanel screenPanel = new ScreenPanel();
 
    /** The auto_save_interval millisecond. */
    private static final int AUTO_SAVE_INTERVAL_MS = 30000;
@@ -68,6 +73,8 @@ public class UIDesignerView extends TabItem {
    private Timer timer;
 
    private ContentPanel profilePanel = null;
+   
+   private PropertyPanel propertyPanel = null;
 
    /**
     * Instantiates a new uI designer view.
@@ -76,6 +83,15 @@ public class UIDesignerView extends TabItem {
       super();
       setText("UI Designer");
 
+      AsyncServiceFactory.getUtilsRPCServiceAsync().getAccountPath(new AsyncCallback <String>() {
+         public void onFailure(Throwable caught) {
+            Info.display("Error", "falid to get account path.");
+         }
+         public void onSuccess(String result) {
+            Cookies.setCookie(Constants.CURRETN_RESOURCE_PATH, result);
+         }
+         
+      });
       setLayout(new BorderLayout());
       profilePanel = createWest();
       createCenter();
@@ -91,7 +107,7 @@ public class UIDesignerView extends TabItem {
       timer = new Timer() {
          @Override
          public void run() {
-            autoSaveUiDesignerLayout();
+//            autoSaveUiDesignerLayout();
          }
       };
       timer.scheduleRepeating(AUTO_SAVE_INTERVAL_MS);
@@ -131,12 +147,12 @@ public class UIDesignerView extends TabItem {
             }
          }
 
-         /*@Override
+         @Override
          public void onFailure(Throwable caught) {
             timer.cancel();
-            Info.display(new InfoConfig("Error", "failed to save UI information "
+            Info.display(new InfoConfig("Error", caught.getLocalizedMessage()+" "
                   + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
-         }*/
+         }
 
       });
    }
@@ -156,8 +172,8 @@ public class UIDesignerView extends TabItem {
                for (GroupRef groupRef : panel.getGroupRefs()) {
                   Group group = groupRef.getGroup();
                   BeanModelDataBase.groupTable.insert(group.getBeanModel());
-                  for (ScreenRef screenRef : group.getScreenRefs()) {
-                     Screen screen = screenRef.getScreen();
+                  for (ScreenPairRef screenRef : group.getScreenRefs()) {
+                     ScreenPair screen = screenRef.getScreen();
                      BeanModelDataBase.screenTable.insert(screen.getBeanModel());
                   }
                }
@@ -168,11 +184,6 @@ public class UIDesignerView extends TabItem {
 
          @Override
          public void onFailure(Throwable caught) {
-            /*
-             * if (caught instanceof BeehiveNotAvailableException) {
-             * 
-             * } MessageBox.alert("Fail", "Server error, UI designer restore failed.", null);
-             */
             MessageBox.alert("Error", "UI designer restore failed: " + caught.getLocalizedMessage(), null);
          }
       });
@@ -193,8 +204,14 @@ public class UIDesignerView extends TabItem {
     */
    private ProfilePanel createWest() {
       ContentPanel west = new ContentPanel();
-      ProfilePanel result = new ProfilePanel(screenTab);
-      TemplatePanel templatePanel = new TemplatePanel(screenTab);
+      ProfilePanel result = new ProfilePanel(screenPanel);
+      result.addListener(PropertyEditEvent.PropertyEditEvent, new Listener<PropertyEditEvent>() {
+         public void handleEvent(PropertyEditEvent be) {
+            propertyPanel.setPropertyForm(be.getPropertyEditable());
+         }
+         
+      });
+      TemplatePanel templatePanel = new TemplatePanel(screenPanel);
       BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 200);
       westData.setSplit(true);
       west.setLayout(new AccordionLayout());
@@ -219,8 +236,7 @@ public class UIDesignerView extends TabItem {
    private void createCenter() {
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setMargins(new Margins(0, 2, 0, 2));
-      screenTab.setBorderStyle(false);
-      add(screenTab, centerData);
+      add(screenPanel, centerData);
    }
 
    /**
@@ -228,15 +244,6 @@ public class UIDesignerView extends TabItem {
     */
    private void prepareData() {
       TouchPanels.load();
-   }
-
-   /**
-    * Gets the screen tab.
-    * 
-    * @return the screen tab
-    */
-   public ScreenTab getScreenTab() {
-      return screenTab;
    }
 
    /**
@@ -255,7 +262,7 @@ public class UIDesignerView extends TabItem {
       widgetPanel.setSize("100%", "50%");
       widgetAndPropertyContainer.add(widgetPanel, northData);
 
-      PropertyPanel propertyPanel = new PropertyPanel();
+      propertyPanel = new PropertyPanel();
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setSplit(true);
       centerData.setMargins(new Margins(2));
@@ -263,14 +270,6 @@ public class UIDesignerView extends TabItem {
 
       widgetAndPropertyContainer.add(propertyPanel, centerData);
       return widgetAndPropertyContainer;
-   }
-
-   List<Screen> getAllScreens() {
-      List<Screen> screenList = new ArrayList<Screen>();
-      for (BeanModel screenBeanModel : BeanModelDataBase.screenTable.loadAll()) {
-         screenList.add((Screen) screenBeanModel.getBean());
-      }
-      return screenList;
    }
 
    List<Panel> getAllPanels() {

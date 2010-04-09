@@ -29,8 +29,8 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
-import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -48,7 +48,7 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 public class GroupEditWindow extends FormWindow {
 
    private TextField<String> nameField = null;
-   private CheckBoxListView<BeanModel> screenListView = null;
+   private CheckBoxListView<BeanModel> screenPairListView = null;
    private BeanModel groupRefBeanModel = null;
    public GroupEditWindow(BeanModel groupRefBeanModel) {
       this.groupRefBeanModel = groupRefBeanModel;
@@ -73,14 +73,14 @@ public class GroupEditWindow extends FormWindow {
          nameField.setValue(groupRef.getGroup().getName());
       }
       
-      AdapterField screenField = new AdapterField(createScreenList(groupRef));
+      AdapterField screenField = new AdapterField(createScreenPairList(groupRef));
       screenField.setFieldLabel("Screen");
       form.add(nameField);
       form.add(screenField);
       
    }
    
-   private ContentPanel createScreenList(GroupRef groupRef) {
+   private ContentPanel createScreenPairList(GroupRef groupRef) {
       TouchPanelDefinition touchPanel = groupRef.getPanel().getTouchPanelDefinition();
       
       ContentPanel screenContainer = new ContentPanel();
@@ -91,33 +91,33 @@ public class GroupEditWindow extends FormWindow {
       // overflow-auto style is for IE hack.
       screenContainer.addStyleName("overflow-auto");
       
-      screenListView = new CheckBoxListView<BeanModel>();
+      screenPairListView = new CheckBoxListView<BeanModel>();
       ListStore<BeanModel> store = new ListStore<BeanModel>();
       
       List<BeanModel> otherModels = new ArrayList<BeanModel>();
-      List<BeanModel> screenModels = BeanModelDataBase.screenTable.loadAll();
+      List<BeanModel> screenPairModels = BeanModelDataBase.screenTable.loadAll();
       List<BeanModel> selectedModels = new ArrayList<BeanModel>();
-      for (ScreenRef screenRef: groupRef.getGroup().getScreenRefs()) {
+      for (ScreenPairRef screenRef: groupRef.getGroup().getScreenRefs()) {
          selectedModels.add(screenRef.getScreen().getBeanModel());
       }
-      for (BeanModel screenModel : screenModels) {
-         if (((Screen) screenModel.getBean()).getTouchPanelDefinition().equals(touchPanel)) {
-            store.add(screenModel);
-            screenListView.getSelectionModel().select(screenModel, true);
-         } else if (((Screen) screenModel.getBean()).getTouchPanelDefinition().getCanvas().equals(touchPanel.getCanvas())){
-            otherModels.add(screenModel);
+      for (BeanModel screenPairModel : screenPairModels) {
+         if (((ScreenPair) screenPairModel.getBean()).getTouchPanelDefinition().equals(touchPanel)) {
+            store.add(screenPairModel);
+            screenPairListView.getSelectionModel().select(screenPairModel, true);
+         } else if (((ScreenPair) screenPairModel.getBean()).getTouchPanelDefinition().getCanvas().equals(touchPanel.getCanvas())){
+            otherModels.add(screenPairModel);
          }
       }
       
       store.add(otherModels);
       for (BeanModel selectedModel : selectedModels) {
-         screenListView.setChecked(selectedModel, true);
+         screenPairListView.setChecked(selectedModel, true);
       }
-      screenListView.setStore(store);
-      screenListView.setDisplayProperty("panelName");
-      screenListView.setStyleAttribute("overflow", "auto");
-      screenListView.setSelectStyle("screen-view-item-sel");
-      screenContainer.add(screenListView);
+      screenPairListView.setStore(store);
+      screenPairListView.setDisplayProperty("panelName");
+      screenPairListView.setStyleAttribute("overflow", "auto");
+      screenPairListView.setSelectStyle("screen-view-item-sel");
+      screenContainer.add(screenPairListView);
       return screenContainer;
    }
    
@@ -136,17 +136,18 @@ public class GroupEditWindow extends FormWindow {
          public void handleEvent(FormEvent be) {
             Group group = ((GroupRef) groupRefBeanModel.getBean()).getGroup();
             TouchPanelDefinition touchPanelDefinition = ((GroupRef) groupRefBeanModel.getBean()).getPanel().getTouchPanelDefinition();
-            for (ScreenRef screenRef : group.getScreenRefs()) {
-               screenRef.getScreen().releaseRef();
+            for (ScreenPairRef screenPairRef : group.getScreenRefs()) {
+               screenPairRef.getScreen().releaseRef();
             }
             group.getScreenRefs().clear();
-            List<BeanModel> screenModels = screenListView.getChecked();
-            if (screenModels.size() > 0) {
-               for (BeanModel screenModel : screenModels) {
-                  ScreenRef screenRef = new ScreenRef((Screen) screenModel.getBean());
-                  screenRef.setTouchPanelDefinition(touchPanelDefinition);
-                  screenRef.setGroup(group);
-                  group.addScreenRef(screenRef);
+            group.setName(nameField.getValue());
+            List<BeanModel> screenPairModels = screenPairListView.getChecked();
+            if (screenPairModels.size() > 0) {
+               for (BeanModel screenPairModel : screenPairModels) {
+                  ScreenPairRef screenPairRef = new ScreenPairRef((ScreenPair) screenPairModel.getBean());
+                  screenPairRef.setTouchPanelDefinition(touchPanelDefinition);
+                  screenPairRef.setGroup(group);
+                  group.addScreenRef(screenPairRef);
                }
             }
             fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(groupRefBeanModel));

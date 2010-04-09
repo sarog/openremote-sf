@@ -21,7 +21,9 @@ package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.event.WidgetSelectChangeEvent;
 import org.openremote.modeler.client.listener.WidgetSelectChangeListener;
+import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.client.widget.propertyform.ScreenPairPropertyForm;
 
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
@@ -65,12 +67,21 @@ public class PropertyPanel extends ContentPanel {
    public void update(ComponentContainer component) {
       if (component == null) {
          removePropertiesForm();
+         setHeading("Properties");
          layout();
          return;
       }
       if (!component.equals(currentLayoutContainer)) {
          currentLayoutContainer =  component;
-         if (component instanceof AbsoluteLayoutContainer) {
+         if (component instanceof GridLayoutContainerHandle) {
+            addPropertiesForm(component);
+            currentLayoutContainer = null;
+         } else if (component.getParent() instanceof ScreenTabItem) {
+            addScreenPairPropertyForm(component);
+         }else {
+            addPropertiesForm(component);
+         } 
+         /*if (component instanceof AbsoluteLayoutContainer) {
             addPropertiesForm(((AbsoluteLayoutContainer) component).getScreenComponent());
          } else if (component instanceof GridCellContainer) {
             addPropertiesForm(((GridCellContainer) component).getScreenComponent());
@@ -79,10 +90,18 @@ public class PropertyPanel extends ContentPanel {
             currentLayoutContainer = null;
          } else if (component instanceof ScreenCanvas) {
             addPropertiesForm(component);
-         }
+         }*/
          layout();
       }
 
+   }
+   
+   public void setPropertyForm(PropertyEditable propertyEditable) {
+      removePropertiesForm();
+      currentPropertyForm = propertyEditable.getPropertiesForm();
+      add(currentPropertyForm);
+      this.setHeading(propertyEditable.getTitle());
+      layout();
    }
 
    /**
@@ -103,5 +122,13 @@ public class PropertyPanel extends ContentPanel {
          currentLayoutContainer = null;
          currentPropertyForm = null;
       }
+   }
+   
+   private void addScreenPairPropertyForm(ComponentContainer component) {
+      if (currentPropertyForm != null) {
+         currentPropertyForm.removeFromParent();
+      }
+      currentPropertyForm = new ScreenPairPropertyForm(component);
+      add(currentPropertyForm);
    }
 }
