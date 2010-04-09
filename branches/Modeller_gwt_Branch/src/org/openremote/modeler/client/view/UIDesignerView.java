@@ -107,7 +107,7 @@ public class UIDesignerView extends TabItem {
       timer = new Timer() {
          @Override
          public void run() {
-            autoSaveUiDesignerLayout();
+//            autoSaveUiDesignerLayout();
          }
       };
       timer.scheduleRepeating(AUTO_SAVE_INTERVAL_MS);
@@ -147,12 +147,12 @@ public class UIDesignerView extends TabItem {
             }
          }
 
-         /*@Override
+         @Override
          public void onFailure(Throwable caught) {
             timer.cancel();
-            Info.display(new InfoConfig("Error", "failed to save UI information "
+            Info.display(new InfoConfig("Error", caught.getLocalizedMessage()+" "
                   + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
-         }*/
+         }
 
       });
    }

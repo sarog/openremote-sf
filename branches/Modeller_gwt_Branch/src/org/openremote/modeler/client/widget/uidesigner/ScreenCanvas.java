@@ -327,12 +327,9 @@ public class ScreenCanvas extends ComponentContainer {
                      componentContainer = createGridLayoutContainer(grid);
                      createGridDragSource(componentContainer, canvas);  
                   } else if (dataModel.getBean() instanceof UITabbar) {
-                     //TODO
                      addTabbar(new ScreenTabbar(ScreenCanvas.this,new UITabbar()));
                      WidgetSelectionUtil.setSelectWidget(tabbarContainer);
                      return;
-//                     componentContainer = tabbarContainer;
-                     
                   } else if (dataModel.getBean() instanceof UITabbarItem){
                      addTabItemToTabbar();
                      return ;

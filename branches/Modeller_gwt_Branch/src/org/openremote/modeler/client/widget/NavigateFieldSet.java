@@ -65,7 +65,7 @@ public class NavigateFieldSet extends FieldSet {
    }
    private void init() {
       setLayout(new ColumnLayout());
-      setHeading("Add Button Navigation");
+      setHeading("Add Navigation");
    }
    
    private void createLeftContainer() {
