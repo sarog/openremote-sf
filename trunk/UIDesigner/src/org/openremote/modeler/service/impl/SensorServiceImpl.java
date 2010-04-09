@@ -84,4 +84,13 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       return dvic.getSensors();
    }
 */
+   public List<Sensor> loadSameSensors(Sensor sensor) {
+      DetachedCriteria critera = DetachedCriteria.forClass(Sensor.class);
+      critera.add(Restrictions.eq("name", sensor.getName()));
+      critera.add(Restrictions.eq("type", sensor.getType()));
+      critera.add(Restrictions.eq("device.oid", sensor.getDevice().getOid()));
+      
+//      critera.add(Restrictions.eq("sensorCommandRef.deviceCommand", sensor.getSensorCommandRef().getDeviceCommand()));
+      return genericDAO.findPagedDateByDetachedCriteria(critera, 1, 0);
+   }
 }

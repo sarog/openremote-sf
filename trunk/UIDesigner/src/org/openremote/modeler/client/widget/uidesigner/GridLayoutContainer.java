@@ -29,6 +29,8 @@ import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
+import org.openremote.modeler.client.widget.component.ScreenImage;
+import org.openremote.modeler.client.widget.component.ScreenLabel;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.GridCellBounds;
@@ -221,6 +223,10 @@ public class GridLayoutContainer extends ComponentContainer {
                   ((ScreenButton)screenComponent).setPressedImage();
                } else if (screenComponent instanceof ScreenSwitch) {
                   ((ScreenSwitch)screenComponent).onStateChange();
+               } else if (screenComponent instanceof ScreenLabel) {
+                  ((ScreenLabel)screenComponent).onStateChange();
+               } else if (screenComponent instanceof ScreenImage) {
+                  ((ScreenImage)screenComponent).onStateChange();
                }
             } else if (ce.getEventTypeInt() == Event.ONMOUSEUP){
                if (screenComponent instanceof ScreenButton) {
@@ -281,6 +287,10 @@ public class GridLayoutContainer extends ComponentContainer {
                   ((ScreenButton)screenComponent).setPressedImage();
                } else if (screenComponent instanceof ScreenSwitch) {
                   ((ScreenSwitch)screenComponent).onStateChange();
+               } else if (screenComponent instanceof ScreenLabel) {
+                  ((ScreenLabel)screenComponent).onStateChange();
+               } else if (screenComponent instanceof ScreenImage) {
+                  ((ScreenImage)screenComponent).onStateChange();
                }
             } else if (ce.getEventTypeInt() == Event.ONMOUSEUP){
                if (screenComponent instanceof ScreenButton) {

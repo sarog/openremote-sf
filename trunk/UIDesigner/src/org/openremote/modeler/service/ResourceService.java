@@ -25,9 +25,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
-import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
-import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Template;
 
 /**
@@ -86,17 +84,13 @@ public interface ResourceService {
    
    String getPanelsJson(Collection<Panel> panels);
    
-   String getGroupsJson(Collection<Group> groups);
-   
-   String getScreensJson(Collection<Screen> screens);
-   
    void initResources(Collection<Panel> panels,long maxOid);
    
    PanelsAndMaxOid restore();
    
    boolean canRestore();
    
-   void saveResourcesToBeehive();
+   void saveResourcesToBeehive(Collection<Panel> panels);
    void saveTemplateResourcesToBeehive(Template Template);
    void downloadResourcesForTemplate(long templateOid); 
    

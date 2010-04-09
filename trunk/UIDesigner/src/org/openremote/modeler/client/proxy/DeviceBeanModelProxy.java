@@ -234,22 +234,77 @@ public class DeviceBeanModelProxy {
     */
    public static void deleteDevice(BeanModel deviceModel, final AsyncSuccessCallback<Void> callback) {
       final Device device = deviceModel.getBean();
-      AsyncServiceFactory.getDeviceCommandServiceAsync().loadByDevice(device.getOid(), new AsyncSuccessCallback<List<DeviceCommand>>() {
+      /*AsyncServiceFactory.getDeviceCommandServiceAsync().loadByDevice(device.getOid(), new AsyncSuccessCallback<List<DeviceCommand>>() {
          @Override
          public void onSuccess(List<DeviceCommand> result) {
             List<BeanModel> beanModels = DeviceCommand.createModels(result);
             BeanModelDataBase.deviceCommandTable.insertAll(beanModels);
             for (BeanModel beanModel : beanModels) {
                BeanModelDataBase.deviceCommandTable.delete(beanModel.<DeviceCommand> getBean().getOid());
-            }
+            }*/
             AsyncServiceFactory.getDeviceServiceAsync().deleteDevice(device.getOid(), new AsyncSuccessCallback<Void>() {
                public void onSuccess(Void result) {
+                  //1, remove switches and sliders.
+                  removeAllSwitchsForDevice(device);
+                  removeAllSlidersForDevice(device);
+                  //2, remove sensors. 
+                  removeAllSensorsForDevice(device);
+                  //3, remove device commands. 
+                  removeAllDeviceCommandsForDevice(device);
+                  //4, remove device
                   BeanModelDataBase.deviceTable.delete(device.getOid());
                   callback.onSuccess(result);
                }
             });
-         }
-      });
+      /*   }
+      });*/
    }
    
+   private static void removeAllSwitchsForDevice(Device device) {
+      List<BeanModel> switchBeans = BeanModelDataBase.switchTable.loadAll();
+      if (switchBeans !=null && switchBeans.size() >0){
+         for(BeanModel swhBean : switchBeans) {
+            Switch swh = swhBean.getBean();
+            if(swh.getDevice().equals(device)) {
+               BeanModelDataBase.switchTable.delete(swhBean);
+            }
+         }
+      }
+   }
+   
+   private static void removeAllSlidersForDevice(Device device) {
+      List<BeanModel> sliderBeans = BeanModelDataBase.sliderTable.loadAll();
+      if (sliderBeans !=null && sliderBeans.size() >0){
+         for(BeanModel sldBean : sliderBeans) {
+            Slider sld = sldBean.getBean();
+            if(sld.getDevice().equals(device)) {
+               BeanModelDataBase.sliderTable.delete(sldBean);
+            }
+         }
+      }
+   }
+   
+   private static void removeAllSensorsForDevice(Device device) {
+      List<BeanModel> sensorBeans = BeanModelDataBase.sensorTable.loadAll();
+      if (sensorBeans !=null && sensorBeans.size() >0){
+         for(BeanModel sensorBean : sensorBeans) {
+            Sensor sld = sensorBean.getBean();
+            if(sld.getDevice().equals(device)) {
+               BeanModelDataBase.sensorTable.delete(sensorBean);
+            }
+         }
+      }
+   }
+   
+   private static void removeAllDeviceCommandsForDevice(Device device) {
+      List<BeanModel> dvcCommandBeans = BeanModelDataBase.deviceCommandTable.loadAll();
+      if (dvcCommandBeans !=null && dvcCommandBeans.size() >0){
+         for(BeanModel dvcBean : dvcCommandBeans) {
+            DeviceCommand dvc = dvcBean.getBean();
+            if(dvc.getDevice().equals(device)) {
+               BeanModelDataBase.deviceCommandTable.delete(dvcBean);
+            }
+         }
+      }
+   }
 }

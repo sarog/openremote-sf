@@ -77,4 +77,6 @@ public interface DeviceService {
     * @return the list< device>
     */
    List<Device> loadAll(Account account);
+   
+   List<Device> loadSameDevices(Device device);
 }

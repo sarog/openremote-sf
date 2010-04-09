@@ -87,6 +87,8 @@ public abstract class UIComponent extends BusinessEntity {
             result = new UILabel();
          } else if (uiComponent instanceof UIImage) {
             result = new UIImage();
+         } else if (uiComponent instanceof UITabbar) {
+            return new UITabbar();
          }
       }
       result.setOid(IDUtil.nextID());
@@ -111,6 +113,8 @@ public abstract class UIComponent extends BusinessEntity {
             return new UILabel((UILabel) uiComponent);
          } else if (uiComponent instanceof UIImage) {
             return new UIImage((UIImage) uiComponent);
+         }  else if (uiComponent instanceof UITabbar) {
+            return new UITabbar((UITabbar)uiComponent);
          }
       }
       return null;

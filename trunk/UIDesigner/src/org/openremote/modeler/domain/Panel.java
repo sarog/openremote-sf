@@ -25,6 +25,7 @@ import java.util.List;
 import javax.persistence.Transient;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
@@ -42,6 +43,7 @@ public class Panel extends BusinessEntity {
    private List<UITabbarItem> tabbarItems = new ArrayList<UITabbarItem>();
    private TouchPanelDefinition touchPanelDefinition;
    
+   private UITabbar tabbar = null; 
    public String getName() {
       return name;
    }
@@ -105,4 +107,11 @@ public class Panel extends BusinessEntity {
       }
       return Constants.CUSTOM_PANEL;
    }
+   public UITabbar getTabbar() {
+      return tabbar;
+   }
+   public void setTabbar(UITabbar tabbar) {
+      this.tabbar = tabbar;
+   }
+   
 }

@@ -26,7 +26,7 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.FormWindow;
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Template;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -66,12 +66,13 @@ public class TemplateCreateWindow extends FormWindow
    
    private Radio notShare = new Radio();
    private Radio share = new Radio();
-   
+   private boolean isShare;
    
    
    private Template template = null;
    
-   public TemplateCreateWindow(){
+   public TemplateCreateWindow(boolean isShare){
+      this.isShare = isShare;
       setPlain(true);  
       setSize(350, 450);  
       setHeading("New Template");
@@ -178,6 +179,9 @@ public class TemplateCreateWindow extends FormWindow
       if(template != null) {
          notShare.setValue(!template.isShared());
          share.setValue(template.isShared());
+      } else {
+         notShare.setValue(!isShare);
+         share.setValue(isShare);
       }
       shareRadioGroup.add(notShare);
       shareRadioGroup.add(share);
@@ -219,7 +223,7 @@ public class TemplateCreateWindow extends FormWindow
          MessageBox.alert("Error", "One (and only one) screen must be selected", null);
          return;
       }
-      Screen screen = screenBeanModels.get(0).getBean();
+      ScreenPair screen = screenBeanModels.get(0).getBean();
       Template template = new Template(templateName.getValue(), screen);
       assembleTemplate(template);
       TemplateProxy.saveTemplate(template, new AsyncSuccessCallback<Template>() {

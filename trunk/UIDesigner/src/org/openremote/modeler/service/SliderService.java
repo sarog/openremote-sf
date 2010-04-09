@@ -28,4 +28,5 @@ public interface SliderService {
    Slider update(Slider slider);
    void delete(long id);
    List<Slider> loadAll();
+   List<Slider> loadSameSliders(Slider slider);
 }

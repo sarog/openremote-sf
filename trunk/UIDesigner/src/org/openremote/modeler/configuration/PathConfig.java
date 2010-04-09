@@ -237,7 +237,7 @@ public class PathConfig {
       return  WEBROOTPATH;
    }
    
-   public String getSerizalizedPanelsFile(Account account){
+   public String getSerializedPanelsFile(Account account){
       return userFolder(account)+"panels.obj";
    }
    
