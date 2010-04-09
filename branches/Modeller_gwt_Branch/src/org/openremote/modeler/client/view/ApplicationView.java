@@ -219,10 +219,6 @@ public class ApplicationView implements View {
       saveButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            if (!isExportedDataValid()) {
-               MessageBox.info("Info", "Nothing to save.", null);
-               return;
-            }
             uiDesignerView.saveUiDesignerLayout();
          }
       });

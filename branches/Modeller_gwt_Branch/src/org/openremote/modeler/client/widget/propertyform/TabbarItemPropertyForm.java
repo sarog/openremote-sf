@@ -47,6 +47,7 @@ public class TabbarItemPropertyForm extends PropertyForm {
    public TabbarItemPropertyForm(ScreenTabbarItem screenTabbarItem) {
       super(screenTabbarItem);
       this.screenTabbarItem = screenTabbarItem;
+      setLabelWidth(100);
       addFields();
       addSubmitListenersToForm();
       super.addDeleteButton();
@@ -74,7 +75,7 @@ public class TabbarItemPropertyForm extends PropertyForm {
          }
       };
       imageUploader.setValue(screenTabbarItem.getImageSource().getSrc());
-      imageUploader.setFieldLabel("imageSource");
+      imageUploader.setFieldLabel("Image Source");
       imageUploader.setActionToForm(this);
       // initial navigate properties
       final Navigate navigate = screenTabbarItem.getNavigate();
@@ -124,6 +125,6 @@ public class TabbarItemPropertyForm extends PropertyForm {
    @Override
    protected void afterRender() {
       super.afterRender();
-      ((PropertyPanel)this.getParent()).setHeading("Tabbar item properties");
+      ((PropertyPanel)this.getParent()).setHeading("Tab bar item properties");
    }
 }

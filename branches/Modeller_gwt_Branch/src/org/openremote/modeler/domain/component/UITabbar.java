@@ -69,7 +69,7 @@ public class UITabbar extends UIComponent {
    }
    @Override
    public String getName() {
-      return "Tabbar";
+      return "Tab bar";
    }
    
    public static enum Scope {
