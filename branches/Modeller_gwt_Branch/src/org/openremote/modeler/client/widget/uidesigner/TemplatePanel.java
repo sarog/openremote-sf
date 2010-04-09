@@ -23,8 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
+import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
+import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.TemplateProxy;
@@ -72,12 +75,12 @@ public class TemplatePanel extends ContentPanel {
    private Timer timer;
 
    private Icons icon = GWT.create(Icons.class);
-
-   /**
-    * Instantiates a new profile panel.
-    */
+   
+   private SelectionServiceExt<BeanModel> selectionService;
+   
    public TemplatePanel(ScreenPanel templateEditPanel) {
       this.templateEditPanel = templateEditPanel;
+      selectionService = new SelectionServiceExt<BeanModel>();
       setHeading("Template");
       setIcon(icon.templateIcon());
       setLayout(new FitLayout());
@@ -95,12 +98,27 @@ public class TemplatePanel extends ContentPanel {
       toolBar.add(createNewTemplateMenuItem());
 
       Button editBtn = createEditTemplateMenuItem();
-      editBtn.setEnabled(true);
+      editBtn.setEnabled(false);
       
       Button deleteBtn = createDeleteBtn();
-      deleteBtn.setEnabled(true);
-      toolBar.add(editBtn);
       
+      List<Button> editDelBtns = new ArrayList<Button>();
+      editDelBtns.add(editBtn);
+      editDelBtns.add(deleteBtn);
+      deleteBtn.setEnabled(false); 
+      
+      selectionService.addListener(new EditDelBtnSelectionListener(editDelBtns) {
+         @Override
+         protected boolean isEditableAndDeletable(List<BeanModel> sels) {
+            BeanModel selectModel = sels.get(0);
+            if (selectModel != null && selectModel.getBean() instanceof Template) {
+               return true;
+            }
+            return false;
+         }
+      });
+      
+      toolBar.add(editBtn);
       toolBar.add(deleteBtn);
       menuButtons.add(deleteBtn);
       setTopComponent(toolBar);
@@ -279,6 +297,9 @@ public class TemplatePanel extends ContentPanel {
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
       add(treeContainer);
+      
+      selectionService.addListener(new SourceSelectionChangeListenerExt(templateTree.getSelectionModel()));
+      selectionService.register(templateTree.getSelectionModel());
       
    }
    
