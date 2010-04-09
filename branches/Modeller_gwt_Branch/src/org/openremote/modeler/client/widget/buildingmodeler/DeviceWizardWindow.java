@@ -66,7 +66,7 @@ public class DeviceWizardWindow extends WizardWindow {
    protected void initForms() {
       forms = new CommonForm[]{
             new DeviceInfoWizardForm(this, beanModel),
-            new IRCommandImportWizardForm(this, beanModel)
+            new DeviceContentWizardForm(this, beanModel)
             };
    }
 
@@ -93,7 +93,7 @@ public class DeviceWizardWindow extends WizardWindow {
     */
    @Override
    protected void finish(int step, FormPanel currentForm) {
-      IRCommandImportWizardForm commandImportWizardForm = (IRCommandImportWizardForm) forms[IMPORT_IR_STEP];
+      DeviceContentWizardForm commandImportWizardForm = (DeviceContentWizardForm) forms[IMPORT_IR_STEP];
       DeviceInfoWizardForm deviceInfoWizardForm = (DeviceInfoWizardForm) forms[DEVICE_INFO_STEP];
       switch (step) {
       case DEVICE_INFO_STEP:

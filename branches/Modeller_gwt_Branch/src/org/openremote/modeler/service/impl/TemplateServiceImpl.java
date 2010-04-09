@@ -903,9 +903,9 @@ public class TemplateServiceImpl implements TemplateService {
 
       for (Device device : devices ) {
          device.setAccount(null);
-         device.setSensors(new HashSet<Sensor>());
-         device.setSwitchs(new HashSet<Switch>());
-         device.setSliders(new HashSet<Slider>());
+         device.setSensors(new ArrayList<Sensor>());
+         device.setSwitchs(new ArrayList<Switch>());
+         device.setSliders(new ArrayList<Slider>());
          device.setDeviceCommands(new ArrayList<DeviceCommand>());
       }
 

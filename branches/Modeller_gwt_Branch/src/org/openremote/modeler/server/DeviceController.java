@@ -115,5 +115,9 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
       deviceService.updateDevice(device);
       
    }
+
+   public Account getAccount() {
+      return userService.getAccount();
+   }
    
 }

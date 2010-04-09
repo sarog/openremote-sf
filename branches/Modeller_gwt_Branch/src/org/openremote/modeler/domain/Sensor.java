@@ -121,6 +121,9 @@ public class Sensor extends BusinessEntity {
             return false;
          }
       }
+      if (!name.equals(other.getName())){
+         return false;
+      }
       return getOid() == other.getOid();
    }
 }

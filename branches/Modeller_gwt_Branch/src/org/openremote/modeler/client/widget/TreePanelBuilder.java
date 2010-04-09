@@ -191,6 +191,7 @@ public class TreePanelBuilder {
          protected void afterRender() {
             super.afterRender();
             mask("Loading devices...");
+            removeStyleName("x-masked");
          }
       };
       ((DeviceBeanModelTable) BeanModelDataBase.deviceTable)
@@ -457,6 +458,7 @@ public class TreePanelBuilder {
          protected void afterRender() {
             super.afterRender();
             mask("Loading panels...");
+            removeStyleName("x-masked");
          }
 
       };
@@ -641,4 +643,32 @@ public static TreePanel<BeanModel> buildTemplateTree(final TemplatePanel templat
       tree.setDisplayProperty("displayName");
       return tree;
    }
+
+public static TreePanel<BeanModel> buildDeviceContentTree(TreeStore<BeanModel> store) {
+   TreePanel<BeanModel> deviceContentTree = new TreePanel<BeanModel>(store);
+      
+   deviceContentTree.setStateful(true);
+   deviceContentTree.setBorders(false);
+   deviceContentTree.setHeight("100%");
+   deviceContentTree.setDisplayProperty("displayName");
+   deviceContentTree.setStyleAttribute("overflow", "auto");
+   
+   deviceContentTree.setIconProvider(new ModelIconProvider<BeanModel>() {
+      public AbstractImagePrototype getIcon(BeanModel thisModel) {
+         if (thisModel.getBean() instanceof DeviceCommand) {
+            return ICON.deviceCmd();
+         } else if(thisModel.getBean() instanceof Sensor){
+            return ICON.sensorIcon();
+         } else if(thisModel.getBean() instanceof Switch){
+            return ICON.switchIcon();
+         } else if(thisModel.getBean() instanceof Slider){
+            return ICON.sliderIcon();
+         } else {
+            return ICON.folder();
+         }
+      }
+   });
+
+   return deviceContentTree;
+}
 }

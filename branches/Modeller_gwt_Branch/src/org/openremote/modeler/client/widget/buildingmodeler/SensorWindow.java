@@ -78,13 +78,13 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 public class SensorWindow extends FormWindow {
 
    private BeanModel sensorModel = null;
-   private TextField<String> nameField = new TextField<String>();
-   private TreePanel<BeanModel> commandSelectTree = null;
-   private SimpleComboBox typeList = new SimpleComboBox();
+   protected TextField<String> nameField = new TextField<String>();
+   protected TreePanel<BeanModel> commandSelectTree = null;
+   protected SimpleComboBox typeList = new SimpleComboBox();
    private FieldSet customFieldSet = null;
-   private TextField<Integer> minField = new TextField<Integer>();
-   private TextField<Integer> maxField = new TextField<Integer>();
-   private EditorGrid<BeanModel> grid = null;
+   protected TextField<Integer> minField = new TextField<Integer>();
+   protected TextField<Integer> maxField = new TextField<Integer>();
+   protected EditorGrid<BeanModel> grid = null;
    private int stateRowIndex = -1;
    
    private Device device = null;
@@ -209,22 +209,24 @@ public class SensorWindow extends FormWindow {
       }
    }
    
-   private ContentPanel createCommandTreeView() {
-      ContentPanel deviceCommandTreeContainer = new ContentPanel();
-      deviceCommandTreeContainer.setHeaderVisible(false);
+   private LayoutContainer createCommandTreeView() {
+      LayoutContainer deviceCommandTreeContainer = new LayoutContainer();
       deviceCommandTreeContainer.setSize(230, 120);
       deviceCommandTreeContainer.setLayout(new FitLayout());
       // overflow-auto style is for IE hack.
-      deviceCommandTreeContainer.addStyleName("overflow-auto");
+//      deviceCommandTreeContainer.addStyleName("overflow-auto");
       deviceCommandTreeContainer.setStyleAttribute("backgroundColor", "white");
       
-      commandSelectTree = TreePanelBuilder.buildCommandTree(device!=null?device:((Sensor)sensorModel.getBean()).getDevice());
+      buildCommandSelectTree(device);
       commandSelectTree.getSelectionModel().deselectAll();
       deviceCommandTreeContainer.add(commandSelectTree);
       
       return deviceCommandTreeContainer;
    }
    
+   protected void buildCommandSelectTree(Device device) {
+      commandSelectTree = TreePanelBuilder.buildCommandTree(device!=null?device:((Sensor)sensorModel.getBean()).getDevice());
+   }
    private FieldSet createRangeSet() {
       FieldSet rangeSet = new FieldSet();
       rangeSet.setWidth(300);
