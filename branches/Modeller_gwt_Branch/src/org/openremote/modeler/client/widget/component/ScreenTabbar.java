@@ -39,6 +39,7 @@ import com.extjs.gxt.ui.client.event.DragEvent;
 import com.extjs.gxt.ui.client.event.DragListener;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.fx.Draggable;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.AbsoluteLayout;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -58,6 +59,8 @@ public class ScreenTabbar extends ScreenComponent {
    private FlexTable tabItemContainer = new FlexTable();
    
    private UITabbar uiTabbar = null;
+   
+   private LayoutContainer moveBackGround = null;
 
    public ScreenTabbar(ScreenCanvas screenCanvas) {
       super(screenCanvas);
@@ -78,6 +81,22 @@ public class ScreenTabbar extends ScreenComponent {
       setStyleAttribute("position", "absolute");
       initTabbar();
       addDeleteListener();
+   }
+
+   private void addDragLine() {
+      this.moveBackGround = new LayoutContainer(){
+         @Override
+         protected void afterRender() {
+            super.afterRender();
+            super.el().updateZIndex(1);
+         }
+      };
+      moveBackGround.addStyleName("move-background");
+      moveBackGround.setSize("1px", defaultHeight+"px");
+      moveBackGround.setStyleAttribute("position", "absolute");
+      moveBackGround.setPosition(0, 0);
+      moveBackGround.hide();
+      add(moveBackGround);
    }
    @Override
    public String getName() {
@@ -185,10 +204,10 @@ public class ScreenTabbar extends ScreenComponent {
    }
    
    private void initTabbar() {
-      int tabbarNumber = getTabbarItemCount();
+      int tabbarItemNumber = getTabbarItemCount();
       int index = 0;
-      if (tabbarNumber >0 ) {
-         int width = (getScreenCanvas().getScreen().getTouchPanelDefinition().getCanvas().getWidth()-2*PADDING)/tabbarNumber;
+      if (tabbarItemNumber >0 ) {
+         int width = (getScreenCanvas().getScreen().getTouchPanelDefinition().getCanvas().getWidth()-2*PADDING)/tabbarItemNumber;
          this.screenTabbarItems.removeAll(screenTabbarItems);
          for (UITabbarItem uiTabbarItem : this.uiTabbar.getTabbarItems()) {
             ScreenTabbarItem screenTabbarItem = new ScreenTabbarItem(this.getScreenCanvas(),uiTabbarItem);
@@ -205,6 +224,7 @@ public class ScreenTabbar extends ScreenComponent {
             add(item);
             index++;
          }
+         this.addDragLine();
       }
       this.getScreenCanvas().layout();
    }
@@ -220,19 +240,29 @@ public class ScreenTabbar extends ScreenComponent {
          @Override
          public void dragEnd(DragEvent de) {
             super.dragEnd(de);
-            int index = getOrder(de.getClientX() - getScreenCanvas().getAbsoluteLeft());
+            int index = getOrder(de.getClientX() - getScreenCanvas().getAbsoluteLeft()-PADDING);
             ScreenTabbarItem screenTabarItem = (ScreenTabbarItem) de.getComponent();
             screenTabarItem.removeFromParent();
             ScreenTabbar.this.uiTabbar.removeTabarItem(screenTabarItem.getUITabbarIem());
             ScreenTabbar.this.uiTabbar.insertTabbarItem(index, screenTabarItem.getUITabbarIem());
             ScreenTabbar.this.initTabbar();
+            moveBackGround.hide();
          }
 
          @Override
          public void dragStart(DragEvent de) {
             super.dragStart(de);
             tabItem.hide();
+            moveBackGround.setPosition(0, 0);
+            moveBackGround.show();
          }
+
+         @Override
+         public void dragMove(DragEvent de) {
+            super.dragMove(de);
+            moveBackGround.setPosition(de.getClientX() - getScreenCanvas().getAbsoluteLeft()-PADDING, 0);
+         }
+         
          
          
       });
@@ -244,7 +274,6 @@ public class ScreenTabbar extends ScreenComponent {
             removeItself();
             getScreenCanvas().layout();
          }
-         
       });
    }
    
@@ -266,19 +295,13 @@ public class ScreenTabbar extends ScreenComponent {
    
    private int getOrder(int xPosition) {
       int result = 0;
-      int tabitemCount = getTabbarItemCount();
-      if (tabitemCount > 0) {
-         int width = (getScreenCanvas().getScreen().getTouchPanelDefinition().getWidth()-(2*PADDING)) / tabitemCount;
-         /*float temp =((float) xPosition) / width;
-         int integer = (int)temp;
-         float decimal = temp - integer;
-         if (decimal >= 0.5) {
-            result = integer +1;
-         } else {
-            result = integer;
+      int tabbarItemCouont = getTabbarItemCount();
+      if (tabbarItemCouont > 0) {
+         int tabbarWidth = getScreenCanvas().getScreen().getTouchPanelDefinition().getCanvas().getWidth() - (2 * PADDING);
+         int tabbarItemWidth = tabbarWidth / tabbarItemCouont;
+         if (xPosition >= 0 && xPosition <= tabbarWidth){
+            result = xPosition / tabbarItemWidth;
          }
-         result = integer;*/
-         result = xPosition/ width;
       }
       return result;
    }
