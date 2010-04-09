@@ -22,6 +22,8 @@ package org.openremote.modeler.service.impl;
 import java.util.List;
 
 import org.hibernate.Hibernate;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
@@ -127,4 +129,10 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
    }
 
 
+   public List<DeviceMacro> loadSameMacro(DeviceMacro macro) {
+      DetachedCriteria critera = DetachedCriteria.forClass(DeviceMacro.class);
+      critera.add(Restrictions.eq("account.oid", macro.getAccount().getOid()));
+      critera.add(Restrictions.eq("name", macro.getName()));
+      return genericDAO.findPagedDateByDetachedCriteria(critera, 1, 0);
+   }
 }

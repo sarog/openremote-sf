@@ -19,12 +19,17 @@
 */
 package org.openremote.modeler.domain.component;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.persistence.Transient;
 
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.domain.Sensor;
 
-public class UIImage extends UIComponent implements SensorOwner {
+import flexjson.JSON;
+
+public class UIImage extends UIComponent implements SensorOwner, ImageSourceOwner {
 
    private static final long serialVersionUID = -4114009124680167066L;
 
@@ -36,7 +41,7 @@ public class UIImage extends UIComponent implements SensorOwner {
 
    private UILabel label = null;
 
-   private SensorLink sensorLinker;
+   private SensorLink sensorLink;
 
    public UIImage() {
    }
@@ -50,6 +55,7 @@ public class UIImage extends UIComponent implements SensorOwner {
       this.imageSource = uiImage.imageSource;
       this.sensor = uiImage.sensor;
       this.label = uiImage.label;
+      this.sensorLink = uiImage.sensorLink;
    }
 
    public ImageSource getImageSource() {
@@ -67,9 +73,9 @@ public class UIImage extends UIComponent implements SensorOwner {
    public void setSensor(Sensor sensor) {
       this.sensor = sensor;
       if (sensor != null) {
-         this.sensorLinker = new SensorLink(sensor);
+         this.sensorLink = new SensorLink(sensor);
       } else {
-         sensorLinker.clear();
+         sensorLink.clear();
       }
    }
 
@@ -81,12 +87,12 @@ public class UIImage extends UIComponent implements SensorOwner {
       this.label = label;
    }
 
-   public SensorLink getSensorLinker() {
-      return sensorLinker;
+   public SensorLink getSensorLink() {
+      return sensorLink;
    }
 
-   public void setSensorLinker(SensorLink sensorLinker) {
-      this.sensorLinker = sensorLinker;
+   public void setSensorLink(SensorLink sensorLinker) {
+      this.sensorLink = sensorLinker;
    }
 
    @Override
@@ -100,7 +106,7 @@ public class UIImage extends UIComponent implements SensorOwner {
       StringBuilder sb = new StringBuilder();
       sb.append("<image id=\"" + getOid() + "\" src=\"" + imageSource.getImageFileName() + "\"> ");
       if (sensor != null) {
-         sb.append(sensorLinker.getXMLString());
+         sb.append(sensorLink.getXMLString());
       }
       if (label != null && label.isRemoved()==false) {
          sb.append("<include type=\"label\" ref=\"" + label.getOid() + "\"/>\n");
@@ -117,5 +123,17 @@ public class UIImage extends UIComponent implements SensorOwner {
    @Override
    public int getPreferredHeight() {
       return 32;
+   }
+
+   @Override
+   @JSON(include = false)
+   public Collection<ImageSource> getImageSources() {
+      Collection<ImageSource> imageSources = new ArrayList<ImageSource>(2);
+      if (this.imageSource != null && !this.imageSource.isEmpty()) {
+         imageSources.add(imageSource);
+      } else {
+         imageSources.add(new ImageSource(DEFAULT_IMAGE_URL));
+      }
+      return imageSources;
    }
 }

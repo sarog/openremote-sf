@@ -29,7 +29,7 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.client.widget.FormWindow;
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Template;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -67,7 +67,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
    
    private int currentPage = 0;
 
-   private Screen screen = null;
+   private ScreenPair screen = null;
 
    private TextField<String> nameField = null;
 
@@ -86,21 +86,21 @@ public class NewScreenFromTemplateWindow extends FormWindow {
    
    private Button nextPage = new Button();
 
-   public NewScreenFromTemplateWindow(ScreenTab screenTab) {
+   public NewScreenFromTemplateWindow() {
       super();
       setSize(400, 450);
       setHeading("New Screen From Template");
       setLayout(new FillLayout());
       setModal(true);
       createFormButtons();
-      createFields(screenTab);
+      createFields();
       createTemplateView();
       setBodyBorder(false);
       add(form);
       show();
    }
 
-   public void createFields(final ScreenTab screenTab) {
+   public void createFields() {
       form.setHeaderVisible(false);
       form.setBorders(false);
       form.setBodyBorder(true);
@@ -111,7 +111,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       nameField.setFieldLabel("Name");
       nameField.setName("name");
       form.add(nameField);
-      addBeforHideListener(screenTab);
+      addBeforHideListener();
    }
 
    private void createFormButtons() {
@@ -131,7 +131,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       form.addButton(resetBtn);
    }
 
-   private void addBeforHideListener(final ScreenTab screenTab) {
+   private void addBeforHideListener() {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          @Override
          public void handleEvent(FormEvent be) {
@@ -182,7 +182,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       searchBtn.addSelectionListener(new SearchListener());
       searchBtn.setText("Search");
       
-      ContentPanel searchContainer = new ContentPanel();
+      final ContentPanel searchContainer = new ContentPanel();
       searchContainer.setScrollMode(Scroll.NONE);
       searchContainer.setHeaderVisible(false);
       FormLayout searchContainerLayout = new FormLayout();
@@ -193,7 +193,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
 //      searchContainer.setButtonAlign(HorizontalAlignment.RIGHT);
       searchContainer.add(keywordsField);
       searchContainer.addButton(searchBtn);
-      
+      searchContainer.hide();
       
       templateFieldSet.add(searchContainer);
       
@@ -213,7 +213,20 @@ public class NewScreenFromTemplateWindow extends FormWindow {
 
       shareNoneRadio.setBoxLabel("Private");
       shareNoneRadio.setValue(true);
-      shareNoneRadio.addListener(Events.Change,shareRadioChangeListener);
+      shareNoneRadio.addListener(Events.Change,new ShareRadioChangeListener(){
+
+         @Override
+         public void handleEvent(FieldEvent be) {
+            super.handleEvent(be);
+            boolean showPrivate = shareNoneRadio.getValue();
+            if (showPrivate) {
+               searchContainer.hide();
+            } else {
+               searchContainer.show();
+            }
+         }
+         
+      });
 
       shareToAllRadio.setName("Public");
       shareToAllRadio.setBoxLabel("Public");

@@ -31,7 +31,8 @@ import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
@@ -189,6 +190,7 @@ public class CustomPanelWindow extends FormWindow {
                panel.setTouchPanelDefinition(customPanel);
                
                Group defaultGroup = new Group();
+               defaultGroup.setParentPanel(panel);
                defaultGroup.setOid(IDUtil.nextID());
                defaultGroup.setName(Constants.DEFAULT_GROUP);
                GroupRef groupRef = new GroupRef(defaultGroup);
@@ -199,11 +201,18 @@ public class CustomPanelWindow extends FormWindow {
                defaultScreen.setOid(IDUtil.nextID());
                defaultScreen.setName(Constants.DEFAULT_SCREEN);
                defaultScreen.setTouchPanelDefinition(panel.getTouchPanelDefinition());
-               ScreenRef screenRef = new ScreenRef(defaultScreen);
+               
+               ScreenPair screenPair = new ScreenPair();
+               screenPair.setOid(IDUtil.nextID());
+               screenPair.setTouchPanelDefinition(panel.getTouchPanelDefinition());
+               screenPair.setPortraitScreen(defaultScreen);
+               screenPair.setParentGroup(defaultGroup);
+               
+               ScreenPairRef screenRef = new ScreenPairRef(screenPair);
                screenRef.setTouchPanelDefinition(panel.getTouchPanelDefinition());
                screenRef.setGroup(defaultGroup);
                defaultGroup.addScreenRef(screenRef);
-               BeanModelDataBase.screenTable.insert(defaultScreen.getBeanModel());
+               BeanModelDataBase.screenTable.insert(screenPair.getBeanModel());
                BeanModelDataBase.groupTable.insert(defaultGroup.getBeanModel());
                
             } else {

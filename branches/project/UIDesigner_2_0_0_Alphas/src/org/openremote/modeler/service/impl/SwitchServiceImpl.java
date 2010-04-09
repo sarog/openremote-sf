@@ -22,6 +22,8 @@ package org.openremote.modeler.service.impl;
 import java.util.List;
 
 import org.hibernate.Hibernate;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.service.BaseAbstractService;
@@ -93,5 +95,10 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
       this.userService = userService;
    }
    
-    
+   public List<Switch> loadSameSwitchs(Switch swh) {
+      DetachedCriteria critera = DetachedCriteria.forClass(Switch.class);
+      critera.add(Restrictions.eq("device.oid", swh.getDevice().getOid()));
+      critera.add(Restrictions.eq("name", swh.getName()));
+      return genericDAO.findPagedDateByDetachedCriteria(critera, 1, 0);
+   }
 }

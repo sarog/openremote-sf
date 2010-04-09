@@ -112,8 +112,10 @@ public class SelectPanelForm extends CommonForm {
          public void handleEvent(FormEvent be) {
             GroupRef groupRef = (GroupRef) groupRefBeanModel.getBean();
             groupRef.getGroup().setName(nameField.getValue());
-            groupRef.setPanel((Panel) panelListView.getSelectionModel().getSelectedItem().getBean());
-            ((Panel) panelListView.getSelectionModel().getSelectedItem().getBean()).addGroupRef(groupRef);
+            Panel selectedPanel = (Panel) panelListView.getSelectionModel().getSelectedItem().getBean();
+            groupRef.setPanel(selectedPanel);
+            groupRef.getGroup().setParentPanel(selectedPanel);
+            selectedPanel.addGroupRef(groupRef);
             wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(groupRefBeanModel));
          }
 

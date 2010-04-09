@@ -300,7 +300,12 @@ table.screen-btn-cont td.br-c{
 }
 
 .tabbar-background {
-   background-image: url('../../resources/images/iphone_tabbar_bg.png');
+   background: url('../../resources/images/iphone_tabbar_bg.png') repeat-x;
+}
+
+.tabbaritem-background {
+	background-image: url('../../resources/images/tabbarItem.png');
+	background-position:center center;
 }
 
 /**

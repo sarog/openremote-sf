@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.openremote.modeler.client.rpc.TemplateRPCService;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.service.TemplateService;
@@ -68,29 +68,30 @@ public class TemplateController extends BaseGWTSpringController implements Templ
    }
 
    @Override
-   public Screen buildScreen(Template template) {
+   public ScreenPair buildScreen(Template template) {
       return templateService.buildScreen(template);
    }
 
    @Override
    public Template updateTemplate(Template template) throws BeehiveNotAvailableException {
       Template result = template;
-      Object obj = getThreadLocalRequest().getSession().getAttribute(TEMPLATE_IN_EDITING);
-      if (obj != null && obj instanceof Template) {
-         Template oldTemplate = (Template) obj;
-         String newContent = templateService.getTemplateContent(template.getScreen());
-         String oldContent = templateService.getTemplateContent(oldTemplate.getScreen());
-         if (!(template.getOid() == oldTemplate.getOid()) || !template.getName().equals(oldTemplate.getName())
-               || !(template.getKeywords().equals(oldTemplate.getKeywords()))
-               || !(template.isShared() == oldTemplate.isShared()) || !(newContent.equals(oldContent))) {
+      synchronized (getThreadLocalRequest().getSession()) {
+         Object obj = getThreadLocalRequest().getSession().getAttribute(TEMPLATE_IN_EDITING);
+         if (obj != null && obj instanceof Template) {
+            Template oldTemplate = (Template) obj;
+            String newContent = templateService.getTemplateContent(template.getScreen());
+            String oldContent = templateService.getTemplateContent(oldTemplate.getScreen());
+            oldTemplate.setContent(oldContent);
+            template.setContent(newContent);
+            if (!template.equals(oldTemplate)) {
+               result = templateService.updateTemplate(template);
+               getThreadLocalRequest().getSession().setAttribute(TEMPLATE_IN_EDITING, template);
+            }
+         } else {
             result = templateService.updateTemplate(template);
             getThreadLocalRequest().getSession().setAttribute(TEMPLATE_IN_EDITING, template);
          }
-      } else {
-         result = templateService.updateTemplate(template);
-         getThreadLocalRequest().getSession().setAttribute(TEMPLATE_IN_EDITING, template);
       }
-      
       return result;
    }
 

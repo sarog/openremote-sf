@@ -22,6 +22,8 @@ package org.openremote.modeler.service.impl;
 import java.util.List;
 
 import org.hibernate.Hibernate;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -100,4 +102,12 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       return device;
    }
 
+   public List<Device> loadSameDevices(Device device) {
+      DetachedCriteria critera = DetachedCriteria.forClass(Device.class);
+      critera.add(Restrictions.eq("name", device.getName()));
+      critera.add(Restrictions.eq("model", device.getModel()));
+      critera.add(Restrictions.eq("vendor", device.getVendor()));
+      critera.add(Restrictions.eq("account.oid", device.getAccount().getOid()));
+      return genericDAO.findPagedDateByDetachedCriteria(critera, 1, 0);
+   }
 }

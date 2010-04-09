@@ -22,9 +22,11 @@ package org.openremote.modeler.client.widget.propertyform;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
 import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
+import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectCommandWindow;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
@@ -60,6 +62,7 @@ public class ButtonPropertyForm extends PropertyForm {
    public ButtonPropertyForm(ScreenButton screenButton, UIButton uiButton) {
       super(screenButton);
       addFields(screenButton, uiButton);
+      super.addDeleteButton();
    }
    private void addFields(final ScreenButton screenButton, final UIButton uiButton) {
       // initial name field.
@@ -129,12 +132,15 @@ public class ButtonPropertyForm extends PropertyForm {
          navigateSet.collapse();
       }
       
-      Button imageBtn = new Button("Select");
+      final Button imageBtn = new Button("Select");
+      if (uiButton.getImage() != null) {
+         imageBtn.setText(uiButton.getImage().getImageFileName());
+      }
       imageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             final ImageSource image = uiButton.getImage();
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenButton, image);
+            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenButton, image), screenButton.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -145,6 +151,7 @@ public class ButtonPropertyForm extends PropertyForm {
                   } else {
                      uiButton.setImage(new ImageSource(imageUrl));
                   }
+                  imageBtn.setText(uiButton.getImage().getImageFileName());
                }
             });
          }
@@ -152,12 +159,15 @@ public class ButtonPropertyForm extends PropertyForm {
       AdapterField adapterImageBtn = new AdapterField(imageBtn);
       adapterImageBtn.setFieldLabel("Image");
       
-      Button onPressImageBtn = new Button("Select");
+      final Button onPressImageBtn = new Button("Select");
+      if (uiButton.getPressImage() != null) {
+         onPressImageBtn.setText(uiButton.getPressImage().getImageFileName());
+      }
       onPressImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             final ImageSource onPressImage = uiButton.getPressImage();
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenButton, onPressImage);
+            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenButton, onPressImage), screenButton.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -167,6 +177,7 @@ public class ButtonPropertyForm extends PropertyForm {
                   } else {
                      uiButton.setPressImage(new ImageSource(onPressImageUrl));
                   }
+                  onPressImageBtn.setText(uiButton.getPressImage().getImageFileName());
                }
             });
          }
@@ -199,4 +210,23 @@ public class ButtonPropertyForm extends PropertyForm {
       add(navigateSet);
       
    }
+   /**
+    * @param screenButton
+    * @param imageSource
+    * @return
+    */
+   private IconPreviewWidget createIconPreviewWidget(final ScreenButton screenButton, final ImageSource imageSource) {
+      IconPreviewWidget previewWidget = new IconPreviewWidget(screenButton.getWidth(), screenButton.getHeight());
+      previewWidget.setText(screenButton.getName());
+      if (imageSource != null) {
+         previewWidget.setIcon(imageSource.getSrc());
+      }
+      return previewWidget;
+   }
+   @Override
+   protected void afterRender() {
+      super.afterRender();
+      ((PropertyPanel)this.getParent()).setHeading("Button properties");
+   }
+   
 }

@@ -27,36 +27,25 @@ import org.openremote.modeler.touchpanel.TouchPanelDefinition;
  * The Class ScreenRef.
  */
 @SuppressWarnings("serial")
-public class ScreenRef extends BusinessEntity {
+public class ScreenPairRef extends BusinessEntity {
 
-   /** The screen. */
-   private Screen screen;
+   private ScreenPair screen;
    
-   /** The group. */
    private Group group;
 
    private TouchPanelDefinition touchPanelDefinition;
    
-   public ScreenRef() {
+   public ScreenPairRef() {
    }
-   /**
-    * Instantiates a new screen ref.
-    * 
-    * @param screen the screen
-    */
-   public ScreenRef(Screen screen) {
+   
+   public ScreenPairRef(ScreenPair screen) {
       super();
       screen.ref();
       this.screen = screen;
    }
    
    
-   /**
-    * Gets the screen.
-    * 
-    * @return the screen
-    */
-   public Screen getScreen() {
+   public ScreenPair getScreen() {
       return screen;
    }
 
@@ -65,7 +54,7 @@ public class ScreenRef extends BusinessEntity {
     * 
     * @param screen the new screen
     */
-   public void setScreen(Screen screen) {
+   public void setScreen(ScreenPair screen) {
       if (this.screen != null) {
          this.screen.releaseRef();
       }

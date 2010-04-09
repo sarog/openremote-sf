@@ -22,6 +22,8 @@ package org.openremote.modeler.service.impl;
 import java.util.List;
 
 import org.hibernate.Hibernate;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SliderService;
@@ -64,5 +66,16 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
          oldSlider.setSetValueCmd(slider.getSetValueCmd());
       }
       return oldSlider;
+   }
+   
+   public List<Slider> loadSameSliders(Slider slider) {
+      DetachedCriteria critera = DetachedCriteria.forClass(Slider.class);
+      critera.add(Restrictions.eq("device.oid", slider.getDevice().getOid()));
+      critera.add(Restrictions.eq("name", slider.getName()));
+//      critera.add(Restrictions.eq("setValueCmd.oid", slider.getSetValueCmd().getOid()));
+      /*if (slider.getSliderSensorRef() != null) {
+         critera.add(Restrictions.eq("sliderSensorRef.sensor.oid", slider.getSliderSensorRef().getOid()));
+      }*/
+      return genericDAO.findPagedDateByDetachedCriteria(critera, 1, 0);
    }
 }

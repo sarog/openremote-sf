@@ -28,8 +28,8 @@ import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
-import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -128,10 +128,10 @@ public class SelectScreenForm extends CommonForm {
       otherModels.clear();
       List<BeanModel> screenModels = BeanModelDataBase.screenTable.loadAll();
       for (BeanModel screenModel : screenModels) {
-         if (((Screen) screenModel.getBean()).getTouchPanelDefinition().equals(touchPanel)) {
+         if (((ScreenPair) screenModel.getBean()).getTouchPanelDefinition().equals(touchPanel)) {
             store.add(screenModel);
             screenListView.getSelectionModel().select(screenModel, true);
-         } else if (((Screen) screenModel.getBean()).getTouchPanelDefinition().getCanvas().equals(touchPanel.getCanvas())){
+         } else if (((ScreenPair) screenModel.getBean()).getTouchPanelDefinition().getCanvas().equals(touchPanel.getCanvas())){
             otherModels.add(screenModel);
          }
       }
@@ -144,14 +144,14 @@ public class SelectScreenForm extends CommonForm {
          public void handleEvent(FormEvent be) {
             Group group = ((GroupRef) groupRefBeanModel.getBean()).getGroup();
             TouchPanelDefinition touchPanelDefinition = ((GroupRef) groupRefBeanModel.getBean()).getPanel().getTouchPanelDefinition();
-            for (ScreenRef screenRef : group.getScreenRefs()) {
+            for (ScreenPairRef screenRef : group.getScreenRefs()) {
                screenRef.getScreen().releaseRef();
             }
             group.getScreenRefs().clear();
             List<BeanModel> screenModels = screenListView.getChecked();
             if (screenModels.size() > 0) {
                for (BeanModel screenModel : screenModels) {
-                  ScreenRef screenRef = new ScreenRef((Screen) screenModel.getBean());
+                  ScreenPairRef screenRef = new ScreenPairRef((ScreenPair) screenModel.getBean());
                   screenRef.setTouchPanelDefinition(touchPanelDefinition);
                   screenRef.setGroup(group);
                   group.addScreenRef(screenRef);

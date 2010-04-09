@@ -25,7 +25,7 @@ import java.util.Set;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceMacro;
-import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenPair;
 
 /**
  * 
@@ -38,11 +38,11 @@ public class ScreenFromTemplate extends BusinessEntity{
    
    private Set<Device> devices = new HashSet<Device>();
    private Set<DeviceMacro> macros = new HashSet<DeviceMacro>();
-   private Screen screen = null;
+   private ScreenPair screen = null;
    
    public ScreenFromTemplate(){}
    
-   public ScreenFromTemplate(Set<Device> devices,Screen screen,Set<DeviceMacro> macros) {
+   public ScreenFromTemplate(Set<Device> devices,ScreenPair screen,Set<DeviceMacro> macros) {
       this.devices = devices;
       this.screen = screen;
       this.macros = macros;
@@ -56,11 +56,11 @@ public class ScreenFromTemplate extends BusinessEntity{
       this.devices = devices;
    }
 
-   public Screen getScreen() {
+   public ScreenPair getScreen() {
       return screen;
    }
 
-   public void setScreen(Screen screen) {
+   public void setScreen(ScreenPair screen) {
       this.screen = screen;
    }
 

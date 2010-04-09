@@ -109,29 +109,38 @@ public class ScreenSlider extends ScreenComponent {
    }
 
    public void setMinImage(String imageURL) {
-      ImageSource minImageSource = new ImageSource();
-      minImageSource.setSrc(imageURL);
-      uiSlider.setMinImage(minImageSource);
+      if (isMinImageUploaded()) {
+         ImageSource minImageSource = new ImageSource(imageURL);
+         uiSlider.setMinImage(minImageSource);
+      }
       minImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
    }
 
    public void setMinTrackImage(String imageURL) {
-      uiSlider.setMinTrackImage(new ImageSource(imageURL));
+      if (isMinTrackImageUploaded()) {
+         uiSlider.setMinTrackImage(new ImageSource(imageURL));
+      }
       minTrackImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
    }
 
    public void setThumbImage(String imageURL) {
-      uiSlider.setThumbImage(new ImageSource(imageURL));
+      if (isThumbUploaded()) {
+         uiSlider.setThumbImage(new ImageSource(imageURL));
+      }
       thumbImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
    }
 
    public void setMaxTrackImage(String imageURL) {
-      uiSlider.setMaxTrackImage(new ImageSource(imageURL));
+      if (isMaxTrackImageUploaded()) {
+         uiSlider.setMaxTrackImage(new ImageSource(imageURL));
+      }
       maxTrackImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
    }
 
    public void setMaxImage(String imageURL) {
-      uiSlider.setMaxImage(new ImageSource(imageURL));
+      if (isMaxImageUploaded()) {
+         uiSlider.setMaxImage(new ImageSource(imageURL));
+      }
       maxImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
    }
 
@@ -268,7 +277,7 @@ public class ScreenSlider extends ScreenComponent {
    }
    
    
-   private boolean isMinImageUploaded() {
+   public boolean isMinImageUploaded() {
       ImageSource minImageSource = uiSlider.getMinImage();
       if (minImageSource != null && minImageSource.getSrc() != null) {
          String imageURL = uiSlider.getMinImage().getSrc();
@@ -277,7 +286,7 @@ public class ScreenSlider extends ScreenComponent {
       return false;
    }
    
-   private boolean isMinTrackImageUploaded() {
+   public boolean isMinTrackImageUploaded() {
       ImageSource minTrackImageSource = uiSlider.getMinTrackImage();
          if (minTrackImageSource != null && minTrackImageSource.getSrc() != null) {
          String imageURL = uiSlider.getMinTrackImage().getSrc();
@@ -286,7 +295,7 @@ public class ScreenSlider extends ScreenComponent {
       return false;
    }
    
-   private boolean isThumbUploaded() {
+   public boolean isThumbUploaded() {
       ImageSource thumbImageSource = uiSlider.getThumbImage();
       if (thumbImageSource !=null && thumbImageSource.getSrc() != null) {
          String imageURL = uiSlider.getThumbImage().getSrc();
@@ -295,7 +304,7 @@ public class ScreenSlider extends ScreenComponent {
       return false;
    }
    
-   private boolean isMaxTrackImageUploaded() {
+   public boolean isMaxTrackImageUploaded() {
       ImageSource maxTrackImageSource = uiSlider.getMaxTrackImage();
       if (maxTrackImageSource != null && maxTrackImageSource.getSrc() != null) {
          String imageURL = uiSlider.getMaxTrackImage().getSrc();
@@ -304,7 +313,7 @@ public class ScreenSlider extends ScreenComponent {
       return false;
    }
    
-   private boolean isMaxImageUploaded() {
+   public boolean isMaxImageUploaded() {
       ImageSource maxImageSource = uiSlider.getMaxImage();
       if (maxImageSource != null && maxImageSource.getSrc() != null) {
          String imageURL = uiSlider.getMaxImage().getSrc();
@@ -316,4 +325,5 @@ public class ScreenSlider extends ScreenComponent {
    public Boolean isVertical() {
       return uiSlider.isVertical();
    }
+   
 }

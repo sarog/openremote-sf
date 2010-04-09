@@ -21,8 +21,10 @@ package org.openremote.modeler.client.widget.propertyform;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
+import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
+import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectSwitchWindow;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.component.ImageSource;
@@ -43,15 +45,19 @@ public class SwitchPropertyForm extends PropertyForm {
       super(screenSwitch);
       setLabelWidth(90);
       addFields(screenSwitch, uiSwitch);
+      super.addDeleteButton();
    }
    
    private void addFields(final ScreenSwitch screenSwitch, final UISwitch uiSwitch) {
-      Button imageON = new Button("Select");
+      final Button imageON = new Button("Select");
+      if (uiSwitch.getOnImage() != null) {
+         imageON.setText(uiSwitch.getOnImage().getImageFileName());
+      }
       imageON.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             final ImageSource onImage = uiSwitch.getOnImage();
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(screenSwitch, onImage);
+            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSwitch, onImage), screenSwitch.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -61,6 +67,7 @@ public class SwitchPropertyForm extends PropertyForm {
                   } else {
                      uiSwitch.setOnImage(new ImageSource(imageOnUrl));
                   }
+                  imageON.setText(uiSwitch.getOnImage().getImageFileName());
                   screenSwitch.setIcon(imageOnUrl);
                }
             });
@@ -69,12 +76,15 @@ public class SwitchPropertyForm extends PropertyForm {
       AdapterField adapterImageON = new AdapterField(imageON);
       adapterImageON.setFieldLabel("Image(ON)");
 
-      Button imageOFF = new Button("Select");
+      final Button imageOFF = new Button("Select");
+      if (uiSwitch.getOffImage() != null) {
+         imageOFF.setText(uiSwitch.getOffImage().getImageFileName());
+      }
       imageOFF.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             final ImageSource offImage = uiSwitch.getOffImage();
-            ChangeIconWindow selectImageOFFWindow = new ChangeIconWindow(screenSwitch, offImage);
+            ChangeIconWindow selectImageOFFWindow = new ChangeIconWindow(createIconPreviewWidget(screenSwitch, offImage), screenSwitch.getWidth());
             selectImageOFFWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -84,6 +94,7 @@ public class SwitchPropertyForm extends PropertyForm {
                   } else {
                      uiSwitch.setOffImage(new ImageSource(imageOffUrl));
                   }
+                  imageOFF.setText(uiSwitch.getOffImage().getImageFileName());
                }
             });
 
@@ -130,5 +141,25 @@ public class SwitchPropertyForm extends PropertyForm {
          
          }
       };
+   }
+
+   /**
+    * @param screenSwitch
+    * @param imageSource
+    * @return
+    */
+   private IconPreviewWidget createIconPreviewWidget(ScreenSwitch screenSwitch, ImageSource imageSource) {
+      IconPreviewWidget previewWidget = new IconPreviewWidget(screenSwitch.getWidth(), screenSwitch.getHeight());
+      previewWidget.setText("Switch");
+      if (imageSource != null) {
+         previewWidget.setIcon(imageSource.getSrc());
+      }
+      return previewWidget;
+   }
+   
+   @Override
+   protected void afterRender() {
+      super.afterRender();
+      ((PropertyPanel)this.getParent()).setHeading("Switch properties");
    }
 }

@@ -27,6 +27,7 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.widget.component.ScreenLabel;
+import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectColorWindow;
 import org.openremote.modeler.client.widget.uidesigner.SelectSensorWindow;
 import org.openremote.modeler.domain.CustomSensor;
@@ -62,6 +63,7 @@ public class LabelPropertyForm extends PropertyForm {
       this.screenLabel = screenLabel;
       addFields();
       createSensorStates();
+      super.addDeleteButton();
    }
    private void addFields() {
       this.setLabelWidth(70);
@@ -110,6 +112,7 @@ public class LabelPropertyForm extends PropertyForm {
                   } else {
                      statesPanel.hide();
                   }
+                  screenLabel.clearSensorStates();
                }
             });
          }
@@ -164,7 +167,7 @@ public class LabelPropertyForm extends PropertyForm {
    
    private void createSensorStates(){
       statesPanel.removeAll();
-      SensorLink sensorLink = screenLabel.getUiLabel().getSensorLinker();
+      SensorLink sensorLink = screenLabel.getUiLabel().getSensorLink();
       final Map<String,String> sensorAttrs = new HashMap<String,String>();
       if(screenLabel.getUiLabel().getSensor()!=null && screenLabel.getUiLabel().getSensor().getType()==SensorType.SWITCH){
         final TextField<String> onField = new TextField<String>();
@@ -186,8 +189,9 @@ public class LabelPropertyForm extends PropertyForm {
                if (onText != null && onText.trim().length() != 0) {
                   sensorAttrs.put("name", "on");
                   sensorAttrs.put("value", onText);
-                  screenLabel.getUiLabel().getSensorLinker().addOrUpdateChildForSensorLinker("state", sensorAttrs);
+                  screenLabel.getUiLabel().getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
+               screenLabel.clearSensorStates();
             }
         });
         
@@ -198,8 +202,9 @@ public class LabelPropertyForm extends PropertyForm {
                if (offText != null && offText.trim().length() != 0) {
                   sensorAttrs.put("name", "off");
                   sensorAttrs.put("value", offText);
-                  screenLabel.getUiLabel().getSensorLinker().addOrUpdateChildForSensorLinker("state", sensorAttrs);
+                  screenLabel.getUiLabel().getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
+               screenLabel.clearSensorStates();
             }
         });
        
@@ -223,8 +228,9 @@ public class LabelPropertyForm extends PropertyForm {
                if(stateText!=null&&!stateText.trim().isEmpty()){
                   sensorAttrs.put("name", state.getName());
                   sensorAttrs.put("value", stateText);
-                  screenLabel.getUiLabel().getSensorLinker().addOrUpdateChildForSensorLinker("state", sensorAttrs);
+                  screenLabel.getUiLabel().getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
+               screenLabel.clearSensorStates();
             }
               
            });
@@ -234,4 +240,9 @@ public class LabelPropertyForm extends PropertyForm {
       statesPanel.layout();
    }
    
+   @Override
+   protected void afterRender() {
+      super.afterRender();
+      ((PropertyPanel)this.getParent()).setHeading("Label properties");
+   }
 }

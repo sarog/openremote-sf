@@ -38,6 +38,8 @@ public class Configuration {
    private String webappServerRoot;
 
    private String controllerConfigPath;
+   
+   private String controllerConfigXsdPath;
 
    public String getPanelXsdPath() {
       return panelXsdPath;
@@ -95,4 +97,12 @@ public class Configuration {
       this.controllerConfigPath = controllerConfigPath;
    }
 
+   public String getControllerConfigXsdPath() {
+      return controllerConfigXsdPath;
+   }
+
+   public void setControllerConfigXsdPath(String controllerConfigXsdPath) {
+      this.controllerConfigXsdPath = controllerConfigXsdPath;
+   }
+   
 }
