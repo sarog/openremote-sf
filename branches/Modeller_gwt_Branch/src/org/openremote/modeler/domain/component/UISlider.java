@@ -13,14 +13,26 @@ import flexjson.JSON;
 
 public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner {
    
+   public static final String DEFAULT_HORIZONTAL_MIN_IMAGE = "./resources/images/custom/slider/min.png";
+   public static final String DEFAULT_HORIZONTAL_MINTRACK_IMAGE = "./resources/images/custom/slider/minTrack.png";
+   public static final String DEFAULT_HORIZONTAL_THUMB_IMAGE = "./resources/images/custom/slider/thumb.png";
+   public static final String DEFAULT_HORIZONTAL_MAXTRACK_IMAGE = "./resources/images/custom/slider/maxTrack.png";
+   public static final String DEFAULT_HORIZONTAL_MAX_IMAGE = "./resources/images/custom/slider/max.png";
+   
+   public static final String DEFAULT_VERTICAL_MIN_IMAGE = "./resources/images/custom/slider/vmin.png";
+   public static final String DEFAULT_VERTICAL_MINTRACK_IMAGE = "./resources/images/custom/slider/vminTrack.png";
+   public static final String DEFAULT_VERTICAL_THUMB_IMAGE = "./resources/images/custom/slider/vthumb.png";
+   public static final String DEFAULT_VERTICAL_MAXTRACK_IMAGE = "./resources/images/custom/slider/vmaxTrack.png";
+   public static final String DEFAULT_VERTICAL_MAX_IMAGE = "./resources/images/custom/slider/vmax.png";
+   
    private static final long serialVersionUID = 4821886776184406692L;
    
    private boolean vertical = false;
-   private ImageSource thumbImage;
-   private ImageSource minImage;
-   private ImageSource minTrackImage;
-   private ImageSource maxImage;
-   private ImageSource maxTrackImage;
+   private ImageSource thumbImage = new ImageSource("");;
+   private ImageSource minImage = new ImageSource("");
+   private ImageSource minTrackImage = new ImageSource("");
+   private ImageSource maxImage = new ImageSource("");
+   private ImageSource maxTrackImage = new ImageSource("");
    private Slider slider;
    
    public UISlider() {
@@ -108,7 +120,7 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
    public String getPanelXml() {
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("        <slider id=\"" + getOid() + "\" ");
-      if (thumbImage != null) {
+      if (isThumbUploaded()) {
          xmlContent.append("thumbImage=\"" + thumbImage.getImageFileName() + "\" ");
       }
       if (vertical) {
@@ -123,19 +135,19 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
          if (getSensor() instanceof RangeSensor) {
             RangeSensor rangeSensor = (RangeSensor) getSensor();
             xmlContent.append("<min value=\"" + rangeSensor.getMin() + "\"");
-            if (minImage != null) {
+            if (isMinImageUploaded()) {
                xmlContent.append(" image=\"" + minImage.getImageFileName() + "\"");
             }
-            if (minTrackImage != null) {
+            if (isMinTrackImageUploaded()) {
                xmlContent.append(" trackImage=\"" + minTrackImage.getImageFileName() + "\"");
             }
             xmlContent.append("/>\n");
             
             xmlContent.append("<max value=\"" + rangeSensor.getMax() + "\" ");
-            if (maxImage != null) {
+            if (isMaxImageUploaded()) {
                xmlContent.append("image=\"" + maxImage.getImageFileName() + "\" ");
             }
-            if (maxTrackImage != null) {
+            if (isMaxTrackImageUploaded()) {
                xmlContent.append("trackImage=\"" + maxTrackImage.getImageFileName() + "\" ");
             }
             xmlContent.append("/>\n");
@@ -202,5 +214,43 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       return imageSources;
    }
    
+   public boolean isMinImageUploaded() {
+      if (minImage != null && !minImage.isEmpty()) {
+         String imageURL = minImage.getSrc();
+         return !(DEFAULT_HORIZONTAL_MIN_IMAGE.equals(imageURL) || DEFAULT_VERTICAL_MIN_IMAGE.equals(imageURL)); 
+      }
+      return false;
+   }
    
+   public boolean isMinTrackImageUploaded() {
+         if (minTrackImage != null && !minTrackImage.isEmpty()) {
+         String imageURL = minTrackImage.getSrc();
+         return !(DEFAULT_HORIZONTAL_MINTRACK_IMAGE.equals(imageURL) || DEFAULT_VERTICAL_MINTRACK_IMAGE.equals(imageURL));
+      }
+      return false;
+   }
+   
+   public boolean isThumbUploaded() {
+      if (thumbImage !=null && !thumbImage.isEmpty()) {
+         String imageURL = thumbImage.getSrc();
+         return !(DEFAULT_HORIZONTAL_THUMB_IMAGE.equals(imageURL) || DEFAULT_VERTICAL_THUMB_IMAGE.equals(imageURL)); 
+      } 
+      return false;
+   }
+   
+   public boolean isMaxTrackImageUploaded() {
+      if (maxTrackImage != null && !maxTrackImage.isEmpty()) {
+         String imageURL = maxTrackImage.getSrc();
+         return !(DEFAULT_HORIZONTAL_MAXTRACK_IMAGE.equals(imageURL) || DEFAULT_VERTICAL_MAXTRACK_IMAGE.equals(imageURL)); 
+      }
+      return false;
+   }
+   
+   public boolean isMaxImageUploaded() {
+      if (maxImage != null && !maxImage.isEmpty()) {
+         String imageURL = maxImage.getSrc();
+         return !(DEFAULT_HORIZONTAL_MAX_IMAGE.equals(imageURL) || DEFAULT_VERTICAL_MAX_IMAGE.equals(imageURL)); 
+      }
+      return false;
+   }
 }
