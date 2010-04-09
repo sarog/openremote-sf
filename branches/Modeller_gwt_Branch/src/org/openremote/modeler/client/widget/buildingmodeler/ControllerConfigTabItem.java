@@ -141,6 +141,7 @@ public class ControllerConfigTabItem extends TabItem {
                                  label.setHideLabel(true);
                                  label.setText("(new configuration is marked as red)");
                                  label.setStyleAttribute("fontSize", "11px");
+                                 label.setStyleAttribute("fontFamily", Constants.DEFAULT_FONT_FAMILY);
                                  configContainer.add(label);
                                  
                                  Info.display("Info",

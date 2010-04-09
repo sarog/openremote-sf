@@ -57,8 +57,6 @@ public class SliderPropertyForm extends PropertyForm {
       final CheckBox vertical = new CheckBox();
       vertical.setValue(false);
       vertical.setFieldLabel("Vertical");
-//      vertical.setBoxLabel("Vertical");
-//      vertical.setHideLabel(true);
       vertical.setValue(screenSlider.isVertical());
       vertical.setStyleName("left:0px");
       vertical.addListener(Events.Change, new Listener<FieldEvent>() {
