@@ -109,29 +109,38 @@ public class ScreenSlider extends ScreenComponent {
    }
 
    public void setMinImage(String imageURL) {
-      ImageSource minImageSource = new ImageSource();
-      minImageSource.setSrc(imageURL);
-      uiSlider.setMinImage(minImageSource);
+      if (isMinImageUploaded()) {
+         ImageSource minImageSource = new ImageSource(imageURL);
+         uiSlider.setMinImage(minImageSource);
+      }
       minImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
    }
 
    public void setMinTrackImage(String imageURL) {
-      uiSlider.setMinTrackImage(new ImageSource(imageURL));
+      if (isMinTrackImageUploaded()) {
+         uiSlider.setMinTrackImage(new ImageSource(imageURL));
+      }
       minTrackImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
    }
 
    public void setThumbImage(String imageURL) {
-      uiSlider.setThumbImage(new ImageSource(imageURL));
+      if (isThumbUploaded()) {
+         uiSlider.setThumbImage(new ImageSource(imageURL));
+      }
       thumbImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
    }
 
    public void setMaxTrackImage(String imageURL) {
-      uiSlider.setMaxTrackImage(new ImageSource(imageURL));
+      if (isMaxTrackImageUploaded()) {
+         uiSlider.setMaxTrackImage(new ImageSource(imageURL));
+      }
       maxTrackImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
    }
 
    public void setMaxImage(String imageURL) {
-      uiSlider.setMaxImage(new ImageSource(imageURL));
+      if (isMaxImageUploaded()) {
+         uiSlider.setMaxImage(new ImageSource(imageURL));
+      }
       maxImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
    }
 
