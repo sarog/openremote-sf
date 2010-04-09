@@ -77,6 +77,6 @@ public class TabbarPropertyForm extends PropertyForm {
    @Override
    protected void afterRender() {
       super.afterRender();
-      ((PropertyPanel)this.getParent()).setHeading("Tabbar properties");
+      ((PropertyPanel)this.getParent()).setHeading("Tab bar properties");
    }
 }

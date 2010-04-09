@@ -66,6 +66,9 @@ public class NavigateFieldSet extends FieldSet {
    private void init() {
       setLayout(new ColumnLayout());
       setHeading("Add Navigation");
+      typeList.setEditable(false);
+      groupList.setEditable(false);
+      screenList.setEditable(false);
    }
    
    private void createLeftContainer() {

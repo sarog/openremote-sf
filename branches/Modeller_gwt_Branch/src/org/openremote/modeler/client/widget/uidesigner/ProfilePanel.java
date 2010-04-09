@@ -45,6 +45,7 @@ import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.IDUtil;
+import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.Device;
@@ -317,7 +318,7 @@ public class ProfilePanel extends ContentPanel {
     * @param panelBeanModel
     *           the group bean model
     */
-   private void editPanel(BeanModel panelBeanModel) {
+   private void editPanel(final BeanModel panelBeanModel) {
       Panel panel = panelBeanModel.getBean();
       if (Constants.CUSTOM_PANEL.equals(panel.getType())) {
          final CustomPanelWindow editCustomPanelWindow = new CustomPanelWindow(panel);
@@ -344,11 +345,12 @@ public class ProfilePanel extends ContentPanel {
                Panel panel = be.<Panel> getData();
                panelTree.getStore().update(panel.getBeanModel());
                Info.display("Info", "Edit panel " + panel.getName() + " success.");
+               ProfilePanel.this.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(panelBeanModel,panelTree)));
             }
          });
       }
    }
-   private void editGroup(BeanModel groupRefBeanModel) {
+   private void editGroup(final BeanModel groupRefBeanModel) {
       final GroupEditWindow groupEditWindow = new GroupEditWindow(groupRefBeanModel);
       groupEditWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
@@ -369,6 +371,7 @@ public class ProfilePanel extends ContentPanel {
             panelTree.getSelectionModel().select(groupRefModel, false);
             BeanModelDataBase.screenTable.clearUnuseData();
             Info.display("Info", "Edit Group " + groupRef.getGroup().getName() + " success.");
+            ProfilePanel.this.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(groupRefBeanModel,panelTree)));
          }
       });
    }
@@ -382,6 +385,7 @@ public class ProfilePanel extends ContentPanel {
             panelTree.getStore().update(screenRef.getBeanModel());
             BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
             Info.display("Info", "Edit screen " + screenRef.getScreen().getName() + " success.");
+            ProfilePanel.this.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(screenRefBeanModel,panelTree)));
          }
          
       });

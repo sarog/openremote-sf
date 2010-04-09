@@ -41,6 +41,7 @@ import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.CheckBox;
+import com.extjs.gxt.ui.client.widget.form.CheckBoxGroup;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SliderPropertyForm extends PropertyForm {
@@ -221,7 +222,10 @@ public class SliderPropertyForm extends PropertyForm {
       AdapterField adapterMaxTrackImageBtn = new AdapterField(maxTrackImageBtn);
       adapterMaxTrackImageBtn.setFieldLabel("TrackImage(max)");
 
-      add(vertical);
+      CheckBoxGroup checkBoxGroup = new CheckBoxGroup();
+      checkBoxGroup.setFieldLabel("Vertical");
+      checkBoxGroup.add(vertical);
+      add(checkBoxGroup);
       add(adapterCommand);
       add(adapterMinImageBtn);
       add(adapterMinTrackImageBtn);
