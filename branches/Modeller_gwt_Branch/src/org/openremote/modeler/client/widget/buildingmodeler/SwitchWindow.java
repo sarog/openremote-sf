@@ -65,12 +65,12 @@ public class SwitchWindow extends FormWindow {
    public static final String SWITCH_ON_COMMAND_FIELD_NAME="command(on)";
    public static final String SWITCH_OFF_COMMAND_FIELD_NAME="command(off)";
    
-   private Switch switchToggle = null;
+   protected Switch switchToggle = null;
    
    private TextField<String> nameField = new TextField<String>();
-   private ComboBox<ModelData> sensorField = new SimpleComboBox();
-   private Button switchOnBtn = new Button("select");
-   private Button switchOffBtn = new Button("select");
+   protected ComboBox<ModelData> sensorField = new SimpleComboBox();
+   protected Button switchOnBtn = new Button("select");
+   protected Button switchOffBtn = new Button("select");
    
    private boolean edit = false;
    
