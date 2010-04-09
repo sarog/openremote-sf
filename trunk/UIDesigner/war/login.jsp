@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta content="openremote, knx, iphone, insteon, x10, infrared, crestron, zigbee, opensource, gpl, iknx, lirc, beehive, modeler, uicomposer" name="KEYWORDS"/>
+<meta content="openremote, boss, iphone, android, knx, insteon, x10, infrared, z-wave, zigbee, opensource, gpl, iknx, lirc" name="KEYWORDS"/>
 <link href="image/OpenRemote.Logo.16x16.png" rel="shortcut icon"/>
 <link href="image/OpenRemote.Logo.16x16.png" type="image/png" rel="icon"/>
 <title>Login - OpenRemote Boss 2.0 Online</title>
@@ -88,8 +88,8 @@
                 <p class="fail">Invalid activation credentials, activation failed.</p>
             </c:if>
             <c:if test="${needActivation ne null}">
-                <p class="pass">We have sent you an activation email to <b>${email}</b>,
-                 please check it out to finish your registration.</p>
+                <p class="pass">We have sent an activation email to <b>${email}</b>,
+                 please follow the instructions in the email to complete your registration.</p>
             </c:if>
             <div style="padding-left:110px">
 	            <p class="input"><b class="form_label">Username</b>

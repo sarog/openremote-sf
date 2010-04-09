@@ -149,11 +149,13 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       }
       if (panels != null) {
          if (!resourceService.getPanelsJson(panels).equals(resourceService.getPanelsJson(oldPanels))) {
-            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
-            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
-            autoSaveResponse.setUpdated(true);
-            resourceService.initResources(panels, maxID);
-            resourceService.saveResourcesToBeehive();
+            synchronized (getThreadLocalRequest().getSession()) {
+               getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
+               getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
+               autoSaveResponse.setUpdated(true);
+               resourceService.initResources(panels, maxID);
+               resourceService.saveResourcesToBeehive(panels);
+            }
             LOGGER.info("Auto save UI designerLayout sucessfully");
          }
       }
@@ -165,26 +167,29 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       AutoSaveResponse autoSaveResponse = new AutoSaveResponse();
 
       if (panels != null) {
-         getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
-         getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
-         autoSaveResponse.setUpdated(true);
-         resourceService.initResources(panels, maxID);
-         resourceService.saveResourcesToBeehive();
+         synchronized (getThreadLocalRequest().getSession()) {
+            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
+            getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
+            autoSaveResponse.setUpdated(true);
+            resourceService.initResources(panels, maxID);
+            resourceService.saveResourcesToBeehive(panels);
+         }
          LOGGER.info("manual save UI DesingerLayout successfully");
       }
       autoSaveResponse.setUpdated(true);
       return autoSaveResponse;
    }
 
-   @SuppressWarnings("unchecked")
    @Override
    public Collection<Panel> loadPanelsFromSession() {
-      Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
-      if(obj == null){
+      synchronized (getThreadLocalRequest().getSession()) {
+//      Object obj = getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
+//      if(obj == null){
          PanelsAndMaxOid panelsAndMaxOid = restore();
-         obj = panelsAndMaxOid !=null ? panelsAndMaxOid.getPanels(): null; 
+//         obj = panelsAndMaxOid !=null ? panelsAndMaxOid.getPanels(): null; 
+//      }
+         return panelsAndMaxOid.getPanels();
       }
-      return (obj == null) ? new ArrayList<Panel>() : (Collection<Panel>)obj;
    }
    
    @SuppressWarnings("unchecked")
@@ -291,5 +296,14 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       File fileAfterRotated = ImageRotateUtil.rotate(imageFileInUserFolder, imageFileInUserFolder.getParent() + File.separator + ROTATED_FLAG
             +imageFileInUserFolder.getName(), degree);
       return fileAfterRotated==null?imageFileInUserFolder.getName():fileAfterRotated.getName();
+   }
+
+   public String getAccountPath() {
+      String accountPath = resourceService.getRelativeResourcePathByCurrentAccount("account");
+      return accountPath.substring(0, accountPath.lastIndexOf("/") + 1);
+   }
+   
+   public String getOnLineTestURL () {
+      return configuration.getBeehiveRESTRootUrl()+"user/"+userService.getAccount().getUser().getUsername();
    }
 }

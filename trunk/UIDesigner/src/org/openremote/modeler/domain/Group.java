@@ -24,7 +24,10 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
+
+import flexjson.JSON;
 
 /**
  * The Class Group.
@@ -40,10 +43,15 @@ public class Group extends RefedEntity {
    private String name;
    
    /** The screen refs. */
-   private List<ScreenRef> screenRefs = new ArrayList<ScreenRef>();
+   private List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
 
    private List<UITabbarItem> tabbarItems = new ArrayList<UITabbarItem>();
    
+   private UITabbar tabbar = null;
+   
+   private Panel parentPanel = null;
+   
+   public Group() {}
    /**
     * Gets the name.
     * 
@@ -68,7 +76,7 @@ public class Group extends RefedEntity {
     * 
     * @return the screen refs
     */
-   public List<ScreenRef> getScreenRefs() {
+   public List<ScreenPairRef> getScreenRefs() {
       return screenRefs;
    }
 
@@ -77,7 +85,7 @@ public class Group extends RefedEntity {
     * 
     * @param screenRefs the new screen refs
     */
-   public void setScreenRefs(List<ScreenRef> screenRefs) {
+   public void setScreenRefs(List<ScreenPairRef> screenRefs) {
       this.screenRefs = screenRefs;
    }
 
@@ -86,16 +94,18 @@ public class Group extends RefedEntity {
     * 
     * @param screen the screen
     */
-   public void addScreenRef(ScreenRef screenRef) {
+   public void addScreenRef(ScreenPairRef screenRef) {
       screenRefs.add(screenRef);
    }
    
-   public void removeScreenRef(ScreenRef screenRef) {
+   public void removeScreenRef(ScreenPairRef screenRef) {
       screenRefs.remove(screenRef);
    }
    
-   public void insertScreenRef(ScreenRef before, ScreenRef target) {
+   public void insertScreenRef(ScreenPairRef before, ScreenPairRef target) {
       int index = screenRefs.indexOf(before);
+      target.setGroup(this);
+      target.getScreen().setParentGroup(this);
       screenRefs.add(index, target);
    }
    public List<UITabbarItem> getTabbarItems() {
@@ -132,4 +142,20 @@ public class Group extends RefedEntity {
    public static void increaseDefaultNameIndex() {
       defaultNameIndex++;
    }
+
+   @JSON(include = false)
+   public Panel getParentPanel() {
+      return parentPanel;
+   }
+
+   public void setParentPanel(Panel belongsTo) {
+      this.parentPanel = belongsTo;
+   }
+   public UITabbar getTabbar() {
+      return tabbar;
+   }
+   public void setTabbar(UITabbar tabbar) {
+      this.tabbar = tabbar;
+   }
+   
 }

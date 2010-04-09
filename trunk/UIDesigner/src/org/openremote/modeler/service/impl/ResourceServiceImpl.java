@@ -76,11 +76,14 @@ import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.ScreenRef;
+import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.component.Gesture;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.SensorOwner;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
@@ -90,6 +93,8 @@ import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
+import org.openremote.modeler.domain.component.UITabbar;
+import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.IllegalRestUrlException;
@@ -149,7 +154,7 @@ public class ResourceServiceImpl implements ResourceService {
    public String downloadZipResource(long maxOid, String sessionId, List<Panel> panels) {
       initResources(panels, maxOid);
       PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File zipFile = this.getExportResource();
+      File zipFile = this.getExportResource(panels);
       if (zipFile == null) {
          throw new XmlExportException("Failed to export! User folder is empty!");
       }
@@ -165,15 +170,6 @@ public class ResourceServiceImpl implements ResourceService {
     * @param sessionId
     *           the user id
     */
-   /*
-    * private void replaceUrl(Collection<Screen> screens, String sessionId) { String rerlativeSessionFolderPath =
-    * PathConfig.getInstance(configuration).getRelativeSessionFolderPath(sessionId); for (Screen screen : screens) { for
-    * (Absolute absolute : screen.getAbsolutes()) {
-    * absolute.getUIComponent().transImagePathToRelative(rerlativeSessionFolderPath); } for (UIGrid grid :
-    * screen.getGrids()) { for (Cell cell : grid.getCells()) {
-    * cell.getUIComponent().transImagePathToRelative(rerlativeSessionFolderPath); } } } }
-    */
-
    private File compressFilesToZip(File[] files, String zipFilePath,List<String>ignoreExtentions) {
       List<File> compressedfiles = new ArrayList<File>();
       for (File file : files) {
@@ -381,7 +377,7 @@ public class ResourceServiceImpl implements ResourceService {
             return new ArrayList<Command>();
          }
       } catch (Exception e) {
-         LOGGER.warn("Some components referenced a removed object! ", e);
+         LOGGER.warn("Some components referenced a removed object:  "+e.getMessage());
          return new ArrayList<Command>();
       }
       return oneUIButtonEventList;
@@ -559,36 +555,10 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    @Override
-   public String getGroupsJson(Collection<Group> groups) {
-      try {
-         String[] includedPropertyNames = {"screenRefs"};
-         String[] excludePropertyNames = {};
-         return JsonGenerator.serializerObjectInclude(groups, includedPropertyNames, excludePropertyNames);
-      } catch (Exception e) {
-         LOGGER.error(e);
-         return "";
-      }
-   }
-
-   @Override
-   public String getScreensJson(Collection<Screen> screens) {
-      try {
-         String[] includedPropertyNames = {"absolutes", "absolutes.uiComponent", "grid", "grid.cells",
-               "grid.cells.uiComponent"};
-         String[] excludePropertyNames = {"absolutes.uiComponent.panelXml", "grid.cells.uiComponent.panelXml"};
-         return JsonGenerator
-               .serializerObjectInclude(screens, includedPropertyNames, excludePropertyNames);
-      } catch (Exception e) {
-         LOGGER.error(e);
-         return "";
-      }
-   }
-
-   @Override
    public String getPanelsJson(Collection<Panel> panels) {
       try {
-         String[] includedPropertyNames = { "groupRefs", "tabbarItems", "tabbarItems.navigate",
-               "groupRefs.group.tabbarItems", "groupRefs.group.tabbarItems.navigate", "groupRefs.group.screenRefs",
+         String[] includedPropertyNames = { "groupRefs", "tabbar.tabbarItems", "tabbar.tabbarItems.navigate",
+               "groupRefs.group.tabbar.tabbarItems", "groupRefs.group.tabbar.tabbarItems.navigate", "groupRefs.group.screenRefs",
                "groupRefs.group.screenRefs.screen.absolutes.uiComponent", "groupRefs.group.screenRefs.screen.gestures",
                "groupRefs.group.screenRefs.screen.gestures.navigate",
                "groupRefs.group.screenRefs.screen.absolutes.uiComponent.uiCommand",
@@ -598,7 +568,7 @@ public class ResourceServiceImpl implements ResourceService {
                "groupRefs.group.screenRefs.screen.grids.cells.uiComponent.commands",
                "groupRefs.group.screenRefs.screen.grids.uiComponent.sensor",
                "groupRefs.group.screenRefs.screen.grids.cells.uiComponent.sensor" };
-         String[] excludePropertyNames = {"panelName"};
+         String[] excludePropertyNames = {"panelName", "*.displayName","*.panelXml"};
          return JsonGenerator.serializerObjectInclude(panels, includedPropertyNames, excludePropertyNames);
       } catch (Exception e) {
          LOGGER.error(e);
@@ -693,9 +663,18 @@ public class ResourceServiceImpl implements ResourceService {
       }
 
       for (Group group : groups) {
-         List<ScreenRef> screenRefs = group.getScreenRefs();
-         for (ScreenRef screenRef : screenRefs) {
-            screens.add(screenRef.getScreen());
+         List<ScreenPairRef> screenRefs = group.getScreenRefs();
+         for (ScreenPairRef screenRef : screenRefs) {
+            ScreenPair screenPair = screenRef.getScreen();
+            if (OrientationType.PORTRAIT.equals(screenPair.getOrientation())) {
+               screens.add(screenPair.getPortraitScreen());
+            } else if (OrientationType.LANDSCAPE.equals(screenPair.getOrientation())) {
+               screens.add(screenPair.getLandscapeScreen());
+            } else if (OrientationType.BOTH.equals(screenPair.getOrientation())) {
+               screenPair.setInverseScreenIds();
+               screens.add(screenPair.getPortraitScreen());
+               screens.add(screenPair.getLandscapeScreen());
+            }
          }
       }
    }
@@ -719,15 +698,20 @@ public class ResourceServiceImpl implements ResourceService {
 
       /*
        * reset sensor oid, avoid duplicated id in export xml.
+       * make sure same sensors have same oid. 
        */
 
       for (Sensor sensor : sensorWithoutDuplicate) {
-         long sensorOid = sensor.getOid();
          long currentSensorId = maxId.maxId();
+         Collection<Sensor> sensorsWithSameOid = new ArrayList<Sensor>();
+         sensorsWithSameOid.add(sensor);
          for (Sensor s : allSensors) {
-            if (s.getOid() == sensorOid) {
-               s.setOid(currentSensorId);
+            if (s.equals(sensor)) {
+               sensorsWithSameOid.add(s);
             }
+         }
+         for(Sensor s: sensorsWithSameOid) {
+            s.setOid(currentSensorId);
          }
       }
       return sensorWithoutDuplicate;
@@ -766,6 +750,10 @@ public class ResourceServiceImpl implements ResourceService {
 
    @Override
    public void initResources(Collection<Panel> panels, long maxOid) {
+      //1, we must serialize panels at first, otherwise after integrating panel's ui component and commands(such as device command, sensor ...)
+      //the oid would be changed, that is not ought to happen. for example : after we restore panels, we create a component with same sensor (like we did last time), the two 
+      //sensors will have different oid, if so, when we export controller.xml we my find that there are two (or more sensors) with all the same property except oid. 
+      serializePanelsAndMaxOid(panels,maxOid);
       Set<Group> groups = new LinkedHashSet<Group>();
       Set<Screen> screens = new LinkedHashSet<Screen>();
       /*
@@ -834,60 +822,63 @@ public class ResourceServiceImpl implements ResourceService {
 
          }
          
-         serialize(panels,maxOid);
-//         saveResourcesToBeehive();
       } catch (IOException e) {
          throw new FileOperationException("Failed to write resource: " + e.getMessage(), e);
       }
    }
    
-   private void serialize(Collection<Panel> panels, long maxOid) {
+   private void serializePanelsAndMaxOid(Collection<Panel> panels, long maxOid) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File panelsObjFile = new File(pathConfig.getSerizalizedPanelsFile(userService.getAccount()));
+      File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));
       ObjectOutputStream oos = null;
-
       try {
          FileUtilsExt.deleteQuietly(panelsObjFile);
-
-         if (panels==null || panels.size()<1) {
+         if (panels == null || panels.size() < 1) {
             return;
          }
-
          oos = new ObjectOutputStream(new FileOutputStream(panelsObjFile));
          oos.writeObject(panels);
          oos.writeLong(maxOid);
       } catch (FileNotFoundException e) {
-        LOGGER.error(e.getMessage(), e);
+         LOGGER.error(e.getMessage(), e);
       } catch (IOException e) {
-        LOGGER.error(e.getMessage(), e);
+         LOGGER.error(e.getMessage(), e);
       } finally {
          try {
             if (oos != null) {
                oos.close();
             }
          } catch (IOException e) {
-           LOGGER.warn("Unable to close output stream to '" + panelsObjFile + "'.");
+            LOGGER.warn("Unable to close output stream to '" + panelsObjFile + "'.");
          }
       }
    }
-
-   @SuppressWarnings("unchecked")
+   
    public PanelsAndMaxOid restore(){
       //First, try to down openremote.zip from beehive.
-      downloadOpenRemoteZip();
+      try {
+         downloadOpenRemoteZip();
+      } catch (IOException e) {
+         LOGGER.error("Beehive no available !" + e.getLocalizedMessage());
+      }
       //Restore panels and max oid. 
+      
+      return  restorePanelsAndMaxOid();
+   }
+
+   @SuppressWarnings("unchecked")
+   private PanelsAndMaxOid restorePanelsAndMaxOid() {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File panelsObjFile = new File(pathConfig.getSerizalizedPanelsFile(userService.getAccount()));
+      File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));
       if (!panelsObjFile.exists()) {
-         return null;
+         return new PanelsAndMaxOid(new ArrayList<Panel>(),0L);
       }
       ObjectInputStream ois = null;
-      PanelsAndMaxOid panelsAndMaxOid = new PanelsAndMaxOid(new ArrayList<Panel>(),0);
       try {
          ois = new ObjectInputStream(new FileInputStream(panelsObjFile));
          Collection<Panel> panels = (Collection<Panel>) ois.readObject();
-         Long maxOid = ois.readLong();
-         panelsAndMaxOid = new PanelsAndMaxOid(panels, maxOid);
+         long maxOid = ois.readLong();
+         return new PanelsAndMaxOid(panels,maxOid);
       } catch (Exception e) {
          throw new UIRestoreException("UIDesigner restore failed, incompatible data can not be restore to panels. ", e);
       } finally {
@@ -902,11 +893,10 @@ public class ResourceServiceImpl implements ResourceService {
             );
          }
       }
-      return panelsAndMaxOid;
    }
-
+   
    @SuppressWarnings("all")
-   public void saveResourcesToBeehive() {
+   public void saveResourcesToBeehive(Collection<Panel> panels) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
       HttpPost httpPost = new HttpPost();
@@ -918,7 +908,7 @@ public class ResourceServiceImpl implements ResourceService {
       
       try {
          httpPost.setURI(new URI(url));
-         FileBody resource = new FileBody(getExportResource());
+         FileBody resource = new FileBody(getExportResource(panels));
          MultipartEntity entity = new MultipartEntity();
          entity.addPart("resource", resource);
          httpPost.setEntity(entity);
@@ -951,7 +941,12 @@ public class ResourceServiceImpl implements ResourceService {
       } 
       try {
          httpPost.setURI(new URI(url));
-         FileBody resource = new FileBody(getTemplateZipResource());
+         File templateZip = getTemplateZipResource(template);
+         if (templateZip == null) {
+            LOGGER.warn("There are no template resources for template \"" + template.getName()+ "\"to save to beehive!");
+            return ;
+         }
+         FileBody resource = new FileBody(templateZip);
          MultipartEntity entity = new MultipartEntity();
          entity.addPart("resource", resource);
 
@@ -975,7 +970,7 @@ public class ResourceServiceImpl implements ResourceService {
    @Override
    public boolean canRestore() {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File panelsObjFile = new File(pathConfig.getSerizalizedPanelsFile(userService.getAccount()));
+      File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));
       return panelsObjFile.exists();
    }
 
@@ -1045,7 +1040,7 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
    
-   private void downloadOpenRemoteZip() {
+   private void downloadOpenRemoteZip() throws IOException {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
       HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTRootUrl() + "user/"
@@ -1095,9 +1090,6 @@ public class ResourceServiceImpl implements ResourceService {
             throw new BeehiveNotAvailableException("Failed to download resources, status code: "
                   + response.getStatusLine().getStatusCode());
          }
-      } catch (IOException ioException) {
-         throw new BeehiveNotAvailableException("Failed to download user resource: " + ioException.getMessage(),
-               ioException);
       } finally {
          if (inputStream != null) {
             try {
@@ -1119,22 +1111,26 @@ public class ResourceServiceImpl implements ResourceService {
    
    @Override
    public File getTemplateResource(Template template) {
-      //TODO ---------just include the resource which is necessary for this template.
-      //     ---------Now, All the resources in the user folder is included! 
-      return this.getTemplateZipResource();
+      return this.getTemplateZipResource(template);
    }
 
-   private File getResourceZipFile(List<String> ignoreExtentions) {
+   private File getResourceZipFile(List<String> ignoreExtentions,Collection<File> compresseFiles) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
       File[] filesInAccountFolder = userFolder.listFiles();
       if (filesInAccountFolder == null || filesInAccountFolder.length == 0) {
          return null;
       }
-      File[] filesInZip = new File[filesInAccountFolder.length];
+      
+      File[] filesInZip = null;
+      if (compresseFiles != null && compresseFiles.size() > 0) {
+         filesInZip = new File[compresseFiles.size()];
+      } else {
+         filesInZip = new File[1];
+      }
       int i = 0;
-      for (File file : filesInAccountFolder) {
-         if (file.exists() && !file.getPath().equals(pathConfig.getSerizalizedPanelsFile(userService.getAccount()))) {
+      for (File file : compresseFiles) {
+         if (file.exists()) {
             filesInZip[i++] = file;
          }
       }
@@ -1146,17 +1142,32 @@ public class ResourceServiceImpl implements ResourceService {
 
    }
    
-   private File getTemplateZipResource(){
+   private File getTemplateZipResource(Template template){
       List<String> ignoreExtentions = new ArrayList<String>();
       ignoreExtentions.add("zip");
       ignoreExtentions.add("xml");
-//      ignoreExtentions.add("obj");
-      return getResourceZipFile(ignoreExtentions);
+      ScreenPair sp = template.getScreen();
+      Collection<ImageSource> images = sp.getAllImageSources();
+      Collection<File> templateRelatedFiles = getAllImageFiles(images);
+      if (templateRelatedFiles.size() ==0 ) return null;
+      return getResourceZipFile(ignoreExtentions,templateRelatedFiles);
    }
-   private File getExportResource() {
+   private File getExportResource(Collection<Panel> panels) {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
       List<String> ignoreExtentions = new ArrayList<String>();
+      Collection<ImageSource> images = getAllImageSources(panels);
+      Collection<File> imageFiles = getAllImageFiles(images);
+      File panelXMLFile = new File(pathConfig.panelXmlFilePath(userService.getAccount()));
+      File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(userService.getAccount()));
+      File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));
+      Collection<File> exportFile = new HashSet<File>();
+      exportFile.addAll(imageFiles);
+      exportFile.add(panelXMLFile);
+      exportFile.add(controllerXMLFile);
+      exportFile.add(panelsObjFile);
+      
       ignoreExtentions.add("zip");
-      return getResourceZipFile(ignoreExtentions);
+      return getResourceZipFile(ignoreExtentions,exportFile);
    }
    
    private String encode(String namePassword) {
@@ -1164,6 +1175,71 @@ public class ResourceServiceImpl implements ResourceService {
       return new String(Base64.encodeBase64(namePassword.getBytes()));
    }
 
+   private Set<File> getAllImageFiles(Collection<ImageSource> images) {
+      Set<File> files = new HashSet<File>();
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
+
+      for (ImageSource image : images) {
+         String fileName = image.getImageFileName();
+         File imageFile = new File(userFolder, fileName);
+         if (imageFile.exists()) {
+            files.add(imageFile);
+         }
+      }
+      return files;
+   }
+   
+   private Set<ImageSource> getAllImageSources(Collection<Panel> panels) {
+      Set<ImageSource> imageSources = new HashSet<ImageSource>();
+      if (panels != null & panels.size() > 0) {
+         for (Panel panel : panels) {
+            List<GroupRef> groupRefs = panel.getGroupRefs();
+            if (groupRefs != null && groupRefs.size() > 0) {
+               for (GroupRef groupRef : groupRefs) {
+                  Group group = groupRef.getGroup();
+                  if (group.getTabbar() != null) {
+                     imageSources.addAll(getImageSourcesFromTabbar(group.getTabbar()));
+                  }
+                  List<ScreenPairRef> screenPairRefs = group.getScreenRefs();
+                  if (screenPairRefs != null && screenPairRefs.size() > 0) {
+                     for (ScreenPairRef screenPairRef : screenPairRefs) {
+                        ScreenPair screenPair = screenPairRef.getScreen();
+                        if (OrientationType.PORTRAIT.equals(screenPair.getOrientation())) {
+                           imageSources.addAll(screenPair.getPortraitScreen().getAllImageSources());
+                        } else if (OrientationType.LANDSCAPE.equals(screenPair.getOrientation())) {
+                           imageSources.addAll(screenPair.getLandscapeScreen().getAllImageSources());
+                        } else if (OrientationType.BOTH.equals(screenPair.getOrientation())) {
+                           imageSources.addAll(screenPair.getPortraitScreen().getAllImageSources());
+                           imageSources.addAll(screenPair.getLandscapeScreen().getAllImageSources());
+                        }
+                     }
+                  }
+               }
+            }
+            if (panel.getTabbar() != null) {
+               imageSources.addAll(getImageSourcesFromTabbar(panel.getTabbar()));
+            }
+         }
+      }
+      return imageSources;
+   }
+   
+   private Collection<ImageSource> getImageSourcesFromTabbar(UITabbar uiTabbar) {
+      Collection<ImageSource> imageSources = new ArrayList<ImageSource>(5);
+      if (uiTabbar != null) {
+         List<UITabbarItem> uiTabbarItems = uiTabbar.getTabbarItems();
+         if (uiTabbarItems != null && uiTabbarItems.size() >0) {
+            for (UITabbarItem item : uiTabbarItems) {
+               ImageSource image = item.getImage();
+               if (image != null && ! image.isEmpty()) {
+                  imageSources.add(image);
+               }
+            }
+         }
+      }
+      return imageSources;
+   }
   static class MaxId{
       Long maxId = 0L;
       public MaxId(Long maxId){

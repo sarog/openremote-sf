@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -23,11 +23,10 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.ImageUploadField;
-import org.openremote.modeler.client.widget.component.ScreenButton;
-import org.openremote.modeler.client.widget.component.ScreenComponent;
-import org.openremote.modeler.domain.component.ImageSource;
 
+import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BaseListLoader;
 import com.extjs.gxt.ui.client.data.DataField;
@@ -101,14 +100,8 @@ public class ChangeIconWindow extends Dialog {
    /** The image url. */
    private String imageURL;
    
-   /** The upload image url. */
-   private String uploadImageURL = null;
-   
-   /** The screen button. */
-   private ScreenButton screenButton;
-   
-   /** The preview image. */
-//   private Image previewImage = ((UIDesignerImages) GWT.create(UIDesignerImages.class)).iphoneBtn().createImage();
+   /** The preview widget. */
+   private IconPreviewWidget previewWidget;
    
    /** The window. */
    private ChangeIconWindow window;
@@ -116,16 +109,15 @@ public class ChangeIconWindow extends Dialog {
    /**
     * Instantiates a new change icon window.
     *
-    * @param  screenControl  TODO
-    * @param  uImage         TODO
+    * @param  previewWidget  the icon preview container.
+    * 
+    * @param  previewWidth   the preview container width.
     */
-   public ChangeIconWindow(ScreenComponent screenControl, ImageSource uImage) {
-      ScreenCanvas canvas = screenControl.getScreenCanvas();
-      createScreenControl(canvas, screenControl, uImage);
+   public ChangeIconWindow(IconPreviewWidget previewWidget, int previewWidth) {
+      this.previewWidget = previewWidget;
       window = this;
-
-      if (screenControl.getWidth() > 90) {
-         setMinWidth(400 + screenControl.getWidth() + 16);
+      if (previewWidth > 90) {
+         setMinWidth(400 + previewWidth + 16);
       } else {
          setMinWidth(500);
       }
@@ -295,16 +287,19 @@ public class ChangeIconWindow extends Dialog {
       iconContainer.setBorders(true);
       iconContainer.setBodyBorder(false);
       iconContainer.setHeaderVisible(false);
-//      iconContainer.set
       
       iconContainer.add(createBeehiveIconsView());
       urlPanel.setHeaderVisible(false);
       urlPanel.setBorders(false);
       urlPanel.setBodyBorder(false);
       urlPanel.setHeight(80);
+      urlPanel.setButtonAlign(HorizontalAlignment.RIGHT);
       TextField<String> urlField = new TextField<String>();
       urlField.setFieldLabel("URL");
+      Button preview = new Button("Preview");
+      preview.addSelectionListener(new PreviewListener());
       urlPanel.add(urlField);
+      urlPanel.addButton(preview);
       iconContainer.add(urlPanel);
       
       ImageUploadField imageUpload = new ImageUploadField(null) {
@@ -314,7 +309,6 @@ public class ChangeIconWindow extends Dialog {
             super.onChange(ce);
 
             if (!uploadPanel.isValid()) {
-//               uploadPanel.reset();
                return;
             }
 
@@ -332,8 +326,14 @@ public class ChangeIconWindow extends Dialog {
       uploadPanel.add(imageUpload);
       uploadPanel.addListener(Events.Submit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
-            uploadImageURL = be.getResultHtml();
+            imageURL = be.getResultHtml();
             window.unmask();
+            if (imageURL != null) {
+               previewWidget.setIcon(imageURL);
+               layout();
+            } else {
+               MessageBox.alert("Error", "Please upload an image.", null);
+            }
          }
       });
 
@@ -359,30 +359,7 @@ public class ChangeIconWindow extends Dialog {
       previewIconContainer.setLayout(layout);
       previewIconContainer.setBorders(true);
       previewIconContainer.setStyleAttribute("backgroundColor", "white");
-      Button preview = new Button("Preview");
-      preview.addSelectionListener(new SelectionListener<ButtonEvent>() {
-
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            setImageURL();
-
-            if (imageURL != null) {
-//               previewImage.setUrl(imageURL);
-//               previewImage.setSize("46px", "46px");
-               screenButton.setIcon(imageURL);
-               layout();
-            } else {
-               MessageBox.alert("Error", "Please input an image URL.", null);
-            }
-         }
-      });
-//      imageURL = screenButton.getButtonIcon();
-//      if (imageURL != null) {
-//         previewImage.setUrl(imageURL);
-//         previewImage.setSize("46px", "46px");
-//      }
-      previewIconContainer.add(screenButton, new VBoxLayoutData(new Margins(0, 0, 5, 0)));
-      previewIconContainer.add(preview, new VBoxLayoutData(new Margins(5, 0, 5, 0)));
+      previewIconContainer.add(previewWidget, new VBoxLayoutData(new Margins(0, 0, 5, 0)));
    }
    
    /**
@@ -441,27 +418,20 @@ public class ChangeIconWindow extends Dialog {
          imageURL = beehiveIconsView.getSelectionModel().getSelectedItem().get("fileName").toString();
       } else if (FROM_URL.equals(radioValue)) {
          imageURL = ((TextField<String>) urlPanel.getItem(0)).getValue();
-      } else if (FROM_LOCAL.equals(radioValue)) {
-         imageURL = uploadImageURL;
       }
-         
    }
    
-   /**
-    * Creates the screen control as a screen button to preview the image.
-    *
-    * @param canvas TODO
-    * @param screenControl the screen control
-    * @param uImage the u image
-    */
-   private void createScreenControl(ScreenCanvas canvas, ScreenComponent screenControl, ImageSource uImage) {
-      screenButton = new ScreenButton(canvas, screenControl.getWidth(), screenControl.getHeight());
-      screenButton.setName(screenControl.getName());
-      if (uImage != null) {
-         imageURL = uImage.getSrc();
-         screenButton.setIcon(imageURL);
+   private final class PreviewListener extends SelectionListener<ButtonEvent> {
+      @SuppressWarnings("unchecked")
+      @Override
+      public void componentSelected(ButtonEvent ce) {
+         imageURL = ((TextField<String>) urlPanel.getItem(0)).getValue();
+         if (imageURL != null) {
+            previewWidget.setIcon(imageURL);
+            layout();
+         } else {
+            MessageBox.alert("Error", "Please input an image URL.", null);
+         }
       }
-      screenButton.addStyleName("button-border");
-      screenButton.layout();
    }
 }

@@ -27,6 +27,7 @@ import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
+import org.openremote.modeler.domain.component.UITabbar;
 
 /**
  * ScreenControl as the component's super class.
@@ -57,6 +58,8 @@ public abstract class ScreenComponent extends ComponentContainer {
          return new ScreenLabel(canvas, (UILabel) uiComponent);
       } else if (uiComponent instanceof UIImage) {
          return new ScreenImage(canvas, (UIImage) uiComponent);
+      } else if (uiComponent instanceof UITabbar) {
+         return new ScreenTabbar(canvas,(UITabbar)uiComponent);
       }
       return null;
    }

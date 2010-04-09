@@ -21,6 +21,8 @@ package org.openremote.modeler.touchpanel;
 
 import java.io.Serializable;
 
+import flexjson.JSON;
+
 /**
  * The Class TouchPanelDefinition define the touch panel's properties, which match along with panel xml file.
  */
@@ -52,6 +54,8 @@ public class TouchPanelDefinition implements Serializable {
    
    /** The canvas define the area's width and height that user can operate. */
    private TouchPanelCanvasDefinition canvas;
+   
+   public TouchPanelDefinition  horizontalDefinition;
    
    /**
     * Instantiates a new panel definition.
@@ -251,5 +255,27 @@ public class TouchPanelDefinition implements Serializable {
       result = 31 * result + (bgImage != null ? bgImage.hashCode() : 0);
       result = 31 * result + (canvas != null ? canvas.hashCode() : 0);
       return result;
+   }
+   
+   @JSON(include=false)
+   public TouchPanelDefinition getHorizontalDefinition() {
+      if (horizontalDefinition == null) {
+         horizontalDefinition = new TouchPanelDefinition();
+         horizontalDefinition.setType(this.type);
+         horizontalDefinition.setName(this.name);
+         horizontalDefinition.setWidth(this.height);
+         horizontalDefinition.setHeight(this.width);
+         if (this.width > 0 ) {
+            horizontalDefinition.setPaddingTop(this.width - this.paddingLeft - this.canvas.getWidth());
+         }
+         horizontalDefinition.setPaddingLeft(this.paddingTop);
+         
+         if (this.bgImage != null) {
+            int lastPoint = this.bgImage.lastIndexOf(".");
+            horizontalDefinition.setBgImage(this.bgImage.substring(0, lastPoint) + "_h" + this.bgImage.substring(lastPoint));
+         }
+         horizontalDefinition.setCanvas(new TouchPanelCanvasDefinition(this.canvas.getHeight(),this.canvas.getWidth()));
+      }
+      return horizontalDefinition;
    }
 }

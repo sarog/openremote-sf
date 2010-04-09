@@ -16,13 +16,20 @@
  */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.client.widget.component.ScreenTabbar;
+import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
-import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
+import com.google.gwt.user.client.Event;
 
 /**
  * The Class ScreenTabItem contain a screenPanel.
@@ -32,7 +39,7 @@ public class ScreenTabItem extends TabItem {
    /** The screen. */
    private Screen screen;
 
-   private LayoutContainer screenContainer;
+   private ComponentContainer screenContainer;
    
    private ScreenCanvas screenCanvas;
 
@@ -44,8 +51,14 @@ public class ScreenTabItem extends TabItem {
     */
    public ScreenTabItem(Screen screen) {
       this.screen = screen;
-      setText(screen.getName());
-      setClosable(true);
+      if (screen.isLandscape()) {
+         setText(Constants.LANDSCAPE);
+         setItemId(Constants.LANDSCAPE);
+      } else {
+         setText(Constants.PORTRAIT);
+         setItemId(Constants.PORTRAIT);
+      }
+//      setClosable(true);
       setLayout(new FlowLayout());
       setScrollMode(Scroll.AUTO);
       addScreenContainer();
@@ -56,12 +69,23 @@ public class ScreenTabItem extends TabItem {
     * Adds the screen container.
     */
    private void addScreenContainer() {
-      screenContainer = new LayoutContainer();
+      screenContainer = new ComponentContainer(){ 
+         @Override
+         public void onComponentEvent(ComponentEvent ce) {
+            super.onComponentEvent(ce);
+            if (ce.getEventTypeInt() == Event.ONMOUSEDOWN) {
+               WidgetSelectionUtil.setSelectWidget(this);
+            }
+         }
+      };
       screenContainer.addStyleName("screen-background");
+      screenContainer.sinkEvents(Event.ONMOUSEDOWN);
       updateTouchPanel();
       screenCanvas = new ScreenCanvas(screen);
+      initTabbarForScreenCanvas();
       screenContainer.add(screenCanvas);
-      screenContainer.setBorders(false);
+//      screenContainer.setBorders(false);
+      screenContainer.setStyleAttribute("border", "1px dashed gray");
       add(screenContainer);
    }
 
@@ -71,11 +95,11 @@ public class ScreenTabItem extends TabItem {
     */
    public void updateTouchPanel() {
       TouchPanelDefinition touchPanelDefinition = screen.getTouchPanelDefinition();
-      if (touchPanelDefinition.getWidth() > 0 && touchPanelDefinition.getHeight() > 0) {
-         screenContainer.setSize(touchPanelDefinition.getWidth(), touchPanelDefinition.getHeight());
-      } else {
-         screenContainer.setSize(touchPanelDefinition.getCanvas().getWidth(), touchPanelDefinition.getCanvas().getHeight());
+      if (touchPanelDefinition.getWidth() == 0 || touchPanelDefinition.getHeight() == 0) {
+         touchPanelDefinition.setWidth(touchPanelDefinition.getCanvas().getWidth() + 20);
+         touchPanelDefinition.setHeight(touchPanelDefinition.getCanvas().getHeight() + 20);
       }
+      screenContainer.setSize(touchPanelDefinition.getWidth(), touchPanelDefinition.getHeight());
       if (touchPanelDefinition.getBgImage() != null) {
          screenContainer.setStyleAttribute("backgroundImage", "url(" + touchPanelDefinition.getBgImage() + ")");
       }
@@ -96,4 +120,43 @@ public class ScreenTabItem extends TabItem {
       return screenCanvas;
    }
 
+   public void updateTabbarForScreenCanvas(ScreenPairRef screenRef) {
+      Group screenGroup = screenRef.getGroup();
+      if (screenGroup != null) {
+         Panel groupPanel = screenGroup.getParentPanel();
+         ScreenTabbar tabbar = null;
+         if (screenGroup.getTabbar() != null) {
+            tabbar = new ScreenTabbar(screenCanvas,screenGroup.getTabbar());
+         } else if (groupPanel != null && groupPanel.getTabbar()!= null) {
+            tabbar = new ScreenTabbar(screenCanvas,groupPanel.getTabbar());
+            tabbar.setToPanel();
+         }
+         
+         if (tabbar != null) {
+            screenCanvas.addTabbar(tabbar);
+         } else {
+            screenCanvas.removeTabbar();
+         }
+      }
+   }
+   
+   public void initTabbarForScreenCanvas() {
+      if (screen != null) {
+         Group screenGroup = screen.getScreenPair().getParentGroup();
+         if (screenGroup != null) {
+            Panel groupPanel = screenGroup.getParentPanel();
+            ScreenTabbar tabbar = null;
+            if (screenGroup.getTabbar() != null) {
+               tabbar = new ScreenTabbar(screenCanvas,screenGroup.getTabbar());
+            } else if (groupPanel != null && groupPanel.getTabbar()!= null) {
+               tabbar = new ScreenTabbar(screenCanvas,groupPanel.getTabbar());
+               tabbar.setToPanel();
+            }
+            
+            if (tabbar != null) {
+               screenCanvas.addTabbar(tabbar);
+            }
+         }
+      }
+   }
 }

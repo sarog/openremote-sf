@@ -98,7 +98,6 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
       genericDAO.delete(old.getProtocol());
       old.setName(deviceCommand.getName());
       old.setProtocol(deviceCommand.getProtocol());
-//      genericDAO.saveOrUpdate(deviceCommand);
       return old;
 
    }
@@ -126,4 +125,14 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
       return deviceCommandList;
    }
 
+   public List<DeviceCommand> loadSameCommands(DeviceCommand deviceCommand) {
+      DetachedCriteria critera = DetachedCriteria.forClass(DeviceCommand.class);
+      critera.add(Restrictions.eq("device.oid", deviceCommand.getDevice().getOid()));
+      critera.add(Restrictions.eq("name", deviceCommand.getName()));
+      if (deviceCommand.getSectionId() != null) {
+         critera.add(Restrictions.eq("sectionId", deviceCommand.getSectionId()));
+      }
+      critera.add(Restrictions.eq("protocol", deviceCommand.getProtocol()));
+      return genericDAO.findPagedDateByDetachedCriteria(critera, 1, 0);
+   }
 }

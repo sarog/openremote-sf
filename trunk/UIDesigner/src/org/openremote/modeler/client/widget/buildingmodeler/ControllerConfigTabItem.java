@@ -141,6 +141,7 @@ public class ControllerConfigTabItem extends TabItem {
                                  label.setHideLabel(true);
                                  label.setText("(new configuration is marked as red)");
                                  label.setStyleAttribute("fontSize", "11px");
+                                 label.setStyleAttribute("fontFamily", Constants.DEFAULT_FONT_FAMILY);
                                  configContainer.add(label);
                                  
                                  Info.display("Info",
@@ -194,7 +195,7 @@ public class ControllerConfigTabItem extends TabItem {
          optionComboBox.setValue(new ComboBoxDataModel<String>(config.getValue(),config.getValue()));
          optionComboBox.setStore(store);
          optionComboBox.setDisplayField(ComboBoxDataModel.getDisplayProperty());
-         optionComboBox.setFieldLabel(config.getName());
+         optionComboBox.setFieldLabel("<font color=\"red\">"+config.getName()+"</font>");
          optionComboBox.setName(config.getName() + "Options");
          optionComboBox.setAllowBlank(false);
          addUpdateListenerToComboBox(config,optionComboBox);

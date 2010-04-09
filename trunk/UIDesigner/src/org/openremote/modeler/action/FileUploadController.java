@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.openremote.modeler.service.ResourceService;
+import org.openremote.modeler.utils.ImageRotateUtil;
 import org.openremote.modeler.utils.MultipartFileUtil;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -117,6 +118,7 @@ public class FileUploadController extends MultiActionController {
       file.renameTo(newFile);
 
       if ("panelImage".equals(uploadFieldName) && newFile.exists()) {
+         rotateBackgroud(newFile);
          BufferedImage buff = ImageIO.read(newFile);
          response.getWriter().print(
                "{\"name\": \"" + resourceService.getRelativeResourcePathByCurrentAccount(newFile.getName())
@@ -126,4 +128,8 @@ public class FileUploadController extends MultiActionController {
       }
    }
 
+   private void rotateBackgroud(File sourceFile) {
+      String targetImagePath = sourceFile.getParent() + File.separator + sourceFile.getName().replace(".", "_h.");
+      ImageRotateUtil.rotate(sourceFile, targetImagePath, -90);
+   }
 }

@@ -35,4 +35,5 @@ public interface SwitchService {
    
    Switch update(Switch switchToggle);
    
+   List<Switch> loadSameSwitchs(Switch swh);
 }

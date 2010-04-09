@@ -24,8 +24,8 @@
   #foreach ($panel in $panels)
   	<panel id="${panel.getOid()}" name="${stringUtils.escapeXml($panel.getName())}">
   		##<-------tabbar---------->##
-		#if($panel.getTabbarItems().size()>0)
-	  		#getTabbarXML($panel.getTabbarItems())
+		#if($panel.getTabbar())
+	  		#getTabbarXML($panel.getTabbar())
   		#end
   		##<-------tabbar---------->##
   		
@@ -43,7 +43,14 @@
   ##-----------------------------------------------------------------screens---------------------------------------------------------------------------
   <screens>
   	#foreach($screen in $screens)
-  		<screen id="${screen.getOid()}" name="${stringUtils.escapeXml($screen.getName())}">
+  		<screen id="${screen.getOid()}" name="${stringUtils.escapeXml($screen.getName())}"
+  		#if($screen.isLandscape())
+  		  landscape="true"
+  		#end
+  		#if($screen.getInverseScreenId()!=0)
+  		  inverseScreenId="${screen.getInverseScreenId()}"
+  		#end
+  		>
   		##-----------------------------------------------------------------background---------------------------------------------------------------------------
   		#if($screen.getBackground().getImageSource().getSrc().length()!=0)
   			<background
@@ -87,15 +94,15 @@
   		#foreach($group in $groups)
   			<group id="${group.getOid()}" name="${stringUtils.escapeXml($group.getName())}">
   				##<-------tabbar---------->##
-				#if($group.getTabbarItems().size()>0)
-					#getTabbarXML($group.getTabbarItems())
+				#if($group.getTabbar())
+					#getTabbarXML($group.getTabbar())
 		  		#end
   				##<-------tabbar---------->##
 				
 				##<-----include screens--->##
 				#if($group.getScreenRefs().size()>0)
 					#foreach($screenRef in $group.getScreenRefs())
-						<include type="screen" ref="${screenRef.getScreenId()}"/>
+					 ${screenRef.getScreen().getPanelXml()}
 					#end
 				#end
 				##<-----include screens--->##
@@ -107,9 +114,9 @@
 #*
 *	===================get the xml string for tabbar .===================
 *#
-#macro(getTabbarXML,$tabbarItems)
+#macro(getTabbarXML,$tabbar)
 	<tabbar>
-		#foreach($tabbarItem in $tabbarItems)
+		#foreach($tabbarItem in $tabbar.getTabbarItems())
 			<item name="$tabbarItem.getName()">
 				#set($navigate = $tabbarItem.getNavigate())
 				#getNavigateXML($navigate)
@@ -125,15 +132,17 @@
 *	===================get the xml string for navigate .===================
 *#
 #macro(getNavigateXML,$navigate)
-	<navigate 
-		#if($navigate.getToGroup()!=-1)
-			toGroup="${navigate.getToGroup()}"
-			#if($navigate.getToScreen()!=-1)
-				toScreen="${navigate.getToScreen()}"
-			#end
-		#else
-			to="${navigate.getToLogical().toString()}"
-		#end
-		/>
+   #if($navigate.isSet())
+   	<navigate 
+   		#if($navigate.getToGroup()!=-1)
+   			toGroup="${navigate.getToGroup()}"
+   			#if($navigate.getToScreen()!=-1)
+   				toScreen="${navigate.getToScreen()}"
+   			#end
+   		#else
+   			to="${navigate.getToLogical().toString()}"
+   		#end
+   		/>
+	#end
 #end
 ##----------------------------------------------------------------------------Methods-------------------------------------------------------------------------------------

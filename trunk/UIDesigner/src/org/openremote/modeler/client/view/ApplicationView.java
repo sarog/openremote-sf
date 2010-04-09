@@ -19,6 +19,7 @@ package org.openremote.modeler.client.view;
 import java.util.List;
 
 import org.openremote.modeler.auth.Authority;
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.ResponseJSONEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ResponseJSONListener;
@@ -51,6 +52,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.SeparatorToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -125,21 +127,18 @@ public class ApplicationView implements View {
    private void createNorth() {
       ToolBar applicationToolBar = new ToolBar();
       List<String> roles = authority.getRoles();
-      if (roles.contains("ROLE_MODELER") && roles.contains("ROLE_DESIGNER")) {
+      if (roles.contains(Constants.ROLE_MODELER) && roles.contains(Constants.ROLE_DESIGNER)) {
          applicationToolBar.add(createBMButton());
          applicationToolBar.add(createUDButton());
          SeparatorToolItem separatorItem = new SeparatorToolItem();
          separatorItem.setWidth("20");
          applicationToolBar.add(separatorItem);
       }
-      if (roles.contains("ROLE_DESIGNER")) {
+      if (roles.contains(Constants.ROLE_DESIGNER)) {
          initSaveAndExportButtons();
          applicationToolBar.add(saveButton);
          applicationToolBar.add(exportButton);
-         if (roles.contains("ROLE_MODELER")) {
-            saveButton.setVisible(false);
-            exportButton.setVisible(false);
-         }
+         applicationToolBar.add(createOnLineTestBtn());
       }
       applicationToolBar.add(new FillToolItem());
       applicationToolBar.add(createLogoutButton());
@@ -158,16 +157,17 @@ public class ApplicationView implements View {
             if (!bmButton.isPressed()) {
                bmButton.toggle(true);
             } else {
-               saveButton.setVisible(false);
-               exportButton.setVisible(false);
                modelerContainer.remove(uiDesignerView);
                modelerContainer.add(buildingModelerView);
+               Cookies.setCookie(Constants.CURRETN_ROLE, Constants.ROLE_MODELER);
                modelerContainer.layout();
             }
          }
       });
       bmButton.setToggleGroup("modeler-switch");
-      bmButton.toggle(true);
+      if (Cookies.getCookie(Constants.CURRETN_ROLE) == null || Constants.ROLE_MODELER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
+         bmButton.toggle(true);
+      }
       return bmButton;
    }
    
@@ -180,18 +180,38 @@ public class ApplicationView implements View {
             if (!udButton.isPressed()) {
                udButton.toggle(true);
             } else {
-               saveButton.setVisible(true);
-               exportButton.setVisible(true);
                modelerContainer.remove(buildingModelerView);
                modelerContainer.add(uiDesignerView);
+               Cookies.setCookie(Constants.CURRETN_ROLE, Constants.ROLE_DESIGNER);
                modelerContainer.layout();
             }
          }
       });
       udButton.setToggleGroup("modeler-switch");
+      if (Constants.ROLE_DESIGNER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
+         udButton.toggle(true);
+      }
       return udButton;
    }
    
+   private ToggleButton createOnLineTestBtn() {
+      final ToggleButton showDemoBtn = new ToggleButton();
+      showDemoBtn.setToolTip("Test UI online. ");
+      showDemoBtn.setIcon(icons.onLineTestIcon());
+      showDemoBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+         public void componentSelected(ButtonEvent ce) {
+            UtilsProxy.getOnTestLineURL(new AsyncSuccessCallback<String> () {
+               @Override
+               public void onSuccess(String result) {
+                  MessageBox.info("Test UI Online", "To test your UI without installing any Controller or deploying configuration, " +
+                  		"type the following URL into your panel setting as Controller URL :\n"+result, null);
+               }
+            });
+         }
+      });
+      showDemoBtn.setToggleGroup("modeler-switch");
+      return showDemoBtn;
+   }
    private void initSaveAndExportButtons() {
       saveButton = new Button();
       saveButton.setIcon(icons.saveIcon());
@@ -199,10 +219,6 @@ public class ApplicationView implements View {
       saveButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            if (!isExportedDataValid()) {
-               MessageBox.info("Info", "Nothing to save.", null);
-               return;
-            }
             uiDesignerView.saveUiDesignerLayout();
          }
       });
@@ -296,13 +312,19 @@ public class ApplicationView implements View {
       List<String> roles = authority.getRoles();
       modelerContainer = new LayoutContainer();
       modelerContainer.setLayout(new FitLayout());
-      if (roles.contains("ROLE_MODELER")) {
+      if (roles.contains(Constants.ROLE_MODELER)) {
          this.buildingModelerView = new BuildingModelerView();
          modelerContainer.add(buildingModelerView);
       }
-      if (roles.contains("ROLE_DESIGNER")) {
+      if (roles.contains(Constants.ROLE_DESIGNER)) {
          this.uiDesignerView = new UIDesignerView();
-         if (!roles.contains("ROLE_MODELER")) {
+         if (!roles.contains(Constants.ROLE_MODELER)) {
+            modelerContainer.add(uiDesignerView);
+         }
+      }
+      if (roles.contains(Constants.ROLE_MODELER) && roles.contains(Constants.ROLE_MODELER)) {
+         if (Constants.ROLE_DESIGNER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
+            modelerContainer.remove(buildingModelerView);
             modelerContainer.add(uiDesignerView);
          }
       }

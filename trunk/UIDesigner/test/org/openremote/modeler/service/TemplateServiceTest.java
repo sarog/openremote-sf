@@ -5,6 +5,7 @@ import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
@@ -17,7 +18,6 @@ import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
 
 public class TemplateServiceTest {
    private TemplateService templateService = null;
@@ -39,7 +39,10 @@ public class TemplateServiceTest {
    public void getJson4EmptyScreen() {
       Screen screen = new Screen();
       screen.setOid(IDUtil.nextID());
-      Template template = new Template("emptyScreen", screen);
+      ScreenPair screenPair = new ScreenPair();
+      screenPair.setOid(IDUtil.nextID());
+      screenPair.setPortraitScreen(screen);
+      Template template = new Template("emptyScreen", screenPair);
       Template t2 = templateService.saveTemplate(template);
       System.out.println(t2.getContent());
    }
@@ -49,7 +52,10 @@ public class TemplateServiceTest {
 
       Screen screen = new Screen();
       screen.setOid(IDUtil.nextID());
-      Template template = new Template("screenHasButton", screen);
+      ScreenPair screenPair = new ScreenPair();
+      screenPair.setOid(IDUtil.nextID());
+      screenPair.setPortraitScreen(screen);
+      Template template = new Template("screenHasButton", screenPair);
 
       UIButton btn = new UIButton();
       btn.setOid(IDUtil.nextID());
@@ -65,7 +71,10 @@ public class TemplateServiceTest {
    public void testGetScreenFromTemplate() {
       Screen screen = new Screen();
       screen.setOid(IDUtil.nextID());
-      Template template = new Template("screenHasButton", screen);
+      ScreenPair screenPair = new ScreenPair();
+      screenPair.setOid(IDUtil.nextID());
+      screenPair.setPortraitScreen(screen);
+      Template template = new Template("screenHasButton", screenPair);
 
       UIButton btn = new UIButton();
       btn.setOid(IDUtil.nextID());
@@ -94,8 +103,9 @@ public class TemplateServiceTest {
 
       templateService.saveTemplate(template);
       System.out.println(template.getContent());
-      Screen screen2 = templateService.buildScreen(template);
-
+      ScreenPair screenPair2 = templateService.buildScreen(template);
+      Screen screen2 = screenPair2.getPortraitScreen();
+      
       Assert.assertTrue(screen2.getGrids().size() == 1);
       Assert.assertTrue(screen.getGrid(0).getCells().get(0).getUiComponent().getClass() == UISwitch.class);
       Assert.assertTrue(screen2.getAbsolutes().size() == 1);
@@ -106,7 +116,10 @@ public class TemplateServiceTest {
    public void testSaveTemplate() {
       Screen screen = new Screen();
       screen.setOid(IDUtil.nextID());
-      Template template = new Template("screenHasButton", screen);
+      ScreenPair screenPair = new ScreenPair();
+      screenPair.setOid(IDUtil.nextID());
+      screenPair.setPortraitScreen(screen);
+      Template template = new Template("screenHasButton", screenPair);
 
       UIButton btn = new UIButton();
       btn.setOid(IDUtil.nextID());
