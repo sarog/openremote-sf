@@ -24,7 +24,9 @@ import java.util.Set;
 
 import org.openremote.modeler.client.event.DoubleClickEvent;
 import org.openremote.modeler.client.event.PropertyEditEvent;
+import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.ConfigCategoryBeanModelProxy;
@@ -533,10 +535,20 @@ public class TreePanelBuilder {
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONCLICK) {
                BeanModel beanModel = this.getSelectionModel().getSelectedItem();
-               ConfigCategory  category = beanModel.getBean();
+               final ConfigCategory  category = beanModel.getBean();
                configTabPanel.removeAll();
                ControllerConfigTabItem configTabItem = new ControllerConfigTabItem(category);
                configTabPanel.add(configTabItem);
+               configTabItem.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+
+                  @Override
+                  public void afterSubmit(SubmitEvent be) {
+                     configTabPanel.removeAll();
+                     ControllerConfigTabItem configTabItem = new ControllerConfigTabItem(category);
+                     configTabPanel.add(configTabItem);
+                  }
+                  
+               });
             }
             super.onBrowserEvent(event);
          }
