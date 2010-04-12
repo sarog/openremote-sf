@@ -38,7 +38,6 @@ package org.openremote.modeler.client.widget;
 import java.util.List;
 import java.util.Set;
 
-import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.DoubleClickEvent;
 import org.openremote.modeler.client.event.PropertyEditEvent;
 import org.openremote.modeler.client.event.SubmitEvent;

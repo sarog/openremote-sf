@@ -153,7 +153,7 @@ public class CustomPanelWindow extends FormWindow {
       panelPaddingTopField.getMessages().setRegexText("The padding top must be a nonnegative integer");
       
       tabbarHeightField = new TextField<Integer>();
-      tabbarHeightField.setAllowBlank(false);
+//      tabbarHeightField.setAllowBlank(false);
       tabbarHeightField.setName("tabbarHeight");
       tabbarHeightField.setFieldLabel("Tab bar height");
       tabbarHeightField.setRegex(Constants.REG_NONNEGATIVEINT);
@@ -179,9 +179,9 @@ public class CustomPanelWindow extends FormWindow {
       typeSet.add(screenWidthField);
       typeSet.add(screenHeightField);
       typeSet.add(panelImage);
-      typeSet.add(tabbarHeightField);
       typeSet.add(panelPaddingLeftField);
       typeSet.add(panelPaddingTopField);
+      typeSet.add(tabbarHeightField);
       typeSet.add(tabbarImage);
       
       return typeSet;
@@ -231,6 +231,7 @@ public class CustomPanelWindow extends FormWindow {
          }
       };
       tabbarImage.setFieldLabel("Tab bar bg image");
+      tabbarImage.setAllowBlank(true);
    }
    
    private void createBackgroundImageUploader (){
@@ -304,7 +305,10 @@ public class CustomPanelWindow extends FormWindow {
             customPanel.setTabbarDefinition(tabBarDef);
             initCustomPanelDefinition(panelImageURL, tabbarImageURL,customPanel);
             if (tabbarHeightField.isValid()){
-               tabBarDef.setHeight(Integer.valueOf(tabbarHeightField.getRawValue()));
+               try {
+                  int tabbarHeight = Integer.valueOf(tabbarHeightField.getRawValue());
+                  customPanel.getTabbarDefinition().setHeight(tabbarHeight);
+               }catch(NumberFormatException nfe) {}
             }
             panel.setTouchPanelDefinition(customPanel);
             
@@ -340,7 +344,10 @@ public class CustomPanelWindow extends FormWindow {
             customPanel.getCanvas().setHeight(Integer.valueOf(screenHeightField.getRawValue()));
             initCustomPanelDefinition(panelImageURL,tabbarImageURL, customPanel);
             if (tabbarHeightField.isValid()){
-               customPanel.getTabbarDefinition().setHeight(Integer.valueOf(tabbarHeightField.getRawValue()));
+               try {
+                  int tabbarHeight = Integer.valueOf(tabbarHeightField.getRawValue());
+                  customPanel.getTabbarDefinition().setHeight(tabbarHeight);
+               }catch(NumberFormatException nfe) {}
             }
          }
          
