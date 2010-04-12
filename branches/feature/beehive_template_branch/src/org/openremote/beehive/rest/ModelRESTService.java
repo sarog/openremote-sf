@@ -25,7 +25,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.openremote.beehive.api.dto.ModelDTO;
@@ -46,15 +45,15 @@ public class ModelRESTService extends RESTBaseService {
     */
    @GET
    @Produces( { "application/xml", "application/json" })
-   public ModelListing getModels(@PathParam("vendor_name") String vendorName) {
+   public Response getModels(@PathParam("vendor_name") String vendorName) {
       List<ModelDTO> list = getModelService().findModelsByVendorName(vendorName);
       if (list == null) {
-         throw new WebApplicationException(Response.Status.NOT_FOUND);
+          return resourceNotFoundResponse();
       }
       if (list.size() == 0) {
-         throw new WebApplicationException(Response.Status.NO_CONTENT);
+         return buildResponse(null);
       }
-      return new ModelListing(list);
+      return buildResponse(new ModelListing(list));
    }
 
    /**

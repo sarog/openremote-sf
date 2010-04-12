@@ -21,8 +21,11 @@ package org.openremote.beehive.rest;
 
 import java.lang.reflect.Method;
 
-import org.openremote.beehive.spring.SpringContext;
+import javax.ws.rs.core.Response;
+
+import org.openremote.beehive.api.service.AccountService;
 import org.openremote.beehive.spring.ISpringContext;
+import org.openremote.beehive.spring.SpringContext;
 
 
 /**
@@ -51,4 +54,34 @@ public class RESTBaseService {
       return null;
    }
 
+   protected Response buildResponse(Object entity) {
+      if (entity !=null) return Response.status(Response.Status.OK).entity(entity).build();
+      return Response.status(Response.Status.NO_CONTENT).build();
+   }
+   
+   protected Response resourceNotFoundResponse() {
+      return Response.status(Response.Status.NOT_FOUND).build();
+   }
+   
+   protected Response unAuthorizedResponse() {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+   }
+   
+   /*
+    * If the user was not validated, fail with a
+    * 401 status code (UNAUTHORIZED) and
+    * pass back a WWW-Authenticate header for
+    * this servlet.
+    *  
+    */
+   protected boolean authorize(String credentials) {
+      if (!getAccountService().isHTTPBasicAuthorized(credentials)) return false;
+      return true;
+   }
+   
+   protected AccountService getAccountService() {
+      return (AccountService) getSpringContextInstance().getBean("accountService");
+   }
+   
+   
 }

@@ -24,7 +24,6 @@ import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.openremote.beehive.api.dto.VendorDTO;
@@ -43,12 +42,12 @@ public class VendorRESTService extends RESTBaseService {
     */
    @GET
    @Produces( { "application/xml", "application/json" })
-   public VendorListing getAllVendors() {
+   public Response getAllVendors() {
       List<VendorDTO> list = getVendorService().loadAllVendors();
       if (list.size() > 0) {
-         return new VendorListing(list);
+         return buildResponse(new VendorListing(list));
       }
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
+      return resourceNotFoundResponse();
    }
 
    /**

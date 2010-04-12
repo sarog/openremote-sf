@@ -32,7 +32,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.openremote.beehive.Constant;
-import org.openremote.beehive.api.service.AccountService;
 import org.openremote.beehive.api.service.ResourceService;
 import org.openremote.beehive.exception.InvalidPanelXMLException;
 import org.openremote.beehive.exception.NoSuchPanelException;
@@ -62,15 +61,15 @@ public class ResourceRESTService extends RESTBaseService{
    @GET
 //   @Produces( { "application/zip" })
    @Produces( { MediaType.APPLICATION_OCTET_STREAM })
-   public File getResourcesForController(@PathParam("username") String username, 
+   public Response getResourcesForController(@PathParam("username") String username, 
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (! authorize(credentials)) return unAuthorizedResponse();
       
-      authorize(credentials);
       File file = getResourceService().getResourceZip(username);
       if (file != null) {
-         return file;
+         return buildResponse(file);
       }
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
+      return resourceNotFoundResponse();
    }
    
    
@@ -86,9 +85,9 @@ public class ResourceRESTService extends RESTBaseService{
       try {
          panels = getResourceService().getAllPanelsXMLFromAccount(username);
       } catch (PanelXMLNotFoundException e) {
-         throw new WebApplicationException(426);
+         throw new WebApplicationException(e,426);
       } catch (InvalidPanelXMLException e) {
-         throw new WebApplicationException(427);
+         throw new WebApplicationException(e,427);
       }
       
       if (panels != null) {
@@ -109,11 +108,11 @@ public class ResourceRESTService extends RESTBaseService{
       try {
          panelXML = getResourceService().getPanelXMLByPanelNameFromAccount(username, panelName);
       } catch (PanelXMLNotFoundException e) {
-         throw new WebApplicationException(426);
+         throw new WebApplicationException(e,426);
       } catch (InvalidPanelXMLException e) {
-         throw new WebApplicationException(427);
+         throw new WebApplicationException(e,427);
       } catch (NoSuchPanelException e) {
-         throw new WebApplicationException(428);
+         throw new WebApplicationException(e,428);
       }
       
       if (panelXML != null) {
@@ -125,21 +124,21 @@ public class ResourceRESTService extends RESTBaseService{
    @Path("resources/{file_name}")
    @GET
    @Produces( { MediaType.APPLICATION_OCTET_STREAM })
-   public File getResource(@PathParam("username") String username, @PathParam("file_name") String fileName,
+   public Response getResource(@PathParam("username") String username, @PathParam("file_name") String fileName,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
 
-      authorize(credentials, false);
+      if (!authorize(credentials, false)) return unAuthorizedResponse();
       
       try {
          File file = getResourceService().getResource(username, fileName);
          if (file != null) {
-            return file;
+            return buildResponse(file);
          }
       } catch (FileNotFoundException e) {
-         throw new WebApplicationException(Response.Status.NOT_FOUND);
+         throw new WebApplicationException(e,Response.Status.NOT_FOUND);
       }
       
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
+      return resourceNotFoundResponse();
    }
    
    
@@ -163,22 +162,18 @@ public class ResourceRESTService extends RESTBaseService{
     * this servlet.
     *  
     */
-   private void authorize(String credentials) {
-      authorize(credentials, true);
+   protected boolean authorize(String credentials) {
+      return authorize(credentials, true);
    }
    
-   private void authorize(String credentials, boolean isPasswordEncoded) {
+   private boolean authorize(String credentials, boolean isPasswordEncoded) {
       if (!getAccountService().isHTTPBasicAuthorized(credentials, isPasswordEncoded)) {
-         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+         return false;
       }
+      return true;
    }
    
    protected ResourceService getResourceService() {
       return (ResourceService) getSpringContextInstance().getBean("resourceService");
    }
-   
-   protected AccountService getAccountService() {
-      return (AccountService) getSpringContextInstance().getBean("accountService");
-   }
-
 }

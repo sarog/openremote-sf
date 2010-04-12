@@ -26,13 +26,11 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.dto.TemplateDTO;
-import org.openremote.beehive.api.service.AccountService;
 import org.openremote.beehive.api.service.TemplateService;
 
 @Path("/templates")
@@ -41,42 +39,23 @@ public class PublicTemplatesRestService extends RESTBaseService {
    @Path("keywords/{keywords}/page/{page}")
    @GET
    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-   public TemplateListing getTemplates(@PathParam("keywords") String keywords,
-         @PathParam("page")int page,
+   public Response getTemplates(@PathParam("keywords") String keywords, @PathParam("page") int page,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
-      authorize(credentials);
+      if (!authorize(credentials)) return unAuthorizedResponse();
       String newKeywords = keywords;
       if (keywords.equals(TemplateService.NO_KEYWORDS)) {
          newKeywords = "";
       }
       List<TemplateDTO> list = getTemplateService().loadPublicTemplatesByKeywordsAndPage(newKeywords, page);
-      if (list !=null) {
-         return new TemplateListing(list);
+      if (list != null) {
+         return buildResponse(new TemplateListing(list));
       }
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
+      return resourceNotFoundResponse();
    }
 
-   
-   /*
-    * If the user was not validated, fail with a
-    * 401 status code (UNAUTHORIZED) and
-    * pass back a WWW-Authenticate header for
-    * this servlet.
-    *  
-    */
-   private void authorize(String credentials) {
-      if (!getAccountService().isHTTPBasicAuthorized(credentials)) {
-         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-      }
-   }
    
    protected TemplateService getTemplateService() {
       return (TemplateService) getSpringContextInstance().getBean("templateService");
    }
-   
-   protected AccountService getAccountService() {
-      return (AccountService) getSpringContextInstance().getBean("accountService");
-   }
-   
    
 }
