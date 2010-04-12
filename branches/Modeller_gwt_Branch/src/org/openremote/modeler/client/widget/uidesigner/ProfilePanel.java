@@ -582,6 +582,7 @@ public class ProfilePanel extends ContentPanel {
                      ScreenFromTemplate screenFromTemplate = be.<ScreenFromTemplate> getData();
                      ScreenPair screen = screenFromTemplate.getScreen();
                      screen.setTouchPanelDefinition(groupRef.getPanel().getTouchPanelDefinition());
+                     screen.setParentGroup(groupRef.getGroup());
                      BeanModelDataBase.screenTable.insert(screen.getBeanModel());
                      screenRef = new ScreenPairRef(screen);
                      screenRef.setTouchPanelDefinition(screen.getTouchPanelDefinition());

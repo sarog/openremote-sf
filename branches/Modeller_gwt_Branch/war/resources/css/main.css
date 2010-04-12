@@ -317,3 +317,13 @@ table.screen-btn-cont td.br-c{
 .zero-padding {
    padding: 0px;
 }
+
+.indicator-default {
+	float: left;
+   background: url('../../resources/images/indicator_sprite.png') no-repeat right 0;
+}
+
+.indicator-current {
+	float: left;
+   background: url('../../resources/images/indicator_sprite.png') no-repeat 0 0;
+}
