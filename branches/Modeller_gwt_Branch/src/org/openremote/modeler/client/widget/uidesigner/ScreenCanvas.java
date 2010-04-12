@@ -25,6 +25,7 @@ import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.client.widget.component.ScreenImage;
+import org.openremote.modeler.client.widget.component.ScreenIndicator;
 import org.openremote.modeler.client.widget.component.ScreenLabel;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
@@ -71,9 +72,11 @@ public class ScreenCanvas extends ComponentContainer {
 
    private Screen screen = null;
 
-//   private boolean hasTabbar;
+   // private boolean hasTabbar;
 
    private ScreenTabbar tabbarContainer;
+
+   private ScreenIndicator screenIndicator;
 
    /**
     * Instantiates a new screen canvas.
@@ -122,9 +125,9 @@ public class ScreenCanvas extends ComponentContainer {
       setStyleAttribute("overflow", "hidden");
       updateGround();
       new DragSource(this);
-      /*if (screen.isHasTabbar()) {
-         addTabbar();
-      }*/
+      /*
+       * if (screen.isHasTabbar()) { addTabbar(); }
+       */
       if (this.tabbarContainer != null) {
          add(tabbarContainer);
       }
@@ -190,7 +193,7 @@ public class ScreenCanvas extends ComponentContainer {
                      if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
                         cellContainer.getGridContainer().getGrid().removeCell(cellContainer.getCell());
                         WidgetSelectionUtil.setSelectWidget(null);
-                     } else if (be.getButtonClicked().getItemId().equals(Dialog.NO)){
+                     } else if (be.getButtonClicked().getItemId().equals(Dialog.NO)) {
                         cellContainer.getGridContainer().addGridCellContainer(cellContainer);
                      }
                   }
@@ -245,7 +248,7 @@ public class ScreenCanvas extends ComponentContainer {
                         if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
                            controlContainer.getGridContainer().getGrid().removeCell(controlContainer.getCell());
                            WidgetSelectionUtil.setSelectWidget(null);
-                        } else if (be.getButtonClicked().getItemId().equals(Dialog.NO)){
+                        } else if (be.getButtonClicked().getItemId().equals(Dialog.NO)) {
                            controlContainer.getGridContainer().addGridCellContainer(controlContainer);
                         }
                      }
@@ -258,7 +261,8 @@ public class ScreenCanvas extends ComponentContainer {
                   componentContainer = dragComponentFromGrid(screen, controlContainer, recorder);
                   createDragSource(canvas, componentContainer);
                   canvas.add(componentContainer);
-                  componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY() - absolutePosition.y);
+                  componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
+                        - absolutePosition.y);
                   Resizable resizable = new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
                   resizable.setMinHeight(10);
                   resizable.setMinWidth(10);
@@ -325,14 +329,18 @@ public class ScreenCanvas extends ComponentContainer {
                            UIGrid.DEFAULT_HEIGHT, UIGrid.DEFALUT_ROW_COUNT, UIGrid.DEFAULT_COL_COUNT);
                      screen.addGrid(grid);
                      componentContainer = createGridLayoutContainer(grid);
-                     createGridDragSource(componentContainer, canvas);  
+                     createGridDragSource(componentContainer, canvas);
                   } else if (dataModel.getBean() instanceof UITabbar) {
-                     addTabbar(new ScreenTabbar(ScreenCanvas.this,new UITabbar()));
+                     addTabbar(new ScreenTabbar(ScreenCanvas.this, new UITabbar()));
+                     if (screenIndicator != null) {
+                        screenIndicator.setPosition(0, screen.getTouchPanelDefinition().getCanvas().getHeight() - 20
+                              - screen.getTouchPanelDefinition().getTabbarDefinition().getHeight());
+                     }
                      WidgetSelectionUtil.setSelectWidget(tabbarContainer);
                      return;
-                  } else if (dataModel.getBean() instanceof UITabbarItem){
+                  } else if (dataModel.getBean() instanceof UITabbarItem) {
                      addTabItemToTabbar();
-                     return ;
+                     return;
                   } else {
                      componentContainer = createNewAbsoluteLayoutContainer(screen, (UIComponent) dataModel.getBean());
                      createDragSource(canvas, componentContainer);
@@ -345,15 +353,18 @@ public class ScreenCanvas extends ComponentContainer {
                   Object model = dataModel.getBean();
                   if (!(model instanceof UITabbar) && !(model instanceof UITabbarItem)) {
                      componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
-                        - absolutePosition.y);
+                           - absolutePosition.y);
                   }
                }
             }
 
             moveBackGround.hide();
-//            if (screen.isHasTabbar()) {
-//               tabbarContainer.el().updateZIndex(1);
-//            }
+             if (tabbarContainer != null) {
+                tabbarContainer.el().updateZIndex(1);
+             }
+             if (screenIndicator != null) {
+                screenIndicator.el().updateZIndex(1);
+             }
             layout();
             super.dragDrop(e);
          }
@@ -388,11 +399,11 @@ public class ScreenCanvas extends ComponentContainer {
             event.getStatus().setStatus(true);
             event.getStatus().update("drop here");
             event.cancelBubble();
-            ScreenComponent screenComponent = ((AbsoluteLayoutContainer)layoutContainer).getScreenComponent();
+            ScreenComponent screenComponent = ((AbsoluteLayoutContainer) layoutContainer).getScreenComponent();
             if (screenComponent instanceof ScreenButton) {
-               ((ScreenButton)screenComponent).setDefaultImage();
+               ((ScreenButton) screenComponent).setDefaultImage();
             }
-            
+
          }
       };
       source.setGroup(Constants.CONTROL_DND_GROUP);
@@ -441,17 +452,17 @@ public class ScreenCanvas extends ComponentContainer {
             if (ce.getEventTypeInt() == Event.ONMOUSEDOWN) {
                WidgetSelectionUtil.setSelectWidget(this);
                if (screenControl instanceof ScreenButton) {
-                  ((ScreenButton)screenControl).setPressedImage();
+                  ((ScreenButton) screenControl).setPressedImage();
                } else if (screenControl instanceof ScreenSwitch) {
-                  ((ScreenSwitch)screenControl).onStateChange();
+                  ((ScreenSwitch) screenControl).onStateChange();
                } else if (screenControl instanceof ScreenLabel) {
-                  ((ScreenLabel)screenControl).onStateChange();
+                  ((ScreenLabel) screenControl).onStateChange();
                } else if (screenControl instanceof ScreenImage) {
-                  ((ScreenImage)screenControl).onStateChange();
+                  ((ScreenImage) screenControl).onStateChange();
                }
-            } else if (ce.getEventTypeInt() == Event.ONMOUSEUP){
+            } else if (ce.getEventTypeInt() == Event.ONMOUSEUP) {
                if (screenControl instanceof ScreenButton) {
-                  ((ScreenButton)screenControl).setDefaultImage();
+                  ((ScreenButton) screenControl).setDefaultImage();
                }
             }
             ce.cancelBubble();
@@ -464,7 +475,7 @@ public class ScreenCanvas extends ComponentContainer {
             screen.removeAbsolute(absolute);
             controlContainer.removeFromParent();
          }
-         
+
       });
       new KeyNav<ComponentEvent>() {
          @Override
@@ -547,14 +558,14 @@ public class ScreenCanvas extends ComponentContainer {
             super.afterRender();
             this.setZIndex(100); // set z-index to make drop widget on grid cell is possible(after reopen the screen).
          }
-         
+
       };
       gridContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
          public void handleEvent(WidgetDeleteEvent be) {
             screen.removeGrid(grid);
             gridContainer.removeFromParent();
          }
-         
+
       });
       new KeyNav<ComponentEvent>(gridContainer) {
          @Override
@@ -650,23 +661,16 @@ public class ScreenCanvas extends ComponentContainer {
    }
 
    public void addTabbar() {
-      /*if (!hasTabbar) {
-         hasTabbar = true;
-         tabbarContainer = new LayoutContainer() {
-            protected void afterRender() {
-               super.el().updateZIndex(1);
-               super.afterRender();
-            }
-
-         };
-         tabbarContainer.setHeight(44);
-         tabbarContainer.setWidth(screen.getTouchPanelDefinition().getCanvas().getWidth());
-         tabbarContainer.addStyleName("tabbar-background");
-         tabbarContainer.setPosition(0, screen.getTouchPanelDefinition().getCanvas().getHeight() - 44);
-         tabbarContainer.setStyleAttribute("position", "absolute");
-         this.add(tabbarContainer);
-         layout();
-      }*/
+      /*
+       * if (!hasTabbar) { hasTabbar = true; tabbarContainer = new LayoutContainer() { protected void afterRender() {
+       * super.el().updateZIndex(1); super.afterRender(); }
+       * 
+       * }; tabbarContainer.setHeight(44);
+       * tabbarContainer.setWidth(screen.getTouchPanelDefinition().getCanvas().getWidth());
+       * tabbarContainer.addStyleName("tabbar-background"); tabbarContainer.setPosition(0,
+       * screen.getTouchPanelDefinition().getCanvas().getHeight() - 44); tabbarContainer.setStyleAttribute("position",
+       * "absolute"); this.add(tabbarContainer); layout(); }
+       */
    }
 
    public void setSizeToDefault(UIComponent component) {
@@ -688,32 +692,57 @@ public class ScreenCanvas extends ComponentContainer {
       this.layout();
    }
 
-   /*public void setTabbarContainer(ScreenTabbar tabbarContainer) {
-      this.tabbarContainer = tabbarContainer;
-   }*/
+   /*
+    * public void setTabbarContainer(ScreenTabbar tabbarContainer) { this.tabbarContainer = tabbarContainer; }
+    */
 
    public ScreenTabbar getTabbarContainer() {
       return tabbarContainer;
    }
-   
+
    private void addTabItemToTabbar() {
       if (this.tabbarContainer.getTabbarItemCount() == UITabbar.MAX_TABBARITEM_COUNT) {
-         MessageBox.alert("Warn", "Sory, a tabbar can not have more than "+UITabbar.MAX_TABBARITEM_COUNT+"tabbarItems", null);
-         return ;
+         MessageBox.alert("Warn", "Sory, a tabbar can not have more than " + UITabbar.MAX_TABBARITEM_COUNT
+               + "tabbarItems", null);
+         return;
       }
       if (this.tabbarContainer == null) {
          MessageBox.alert("Error", "You must add a tabbar at first!", null);
-         return; 
+         return;
       }
       UITabbarItem tabItem = new UITabbarItem();
       tabbarContainer.addTabbarItem(tabItem);
       layout();
    }
-   
+
    public void removeTabbar() {
       if (this.tabbarContainer != null) {
          tabbarContainer.removeFromParent();
+         tabbarContainer = null;
+         if (screenIndicator != null) {
+            screenIndicator.setPosition(0, screen.getTouchPanelDefinition().getCanvas().getHeight() - 20);
+         }
          layout();
       }
+   }
+
+   public void updateScreenIndicator(int screenCount, int screenIndex) {
+      if (screenIndicator != null) {
+         screenIndicator.removeFromParent();
+      }
+      if (Constants.IPHONE_TYPE.equals(screen.getTouchPanelDefinition().getType())) {
+         screenIndicator = new ScreenIndicator(screenCount, screenIndex, screen.getTouchPanelDefinition().getCanvas()
+               .getWidth(), 20);
+         if (tabbarContainer != null) {
+            screenIndicator.setPosition(0, screen.getTouchPanelDefinition().getCanvas().getHeight() - 20
+                  - screen.getTouchPanelDefinition().getTabbarDefinition().getHeight());
+         } else {
+            screenIndicator.setPosition(0, screen.getTouchPanelDefinition().getCanvas().getHeight() - 20);
+         }
+         this.add(screenIndicator);
+      } else {
+         screenIndicator = null;
+      }
+      layout();
    }
 }

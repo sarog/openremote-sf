@@ -117,4 +117,6 @@ public class Constants {
    
    public static final String CURRETN_RESOURCE_PATH = "currentResourcePath";
    
+   public static final String IPHONE_TYPE = "iPhone";
+   
 }

@@ -284,7 +284,7 @@ public class ScreenTabbar extends ScreenComponent {
       addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
          public void handleEvent(WidgetDeleteEvent be) {
             removeItself();
-            getScreenCanvas().layout();
+            getScreenCanvas().removeTabbar();
          }
       });
    }
@@ -302,7 +302,7 @@ public class ScreenTabbar extends ScreenComponent {
          item.removeFromParent();
       }
       uiTabbar.removeAll();
-      this.removeFromParent();
+//      this.removeFromParent();
    }
    
    private int getOrder(int xPosition) {
