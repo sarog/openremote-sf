@@ -57,7 +57,7 @@ public class TouchPanelDefinition implements Serializable {
    
    public TouchPanelDefinition  horizontalDefinition;
    
-   private TouchPanelTabbarDefinition tabbarDefinition ;
+   private TouchPanelTabbarDefinition tabbarDefinition = new TouchPanelTabbarDefinition();
    
    /**
     * Instantiates a new panel definition.

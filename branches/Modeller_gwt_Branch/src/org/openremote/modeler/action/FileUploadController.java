@@ -117,7 +117,7 @@ public class FileUploadController extends MultiActionController {
       File newFile = new File(file.getParent() + File.separator + fileName);
       file.renameTo(newFile);
 
-      if ("panelImage".equals(uploadFieldName) && newFile.exists()) {
+      if (("panelImage".equals(uploadFieldName) || "tabbarImage".equals(uploadFieldName)) && newFile.exists()) {
          rotateBackgroud(newFile);
          BufferedImage buff = ImageIO.read(newFile);
          response.getWriter().print(

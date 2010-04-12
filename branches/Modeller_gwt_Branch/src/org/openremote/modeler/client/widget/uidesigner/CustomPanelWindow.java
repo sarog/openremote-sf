@@ -60,7 +60,7 @@ public class CustomPanelWindow extends FormWindow {
    private TextField<Integer> screenHeightField = null;
    private ImageUploadField panelImage = null;
    
-   private TextField<Integer> tabbarHeightField = new TextField<Integer>();
+//   private TextField<Integer> tabbarHeightField = new TextField<Integer>();
    
    private ImageUploadField tabbarImage = null;
    private TextField<Integer> panelPaddingLeftField = null;
@@ -69,7 +69,7 @@ public class CustomPanelWindow extends FormWindow {
    private Operation operation = Operation.UPLOAD_BACKGROUND_IMAGE;
    
    private String panelImageURL = null;
-   private ImageSource tabbarImageSource = null; 
+   private String tabbarImageURL = null; 
    /**
     * Create profile.
     */
@@ -152,34 +152,36 @@ public class CustomPanelWindow extends FormWindow {
       panelPaddingTopField.setRegex(Constants.REG_NONNEGATIVEINT);
       panelPaddingTopField.getMessages().setRegexText("The padding top must be a nonnegative integer");
       
-      tabbarHeightField = new TextField<Integer>();
-      tabbarHeightField.setName("tabbarHeight");
-      tabbarHeightField.setFieldLabel("Tab bar height");
-      tabbarHeightField.setRegex(Constants.REG_NONNEGATIVEINT);
-      tabbarHeightField.getMessages().setRegexText("The tab bar height must be a nonnegative integer");
+//      tabbarHeightField = new TextField<Integer>();
+//      tabbarHeightField.setName("tabbarHeight");
+//      tabbarHeightField.setFieldLabel("Tab bar height");
+//      tabbarHeightField.setRegex(Constants.REG_NONNEGATIVEINT);
+//      tabbarHeightField.getMessages().setRegexText("The tab bar height must be a nonnegative integer");
       
       createBackgroundImageUploader();
       createTabbarImageUploader();
+      
       if (panel != null) {
          TouchPanelDefinition touchPanelDefinition = panel.getTouchPanelDefinition();
          screenWidthField.setValue(touchPanelDefinition.getCanvas().getWidth());
          screenHeightField.setValue(touchPanelDefinition.getCanvas().getHeight());
-         tabbarHeightField.setValue(touchPanelDefinition.getTabbarDefinition().getHeight());
+//         tabbarHeightField.setValue(touchPanelDefinition.getTabbarDefinition().getHeight());
          panelPaddingLeftField.setValue(touchPanelDefinition.getPaddingLeft());
          panelPaddingTopField.setValue(touchPanelDefinition.getPaddingTop());
          panelImage.setValue(touchPanelDefinition.getBgImage());
          tabbarImage.setValue(touchPanelDefinition.getTabbarDefinition().getBackground().getSrc());
       }
       initIntegerFieldStyle(panelPaddingLeftField, panelPaddingTopField, panelImage,
-            screenWidthField, screenHeightField,tabbarHeightField,tabbarImage);
+            screenWidthField, screenHeightField,/*tabbarHeightField,*/tabbarImage);
+      
       
       typeSet.add(screenWidthField);
       typeSet.add(screenHeightField);
       typeSet.add(panelImage);
-      typeSet.add(tabbarHeightField);
-      typeSet.add(tabbarImage);
+//      typeSet.add(tabbarHeightField);
       typeSet.add(panelPaddingLeftField);
       typeSet.add(panelPaddingTopField);
+      typeSet.add(tabbarImage);
       
       return typeSet;
    }
@@ -204,7 +206,7 @@ public class CustomPanelWindow extends FormWindow {
             boolean success = !"".equals(imageURL);
             if (success) {
                if (operation == Operation.UPLOAD_TABBAR_IMAGE) {
-                  tabbarImageSource = new ImageSource(imageURL);
+                  tabbarImageURL = imageURL;
                } else {
                   panelImageURL = imageURL;
                }
@@ -215,7 +217,7 @@ public class CustomPanelWindow extends FormWindow {
    }
    
    private void createTabbarImageUploader (){
-      this.tabbarImage = new ImageUploadField("tabbarImageUploader") {
+      this.tabbarImage = new ImageUploadField("tabbarImage") {
          @Override
          protected void onChange(ComponentEvent ce) {
             super.onChange(ce);
@@ -255,12 +257,19 @@ public class CustomPanelWindow extends FormWindow {
     * @param panelImageURL
     * @param customPanel
     */
-   private void initCustomPanelDefinition(String panelImageURL, TouchPanelDefinition customPanel) {
+   private void initCustomPanelDefinition(String panelImageURL, String tabbarImageURL,TouchPanelDefinition customPanel) {
       if (panelImageURL != null && !"".equals(panelImageURL)) {
          JSONObject jsonObj = JSONParser.parse(panelImageURL).isObject();
          customPanel.setBgImage(jsonObj.get("name").isString().stringValue());
          customPanel.setWidth(Integer.valueOf(jsonObj.get("width").toString()));
          customPanel.setHeight(Integer.valueOf(jsonObj.get("height").toString()));
+      }
+      
+      if (tabbarImageURL != null && tabbarImageURL.trim().length() != 0) {
+         JSONObject jsonObj = JSONParser.parse(tabbarImageURL).isObject();
+         TouchPanelTabbarDefinition tabbarDef = customPanel.getTabbarDefinition();
+         tabbarDef.setBackground(new ImageSource(jsonObj.get("name").isString().stringValue()));
+         tabbarDef.setHeight(Integer.valueOf(jsonObj.get("height").toString()));
       }
       if (!"".equals(panelPaddingLeftField.getRawValue())) {
          customPanel.setPaddingLeft(Integer.valueOf(panelPaddingLeftField.getRawValue()));
@@ -291,10 +300,9 @@ public class CustomPanelWindow extends FormWindow {
             customPanel.setName(Constants.CUSTOM_PANEL);
             
             TouchPanelTabbarDefinition tabBarDef = new TouchPanelTabbarDefinition();
-            tabBarDef.setBackground(tabbarImageSource);
-            tabBarDef.setHeight(Integer.valueOf(tabbarHeightField.getRawValue()));
+//            tabBarDef.setHeight(Integer.valueOf(tabbarHeightField.getRawValue()));
             customPanel.setTabbarDefinition(tabBarDef);
-            initCustomPanelDefinition(panelImageURL, customPanel);
+            initCustomPanelDefinition(panelImageURL, tabbarImageURL,customPanel);
             panel.setTouchPanelDefinition(customPanel);
             
             Group defaultGroup = new Group();
@@ -327,7 +335,7 @@ public class CustomPanelWindow extends FormWindow {
             customPanel = panel.getTouchPanelDefinition();
             customPanel.getCanvas().setWidth(Integer.valueOf(screenWidthField.getRawValue()));
             customPanel.getCanvas().setHeight(Integer.valueOf(screenHeightField.getRawValue()));
-            initCustomPanelDefinition(panelImageURL, customPanel);
+            initCustomPanelDefinition(panelImageURL,tabbarImageURL, customPanel);
          }
          
          panel.setName(panelNameField.getValue());
@@ -342,11 +350,11 @@ public class CustomPanelWindow extends FormWindow {
       if (!this.panelNameField.isValid()) return false;
       if (!this.screenWidthField.isValid()) return false;
       if (!this.screenHeightField.isValid()) return false;
-      if (!this.panelImage.isValid()) return false;
-      if (!this.tabbarHeightField.isValid()) return false;
-      if (!this.tabbarImage.isValid()) return false;
-      if (!this.panelPaddingLeftField.isValid()) return false;
-      if (!this.panelPaddingTopField.isValid()) return false;
+//      if (!this.panelImage.isValid()) return false;
+//      if (!this.tabbarHeightField.isValid()) return false;
+//      if (!this.tabbarImage.isValid()) return false;
+//      if (!this.panelPaddingLeftField.isValid()) return false;
+//      if (!this.panelPaddingTopField.isValid()) return false;
       return true;
    }
 }
