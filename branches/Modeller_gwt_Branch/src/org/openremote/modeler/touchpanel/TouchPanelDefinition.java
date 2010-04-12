@@ -57,6 +57,8 @@ public class TouchPanelDefinition implements Serializable {
    
    public TouchPanelDefinition  horizontalDefinition;
    
+   private TouchPanelTabbarDefinition tabbarDefinition ;
+   
    /**
     * Instantiates a new panel definition.
     */
@@ -277,5 +279,13 @@ public class TouchPanelDefinition implements Serializable {
          horizontalDefinition.setCanvas(new TouchPanelCanvasDefinition(this.canvas.getHeight(),this.canvas.getWidth()));
       }
       return horizontalDefinition;
+   }
+
+   public TouchPanelTabbarDefinition getTabbarDefinition() {
+      return tabbarDefinition;
+   }
+
+   public void setTabbarDefinition(TouchPanelTabbarDefinition tabbarDefinition) {
+      this.tabbarDefinition = tabbarDefinition;
    }
 }

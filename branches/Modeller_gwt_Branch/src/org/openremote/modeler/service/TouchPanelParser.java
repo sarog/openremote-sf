@@ -41,9 +41,11 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.SAXValidator;
 import org.dom4j.io.XMLWriter;
 import org.dom4j.util.XMLErrorHandler;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.exception.ParseTouchPanelException;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
+import org.openremote.modeler.touchpanel.TouchPanelTabbarDefinition;
 import org.xml.sax.SAXException;
 
 /**
@@ -83,6 +85,8 @@ public class TouchPanelParser {
    private static final String PADDINGTOP_ATTR_NAME = "paddingTop";
    
    private static final String CANVAS_ELEMENT_NAME = "canvas";
+   
+   private static final String TABBAR_ELEMENT_NAME = "tabbar";
    
    /** The xml path. */
    private String xmlPath;
@@ -137,6 +141,7 @@ public class TouchPanelParser {
          panelDefinition.setPaddingTop(Integer.valueOf(panelElement.attributeValue(PADDINGTOP_ATTR_NAME)));
          
          panelDefinition.setCanvas(parseGrid(panelElement));
+         panelDefinition.setTabbarDefinition(parseTabbar(panelElement));
          panelList.add(panelDefinition);
          
          panelMap.put(type, panelList);
@@ -157,6 +162,13 @@ public class TouchPanelParser {
       return grid;
    }
    
+   private TouchPanelTabbarDefinition parseTabbar(Element panelElement) {
+      Element tabbarEle = panelElement.element(TABBAR_ELEMENT_NAME);
+      TouchPanelTabbarDefinition tchPanelDef = new TouchPanelTabbarDefinition();
+      tchPanelDef.setHeight(Integer.valueOf(tabbarEle.attributeValue(HEIGHT_ATTR_NAME)));
+      tchPanelDef.setBackground(new ImageSource(tabbarEle.attributeValue(BGIMAGE_ATTR_NAME)));
+      return tchPanelDef; 
+   }
    /**
     * Read xml from file.
     * 
