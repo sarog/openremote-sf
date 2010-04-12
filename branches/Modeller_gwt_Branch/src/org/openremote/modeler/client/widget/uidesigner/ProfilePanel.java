@@ -565,11 +565,13 @@ public class ProfilePanel extends ContentPanel {
          public void componentSelected(MenuEvent ce) {
             BeanModel selectedItem = panelTree.getSelectionModel().getSelectedItem();
             
-            if (selectedItem == null || (selectedItem.getBean() instanceof Panel)) {
-               MessageBox.alert("Warn", "A group must be selected! ", null);
+            if (selectedItem == null) {
+               MessageBox.alert("Warn", "A group should be selected! ", null);
                return;
             } else if (selectedItem.getBean() instanceof ScreenPairRef) {
                selectedItem = panelTree.getStore().getParent(selectedItem);
+            } else if (selectedItem.getBean() instanceof Panel) {
+               selectedItem = panelTree.getStore().getChild(selectedItem, 0);
             }
             final GroupRef groupRef = selectedItem.getBean();
             final NewScreenFromTemplateWindow screenWindow = new NewScreenFromTemplateWindow();
@@ -583,13 +585,13 @@ public class ProfilePanel extends ContentPanel {
                      ScreenPair screen = screenFromTemplate.getScreen();
                      screen.setTouchPanelDefinition(groupRef.getPanel().getTouchPanelDefinition());
                      screen.setParentGroup(groupRef.getGroup());
-                     BeanModelDataBase.screenTable.insert(screen.getBeanModel());
                      screenRef = new ScreenPairRef(screen);
                      screenRef.setTouchPanelDefinition(screen.getTouchPanelDefinition());
                      screenRef.setOid(IDUtil.nextID());
                      groupRef.getGroup().addScreenRef(screenRef);
                      screenRef.setGroup(groupRef.getGroup());
                      updatePanelTree(screenRef);
+                     BeanModelDataBase.screenTable.insert(screen.getBeanModel());
                      // ----------rebuild command
                      Set<Device> devices = screenFromTemplate.getDevices();
                      for (Device device : devices) {
