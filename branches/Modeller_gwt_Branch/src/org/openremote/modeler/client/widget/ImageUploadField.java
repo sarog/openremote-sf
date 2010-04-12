@@ -49,6 +49,7 @@ public class ImageUploadField extends FileUploadField {
       } else {
          setName(IMAGEUPLOADFIELD);
       }
+      setAllowBlank(false);
       setRegex(".+?\\.(png|gif|jpg|jpeg|PNG|GIF|JPG|GPEG)");
       getMessages().setRegexText("Please select a gif, jpg or png type image.");
       setStyleAttribute("overflow", "hidden");
