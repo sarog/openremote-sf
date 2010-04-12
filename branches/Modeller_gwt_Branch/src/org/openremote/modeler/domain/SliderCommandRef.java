@@ -49,4 +49,7 @@ public class SliderCommandRef extends CommandRefItem {
       this.slider = slider;
    }
 
+   public boolean equalsWithoutCompareOid(SliderCommandRef other) {
+      return getDeviceCommand().equalsWithoutCompareOid(other.getDeviceCommand());
+   }
 }

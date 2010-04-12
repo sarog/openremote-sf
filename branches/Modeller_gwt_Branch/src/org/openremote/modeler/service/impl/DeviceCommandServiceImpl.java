@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -126,13 +128,22 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
    }
 
    public List<DeviceCommand> loadSameCommands(DeviceCommand deviceCommand) {
+      List<DeviceCommand> tmpResult = new ArrayList<DeviceCommand>();
       DetachedCriteria critera = DetachedCriteria.forClass(DeviceCommand.class);
       critera.add(Restrictions.eq("device.oid", deviceCommand.getDevice().getOid()));
       critera.add(Restrictions.eq("name", deviceCommand.getName()));
       if (deviceCommand.getSectionId() != null) {
          critera.add(Restrictions.eq("sectionId", deviceCommand.getSectionId()));
       }
-      critera.add(Restrictions.eq("protocol", deviceCommand.getProtocol()));
-      return genericDAO.findPagedDateByDetachedCriteria(critera, 1, 0);
+      tmpResult = genericDAO.findByDetachedCriteria(critera);
+      if (tmpResult != null) {
+         for(Iterator<DeviceCommand> iterator= tmpResult.iterator();iterator.hasNext();) {
+            DeviceCommand cmd = iterator.next();
+            if (! cmd.equalsWithoutCompareOid(deviceCommand)) {
+               iterator.remove();
+            }
+         }
+      }
+      return tmpResult;
    }
 }

@@ -57,4 +57,8 @@ public class SensorRefItem extends BusinessEntity {
    public String getDisplayName() {
       return sensor.getDisplayName();
    }
+   
+   public boolean equalsWithoutCompareOid(SensorRefItem other) {
+      return sensor.equalsWithoutCompareOid(other.getSensor());
+   }
 }

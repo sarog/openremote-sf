@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -85,12 +86,21 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
    }
 */
    public List<Sensor> loadSameSensors(Sensor sensor) {
+      List<Sensor> result = null;
       DetachedCriteria critera = DetachedCriteria.forClass(Sensor.class);
       critera.add(Restrictions.eq("name", sensor.getName()));
       critera.add(Restrictions.eq("type", sensor.getType()));
       critera.add(Restrictions.eq("device.oid", sensor.getDevice().getOid()));
+      result = genericDAO.findByDetachedCriteria(critera);
       
-//      critera.add(Restrictions.eq("sensorCommandRef.deviceCommand", sensor.getSensorCommandRef().getDeviceCommand()));
-      return genericDAO.findPagedDateByDetachedCriteria(critera, 1, 0);
+      if (result != null) {
+         for(Iterator<Sensor> iterator=result.iterator();iterator.hasNext();) {
+            Sensor s = iterator.next();
+            if(!s.equalsWithoutCompareOid(sensor)){
+               iterator.remove();
+            }
+         }
+      }
+      return result;
    }
 }

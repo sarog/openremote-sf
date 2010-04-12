@@ -109,5 +109,29 @@ public class Protocol extends BusinessEntity {
    public void setDeviceCommand(DeviceCommand deviceCommand) {
       this.deviceCommand = deviceCommand;
    }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
+      Protocol other = (Protocol) obj;
+      if (attributes == null) {
+         if (other.attributes != null) return false;
+      } else if (!attributes.equals(other.attributes)) return false;
+      if (type == null) {
+         if (other.type != null) return false;
+      } else if (!type.equals(other.type)) return false;
+      return true;
+   }
    
+   public boolean equalsWithoutCompareOid(Protocol other) {
+      if (type == null) {
+         if (other.type != null) return false;
+      } else if (!type.equals(other.type)) return false;
+      if (attributes == null) {
+         if (other.attributes != null) return false;
+      } else if (!(attributes.containsAll(other.attributes) && other.attributes.containsAll(attributes))) return false;
+      return true;
+   }
 }
