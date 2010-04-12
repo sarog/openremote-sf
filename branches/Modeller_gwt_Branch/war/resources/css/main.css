@@ -304,8 +304,7 @@ table.screen-btn-cont td.br-c{
 }
 
 .tabbaritem-background {
-	background-image: url('../../resources/images/tabbarItem.png');
-	background-position:center center;
+	background: url('../../resources/images/tabbaritem_img.png') no-repeat center 10px;
 }
 
 /**

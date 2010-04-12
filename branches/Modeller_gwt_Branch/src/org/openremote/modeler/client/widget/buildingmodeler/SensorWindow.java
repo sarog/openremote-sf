@@ -239,7 +239,7 @@ public class SensorWindow extends FormWindow {
       minField.setAllowBlank(false);
       minField.setValue(0);
       
-      maxField.setFieldLabel("max");
+      maxField.setFieldLabel("Max");
       maxField.setAllowBlank(false);
       maxField.setValue(1);
       

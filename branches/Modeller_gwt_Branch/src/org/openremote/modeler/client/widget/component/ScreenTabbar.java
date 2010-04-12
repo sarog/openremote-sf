@@ -206,6 +206,9 @@ public class ScreenTabbar extends ScreenComponent {
             item.setWidth(width);
             item.setHeight(defaultHeight);
             item.setPosition(index*width+PADDING, 0);
+            if ("Tab Bar Item".equals(item.getName())) {
+               item.setName("Item");
+            }
             add(item);
             index++;
          }
