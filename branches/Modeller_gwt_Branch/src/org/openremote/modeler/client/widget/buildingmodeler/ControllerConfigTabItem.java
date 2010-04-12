@@ -23,6 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.proxy.ControllerConfigBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
@@ -264,6 +265,7 @@ public class ControllerConfigTabItem extends TabItem {
          public void onSuccess(Set<ControllerConfig> result) {
             configs = result;
             Info.display("save", "Property saved successfully");
+            fireEvent(SubmitEvent.SUBMIT,new SubmitEvent(this));
          }
          
       });
