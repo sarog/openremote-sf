@@ -195,7 +195,11 @@ public class ControllerConfigTabItem extends TabItem {
          optionComboBox.setValue(new ComboBoxDataModel<String>(config.getValue(),config.getValue()));
          optionComboBox.setStore(store);
          optionComboBox.setDisplayField(ComboBoxDataModel.getDisplayProperty());
-         optionComboBox.setFieldLabel("<font color=\"red\">"+config.getName()+"</font>");
+         if (isNewConfig) {
+            optionComboBox.setFieldLabel("<font color=\"red\">"+config.getName()+"</font>");
+         } else {
+            optionComboBox.setFieldLabel(config.getName());
+         }
          optionComboBox.setName(config.getName() + "Options");
          optionComboBox.setAllowBlank(false);
          addUpdateListenerToComboBox(config,optionComboBox);
