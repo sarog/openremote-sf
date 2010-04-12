@@ -115,15 +115,20 @@ public class Sensor extends BusinessEntity {
       if (obj == null) return false;
       if (getClass() != obj.getClass()) return false;
       Sensor other = (Sensor) obj;
-      if (! getType().equals(other.getType()))return false;
-      if (this.device!=null && other.device != null) {
-         if (!this.device.equals(other.device)){
-            return false;
-         }
-      }
-      if (!name.equals(other.getName())){
-         return false;
-      }
+      if (! equalsWithoutCompareOid(other)) return false;
       return getOid() == other.getOid();
+   }
+   
+   public boolean equalsWithoutCompareOid(Sensor other) {
+      if (name == null) {
+         if (other.name != null) return false;
+      } else if (!name.equals(other.name)) return false;
+      if (type == null) {
+         if (other.type != null) return false;
+      } else if (!type.equals(other.type)) return false;
+      if (sensorCommandRef == null) {
+         if (other.sensorCommandRef != null) return false;
+      } else if (!sensorCommandRef.equalsWithoutCompareOid(other.sensorCommandRef)) return false;
+      return true;
    }
 }

@@ -110,15 +110,9 @@ public class Switch extends BusinessEntity {
    }
 
 
-   @Override
    public int hashCode() {
-      /*final int prime = 31;
-      int result = 1;
-      result = prime * result + ((name == null) ? 0 : name.hashCode());
-      return result^0xFFFF+(int)getOid();*/
       return (int) getOid();
    }
-
 
    @Override
    public boolean equals(Object obj) {
@@ -126,19 +120,23 @@ public class Switch extends BusinessEntity {
       if (obj == null) return false;
       if (getClass() != obj.getClass()) return false;
       Switch other = (Switch) obj;
-      if (name == null) {
-         if (other.name != null) return false;
-      } else if (!name.equals(other.name)) return false;
-      if (this.device!=null && other.device != null) {
-         if (!this.device.equals(other.device)){
-            return false;
-         }
-      }
-      if (!name.equals(other.getName())){
-         return false;
-      }
-      return other.getOid() == getOid();
+      if (!equalsWithoutCompareOid(other)) return false;
+      return getOid() == other.getOid();
    }
    
-   
+   public boolean equalsWithoutCompareOid(Switch swh) {
+      if (name == null) {
+         if (swh.name != null) return false;
+      } else if (!name.equals(swh.name)) return false;
+      if (switchCommandOffRef == null) {
+         if (swh.switchCommandOffRef != null) return false;
+      } else if (!switchCommandOffRef.equalsWithoutCompareOid(swh.switchCommandOffRef)) return false;
+      if (switchCommandOnRef == null) {
+         if (swh.switchCommandOnRef != null) return false;
+      } else if (!switchCommandOnRef.equalsWithoutCompareOid(swh.switchCommandOnRef)) return false;
+      if (switchSensorRef == null) {
+         if (swh.switchSensorRef != null) return false;
+      } else if (!switchSensorRef.equalsWithoutCompareOid(swh.switchSensorRef)) return false;
+      return true;
+   }
 }

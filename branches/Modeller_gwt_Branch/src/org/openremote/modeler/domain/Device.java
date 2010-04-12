@@ -241,13 +241,6 @@ public class Device extends BusinessEntity {
 
    @Override
    public int hashCode() {
-      /*final int prime = 31;
-      int result = 1;
-      result = prime * result + ((model == null) ? 0 : model.hashCode());
-      result = prime * result + ((name == null) ? 0 : name.hashCode());
-      result = prime * result + ((vendor == null) ? 0 : vendor.hashCode());
-      return result^0xFFFF+(int)getOid();*/
-      
       return (int) getOid();
    }
 

@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -69,13 +70,19 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
    }
    
    public List<Slider> loadSameSliders(Slider slider) {
+      List<Slider> result = null;
       DetachedCriteria critera = DetachedCriteria.forClass(Slider.class);
       critera.add(Restrictions.eq("device.oid", slider.getDevice().getOid()));
       critera.add(Restrictions.eq("name", slider.getName()));
-//      critera.add(Restrictions.eq("setValueCmd.oid", slider.getSetValueCmd().getOid()));
-      /*if (slider.getSliderSensorRef() != null) {
-         critera.add(Restrictions.eq("sliderSensorRef.sensor.oid", slider.getSliderSensorRef().getOid()));
-      }*/
-      return genericDAO.findPagedDateByDetachedCriteria(critera, 1, 0);
+      result = genericDAO.findByDetachedCriteria(critera);
+      if (result != null) {
+         for(Iterator<Slider> iterator = result.iterator();iterator.hasNext();) {
+            Slider sld = iterator.next();
+            if (!sld.equalsWithoutCompareOid(slider)) {
+               iterator.remove();
+            }
+         }
+      }
+      return result;
    }
 }

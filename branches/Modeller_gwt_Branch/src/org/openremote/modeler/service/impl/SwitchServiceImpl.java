@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -96,9 +97,19 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
    }
    
    public List<Switch> loadSameSwitchs(Switch swh) {
+      List<Switch> result = null;
       DetachedCriteria critera = DetachedCriteria.forClass(Switch.class);
       critera.add(Restrictions.eq("device.oid", swh.getDevice().getOid()));
       critera.add(Restrictions.eq("name", swh.getName()));
-      return genericDAO.findPagedDateByDetachedCriteria(critera, 1, 0);
+      result = genericDAO.findByDetachedCriteria(critera);
+      if (result != null) {
+         for(Iterator<Switch> iterator = result.iterator();iterator.hasNext();) {
+            Switch tmp = iterator.next();
+            if (! tmp.equalsWithoutCompareOid(swh)) {
+               iterator.remove();
+            }
+         }
+      }
+      return result;
    }
 }
