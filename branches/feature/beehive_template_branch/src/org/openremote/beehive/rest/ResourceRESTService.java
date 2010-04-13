@@ -63,7 +63,10 @@ public class ResourceRESTService extends RESTBaseService{
    @Produces( { MediaType.APPLICATION_OCTET_STREAM })
    public Response getResourcesForController(@PathParam("username") String username, 
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
-      if (! authorize(credentials)) return unAuthorizedResponse();
+      
+      if (! authorize(credentials)) {
+         return unAuthorizedResponse();
+      }
       
       File file = getResourceService().getResourceZip(username);
       if (file != null) {
@@ -76,10 +79,12 @@ public class ResourceRESTService extends RESTBaseService{
    @Path("rest/panels")
    @GET
    @Produces( { MediaType.APPLICATION_XML })
-   public String getPanels(@PathParam("username") String username,
+   public Response getPanels(@PathParam("username") String username,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
 
-      authorize(credentials, false);
+      if (!authorize(credentials, false)) {
+         return unAuthorizedResponse();
+      }
       String panels = null;
       
       try {
@@ -91,7 +96,7 @@ public class ResourceRESTService extends RESTBaseService{
       }
       
       if (panels != null) {
-         return panels;
+         return buildResponse(panels);
       }
       throw new WebApplicationException(Response.Status.NOT_FOUND);
    }
@@ -99,10 +104,12 @@ public class ResourceRESTService extends RESTBaseService{
    @Path("rest/panel/{panel_id}")
    @GET
    @Produces( { MediaType.APPLICATION_XML })
-   public String getPanelXMLByName(@PathParam("username") String username, @PathParam("panel_id") String panelName,
+   public Response getPanelXMLByName(@PathParam("username") String username, @PathParam("panel_id") String panelName,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
 
-      authorize(credentials, false);
+      if (!authorize(credentials, false)) {
+         return unAuthorizedResponse();
+      }
       String panelXML = null;
       
       try {
@@ -116,7 +123,7 @@ public class ResourceRESTService extends RESTBaseService{
       }
       
       if (panelXML != null) {
-         return panelXML;
+         return buildResponse(panelXML);
       }
       throw new WebApplicationException(Response.Status.NOT_FOUND);
    }
@@ -127,7 +134,9 @@ public class ResourceRESTService extends RESTBaseService{
    public Response getResource(@PathParam("username") String username, @PathParam("file_name") String fileName,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
 
-      if (!authorize(credentials, false)) return unAuthorizedResponse();
+      if (!authorize(credentials, false)) {
+         return unAuthorizedResponse();
+      }
       
       try {
          File file = getResourceService().getResource(username, fileName);
