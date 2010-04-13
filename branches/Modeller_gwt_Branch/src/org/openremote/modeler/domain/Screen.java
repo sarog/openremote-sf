@@ -295,7 +295,7 @@ public class Screen extends BusinessEntity {
    
    public String getNameWithOrientation() {
       if (isLandscape) {
-         return name + "_landscape";
+         return "(L)" + name;
       }
       return name;
    }

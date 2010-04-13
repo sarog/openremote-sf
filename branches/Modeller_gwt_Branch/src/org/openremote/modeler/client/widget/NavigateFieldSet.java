@@ -31,7 +31,6 @@ import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
-import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
@@ -50,15 +49,15 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
  */
 public class NavigateFieldSet extends FieldSet {
    private Navigate navigate;
-   private List<BeanModel> groupModels;
+   private List<Group> groups;
    private Radio toLogical = new Radio();
    private Radio toGroup = new Radio();
    private SimpleComboBox typeList = new SimpleComboBox();
    private SimpleComboBox groupList = new SimpleComboBox();
    private SimpleComboBox screenList = new SimpleComboBox();
-   public NavigateFieldSet(Navigate navigate, List<BeanModel> groupModels) {
+   public NavigateFieldSet(Navigate navigate, List<Group> groups) {
       this.navigate = navigate;
-      this.groupModels = groupModels;
+      this.groups = groups;
       init();
       createLeftContainer();
       createRightComboBoxes();
@@ -117,7 +116,7 @@ public class NavigateFieldSet extends FieldSet {
       LayoutContainer rightComboBoxes = new LayoutContainer();
       FormLayout layout = new FormLayout();
       layout.setHideLabels(true);
-      layout.setDefaultWidth(110);
+      layout.setDefaultWidth(140);
       rightComboBoxes.setLayout(layout);
       rightComboBoxes.setLayoutOnChange(true);
 
@@ -132,8 +131,8 @@ public class NavigateFieldSet extends FieldSet {
       
       groupList.setEmptyText("--group--");
       groupList.disable();
-      for (BeanModel groupModel : groupModels) {
-         ComboBoxDataModel<Group> data = new ComboBoxDataModel<Group>(groupModel.get("name").toString(), (Group) groupModel.getBean());
+      for (Group group : groups) {
+         ComboBoxDataModel<Group> data = new ComboBoxDataModel<Group>(group.getName(), group);
          groupList.getStore().add(data);
       }
       screenList.setEmptyText("--screen--");
@@ -213,9 +212,9 @@ public class NavigateFieldSet extends FieldSet {
          toGroup.setValue(false);
       } else if (navigate.toGroup()) {
          toGroup.setValue(true);
-         for (BeanModel groupModel : groupModels) {
-            ComboBoxDataModel<Group> data = new ComboBoxDataModel<Group>(groupModel.get("name").toString(), (Group) groupModel.getBean());
-            if (navigate.getToGroup() == ((Group) groupModel.getBean()).getOid()) {
+         for (Group group : groups) {
+            ComboBoxDataModel<Group> data = new ComboBoxDataModel<Group>(group.getName(), group);
+            if (navigate.getToGroup() == group.getOid()) {
                groupList.setValue(data);
           }
          }
