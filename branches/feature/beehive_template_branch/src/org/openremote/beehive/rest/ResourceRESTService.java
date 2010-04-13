@@ -163,6 +163,17 @@ public class ResourceRESTService extends RESTBaseService{
       return "<openremote></openremote>";
    }
    
+   @Path("rest/status/{panel_ids}")
+   @GET
+   public Response getComponentStatus() {
+      try {
+         Thread.sleep(45000);
+      } catch (InterruptedException e) {
+         throw new WebApplicationException(e);
+      }
+      return Response.status(504).build();
+   }
+   
    
    /*
     * If the user was not validated, fail with a
