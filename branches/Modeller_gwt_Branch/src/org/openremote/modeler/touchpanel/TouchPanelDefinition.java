@@ -277,6 +277,7 @@ public class TouchPanelDefinition implements Serializable {
             horizontalDefinition.setBgImage(this.bgImage.substring(0, lastPoint) + "_h" + this.bgImage.substring(lastPoint));
          }
          horizontalDefinition.setCanvas(new TouchPanelCanvasDefinition(this.canvas.getHeight(),this.canvas.getWidth()));
+         horizontalDefinition.setTabbarDefinition(tabbarDefinition);
       }
       return horizontalDefinition;
    }
