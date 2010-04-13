@@ -16,6 +16,8 @@
  */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import java.util.List;
+
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
@@ -83,6 +85,7 @@ public class ScreenTabItem extends TabItem {
       updateTouchPanel();
       screenCanvas = new ScreenCanvas(screen);
       initTabbarAndIndicatorForScreenCanvas();
+      updateScreenIndicator();
       screenContainer.add(screenCanvas);
 //      screenContainer.setBorders(false);
       screenContainer.setStyleAttribute("border", "1px dashed gray");
@@ -156,12 +159,20 @@ public class ScreenTabItem extends TabItem {
             if (tabbar != null) {
                screenCanvas.addTabbar(tabbar);
             }
-            screenCanvas.updateScreenIndicator(screenGroup.getScreenRefs().size(), screen.getScreenPair().getScreenIndex());
          }
       }
    }
    
-   public void updateScreenIndicator(int screenCount, int screenIndex) {
-      screenCanvas.updateScreenIndicator(screenCount, screenIndex);
+   public void updateScreenIndicator() {
+      Group screenGroup = screen.getScreenPair().getParentGroup();
+      if (screenGroup != null) {
+         if (screen.isLandscape()) {
+            List<Screen> landscapeScreens = screenGroup.getLandscapeScreens();
+            screenCanvas.updateScreenIndicator(landscapeScreens.size(), landscapeScreens.indexOf(screen));
+         } else {
+            List<Screen> portraitScreens = screenGroup.getPortraitScreens();
+            screenCanvas.updateScreenIndicator(portraitScreens.size(), portraitScreens.indexOf(screen));
+         }
+      }
    }
 }
