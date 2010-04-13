@@ -45,13 +45,21 @@
 			group = [newGroup retain];// must retain newGroup here!!!
 			[self setTitle:group.name];
 		}
-		if (UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation)) {
-			currentOrientation = UIInterfaceOrientationLandscapeLeft;
-		} else {
-			currentOrientation = UIInterfaceOrientationPortrait;
-		}
+		[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+		currentOrientation = [[UIDevice currentDevice] orientation];
 	}
 	return self;
+}
+
+- (UIInterfaceOrientation)getCurrentOrientation {
+	return currentOrientation;
+}
+
+- (void)setNewOrientation:(UIInterfaceOrientation)newOrientation {
+	if (currentOrientation != newOrientation) {
+		currentOrientation = newOrientation;
+		[self willRotateToInterfaceOrientation:newOrientation duration:1.0f];
+	}
 }
 
 - (int)groupId {
@@ -159,6 +167,9 @@
 	return [[self currentScreenViewController] performGesture:gesture];
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	return [[self currentScreen] inverseScreenId] > 0;
+}
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
 	int inverseScreenId = [self currentScreen].inverseScreenId;

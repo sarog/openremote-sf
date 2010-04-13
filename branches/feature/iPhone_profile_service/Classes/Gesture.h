@@ -24,10 +24,14 @@
 #import "Control.h"
 #import "Navigate.h"
 
+
+//CW rotate: +1 % 4
+//CCW rotate: (-1+4) % 4
+//opposite : +2 % 4
 typedef enum {
-	GestureSwipeTypeTopToBottom  = 0,
-	GestureSwipeTypeBottomToTop  = 1,
-	GestureSwipeTypeLeftToRight  = 2,
+	GestureSwipeTypeBottomToTop  = 0,
+	GestureSwipeTypeLeftToRight  = 1,
+	GestureSwipeTypeTopToBottom  = 2,
 	GestureSwipeTypeRightToLeft  = 3
 } GestureSwipeType;
 
@@ -44,5 +48,7 @@ typedef enum {
 @property (nonatomic, readonly)Navigate *navigate;
 
 - (id)initWithGestureSwipeType:(GestureSwipeType)type;
+- (id)initWithGestureSwipeType:(GestureSwipeType)type orientation:(UIInterfaceOrientation)orientation;
+- (NSString *)toString;
 
 @end

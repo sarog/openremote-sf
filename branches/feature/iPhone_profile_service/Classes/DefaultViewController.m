@@ -70,7 +70,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	// status bar is 20px high and on the top of window.
 	// all the visible view contents will be shown inside this container.
 	CGSize size = [UIScreen mainScreen].bounds.size;
-	[self setView:[[UIView alloc] initWithFrame:CGRectMake(0, STATUS_BAR_HEIGHT, size.width, size.height - STATUS_BAR_HEIGHT) ]];
+	[self setView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height)]];
 }
 
 
@@ -301,8 +301,8 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		
 		[currentGroupController stopPolling];
 		[targetGroupController startPolling];
-		[UIView beginAnimations:nil context:nil];
-		[UIView setAnimationDuration:1];
+		//[UIView beginAnimations:nil context:nil];
+		//[UIView setAnimationDuration:1];
 		
 		// calculate animation curl up or down
 		int currentIndex = 0;
@@ -323,10 +323,18 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 //		} else {
 //			[UIView setAnimationTransition:UIViewAnimationTransitionCurlDown forView:self.view cache:YES];
 //		}
-		[UIView setAnimationTransition:UIViewAnimationTransitionNone forView:self.view cache:YES];
+		//[UIView setAnimationTransition:UIViewAnimationTransitionNone forView:self.view cache:YES];
+		[targetGroupController setNewOrientation:[currentGroupController getCurrentOrientation]];
+//		if ([targetGroupController shouldAutorotateToInterfaceOrientation:[currentGroupController getCurrentOrientation]]) {
+//			[targetGroupController setNewOrientation:[currentGroupController getCurrentOrientation]];
+//		} else {
+//			;
+//		}
+
+		
 		[self.view addSubview:view];
 		
-		[UIView commitAnimations];
+		//[UIView commitAnimations];
 		
 		currentGroupController = targetGroupController;
 	}
@@ -426,12 +434,13 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 
 #pragma mark delegate method of GestureWindow
 - (void)performGesture:(Gesture *)gesture {
-	NSLog(@"detected gesture : %d", gesture.swipeType);
+	NSLog(@"detected gesture : %@", [gesture toString]);
 	[currentGroupController performGesture:gesture];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return groupControllers.count > 0 && [[currentGroupController currentScreen] inverseScreenId] > 0;
+	return groupControllers.count > 0 && [currentGroupController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+	//return groupControllers.count > 0;
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {

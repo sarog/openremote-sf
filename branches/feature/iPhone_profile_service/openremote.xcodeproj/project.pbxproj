@@ -39,6 +39,7 @@
 		33DF56CE10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
 		33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
+		8C1F03C9117416A700A9DA83 /* zUIAccelerometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */; };
 		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		8C3DE3081163492C00DD4EE7 /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3001163492C00DD4EE7 /* btn_green.png */; };
 		8C3DE3091163492C00DD4EE7 /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3011163492C00DD4EE7 /* button.png */; };
@@ -275,6 +276,8 @@
 		799CC3CC0F4D4EEA006195BD /* URLConnectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLConnectionHelper.h; sourceTree = "<group>"; };
 		799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLConnectionHelper.m; sourceTree = "<group>"; };
 		8C09E76210BA838800A475D8 /* ControllerException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerException.h; sourceTree = "<group>"; };
+		8C1F03C7117416A700A9DA83 /* zUIAccelerometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zUIAccelerometer.h; sourceTree = "<group>"; };
+		8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = zUIAccelerometer.m; sourceTree = "<group>"; };
 		8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		8C3DE3001163492C00DD4EE7 /* btn_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = btn_green.png; path = image/btn_green.png; sourceTree = "<group>"; };
 		8C3DE3011163492C00DD4EE7 /* button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button.png; path = image/button.png; sourceTree = "<group>"; };
@@ -738,6 +741,8 @@
 		8CF6A27B0FBD3751006ED733 /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				8C1F03C7117416A700A9DA83 /* zUIAccelerometer.h */,
+				8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */,
 				8CF6A27C0FBD3782006ED733 /* AsyncSocket.h */,
 				8CF6A27D0FBD3782006ED733 /* AsyncSocket.m */,
 				8CF6A27E0FBD3782006ED733 /* AsyncUdpSocket.h */,
@@ -1110,6 +1115,7 @@
 				33B8ED1310FCA5B700F3363D /* SensoryView.m in Sources */,
 				33B8ED5010FCAB4F00F3363D /* SensoryControlView.m in Sources */,
 				33C3A49410FE32E3001C520E /* ColorUtil.m in Sources */,
+				8C1F03C9117416A700A9DA83 /* zUIAccelerometer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1231,8 +1237,8 @@
 					"-lgcov",
 				);
 				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "A1726BE6-FE9F-4867-B38B-590AAC655493";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "A1726BE6-FE9F-4867-B38B-590AAC655493";
+				PROVISIONING_PROFILE = "070098F3-3531-4915-8499-9C7896FA6CAB";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "070098F3-3531-4915-8499-9C7896FA6CAB";
 				SDKROOT = iphoneos2.2.1;
 			};
 			name = Debug;
@@ -1254,8 +1260,8 @@
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "A1726BE6-FE9F-4867-B38B-590AAC655493";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "A1726BE6-FE9F-4867-B38B-590AAC655493";
+				PROVISIONING_PROFILE = "070098F3-3531-4915-8499-9C7896FA6CAB";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "070098F3-3531-4915-8499-9C7896FA6CAB";
 				SDKROOT = iphoneos2.2.1;
 			};
 			name = Release;
@@ -1388,8 +1394,8 @@
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "A1726BE6-FE9F-4867-B38B-590AAC655493";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "A1726BE6-FE9F-4867-B38B-590AAC655493";
+				PROVISIONING_PROFILE = "070098F3-3531-4915-8499-9C7896FA6CAB";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "070098F3-3531-4915-8499-9C7896FA6CAB";
 				SDKROOT = iphoneos3.0;
 			};
 			name = Distribution;
@@ -1432,8 +1438,8 @@
 					"-lgcov",
 				);
 				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "A1726BE6-FE9F-4867-B38B-590AAC655493";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "A1726BE6-FE9F-4867-B38B-590AAC655493";
+				PROVISIONING_PROFILE = "070098F3-3531-4915-8499-9C7896FA6CAB";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "070098F3-3531-4915-8499-9C7896FA6CAB";
 				SDKROOT = iphoneos2.2.1;
 			};
 			name = GCov_Build;
