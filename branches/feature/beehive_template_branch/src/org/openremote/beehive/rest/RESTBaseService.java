@@ -55,7 +55,9 @@ public class RESTBaseService {
    }
 
    protected Response buildResponse(Object entity) {
-      if (entity !=null) return Response.status(Response.Status.OK).entity(entity).build();
+      if (entity !=null) {
+         return Response.status(Response.Status.OK).entity(entity).build();
+      }
       return Response.status(Response.Status.NO_CONTENT).build();
    }
    
