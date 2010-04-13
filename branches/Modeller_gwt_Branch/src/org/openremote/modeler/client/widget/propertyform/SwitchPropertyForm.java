@@ -22,6 +22,7 @@ package org.openremote.modeler.client.widget.propertyform;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.widget.IconPreviewWidget;
+import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
@@ -49,11 +50,11 @@ public class SwitchPropertyForm extends PropertyForm {
    }
    
    private void addFields(final ScreenSwitch screenSwitch, final UISwitch uiSwitch) {
-      final Button imageON = new Button("Select");
+      final ImageSelectAdapterField imageONField = new ImageSelectAdapterField("Image(ON)");
       if (uiSwitch.getOnImage() != null) {
-         imageON.setText(uiSwitch.getOnImage().getImageFileName());
+         imageONField.setText(uiSwitch.getOnImage().getImageFileName());
       }
-      imageON.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      imageONField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             final ImageSource onImage = uiSwitch.getOnImage();
@@ -67,20 +68,28 @@ public class SwitchPropertyForm extends PropertyForm {
                   } else {
                      uiSwitch.setOnImage(new ImageSource(imageOnUrl));
                   }
-                  imageON.setText(uiSwitch.getOnImage().getImageFileName());
+                  imageONField.setText(uiSwitch.getOnImage().getImageFileName());
                   screenSwitch.setIcon(imageOnUrl);
                }
             });
          }
       });
-      AdapterField adapterImageON = new AdapterField(imageON);
-      adapterImageON.setFieldLabel("Image(ON)");
+      imageONField.addDeleteListener(new SelectionListener<ButtonEvent>() {
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            if (uiSwitch.getOnImage() != null) {
+               imageONField.removeImageText();
+               screenSwitch.removeIcon();
+               uiSwitch.setOnImage(null);
+            }
+         }
+      });
 
-      final Button imageOFF = new Button("Select");
+      final ImageSelectAdapterField imageOFFField = new ImageSelectAdapterField("Image(OFF)");
       if (uiSwitch.getOffImage() != null) {
-         imageOFF.setText(uiSwitch.getOffImage().getImageFileName());
+         imageOFFField.setText(uiSwitch.getOffImage().getImageFileName());
       }
-      imageOFF.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      imageOFFField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             final ImageSource offImage = uiSwitch.getOffImage();
@@ -94,15 +103,25 @@ public class SwitchPropertyForm extends PropertyForm {
                   } else {
                      uiSwitch.setOffImage(new ImageSource(imageOffUrl));
                   }
-                  imageOFF.setText(uiSwitch.getOffImage().getImageFileName());
+                  imageOFFField.setText(uiSwitch.getOffImage().getImageFileName());
                }
             });
 
          }
       });
-      AdapterField adapterImageOFF = new AdapterField(imageOFF);
-      adapterImageOFF.setFieldLabel("Image(OFF)");
-
+      imageOFFField.addDeleteListener(new SelectionListener<ButtonEvent>() {
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            if (uiSwitch.getOffImage() != null) {
+               imageOFFField.removeImageText();
+               uiSwitch.setOffImage(null);
+               if (uiSwitch.getOnImage() != null) {
+                  screenSwitch.setIcon(uiSwitch.getOnImage().getSrc());
+               }
+            }
+         }
+      });
+      
       Button switchCommand = new Button("Select");
       if (uiSwitch.getSwitchCommand() != null) {
          switchCommand.setText(uiSwitch.getSwitchCommand().getDisplayName());
@@ -112,8 +131,8 @@ public class SwitchPropertyForm extends PropertyForm {
       adapterSwitchCommand.setFieldLabel("SwitchCommand");
       adapterSwitchCommand.setAutoHeight(true);
 
-      add(adapterImageON);
-      add(adapterImageOFF);
+      add(imageONField);
+      add(imageOFFField);
       add(adapterSwitchCommand);
    }
 
