@@ -313,11 +313,11 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       @Override
       public void componentSelected(ButtonEvent ce) {
          if (keywordsField.getValue() == null || keywordsField.getValue().trim().length()==0) {
-            MessageBox.alert("Warn", "At least, one keyword is needed!", null);
-            return; 
+           //search public templates without caring keywords.  
+           searchTemplates(null,currentPage); 
+         } else {
+            searchTemplates(keywordsField.getValue(),currentPage);
          }
-         
-         searchTemplates(keywordsField.getValue(),currentPage);
          currentPage = 0;
       }
    }
