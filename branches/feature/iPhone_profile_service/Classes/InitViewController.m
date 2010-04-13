@@ -36,7 +36,7 @@
 - (id)init {
 	if (self = [super  initWithNibName:@"InitViewController" bundle:nil]) {
 		
-		label = [[UILabel alloc] initWithFrame:CGRectMake(0, 430, 320, 20)];
+		label = [[UILabel alloc] initWithFrame:CGRectMake(0, 450, 320, 20)];
 		[label setText:@"loading ... please wait."];
 		[label setBackgroundColor:[UIColor clearColor]];
 		[label setTextColor:[UIColor darkTextColor]];
@@ -47,9 +47,9 @@
 		//	[label setShadowOffset:CGSizeMake(1,1)];
 		loadding = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
 		[loadding sizeToFit];
-		[loadding setFrame:CGRectMake(140,390,30,30)];
+		[loadding setFrame:CGRectMake(140,410,30,30)];
 		
-		version = [[UILabel alloc] initWithFrame:CGRectMake(140, 300, 30, 20)];
+		version = [[UILabel alloc] initWithFrame:CGRectMake(140, 320, 30, 20)];
 		NSLog(@"version is %@",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]);
 		version.text = [NSString stringWithFormat:@"v%@",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
 		[version setBackgroundColor:[UIColor clearColor]];

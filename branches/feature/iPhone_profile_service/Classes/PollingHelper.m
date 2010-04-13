@@ -53,7 +53,7 @@
 	//assemble put request 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
 	[request setURL:url];
-	[request setHTTPMethod:@"POST"];
+	[request setHTTPMethod:@"GET"];
 	
 	connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
 	
@@ -72,7 +72,7 @@
 	//assemble put request 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
 	[request setURL:url];
-	[request setHTTPMethod:@"POST"];
+	[request setHTTPMethod:@"GET"];
 	
 	connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
 	

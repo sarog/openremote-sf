@@ -191,11 +191,10 @@
 	
 	CGFloat availableScreenWidth = isLandscape ? size.height : size.width;
 	CGFloat availableScreenHeight = isLandscape ? size.width : size.height;
-	CGFloat statusBarHeight = 20;
 	CGFloat pageControlHeight = 20;
-	CGFloat availableScrollHeight = availableScreenHeight - statusBarHeight - pageControlHeight;
+	CGFloat availableScrollHeight = availableScreenHeight - pageControlHeight;
 	
-	[self.view setFrame:CGRectMake(0, 0, availableScreenWidth, availableScreenHeight - statusBarHeight)];
+	[self.view setFrame:CGRectMake(0, 0, availableScreenWidth, availableScreenHeight)];
 	
 	scrollView = [[UIScrollView alloc] init];
 	[scrollView setDelegate:self];

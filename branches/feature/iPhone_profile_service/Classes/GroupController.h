@@ -43,6 +43,8 @@
 - (int)currentScreenId;
 - (int)groupId;
 - (void)performGesture:(Gesture *)gesture;
+- (UIInterfaceOrientation)getCurrentOrientation;
+- (void)setNewOrientation:(UIInterfaceOrientation)newOrientation;
 
 @property (nonatomic, retain) Group *group;
 
