@@ -730,7 +730,7 @@ public class ScreenCanvas extends ComponentContainer {
       if (screenIndicator != null) {
          screenIndicator.removeFromParent();
       }
-      if (Constants.IPHONE_TYPE.equals(screen.getTouchPanelDefinition().getType())) {
+      if (Constants.IPHONE_TYPE.equals(screen.getTouchPanelDefinition().getType()) || Constants.IPAD_TYPE.equals(screen.getTouchPanelDefinition().getType())) {
          screenIndicator = new ScreenIndicator(screenCount, screenIndex, screen.getTouchPanelDefinition().getCanvas()
                .getWidth(), 20);
          if (tabbarContainer != null) {
