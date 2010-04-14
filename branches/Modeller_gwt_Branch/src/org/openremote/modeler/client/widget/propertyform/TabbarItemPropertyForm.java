@@ -19,21 +19,26 @@
 */
 package org.openremote.modeler.client.widget.propertyform;
 
-import org.openremote.modeler.client.widget.ImageUploadField;
+import java.util.ArrayList;
+
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
+import org.openremote.modeler.client.widget.component.ImageUploadAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenTabbarItem;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
-import org.openremote.modeler.domain.Panel;
+import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
-import com.extjs.gxt.ui.client.event.ComponentEvent;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.FieldSetEvent;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 
 /**
@@ -42,12 +47,10 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 public class TabbarItemPropertyForm extends PropertyForm {
    private NavigateFieldSet navigateSet = null;
    private ScreenTabbarItem screenTabbarItem = null;
-   private ImageUploadField imageUploader = null;
    
    public TabbarItemPropertyForm(ScreenTabbarItem screenTabbarItem) {
       super(screenTabbarItem);
       this.screenTabbarItem = screenTabbarItem;
-      setLabelWidth(100);
       addFields();
       addSubmitListenersToForm();
       super.addDeleteButton();
@@ -64,23 +67,37 @@ public class TabbarItemPropertyForm extends PropertyForm {
          }
       });
       
-      imageUploader = new ImageUploadField(null) {
-         @Override
-         protected void onChange(ComponentEvent ce) {
-            super.onChange(ce);
+      final ImageUploadAdapterField imageUploaderField = new ImageUploadAdapterField(null);
+      imageUploaderField.addUploadListener(Events.OnChange, new Listener<FieldEvent>() {
+         public void handleEvent(FieldEvent be) {
             if (!isValid()) {
                return;
             }
             submit();
          }
-      };
-      imageUploader.setValue(screenTabbarItem.getImageSource().getSrc());
-      imageUploader.setFieldLabel("Image Source");
-      imageUploader.setActionToForm(this);
+      });
+      
+      imageUploaderField.addDeleteListener(new SelectionListener<ButtonEvent>() {
+         public void componentSelected(ButtonEvent ce) {
+            if (screenTabbarItem.getImageSource().getSrc() != null) {
+               screenTabbarItem.removeImage();
+               WidgetSelectionUtil.setSelectWidget(null);
+               WidgetSelectionUtil.setSelectWidget(screenTabbarItem);
+            }
+         }
+         
+      });
+      imageUploaderField.setImage(screenTabbarItem.getImageSource().getSrc());
+      imageUploaderField.setFieldLabel("Image Source");
+      imageUploaderField.setActionToForm(this);
       // initial navigate properties
       final Navigate navigate = screenTabbarItem.getNavigate();
-      Panel panel = screenTabbarItem.getScreenCanvas().getScreen().getScreenPair().getParentGroup().getParentPanel();
-      navigateSet = new NavigateFieldSet(navigate, panel.getGroups());
+      Group parentGroup = screenTabbarItem.getScreenCanvas().getScreen().getScreenPair().getParentGroup();
+      if (parentGroup != null) {
+         navigateSet = new NavigateFieldSet(navigate, parentGroup.getParentPanel().getGroups());
+      } else {
+         navigateSet = new NavigateFieldSet(navigate, new ArrayList<Group>());
+      }
       navigateSet.setCheckboxToggle(true);
       navigateSet.addListener(Events.BeforeExpand, new Listener<FieldSetEvent>() {
          @Override
@@ -105,7 +122,7 @@ public class TabbarItemPropertyForm extends PropertyForm {
       }
       
       add(name);
-      add(imageUploader);
+      add(imageUploaderField);
       add(navigateSet);
       
    }
