@@ -291,7 +291,8 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    private Element queryPanelByName(String xmlPath, String name) {
-      return queryElementFromXML(xmlPath, "//" + Constant.OPENREMOTE_NAMESPACE + ":panel[@name='" + name + "']");
+      return queryElementFromXML(xmlPath, "//" + Constant.OPENREMOTE_NAMESPACE + ":panel[@name=\"" + escapeQuotes(name)
+            + "\"]");
    }
 
    private List<Element> queryElementByElementName(Document doc, String eleName) {
@@ -336,6 +337,9 @@ public class ResourceServiceImpl implements ResourceService {
       return results.size() > 0 ? results.get(0) : null;
    }
    
+   private String escapeQuotes(String xpath) {
+      return xpath.replaceAll("\"", "");
+   }
    
    @Override
    public File getResource(String username, String fileName) throws FileNotFoundException {
