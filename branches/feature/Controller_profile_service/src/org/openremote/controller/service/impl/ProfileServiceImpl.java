@@ -247,7 +247,8 @@ public class ProfileServiceImpl implements ProfileService {
    }
 
    private Element queryPanelByName(String xmlPath, String name) {
-      return queryElementFromXML(xmlPath, "//" + Constants.OPENREMOTE_NAMESPACE + ":panel[@name='" + name + "']");
+      return queryElementFromXML(xmlPath, "//" + Constants.OPENREMOTE_NAMESPACE + ":panel[@name=\""
+            + escapeQuotes(name) + "\"]");
    }
 
    private List<Element> queryElementByElementName(Document doc, String eleName) {
@@ -296,4 +297,7 @@ public class ProfileServiceImpl implements ProfileService {
       this.configuration = configuration;
    }
 
+   private String escapeQuotes(String xpath) {
+      return xpath.replaceAll("\"", "");
+   }
 }
