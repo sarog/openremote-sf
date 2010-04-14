@@ -25,6 +25,7 @@
 #import "Screen.h"
 #import "ScreenViewController.h"
 
+#define degreesToRadian(x) (M_PI * (x) / 180.0) 
 
 @interface GroupController (Private)
 
@@ -80,6 +81,15 @@
 	frame.size.height = isLandscape ? size.width : size.height;
 	frame.size.width = isLandscape ? size.height : size.width;
 	return frame;
+}
+
+- (BOOL)hasNoViewInThatOrientation:(BOOL)isLandscape {
+	if (isLandscape) {
+		return [group getLandscapeScreens].count == 0;
+	} else {
+		return [group getPortraitScreens].count == 0;
+	}
+	return NO;
 }
 
 - (int)groupId {
@@ -147,8 +157,8 @@
 
 - (void)showErrorView {
 	errorViewController = [[ErrorViewController alloc] 
-												 initWithErrorTitle:@"No Screen Found" 
-												 message:@"Please associate screens with group or reset setting."];
+															initWithErrorTitle:@"No Screen Found" 
+																				 message:@"Please associate screens with this group of this orientation."];
 	[self setView:errorViewController.view];	
 }
 
