@@ -103,9 +103,11 @@
 	}
 	if (index != -1) {
 		selectedIndex = index;
+		NSLog(@"switch to screen index = %d, id = %d", selectedIndex, screenId);
 		[pageControl setCurrentPage:selectedIndex];
 		[self scrollToSelectedViewWithAnimation:NO];
 	} else {
+		NSLog(@"switch to screen not found, id = %d", screenId);
 		return NO;
 	}
 	

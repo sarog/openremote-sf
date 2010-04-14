@@ -37,11 +37,6 @@
 			self.delegate = self;
 			self.groupController = groupControllerParam;
 			CGRect frame = [groupController getFullFrame];
-//			CGRect frame = groupController.view.frame;
-//			CGSize size = [UIScreen mainScreen].bounds.size;
-//			BOOL isLandscape = [groupController isOrientationLandscape];
-//			frame.size.height = isLandscape ? size.width : size.height;
-//			frame.size.width = isLandscape ? size.height : size.width;
 			[self.view setFrame:frame];
 			NSLog(@"tabbar width=%g, height=%g", frame.size.width,frame.size.height);
 			

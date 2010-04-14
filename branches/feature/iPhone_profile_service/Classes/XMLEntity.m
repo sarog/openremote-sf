@@ -89,8 +89,10 @@ NSString *const GESTURE = @"gesture";
 
 NSString *const GROUP = @"group";
 NSString *const TABBAR = @"tabbar";
+NSString *const ITEM = @"item";
 
 NSString *const NAVIGATE = @"navigate";
+
 
 // NOTE: This is an abstract method, must be implemented in subclass
 - (NSString *) elementName {

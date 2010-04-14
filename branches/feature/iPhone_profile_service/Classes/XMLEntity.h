@@ -80,8 +80,10 @@ extern NSString *const GESTURE;
 
 extern NSString *const GROUP;
 extern NSString *const TABBAR;
+extern NSString *const ITEM;
 
 extern NSString *const NAVIGATE;
+
 
 /* This is an abstract class for all entities (element) in panel.xml.
  * Objective-C doesn't have the abstract compiler construct like Java at 

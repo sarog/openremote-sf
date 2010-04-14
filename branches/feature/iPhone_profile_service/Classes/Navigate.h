@@ -44,7 +44,7 @@
 @property (nonatomic, readonly) BOOL isSetting;
 @property (nonatomic, readonly) BOOL isLogin;
 @property (nonatomic, readonly) BOOL isLogout;
-@property (nonatomic, readwrite) int fromGroup;
-@property (nonatomic, readwrite) int fromScreen;
+@property (nonatomic, readwrite, assign) int fromGroup;
+@property (nonatomic, readwrite, assign) int fromScreen;
 
 @end

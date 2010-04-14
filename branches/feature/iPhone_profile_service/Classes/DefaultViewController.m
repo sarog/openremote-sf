@@ -37,7 +37,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 - (void)navigateBackwardInHistory:(id)sender;
 - (BOOL)navigateTo:(Navigate *)navi;
 - (void)navigateToWithHistory:(Navigate *)navi;
-
+- (void)saveLastGroupIdAndScreenId;
 
 @end
 
@@ -170,24 +170,28 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 }
 
 - (void)navigateToWithHistory:(Navigate *)navi {
+	Navigate *historyNavigate = [[Navigate alloc] init];
 	if (currentGroupController.group) {
-		navi.fromGroup = currentGroupController.group.groupId;
-		navi.fromScreen = [currentGroupController currentScreenId];
+		historyNavigate.fromGroup = currentGroupController.group.groupId;
+		historyNavigate.fromScreen = [currentGroupController currentScreenId];
 	} else {
 		return;
 	}
 	
 	if ([self navigateTo:navi]) {
-		NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-		[userDefaults setObject:[NSString stringWithFormat:@"%d",currentGroupController.group.groupId] forKey:@"lastGroupId"];
-		[userDefaults setObject:[NSString stringWithFormat:@"%d",[currentGroupController currentScreenId]] forKey:@"lastScreenId"];		
-		[navigationHistory addObject:navi];
+		[self saveLastGroupIdAndScreenId];
+		NSLog(@"navigte from group %d, screen %d", historyNavigate.fromGroup, historyNavigate.fromScreen);
+		[navigationHistory addObject:historyNavigate];
+		[historyNavigate release];
 	}
 	
 	NSLog(@"navi history count = %d", navigationHistory.count);
+	for (Navigate *n in navigationHistory) {
+		NSLog(@"navi history from group %d screen %d", n.fromGroup, n.fromScreen);
+	}
 }
 
-- (void) saveLastGroupIdAndScreenId {
+- (void)saveLastGroupIdAndScreenId {
 	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 	[userDefaults setObject:[NSString stringWithFormat:@"%d",currentGroupController.group.groupId] forKey:@"lastGroupId"];
 	[userDefaults setObject:[NSString stringWithFormat:@"%d",[currentGroupController currentScreenId]] forKey:@"lastScreenId"];
@@ -207,11 +211,6 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		return [self navigateToScreen:navi.toScreen];
 	} 
 	
-	else if (navi.isSetting) {								//toSetting
-		[self populateSettingsView:nil];
-		return NO;
-	} 
-	
 	else if (navi.isPreviousScreen) {					//toPreviousScreen
 		return [self navigateToPreviousScreen];
 	}
@@ -219,6 +218,8 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	else if (navi.isNextScreen) {							//toNextScreen
 		return [self navigateToNextScreen];
 	}
+	
+	//the following is non-history
 	
 	else if (navi.isBack) {										//toBack
 		[self navigateBackwardInHistory:nil]; 
@@ -234,6 +235,12 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		[self logout];
 		return NO;
 	}
+	
+	else if (navi.isSetting) {								//toSetting
+		[self populateSettingsView:nil];
+		return NO;
+	}
+	
 	return NO;
 }
 
@@ -263,13 +270,10 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		}
 		[targetGroupController setNewOrientation:[currentGroupController getCurrentOrientation]];
 		if ([TABBAR_SCALE_GLOBAL isEqualToString:tabBarScale]) {
-			NSLog(@"global tabbar");
 			[globalTabBarController.view removeFromSuperview];
 		} else if([TABBAR_SCALE_LOCAL isEqualToString:tabBarScale]) {
-			NSLog(@"local tabbar");
 			[localTabBarController.view removeFromSuperview];
 		} else if([TABBAR_SCALE_NONE isEqualToString:tabBarScale]) {
-			NSLog(@"none tabbar");
 			[currentGroupController.view removeFromSuperview];
 		}
 		UIView *view = [groupViewMap objectForKey:[NSString stringWithFormat:@"%d", groupId]];
@@ -329,7 +333,8 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 - (void)navigateBackwardInHistory:(id)sender {
 	if (navigationHistory.count > 0) {		
 		Navigate *backward = (Navigate *)[navigationHistory lastObject];
-		if (backward.toGroup > 0 || backward.toScreen > 0 || backward.isPreviousScreen || backward.isNextScreen) {
+		if (backward.fromGroup > 0 && backward.fromScreen > 0 ) {
+			NSLog(@"navigte back to group %d, screen %d", backward.fromGroup, backward.fromScreen);
 			[self navigateToGroup:backward.fromGroup toScreen:backward.fromScreen];
 		} else {
 			[self navigateTo:backward];
