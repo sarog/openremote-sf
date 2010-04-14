@@ -43,10 +43,20 @@
 	if (self = [super init]) {
 		if (newGroup) {
 			group = [newGroup retain];// must retain newGroup here!!!
-			[self setTitle:group.name];
 		}
-		[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-		currentOrientation = [[UIDevice currentDevice] orientation];
+//		[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+//		currentOrientation = [[UIDevice currentDevice] orientation];
+		currentOrientation = UIInterfaceOrientationPortrait;
+	}
+	return self;
+}
+
+- (id)initWithGroup:(Group *)newGroup orientation:(UIInterfaceOrientation)thatOrientation {
+	if (self = [super init]) {
+		if (newGroup) {
+			group = [newGroup retain];// must retain newGroup here!!!
+		}
+		currentOrientation = thatOrientation;
 	}
 	return self;
 }
@@ -56,10 +66,20 @@
 }
 
 - (void)setNewOrientation:(UIInterfaceOrientation)newOrientation {
-	if (currentOrientation != newOrientation) {
-		currentOrientation = newOrientation;
-		[self willRotateToInterfaceOrientation:newOrientation duration:1.0f];
-	}
+	[self willRotateToInterfaceOrientation:newOrientation duration:0];
+}
+
+- (BOOL)isOrientationLandscape {
+	return UIInterfaceOrientationIsLandscape(currentOrientation);
+}
+
+- (CGRect)getFullFrame {
+	CGRect frame = self.view.frame;
+	CGSize size = [UIScreen mainScreen].bounds.size;
+	BOOL isLandscape = [self isOrientationLandscape];
+	frame.size.height = isLandscape ? size.width : size.height;
+	frame.size.width = isLandscape ? size.height : size.width;
+	return frame;
 }
 
 - (int)groupId {
@@ -70,7 +90,7 @@
 	NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
 	
 	for (Screen *screen in screens) {
-		NSLog(@"screen = %@", screen.name);
+		NSLog(@"init screen = %@", screen.name);
 		ScreenViewController *viewController = [[ScreenViewController alloc]init];
 		[viewController setScreen:screen];
 		[viewControllers addObject:viewController];
@@ -84,6 +104,7 @@
 }
 
 - (void)showPortrait {
+	NSLog(@"show portrait");
 	if ([group getPortraitScreens].count > 0) {
 		[paginationController release];
 		paginationController = nil;
@@ -98,6 +119,7 @@
 }
 
 - (void)showLandscape {
+	NSLog(@"show landscape");
 	if ([group getLandscapeScreens].count > 0) {
 		[paginationController release];
 		paginationController = nil;
@@ -114,7 +136,13 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	[self.navigationController setNavigationBarHidden:YES];
-	[self showPortrait];
+	if (UIInterfaceOrientationIsPortrait(currentOrientation)) {
+		NSLog(@"view did load show portrait");
+		[self showPortrait];
+	} else {
+		NSLog(@"view did load show landscape");
+		[self showLandscape];
+	}
 }
 
 - (void)showErrorView {
@@ -139,19 +167,19 @@
 - (void)startPolling {
 	if ([self currentPaginationController].viewControllers.count > 0) {
 		[[self currentScreenViewController] startPolling];
-		NSLog(@"start polling screen_id=%d",[self currentScreenId]);
+		NSLog(@"start polling screen_id = %d",[self currentScreenId]);
 	}
 }
 
 - (void)stopPolling {
 	for (ScreenViewController *svc in [self currentPaginationController].viewControllers) {
-		NSLog(@"stop polling screen_id=%d",svc.screen.screenId);
+		NSLog(@"stop polling screen_id = %d",svc.screen.screenId);
 		[svc stopPolling];
 	}
 }
 
 - (BOOL)switchToScreen:(int)screenId {
-	NSLog(@"to screen %d", screenId);
+	NSLog(@"switch to screen %d", screenId);
 	return [[self currentPaginationController] switchToScreen:screenId];
 }
 
@@ -168,27 +196,58 @@
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return [[self currentScreen] inverseScreenId] > 0;
+	return currentOrientation != interfaceOrientation && [[self currentScreen] inverseScreenId] > 0;
+}
+
+
+- (void)printOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+	switch (toInterfaceOrientation) {
+		case UIInterfaceOrientationPortrait:
+			NSLog(@"is portrait");
+			break;
+		case UIInterfaceOrientationLandscapeLeft:
+			NSLog(@"is landscape left");
+			break;
+		case UIInterfaceOrientationLandscapeRight:
+			NSLog(@"is landscape right");
+			break;
+		case UIInterfaceOrientationPortraitUpsideDown:
+			NSLog(@"is portrait upsidedown");
+			break;
+		default:
+			break;
+	}
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-	int inverseScreenId = [self currentScreen].inverseScreenId;
-	NSLog(@"switch screen from %d - > %d", [self currentScreenId], inverseScreenId);
-	currentOrientation = toInterfaceOrientation;
-	
-	if (UIInterfaceOrientationIsPortrait(currentOrientation)) {
-		[self showPortrait];
-		[self switchToScreen:inverseScreenId];
+	[self printOrientation:currentOrientation];
+	[self printOrientation:toInterfaceOrientation];
+	if (toInterfaceOrientation == currentOrientation) {
+		NSLog(@"same orientation");
+		return;
 	} else {
-		[self showLandscape];
-		[self switchToScreen:inverseScreenId];
+		NSLog(@"diff orientation");
+		
+		int inverseScreenId = [self currentScreen].inverseScreenId;
+		NSLog(@"switch screen from %d - > %d", [self currentScreenId], inverseScreenId);
+		currentOrientation = toInterfaceOrientation;
+		
+		if (UIInterfaceOrientationIsPortrait(currentOrientation)) {
+			[self showPortrait];
+			[self switchToScreen:inverseScreenId];
+		} else {
+			[self showLandscape];
+			[self switchToScreen:inverseScreenId];
+		}
 	}
+	
 }
+
 
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
+	[super didReceiveMemoryWarning];
 	
 	// Release any cached data, images, etc that aren't in use.
 }

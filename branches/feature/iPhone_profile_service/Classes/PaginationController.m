@@ -194,25 +194,25 @@
 	CGFloat pageControlHeight = 20;
 	CGFloat availableScrollHeight = availableScreenHeight - pageControlHeight;
 	
-	[self.view setFrame:CGRectMake(0, 0, availableScreenWidth, availableScreenHeight)];
-	
+	[self.view setFrame:CGRectMake(0, 0, frameWidth, frameHeight)];
+	NSLog(@"pagination loadView width=%g height=%g", frameWidth, frameHeight);
 	scrollView = [[UIScrollView alloc] init];
 	[scrollView setDelegate:self];
 	[scrollView setPagingEnabled:YES];
 	[scrollView setShowsVerticalScrollIndicator:NO];
 	[scrollView setShowsHorizontalScrollIndicator:NO];
 	[scrollView setScrollsToTop:NO];
-	[scrollView setBackgroundColor:[UIColor blackColor]];
 	[scrollView setOpaque:YES];
 	[scrollView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
-	[scrollView setFrame:CGRectMake(0, 0, availableScreenWidth, availableScrollHeight)];
+	[scrollView setFrame:CGRectMake(0, 0, frameWidth, frameHeight)];
+	[scrollView setBackgroundColor:[UIColor blackColor]];
 	[self.view addSubview:scrollView];
 	[scrollView release];
 	
 	pageControl = [[UIPageControl alloc] init];
 	[pageControl setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth];
 	[pageControl setFrame:CGRectMake(0, availableScrollHeight, availableScreenWidth, pageControlHeight)];
-	[pageControl setBackgroundColor:[UIColor blackColor]];
+	[pageControl setBackgroundColor:[UIColor clearColor]];
 	[pageControl setOpaque:YES];
 	[pageControl addTarget:self action:@selector(pageControlValueDidChange:) forControlEvents:UIControlEventValueChanged];
 	[self.view addSubview:pageControl];
