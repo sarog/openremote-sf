@@ -254,19 +254,22 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		if (targetGroupController == nil) {
 			Group *group = [[Definition sharedDefinition] findGroupById:groupId];
 			if (group) {
-				targetGroupController = [[GroupController alloc] initWithGroup:group];
+				targetGroupController = [[GroupController alloc] initWithGroup:group orientation:[currentGroupController getCurrentOrientation]];
 				[groupControllers addObject:targetGroupController];
 				[groupViewMap setObject:targetGroupController.view forKey:[NSString stringWithFormat:@"%d", group.groupId]];
 			} else {
 				return NO;
 			}
 		}
-		
+		[targetGroupController setNewOrientation:[currentGroupController getCurrentOrientation]];
 		if ([TABBAR_SCALE_GLOBAL isEqualToString:tabBarScale]) {
+			NSLog(@"global tabbar");
 			[globalTabBarController.view removeFromSuperview];
 		} else if([TABBAR_SCALE_LOCAL isEqualToString:tabBarScale]) {
+			NSLog(@"local tabbar");
 			[localTabBarController.view removeFromSuperview];
 		} else if([TABBAR_SCALE_NONE isEqualToString:tabBarScale]) {
+			NSLog(@"none tabbar");
 			[currentGroupController.view removeFromSuperview];
 		}
 		UIView *view = [groupViewMap objectForKey:[NSString stringWithFormat:@"%d", groupId]];
@@ -282,13 +285,13 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		//if local tabbar exists
 		if (targetGroupController.group.tabBar) {
 			BOOL findCachedTargetTabBarController = NO;
-			for (TabBarController *tempTargetTabBarController in tabBarControllers) {
-				if (tempTargetTabBarController.groupController.group.groupId == targetGroupController.group.groupId) {
-					localTabBarController = tempTargetTabBarController;
-					findCachedTargetTabBarController = YES;
-					break;
-				}
-			}
+//			for (TabBarController *tempTargetTabBarController in tabBarControllers) {
+//				if (tempTargetTabBarController.groupController.group.groupId == targetGroupController.group.groupId) {
+//					localTabBarController = tempTargetTabBarController;
+//					findCachedTargetTabBarController = YES;
+//					break;
+//				}
+//			}
 			if (!findCachedTargetTabBarController) {
 				localTabBarController = [[TabBarController alloc] initWithGroupController:targetGroupController tabBar:targetGroupController.group.tabBar];
 				[tabBarControllers addObject:localTabBarController];
@@ -301,40 +304,8 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		
 		[currentGroupController stopPolling];
 		[targetGroupController startPolling];
-		//[UIView beginAnimations:nil context:nil];
-		//[UIView setAnimationDuration:1];
-		
-		// calculate animation curl up or down
-		int currentIndex = 0;
-		int targetIndex = 0;
-		for (int i = 0; i<groupControllers.count; i++) {
-			GroupController *gc = (GroupController *)[groupControllers objectAtIndex:i];
-			if ([gc groupId] == [currentGroupController groupId]) {
-				currentIndex = i;
-			}
-			if ([gc groupId] == [targetGroupController groupId]) {
-				targetIndex = i;
-			}			
-		}
-		//BOOL forward = targetIndex > currentIndex;
-		
-		//if (forward) {
-//			[UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:self.view cache:YES];
-//		} else {
-//			[UIView setAnimationTransition:UIViewAnimationTransitionCurlDown forView:self.view cache:YES];
-//		}
-		//[UIView setAnimationTransition:UIViewAnimationTransitionNone forView:self.view cache:YES];
-		[targetGroupController setNewOrientation:[currentGroupController getCurrentOrientation]];
-//		if ([targetGroupController shouldAutorotateToInterfaceOrientation:[currentGroupController getCurrentOrientation]]) {
-//			[targetGroupController setNewOrientation:[currentGroupController getCurrentOrientation]];
-//		} else {
-//			;
-//		}
-
 		
 		[self.view addSubview:view];
-		
-		//[UIView commitAnimations];
 		
 		currentGroupController = targetGroupController;
 	}

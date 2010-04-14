@@ -34,6 +34,7 @@
 }
 
 - (id)initWithGroup:(Group *)newGroup;
+- (id)initWithGroup:(Group *)newGroup orientation:(UIInterfaceOrientation)thatOrientation;
 - (void)startPolling;
 - (void)stopPolling;
 - (BOOL)switchToScreen:(int)screenId;
@@ -45,6 +46,8 @@
 - (void)performGesture:(Gesture *)gesture;
 - (UIInterfaceOrientation)getCurrentOrientation;
 - (void)setNewOrientation:(UIInterfaceOrientation)newOrientation;
+- (BOOL)isOrientationLandscape;
+- (CGRect)getFullFrame;
 
 @property (nonatomic, retain) Group *group;
 

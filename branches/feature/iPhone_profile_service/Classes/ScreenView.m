@@ -89,7 +89,7 @@
 			screenBackgroundImageViewWidth = [UIScreen mainScreen].bounds.size.width;
 			screenBackgroundImageViewHeight = [UIScreen mainScreen].bounds.size.height;
 		}
-		screenBackgroundImageViewHeight -= IPHONE_SCREEN_STATUS_BAR_HEIGHT + IPHONE_SCREEN_BOTTOM_PAGE_CONTROL_HEIGHT;
+		//screenBackgroundImageViewHeight -= IPHONE_SCREEN_BOTTOM_PAGE_CONTROL_HEIGHT;
 
 		UIImageView *backgroundImageView = [[UIImageView alloc] init];
 		// fillscreen is false
