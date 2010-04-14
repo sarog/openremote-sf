@@ -7,7 +7,6 @@ public class ScreenIndicator extends LayoutContainer {
 
    public ScreenIndicator(int screenCount, int screenIndex, int width, int height) {
       setStyleAttribute("position", "absolute");
-      setStyleAttribute("background-color", "black");
       setSize(width, height);
       setLayout(new CenterLayout());
       if (screenCount > 1) {

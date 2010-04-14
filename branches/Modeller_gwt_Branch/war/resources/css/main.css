@@ -320,7 +320,7 @@ table.screen-btn-cont td.br-c{
 
 .indicator-default {
 	float: left;
-   background: url('../../resources/images/indicator_sprite.png') no-repeat right 0;
+   background: url('../../resources/images/indicator_sprite.png') no-repeat -16px 0;
 }
 
 .indicator-current {
