@@ -28,7 +28,7 @@
 
 // This method is abstract method of XMLEntity, must be overriden in it's subclass.
 - (NSString *) elementName {
-	return @"tabbar";
+	return TABBAR;
 }
 
 #pragma mark Delegate methods of NSXMLParser
@@ -49,7 +49,7 @@
  * Parse the tabbaritem reference elements .
  */
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{	
-	if ([elementName isEqualToString:@"item"]) {
+	if ([elementName isEqualToString:ITEM]) {
 		NSLog(@"start item in tabbar");		
 		TabBarItem *tabBarItem = [[TabBarItem alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 		NSLog(@"find item %@", tabBarItem.tabBarItemName);
