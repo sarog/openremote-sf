@@ -156,7 +156,8 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		// ReSave last groupId and screenId
 		[self saveLastGroupIdAndScreenId];
 	} else {		
-		errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" message:@"Please associate screens with group or reset setting."];
+		errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" 
+																																	message:@"Please check your setting or define a group with screens first."];
 		[self.view addSubview:errorViewController.view];		
 	}
 	
@@ -220,7 +221,6 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	}
 	
 	//the following is non-history
-	
 	else if (navi.isBack) {										//toBack
 		[self navigateBackwardInHistory:nil]; 
 		return NO;
@@ -267,6 +267,10 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 			} else {
 				return NO;
 			}
+		}
+		if ([targetGroupController hasNoViewInThatOrientation:[currentGroupController isOrientationLandscape]]) {
+			[ViewHelper showAlertViewWithTitle:@"" Message:@"No screen in that group of this orientation"];
+			return NO;
 		}
 		[targetGroupController setNewOrientation:[currentGroupController getCurrentOrientation]];
 		if ([TABBAR_SCALE_GLOBAL isEqualToString:tabBarScale]) {

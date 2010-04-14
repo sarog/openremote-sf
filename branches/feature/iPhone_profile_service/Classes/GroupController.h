@@ -48,6 +48,7 @@
 - (void)setNewOrientation:(UIInterfaceOrientation)newOrientation;
 - (BOOL)isOrientationLandscape;
 - (CGRect)getFullFrame;
+- (BOOL)hasNoViewInThatOrientation:(BOOL)isLandscape;
 
 @property (nonatomic, retain) Group *group;
 
