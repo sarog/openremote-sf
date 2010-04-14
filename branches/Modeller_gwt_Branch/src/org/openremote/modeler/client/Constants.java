@@ -119,4 +119,6 @@ public class Constants {
    
    public static final String IPHONE_TYPE = "iPhone";
    
+   public static final String IPAD_TYPE = "iPad";
+   
 }
