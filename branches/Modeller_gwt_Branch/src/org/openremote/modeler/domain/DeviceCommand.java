@@ -162,13 +162,13 @@ public class DeviceCommand extends BusinessEntity {
       if (other == null) return false;
       if (device == null) {
          if (other.device != null) return false;
-      } else if (device.getOid() != other.getDevice().getOid()) return false;
+      } else if (other.device != null && device.getOid() != other.device.getOid()) return false;
       if (name == null) {
          if (other.name != null) return false;
       } else if (!name.equals(other.name)) return false;
       if (protocol == null) {
          if (other.protocol != null) return false;
-      } else if (!protocol.equalsWithoutCompareOid(other.protocol)) return false;
+      } else if (other.protocol != null && !protocol.equalsWithoutCompareOid(other.protocol)) return false;
       if (sectionId == null) {
          if (other.sectionId != null) return false;
       } else if (!sectionId.equals(other.sectionId)) return false;
