@@ -9,18 +9,23 @@ import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.SliderCommandRef;
+import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class SliderServiceTest {
-   private SliderService service = null;
-   private DeviceCommandService deviceCommandService;
-
+   private SliderService sliderService = null;
+   private DeviceCommandService deviceCommandService = null;
+   private UserService userService = null;
    @BeforeClass
    public void setUp() {
-
-      service = (SliderService) SpringTestContext.getInstance().getBean("sliderService");
+      userService = (UserService)SpringTestContext.getInstance().getBean("userService");
+      sliderService = (SliderService) SpringTestContext.getInstance().getBean("sliderService");
+      
+      userService.createUserAccount("test", "test", "test@email.com", "role_bm");
+      SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("test", "test"));
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
    }
 
@@ -36,31 +41,33 @@ public class SliderServiceTest {
       deviceCommandService.save(cmd);
 
       slider.setName("testName");
-
-      Slider slider2 = new Slider();
-      slider.setName("testName2");
       SliderCommandRef scf = new SliderCommandRef();
       scf.setSlider(slider);
       scf.setDeviceCommand(cmd);
       slider.setSetValueCmd(scf);
+      slider.setAccount(userService.getAccount());
+      
+      Slider slider2 = new Slider();
+      slider2.setName("testName2");
+      slider2.setAccount(userService.getAccount());
 
-      service.save(slider);
-      service.save(slider2);
+      sliderService.save(slider);
+      sliderService.save(slider2);
 
       Assert.assertEquals(slider.getOid(), 1);
       Assert.assertEquals(slider2.getOid(), 2);
-      Slider sliderFromTable = service.loadAll().get(0);
+      Slider sliderFromTable = sliderService.loadAll().get(0);
       Assert.assertEquals(sliderFromTable.getSetValueCmd().getDeviceCommand().getName(), "testLirc");
    }
 
    @Test(dependsOnMethods = "testSaveSlider")
    public void testUpdate() {
-      List<Slider> sliders = service.loadAll();
+      List<Slider> sliders = sliderService.loadAll();
       Assert.assertEquals(sliders.size(), 2);
       
       Slider slider = sliders.get(0);
       slider.setName("testUpdate");
-      service.update(slider);
+      sliderService.update(slider);
 
       for (Slider s : sliders) {
          if (s.getOid() == 1) {
@@ -72,7 +79,7 @@ public class SliderServiceTest {
 
    @Test(dependsOnMethods = "testSaveSlider")
    public void testLoadAll() {
-      Collection<Slider> switchs = service.loadAll();
+      Collection<Slider> switchs = sliderService.loadAll();
       Assert.assertEquals(switchs.size(), 2);
    }
 
@@ -80,8 +87,8 @@ public class SliderServiceTest {
    public void testDelte() {
       Slider slider = new Slider();
       slider.setOid(1);
-      service.delete(1);
-      Collection<Slider> switchs = service.loadAll();
+      sliderService.delete(1);
+      Collection<Slider> switchs = sliderService.loadAll();
       Assert.assertEquals(switchs.size(), 1);
    }
 }
