@@ -19,18 +19,21 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SliderService;
+import org.openremote.modeler.service.UserService;
 
 public class SliderServiceImpl extends BaseAbstractService<Slider> implements SliderService {
 
+   private UserService userService = null;
+   
    @Override
    public void delete(long id) {
       Slider slider = super.loadById(id);
@@ -39,9 +42,11 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
 
    @Override
    public List<Slider> loadAll() {
-      List<Slider> sliders = genericDAO.loadAll(Slider.class);
-      Hibernate.initialize(sliders);
-      return sliders;
+      List<Slider> result = userService.getAccount().getSliders();
+      if (result == null || result.size() == 0) {
+         return new ArrayList<Slider> ();
+      }
+      return result;
    }
 
    @Override
@@ -84,5 +89,9 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
          }
       }
       return result;
+   }
+
+   public void setUserService(UserService userService) {
+      this.userService = userService;
    }
 }
