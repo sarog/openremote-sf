@@ -25,7 +25,6 @@
 #import "Screen.h"
 #import "ScreenViewController.h"
 
-#define degreesToRadian(x) (M_PI * (x) / 180.0) 
 
 @interface GroupController (Private)
 
@@ -113,34 +112,31 @@
 	return paginationController;
 }
 
-- (void)showPortrait {
-	NSLog(@"show portrait");
-	if ([group getPortraitScreens].count > 0) {
+- (void)showLandscapeOrientation:(BOOL)isLandscape {
+	NSArray *screens = isLandscape ? [group getLandscapeScreens] : [group getPortraitScreens];
+	if (screens.count > 0) {
+		[[paginationController currentScreenViewController] stopPolling];
 		[paginationController release];
 		paginationController = nil;
 		paginationController = [[PaginationController alloc] init];
-		NSMutableArray *viewControllers = [self initScreenViewControllers:[group getPortraitScreens]];
-		[paginationController setViewControllers:viewControllers isLandscape:NO];
+		NSMutableArray *viewControllers = [self initScreenViewControllers:screens];
+		[paginationController setViewControllers:viewControllers isLandscape:isLandscape];
 		[viewControllers release];
 		[self setView:paginationController.view];
+		[[paginationController currentScreenViewController] startPolling];
 	} else {
 		[self showErrorView];
 	}
 }
 
+- (void)showPortrait {
+	NSLog(@"show portrait");
+	[self showLandscapeOrientation:NO];
+}
+
 - (void)showLandscape {
 	NSLog(@"show landscape");
-	if ([group getLandscapeScreens].count > 0) {
-		[paginationController release];
-		paginationController = nil;
-		paginationController = [[PaginationController alloc] init];
-		NSMutableArray *viewControllers = [self initScreenViewControllers:[group getLandscapeScreens]];
-		[paginationController setViewControllers:viewControllers isLandscape:YES];
-		[viewControllers release];
-		[self setView:paginationController.view];
-	} else {
-		[self showErrorView];
-	}
+	[self showLandscapeOrientation:YES];
 }
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
