@@ -245,7 +245,7 @@ public class ImagePropertyForm extends PropertyForm {
          });
          onImageUploadField.setFieldLabel("on");
          
-         final ImageUploadAdapterField offImageUploadField = new ImageUploadAdapterField("switchOnImage");
+         final ImageUploadAdapterField offImageUploadField = new ImageUploadAdapterField("switchOffImage");
          offImageUploadField.addUploadListener(Events.OnChange, new Listener<FieldEvent>() {
             public void handleEvent(FieldEvent be) {
                if (!isValid()) {

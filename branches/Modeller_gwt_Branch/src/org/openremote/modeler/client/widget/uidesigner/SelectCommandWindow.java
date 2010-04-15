@@ -41,9 +41,9 @@ public class SelectCommandWindow extends Dialog {
    private TreePanel<BeanModel> devicesAndMacrosTree;
    public SelectCommandWindow() {
       setHeading("Select Command");
-      setMinHeight(260);
+      setHeight(260);
       setWidth(200);
-      setLayout(new FitLayout());
+//      setLayout(new FitLayout());
       setModal(true);
       initDevicesAndMacrosTree();
       setButtons(Dialog.OKCANCEL);
@@ -54,9 +54,11 @@ public class SelectCommandWindow extends Dialog {
 
    private void initDevicesAndMacrosTree() {
       ContentPanel devicesAndMacrosTreeContainer = new ContentPanel();
+      devicesAndMacrosTreeContainer.setSize(180, 240);
       devicesAndMacrosTreeContainer.setBorders(false);
       devicesAndMacrosTreeContainer.setBodyBorder(false);
       devicesAndMacrosTreeContainer.setHeaderVisible(false);
+      devicesAndMacrosTreeContainer.setLayout(new FitLayout());
       if (devicesAndMacrosTree == null) {
          devicesAndMacrosTree = DeviceAndMacroTree.getInstance();
          devicesAndMacrosTreeContainer.add(devicesAndMacrosTree);
