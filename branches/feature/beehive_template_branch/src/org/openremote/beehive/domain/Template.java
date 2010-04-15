@@ -96,6 +96,7 @@ public class Template extends BusinessEntity {
       dto.setKeywords(keywords);
       dto.setName(name);
       dto.setOid(getOid());
+      dto.setShared(shared);
       return dto;
    }
 }

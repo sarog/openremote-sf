@@ -34,6 +34,7 @@ public class TemplateDTO extends BusinessEntityDTO {
    private String name;
    private String content;
    private String keywords;
+   private boolean shared = false;
 
    public String getName() {
       return name;
@@ -58,4 +59,13 @@ public class TemplateDTO extends BusinessEntityDTO {
    public void setKeywords(String keywords) {
       this.keywords = keywords;
    }
+
+   public boolean isShared() {
+      return shared;
+   }
+
+   public void setShared(boolean shared) {
+      this.shared = shared;
+   }
+   
 }
