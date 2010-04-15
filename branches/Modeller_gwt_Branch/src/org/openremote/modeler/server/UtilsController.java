@@ -147,7 +147,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       if (getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY) != null) {
          oldPanels = (List<Panel>) getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
       }
-      if (panels != null) {
+      if (panels != null && panels.size() > 0) {
          if (!resourceService.getPanelsJson(panels).equals(resourceService.getPanelsJson(oldPanels))) {
             synchronized (getThreadLocalRequest().getSession()) {
                getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
