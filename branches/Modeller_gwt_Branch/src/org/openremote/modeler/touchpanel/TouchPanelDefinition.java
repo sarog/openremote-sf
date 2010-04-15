@@ -281,6 +281,10 @@ public class TouchPanelDefinition implements Serializable {
       }
       return horizontalDefinition;
    }
+   
+   public void removeHorizontalDefinition() {
+      this.horizontalDefinition = null;
+   }
 
    public TouchPanelTabbarDefinition getTabbarDefinition() {
       return tabbarDefinition;

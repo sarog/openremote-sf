@@ -330,7 +330,9 @@ public class ProfilePanel extends ContentPanel {
                panelTree.getStore().update(panel.getBeanModel());
                for (GroupRef groupRef : panel.getGroupRefs()) {
                   for (ScreenPairRef screenRef : groupRef.getGroup().getScreenRefs()) {
-                     BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
+                     ScreenPair screenPair = screenRef.getScreen();
+                     screenPair.setTouchPanelDefinition(panel.getTouchPanelDefinition());
+                     BeanModelDataBase.screenTable.update(screenPair.getBeanModel());
                   }
                }
                Info.display("Info", "Edit panel " + panel.getName() + " success.");

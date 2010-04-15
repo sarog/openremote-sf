@@ -93,6 +93,7 @@ public class ScreenPanel extends LayoutContainer {
                   screenItem = null;
                } else if (event.getType() == BeanModelTable.UPDATE) {
                   screenTab.updateTouchPanel();
+                  System.out.println("change");
 //                  ScreenCanvas screenCanvas = screenTabItem.getScreenCanvas();
 //                  if (screen.isHasTabbar()) {
 //                    screenCanvas.addTabbar();
