@@ -36,6 +36,9 @@
 	uiLabel = [[UILabel alloc] initWithFrame:[self bounds]];
 	[uiLabel setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
 	[uiLabel setTextAlignment:UITextAlignmentCenter];
+    uiLabel.adjustsFontSizeToFitWidth = NO;
+    [uiLabel setLineBreakMode:UILineBreakModeWordWrap];
+    [uiLabel setNumberOfLines:50];
 	Label *labelModel = (Label *)component;
 	
 	uiLabel.text = labelModel.text;
