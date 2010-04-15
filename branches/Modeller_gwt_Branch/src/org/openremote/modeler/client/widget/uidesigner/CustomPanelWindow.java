@@ -343,12 +343,14 @@ public class CustomPanelWindow extends FormWindow {
             customPanel.getCanvas().setWidth(Integer.valueOf(screenWidthField.getRawValue()));
             customPanel.getCanvas().setHeight(Integer.valueOf(screenHeightField.getRawValue()));
             initCustomPanelDefinition(panelImageURL,tabbarImageURL, customPanel);
+            customPanel.removeHorizontalDefinition();
             if (tabbarHeightField.isValid()){
                try {
                   int tabbarHeight = Integer.valueOf(tabbarHeightField.getRawValue());
                   customPanel.getTabbarDefinition().setHeight(tabbarHeight);
                }catch(NumberFormatException nfe) {}
             }
+            panel.setTouchPanelDefinition(customPanel);
          }
          
          panel.setName(panelNameField.getValue());
