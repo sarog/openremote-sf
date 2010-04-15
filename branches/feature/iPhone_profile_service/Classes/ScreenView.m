@@ -101,8 +101,21 @@
 			if ([[screen background] isBackgroundImageAbsolutePosition]) {
 				int left = [[screen background] backgroundImageAbsolutePositionLeft];
 				int top = [[screen background] backgroundImageAbsolutePositionTop];
-				[backgroundImageView setFrame:CGRectMake(left, top, screenBackgroundImageViewWidth-left, screenBackgroundImageViewHeight-top)];
+				if (left > 0) {
+					screenBackgroundImageViewWidth = screenBackgroundImageViewWidth-left;
+				}
+				if (top > 0) {
+					screenBackgroundImageViewHeight = screenBackgroundImageViewHeight-top;
+				}
+				[backgroundImageView setFrame:CGRectMake(left, top, screenBackgroundImageViewWidth, screenBackgroundImageViewHeight)];
 				backgroundImageView = [UIViewUtil clippedUIImageViewWith:backgroundImage dependingOnUIView:backgroundImageView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:YES];
+				if (left < 0) {
+					left = 0;
+				}
+				if (top < 0) {
+					top = 0;
+				}
+				[backgroundImageView setFrame:CGRectMake(left, top, backgroundImageView.frame.size.width, backgroundImageView.frame.size.height)];
 				NSLog(@"Clipped BackgroundImage's width:%f, height:%f", backgroundImageView.image.size.width, backgroundImageView.image.size.height);
 				NSLog(@"BackgroundImageView's left is %d, top is %d", left, top);
 				NSLog(@"BackgroundImageView's width:%f, height:%f", backgroundImageView.frame.size.width, backgroundImageView.frame.size.height);
