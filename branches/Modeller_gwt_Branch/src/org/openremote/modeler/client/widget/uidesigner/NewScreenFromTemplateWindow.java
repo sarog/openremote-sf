@@ -314,9 +314,9 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       public void componentSelected(ButtonEvent ce) {
          if (keywordsField.getValue() == null || keywordsField.getValue().trim().length()==0) {
            //search public templates without caring keywords.  
-           searchTemplates(null,currentPage); 
+           searchTemplates(null,0); 
          } else {
-            searchTemplates(keywordsField.getValue(),currentPage);
+            searchTemplates(keywordsField.getValue(),0);
          }
          currentPage = 0;
       }
