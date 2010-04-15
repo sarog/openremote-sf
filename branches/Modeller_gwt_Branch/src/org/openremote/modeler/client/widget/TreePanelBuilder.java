@@ -445,6 +445,7 @@ public class TreePanelBuilder {
             if (beanModel != null && beanModel.getBean() instanceof ScreenPairRef) {
                ScreenPair screen = ((ScreenPairRef) beanModel.getBean()).getScreen();
                screen.setTouchPanelDefinition(((ScreenPairRef) beanModel.getBean()).getTouchPanelDefinition());
+               screen.setParentGroup(((ScreenPairRef) beanModel.getBean()).getGroup());
                ScreenTab screenTabItem = screenPanel.getScreenItem();
                if (screenTabItem != null) {
                   if (screen == screenTabItem.getScreenPair()) {
