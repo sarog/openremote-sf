@@ -16,6 +16,12 @@ import org.openremote.controller.exception.NoSuchPanelException;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
 
+/**
+ * Get panel.xml by profile (panel name).
+ * 
+ * @author Javen, Dan Cong
+ *
+ */
 public class GetProfileRestServlet extends HttpServlet {
    private static final Logger logger = Logger.getLogger(GetProfileRestServlet.class);
    private static final ProfileService profileService = (ProfileService) SpringContext.getInstance().getBean("profileService");
@@ -26,7 +32,8 @@ public class GetProfileRestServlet extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-      PrintWriter out = response.getWriter();
+	   response.setCharacterEncoding("utf8");
+	   PrintWriter out = response.getWriter();
       String url = request.getRequestURL().toString().trim();
       String regexp = "rest\\/panel\\/(.*)";
       Pattern pattern = Pattern.compile(regexp);
