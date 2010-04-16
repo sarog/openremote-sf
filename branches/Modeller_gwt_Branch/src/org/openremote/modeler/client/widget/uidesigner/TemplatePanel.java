@@ -220,11 +220,7 @@ public class TemplatePanel extends ContentPanel {
                      BeanModel parentNode = template.isShared()?publicTemplateTopNode:privateTemplateTopNode;
                      templateTree.getStore().add(parentNode, template.getBeanModel(),false);
                   }
-//                  if ( editTabItem != null) {
-//                     try{templateEditTab.remove(editTabItem);}catch(RuntimeException e){}
-//                  } 
                   editTabItem = new ScreenTab(template.getScreen());
-//                  editTabItem.setText("Template: "+templateInEditing.getName());
                   templateEditPanel.setScreenItem(editTabItem);
                }
 
@@ -340,13 +336,6 @@ public class TemplatePanel extends ContentPanel {
    }
 
    public void setTemplateInEditing(final Template templateInEditing) {
-      if (editTabItem != null) {
-         //reopen template tab item close by user. 
-         if (templateEditPanel.indexOf(editTabItem) == -1 ) {
-            templateEditPanel.setScreenItem(editTabItem);
-            templateInEditing.setScreen(templateInEditing.getScreen());
-         }
-      }
       if (templateInEditing != null &&templateInEditing.equals(this.templateInEditing)) return;
       
       if (this.templateInEditing != null) {
@@ -363,7 +352,11 @@ public class TemplatePanel extends ContentPanel {
             @Override
             public void onSuccess(Template result) {
                //--------------------------
-               // 2, edit another template.
+               // 2, make sure the content for the previous template be updated. 
+               //--------------------------
+               TemplatePanel.this.templateInEditing.setContent(result.getContent());
+               //--------------------------
+               // 3, edit another template.
                //--------------------------
                buildScreen(templateInEditing);
                Info.display("Success", "auto save template" + templateInEditing.getName() + " successfully !");
@@ -374,10 +367,6 @@ public class TemplatePanel extends ContentPanel {
       } else {
          buildScreen(templateInEditing);
       }
-      
-
-      //this.templateInEditing = templateInEditing;
-
    }
    
    private void buildScreen(final Template templateInEditing) {
@@ -390,15 +379,7 @@ public class TemplatePanel extends ContentPanel {
 
          @Override
          public void onSuccess(ScreenPair screen) {
-            // try to close previous template editing tab item.
-//            if (editTabItem != null) {
-//               try {
-//                  templateEditTab.remove(editTabItem);
-//               } catch (RuntimeException e) {
-//               }
-//            }
             editTabItem = new ScreenTab(screen);
-//            editTabItem.setText("Template: " + templateInEditing.getName());
             templateEditPanel.setScreenItem(editTabItem);
             templateInEditing.setScreen(screen);
             TemplatePanel.this.templateInEditing = templateInEditing;
