@@ -146,6 +146,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
          MessageBox.alert("Error", "Please select a template.", null);
          be.cancelBubble();
       } else {
+         NewScreenFromTemplateWindow.this.mask("Downloading resources for this template... ");
          Template template = templateBeanModel.getBean();
          TemplateProxy.buildScreenFromTemplate(template, new AsyncSuccessCallback<ScreenFromTemplate>() {
 
@@ -167,7 +168,6 @@ public class NewScreenFromTemplateWindow extends FormWindow {
 
          });
       }
-      NewScreenFromTemplateWindow.this.mask("Downloading resources for this template... ");
    }
 
    private void createTemplateView() {
