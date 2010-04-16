@@ -37,9 +37,12 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.CheckBoxListView;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.TextField;
@@ -134,6 +137,34 @@ public class GroupEditWindow extends FormWindow {
    private void addBeforSubmitListener() {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
+            List<BeanModel> storeModels = screenPairListView.getStore().getModels();
+            List<BeanModel> screenPairModels = screenPairListView.getChecked();
+            Group group = ((GroupRef) groupRefBeanModel.getBean()).getGroup();
+            storeModels.removeAll(screenPairModels);
+            String screenNames = "";
+            for (BeanModel beanModel : storeModels) {
+               for (ScreenPairRef screenPairRef : group.getScreenRefs()) {
+                  if (screenPairRef.getScreen() == beanModel.getBean() && screenPairRef.getScreen().getRefCount() == 1) {
+                     screenNames = screenNames + screenPairRef.getScreen().getName() + " ";
+                  }
+               }
+            }
+            if (!"".equals(screenNames)) {
+               MessageBox.confirm("Confirm delete screens", "Are you sure you want to delete " + screenNames + "?", new Listener<MessageBoxEvent>() {
+                  public void handleEvent(MessageBoxEvent be) {
+                     if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
+                        confirmSubmit();
+                     } else if (be.getButtonClicked().getItemId().equals(Dialog.NO)) {
+                        return;
+                     }
+                  }
+               });
+            } else {
+               confirmSubmit();
+            }
+         }
+
+         private void confirmSubmit() {
             Group group = ((GroupRef) groupRefBeanModel.getBean()).getGroup();
             TouchPanelDefinition touchPanelDefinition = ((GroupRef) groupRefBeanModel.getBean()).getPanel().getTouchPanelDefinition();
             for (ScreenPairRef screenPairRef : group.getScreenRefs()) {
