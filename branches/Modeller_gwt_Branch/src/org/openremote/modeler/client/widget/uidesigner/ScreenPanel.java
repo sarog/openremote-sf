@@ -87,22 +87,11 @@ public class ScreenPanel extends LayoutContainer {
       if (changeListener == null) {
          changeListener = new ChangeListener() {
             public void modelChanged(ChangeEvent event) {
-//               ScreenPair screen = screenTabItem.getScreenPair();
                if (event.getType() == BeanModelTable.REMOVE) {
                   remove(screenTab);
                   screenItem = null;
                } else if (event.getType() == BeanModelTable.UPDATE) {
                   screenTab.updateTouchPanel();
-                  System.out.println("change");
-//                  ScreenCanvas screenCanvas = screenTabItem.getScreenCanvas();
-//                  if (screen.isHasTabbar()) {
-//                    screenCanvas.addTabbar();
-//                  } else {
-//                     screenCanvas.removeTabbar();
-//                  }
-//                  screenTabItem.updateTouchPanel();
-//                  screenCanvas.setSize(screen.getTouchPanelDefinition().getCanvas().getWidth(), screen.getTouchPanelDefinition().getCanvas().getHeight());
-//                  screenCanvas.setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
                }
             }
          };
