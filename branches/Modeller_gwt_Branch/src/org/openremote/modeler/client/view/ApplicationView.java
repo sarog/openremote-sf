@@ -194,9 +194,9 @@ public class ApplicationView implements View {
       return udButton;
    }
    
-   private ToggleButton createOnLineTestBtn() {
-      final ToggleButton showDemoBtn = new ToggleButton();
-      showDemoBtn.setToolTip("Test UI online. ");
+   private Button createOnLineTestBtn() {
+      final Button showDemoBtn = new Button();
+      showDemoBtn.setToolTip("Test UI online in your panel. ");
       showDemoBtn.setIcon(icons.onLineTestIcon());
       showDemoBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
@@ -209,7 +209,6 @@ public class ApplicationView implements View {
             });
          }
       });
-      showDemoBtn.setToggleGroup("modeler-switch");
       return showDemoBtn;
    }
    private void initSaveAndExportButtons() {
