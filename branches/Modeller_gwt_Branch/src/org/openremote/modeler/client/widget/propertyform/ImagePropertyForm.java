@@ -27,6 +27,7 @@ import java.util.Map;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
+import org.openremote.modeler.client.utils.ImageSourceValidator;
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.SimpleComboBox;
@@ -194,7 +195,7 @@ public class ImagePropertyForm extends PropertyForm {
       addListener(Events.Submit, new Listener<FormEvent>() {
          @Override
          public void handleEvent(FormEvent be) {
-            String imageURL = be.getResultHtml();
+            String imageURL = ImageSourceValidator.validate(be.getResultHtml());
             SensorLink sensorLink = screenImage.getUiImage().getSensorLink();
             Map<String,String> sensorAttrMap = new HashMap<String,String>();
             

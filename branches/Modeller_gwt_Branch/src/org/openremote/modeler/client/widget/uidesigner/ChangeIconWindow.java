@@ -23,6 +23,7 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.utils.ImageSourceValidator;
 import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.ImageUploadField;
 
@@ -326,7 +327,7 @@ public class ChangeIconWindow extends Dialog {
       uploadPanel.add(imageUpload);
       uploadPanel.addListener(Events.Submit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
-            imageURL = be.getResultHtml();
+            imageURL = ImageSourceValidator.validate(be.getResultHtml());
             window.unmask();
             if (imageURL != null) {
                previewWidget.setIcon(imageURL);
