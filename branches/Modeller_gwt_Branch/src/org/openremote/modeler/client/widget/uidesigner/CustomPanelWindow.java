@@ -350,7 +350,6 @@ public class CustomPanelWindow extends FormWindow {
                   customPanel.getTabbarDefinition().setHeight(tabbarHeight);
                }catch(NumberFormatException nfe) {}
             }
-            panel.setTouchPanelDefinition(customPanel);
          }
          
          panel.setName(panelNameField.getValue());
