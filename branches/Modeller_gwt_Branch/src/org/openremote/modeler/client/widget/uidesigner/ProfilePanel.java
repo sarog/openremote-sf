@@ -48,6 +48,7 @@ import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
+import org.openremote.modeler.client.widget.component.ScreenPropertyEditable;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.Group;
@@ -97,7 +98,7 @@ public class ProfilePanel extends ContentPanel {
       setIcon(icon.panelIcon());
       setLayout(new FitLayout());
       createMenu();
-      createPanelTree(screenPanel);
+      createPanelTree();
       new TreePanelDragSourcePanelTreeExt(panelTree);
       new TreePanelDropTargetPanelTreeExt(panelTree);
    }
@@ -136,7 +137,7 @@ public class ProfilePanel extends ContentPanel {
    /**
     * Creates the screen tree.
     */
-   private void createPanelTree(ScreenPanel screenPanel) {
+   private void createPanelTree() {
       panelTree = TreePanelBuilder.buildPanelTree(screenPanel);
       selectionService.addListener(new SourceSelectionChangeListenerExt(panelTree.getSelectionModel()));
       selectionService.register(panelTree.getSelectionModel());
@@ -157,6 +158,9 @@ public class ProfilePanel extends ContentPanel {
             
             panelTree.addListener(PropertyEditEvent.PropertyEditEvent, new Listener<PropertyEditEvent>() {
                public void handleEvent(PropertyEditEvent be) {
+                  if (be.getPropertyEditable() instanceof ScreenPropertyEditable) {
+                     ((ScreenPropertyEditable)be.getPropertyEditable()).setScreenTab(screenPanel.getScreenItem());
+                  }
                   ProfilePanel.this.fireEvent(PropertyEditEvent.PropertyEditEvent,be);
                }
                
