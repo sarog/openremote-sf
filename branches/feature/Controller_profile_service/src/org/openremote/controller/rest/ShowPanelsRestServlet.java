@@ -34,8 +34,9 @@ import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
 /**
+ * Show all available panels.
  * 
- * @author Javen
+ * @author Javen, Dan Cong
  *
  */
 public class ShowPanelsRestServlet extends HttpServlet {
@@ -51,6 +52,7 @@ public class ShowPanelsRestServlet extends HttpServlet {
    }
 
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+      response.setCharacterEncoding("utf8");
       PrintWriter out = response.getWriter();
       String url = request.getRequestURL().toString();
       String regexp = "rest\\/panels";
