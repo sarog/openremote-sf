@@ -21,11 +21,14 @@ package org.openremote.modeler.domain.component;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import javax.persistence.Transient;
 
 import org.openremote.modeler.client.utils.SensorLink;
+import org.openremote.modeler.client.utils.SensorLink.LinkerChild;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorType;
 
 import flexjson.JSON;
 
@@ -133,6 +136,19 @@ public class UIImage extends UIComponent implements SensorOwner, ImageSourceOwne
          imageSources.add(imageSource);
       } else {
          imageSources.add(new ImageSource(DEFAULT_IMAGE_URL));
+      }
+      if (sensor != null && sensorLink != null
+            && (sensor.getType() == SensorType.SWITCH || sensor.getType() == SensorType.CUSTOM)) {
+         Collection<LinkerChild> linkChildren = sensorLink.getLinkerChildren();
+         if (linkChildren != null && !linkChildren.isEmpty()) {
+            for (LinkerChild child : linkChildren) {
+               Map<String,String> imageMap = child.getAttributes();
+               if (imageMap.containsKey("value")){
+                  ImageSource image = new ImageSource(imageMap.get("value"));
+                  imageSources.add(image);
+               }
+            }
+         }
       }
       return imageSources;
    }
