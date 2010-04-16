@@ -23,6 +23,7 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.propertyform.ScreenPropertyEditForm;
+import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 
@@ -43,6 +44,8 @@ public class ScreenPropertyEditable implements PropertyEditable {
 
    private TreePanel<BeanModel> profileTree = null;
 
+   private ScreenTab screenTab = null;
+   
    public ScreenPropertyEditable() {
    }
 
@@ -67,9 +70,13 @@ public class ScreenPropertyEditable implements PropertyEditable {
       }
    }
 
+   public void setScreenTab(ScreenTab screenTab) {
+      this.screenTab = screenTab;
+   }
+   
    @Override
    public PropertyForm getPropertiesForm() {
-      return new ScreenPropertyEditForm(this);
+      return new ScreenPropertyEditForm(this, screenPairRef.getScreen(), screenTab);
    }
 
    private void updateScreen() {
