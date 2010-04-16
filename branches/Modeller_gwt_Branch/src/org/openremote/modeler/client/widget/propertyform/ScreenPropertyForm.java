@@ -26,6 +26,7 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
+import org.openremote.modeler.client.utils.ImageSourceValidator;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ImageUploadAdapterField;
 import org.openremote.modeler.client.widget.uidesigner.GestureWindow;
@@ -309,7 +310,7 @@ public class ScreenPropertyForm extends PropertyForm {
       addListener(Events.Submit, new Listener<FormEvent>() {
          @Override
          public void handleEvent(FormEvent be) {
-            String backgroundImgURL = be.getResultHtml();
+            String backgroundImgURL = ImageSourceValidator.validate(be.getResultHtml());
             boolean success = !"".equals(backgroundImgURL);
             if (success) {
                setBackground(backgroundImgURL);

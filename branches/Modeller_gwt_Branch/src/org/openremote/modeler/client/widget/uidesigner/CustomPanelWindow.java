@@ -24,6 +24,7 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormResetListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.IDUtil;
+import org.openremote.modeler.client.utils.ImageSourceValidator;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.client.widget.ImageUploadField;
 import org.openremote.modeler.domain.Group;
@@ -203,7 +204,7 @@ public class CustomPanelWindow extends FormWindow {
 
          @Override
          public void handleEvent(FormEvent be) {
-            String imageURL = be.getResultHtml();
+            String imageURL = ImageSourceValidator.validate(be.getResultHtml());
             boolean success = !"".equals(imageURL);
             if (success) {
                if (operation == Operation.UPLOAD_TABBAR_IMAGE) {
