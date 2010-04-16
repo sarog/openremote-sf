@@ -89,22 +89,24 @@
             </c:if>
             <c:if test="${needActivation ne null}">
                 <p class="pass">We have sent you an activation email to <b>${email}</b>,
-                 please check it out to finish your registration.</p>
+                 please follow the instructions in the email to finish your registration.</p>
             </c:if>
-            <div style="padding-left:110px">
-	            <p class="input"><b class="form_label">Username</b>
-	            <input id="username" style="width:150px" type="text" name="j_username" value="${username}"></p>
-	            <p class="input"><b class="form_label">Password</b>
-	            <input id="password" style="width:150px" type="password" name="j_password" value=""></p>
-                <c:if test="${param.fail ne null }">
-	                <p class="incorrect">The username or password you entered is incorrect.</p>
-                </c:if>
-                <p>
-                	<input id="rememberme" type="checkbox" name="_spring_security_remember_me"><label for="rememberme">Remember Me</label>
-                	<a class="register_btn" href="register.jsp">Create a New Account</a>
-                </p> 
-	            <div><input class="login_submit" type="submit" value="Login"></div>
-            </div>                       
+            <c:if test="${needActivation eq null}">
+	            <div style="padding-left:110px">
+		            <p class="input"><b class="form_label">Username</b>
+		            <input id="username" style="width:150px" type="text" name="j_username" value="${username}"></p>
+		            <p class="input"><b class="form_label">Password</b>
+		            <input id="password" style="width:150px" type="password" name="j_password" value=""></p>
+	                <c:if test="${param.fail ne null }">
+		                <p class="incorrect">The username or password you entered is incorrect.</p>
+	                </c:if>
+	                <p>
+	                	<input id="rememberme" type="checkbox" name="_spring_security_remember_me"><label for="rememberme">Remember Me</label>
+	                	<a class="register_btn" href="register.jsp">Create a New Account</a>
+	                </p> 
+		            <div><input class="login_submit" type="submit" value="Login"></div>
+	            </div>
+            </c:if>                    
 	        <p class="copyright">Copyright &copy; 2008-<fmt:formatDate value="${now}"pattern="yyyy" /> 
 	        <a href="http://www.openremote.org">OpenRemote</a>.</p>
 		  </div>
