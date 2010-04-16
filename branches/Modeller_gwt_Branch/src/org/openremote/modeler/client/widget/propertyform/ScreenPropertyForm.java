@@ -53,7 +53,6 @@ import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
-import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.Radio;
@@ -127,8 +126,8 @@ public class ScreenPropertyForm extends PropertyForm {
       posTopField.setName("posTop");
       posTopField.setFieldLabel("Top");
       posTopField.setAllowBlank(false);
-      posTopField.setRegex(Constants.REG_NONNEGATIVEINT);
-      posTopField.getMessages().setRegexText("The top must be a nonnegative integer");
+      posTopField.setRegex(Constants.REG_INTEGER);
+      posTopField.getMessages().setRegexText("The top must be a integer");
       posTopField.setValue("0"); // temp set top 0
       posTopField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
@@ -148,8 +147,8 @@ public class ScreenPropertyForm extends PropertyForm {
       posLeftField.setName("posLeft");
       posLeftField.setFieldLabel("Left");
       posLeftField.setAllowBlank(false);
-      posLeftField.setRegex(Constants.REG_NONNEGATIVEINT);
-      posLeftField.getMessages().setRegexText("The left must be a nonnegative integer");
+      posLeftField.setRegex(Constants.REG_INTEGER);
+      posLeftField.getMessages().setRegexText("The left must be a integer");
       posLeftField.setValue("0"); // temp set left 0
       posLeftField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
