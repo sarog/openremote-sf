@@ -30,6 +30,7 @@
 
 - (NSMutableArray *)initScreenViewControllers:(NSArray *)screens;
 - (void)showErrorView;
+- (void)detectDeviceOrientation;
 
 @end
 
@@ -44,9 +45,9 @@
 		if (newGroup) {
 			group = [newGroup retain];// must retain newGroup here!!!
 		}
-//		[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-//		currentOrientation = [[UIDevice currentDevice] orientation];
-		currentOrientation = UIInterfaceOrientationPortrait;
+		
+		[self detectDeviceOrientation];
+		
 	}
 	return self;
 }
@@ -59,6 +60,16 @@
 		currentOrientation = thatOrientation;
 	}
 	return self;
+}
+
+- (void)detectDeviceOrientation {
+	[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+	currentOrientation = [[UIDevice currentDevice] orientation];
+	
+	if (currentOrientation == UIDeviceOrientationUnknown) {
+		currentOrientation = UIInterfaceOrientationPortrait;
+		NSLog(@"it's using simulator, set portrait by default");
+	}
 }
 
 - (UIInterfaceOrientation)getCurrentOrientation {
@@ -116,12 +127,15 @@
 	NSArray *screens = isLandscape ? [group getLandscapeScreens] : [group getPortraitScreens];
 	if (screens.count > 0) {
 		[[paginationController currentScreenViewController] stopPolling];
-		[paginationController release];
-		paginationController = nil;
-		paginationController = [[PaginationController alloc] init];
-		NSMutableArray *viewControllers = [self initScreenViewControllers:screens];
-		[paginationController setViewControllers:viewControllers isLandscape:isLandscape];
-		[viewControllers release];
+		if (lastPaginationController == nil) {
+			lastPaginationController = [[PaginationController alloc] init];
+			NSMutableArray *viewControllers = [self initScreenViewControllers:screens];
+			[lastPaginationController setViewControllers:viewControllers isLandscape:isLandscape];
+			[viewControllers release];
+		}
+		PaginationController *temp = lastPaginationController;
+		lastPaginationController = paginationController;
+		paginationController = temp;
 		[self setView:paginationController.view];
 		[[paginationController currentScreenViewController] startPolling];
 	} else {
@@ -145,10 +159,10 @@
 	if (UIInterfaceOrientationIsPortrait(currentOrientation)) {
 		NSLog(@"view did load show portrait");
 		[self showPortrait];
-	} else {
+	} else if (UIInterfaceOrientationIsLandscape(currentOrientation)) {
 		NSLog(@"view did load show landscape");
 		[self showLandscape];
-	}
+	} 
 }
 
 - (void)showErrorView {
@@ -246,7 +260,6 @@
 			[self switchToScreen:inverseScreenId];
 		}
 	}
-	
 }
 
 

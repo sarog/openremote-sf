@@ -29,6 +29,7 @@
 
 	Group *group;
 	PaginationController *paginationController;
+	PaginationController *lastPaginationController;
 	ErrorViewController *errorViewController;
 	UIInterfaceOrientation currentOrientation;
 }

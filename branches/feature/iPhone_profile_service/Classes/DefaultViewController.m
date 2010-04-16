@@ -293,13 +293,13 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		//if local tabbar exists
 		if (targetGroupController.group.tabBar) {
 			BOOL findCachedTargetTabBarController = NO;
-//			for (TabBarController *tempTargetTabBarController in tabBarControllers) {
-//				if (tempTargetTabBarController.groupController.group.groupId == targetGroupController.group.groupId) {
-//					localTabBarController = tempTargetTabBarController;
-//					findCachedTargetTabBarController = YES;
-//					break;
-//				}
-//			}
+			for (TabBarController *tempTargetTabBarController in tabBarControllers) {
+				if (tempTargetTabBarController.groupController.group.groupId == targetGroupController.group.groupId) {
+					localTabBarController = tempTargetTabBarController;
+					findCachedTargetTabBarController = YES;
+					break;
+				}
+			}
 			if (!findCachedTargetTabBarController) {
 				localTabBarController = [[TabBarController alloc] initWithGroupController:targetGroupController tabBar:targetGroupController.group.tabBar];
 				[tabBarControllers addObject:localTabBarController];
