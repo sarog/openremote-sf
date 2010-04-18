@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response;
 import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.service.ResourceService;
 import org.openremote.beehive.exception.InvalidPanelXMLException;
+import org.openremote.beehive.exception.NoSuchAccountException;
 import org.openremote.beehive.exception.NoSuchPanelException;
 import org.openremote.beehive.exception.PanelXMLNotFoundException;
 
@@ -67,7 +68,7 @@ public class ResourceRESTService extends RESTBaseService{
    public Response getResourcesForController(@PathParam("username") String username, 
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
-      if (! authorize(credentials)) {
+      if (!authorize(username, credentials)) {
          return unAuthorizedResponse();
       }
       
@@ -85,7 +86,7 @@ public class ResourceRESTService extends RESTBaseService{
    public Response getPanels(@PathParam("username") String username,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
 
-      if (!authorize(credentials, false)) {
+      if (!authorize(username, credentials, false)) {
          return unAuthorizedResponse();
       }
       String panels = null;
@@ -93,15 +94,17 @@ public class ResourceRESTService extends RESTBaseService{
       try {
          panels = getResourceService().getAllPanelsXMLFromAccount(username);
       } catch (PanelXMLNotFoundException e) {
-         throw new WebApplicationException(e,426);
+         throw new WebApplicationException(e, 426);
       } catch (InvalidPanelXMLException e) {
-         throw new WebApplicationException(e,427);
+         throw new WebApplicationException(e, 427);
+      } catch (NoSuchAccountException e) {
+         return unAuthorizedResponse();
       }
       
       if (panels != null) {
          return buildResponse(panels);
       }
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
+      return resourceNotFoundResponse();
    }
 
    @Path("rest/panel/{panel_id}")
@@ -110,7 +113,7 @@ public class ResourceRESTService extends RESTBaseService{
    public Response getPanelXMLByName(@PathParam("username") String username, @PathParam("panel_id") String panelName,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
 
-      if (!authorize(credentials, false)) {
+      if (!authorize(username, credentials, false)) {
          return unAuthorizedResponse();
       }
       String panelXML = null;
@@ -118,17 +121,19 @@ public class ResourceRESTService extends RESTBaseService{
       try {
          panelXML = getResourceService().getPanelXMLByPanelNameFromAccount(username, panelName);
       } catch (PanelXMLNotFoundException e) {
-         throw new WebApplicationException(e,426);
+         throw new WebApplicationException(e, 426);
       } catch (InvalidPanelXMLException e) {
-         throw new WebApplicationException(e,427);
+         throw new WebApplicationException(e, 427);
       } catch (NoSuchPanelException e) {
-         throw new WebApplicationException(e,428);
+         throw new WebApplicationException(e, 428);
+      } catch (NoSuchAccountException e) {
+         return unAuthorizedResponse();
       }
       
       if (panelXML != null) {
          return buildResponse(panelXML);
       }
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
+      return resourceNotFoundResponse();
    }
    
    @Path("resources/{file_name}")
@@ -137,7 +142,7 @@ public class ResourceRESTService extends RESTBaseService{
    public Response getResource(@PathParam("username") String username, @PathParam("file_name") String fileName,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
 
-      if (!authorize(credentials, false)) {
+      if (!authorize(username, credentials, false)) {
          return unAuthorizedResponse();
       }
       
@@ -196,12 +201,12 @@ public class ResourceRESTService extends RESTBaseService{
     * this servlet.
     *  
     */
-   protected boolean authorize(String credentials) {
-      return authorize(credentials, true);
+   protected boolean authorize(String username, String credentials) {
+      return authorize(username, credentials, true);
    }
    
-   private boolean authorize(String credentials, boolean isPasswordEncoded) {
-      if (!getAccountService().isHTTPBasicAuthorized(credentials, isPasswordEncoded)) {
+   private boolean authorize(String username, String credentials, boolean isPasswordEncoded) {
+      if (!getAccountService().isHTTPBasicAuthorized(username, credentials, isPasswordEncoded)) {
          return false;
       }
       return true;

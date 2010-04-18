@@ -17,31 +17,29 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.beehive.api.service;
-
-import org.openremote.beehive.domain.Account;
-import org.openremote.beehive.domain.User;
+package org.openremote.beehive.exception;
 
 /**
- * Account service.
- * 
- * @author Dan Cong
- *
+ * No Such Account Exception.
  */
-public interface AccountService {
-   
-   void save(Account a);
-   
-   User loadByUsername(String username);
-   
-   boolean isHTTPBasicAuthorized(long accountId, String credentials);
-   
-   boolean isHTTPBasicAuthorized(String credentials);
-   
-   boolean isHTTPBasicAuthorized(long accountId, String credentials, boolean isPasswordEncoded);
-   
-   boolean isHTTPBasicAuthorized(String username, String credentials, boolean isPasswordEncoded);
-   
-   long queryAccountIdByUsername(String username);
+public class NoSuchAccountException extends RuntimeException {
+
+   private static final long serialVersionUID = -3589074229725437767L;
+
+   public NoSuchAccountException() {
+      super();
+   }
+
+   public NoSuchAccountException(String message, Throwable cause) {
+      super(message, cause);
+   }
+
+   public NoSuchAccountException(String message) {
+      super(message);
+   }
+
+   public NoSuchAccountException(Throwable cause) {
+      super(cause);
+   }
 
 }

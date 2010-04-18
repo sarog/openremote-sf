@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 
 import javax.ws.rs.core.Response;
 
+import org.apache.log4j.Logger;
 import org.openremote.beehive.api.service.AccountService;
 import org.openremote.beehive.spring.ISpringContext;
 import org.openremote.beehive.spring.SpringContext;
@@ -35,6 +36,8 @@ import org.openremote.beehive.spring.SpringContext;
  */
 public class RESTBaseService {
    
+   private static Logger log = Logger.getLogger(RESTBaseService.class);
+   
    protected Class<? extends ISpringContext> getSpringContextClass() {
       return SpringContext.class;
    }
@@ -42,20 +45,20 @@ public class RESTBaseService {
    public ISpringContext getSpringContextInstance() {
       Method m = null;
       try {
-         m = getSpringContextClass().getMethod("getInstance", new Class[]{});
+         m = getSpringContextClass().getMethod("getInstance", new Class[] {});
       } catch (NoSuchMethodException e) {
-         e.printStackTrace();
+         log.error(e);
       }
       try {
-         return (ISpringContext) m.invoke(this, new Object[]{});
+         return (ISpringContext) m.invoke(this, new Object[] {});
       } catch (Exception e) {
-         e.printStackTrace();
+         log.error(e);
       }
       return null;
    }
 
    protected Response buildResponse(Object entity) {
-      if (entity !=null) {
+      if (entity != null) {
          return Response.status(Response.Status.OK).entity(entity).build();
       }
       return Response.status(Response.Status.NO_CONTENT).build();
@@ -76,8 +79,17 @@ public class RESTBaseService {
     * this servlet.
     *  
     */
+   protected boolean authorize(long accountId, String credentials) {
+      if (!getAccountService().isHTTPBasicAuthorized(accountId, credentials)) {
+         return false;
+      }
+      return true;
+   }
+   
    protected boolean authorize(String credentials) {
-      if (!getAccountService().isHTTPBasicAuthorized(credentials)) return false;
+      if (!getAccountService().isHTTPBasicAuthorized(credentials)) {
+         return false;
+      }
       return true;
    }
    

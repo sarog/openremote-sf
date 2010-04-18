@@ -75,10 +75,10 @@ public class TemplateRESTService extends RESTBaseService {
    @Path("templates/{shared}")
    @GET
    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-   public Response getTemplates(@PathParam("account_id") long accountId,@PathParam("shared") String shared, 
+   public Response getTemplates(@PathParam("account_id") long accountId, @PathParam("shared") String shared, 
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
-      if (!authorize(credentials)) return unAuthorizedResponse();
+      if (!authorize(accountId, credentials)) return unAuthorizedResponse();
       List<TemplateDTO> list = null;
       if ("public".equalsIgnoreCase(shared)) {
          list = getTemplateService().loadAllPublicTemplatesByAccountOid(accountId);
@@ -103,10 +103,11 @@ public class TemplateRESTService extends RESTBaseService {
    @GET
    @Produces( { "application/zip"})
    @Path("template/{template_id}/resource")
-   public Response getTemplateResources(@PathParam("template_id") long templateId,
+   public Response getTemplateResources(@PathParam("account_id") long accountId, 
+         @PathParam("template_id") long templateId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
-      if (!authorize(credentials)) return unAuthorizedResponse();
+      if (!authorize(accountId, credentials)) return unAuthorizedResponse();
       File templateZip = getTemplateService().getTemplateResourceZip(templateId);
       if (templateZip != null) {
          return buildResponse(templateZip);
@@ -126,10 +127,11 @@ public class TemplateRESTService extends RESTBaseService {
    @Path("template/{template_id}")
    @GET
    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-   public Response getTemplateById(@PathParam("template_id") long templateId, 
+   public Response getTemplateById(@PathParam("account_id") long accountId, 
+         @PathParam("template_id") long templateId, 
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
-      if (!authorize(credentials)) return unAuthorizedResponse();
+      if (!authorize(accountId, credentials)) return unAuthorizedResponse();
       TemplateDTO t = getTemplateService().loadTemplateByOid(templateId);
       if (t != null) {
          return buildResponse(t);
@@ -153,9 +155,14 @@ public class TemplateRESTService extends RESTBaseService {
    @Path("template")
    @POST
    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-   public Response addTemplateIntoAccount(@PathParam("account_id") long accountId, @FormParam("name") String name,
-         @FormParam("content") String content, @FormParam("keywords") String keywords,@FormParam("shared") boolean shared,@HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
-      if (!authorize(credentials)) return unAuthorizedResponse();
+   public Response addTemplateIntoAccount(
+         @PathParam("account_id") long accountId, 
+         @FormParam("name") String name,
+         @FormParam("content") String content, 
+         @FormParam("keywords") String keywords,
+         @FormParam("shared") boolean shared,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(accountId, credentials)) return unAuthorizedResponse();
       Template t = new Template();
       if (accountId > 0) {
          Account a = new Account();
@@ -178,9 +185,15 @@ public class TemplateRESTService extends RESTBaseService {
    @Path("template/{template_id}")
    @PUT
    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-   public Response updateTemplate(@PathParam("account_id") long accountId,@PathParam("template_id") long templateID, @FormParam("name") String name,
-         @FormParam("content") String content, @FormParam("keywords") String keywords,@FormParam("shared") boolean shared,@HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
-      if (!authorize(credentials)) return unAuthorizedResponse();
+   public Response updateTemplate(
+         @PathParam("account_id") long accountId,
+         @PathParam("template_id") long templateID, 
+         @FormParam("name") String name,
+         @FormParam("content") String content, 
+         @FormParam("keywords") String keywords,
+         @FormParam("shared") boolean shared,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(accountId, credentials)) return unAuthorizedResponse();
       Template t = new Template();
       if (templateID > 0) {
          Account a = new Account();
@@ -213,10 +226,11 @@ public class TemplateRESTService extends RESTBaseService {
    
    @Path("template/{template_id}")
    @DELETE
-   public Response deleteTemplate(@PathParam("template_id") long templateId,
+   public Response deleteTemplate(@PathParam("account_id") long accountId,
+         @PathParam("template_id") long templateId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
-      if (!authorize(credentials)) return unAuthorizedResponse();
+      if (!authorize(accountId, credentials)) return unAuthorizedResponse();
       if (templateId > 0) {
          return buildResponse(getTemplateService().delete(templateId));
       }
@@ -243,7 +257,7 @@ public class TemplateRESTService extends RESTBaseService {
          @PathParam("template_id") long templateId, MultipartFormDataInput input, 
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
-      if (!authorize(credentials)) return unAuthorizedResponse();
+      if (!authorize(accountId, credentials)) return unAuthorizedResponse();
       List<InputPart> parts = input.getParts();
       InputStream in = null;
       try {
@@ -284,7 +298,7 @@ public class TemplateRESTService extends RESTBaseService {
          MultipartFormDataInput input,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
-      if (!authorize(credentials)) return unAuthorizedResponse();
+      if (!authorize(accountId, credentials)) return unAuthorizedResponse();
       List<InputPart> parts = input.getParts();
       InputStream in = null;
       try {
