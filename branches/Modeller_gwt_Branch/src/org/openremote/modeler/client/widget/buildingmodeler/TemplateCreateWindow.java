@@ -97,7 +97,8 @@ public class TemplateCreateWindow extends FormWindow
       templateName.setName(TEMPLATE_NAME_FIELD);
       templateName.setFieldLabel("Name");
       templateName.setAllowBlank(false);
-      templateName.setRegex("[^\\d\\s].+");
+      templateName.setRegex("^\\s*.*\\D+\\s*|$");
+      templateName.setMessageTarget("The template name can't be number");
       templateName.setValidateOnBlur(true);
       if (template != null) {
          templateName.setValue(template.getName());
@@ -117,7 +118,8 @@ public class TemplateCreateWindow extends FormWindow
       keywordsLabel.setHideLabel(true);
       templateKeywords.setName(TEMPLATE_NAME_FIELD);
       templateKeywords.setLabelSeparator("");
-      templateKeywords.setRegex("[^\\d\\s].+");
+      templateKeywords.setRegex("^\\s*.*\\D+\\s*|$");
+      templateKeywords.setMessageTarget("The keywords can't be number");
       if(template!=null ) {
          templateKeywords.setValue(template.getKeywords());
       }
