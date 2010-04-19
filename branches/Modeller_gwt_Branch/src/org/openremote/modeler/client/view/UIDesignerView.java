@@ -57,6 +57,7 @@ import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -125,6 +126,7 @@ public class UIDesignerView extends TabItem {
                      Info.display("Info", "UI designer layout saved at "
                            + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
                   }
+                  Window.setStatus("UI designer layout saved at: "+ DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
                }
 
                @Override
@@ -132,9 +134,10 @@ public class UIDesignerView extends TabItem {
                   timer.cancel();
                   Info.display(new InfoConfig("Error", caught.getLocalizedMessage()
                         + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
+                  Window.setStatus("Failed to save UI designer layout at: "+ DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
                }
-
             });
+      Window.setStatus("Saving ....");
    }
 
    public void saveUiDesignerLayout() {
@@ -145,6 +148,7 @@ public class UIDesignerView extends TabItem {
                Info.display("Info", "UI designer layout saved at "
                      + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
             }
+            Window.setStatus("UI designer layout saved at: "+ DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
          }
 
          @Override
@@ -152,9 +156,11 @@ public class UIDesignerView extends TabItem {
             timer.cancel();
             Info.display(new InfoConfig("Error", caught.getLocalizedMessage()+" "
                   + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
+            Window.setStatus("Failed to save UI designer layout at: "+ DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
          }
 
       });
+      Window.setStatus("Saving ....");
    }
 
    public void restore() {
