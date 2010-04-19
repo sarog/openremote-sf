@@ -48,10 +48,10 @@ public class SensorCommandRef extends CommandRefItem {
       if (obj == null) return false;
       if (getClass() != obj.getClass()) return false;
       SensorCommandRef other = (SensorCommandRef) obj;
-      if (sensor == null) {
-         if (other.sensor != null) return false;
-      } else if (!sensor.equals(other.sensor)) return false;
-      return true;
+      if (this.getDeviceCommand() == null) {
+         if (other.getDeviceCommand() != null) return false;
+      } else if (! this.getDeviceCommand().equals(other.getDeviceCommand())) return false;
+      return this.getOid() == other.getOid();
    }
 
    public boolean equalsWithoutCompareOid(SensorCommandRef other) {

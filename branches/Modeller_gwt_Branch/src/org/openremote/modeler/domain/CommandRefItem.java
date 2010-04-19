@@ -71,4 +71,14 @@ public class CommandRefItem extends UICommand {
       return getDeviceCommand().getName() + " (" + this.deviceName + ")";
    }
    
+   public boolean equals(Object obj) {
+      if (obj == null) return false;
+      if (obj.getClass() != getClass()) return false;
+      CommandRefItem other = (CommandRefItem)obj;
+      if (this.getOid() != other.getOid()) return false;
+      if (this.deviceCommand == null) {
+         if (other.deviceCommand != null) return false;
+      } else if (!this.deviceCommand .equals(other.deviceCommand)) return false;
+      return true;
+   }
 }
