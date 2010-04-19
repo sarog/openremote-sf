@@ -241,7 +241,7 @@ public class TemplateCreateWindow extends FormWindow
 
          @Override
          public void onFailure(Throwable caught) {
-            MessageBox.alert("Error","Beehive database not available at the moment. Error message: " + caught.getLocalizedMessage(),null);
+            MessageBox.alert("Error","Beehive database not available at the moment. Error message: " + caught.getMessage(),null);
             TemplateCreateWindow.this.unmask();
          }
          
@@ -268,7 +268,7 @@ public class TemplateCreateWindow extends FormWindow
 
          @Override
          public void onFailure(Throwable caught) {
-            MessageBox.alert("Error","Beehive not available at the moment. Error message: " + caught.getLocalizedMessage(),null);
+            MessageBox.alert("Error","Beehive not available at the moment. Error message: " + caught.getMessage(),null);
             TemplateCreateWindow.this.unmask();
          }
          

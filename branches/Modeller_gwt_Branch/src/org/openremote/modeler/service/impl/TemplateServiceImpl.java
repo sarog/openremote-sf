@@ -180,7 +180,7 @@ public class TemplateServiceImpl implements TemplateService {
             throw new BeehiveNotAvailableException();
          }
       } catch (Exception e) {
-         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + (e.getLocalizedMessage()==null?"":e.getLocalizedMessage()), e);
+         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + (e.getMessage()==null?"":e.getMessage()), e);
       }
 
       log.debug("save Template Ok!");
@@ -1171,7 +1171,7 @@ public class TemplateServiceImpl implements TemplateService {
             throw new BeehiveNotAvailableException();
          }
       } catch (Exception e) {
-         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + (e.getLocalizedMessage()==null?"":e.getLocalizedMessage()), e);
+         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + (e.getMessage()==null?"":e.getMessage()), e);
       }
 
       log.debug("update Template Ok!");
