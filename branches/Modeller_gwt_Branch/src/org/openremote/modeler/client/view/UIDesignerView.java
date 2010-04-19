@@ -132,7 +132,7 @@ public class UIDesignerView extends TabItem {
                @Override
                public void onFailure(Throwable caught) {
                   timer.cancel();
-                  Info.display(new InfoConfig("Error", caught.getLocalizedMessage()
+                  Info.display(new InfoConfig("Error", caught.getMessage()
                         + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
                   Window.setStatus("Failed to save UI designer layout at: "+ DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
                }
@@ -154,7 +154,7 @@ public class UIDesignerView extends TabItem {
          @Override
          public void onFailure(Throwable caught) {
             timer.cancel();
-            Info.display(new InfoConfig("Error", caught.getLocalizedMessage()+" "
+            Info.display(new InfoConfig("Error", caught.getMessage()+" "
                   + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
             Window.setStatus("Failed to save UI designer layout at: "+ DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
          }
@@ -190,7 +190,7 @@ public class UIDesignerView extends TabItem {
 
          @Override
          public void onFailure(Throwable caught) {
-            MessageBox.alert("Error", "UI designer restore failed: " + caught.getLocalizedMessage(), null);
+            MessageBox.alert("Error", "UI designer restore failed: " + caught.getMessage(), null);
          }
       });
    }

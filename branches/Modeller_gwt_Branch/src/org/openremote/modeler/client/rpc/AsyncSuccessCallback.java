@@ -49,7 +49,7 @@ public abstract class AsyncSuccessCallback<T> implements AsyncCallback<T> {
          Info.display("ERROR", "Beehive is not available right now! ");
          return ;
       }
-      MessageBox.alert("ERROR", caught.getLocalizedMessage(), null);
+      MessageBox.alert("ERROR", caught.getMessage(), null);
    }
 
 
