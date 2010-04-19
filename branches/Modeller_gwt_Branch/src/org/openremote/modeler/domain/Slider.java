@@ -95,10 +95,6 @@ public class Slider extends BusinessEntity {
 
    @Override
    public int hashCode() {
-      /*final int prime = 31;
-      int result = 1;
-      result = prime * result + ((name == null) ? 0 : name.hashCode());
-      return result^0xFFFF+(int) getOid();*/
       return (int) getOid();
    }
 
@@ -108,8 +104,20 @@ public class Slider extends BusinessEntity {
       if (obj == null) return false;
       if (getClass() != obj.getClass()) return false;
       Slider other = (Slider) obj;
-      if (!equalsWithoutCompareOid(other)) return false;
-      return other.getOid() == getOid();
+      if (this.getOid() != other.getOid()) return false;
+      if (device == null) {
+         if (other.device != null) return false;
+      } else if (!device.equals(other.device)) return false;
+      if (name == null) {
+         if (other.name != null) return false;
+      } else if (!name.equals(other.name)) return false;
+      if (setValueCmd == null) {
+         if (other.setValueCmd != null) return false;
+      } else if (!setValueCmd.equals(other.setValueCmd)) return false;
+      if (sliderSensorRef == null) {
+         if (other.sliderSensorRef != null) return false;
+      } else if (!sliderSensorRef.equals(other.sliderSensorRef)) return false;
+      return true;
    }
    
    public boolean equalsWithoutCompareOid(Slider other) {
@@ -117,18 +125,15 @@ public class Slider extends BusinessEntity {
       if (name == null) {
          if (other.name != null) return false;
       } else if (!name.equals(other.name)) return false;
-      
-      if (this.device!=null && other.device != null) {
-         if (this.device.getOid()!=other.device.getOid())return false;
-      }
+      if (this.device != null) {
+         if (other.device == null || this.device.getOid() != other.device.getOid()) return false;
+      } else if (other.device != null) return false;
       if (this.setValueCmd != null) {
-         if (other.setValueCmd == null) return false;
-         else if (!this.setValueCmd.equalsWithoutCompareOid(other.getSetValueCmd())) return false;
-      }
+         if (other.setValueCmd == null || !this.setValueCmd.equalsWithoutCompareOid(other.getSetValueCmd())) return false;
+      } else if (other.setValueCmd != null)  return false;
       if (this.sliderSensorRef != null) {
-         if (other.sliderSensorRef == null) return false;
-         else if (!this.sliderSensorRef.equalsWithoutCompareOid(other.sliderSensorRef)) return false;
-      }
+         if (other.sliderSensorRef == null || !sliderSensorRef.equalsWithoutCompareOid(other.sliderSensorRef)) return false;
+      } else if(other.sliderSensorRef != null) return false;
       return true;
    }
 }

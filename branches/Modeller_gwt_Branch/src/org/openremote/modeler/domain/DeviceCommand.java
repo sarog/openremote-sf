@@ -148,16 +148,32 @@ public class DeviceCommand extends BusinessEntity {
    public int hashCode() {
       return (int) getOid();
    }
+   
    @Override
    public boolean equals(Object obj) {
       if (this == obj) return true;
       if (obj == null) return false;
       if (getClass() != obj.getClass()) return false;
       DeviceCommand other = (DeviceCommand) obj;
-      if (! equalsWithoutCompareOid(other)) return false;
-      return other.getOid() == getOid();
+      if (device == null) {
+         if (other.device != null) return false;
+      } else if (!device.equals(other.device)) return false;
+      if (name == null) {
+         if (other.name != null) return false;
+      } else if (!name.equals(other.name)) return false;
+      if (protocol == null) {
+         if (other.protocol != null) return false;
+      } else if (!protocol.equals(other.protocol)) return false;
+      if (sectionId == null) {
+         if (other.sectionId != null) return false;
+      } else if (!sectionId.equals(other.sectionId)) return false;
+      return this.getOid() == other.getOid();
    }
-   
+   /**
+    * This method is used for checking whether same device command exists when try to rebuild command for user from template. 
+    * @param other
+    * @return
+    */
    public boolean equalsWithoutCompareOid(DeviceCommand other) {
       if (other == null) return false;
       if (device == null) {
