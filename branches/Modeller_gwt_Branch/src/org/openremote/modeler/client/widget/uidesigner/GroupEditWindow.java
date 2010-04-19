@@ -145,11 +145,12 @@ public class GroupEditWindow extends FormWindow {
             for (BeanModel beanModel : storeModels) {
                for (ScreenPairRef screenPairRef : group.getScreenRefs()) {
                   if (screenPairRef.getScreen() == beanModel.getBean() && screenPairRef.getScreen().getRefCount() == 1) {
-                     screenNames = screenNames + screenPairRef.getScreen().getName() + " ";
+                     screenNames = screenNames + screenPairRef.getScreen().getName() + ",";
                   }
                }
             }
             if (!"".equals(screenNames)) {
+               screenNames = screenNames.substring(0, screenNames.lastIndexOf(","));
                MessageBox.confirm("Confirm delete screens", "Are you sure you want to delete " + screenNames + "?", new Listener<MessageBoxEvent>() {
                   public void handleEvent(MessageBoxEvent be) {
                      if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
