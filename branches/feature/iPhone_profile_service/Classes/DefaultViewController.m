@@ -430,19 +430,26 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 
 #pragma mark Detect the shake motion.
 
-//-(BOOL)canBecomeFirstResponder {
-//	return YES;
-//}
-//
-//-(void)viewDidAppear:(BOOL)animated {
-//	[self becomeFirstResponder];
-//}
-//
-//- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event {
-//	if (event.type == UIEventSubtypeMotionShake) {
-//		[self populateSettingsView:nil];
-//	}
-//}
+-(BOOL)canBecomeFirstResponder {
+	return YES;
+}
+
+-(void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+	[self becomeFirstResponder];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	[self resignFirstResponder];
+	[super viewWillDisappear:animated];
+}
+
+
+- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event {
+	if (event.type == UIEventSubtypeMotionShake) {
+		[self populateSettingsView:nil];
+	}
+}
 
 - (void)dealloc {
 	[groupViewMap release];
