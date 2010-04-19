@@ -137,39 +137,38 @@ public class TemplatePanel extends ContentPanel {
       deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
          @Override
          public void onDelete(ButtonEvent ce) {
-            final BeanModel templateBeanModel = templateTree.getSelectionModel().getSelectedItem();
-            
-            if (templateBeanModel == null) {
+            List<BeanModel> templateBeanModels = templateTree.getSelectionModel().getSelectedItems();
+            if (templateBeanModels == null || templateBeanModels.size() == 0) {
                MessageBox.alert("Error", "Please select a template.", null);
                ce.cancelBubble();
-            }
-
-            else {
-               Template template = templateBeanModel.getBean();
-               Long oid = template.getOid();
-
-               TemplateProxy.deleteTemplateById(oid, new AsyncSuccessCallback<Boolean>() {
-                  @Override
-                  public void onSuccess(Boolean success) {
-                     if (success) {
-                        templateTree.getStore().remove(templateBeanModel);
-                        if (editTabItem != null) {
-                           templateInEditing = null;
-                           templateEditPanel.remove(editTabItem);
-                           templateEditPanel.closeCurrentScreenTab();
-                           editTabItem = null;
-                           templateEditPanel.layout();
+            } else {
+               for (final BeanModel templateBeanModel : templateBeanModels) {
+                  Template template = templateBeanModel.getBean();
+                  Long oid = template.getOid();
+                  TemplateProxy.deleteTemplateById(oid, new AsyncSuccessCallback<Boolean>() {
+                     @Override
+                     public void onSuccess(Boolean success) {
+                        if (success) {
+                           templateTree.getStore().remove(templateBeanModel);
+                           if (editTabItem != null) {
+                              templateInEditing = null;
+                              templateEditPanel.remove(editTabItem);
+                              templateEditPanel.closeCurrentScreenTab();
+                              editTabItem = null;
+                              templateEditPanel.layout();
+                           }
+                           Info.display("Delete Template", "Template deleted successfully.");
                         }
-                        Info.display("Delete Template", "Template deleted successfully.");
                      }
-                  }
 
-                  @Override
-                  public void onFailure(Throwable caught) {
-                     MessageBox.alert("Error", "Failed to delete template :\""+caught.getMessage()+"\"", null);
-                  }
+                     @Override
+                     public void onFailure(Throwable caught) {
+                        MessageBox.alert("Error", "Failed to delete template :\"" + caught.getMessage() + "\"", null);
+                     }
 
-               });
+                  });
+
+               }
             }
          }
       });
