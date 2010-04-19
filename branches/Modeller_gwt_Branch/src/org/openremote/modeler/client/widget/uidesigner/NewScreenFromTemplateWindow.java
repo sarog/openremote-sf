@@ -61,7 +61,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  *
  */
 public class NewScreenFromTemplateWindow extends FormWindow {
-   public static final int MAX_TEMPLATES_SIZE_PER_PAGE = 5;
+   public static final int MAX_TEMPLATES_SIZE_PER_PAGE = 10;
    
    private String currentKeywords = "";
    
