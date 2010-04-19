@@ -340,7 +340,7 @@ public class ResourceServiceImpl implements ResourceService {
          Document doc = sb.build(new File(xmlPath));
          return doc;
       } catch (JDOMException e) {
-         throw new InvalidPanelXMLException(e.getLocalizedMessage() +
+         throw new InvalidPanelXMLException(e.getMessage() +
                "check the version of schema or structure of panel.xml with its dtd or schema : ");
       } catch (IOException e) {
          String msg = " An I/O error prevents a " + Constant.PANEL_XML + " from being fully parsed";
