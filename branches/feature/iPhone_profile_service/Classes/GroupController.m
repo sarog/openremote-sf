@@ -62,6 +62,14 @@
 	return self;
 }
 
+- (BOOL)isNew {
+	return paginationController.selectedIndex == 0;
+}
+
+- (BOOL)switchToFirstScreen {
+	return [paginationController switchToFirstScreen];
+}
+
 - (void)detectDeviceOrientation {
 	[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 	currentOrientation = [[UIDevice currentDevice] orientation];
@@ -281,6 +289,7 @@
 
 - (void)dealloc {
 	[paginationController release];
+	[lastPaginationController release];
 	[errorViewController release];
 	//[group release];
 	

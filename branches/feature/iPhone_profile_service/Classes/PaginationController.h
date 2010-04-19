@@ -23,9 +23,6 @@
 #import <UIKit/UIKit.h>
 #import "ScreenViewController.h"
 
-#define kMinimumGestureLength       25
-#define kMaximumVariance            5
-
 @interface PaginationController : UIViewController <UIScrollViewDelegate> {
 	NSArray *viewControllers;
 	NSUInteger selectedIndex;
@@ -51,5 +48,6 @@
 - (void)setViewControllers:(NSArray *)newViewControllers isLandscape:(BOOL)isLandscapeOrientation;
 - (ScreenViewController *)currentScreenViewController;
 - (void)updateView;
+- (BOOL)switchToFirstScreen;
 
 @end
