@@ -321,7 +321,12 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	//if screenId is specified, jump to that screen
 	if (screenId > 0) {
 		return [currentGroupController switchToScreen:screenId];
+	} else {
+		if ([currentGroupController isNew]) {
+			[currentGroupController switchToFirstScreen];
+		}
 	}
+
 	
 	return YES;
 }

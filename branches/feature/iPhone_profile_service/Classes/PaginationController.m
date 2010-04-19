@@ -31,6 +31,7 @@
 - (void)pageControlValueDidChange:(id)sender;
 - (void)scrollToSelectedViewWithAnimation:(BOOL)withAnimation;
 - (BOOL)switchToScreen:(int)screenId withAnimation:(BOOL) withAnimation;
+
 @end
 
 @implementation PaginationController
@@ -61,6 +62,7 @@
 	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 	int lastScreenId = [[userDefaults objectForKey:@"lastScreenId"] intValue];
 	NSLog(@"last screen id =%d", lastScreenId);
+	
 	if (lastScreenId > 0) {
 		for (int i = 0; i < [viewControllers count]; i++) {
 			if (lastScreenId == [[[viewControllers objectAtIndex:i] screen] screenId]) {
@@ -71,8 +73,11 @@
 	} else {
 		selectedIndex = 0;
 	}
-	
-	//[self updateView];
+}
+
+- (BOOL)switchToFirstScreen {
+	int screenId = ((ScreenViewController *)[viewControllers objectAtIndex:0]).screen.screenId;
+	return [self switchToScreen:screenId];
 }
 
 - (ScreenViewController *)currentScreenViewController {
@@ -82,7 +87,6 @@
 - (void)updateView {
 	[scrollView setContentSize:CGSizeMake(frameWidth * [viewControllers count], frameHeight)];
 	[pageControl setNumberOfPages:[viewControllers count]];
-	
 	[self updateViewForCurrentPageAndBothSides];
 }
 
@@ -142,7 +146,6 @@
 	[self updateViewForPage:selectedIndex + 1];
 	
 	[pageControl setCurrentPage:selectedIndex];
-	
 	if (selectedIndex < viewControllers.count && selectedIndex >= 0) {
 		int lastScreenId = ((ScreenViewController *)[viewControllers objectAtIndex:selectedIndex]).screen.screenId;
 		NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
@@ -156,12 +159,13 @@
 	
 	UIViewController *controller = [viewControllers objectAtIndex:page];	
 	
-	if (controller.view.superview != scrollView) {
-		[scrollView addSubview:controller.view];
-	}
 	CGRect frame = scrollView.bounds;
 	frame.origin.x = frameWidth * page;
 	[controller.view setFrame:frame];
+	
+	if (controller.view.superview != scrollView) {
+		[scrollView addSubview:controller.view];
+	}
 	
 	if (page == selectedIndex) {
 		[((ScreenViewController *)controller) startPolling];

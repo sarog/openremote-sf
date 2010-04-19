@@ -34,7 +34,6 @@
 #import "Definition.h"
 #import "UpdateController.h"
 
-#define STATUS_BAR_HEIGHT 0
 
 @interface DefaultViewController : UIViewController {
 	
@@ -58,6 +57,6 @@
 - (void)populateLoginView:(id)sender;
 - (void)populateSettingsView:(id)sender;
 - (void)performGesture:(Gesture *)gesture;
-- (void) saveLastGroupIdAndScreenId;
+- (void)saveLastGroupIdAndScreenId;
 
 @end

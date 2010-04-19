@@ -50,6 +50,8 @@
 - (BOOL)isOrientationLandscape;
 - (CGRect)getFullFrame;
 - (BOOL)hasNoViewInThatOrientation:(BOOL)isLandscape;
+- (BOOL)isNew;
+- (BOOL)switchToFirstScreen;
 
 @property (nonatomic, retain) Group *group;
 

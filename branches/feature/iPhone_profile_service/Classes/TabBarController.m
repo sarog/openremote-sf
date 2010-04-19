@@ -38,7 +38,7 @@
 			self.groupController = groupControllerParam;
 			CGRect frame = [groupController getFullFrame];
 			[self.view setFrame:frame];
-			NSLog(@"tabbar width=%g, height=%g", frame.size.width,frame.size.height);
+			NSLog(@"tabbar full frame width=%g, height=%g", frame.size.width,frame.size.height);
 			
 			NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
 			int i = 0;
