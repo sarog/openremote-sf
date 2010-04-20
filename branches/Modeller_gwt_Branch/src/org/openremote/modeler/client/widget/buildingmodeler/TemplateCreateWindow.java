@@ -283,10 +283,12 @@ public class TemplateCreateWindow extends FormWindow
 
       @Override
       public void componentSelected(ButtonEvent ce) {
-         if (template == null) {
-            submitToCreateTemplate();
-         } else {
-            submitToEditTemplate();
+         if (form.isValid()) {
+            if (template == null) {
+               submitToCreateTemplate();
+            } else {
+               submitToEditTemplate();
+            }
          }
       }
    }
