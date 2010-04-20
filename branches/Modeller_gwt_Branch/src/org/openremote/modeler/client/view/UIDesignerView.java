@@ -75,6 +75,8 @@ public class UIDesignerView extends TabItem {
    private ContentPanel profilePanel = null;
    
    private PropertyPanel propertyPanel = null;
+   
+   private boolean initialzed = false;
 
    /**
     * Instantiates a new uI designer view.
@@ -193,6 +195,7 @@ public class UIDesignerView extends TabItem {
             }
             IDUtil.setCurrentID(maxOid);
             refreshPanelTree();
+            initialzed = true;
          }
 
          @Override
@@ -294,4 +297,7 @@ public class UIDesignerView extends TabItem {
       return panelList;
    }
 
+   public boolean isInitialzed() {
+      return initialzed;
+   }
 }
