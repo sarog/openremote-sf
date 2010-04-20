@@ -183,6 +183,7 @@ public class ApplicationView implements View {
                modelerContainer.remove(buildingModelerView);
                modelerContainer.add(uiDesignerView);
                Cookies.setCookie(Constants.CURRETN_ROLE, Constants.ROLE_DESIGNER);
+               saveButton.setEnabled(true);
                modelerContainer.layout();
             }
          }
@@ -215,10 +216,13 @@ public class ApplicationView implements View {
       saveButton = new Button();
       saveButton.setIcon(icons.saveIcon());
       saveButton.setToolTip("Save");
+      saveButton.setEnabled(false);
       saveButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            uiDesignerView.saveUiDesignerLayout();
+            if (uiDesignerView.isRendered()) {
+               uiDesignerView.saveUiDesignerLayout();
+            } 
          }
       });
       
