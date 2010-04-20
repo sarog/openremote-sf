@@ -164,6 +164,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
                MessageBox
                      .alert("Error", "Failed to create screen from template: \"" + caught.getMessage() + "\"", null);
                NewScreenFromTemplateWindow.this.unmask();
+               super.checkTimeout(caught);
             }
 
          });

@@ -245,6 +245,7 @@ public class TemplateCreateWindow extends FormWindow
          public void onFailure(Throwable caught) {
             MessageBox.alert("Error","Beehive database not available at the moment. Error message: " + caught.getMessage(),null);
             TemplateCreateWindow.this.unmask();
+            super.checkTimeout(caught);
          }
          
          
@@ -272,6 +273,7 @@ public class TemplateCreateWindow extends FormWindow
          public void onFailure(Throwable caught) {
             MessageBox.alert("Error","Beehive not available at the moment. Error message: " + caught.getMessage(),null);
             TemplateCreateWindow.this.unmask();
+            super.checkTimeout(caught);
          }
          
          

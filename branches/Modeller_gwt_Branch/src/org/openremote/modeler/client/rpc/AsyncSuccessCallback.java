@@ -21,9 +21,14 @@ package org.openremote.modeler.client.rpc;
 
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.StatusCodeException;
 
 /**
  * Inherited from {@link AsyncCallback}. For global error handle.
@@ -45,11 +50,14 @@ public abstract class AsyncSuccessCallback<T> implements AsyncCallback<T> {
     * @see com.google.gwt.user.client.rpc.AsyncCallback#onFailure(java.lang.Throwable)
     */
    public void onFailure(Throwable caught) {
+      if (checkTimeout(caught)) {
+         return;
+      }
       if (caught instanceof BeehiveNotAvailableException) {
          Info.display("ERROR", "Beehive is not available right now! ");
-         return ;
+      } else {
+         MessageBox.alert("ERROR", caught.getMessage(), null);
       }
-      MessageBox.alert("ERROR", caught.getMessage(), null);
    }
 
 
@@ -63,5 +71,23 @@ public abstract class AsyncSuccessCallback<T> implements AsyncCallback<T> {
     * @see com.google.gwt.user.client.rpc.AsyncCallback#onSuccess(java.lang.Object)
     */
    public abstract void onSuccess(T result);
+   
+   protected boolean checkTimeout(Throwable caught) {
+      if (caught instanceof StatusCodeException) {
+         StatusCodeException sce = (StatusCodeException) caught;
+         if (sce.getStatusCode() == 401) {
+            MessageBox.confirm("Timeout", "Your session is timeout, please login again. ", new Listener<MessageBoxEvent>() {
+               @Override
+               public void handleEvent(MessageBoxEvent be) {
+                  if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
+                     Window.open("login.jsp", "_self", "");
+                  }
+               }
+            });
+            return true;
+         }
+      }
+      return false;
+   }
 
 }

@@ -164,6 +164,7 @@ public class TemplatePanel extends ContentPanel {
                      @Override
                      public void onFailure(Throwable caught) {
                         MessageBox.alert("Error", "Failed to delete template :\"" + caught.getMessage() + "\"", null);
+                        super.checkTimeout(caught);
                      }
 
                   });

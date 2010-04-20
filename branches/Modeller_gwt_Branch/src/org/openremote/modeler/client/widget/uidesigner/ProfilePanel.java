@@ -222,6 +222,7 @@ public class ProfilePanel extends ContentPanel {
          public void onFailure(Throwable caught) {
             panelTree.unmask();
             super.onFailure(caught);
+            super.checkTimeout(caught);
          }
 
          private void initModelDataBase(Collection<Panel> panels) {
