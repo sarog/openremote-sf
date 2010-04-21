@@ -94,7 +94,7 @@
     </filter-mapping>
 	<filter-mapping>
     	<filter-name>userTimeoutFilter</filter-name>
-    	<url-pattern>*fileUploadController.htm</url-pattern>
+    	<url-pattern>/modeler/fileUploadController.htm</url-pattern>
     </filter-mapping>
 	<filter>
 		<filter-name>OpenSessionInViewFilter</filter-name>
