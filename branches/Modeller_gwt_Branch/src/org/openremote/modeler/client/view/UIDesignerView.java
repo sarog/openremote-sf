@@ -127,7 +127,7 @@ public class UIDesignerView extends TabItem {
                         Info.display("Info", "UI designer layout saved at "
                               + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
                      }
-                     Window.setStatus("UI designer layout saved at: "
+                     Window.setStatus("Auto-Saving: UI designer layout saved at: "
                            + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
                   }
 
@@ -145,7 +145,7 @@ public class UIDesignerView extends TabItem {
                });
          Window.setStatus("Saving ....");
       } else {
-         Window.setStatus("Unable to save UI designer because panel list has not been initialized, ");
+         Window.setStatus("Auto-Saving: Unable to save UI designer because panel list has not been initialized. ");
       }
    }
 
@@ -179,7 +179,7 @@ public class UIDesignerView extends TabItem {
                });
          Window.setStatus("Saving ....");
       } else {
-         Window.setStatus("Unable to save UI designer because panel list has not been initialized, ");
+         Window.setStatus("Unable to save UI designer because panel list has not been initialized. ");
       }
    }
 
