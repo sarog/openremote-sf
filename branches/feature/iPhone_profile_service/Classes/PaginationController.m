@@ -215,14 +215,16 @@
 	[self.view addSubview:scrollView];
 	[scrollView release];
 	
-	pageControl = [[UIPageControl alloc] init];
-	[pageControl setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth];
-	[pageControl setFrame:CGRectMake(0, availableScrollHeight, availableScreenWidth, pageControlHeight)];
-	[pageControl setBackgroundColor:[UIColor clearColor]];
-	[pageControl setOpaque:YES];
-	[pageControl addTarget:self action:@selector(pageControlValueDidChange:) forControlEvents:UIControlEventValueChanged];
-	[self.view addSubview:pageControl];
-	[pageControl release];
+	if (viewControllers.count > 1) {
+		pageControl = [[UIPageControl alloc] init];
+		[pageControl setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth];
+		[pageControl setFrame:CGRectMake(0, availableScrollHeight, availableScreenWidth, pageControlHeight)];
+		[pageControl setBackgroundColor:[UIColor colorWithWhite:0 alpha:0.5f]];
+		[pageControl setOpaque:YES];
+		[pageControl addTarget:self action:@selector(pageControlValueDidChange:) forControlEvents:UIControlEventValueChanged];
+		[self.view addSubview:pageControl];
+		[pageControl release];
+	}
 	
 	[self updateView];
 }
