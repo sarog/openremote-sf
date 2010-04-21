@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +31,7 @@ import javax.mail.internet.MimeMessage;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
+import org.hibernate.Hibernate;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.Account;
@@ -55,7 +57,6 @@ import org.springframework.ui.velocity.VelocityEngineUtils;
  */
 public class UserServiceImpl extends BaseAbstractService<User> implements UserService {
    
-   
    private static Logger log = Logger.getLogger(UserServiceImpl.class);
    
    private JavaMailSenderImpl mailSender;
@@ -70,12 +71,15 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    public void initRoles() {
       boolean hasDesignerRole = false;
       boolean hasModelerRole = false;
+      boolean hasAdminRole = false;
       List<Role> allRoles = genericDAO.loadAll(Role.class);
       for (Role r : allRoles) {
          if (r.getName().equals(Role.ROLE_DESIGNER)) {
             hasDesignerRole = true;
          } else if (r.getName().equals(Role.ROLE_MODELER)) {
             hasModelerRole = true;
+         } else if (r.getName().equals(Role.ROLE_ADMIN)) {
+            hasAdminRole = true;
          }
       }
       if (!hasDesignerRole) {
@@ -86,6 +90,11 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       if (!hasModelerRole) {
          Role r = new Role();
          r.setName(Role.ROLE_MODELER);
+         genericDAO.save(r);
+      }
+      if (!hasAdminRole) {
+         Role r = new Role();
+         r.setName(Role.ROLE_ADMIN);
          genericDAO.save(r);
       }
       
@@ -109,9 +118,8 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     /**
      * {@inheritDoc}
      */
-    public boolean createUserAccount(String username, String password, String email, String roleStr) {
-      if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password) || StringUtils.isEmpty(email)
-            || StringUtils.isEmpty(roleStr)) {
+    public boolean createUserAccount(String username, String password, String email) {
+      if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password) || StringUtils.isEmpty(email)) {
          return false;
       }
       User user = new User();
@@ -120,14 +128,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       user.setPassword(new Md5PasswordEncoder().encodePassword(password, username));
       user.setEmail(email);
       if (isUsernameAvailable(username)) {
-         List<Role> allRoles = genericDAO.loadAll(Role.class);
-         for (Role r : allRoles) {
-            if (r.getName().equals(Role.ROLE_DESIGNER) && roleStr.indexOf("role_ud") != -1) {
-               user.addRole(r);
-            } else if (r.getName().equals(Role.ROLE_MODELER) && roleStr.indexOf("role_bm") != -1) {
-               user.addRole(r);
-            }
-         }
+         user.addRole(genericDAO.getByNonIdField(Role.class, "name", Role.ROLE_ADMIN));
          saveUser(user);
          return sendRegisterActivationEmail(user);
       } else {
@@ -139,6 +140,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     * {@inheritDoc}
     */
     public void saveUser(User user) {
+        genericDAO.save(user.getAccount());
         genericDAO.save(user);
     }
     /**
@@ -238,6 +240,158 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
 
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
+   }
+
+   public User getCurrentUser() {
+      String username = SecurityContextHolder.getContext().getAuthentication().getName();
+      return genericDAO.getByNonIdField(User.class, "username", username);
+   }
+
+   public User inviteUser(String email, String role, User currentUser) {
+      User invitee = new User(currentUser.getAccount());
+      invitee.setEmail(email);
+      invitee.setUsername(email);
+      invitee.setPassword("pending password");
+      convertRoleStringToRole(role, invitee, genericDAO.loadAll(Role.class));
+      genericDAO.save(invitee);
+      if (!sendInvitation(invitee, currentUser)) {
+         return null;
+      }
+      return invitee;
+   }
+
+   public boolean sendInvitation(final User invitee, final User currentUser) {
+       if (invitee == null || invitee.getOid() == 0 || StringUtils.isEmpty(invitee.getEmail())) {
+         return false;
+       }
+       
+       MimeMessagePreparator preparator = new MimeMessagePreparator() {
+          @SuppressWarnings("unchecked")
+          public void prepare(MimeMessage mimeMessage) throws Exception {
+             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+             message.setSubject("Invitation to Share an OpenRemote Boss 2.0 Account");
+             message.setTo(invitee.getEmail());
+             message.setFrom(mailSender.getUsername());
+             Map model = new HashMap();
+             model.put("uid", invitee.getOid());
+             model.put("role", invitee.getRole());
+             model.put("cid", currentUser.getOid());
+             model.put("host", currentUser.getEmail());
+             model.put("webapp", configuration.getWebappServerRoot());
+             model.put("aid", new Md5PasswordEncoder().encodePassword(invitee.getEmail(), currentUser.getPassword()));
+             String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
+                  Constants.REGISTRATION_INVITATION_EMAIL_VM_NAME, "UTF-8", model);
+             message.setText(text, true);
+          }
+       };
+       try {
+          this.mailSender.send(preparator);
+          log.info("Sent 'Modeler Account Invitation' email to " + invitee.getEmail());
+          return true;
+       } catch (MailException e) {
+          log.error("Can't send 'Modeler Account Invitation' email", e);
+          return false;
+       }
+   }
+
+   public boolean checkInvitation(String userOid, String hostOid, String aid) {
+      long uid = 0;
+      long hid = 0;
+      try {
+         uid = Long.valueOf(userOid);
+      } catch (NumberFormatException e) {
+         return false;
+      }
+      try {
+         hid = Long.valueOf(hostOid);
+      } catch (NumberFormatException e) {
+         return false;
+      }
+      User user = getUserById(uid);
+      User hostUser = getUserById(hid);
+      if (user != null && hostUser != null && aid != null) {
+         if (new Md5PasswordEncoder().encodePassword(user.getEmail(), hostUser.getPassword()).equals(aid)) {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   public boolean createInviteeAccount(String userOid, String username, String password, String email) {
+      if (StringUtils.isEmpty(userOid) || StringUtils.isEmpty(username) || StringUtils.isEmpty(password) || StringUtils.isEmpty(email)) {
+         return false;
+      }
+      long id = 0;
+      try {
+         id = Long.valueOf(userOid);
+      } catch (NumberFormatException e) {
+         return false;
+      }
+      if (isUsernameAvailable(username)) {
+         User user = getUserById(id);
+         user.setValid(true);
+         user.setUsername(username);
+         user.setRawPassword(password);
+         user.setPassword(new Md5PasswordEncoder().encodePassword(password, username));
+         user.setEmail(email);
+         updateUser(user);
+         return true;
+      } else {
+         return false;
+      }
+   }
+
+   public List<User> getPendingInviteesByAccount(User currentUser) {
+      List<User> invitees = new ArrayList<User>();
+      List<User> sameAccountUsers = currentUser.getAccount().getUsers();
+      sameAccountUsers.remove(currentUser);
+      for (User invitee : sameAccountUsers) {
+         if(!invitee.isValid()) {
+            Hibernate.initialize(invitee.getRoles());
+            invitees.add(invitee);
+         }
+      }
+      return invitees;
+   }
+
+   public User updateUserRoles(long uid, String roles) {
+      User user = getUserById(uid);
+      user.getRoles().clear();
+      convertRoleStringToRole(roles, user, genericDAO.loadAll(Role.class));
+      Hibernate.initialize(user.getRoles());
+      return user;
+   }
+
+   private void convertRoleStringToRole(String roles, User user, List<Role> allRoles) {
+      for (Role role : allRoles) {
+         if(role.getName().equals(Role.ROLE_ADMIN) && roles.indexOf(Constants.ROLE_ADMIN_DISPLAYNAME) != -1) {
+            user.addRole(role);
+         } else if (role.getName().equals(Role.ROLE_MODELER) && roles.indexOf(Constants.ROLE_MODELER_DISPLAYNAME) != -1) {
+            user.addRole(role);
+         } else if (role.getName().equals(Role.ROLE_DESIGNER) && roles.indexOf(Constants.ROLE_DESIGNER_DISPLAYNAME) != -1) {
+            user.addRole(role);
+         }
+      }
+   }
+
+   public void deleteUser(long uid) {
+      User user = getUserById(uid);
+      genericDAO.delete(user);
+   }
+
+   public List<User> getAccountAccessUsers(User currentUser) {
+      List<User> accessUsers = new ArrayList<User>();
+      List<User> sameAccountUsers = currentUser.getAccount().getUsers();
+      sameAccountUsers.remove(currentUser);
+      accessUsers.add(currentUser);
+      Hibernate.initialize(currentUser.getRoles());
+      for (User accessUser : sameAccountUsers) {
+         if(accessUser.isValid()) {
+            Hibernate.initialize(accessUser.getRoles());
+            accessUsers.add(accessUser);
+         }
+      }
+      return accessUsers;
    }
    
 }

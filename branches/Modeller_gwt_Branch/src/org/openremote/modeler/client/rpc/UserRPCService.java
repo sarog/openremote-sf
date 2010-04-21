@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -17,18 +17,27 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.client.widget;
+package org.openremote.modeler.client.rpc;
 
-import org.openremote.modeler.client.model.ComboBoxDataModel;
+import java.util.List;
 
-import com.extjs.gxt.ui.client.data.ModelData;
-import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.widget.form.ComboBox;
+import org.openremote.modeler.domain.User;
 
-public class SimpleComboBox extends ComboBox<ModelData> {
-   public SimpleComboBox() {
-      setStore(new ListStore<ModelData>());
-      setDisplayField(ComboBoxDataModel.getDisplayProperty());
-      setValueField(ComboBoxDataModel.getDataProperty());
-   }
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+
+@RemoteServiceRelativePath("user.smvc")
+public interface UserRPCService extends RemoteService {
+
+   User inviteUser(String email, String role);
+   
+   List<User> getPendingInviteesByAccount();
+   
+   User updateUserRoles(long uid, String roles);
+   
+   void deleteUser(long uid);
+   
+   List<User> getAccountAccessUsers();
+   
+   Long getUserId();
 }

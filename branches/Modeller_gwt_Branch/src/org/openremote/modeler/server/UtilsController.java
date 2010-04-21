@@ -218,7 +218,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
       if (!userFolder.exists()) {
          if (! userFolder.mkdirs()) {
-            throw new FileOperationException("Can't create user folder for user: "+userService.getAccount().getUser().getUsername());
+            throw new FileOperationException("Can't create user folder for user: "+userService.getCurrentUser().getUsername());
          }
       }
       File imageFile = new File(userFolder, url.substring(url.lastIndexOf("/") + 1));
@@ -311,6 +311,6 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    }
    
    public String getOnLineTestURL () {
-      return configuration.getBeehiveRESTRootUrl()+"user/"+userService.getAccount().getUser().getUsername();
+      return configuration.getBeehiveRESTRootUrl()+"user/"+userService.getCurrentUser().getUsername();
    }
 }

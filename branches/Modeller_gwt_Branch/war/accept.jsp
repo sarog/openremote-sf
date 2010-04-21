@@ -67,13 +67,15 @@
 <body>
 
 <div class="center-form">
-	<form method="POST" action="account.htm?method=create">
+	<form method="POST" action="account.htm?method=acceptInvition">
 		<div class="inner-boundary">
 			  <div class="inner-border">
 	            <a href="http://www.openremote.org" ><img src="image/global.logo.png" /></a>
-	            <p class="title">Create OpenRemote Boss 2.0 Online Account</p>
+	            <p class="title">You have been invited to access OpenRemote Boss 2.0 Online</p>
+               <c:if test="${isChecked ne null and isChecked}">
 	            <div style="padding-left:70px">
 		            <p>If you already have an account, you can <a href="login.jsp">login here</a>.</p>
+                  <input type="hidden" name="uid" value="${uid}">
 		            <p class="input"><b class="form_label">Desired username</b><input id="username" style="width:150px" type="text" name="username" value="${username}"></p>
 		            <c:if test="${success ne null and not success}">
 		                <p class="fail"><b>${username}</b> is not available, choose another.</p>
@@ -108,18 +110,6 @@
 	                <c:if test="${email_invalid ne null}">
 		                <p class="fail">Invalid email format.</p>
 	                </c:if>
-	                <!--  
-	                <p>
-	                	<b class="form_label">Choose your role(s)</b>
-	                	<input id="role_bm" type="checkbox" name="role" value="role_bm" checked>
-	                	<label title="An installer who models the building automation setup" for="role_bm" style="cursor:help">Building Modeler</label>
-	                	<input id="role_ud" type="checkbox" name="role" value="role_ud" checked>
-	                	<label title="A user interface designer who uses this model to create different types of panel and console applications" for="role_ud" style="cursor:help">UI Designer</label>
-	                </p>
-	                <c:if test="${role_blank ne null}">
-		                <p class="fail">You must choose at least one role.</p>
-	                </c:if>
-	                -->
 	                <p class="input"><b class="form_label">Type code below</b><input name="code" style="width:150px" /> </p>
 	                <c:if test="${code_dismatch ne null}">
 		                <p class="fail">The code you entered didn't match the verification.</p>
@@ -131,7 +121,8 @@
 	                 }
 	                </script>
 					<div><input class="register_submit" type="submit" value="Create my account"></div>
-	            </div>                       
+	            </div>
+              </c:if>                       
 		        <p class="copyright">Copyright &copy; 2008-<fmt:formatDate value="${now}"pattern="yyyy" />
 		        <a href="http://www.openremote.org">OpenRemote</a>.</p>            
 			</div>

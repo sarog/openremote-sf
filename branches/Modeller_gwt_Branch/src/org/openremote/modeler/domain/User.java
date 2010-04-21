@@ -23,15 +23,16 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openremote.modeler.client.Constants;
 
 
 
@@ -74,6 +75,12 @@ public class User extends BusinessEntity {
       roles = new ArrayList<Role>();
    }
 
+   public User(Account account) {
+      this.account = account;
+      valid = false;// need to be activated by email
+      registerTime = new Timestamp(System.currentTimeMillis());
+      roles = new ArrayList<Role>();
+   }
    /**
     * Gets the username.
     * 
@@ -117,7 +124,7 @@ public class User extends BusinessEntity {
     * 
     * @return the account
     */
-   @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+   @ManyToOne
    public Account getAccount() {
       return account;
    }
@@ -129,7 +136,7 @@ public class User extends BusinessEntity {
     */
    public void setAccount(Account account) {
       this.account = account;
-      account.setUser(this);
+//      account.setUser(this);
    }
    
    /**
@@ -200,7 +207,23 @@ public class User extends BusinessEntity {
    public void setRawPassword(String rawPassword) {
       this.rawPassword = rawPassword;
    }
-   
-   
 
+   @Transient
+   public String getRole() {
+      List<String> roleStrs = new ArrayList<String>();
+      for (Role role : roles) {
+         roleStrs.add(role.getName());
+      }
+      String userRole = null;
+      if (roleStrs.contains(Role.ROLE_ADMIN)) {
+         userRole = Constants.ROLE_ADMIN_DISPLAYNAME;
+      } else if(roleStrs.contains(Role.ROLE_MODELER) && roleStrs.contains(Role.ROLE_DESIGNER)) {
+         userRole = Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME;
+      } else if (roleStrs.contains(Role.ROLE_MODELER)) {
+         userRole = Constants.ROLE_MODELER_DISPLAYNAME;
+      } else if(roleStrs.contains(Role.ROLE_DESIGNER)) {
+         userRole = Constants.ROLE_DESIGNER_DISPLAYNAME;
+      }
+      return userRole;
+   }
 }
