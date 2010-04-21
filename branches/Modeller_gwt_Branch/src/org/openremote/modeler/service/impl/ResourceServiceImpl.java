@@ -1044,7 +1044,7 @@ public class ResourceServiceImpl implements ResourceService {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
       HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTRootUrl() + "user/"
-            + userService.getAccount().getUser().getUsername() + "/openremote.zip");
+            + userService.getCurrentUser().getUsername() + "/openremote.zip");
 
       LOGGER.debug("Attempting to fetch account configuration from: " + httpGet.getURI());
 
@@ -1057,7 +1057,7 @@ public class ResourceServiceImpl implements ResourceService {
 
          if (HttpServletResponse.SC_NOT_FOUND == response.getStatusLine().getStatusCode()) {
             LOGGER.warn("Failed to download openremote.zip for user "
-                  + userService.getAccount().getUser().getUsername()
+                  + userService.getCurrentUser().getUsername()
                   + " from Beehive. Status code is 404. Will try to restore panels from local resource! ");
             return;
          }
@@ -1277,7 +1277,7 @@ public class ResourceServiceImpl implements ResourceService {
    
    private void addAuthentication(AbstractHttpMessage httpMessage) {
       httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
-            + encode(userService.getAccount().getUser().getUsername() + ":"
-                  + userService.getAccount().getUser().getPassword()));
+            + encode(userService.getCurrentUser().getUsername() + ":"
+                  + userService.getCurrentUser().getPassword()));
    }
 }

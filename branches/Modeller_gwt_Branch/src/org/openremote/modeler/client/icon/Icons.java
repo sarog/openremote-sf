@@ -134,5 +134,8 @@ public interface Icons extends ImageBundle {
    
    @Resource("url.png")
    AbstractImagePrototype onLineTestIcon();
+   
+   @Resource("user.png")
+   AbstractImagePrototype userIcon();
 
 }

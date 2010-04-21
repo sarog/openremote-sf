@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.service;
 
+import java.util.List;
+
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.User;
 
@@ -44,11 +46,10 @@ public interface UserService {
     * 
     * @param username the username
     * @param password the password
-    * @param roleStr the role string
     * 
     * @return true, if successful
     */
-   boolean createUserAccount(String username, String password, String email, String roleStr);
+   boolean createUserAccount(String username, String password, String email);
    
    /**
     * Activate user, then user can login.
@@ -72,5 +73,22 @@ public interface UserService {
    boolean sendRegisterActivationEmail(User user);
    
    boolean isUsernameAvailable(String username);
+   
+   User getCurrentUser();
+   
+   User inviteUser(String email, String role, User currentUser);
 
+   boolean sendInvitation(User invitee, User currentUser);
+   
+   boolean checkInvitation(String userOid, String hostOid, String aid);
+   
+   boolean createInviteeAccount(String userOid, String username, String password, String email);
+   
+   List<User> getPendingInviteesByAccount(User currentUser);
+   
+   User updateUserRoles(long uid, String roles);
+   
+   void deleteUser(long uid);
+   
+   List<User> getAccountAccessUsers(User currentUser);
 }

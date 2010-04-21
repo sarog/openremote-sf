@@ -42,6 +42,8 @@ public class Role extends BusinessEntity {
    
    /** The Constant ROLE_DESIGNER. */
    public static final String ROLE_DESIGNER = "ROLE_DESIGNER";
+   
+   public static final String ROLE_ADMIN = "ROLE_ADMIN";
 
    /** The name. */
    private String name;

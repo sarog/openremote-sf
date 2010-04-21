@@ -52,9 +52,9 @@ public class NavigateFieldSet extends FieldSet {
    private List<Group> groups;
    private Radio toLogical = new Radio();
    private Radio toGroup = new Radio();
-   private SimpleComboBox typeList = new SimpleComboBox();
-   private SimpleComboBox groupList = new SimpleComboBox();
-   private SimpleComboBox screenList = new SimpleComboBox();
+   private ComboBoxExt typeList = new ComboBoxExt();
+   private ComboBoxExt groupList = new ComboBoxExt();
+   private ComboBoxExt screenList = new ComboBoxExt();
    public NavigateFieldSet(Navigate navigate, List<Group> groups) {
       this.navigate = navigate;
       this.groups = groups;

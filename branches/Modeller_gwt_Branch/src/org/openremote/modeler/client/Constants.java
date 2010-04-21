@@ -104,15 +104,13 @@ public class Constants {
    
    public static final String REGISTRATION_ACTIVATION_EMAIL_VM_NAME= "registration-activation-email.vm";
    
+   public static final String REGISTRATION_INVITATION_EMAIL_VM_NAME= "registration-invitation-email.vm";
+   
    public static final String DEFAULT_FONT_FAMILY = "tahoma,arial,verdana,sans-serif";
    
    public static final String PORTRAIT = "portrait";
    
    public static final String LANDSCAPE = "landscape";
-   
-   public static final String ROLE_DESIGNER = "ROLE_DESIGNER";
-   
-   public static final String ROLE_MODELER = "ROLE_MODELER";
    
    public static final String CURRETN_ROLE = "currentRole";
    
@@ -122,4 +120,8 @@ public class Constants {
    
    public static final String IPAD_TYPE = "iPad";
    
+   public static final String ROLE_MODELER_DISPLAYNAME = "Building Modeler";
+   public static final String ROLE_DESIGNER_DISPLAYNAME = "UI Designer";
+   public static final String ROLE_MODELER_DESIGNER_DISPLAYNAME = "Building Modeler & UI Designer";
+   public static final String ROLE_ADMIN_DISPLAYNAME = "Admin";
 }
