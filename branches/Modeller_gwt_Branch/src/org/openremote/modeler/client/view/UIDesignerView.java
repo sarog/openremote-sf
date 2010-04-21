@@ -72,12 +72,10 @@ public class UIDesignerView extends TabItem {
 
    private Timer timer;
 
-   private ContentPanel profilePanel = null;
+   private ProfilePanel profilePanel = null;
    
    private PropertyPanel propertyPanel = null;
    
-   private boolean initialzed = false;
-
    /**
     * Instantiates a new uI designer view.
     */
@@ -120,56 +118,69 @@ public class UIDesignerView extends TabItem {
     * Auto save ui designer layout json.
     */
    public void autoSaveUiDesignerLayout() {
-      UtilsProxy.autoSaveUiDesignerLayout(getAllPanels(), IDUtil.currentID(),
-            new AsyncSuccessCallback<AutoSaveResponse>() {
-               @Override
-               public void onSuccess(AutoSaveResponse result) {
-                  if (result != null && result.isUpdated()) {
-                     Info.display("Info", "UI designer layout saved at "
+      if (profilePanel.isInitialized()) {
+         UtilsProxy.autoSaveUiDesignerLayout(getAllPanels(), IDUtil.currentID(),
+               new AsyncSuccessCallback<AutoSaveResponse>() {
+                  @Override
+                  public void onSuccess(AutoSaveResponse result) {
+                     if (result != null && result.isUpdated()) {
+                        Info.display("Info", "UI designer layout saved at "
+                              + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
+                     }
+                     Window.setStatus("UI designer layout saved at: "
                            + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
                   }
-                  Window.setStatus("UI designer layout saved at: "+ DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
-               }
 
-               @Override
-               public void onFailure(Throwable caught) {
-               	timer.cancel();
-                  boolean timeout = super.checkTimeout(caught);
-                  if (!timeout) {
-                     Info.display(new InfoConfig("Error", caught.getMessage() + " "
-                           + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
+                  @Override
+                  public void onFailure(Throwable caught) {
+                     timer.cancel();
+                     boolean timeout = super.checkTimeout(caught);
+                     if (!timeout) {
+                        Info.display(new InfoConfig("Error", caught.getMessage() + " "
+                              + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
+                     }
+                     Window.setStatus("Failed to save UI designer layout at: "
+                           + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
                   }
-                  Window.setStatus("Failed to save UI designer layout at: "+ DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
-               }
-            });
-      Window.setStatus("Saving ....");
+               });
+         Window.setStatus("Saving ....");
+      } else {
+         Window.setStatus("Unable to save UI designer because of profile Panel has not been initialized, ");
+      }
    }
 
    public void saveUiDesignerLayout() {
-      UtilsProxy.saveUiDesignerLayout(getAllPanels(), IDUtil.currentID(), new AsyncSuccessCallback<AutoSaveResponse>() {
-         @Override
-         public void onSuccess(AutoSaveResponse result) {
-            if (result != null && result.isUpdated()) {
-               Info.display("Info", "UI designer layout saved at "
-                     + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
-            }
-            Window.setStatus("UI designer layout saved at: "+ DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
-         }
+      if (profilePanel.isInitialized()) {
+         UtilsProxy.saveUiDesignerLayout(getAllPanels(), IDUtil.currentID(),
+               new AsyncSuccessCallback<AutoSaveResponse>() {
+                  @Override
+                  public void onSuccess(AutoSaveResponse result) {
+                     if (result != null && result.isUpdated()) {
+                        Info.display("Info", "UI designer layout saved at "
+                              + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
+                     }
+                     Window.setStatus("UI designer layout saved at: "
+                           + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
+                  }
 
-         @Override
-         public void onFailure(Throwable caught) {
-            timer.cancel();
-            boolean timeout = super.checkTimeout(caught);
-            if (!timeout) {
-               Info.display(new InfoConfig("Error", caught.getMessage() + " "
-                     + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
-            }
-            Window.setStatus("Failed to save UI designer layout at: "+ DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
-            
-         }
+                  @Override
+                  public void onFailure(Throwable caught) {
+                     timer.cancel();
+                     boolean timeout = super.checkTimeout(caught);
+                     if (!timeout) {
+                        Info.display(new InfoConfig("Error", caught.getMessage() + " "
+                              + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
+                     }
+                     Window.setStatus("Failed to save UI designer layout at: "
+                           + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
 
-      });
-      Window.setStatus("Saving ....");
+                  }
+
+               });
+         Window.setStatus("Saving ....");
+      } else {
+         Window.setStatus("Unable to save UI designer because of profile Panel has not been initialized, ");
+      }
    }
 
    public void restore() {
@@ -195,7 +206,6 @@ public class UIDesignerView extends TabItem {
             }
             IDUtil.setCurrentID(maxOid);
             refreshPanelTree();
-            initialzed = true;
          }
 
          @Override
@@ -295,9 +305,5 @@ public class UIDesignerView extends TabItem {
          panelList.add((Panel) panelBeanModel.getBean());
       }
       return panelList;
-   }
-
-   public boolean isInitialzed() {
-      return initialzed;
    }
 }
