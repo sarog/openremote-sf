@@ -57,6 +57,7 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.component.UITabbarItem;
+import org.openremote.modeler.exception.UIRestoreException;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
@@ -88,6 +89,7 @@ public class ProfilePanel extends ContentPanel {
    private Icons icon = GWT.create(Icons.class);
    private SelectionServiceExt<BeanModel> selectionService;
    private ScreenPanel screenPanel = null;
+   private boolean initialized = false;
    /**
     * Instantiates a new profile panel.
     */
@@ -214,12 +216,16 @@ public class ProfilePanel extends ContentPanel {
                   if (maxID > 0) {              // set the layout component's max id after refresh page.
                      IDUtil.setCurrentID(maxID.longValue());
                   }
+                  initialized = true;
                }
                
             });
          }
          @Override
          public void onFailure(Throwable caught) {
+            if (caught instanceof UIRestoreException) {
+               initialized = true;
+            }
             panelTree.unmask();
             super.onFailure(caught);
             super.checkTimeout(caught);
@@ -752,6 +758,9 @@ public class ProfilePanel extends ContentPanel {
             editScreen(selectedModel);
          }
       }
-   }   
-   
+   }
+
+   public boolean isInitialized() {
+      return initialized;
+   }
 }
