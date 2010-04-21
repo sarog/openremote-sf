@@ -145,7 +145,7 @@ public class UIDesignerView extends TabItem {
                });
          Window.setStatus("Saving ....");
       } else {
-         Window.setStatus("Unable to save UI designer because of profile Panel has not been initialized, ");
+         Window.setStatus("Unable to save UI designer because panel list has not been initialized, ");
       }
    }
 
@@ -179,7 +179,7 @@ public class UIDesignerView extends TabItem {
                });
          Window.setStatus("Saving ....");
       } else {
-         Window.setStatus("Unable to save UI designer because of profile Panel has not been initialized, ");
+         Window.setStatus("Unable to save UI designer because panel list has not been initialized, ");
       }
    }
 
