@@ -72,6 +72,9 @@
 			  <div class="inner-border">
 	            <a href="http://www.openremote.org" ><img src="image/global.logo.png" /></a>
 	            <p class="title">You have been invited to access OpenRemote Boss 2.0 Online</p>
+               <c:if test="${isChecked ne null and not isChecked}">
+                  <a class="register_btn" href="register.jsp">Create a New Account</a>
+               </c:if>
                <c:if test="${isChecked ne null and isChecked}">
 	            <div style="padding-left:70px">
 		            <p>If you already have an account, you can <a href="login.jsp">login here</a>.</p>
