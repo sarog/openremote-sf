@@ -98,6 +98,7 @@ import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.IllegalRestUrlException;
+import org.openremote.modeler.exception.ResourceFileLostException;
 import org.openremote.modeler.exception.UIRestoreException;
 import org.openremote.modeler.exception.XmlExportException;
 import org.openremote.modeler.exception.XmlParserException;
@@ -1132,6 +1133,8 @@ public class ResourceServiceImpl implements ResourceService {
       for (File file : compresseFiles) {
          if (file.exists()) {
             filesInZip[i++] = file;
+         } else {
+            throw new ResourceFileLostException("File '" + file.getName() +"' is lost! ");
          }
       }
       return compressFilesToZip(
@@ -1185,6 +1188,8 @@ public class ResourceServiceImpl implements ResourceService {
          File imageFile = new File(userFolder, fileName);
          if (imageFile.exists()) {
             files.add(imageFile);
+         } else {
+            throw new ResourceFileLostException("File '" + imageFile.getName() +"' is lost!");
          }
       }
       return files;

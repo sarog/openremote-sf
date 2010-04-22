@@ -701,11 +701,11 @@ public class ScreenCanvas extends ComponentContainer {
    }
 
    private void addTabItemToTabbar() {
-      if (this.tabbarContainer.getTabbarItemCount() == UITabbar.MAX_TABBARITEM_COUNT) {
+      /*if (this.tabbarContainer.getTabbarItemCount() == UITabbar.MAX_TABBARITEM_COUNT) {
          MessageBox.alert("Warn", "Sory, a tabbar can not have more than " + UITabbar.MAX_TABBARITEM_COUNT
                + "tabbarItems", null);
          return;
-      }
+      }*/
       if (this.tabbarContainer == null) {
          MessageBox.alert("Error", "You must add a tabbar at first!", null);
          return;
