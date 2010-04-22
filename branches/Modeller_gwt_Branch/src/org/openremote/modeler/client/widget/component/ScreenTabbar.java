@@ -186,33 +186,9 @@ public class ScreenTabbar extends ScreenComponent {
       this.uiTabbar.addTabbarItem(uiTabbarItem);
       
       final ScreenTabbarItem screenTabbarItem = new ScreenTabbarItem(this.getScreenCanvas(),uiTabbarItem);
-      
-      addDeleteListenerToTabItem(screenTabbarItem);
-      
       this.getScreenTabbarItems().add(screenTabbarItem);
-      makeTabItemDragable(screenTabbarItem);
-      this.updateTabbar();
+      this.initTabbar();
       WidgetSelectionUtil.setSelectWidget(screenTabbarItem);
-   }
-   
-   private void updateTabbar() {
-      int tabbarNumber = getTabbarItemCount();
-      if (tabbarNumber > 0) {
-         int index = 0;
-         int width = (getScreenCanvas().getScreen().getTouchPanelDefinition().getCanvas().getWidth()-2*PADDING)/tabbarNumber;
-         this.removeAll();
-         this.setLayout(new AbsoluteLayout());
-         for(ScreenTabbarItem item : getScreenTabbarItems()) {
-            item.setWidth(width);
-            item.setHeight(defaultHeight);
-            item.setPosition(index*width+PADDING, 0);
-            if ("Tab Bar Item".equals(item.getName())) {
-               item.setName("Item");
-            }
-            add(item);
-            index++;
-         }
-      }
    }
    
    private void initTabbar() {
@@ -233,6 +209,9 @@ public class ScreenTabbar extends ScreenComponent {
             item.setWidth(width);
             item.setHeight(defaultHeight);
             item.setPosition(index*width+PADDING, 0);
+            if ("Tab Bar Item".equals(item.getName())) {
+               item.setName("Item");
+            }
             add(item);
             index++;
          }
