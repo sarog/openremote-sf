@@ -188,10 +188,11 @@ public class AccountManageWindow extends Dialog {
       GridCellRenderer<BeanModel> emailRenderer = new GridCellRenderer<BeanModel>() {
          public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
                final int colIndex, final ListStore<BeanModel> store, Grid<BeanModel> grid) {
+            String html = (String) model.get(property);
             if (cureentUserId == (Long) model.get("oid")) {
-               return (String) model.get(property) + "<span style='font-weight:bold'> - me</span>";
+               html += "<b> - me</b>";
             }
-            return (String) model.get(property);
+            return "<span title='" + (String) model.get("username") + "'>" + html + "</span>";
          }
       };
       
