@@ -22,13 +22,12 @@ package org.openremote.beehive.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 
@@ -106,7 +105,7 @@ public class User extends BusinessEntity {
     * 
     * @return the account
     */
-   @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+   @ManyToOne
    public Account getAccount() {
       return account;
    }
