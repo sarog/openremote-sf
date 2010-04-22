@@ -25,7 +25,6 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 
@@ -39,26 +38,22 @@ import javax.persistence.Table;
 @Table(name = "account")
 public class Account extends BusinessEntity {
 
-   private User user;
+   private List<User> users;
    
    private List<Template> templates;
-
 
    public Account() {
       templates = new ArrayList<Template>();
    }
 
-
-   @OneToOne
-   public User getUser() {
-      return user;
+   @OneToMany(mappedBy = "account")
+   public List<User> getUsers() {
+      return users;
    }
 
-
-   public void setUser(User user) {
-      this.user = user;
+   public void setUsers(List<User> users) {
+      this.users = users;
    }
-
 
    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
    public List<Template> getTemplates() {
