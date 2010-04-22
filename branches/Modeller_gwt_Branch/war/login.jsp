@@ -91,6 +91,9 @@
                 <p class="pass">We have sent you an activation email to <b>${email}</b>,
                  please follow the instructions in the email to finish your registration.</p>
             </c:if>
+            <c:if test="${isAccepted ne null and isAccepted}">
+                <p class="pass">You have accepted the invitation, please login.</p>
+            </c:if>
             <c:if test="${needActivation eq null}">
 	            <div style="padding-left:110px">
 		            <p class="input"><b class="form_label">Username</b>

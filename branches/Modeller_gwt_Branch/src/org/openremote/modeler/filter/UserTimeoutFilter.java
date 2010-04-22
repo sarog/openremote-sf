@@ -34,7 +34,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.security.context.SecurityContext;
 /**
  * A filter to check whether user's session is out of date. 
- * If the session is timeout, http code 401 will be sent to client. 
+ * If the session has timeout, http code 401 will be sent to client. 
  * @author Javen
  *
  */

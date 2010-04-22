@@ -75,11 +75,11 @@ public class AccountManageWindow extends Dialog {
       setButtonAlign(HorizontalAlignment.CENTER);
       setAutoHeight(true);
       setButtons("");
-      setWidth(432);
+      setWidth(452);
       setMinHeight(280);
       addInviteUserButton();
       addInvitedUsers();
-      addAccessedUsers();
+      createAccessUserGrid();
       show();
    }
    
@@ -94,12 +94,14 @@ public class AccountManageWindow extends Dialog {
                public void afterSubmit(SubmitEvent be) {
                   inviteUserWindow.hide();
                   User user = be.getData();
-                  if (invitedUsersGrid == null) {
-                     createInvitedUserGrid();
+                  if (user != null) {
+                     if (invitedUsersGrid == null) {
+                        createInvitedUserGrid();
+                     }
+                     invitedUsersGrid.stopEditing();
+                     invitedUsersGrid.getStore().insert(user.getBeanModel(), 0);
+                     invitedUsersGrid.startEditing(0, 1);
                   }
-                  invitedUsersGrid.stopEditing();
-                  invitedUsersGrid.getStore().insert(user.getBeanModel(), 0);
-                  invitedUsersGrid.startEditing(0, 1);
                }
             });
          }
@@ -136,11 +138,11 @@ public class AccountManageWindow extends Dialog {
          }
       };
       
-      ColumnConfig roleColumn = new ColumnConfig("role", "Role", 180);
+      ColumnConfig roleColumn = new ColumnConfig("role", "Role", 190);
       roleColumn.setRenderer(comboRenderer);
       invitedUserConfigs.add(roleColumn);
       
-      ColumnConfig actionColumn = new ColumnConfig("delete", "Delete", 40);
+      ColumnConfig actionColumn = new ColumnConfig("delete", "Delete", 50);
       actionColumn.setRenderer(buttonRenderer);
       invitedUserConfigs.add(actionColumn);
       
@@ -149,23 +151,14 @@ public class AccountManageWindow extends Dialog {
       pendingContainer.setBodyBorder(false);
       pendingContainer.setHeading("Pending invitations");
       pendingContainer.setLayout(new FitLayout());
-      pendingContainer.setSize(420, 150);
+      pendingContainer.setSize(440, 150);
       pendingContainer.add(invitedUsersGrid);
       insert(pendingContainer, 1);
       layout();
+      center();
    }
 
-   private void addAccessedUsers() {
-      AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsers(new AsyncSuccessCallback<List<User>>() {
-         public void onSuccess(List<User> accessUsers) {
-            if (accessUsers.size() > 0) {
-               createAccessUserGrid(accessUsers);
-            }
-         }
-      });
-   }
-
-   private void createAccessUserGrid(List<User> accessUsers) {
+   private void createAccessUserGrid() {
       List<ColumnConfig> accessUserConfigs = new ArrayList<ColumnConfig>();
       
        GridCellRenderer<BeanModel> comboRenderer = new GridCellRenderer<BeanModel>() {
@@ -207,34 +200,51 @@ public class AccountManageWindow extends Dialog {
       emailColumn.setRenderer(emailRenderer);
       accessUserConfigs.add(emailColumn);
       
-      ColumnConfig roleColumn = new ColumnConfig("role", "Role", 180);
+      ColumnConfig roleColumn = new ColumnConfig("role", "Role", 190);
       roleColumn.setSortable(false);
       roleColumn.setRenderer(comboRenderer);
       accessUserConfigs.add(roleColumn);
       
-      ColumnConfig actionColumn = new ColumnConfig("delete", "Delete", 40);
+      ColumnConfig actionColumn = new ColumnConfig("delete", "Delete", 50);
       actionColumn.setSortable(false);
       actionColumn.setRenderer(buttonRenderer);
       accessUserConfigs.add(actionColumn);
       
-      ListStore<BeanModel> accsessUserStore = new ListStore<BeanModel>();
-      accsessUserStore.add(User.createModels(accessUsers));
-      EditorGrid<BeanModel> accessUsersGrid = new EditorGrid<BeanModel>(accsessUserStore, new ColumnModel(accessUserConfigs));
+      final EditorGrid<BeanModel> accessUsersGrid = new EditorGrid<BeanModel>(new ListStore<BeanModel>(), new ColumnModel(accessUserConfigs)) {
+         @Override
+         protected void afterRender() {
+            super.afterRender();
+            layout();
+            center();
+            this.mask("Loading users...");
+         }
+      };
       
       ContentPanel accessUsersContainer = new ContentPanel();
       accessUsersContainer.setBodyBorder(false);
       accessUsersContainer.setHeading("Users with account access");
       accessUsersContainer.setLayout(new FitLayout());
       accessUsersContainer.setStyleAttribute("paddingTop", "5px");
-      accessUsersContainer.setSize(420, 150);
+      accessUsersContainer.setSize(440, 150);
       accessUsersContainer.add(accessUsersGrid);
       add(accessUsersContainer);
-      layout();
+      AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsers(new AsyncSuccessCallback<List<User>>() {
+         public void onSuccess(List<User> accessUsers) {
+            if (accessUsers.size() > 0) {
+               accessUsersGrid.getStore().add(User.createModels(accessUsers));
+               accessUsersGrid.unmask();
+            }
+         }
+         public void onFailure(Throwable caught) {
+            super.onFailure(caught);
+            accessUsersGrid.unmask();
+         }
+      });
    }
    
    private SimpleComboBox<String> createRoleCombo(final BeanModel model, String property) {
       SimpleComboBox<String> combo = new SimpleComboBox<String>();
-      combo.setWidth(176);
+      combo.setWidth(182);
       combo.setForceSelection(true);
       combo.setEditable(false);
       combo.setTriggerAction(TriggerAction.ALL);
@@ -296,21 +306,28 @@ public class AccountManageWindow extends Dialog {
          
          final ComboBoxExt roleList = new ComboBoxExt();
          roleList.setFieldLabel("Role");
-         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_ADMIN_DISPLAYNAME.toLowerCase(), Constants.ROLE_ADMIN_DISPLAYNAME));
-         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_MODELER_DISPLAYNAME.toLowerCase(), Constants.ROLE_MODELER_DISPLAYNAME));
-         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_DESIGNER_DISPLAYNAME.toLowerCase(), Constants.ROLE_DESIGNER_DISPLAYNAME));
-         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME.toLowerCase(), Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME));
-         roleList.setValue(new ComboBoxDataModel<String>(Constants.ROLE_MODELER_DISPLAYNAME.toLowerCase(), Constants.ROLE_MODELER_DISPLAYNAME));
+         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_ADMIN_DISPLAYNAME, Constants.ROLE_ADMIN_DISPLAYNAME));
+         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_MODELER_DISPLAYNAME, Constants.ROLE_MODELER_DISPLAYNAME));
+         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_DESIGNER_DISPLAYNAME, Constants.ROLE_DESIGNER_DISPLAYNAME));
+         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME, Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME));
+         roleList.setValue(new ComboBoxDataModel<String>(Constants.ROLE_MODELER_DISPLAYNAME, Constants.ROLE_MODELER_DISPLAYNAME));
          form.add(emailField);
          form.add(roleList);
          
          form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
             public void handleEvent(FormEvent be) {
+               form.mask("sending email...");
                AsyncServiceFactory.getUserRPCServiceAsync().inviteUser(emailField.getValue(),
                      roleList.getValue().get("data").toString(), new AsyncSuccessCallback<User>() {
                         public void onSuccess(User user) {
+                           form.unmask();
                            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(user));
                         }
+                        public void onFailure(Throwable caught) {
+                           super.onFailure(caught);
+                           form.unmask();
+                        }
+                        
                      });
             }
          });
