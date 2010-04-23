@@ -192,23 +192,23 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
    @JSON(include = false)
    public Collection<ImageSource> getImageSources() {
       Collection<ImageSource> imageSources = new ArrayList<ImageSource>(2);
-      if (this.minImage != null && !this.minImage.isEmpty()) {
+      if (this.minImage != null && !this.minImage.isEmpty() && isMinImageUploaded()) {
          imageSources.add(minImage);
       }
       
-      if (this.minTrackImage != null && ! this.minTrackImage.isEmpty()) {
+      if (this.minTrackImage != null && ! this.minTrackImage.isEmpty() && isMinTrackImageUploaded()) {
          imageSources.add(minTrackImage);
       }
       
-      if (this.thumbImage != null && ! this.thumbImage.isEmpty()) {
+      if (this.thumbImage != null && ! this.thumbImage.isEmpty() && isThumbUploaded()) {
          imageSources.add(thumbImage);
       }
       
-      if (this.maxTrackImage != null && ! this.maxTrackImage.isEmpty()) {
+      if (this.maxTrackImage != null && ! this.maxTrackImage.isEmpty() && isMaxTrackImageUploaded()) {
          imageSources.add(maxTrackImage);
       }
       
-      if (this.maxImage != null && ! this.maxImage.isEmpty()) {
+      if (this.maxImage != null && ! this.maxImage.isEmpty() && isMaxImageUploaded()) {
          imageSources.add(maxImage);
       }
       return imageSources;
