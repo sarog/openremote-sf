@@ -71,6 +71,7 @@ import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.domain.User;
 import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
@@ -895,6 +896,7 @@ public class TemplateServiceImpl implements TemplateService {
       account.setSliders(new ArrayList<Slider>());
       account.setSwitches(new ArrayList<Switch>());
       account.setDevices(new ArrayList<Device>());
+      account.setUsers(new ArrayList<User>());
       userService.getCurrentUser().setRoles(new ArrayList<Role>());
 
       for (Device device : devices ) {
