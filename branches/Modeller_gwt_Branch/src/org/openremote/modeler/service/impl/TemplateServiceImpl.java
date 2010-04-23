@@ -930,6 +930,7 @@ public class TemplateServiceImpl implements TemplateService {
 
          // second, save the macro itself. 
          if (! createNew) {
+            macro.setAccount(userService.getAccount());
             List<DeviceMacro> sameMacro = deviceMacroService.loadSameMacro(macro);
             if (sameMacro != null && sameMacro.size() >0) {
                macro.setOid(sameMacro.get(0).getOid());

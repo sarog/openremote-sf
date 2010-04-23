@@ -349,10 +349,13 @@ public class TreePanelBuilder {
                @Override
                public void handleInsert(BeanModel beanModel) {
                   if (beanModel != null && beanModel.getBean() instanceof DeviceMacro) {
-                     if (!macroTreeStore.contains(beanModel)) {
-                        macroTreeStore.add(beanModel, false);
-                        tree.getSelectionModel().select(beanModel, true);
+                     if (macroTreeStore.contains(beanModel)) {
+                        tree.getStore().removeAll(beanModel);
+                        tree.getStore().remove(beanModel);
                      }
+                     macroTreeStore.add(beanModel, false);
+                     tree.getSelectionModel().select(beanModel, true);
+                     tree.getStore().getLoader().load();
                   }
                }
 
