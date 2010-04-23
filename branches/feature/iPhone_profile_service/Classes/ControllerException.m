@@ -63,9 +63,9 @@
 				break;
 			case NO_SUCH_PANEL://428
 				if ([@"None" isEqualToString:[AppSettingsDefinition getCurrentPanelIdentity]]) {
-					errorMessage = @"You haven't chosen panel identity in Setting";
+					errorMessage = @"Welcome, please choose your own panel identity in Settings";
 				} else {
-					errorMessage = [NSString stringWithFormat:@"Current panel identity ‘%@’ isn't available. Please rechoose in Settings.", 
+					errorMessage = [NSString stringWithFormat:@"Current panel identity ‘%@’ isn't available. Please choose again in Settings.", 
 														[AppSettingsDefinition getCurrentPanelIdentity]];
 				}				
 				break;

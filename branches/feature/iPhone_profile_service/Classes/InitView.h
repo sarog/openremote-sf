@@ -19,28 +19,20 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
 #import <UIKit/UIKit.h>
-#import "InitViewController.h"
-#import "UpdateController.h"
-#import "ViewHelper.h"
-#import "GestureWindow.h"
-#import "ScreenViewController.h"
-#import "GroupController.h"
-#import "Group.h"
 #import "Definition.h"
-#import "UpdateController.h"
-#import "DefaultViewController.h"
 
-@interface AppDelegate : NSObject <UIApplicationDelegate> {
+@interface InitView : UIView {
 	
-	GestureWindow *window;
-	UIView *defaultView;
-	DefaultViewController *defaultViewController;
-	UpdateController *updateController;
+	BOOL isLandscape;
+	UIImageView *logo;
+	UIImageView *background;
+	UIActivityIndicatorView *loading;
+	UILabel *label;
+	UILabel *version;
+
 }
 
-
+- (id)initWithOrientation:(BOOL)isLandscapeOrientation;
 
 @end
-

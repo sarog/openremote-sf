@@ -23,6 +23,8 @@
 #import "PaginationController.h"
 #import "ScreenViewController.h"
 
+#define PAGE_CONTROL_HEIGHT 20
+
 @interface PaginationController (Private)
 
 - (void)updateView;
@@ -192,14 +194,6 @@
 
 - (void)loadView {
 	[super loadView];
-	
-	CGSize size = [UIScreen mainScreen].bounds.size;
-	
-	CGFloat availableScreenWidth = isLandscape ? size.height : size.width;
-	CGFloat availableScreenHeight = isLandscape ? size.width : size.height;
-	CGFloat pageControlHeight = 20;
-	CGFloat availableScrollHeight = availableScreenHeight - pageControlHeight;
-	
 	[self.view setFrame:CGRectMake(0, 0, frameWidth, frameHeight)];
 	NSLog(@"pagination loadView width=%g height=%g", frameWidth, frameHeight);
 	scrollView = [[UIScrollView alloc] init];
@@ -214,11 +208,10 @@
 	[scrollView setBackgroundColor:[UIColor blackColor]];
 	[self.view addSubview:scrollView];
 	[scrollView release];
-	
+	pageControl = [[UIPageControl alloc] init];
 	if (viewControllers.count > 1) {
-		pageControl = [[UIPageControl alloc] init];
 		[pageControl setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth];
-		[pageControl setFrame:CGRectMake(0, availableScrollHeight, availableScreenWidth, pageControlHeight)];
+		[pageControl setFrame:CGRectMake(0, frameHeight - PAGE_CONTROL_HEIGHT, frameWidth, PAGE_CONTROL_HEIGHT)];
 		[pageControl setBackgroundColor:[UIColor colorWithWhite:0 alpha:0.5f]];
 		[pageControl setOpaque:YES];
 		[pageControl addTarget:self action:@selector(pageControlValueDidChange:) forControlEvents:UIControlEventValueChanged];

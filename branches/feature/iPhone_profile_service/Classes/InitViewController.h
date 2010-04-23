@@ -21,15 +21,13 @@
 
 
 #import <UIKit/UIKit.h>
-
+#import "InitView.h"
 
 @interface InitViewController : UIViewController {
-	UIActivityIndicatorView *loadding;
-	UILabel *label;
-	UILabel *version;
+	
+	UIInterfaceOrientation currentOrientation;
 
 }
 
-@property (nonatomic,readonly)UILabel *label;
 
 @end

@@ -31,6 +31,7 @@
 - (NSMutableArray *)initScreenViewControllers:(NSArray *)screens;
 - (void)showErrorView;
 - (void)detectDeviceOrientation;
+- (void)printOrientation:(UIInterfaceOrientation)toInterfaceOrientation;
 
 @end
 
@@ -45,9 +46,7 @@
 		if (newGroup) {
 			group = [newGroup retain];// must retain newGroup here!!!
 		}
-		
 		[self detectDeviceOrientation];
-		
 	}
 	return self;
 }
@@ -146,8 +145,6 @@
 		paginationController = temp;
 		[self setView:paginationController.view];
 		[[paginationController currentScreenViewController] startPolling];
-	} else {
-		[self showErrorView];
 	}
 }
 
@@ -224,7 +221,16 @@
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return currentOrientation != interfaceOrientation && [[self currentScreen] inverseScreenId] > 0;
+	if (currentOrientation == interfaceOrientation) {
+		return YES;
+	}
+	if ([self currentScreenId] > 0) {
+		return [[self currentScreen] inverseScreenId] > 0;
+	} else {
+		return ![self hasNoViewInThatOrientation:UIInterfaceOrientationIsLandscape(interfaceOrientation)];
+	}
+
+	return YES;
 }
 
 
@@ -243,6 +249,7 @@
 			NSLog(@"is portrait upsidedown");
 			break;
 		default:
+			NSLog(@"is unknown orientation, it's using simulator");
 			break;
 	}
 }
@@ -256,17 +263,24 @@
 	} else {
 		NSLog(@"diff orientation");
 		
-		int inverseScreenId = [self currentScreen].inverseScreenId;
-		NSLog(@"switch screen from %d - > %d", [self currentScreenId], inverseScreenId);
+		int inverseScreenId = 0;
+		if ([self currentScreenId] > 0) {
+			inverseScreenId = [self currentScreen].inverseScreenId;
+		}
+		NSLog(@"inverseScreenId=%d", inverseScreenId);
 		currentOrientation = toInterfaceOrientation;
 		
 		if (UIInterfaceOrientationIsPortrait(currentOrientation)) {
 			[self showPortrait];
-			[self switchToScreen:inverseScreenId];
 		} else {
 			[self showLandscape];
-			[self switchToScreen:inverseScreenId];
 		}
+		
+		if (inverseScreenId > 0) {
+			NSLog(@"switch screen from %d - > %d", [self currentScreenId], inverseScreenId);
+			[self switchToScreen:inverseScreenId];
+		} 
+
 	}
 }
 
