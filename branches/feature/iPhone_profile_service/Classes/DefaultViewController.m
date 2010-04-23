@@ -71,10 +71,16 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	// all the visible view contents will be shown inside this container.
 	CGSize size = [UIScreen mainScreen].bounds.size;
 	[self setView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height)]];
+	[self.view setBackgroundColor:[UIColor blackColor]];
+	//Init the loading view
+	initViewController = [[InitViewController alloc] init];
+	[self.view addSubview:initViewController.view];
 }
 
 
 - (void)initGroups {
+	
+	[initViewController.view removeFromSuperview];
 	NSArray *groups = [[Definition sharedDefinition] groups];
 	NSLog(@"groups count is %d",groups.count);
 	
@@ -269,7 +275,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 			}
 		}
 		if ([targetGroupController hasNoViewInThatOrientation:[currentGroupController isOrientationLandscape]]) {
-			[ViewHelper showAlertViewWithTitle:@"" Message:@"No screen in that group of this orientation"];
+			[ViewHelper showAlertViewWithTitle:@"" Message:@"No screen is in that group of this orientation"];
 			return NO;
 		}
 		[targetGroupController setNewOrientation:[currentGroupController getCurrentOrientation]];
@@ -405,6 +411,10 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	
 }
 
+- (BOOL)isLoadingViewGone {
+	return groupControllers.count > 0;
+}
+
 #pragma mark delegate method of LoginViewController
 
 - (void)onSignin {
@@ -413,7 +423,6 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 }
 
 - (void)onBackFromLogin {
-	
 	[theDelegate performSelector:@selector(updateDidFinished)];
 }
 
@@ -424,12 +433,19 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return groupControllers.count > 0 && [currentGroupController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
-	//return groupControllers.count > 0;
+	if ([self isLoadingViewGone]) {
+		return [currentGroupController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+	} else {
+		return YES;
+	}
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-	[currentGroupController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+	if ([self isLoadingViewGone]) {
+		[currentGroupController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+	} else {
+		[initViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+	}
 }
 
 
@@ -451,7 +467,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 
 
 - (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event {
-	if (event.type == UIEventSubtypeMotionShake) {
+	if (event.type == UIEventSubtypeMotionShake && [self isLoadingViewGone]) {
 		[self populateSettingsView:nil];
 	}
 }

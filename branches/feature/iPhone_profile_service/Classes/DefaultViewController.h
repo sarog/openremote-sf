@@ -33,12 +33,14 @@
 #import "TabBarController.h"
 #import "Definition.h"
 #import "UpdateController.h"
+#import "InitViewController.h"
 
 
 @interface DefaultViewController : UIViewController {
 	
 	id theDelegate;
 	
+	InitViewController *initViewController;
 	NSMutableArray *groupControllers;
 	GroupController *currentGroupController;
 	NSMutableDictionary *groupViewMap;
@@ -58,5 +60,6 @@
 - (void)populateSettingsView:(id)sender;
 - (void)performGesture:(Gesture *)gesture;
 - (void)saveLastGroupIdAndScreenId;
+- (BOOL)isLoadingViewGone;
 
 @end

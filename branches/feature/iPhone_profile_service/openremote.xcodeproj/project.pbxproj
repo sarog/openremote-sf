@@ -40,6 +40,7 @@
 		33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
 		8C1F03C9117416A700A9DA83 /* zUIAccelerometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */; };
+		8C28E6421181950F000154CA /* InitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C28E6411181950F000154CA /* InitView.m */; };
 		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		8C3DE3081163492C00DD4EE7 /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3001163492C00DD4EE7 /* btn_green.png */; };
 		8C3DE3091163492C00DD4EE7 /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3011163492C00DD4EE7 /* button.png */; };
@@ -150,7 +151,6 @@
 		8C6502E3109809EC006FC19F /* PollingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6502E1109809EC006FC19F /* PollingHelper.m */; };
 		8C650568109870D2006FC19F /* GridCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C650567109870D2006FC19F /* GridCellView.m */; };
 		8C650624109882F2006FC19F /* GridCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C650567109870D2006FC19F /* GridCellView.m */; };
-		8C6528480FC0F64F002632BF /* InitViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C6528470FC0F64F002632BF /* InitViewController.xib */; };
 		8C65FDF51096F33C006FC19F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
 		8C65FDF61096F33C006FC19F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
 		8C6682490F53FFF5007C45D4 /* FileUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6682480F53FFF5007C45D4 /* FileUtils.m */; };
@@ -278,6 +278,8 @@
 		8C09E76210BA838800A475D8 /* ControllerException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerException.h; sourceTree = "<group>"; };
 		8C1F03C7117416A700A9DA83 /* zUIAccelerometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zUIAccelerometer.h; sourceTree = "<group>"; };
 		8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = zUIAccelerometer.m; sourceTree = "<group>"; };
+		8C28E6401181950F000154CA /* InitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InitView.h; sourceTree = "<group>"; };
+		8C28E6411181950F000154CA /* InitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InitView.m; sourceTree = "<group>"; };
 		8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		8C3DE3001163492C00DD4EE7 /* btn_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = btn_green.png; path = image/btn_green.png; sourceTree = "<group>"; };
 		8C3DE3011163492C00DD4EE7 /* button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button.png; path = image/button.png; sourceTree = "<group>"; };
@@ -370,7 +372,6 @@
 		8C6502E1109809EC006FC19F /* PollingHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PollingHelper.m; sourceTree = "<group>"; };
 		8C650566109870D2006FC19F /* GridCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridCellView.h; sourceTree = "<group>"; };
 		8C650567109870D2006FC19F /* GridCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridCellView.m; sourceTree = "<group>"; };
-		8C6528470FC0F64F002632BF /* InitViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InitViewController.xib; sourceTree = "<group>"; };
 		8C65FDF31096F33C006FC19F /* PollingStatusParserDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PollingStatusParserDelegate.h; sourceTree = "<group>"; };
 		8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PollingStatusParserDelegate.m; sourceTree = "<group>"; };
 		8C6682470F53FFF5007C45D4 /* FileUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileUtils.h; sourceTree = "<group>"; };
@@ -567,7 +568,6 @@
 				8C3DE3071163492C00DD4EE7 /* slider_tip.png */,
 				8CECF3E010E9DD1400C0E1BB /* database.db */,
 				97B0011F106127AF00C31E4A /* iTunesArtwork */,
-				8C6528470FC0F64F002632BF /* InitViewController.xib */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 				8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */,
 				8CFDB2760FBBBF4500D204CB /* appSettings.plist */,
@@ -813,6 +813,8 @@
 		8CFEE2860F558C3D00DF8759 /* view */ = {
 			isa = PBXGroup;
 			children = (
+				8C28E6401181950F000154CA /* InitView.h */,
+				8C28E6411181950F000154CA /* InitView.m */,
 				3338CDB310C5036C0067C94D /* ImageView.h */,
 				3338CDB410C5036C0067C94D /* ImageView.m */,
 				3338CDB510C5036C0067C94D /* LabelView.h */,
@@ -955,7 +957,6 @@
 			files = (
 				8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */,
 				8CFDB2770FBBBF4500D204CB /* appSettings.plist in Resources */,
-				8C6528480FC0F64F002632BF /* InitViewController.xib in Resources */,
 				97B00120106127AF00C31E4A /* iTunesArtwork in Resources */,
 				974DAC881063ADEF00B1B04B /* Entitlements.plist in Resources */,
 				8CECF3E110E9DD1400C0E1BB /* database.db in Resources */,
@@ -1116,6 +1117,7 @@
 				33B8ED5010FCAB4F00F3363D /* SensoryControlView.m in Sources */,
 				33C3A49410FE32E3001C520E /* ColorUtil.m in Sources */,
 				8C1F03C9117416A700A9DA83 /* zUIAccelerometer.m in Sources */,
+				8C28E6421181950F000154CA /* InitView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
