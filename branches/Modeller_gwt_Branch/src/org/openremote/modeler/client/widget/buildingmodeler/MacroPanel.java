@@ -41,6 +41,7 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
+import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.selenium.DebugId;
 
@@ -317,15 +318,18 @@ public class MacroPanel extends ContentPanel {
    private void afterUpdateDeviceMacroSubmit(final BeanModel dataModel, DeviceMacro deviceMacro) {
       DeviceMacro old = dataModel.getBean();
       old.setName(deviceMacro.getName());
-      old.setDeviceMacroItems(deviceMacro.getDeviceMacroItems());
-      List<BeanModel> macroItemBeanModels = BeanModelDataBase.getBeanModelsByBeans(deviceMacro.getDeviceMacroItems(),
-            BeanModelDataBase.deviceMacroItemTable);
-      macroTree.getStore().removeAll(dataModel);
-      for (BeanModel beanModel : macroItemBeanModels) {
-         macroTree.getStore().add(dataModel, beanModel, false);
+      if (old.getDeviceMacroItems() != null) {
+         for (DeviceMacroItem item: old.getDeviceMacroItems()) {
+            BeanModelDataBase.deviceMacroItemTable.delete(item.getBeanModel());
+         }
       }
-      macroTree.getStore().update(dataModel);
-      macroTree.setExpanded(dataModel, true);
+      if (deviceMacro != null) {
+         BeanModelDataBase.deviceMacroItemTable.insertAll(DeviceMacroItem.createModels(deviceMacro.getDeviceMacroItems()));
+      }
+      old.setDeviceMacroItems(deviceMacro.getDeviceMacroItems());
+      macroTree.getStore().removeAll(dataModel);
+      macroTree.getStore().remove(dataModel);
+      macroTree.getStore().getLoader().load();
    }
 
    /**
