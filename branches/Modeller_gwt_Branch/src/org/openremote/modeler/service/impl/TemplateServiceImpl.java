@@ -1119,8 +1119,6 @@ public class TemplateServiceImpl implements TemplateService {
 
    @Override
    public Template updateTemplate(Template template) {
-      log.debug("update Template Name: " + template.getName());
-
       template.setContent(getTemplateContent(template.getScreen()));
       List<NameValuePair> params = new ArrayList<NameValuePair>();
       params.add(new BasicNameValuePair("name", template.getName()));
@@ -1128,56 +1126,27 @@ public class TemplateServiceImpl implements TemplateService {
       params.add(new BasicNameValuePair("shared",template.isShared()+""));
       params.add(new BasicNameValuePair("keywords",template.getKeywords()));
       
-      log.debug("TemplateContent" + template.getContent());
-
       try {
          String saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid()
-               + "/template/"+template.getOid();
-
-         /*if (screenTemplate.getShareTo() == Template.PUBLIC) {
-            saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/0" + "/template/";
-         }*/
-
+               + "/template/" + template.getOid();
          HttpPut httpPut = new HttpPut(saveRestUrl);
          addAuthentication(httpPut);
          UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(params, "UTF-8");
          httpPut.setEntity(formEntity);
+
          HttpClient httpClient = new DefaultHttpClient();
-
-         String result = httpClient.execute(httpPut, new ResponseHandler<String>() {
-
-            @Override
-            public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-
-               InputStreamReader reader = new InputStreamReader(response.getEntity().getContent());
-               BufferedReader buffReader = new BufferedReader(reader);
-               StringBuilder sb = new StringBuilder();
-               String line = "";
-
-               while ((line = buffReader.readLine()) != null) {
-                  sb.append(line);
-                  sb.append("\n");
-               }
-
-               return sb.toString();
-            }
-
-         });
-
-         if (result.indexOf("<id>") != -1 && result.indexOf("</id>") != -1) {
-            long templateOid = Long.parseLong(result.substring(result.indexOf("<id>") + "<id>".length(), result
-                  .indexOf("</id>")));
-            template.setOid(templateOid);
-            // save the resources (eg:images) to beehive.
+         HttpResponse response = httpClient.execute(httpPut);
+         if (HttpServletResponse.SC_OK == response.getStatusLine().getStatusCode()) {
             resourceService.saveTemplateResourcesToBeehive(template);
+         } else if (HttpServletResponse.SC_NOT_FOUND == response.getStatusLine().getStatusCode()) {
+            return null;
          } else {
-            throw new BeehiveNotAvailableException();
+            throw new BeehiveNotAvailableException("Failed to update template:"+template.getName()+", Status code: "+response.getStatusLine().getStatusCode());
          }
       } catch (Exception e) {
-         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + (e.getMessage()==null?"":e.getMessage()), e);
+         throw new BeehiveNotAvailableException("Failed to save screen as a template: "
+               + (e.getMessage() == null ? "" : e.getMessage()), e);
       }
-
-      log.debug("update Template Ok!");
       return template;
    }
    
