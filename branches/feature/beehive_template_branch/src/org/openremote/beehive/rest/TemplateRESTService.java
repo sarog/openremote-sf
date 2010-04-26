@@ -208,8 +208,9 @@ public class TemplateRESTService extends RESTBaseService {
       TemplateDTO newTemplate = getTemplateService().updateTemplate(t);
       if (newTemplate != null) {
          return buildResponse(newTemplate);
+      } else {
+         return resourceNotFoundResponse();
       }
-      throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
 
    }
    /**
