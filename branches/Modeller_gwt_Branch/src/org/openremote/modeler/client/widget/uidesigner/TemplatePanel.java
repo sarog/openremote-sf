@@ -357,6 +357,7 @@ public class TemplatePanel extends ContentPanel {
             public void onFailure(Throwable caught) {
                unmask();
                Info.display("Error", "Update template: " + TemplatePanel.this.templateInEditing.getName() + " failed");
+               buildScreen(templateInEditing);
             }
 
             @Override
