@@ -187,22 +187,12 @@ public class TemplatePanel extends ContentPanel {
                return;
             }
             //remember the share type information before being updated. 
+            
+            final BeanModel privateTemplateTopNode = templateTree.getStore().getChild(0);
+            final BeanModel publicTemplateTopNode = templateTree.getStore().getChild(1);
             final Template template = selectedBean.getBean();
             final boolean shareType = template.isShared();
             
-            List<BeanModel> topNode = templateTree.getStore().getRootItems();
-            TreeFolderBean tmpPublicTemplateParentNode = topNode.get(0).getBean();
-            TreeFolderBean tmpPrivateTemplateParentNode = topNode.get(1).getBean();
-            for(BeanModel beanModel : topNode) {
-               TreeFolderBean folderBean = beanModel.getBean();
-               if(folderBean.getDisplayName().contains("Public") ) {
-                  tmpPublicTemplateParentNode = folderBean;
-               } else {
-                  tmpPrivateTemplateParentNode = folderBean;
-               }
-            }
-            final BeanModel privateTemplateTopNode = tmpPrivateTemplateParentNode.getBeanModel();
-            final BeanModel publicTemplateTopNode = tmpPublicTemplateParentNode.getBeanModel();
             final TemplateCreateWindow templateCreateWindow = new TemplateCreateWindow(template);
             
             templateCreateWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
@@ -231,32 +221,21 @@ public class TemplatePanel extends ContentPanel {
       return editTempalteMenuItem;
    }
    private Button createNewTemplateMenuItem() {
-      Button newPanelItem = new Button("New");
-      newPanelItem.setIcon(icon.add());
-      newPanelItem.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      Button newTemplateMenuItem = new Button("New");
+      newTemplateMenuItem.setIcon(icon.add());
+      newTemplateMenuItem.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
-            List<BeanModel> topNode = templateTree.getStore().getRootItems();
-            TreeFolderBean tmpPublicTemplateParentNode = topNode.get(0).getBean();
-            TreeFolderBean tmpPrivateTemplateParentNode = topNode.get(1).getBean();
-            for(BeanModel beanModel : topNode) {
-               TreeFolderBean folderBean = beanModel.getBean();
-               if(folderBean.getDisplayName().contains("Public") ) {
-                  tmpPublicTemplateParentNode = folderBean;
-               } else {
-                  tmpPrivateTemplateParentNode = folderBean;
-               }
-            }
+            final BeanModel privateTemplateTopNode = templateTree.getStore().getChild(0);
+            final BeanModel publicTemplateTopNode = templateTree.getStore().getChild(1);
             BeanModel selectedModel = templateTree.getSelectionModel().getSelectedItem();
             boolean isShare = false;
             if (selectedModel != null) {
-               if (selectedModel.getBean() instanceof TreeFolderBean && tmpPublicTemplateParentNode == selectedModel.getBean()) {
+               if (selectedModel.getBean() instanceof TreeFolderBean && publicTemplateTopNode == selectedModel) {
                   isShare = true;
                } else if (selectedModel.getBean() instanceof Template && ((Template) selectedModel.getBean()).isShared()) {
                   isShare = true;
                }
             }
-            final BeanModel privateTemplateTopNode = tmpPrivateTemplateParentNode.getBeanModel();
-            final BeanModel publicTemplateTopNode = tmpPublicTemplateParentNode.getBeanModel();
             final TemplateCreateWindow templateCreateWindow = new TemplateCreateWindow(isShare);
             templateCreateWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
@@ -274,7 +253,7 @@ public class TemplatePanel extends ContentPanel {
 
          }
       });
-      return newPanelItem;
+      return newTemplateMenuItem;
    }
 
    
@@ -317,7 +296,7 @@ public class TemplatePanel extends ContentPanel {
 
             @Override
             public void onFailure(Throwable caught) {
-               Info.display("Error","Update template: "+templateInEditing.getName()+"failed");
+               Info.display("Error","Update template: "+templateInEditing.getName()+" failed");
             }
 
             @Override

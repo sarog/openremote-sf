@@ -643,7 +643,9 @@ public class TreePanelBuilder {
       if (templateTreeStore == null) {
          templateTreeStore = new TreeStore<BeanModel>(templateLoader);
       }
+      //set private template folder as the first node
       templateTreeStore.add(privateTemplatesBean.getBeanModel(), false);
+      //set public template folder as the second node. 
       templateTreeStore.add(publicTemplatesBean.getBeanModel(), false);
       TreePanel<BeanModel> tree = new TreePanel<BeanModel>(templateTreeStore) {
          @Override
