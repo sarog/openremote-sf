@@ -1163,11 +1163,17 @@ public class ResourceServiceImpl implements ResourceService {
       File panelXMLFile = new File(pathConfig.panelXmlFilePath(userService.getAccount()));
       File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(userService.getAccount()));
       File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));
+      File lircdFile = new File(pathConfig.lircFilePath(userService.getAccount()));
+      
       Collection<File> exportFile = new HashSet<File>();
       exportFile.addAll(imageFiles);
       exportFile.add(panelXMLFile);
       exportFile.add(controllerXMLFile);
       exportFile.add(panelsObjFile);
+      
+      if (lircdFile.exists()) {
+         exportFile.add(lircdFile);
+      }
       
       ignoreExtentions.add("zip");
       return getResourceZipFile(ignoreExtentions,exportFile);
