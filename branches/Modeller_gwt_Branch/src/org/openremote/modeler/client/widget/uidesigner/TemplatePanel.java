@@ -149,9 +149,9 @@ public class TemplatePanel extends ContentPanel {
                      @Override
                      public void onSuccess(Boolean success) {
                         if (success) {
+                           templateInEditing = null;
                            templateTree.getStore().remove(templateBeanModel);
                            if (editTabItem != null) {
-                              templateInEditing = null;
                               templateEditPanel.remove(editTabItem);
                               templateEditPanel.closeCurrentScreenTab();
                               editTabItem = null;
@@ -322,12 +322,14 @@ public class TemplatePanel extends ContentPanel {
 
             @Override
             public void onSuccess(Template result) {
-               templateInEditing.setContent(result.getContent());
-               templateInEditing.setScreen(result.getScreen());
-               Info.display("Success", "auto save template" + templateInEditing.getName()+" successfully !");
-               // stop auto-saving when the template preview tab has been closed. 
-               if (editTabItem != null && templateEditPanel.indexOf(editTabItem) == -1) {
-                  templateInEditing = null;
+               if (result != null && result.getOid() == templateInEditing.getOid()) {
+                  templateInEditing.setContent(result.getContent());
+                  templateInEditing.setScreen(result.getScreen());
+                  Info.display("Success", "Auto save template " + templateInEditing.getName()+" successfully !");
+                  // stop auto-saving when the template preview tab has been closed. 
+                  if (editTabItem != null && templateEditPanel.indexOf(editTabItem) == -1) {
+                     templateInEditing = null;
+                  }
                }
                
             }
@@ -340,17 +342,20 @@ public class TemplatePanel extends ContentPanel {
       return templateInEditing;
    }
 
-   public void setTemplateInEditing(final Template templateInEditing) {
-      if (templateInEditing != null &&templateInEditing.equals(this.templateInEditing)) return;
-      
+   public synchronized void  setTemplateInEditing(final Template templateInEditing) {
+      if (templateInEditing != null && this.templateInEditing != null ) {
+         if (templateInEditing.getOid() == this.templateInEditing.getOid()) return;
+      }
       if (this.templateInEditing != null) {
          //-----------------------------
          // 1, save previous template.
          //------------------------------
+         mask("Saving previous template.....");
          TemplateProxy.updateTemplate(this.templateInEditing, new AsyncCallback<Template>() {
 
             @Override
             public void onFailure(Throwable caught) {
+               unmask();
                Info.display("Error", "Update template: " + TemplatePanel.this.templateInEditing.getName() + " failed");
             }
 
@@ -359,17 +364,22 @@ public class TemplatePanel extends ContentPanel {
                //--------------------------
                // 2, make sure the content for the previous template be updated. 
                //--------------------------
-               TemplatePanel.this.templateInEditing.setContent(result.getContent());
+               if (result.getOid() == TemplatePanel.this.templateInEditing.getOid()){
+                  TemplatePanel.this.templateInEditing.setContent(result.getContent());
+                  Info.display("Success", "Auto save template " + TemplatePanel.this.templateInEditing.getName() + " successfully !");
+               }
+               mask("Building screen and downloading resources ...");
                //--------------------------
                // 3, edit another template.
                //--------------------------
                buildScreen(templateInEditing);
-               Info.display("Success", "auto save template" + templateInEditing.getName() + " successfully !");
             }
 
             
          });
       } else {
+         mask("Building screen and downloading resources ...");
+         this.templateInEditing = templateInEditing;
          buildScreen(templateInEditing);
       }
    }
@@ -380,10 +390,12 @@ public class TemplatePanel extends ContentPanel {
          @Override
          public void onFailure(Throwable caught) {
             MessageBox.alert("Error", "Failed to preview Template: " + templateInEditing.getName(), null);
+            unmask();
          }
 
          @Override
          public void onSuccess(ScreenPair screen) {
+            unmask();
             editTabItem = new ScreenTab(screen);
             templateEditPanel.setScreenItem(editTabItem);
             templateInEditing.setScreen(screen);
