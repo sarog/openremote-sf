@@ -23,9 +23,10 @@
 #import "TabBar.h"
 #import "GroupController.h"
 
-@interface TabBarController : UITabBarController <UITabBarControllerDelegate> {
+@interface TabBarController : UITabBarController <UITabBarControllerDelegate, UITableViewDelegate> {
 	TabBar *customziedTabBar;
 	GroupController *groupController;
+	BOOL isMoreViewShown;
 }
 
 - (id) initWithGroupController:(GroupController *)groupControllerParam tabBar:(TabBar *)tabBar;
