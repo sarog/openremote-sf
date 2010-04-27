@@ -33,12 +33,16 @@
 	if (self = [super initWithNibName:nil bundle:nil]) {
 		if (tabBar) {
 			customziedTabBar = tabBar;
-			
+			isMoreViewShown = NO;
 			self.delegate = self;
 			self.groupController = groupControllerParam;
 			CGRect frame = [groupController getFullFrame];
 			[self.view setFrame:frame];
 			NSLog(@"tabbar full frame width=%g, height=%g", frame.size.width,frame.size.height);
+			
+			self.moreNavigationController.navigationBar.hidden = YES;
+			UITableView *tableView = (UITableView *)self.moreNavigationController.topViewController.view;
+			[tableView setDelegate:self];
 			
 			NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
 			int i = 0;
@@ -50,7 +54,6 @@
 				itemController.tabBarItem.title = tabBarItem.tabBarItemName;
 				UIImage *image = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:tabBarItem.tabBarItemImage.src]];
 				itemController.tabBarItem.image = image;
-				
 				[viewControllers addObject:itemController];
 				
 				if (tabBarItem.navigate && groupController.group.groupId == tabBarItem.navigate.toGroup) {
@@ -59,6 +62,10 @@
 				i++;
 			}
 			self.viewControllers = viewControllers;
+			
+			// no custom view, this disable 'Edit' button in 'More' table view
+			self.customizableViewControllers = nil; 
+			
 			//set selected index after viewControllers have been added, or it won't work
 			//otherwise must set selected index in viewDidLoad
 			[self setSelectedIndex:selected];
@@ -83,35 +90,49 @@
 	self.viewControllers = viewControllers;
 }
 
-#pragma mark Delegate method of UITabBarController
-- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
-	NSString *selectedViewControllerTitle = viewController.tabBarItem.title;
-	for (TabBarItem *tabBarItem in customziedTabBar.tabBarItems) {
-		if ([selectedViewControllerTitle isEqualToString:tabBarItem.tabBarItemName]) {
-			if (tabBarItem.navigate) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
-			}
-		}
+- (void)returnToContentView {
+	if (groupController) {
+		self.selectedViewController = groupController;
+		isMoreViewShown = NO;
 	}
 }
 
-- (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
+#pragma mark Delegate method of UITabBarController
+- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
+
+	//if the selected view controller is currently the 'More' navigation controller
+	if (self.selectedIndex == NSNotFound) {
+		if (isMoreViewShown) {
+			[self returnToContentView];
+		} else {
+			isMoreViewShown = YES;
+		}
+
+		return;
+	}
 	
-	// Release any cached data, images, etc that aren't in use.
+	TabBarItem *tabBarItem = [customziedTabBar.tabBarItems objectAtIndex:self.selectedIndex];
+	if (tabBarItem && tabBarItem.navigate) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
+	} else if (tabBarItem && !tabBarItem.navigate) {
+		[self returnToContentView];
+	}
 }
 
-- (void)viewDidUnload {
-	// Release any retained subviews of the main view.
-	// e.g. self.myOutlet = nil;
+#pragma mark Delegate method of 'More' UITableView
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	TabBarItem *tabBarItem = [customziedTabBar.tabBarItems objectAtIndex:indexPath.row + 4];
+	if (tabBarItem.navigate) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
+	}
+	[self returnToContentView];
 }
-
 
 - (void)dealloc {
 	[groupController release];
 	[customziedTabBar release];
-    [super dealloc];
+	
+	[super dealloc];
 }
 
 
