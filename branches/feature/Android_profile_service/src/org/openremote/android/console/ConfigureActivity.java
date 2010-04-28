@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -47,6 +48,7 @@ public class ConfigureActivity extends Activity {
 
     public void onCreate(Bundle savedState) {
         super.onCreate(savedState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         Log.d(this.toString(), "onCreate for configure activity");
 //        String url = getUrl();
 //        String error = getIntent().getExtras().getString(Constants.ERROR);

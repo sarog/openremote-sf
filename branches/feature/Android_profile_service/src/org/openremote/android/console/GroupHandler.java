@@ -29,6 +29,7 @@ import org.openremote.android.console.model.OREvent;
 import org.openremote.android.console.model.OREventListener;
 import org.openremote.android.console.model.ORListenerManager;
 import org.openremote.android.console.model.UserCache;
+import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.model.XMLEntityDataBase;
 import org.openremote.android.console.view.GroupView;
 import org.openremote.android.console.view.ScreenView;
@@ -40,6 +41,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -460,6 +462,16 @@ public class GroupHandler extends Activity implements OnGestureListener {
          Intent intent = new Intent();
          intent.setClass(GroupHandler.this, AppSettingsActivity.class);
          startActivity(intent);
+      } else if (navigate.isLogin()) {
+         Intent intent = new Intent();
+         intent.setClass(GroupHandler.this, LoginViewActivity.class);
+         startActivity(intent);
+      } else if (navigate.isLogout()) {
+         String username = UserCache.getUsername(GroupHandler.this);
+         if (!TextUtils.isEmpty(username)) {
+            UserCache.saveUser(GroupHandler.this, "", "");
+            ViewHelper.showAlertViewWithTitle(GroupHandler.this, "Logout", username + " logout success.");
+         }
       }
       return false;
    }

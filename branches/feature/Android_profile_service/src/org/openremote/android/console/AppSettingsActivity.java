@@ -126,7 +126,7 @@ public class AppSettingsActivity extends Activity{
     * 
     */
    private void addOnclickListenerOnDoneButton() {
-      Button doneButton = (Button)findViewById(R.id.done);
+      Button doneButton = (Button)findViewById(R.id.setting_done);
       doneButton.setOnClickListener(new OnClickListener() {
          public void onClick(View v) {
             String serverUrl = AppSettingsModel.getCurrentServer(AppSettingsActivity.this);
@@ -145,7 +145,7 @@ public class AppSettingsActivity extends Activity{
    }
    
    private void addOnclickListenerOnCancelButton() {
-      Button cancelButton = (Button)findViewById(R.id.cancel);
+      Button cancelButton = (Button)findViewById(R.id.setting_cancel);
       cancelButton.setOnClickListener(new OnClickListener() {
          public void onClick(View v) {
             finish();
