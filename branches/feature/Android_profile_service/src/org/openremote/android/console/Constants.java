@@ -33,6 +33,7 @@ public class Constants {
    }
    public static final long BINDING_VERSION = 1L;
    public static final long MODEL_VERSION = 2L;
+   public static final long CACHE_VERSION = 3L;
    public static final int MENU_ITEM_CONFIG = Menu.FIRST + 1;
    public static final int MENU_ITEM_QUIT = Menu.FIRST + 2;
    public static final int MENU_ITEM_ACTIVITIES = Menu.FIRST + 3;

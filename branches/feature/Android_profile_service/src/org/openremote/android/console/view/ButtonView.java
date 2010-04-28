@@ -24,6 +24,8 @@ import java.util.TimerTask;
 
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.bindings.XButton;
+import org.openremote.android.console.model.ListenerConstant;
+import org.openremote.android.console.model.ORListenerManager;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -90,6 +92,10 @@ public class ButtonView extends ControlView {
                if (defaultImage != null) {
                   defaultImage.setAlpha(255);
                   uiButton.setBackgroundDrawable(defaultImage);
+               }
+               if (button.getNavigate() != null) {
+                  uiButton.setPressed(false);
+                  ORListenerManager.getInstance().notifyOREventListener(ListenerConstant.ListenerNavigateTo, button.getNavigate());
                }
             }
             return false;

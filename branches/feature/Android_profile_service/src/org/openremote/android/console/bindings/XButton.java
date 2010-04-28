@@ -31,6 +31,7 @@ public class XButton extends Control {
    private boolean repeat;
    private Image defaultImage;
    private Image pressedImage;
+   private Navigate navigate;
    public XButton(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
       this.setComponentId(Integer.valueOf(nodeMap.getNamedItem("id").getNodeValue()));
@@ -51,6 +52,8 @@ public class XButton extends Control {
                this.defaultImage = createImage(elementNode);
             } else if ("pressed".equals(elementNode.getNodeName())) {
                this.pressedImage = createImage(elementNode);
+            } else if ("navigate".equals(elementNode.getNodeName())) {
+               this.navigate = new Navigate(elementNode);
             }
          }
       }
@@ -76,6 +79,10 @@ public class XButton extends Control {
       return pressedImage;
    }
 
+   public Navigate getNavigate() {
+      return navigate;
+   }
+   
    private Image createImage(Node elementNode) {
       for (Node imageNode = elementNode.getFirstChild(); imageNode != null; imageNode = imageNode.getNextSibling()) {
          if (imageNode.getNodeType() == Node.ELEMENT_NODE && "image".equals(imageNode.getNodeName())) {
