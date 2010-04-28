@@ -17,4 +17,7 @@
     <string name="button_auto">Toggle</string>
     <string name="cancel">Cancel</string>
     <string name="done">Done</string>
+    <string name="login">Login</string>
+    <string name="username">Username:</string>
+    <string name="password">Password:</string>
 </resources>

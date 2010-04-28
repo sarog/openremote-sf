@@ -29,6 +29,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -38,6 +39,7 @@ public class PanelSelectorActivity extends ListActivity {
    @Override
    public void onCreate(Bundle savedInstanceState) {
        super.onCreate(savedInstanceState);
+       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
        List<String> panelList = HTTPUtil.getPanels(getIntent().getDataString());
        setListAdapter(new ArrayAdapter<String>(this,
                android.R.layout.simple_list_item_single_choice, panelList));
