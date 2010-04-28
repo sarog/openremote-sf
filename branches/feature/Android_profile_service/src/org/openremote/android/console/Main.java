@@ -78,7 +78,7 @@ public class Main extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        judgeNetType();
+        checkNetType();
         readDisplayMetrics();
         configSettings();
 //        imageLoader = new ImageLoader();
@@ -338,7 +338,7 @@ public class Main extends Activity {
        startActivity(i);
     }
     
-    private void judgeNetType() {
+    private void checkNetType() {
        ConnectivityManager conn = (ConnectivityManager)(Main.this).getSystemService(Context.CONNECTIVITY_SERVICE);
        if ("mobile".equals(conn.getActiveNetworkInfo().getTypeName().toLowerCase())) {
           IPAutoDiscoveryClient.IS_EMULATOR = true;

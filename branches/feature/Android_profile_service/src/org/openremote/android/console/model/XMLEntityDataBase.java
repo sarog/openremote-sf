@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -34,6 +34,20 @@ public class XMLEntityDataBase {
    public static Group getFirstGroup() {
       if (!groups.isEmpty()) {
          return groups.get(groups.keySet().iterator().next());
+      }
+      return null;
+   }
+   
+   public static Group getGroup(int groupId) {
+      if (!groups.isEmpty()) {
+         return groups.get(groupId);
+      }
+      return null;
+   }
+   
+   public static XScreen getScreen(int screenId) {
+      if (!groups.isEmpty()) {
+         return screens.get(screenId);
       }
       return null;
    }

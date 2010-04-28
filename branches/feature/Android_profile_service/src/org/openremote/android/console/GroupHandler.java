@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -19,17 +19,26 @@
 */
 package org.openremote.android.console;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.openremote.android.console.bindings.Group;
-import org.openremote.android.console.bindings.XScreen;
+import org.openremote.android.console.bindings.Navigate;
+import org.openremote.android.console.model.ListenerConstant;
+import org.openremote.android.console.model.OREvent;
+import org.openremote.android.console.model.OREventListener;
+import org.openremote.android.console.model.ORListenerManager;
+import org.openremote.android.console.model.UserCache;
 import org.openremote.android.console.model.XMLEntityDataBase;
+import org.openremote.android.console.view.GroupView;
 import org.openremote.android.console.view.ScreenView;
+import org.openremote.android.console.view.ScreenViewFlipper;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -39,19 +48,18 @@ import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.GestureDetector.OnGestureListener;
-import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
-import android.widget.ViewFlipper;
 
 public class GroupHandler extends Activity implements OnGestureListener {
 
-   private static final int FLIPPER = 0xF00D;
-//   private ORActivity activity;
+//   private static final int FLIPPER = 0xF00D;
    private GestureDetector gestureScanner;
-//   private ImageLoader imageLoader;
-   private Group group;
-   private ViewFlipper vf;
+   private GroupView currentGroupView;
+   private LinearLayout linearLayout;
+   private ScreenViewFlipper currentScreenViewFlipper;
    private int screenSize;
+   private HashMap<Integer, GroupView> groupViews;
+   private ArrayList<Navigate> navigationHistory;
 
    private static final int SWIPE_MIN_DISTANCE = 120;
    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
@@ -59,29 +67,50 @@ public class GroupHandler extends Activity implements OnGestureListener {
    @Override
    protected void onCreate(Bundle savedInstanceState) {
        super.onCreate(savedInstanceState);
-
        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-//       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//       this.imageLoader = Main.imageLoader;
-//       this.imageLoader.reset();
+       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
        this.gestureScanner = new GestureDetector(this);
        Log.d(this.toString(), "in oncreate for GroupHandler");
-//       this.activity = (ORActivity) getIntent().getExtras().get("activity");
-//       startLoadingImages(activity);
-       this.group = XMLEntityDataBase.getFirstGroup();
+       
+       if (groupViews == null) {
+          groupViews = new HashMap<Integer, GroupView>();
+       }
+       if (navigationHistory == null) {
+          navigationHistory = new ArrayList<Navigate>();
+       }
+       Group group = XMLEntityDataBase.getFirstGroup();
        screenSize = group.getScreens().size();
-       LinearLayout ll = new LinearLayout(this);
-       vf = new ViewFlipper(this);
-       vf.setInAnimation(AnimationUtils.loadAnimation(this,R.anim.fade));
-       vf.setOutAnimation(AnimationUtils.loadAnimation(this,R.anim.fade));
-       vf.setId(FLIPPER);
-       ll.addView(vf);
-       this.setContentView(ll);
-       constructScreens(vf, group);
-       ((ScreenView) vf.getCurrentView()).startPolling();
-
+       currentGroupView = new GroupView(this, group);
+       groupViews.put(group.getGroupId(), currentGroupView);
+       
+       currentScreenViewFlipper = currentGroupView.getScreenViewFlipper();
+       linearLayout = new LinearLayout(this);
+       linearLayout.addView(currentScreenViewFlipper);
+       this.setContentView(linearLayout);
+       ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
+       addNaviagateListener();
    }
 
+   private void addNaviagateListener() {
+      ORListenerManager.getInstance().addOREventListener(ListenerConstant.ListenerNavigateTo, new OREventListener() {
+         public void handleEvent(OREvent event) {
+            Navigate navigate = (Navigate) event.getData();
+            if (navigate != null) {
+               Navigate historyNavigate = new Navigate();
+               if (currentGroupView.getGroup() != null) {
+                  historyNavigate.setFromGroup(currentGroupView.getGroup().getGroupId());
+                  historyNavigate.setFromScreen(((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
+               } else {
+                  return;
+               }
+               if (navigateTo(navigate)) {
+                  UserCache.saveLastGroupIdAndScreenId(GroupHandler.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
+                  navigationHistory.add(historyNavigate);
+               }
+            }
+         }
+      });
+   }
 //   private void startLoadingImages(ORActivity activity) {
 //        this.imageLoader = this.imageLoader == null ? new ImageLoader() :
 //        this.imageLoader.reset();
@@ -127,14 +156,6 @@ public class GroupHandler extends Activity implements OnGestureListener {
 //           }
 //       };
 //   }
-
-   private void constructScreens(ViewFlipper vf, Group group) {
-       List<XScreen> screens = group.getScreens();
-       int screenSize = screens.size();
-       for (int i = 0; i < screenSize; i++) {
-           vf.addView(new ScreenView(this, screens.get(i)));
-       }
-   }
 
 //   private AbsoluteLayout constructScreen(int col, int row,
 //           List<Button> buttons, Map<String, Integer> loaded) {
@@ -286,25 +307,26 @@ public class GroupHandler extends Activity implements OnGestureListener {
 //       return label == null || label.equals("");
 //   }
 
-   private void moveRight() {
+   private boolean moveRight() {
        Log.d(this.toString(), "MoveRight");
-       ViewFlipper vf = (ViewFlipper) findViewById(FLIPPER);
-       if (vf.getDisplayedChild() < screenSize - 1) {
-          ((ScreenView) vf.getCurrentView()).cancelPolling();
-          vf.showNext();
-          ((ScreenView) vf.getCurrentView()).startPolling();
+       if (currentScreenViewFlipper.getDisplayedChild() < screenSize - 1) {
+          ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
+          currentScreenViewFlipper.showNext();
+          ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
+          return true;
        }
+       return false;
    }
 
-   private void moveLeft() {
-
+   private boolean moveLeft() {
        Log.d(this.toString(), "MoveLeft");
-       ViewFlipper vf = (ViewFlipper) findViewById(FLIPPER);
-       if (vf.getDisplayedChild() > 0) {
-          ((ScreenView) vf.getCurrentView()).cancelPolling();
-          vf.showPrevious();
-          ((ScreenView) vf.getCurrentView()).startPolling();
+       if (currentScreenViewFlipper.getDisplayedChild() > 0) {
+          ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
+          currentScreenViewFlipper.showPrevious();
+          ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
+          return true;
        }
+       return false;
    }
 
    @Override
@@ -412,9 +434,64 @@ public class GroupHandler extends Activity implements OnGestureListener {
 
    @Override
    protected void onDestroy() {
-      ((ScreenView) vf.getCurrentView()).cancelPolling();
       super.onDestroy();
+      ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
    }
 
-   
+   /**
+    * @param navigate
+    */
+   private boolean navigateTo(Navigate navigate) {
+      if (navigate.isNextScreen()) {
+         return moveRight();
+      } else if (navigate.isPreviousScreen()) {
+         return moveLeft();
+      } else if (navigate.getToGroup() > 0) {
+         return navigateToGroup(navigate.getToGroup(), navigate.getToScreen());
+      } else if (navigate.isBack()) {
+         if (navigationHistory.size() > 0) {
+            Navigate backward = navigationHistory.get(navigationHistory.size() - 1);
+            if (backward.getFromGroup() > 0 && backward.getFromScreen() > 0) {
+               navigateToGroup(backward.getFromGroup(), backward.getFromScreen());
+            }
+            navigationHistory.remove(backward);
+         }
+      } else if (navigate.isSetting()) {
+         Intent intent = new Intent();
+         intent.setClass(GroupHandler.this, AppSettingsActivity.class);
+         startActivity(intent);
+      }
+      return false;
+   }
+
+   private boolean navigateToGroup(int toGroupId, int toScreenId) {
+      Group targetGroup = XMLEntityDataBase.getGroup(toGroupId);
+      if (targetGroup != null) {
+         ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
+         if (currentGroupView.getGroup().getGroupId() != toGroupId) {
+            GroupView targetGroupView = groupViews.get(toGroupId);
+            if (targetGroupView == null) {
+               targetGroupView = new GroupView(this, targetGroup);
+               groupViews.put(toGroupId, targetGroupView);
+            }
+            linearLayout.removeView(currentScreenViewFlipper);
+            currentScreenViewFlipper = targetGroupView.getScreenViewFlipper();
+            linearLayout.addView(currentScreenViewFlipper);
+            if (toScreenId > 0) {
+               currentScreenViewFlipper.setDisplayedChild(targetGroup.getScreens().indexOf(XMLEntityDataBase.getScreen(toScreenId)));
+            }
+            screenSize = targetGroup.getScreens().size();
+            currentGroupView = targetGroupView;
+         } else {
+            // in same group.
+            if (toScreenId > 0) {
+               currentScreenViewFlipper.setDisplayedChild(targetGroup.getScreens().indexOf(XMLEntityDataBase.getScreen(toScreenId)));
+            }
+         }
+         ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
+         return true;
+      }
+      return false;
+   }
+
 }

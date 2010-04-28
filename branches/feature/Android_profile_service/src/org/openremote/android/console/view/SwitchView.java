@@ -31,7 +31,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -121,7 +120,6 @@ public class SwitchView extends SensoryControlView {
       if (sensorId > 0) {
          ORListenerManager.getInstance().addOREventListener(ListenerConstant.ListenerPollingStatusIdFormat + sensorId, new OREventListener() {
             public void handleEvent(OREvent event) {
-               Log.e("polling", "sensorid:"+sensorId);
                String value = PollingStatusParser.statusMap.get(sensorId.toString()).toLowerCase();
                if (isOn && Switch.OFF.equals(value)) {
                   isOn = false;

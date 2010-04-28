@@ -51,8 +51,9 @@ public class ScreenView extends AbsoluteLayout {
       this.screen = screen;
       setBackgroundColor(0);
       setTag(screen.getName());
+      setId(screen.getScreenId());
       if (screen.getBackground() != null) {
-         addBackground(screen);
+         addBackground();
 
       }
 
@@ -73,7 +74,7 @@ public class ScreenView extends AbsoluteLayout {
    /**
     * @param screen
     */
-   private void addBackground(XScreen screen) {
+   private void addBackground() {
       ImageView backgroudView = new ImageView(this.getContext());
       int left = 0;
       int top = 0;
@@ -136,6 +137,10 @@ public class ScreenView extends AbsoluteLayout {
             pollingTask.cancel(true);
          }
       }
+   }
+   
+   public XScreen getScreen() {
+      return screen;
    }
    
    class AsyncLoader extends AsyncTask<Void, Void, Integer>{

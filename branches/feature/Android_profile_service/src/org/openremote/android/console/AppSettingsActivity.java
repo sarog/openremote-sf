@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
@@ -58,6 +59,7 @@ public class AppSettingsActivity extends Activity{
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
       this.autoMode = AppSettingsModel.isAutoMode(AppSettingsActivity.this);
       setTitle(R.string.settings);
       ScrollView scroll = new ScrollView(this);
@@ -86,6 +88,7 @@ public class AppSettingsActivity extends Activity{
       
       setContentView(scroll);
       addOnclickListenerOnDoneButton();
+      addOnclickListenerOnCancelButton();
    }
 
    /**
@@ -137,6 +140,15 @@ public class AppSettingsActivity extends Activity{
             Intent intent = new Intent();
             intent.setClass(AppSettingsActivity.this, GroupHandler.class);
             startActivity(intent);
+         }
+      });
+   }
+   
+   private void addOnclickListenerOnCancelButton() {
+      Button cancelButton = (Button)findViewById(R.id.cancel);
+      cancelButton.setOnClickListener(new OnClickListener() {
+         public void onClick(View v) {
+            finish();
          }
       });
    }
