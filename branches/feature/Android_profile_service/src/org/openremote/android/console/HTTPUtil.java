@@ -22,26 +22,20 @@ package org.openremote.android.console;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import org.openremote.android.console.net.ORButtonConnectionDelegate;
+import org.openremote.android.console.net.ORCommandConnectionDelegate;
+import org.openremote.android.console.net.ORConnection;
+import org.openremote.android.console.net.ORGetPanelsConnectionDelegate;
+import org.openremote.android.console.net.ORHttpMethod;
 
 import android.content.Context;
-import android.util.Log;
 
 /**
  * Does the HTTP stuff, anything related to HttpClient should go here.
@@ -65,27 +59,36 @@ public class HTTPUtil {
      * @throws IOException
      */
     public static int sendButton(String url, String id, String command)
-            throws ClientProtocolException, IOException {
-        String connectString = url + "/rest/button/" + id + "/" + command;
-        HttpClient client = new DefaultHttpClient();
-        HttpPost post = new HttpPost(connectString);
-        HttpResponse response = client.execute(post);
-        int code = response.getStatusLine().getStatusCode();
-        return code;
-    }
-    
-    public static int sendCommand(String url, int id, String command)
     throws ClientProtocolException, IOException {
-       String connectString = url + "/rest/control/" + id + "/" + command;
-       HttpClient client = new DefaultHttpClient();
-       HttpPost post = new HttpPost(connectString);
-       HttpResponse response = client.execute(post);
-       int code = response.getStatusLine().getStatusCode();
-       return code;
-    }
+		//String connectString = url + "/rest/button/" + id + "/" + command;
+		//HttpClient client = new DefaultHttpClient();
+		//HttpPost post = new HttpPost(connectString);
+		//HttpResponse response = client.execute(post);
+		//int code = response.getStatusLine().getStatusCode();
+		//return code;
+//		String connectString = url + "/rest/button/" + id + "/" + command;
+    	String connectString = url + "/rest/control/" + id + "/" + command;
+		ORButtonConnectionDelegate delegate =  new ORButtonConnectionDelegate();
+		new ORConnection(ORHttpMethod.POST, connectString, delegate);
+		return delegate.getHttpResponseStatusCode();
+	}
+	
+	public static int sendCommand(String url, int id, String command)
+	throws ClientProtocolException, IOException {
+		//String connectString = url + "/rest/control/" + id + "/" + command;
+		//HttpClient client = new DefaultHttpClient();
+		//HttpPost post = new HttpPost(connectString);
+		//HttpResponse response = client.execute(post);
+		//int code = response.getStatusLine().getStatusCode();
+		//return code;
+		String connectString = url + "/rest/control/" + id + "/" + command;
+		ORCommandConnectionDelegate delegate =  new ORCommandConnectionDelegate();
+		new ORConnection(ORHttpMethod.POST, connectString, delegate);
+		return delegate.getHttpResponseStatusCode();
+	}
 
     public static List<String> getPanels(String serverUrl){
-       List<String> panelList = new ArrayList<String>();
+/*       List<String> panelList = new ArrayList<String>();
       try {
          HttpClient client = new DefaultHttpClient();
          HttpGet get = new HttpGet(serverUrl + "/rest/panels");
@@ -108,7 +111,7 @@ public class HTTPUtil {
          Log.e("HTTPUtil", "can not build new Document builder", e);
       } catch (SAXException e) {
          Log.e("HTTPUtil", "parse panels error", e);
-      }
+      }*/
 //      for (Panel panel : panelList) {
 //         Log.d("tt", "---------------------id:"+panel.getId() + "name:" + panel.getName()+"------------------");
 //      }
@@ -129,7 +132,10 @@ public class HTTPUtil {
 //       for (Panel panel : messages) {
 //          Log.d("tt", "id:"+panel.getId() + "name:" + panel.getName());
 //      }
-       return panelList;
+       /*return panelList;*/
+    	ORGetPanelsConnectionDelegate delegate = new ORGetPanelsConnectionDelegate();
+    	new ORConnection(ORHttpMethod.GET, serverUrl + "/rest/panels", delegate);
+    	return delegate.getPanelsName();
     }
     
     public static void downLoadPanelXml(Context context, String serverUrl, String panelName) {
