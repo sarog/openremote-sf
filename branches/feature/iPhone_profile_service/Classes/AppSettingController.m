@@ -461,9 +461,6 @@
 	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
 	if (currentSelectedServerIndex) {
 		UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:currentSelectedServerIndex];
-		if (cell.accessoryType  == oldCell.accessoryType) {
-			return;
-		}
 		if (oldCell.accessoryType == UITableViewCellAccessoryCheckmark) {
 			[[[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:currentSelectedServerIndex.row] setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];		
 			oldCell.accessoryType = UITableViewCellAccessoryNone;
