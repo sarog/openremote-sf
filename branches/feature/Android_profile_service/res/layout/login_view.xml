@@ -17,6 +17,7 @@ android:padding="5px">
 	<EditText android:id="@+id/username"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content" 
+	android:lines="1"
 	android:layout_weight="1.0" />
 </TableRow>
 <TableRow android:layout_width="fill_parent"
@@ -30,6 +31,7 @@ android:padding="5px">
 	<EditText android:id="@+id/password"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
+	android:lines="1"
 	android:password="true" 
 	android:layout_weight="1.0" />
 </TableRow>

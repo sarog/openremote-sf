@@ -22,13 +22,30 @@ package org.openremote.android.console.view;
 import org.openremote.android.console.R;
 
 import android.content.Context;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ViewFlipper;
 
 public class ScreenViewFlipper extends ViewFlipper {
+   private Animation slideLeftIn;
+   private Animation slideLeftOut;
+   private Animation slideRightIn;
+   private Animation slideRightOut;
    public ScreenViewFlipper(Context context) {
       super(context);
-      setInAnimation(AnimationUtils.loadAnimation(context,R.anim.fade));
-      setOutAnimation(AnimationUtils.loadAnimation(context,R.anim.fade));
+      slideLeftIn = AnimationUtils.loadAnimation(context,R.anim.slide_to_left_in);
+      slideLeftOut = AnimationUtils.loadAnimation(context,R.anim.slide_to_left_out);
+      slideRightIn = AnimationUtils.loadAnimation(context,R.anim.slide_to_right_in);
+      slideRightOut = AnimationUtils.loadAnimation(context,R.anim.slide_to_right_out);
+   }
+   
+   public void setToPreviousAnimation() {
+      setInAnimation(slideRightIn);
+      setOutAnimation(slideRightOut);
+   }
+   
+   public void setToNextAnimation() {
+      setInAnimation(slideLeftIn);
+      setOutAnimation(slideLeftOut);
    }
 }

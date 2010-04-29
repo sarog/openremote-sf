@@ -4,6 +4,7 @@ import org.openremote.android.console.model.UserCache;
 import org.openremote.android.console.model.ViewHelper;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -16,10 +17,14 @@ public class LoginViewActivity extends Activity {
 
    private EditText usernameText;
    private EditText passwordText;
+   private boolean isFromMain;
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
       setTitle(R.string.login);
+      if (Main.LOAD_RESOURCE.equals(getIntent().getDataString())) {
+         isFromMain = true;
+      }
       this.setContentView(R.layout.login_view);
       usernameText = (EditText)findViewById(R.id.username);
       usernameText.setText(UserCache.getUsername(this));
@@ -39,6 +44,12 @@ public class LoginViewActivity extends Activity {
             return;
          } else {
             UserCache.saveUser(LoginViewActivity.this, username, password);
+         }
+         
+         if (isFromMain) {
+            Intent intent = new Intent();
+            intent.setClass(LoginViewActivity.this, Main.class);
+            startActivity(intent);
          }
          finish();
       }
