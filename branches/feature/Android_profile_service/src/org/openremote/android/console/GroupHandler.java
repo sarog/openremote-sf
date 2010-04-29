@@ -71,6 +71,7 @@ public class GroupHandler extends Activity implements OnGestureListener {
        super.onCreate(savedInstanceState);
        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+       
        this.gestureScanner = new GestureDetector(this);
        Log.d(this.toString(), "in oncreate for GroupHandler");
        
@@ -313,6 +314,7 @@ public class GroupHandler extends Activity implements OnGestureListener {
        Log.d(this.toString(), "MoveRight");
        if (currentScreenViewFlipper.getDisplayedChild() < screenSize - 1) {
           ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
+          currentScreenViewFlipper.setToNextAnimation();
           currentScreenViewFlipper.showNext();
           ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
           return true;
@@ -324,6 +326,7 @@ public class GroupHandler extends Activity implements OnGestureListener {
        Log.d(this.toString(), "MoveLeft");
        if (currentScreenViewFlipper.getDisplayedChild() > 0) {
           ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
+          currentScreenViewFlipper.setToPreviousAnimation();
           currentScreenViewFlipper.showPrevious();
           ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
           return true;
@@ -434,6 +437,20 @@ public class GroupHandler extends Activity implements OnGestureListener {
        return dialog;
    }
 
+   
+
+   @Override
+   protected void onStart() {
+      super.onStart();
+      ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
+   }
+
+   @Override
+   protected void onStop() {
+      super.onStop();
+      ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
+   }
+
    @Override
    protected void onDestroy() {
       super.onDestroy();
@@ -471,6 +488,7 @@ public class GroupHandler extends Activity implements OnGestureListener {
          if (!TextUtils.isEmpty(username)) {
             UserCache.saveUser(GroupHandler.this, "", "");
             ViewHelper.showAlertViewWithTitle(GroupHandler.this, "Logout", username + " logout success.");
+            ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
          }
       }
       return false;

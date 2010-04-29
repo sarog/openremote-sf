@@ -20,11 +20,8 @@
 package org.openremote.android.console;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.openremote.android.console.model.AppSettingsModel;
-import org.openremote.android.console.model.XMLEntityDataBase;
-import org.openremote.android.console.util.FileUtil;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -60,8 +57,9 @@ public class AppSettingsActivity extends Activity{
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-      this.autoMode = AppSettingsModel.isAutoMode(AppSettingsActivity.this);
       setTitle(R.string.settings);
+      
+      this.autoMode = AppSettingsModel.isAutoMode(AppSettingsActivity.this);
       ScrollView scroll = new ScrollView(this);
       scroll.setVerticalScrollBarEnabled(false);
       scroll.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
@@ -129,17 +127,10 @@ public class AppSettingsActivity extends Activity{
       Button doneButton = (Button)findViewById(R.id.setting_done);
       doneButton.setOnClickListener(new OnClickListener() {
          public void onClick(View v) {
-            String serverUrl = AppSettingsModel.getCurrentServer(AppSettingsActivity.this);
-            String panelName = AppSettingsModel.getCurrentPanelIdentity(AppSettingsActivity.this);
-            HTTPUtil.downLoadPanelXml(AppSettingsActivity.this, serverUrl, panelName);
-            FileUtil.parsePanelXML(AppSettingsActivity.this);
-            Iterator<String> images = XMLEntityDataBase.imageSet.iterator();
-            while (images.hasNext()) {
-               HTTPUtil.downLoadImage(AppSettingsActivity.this, AppSettingsModel.getCurrentServer(AppSettingsActivity.this), images.next());
-            }
             Intent intent = new Intent();
-            intent.setClass(AppSettingsActivity.this, GroupHandler.class);
+            intent.setClass(AppSettingsActivity.this, Main.class);
             startActivity(intent);
+            finish();
          }
       });
    }

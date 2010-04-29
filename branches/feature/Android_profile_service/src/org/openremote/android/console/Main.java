@@ -19,38 +19,36 @@
  */
 package org.openremote.android.console;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.openremote.android.console.bindings.Button;
-import org.openremote.android.console.bindings.ORActivity;
-import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.bindings.XScreen;
 import org.openremote.android.console.image.ImageLoader;
+import org.openremote.android.console.model.AppSettingsModel;
+import org.openremote.android.console.model.UserCache;
+import org.openremote.android.console.model.XMLEntityDataBase;
 import org.openremote.android.console.net.IPAutoDiscoveryClient;
-import org.openremote.android.xml.SimpleBinder;
-import org.xml.sax.SAXException;
+import org.openremote.android.console.util.FileUtil;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 /**
  * This class represents the main OpenRemote activity. It starts up, reads the
@@ -70,143 +68,23 @@ import android.widget.ListView;
 public class Main extends Activity {
 
     LinearLayout activitiesListView;
-    private List<ORActivity> activities;
-    private String ip;
+    private TextView loadingText;
+    private RelativeLayout loadingView;
     public static ImageLoader imageLoader;
-
+    private static final String TO_LOGIN = "toLogin";
+    private static final String TO_SETTING = "toSetting";
+    private static final String TO_GROUP = "toGroup";
+    public static final String LOAD_RESOURCE = "loadResource";
+    
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        checkNetType();
-        readDisplayMetrics();
-        configSettings();
-//        imageLoader = new ImageLoader();
-//        ArrayList<String> activityNames = new ArrayList<String>(); // used
-//        // solely for
-//        // making our
-//        // list view
-//        activities = new ArrayList<ORActivity>();
-//        this.ip = getIp();
-//        if (!TextUtils.isEmpty(ip)) {
-//            String error = null;
-//            try {
-//                parseXML(ip + "/iphone.xml", activityNames, activities);
-//                startLoadingImages();
-//            } catch (IllegalArgumentException e) {
-//                Log.e(this.toString(), "Error in " + ip
-//                        + "/iphone.xml syntax (most likely binding)", e);
-//                error = getApplication().getString(R.string.config_file_at)
-//                        + ip + "/iphone.xml "
-//                        + getApplication().getString(R.string.has_an_error);
-//                doSettings(error);
-//            } catch (ParserConfigurationException e) {
-//                Log.e(this.toString(), "Error in " + ip
-//                        + "/iphone.xml syntax (most likely bad code)", e);
-//                error = getApplication().getString(R.string.config_file_at)
-//                        + ip + "/iphone.xml "
-//                        + getApplication().getString(R.string.has_an_error);
-//                doSettings(error);
-//            } catch (SAXException e) {
-//                Log
-//                        .e(
-//                                this.toString(),
-//                                "Error in "
-//                                        + ip
-//                                        + "/iphone.xml syntax (most likely invalid conformance or non-wellformed)",
-//                                e);
-//                error = getApplication().getString(R.string.config_file_at)
-//                        + ip + "/iphone.xml "
-//                        + getApplication().getString(R.string.has_an_error);
-//                doSettings(error);
-//            } catch (IOException e) {
-//                Log.e(this.toString(), "Error connecting to " + ip
-//                        + " probably bad URL", e);
-//                error = getApplication()
-//                        .getString(R.string.error_connecting_to)
-//                        + ip + "/iphone.xml";
-//                doSettings(error);
-//            } catch (IllegalAccessException e) {
-//                Log.e(this.toString(), "Error in " + ip
-//                        + "/iphone.xml probably bad XML bound to wrong stuff",
-//                        e);
-//                error = getApplication().getString(R.string.config_file_at)
-//                        + ip + "/iphone.xml "
-//                        + getApplication().getString(R.string.has_an_error);
-//                doSettings(error);
-//            } catch (InstantiationException e) {
-//                Log.e(this.toString(), "Error in " + ip
-//                        + "/iphone.xml probably bad XML bound to wrong stuff",
-//                        e);
-//                error = getApplication().getString(R.string.config_file_at)
-//                        + ip + "/iphone.xml "
-//                        + getApplication().getString(R.string.has_an_error);
-//                doSettings(error);
-//            } catch (InvocationTargetException e) {
-//                Log.e(this.toString(), "Error in " + ip
-//                        + "/iphone.xml probably bad XML bound to wrong stuff",
-//                        e);
-//                error = getApplication().getString(R.string.config_file_at)
-//                        + ip + "/iphone.xml "
-//                        + getApplication().getString(R.string.has_an_error);
-//                doSettings(error);
-//            }
-//
-//            // Set main.XML as the layout for this Activity
-//            activitiesListView = new LinearLayout(this);
-//            activitiesListView.setBackgroundColor(0);
-//            activitiesListView.setTag(R.string.activities);
-//            activitiesListView.setLayoutParams(new LinearLayout.LayoutParams(
-//                    320, 480));
-//            ListView lv = constructListView(activityNames);
-//            lv.setCacheColorHint(0);
-//            lv.setBackgroundColor(0);
-//
-//            activitiesListView.addView(lv);
-//            this.setContentView(activitiesListView);
-//
-//            // add click listener to the list
-//            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//                @Override
-//                public void onItemClick(AdapterView<?> parent, View view,
-//                        int pos, long id) {
-//                    Log.d(this.toString(), "onClick");
-//                    String selected = (String) parent.getItemAtPosition(pos);
-//                    for (ORActivity activity : activities) {
-//                        if (selected.equals(activity.getName())) {
-//                            Intent intent = new Intent();
-//                            intent
-//                                    .setClassName(this.getClass().getPackage()
-//                                            .getName(), ActivityHandler.class
-//                                            .getName());
-//                            intent.putExtra(Constants.ACTIVITY, activity);
-//                            startActivity(intent);
-//                        }
-//                    }
-//                }
-//
-//            });
-//
-//        } else {
-//            doSettings(null);
-//        }
-    }
-
-    private void startLoadingImages() {
-        for (ORActivity activity : activities) {
-            List<Screen> screens = activity.getScreens();
-            for (Screen screen : screens) {
-                List<Button> buttons = screen.getButtons();
-                for (Button button : buttons) {
-                    if (button.getIcon() != null) {
-                        imageLoader
-                                .load(this.ip + "/" + button.getIcon(), null);
-                    }
-                }
-            }
-        }
-        imageLoader.start();
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        this.setContentView(R.layout.welcome_view);
+        loadingText = (TextView)findViewById(R.id.loading_text);
+        new AsyncResourceLoader().execute((Void) null);
     }
 
     private void doSettings(String error) {
@@ -217,65 +95,6 @@ public class Main extends Activity {
             ;
         i.putExtra(Constants.ERROR, error);
         startActivity(i);
-    }
-
-    private String getIp() {
-        SharedPreferences settings = getSharedPreferences(
-                ConfigureActivity.OPEN_REMOTE_PREFS, 0);
-        String val = settings.getString(Constants.URL, "");
-        return val;
-    }
-
-    /**
-     * Parse the xml file. A urlString and an initialized but empty list of
-     * activityNames and activities are passed in. The method will fill
-     * activityNames and activities with the names of the activities in the file
-     * (so we can construct the list elegantly) and instances of the ORActivity
-     * as bound by SimpleBinder (again from the XML file). Various IO, XML,
-     * reflection type exception are thrown if there is a problem with the XML
-     * file or the classes in org.openremote.android.console.bindings.
-     * 
-     * @param urlString
-     * @param activityNames
-     * @param activities
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws InstantiationException
-     * @throws InvocationTargetException
-     */
-    @SuppressWarnings("unchecked")
-    private void parseXML(String urlString, List<String> activityNames,
-            List<ORActivity> activities) throws ParserConfigurationException,
-            SAXException, IOException, IllegalArgumentException,
-            IllegalAccessException, InstantiationException,
-            InvocationTargetException {
-        URL url = new URL(urlString);
-        List<Class> classes = new ArrayList<Class>();
-        classes.add(org.openremote.android.console.bindings.Activity.class);
-        List<String> ignoreNodes = new ArrayList<String>();
-        ignoreNodes.add(Constants.ELEMENT_BUTTONS); // because we don't want to
-        // have a Buttons class, we
-        // "ignore" it in the node
-        // tree
-        SimpleBinder b = new SimpleBinder(Constants.ELEMENT_OPENREMOTE,
-                classes, ignoreNodes);
-        URLConnection conn = url.openConnection();
-        conn.setConnectTimeout(5000);
-        conn.setReadTimeout(5000);
-        InputStream stream = conn.getInputStream();
-        List objs = b.bindStuff(stream);
-
-        for (Object object : objs) {
-            org.openremote.android.console.bindings.Activity act = (org.openremote.android.console.bindings.Activity) object;
-            activityNames.add(act.getName());
-        }
-
-        activities.addAll((List<ORActivity>) objs); // in order to have a typed
-        // list and two return
-        // values we have to do this
     }
 
     /**
@@ -331,13 +150,6 @@ public class Main extends Activity {
         quit.setIcon(R.drawable.ic_menu_close_clear_cancel);
     }
 
-    private void configSettings() {
-       Intent i = new Intent();
-       i.setClassName(this.getClass().getPackage().getName(),
-               AppSettingsActivity.class.getName());
-       startActivity(i);
-    }
-    
     private void checkNetType() {
        ConnectivityManager conn = (ConnectivityManager)(Main.this).getSystemService(Context.CONNECTIVITY_SERVICE);
        if ("mobile".equals(conn.getActiveNetworkInfo().getTypeName().toLowerCase())) {
@@ -350,5 +162,64 @@ public class Main extends Activity {
       dm = getApplicationContext().getResources().getDisplayMetrics();
       XScreen.SCREEN_WIDTH = dm.widthPixels;
       XScreen.SCREEN_HEIGHT = dm.heightPixels;
+    }
+    
+    private class AsyncResourceLoader extends AsyncTask<Void, String, String> {
+      @Override
+      protected String doInBackground(Void... params) {
+         checkNetType();
+         readDisplayMetrics();
+
+         if (TextUtils.isEmpty(UserCache.getUsername(Main.this)) || TextUtils.isEmpty(UserCache.getPassword(Main.this))) {
+            return TO_LOGIN;
+         }
+         
+         String serverUrl = AppSettingsModel.getCurrentServer(Main.this);
+         String panelName = AppSettingsModel.getCurrentPanelIdentity(Main.this);
+         if (TextUtils.isEmpty(serverUrl) || TextUtils.isEmpty(panelName)) {
+            return TO_SETTING;
+         }
+
+         publishProgress(panelName);
+         HTTPUtil.downLoadPanelXml(Main.this, serverUrl, panelName);
+         FileUtil.parsePanelXML(Main.this);
+         Iterator<String> images = XMLEntityDataBase.imageSet.iterator();
+         String imageName = "";
+         while (images.hasNext()) {
+            imageName = images.next();
+            publishProgress(imageName);
+            HTTPUtil.downLoadImage(Main.this, AppSettingsModel.getCurrentServer(Main.this), imageName);
+         }
+         return TO_GROUP;
+      }
+
+      @Override
+      protected void onProgressUpdate(String... values) {
+         if (loadingView == null) {
+            loadingView = (RelativeLayout) findViewById(R.id.welcome_view);
+            ImageView globalLogo = (ImageView) findViewById(R.id.global_logo);
+            globalLogo.setImageResource(R.drawable.global_logo);
+            loadingView.setBackgroundResource(R.drawable.loading);
+         }
+         loadingText.setText("loading..." + values[0]);
+      }
+
+      @Override
+      protected void onPostExecute(String result) {
+         Intent intent = new Intent();
+         if (TO_LOGIN.equals(result)) {
+            intent.setClass(Main.this, LoginViewActivity.class);
+            intent.setData(Uri.parse(LOAD_RESOURCE));
+         } else if (TO_SETTING.equals(result)) {
+            intent.setClass(Main.this, AppSettingsActivity.class);
+         } else if (TO_GROUP.equals(result)) {
+            intent.setClass(Main.this, GroupHandler.class);
+            
+         }
+         startActivity(intent);
+         finish();
+      }
+
    }
+   
 }
