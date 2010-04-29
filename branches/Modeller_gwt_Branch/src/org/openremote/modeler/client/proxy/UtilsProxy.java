@@ -32,6 +32,7 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.component.UISlider;
 
+import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -268,5 +269,15 @@ public class UtilsProxy {
          }
          
       });
+   }
+   
+   public static boolean isPanelNameAvailable(String panelName) {
+      List<BeanModel> panelModels = BeanModelDataBase.panelTable.loadAll();
+      for (BeanModel panelModel : panelModels) {
+         if (panelName.equals(panelModel.get("name").toString())) {
+            return false;
+         }
+      }
+      return true;
    }
 }
