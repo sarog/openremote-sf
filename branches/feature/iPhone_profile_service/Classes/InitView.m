@@ -38,7 +38,7 @@
 	logo = [[UIImageView alloc] init];
 	[logo setImage:[UIImage imageNamed:@"global.logo.png"]];
 	label = [[UILabel alloc] init];
-	[Definition sharedDefinition].loading = label;
+	[Definition sharedDefinition].loading = [label retain];
 	[label setText:@"loading ... please wait."];
 	[label setBackgroundColor:[UIColor clearColor]];
 	[label setTextColor:[UIColor darkTextColor]];

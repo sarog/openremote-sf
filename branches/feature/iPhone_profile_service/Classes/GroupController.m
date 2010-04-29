@@ -77,6 +77,12 @@
 		currentOrientation = UIInterfaceOrientationPortrait;
 		NSLog(@"it's using simulator, set portrait by default");
 	}
+	
+	if (currentOrientation == UIDeviceOrientationFaceUp || 
+			currentOrientation == UIDeviceOrientationFaceDown) {
+		currentOrientation = UIInterfaceOrientationPortrait;
+		NSLog(@"it's facing up/down, set portrait by default");
+	}
 }
 
 - (UIInterfaceOrientation)getCurrentOrientation {
