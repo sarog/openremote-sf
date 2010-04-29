@@ -58,6 +58,7 @@
 				
 				if (tabBarItem.navigate && groupController.group.groupId == tabBarItem.navigate.toGroup) {
 					selected = i;
+					break;
 				}
 				i++;
 			}
@@ -68,6 +69,9 @@
 			
 			//set selected index after viewControllers have been added, or it won't work
 			//otherwise must set selected index in viewDidLoad
+			if (i == customziedTabBar.tabBarItems.count) {
+				selected = NSNotFound;
+			}
 			[self setSelectedIndex:selected];
 		}
 	}
@@ -100,11 +104,15 @@
 #pragma mark Delegate method of UITabBarController
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
 
+	
+	NSLog(@"self.selectedIndex = %d", self.selectedIndex);
 	//if the selected view controller is currently the 'More' navigation controller
 	if (self.selectedIndex == NSNotFound) {
 		if (isMoreViewShown) {
+			NSLog(@"isMoreViewShown");
 			[self returnToContentView];
 		} else {
+			NSLog(@"isMoreView not Shown");
 			isMoreViewShown = YES;
 		}
 
