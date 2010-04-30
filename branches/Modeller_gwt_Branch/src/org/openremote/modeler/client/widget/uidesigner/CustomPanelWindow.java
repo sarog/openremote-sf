@@ -294,6 +294,11 @@ public class CustomPanelWindow extends FormWindow {
       public void componentSelected(ButtonEvent ce) {
          if (!isValid()) return; 
          TouchPanelDefinition customPanel;
+         String panelName = panelNameField.getValue();
+         if (!UtilsProxy.isPanelNameAvailable(panelName)) {
+            MessageBox.alert("Warn", "'" + panelName + "' already exists, please select another name.", null);
+            return;
+         }
          if (panel == null) {
             panel = new Panel();
             panel.setOid(IDUtil.nextID());
@@ -353,12 +358,6 @@ public class CustomPanelWindow extends FormWindow {
                   customPanel.getTabbarDefinition().setHeight(tabbarHeight);
                }catch(NumberFormatException nfe) {}
             }
-         }
-         
-         String panelName = panelNameField.getValue();
-         if (!UtilsProxy.isPanelNameAvailable(panelName)) {
-            MessageBox.alert("Warn", panelName + " had created, please select other name.", null);
-            return;
          }
          panel.setName(panelName);
          BeanModelDataBase.panelTable.insert(panel.getBeanModel());
