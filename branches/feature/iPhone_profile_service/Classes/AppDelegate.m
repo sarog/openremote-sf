@@ -74,7 +74,9 @@
 - (void)updateDidFinished {
 	NSLog(@"----------updateDidFinished------");
 	if (![defaultViewController isLoadingViewGone]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 		[defaultViewController initGroups];
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
 	}
 }
 

@@ -166,7 +166,6 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 																																	message:@"Please check your setting or define a group with screens first."];
 		[self.view addSubview:errorViewController.view];		
 	}
-	
 }
 
 - (void)navigateFromNotification:(NSNotification *)notification {
@@ -376,7 +375,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 - (void)populateLoginView:(id)sender {
 	LoginViewController *loginController = [[LoginViewController alloc] initWithDelegate:self];
 	UINavigationController *loginNavController = [[UINavigationController alloc] initWithRootViewController:loginController];
-	[self presentModalViewController:loginNavController animated:NO];
+	[self presentModalViewController:loginNavController animated:YES];
 	[loginController release];
 	[loginNavController release];
 }
@@ -391,6 +390,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 }
 
 - (void)refreshView:(id)sender {
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 	for (UIView *view in self.view.subviews) {
 		[view removeFromSuperview];
 	}
@@ -408,7 +408,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	currentGroupController = nil;
 	
 	[self initGroups];
-	
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
 }
 
 - (BOOL)isLoadingViewGone {
@@ -418,8 +418,10 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 #pragma mark delegate method of LoginViewController
 
 - (void)onSignin {
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 	[currentGroupController stopPolling];
 	[theDelegate performSelector:@selector(checkConfigAndUpdate)];
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
 }
 
 - (void)onBackFromLogin {

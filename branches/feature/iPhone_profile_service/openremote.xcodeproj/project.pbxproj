@@ -41,6 +41,7 @@
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
 		8C1F03C9117416A700A9DA83 /* zUIAccelerometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */; };
 		8C28E6421181950F000154CA /* InitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C28E6411181950F000154CA /* InitView.m */; };
+		8C3839191189D69100750257 /* LoadingHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C3839181189D69100750257 /* LoadingHUDView.m */; };
 		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		8C3DE3081163492C00DD4EE7 /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3001163492C00DD4EE7 /* btn_green.png */; };
 		8C3DE3091163492C00DD4EE7 /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3011163492C00DD4EE7 /* button.png */; };
@@ -280,6 +281,8 @@
 		8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = zUIAccelerometer.m; sourceTree = "<group>"; };
 		8C28E6401181950F000154CA /* InitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InitView.h; sourceTree = "<group>"; };
 		8C28E6411181950F000154CA /* InitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InitView.m; sourceTree = "<group>"; };
+		8C3839171189D69100750257 /* LoadingHUDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadingHUDView.h; sourceTree = "<group>"; };
+		8C3839181189D69100750257 /* LoadingHUDView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadingHUDView.m; sourceTree = "<group>"; };
 		8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		8C3DE3001163492C00DD4EE7 /* btn_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = btn_green.png; path = image/btn_green.png; sourceTree = "<group>"; };
 		8C3DE3011163492C00DD4EE7 /* button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button.png; path = image/button.png; sourceTree = "<group>"; };
@@ -741,6 +744,8 @@
 		8CF6A27B0FBD3751006ED733 /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				8C3839171189D69100750257 /* LoadingHUDView.h */,
+				8C3839181189D69100750257 /* LoadingHUDView.m */,
 				8C1F03C7117416A700A9DA83 /* zUIAccelerometer.h */,
 				8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */,
 				8CF6A27C0FBD3782006ED733 /* AsyncSocket.h */,
@@ -1118,6 +1123,7 @@
 				33C3A49410FE32E3001C520E /* ColorUtil.m in Sources */,
 				8C1F03C9117416A700A9DA83 /* zUIAccelerometer.m in Sources */,
 				8C28E6421181950F000154CA /* InitView.m in Sources */,
+				8C3839191189D69100750257 /* LoadingHUDView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

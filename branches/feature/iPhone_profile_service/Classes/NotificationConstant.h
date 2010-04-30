@@ -33,6 +33,8 @@ extern NSString *const NotificationNavigateTo;
 extern NSString *const NotificationPopulateCredentialView;
 extern NSString *const NotificationPopulateSettingsView;
 extern NSString *const NotificationNavigateBack;
+extern NSString *const NotificationShowLoading;
+extern NSString *const NotificationHideLoading;
 
 @interface NotificationConstant : NSObject {
 

@@ -30,7 +30,7 @@
 #import "NotificationConstant.h"
 #import "ChoosePanelViewController.h"
 #import "DataBaseService.h"
-
+#import "NotificationConstant.h"
 
 @interface AppSettingController (Private)
 -(NSMutableArray *)getCurrentServersWithAutoDiscoveryEnable:(BOOL)b;
@@ -236,6 +236,7 @@
 			updateController = nil;
 		}
 		updateController = [[UpdateController alloc] initWithDelegate:self];
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 		[updateController checkConfigAndUpdate];
 	}	
 }
