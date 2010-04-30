@@ -163,6 +163,11 @@ public class PanelWindow extends FormWindow {
          @Override
          public void handleEvent(FormEvent be) {
             Panel panel = new Panel();
+            String panelName = panelNameField.getValue();
+            if (!UtilsProxy.isPanelNameAvailable(panelName)) {
+               MessageBox.alert("Warn", "'" + panelName + "' already exists, please select another name.", null);
+               return;
+            }
             if (panelModel == null) {
                panel.setOid(IDUtil.nextID());
                Panel.increaseDefaultNameIndex();
@@ -196,11 +201,6 @@ public class PanelWindow extends FormWindow {
                BeanModelDataBase.groupTable.insert(defaultGroup.getBeanModel());
             } else {
                panel = panelModel.getBean();
-            }
-            String panelName = panelNameField.getValue();
-            if (!UtilsProxy.isPanelNameAvailable(panelName)) {
-               MessageBox.alert("Warn", panelName + " had created, please select other name.", null);
-               return;
             }
             panel.setName(panelName);
             BeanModelDataBase.panelTable.insert(panel.getBeanModel());
