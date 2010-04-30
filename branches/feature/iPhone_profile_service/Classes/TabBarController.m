@@ -32,10 +32,10 @@
 - (id) initWithGroupController:(GroupController *)groupControllerParam tabBar:(TabBar *)tabBar {
 	if (self = [super initWithNibName:nil bundle:nil]) {
 		if (tabBar) {
-			customziedTabBar = tabBar;
+			customziedTabBar = [tabBar retain];
 			isMoreViewShown = NO;
 			self.delegate = self;
-			self.groupController = groupControllerParam;
+			self.groupController = [groupControllerParam retain];
 			CGRect frame = [groupController getFullFrame];
 			[self.view setFrame:frame];
 			NSLog(@"tabbar full frame width=%g, height=%g", frame.size.width,frame.size.height);
@@ -47,8 +47,8 @@
 			NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
 			int i = 0;
 			int selected = i;
+			
 			for (TabBarItem *tabBarItem in customziedTabBar.tabBarItems) {
-				
 				UIViewController *itemController = [[UIViewController alloc] init];
 				itemController.view = groupController.view;
 				itemController.tabBarItem.title = tabBarItem.tabBarItemName;
@@ -58,7 +58,6 @@
 				
 				if (tabBarItem.navigate && groupController.group.groupId == tabBarItem.navigate.toGroup) {
 					selected = i;
-					break;
 				}
 				i++;
 			}
