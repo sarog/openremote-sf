@@ -27,12 +27,14 @@
 @implementation ViewHelper
 
 +(void) showAlertViewWithTitle:(NSString *)title Message:(NSString *)message  {
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 	[alert show];
 	[alert autorelease];
 }
 
 -(void) showAlertViewWithTitleAndSettingNavigation:(NSString *)title Message:(NSString *)message  {
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
 	[alert addButtonWithTitle:@"Settings"];
 	[alert show];

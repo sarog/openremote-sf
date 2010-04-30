@@ -20,6 +20,7 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "LoadingHUDView.h"
 /*accelerometer simulator*/
 #import "zUIAccelerometer.h"
 /*accelerometer simulator*/
@@ -33,6 +34,7 @@
 	CGPoint previousTouchLocation;
 	UIInterfaceOrientation orientation;
 	id theDelegate;
+	LoadingHUDView *loading;
 }
 
 - (id)initWithDelegate:(id)delegate;

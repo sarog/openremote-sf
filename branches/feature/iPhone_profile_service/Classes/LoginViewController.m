@@ -23,6 +23,7 @@
 #import "Definition.h"
 #import "ViewHelper.h"
 #import "DataBaseService.h"
+#import "NotificationConstant.h"
 
 @interface LoginViewController (Private)
 
@@ -43,9 +44,10 @@
 }
 
 - (void)viewDidLoad {
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
 	//[[DataBaseService sharedDataBaseService] deleteAllUsers];
 	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(goBack:)];
-	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelInput:)];
+	//self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelInput:)];
 	[super viewDidLoad];
 }
 
@@ -83,7 +85,7 @@
 	[Definition sharedDefinition].username = usernameField.text;
 	[Definition sharedDefinition].password = passwordField.text;
 	[[DataBaseService sharedDataBaseService] saveCurrentUser];
-	[self dismissModalViewControllerAnimated:NO];
+	[self dismissModalViewControllerAnimated:YES];
 	if ([theDelegate respondsToSelector:@selector(onSignin)]) {
 		[theDelegate performSelector:@selector(onSignin)];
 	}

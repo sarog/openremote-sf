@@ -27,6 +27,7 @@
 #import "CredentialUtil.h"
 #import "Definition.h"
 #import "DataBaseService.h"
+#import "NotificationConstant.h"
 
 @interface ChoosePanelViewController (Private)
 
@@ -49,6 +50,7 @@
 }
 
 - (void)requestPanelList {
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition panelsRESTUrl]];
 	NSURL *url = [[NSURL alloc]initWithString:location];
 	NSLog(@"panels:%@",location);
@@ -213,6 +215,7 @@
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
 	[xmlParser setDelegate:self];
 	[xmlParser parse];
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
 	[self updateTableView];
 	[xmlParser release];
 	[result release];
