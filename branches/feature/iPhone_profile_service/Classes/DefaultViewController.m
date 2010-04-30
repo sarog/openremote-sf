@@ -157,7 +157,10 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		int lastScreenId = [[userDefaults objectForKey:@"lastScreenId"] intValue];
 		if (lastScreenId > 0) {
 			[currentGroupController switchToScreen:lastScreenId];
+		} else {
+			[currentGroupController switchToFirstScreen];
 		}
+
 		//End: Recover the last screen
 		// ReSave last groupId and screenId
 		[self saveLastGroupIdAndScreenId];
@@ -418,7 +421,6 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 #pragma mark delegate method of LoginViewController
 
 - (void)onSignin {
-	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 	[currentGroupController stopPolling];
 	[theDelegate performSelector:@selector(checkConfigAndUpdate)];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];

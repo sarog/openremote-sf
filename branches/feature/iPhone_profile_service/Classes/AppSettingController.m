@@ -236,7 +236,6 @@
 			updateController = nil;
 		}
 		updateController = [[UpdateController alloc] initWithDelegate:self];
-		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 		[updateController checkConfigAndUpdate];
 	}	
 }
