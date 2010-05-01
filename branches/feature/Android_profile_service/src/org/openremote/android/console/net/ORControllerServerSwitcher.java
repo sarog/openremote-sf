@@ -92,6 +92,7 @@ public class ORControllerServerSwitcher {
     					   for (int i = 0; i < nodeNums; i++) {
     						   groupMembers.add(nodeList.item(i).getAttributes().getNamedItem("url").getNodeValue());
     					   }
+    					   Log.i("Had detected groupmembers", "Groupmembers are " + groupMembers);
     					   return saveGroupMembersToFile(context, groupMembers);
     					} catch (IOException e) {
     						Log.e("ERROR", "The data is from ORConnection is bad", e);
@@ -114,7 +115,6 @@ public class ORControllerServerSwitcher {
 		} catch (IOException e) {
 			throw new ORConnectionException("Httpclient execute httprequest fail.", e);
 		}
-		
 		return true;
 	}
 	
