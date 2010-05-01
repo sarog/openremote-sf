@@ -24,10 +24,16 @@ import java.io.IOException;
 import java.util.List;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
 
 import org.apache.http.client.ClientProtocolException;
+import org.openremote.android.console.AppSettingsActivity;
+import org.openremote.android.console.Constants;
 import org.openremote.android.console.HTTPUtil;
+import org.openremote.android.console.model.UserCache;
+
+import android.test.ActivityInstrumentationTestCase2;
+import android.test.suitebuilder.annotation.MediumTest;
+import android.util.Log;
 
 /**
  * it's responsible for testing whether the HTTPUtil works after it's refactored with ORConnection.
@@ -35,15 +41,23 @@ import org.openremote.android.console.HTTPUtil;
  * @author handy 2010-04-27
  *
  */
-public class HTTPUtilTest extends TestCase {
+public class HTTPUtilTest extends ActivityInstrumentationTestCase2<AppSettingsActivity> {
 	
-	private static final int HTTP_REQUEST_SUCCESS = 200;
-	private static final String CONTROLLER_SERVER_ROOT_URL = "http://localhost:8080/controller";
+	public HTTPUtilTest() {
+		super("org.openremote.android.console", AppSettingsActivity.class);
+		
+	}
 	
+	private static final String CONTROLLER_SERVER_ROOT_URL = "http://192.168.100.108:8080/controller";
+	
+	@MediumTest
 	public void testSendButton() {
 		try {
-			int httpResponseStatusCode = HTTPUtil.sendButton(CONTROLLER_SERVER_ROOT_URL, String.valueOf(81), "off");
-			Assert.assertEquals(HTTP_REQUEST_SUCCESS, httpResponseStatusCode);
+			UserCache.saveUser(getActivity(), "handy", "handy");
+			int httpResponseStatusCode = HTTPUtil.sendButton(getActivity(), CONTROLLER_SERVER_ROOT_URL, String.valueOf(81), "off");
+			Log.i("INFO", httpResponseStatusCode + "");
+			System.out.println("StatusCode : " + httpResponseStatusCode);
+			Assert.assertEquals(Constants.HTTP_SUCCESS, httpResponseStatusCode);
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -51,10 +65,12 @@ public class HTTPUtilTest extends TestCase {
 		}
 	}
 	
+	@MediumTest
 	public void testSendCommand() {
 		try {
-			int httpResponseStatusCode = HTTPUtil.sendCommand(CONTROLLER_SERVER_ROOT_URL, 81, "off");
-			Assert.assertEquals(HTTP_REQUEST_SUCCESS, httpResponseStatusCode);
+			UserCache.saveUser(getActivity(), "handy", "handy");
+			int httpResponseStatusCode = HTTPUtil.sendCommand(getActivity(), CONTROLLER_SERVER_ROOT_URL, 81, "off");
+			Assert.assertEquals(Constants.HTTP_SUCCESS, httpResponseStatusCode);
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -62,8 +78,10 @@ public class HTTPUtilTest extends TestCase {
 		}
 	}
 	
+	@MediumTest
 	public void testGetPanels() {
-		List<String> panelsname = HTTPUtil.getPanels(CONTROLLER_SERVER_ROOT_URL);
+		UserCache.saveUser(getActivity(), "handy", "handy");
+		List<String> panelsname = HTTPUtil.getPanels(getActivity(), CONTROLLER_SERVER_ROOT_URL);
 		Assert.assertEquals(true, panelsname.size() > 0);
 	}
 }

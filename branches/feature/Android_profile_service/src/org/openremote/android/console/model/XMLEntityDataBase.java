@@ -21,6 +21,8 @@ package org.openremote.android.console.model;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.openremote.android.console.bindings.Group;
 import org.openremote.android.console.bindings.TabBar;
@@ -28,7 +30,7 @@ import org.openremote.android.console.bindings.XScreen;
 
 public class XMLEntityDataBase {
    public static TabBar globalTabBar = null;
-   public static final HashMap<Integer, Group> groups = new HashMap<Integer, Group>();
+   public static final Map<Integer, Group> groups = new LinkedHashMap<Integer, Group>();
    public static final HashMap<Integer, XScreen> screens = new HashMap<Integer, XScreen>();
    public static final HashSet<String> imageSet = new HashSet<String>();
    public static Group getFirstGroup() {

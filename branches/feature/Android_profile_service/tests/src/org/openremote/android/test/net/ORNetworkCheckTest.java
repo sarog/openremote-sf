@@ -18,27 +18,32 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.openremote.android.console.exceptions;
+package org.openremote.android.test.net;
 
+import org.openremote.android.console.AppSettingsActivity;
+import org.openremote.android.console.net.ORNetworkCheck;
+
+import android.content.Context;
+import android.test.ActivityInstrumentationTestCase2;
+import android.test.suitebuilder.annotation.MediumTest;
+import android.util.Log;
 
 /**
- * This is the exceptions' root in Android console side.
+ * This is responsible for testing networkcheck.
  * 
- * @author handy 2010-04-27
+ * @author handy 2010-04-28
  *
  */
+public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSettingsActivity> {
 
-public abstract class AndroidConsoleException extends RuntimeException {
-
-	public AndroidConsoleException(String msg) {
-		super(msg);
+	public ORNetworkCheckTest() {
+		super("org.openremote.android.console", AppSettingsActivity.class);
 	}
 	
-	public AndroidConsoleException(Throwable throwable) {
-		super(throwable);
+	@MediumTest
+	public void testReachability() {
+		Context context = getActivity();
+		Log.i("INFO", "Network check was " + (ORNetworkCheck.checkAllWithControllerServerURL(context, "http://192.168.100.108:8080/controller") ? "successful" : "failed"));
 	}
-	
-	public AndroidConsoleException(String msg, Throwable throwable) {
-		super(msg, throwable);
-	}
+
 }

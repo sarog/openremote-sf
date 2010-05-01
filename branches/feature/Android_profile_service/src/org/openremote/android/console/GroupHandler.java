@@ -31,6 +31,7 @@ import org.openremote.android.console.model.ORListenerManager;
 import org.openremote.android.console.model.UserCache;
 import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.model.XMLEntityDataBase;
+import org.openremote.android.console.net.ORControllerServerSwitcher;
 import org.openremote.android.console.view.GroupView;
 import org.openremote.android.console.view.ScreenView;
 import org.openremote.android.console.view.ScreenViewFlipper;
@@ -40,6 +41,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -81,17 +83,50 @@ public class GroupHandler extends Activity implements OnGestureListener {
        if (navigationHistory == null) {
           navigationHistory = new ArrayList<Navigate>();
        }
-       Group group = XMLEntityDataBase.getFirstGroup();
-       screenSize = group.getScreens().size();
-       currentGroupView = new GroupView(this, group);
-       groupViews.put(group.getGroupId(), currentGroupView);
+       recoverLastGroupScreen();
+       ORControllerServerSwitcher.detectGroupMembers(this);
        
-       currentScreenViewFlipper = currentGroupView.getScreenViewFlipper();
-       linearLayout = new LinearLayout(this);
-       linearLayout.addView(currentScreenViewFlipper);
-       this.setContentView(linearLayout);
-       ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
-       addNaviagateListener();
+//       Group group = XMLEntityDataBase.getFirstGroup();
+//       screenSize = group.getScreens().size();
+//       currentGroupView = new GroupView(this, group);
+//       groupViews.put(group.getGroupId(), currentGroupView);
+//       
+//       currentScreenViewFlipper = currentGroupView.getScreenViewFlipper();
+//       linearLayout = new LinearLayout(this);
+//       linearLayout.addView(currentScreenViewFlipper);
+//       this.setContentView(linearLayout);
+//       UserCache.saveLastGroupIdAndScreenId(GroupHandler.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
+//       Log.i("------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupHandler.this) + "," + UserCache.getLastScreenId(GroupHandler.this));
+//       ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
+//       addNaviagateListener();
+   }
+
+   private void recoverLastGroupScreen() {
+      Log.i("Before recovery------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupHandler.this) + "," + UserCache.getLastScreenId(GroupHandler.this));
+	   
+      int lastGroupID = UserCache.getLastGroupId(this);
+      Group lastGroup = XMLEntityDataBase.getGroup(lastGroupID);
+      if (lastGroup == null) {
+    	  lastGroup = XMLEntityDataBase.getFirstGroup();
+      }
+      screenSize = lastGroup.getScreens().size();
+      currentGroupView = new GroupView(this, lastGroup);
+      groupViews.put(lastGroup.getGroupId(), currentGroupView);
+      currentScreenViewFlipper = currentGroupView.getScreenViewFlipper();
+
+      int lastScreenID = UserCache.getLastScreenId(this);
+      if (lastScreenID > 0) {
+    	  currentScreenViewFlipper.setDisplayedChild(lastGroup.getScreens().indexOf(XMLEntityDataBase.getScreen(lastScreenID)));
+      }
+      
+      linearLayout = new LinearLayout(this);
+      linearLayout.addView(currentScreenViewFlipper);
+      this.setContentView(linearLayout);
+      
+      UserCache.saveLastGroupIdAndScreenId(GroupHandler.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
+      ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
+      addNaviagateListener();
+      Log.i("After recovery------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupHandler.this) + "," + UserCache.getLastScreenId(GroupHandler.this));
    }
 
    private void addNaviagateListener() {
@@ -108,6 +143,7 @@ public class GroupHandler extends Activity implements OnGestureListener {
                }
                if (navigateTo(navigate)) {
                   UserCache.saveLastGroupIdAndScreenId(GroupHandler.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
+                  Log.i("------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupHandler.this) + "," + UserCache.getLastScreenId(GroupHandler.this));
                   navigationHistory.add(historyNavigate);
                }
             }
@@ -317,6 +353,8 @@ public class GroupHandler extends Activity implements OnGestureListener {
           currentScreenViewFlipper.setToNextAnimation();
           currentScreenViewFlipper.showNext();
           ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
+          UserCache.saveLastGroupIdAndScreenId(GroupHandler.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
+          Log.i("------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupHandler.this) + "," + UserCache.getLastScreenId(GroupHandler.this));
           return true;
        }
        return false;
@@ -329,6 +367,8 @@ public class GroupHandler extends Activity implements OnGestureListener {
           currentScreenViewFlipper.setToPreviousAnimation();
           currentScreenViewFlipper.showPrevious();
           ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
+          UserCache.saveLastGroupIdAndScreenId(GroupHandler.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
+          Log.i("------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupHandler.this) + "," + UserCache.getLastScreenId(GroupHandler.this));
           return true;
        }
        return false;

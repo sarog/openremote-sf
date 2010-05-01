@@ -34,6 +34,7 @@ import org.openremote.android.console.net.ORCommandConnectionDelegate;
 import org.openremote.android.console.net.ORConnection;
 import org.openremote.android.console.net.ORGetPanelsConnectionDelegate;
 import org.openremote.android.console.net.ORHttpMethod;
+import org.openremote.android.console.util.SecurityUtil;
 
 import android.content.Context;
 
@@ -58,7 +59,8 @@ public class HTTPUtil {
      * @throws ClientProtocolException
      * @throws IOException
      */
-    public static int sendButton(String url, String id, String command)
+    @SuppressWarnings("deprecation")
+	public static int sendButton(Context context, String url, String id, String command)
     throws ClientProtocolException, IOException {
 		//String connectString = url + "/rest/button/" + id + "/" + command;
 		//HttpClient client = new DefaultHttpClient();
@@ -69,11 +71,12 @@ public class HTTPUtil {
 //		String connectString = url + "/rest/button/" + id + "/" + command;
     	String connectString = url + "/rest/control/" + id + "/" + command;
 		ORButtonConnectionDelegate delegate =  new ORButtonConnectionDelegate();
-		new ORConnection(ORHttpMethod.POST, connectString, delegate);
+		new ORConnection(context, ORHttpMethod.POST, true, connectString, delegate);
 		return delegate.getHttpResponseStatusCode();
 	}
 	
-	public static int sendCommand(String url, int id, String command)
+	@SuppressWarnings("deprecation")
+	public static int sendCommand(Context context, String url, int id, String command)
 	throws ClientProtocolException, IOException {
 		//String connectString = url + "/rest/control/" + id + "/" + command;
 		//HttpClient client = new DefaultHttpClient();
@@ -83,11 +86,12 @@ public class HTTPUtil {
 		//return code;
 		String connectString = url + "/rest/control/" + id + "/" + command;
 		ORCommandConnectionDelegate delegate =  new ORCommandConnectionDelegate();
-		new ORConnection(ORHttpMethod.POST, connectString, delegate);
+		new ORConnection(context, ORHttpMethod.POST, true, connectString, delegate);
 		return delegate.getHttpResponseStatusCode();
 	}
 
-    public static List<String> getPanels(String serverUrl){
+    @SuppressWarnings("deprecation")
+	public static List<String> getPanels(Context context, String serverUrl){
 /*       List<String> panelList = new ArrayList<String>();
       try {
          HttpClient client = new DefaultHttpClient();
@@ -134,7 +138,7 @@ public class HTTPUtil {
 //      }
        /*return panelList;*/
     	ORGetPanelsConnectionDelegate delegate = new ORGetPanelsConnectionDelegate();
-    	new ORConnection(ORHttpMethod.GET, serverUrl + "/rest/panels", delegate);
+    	new ORConnection(context ,ORHttpMethod.GET, true, serverUrl + "/rest/panels", delegate);
     	return delegate.getPanelsName();
     }
     
@@ -150,6 +154,7 @@ public class HTTPUtil {
        HttpClient client = new DefaultHttpClient();
        try {
          HttpGet get = new HttpGet(serverUrl);
+         SecurityUtil.addCredentialToHttpRequest(context, get);
          HttpResponse response = client.execute(get);
          if (response.getStatusLine().getStatusCode() == 200) {
             FileOutputStream fOut = context.openFileOutput(fileName, Context.MODE_PRIVATE);

@@ -36,7 +36,7 @@ public class ORCommandConnectionDelegate implements ORConnectionDelegate {
 	
 	@Override
 	public void urlConnectionDidFailWithException(Exception e) {
-
+		e.printStackTrace();
 	}
 
 	@Override
