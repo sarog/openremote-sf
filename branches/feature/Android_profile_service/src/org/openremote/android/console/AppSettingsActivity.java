@@ -22,6 +22,7 @@ package org.openremote.android.console;
 import java.util.ArrayList;
 
 import org.openremote.android.console.model.AppSettingsModel;
+import org.openremote.android.console.util.StringUtil;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -351,9 +352,12 @@ public class AppSettingsActivity extends Activity{
          String customServerUrls = "";
          for (int i = 0; i < customServerCount; i++) {
             if (i != checkedPosition) {
-               customServerUrls = customServerUrls + customeListView.getItemAtPosition(i).toString() + ",";
+               customServerUrls = customServerUrls + customeListView.getItemAtPosition(i).toString();
             } else {
-               customServerUrls = customServerUrls + "+" + customeListView.getItemAtPosition(i).toString() + ",";
+               customServerUrls = customServerUrls + StringUtil.markControllerServerURLSelected(customeListView.getItemAtPosition(i).toString());
+            }
+            if (i != customServerCount - 1) {
+            	customServerUrls = customServerUrls + ",";
             }
          }
          if (!TextUtils.isEmpty(customServerUrls)) {

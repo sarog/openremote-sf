@@ -46,11 +46,15 @@ import android.util.Log;
  */
 public class ORGetPanelsConnectionDelegate implements ORConnectionDelegate {
 	
+	private static final int UNKNOWN_STATUS_CODE = -1;
+	
+	private int statusCode = UNKNOWN_STATUS_CODE;
+	
 	List<String> panelsName = new ArrayList<String>();
 	
 	@Override
 	public void urlConnectionDidFailWithException(Exception e) {
-
+		e.printStackTrace();
 	}
 
 	@Override
@@ -77,11 +81,15 @@ public class ORGetPanelsConnectionDelegate implements ORConnectionDelegate {
 
 	@Override
 	public void urlConnectionDidReceiveResponse(HttpResponse httpResponse) {
-
+		this.statusCode = httpResponse.getStatusLine().getStatusCode();
 	}
 
 	public List<String> getPanelsName() {
 		return panelsName;
+	}
+
+	public int getStatusCode() {
+		return statusCode;
 	}
 
 }

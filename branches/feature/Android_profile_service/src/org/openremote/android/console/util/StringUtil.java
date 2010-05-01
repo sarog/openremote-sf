@@ -18,27 +18,23 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.openremote.android.console.exceptions;
-
+package org.openremote.android.console.util;
 
 /**
- * This is the exceptions' root in Android console side.
  * 
- * @author handy 2010-04-27
+ * @author handy 2010-04-29
  *
  */
-
-public abstract class AndroidConsoleException extends RuntimeException {
-
-	public AndroidConsoleException(String msg) {
-		super(msg);
+public class StringUtil {
+	
+	/** Marks the specified controllerServerURL selected. */
+	public static String markControllerServerURLSelected(String controllerServerURL) {
+		return "+" + controllerServerURL;
 	}
 	
-	public AndroidConsoleException(Throwable throwable) {
-		super(throwable);
+	/** Removes the specified url selected. */
+	public static String removeControllerServerURLSelected(String url) {
+		return url.replaceAll("+", "");
 	}
 	
-	public AndroidConsoleException(String msg, Throwable throwable) {
-		super(msg, throwable);
-	}
 }

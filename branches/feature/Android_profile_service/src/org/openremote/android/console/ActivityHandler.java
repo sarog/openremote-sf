@@ -255,7 +255,7 @@ public class ActivityHandler extends Activity implements OnGestureListener {
                 }
                 int status;
                 try {
-                    status = HTTPUtil.sendButton(url, id, HTTPUtil.CLICK);
+                    status = HTTPUtil.sendButton(ActivityHandler.this, url, id, HTTPUtil.CLICK);
                     if (status != Constants.HTTP_SUCCESS) {
                         showDialog(Constants.DIALOG_ERROR_ID);
                     }
@@ -282,7 +282,7 @@ public class ActivityHandler extends Activity implements OnGestureListener {
             public void onClick(View v) {
                 Log.d(this.toString(), id + " click");
                 try {
-                    int status = HTTPUtil.sendButton(url, id, HTTPUtil.CLICK);
+                    int status = HTTPUtil.sendButton(ActivityHandler.this, url, id, HTTPUtil.CLICK);
                     Log.d(this.toString(), id + " click status " + status);
                 } catch (Exception e) {
                     Log.e(this.toString(), id + " click failed", e);

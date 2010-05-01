@@ -40,7 +40,7 @@ public class PanelSelectorActivity extends ListActivity {
    public void onCreate(Bundle savedInstanceState) {
        super.onCreate(savedInstanceState);
        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-       List<String> panelList = HTTPUtil.getPanels(getIntent().getDataString());
+       List<String> panelList = HTTPUtil.getPanels(this, getIntent().getDataString());
        setListAdapter(new ArrayAdapter<String>(this,
                android.R.layout.simple_list_item_single_choice, panelList));
        

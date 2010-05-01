@@ -18,27 +18,34 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.openremote.android.console.exceptions;
-
+package org.openremote.android.console.net;
 
 /**
- * This is the exceptions' root in Android console side.
+ * It enumerates the statuses of wifi connection.
  * 
- * @author handy 2010-04-27
+ * @author handy 2010-04-28
  *
  */
-
-public abstract class AndroidConsoleException extends RuntimeException {
-
-	public AndroidConsoleException(String msg) {
-		super(msg);
+public enum ORWifiConnectionStatus {
+	UNREACHABLE("UNREACHABLE"),
+	REACHABLE_VIA_CARRIER_DATANETWORK("REACHABLE_VIA_CARRIER_DATANETWORK"),
+	REACHABLE_VIA_WIFINETWORK("REACHABLE_VIA_WIFINETWORK");
+	
+	private String statusValue;
+	
+	private ORWifiConnectionStatus(String status) {
+		this.statusValue = status.toUpperCase();
 	}
 	
-	public AndroidConsoleException(Throwable throwable) {
-		super(throwable);
+	@Override
+	public String toString() {
+		return this.statusValue;
 	}
 	
-	public AndroidConsoleException(String msg, Throwable throwable) {
-		super(msg, throwable);
+	public boolean equals(ORWifiConnectionStatus wifiConnectionStatus) {
+		if (wifiConnectionStatus == null || wifiConnectionStatus.toString() == null || this.statusValue == null) {
+			return false;
+		}
+		return this.statusValue.equals(wifiConnectionStatus.toString());
 	}
 }

@@ -29,7 +29,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.openremote.android.console.Constants;
 import org.openremote.android.console.exceptions.ORConnectionException;
+import org.openremote.android.console.util.SecurityUtil;
+
+import android.content.Context;
 
 /**
  * This is responsible for manage the connection of android console to controller
@@ -39,18 +43,16 @@ import org.openremote.android.console.exceptions.ORConnectionException;
  */
 
 public class ORConnection {	
-	private static final int HTTP_REQUEST_SUCCESS = 200;
-	
 	private HttpClient httpClient;
 	private HttpRequestBase httpRequest;
 	private HttpResponse httpResponse;
 	private ORConnectionDelegate delegate;
 	
 	/** 
-	 * Establish the httpconnection with url for caller,<br />
-	 * and then the caller can deal with the httprequest result in ORConnectionDelegate instance.
+	 * Establish the HttpBasicAuthentication httpconnection depend on param <b>isNeedHttpBasicAuth</b> with url for caller,<br />
+	 * and then the caller can deal with the httprequest result within ORConnectionDelegate instance.
 	 */
-	public ORConnection (ORHttpMethod httpMethod, String url, ORConnectionDelegate delegateParam) {
+	public ORConnection (Context context, ORHttpMethod httpMethod, boolean isNeedHttpBasicAuth, String url, ORConnectionDelegate delegateParam) {
 		delegate = delegateParam;
 		httpClient = new DefaultHttpClient();
 		if (ORHttpMethod.POST.equals(httpMethod)) {
@@ -62,13 +64,18 @@ public class ORConnection {
 		if (httpRequest == null) {
 			throw new ORConnectionException("Create HttpRequest fail.");
 		}
+		
+		if (isNeedHttpBasicAuth) {
+			SecurityUtil.addCredentialToHttpRequest(context, httpRequest);
+		}
+		
         try {
         	httpResponse = httpClient.execute(httpRequest);
 		} catch (ClientProtocolException e) {
-			connectionDidFailWithException(new ORConnectionException("Httpclient execute httprequest fail.", e));
+			connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail.", e));
 			return;
 		} catch (IOException e) {
-			connectionDidFailWithException(new ORConnectionException("Httpclient execute httprequest fail.", e));
+			connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail.", e));
 			return;
 		}
 		dealWithResponse();
@@ -87,9 +94,9 @@ public class ORConnection {
 	 * and sends a notification to delegate with <b>urlConnectionDidFailWithException</b> method calling and
 	 * switching the connection of android console to a available controller server in groupmembers of self.
 	 */
-	private void connectionDidFailWithException(ORConnectionException e) {
+	private void connectionDidFailWithException(Context context, ORConnectionException e) {
 		delegate.urlConnectionDidFailWithException(e);
-		switchControllerToGroupMember();
+		ORControllerServerSwitcher.doSwitch(context);
 	}
 	
 	/** 
@@ -106,25 +113,53 @@ public class ORConnection {
 	 */
 	private void connectionDidReceiveData() {
 		try {
-			if (httpResponse.getStatusLine().getStatusCode() == HTTP_REQUEST_SUCCESS) {
+			if (httpResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
 				delegate.urlConnectionDidReceiveData(httpResponse.getEntity().getContent());
 			} else {
 				new ORConnectionException("Get the entity's content of httpresponse fail."); 
 			}
 		} catch (IllegalStateException e) {
-			new ORConnectionException("Get the entity's content of httpresponse fail.", e);
+			throw new ORConnectionException("Get the entity's content of httpresponse fail.", e);
 		} catch (IOException e) {
-			new ORConnectionException("Get the entity's content of httpresponse fail.", e);
+			throw new ORConnectionException("Get the entity's content of httpresponse fail.", e);
 		}
 	}
 	
-	/** private methods */
-	
-	/** Switch urlconnnection to a available controller server */
-	private void switchControllerToGroupMember() {
-		// TODO: removeBadCurrentServerURL
-		// TODO: checkGroupMemberServers, if there is one available, then get it.
-		// TODO: if get a available url, then updateControllerWith:controllerServerUrl, else alert "no server available" to users
+	/** 
+	 * Establish the httpconnection with url for caller<br />
+	 * and then the caller can deal with the httprequest result within ORConnectionDelegate instance.
+	 */
+	public static boolean checkURLWithHTTPProtocol (Context context, ORHttpMethod httpMethod, String url, boolean isNeedBasicAuth) {
+		HttpRequestBase request = null;
+		HttpResponse response;
+		
+		HttpClient client = new DefaultHttpClient();
+		if (ORHttpMethod.POST.equals(httpMethod)) {
+			request = new HttpPost(url);
+		} else if (ORHttpMethod.GET.equals(httpMethod)) {
+			request = new HttpGet(url);
+		}
+		
+		if (request == null) {
+			throw new ORConnectionException("Create HttpRequest fail.");
+		}
+		
+		if (isNeedBasicAuth) {
+			SecurityUtil.addCredentialToHttpRequest(context, request);
+		}
+		
+        try {
+        	response = client.execute(request);
+        	if (response != null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
+        		return true;
+        	} else {
+        		return false;
+        	}
+		} catch (ClientProtocolException e) {
+			throw new ORConnectionException("Httpclient execute httprequest fail.", e);
+		} catch (IOException e) {
+			throw new ORConnectionException("Httpclient execute httprequest fail.", e);
+		}
 	}
 	
 }

@@ -28,6 +28,7 @@ import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.UserCache;
 import org.openremote.android.console.model.XMLEntityDataBase;
 import org.openremote.android.console.net.IPAutoDiscoveryClient;
+import org.openremote.android.console.net.ORControllerServerSwitcher;
 import org.openremote.android.console.util.FileUtil;
 
 import android.app.Activity;
@@ -188,8 +189,9 @@ public class Main extends Activity {
          while (images.hasNext()) {
             imageName = images.next();
             publishProgress(imageName);
-            HTTPUtil.downLoadImage(Main.this, AppSettingsModel.getCurrentServer(Main.this), imageName);
+            HTTPUtil.downLoadImage(Main.this, AppSettingsModel.getCurrentServer(Main.this)+"/resources", imageName);
          }
+         ORControllerServerSwitcher.detectGroupMembers(Main.this);
          return TO_GROUP;
       }
 

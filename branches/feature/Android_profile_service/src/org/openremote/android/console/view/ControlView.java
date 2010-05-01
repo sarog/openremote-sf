@@ -37,9 +37,11 @@ import android.util.Log;
 public class ControlView extends ComponentView {
 
    private Timer timer;
+   private Context context;
    
    protected ControlView(Context context) {
       super(context);
+      this.context = context;
    }
    
    public static ControlView buildWithControl(Context context, Component control) {
@@ -54,7 +56,7 @@ public class ControlView extends ComponentView {
    
    public boolean sendCommandRequest(String commandType) {
       try {
-         int responseCode = HTTPUtil.sendCommand(AppSettingsModel.getCurrentServer(getContext()), getComponent().getComponentId(), commandType);
+         int responseCode = HTTPUtil.sendCommand(this.context, AppSettingsModel.getCurrentServer(getContext()), getComponent().getComponentId(), commandType);
          if (responseCode != 200) {
             handleServerErrorWithStatusCode(responseCode);
             return false;
