@@ -84,7 +84,6 @@ public class GroupHandler extends Activity implements OnGestureListener {
           navigationHistory = new ArrayList<Navigate>();
        }
        recoverLastGroupScreen();
-       ORControllerServerSwitcher.detectGroupMembers(this);
        
 //       Group group = XMLEntityDataBase.getFirstGroup();
 //       screenSize = group.getScreens().size();
