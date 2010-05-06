@@ -153,16 +153,6 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 				[self.view addSubview:currentGroupController.view];
 			}
 		
-		//Begin: Recover the last screen	
-		int lastScreenId = [[userDefaults objectForKey:@"lastScreenId"] intValue];
-		if (lastScreenId > 0) {
-			[currentGroupController switchToScreen:lastScreenId];
-		} else {
-			[currentGroupController switchToFirstScreen];
-		}
-
-		//End: Recover the last screen
-		// ReSave last groupId and screenId
 		[self saveLastGroupIdAndScreenId];
 	} else {		
 		errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" 
