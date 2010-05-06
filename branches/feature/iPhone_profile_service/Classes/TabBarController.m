@@ -79,6 +79,8 @@
 }
 
 - (void)updateGroupController:(GroupController *)groupControllerParam {
+	[self.groupController release];
+	[groupControllerParam retain];
 	self.groupController = groupControllerParam;
 	NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
 	for (TabBarItem *tabBarItem in customziedTabBar.tabBarItems) {
@@ -90,6 +92,7 @@
 		
 		[viewControllers addObject:itemController];
 	}
+	[self.viewControllers release];
 	self.viewControllers = viewControllers;
 }
 
@@ -98,6 +101,10 @@
 		self.selectedViewController = groupController;
 		isMoreViewShown = NO;
 	}
+}
+
+- (void)returnToContentViewWithAnimation {
+		[NSTimer scheduledTimerWithTimeInterval:0.2f target:self selector:@selector(returnToContentView) userInfo:nil repeats:NO];
 }
 
 #pragma mark Delegate method of UITabBarController
@@ -121,6 +128,7 @@
 	TabBarItem *tabBarItem = [customziedTabBar.tabBarItems objectAtIndex:self.selectedIndex];
 	if (tabBarItem && tabBarItem.navigate) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
+		isMoreViewShown = NO;
 	} else if (tabBarItem && !tabBarItem.navigate) {
 		[self returnToContentView];
 	}
@@ -132,7 +140,7 @@
 	if (tabBarItem.navigate) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
 	}
-	[self returnToContentView];
+	[self returnToContentViewWithAnimation];
 }
 
 - (void)dealloc {
