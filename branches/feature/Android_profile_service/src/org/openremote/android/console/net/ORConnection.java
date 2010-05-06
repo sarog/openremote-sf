@@ -34,6 +34,7 @@ import org.openremote.android.console.exceptions.ORConnectionException;
 import org.openremote.android.console.util.SecurityUtil;
 
 import android.content.Context;
+import android.os.AsyncTask;
 
 /**
  * This is responsible for manage the connection of android console to controller
@@ -69,16 +70,17 @@ public class ORConnection {
 			SecurityUtil.addCredentialToHttpRequest(context, httpRequest);
 		}
 		
-        try {
-        	httpResponse = httpClient.execute(httpRequest);
-		} catch (ClientProtocolException e) {
-			connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail.", e));
-			return;
-		} catch (IOException e) {
-			connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail.", e));
-			return;
-		}
-		dealWithResponse();
+		new AsyncHttpExecutor().execute(context);
+//        try {
+//        	httpResponse = httpClient.execute(httpRequest);
+//		} catch (ClientProtocolException e) {
+//			connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail.", e));
+//			return;
+//		} catch (IOException e) {
+//			connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail.", e));
+//			return;
+//		}
+//		dealWithResponse();
 	}
 
 	/** Deal with the response while httpconnection of android console to controller success. */
@@ -162,4 +164,28 @@ public class ORConnection {
 		}
 	}
 	
+	private class AsyncHttpExecutor extends AsyncTask<Context, Void, Context> {
+      @Override
+      protected Context doInBackground(Context... contexts) {
+         try {
+            httpResponse = httpClient.execute(httpRequest);
+         } catch (ClientProtocolException e) {
+            return contexts[0];
+         } catch (IOException e) {
+            return contexts[0];
+         }
+         return null;
+      }
+
+      @Override
+      protected void onPostExecute(Context context) {
+         if (context != null) {
+            connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail."));
+            return;
+         }
+         dealWithResponse();
+      }
+	   
+      
+	}
 }

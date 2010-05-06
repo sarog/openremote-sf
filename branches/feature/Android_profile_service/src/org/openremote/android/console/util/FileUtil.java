@@ -108,7 +108,7 @@ public class FileUtil {
          try {
             parsePanelXMLInputStream(context.openFileInput(Constants.PANEL_XML));
          } catch (FileNotFoundException e) {
-//            Log.e("FileUtil", "panel.xml not found.", e);
+            Log.e("FileUtil", "panel.xml not found.", e);
          }
       }
    }

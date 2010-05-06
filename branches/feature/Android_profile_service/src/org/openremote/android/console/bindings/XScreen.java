@@ -18,7 +18,9 @@ package org.openremote.android.console.bindings;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 
+import org.openremote.android.console.bindings.Gesture.GestureSwipeType;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -37,6 +39,7 @@ public class XScreen extends BusinessEntity {
    private String name;
    private ArrayList<LayoutContainer> layouts;
    private Background background;
+   private ArrayList<Gesture> gestures;
    private HashSet<Integer> pollingComponentsIds;
 
    public XScreen(Node node) {
@@ -44,6 +47,7 @@ public class XScreen extends BusinessEntity {
       this.screenId = Integer.valueOf(nodeMap.getNamedItem("id").getNodeValue());
       this.name = nodeMap.getNamedItem("name").getNodeValue();
       this.layouts = new ArrayList<LayoutContainer>();
+      this.gestures = new ArrayList<Gesture>();
       NodeList childNodes = node.getChildNodes();
       int nodeNum = childNodes.getLength();
       for (int i = 0; i < nodeNum; i++) {
@@ -55,6 +59,10 @@ public class XScreen extends BusinessEntity {
                layouts.add(new GridLayoutContainer(childNodes.item(i)));
             } else if ("background".equals(nodeName)) {
                this.background = new Background(childNodes.item(i));
+            } else if ("background".equals(nodeName)) {
+               this.background = new Background(childNodes.item(i));
+            } else if ("gesture".equals(nodeName)) {
+               this.gestures.add(new Gesture(childNodes.item(i)));
             }
          }
       }
@@ -93,5 +101,18 @@ public class XScreen extends BusinessEntity {
       }
       return pollingComponentsIds;
    }
+
+   public ArrayList<Gesture> getGestures() {
+      return gestures;
+   }
    
+   public Gesture getGestureByType(GestureSwipeType swipeType) {
+      Gesture gesture = null;
+      for (Gesture gestureItem : gestures) {
+         if (swipeType.equals(gestureItem.getSwipeType())) {
+            gesture = gestureItem;
+         }
+      }
+      return gesture;
+   }
 }
