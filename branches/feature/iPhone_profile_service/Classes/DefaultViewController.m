@@ -283,11 +283,16 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		
 		// begin tabBar and view(local or global)
 		//if global tabbar exists
-		if (globalTabBarController) {
-			[globalTabBarController updateGroupController:targetGroupController];
+		if ([[Definition sharedDefinition] tabBar]) {
+			if (globalTabBarController) {
+				[globalTabBarController updateGroupController:targetGroupController];
+			} else {
+				globalTabBarController = [[TabBarController alloc] initWithGroupController:targetGroupController tabBar:[[Definition sharedDefinition] tabBar]];
+			}
 			view = globalTabBarController.view;
 			tabBarScale = TABBAR_SCALE_GLOBAL;
-		}		
+		}
+		
 		//if local tabbar exists
 		if (targetGroupController.group.tabBar) {
 			BOOL findCachedTargetTabBarController = NO;
@@ -315,17 +320,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		
 		currentGroupController = targetGroupController;
 	}
-	
-	//if screenId is specified, jump to that screen
-	if (screenId > 0) {
-		return [currentGroupController switchToScreen:screenId];
-	} else {
-		if ([currentGroupController isNew]) {
-			[currentGroupController switchToFirstScreen];
-		}
-	}
-
-	
+		
 	return YES;
 }
 
