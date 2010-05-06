@@ -19,11 +19,19 @@
 */
 package org.openremote.android.console;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.openremote.android.console.bindings.Gesture;
 import org.openremote.android.console.bindings.Group;
 import org.openremote.android.console.bindings.Navigate;
+import org.openremote.android.console.bindings.XScreen;
+import org.openremote.android.console.model.AppSettingsModel;
+import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ListenerConstant;
 import org.openremote.android.console.model.OREvent;
 import org.openremote.android.console.model.OREventListener;
@@ -31,7 +39,9 @@ import org.openremote.android.console.model.ORListenerManager;
 import org.openremote.android.console.model.UserCache;
 import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.model.XMLEntityDataBase;
-import org.openremote.android.console.net.ORControllerServerSwitcher;
+import org.openremote.android.console.net.ORConnection;
+import org.openremote.android.console.net.ORConnectionDelegate;
+import org.openremote.android.console.net.ORHttpMethod;
 import org.openremote.android.console.view.GroupView;
 import org.openremote.android.console.view.ScreenView;
 import org.openremote.android.console.view.ScreenViewFlipper;
@@ -41,11 +51,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -54,13 +64,14 @@ import android.view.WindowManager;
 import android.view.GestureDetector.OnGestureListener;
 import android.widget.LinearLayout;
 
-public class GroupHandler extends Activity implements OnGestureListener {
+public class GroupHandler extends Activity implements OnGestureListener, ORConnectionDelegate{
 
 //   private static final int FLIPPER = 0xF00D;
    private GestureDetector gestureScanner;
    private GroupView currentGroupView;
    private LinearLayout linearLayout;
    private ScreenViewFlipper currentScreenViewFlipper;
+   private XScreen currentScreen;
    private int screenSize;
    private HashMap<Integer, GroupView> groupViews;
    private ArrayList<Navigate> navigationHistory;
@@ -75,7 +86,6 @@ public class GroupHandler extends Activity implements OnGestureListener {
        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
        
        this.gestureScanner = new GestureDetector(this);
-       Log.d(this.toString(), "in oncreate for GroupHandler");
        
        if (groupViews == null) {
           groupViews = new HashMap<Integer, GroupView>();
@@ -85,19 +95,6 @@ public class GroupHandler extends Activity implements OnGestureListener {
        }
        recoverLastGroupScreen();
        
-//       Group group = XMLEntityDataBase.getFirstGroup();
-//       screenSize = group.getScreens().size();
-//       currentGroupView = new GroupView(this, group);
-//       groupViews.put(group.getGroupId(), currentGroupView);
-//       
-//       currentScreenViewFlipper = currentGroupView.getScreenViewFlipper();
-//       linearLayout = new LinearLayout(this);
-//       linearLayout.addView(currentScreenViewFlipper);
-//       this.setContentView(linearLayout);
-//       UserCache.saveLastGroupIdAndScreenId(GroupHandler.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
-//       Log.i("------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupHandler.this) + "," + UserCache.getLastScreenId(GroupHandler.this));
-//       ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
-//       addNaviagateListener();
    }
 
    private void recoverLastGroupScreen() {
@@ -117,13 +114,13 @@ public class GroupHandler extends Activity implements OnGestureListener {
       if (lastScreenID > 0) {
     	  currentScreenViewFlipper.setDisplayedChild(lastGroup.getScreens().indexOf(XMLEntityDataBase.getScreen(lastScreenID)));
       }
-      
       linearLayout = new LinearLayout(this);
       linearLayout.addView(currentScreenViewFlipper);
       this.setContentView(linearLayout);
-      
-      UserCache.saveLastGroupIdAndScreenId(GroupHandler.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
-      ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
+      ScreenView currentScreenView = (ScreenView) currentScreenViewFlipper.getCurrentView();
+      UserCache.saveLastGroupIdAndScreenId(GroupHandler.this, currentGroupView.getGroup().getGroupId(), currentScreenView.getScreen().getScreenId());
+      currentScreen = currentScreenView.getScreen();
+      currentScreenView.startPolling();
       addNaviagateListener();
       Log.i("After recovery------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupHandler.this) + "," + UserCache.getLastScreenId(GroupHandler.this));
    }
@@ -133,217 +130,11 @@ public class GroupHandler extends Activity implements OnGestureListener {
          public void handleEvent(OREvent event) {
             Navigate navigate = (Navigate) event.getData();
             if (navigate != null) {
-               Navigate historyNavigate = new Navigate();
-               if (currentGroupView.getGroup() != null) {
-                  historyNavigate.setFromGroup(currentGroupView.getGroup().getGroupId());
-                  historyNavigate.setFromScreen(((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
-               } else {
-                  return;
-               }
-               if (navigateTo(navigate)) {
-                  UserCache.saveLastGroupIdAndScreenId(GroupHandler.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
-                  Log.i("------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupHandler.this) + "," + UserCache.getLastScreenId(GroupHandler.this));
-                  navigationHistory.add(historyNavigate);
-               }
+               handleNavigate(navigate);
             }
          }
       });
    }
-//   private void startLoadingImages(ORActivity activity) {
-//        this.imageLoader = this.imageLoader == null ? new ImageLoader() :
-//        this.imageLoader.reset();
-//       for (Screen s : activity.getScreens()) {
-//
-//           for (Button b : s.getButtons()) {
-//               if (b.getIcon() != null) {
-//                   this.imageLoader.load(this.url + "/" + b.getIcon(),
-//                           makeTyper(s, this));
-//               }
-//           }
-//       }
-//       this.imageLoader.start();
-//
-//   }
-
-//   private Typer makeTyper(final Screen s, final Context c) {
-//       return new ImageLoader.Typer() {
-//
-//           @Override
-//           public ImageView type(Bitmap bitmap) {
-//               if (bitmap == null) {
-//                   ImageButton ib2 = new ImageButton(c);
-//                   ib2.setImageResource(R.drawable.ic_notfound);
-//               }
-//               int rowsize = 420 / s.getRow();
-//               int colsize = 310 / s.getCol();
-//               int yinset = rowsize / 6;
-//               int xinset = colsize / 7;
-//               int height = bitmap.getHeight();
-//               int width = bitmap.getWidth();
-//               if (height < (rowsize - (yinset * 2))
-//                       && width < (colsize - (xinset * 2))) {
-//                   ImageButton ib = new ImageButton(c);
-//                   ib.setImageBitmap(bitmap);
-//                   return ib;
-//               } else {
-//                   ImageView iv = new ImageView(c);
-//                   iv.setImageBitmap(bitmap);
-//                   iv.setBackgroundColor(0);
-//                   return iv;
-//               }
-//           }
-//       };
-//   }
-
-//   private AbsoluteLayout constructScreen(int col, int row,
-//           List<Button> buttons, Map<String, Integer> loaded) {
-//       int rowsize = 420 / row;
-//       int colsize = 310 / col;
-//       int yinset = rowsize / 6;
-//       int xinset = colsize / 7;
-//       Log.d(this.toString(), "rowsize=" + rowsize + ",colsize=" + colsize);
-//
-//       AbsoluteLayout screen = new AbsoluteLayout(this);
-//       screen.setBackgroundColor(0);
-//       for (Button button : buttons) {
-//           int posX = (colsize * button.getX());
-//           int posY = (rowsize * button.getY());
-//           if (!nvl(button.getIcon())) {
-//               Bitmap bitmap = getImage(button);
-//               View view = null;
-//               int height = bitmap != null ? bitmap.getHeight() : -1;
-//               int width = bitmap != null ? bitmap.getWidth() : -1;
-//               // Log.d(this.toString(),"height="+height+",width="+width);
-//               int i = loaded.get(button.getIcon()) == null ? 0 : loaded
-//                       .get(button.getIcon());
-//               view = bitmap != null ? getViewForButton(button.getIcon()).get(
-//                       i) : constructNotFoundButton();
-//               i++;
-//               loaded.put(button.getIcon(), i);
-//               if (height < (rowsize - (yinset * 2))
-//                       && width < (colsize - (xinset * 2))) {
-//
-//                   height = (rowsize - (yinset * 2));
-//                   width = (colsize - (xinset * 2));
-//                   posX += xinset;
-//                   posY += yinset;
-//               }
-//               if ((posX + width) > 320) {
-//                   posX += (320 - (posX + width));
-//                   posX = posX >= 0 ? posX : 0;
-//               }
-//               if ((posY + height) > 480) {
-//                   posY += (480 - (posY + height));
-//                   posY = posY >= 0 ? posY : 0;
-//               }
-//               width = width > 320 ? 320 : width;
-//               height = height > 455 ? 455 : height;
-//               Log.d(this.toString(), "positioning " + button.getIcon()
-//                       + " num " + i + " at " + width + "," + height + ","
-//                       + posX + "," + posY);
-//               if (height < 400 && width < 300) {
-//                   // dirty dirty hack, make big buttons that do nothing
-//                   // inoperative for clicks so that gestures work
-//                   // properly
-//                   view.setOnClickListener(createClickListener(url, button
-//                           .getId()));
-//                   view.setOnTouchListener(createTouchListener(url, button
-//                           .getId()));
-//
-//               }
-//
-//               screen.addView(view, new AbsoluteLayout.LayoutParams(width,
-//                       height, posX, posY));
-//           } else if (!nvl(button.getLabel())) {
-//               android.widget.Button b = new android.widget.Button(this);
-//               b.setTypeface(Typeface.DEFAULT_BOLD);
-//               b.setTextSize(18);
-//               b.setOnTouchListener(createTouchListener(url, button.getId()));
-//               b.setOnClickListener(createClickListener(url, button.getId()));
-//               b.setText(button.getLabel());
-//               screen.addView(b, new AbsoluteLayout.LayoutParams(
-//                       (colsize - (xinset * 2)), (rowsize - (yinset * 2)),
-//                       posX + xinset, posY + yinset));
-//           }
-//
-//       }
-//       return screen;
-//   }
-//
-//   private ImageView constructNotFoundButton() {
-//       ImageButton b = new ImageButton(this);
-//       b.setImageResource(R.drawable.ic_notfound);
-//       return b;
-//   }
-//
-//   private List<ImageView> getViewForButton(String icon) {
-//       Log.d(this.toString(), "get view for " + icon);
-//       return this.imageLoader.getView(this.url + "/" + icon);
-//   }
-//
-//   private OnTouchListener createTouchListener(final String url,
-//           final String id) {
-//       OnTouchListener listener = new View.OnTouchListener() {
-//
-//           @Override
-//           public boolean onTouch(View v, MotionEvent event) {
-//               String param = null;
-//               int action = event.getAction();
-//               switch (action) {
-//               case MotionEvent.ACTION_DOWN:
-//                   param = HTTPUtil.PRESS;
-//                   break;
-//               case MotionEvent.ACTION_UP:
-//                   param = HTTPUtil.RELEASE;
-//                   break;
-//               }
-//               int status;
-//               try {
-//                   status = HTTPUtil.sendButton(url, id, HTTPUtil.CLICK);
-//                   if (status != Constants.HTTP_SUCCESS) {
-//                       showDialog(Constants.DIALOG_ERROR_ID);
-//                   }
-//                   Log.d(this.toString(), id + " " + param + " touch status "
-//                           + status);
-//
-//               } catch (Exception e) {
-//                   Log.e(this.toString(), id + " " + param + " failed", e);
-//               }
-//
-//               return false;
-//           }
-//       };
-//
-//       return listener;
-//   }
-//
-//   private OnClickListener createClickListener(final String url,
-//           final String id) {
-//
-//       OnClickListener listener = new View.OnClickListener() {
-//
-//           @Override
-//           public void onClick(View v) {
-//               Log.d(this.toString(), id + " click");
-//               try {
-//                   int status = HTTPUtil.sendButton(url, id, HTTPUtil.CLICK);
-//                   Log.d(this.toString(), id + " click status " + status);
-//               } catch (Exception e) {
-//                   Log.e(this.toString(), id + " click failed", e);
-//               }
-//
-//           }
-//       };
-//       return listener;
-//   }
-//
-//   private Bitmap getImage(Button button) {
-//       return this.imageLoader.getBitmap(this.url + "/" + button.getIcon());
-//   }
-
-//   private boolean nvl(String label) {
-//       return label == null || label.equals("");
-//   }
 
    private boolean moveRight() {
        Log.d(this.toString(), "MoveRight");
@@ -388,17 +179,41 @@ public class GroupHandler extends Activity implements OnGestureListener {
    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
            float velocityY) {
        Log.v(this.toString(), "fling");
+       currentScreen = ((ScreenView) currentScreenViewFlipper.getCurrentView()).getScreen();
        if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
                && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-           moveRight();
+          Log.e(this.toString(), "right to left");
+          onScreenGestureEvent(currentScreen.getGestureByType(Gesture.GestureSwipeType.GestureSwipeTypeRightToLeft));
+          moveRight();
        } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
                && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-           moveLeft();
+          Log.e(this.toString(), "left to right");
+          onScreenGestureEvent(currentScreen.getGestureByType(Gesture.GestureSwipeType.GestureSwipeTypeLeftToRight));
+          moveLeft();
+       } else if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE
+             && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+          Log.e(this.toString(), "bottom to top");
+          onScreenGestureEvent(currentScreen.getGestureByType(Gesture.GestureSwipeType.GestureSwipeTypeBottomToTop));
+       } else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE
+             && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+          Log.e(this.toString(), "top to bottom");
+          onScreenGestureEvent(currentScreen.getGestureByType(Gesture.GestureSwipeType.GestureSwipeTypeTopToBottom));
        }
-
        return true;
    }
 
+   private void onScreenGestureEvent(Gesture gesture) {
+      if (gesture != null) {
+         if (gesture.isHasControlCommand()) {
+            new ORConnection(this, ORHttpMethod.POST, true, AppSettingsModel.getCurrentServer(this)
+                  + "/rest/control/" + gesture.getComponentId() + "/swipe", this);
+         }
+         if (gesture.getNavigate() != null) {
+            handleNavigate(gesture.getNavigate());
+         }
+      }
+   }
+   
    @Override
    public void onLongPress(MotionEvent e) {
        // TODO Auto-generated method stub
@@ -558,9 +373,63 @@ public class GroupHandler extends Activity implements OnGestureListener {
             }
          }
          ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
+         currentScreen = ((ScreenView) currentScreenViewFlipper.getCurrentView()).getScreen();
          return true;
       }
       return false;
    }
 
+   /**
+    * @param navigate
+    */
+   private void handleNavigate(Navigate navigate) {
+      Navigate historyNavigate = new Navigate();
+      if (currentGroupView.getGroup() != null) {
+         historyNavigate.setFromGroup(currentGroupView.getGroup().getGroupId());
+         historyNavigate.setFromScreen(((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
+         if (navigateTo(navigate)) {
+            UserCache.saveLastGroupIdAndScreenId(GroupHandler.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
+            Log.i("------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupHandler.this) + "," + UserCache.getLastScreenId(GroupHandler.this));
+            navigationHistory.add(historyNavigate);
+         }
+      }
+   }
+
+   @Override
+   public boolean onKeyDown(int keyCode, KeyEvent event) {
+      if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+         ViewHelper.showAlertViewWithTitle(GroupHandler.this, "Exit", " Exit the application.");
+         System.exit(0);
+         return true;
+     } else if (keyCode == KeyEvent.KEYCODE_HOME && event.getRepeatCount() == 0) {
+         System.exit(0);
+         return true;
+      }
+      return super.onKeyDown(keyCode, event);
+   }
+
+   @Override
+   public void urlConnectionDidFailWithException(Exception e) {
+      // do nothing.
+   }
+
+   @Override
+   public void urlConnectionDidReceiveData(InputStream data) {
+      // do nothing.
+   }
+
+   @Override
+   public void urlConnectionDidReceiveResponse(HttpResponse httpResponse) {
+      int responseCode = httpResponse.getStatusLine().getStatusCode();
+      if (responseCode != 200) {
+         if (responseCode == 401) {
+            new LoginDialog(this);
+         } else {
+            ViewHelper.showAlertViewWithTitle(this, "Send Request Error", ControllerException.exceptionMessageOfCode(responseCode));
+         }
+      }
+      
+   }
+
+   
 }

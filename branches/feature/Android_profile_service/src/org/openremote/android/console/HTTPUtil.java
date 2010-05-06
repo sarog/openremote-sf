@@ -29,6 +29,10 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.openremote.android.console.exceptions.ORConnectionException;
 import org.openremote.android.console.net.ORButtonConnectionDelegate;
 import org.openremote.android.console.net.ORCommandConnectionDelegate;
 import org.openremote.android.console.net.ORConnection;
@@ -37,6 +41,7 @@ import org.openremote.android.console.net.ORHttpMethod;
 import org.openremote.android.console.util.SecurityUtil;
 
 import android.content.Context;
+import android.util.Log;
 
 /**
  * Does the HTTP stuff, anything related to HttpClient should go here.
@@ -142,21 +147,26 @@ public class HTTPUtil {
     	return delegate.getPanelsName();
     }
     
-    public static void downLoadPanelXml(Context context, String serverUrl, String panelName) {
-       downLoadFile(context, serverUrl + "/rest/panel/" + panelName, Constants.PANEL_XML);
+    public static int downLoadPanelXml(Context context, String serverUrl, String panelName) {
+       return downLoadFile(context, serverUrl + "/rest/panel/" + panelName, Constants.PANEL_XML);
     }
     
-    public static void downLoadImage(Context context, String serverUrl, String imageName) {
-       downLoadFile(context, serverUrl + "/" + imageName, imageName);
+    public static int downLoadImage(Context context, String serverUrl, String imageName) {
+       return downLoadFile(context, serverUrl + "/resources/" + imageName, imageName);
     }
     
-    private static void downLoadFile(Context context, String serverUrl, String fileName) {
-       HttpClient client = new DefaultHttpClient();
+    private static int downLoadFile(Context context, String serverUrl, String fileName) {
+       HttpParams params = new BasicHttpParams();
+       HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
+       HttpConnectionParams.setSoTimeout(params, 5 * 1000);
+       HttpClient client = new DefaultHttpClient(params);
+       int statusCode = 0;
        try {
          HttpGet get = new HttpGet(serverUrl);
          SecurityUtil.addCredentialToHttpRequest(context, get);
          HttpResponse response = client.execute(get);
-         if (response.getStatusLine().getStatusCode() == 200) {
+         statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == 200) {
             FileOutputStream fOut = context.openFileOutput(fileName, Context.MODE_PRIVATE);
             InputStream is = response.getEntity().getContent();
             byte buf[] = new byte[1024];
@@ -168,9 +178,10 @@ public class HTTPUtil {
             is.close();
          }
       } catch (ClientProtocolException e) {
-         e.printStackTrace();
+         throw new ORConnectionException("Httpclient execute httprequest fail.", e);
       } catch (IOException e) {
-         e.printStackTrace();
+         throw new ORConnectionException("Httpclient execute httprequest fail.", e);
       }
+      return statusCode;
     }
 }

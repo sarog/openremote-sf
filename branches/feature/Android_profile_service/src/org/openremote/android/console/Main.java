@@ -25,10 +25,13 @@ import java.util.List;
 import org.openremote.android.console.bindings.XScreen;
 import org.openremote.android.console.image.ImageLoader;
 import org.openremote.android.console.model.AppSettingsModel;
+import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.UserCache;
+import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.model.XMLEntityDataBase;
 import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.console.net.ORControllerServerSwitcher;
+import org.openremote.android.console.net.ORNetworkCheck;
 import org.openremote.android.console.util.FileUtil;
 
 import android.app.Activity;
@@ -72,9 +75,10 @@ public class Main extends Activity {
     private TextView loadingText;
     private RelativeLayout loadingView;
     public static ImageLoader imageLoader;
-    private static final String TO_LOGIN = "toLogin";
-    private static final String TO_SETTING = "toSetting";
-    private static final String TO_GROUP = "toGroup";
+    private static final int TO_LOGIN = 0xF00A;
+    private static final int TO_SETTING = 0xF00B;
+    private static final int TO_GROUP = 0xF00C;
+    private static final int SWITCH_TO_OTHER_CONTROLER = 0xF00D;
     public static final String LOAD_RESOURCE = "loadResource";
     
     /** Called when the activity is first created. */
@@ -165,9 +169,9 @@ public class Main extends Activity {
       XScreen.SCREEN_HEIGHT = dm.heightPixels;
     }
     
-    private class AsyncResourceLoader extends AsyncTask<Void, String, String> {
+    private class AsyncResourceLoader extends AsyncTask<Void, String, Integer> {
       @Override
-      protected String doInBackground(Void... params) {
+      protected Integer doInBackground(Void... params) {
          checkNetType();
          readDisplayMetrics();
 
@@ -181,17 +185,39 @@ public class Main extends Activity {
             return TO_SETTING;
          }
 
+         boolean isControllerAvailable = false;
          publishProgress(panelName);
-         HTTPUtil.downLoadPanelXml(Main.this, serverUrl, panelName);
-         FileUtil.parsePanelXML(Main.this);
-         Iterator<String> images = XMLEntityDataBase.imageSet.iterator();
-         String imageName = "";
-         while (images.hasNext()) {
-            imageName = images.next();
-            publishProgress(imageName);
-            HTTPUtil.downLoadImage(Main.this, AppSettingsModel.getCurrentServer(Main.this)+"/resources", imageName);
+         if (ORNetworkCheck.checkControllerAvailable(Main.this)) {
+            isControllerAvailable = true;
+            if (ORNetworkCheck.checkPanelXMlOfCurrentPanelIdentity(Main.this)) {
+               int statusCode = HTTPUtil.downLoadPanelXml(Main.this, serverUrl, panelName);
+               if (statusCode != 200 && statusCode != 0) {
+                  return statusCode;
+               }
+            }
          }
-         ORControllerServerSwitcher.detectGroupMembers(Main.this);
+         
+         if (Main.this.getFileStreamPath(Constants.PANEL_XML).exists()) {
+            FileUtil.parsePanelXML(Main.this);
+         } else {
+            return SWITCH_TO_OTHER_CONTROLER;
+         }
+         
+         Iterator<String> images = XMLEntityDataBase.imageSet.iterator();
+         if (isControllerAvailable) {
+            String imageName = "";
+            while (images.hasNext()) {
+               imageName = images.next();
+               publishProgress(imageName);
+               HTTPUtil.downLoadImage(Main.this, AppSettingsModel.getCurrentServer(Main.this), imageName);
+            }
+         }
+         
+         new Thread(new Runnable() {
+            public void run() {
+               ORControllerServerSwitcher.detectGroupMembers(Main.this);
+            }
+         }).start(); 
          return TO_GROUP;
       }
 
@@ -207,16 +233,27 @@ public class Main extends Activity {
       }
 
       @Override
-      protected void onPostExecute(String result) {
+      protected void onPostExecute(Integer result) {
          Intent intent = new Intent();
-         if (TO_LOGIN.equals(result)) {
+         switch (result) {
+         case TO_LOGIN:
             intent.setClass(Main.this, LoginViewActivity.class);
             intent.setData(Uri.parse(LOAD_RESOURCE));
-         } else if (TO_SETTING.equals(result)) {
+            break;
+         case TO_SETTING:
             intent.setClass(Main.this, AppSettingsActivity.class);
-         } else if (TO_GROUP.equals(result)) {
+            break;
+         case TO_GROUP:
             intent.setClass(Main.this, GroupHandler.class);
-            
+            break;
+         case SWITCH_TO_OTHER_CONTROLER:
+            ORControllerServerSwitcher.doSwitch(Main.this);
+            return;
+
+         default:
+            ViewHelper.showAlertViewWithTitle(Main.this, "Send Request Error", ControllerException
+                  .exceptionMessageOfCode(result));
+            return;
          }
          startActivity(intent);
          finish();

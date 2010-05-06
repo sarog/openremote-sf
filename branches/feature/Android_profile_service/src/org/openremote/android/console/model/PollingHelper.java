@@ -1,3 +1,22 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2010, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.android.console.model;
 
 import java.io.IOException;
@@ -12,8 +31,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.openremote.android.console.util.SecurityUtil;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 
 public class PollingHelper {
 
@@ -23,9 +47,13 @@ public class PollingHelper {
    private HttpGet httpGet;
    private String serverUrl;
    private Context context;
+   private static String deviceId = null;
+   
    public PollingHelper(HashSet<Integer> ids, Context context) {
       this.context = context;
       this.serverUrl = AppSettingsModel.getCurrentServer(context);
+      readDeviceId(context);
+      
       Iterator<Integer> id = ids.iterator();
       if (id.hasNext()) {
          pollingStatusIds = id.next().toString();
@@ -51,13 +79,13 @@ public class PollingHelper {
    }
 
    private void doPolling() {
-      String deviceId = "96e79218965eb72c92a549dd5a330316";
       handleRequest(serverUrl + "/rest/polling/" + deviceId + "/" + pollingStatusIds);
    }
 
    private void handleRequest(String requestUrl) {
       httpGet = new HttpGet(requestUrl);
       if (!httpGet.isAborted()) {
+         SecurityUtil.addCredentialToHttpRequest(context, httpGet);
          try {
             HttpResponse response = client.execute(httpGet);
             int statusCode = response.getStatusLine().getStatusCode();
@@ -85,44 +113,37 @@ public class PollingHelper {
          httpGet.abort();
          httpGet = null;
       }
-//      client.getConnectionManager().shutdown();
    }
 
    private void handleServerErrorWithStatusCode(int statusCode) {
       if (statusCode != 200) {
-         String errorMessage = null;
-         switch (statusCode) {
-         case 404:
-            errorMessage = "The command was sent to an invalid URL.";
-            break;
-         case 500:
-            errorMessage = "Error in controller. Please check controller log.";
-            break;
-         case 503:
-            errorMessage = "Controller is not currently available.";
-            break;
-         case 504:// polling timeout, need to refresh
-//            if (isPolling) {
-//               return;
-//            }
-            httpGet = null;
-            return;
-         }
-
-         if (errorMessage == null) {
-            errorMessage = "Unknown error occured , satus code is " + statusCode;
-         }
-         ViewHelper.showAlertViewWithTitle(context, "Send Request Error", errorMessage);
-         isPolling = false;
-      } else {
          httpGet = null;
-//         if (isPolling) {
-//            doPolling();
-//         }
-         return;
+         if (statusCode == 504) { // polling timeout, need to refresh
+            return;
+         } else {
+            isPolling = false;
+            handler.sendEmptyMessage(statusCode);
+         }
       }
    }
 
-   
+   private static void readDeviceId(Context context) {
+      if (deviceId == null) {
+         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+         deviceId = tm.getDeviceId();
+      }
+   }
 
+   private Handler handler = new Handler() {
+      @Override
+      public void handleMessage(Message msg) {
+         int statusCode = msg.what;
+//         if (statusCode == 401) {
+//            new LoginDialog(context);
+//            // TODO: restore polling.
+//         } else {
+            ViewHelper.showAlertViewWithTitle(context, "Send Request Error", ControllerException.exceptionMessageOfCode(statusCode));
+//         }
+      }
+  };
 }
