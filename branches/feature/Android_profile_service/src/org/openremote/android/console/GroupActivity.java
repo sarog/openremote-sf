@@ -64,7 +64,7 @@ import android.view.WindowManager;
 import android.view.GestureDetector.OnGestureListener;
 import android.widget.LinearLayout;
 
-public class GroupHandler extends Activity implements OnGestureListener, ORConnectionDelegate{
+public class GroupActivity extends Activity implements OnGestureListener, ORConnectionDelegate{
 
 //   private static final int FLIPPER = 0xF00D;
    private GestureDetector gestureScanner;
@@ -98,7 +98,7 @@ public class GroupHandler extends Activity implements OnGestureListener, ORConne
    }
 
    private void recoverLastGroupScreen() {
-      Log.i("Before recovery------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupHandler.this) + "," + UserCache.getLastScreenId(GroupHandler.this));
+      Log.i("Before recovery------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupActivity.this) + "," + UserCache.getLastScreenId(GroupActivity.this));
 	   
       int lastGroupID = UserCache.getLastGroupId(this);
       Group lastGroup = XMLEntityDataBase.getGroup(lastGroupID);
@@ -118,11 +118,11 @@ public class GroupHandler extends Activity implements OnGestureListener, ORConne
       linearLayout.addView(currentScreenViewFlipper);
       this.setContentView(linearLayout);
       ScreenView currentScreenView = (ScreenView) currentScreenViewFlipper.getCurrentView();
-      UserCache.saveLastGroupIdAndScreenId(GroupHandler.this, currentGroupView.getGroup().getGroupId(), currentScreenView.getScreen().getScreenId());
+      UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(), currentScreenView.getScreen().getScreenId());
       currentScreen = currentScreenView.getScreen();
       currentScreenView.startPolling();
       addNaviagateListener();
-      Log.i("After recovery------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupHandler.this) + "," + UserCache.getLastScreenId(GroupHandler.this));
+      Log.i("After recovery------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupActivity.this) + "," + UserCache.getLastScreenId(GroupActivity.this));
    }
 
    private void addNaviagateListener() {
@@ -143,8 +143,8 @@ public class GroupHandler extends Activity implements OnGestureListener, ORConne
           currentScreenViewFlipper.setToNextAnimation();
           currentScreenViewFlipper.showNext();
           ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
-          UserCache.saveLastGroupIdAndScreenId(GroupHandler.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
-          Log.i("------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupHandler.this) + "," + UserCache.getLastScreenId(GroupHandler.this));
+          UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
+          Log.i("------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupActivity.this) + "," + UserCache.getLastScreenId(GroupActivity.this));
           return true;
        }
        return false;
@@ -157,8 +157,8 @@ public class GroupHandler extends Activity implements OnGestureListener, ORConne
           currentScreenViewFlipper.setToPreviousAnimation();
           currentScreenViewFlipper.showPrevious();
           ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
-          UserCache.saveLastGroupIdAndScreenId(GroupHandler.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
-          Log.i("------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupHandler.this) + "," + UserCache.getLastScreenId(GroupHandler.this));
+          UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
+          Log.i("------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupActivity.this) + "," + UserCache.getLastScreenId(GroupActivity.this));
           return true;
        }
        return false;
@@ -253,7 +253,7 @@ public class GroupHandler extends Activity implements OnGestureListener, ORConne
    }
 
    public boolean onCreateOptionsMenu(Menu menu) {
-       ActivityHandler.populateMenu(menu);
+       GroupActivity.populateMenu(menu);
        return true;
    }
 
@@ -331,17 +331,17 @@ public class GroupHandler extends Activity implements OnGestureListener, ORConne
          }
       } else if (navigate.isSetting()) {
          Intent intent = new Intent();
-         intent.setClass(GroupHandler.this, AppSettingsActivity.class);
+         intent.setClass(GroupActivity.this, AppSettingsActivity.class);
          startActivity(intent);
       } else if (navigate.isLogin()) {
          Intent intent = new Intent();
-         intent.setClass(GroupHandler.this, LoginViewActivity.class);
+         intent.setClass(GroupActivity.this, LoginViewActivity.class);
          startActivity(intent);
       } else if (navigate.isLogout()) {
-         String username = UserCache.getUsername(GroupHandler.this);
+         String username = UserCache.getUsername(GroupActivity.this);
          if (!TextUtils.isEmpty(username)) {
-            UserCache.saveUser(GroupHandler.this, "", "");
-            ViewHelper.showAlertViewWithTitle(GroupHandler.this, "Logout", username + " logout success.");
+            UserCache.saveUser(GroupActivity.this, "", "");
+            ViewHelper.showAlertViewWithTitle(GroupActivity.this, "Logout", username + " logout success.");
             ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
          }
       }
@@ -388,8 +388,8 @@ public class GroupHandler extends Activity implements OnGestureListener, ORConne
          historyNavigate.setFromGroup(currentGroupView.getGroup().getGroupId());
          historyNavigate.setFromScreen(((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
          if (navigateTo(navigate)) {
-            UserCache.saveLastGroupIdAndScreenId(GroupHandler.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
-            Log.i("------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupHandler.this) + "," + UserCache.getLastScreenId(GroupHandler.this));
+            UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
+            Log.i("------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupActivity.this) + "," + UserCache.getLastScreenId(GroupActivity.this));
             navigationHistory.add(historyNavigate);
          }
       }
@@ -398,7 +398,7 @@ public class GroupHandler extends Activity implements OnGestureListener, ORConne
    @Override
    public boolean onKeyDown(int keyCode, KeyEvent event) {
       if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-         ViewHelper.showAlertViewWithTitle(GroupHandler.this, "Exit", " Exit the application.");
+         ViewHelper.showAlertViewWithTitle(GroupActivity.this, "Exit", " Exit the application.");
          System.exit(0);
          return true;
      } else if (keyCode == KeyEvent.KEYCODE_HOME && event.getRepeatCount() == 0) {

@@ -33,6 +33,7 @@ import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.console.net.ORControllerServerSwitcher;
 import org.openremote.android.console.net.ORNetworkCheck;
 import org.openremote.android.console.util.FileUtil;
+import org.openremote.android.console.util.HTTPUtil;
 
 import android.app.Activity;
 import android.content.Context;
@@ -244,7 +245,7 @@ public class Main extends Activity {
             intent.setClass(Main.this, AppSettingsActivity.class);
             break;
          case TO_GROUP:
-            intent.setClass(Main.this, GroupHandler.class);
+            intent.setClass(Main.this, GroupActivity.class);
             break;
          case SWITCH_TO_OTHER_CONTROLER:
             ORControllerServerSwitcher.doSwitch(Main.this);
