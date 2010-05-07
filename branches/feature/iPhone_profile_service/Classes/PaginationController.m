@@ -31,7 +31,7 @@
 - (void)updateView;
 - (void)initViewForPage:(NSUInteger)page;
 - (void)updateViewForPage:(NSUInteger)page;
-- (void)initViewForCurrentPageAndBothSides;
+- (void)updateViewForCurrentPage;
 - (void)updateViewForCurrentPageAndBothSides;
 - (void)pageControlValueDidChange:(id)sender;
 - (void)scrollToSelectedViewWithAnimation:(BOOL)withAnimation;
@@ -92,7 +92,7 @@
 - (void)initView {
 	[scrollView setContentSize:CGSizeMake(frameWidth * [viewControllers count], frameHeight)];
 	[pageControl setNumberOfPages:[viewControllers count]];
-	[self initViewForCurrentPageAndBothSides];
+	[self updateViewForCurrentPage];
 }
 
 - (void)updateView {
@@ -159,7 +159,7 @@
 	}
 }
 
-- (void)initViewForCurrentPageAndBothSides {
+- (void)updateViewForCurrentPage {
 	[self initViewForPage:selectedIndex];
 	[pageControl setCurrentPage:selectedIndex];
 }
@@ -214,7 +214,7 @@
 
 //if you have changed *selectedIndex* then calling this method will scroll to that seleted view immediately
 - (void)scrollToSelectedViewWithAnimation:(BOOL)withAnimation {
-	[self updateViewForCurrentPageAndBothSides];
+	[self updateViewForCurrentPage];
 	CGRect frame = scrollView.bounds;
 	
 	if (selectedIndex == pageControl.numberOfPages - 1) {
