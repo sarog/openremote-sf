@@ -22,6 +22,7 @@ package org.openremote.android.console;
 import java.util.List;
 
 import org.openremote.android.console.model.AppSettingsModel;
+import org.openremote.android.console.util.HTTPUtil;
 
 import android.app.ListActivity;
 import android.content.Intent;
