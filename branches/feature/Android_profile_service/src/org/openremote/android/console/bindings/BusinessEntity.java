@@ -52,7 +52,7 @@ public class BusinessEntity implements Serializable {
    public static final String TRACK_IMAGE = "trackImage";
 
    public static final String LABEL = "label";
-   public static final String FONT_SIZE = "font-size";
+   public static final String FONT_SIZE = "fontSize";
    public static final String COLOR = "color";
    public static final String TEXT = "text";
 
