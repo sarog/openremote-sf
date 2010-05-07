@@ -33,11 +33,11 @@ public class Group extends BusinessEntity{
 
    private int groupId;
    private String name;
-   private List<XScreen> screens;
+   private List<Screen> screens;
    private TabBar tabBar;
    
    public Group(Node node) {
-      screens = new ArrayList<XScreen>();
+      screens = new ArrayList<Screen>();
       
       NamedNodeMap nodeMap = node.getAttributes();
       this.groupId = Integer.valueOf(nodeMap.getNamedItem("id").getNodeValue());
@@ -65,7 +65,7 @@ public class Group extends BusinessEntity{
       return name;
    }
 
-   public List<XScreen> getScreens() {
+   public List<Screen> getScreens() {
       return screens;
    }
 

@@ -3,7 +3,7 @@ package org.openremote.android.console.view;
 import java.util.List;
 
 import org.openremote.android.console.bindings.Group;
-import org.openremote.android.console.bindings.XScreen;
+import org.openremote.android.console.bindings.Screen;
 
 import android.content.Context;
 
@@ -14,7 +14,7 @@ public class GroupView {
    public GroupView(Context context, Group group) {
       this.group = group;
       this.screenViewFlipper = new ScreenViewFlipper(context);
-      List<XScreen> screens = group.getScreens();
+      List<Screen> screens = group.getScreens();
       int screenSize = screens.size();
       for (int i = 0; i < screenSize; i++) {
          screenViewFlipper.addView(new ScreenView(context, screens.get(i)));

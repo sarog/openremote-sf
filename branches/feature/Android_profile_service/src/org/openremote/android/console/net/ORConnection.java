@@ -29,6 +29,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.exceptions.ORConnectionException;
 import org.openremote.android.console.util.SecurityUtil;
@@ -55,7 +58,10 @@ public class ORConnection {
 	 */
 	public ORConnection (Context context, ORHttpMethod httpMethod, boolean isNeedHttpBasicAuth, String url, ORConnectionDelegate delegateParam) {
 		delegate = delegateParam;
-		httpClient = new DefaultHttpClient();
+		HttpParams params = new BasicHttpParams();
+      HttpConnectionParams.setConnectionTimeout(params, 50 * 1000);
+      HttpConnectionParams.setSoTimeout(params, 50 * 1000);
+		httpClient = new DefaultHttpClient(params);
 		if (ORHttpMethod.POST.equals(httpMethod)) {
 			httpRequest = new HttpPost(url);
 		} else if (ORHttpMethod.GET.equals(httpMethod)) {

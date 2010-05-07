@@ -29,7 +29,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.openremote.android.console.bindings.Gesture;
 import org.openremote.android.console.bindings.Group;
 import org.openremote.android.console.bindings.Navigate;
-import org.openremote.android.console.bindings.XScreen;
+import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ListenerConstant;
@@ -71,7 +71,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    private GroupView currentGroupView;
    private LinearLayout linearLayout;
    private ScreenViewFlipper currentScreenViewFlipper;
-   private XScreen currentScreen;
+   private Screen currentScreen;
    private int screenSize;
    private HashMap<Integer, GroupView> groupViews;
    private ArrayList<Navigate> navigationHistory;

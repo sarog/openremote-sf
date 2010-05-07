@@ -19,56 +19,113 @@
 */
 package org.openremote.android.console;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.http.HttpResponse;
 import org.openremote.android.console.model.AppSettingsModel;
-import org.openremote.android.console.util.HTTPUtil;
+import org.openremote.android.console.model.ControllerException;
+import org.openremote.android.console.model.ViewHelper;
+import org.openremote.android.console.net.ORConnection;
+import org.openremote.android.console.net.ORConnectionDelegate;
+import org.openremote.android.console.net.ORHttpMethod;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import android.app.ListActivity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class PanelSelectorActivity extends ListActivity {
+public class PanelSelectorActivity extends ListActivity implements ORConnectionDelegate{
 
+   List<String> panelsName = new ArrayList<String>();
    @Override
    public void onCreate(Bundle savedInstanceState) {
        super.onCreate(savedInstanceState);
        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-       List<String> panelList = HTTPUtil.getPanels(this, getIntent().getDataString());
-       setListAdapter(new ArrayAdapter<String>(this,
-               android.R.layout.simple_list_item_single_choice, panelList));
-       
-       final ListView listView = getListView();
+       new ORConnection(this ,ORHttpMethod.GET, true, getIntent().getDataString() + "/rest/panels", this);
+   }
 
-       listView.setItemsCanFocus(false);
-       listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-       listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+   @Override
+   public void urlConnectionDidFailWithException(Exception e) {
+      ViewHelper.showAlertViewWithTitle(this, "Error", "Can not get panel names.");
+      Log.e("ERROR", "Can not get panel names", e);
+      finish();
+   }
+
+   @Override
+   public void urlConnectionDidReceiveData(InputStream data) {
+      try{
+         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+         DocumentBuilder builder = factory.newDocumentBuilder();
+         Document dom = builder.parse(data);
+         Element root = dom.getDocumentElement();
+         
+         NodeList nodeList = root.getElementsByTagName("panel");
+         int nodeNums = nodeList.getLength();
+         for (int i = 0; i < nodeNums; i++) {
+            panelsName.add(nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue());
+         }       
+      } catch (IOException e) {
+         Log.e("ERROR", "The data is from ORConnection is bad", e);
+      } catch (ParserConfigurationException e) {
+         Log.e("ERROR", "Cant build new Document builder", e);
+      } catch (SAXException e) {
+         Log.e("ERROR", "Parse data error", e);
+      }
+      
+      setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, panelsName));
+
+      final ListView listView = getListView();
+      listView.setItemsCanFocus(false);
+      listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+      listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
          public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String selectedPanel = (String)parent.getItemAtPosition(position);
+            String selectedPanel = (String) parent.getItemAtPosition(position);
             Intent intent = getIntent();
             intent.setData(Uri.parse(selectedPanel));
             setResult(Constants.RESULT_PANEL_SELECTED, intent);
             AppSettingsModel.setCurrentPanelIdentity(PanelSelectorActivity.this, selectedPanel);
             finish();
          }
-       });
-       String panel = AppSettingsModel.getCurrentPanelIdentity(PanelSelectorActivity.this);
-       if (!TextUtils.isEmpty(panel)) {
-          int panelCount = panelList.size();
-          for (int i = 0; i < panelCount; i++) {
-            if (panel.equals(panelList.get(i))) {
+      });
+      
+      String panel = AppSettingsModel.getCurrentPanelIdentity(PanelSelectorActivity.this);
+      if (!TextUtils.isEmpty(panel)) {
+         int panelCount = panelsName.size();
+         for (int i = 0; i < panelCount; i++) {
+            if (panel.equals(panelsName.get(i))) {
                listView.setItemChecked(i, true);
                break;
             }
          }
-       }
+      }
+   }
+
+   @Override
+   public void urlConnectionDidReceiveResponse(HttpResponse httpResponse) {
+      int statusCode = httpResponse.getStatusLine().getStatusCode();
+      if (statusCode != 200) {
+         ViewHelper.showAlertViewWithTitle(this, "Send Request Error", ControllerException
+               .exceptionMessageOfCode(statusCode));
+         finish();
+      }
    }
 
 }

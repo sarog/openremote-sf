@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 import org.openremote.android.console.bindings.Background;
 import org.openremote.android.console.bindings.LayoutContainer;
-import org.openremote.android.console.bindings.XScreen;
+import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.model.PollingHelper;
 
 import android.content.Context;
@@ -34,7 +34,7 @@ import android.widget.ImageView;
 
 public class ScreenView extends AbsoluteLayout {
 
-   private XScreen screen;
+   private Screen screen;
    private PollingHelper polling;
    private AsyncLoader pollingTask;
    /**
@@ -46,7 +46,7 @@ public class ScreenView extends AbsoluteLayout {
     *           the screen
     */
    @SuppressWarnings("deprecation")
-   public ScreenView(Context context, XScreen screen) {
+   public ScreenView(Context context, Screen screen) {
       super(context);
       this.screen = screen;
       setBackgroundColor(0);
@@ -78,8 +78,8 @@ public class ScreenView extends AbsoluteLayout {
       ImageView backgroudView = new ImageView(this.getContext());
       int left = 0;
       int top = 0;
-      int screenWidth = XScreen.SCREEN_WIDTH;
-      int screenHeight = XScreen.SCREEN_HEIGHT - XScreen.SCREEN_STATUS_BAR_HEIGHT;
+      int screenWidth = Screen.SCREEN_WIDTH;
+      int screenHeight = Screen.SCREEN_HEIGHT - Screen.SCREEN_STATUS_BAR_HEIGHT;
       try {
          Bitmap backgroudBitMap = BitmapFactory
                .decodeStream(this.getContext().openFileInput(screen.getBackgroundSrc()));
@@ -139,7 +139,7 @@ public class ScreenView extends AbsoluteLayout {
       }
    }
    
-   public XScreen getScreen() {
+   public Screen getScreen() {
       return screen;
    }
    

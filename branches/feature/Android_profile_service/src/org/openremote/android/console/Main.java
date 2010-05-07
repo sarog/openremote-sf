@@ -22,7 +22,7 @@ package org.openremote.android.console;
 import java.util.Iterator;
 import java.util.List;
 
-import org.openremote.android.console.bindings.XScreen;
+import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.image.ImageLoader;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
@@ -166,8 +166,8 @@ public class Main extends Activity {
     private void readDisplayMetrics() {
       DisplayMetrics dm = new DisplayMetrics();
       dm = getApplicationContext().getResources().getDisplayMetrics();
-      XScreen.SCREEN_WIDTH = dm.widthPixels;
-      XScreen.SCREEN_HEIGHT = dm.heightPixels;
+      Screen.SCREEN_WIDTH = dm.widthPixels;
+      Screen.SCREEN_HEIGHT = dm.heightPixels;
     }
     
     private class AsyncResourceLoader extends AsyncTask<Void, String, Integer> {
@@ -188,12 +188,22 @@ public class Main extends Activity {
 
          boolean isControllerAvailable = false;
          publishProgress(panelName);
-         if (ORNetworkCheck.checkControllerAvailable(Main.this)) {
+         
+         if (IPAutoDiscoveryClient.IS_EMULATOR) {
+            //TODO: checkNetwork.
             isControllerAvailable = true;
-            if (ORNetworkCheck.checkPanelXMlOfCurrentPanelIdentity(Main.this)) {
-               int statusCode = HTTPUtil.downLoadPanelXml(Main.this, serverUrl, panelName);
-               if (statusCode != 200 && statusCode != 0) {
-                  return statusCode;
+            int statusCode = HTTPUtil.downLoadPanelXml(Main.this, serverUrl, panelName);
+            if (statusCode != 200 && statusCode != 0) {
+               return statusCode;
+            }
+         } else {
+            if (ORNetworkCheck.checkControllerAvailable(Main.this)) {
+               isControllerAvailable = true;
+               if (ORNetworkCheck.checkPanelXMlOfCurrentPanelIdentity(Main.this)) {
+                  int statusCode = HTTPUtil.downLoadPanelXml(Main.this, serverUrl, panelName);
+                  if (statusCode != 200 && statusCode != 0) {
+                     return statusCode;
+                  }
                }
             }
          }
