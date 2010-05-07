@@ -48,4 +48,13 @@ public class Sensor extends BusinessEntity {
       return states;
    }
    
+   public String getStateValue(String key) {
+      int stateSize = states.size();
+      for (int i = 0; i < stateSize; i++) {
+         if (states.get(i).getName().equals(key)) {;
+            return states.get(i).getValue();
+         }
+      }
+      return null;
+   }
 }

@@ -26,12 +26,14 @@ public class Component extends BusinessEntity {
 
    private int componentId;
    public static Component buildWithXML(Node node) {
-      if ("label".equals(node.getNodeName())) {
-      } else if("image".equals(node.getNodeName())) {
+      Component component = null;
+      if (LABEL.equals(node.getNodeName())) {
+         component = new Label(node);
+      } else if(IMAGE.equals(node.getNodeName())) {
       } else {
          return Control.buildWithXML(node);
       }
-      return null;
+      return component;
    }
    public int getComponentId() {
       return componentId;
