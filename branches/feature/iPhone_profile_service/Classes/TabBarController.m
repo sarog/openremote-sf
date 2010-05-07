@@ -25,6 +25,15 @@
 #import "NotificationConstant.h"
 #import "DirectoryDefinition.h"
 
+
+@interface TabBarController (Private)
+
+- (void)updateTabItems;
+
+@end
+
+
+
 @implementation TabBarController
 
 @synthesize customziedTabBar, groupController;
@@ -38,62 +47,16 @@
 			self.groupController = [groupControllerParam retain];
 			CGRect frame = [groupController getFullFrame];
 			[self.view setFrame:frame];
-			NSLog(@"tabbar full frame width=%g, height=%g", frame.size.width,frame.size.height);
 			
 			self.moreNavigationController.navigationBar.hidden = YES;
 			UITableView *tableView = (UITableView *)self.moreNavigationController.topViewController.view;
 			[tableView setDelegate:self];
 			
-			NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
-			int i = 0;
-			int selected = i;
-			
-			for (TabBarItem *tabBarItem in customziedTabBar.tabBarItems) {
-				UIViewController *itemController = [[UIViewController alloc] init];
-				itemController.view = groupController.view;
-				itemController.tabBarItem.title = tabBarItem.tabBarItemName;
-				UIImage *image = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:tabBarItem.tabBarItemImage.src]];
-				itemController.tabBarItem.image = image;
-				[viewControllers addObject:itemController];
-				
-				if (tabBarItem.navigate && groupController.group.groupId == tabBarItem.navigate.toGroup) {
-					selected = i;
-				}
-				i++;
-			}
-			self.viewControllers = viewControllers;
-			
-			// no custom view, this disable 'Edit' button in 'More' table view
-			self.customizableViewControllers = nil; 
-			
-			//set selected index after viewControllers have been added, or it won't work
-			//otherwise must set selected index in viewDidLoad
-			if (i == customziedTabBar.tabBarItems.count) {
-				selected = NSNotFound;
-			}
-			[self setSelectedIndex:selected];
+			[self updateTabItems];
 		}
 	}
 	return self;
 	
-}
-
-- (void)updateGroupController:(GroupController *)groupControllerParam {
-	[self.groupController release];
-	[groupControllerParam retain];
-	self.groupController = groupControllerParam;
-	NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
-	for (TabBarItem *tabBarItem in customziedTabBar.tabBarItems) {
-		UIViewController *itemController = [[UIViewController alloc] init];
-		itemController.view = groupController.view;
-		itemController.tabBarItem.title = tabBarItem.tabBarItemName;
-		UIImage *image = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:tabBarItem.tabBarItemImage.src]];
-		itemController.tabBarItem.image = image;
-		
-		[viewControllers addObject:itemController];
-	}
-	[self.viewControllers release];
-	self.viewControllers = viewControllers;
 }
 
 - (void)returnToContentView {
@@ -103,22 +66,72 @@
 	}
 }
 
+- (void)updateTabItems {
+	NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
+	int i = 0;
+	int selected = i;
+	BOOL selectedIndexFound = NO;
+	for (TabBarItem *tabBarItem in customziedTabBar.tabBarItems) {
+		UIViewController *itemController = [[UIViewController alloc] init];
+		itemController.view = groupController.view;
+		itemController.tabBarItem.title = tabBarItem.tabBarItemName;
+		UIImage *image = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:tabBarItem.tabBarItemImage.src]];
+		itemController.tabBarItem.image = image;
+		[viewControllers addObject:itemController];
+		
+		if (tabBarItem.navigate && groupController.group.groupId == tabBarItem.navigate.toGroup) {
+			if (selectedIndexFound == NO && tabBarItem.navigate.toScreen == [groupController currentScreenId]) {
+				selected = i;
+				selectedIndexFound = YES;
+			}	
+		}
+		i++;
+	}
+	
+	self.viewControllers = viewControllers;
+	
+	// no custom view, this disable 'Edit' button in 'More' table view
+	self.customizableViewControllers = nil; 
+	
+	//set selected index after viewControllers have been added, or it won't work
+	//otherwise must set selected index in viewDidLoad
+	if (selectedIndexFound == NO) {
+		i = 0;
+		for (TabBarItem *tabBarItem in customziedTabBar.tabBarItems) {
+			if (tabBarItem.navigate && groupController.group.groupId == tabBarItem.navigate.toGroup) {
+				selected = i;
+				selectedIndexFound = YES;
+				break;
+			}
+			i++;
+		}
+		if (selectedIndexFound == NO) {
+			selected = NSNotFound;
+		}
+	}
+	[self setSelectedIndex:selected];
+}
+
+- (void)updateGroupController:(GroupController *)groupControllerParam {
+	[self.groupController release];
+	[groupControllerParam retain];
+	self.groupController = groupControllerParam;
+	[self updateTabItems];
+}
+
+
+
 - (void)returnToContentViewWithAnimation {
 		[NSTimer scheduledTimerWithTimeInterval:0.2f target:self selector:@selector(returnToContentView) userInfo:nil repeats:NO];
 }
 
 #pragma mark Delegate method of UITabBarController
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
-
-	
-	NSLog(@"self.selectedIndex = %d", self.selectedIndex);
 	//if the selected view controller is currently the 'More' navigation controller
 	if (self.selectedIndex == NSNotFound) {
 		if (isMoreViewShown) {
-			NSLog(@"isMoreViewShown");
 			[self returnToContentView];
 		} else {
-			NSLog(@"isMoreView not Shown");
 			isMoreViewShown = YES;
 		}
 
@@ -126,6 +139,7 @@
 	}
 	
 	TabBarItem *tabBarItem = [customziedTabBar.tabBarItems objectAtIndex:self.selectedIndex];
+	NSLog(@"tabBarItem.navigate togroup=%d toscreen=%d", tabBarItem.navigate.toGroup, tabBarItem.navigate.toScreen);
 	if (tabBarItem && tabBarItem.navigate) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
 		isMoreViewShown = NO;
