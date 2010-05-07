@@ -252,7 +252,7 @@
 		[self.view addSubview:pageControl];
 		[pageControl release];
 	}
-	
+	pageControlUsed = NO;
 	[self initView];
 }
 
@@ -294,7 +294,7 @@
 
 	// DENNIS: Maybe you want to make sure that the user can't interact with the scroll view while it is animating.
 	//[scrollView setUserInteractionEnabled:NO];
-	pageControlUsed = YES;
+	pageControlUsed = NO;
 }
 
 
