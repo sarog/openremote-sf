@@ -310,6 +310,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 			}
 			tabBarScale = TABBAR_SCALE_LOCAL;
 			view = [tabBarControllerViewMap objectForKey:[NSString stringWithFormat:@"%d", localTabBarController.groupController.group.groupId]];
+			[localTabBarController returnToContentView];
 		}
 		// end tabBar and view(local or global)
 		
