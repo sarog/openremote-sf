@@ -28,7 +28,7 @@ public class Control extends Component {
    public static Component buildWithXML(Node node) {
       Component component = null;
       if (BUTTON.equals(node.getNodeName())) {
-         component =  new XButton(node);
+         component =  new ORButton(node);
       } else if (SWITCH.equals(node.getNodeName())) {
          component = new Switch(node);
       }

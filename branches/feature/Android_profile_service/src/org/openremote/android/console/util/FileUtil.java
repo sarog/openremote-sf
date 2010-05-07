@@ -33,7 +33,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.bindings.Group;
 import org.openremote.android.console.bindings.TabBar;
-import org.openremote.android.console.bindings.XScreen;
+import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.model.XMLEntityDataBase;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -132,7 +132,7 @@ public class FileUtil {
          NodeList screenNodes = root.getElementsByTagName("screen");
          int screenNum = screenNodes.getLength();
          for (int i = 0; i < screenNum; i++) {
-            XScreen screen = new XScreen(screenNodes.item(i));
+            Screen screen = new Screen(screenNodes.item(i));
             XMLEntityDataBase.screens.put(screen.getScreenId(), screen);
          }
 

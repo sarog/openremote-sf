@@ -26,12 +26,12 @@ import java.util.Map;
 
 import org.openremote.android.console.bindings.Group;
 import org.openremote.android.console.bindings.TabBar;
-import org.openremote.android.console.bindings.XScreen;
+import org.openremote.android.console.bindings.Screen;
 
 public class XMLEntityDataBase {
    public static TabBar globalTabBar = null;
    public static final Map<Integer, Group> groups = new LinkedHashMap<Integer, Group>();
-   public static final HashMap<Integer, XScreen> screens = new HashMap<Integer, XScreen>();
+   public static final HashMap<Integer, Screen> screens = new HashMap<Integer, Screen>();
    public static final HashSet<String> imageSet = new HashSet<String>();
    public static Group getFirstGroup() {
       if (!groups.isEmpty()) {
@@ -47,7 +47,7 @@ public class XMLEntityDataBase {
       return null;
    }
    
-   public static XScreen getScreen(int screenId) {
+   public static Screen getScreen(int screenId) {
       if (!groups.isEmpty()) {
          return screens.get(screenId);
       }

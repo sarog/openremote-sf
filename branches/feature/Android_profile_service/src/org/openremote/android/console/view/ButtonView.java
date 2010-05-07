@@ -23,7 +23,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.openremote.android.console.Constants;
-import org.openremote.android.console.bindings.XButton;
+import org.openremote.android.console.bindings.ORButton;
 import org.openremote.android.console.model.ListenerConstant;
 import org.openremote.android.console.model.ORListenerManager;
 
@@ -40,7 +40,7 @@ public class ButtonView extends ControlView {
    private Drawable defaultImage;
    private Drawable pressedImage;
    public final static long REPEAT_CMD_INTERVAL = 300;
-   public ButtonView(Context context, XButton button) {
+   public ButtonView(Context context, ORButton button) {
       super(context);
       setComponent(button);
       if (button != null) {
@@ -49,7 +49,7 @@ public class ButtonView extends ControlView {
       }
    }
    
-   private void initButton(final XButton button) {
+   private void initButton(final ORButton button) {
       uiButton.setId(button.getComponentId());
       uiButton.setText(button.getName());
       uiButton.setTextSize(10);

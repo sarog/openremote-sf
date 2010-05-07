@@ -23,7 +23,7 @@ import org.apache.http.HttpResponse;
 import org.openremote.android.console.LoginDialog;
 import org.openremote.android.console.bindings.Component;
 import org.openremote.android.console.bindings.Switch;
-import org.openremote.android.console.bindings.XButton;
+import org.openremote.android.console.bindings.ORButton;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ViewHelper;
@@ -45,8 +45,8 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
 
    public static ControlView buildWithControl(Context context, Component control) {
       ControlView controlView = null;
-      if (control instanceof XButton) {
-         controlView = new ButtonView(context, (XButton) control);
+      if (control instanceof ORButton) {
+         controlView = new ButtonView(context, (ORButton) control);
       } else if (control instanceof Switch) {
          controlView = new SwitchView(context, (Switch) control);
       }

@@ -24,7 +24,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @SuppressWarnings("serial")
-public class XButton extends Control {
+public class ORButton extends Control {
 
    private String name;
    private boolean hasControlCommand;
@@ -32,7 +32,7 @@ public class XButton extends Control {
    private Image defaultImage;
    private Image pressedImage;
    private Navigate navigate;
-   public XButton(Node node) {
+   public ORButton(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
       this.setComponentId(Integer.valueOf(nodeMap.getNamedItem("id").getNodeValue()));
       this.name = nodeMap.getNamedItem("name").getNodeValue();

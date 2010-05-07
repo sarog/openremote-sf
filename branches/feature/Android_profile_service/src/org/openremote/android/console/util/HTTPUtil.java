@@ -22,7 +22,6 @@ package org.openremote.android.console.util;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -36,7 +35,6 @@ import org.openremote.android.console.Constants;
 import org.openremote.android.console.exceptions.ORConnectionException;
 import org.openremote.android.console.net.ORCommandConnectionDelegate;
 import org.openremote.android.console.net.ORConnection;
-import org.openremote.android.console.net.ORGetPanelsConnectionDelegate;
 import org.openremote.android.console.net.ORHttpMethod;
 
 import android.content.Context;
@@ -57,13 +55,6 @@ public class HTTPUtil {
 		return delegate.getHttpResponseStatusCode();
 	}
 
-    @SuppressWarnings("deprecation")
-	public static List<String> getPanels(Context context, String serverUrl){
-    	ORGetPanelsConnectionDelegate delegate = new ORGetPanelsConnectionDelegate();
-    	new ORConnection(context ,ORHttpMethod.GET, true, serverUrl + "/rest/panels", delegate);
-    	return delegate.getPanelsName();
-    }
-    
     public static int downLoadPanelXml(Context context, String serverUrl, String panelName) {
        return downLoadFile(context, serverUrl + "/rest/panel/" + panelName, Constants.PANEL_XML);
     }

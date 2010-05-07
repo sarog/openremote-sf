@@ -26,7 +26,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @SuppressWarnings("serial")
-public class XScreen extends BusinessEntity {
+public class Screen extends BusinessEntity {
    /**
     * Screen width and height may be different in different device, 
     *  so they can be changed when the application start at runtime.
@@ -42,7 +42,7 @@ public class XScreen extends BusinessEntity {
    private ArrayList<Gesture> gestures;
    private HashSet<Integer> pollingComponentsIds;
 
-   public XScreen(Node node) {
+   public Screen(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
       this.screenId = Integer.valueOf(nodeMap.getNamedItem("id").getNodeValue());
       this.name = nodeMap.getNamedItem("name").getNodeValue();
