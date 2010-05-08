@@ -20,9 +20,6 @@
  */
 
 #import "DefaultViewController.h"
-static NSString *TABBAR_SCALE_GLOBAL = @"global";
-static NSString *TABBAR_SCALE_LOCAL = @"local";
-static NSString *TABBAR_SCALE_NONE = @"none";
 
 @interface DefaultViewController (Private)
 
@@ -140,18 +137,18 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		// local tabBar
 		if (localTabBar) {
 			localTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController tabBar:localTabBar];
-			tabBarScale = TABBAR_SCALE_LOCAL;
 			[self.view addSubview:localTabBarController.view];
-		} else 
-			// global tabBar
-			if ([[Definition sharedDefinition] tabBar]) {
-				globalTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController tabBar:[[Definition sharedDefinition] tabBar]];
-				tabBarScale = TABBAR_SCALE_GLOBAL;
-				[self.view addSubview:globalTabBarController.view];
-			} else {
-				tabBarScale = TABBAR_SCALE_NONE;
-				[self.view addSubview:currentGroupController.view];
-			}
+			lastSubView = localTabBarController.view;
+		}		
+		// global tabBar
+		else if ([[Definition sharedDefinition] tabBar]) {
+			globalTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController tabBar:[[Definition sharedDefinition] tabBar]];
+			[self.view addSubview:globalTabBarController.view];
+			lastSubView = globalTabBarController.view;
+		} else {
+			[self.view addSubview:currentGroupController.view];
+			lastSubView = currentGroupController.view;
+		}
 		
 		[self saveLastGroupIdAndScreenId];
 	} else {		
@@ -271,29 +268,11 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 			return NO;
 		}
 		[targetGroupController setNewOrientation:[currentGroupController getCurrentOrientation]];
-		if ([TABBAR_SCALE_GLOBAL isEqualToString:tabBarScale]) {
-			[globalTabBarController.view removeFromSuperview];
-		} else if([TABBAR_SCALE_LOCAL isEqualToString:tabBarScale]) {
-			[localTabBarController.view removeFromSuperview];
-		} else if([TABBAR_SCALE_NONE isEqualToString:tabBarScale]) {
-			[currentGroupController.view removeFromSuperview];
-		}
+		[lastSubView removeFromSuperview];
+		
 		UIView *view = [groupViewMap objectForKey:[NSString stringWithFormat:@"%d", groupId]];
-		tabBarScale = TABBAR_SCALE_NONE;
 		
 		// begin tabBar and view(local or global)
-		//if global tabbar exists
-		if ([[Definition sharedDefinition] tabBar]) {
-			if (globalTabBarController) {
-				[globalTabBarController updateGroupController:targetGroupController];
-			} else {
-				globalTabBarController = [[TabBarController alloc] initWithGroupController:targetGroupController tabBar:[[Definition sharedDefinition] tabBar]];
-			}
-			view = globalTabBarController.view;
-			tabBarScale = TABBAR_SCALE_GLOBAL;
-			[globalTabBarController returnToContentView];
-		}
-		
 		//if local tabbar exists
 		if (targetGroupController.group.tabBar) {
 			BOOL findCachedTargetTabBarController = NO;
@@ -309,15 +288,22 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 				[tabBarControllers addObject:localTabBarController];
 				[tabBarControllerViewMap setObject:localTabBarController.view forKey:[NSString stringWithFormat:@"%d", localTabBarController.groupController.group.groupId]];
 			}
-			tabBarScale = TABBAR_SCALE_LOCAL;
 			view = [tabBarControllerViewMap objectForKey:[NSString stringWithFormat:@"%d", localTabBarController.groupController.group.groupId]];
-			[localTabBarController returnToContentView];
+		} 
+		//if global tabbar exists
+		else if ([[Definition sharedDefinition] tabBar]) {
+			if (globalTabBarController) {
+				[globalTabBarController updateGroupController:targetGroupController];
+			} else {
+				globalTabBarController = [[TabBarController alloc] initWithGroupController:targetGroupController tabBar:[[Definition sharedDefinition] tabBar]];
+			}
+			view = globalTabBarController.view;
 		}
 		// end tabBar and view(local or global)
 		
 		[currentGroupController stopPolling];
 		[targetGroupController startPolling];
-		
+		lastSubView = view;
 		[self.view addSubview:view];
 		
 		currentGroupController = targetGroupController;
@@ -394,7 +380,6 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	[groupViewMap removeAllObjects];
 	[tabBarControllers removeAllObjects];
 	[tabBarControllerViewMap removeAllObjects];
-	tabBarScale = TABBAR_SCALE_NONE;
 	globalTabBarController = nil;
 	localTabBarController = nil;
 	
