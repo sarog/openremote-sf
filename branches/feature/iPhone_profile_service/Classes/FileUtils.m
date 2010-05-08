@@ -38,8 +38,7 @@
 
 NSFileManager *fileManager;
 
-+ (void)initialize
-{
++ (void)initialize {
 	if (self == [FileUtils class]) {
 		fileManager = [NSFileManager defaultManager];
 	}
@@ -71,6 +70,10 @@ NSFileManager *fileManager;
 	[fileManager createFileAtPath:filePathToSave contents:data attributes:nil];
 	[request release];
 	
+}
+
++ (BOOL)checkFileExistsWithPath:(NSString *)path {
+	return [fileManager fileExistsAtPath:path];
 }
 
 + (void)makeSurePathExists:(NSString *)path {

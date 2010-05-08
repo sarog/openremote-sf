@@ -291,6 +291,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 			}
 			view = globalTabBarController.view;
 			tabBarScale = TABBAR_SCALE_GLOBAL;
+			[globalTabBarController returnToContentView];
 		}
 		
 		//if local tabbar exists
@@ -370,7 +371,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 - (void)populateLoginView:(id)sender {
 	LoginViewController *loginController = [[LoginViewController alloc] initWithDelegate:self];
 	UINavigationController *loginNavController = [[UINavigationController alloc] initWithRootViewController:loginController];
-	[self presentModalViewController:loginNavController animated:YES];
+	[self presentModalViewController:loginNavController animated:NO];
 	[loginController release];
 	[loginNavController release];
 }
@@ -429,7 +430,9 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	if ([self isLoadingViewGone]) {
+	if (groupControllers.count == 0) {
+		return NO;
+	} else if ([self isLoadingViewGone]) {
 		return [currentGroupController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 	} else {
 		return YES;

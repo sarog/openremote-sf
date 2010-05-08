@@ -30,4 +30,6 @@
 
 + (void) downloadFromURL:(NSString *) url  path:(NSString *)p;
 + (void)deleteFolderWithPath:(NSString *) path;
++ (BOOL)checkFileExistsWithPath:(NSString *)path;
+
 @end

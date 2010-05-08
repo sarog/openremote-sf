@@ -53,6 +53,8 @@
 
 #define PANEL_IDENTITY_SECTION 2
 
+#define CLEAR_CACHE_SECTION 3
+
 #define AUTO_DISCOVERY_TIMER_INTERVAL 1
 
 @implementation AppSettingController
@@ -226,6 +228,7 @@
 		[ViewHelper showAlertViewWithTitle:@"Warning" 
 								   Message:@"No Controller. Please configure Controller URL manually."];
 	} else {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 		done.enabled = NO;
 		cancel.enabled = NO;
 		
@@ -317,17 +320,18 @@
 #pragma mark Table view methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return [AppSettingsDefinition getAppSettings].count - 1;
+	return [AppSettingsDefinition getAppSettings].count - 1 + 1;
 }
 
 
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	if (section == AUTO_DISCOVERY_SWITCH_SECTION || section == PANEL_IDENTITY_SECTION) {
+	if (section == AUTO_DISCOVERY_SWITCH_SECTION || section == PANEL_IDENTITY_SECTION 
+			|| section == CLEAR_CACHE_SECTION) {
 		return 1;
 	} else {
 		if (!autoDiscovery) {
-			return serverArray.count+1;
+			return serverArray.count + 1;
 		}
 		return serverArray.count;
 	}
@@ -335,12 +339,15 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
 	if (section == [self numberOfSectionsInTableView:tableView] - 1) {
-		return [NSString stringWithFormat:@"version:v%@",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+		return [NSString stringWithFormat:@"Version %@",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
 	} 
 	return [AppSettingsDefinition getSectionFooterWithIndex:section];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+	if (section == CLEAR_CACHE_SECTION) {
+		return nil;
+	}
 	if (section == PANEL_IDENTITY_SECTION) {
 		return [AppSettingsDefinition getSectionHeaderWithIndex:PANEL_IDENTITY_INDEX];
 	}
@@ -353,10 +360,12 @@
 	static NSString *autoCellIdentifier = @"autoCell";
 	static NSString *serverCellIdentifier = @"serverCell";
 	static NSString *panelCellIdentifier = @"panelCell";
+	static NSString *buttonCellIdentifier = @"buttonCell";
 	
 	UITableViewCell *autoCell = [tableView dequeueReusableCellWithIdentifier:autoCellIdentifier];
 	UITableViewCell *serverCell = [tableView dequeueReusableCellWithIdentifier:serverCellIdentifier];
 	UITableViewCell *panelCell = [tableView dequeueReusableCellWithIdentifier:panelCellIdentifier];
+	UITableViewCell *buttonCell = [tableView dequeueReusableCellWithIdentifier:buttonCellIdentifier];
 	
 	if (autoCell == nil) {
 		autoCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:autoCellIdentifier] autorelease];
@@ -366,6 +375,9 @@
 	}
 	if (panelCell == nil) {
 		panelCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:panelCellIdentifier] autorelease];
+	}
+	if (buttonCell == nil) {
+		buttonCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:buttonCellIdentifier] autorelease];
 	}
 	
 	if ([self isAutoDiscoverySection:indexPath]) {
@@ -399,7 +411,11 @@
 		panelCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		panelCell.selectionStyle = UITableViewCellSelectionStyleBlue;
 		return panelCell;
-	} 
+	} else if (indexPath.section == CLEAR_CACHE_SECTION) {
+		buttonCell.textLabel.text = @"Clear Image Cache";
+		buttonCell.selectionStyle = UITableViewCellSelectionStyleGray;
+		return buttonCell;
+	}
 	return nil;
 }
 
@@ -435,7 +451,15 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
+	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+	
 	if (indexPath.section == AUTO_DISCOVERY_SWITCH_SECTION) {
+		return;
+	} 
+	
+	if (indexPath.section == CLEAR_CACHE_SECTION) {
+		[FileUtils deleteFolderWithPath:[DirectoryDefinition imageCacheFolder]];
+		cell.selected = NO;
 		return;
 	}
 	
@@ -447,7 +471,12 @@
 		[addServerViewController release];
 		return;
 	} else if (indexPath.section == PANEL_IDENTITY_SECTION) {
-		
+		if ([self getUnsavedChosenServerUrl] == nil) {
+			[ViewHelper showAlertViewWithTitle:@"Warning" 
+																 Message:@"No Controller. Please configure Controller URL manually."];
+			cell.selected = NO;
+			return;
+		}
 		[AppSettingsDefinition setUnsavedChosenServerUrl:[self getUnsavedChosenServerUrl]];
 
 		ChoosePanelViewController *choosePanelViewController = [[ChoosePanelViewController alloc]init];
@@ -458,7 +487,7 @@
 	
 	
 	
-	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+
 	if (currentSelectedServerIndex) {
 		UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:currentSelectedServerIndex];
 		if (oldCell.accessoryType == UITableViewCellAccessoryCheckmark) {
