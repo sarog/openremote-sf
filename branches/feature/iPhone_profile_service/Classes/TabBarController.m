@@ -29,6 +29,7 @@
 @interface TabBarController (Private)
 
 - (void)updateTabItems;
+- (void)returnToContentView;
 
 @end
 
@@ -44,7 +45,8 @@
 			customziedTabBar = [tabBar retain];
 			isMoreViewShown = NO;
 			self.delegate = self;
-			self.groupController = [groupControllerParam retain];
+			[groupControllerParam retain];
+			self.groupController = groupControllerParam;
 			CGRect frame = [groupController getFullFrame];
 			[self.view setFrame:frame];
 			
@@ -53,6 +55,7 @@
 			[tableView setDelegate:self];
 			
 			[self updateTabItems];
+			lastNonMoreSelectedIndex = NSNotFound;
 		}
 	}
 	return self;
@@ -60,8 +63,8 @@
 }
 
 - (void)returnToContentView {
-	if (groupController) {
-		self.selectedViewController = groupController;
+	if (groupController && self.viewControllers.count > 0) {
+		[self setSelectedIndex:lastNonMoreSelectedIndex];
 		isMoreViewShown = NO;
 	}
 }
@@ -113,16 +116,9 @@
 }
 
 - (void)updateGroupController:(GroupController *)groupControllerParam {
-	[self.groupController release];
 	[groupControllerParam retain];
 	self.groupController = groupControllerParam;
 	[self updateTabItems];
-}
-
-
-
-- (void)returnToContentViewWithAnimation {
-		[NSTimer scheduledTimerWithTimeInterval:0.2f target:self selector:@selector(returnToContentView) userInfo:nil repeats:NO];
 }
 
 #pragma mark Delegate method of UITabBarController
@@ -137,23 +133,28 @@
 
 		return;
 	}
-	
+
 	TabBarItem *tabBarItem = [customziedTabBar.tabBarItems objectAtIndex:self.selectedIndex];
 	if (tabBarItem && tabBarItem.navigate) {
+		NSLog(@"tabbar navi tog=%d tos=%d", tabBarItem.navigate.toGroup, tabBarItem.navigate.toScreen);
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
 		isMoreViewShown = NO;
-	} else if (tabBarItem && !tabBarItem.navigate) {
-		[self returnToContentView];
+		if (tabBarItem.navigate.toGroup == groupController.group.groupId) {
+			lastNonMoreSelectedIndex = self.selectedIndex;
+		}
+	} else if (tabBarItem && tabBarItem.navigate == nil) {
+		lastNonMoreSelectedIndex = self.selectedIndex;
 	}
+	
 }
 
 #pragma mark Delegate method of 'More' UITableView
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	[self returnToContentView];
 	TabBarItem *tabBarItem = [customziedTabBar.tabBarItems objectAtIndex:indexPath.row + 4];
 	if (tabBarItem.navigate) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
 	}
-	[self returnToContentView];
 }
 
 - (void)dealloc {

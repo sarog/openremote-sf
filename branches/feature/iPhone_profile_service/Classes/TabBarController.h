@@ -27,11 +27,11 @@
 	TabBar *customziedTabBar;
 	GroupController *groupController;
 	BOOL isMoreViewShown;
+	int lastNonMoreSelectedIndex;
 }
 
 - (id) initWithGroupController:(GroupController *)groupControllerParam tabBar:(TabBar *)tabBar;
 - (void)updateGroupController:(GroupController *)groupControllerParam;
-- (void)returnToContentView;
 
 @property (nonatomic, retain) TabBar *customziedTabBar;
 @property (nonatomic, retain) GroupController *groupController;
