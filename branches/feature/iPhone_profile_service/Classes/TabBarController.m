@@ -139,7 +139,6 @@
 	}
 	
 	TabBarItem *tabBarItem = [customziedTabBar.tabBarItems objectAtIndex:self.selectedIndex];
-	NSLog(@"tabBarItem.navigate togroup=%d toscreen=%d", tabBarItem.navigate.toGroup, tabBarItem.navigate.toScreen);
 	if (tabBarItem && tabBarItem.navigate) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
 		isMoreViewShown = NO;
@@ -154,7 +153,7 @@
 	if (tabBarItem.navigate) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
 	}
-	[self returnToContentViewWithAnimation];
+	[self returnToContentView];
 }
 
 - (void)dealloc {

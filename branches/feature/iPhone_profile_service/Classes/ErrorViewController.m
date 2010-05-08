@@ -42,11 +42,11 @@ static const int ERROR_IMAGE_FIXED_HEIGHT = 160;
 		UIToolbar* toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, size.width, 44)];
 		items = [[NSMutableArray alloc] init];
 		
-		UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:self action:@selector(goBack:)];
-		[items addObject: item];
-		[item release];
+//		UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:self action:@selector(goBack:)];
+//		[items addObject: item];
+//		[item release];
 		
-		item = [[UIBarButtonItem alloc] initWithTitle:@"Settings" style:UIBarButtonItemStyleBordered target:self action:@selector(gotoSettings:)];
+		UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Settings" style:UIBarButtonItemStyleBordered target:self action:@selector(gotoSettings:)];
 		[items addObject: item];
 		[item release];
 		

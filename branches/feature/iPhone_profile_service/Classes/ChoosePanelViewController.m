@@ -226,6 +226,9 @@
 	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
+}
 
 #pragma mark delegate method of NSXMLParser
 //when find a panel start we get its *name* attribute as logical identity

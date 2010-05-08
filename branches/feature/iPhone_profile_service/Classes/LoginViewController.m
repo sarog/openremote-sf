@@ -78,14 +78,16 @@
 }
 
 - (void)signin:(id)sender {
-	if (usernameField.text == nil || passwordField.text == nil || [@"" isEqualToString:usernameField.text] || [@"" isEqualToString:passwordField.text]) {
+	if (usernameField.text == nil || passwordField.text == nil ||
+			[@"" isEqualToString:usernameField.text] || [@"" isEqualToString:passwordField.text]) {
 		[ViewHelper showAlertViewWithTitle:@"" Message:@"No username or password entered."];
 		return;
 	}
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 	[Definition sharedDefinition].username = usernameField.text;
 	[Definition sharedDefinition].password = passwordField.text;
 	[[DataBaseService sharedDataBaseService] saveCurrentUser];
-	[self dismissModalViewControllerAnimated:YES];
+	[self dismissModalViewControllerAnimated:NO];
 	if ([theDelegate respondsToSelector:@selector(onSignin)]) {
 		[theDelegate performSelector:@selector(onSignin)];
 	}
@@ -210,7 +212,10 @@
 
 
 - (void)dealloc {
-    [super dealloc];
+	[usernameField release];
+	[passwordField release];
+	
+	[super dealloc];
 }
 
 

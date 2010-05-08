@@ -23,6 +23,7 @@
 #import <UIKit/UIKit.h>
 #import "ServerAutoDiscoveryController.h"
 #import "UpdateController.h"
+#import "FileUtils.h"
 
 @interface AppSettingController : UITableViewController {
 	NSString *pathToUserCopyOfPlist;
