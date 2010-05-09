@@ -273,6 +273,9 @@
 		if ([self currentScreenId] > 0) {
 			inverseScreenId = [self currentScreen].inverseScreenId;
 		}
+		if (inverseScreenId == 0) {
+			return;
+		}
 		NSLog(@"inverseScreenId=%d", inverseScreenId);
 		currentOrientation = toInterfaceOrientation;
 		

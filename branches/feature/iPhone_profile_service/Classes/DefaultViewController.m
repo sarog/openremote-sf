@@ -287,6 +287,8 @@
 				localTabBarController = [[TabBarController alloc] initWithGroupController:targetGroupController tabBar:targetGroupController.group.tabBar];
 				[tabBarControllers addObject:localTabBarController];
 				[tabBarControllerViewMap setObject:localTabBarController.view forKey:[NSString stringWithFormat:@"%d", localTabBarController.groupController.group.groupId]];
+			} else {
+				[localTabBarController updateGroupController:targetGroupController];
 			}
 			view = [tabBarControllerViewMap objectForKey:[NSString stringWithFormat:@"%d", localTabBarController.groupController.group.groupId]];
 		} 

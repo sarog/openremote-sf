@@ -47,15 +47,13 @@
 			self.delegate = self;
 			[groupControllerParam retain];
 			self.groupController = groupControllerParam;
-			CGRect frame = [groupController getFullFrame];
-			[self.view setFrame:frame];
+			[self.view setFrame:[groupController getFullFrame]];
 			
 			self.moreNavigationController.navigationBar.hidden = YES;
 			UITableView *tableView = (UITableView *)self.moreNavigationController.topViewController.view;
 			[tableView setDelegate:self];
 			
 			[self updateTabItems];
-			lastNonMoreSelectedIndex = NSNotFound;
 		}
 	}
 	return self;
@@ -64,7 +62,7 @@
 
 - (void)returnToContentView {
 	if (groupController && self.viewControllers.count > 0) {
-		[self setSelectedIndex:lastNonMoreSelectedIndex];
+		[self setSelectedViewController:groupController];
 		isMoreViewShown = NO;
 	}
 }
@@ -118,6 +116,7 @@
 - (void)updateGroupController:(GroupController *)groupControllerParam {
 	[groupControllerParam retain];
 	self.groupController = groupControllerParam;
+	[self.view setFrame:[groupController getFullFrame]];
 	[self updateTabItems];
 }
 
@@ -136,14 +135,10 @@
 
 	TabBarItem *tabBarItem = [customziedTabBar.tabBarItems objectAtIndex:self.selectedIndex];
 	if (tabBarItem && tabBarItem.navigate) {
-		NSLog(@"tabbar navi tog=%d tos=%d", tabBarItem.navigate.toGroup, tabBarItem.navigate.toScreen);
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
 		isMoreViewShown = NO;
-		if (tabBarItem.navigate.toGroup == groupController.group.groupId) {
-			lastNonMoreSelectedIndex = self.selectedIndex;
-		}
-	} else if (tabBarItem && tabBarItem.navigate == nil) {
-		lastNonMoreSelectedIndex = self.selectedIndex;
+	} else if (tabBarItem && !tabBarItem.navigate) {
+		[self returnToContentView];
 	}
 	
 }
