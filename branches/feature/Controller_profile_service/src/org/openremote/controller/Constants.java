@@ -32,7 +32,7 @@ public class Constants {
    /** The Constant CONTROLLER_XSD_PATH. */
    public final static String CONTROLLER_XSD_PATH = "/controller-2.0-M7.xsd";
    
-   public final static String PANEL_XSD_PATH = "/panel-2.0-M6.xsd";
+   public final static String PANEL_XSD_PATH = "/panel-2.0-M7.xsd";
    
    /** The Constant CONTROLLER_XML. */
    public final static String CONTROLLER_XML = "controller.xml";
