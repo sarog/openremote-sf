@@ -458,7 +458,10 @@
 	} 
 	
 	if (indexPath.section == CLEAR_CACHE_SECTION) {
-		[FileUtils deleteFolderWithPath:[DirectoryDefinition imageCacheFolder]];
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"Are you sure you want to clear image cache?" delegate:self cancelButtonTitle:@"NO" otherButtonTitles:nil];
+		[alert addButtonWithTitle:@"YES"];
+		[alert show];
+		[alert autorelease];
 		cell.selected = NO;
 		return;
 	}
@@ -503,6 +506,12 @@
 	currentSelectedServerIndex = indexPath;
 }
 
+#pragma mark alert delegate
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (buttonIndex == 1) {
+		[FileUtils deleteFolderWithPath:[DirectoryDefinition imageCacheFolder]];
+	} 
+}
 
 
 - (void)dealloc {
