@@ -269,14 +269,14 @@
 	} else {
 		NSLog(@"diff orientation");
 		
-		int inverseScreenId = 0;
+		int inverseScreenId = -1;
 		if ([self currentScreenId] > 0) {
 			inverseScreenId = [self currentScreen].inverseScreenId;
 		}
+		NSLog(@"inverseScreenId=%d", inverseScreenId);
 		if (inverseScreenId == 0) {
 			return;
 		}
-		NSLog(@"inverseScreenId=%d", inverseScreenId);
 		currentOrientation = toInterfaceOrientation;
 		
 		if (UIInterfaceOrientationIsPortrait(currentOrientation)) {
@@ -292,23 +292,6 @@
 
 	}
 }
-
-
-
-- (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-	[super didReceiveMemoryWarning];
-	
-	// Release any cached data, images, etc that aren't in use.
-}
-
-- (void)viewDidUnload {
-	// Release any retained subviews of the main view.
-	// e.g. self.myOutlet = nil;
-}
-
-
-
 
 - (void)dealloc {
 	[paginationController release];

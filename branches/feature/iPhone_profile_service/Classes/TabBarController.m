@@ -122,6 +122,8 @@
 
 #pragma mark Delegate method of UITabBarController
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
+	NSLog(@"tabbar selectedIndex = %d", self.selectedIndex);
+	
 	//if the selected view controller is currently the 'More' navigation controller
 	if (self.selectedIndex == NSNotFound) {
 		if (isMoreViewShown) {
@@ -135,6 +137,7 @@
 
 	TabBarItem *tabBarItem = [customziedTabBar.tabBarItems objectAtIndex:self.selectedIndex];
 	if (tabBarItem && tabBarItem.navigate) {
+		[self returnToContentView];
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
 		isMoreViewShown = NO;
 	} else if (tabBarItem && !tabBarItem.navigate) {

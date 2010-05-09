@@ -39,5 +39,6 @@
 
 - (NSArray *) getPortraitScreens;
 - (NSArray *) getLandscapeScreens;
+- (BOOL)canFindScreenById:(int)screenId inOrientation:(BOOL)isLandscape;
 
 @end
