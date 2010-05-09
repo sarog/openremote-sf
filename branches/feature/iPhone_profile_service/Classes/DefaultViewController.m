@@ -182,9 +182,9 @@
 	}
 	
 	NSLog(@"navi history count = %d", navigationHistory.count);
-	for (Navigate *n in navigationHistory) {
-		NSLog(@"navi history from group %d screen %d", n.fromGroup, n.fromScreen);
-	}
+//	for (Navigate *n in navigationHistory) {
+//		NSLog(@"navi history from group %d screen %d", n.fromGroup, n.fromScreen);
+//	}
 }
 
 - (void)saveLastGroupIdAndScreenId {
@@ -201,10 +201,6 @@
 	
 	if (navi.toGroup > 0 ) {	                //toGroup & toScreen
 		return [self navigateToGroup:navi.toGroup toScreen:navi.toScreen];
-	} 
-	
-	else if (navi.toScreen > 0) {             //toScreen in current group
-		return [self navigateToScreen:navi.toScreen];
 	} 
 	
 	else if (navi.isPreviousScreen) {					//toPreviousScreen
@@ -241,6 +237,8 @@
 
 - (BOOL)navigateToGroup:(int)groupId toScreen:(int)screenId {
 	GroupController *targetGroupController = nil;
+	BOOL isOrientationLandscape = [currentGroupController isOrientationLandscape];
+	
 	BOOL notItSelf = groupId != [currentGroupController groupId];
 	
 	//if screenId is specified, and is not current group, jump to that group
@@ -266,7 +264,14 @@
 		if ([targetGroupController hasNoViewInThatOrientation:[currentGroupController isOrientationLandscape]]) {
 			[ViewHelper showAlertViewWithTitle:@"" Message:@"No screen is in that group of this orientation"];
 			return NO;
+		} 
+		if (screenId > 0) {
+			if (![targetGroupController.group canFindScreenById:screenId inOrientation:isOrientationLandscape]) {
+				[ViewHelper showAlertViewWithTitle:@"" Message:@"That screen doesn't support this orientation"];
+				return NO;
+			}
 		}
+
 		[targetGroupController setNewOrientation:[currentGroupController getCurrentOrientation]];
 		[lastSubView removeFromSuperview];
 		
@@ -313,9 +318,12 @@
 	
 	//if screenId is specified, jump to that screen
 	if (screenId > 0) {
+		if (![currentGroupController.group canFindScreenById:screenId inOrientation:isOrientationLandscape]) {
+			[ViewHelper showAlertViewWithTitle:@"" Message:@"That screen doesn't support this orientation"];
+			return NO;
+		}
 		return [currentGroupController switchToScreen:screenId];
-	} 
-	
+	}
 		
 	return YES;
 }
@@ -340,10 +348,6 @@
 		//remove current navigation, navigate backward
 		[navigationHistory removeLastObject];
 	}
-}
-
-- (BOOL)navigateToScreen:(int)to {
-	return [currentGroupController switchToScreen:to];
 }
 
 - (BOOL)navigateToPreviousScreen {
