@@ -20,6 +20,7 @@
 package org.openremote.android.console.model;
 
 public class ControllerException {
+   public static final int CONTROLLER_UNAVAILABLE = 0;
 
    private static final int UNAUTHORIZED = 401;
    private static final int REQUEST_ERROR = 404;
@@ -90,6 +91,9 @@ public class ControllerException {
             case UNAUTHORIZED://401
                errorMessage = "You can't execute a protected command without authentication.";
                break;
+            case CONTROLLER_UNAVAILABLE://0
+            	errorMessage = "Controller isn't available.";
+            	break;
          }
          if (errorMessage == null) {
             errorMessage = "Occured unknown error, satus code is " + erroCode;

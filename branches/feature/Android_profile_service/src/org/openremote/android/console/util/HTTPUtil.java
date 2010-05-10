@@ -32,12 +32,13 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.openremote.android.console.Constants;
-import org.openremote.android.console.exceptions.ORConnectionException;
+import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.net.ORCommandConnectionDelegate;
 import org.openremote.android.console.net.ORConnection;
 import org.openremote.android.console.net.ORHttpMethod;
 
 import android.content.Context;
+import android.util.Log;
 
 /**
  * Does the HTTP stuff, anything related to HttpClient should go here.
@@ -68,7 +69,7 @@ public class HTTPUtil {
        HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
        HttpConnectionParams.setSoTimeout(params, 5 * 1000);
        HttpClient client = new DefaultHttpClient(params);
-       int statusCode = 0;
+       int statusCode = ControllerException.CONTROLLER_UNAVAILABLE;
        try {
          HttpGet get = new HttpGet(serverUrl);
          SecurityUtil.addCredentialToHttpRequest(context, get);
@@ -85,10 +86,14 @@ public class HTTPUtil {
             fOut.close();
             is.close();
          }
-      } catch (ClientProtocolException e) {
-         throw new ORConnectionException("Httpclient execute httprequest fail.", e);
-      } catch (IOException e) {
-         throw new ORConnectionException("Httpclient execute httprequest fail.", e);
+      } catch (ClientProtocolException cpe) {
+    	 Log.e("ERROR", "Download file " + fileName + " failed with URL: " + serverUrl);
+      } catch (IOException cpe) {
+         Log.e("ERROR", "Download file " + fileName + " failed with URL: " + serverUrl);
+//         int switchControllerResult = ORControllerServerSwitcher.doSwitch(context);
+//         String resultInfo = (switchControllerResult == ORControllerServerSwitcher.SWITCH_CONTROLLER_SUCCESS) ? " success" : " fail";
+//    	 Log.i("INFO", "Switch to controller " + AppSettingsModel.getCurrentServer(context) + resultInfo);
+//         return switchControllerResult;
       }
       return statusCode;
     }

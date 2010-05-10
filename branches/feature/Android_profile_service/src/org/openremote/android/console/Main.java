@@ -44,6 +44,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -170,20 +171,54 @@ public class Main extends Activity {
       Screen.SCREEN_HEIGHT = dm.heightPixels;
     }
     
-    private class AsyncResourceLoader extends AsyncTask<Void, String, Integer> {
+    private class AsyncResourceLoaderResult {
+    	private int action;
+    	private int statusCode;
+    	private boolean canUseLocalCache;
+    	
+    	public AsyncResourceLoaderResult() {
+    		action = -1;
+    		statusCode = -1;
+    		canUseLocalCache = false;
+    	}    	
+    	
+		public int getAction() {
+			return action;
+		}
+		public void setAction(int action) {
+			this.action = action;
+		}
+		public int getStatusCode() {
+			return statusCode;
+		}
+		public void setStatusCode(int statusCode) {
+			this.statusCode = statusCode;
+		}
+		public boolean isCanUseLocalCache() {
+			return canUseLocalCache;
+		}
+		public void setCanUseLocalCache(boolean canUseLocalCache) {
+			this.canUseLocalCache = canUseLocalCache;
+		}
+    }
+    
+    private class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLoaderResult> {
       @Override
-      protected Integer doInBackground(Void... params) {
+      protected AsyncResourceLoaderResult doInBackground(Void... params) {
+    	 AsyncResourceLoaderResult result = new AsyncResourceLoaderResult();
          checkNetType();
          readDisplayMetrics();
 
          if (TextUtils.isEmpty(UserCache.getUsername(Main.this)) || TextUtils.isEmpty(UserCache.getPassword(Main.this))) {
-            return TO_LOGIN;
+        	result.setAction(TO_LOGIN);
+            return result;
          }
          
          String serverUrl = AppSettingsModel.getCurrentServer(Main.this);
          String panelName = AppSettingsModel.getCurrentPanelIdentity(Main.this);
          if (TextUtils.isEmpty(serverUrl) || TextUtils.isEmpty(panelName)) {
-            return TO_SETTING;
+         	result.setAction(TO_SETTING);
+            return result;
          }
 
          boolean isControllerAvailable = false;
@@ -192,44 +227,64 @@ public class Main extends Activity {
          if (IPAutoDiscoveryClient.IS_EMULATOR) {
             //TODO: checkNetwork.
             isControllerAvailable = true;
-            int statusCode = HTTPUtil.downLoadPanelXml(Main.this, serverUrl, panelName);
-            if (statusCode != 200 && statusCode != 0) {
-               return statusCode;
-            }
          } else {
-            if (ORNetworkCheck.checkControllerAvailable(Main.this)) {
-               isControllerAvailable = true;
-               if (ORNetworkCheck.checkPanelXMlOfCurrentPanelIdentity(Main.this)) {
-                  int statusCode = HTTPUtil.downLoadPanelXml(Main.this, serverUrl, panelName);
-                  if (statusCode != 200 && statusCode != 0) {
-                     return statusCode;
-                  }
-               }
-            }
+            isControllerAvailable = ORNetworkCheck.checkAllWithControllerServerURL(Main.this, serverUrl);
          }
          
-         if (Main.this.getFileStreamPath(Constants.PANEL_XML).exists()) {
-            FileUtil.parsePanelXML(Main.this);
-         } else {
-            return SWITCH_TO_OTHER_CONTROLER;
-         }
-         
-         Iterator<String> images = XMLEntityDataBase.imageSet.iterator();
-         if (isControllerAvailable) {
-            String imageName = "";
-            while (images.hasNext()) {
-               imageName = images.next();
-               publishProgress(imageName);
-               HTTPUtil.downLoadImage(Main.this, AppSettingsModel.getCurrentServer(Main.this), imageName);
-            }
-         }
-         
+ 		 if (isControllerAvailable) {
+ 		    int downLoadPanelXMLStatusCode = HTTPUtil.downLoadPanelXml(Main.this, serverUrl, panelName);
+ 		    if (downLoadPanelXMLStatusCode != 200) { // download panel xml fail.
+ 		    	Log.e("INFO", "Download file panel.xml fail.");
+ 		    	if (Main.this.getFileStreamPath(Constants.PANEL_XML).exists()) {
+ 		    	   Log.e("INFO", "Download file panel.xml fail, so use local cache.");
+ 		    	   FileUtil.parsePanelXML(Main.this);
+ 		    	   result.setCanUseLocalCache(true);
+ 		    	   result.setStatusCode(downLoadPanelXMLStatusCode);
+ 		    	   result.setAction(TO_GROUP);
+ 		    	}  else {
+ 		    	   Log.e("INFO", "No local cache is available, ready to switch controller.");
+ 		           result.setAction(SWITCH_TO_OTHER_CONTROLER);
+ 		           return result;
+ 		        }
+ 		    } else { //download panel xml success.
+ 		    	Log.e("INFO", "Download file panel.xml successfully.");
+ 		    	if (Main.this.getFileStreamPath(Constants.PANEL_XML).exists()) {
+ 		           FileUtil.parsePanelXML(Main.this);
+ 		           result.setAction(TO_GROUP);
+ 		        } else {
+ 		           Log.e("INFO", "No local cache is available authouth downloaded file panel.xml successfully, ready to switch controller.");
+ 		           result.setAction(SWITCH_TO_OTHER_CONTROLER);
+ 		           return result;
+ 		        }
+ 		    	
+ 		    	Iterator<String> images = XMLEntityDataBase.imageSet.iterator();
+	            String imageName = "";
+	            while (images.hasNext()) {
+	               imageName = images.next();
+	               publishProgress(imageName);
+	               HTTPUtil.downLoadImage(Main.this, AppSettingsModel.getCurrentServer(Main.this), imageName);
+	            }
+ 		    }
+ 		 } else { // controller isn't available
+ 			if (Main.this.getFileStreamPath(Constants.PANEL_XML).exists()) {
+ 				Log.e("INFO", "Current controller server isn't available, so use local cache.");
+ 				FileUtil.parsePanelXML(Main.this);
+ 				result.setCanUseLocalCache(true);
+ 				result.setAction(TO_GROUP);
+ 				result.setStatusCode(ControllerException.CONTROLLER_UNAVAILABLE);
+ 			} else {
+ 				Log.e("INFO", "No local cache is available, ready to switch controller.");
+ 				result.setAction(SWITCH_TO_OTHER_CONTROLER);
+ 				return result;
+ 			}
+ 		 }
+ 		 
          new Thread(new Runnable() {
             public void run() {
                ORControllerServerSwitcher.detectGroupMembers(Main.this);
             }
          }).start(); 
-         return TO_GROUP;
+         return result;
       }
 
       @Override
@@ -244,9 +299,9 @@ public class Main extends Activity {
       }
 
       @Override
-      protected void onPostExecute(Integer result) {
+      protected void onPostExecute(AsyncResourceLoaderResult result) {
          Intent intent = new Intent();
-         switch (result) {
+         switch (result.getAction()) {
          case TO_LOGIN:
             intent.setClass(Main.this, LoginViewActivity.class);
             intent.setData(Uri.parse(LOAD_RESOURCE));
@@ -256,14 +311,15 @@ public class Main extends Activity {
             break;
          case TO_GROUP:
             intent.setClass(Main.this, GroupActivity.class);
+            if (result.isCanUseLocalCache()) {
+                intent.setData(Uri.parse(ControllerException.exceptionMessageOfCode(result.getStatusCode())));
+         	 }
             break;
          case SWITCH_TO_OTHER_CONTROLER:
             ORControllerServerSwitcher.doSwitch(Main.this);
             return;
-
          default:
-            ViewHelper.showAlertViewWithTitle(Main.this, "Send Request Error", ControllerException
-                  .exceptionMessageOfCode(result));
+            ViewHelper.showAlertViewWithTitle(Main.this, "Send Request Error", ControllerException.exceptionMessageOfCode(result.getStatusCode()));
             return;
          }
          startActivity(intent);

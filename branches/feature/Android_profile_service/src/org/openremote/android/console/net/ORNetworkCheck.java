@@ -44,7 +44,7 @@ public class ORNetworkCheck {
 	/**
 	 * Check if the RESTful url {controllerServerURL}/rest/panel/{panel identity} is available.
 	 */
-	public static boolean checkPanelXMlOfCurrentPanelIdentity(Context context) {
+	private static boolean checkPanelXMlOfCurrentPanelIdentity(Context context) {
 		if(checkControllerAvailable(context)) {
 			String currentControllerServerURL = AppSettingsModel.getCurrentServer(context);
 			if (currentControllerServerURL == null || "".equals(currentControllerServerURL)) {
@@ -63,7 +63,7 @@ public class ORNetworkCheck {
 	/**
 	 * Check if the ControllerServerURL is available.
 	 */
-	public static boolean checkControllerAvailable(Context context) {
+	private static boolean checkControllerAvailable(Context context) {
 		if (checkControllerIPAddress(context)) {
 			String currentControllerServerURL = AppSettingsModel.getCurrentServer(context);
 			if (currentControllerServerURL == null || "".equals(currentControllerServerURL)) {
@@ -77,7 +77,7 @@ public class ORNetworkCheck {
 	/**
 	 * Check if the IP of controller is reachable.
 	 */
-	public static boolean checkControllerIPAddress(Context context) {
+	private static boolean checkControllerIPAddress(Context context) {
 		if (ORWifiReachability.getInstance(context).canReachWifiNetwork()) {
 			String currentControllerServerURL = AppSettingsModel.getCurrentServer(context);
 			if (currentControllerServerURL == null || "".equals(currentControllerServerURL)) {

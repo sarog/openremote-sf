@@ -80,6 +80,10 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    @Override
    protected void onCreate(Bundle savedInstanceState) {
        super.onCreate(savedInstanceState);
+       if(getIntent().getDataString() != null) {
+          ViewHelper.showAlertViewWithSetting(this, "Using cached content", getIntent().getDataString());
+       }
+       
        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
        
@@ -92,7 +96,6 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
           navigationHistory = new ArrayList<Navigate>();
        }
        recoverLastGroupScreen();
-       
    }
 
    private void recoverLastGroupScreen() {
