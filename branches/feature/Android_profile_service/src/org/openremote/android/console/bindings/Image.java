@@ -22,20 +22,36 @@ package org.openremote.android.console.bindings;
 import org.openremote.android.console.model.XMLEntityDataBase;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 @SuppressWarnings("serial")
 public class Image extends SensorComponent {
 
    private String src;
    private String style;
-   
+   private Label label;
+   private int labelRefId = 0;
    public Image(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
+      if (nodeMap.getNamedItem(ID) != null) {
+         setComponentId(Integer.valueOf(nodeMap.getNamedItem(ID).getNodeValue()));
+      }
+      
       if (nodeMap.getNamedItem("src") != null) {
          this.src = nodeMap.getNamedItem("src").getNodeValue();
          XMLEntityDataBase.imageSet.add(src);
       }
-      // TODO: parse sub nodes(sensory/include).
+      
+      NodeList childNodes = node.getChildNodes();
+      int nodeNum = childNodes.getLength();
+      for (int i = 0; i < nodeNum; i++) {
+         if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE && LINK.equals(childNodes.item(i).getNodeName())) {
+            this.parser(childNodes.item(i));
+         } else if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE && INCLUDE.equals(childNodes.item(i).getNodeName())) {
+            labelRefId = Integer.valueOf(childNodes.item(i).getAttributes().getNamedItem(REF).getNodeValue());
+            setLinkedLabel();
+         }
+      }
    }
    
    public Image(String src) {
@@ -49,5 +65,21 @@ public class Image extends SensorComponent {
       return style;
    }
    
-   
+   @Override
+   public void parser(Node node) {
+      super.parser(node);
+      for (SensorState state : getSensor().getStates()) {
+         XMLEntityDataBase.imageSet.add(state.getValue());
+      }
+   }
+
+   public Label getLabel() {
+      return label;
+   }
+
+   public void setLinkedLabel() {
+      if (label == null) {
+         label = XMLEntityDataBase.labels.get(labelRefId);
+      }
+   }
 }

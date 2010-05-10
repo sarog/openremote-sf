@@ -31,6 +31,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Gravity;
 import android.widget.TextView;
 
 public class LabelView extends ComponentView implements SensoryDelegate {
@@ -51,6 +52,7 @@ public class LabelView extends ComponentView implements SensoryDelegate {
 
    private void initLabel(Label label) {
       textView.setId(label.getComponentId());
+      textView.setGravity(Gravity.CENTER);
       text = label.getText();
       if (text != null) {
          textView.setText(text);
@@ -71,8 +73,7 @@ public class LabelView extends ComponentView implements SensoryDelegate {
       if (sensorId > 0) {
          ORListenerManager.getInstance().addOREventListener(ListenerConstant.ListenerPollingStatusIdFormat + sensorId, new OREventListener() {
             public void handleEvent(OREvent event) {
-               String value = PollingStatusParser.statusMap.get(sensorId.toString());
-               text = sensor.getStateValue(value);
+               text = sensor.getStateValue(PollingStatusParser.statusMap.get(sensorId.toString()));
                handler.sendEmptyMessage(0);
             }
          });

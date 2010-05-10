@@ -21,6 +21,7 @@
 package org.openremote.android.console.net;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -37,7 +38,8 @@ import org.openremote.android.console.exceptions.ORConnectionException;
 import org.openremote.android.console.util.SecurityUtil;
 
 import android.content.Context;
-import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 
 /**
  * This is responsible for manage the connection of android console to controller
@@ -51,13 +53,14 @@ public class ORConnection {
 	private HttpRequestBase httpRequest;
 	private HttpResponse httpResponse;
 	private ORConnectionDelegate delegate;
-	
+	private Context context;
 	/** 
 	 * Establish the HttpBasicAuthentication httpconnection depend on param <b>isNeedHttpBasicAuth</b> with url for caller,<br />
 	 * and then the caller can deal with the httprequest result within ORConnectionDelegate instance.
 	 */
 	public ORConnection (Context context, ORHttpMethod httpMethod, boolean isNeedHttpBasicAuth, String url, ORConnectionDelegate delegateParam) {
 		delegate = delegateParam;
+		this.context = context;
 		HttpParams params = new BasicHttpParams();
       HttpConnectionParams.setConnectionTimeout(params, 50 * 1000);
       HttpConnectionParams.setSoTimeout(params, 50 * 1000);
@@ -75,8 +78,20 @@ public class ORConnection {
 		if (isNeedHttpBasicAuth) {
 			SecurityUtil.addCredentialToHttpRequest(context, httpRequest);
 		}
-		
-		new AsyncHttpExecutor().execute(context);
+		new Thread(new Runnable() {
+         public void run() {
+            try {
+               httpResponse = httpClient.execute(httpRequest);
+            } catch (SocketTimeoutException e) {
+               handler.sendEmptyMessage(0);
+            } catch (ClientProtocolException e) {
+               handler.sendEmptyMessage(0);
+            } catch (IOException e) {
+               handler.sendEmptyMessage(0);
+            }
+            handler.sendEmptyMessage(200);
+         }
+      }).start(); 
 //        try {
 //        	httpResponse = httpClient.execute(httpRequest);
 //		} catch (ClientProtocolException e) {
@@ -170,28 +185,15 @@ public class ORConnection {
 		}
 	}
 	
-	private class AsyncHttpExecutor extends AsyncTask<Context, Void, Context> {
+	private Handler handler = new Handler() {
       @Override
-      protected Context doInBackground(Context... contexts) {
-         try {
-            httpResponse = httpClient.execute(httpRequest);
-         } catch (ClientProtocolException e) {
-            return contexts[0];
-         } catch (IOException e) {
-            return contexts[0];
-         }
-         return null;
-      }
-
-      @Override
-      protected void onPostExecute(Context context) {
-         if (context != null) {
+      public void handleMessage(Message msg) {
+         int statusCode = msg.what;
+         if (statusCode == 0) {
             connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail."));
-            return;
+         } else {
+            dealWithResponse();
          }
-         dealWithResponse();
       }
-	   
-      
-	}
+  };
 }

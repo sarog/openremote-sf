@@ -19,6 +19,7 @@
 */
 package org.openremote.android.console.bindings;
 
+import org.openremote.android.console.model.XMLEntityDataBase;
 import org.w3c.dom.Node;
 
 @SuppressWarnings("serial")
@@ -29,7 +30,9 @@ public class Component extends BusinessEntity {
       Component component = null;
       if (LABEL.equals(node.getNodeName())) {
          component = new Label(node);
+         XMLEntityDataBase.labels.put(component.getComponentId(), (Label) component);
       } else if(IMAGE.equals(node.getNodeName())) {
+         component = new Image(node);
       } else {
          return Control.buildWithXML(node);
       }

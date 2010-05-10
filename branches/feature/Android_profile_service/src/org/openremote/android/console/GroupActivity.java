@@ -19,13 +19,11 @@
 */
 package org.openremote.android.console;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.openremote.android.console.bindings.Gesture;
 import org.openremote.android.console.bindings.Group;
 import org.openremote.android.console.bindings.Navigate;
