@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 /**
  * This class is about ip datatype convertion between int and string.
- * eg. Int 1344492298 is equivalent to String 80.35.83.10 .
+ * eg. Long 1344492298 is equivalent to String 80.35.83.10 .
  * 
  * @author handy 2010-04-27
  *

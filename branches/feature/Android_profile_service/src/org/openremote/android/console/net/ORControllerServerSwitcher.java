@@ -22,6 +22,7 @@ package org.openremote.android.console.net;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,9 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.Main;
 import org.openremote.android.console.exceptions.ORConnectionException;
@@ -61,59 +65,70 @@ import android.util.Log;
 public class ORControllerServerSwitcher {
 
 	private static final String SERIALIZE_GROUP_MEMBERS_FILE_NAME = "group_members";
+	public static final int SWITCH_CONTROLLER_SUCCESS = 1;
+	public static final int SWITCH_CONTROLLER_FAIL = 2;
 
 	/**
 	 * Detect the groupmembers of current server url 
 	 */
 	public static boolean detectGroupMembers(Context context) {
-		HttpClient httpClient = new DefaultHttpClient();
+		Log.i("INFO", "Detecting group members with current controller server url " + AppSettingsModel.getCurrentServer(context));
+		HttpParams params = new BasicHttpParams();
+	    HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
+	    HttpConnectionParams.setSoTimeout(params, 5 * 1000);
+		HttpClient httpClient = new DefaultHttpClient(params);
 		HttpGet httpGet = new HttpGet(AppSettingsModel.getCurrentServer(context) + "/rest/servers");
 		
 		if (httpGet == null) {
 			throw new ORConnectionException("Create HttpRequest fail.");
 		}
 		SecurityUtil.addCredentialToHttpRequest(context, httpGet);		
-        try {
-        	HttpResponse httpResponse = httpClient.execute(httpGet);
-        	
-        	try {
-    			if (httpResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
-    				InputStream data = httpResponse.getEntity().getContent();
-    				
-    				try{
-    					   DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    					   DocumentBuilder builder = factory.newDocumentBuilder();
-    					   Document dom = builder.parse(data);
-    					   Element root = dom.getDocumentElement();
-    					   
-    					   NodeList nodeList = root.getElementsByTagName("server");
-    					   int nodeNums = nodeList.getLength();
-    					   List<String> groupMembers = new ArrayList<String>();
-    					   for (int i = 0; i < nodeNums; i++) {
-    						   groupMembers.add(nodeList.item(i).getAttributes().getNamedItem("url").getNodeValue());
-    					   }
-    					   Log.i("Had detected groupmembers", "Groupmembers are " + groupMembers);
-    					   return saveGroupMembersToFile(context, groupMembers);
-    					} catch (IOException e) {
-    						Log.e("ERROR", "The data is from ORConnection is bad", e);
-    					} catch (ParserConfigurationException e) {
-    						Log.e("ERROR", "Cant build new Document builder", e);
-    					} catch (SAXException e) {
-    						Log.e("ERROR", "Parse data error", e);
-    					}
-    				
-    			} else {
-    				new ORConnectionException("Get the entity's content of httpresponse fail.");
-    			}
-    		} catch (IllegalStateException e) {
-    			throw new ORConnectionException("Get the entity's content of httpresponse fail.", e);
-    		} catch (IOException e) {
-    			throw new ORConnectionException("Get the entity's content of httpresponse fail.", e);
-    		}
+	    try {
+	    	HttpResponse httpResponse = httpClient.execute(httpGet);
+	    	
+	    	try {
+				if (httpResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
+					InputStream data = httpResponse.getEntity().getContent();
+					
+					try{
+						   DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+						   DocumentBuilder builder = factory.newDocumentBuilder();
+						   Document dom = builder.parse(data);
+						   Element root = dom.getDocumentElement();
+						   
+						   NodeList nodeList = root.getElementsByTagName("server");
+						   int nodeNums = nodeList.getLength();
+						   List<String> groupMembers = new ArrayList<String>();
+						   for (int i = 0; i < nodeNums; i++) {
+							   groupMembers.add(nodeList.item(i).getAttributes().getNamedItem("url").getNodeValue());
+						   }
+						   Log.i("Had detected groupmembers", "Groupmembers are " + groupMembers);
+						   return saveGroupMembersToFile(context, groupMembers);
+						} catch (IOException e) {
+							Log.e("ERROR", "The data is from ORConnection is bad", e);
+						} catch (ParserConfigurationException e) {
+							Log.e("ERROR", "Cant build new Document builder", e);
+						} catch (SAXException e) {
+							Log.e("ERROR", "Parse data error", e);
+						}
+					
+				} else {
+					new ORConnectionException("Get the entity's content of httpresponse fail.");
+				}
+			} catch (IllegalStateException e) {
+				throw new ORConnectionException("Get the entity's content of httpresponse fail.", e);
+			} catch (IOException e) {
+				throw new ORConnectionException("Get the entity's content of httpresponse fail.", e);
+			}
 		} catch (ClientProtocolException e) {
-			throw new ORConnectionException("Httpclient execute httprequest fail.", e);
+			Log.i("ClientProtocolException", "Can't Detect groupmembers with current controller server " + AppSettingsModel.getCurrentServer(context) + ". " + e.getMessage());
+			return false;
+		} catch (SocketTimeoutException e) {
+			Log.i("SocketTimeoutException", "Can't Detect groupmembers with current controller server " + AppSettingsModel.getCurrentServer(context) + ". " + e.getMessage());
+			return false;
 		} catch (IOException e) {
-			throw new ORConnectionException("Httpclient execute httprequest fail.", e);
+			Log.i("IOException", "Can't Detect groupmembers with current controller server " + AppSettingsModel.getCurrentServer(context) + ". " + e.getMessage());
+			return false;
 		}
 		return true;
 	}
@@ -147,20 +162,26 @@ public class ORControllerServerSwitcher {
 	/** 
 	 * Get a available controller server url and switch to it.
 	 */
-	public static void doSwitch(Context context) {
+	public static int doSwitch(Context context) {
 		String availableGroupMemberURL = getOneAvailableFromGroupMemberURLs(context);
+		List<String> allGroupMembers = findAllGroupMembersFromFile(context);
 		if (availableGroupMemberURL != null && !"".equals(availableGroupMemberURL)) {
+			Log.i("INFO", "Got a available controller url from groupmembers" + allGroupMembers);
 			switchControllerWithURL(context, availableGroupMemberURL);
 		} else {
+			Log.i("INFO", "Didn't get a available controller url from groupmembers " + allGroupMembers + ". Try to detect groupmembers again.");
 			detectGroupMembers(context);
 			availableGroupMemberURL = getOneAvailableFromGroupMemberURLs(context);
 			if (availableGroupMemberURL != null && !"".equals(availableGroupMemberURL)) {
+				Log.i("INFO", "Got a available controller url from groupmembers " + allGroupMembers + " in second groupmembers detection attempt.");
 				switchControllerWithURL(context, availableGroupMemberURL);
 			} else {
-				ViewHelper.showAlertViewWithTitle(context, "Connection failed", "There's no server available. Leave this problem?");
-				Log.i("INFO", "There's no server available.");
+				Log.i("INFO", "There's no controller server available.");
+				ViewHelper.showAlertViewWithSetting(context, "Update fail", "There's no controller server available. Leave this problem?");
+				return SWITCH_CONTROLLER_FAIL;
 			}
 		}
+		return SWITCH_CONTROLLER_SUCCESS;
 	}
 
 	/**
@@ -168,6 +189,7 @@ public class ORControllerServerSwitcher {
 	 */
 	private static String getOneAvailableFromGroupMemberURLs(Context context) {
 		List<String> allGroupMembers = findAllGroupMembersFromFile(context);
+		Log.i("INFO", "Checking a available controller url from groupmembers " + allGroupMembers);
 		for (String controllerServerURL : allGroupMembers) {
 			if (ORNetworkCheck.checkAllWithControllerServerURL(context, controllerServerURL)) {
 				if (!AppSettingsModel.isAutoMode(context)) {//custom model
@@ -193,9 +215,11 @@ public class ORControllerServerSwitcher {
 	 * Switch to the controller identified by the availableGroupMemberURL
 	 */
 	private static void switchControllerWithURL(Context context, String availableGroupMemberURL) {
+		Log.i("INFO", "ControllerServerSwitcher is switching controller to " + availableGroupMemberURL);
 		AppSettingsModel.setCurrentServer(context, availableGroupMemberURL);
 		Intent intent = new Intent();
 		intent.setClass(context, Main.class);
+		context.startActivity(intent);
 	}
 	
 }
