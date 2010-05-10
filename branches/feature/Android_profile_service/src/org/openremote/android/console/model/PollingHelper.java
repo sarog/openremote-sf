@@ -20,6 +20,7 @@
 package org.openremote.android.console.model;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -93,6 +94,10 @@ public class PollingHelper {
                PollingStatusParser.parse(response.getEntity().getContent());
             }
             handleServerErrorWithStatusCode(statusCode);
+         } catch (SocketTimeoutException e) {
+            isPolling = false;
+            Log.e("socket timeout", "polling had occured socket timeout.");
+            handler.sendEmptyMessage(0);
          } catch (ClientProtocolException e) {
             if (!isPolling) {
                return;

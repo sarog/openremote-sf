@@ -39,6 +39,7 @@ public class ComponentView extends FrameLayout {
       if (component instanceof Label) {
          componentView = new LabelView(context, (Label)component);
       } else if (component instanceof Image) {
+         componentView = new ORImageView(context, (Image)component);
       } else {
          componentView = ControlView.buildWithControl(context, component);
       }

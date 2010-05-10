@@ -25,13 +25,15 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.openremote.android.console.bindings.Group;
-import org.openremote.android.console.bindings.TabBar;
+import org.openremote.android.console.bindings.Label;
 import org.openremote.android.console.bindings.Screen;
+import org.openremote.android.console.bindings.TabBar;
 
 public class XMLEntityDataBase {
    public static TabBar globalTabBar = null;
    public static final Map<Integer, Group> groups = new LinkedHashMap<Integer, Group>();
    public static final HashMap<Integer, Screen> screens = new HashMap<Integer, Screen>();
+   public static final HashMap<Integer, Label> labels = new HashMap<Integer, Label>();
    public static final HashSet<String> imageSet = new HashSet<String>();
    public static Group getFirstGroup() {
       if (!groups.isEmpty()) {
