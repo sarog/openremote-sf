@@ -54,7 +54,9 @@ public class AbsoluteLayoutContainer extends LayoutContainer {
    public HashSet<Integer> getPollingComponentsIds() {
       HashSet<Integer> ids = new HashSet<Integer>();
       if (component instanceof SensorComponent) {
-         ids.add(((SensorComponent)component).getSensor().getSensorId());
+         if (((SensorComponent)component).getSensor() != null) {
+            ids.add(((SensorComponent)component).getSensor().getSensorId());
+         }
       }
       return ids;
    }
