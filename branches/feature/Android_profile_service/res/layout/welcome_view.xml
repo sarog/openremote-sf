@@ -11,7 +11,7 @@ android:background="@drawable/welcome">
    android:layout_height="wrap_content"
    android:layout_above="@+id/app_version"
    android:layout_centerHorizontal="true"
-   android:paddingBottom="10px"/>
+   android:paddingBottom="8px"/>
    
 	<TextView android:id="@+id/app_version"
 	android:text="@string/app_version"

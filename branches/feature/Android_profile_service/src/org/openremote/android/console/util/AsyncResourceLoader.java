@@ -44,6 +44,7 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.TextUtils;
+import android.text.TextUtils.TruncateAt;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.ImageView;
@@ -177,7 +178,9 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
       loadingView.setBackgroundResource(R.drawable.loading);
       
       TextView loadingText = (TextView)(activity.findViewById(R.id.loading_text));
-      loadingText.setText("loading..." + values[0]);
+      loadingText.setText("downloading " + values[0] + "...");
+      loadingText.setEllipsize(TruncateAt.MIDDLE);
+      loadingText.setSingleLine(true);
    }
 
    @Override
