@@ -92,7 +92,7 @@ public class HTTPUtil {
          SecurityUtil.addCredentialToHttpRequest(context, get);
          HttpResponse response = client.execute(get);
          statusCode = response.getStatusLine().getStatusCode();
-         if (statusCode == 200) {
+         if (statusCode == Constants.HTTP_SUCCESS) {
             FileOutputStream fOut = context.openFileOutput(fileName, Context.MODE_PRIVATE);
             InputStream is = response.getEntity().getContent();
             byte buf[] = new byte[1024];
