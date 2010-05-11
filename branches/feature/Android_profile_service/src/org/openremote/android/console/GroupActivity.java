@@ -343,7 +343,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
          if (!TextUtils.isEmpty(username)) {
             UserCache.saveUser(GroupActivity.this, "", "");
             ViewHelper.showAlertViewWithTitle(GroupActivity.this, "Logout", username + " logout success.");
-            ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
+//            ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
          }
       }
       return false;

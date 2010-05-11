@@ -152,7 +152,7 @@ public class ORConnection {
 	 * Establish the httpconnection with url for caller<br />
 	 * and then the caller can deal with the httprequest result within ORConnectionDelegate instance.
 	 */
-	public static boolean checkURLWithHTTPProtocol (Context context, ORHttpMethod httpMethod, String url, boolean isNeedBasicAuth) {
+	public static HttpResponse checkURLWithHTTPProtocol (Context context, ORHttpMethod httpMethod, String url, boolean isNeedBasicAuth) {
 		HttpRequestBase request = null;
 		HttpResponse response;
 		
@@ -173,11 +173,12 @@ public class ORConnection {
 		
         try {
         	response = client.execute(request);
-        	if (response != null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
-        		return true;
-        	} else {
-        		return false;
-        	}
+//        	if (response != null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
+//        		return true;
+//        	} else {
+//        		return false;
+//        	}
+        	return response;
 		} catch (ClientProtocolException e) {
 			throw new ORConnectionException("Httpclient execute httprequest fail.", e);
 		} catch (IOException e) {

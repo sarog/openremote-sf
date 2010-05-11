@@ -22,30 +22,24 @@ package org.openremote.android.console.util;
 
 import java.util.Iterator;
 
-import org.openremote.android.console.AppSettingsActivity;
+import org.apache.http.HttpResponse;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.GroupActivity;
 import org.openremote.android.console.LoginViewActivity;
+import org.openremote.android.console.Main;
 import org.openremote.android.console.R;
-import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
-import org.openremote.android.console.model.UserCache;
 import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.model.XMLEntityDataBase;
-import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.console.net.ORControllerServerSwitcher;
 import org.openremote.android.console.net.ORNetworkCheck;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -59,10 +53,9 @@ import android.widget.TextView;
  */
 public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLoaderResult> {
    private static final int TO_LOGIN = 0xF00A;
-   private static final int TO_SETTING = 0xF00B;
+//   private static final int TO_SETTING = 0xF00B;
    private static final int TO_GROUP = 0xF00C;
    private static final int SWITCH_TO_OTHER_CONTROLER = 0xF00D;
-   public static final String LOAD_RESOURCE = "loadResource";
    
    private Activity activity;
    
@@ -70,52 +63,28 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
       this.activity = activity;
    }
    
-   private void checkNetType() {
-      ConnectivityManager conn = (ConnectivityManager)(activity).getSystemService(Context.CONNECTIVITY_SERVICE);
-      if ("mobile".equals(conn.getActiveNetworkInfo().getTypeName().toLowerCase())) {
-         IPAutoDiscoveryClient.IS_EMULATOR = true;
-      }
-   }
-   
-   private void readDisplayMetrics() {
-     DisplayMetrics dm = new DisplayMetrics();
-     dm = activity.getApplicationContext().getResources().getDisplayMetrics();
-     Screen.SCREEN_WIDTH = dm.widthPixels;
-     Screen.SCREEN_HEIGHT = dm.heightPixels;
-   }
-   
    @Override
    protected AsyncResourceLoaderResult doInBackground(Void... params) {
       AsyncResourceLoaderResult result = new AsyncResourceLoaderResult();
-      checkNetType();
-      readDisplayMetrics();
-
-      if (TextUtils.isEmpty(UserCache.getUsername(activity)) || TextUtils.isEmpty(UserCache.getPassword(activity))) {
-         result.setAction(TO_LOGIN);
-         return result;
-      }
-
-      String serverUrl = AppSettingsModel.getCurrentServer(activity);
-      String panelName = AppSettingsModel.getCurrentPanelIdentity(activity);
-      if (TextUtils.isEmpty(serverUrl) || TextUtils.isEmpty(panelName)) {
-         result.setAction(TO_SETTING);
-         return result;
-      }
 
       boolean isControllerAvailable = false;
+      String panelName = AppSettingsModel.getCurrentPanelIdentity(activity);
+      String serverUrl = AppSettingsModel.getCurrentServer(activity);
       publishProgress(panelName);
 
-      if (IPAutoDiscoveryClient.IS_EMULATOR) {
-         // TODO: checkNetwork.
-         isControllerAvailable = true;
-      } else {
-         isControllerAvailable = ORNetworkCheck.checkAllWithControllerServerURL(activity, serverUrl);
-      }
+      HttpResponse checkResponse = ORNetworkCheck.checkAllWithControllerServerURL(activity, serverUrl);
+      isControllerAvailable = (checkResponse != null && checkResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) ? true : false;
 
       if (isControllerAvailable) {
          int downLoadPanelXMLStatusCode = HTTPUtil.downLoadPanelXml(activity, serverUrl, panelName);
-         if (downLoadPanelXMLStatusCode != 200) { // download panel xml fail.
+         if (downLoadPanelXMLStatusCode != Constants.HTTP_SUCCESS) { // download panel xml fail.
             Log.e("INFO", "Download file panel.xml fail.");
+            if (downLoadPanelXMLStatusCode == ControllerException.UNAUTHORIZED) {
+             result.setAction(TO_LOGIN);
+             result.setStatusCode(downLoadPanelXMLStatusCode);
+             return result;
+            }
+            
             if (activity.getFileStreamPath(Constants.PANEL_XML).exists()) {
                Log.e("INFO", "Download file panel.xml fail, so use local cache.");
                FileUtil.parsePanelXML(activity);
@@ -133,8 +102,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
                FileUtil.parsePanelXML(activity);
                result.setAction(TO_GROUP);
             } else {
-               Log
-                     .e("INFO",
+               Log.e("INFO",
                            "No local cache is available authouth downloaded file panel.xml successfully, ready to switch controller.");
                result.setAction(SWITCH_TO_OTHER_CONTROLER);
                return result;
@@ -149,12 +117,18 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
             }
          }
       } else { // controller isn't available
+         if (checkResponse != null && checkResponse.getStatusLine().getStatusCode() == ControllerException.UNAUTHORIZED) {
+            result.setAction(TO_LOGIN);
+            result.setStatusCode(ControllerException.UNAUTHORIZED);
+            return result;
+         }
+         
          if (activity.getFileStreamPath(Constants.PANEL_XML).exists()) {
             Log.e("INFO", "Current controller server isn't available, so use local cache.");
             FileUtil.parsePanelXML(activity);
             result.setCanUseLocalCache(true);
             result.setAction(TO_GROUP);
-            result.setStatusCode(ControllerException.CONTROLLER_UNAVAILABLE);
+            result.setStatusCode(checkResponse.getStatusLine().getStatusCode());
          } else {
             Log.e("INFO", "No local cache is available, ready to switch controller.");
             result.setAction(SWITCH_TO_OTHER_CONTROLER);
@@ -187,18 +161,15 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
    protected void onPostExecute(AsyncResourceLoaderResult result) {
       Intent intent = new Intent();
       switch (result.getAction()) {
-      case TO_LOGIN:
-         intent.setClass(activity, LoginViewActivity.class);
-         intent.setData(Uri.parse(LOAD_RESOURCE));
-         break;
-      case TO_SETTING:
-         intent.setClass(activity, AppSettingsActivity.class);
-         break;
       case TO_GROUP:
          intent.setClass(activity, GroupActivity.class);
          if (result.isCanUseLocalCache()) {
-             intent.setData(Uri.parse(ControllerException.exceptionMessageOfCode(result.getStatusCode())));
-          }
+            intent.setData(Uri.parse(ControllerException.exceptionMessageOfCode(result.getStatusCode())));
+         }
+         break;
+      case TO_LOGIN:
+         intent.setClass(activity, LoginViewActivity.class);
+         intent.setData(Uri.parse(Main.LOAD_RESOURCE));
          break;
       case SWITCH_TO_OTHER_CONTROLER:
          ORControllerServerSwitcher.doSwitch(activity);

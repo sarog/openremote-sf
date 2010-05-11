@@ -22,7 +22,7 @@ package org.openremote.android.console.model;
 public class ControllerException {
    public static final int CONTROLLER_UNAVAILABLE = 0;
 
-   private static final int UNAUTHORIZED = 401;
+   public static final int UNAUTHORIZED = 401;
    private static final int REQUEST_ERROR = 404;
 
    private static final int SERVER_ERROR = 500;

@@ -191,7 +191,8 @@ public class ORControllerServerSwitcher {
 		List<String> allGroupMembers = findAllGroupMembersFromFile(context);
 		Log.i("INFO", "Checking a available controller url from groupmembers " + allGroupMembers);
 		for (String controllerServerURL : allGroupMembers) {
-			if (ORNetworkCheck.checkAllWithControllerServerURL(context, controllerServerURL)) {
+		   HttpResponse response = ORNetworkCheck.checkAllWithControllerServerURL(context, controllerServerURL);
+			if (response != null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
 				if (!AppSettingsModel.isAutoMode(context)) {//custom model
 					String selectedControllerServerURL = StringUtil.markControllerServerURLSelected(controllerServerURL);
 					String customServerURLs = AppSettingsModel.getCustomServers(context);
