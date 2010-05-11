@@ -40,6 +40,13 @@ import android.os.Message;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+/**
+ * Polling Helper, this class will setup a polling thread to listen 
+ * and notify screen component status changes.
+ * 
+ * @author Tomsky Wang, Dan Cong
+ * 
+ */
 public class PollingHelper {
 
    private String pollingStatusIds;
@@ -64,7 +71,10 @@ public class PollingHelper {
       }
       HttpParams params = new BasicHttpParams();
       HttpConnectionParams.setConnectionTimeout(params, 50 * 1000);
-      HttpConnectionParams.setSoTimeout(params, 50 * 1000);
+      
+      //make polling socket timout bigger than Controller (50s)
+      HttpConnectionParams.setSoTimeout(params, 55 * 1000);
+      
       client = new DefaultHttpClient(params);
    }
 
@@ -92,22 +102,23 @@ public class PollingHelper {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == 200) {
                PollingStatusParser.parse(response.getEntity().getContent());
+            } else {
+               handleServerErrorWithStatusCode(statusCode);
             }
-            handleServerErrorWithStatusCode(statusCode);
          } catch (SocketTimeoutException e) {
             isPolling = false;
-            Log.e("socket timeout", "polling had occured socket timeout.");
+            Log.e("socket timeout", "polling socket timeout.");
             handler.sendEmptyMessage(0);
          } catch (ClientProtocolException e) {
             if (!isPolling) {
                return;
             }
-            e.printStackTrace();
+            Log.e("ClientProtocolException", "polling failed.");
          } catch (IOException e) {
             if (!isPolling) {
                return;
             }
-            e.printStackTrace();
+            Log.e("IOException", "polling failed.");
          }
       }
    }
