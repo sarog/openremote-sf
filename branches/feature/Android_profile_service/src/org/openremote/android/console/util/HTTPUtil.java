@@ -22,6 +22,8 @@ package org.openremote.android.console.util;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -33,9 +35,6 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.model.ControllerException;
-import org.openremote.android.console.net.ORCommandConnectionDelegate;
-import org.openremote.android.console.net.ORConnection;
-import org.openremote.android.console.net.ORHttpMethod;
 
 import android.content.Context;
 import android.util.Log;
@@ -44,33 +43,39 @@ import android.util.Log;
  * Does the HTTP stuff, anything related to HttpClient should go here.
  * 
  * @author Andrew C. Oliver <acoliver at osintegrators.com>
+ * @author Dan Cong
  */
 public class HTTPUtil {
 
-	@SuppressWarnings("deprecation")
-	public static int sendCommand(Context context, String url, int id, String command)
-	throws ClientProtocolException, IOException {
-		String connectString = url + "/rest/control/" + id + "/" + command;
-		ORCommandConnectionDelegate delegate =  new ORCommandConnectionDelegate();
-		new ORConnection(context, ORHttpMethod.POST, true, connectString, delegate);
-		return delegate.getHttpResponseStatusCode();
-	}
 
-    public static int downLoadPanelXml(Context context, String serverUrl, String panelName) {
-       return downLoadFile(context, serverUrl + "/rest/panel/" + panelName, Constants.PANEL_XML);
-    }
-    
-    public static int downLoadImage(Context context, String serverUrl, String imageName) {
-       return downLoadFile(context, serverUrl + "/resources/" + imageName, imageName);
-    }
-    
-    private static int downLoadFile(Context context, String serverUrl, String fileName) {
-       HttpParams params = new BasicHttpParams();
-       HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
-       HttpConnectionParams.setSoTimeout(params, 5 * 1000);
-       HttpClient client = new DefaultHttpClient(params);
-       int statusCode = ControllerException.CONTROLLER_UNAVAILABLE;
-       try {
+   public static int downLoadPanelXml(Context context, String serverUrl, String panelName) {
+      return downLoadFile(context, serverUrl + "/rest/panel/" + encodePercentUri(panelName), Constants.PANEL_XML);
+   }
+
+   public static int downLoadImage(Context context, String serverUrl, String imageName) {
+      return downLoadFile(context, serverUrl + "/resources/" + encodePercentUri(imageName), imageName);
+   }
+
+   
+   private static String encodePercentUri(String uri) {
+      String encodedUri = null;
+      try {
+         encodedUri = URLEncoder.encode(uri, "UTF-8");
+         Log.i("URLEncoder", encodedUri);
+      } catch (UnsupportedEncodingException e) {
+         encodedUri = uri;
+         Log.e("UnsupportedEncodingException", "Failed to encode percent : " + uri, e);
+      }
+      return encodedUri;
+   }
+   
+   private static int downLoadFile(Context context, String serverUrl, String fileName) {
+      HttpParams params = new BasicHttpParams();
+      HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
+      HttpConnectionParams.setSoTimeout(params, 5 * 1000);
+      HttpClient client = new DefaultHttpClient(params);
+      int statusCode = ControllerException.CONTROLLER_UNAVAILABLE;
+      try {
          HttpGet get = new HttpGet(serverUrl);
          SecurityUtil.addCredentialToHttpRequest(context, get);
          HttpResponse response = client.execute(get);
@@ -86,15 +91,14 @@ public class HTTPUtil {
             fOut.close();
             is.close();
          }
+      } catch (IllegalArgumentException e) {
+         Log.e("IllegalArgumentException", "Download file " + fileName + " failed with URL: " + serverUrl, e);
       } catch (ClientProtocolException cpe) {
-    	 Log.e("ERROR", "Download file " + fileName + " failed with URL: " + serverUrl);
-      } catch (IOException cpe) {
-         Log.e("ERROR", "Download file " + fileName + " failed with URL: " + serverUrl);
-//         int switchControllerResult = ORControllerServerSwitcher.doSwitch(context);
-//         String resultInfo = (switchControllerResult == ORControllerServerSwitcher.SWITCH_CONTROLLER_SUCCESS) ? " success" : " fail";
-//    	 Log.i("INFO", "Switch to controller " + AppSettingsModel.getCurrentServer(context) + resultInfo);
-//         return switchControllerResult;
+         Log.e("ClientProtocolException", "Download file " + fileName + " failed with URL: " + serverUrl, cpe);
+      } catch (IOException ioe) {
+         Log.e("IOException", "Download file " + fileName + " failed with URL: " + serverUrl, ioe);
       }
       return statusCode;
-    }
+   }
+
 }
