@@ -92,7 +92,7 @@ public class ControllerException {
                errorMessage = "You can't execute a protected command without authentication.";
                break;
             case CONTROLLER_UNAVAILABLE://0
-            	errorMessage = "Controller isn't available.";
+            	errorMessage = "Current controller isn't available.";
             	break;
          }
          if (errorMessage == null) {
