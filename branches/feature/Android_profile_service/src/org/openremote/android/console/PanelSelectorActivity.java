@@ -40,7 +40,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -121,10 +123,25 @@ public class PanelSelectorActivity extends ListActivity implements ORConnectionD
    @Override
    public void urlConnectionDidReceiveResponse(HttpResponse httpResponse) {
       int statusCode = httpResponse.getStatusLine().getStatusCode();
-      if (statusCode != 200) {
-         ViewHelper.showAlertViewWithTitle(this, "Send Request Error", ControllerException
-               .exceptionMessageOfCode(statusCode));
-         finish();
+      if (statusCode != Constants.HTTP_SUCCESS) {
+         if (statusCode == ControllerException.UNAUTHORIZED) {
+            Intent loginIntent = new Intent();
+            loginIntent.setClass(this, LoginViewActivity.class);
+            startActivity(loginIntent);
+            finish();
+         } else {
+            // The following code customizes the dialog, becaurse the finish method should do after dialog show and click ok.
+            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+            alertDialog.setTitle("Send Request Error");
+            alertDialog.setMessage(ControllerException.exceptionMessageOfCode(statusCode));
+            alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+               public void onClick(DialogInterface dialog, int which) {
+                  finish();
+                  return;
+               }
+            });
+            alertDialog.show();
+         }
       }
    }
 

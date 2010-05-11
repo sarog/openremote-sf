@@ -20,6 +20,8 @@
 
 package org.openremote.android.console.net;
 
+import org.apache.http.HttpResponse;
+import org.openremote.android.console.Constants;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.util.IpUitl;
 
@@ -36,7 +38,7 @@ public class ORNetworkCheck {
 	/**
 	 * Check all related to the specified controller server url.
 	 */
-	public static boolean checkAllWithControllerServerURL(Context context, String controllerServerURL) {
+	public static HttpResponse checkAllWithControllerServerURL(Context context, String controllerServerURL) {
 		AppSettingsModel.setCurrentServer(context, controllerServerURL);
 		return checkPanelXMlOfCurrentPanelIdentity(context);
 	}
@@ -44,40 +46,44 @@ public class ORNetworkCheck {
 	/**
 	 * Check if the RESTful url {controllerServerURL}/rest/panel/{panel identity} is available.
 	 */
-	private static boolean checkPanelXMlOfCurrentPanelIdentity(Context context) {
-		if(checkControllerAvailable(context)) {
+	private static HttpResponse checkPanelXMlOfCurrentPanelIdentity(Context context) {
+	   HttpResponse response = checkControllerAvailable(context);
+		if(response !=null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
 			String currentControllerServerURL = AppSettingsModel.getCurrentServer(context);
 			if (currentControllerServerURL == null || "".equals(currentControllerServerURL)) {
-				return false;
+				return null;
 			}
 			String currentPanelIdentity = AppSettingsModel.getCurrentPanelIdentity(context);
 			if (currentPanelIdentity == null || "".equals(currentPanelIdentity)) {
-				return false;
+				return null;
 			}
 			String restfulPanelURL = currentControllerServerURL + "/rest/panel/" + currentPanelIdentity;
-			return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.POST, restfulPanelURL, true);
+			return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, restfulPanelURL, true);
 		}
-		return false;
+		return response;
 	}
 
 	/**
 	 * Check if the ControllerServerURL is available.
 	 */
-	private static boolean checkControllerAvailable(Context context) {
+	private static HttpResponse checkControllerAvailable(Context context) {
 		if (checkControllerIPAddress(context)) {
 			String currentControllerServerURL = AppSettingsModel.getCurrentServer(context);
 			if (currentControllerServerURL == null || "".equals(currentControllerServerURL)) {
-				return false;
+				return null;
 			}
-			return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.POST, currentControllerServerURL, false);
+			return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, currentControllerServerURL, false);
 		}
-		return false;
+		return null;
 	}
 
 	/**
 	 * Check if the IP of controller is reachable.
 	 */
 	private static boolean checkControllerIPAddress(Context context) {
+	   if (IPAutoDiscoveryClient.IS_EMULATOR) {
+	      return true;
+	   }
 		if (ORWifiReachability.getInstance(context).canReachWifiNetwork()) {
 			String currentControllerServerURL = AppSettingsModel.getCurrentServer(context);
 			if (currentControllerServerURL == null || "".equals(currentControllerServerURL)) {

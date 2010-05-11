@@ -2,7 +2,6 @@ package org.openremote.android.console;
 
 import org.openremote.android.console.model.UserCache;
 import org.openremote.android.console.model.ViewHelper;
-import org.openremote.android.console.util.AsyncResourceLoader;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -23,7 +22,7 @@ public class LoginViewActivity extends Activity {
       super.onCreate(savedInstanceState);
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
       setTitle(R.string.login);
-      if (AsyncResourceLoader.LOAD_RESOURCE.equals(getIntent().getDataString())) {
+      if (Main.LOAD_RESOURCE.equals(getIntent().getDataString())) {
          isFromMain = true;
       }
       this.setContentView(R.layout.login_view);

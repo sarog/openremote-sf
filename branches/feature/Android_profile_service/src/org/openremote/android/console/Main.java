@@ -21,13 +21,21 @@ package org.openremote.android.console;
 
 import java.util.List;
 
+import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.image.ImageLoader;
+import org.openremote.android.console.model.AppSettingsModel;
+import org.openremote.android.console.model.UserCache;
+import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.console.util.AsyncResourceLoader;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -55,6 +63,7 @@ public class Main extends Activity {
 
     LinearLayout activitiesListView;
     public static ImageLoader imageLoader;
+    public static final String LOAD_RESOURCE = "loadResource";
     
     /** Called when the activity is first created. */
     @Override
@@ -63,7 +72,41 @@ public class Main extends Activity {
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         this.setContentView(R.layout.welcome_view);
-        new AsyncResourceLoader(this).execute((Void) null);
+        
+        checkNetType();
+        readDisplayMetrics();        
+        if(!toLogginOrSetting()) {        
+           new AsyncResourceLoader(this).execute((Void) null);
+        }
+    }
+    
+    private void checkNetType() {
+       ConnectivityManager conn = (ConnectivityManager)(this).getSystemService(Context.CONNECTIVITY_SERVICE);
+       if ("mobile".equals(conn.getActiveNetworkInfo().getTypeName().toLowerCase())) {
+          IPAutoDiscoveryClient.IS_EMULATOR = true;
+       }
+    }
+    
+    private void readDisplayMetrics() {
+      DisplayMetrics dm = new DisplayMetrics();
+      dm = getApplicationContext().getResources().getDisplayMetrics();
+      Screen.SCREEN_WIDTH = dm.widthPixels;
+      Screen.SCREEN_HEIGHT = dm.heightPixels;
+    }
+    
+    private boolean toLogginOrSetting () {
+       Intent intent = new Intent();
+       if (TextUtils.isEmpty(UserCache.getUsername(this)) || TextUtils.isEmpty(UserCache.getPassword(this))) {
+          intent.setClass(this, LoginViewActivity.class);
+          intent.setData(Uri.parse(LOAD_RESOURCE));
+       } else if (TextUtils.isEmpty(AppSettingsModel.getCurrentServer(this)) || TextUtils.isEmpty(AppSettingsModel.getCurrentPanelIdentity(this))) {
+          intent.setClass(this, AppSettingsActivity.class);
+       } else {
+          return false;
+       }
+       startActivity(intent);
+       finish();
+       return true;
     }
 
     private void doSettings(String error) {

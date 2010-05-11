@@ -309,7 +309,7 @@ public class AppSettingsActivity extends Activity{
          String result = data.getDataString();
          if (Constants.REQUEST_CODE == requestCode && !TextUtils.isEmpty(result)) {
             if (Constants.RESULT_CONTROLLER_URL == resultCode) {
-               ((ArrayAdapter<String>) customeListView.getAdapter()).add("http://" + result + "/controller");
+               ((ArrayAdapter<String>) customeListView.getAdapter()).add("http://" + result);
                writeCustomServerToFile();
             } else if (Constants.RESULT_PANEL_SELECTED == resultCode) {
                choosePanelButton.setText(result);
