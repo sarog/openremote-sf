@@ -49,6 +49,7 @@ import android.widget.TextView;
  * It's responsible for downloading resources in backgroud.
  * 
  * @author handy 2010-05-10
+ * @author Dan Cong
  *
  */
 public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLoaderResult> {
@@ -102,8 +103,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
                FileUtil.parsePanelXML(activity);
                result.setAction(TO_GROUP);
             } else {
-               Log.e("INFO",
-                           "No local cache is available authouth downloaded file panel.xml successfully, ready to switch controller.");
+               Log.e("INFO","No local cache is available authouth downloaded file panel.xml successfully, ready to switch controller.");
                result.setAction(SWITCH_TO_OTHER_CONTROLER);
                return result;
             }
@@ -152,7 +152,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
       loadingView.setBackgroundResource(R.drawable.loading);
       
       TextView loadingText = (TextView)(activity.findViewById(R.id.loading_text));
-      loadingText.setText("downloading " + values[0] + "...");
+      loadingText.setText("loading " + values[0] + "...");
       loadingText.setEllipsize(TruncateAt.MIDDLE);
       loadingText.setSingleLine(true);
    }
