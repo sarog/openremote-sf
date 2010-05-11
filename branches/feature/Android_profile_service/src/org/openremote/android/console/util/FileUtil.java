@@ -44,8 +44,27 @@ import org.xml.sax.SAXException;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
-
+/**
+ * File I/O utility.
+ * 
+ * @author Tomsky Wang
+ * @author Dan Cong
+ *
+ */
 public class FileUtil {
+   
+   /**
+    * Checks whether a file exists by file name.
+    * 
+    * @param context
+    *           Context instance
+    * @param fileName
+    *           file name
+    * @return true if exists.
+    */
+   public static boolean checkFileExists(Context context, String fileName) {
+      return context.getFileStreamPath(fileName).exists();
+   }
 
    // unused
    public static String ReadSettings(Context context) {
@@ -154,6 +173,16 @@ public class FileUtil {
             fIn.close();
          } catch (IOException e) {
             e.printStackTrace();
+         }
+      }
+   }
+   
+   public static void clearImagesInCache(Context context) {
+      String[] fileNames = context.fileList();
+      for (int i = 0; i < fileNames.length; i++) {
+         if (fileNames[i].toLowerCase().matches("^.+\\.(png|gif|jpg|bmp)$")) {
+            Log.i("CLEAR IMAGE", fileNames[i]);
+            context.deleteFile(fileNames[i]);
          }
       }
    }

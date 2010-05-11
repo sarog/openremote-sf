@@ -22,9 +22,12 @@ package org.openremote.android.console;
 import java.util.ArrayList;
 
 import org.openremote.android.console.model.AppSettingsModel;
+import org.openremote.android.console.model.ViewHelper;
+import org.openremote.android.console.util.FileUtil;
 import org.openremote.android.console.util.StringUtil;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -47,6 +50,15 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
+/**
+ * Application global settings view.
+ * 
+ * 
+ * @author Tomsky Wang
+ * @author Dan Cong
+ *
+ */
+
 public class AppSettingsActivity extends Activity{
 
    private LinearLayout appSettingsView;
@@ -54,6 +66,7 @@ public class AppSettingsActivity extends Activity{
    private Button choosePanelButton;
    private int currentCustomServerIndex = -1;
    private boolean autoMode;
+   
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -82,6 +95,7 @@ public class AppSettingsActivity extends Activity{
       }
       appSettingsView.addView(createChoosePanelLabel());
       appSettingsView.addView(choosePanelButton);
+      appSettingsView.addView(createClearImageCacheButton());
       appSettingsView.addView(createDoneAndCancelLayout());
       scroll.addView(appSettingsView);
       
@@ -167,6 +181,25 @@ public class AppSettingsActivity extends Activity{
             }
          }
       });
+   }
+   
+   private Button createClearImageCacheButton() {
+      Button clearImgCacheBtn = new Button(this);
+      clearImgCacheBtn.setText("Clear Image Cache");
+      clearImgCacheBtn.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT));
+      clearImgCacheBtn.setOnClickListener(new OnClickListener() {
+         public void onClick(View v) {
+            ViewHelper.showAlertViewWithTitleYesOrNo(AppSettingsActivity.this, "",
+                  "Are you sure you want to clear image cache?", new DialogInterface.OnClickListener() {
+                     public void onClick(DialogInterface dialog, int which) {
+                        FileUtil.clearImagesInCache(AppSettingsActivity.this);
+                     }
+                  });
+
+         }
+      });
+      return clearImgCacheBtn;
    }
 
    /**

@@ -28,13 +28,40 @@ import android.content.Intent;
 import android.util.Log;
 
 /**
- * This is responsible for show message dialog.
+ * This is responsible for show alert message dialog.
  * 
  * @author tomsky, handy 2010-05-10
+ * @author Dan Cong
  *
  */
 public class ViewHelper {
 
+   /**
+    * Shows a alert view with yes/no buttons. 'no' button only dismiss this alert.
+    * 
+    * @param context
+    *           Context instance.
+    * @param title
+    *           title
+    * @param message
+    *           msg
+    * @param yesClickListener
+    *           listener when you press 'yes'.
+    */
+   public static void showAlertViewWithTitleYesOrNo(Context context, String title, String message, 
+         AlertDialog.OnClickListener yesClickListener) {
+      
+      AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+      alertDialog.setTitle(title);
+      alertDialog.setMessage(message);
+      alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "No", new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int which) {
+          return;
+        } }); 
+      alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Yes", yesClickListener); 
+      alertDialog.show();
+   }
+   
    public static void showAlertViewWithTitle(Context context, String title, String message) {
       AlertDialog alertDialog = new AlertDialog.Builder(context).create();
       alertDialog.setTitle(title);

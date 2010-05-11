@@ -53,6 +53,16 @@ public class HTTPUtil {
    }
 
    public static int downLoadImage(Context context, String serverUrl, String imageName) {
+      if (FileUtil.checkFileExists(context, imageName)) {
+         Log.i("SKIP IMAGE", imageName + " is already in cache");
+      } else {
+         Log.i("NEW IMAGE", imageName + " downloading...");
+         return downLoadFile(context, serverUrl + "/resources/" + encodePercentUri(imageName), imageName);
+      }
+      return 200;
+   }
+   
+   public static int downLoadImageIgnoreCache(Context context, String serverUrl, String imageName) {
       return downLoadFile(context, serverUrl + "/resources/" + encodePercentUri(imageName), imageName);
    }
 
@@ -61,7 +71,9 @@ public class HTTPUtil {
       String encodedUri = null;
       try {
          encodedUri = URLEncoder.encode(uri, "UTF-8");
-         Log.i("URLEncoder", encodedUri);
+         if (!encodedUri.equals(uri)) {
+            Log.i("URLEncoder", encodedUri);
+         }
       } catch (UnsupportedEncodingException e) {
          encodedUri = uri;
          Log.e("UnsupportedEncodingException", "Failed to encode percent : " + uri, e);
