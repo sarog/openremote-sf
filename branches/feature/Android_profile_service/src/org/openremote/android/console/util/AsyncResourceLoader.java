@@ -128,7 +128,11 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
             FileUtil.parsePanelXML(activity);
             result.setCanUseLocalCache(true);
             result.setAction(TO_GROUP);
-            result.setStatusCode(checkResponse.getStatusLine().getStatusCode());
+            if (checkResponse == null) {
+               result.setStatusCode(ControllerException.CONTROLLER_UNAVAILABLE);
+            } else {
+               result.setStatusCode(checkResponse.getStatusLine().getStatusCode());
+            }
          } else {
             Log.e("INFO", "No local cache is available, ready to switch controller.");
             result.setAction(SWITCH_TO_OTHER_CONTROLER);

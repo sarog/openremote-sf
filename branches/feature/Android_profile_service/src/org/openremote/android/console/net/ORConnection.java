@@ -40,6 +40,7 @@ import org.openremote.android.console.util.SecurityUtil;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 /**
  * This is responsible for manage the connection of android console to controller
@@ -62,8 +63,8 @@ public class ORConnection {
 		delegate = delegateParam;
 		this.context = context;
 		HttpParams params = new BasicHttpParams();
-      HttpConnectionParams.setConnectionTimeout(params, 50 * 1000);
-      HttpConnectionParams.setSoTimeout(params, 50 * 1000);
+      HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
+      HttpConnectionParams.setSoTimeout(params, 5 * 1000);
 		httpClient = new DefaultHttpClient(params);
 		if (ORHttpMethod.POST.equals(httpMethod)) {
 			httpRequest = new HttpPost(url);
@@ -152,11 +153,15 @@ public class ORConnection {
 	 * Establish the httpconnection with url for caller<br />
 	 * and then the caller can deal with the httprequest result within ORConnectionDelegate instance.
 	 */
-	public static HttpResponse checkURLWithHTTPProtocol (Context context, ORHttpMethod httpMethod, String url, boolean isNeedBasicAuth) {
+	@SuppressWarnings("finally")
+   public static HttpResponse checkURLWithHTTPProtocol (Context context, ORHttpMethod httpMethod, String url, boolean isNeedBasicAuth) {
 		HttpRequestBase request = null;
-		HttpResponse response;
+		HttpResponse response = null;
 		
-		HttpClient client = new DefaultHttpClient();
+		HttpParams params = new BasicHttpParams();
+      HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
+      HttpConnectionParams.setSoTimeout(params, 5 * 1000);
+		HttpClient client = new DefaultHttpClient(params);
 		if (ORHttpMethod.POST.equals(httpMethod)) {
 			request = new HttpPost(url);
 		} else if (ORHttpMethod.GET.equals(httpMethod)) {
@@ -172,16 +177,15 @@ public class ORConnection {
 		
         try {
         	response = client.execute(request);
-//        	if (response != null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
-//        		return true;
-//        	} else {
-//        		return false;
-//        	}
         	return response;
 		} catch (ClientProtocolException e) {
-			throw new ORConnectionException("Httpclient execute httprequest fail.", e);
+		   Log.e("ERROR", "ClientProtocolException while checking URLWithHTTPProtocol.");
+		} catch (SocketTimeoutException e) {
+		   Log.e("ERROR", "SocketTimeoutException while checking URLWithHTTPProtocol.");
 		} catch (IOException e) {
-			throw new ORConnectionException("Httpclient execute httprequest fail.", e);
+		   Log.e("ERROR", "IOException while checking URLWithHTTPProtocol.");
+		} finally {
+		   return response;
 		}
 	}
 	

@@ -27,7 +27,8 @@ public class ControllerException {
 
    private static final int SERVER_ERROR = 500;
    private static final int NA_SERVICE = 503;
-   private static final int GATEWAY_TIMEOUT = 504;
+   public static final int GATEWAY_TIMEOUT = 504;
+   public static final int REFRESH_CONTROLLER = 506;
 
    private static final int CMD_BUILDER_ERROR = 418;
    private static final int NO_SUCH_COMPONENT = 419;

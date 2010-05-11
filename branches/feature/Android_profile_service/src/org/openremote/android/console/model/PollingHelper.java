@@ -32,9 +32,14 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.openremote.android.console.Constants;
+import org.openremote.android.console.Main;
 import org.openremote.android.console.util.SecurityUtil;
 
+import android.app.ActivityManager;
+import android.app.Instrumentation.ActivityMonitor;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.telephony.TelephonyManager;
@@ -100,7 +105,7 @@ public class PollingHelper {
          try {
             HttpResponse response = client.execute(httpGet);
             int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode == 200) {
+            if (statusCode == Constants.HTTP_SUCCESS) {
                PollingStatusParser.parse(response.getEntity().getContent());
             } else {
                handleServerErrorWithStatusCode(statusCode);
@@ -132,9 +137,16 @@ public class PollingHelper {
    }
 
    private void handleServerErrorWithStatusCode(int statusCode) {
-      if (statusCode != 200) {
+      if (statusCode != Constants.HTTP_SUCCESS) {
          httpGet = null;
-         if (statusCode == 504) { // polling timeout, need to refresh
+         if (statusCode == ControllerException.GATEWAY_TIMEOUT) { // polling timeout, need to refresh
+            return;
+         } if (statusCode == ControllerException.REFRESH_CONTROLLER) {
+            Intent refreshControllerIntent = new Intent();
+            refreshControllerIntent.setClass(context, Main.class);
+            context.startActivity(refreshControllerIntent);
+            // Notify the groupactiviy to finish.
+            ORListenerManager.getInstance().notifyOREventListener(ListenerConstant.FINISH_GROUP_ACTIVITY, null);
             return;
          } else {
             isPolling = false;

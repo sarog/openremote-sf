@@ -98,7 +98,18 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
           navigationHistory = new ArrayList<Navigate>();
        }
        recoverLastGroupScreen();
-       Log.e("onCreate", "onCreate");
+       addControllerRefreshEventListener();
+       Log.e("INFO", "The onCreate of GroupActivity finished.");
+   }
+   
+   private void addControllerRefreshEventListener() {
+      final Activity that = this;
+      ORListenerManager.getInstance().addOREventListener(ListenerConstant.FINISH_GROUP_ACTIVITY, new OREventListener() {
+         @Override
+         public void handleEvent(OREvent event) {
+            that.finish();
+         }
+      }); 
    }
 
    private void recoverLastGroupScreen() {
