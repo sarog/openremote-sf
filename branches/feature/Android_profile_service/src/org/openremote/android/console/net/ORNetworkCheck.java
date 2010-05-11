@@ -23,6 +23,7 @@ package org.openremote.android.console.net;
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.model.AppSettingsModel;
+import org.openremote.android.console.util.HTTPUtil;
 import org.openremote.android.console.util.IpUitl;
 
 import android.content.Context;
@@ -57,7 +58,7 @@ public class ORNetworkCheck {
 			if (currentPanelIdentity == null || "".equals(currentPanelIdentity)) {
 				return null;
 			}
-			String restfulPanelURL = currentControllerServerURL + "/rest/panel/" + currentPanelIdentity;
+			String restfulPanelURL = currentControllerServerURL + "/rest/panel/" + HTTPUtil.encodePercentUri(currentPanelIdentity);
 			return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, restfulPanelURL, true);
 		}
 		return response;

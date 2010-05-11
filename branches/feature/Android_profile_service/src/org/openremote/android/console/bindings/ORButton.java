@@ -34,8 +34,8 @@ public class ORButton extends Control {
    private Navigate navigate;
    public ORButton(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
-      this.setComponentId(Integer.valueOf(nodeMap.getNamedItem("id").getNodeValue()));
-      this.name = nodeMap.getNamedItem("name").getNodeValue();
+      this.setComponentId(Integer.valueOf(nodeMap.getNamedItem(ID).getNodeValue()));
+      this.name = nodeMap.getNamedItem(NAME).getNodeValue();
       if (nodeMap.getNamedItem("hasControlCommand") != null) {
          this.hasControlCommand = Boolean.valueOf(nodeMap.getNamedItem("hasControlCommand").getNodeValue());
       }
@@ -48,11 +48,11 @@ public class ORButton extends Control {
       for (int i = 0; i < nodeNum; i++) {
          if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
             Node elementNode = childNodes.item(i);
-            if ("default".equals(elementNode.getNodeName())) {
+            if (DEFAULT.equals(elementNode.getNodeName())) {
                this.defaultImage = createImage(elementNode);
-            } else if ("pressed".equals(elementNode.getNodeName())) {
+            } else if (PRESSED.equals(elementNode.getNodeName())) {
                this.pressedImage = createImage(elementNode);
-            } else if ("navigate".equals(elementNode.getNodeName())) {
+            } else if (NAVIGATE.equals(elementNode.getNodeName())) {
                this.navigate = new Navigate(elementNode);
             }
          }

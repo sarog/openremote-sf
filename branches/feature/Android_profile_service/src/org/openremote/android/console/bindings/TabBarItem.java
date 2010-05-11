@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -19,33 +19,47 @@
 */
 package org.openremote.android.console.bindings;
 
-import java.util.ArrayList;
-
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @SuppressWarnings("serial")
-public class TabBar extends BusinessEntity {
+public class TabBarItem extends BusinessEntity {
 
-   private ArrayList<TabBarItem> tabBarItems;
+   private String name;
+   private Navigate navigate;
+   private Image image;
    
-   public TabBar(Node node) {
-      tabBarItems = new ArrayList<TabBarItem>();
+   public TabBarItem(Node node) {
+      NamedNodeMap nodeMap = node.getAttributes();
+      if (nodeMap.getNamedItem(NAME) != null) {
+         this.name = nodeMap.getNamedItem(NAME).getNodeValue();
+      }
+      
       NodeList childNodes = node.getChildNodes();
       int nodeNum = childNodes.getLength();
       for (int i = 0; i < nodeNum; i++) {
          if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
             Node elementNode = childNodes.item(i);
-            if (TABBAR_ITEM.equals(elementNode.getNodeName())) {
-               tabBarItems.add(new TabBarItem(elementNode));
+            if (NAVIGATE.equals(elementNode.getNodeName())) {
+               this.navigate = new Navigate(elementNode);
+            } else if (IMAGE.equals(elementNode.getNodeName())) {
+               this.image = new Image(elementNode);
             }
          }
       }
    }
-   
-   public ArrayList<TabBarItem> getTabBarItems() {
-      return tabBarItems;
+
+   public String getName() {
+      return name;
    }
 
+   public Navigate getNavigate() {
+      return navigate;
+   }
+
+   public Image getImage() {
+      return image;
+   }
    
 }

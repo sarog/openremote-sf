@@ -19,6 +19,8 @@
     <string name="cancel">Cancel</string>
     <string name="done">Done</string>
     <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="setting">Setting</string>
     <string name="username">Username:</string>
     <string name="password">Password:</string>
 </resources>

@@ -69,7 +69,7 @@ public class GridLayoutContainer extends LayoutContainer {
       for (GridCell cell : cells) {
          if (cell.getComponent() instanceof SensorComponent) {
             Sensor sensor = ((SensorComponent)cell.getComponent()).getSensor();
-            if (sensor != null) {
+            if (sensor != null && sensor.getSensorId() > 0) {
                ids.add(sensor.getSensorId());
             }
          }

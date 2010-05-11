@@ -154,7 +154,7 @@ public class Main extends Activity {
 
     public void handleMenu(MenuItem item) {
         switch (item.getItemId()) {
-        case Constants.MENU_ITEM_CONFIG:
+        case Constants.MENU_ITEM_SETTING:
             doSettings(null);
             break;
         case Constants.MENU_ITEM_QUIT:
@@ -165,7 +165,7 @@ public class Main extends Activity {
 
     public static void populateMenu(Menu menu) {
         menu.setQwertyMode(true);
-        MenuItem configItem = menu.add(0, Constants.MENU_ITEM_CONFIG, 0,
+        MenuItem configItem = menu.add(0, Constants.MENU_ITEM_SETTING, 0,
                 R.string.configure);
         configItem.setIcon(R.drawable.ic_menu_manage);
         MenuItem quit = menu.add(0, Constants.MENU_ITEM_QUIT, 0, R.string.quit);

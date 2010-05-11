@@ -28,6 +28,8 @@ import org.openremote.android.console.bindings.Gesture;
 import org.openremote.android.console.bindings.Group;
 import org.openremote.android.console.bindings.Navigate;
 import org.openremote.android.console.bindings.Screen;
+import org.openremote.android.console.bindings.TabBar;
+import org.openremote.android.console.bindings.TabBarItem;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ListenerConstant;
@@ -49,6 +51,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -73,7 +76,6 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    private int screenSize;
    private HashMap<Integer, GroupView> groupViews;
    private ArrayList<Navigate> navigationHistory;
-
    private static final int SWIPE_MIN_DISTANCE = 120;
    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 
@@ -96,6 +98,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
           navigationHistory = new ArrayList<Navigate>();
        }
        recoverLastGroupScreen();
+       Log.e("onCreate", "onCreate");
    }
 
    private void recoverLastGroupScreen() {
@@ -241,27 +244,63 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    }
 
    public boolean onOptionsItemSelected(MenuItem item) {
+       Log.e("item selected", "item selected");
        handleMenu(item);
        return true;
    }
 
    public void handleMenu(MenuItem item) {
        switch (item.getItemId()) {
-       case Constants.MENU_ITEM_QUIT:
-           System.exit(0);
-           break;
+       case Constants.MENU_ITEM_SETTING:
+          Intent intent = new Intent();
+          intent.setClass(GroupActivity.this, AppSettingsActivity.class);
+          startActivity(intent);
+          break;
+       case Constants.MENU_ITEM_LOGOUT:
+          doLogout();
+          break;
        }
    }
-
+   
+   @Override
    public boolean onCreateOptionsMenu(Menu menu) {
-       GroupActivity.populateMenu(menu);
-       return true;
+      menu.setQwertyMode(true);
+      MenuItem setting = menu.add(-1, Constants.MENU_ITEM_SETTING, 0, R.string.setting);
+      setting.setIcon(R.drawable.ic_menu_manage);
+      MenuItem logout = menu.add(-1, Constants.MENU_ITEM_LOGOUT, 1, R.string.logout);
+      logout.setIcon(R.drawable.ic_menu_revert);
+      return true;
    }
 
-   public static void populateMenu(Menu menu) {
-       menu.setQwertyMode(true);
-       MenuItem quit = menu.add(0, Constants.MENU_ITEM_QUIT, 0, R.string.back);
-       quit.setIcon(R.drawable.ic_menu_revert);
+   @Override
+   public boolean onPrepareOptionsMenu(Menu menu) {
+      TabBar tabBar = currentGroupView.getGroup().getTabBar();
+      if (tabBar == null) {
+         tabBar = XMLEntityDataBase.globalTabBar;
+      }
+      if (tabBar != null && tabBar.getTabBarItems().size() > 0) {
+         menu.clear();
+         ArrayList<TabBarItem> items = tabBar.getTabBarItems();
+         int itemSize = items.size();
+         for (int i = 0; i < itemSize; i++) {
+            MenuItem menuItem = menu.add(0, i, i, items.get(i).getName());
+            if (items.get(i).getImage() != null) {
+               menuItem.setIcon(Drawable.createFromPath(Constants.FILE_FOLDER_PATH + items.get(i).getImage().getSrc()));
+            }
+            final Navigate navigate = items.get(i).getNavigate();
+            if (navigate != null) {
+               menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                  @Override
+                  public boolean onMenuItemClick(MenuItem item) {
+                     handleNavigate(navigate);
+                     return true;
+                  }
+                  
+               });
+            }
+         }
+      }
+      return true;
    }
 
    protected Dialog onCreateDialog(int id) {
@@ -339,14 +378,19 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
          intent.setClass(GroupActivity.this, LoginViewActivity.class);
          startActivity(intent);
       } else if (navigate.isLogout()) {
-         String username = UserCache.getUsername(GroupActivity.this);
-         if (!TextUtils.isEmpty(username)) {
-            UserCache.saveUser(GroupActivity.this, "", "");
-            ViewHelper.showAlertViewWithTitle(GroupActivity.this, "Logout", username + " logout success.");
-//            ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
-         }
+         doLogout();
       }
       return false;
+   }
+
+   private void doLogout() {
+      String username = UserCache.getUsername(GroupActivity.this);
+      String password = UserCache.getPassword(GroupActivity.this);
+      if (!TextUtils.isEmpty(password)) {
+         UserCache.saveUser(GroupActivity.this, username, "");
+         ViewHelper.showAlertViewWithTitle(GroupActivity.this, "Logout", username + " logout success.");
+         ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
+      }
    }
 
    private boolean navigateToGroup(int toGroupId, int toScreenId) {

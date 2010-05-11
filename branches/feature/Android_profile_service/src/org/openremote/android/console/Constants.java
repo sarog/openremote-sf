@@ -34,9 +34,9 @@ public class Constants {
    public static final long BINDING_VERSION = 1L;
    public static final long MODEL_VERSION = 2L;
    public static final long CACHE_VERSION = 3L;
-   public static final int MENU_ITEM_CONFIG = Menu.FIRST + 1;
-   public static final int MENU_ITEM_QUIT = Menu.FIRST + 2;
-   public static final int MENU_ITEM_ACTIVITIES = Menu.FIRST + 3;
+   public static final int MENU_ITEM_SETTING = Menu.FIRST + 1;
+   public static final int MENU_ITEM_LOGOUT = Menu.FIRST + 2;
+   public static final int MENU_ITEM_QUIT = Menu.FIRST + 3;
    public static final String ERROR = "error";
    public static final int DIALOG_ERROR_ID = 0;
    public static final int HTTP_SUCCESS = 200;
