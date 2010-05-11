@@ -67,7 +67,7 @@ public class HTTPUtil {
    }
 
    
-   private static String encodePercentUri(String uri) {
+   public static String encodePercentUri(String uri) {
       String encodedUri = null;
       try {
          encodedUri = URLEncoder.encode(uri, "UTF-8");

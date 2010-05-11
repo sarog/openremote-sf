@@ -166,7 +166,6 @@ public class ORConnection {
 		if (request == null) {
 			throw new ORConnectionException("Create HttpRequest fail.");
 		}
-		
 		if (isNeedBasicAuth) {
 			SecurityUtil.addCredentialToHttpRequest(context, request);
 		}
