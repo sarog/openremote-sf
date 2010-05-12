@@ -79,7 +79,12 @@ public class ORConnection {
 		if (isNeedHttpBasicAuth) {
 			SecurityUtil.addCredentialToHttpRequest(context, httpRequest);
 		}
-		new Thread(new Runnable() {
+		execute();
+	}
+
+	/** Execute the http request.*/
+	public void execute() {
+	   new Thread(new Runnable() {
          public void run() {
             try {
                httpResponse = httpClient.execute(httpRequest);
@@ -93,18 +98,8 @@ public class ORConnection {
             handler.sendEmptyMessage(200);
          }
       }).start(); 
-//        try {
-//        	httpResponse = httpClient.execute(httpRequest);
-//		} catch (ClientProtocolException e) {
-//			connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail.", e));
-//			return;
-//		} catch (IOException e) {
-//			connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail.", e));
-//			return;
-//		}
-//		dealWithResponse();
 	}
-
+	
 	/** Deal with the response while httpconnection of android console to controller success. */
 	private void dealWithResponse() {
 		connectionDidReceiveResponse();
