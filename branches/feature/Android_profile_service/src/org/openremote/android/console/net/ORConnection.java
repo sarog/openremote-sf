@@ -63,8 +63,8 @@ public class ORConnection {
 		delegate = delegateParam;
 		this.context = context;
 		HttpParams params = new BasicHttpParams();
-      HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
-      HttpConnectionParams.setSoTimeout(params, 5 * 1000);
+      HttpConnectionParams.setConnectionTimeout(params, 50 * 1000);
+      HttpConnectionParams.setSoTimeout(params, 50 * 1000);
 		httpClient = new DefaultHttpClient(params);
 		if (ORHttpMethod.POST.equals(httpMethod)) {
 			httpRequest = new HttpPost(url);
