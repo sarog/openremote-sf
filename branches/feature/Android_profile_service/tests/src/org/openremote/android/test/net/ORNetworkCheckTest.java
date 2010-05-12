@@ -20,7 +20,9 @@
 
 package org.openremote.android.test.net;
 
+import org.apache.http.HttpResponse;
 import org.openremote.android.console.AppSettingsActivity;
+import org.openremote.android.console.Constants;
 import org.openremote.android.console.net.ORNetworkCheck;
 
 import android.content.Context;
@@ -43,7 +45,9 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
 	@MediumTest
 	public void testReachability() {
 		Context context = getActivity();
-		Log.i("INFO", "Network check was " + (ORNetworkCheck.checkAllWithControllerServerURL(context, "http://192.168.100.108:8080/controller") ? "successful" : "failed"));
+		HttpResponse response = ORNetworkCheck.checkAllWithControllerServerURL(context, "http://192.168.100.108:8080/controller");
+		boolean isSuccessful = (response !=null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS);
+		Log.i("INFO", "Network check was " +  (isSuccessful ? "successful" : "failed"));
 	}
 
 }
