@@ -81,9 +81,11 @@ public class ScreenView extends AbsoluteLayout {
       int screenWidth = Screen.SCREEN_WIDTH;
       int screenHeight = Screen.SCREEN_HEIGHT - Screen.SCREEN_STATUS_BAR_HEIGHT;
       try {
-         Bitmap backgroudBitMap = BitmapFactory
-               .decodeStream(this.getContext().openFileInput(screen.getBackgroundSrc()));
+         Bitmap backgroudBitMap = BitmapFactory.decodeStream(this.getContext().openFileInput(screen.getBackgroundSrc()));
          backgroudView.setImageBitmap(backgroudBitMap);
+         if (backgroudBitMap == null) {
+            return;
+         }
          int imageWidth = backgroudBitMap.getWidth();
          int imageHeight = backgroudBitMap.getHeight();
          Background background = screen.getBackground();
