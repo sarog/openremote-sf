@@ -65,6 +65,13 @@ import android.view.WindowManager;
 import android.view.GestureDetector.OnGestureListener;
 import android.widget.LinearLayout;
 
+/**
+ * Controls all the screen views in a group.
+ * 
+ * @author Tomsky Wang
+ *
+ */
+
 public class GroupActivity extends Activity implements OnGestureListener, ORConnectionDelegate{
 
 //   private static final int FLIPPER = 0xF00D;
@@ -98,18 +105,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
           navigationHistory = new ArrayList<Navigate>();
        }
        recoverLastGroupScreen();
-       addControllerRefreshEventListener();
-       Log.e("INFO", "The onCreate of GroupActivity finished.");
-   }
-   
-   private void addControllerRefreshEventListener() {
-      final Activity that = this;
-      ORListenerManager.getInstance().addOREventListener(ListenerConstant.FINISH_GROUP_ACTIVITY, new OREventListener() {
-         @Override
-         public void handleEvent(OREvent event) {
-            that.finish();
-         }
-      }); 
+       Log.e("onCreate", "onCreate");
    }
 
    private void recoverLastGroupScreen() {
@@ -119,6 +115,9 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       Group lastGroup = XMLEntityDataBase.getGroup(lastGroupID);
       if (lastGroup == null) {
     	  lastGroup = XMLEntityDataBase.getFirstGroup();
+      }
+      if (lastGroup == null) {
+         return;
       }
       screenSize = lastGroup.getScreens().size();
       currentGroupView = new GroupView(this, lastGroup);
@@ -454,13 +453,14 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    @Override
    public boolean onKeyDown(int keyCode, KeyEvent event) {
       if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-         ViewHelper.showAlertViewWithTitle(GroupActivity.this, "Exit", " Exit the application.");
-         System.exit(0);
+         ViewHelper.showAlertViewWithTitleYesOrNo(GroupActivity.this, "", "Exit the application?",
+               new DialogInterface.OnClickListener() {
+                  public void onClick(DialogInterface dialog, int which) {
+                     System.exit(0);
+                  }
+               });
          return true;
-     } else if (keyCode == KeyEvent.KEYCODE_HOME && event.getRepeatCount() == 0) {
-         System.exit(0);
-         return true;
-      }
+      } 
       return super.onKeyDown(keyCode, event);
    }
 
