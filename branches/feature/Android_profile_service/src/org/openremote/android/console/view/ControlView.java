@@ -22,8 +22,8 @@ import java.util.Timer;
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.LoginDialog;
 import org.openremote.android.console.bindings.Component;
-import org.openremote.android.console.bindings.Switch;
 import org.openremote.android.console.bindings.ORButton;
+import org.openremote.android.console.bindings.Switch;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ViewHelper;
@@ -37,7 +37,7 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
 
    private Timer timer;
    private Context context;
-
+   private ORConnection orConnecttion;
    protected ControlView(Context context) {
       super(context);
       this.context = context;
@@ -54,9 +54,12 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
    }
 
    public boolean sendCommandRequest(String commandType) {
-      new ORConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel.getCurrentServer(getContext())
-            + "/rest/control/" + getComponent().getComponentId() + "/" + commandType, this);
-
+      if (orConnecttion == null) {
+         orConnecttion = new ORConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel.getCurrentServer(getContext())
+               + "/rest/control/" + getComponent().getComponentId() + "/" + commandType, this);
+      } else {
+         orConnecttion.execute();
+      }
       return true;
    }
 
