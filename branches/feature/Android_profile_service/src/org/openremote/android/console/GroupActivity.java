@@ -22,6 +22,7 @@ package org.openremote.android.console;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.bindings.Gesture;
@@ -85,6 +86,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
    
    private boolean useLocalCache;
+   private boolean isNavigetionBackward;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +110,25 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
        recoverLastGroupScreen();
    }
 
+   
+   private int getCurrentGroupId() {
+      return currentGroupView == null ? 0 : currentGroupView.getGroup().getGroupId();
+   }
+   
+   private int getScreenIndex(int screenId) {
+      if (currentGroupView != null) {
+         List<Screen> screens = currentGroupView.getGroup().getScreens();
+         int i = 0;
+         for (Screen screen : screens) {
+            if (screen.getScreenId() == screenId) {
+               return i;
+            }
+            i++;
+         }
+      }
+      return -1;
+   }
+   
    private void recoverLastGroupScreen() {
 	   
       int lastGroupID = UserCache.getLastGroupId(this);
@@ -384,6 +405,9 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
          if (navigationHistory.size() > 0) {
             Navigate backward = navigationHistory.get(navigationHistory.size() - 1);
             if (backward.getFromGroup() > 0 && backward.getFromScreen() > 0) {
+               if (backward.getFromGroup() == getCurrentGroupId()) {
+                  isNavigetionBackward = getScreenIndex(backward.getFromScreen()) < getScreenIndex(currentScreen.getScreenId());
+               }
                navigateToGroup(backward.getFromGroup(), backward.getFromScreen());
             }
             navigationHistory.remove(backward);
@@ -433,6 +457,11 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
          } else {
             // in same group.
             if (toScreenId > 0) {
+               if (isNavigetionBackward) {
+                  currentScreenViewFlipper.setToPreviousAnimation();
+               } else {
+                  currentScreenViewFlipper.setToNextAnimation();
+               }
                currentScreenViewFlipper.setDisplayedChild(targetGroup.getScreens().indexOf(XMLEntityDataBase.getScreen(toScreenId)));
             }
          }
