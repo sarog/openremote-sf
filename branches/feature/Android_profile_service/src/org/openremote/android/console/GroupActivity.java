@@ -69,6 +69,7 @@ import android.widget.LinearLayout;
  * Controls all the screen views in a group.
  * 
  * @author Tomsky Wang
+ * @author Dan Cong
  *
  */
 
@@ -136,7 +137,6 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       currentScreen = currentScreenView.getScreen();
       currentScreenView.startPolling();
       addNaviagateListener();
-      Log.i("After recovery------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupActivity.this) + "," + UserCache.getLastScreenId(GroupActivity.this));
    }
 
    private void addNaviagateListener() {
@@ -158,7 +158,6 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
           currentScreenViewFlipper.showNext();
           ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
           UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
-          Log.i("------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupActivity.this) + "," + UserCache.getLastScreenId(GroupActivity.this));
           return true;
        }
        return false;
@@ -444,7 +443,6 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
          historyNavigate.setFromScreen(((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
          if (navigateTo(navigate)) {
             UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
-            Log.i("------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupActivity.this) + "," + UserCache.getLastScreenId(GroupActivity.this));
             navigationHistory.add(historyNavigate);
          }
       }
@@ -453,17 +451,12 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    @Override
    public boolean onKeyDown(int keyCode, KeyEvent event) {
       if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-         ViewHelper.showAlertViewWithTitleYesOrNo(GroupActivity.this, "", "Exit the application?",
-               new DialogInterface.OnClickListener() {
-                  public void onClick(DialogInterface dialog, int which) {
-                     System.exit(0);
-                  }
-               });
+         finish();
          return true;
       } 
       return super.onKeyDown(keyCode, event);
    }
-
+   
    @Override
    public void urlConnectionDidFailWithException(Exception e) {
       // do nothing.
