@@ -41,7 +41,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -59,19 +58,20 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
    private static final int SWITCH_TO_OTHER_CONTROLER = 0xF00D;
    
    private Activity activity;
+   private boolean bgImageUpdated;
    
    public AsyncResourceLoader(Activity activity) {
       this.activity = activity;
+      
    }
    
    @Override
    protected AsyncResourceLoaderResult doInBackground(Void... params) {
       AsyncResourceLoaderResult result = new AsyncResourceLoaderResult();
-
       boolean isControllerAvailable = false;
       String panelName = AppSettingsModel.getCurrentPanelIdentity(activity);
+      publishProgress("panel: " + panelName);
       String serverUrl = AppSettingsModel.getCurrentServer(activity);
-      publishProgress(panelName);
 
       HttpResponse checkResponse = ORNetworkCheck.checkAllWithControllerServerURL(activity, serverUrl);
       isControllerAvailable = (checkResponse != null && checkResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) ? true : false;
@@ -151,10 +151,10 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
    @Override
    protected void onProgressUpdate(String... values) {
       RelativeLayout loadingView = (RelativeLayout) (activity.findViewById(R.id.welcome_view));
-      ImageView globalLogo = (ImageView) (activity.findViewById(R.id.global_logo));
-      globalLogo.setImageResource(R.drawable.global_logo);
-      loadingView.setBackgroundResource(R.drawable.loading);
-      
+      if (!bgImageUpdated) {
+         loadingView.setBackgroundResource(R.drawable.loading);
+         bgImageUpdated = true;
+      }
       TextView loadingText = (TextView)(activity.findViewById(R.id.loading_text));
       loadingText.setText("loading " + values[0] + "...");
       loadingText.setEllipsize(TruncateAt.MIDDLE);
@@ -163,6 +163,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
 
    @Override
    protected void onPostExecute(AsyncResourceLoaderResult result) {
+      publishProgress("groups & screens");
       Intent intent = new Intent();
       switch (result.getAction()) {
       case TO_GROUP:
