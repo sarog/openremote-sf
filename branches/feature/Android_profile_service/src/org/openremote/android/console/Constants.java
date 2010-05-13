@@ -32,6 +32,7 @@ public class Constants {
    private Constants() {
    }
    public static final long BINDING_VERSION = 1L;
+   public static final long DEFAULT_FONT_SIZE = 16;
    public static final long MODEL_VERSION = 2L;
    public static final long CACHE_VERSION = 3L;
    public static final int MENU_ITEM_SETTING = Menu.FIRST + 1;

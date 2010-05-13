@@ -48,7 +48,7 @@ public class SwitchView extends SensoryControlView {
       setComponent(switchComponent);
       if (switchComponent != null) {
          button = new Button(context);
-         button.setTextSize(18);
+         button.setTextSize(Constants.DEFAULT_FONT_SIZE);
          initSwitch(switchComponent);
          if (switchComponent.getSensor() != null) {
             addPollingSensoryListener();
