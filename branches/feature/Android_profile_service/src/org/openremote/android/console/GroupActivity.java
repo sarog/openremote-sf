@@ -83,11 +83,14 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    private ArrayList<Navigate> navigationHistory;
    private static final int SWIPE_MIN_DISTANCE = 120;
    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+   
+   private boolean useLocalCache;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
        super.onCreate(savedInstanceState);
        if(getIntent().getDataString() != null) {
+          useLocalCache = true;
           ViewHelper.showAlertViewWithSetting(this, "Using cached content", getIntent().getDataString());
        }
        
@@ -113,7 +116,9 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
     	  lastGroup = XMLEntityDataBase.getFirstGroup();
       }
       if (lastGroup == null) {
-         ViewHelper.showAlertViewWithSetting(this, "No Group Found", "please config Settings again");
+         if (!useLocalCache) {
+            ViewHelper.showAlertViewWithSetting(this, "No Group Found", "please config Settings again");
+         }
          return;
       }
       screenSize = lastGroup.getScreens().size();

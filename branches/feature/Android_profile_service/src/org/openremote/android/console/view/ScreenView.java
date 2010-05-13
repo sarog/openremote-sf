@@ -98,10 +98,10 @@ public class ScreenView extends AbsoluteLayout {
                top = background.getBackgroundImageAbsolutePositionTop();
             } else {
                String backgroundImageRelativePosition = background.getBackgroundImageRelativePosition();
-               if ("top-left".equals(backgroundImageRelativePosition)) {
+               if ("top_left".equals(backgroundImageRelativePosition)) {
                } else if ("top".equals(backgroundImageRelativePosition)) {
                   left = (screenWidth - imageWidth) / 2;
-               } else if ("top-right".equals(backgroundImageRelativePosition)) {
+               } else if ("top_right".equals(backgroundImageRelativePosition)) {
                   left = screenWidth - imageWidth;
                } else if ("left".equals(backgroundImageRelativePosition)) {
                   top = (screenHeight - imageHeight) / 2;
@@ -114,9 +114,9 @@ public class ScreenView extends AbsoluteLayout {
                } else if ("bottom".equals(backgroundImageRelativePosition)) {
                   left = (screenWidth - imageWidth) / 2;
                   top = screenHeight - imageHeight;
-               } else if ("bottom-left".equals(backgroundImageRelativePosition)) {
+               } else if ("bottom_left".equals(backgroundImageRelativePosition)) {
                   top = screenHeight - imageHeight;
-               } else if ("bottom-right".equals(backgroundImageRelativePosition)) {
+               } else if ("bottom_right".equals(backgroundImageRelativePosition)) {
                   left = screenWidth - imageWidth;
                   top = screenHeight - imageHeight;
                }
