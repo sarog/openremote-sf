@@ -42,6 +42,7 @@ import org.openremote.android.console.model.XMLEntityDataBase;
 import org.openremote.android.console.net.ORConnection;
 import org.openremote.android.console.net.ORConnectionDelegate;
 import org.openremote.android.console.net.ORHttpMethod;
+import org.openremote.android.console.util.ImageUtil;
 import org.openremote.android.console.view.GroupView;
 import org.openremote.android.console.view.ScreenView;
 import org.openremote.android.console.view.ScreenViewFlipper;
@@ -51,7 +52,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -135,7 +135,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       ScreenView currentScreenView = (ScreenView) currentScreenViewFlipper.getCurrentView();
       UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(), currentScreenView.getScreen().getScreenId());
       currentScreen = currentScreenView.getScreen();
-      currentScreenView.startPolling();
+      
       addNaviagateListener();
    }
 
@@ -148,6 +148,22 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
             }
          }
       });
+   }
+   
+   
+
+   @Override
+   protected void onPause() {
+      ScreenView currentScreenView = (ScreenView) currentScreenViewFlipper.getCurrentView();
+      currentScreenView.cancelPolling();
+      super.onPause();
+   }
+
+   @Override
+   protected void onResume() {
+      ScreenView currentScreenView = (ScreenView) currentScreenViewFlipper.getCurrentView();
+      currentScreenView.startPolling();
+      super.onResume();
    }
 
    private boolean moveRight() {
@@ -294,7 +310,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
          for (int i = 0; i < itemSize; i++) {
             MenuItem menuItem = menu.add(0, i, i, items.get(i).getName());
             if (items.get(i).getImage() != null) {
-               menuItem.setIcon(Drawable.createFromPath(Constants.FILE_FOLDER_PATH + items.get(i).getImage().getSrc()));
+               menuItem.setIcon(ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + items.get(i).getImage().getSrc()));
             }
             final Navigate navigate = items.get(i).getNavigate();
             if (navigate != null) {
@@ -340,14 +356,12 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
        return dialog;
    }
 
-   
-
    @Override
    protected void onStart() {
       super.onStart();
-      ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
+//      ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
    }
-
+   
    @Override
    protected void onStop() {
       super.onStop();
