@@ -1,0 +1,7 @@
+<SeekBar xmlns:android="http://schemas.android.com/apk/res/android" 
+	android:id="@+id/seek_bar_vertical"
+	android:max="100"
+	android:layout_height="wrap_content"
+	android:layout_width="fill_parent"
+	android:progressDrawable="@drawable/seek_bar_style"
+	android:orientation="horizontal" />

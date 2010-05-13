@@ -31,5 +31,5 @@ public class ListenerConstant {
    public static final String ListenerNavigateTo = "navigateToListener";
    public static final String ListenerPopulateCredentialView = "ListenerPopulateCredentialView";
    public static final String ListenerPopulateSettingsView = "ListenerPopulateSettingsView";
-   public static String FINISH_GROUP_ACTIVITY = "finishGroupActivity";
+   public static final String FINISH_GROUP_ACTIVITY = "finishGroupActivity";
 }

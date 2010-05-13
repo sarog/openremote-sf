@@ -23,6 +23,7 @@ import org.apache.http.HttpResponse;
 import org.openremote.android.console.LoginDialog;
 import org.openremote.android.console.bindings.Component;
 import org.openremote.android.console.bindings.ORButton;
+import org.openremote.android.console.bindings.Slider;
 import org.openremote.android.console.bindings.Switch;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
@@ -37,7 +38,6 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
 
    private Timer timer;
    private Context context;
-   private ORConnection orConnecttion;
    protected ControlView(Context context) {
       super(context);
       this.context = context;
@@ -49,17 +49,16 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
          controlView = new ButtonView(context, (ORButton) control);
       } else if (control instanceof Switch) {
          controlView = new SwitchView(context, (Switch) control);
+      } else if (control instanceof Slider) {
+         controlView = new SliderView(context, (Slider) control);
       }
       return controlView;
    }
 
    public boolean sendCommandRequest(String commandType) {
-      if (orConnecttion == null) {
-         orConnecttion = new ORConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel.getCurrentServer(getContext())
-               + "/rest/control/" + getComponent().getComponentId() + "/" + commandType, this);
-      } else {
-         orConnecttion.execute();
-      }
+      new ORConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel
+            .getCurrentServer(getContext())
+            + "/rest/control/" + getComponent().getComponentId() + "/" + commandType, this);
       return true;
    }
 
