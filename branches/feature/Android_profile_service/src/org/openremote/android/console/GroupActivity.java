@@ -48,9 +48,6 @@ import org.openremote.android.console.view.ScreenView;
 import org.openremote.android.console.view.ScreenViewFlipper;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -106,11 +103,9 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
           navigationHistory = new ArrayList<Navigate>();
        }
        recoverLastGroupScreen();
-       Log.e("onCreate", "onCreate");
    }
 
    private void recoverLastGroupScreen() {
-      Log.i("Before recovery------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupActivity.this) + "," + UserCache.getLastScreenId(GroupActivity.this));
 	   
       int lastGroupID = UserCache.getLastGroupId(this);
       Group lastGroup = XMLEntityDataBase.getGroup(lastGroupID);
@@ -118,6 +113,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
     	  lastGroup = XMLEntityDataBase.getFirstGroup();
       }
       if (lastGroup == null) {
+         ViewHelper.showAlertViewWithSetting(this, "No Group Found", "please config Settings again");
          return;
       }
       screenSize = lastGroup.getScreens().size();
@@ -133,6 +129,9 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       linearLayout.addView(currentScreenViewFlipper);
       this.setContentView(linearLayout);
       ScreenView currentScreenView = (ScreenView) currentScreenViewFlipper.getCurrentView();
+      if (currentScreenView == null) {
+         return;
+      }
       UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(), currentScreenView.getScreen().getScreenId());
       currentScreen = currentScreenView.getScreen();
       
@@ -149,31 +148,16 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
          }
       });
    }
-   
-   
-
-   @Override
-   protected void onPause() {
-      ScreenView currentScreenView = (ScreenView) currentScreenViewFlipper.getCurrentView();
-      currentScreenView.cancelPolling();
-      super.onPause();
-   }
-
-   @Override
-   protected void onResume() {
-      ScreenView currentScreenView = (ScreenView) currentScreenViewFlipper.getCurrentView();
-      currentScreenView.startPolling();
-      super.onResume();
-   }
 
    private boolean moveRight() {
        Log.d(this.toString(), "MoveRight");
        if (currentScreenViewFlipper.getDisplayedChild() < screenSize - 1) {
-          ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
+          cancelCurrentPolling();
           currentScreenViewFlipper.setToNextAnimation();
           currentScreenViewFlipper.showNext();
-          ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
-          UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
+          startCurrentPolling();
+          UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(),
+                ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
           return true;
        }
        return false;
@@ -182,12 +166,12 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    private boolean moveLeft() {
        Log.d(this.toString(), "MoveLeft");
        if (currentScreenViewFlipper.getDisplayedChild() > 0) {
-          ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
+          cancelCurrentPolling();
           currentScreenViewFlipper.setToPreviousAnimation();
           currentScreenViewFlipper.showPrevious();
-          ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
-          UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
-          Log.i("------------Group_ID, Screen_ID--------------", UserCache.getLastGroupId(GroupActivity.this) + "," + UserCache.getLastScreenId(GroupActivity.this));
+          startCurrentPolling();
+          UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(), 
+                ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
           return true;
        }
        return false;
@@ -299,6 +283,9 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
 
    @Override
    public boolean onPrepareOptionsMenu(Menu menu) {
+      if (currentGroupView == null || currentGroupView.getGroup() == null) {
+         return true;
+      }
       TabBar tabBar = currentGroupView.getGroup().getTabBar();
       if (tabBar == null) {
          tabBar = XMLEntityDataBase.globalTabBar;
@@ -328,50 +315,54 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       return true;
    }
 
-   protected Dialog onCreateDialog(int id) {
-       Dialog dialog = null;
-       switch (id) {
-       case Constants.DIALOG_ERROR_ID:
-           AlertDialog.Builder builder = new AlertDialog.Builder(this);
-           builder.setMessage("Error, go back?").setCancelable(false)
-                   .setPositiveButton(R.string.yes,
-                           new DialogInterface.OnClickListener() {
-                               public void onClick(DialogInterface dialog,
-                                       int id) {
-                                   System.exit(0);
-                               }
-                           }).setNegativeButton(R.string.no,
-                           new DialogInterface.OnClickListener() {
-                               public void onClick(DialogInterface dialog,
-                                       int id) {
-                                   dialog.cancel();
-                               }
-                           });
-           dialog = builder.create();
-
-           break;
-       default:
-           dialog = null;
-       }
-       return dialog;
+   private void startCurrentPolling() {
+      if (currentScreenViewFlipper == null) {
+         return;
+      }
+      ScreenView sv = (ScreenView) currentScreenViewFlipper.getCurrentView();
+      if (sv != null) {
+         sv.startPolling();
+      }
+   }
+   
+   private void cancelCurrentPolling() {
+      if (currentScreenViewFlipper == null) {
+         return;
+      }
+      ScreenView sv = (ScreenView) currentScreenViewFlipper.getCurrentView();
+      if (sv != null) {
+         sv.cancelPolling();
+      }
    }
 
    @Override
    protected void onStart() {
       super.onStart();
-//      ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
+//      startCurrentPolling();
    }
    
    @Override
    protected void onStop() {
       super.onStop();
-      ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
+      cancelCurrentPolling();
    }
 
    @Override
    protected void onDestroy() {
       super.onDestroy();
-      ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
+      cancelCurrentPolling();
+   }
+   
+   @Override
+   protected void onPause() {
+      super.onPause();
+      cancelCurrentPolling();
+   }
+
+   @Override
+   protected void onResume() {
+      super.onResume();
+      startCurrentPolling();
    }
 
    /**
@@ -419,7 +410,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    private boolean navigateToGroup(int toGroupId, int toScreenId) {
       Group targetGroup = XMLEntityDataBase.getGroup(toGroupId);
       if (targetGroup != null) {
-         ((ScreenView) currentScreenViewFlipper.getCurrentView()).cancelPolling();
+         cancelCurrentPolling();
          if (currentGroupView.getGroup().getGroupId() != toGroupId) {
             GroupView targetGroupView = groupViews.get(toGroupId);
             if (targetGroupView == null) {
@@ -440,7 +431,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
                currentScreenViewFlipper.setDisplayedChild(targetGroup.getScreens().indexOf(XMLEntityDataBase.getScreen(toScreenId)));
             }
          }
-         ((ScreenView) currentScreenViewFlipper.getCurrentView()).startPolling();
+         startCurrentPolling();
          currentScreen = ((ScreenView) currentScreenViewFlipper.getCurrentView()).getScreen();
          return true;
       }
@@ -454,9 +445,15 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       Navigate historyNavigate = new Navigate();
       if (currentGroupView.getGroup() != null) {
          historyNavigate.setFromGroup(currentGroupView.getGroup().getGroupId());
-         historyNavigate.setFromScreen(((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
+         ScreenView sv = (ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView();
+         if (sv == null) {
+            return;
+         } else {
+            historyNavigate.setFromScreen(sv.getScreen().getScreenId());
+         }
          if (navigateTo(navigate)) {
-            UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(), ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
+            UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(), 
+                  ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
             navigationHistory.add(historyNavigate);
          }
       }
