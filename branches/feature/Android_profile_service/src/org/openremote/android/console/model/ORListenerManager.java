@@ -43,6 +43,9 @@ public class ORListenerManager {
    }
    
    public void notifyOREventListener(String name, Object data) {
+      if (eventListeners.get(name) == null) {
+         return;
+      }
       for (OREventListener listener : eventListeners.get(name)) {
          listener.handleEvent(new OREvent(data));
       }
