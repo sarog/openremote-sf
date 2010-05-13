@@ -141,6 +141,7 @@ public class FileUtil {
          Element root = dom.getDocumentElement();
          NodeList nodes = root.getChildNodes();
          int nodeLength = nodes.getLength();
+         XMLEntityDataBase.globalTabBar = null;
          for (int i = 0; i < nodeLength; i++) {
             if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE && "tabbar".equals(nodes.item(i).getNodeName())) {
                XMLEntityDataBase.globalTabBar = new TabBar(nodes.item(i));
