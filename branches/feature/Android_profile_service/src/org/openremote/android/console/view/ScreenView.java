@@ -122,6 +122,8 @@ public class ScreenView extends AbsoluteLayout {
          addView(backgroudView, new AbsoluteLayout.LayoutParams(imageWidth, imageHeight, left, top));
       } catch (FileNotFoundException e) {
          Log.e("ScreenView", "screen background file" + screen.getBackgroundSrc() + " not found.", e);
+      } catch (OutOfMemoryError e) {
+         Log.e("OutOfMemoryError", screen.getBackgroundSrc() + ": bitmap size exceeds VM budget");
       }
    }
 
