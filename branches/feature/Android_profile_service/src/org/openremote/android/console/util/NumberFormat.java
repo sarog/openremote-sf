@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -17,29 +17,28 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.android.console.bindings;
 
-import org.w3c.dom.Node;
+package org.openremote.android.console.util;
 
-import android.util.Log;
+import java.math.BigDecimal;
 
+/**
+ * Format the number with precision.
+ * 
+ * @author handy 2010-05-13
+ *
+ */
+public final class NumberFormat {
 
-@SuppressWarnings("serial")
-public class Control extends Component {
+    public static double format(int precision, double number) {
+        BigDecimal b1 = new BigDecimal(Double.toString(number));
+        BigDecimal b2 = new BigDecimal(Double.toString(1));
+        return b1.divide(b2, precision, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
 
-   public static Component buildWithXML(Node node) {
-      Component component = null;
-      if (node == null) {
-         Log.e("ERROR", "The node is null in buildWithXML.");
-         return null;
-      }
-      if (BUTTON.equals(node.getNodeName())) {
-         component =  new ORButton(node);
-      } else if (SWITCH.equals(node.getNodeName())) {
-         component = new Switch(node);
-      } else if (SLIDER.equalsIgnoreCase(node.getNodeName())) {
-         component = new Slider(node);
-      }
-      return component;
-   }
+    public static double format(double number) {
+        BigDecimal b1 = new BigDecimal(Double.toString(number));
+        BigDecimal b2 = new BigDecimal(Double.toString(1));
+        return b1.divide(b2, 0, BigDecimal.ROUND_UP).doubleValue();
+    }
 }

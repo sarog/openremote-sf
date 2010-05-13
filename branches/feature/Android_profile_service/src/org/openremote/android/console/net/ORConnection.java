@@ -38,8 +38,6 @@ import org.openremote.android.console.exceptions.ORConnectionException;
 import org.openremote.android.console.util.SecurityUtil;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 
 /**
@@ -89,13 +87,16 @@ public class ORConnection {
             try {
                httpResponse = httpClient.execute(httpRequest);
             } catch (SocketTimeoutException e) {
-               handler.sendEmptyMessage(0);
+               connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail."));
+               return;
             } catch (ClientProtocolException e) {
-               handler.sendEmptyMessage(0);
+               connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail."));
+               return;
             } catch (IOException e) {
-               handler.sendEmptyMessage(0);
+               connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail."));
+               return;
             }
-            handler.sendEmptyMessage(200);
+            dealWithResponse();
          }
       }).start(); 
 	}
@@ -184,15 +185,4 @@ public class ORConnection {
 		}
 	}
 	
-	private Handler handler = new Handler() {
-      @Override
-      public void handleMessage(Message msg) {
-         int statusCode = msg.what;
-         if (statusCode == 0) {
-            connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail."));
-         } else {
-            dealWithResponse();
-         }
-      }
-  };
 }
