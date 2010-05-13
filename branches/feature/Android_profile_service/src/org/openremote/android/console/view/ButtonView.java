@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -26,6 +26,7 @@ import org.openremote.android.console.Constants;
 import org.openremote.android.console.bindings.ORButton;
 import org.openremote.android.console.model.ListenerConstant;
 import org.openremote.android.console.model.ORListenerManager;
+import org.openremote.android.console.util.ImageUtil;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -54,7 +55,7 @@ public class ButtonView extends ControlView {
       uiButton.setText(button.getName());
       uiButton.setTextSize(Constants.DEFAULT_FONT_SIZE);
       if (button.getDefaultImage() != null) {
-         defaultImage = Drawable.createFromPath(Constants.FILE_FOLDER_PATH + button.getDefaultImage().getSrc());
+         defaultImage = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + button.getDefaultImage().getSrc());
          if (defaultImage != null) {
             uiButton.setText(null);
             uiButton.setBackgroundDrawable(defaultImage);
@@ -63,7 +64,7 @@ public class ButtonView extends ControlView {
          }
       }
       if (button.getPressedImage() != null) {
-         pressedImage = Drawable.createFromPath(Constants.FILE_FOLDER_PATH + button.getPressedImage().getSrc());
+         pressedImage = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + button.getPressedImage().getSrc());
       }
       View.OnTouchListener touchListener = new OnTouchListener() {
          public boolean onTouch(View v, MotionEvent event) {

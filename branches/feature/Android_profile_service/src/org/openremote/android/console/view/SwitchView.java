@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -26,6 +26,7 @@ import org.openremote.android.console.model.OREvent;
 import org.openremote.android.console.model.OREventListener;
 import org.openremote.android.console.model.ORListenerManager;
 import org.openremote.android.console.model.PollingStatusParser;
+import org.openremote.android.console.util.ImageUtil;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -58,10 +59,10 @@ public class SwitchView extends SensoryControlView {
 
    private void initSwitch(Switch switchComponent) {
       if (switchComponent.getOnImage() != null) {
-         onImage = Drawable.createFromPath(Constants.FILE_FOLDER_PATH + switchComponent.getOnImage().getSrc());
+         onImage = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + switchComponent.getOnImage().getSrc());
       }
       if (switchComponent.getOffImage() != null) {
-         offImage = Drawable.createFromPath(Constants.FILE_FOLDER_PATH + switchComponent.getOffImage().getSrc());
+         offImage = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + switchComponent.getOffImage().getSrc());
       }
       if (onImage != null && offImage != null) {
          canUseImage = true;

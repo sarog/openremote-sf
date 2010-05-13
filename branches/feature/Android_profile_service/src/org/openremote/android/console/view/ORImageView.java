@@ -27,6 +27,7 @@ import org.openremote.android.console.model.OREvent;
 import org.openremote.android.console.model.OREventListener;
 import org.openremote.android.console.model.ORListenerManager;
 import org.openremote.android.console.model.PollingStatusParser;
+import org.openremote.android.console.util.ImageUtil;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -58,7 +59,10 @@ public class ORImageView extends ComponentView implements SensoryDelegate {
    }
 
    private void addImageView(String imageSrc) {
-      BitmapDrawable bd = (BitmapDrawable) Drawable.createFromPath(Constants.FILE_FOLDER_PATH + imageSrc);
+      BitmapDrawable bd = (BitmapDrawable) ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + imageSrc);
+      if (bd == null) {
+         return;
+      }
       imageView.setLayoutParams(new FrameLayout.LayoutParams(bd.getIntrinsicWidth(), bd.getIntrinsicHeight()));
       imageView.setImageDrawable(bd);
       addView(imageView);
