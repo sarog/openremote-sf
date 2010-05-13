@@ -22,7 +22,6 @@ package org.openremote.android.console.view;
 
 
 import org.openremote.android.console.Constants;
-import org.openremote.android.console.R;
 import org.openremote.android.console.bindings.Image;
 import org.openremote.android.console.bindings.Slider;
 import org.openremote.android.console.model.ListenerConstant;
@@ -38,8 +37,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -153,7 +150,6 @@ public class SliderView extends SensoryControlView implements OnSeekBarChangeLis
    @Override
    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
       slideToBusinessValue = (int)(((float)progress/SEEK_BAR_PROGRESS_MAX) * (slider.getMaxValue() - slider.getMinValue()) + slider.getMinValue());
-      Log.e("INFO onProgressChanged", "Slide to business value " + slideToBusinessValue);
    }
 
    @Override
