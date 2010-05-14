@@ -36,8 +36,6 @@ import org.openremote.android.console.Constants;
 import org.openremote.android.console.Main;
 import org.openremote.android.console.util.SecurityUtil;
 
-import android.app.ActivityManager;
-import android.app.Instrumentation.ActivityMonitor;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
