@@ -86,10 +86,13 @@ public class PanelSelectorActivity extends ListActivity implements ORConnectionD
          }       
       } catch (IOException e) {
          Log.e("ERROR", "The data is from ORConnection is bad", e);
+         return;
       } catch (ParserConfigurationException e) {
          Log.e("ERROR", "Cant build new Document builder", e);
+         return;
       } catch (SAXException e) {
          Log.e("ERROR", "Parse data error", e);
+         return;
       }
       
       setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, panelsName));
