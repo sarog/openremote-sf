@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -30,6 +30,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+/**
+ * Provides accessing to Application Settings.
+ * 
+ * @author Tomsky Wang
+ * @author Dan Cong
+ *
+ */
 public class AppSettingsModel implements Serializable {
 
    private static final long serialVersionUID = Constants.MODEL_VERSION;
@@ -39,8 +46,23 @@ public class AppSettingsModel implements Serializable {
    private static final String AUTO_MODE = "autoMode";
    private static final String CURRENT_PANEL_IDENTITY = "currentPanelIdentity";
    
+   private AppSettingsModel() {
+   }
+
    public static String getCurrentServer(Context context) {
       return context.getSharedPreferences(APP_SETTINGS, 0).getString(CURRENT_SERVER, "");
+   }
+   
+   public static String getCurrentSecuredServer(Context context) {
+      String server = getCurrentServer(context);
+      if (server.indexOf("http") != -1) {
+         server = server.replaceFirst("http", "https");
+      }
+      if (server.indexOf(":") != -1) {
+         server = server.replaceFirst("\\:\\d+", ":" + Constants.SECURED_HTTP_PORT);
+      }
+      Log.i("SECURE", server);
+      return getCurrentServer(context);
    }
    
    public static void setCurrentServer(Context context, String currentServer) {
