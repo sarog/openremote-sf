@@ -87,6 +87,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    
    private boolean useLocalCache;
    private boolean isNavigetionBackward;
+   private boolean isActivityResumed;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -178,7 +179,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       ORListenerManager.getInstance().addOREventListener(ListenerConstant.ListenerNavigateTo, new OREventListener() {
          public void handleEvent(OREvent event) {
             Navigate navigate = (Navigate) event.getData();
-            if (navigate != null) {
+            if (isActivityResumed && navigate != null) {
                handleNavigate(navigate);
             }
          }
@@ -391,12 +392,14 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    
    @Override
    protected void onPause() {
+      isActivityResumed = false;
       super.onPause();
       cancelCurrentPolling();
    }
 
    @Override
    protected void onResume() {
+      isActivityResumed = true;
       super.onResume();
       startCurrentPolling();
    }
