@@ -111,6 +111,9 @@ public class SliderView extends SensoryControlView implements OnSeekBarChangeLis
    }
    
    private int getProgressOfBusinessValue(int businessValue) {
+      if (slider.getMaxValue() == 0 || slider.getMaxValue() == slider.getMinValue()) {
+         return 0;
+      }
       double progress = SEEK_BAR_PROGRESS_MAX * ((float)(businessValue - slider.getMinValue()) / (slider.getMaxValue() - slider.getMinValue()));
       return (int) NumberFormat.format(0, progress);
    }
