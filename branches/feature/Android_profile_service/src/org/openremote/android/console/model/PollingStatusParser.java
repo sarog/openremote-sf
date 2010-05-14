@@ -32,6 +32,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import android.util.Log;
+
+
+/**
+ * Polling status result XML parser.
+ * 
+ * @author Tomsky Wang
+ * @author Dan Cong
+ *
+ */
 public class PollingStatusParser {
    public static final HashMap<String, String> statusMap = new HashMap<String, String>();
    
@@ -50,11 +60,11 @@ public class PollingStatusParser {
             ORListenerManager.getInstance().notifyOREventListener(ListenerConstant.ListenerPollingStatusIdFormat + lastId, null);
          }
       } catch (ParserConfigurationException e) {
-         e.printStackTrace();
+         Log.e("POLLING", "failed", e);
       } catch (SAXException e) {
-         e.printStackTrace();
+         Log.e("POLLING", "failed", e);
       } catch (IOException e) {
-         e.printStackTrace();
+         Log.e("POLLING", "failed", e);
       }
    }
 }

@@ -21,6 +21,7 @@ package org.openremote.android.console.model;
 
 import org.openremote.android.console.AppSettingsActivity;
 
+import android.R;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -54,11 +55,11 @@ public class ViewHelper {
       AlertDialog alertDialog = new AlertDialog.Builder(context).create();
       alertDialog.setTitle(title);
       alertDialog.setMessage(message);
-      alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "No", new DialogInterface.OnClickListener() {
+      alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int which) {
           return;
         } }); 
-      alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Yes", yesClickListener); 
+      alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getResources().getString(R.string.yes), yesClickListener); 
       alertDialog.show();
    }
    
