@@ -57,7 +57,8 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
 
    public boolean sendCommandRequest(String commandType) {
       new ORConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel
-            .getCurrentServer(getContext())
+//            .getCurrentServer(getContext())
+            .getCurrentSecuredServer(getContext())
             + "/rest/control/" + getComponent().getComponentId() + "/" + commandType, this);
       return true;
    }
