@@ -113,15 +113,14 @@ public class PollingHelper {
             Log.e("socket timeout", "polling socket timeout.");
             handler.sendEmptyMessage(0);
          } catch (ClientProtocolException e) {
-            if (!isPolling) {
-               return;
-            }
+            isPolling = false;
             Log.e("ClientProtocolException", "polling failed.");
+         } catch (IllegalArgumentException e) {
+            isPolling = false;
+            Log.e("ERROR", "polling failed", e);
          } catch (IOException e) {
-            if (!isPolling) {
-               return;
-            }
-            Log.e("IOException", "polling failed.");
+            isPolling = false;
+            Log.e("IOException", "polling failed.", e);
          }
       }
    }

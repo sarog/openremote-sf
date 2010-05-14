@@ -113,24 +113,26 @@ public class ORControllerServerSwitcher {
 						}
 					
 				} else {
-					new ORConnectionException("Get the entity's content of httpresponse fail.");
+				   Log.e("ERROR", "detectGroupMembers Parse data error");
 				}
 			} catch (IllegalStateException e) {
-				throw new ORConnectionException("Get the entity's content of httpresponse fail.", e);
+			   Log.e("ERROR", "detectGroupMembers Parse data error", e);
 			} catch (IOException e) {
-				throw new ORConnectionException("Get the entity's content of httpresponse fail.", e);
+			   Log.e("ERROR", "detectGroupMembers Parse data error", e);
 			}
 		} catch (ClientProtocolException e) {
-			Log.i("ClientProtocolException", "Can't Detect groupmembers with current controller server " + AppSettingsModel.getCurrentServer(context) + ". " + e.getMessage());
-			return false;
-		} catch (SocketTimeoutException e) {
-			Log.i("SocketTimeoutException", "Can't Detect groupmembers with current controller server " + AppSettingsModel.getCurrentServer(context) + ". " + e.getMessage());
-			return false;
-		} catch (IOException e) {
-			Log.i("IOException", "Can't Detect groupmembers with current controller server " + AppSettingsModel.getCurrentServer(context) + ". " + e.getMessage());
-			return false;
-		}
-		return true;
+         Log.i("ClientProtocolException", "Can't Detect groupmembers with current controller server "
+               + AppSettingsModel.getCurrentServer(context), e);
+      } catch (SocketTimeoutException e) {
+         Log.i("SocketTimeoutException", "Can't Detect groupmembers with current controller server "
+               + AppSettingsModel.getCurrentServer(context), e);
+      } catch (IOException e) {
+         Log.i("IOException", "Can't Detect groupmembers with current controller server "
+               + AppSettingsModel.getCurrentServer(context), e);
+      } catch (IllegalArgumentException e) {
+         Log.i("IOException", "Host name can be null :" + AppSettingsModel.getCurrentServer(context), e);
+      }
+      return false;
 	}
 	
 	/**
