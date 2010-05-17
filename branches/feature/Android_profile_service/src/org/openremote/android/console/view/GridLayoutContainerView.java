@@ -39,7 +39,7 @@ public class GridLayoutContainerView extends LayoutContainerView {
       int cellHeight = gridLayoutContainer.getHeight()/gridLayoutContainer.getRows();
       for (int i = 0; i < cellSize; i++) {
          GridCell gridCell = gridCells.get(i);
-         gridContainer.addView(new GridCellView(context, gridCell), new AbsoluteLayout.LayoutParams(cellWidth
+         gridContainer.addView(new GridCellView(context, cellWidth, cellHeight, gridCell), new AbsoluteLayout.LayoutParams(cellWidth
                * gridCell.getColspan(), cellHeight * gridCell.getRowspan(), cellWidth * gridCell.getX(), cellHeight
                * gridCell.getY()));
       }
