@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -54,9 +54,31 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class PanelSelectorActivity extends ListActivity implements ORConnectionDelegate{
 
+/**
+ * Panel identity list selector activity. 
+ * 
+ * @author Tomsky Wang
+ * @author Dan Cong
+ *
+ */
+public class PanelSelectorActivity extends ListActivity implements ORConnectionDelegate{
+   
+   private boolean isResumed;
    List<String> panelsName = new ArrayList<String>();
+   
+   @Override
+   protected void onPause() {
+      isResumed = false;
+      super.onPause();
+   }
+
+   @Override
+   protected void onResume() {
+      isResumed = true;
+      super.onResume();
+   }
+
    @Override
    public void onCreate(Bundle savedInstanceState) {
        super.onCreate(savedInstanceState);
@@ -66,13 +88,18 @@ public class PanelSelectorActivity extends ListActivity implements ORConnectionD
 
    @Override
    public void urlConnectionDidFailWithException(Exception e) {
+      if (!isResumed) {
+         return;
+      }
       ViewHelper.showAlertViewWithTitle(this, "Error", "Can not get panel names.");
-      Log.e("ERROR", "Can not get panel names", e);
-      finish();
+      Log.e("PANEL LIST", "Can not get panel names", e);
    }
 
    @Override
    public void urlConnectionDidReceiveData(InputStream data) {
+      if (!isResumed) {
+         return;
+      }
       try{
          DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
          DocumentBuilder builder = factory.newDocumentBuilder();
@@ -85,13 +112,13 @@ public class PanelSelectorActivity extends ListActivity implements ORConnectionD
             panelsName.add(nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue());
          }       
       } catch (IOException e) {
-         Log.e("ERROR", "The data is from ORConnection is bad", e);
+         Log.e("PANEL LIST", "The data is from ORConnection is bad", e);
          return;
       } catch (ParserConfigurationException e) {
-         Log.e("ERROR", "Cant build new Document builder", e);
+         Log.e("PANEL LIST", "Cant build new Document builder", e);
          return;
       } catch (SAXException e) {
-         Log.e("ERROR", "Parse data error", e);
+         Log.e("PANEL LIST", "Parse data error", e);
          return;
       }
       
@@ -125,6 +152,9 @@ public class PanelSelectorActivity extends ListActivity implements ORConnectionD
 
    @Override
    public void urlConnectionDidReceiveResponse(HttpResponse httpResponse) {
+      if (!isResumed) {
+         return;
+      }
       int statusCode = httpResponse.getStatusLine().getStatusCode();
       if (statusCode != Constants.HTTP_SUCCESS) {
          if (statusCode == ControllerException.UNAUTHORIZED) {
@@ -135,7 +165,7 @@ public class PanelSelectorActivity extends ListActivity implements ORConnectionD
          } else {
             // The following code customizes the dialog, becaurse the finish method should do after dialog show and click ok.
             AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-            alertDialog.setTitle("Send Request Error");
+            alertDialog.setTitle("Panel List Not Found");
             alertDialog.setMessage(ControllerException.exceptionMessageOfCode(statusCode));
             alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
                public void onClick(DialogInterface dialog, int which) {
