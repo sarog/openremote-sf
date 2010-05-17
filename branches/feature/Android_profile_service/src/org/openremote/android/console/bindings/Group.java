@@ -35,6 +35,8 @@ public class Group extends BusinessEntity{
    private String name;
    private List<Screen> screens;
    private TabBar tabBar;
+   private List<Screen> portraitScreens;
+   private List<Screen> landscapeScreens;
    
    public Group(Node node) {
       screens = new ArrayList<Screen>();
@@ -73,4 +75,57 @@ public class Group extends BusinessEntity{
       return tabBar;
    }
    
+   public List<Screen> getPortraitScreens() {
+      if (portraitScreens == null) {
+         portraitScreens = new ArrayList<Screen>();
+         for (Screen screen : screens) {
+            if (!screen.isLandscape()) {
+               portraitScreens.add(screen);
+            }
+         }
+      }
+      return portraitScreens;
+   }
+   
+   public List<Screen> getLandscapeScreens() {
+      if (landscapeScreens == null) {
+         landscapeScreens = new ArrayList<Screen>();
+         for (Screen screen : screens) {
+            if (screen.isLandscape()) {
+               landscapeScreens.add(screen);
+            }
+         }
+      }
+      return landscapeScreens;
+   }
+   
+   public boolean canfindScreenByIdAndOrientation(int screenId, boolean landscape) {
+      for (Screen screen : screens) {
+         if (screen.getScreenId() == screenId && screen.isLandscape() == landscape) {
+            return true;
+         }
+      }
+      return false;
+   }
+   
+   public int getScreenSizeByOrientation(boolean landscape) {
+      if(landscape) {
+         return getLandscapeScreens().size();
+      }
+      return getPortraitScreens().size();
+   }
+   
+   public int getScreenIndexByOrientation(Screen screen, boolean landscape) {
+      if(landscape) {
+         return getLandscapeScreens().indexOf(screen);
+      }
+      return getPortraitScreens().indexOf(screen);
+   }
+   
+   public boolean hasOrientationScreens(boolean landscape) {
+      if(landscape) {
+         return getLandscapeScreens().size() > 0 ? true : false;
+      }
+      return getPortraitScreens().size() > 0 ? true : false;
+   }
 }

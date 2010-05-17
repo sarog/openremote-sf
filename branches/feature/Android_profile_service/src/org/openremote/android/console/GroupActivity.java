@@ -1,30 +1,27 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2010, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.android.console;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.apache.http.HttpResponse;
+import org.openintents.sensorsimulator.hardware.SensorManagerSimulator;
 import org.openremote.android.console.bindings.Gesture;
 import org.openremote.android.console.bindings.Group;
 import org.openremote.android.console.bindings.Navigate;
@@ -50,6 +47,8 @@ import org.openremote.android.console.view.ScreenViewFlipper;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.hardware.SensorListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -68,12 +67,12 @@ import android.widget.LinearLayout;
  * 
  * @author Tomsky Wang
  * @author Dan Cong
- *
+ * 
  */
 
-public class GroupActivity extends Activity implements OnGestureListener, ORConnectionDelegate{
+public class GroupActivity extends Activity implements OnGestureListener, ORConnectionDelegate, SensorListener {
 
-//   private static final int FLIPPER = 0xF00D;
+   // private static final int FLIPPER = 0xF00D;
    private GestureDetector gestureScanner;
    private GroupView currentGroupView;
    private LinearLayout linearLayout;
@@ -84,31 +83,36 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    private ArrayList<Navigate> navigationHistory;
    private static final int SWIPE_MIN_DISTANCE = 120;
    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
-   
+
    private boolean useLocalCache;
    private boolean isNavigetionBackward;
+   private boolean landscape;
+   private SensorManagerSimulator mSensorManager;
+   
    private boolean isActivityResumed;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
-       super.onCreate(savedInstanceState);
-       if(getIntent().getDataString() != null) {
-          useLocalCache = true;
-          ViewHelper.showAlertViewWithSetting(this, "Using cached content", getIntent().getDataString());
-       }
-       
-       getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-       
-       this.gestureScanner = new GestureDetector(this);
-       
-       if (groupViews == null) {
-          groupViews = new HashMap<Integer, GroupView>();
-       }
-       if (navigationHistory == null) {
-          navigationHistory = new ArrayList<Navigate>();
-       }
-       recoverLastGroupScreen();
+      super.onCreate(savedInstanceState);
+      if (getIntent().getDataString() != null) {
+         useLocalCache = true;
+         ViewHelper.showAlertViewWithSetting(this, "Using cached content", getIntent().getDataString());
+      }
+
+      getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+      this.gestureScanner = new GestureDetector(this);
+
+      if (groupViews == null) {
+         groupViews = new HashMap<Integer, GroupView>();
+      }
+      if (navigationHistory == null) {
+         navigationHistory = new ArrayList<Navigate>();
+      }
+      mSensorManager = SensorManagerSimulator.getSystemService(this, SENSOR_SERVICE);
+      mSensorManager.connectSimulator();
+      recoverLastGroupScreen();
        addControllerRefreshEventListener();
    }
 
@@ -125,27 +129,21 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    private int getCurrentGroupId() {
       return currentGroupView == null ? 0 : currentGroupView.getGroup().getGroupId();
    }
-   
-   private int getScreenIndex(int screenId) {
-      if (currentGroupView != null) {
-         List<Screen> screens = currentGroupView.getGroup().getScreens();
-         int i = 0;
-         for (Screen screen : screens) {
-            if (screen.getScreenId() == screenId) {
-               return i;
-            }
-            i++;
-         }
+
+   private int getScreenIndex(int screenId, boolean landscape) {
+      if (currentGroupView != null && currentGroupView.getGroup() != null) {
+         return currentGroupView.getGroup().getScreenIndexByOrientation(XMLEntityDataBase
+               .getScreen(screenId), landscape);
       }
       return -1;
    }
-   
+
    private void recoverLastGroupScreen() {
-	   
+
       int lastGroupID = UserCache.getLastGroupId(this);
       Group lastGroup = XMLEntityDataBase.getGroup(lastGroupID);
       if (lastGroup == null) {
-    	  lastGroup = XMLEntityDataBase.getFirstGroup();
+         lastGroup = XMLEntityDataBase.getFirstGroup();
       }
       if (lastGroup == null) {
          if (!useLocalCache) {
@@ -153,14 +151,19 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
          }
          return;
       }
-      screenSize = lastGroup.getScreens().size();
+      screenSize = lastGroup.getScreenSizeByOrientation(landscape);
+      if (screenSize == 0) {
+         return;
+         // landscape = !landscape;
+         // screenSize = lastGroup.getScreenSizeByOrientation(landscape);
+      }
       currentGroupView = new GroupView(this, lastGroup);
       groupViews.put(lastGroup.getGroupId(), currentGroupView);
-      currentScreenViewFlipper = currentGroupView.getScreenViewFlipper();
+      currentScreenViewFlipper = currentGroupView.getScreenViewFlipperByOrientation(landscape);
 
       int lastScreenID = UserCache.getLastScreenId(this);
-      if (lastScreenID > 0) {
-    	  currentScreenViewFlipper.setDisplayedChild(lastGroup.getScreens().indexOf(XMLEntityDataBase.getScreen(lastScreenID)));
+      if (lastScreenID > 0 && lastGroup.canfindScreenByIdAndOrientation(lastScreenID, landscape)) {
+         currentScreenViewFlipper.setDisplayedChild(getScreenIndex(lastScreenID, landscape));
       }
       linearLayout = new LinearLayout(this);
       linearLayout.addView(currentScreenViewFlipper);
@@ -169,9 +172,10 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       if (currentScreenView == null) {
          return;
       }
-      UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(), currentScreenView.getScreen().getScreenId());
+      UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(),
+            currentScreenView.getScreen().getScreenId());
       currentScreen = currentScreenView.getScreen();
-      
+
       addNaviagateListener();
    }
 
@@ -187,127 +191,121 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    }
 
    private boolean moveRight() {
-       Log.d(this.toString(), "MoveRight");
-       if (currentScreenViewFlipper.getDisplayedChild() < screenSize - 1) {
-          cancelCurrentPolling();
-          currentScreenViewFlipper.setToNextAnimation();
-          currentScreenViewFlipper.showNext();
-          startCurrentPolling();
-          UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(),
-                ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
-          return true;
-       }
-       return false;
+      Log.d(this.toString(), "MoveRight");
+      if (currentScreenViewFlipper.getDisplayedChild() < screenSize - 1) {
+         cancelCurrentPolling();
+         currentScreenViewFlipper.setToNextAnimation();
+         currentScreenViewFlipper.showNext();
+         startCurrentPolling();
+         UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(),
+               ((ScreenView) currentScreenViewFlipper.getCurrentView()).getScreen().getScreenId());
+         return true;
+      }
+      return false;
    }
 
    private boolean moveLeft() {
-       Log.d(this.toString(), "MoveLeft");
-       if (currentScreenViewFlipper.getDisplayedChild() > 0) {
-          cancelCurrentPolling();
-          currentScreenViewFlipper.setToPreviousAnimation();
-          currentScreenViewFlipper.showPrevious();
-          startCurrentPolling();
-          UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(), 
-                ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
-          return true;
-       }
-       return false;
+      Log.d(this.toString(), "MoveLeft");
+      if (currentScreenViewFlipper.getDisplayedChild() > 0) {
+         cancelCurrentPolling();
+         currentScreenViewFlipper.setToPreviousAnimation();
+         currentScreenViewFlipper.showPrevious();
+         startCurrentPolling();
+         UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(),
+               ((ScreenView) currentScreenViewFlipper.getCurrentView()).getScreen().getScreenId());
+         return true;
+      }
+      return false;
    }
 
    @Override
    public boolean onTouchEvent(MotionEvent me) {
-       return gestureScanner.onTouchEvent(me);
+      return gestureScanner.onTouchEvent(me);
    }
 
    @Override
    public boolean onDown(MotionEvent e) {
-       // TODO Auto-generated method stub
-       return false;
+      // TODO Auto-generated method stub
+      return false;
    }
 
    @Override
-   public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-           float velocityY) {
-       Log.v(this.toString(), "fling");
-       currentScreen = ((ScreenView) currentScreenViewFlipper.getCurrentView()).getScreen();
-       if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
-               && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-          Log.e(this.toString(), "right to left");
-          onScreenGestureEvent(currentScreen.getGestureByType(Gesture.GestureSwipeType.GestureSwipeTypeRightToLeft));
-          moveRight();
-       } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
-               && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-          Log.e(this.toString(), "left to right");
-          onScreenGestureEvent(currentScreen.getGestureByType(Gesture.GestureSwipeType.GestureSwipeTypeLeftToRight));
-          moveLeft();
-       } else if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE
-             && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-          Log.e(this.toString(), "bottom to top");
-          onScreenGestureEvent(currentScreen.getGestureByType(Gesture.GestureSwipeType.GestureSwipeTypeBottomToTop));
-       } else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE
-             && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-          Log.e(this.toString(), "top to bottom");
-          onScreenGestureEvent(currentScreen.getGestureByType(Gesture.GestureSwipeType.GestureSwipeTypeTopToBottom));
-       }
-       return true;
+   public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+      Log.v(this.toString(), "fling");
+      currentScreen = ((ScreenView) currentScreenViewFlipper.getCurrentView()).getScreen();
+      if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+         Log.e(this.toString(), "right to left");
+         onScreenGestureEvent(currentScreen.getGestureByType(Gesture.GestureSwipeType.GestureSwipeTypeRightToLeft));
+         moveRight();
+      } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+         Log.e(this.toString(), "left to right");
+         onScreenGestureEvent(currentScreen.getGestureByType(Gesture.GestureSwipeType.GestureSwipeTypeLeftToRight));
+         moveLeft();
+      } else if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+         Log.e(this.toString(), "bottom to top");
+         onScreenGestureEvent(currentScreen.getGestureByType(Gesture.GestureSwipeType.GestureSwipeTypeBottomToTop));
+      } else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+         Log.e(this.toString(), "top to bottom");
+         onScreenGestureEvent(currentScreen.getGestureByType(Gesture.GestureSwipeType.GestureSwipeTypeTopToBottom));
+      }
+      return true;
    }
 
    private void onScreenGestureEvent(Gesture gesture) {
       if (gesture != null) {
          if (gesture.isHasControlCommand()) {
-            new ORConnection(this, ORHttpMethod.POST, true, AppSettingsModel.getCurrentServer(this)
-                  + "/rest/control/" + gesture.getComponentId() + "/swipe", this);
+            new ORConnection(this, ORHttpMethod.POST, true, AppSettingsModel.getCurrentServer(this) + "/rest/control/"
+                  + gesture.getComponentId() + "/swipe", this);
          }
          if (gesture.getNavigate() != null) {
             handleNavigate(gesture.getNavigate());
          }
       }
    }
-   
+
    @Override
    public void onLongPress(MotionEvent e) {
-       // TODO Auto-generated method stub
+      // TODO Auto-generated method stub
 
    }
 
    @Override
-   public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-           float distanceY) {
-       // TODO Auto-generated method stub
-       return false;
+   public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+      // TODO Auto-generated method stub
+      return false;
    }
 
    @Override
    public void onShowPress(MotionEvent e) {
-       // TODO Auto-generated method stub
+      // TODO Auto-generated method stub
 
    }
 
    @Override
    public boolean onSingleTapUp(MotionEvent e) {
-       // TODO Auto-generated method stub
-       return false;
+      // TODO Auto-generated method stub
+      return false;
    }
 
    public boolean onOptionsItemSelected(MenuItem item) {
-       Log.e("item selected", "item selected");
-       handleMenu(item);
-       return true;
+      Log.e("item selected", "item selected");
+      handleMenu(item);
+      return true;
    }
 
    public void handleMenu(MenuItem item) {
-       switch (item.getItemId()) {
-       case Constants.MENU_ITEM_SETTING:
-          Intent intent = new Intent();
-          intent.setClass(GroupActivity.this, AppSettingsActivity.class);
-          startActivity(intent);
-          break;
-       case Constants.MENU_ITEM_LOGOUT:
-          doLogout();
-          break;
-       }
+      switch (item.getItemId()) {
+      case Constants.MENU_ITEM_SETTING:
+         Intent intent = new Intent();
+         intent.setClass(GroupActivity.this, AppSettingsActivity.class);
+         startActivity(intent);
+         break;
+      case Constants.MENU_ITEM_LOGOUT:
+         doLogout();
+         break;
+      }
    }
-   
+
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
       menu.setQwertyMode(true);
@@ -334,7 +332,8 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
          for (int i = 0; i < itemSize; i++) {
             MenuItem menuItem = menu.add(0, i, i, items.get(i).getName());
             if (items.get(i).getImage() != null) {
-               menuItem.setIcon(ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + items.get(i).getImage().getSrc()));
+               menuItem.setIcon(ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+                     + items.get(i).getImage().getSrc()));
             }
             final Navigate navigate = items.get(i).getNavigate();
             if (navigate != null) {
@@ -344,7 +343,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
                      handleNavigate(navigate);
                      return true;
                   }
-                  
+
                });
             }
          }
@@ -361,7 +360,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
          sv.startPolling();
       }
    }
-   
+
    private void cancelCurrentPolling() {
       if (currentScreenViewFlipper == null) {
          return;
@@ -375,11 +374,12 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    @Override
    protected void onStart() {
       super.onStart();
-//      startCurrentPolling();
+      // startCurrentPolling();
    }
-   
+
    @Override
    protected void onStop() {
+      mSensorManager.unregisterListener(this);
       super.onStop();
       cancelCurrentPolling();
    }
@@ -389,7 +389,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       super.onDestroy();
       cancelCurrentPolling();
    }
-   
+
    @Override
    protected void onPause() {
       isActivityResumed = false;
@@ -401,6 +401,8 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    protected void onResume() {
       isActivityResumed = true;
       super.onResume();
+      mSensorManager.registerListener(this, SensorManager.SENSOR_ORIENTATION,
+            SensorManager.SENSOR_DELAY_NORMAL);
       startCurrentPolling();
    }
 
@@ -419,7 +421,8 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
             Navigate backward = navigationHistory.get(navigationHistory.size() - 1);
             if (backward.getFromGroup() > 0 && backward.getFromScreen() > 0) {
                if (backward.getFromGroup() == getCurrentGroupId()) {
-                  isNavigetionBackward = getScreenIndex(backward.getFromScreen()) < getScreenIndex(currentScreen.getScreenId());
+                  isNavigetionBackward = getScreenIndex(backward.getFromScreen(), landscape) < getScreenIndex(currentScreen
+                        .getScreenId(), landscape);
                }
                navigateToGroup(backward.getFromGroup(), backward.getFromScreen());
             }
@@ -458,14 +461,17 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
                targetGroupView = new GroupView(this, targetGroup);
                groupViews.put(toGroupId, targetGroupView);
             }
-            linearLayout.removeView(currentScreenViewFlipper);
-            currentScreenViewFlipper = targetGroupView.getScreenViewFlipper();
-            linearLayout.addView(currentScreenViewFlipper);
-            if (toScreenId > 0) {
-               currentScreenViewFlipper.setDisplayedChild(targetGroup.getScreens().indexOf(XMLEntityDataBase.getScreen(toScreenId)));
+            if (!targetGroup.hasOrientationScreens(landscape)) {
+               return false;
             }
-            screenSize = targetGroup.getScreens().size();
+            linearLayout.removeView(currentScreenViewFlipper);
+            currentScreenViewFlipper = targetGroupView.getScreenViewFlipperByOrientation(landscape);
             currentGroupView = targetGroupView;
+            linearLayout.addView(currentScreenViewFlipper);
+            if (toScreenId > 0 && targetGroup.canfindScreenByIdAndOrientation(toScreenId, landscape)) {
+               currentScreenViewFlipper.setDisplayedChild(getScreenIndex(toScreenId, landscape));
+            }
+            screenSize = targetGroup.getScreenSizeByOrientation(landscape);
          } else {
             // in same group.
             if (toScreenId > 0) {
@@ -474,7 +480,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
                } else {
                   currentScreenViewFlipper.setToNextAnimation();
                }
-               currentScreenViewFlipper.setDisplayedChild(targetGroup.getScreens().indexOf(XMLEntityDataBase.getScreen(toScreenId)));
+               currentScreenViewFlipper.setDisplayedChild(getScreenIndex(toScreenId, landscape));
             }
          }
          startCurrentPolling();
@@ -491,15 +497,15 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       Navigate historyNavigate = new Navigate();
       if (currentGroupView.getGroup() != null) {
          historyNavigate.setFromGroup(currentGroupView.getGroup().getGroupId());
-         ScreenView sv = (ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView();
+         ScreenView sv = (ScreenView) currentGroupView.getScreenViewFlipperByOrientation(landscape).getCurrentView();
          if (sv == null) {
             return;
          } else {
             historyNavigate.setFromScreen(sv.getScreen().getScreenId());
          }
          if (navigateTo(navigate)) {
-            UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(), 
-                  ((ScreenView) currentGroupView.getScreenViewFlipper().getCurrentView()).getScreen().getScreenId());
+            UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(),
+                  ((ScreenView) currentGroupView.getScreenViewFlipperByOrientation(landscape).getCurrentView()).getScreen().getScreenId());
             navigationHistory.add(historyNavigate);
          }
       }
@@ -510,10 +516,10 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
          finish();
          return true;
-      } 
+      }
       return super.onKeyDown(keyCode, event);
    }
-   
+
    @Override
    public void urlConnectionDidFailWithException(Exception e) {
       // do nothing.
@@ -531,11 +537,62 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
          if (responseCode == 401) {
             new LoginDialog(this);
          } else {
-            ViewHelper.showAlertViewWithTitle(this, "Send Request Error", ControllerException.exceptionMessageOfCode(responseCode));
+            ViewHelper.showAlertViewWithTitle(this, "Send Request Error", ControllerException
+                  .exceptionMessageOfCode(responseCode));
          }
       }
+
+   }
+
+   @Override
+   public void onAccuracyChanged(int sensor, int accuracy) {
+      // TODO Auto-generated method stub
       
    }
 
+   @Override
+   public void onSensorChanged(int sensor, float[] values) {
+      if (SensorManager.SENSOR_ORIENTATION == sensor) {
+         float pitch = values[1];     // pitch
+         float roll = values[2];        // roll
+         boolean lastOrientataion = landscape;
+         if (!(roll > -45 && roll < 45)) {
+            if (pitch > -45 && pitch < 45) {
+               landscape = true;
+            } else {
+               landscape = false;
+            }
+         }
+         
+         if (lastOrientataion != landscape) {
+            Log.e("landscape", "landscape:"+landscape);
+            if (canRotateToInterfaceOrientation()) {
+               rotateToIntefaceOrientation();
+            }
+         }
+
+      }
+   }
+   
+   private boolean canRotateToInterfaceOrientation() {
+      if (currentScreen != null && currentScreen.getScreenId() > 0 ) {
+         return currentScreen.getInverseScreenId() > 0;
+      }
+      return false;
+   }
+
+   private void rotateToIntefaceOrientation() {
+      int inverseScreenId = currentScreen.getInverseScreenId();
+      if (currentGroupView != null) {
+         linearLayout.removeView(currentScreenViewFlipper);
+         currentScreenViewFlipper = currentGroupView.getScreenViewFlipperByOrientation(landscape);
+         linearLayout.addView(currentScreenViewFlipper);
+         currentScreenViewFlipper.setDisplayedChild(getScreenIndex(inverseScreenId, landscape));
+         currentScreen = XMLEntityDataBase.getScreen(inverseScreenId);
+         if (currentGroupView.getGroup() != null) {
+            screenSize = currentGroupView.getGroup().getScreenSizeByOrientation(landscape);
+         }
+      }
+   }
    
 }

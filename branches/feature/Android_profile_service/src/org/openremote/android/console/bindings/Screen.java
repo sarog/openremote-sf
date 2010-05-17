@@ -44,11 +44,20 @@ public class Screen extends BusinessEntity {
    private Background background;
    private ArrayList<Gesture> gestures;
    private HashSet<Integer> pollingComponentsIds;
-
+   private boolean landscape;
+   private int inverseScreenId;
+   
    public Screen(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
-      this.screenId = Integer.valueOf(nodeMap.getNamedItem("id").getNodeValue());
-      this.name = nodeMap.getNamedItem("name").getNodeValue();
+      this.screenId = Integer.valueOf(nodeMap.getNamedItem(ID).getNodeValue());
+      this.name = nodeMap.getNamedItem(NAME).getNodeValue();
+      if (nodeMap.getNamedItem(LANDSCAPE) != null) {
+         this.landscape = Boolean.valueOf(nodeMap.getNamedItem(LANDSCAPE).getNodeValue());
+      }
+      if (nodeMap.getNamedItem(INVERSE_SCREEN_ID) != null) {
+         this.inverseScreenId = Integer.valueOf(nodeMap.getNamedItem(INVERSE_SCREEN_ID).getNodeValue());
+      }
+      
       this.layouts = new ArrayList<LayoutContainer>();
       this.gestures = new ArrayList<Gesture>();
       NodeList childNodes = node.getChildNodes();
@@ -118,4 +127,14 @@ public class Screen extends BusinessEntity {
       }
       return gesture;
    }
+
+   public boolean isLandscape() {
+      return landscape;
+   }
+
+   public int getInverseScreenId() {
+      return inverseScreenId;
+   }
+   
+   
 }

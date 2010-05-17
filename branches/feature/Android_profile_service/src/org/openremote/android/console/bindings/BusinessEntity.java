@@ -65,6 +65,8 @@ public class BusinessEntity implements Serializable {
    
    public static final String NAVIGATE = "navigate";
    public static final String TABBAR_ITEM = "item";
+   public static final String LANDSCAPE = "landscape";
+   public static final String INVERSE_SCREEN_ID = "inverseScreenId";
 
    public static final String BG_IMAGE_RELATIVE_POSITION_LEFT = "LEFT";
    public static final String BG_IMAGE_RELATIVE_POSITION_RIGHT = "RIGHT";
