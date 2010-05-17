@@ -82,7 +82,7 @@ public class ORNetworkCheck {
 	 * Check if the IP of controller is reachable.
 	 */
 	private static boolean checkControllerIPAddress(Context context) {
-	   if (IPAutoDiscoveryClient.IS_EMULATOR) {
+	   if (!IPAutoDiscoveryClient.isNetworkTypeWIFI) {
 	      return true;
 	   }
 		if (ORWifiReachability.getInstance(context).canReachWifiNetwork()) {
