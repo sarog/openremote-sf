@@ -25,6 +25,7 @@ import org.openintents.sensorsimulator.hardware.SensorManagerSimulator;
 import org.openremote.android.console.bindings.Gesture;
 import org.openremote.android.console.bindings.Group;
 import org.openremote.android.console.bindings.Navigate;
+import org.openremote.android.console.bindings.OROrientation;
 import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.bindings.TabBar;
 import org.openremote.android.console.bindings.TabBarItem;
@@ -52,6 +53,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -87,8 +89,13 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    private boolean useLocalCache;
    private boolean isNavigetionBackward;
    private boolean landscape;
-   private SensorManagerSimulator mSensorManager;
-   
+
+    private SensorManager mSensorManager;
+   /* sensor simulator begin */
+//   private SensorManagerSimulator mSensorManager;
+   /* sensor simulator end */
+
+   private OROrientation orientation;
    private boolean isActivityResumed;
 
    @Override
@@ -102,6 +109,11 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       getWindow().requestFeature(Window.FEATURE_NO_TITLE);
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+      Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+      if (display != null && display.getOrientation() == 1) {
+         landscape = true;
+      }
+      orientation = OROrientation.UIInterfaceOrientationPortrait;
       this.gestureScanner = new GestureDetector(this);
 
       if (groupViews == null) {
@@ -110,10 +122,15 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       if (navigationHistory == null) {
          navigationHistory = new ArrayList<Navigate>();
       }
-      mSensorManager = SensorManagerSimulator.getSystemService(this, SENSOR_SERVICE);
-      mSensorManager.connectSimulator();
+
+       mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+      /* sensor simulator begin */
+//      mSensorManager = SensorManagerSimulator.getSystemService(this, SENSOR_SERVICE);
+//      mSensorManager.connectSimulator();
+      /* sensor simulator end */
+
       recoverLastGroupScreen();
-       addControllerRefreshEventListener();
+      addControllerRefreshEventListener();
    }
 
    private void addControllerRefreshEventListener() {
@@ -123,17 +140,17 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
          public void handleEvent(OREvent event) {
             that.finish();
          }
-      }); 
+      });
    }
-   
+
    private int getCurrentGroupId() {
       return currentGroupView == null ? 0 : currentGroupView.getGroup().getGroupId();
    }
 
    private int getScreenIndex(int screenId, boolean landscape) {
       if (currentGroupView != null && currentGroupView.getGroup() != null) {
-         return currentGroupView.getGroup().getScreenIndexByOrientation(XMLEntityDataBase
-               .getScreen(screenId), landscape);
+         return currentGroupView.getGroup().getScreenIndexByOrientation(XMLEntityDataBase.getScreen(screenId),
+               landscape);
       }
       return -1;
    }
@@ -231,27 +248,28 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
 
    @Override
    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-      Log.v(this.toString(), "fling");
-      currentScreen = ((ScreenView) currentScreenViewFlipper.getCurrentView()).getScreen();
       if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-         Log.e(this.toString(), "right to left");
-         onScreenGestureEvent(currentScreen.getGestureByType(Gesture.GestureSwipeType.GestureSwipeTypeRightToLeft));
+         Log.i("fling", "right to left");
+         onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_RIGHT2LEFT);
          moveRight();
       } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-         Log.e(this.toString(), "left to right");
-         onScreenGestureEvent(currentScreen.getGestureByType(Gesture.GestureSwipeType.GestureSwipeTypeLeftToRight));
+         Log.i("fling", "left to right");
+         onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_LEFT2RIGHT);
          moveLeft();
       } else if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-         Log.e(this.toString(), "bottom to top");
-         onScreenGestureEvent(currentScreen.getGestureByType(Gesture.GestureSwipeType.GestureSwipeTypeBottomToTop));
+         Log.i("fling", "bottom to top");
+         onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_BOTTOM2TOP);
       } else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-         Log.e(this.toString(), "top to bottom");
-         onScreenGestureEvent(currentScreen.getGestureByType(Gesture.GestureSwipeType.GestureSwipeTypeTopToBottom));
+         Log.i("fling", "top to bottom");
+         onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_TOP2BOTTOM);
       }
       return true;
    }
 
-   private void onScreenGestureEvent(Gesture gesture) {
+   private void onScreenGestureEvent(int gestureType) {
+      currentScreen = ((ScreenView) currentScreenViewFlipper.getCurrentView()).getScreen();
+      gestureType = Gesture.switchGestureTypeByOrientation(gestureType, orientation);
+      Gesture gesture = currentScreen.getGestureByType(gestureType);
       if (gesture != null) {
          if (gesture.isHasControlCommand()) {
             new ORConnection(this, ORHttpMethod.POST, true, AppSettingsModel.getCurrentServer(this) + "/rest/control/"
@@ -357,6 +375,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       }
       ScreenView sv = (ScreenView) currentScreenViewFlipper.getCurrentView();
       if (sv != null) {
+         currentScreen = sv.getScreen();
          sv.startPolling();
       }
    }
@@ -401,8 +420,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    protected void onResume() {
       isActivityResumed = true;
       super.onResume();
-      mSensorManager.registerListener(this, SensorManager.SENSOR_ORIENTATION,
-            SensorManager.SENSOR_DELAY_NORMAL);
+      mSensorManager.registerListener(this, SensorManager.SENSOR_ORIENTATION, SensorManager.SENSOR_DELAY_NORMAL);
       startCurrentPolling();
    }
 
@@ -421,8 +439,8 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
             Navigate backward = navigationHistory.get(navigationHistory.size() - 1);
             if (backward.getFromGroup() > 0 && backward.getFromScreen() > 0) {
                if (backward.getFromGroup() == getCurrentGroupId()) {
-                  isNavigetionBackward = getScreenIndex(backward.getFromScreen(), landscape) < getScreenIndex(currentScreen
-                        .getScreenId(), landscape);
+                  isNavigetionBackward = getScreenIndex(backward.getFromScreen(), landscape) < getScreenIndex(
+                        currentScreen.getScreenId(), landscape);
                }
                navigateToGroup(backward.getFromGroup(), backward.getFromScreen());
             }
@@ -505,7 +523,8 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
          }
          if (navigateTo(navigate)) {
             UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(),
-                  ((ScreenView) currentGroupView.getScreenViewFlipperByOrientation(landscape).getCurrentView()).getScreen().getScreenId());
+                  ((ScreenView) currentGroupView.getScreenViewFlipperByOrientation(landscape).getCurrentView())
+                        .getScreen().getScreenId());
             navigationHistory.add(historyNavigate);
          }
       }
@@ -547,25 +566,35 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    @Override
    public void onAccuracyChanged(int sensor, int accuracy) {
       // TODO Auto-generated method stub
-      
+
    }
 
    @Override
    public void onSensorChanged(int sensor, float[] values) {
       if (SensorManager.SENSOR_ORIENTATION == sensor) {
-         float pitch = values[1];     // pitch
-         float roll = values[2];        // roll
-         boolean lastOrientataion = landscape;
+         float pitch = values[1]; // pitch
+         float roll = values[2]; // roll
+         OROrientation lastOrientataion = orientation;
          if (!(roll > -45 && roll < 45)) {
             if (pitch > -45 && pitch < 45) {
+               if (roll > 0) {
+                  orientation = OROrientation.UIInterfaceOrientationLandscapeLeft;
+               } else {
+                  orientation = OROrientation.UIInterfaceOrientationLandscapeRight;
+               }
                landscape = true;
             } else {
+               if (pitch < 0) {
+                  orientation = OROrientation.UIInterfaceOrientationPortrait;
+               } else {
+                  orientation = OROrientation.UIInterfaceOrientationPortraitUpsideDown;
+               }
                landscape = false;
             }
          }
-         
-         if (lastOrientataion != landscape) {
-            Log.e("landscape", "landscape:"+landscape);
+
+         if (lastOrientataion != orientation) {
+            Log.i("orientation change", "orientation:" + orientation);
             if (canRotateToInterfaceOrientation()) {
                rotateToIntefaceOrientation();
             }
@@ -573,9 +602,9 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
 
       }
    }
-   
+
    private boolean canRotateToInterfaceOrientation() {
-      if (currentScreen != null && currentScreen.getScreenId() > 0 ) {
+      if (currentScreen != null && currentScreen.getScreenId() > 0) {
          return currentScreen.getInverseScreenId() > 0;
       }
       return false;
@@ -584,15 +613,16 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    private void rotateToIntefaceOrientation() {
       int inverseScreenId = currentScreen.getInverseScreenId();
       if (currentGroupView != null) {
+         cancelCurrentPolling();
          linearLayout.removeView(currentScreenViewFlipper);
          currentScreenViewFlipper = currentGroupView.getScreenViewFlipperByOrientation(landscape);
          linearLayout.addView(currentScreenViewFlipper);
          currentScreenViewFlipper.setDisplayedChild(getScreenIndex(inverseScreenId, landscape));
-         currentScreen = XMLEntityDataBase.getScreen(inverseScreenId);
+         startCurrentPolling();
          if (currentGroupView.getGroup() != null) {
             screenSize = currentGroupView.getGroup().getScreenSizeByOrientation(landscape);
          }
       }
    }
-   
+
 }

@@ -26,7 +26,12 @@ import org.w3c.dom.NodeList;
 @SuppressWarnings("serial")
 public class Gesture extends Control {
 
-   private GestureSwipeType swipeType;
+   private int swipeType;
+   public static final int GESTURE_SWIPE_TYPE_TOP2BOTTOM = 0;
+   public static final int GESTURE_SWIPE_TYPE_BOTTOM2TOP = 1;
+   public static final int GESTURE_SWIPE_TYPE_LEFT2RIGHT = 2;
+   public static final int GESTURE_SWIPE_TYPE_RIGHT2LEFT = 3;
+   
    private boolean hasControlCommand;
    private Navigate navigate;
    
@@ -35,13 +40,13 @@ public class Gesture extends Control {
       this.setComponentId(Integer.valueOf(nodeMap.getNamedItem("id").getNodeValue()));
       String type = nodeMap.getNamedItem("type").getNodeValue();
       if ("swipe-top-to-bottom".equals(type)) {
-         this.swipeType = GestureSwipeType.GestureSwipeTypeTopToBottom;
+         this.swipeType = GESTURE_SWIPE_TYPE_TOP2BOTTOM;
       } else if ("swipe-bottom-to-top".equals(type)) {
-         this.swipeType = GestureSwipeType.GestureSwipeTypeBottomToTop;
+         this.swipeType = GESTURE_SWIPE_TYPE_BOTTOM2TOP;
       } else if ("swipe-left-to-right".equals(type)) {
-         this.swipeType = GestureSwipeType.GestureSwipeTypeLeftToRight;
+         this.swipeType = GESTURE_SWIPE_TYPE_LEFT2RIGHT;
       } else if ("swipe-right-to-left".equals(type)) {
-         this.swipeType = GestureSwipeType.GestureSwipeTypeRightToLeft;
+         this.swipeType = GESTURE_SWIPE_TYPE_RIGHT2LEFT;
       }
       
       if (nodeMap.getNamedItem("hasControlCommand") != null) {
@@ -60,11 +65,7 @@ public class Gesture extends Control {
       }
    }
    
-   public static enum GestureSwipeType {
-      GestureSwipeTypeTopToBottom, GestureSwipeTypeBottomToTop, GestureSwipeTypeLeftToRight, GestureSwipeTypeRightToLeft;
-   }
-
-   public GestureSwipeType getSwipeType() {
+   public int getSwipeType() {
       return swipeType;
    }
 
@@ -76,7 +77,19 @@ public class Gesture extends Control {
       return navigate;
    }
    
-   public void initWithGestureSwipeTypeAndOrientation(GestureSwipeType swipeType, boolean landscape) {
-      
+   public static int switchGestureTypeByOrientation(int type, OROrientation orientation) {
+      switch (orientation) {
+      case UIInterfaceOrientationPortrait:
+         return type;
+      case UIInterfaceOrientationLandscapeLeft:
+         return (type - 1 + 4) % 4;
+      case UIInterfaceOrientationLandscapeRight:
+         return (type + 1) % 4;
+      case UIInterfaceOrientationPortraitUpsideDown:
+         return (type + 2) % 4;
+      default:
+         return type;
+      }
+
    }
 }

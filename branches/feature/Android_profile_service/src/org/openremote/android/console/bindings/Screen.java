@@ -22,7 +22,6 @@ package org.openremote.android.console.bindings;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import org.openremote.android.console.bindings.Gesture.GestureSwipeType;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -118,11 +117,12 @@ public class Screen extends BusinessEntity {
       return gestures;
    }
    
-   public Gesture getGestureByType(GestureSwipeType swipeType) {
+   public Gesture getGestureByType(int swipeType) {
       Gesture gesture = null;
       for (Gesture gestureItem : gestures) {
-         if (swipeType.equals(gestureItem.getSwipeType())) {
+         if (swipeType == gestureItem.getSwipeType()) {
             gesture = gestureItem;
+            break;
          }
       }
       return gesture;
