@@ -10,28 +10,39 @@ import android.content.Context;
 public class GroupView {
 
    private Group group;
-   private ScreenViewFlipper screenViewFlipper;
+   private ScreenViewFlipper portraitScreenViewFlipper;
+   private ScreenViewFlipper landscapeScreenViewFlipper;
    public GroupView(Context context, Group group) {
       this.group = group;
-      this.screenViewFlipper = new ScreenViewFlipper(context);
-      List<Screen> screens = group.getScreens();
-      int screenSize = screens.size();
-      for (int i = 0; i < screenSize; i++) {
-         screenViewFlipper.addView(new ScreenView(context, screens.get(i)));
+      if (group.getPortraitScreens().size() > 0) {
+         portraitScreenViewFlipper = new ScreenViewFlipper(context);
+         for (Screen screen : group.getPortraitScreens()) {
+            portraitScreenViewFlipper.addView(new ScreenView(context, screen));
+         }
+      }
+      
+      if (group.getLandscapeScreens().size() > 0) {
+         landscapeScreenViewFlipper = new ScreenViewFlipper(context);
+         for (Screen screen : group.getLandscapeScreens()) {
+            landscapeScreenViewFlipper.addView(new ScreenView(context, screen));
+         }
       }
    }
    
    public Group getGroup() {
       return group;
    }
-   public ScreenViewFlipper getScreenViewFlipper() {
-      return screenViewFlipper;
+   public ScreenViewFlipper getScreenViewFlipperByOrientation(boolean landscape) {
+      if (landscape) {
+         return landscapeScreenViewFlipper;
+      }
+      return portraitScreenViewFlipper;
    }
    public void setGroup(Group group) {
       this.group = group;
    }
    public void setScreenViewFlipper(ScreenViewFlipper screenViewFlipper) {
-      this.screenViewFlipper = screenViewFlipper;
+//      this.screenViewFlipper = screenViewFlipper;
    }
    
    

@@ -76,5 +76,7 @@ public class Gesture extends Control {
       return navigate;
    }
    
-   
+   public void initWithGestureSwipeTypeAndOrientation(GestureSwipeType swipeType, boolean landscape) {
+      
+   }
 }
