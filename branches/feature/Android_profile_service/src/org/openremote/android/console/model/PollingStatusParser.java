@@ -56,7 +56,9 @@ public class PollingStatusParser {
          int nodeNums = nodeList.getLength();
          for (int i = 0; i < nodeNums; i++) {
             String lastId = nodeList.item(i).getAttributes().getNamedItem("id").getNodeValue();
-            statusMap.put(lastId, nodeList.item(i).getFirstChild().getNodeValue());
+            String newStatus = nodeList.item(i).getFirstChild().getNodeValue();
+            statusMap.put(lastId, newStatus);
+            Log.i("POLLING", "set " + lastId + " to new status: " + newStatus);
             ORListenerManager.getInstance().notifyOREventListener(ListenerConstant.ListenerPollingStatusIdFormat + lastId, null);
          }
       } catch (ParserConfigurationException e) {

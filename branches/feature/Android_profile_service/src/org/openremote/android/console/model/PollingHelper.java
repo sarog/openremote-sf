@@ -20,6 +20,8 @@
 package org.openremote.android.console.model;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -59,8 +61,9 @@ public class PollingHelper {
    private String serverUrl;
    private Context context;
    private static String deviceId = null;
+   private Handler handler;
    
-   public PollingHelper(HashSet<Integer> ids, Context context) {
+   public PollingHelper(HashSet<Integer> ids, final Context context) {
       this.context = context;
       this.serverUrl = AppSettingsModel.getCurrentServer(context);
       readDeviceId(context);
@@ -72,6 +75,19 @@ public class PollingHelper {
       while (id.hasNext()) {
          pollingStatusIds = pollingStatusIds + "," + id.next();
       }
+
+      
+      handler = new Handler() {
+         @Override
+         public void handleMessage(Message msg) {
+            int statusCode = msg.what;
+            ViewHelper.showAlertViewWithTitle(context, "Send Request Error", ControllerException
+                  .exceptionMessageOfCode(statusCode));
+         }
+      };
+   }
+
+   public void requestCurrentStatusAndStartPolling() {
       HttpParams params = new BasicHttpParams();
       HttpConnectionParams.setConnectionTimeout(params, 50 * 1000);
       
@@ -79,9 +95,7 @@ public class PollingHelper {
       HttpConnectionParams.setSoTimeout(params, 55 * 1000);
       
       client = new DefaultHttpClient(params);
-   }
-
-   public void requestCurrentStatusAndStartPolling() {
+      
       if (isPolling) {
          return;
       }
@@ -93,10 +107,12 @@ public class PollingHelper {
    }
 
    private void doPolling() {
+      Log.i("POLLING", "polling start");
       handleRequest(serverUrl + "/rest/polling/" + deviceId + "/" + pollingStatusIds);
    }
 
    private void handleRequest(String requestUrl) {
+      Log.i("POLLING", requestUrl);
       httpGet = new HttpGet(requestUrl);
       if (!httpGet.isAborted()) {
          SecurityUtil.addCredentialToHttpRequest(context, httpGet);
@@ -110,22 +126,29 @@ public class PollingHelper {
             }
          } catch (SocketTimeoutException e) {
             isPolling = false;
-            Log.e("socket timeout", "polling socket timeout.");
+            Log.e("POLLING", "polling socket timeout.");
             handler.sendEmptyMessage(0);
          } catch (ClientProtocolException e) {
             isPolling = false;
-            Log.e("ClientProtocolException", "polling failed.");
+            Log.e("POLLING", "polling failed.");
+         } catch (SocketException e) {
+            isPolling = false;
+            Log.e("POLLING", "polling failed.", e);
          } catch (IllegalArgumentException e) {
             isPolling = false;
-            Log.e("ERROR", "polling failed", e);
+            Log.e("POLLING", "polling failed", e);
+         } catch (InterruptedIOException e) {
+            isPolling = false;
+            Log.i("POLLING", "last polling [" + pollingStatusIds +"] has been shut down");
          } catch (IOException e) {
             isPolling = false;
-            Log.e("IOException", "polling failed.", e);
+            Log.e("POLLING", "polling failed.", e);
          }
       }
    }
    
    public void cancelPolling() {
+      Log.i("POLLING", "polling [" + pollingStatusIds +"] canceled");
       isPolling = false;
       if (httpGet != null) {
          httpGet.abort();
@@ -159,16 +182,5 @@ public class PollingHelper {
       }
    }
 
-   private Handler handler = new Handler() {
-      @Override
-      public void handleMessage(Message msg) {
-         int statusCode = msg.what;
-//         if (statusCode == 401) {
-//            new LoginDialog(context);
-//            // TODO: restore polling.
-//         } else {
-            ViewHelper.showAlertViewWithTitle(context, "Send Request Error", ControllerException.exceptionMessageOfCode(statusCode));
-//         }
-      }
-  };
+   
 }

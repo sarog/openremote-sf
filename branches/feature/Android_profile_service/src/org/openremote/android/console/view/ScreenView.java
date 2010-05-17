@@ -39,7 +39,6 @@ public class ScreenView extends AbsoluteLayout {
 
    private Screen screen;
    private PollingHelper polling;
-   private AsyncLoader pollingTask;
    /**
     * Instantiates a new screen view.
     * 
@@ -69,9 +68,7 @@ public class ScreenView extends AbsoluteLayout {
                   .getTop()));
          }
       }
-      if (!screen.getPollingComponentsIds().isEmpty()) {
-         polling = new PollingHelper(screen.getPollingComponentsIds(), getContext());
-      }
+      
    }
 
    /**
@@ -131,18 +128,19 @@ public class ScreenView extends AbsoluteLayout {
    }
 
    public void startPolling() {
-      if (polling != null) {
-         pollingTask = new AsyncLoader();
-         pollingTask.execute((Void)null);
+      if (!screen.getPollingComponentsIds().isEmpty()) {
+         polling = new PollingHelper(screen.getPollingComponentsIds(), getContext());
       }
+      new Thread(new Runnable() {
+         public void run() {
+            polling.requestCurrentStatusAndStartPolling();
+         }
+      }).start(); 
    }
    
    public void cancelPolling() {
       if (polling != null) {
          polling.cancelPolling();
-         if (pollingTask != null) {
-            pollingTask.cancel(true);
-         }
       }
    }
    
@@ -150,11 +148,4 @@ public class ScreenView extends AbsoluteLayout {
       return screen;
    }
    
-   class AsyncLoader extends AsyncTask<Void, Void, Integer>{
-      @Override
-      protected Integer doInBackground(Void... params) {
-         polling.requestCurrentStatusAndStartPolling();
-         return null;
-      }
-   }
 }
