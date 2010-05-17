@@ -55,6 +55,8 @@ public class ORConnection {
    private HttpResponse httpResponse;
    private ORConnectionDelegate delegate;
    private Context context;
+   private Handler handler;
+   
    /** 
     * Establish the HttpBasicAuthentication httpconnection depend on param <b>isNeedHttpBasicAuth</b> with url for caller,<br />
     * and then the caller can deal with the httprequest result within ORConnectionDelegate instance.
@@ -196,5 +198,4 @@ public class ORConnection {
       }
    }
    
-   private Handler handler;
 }
