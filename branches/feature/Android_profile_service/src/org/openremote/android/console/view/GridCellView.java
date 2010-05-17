@@ -19,6 +19,7 @@
 */
 package org.openremote.android.console.view;
 
+import org.openremote.android.console.bindings.Component;
 import org.openremote.android.console.bindings.GridCell;
 
 import android.content.Context;
@@ -26,9 +27,12 @@ import android.widget.FrameLayout;
 
 public class GridCellView extends FrameLayout {
 
-   public GridCellView(Context context, GridCell gridCell) {
+   public GridCellView(Context context, int cellWidth, int cellHeight, GridCell gridCell) {
       super(context);
-      ComponentView componentView = ComponentView.buildWithComponent(context, gridCell.getComponent());
+      Component component = gridCell.getComponent();
+      component.setFrameWidth(cellWidth * gridCell.getColspan());
+      component.setFrameHeight(cellHeight * gridCell.getRowspan());
+      ComponentView componentView = ComponentView.buildWithComponent(context, component);
       if (componentView != null) {
          addView(componentView);
       }

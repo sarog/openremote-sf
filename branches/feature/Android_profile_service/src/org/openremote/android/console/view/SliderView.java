@@ -22,7 +22,7 @@ package org.openremote.android.console.view;
 
 
 import org.openremote.android.console.Constants;
-import org.openremote.android.console.bindings.Image;
+import org.openremote.android.console.R;
 import org.openremote.android.console.bindings.Slider;
 import org.openremote.android.console.model.ListenerConstant;
 import org.openremote.android.console.model.OREvent;
@@ -31,14 +31,18 @@ import org.openremote.android.console.model.ORListenerManager;
 import org.openremote.android.console.model.PollingStatusParser;
 import org.openremote.android.console.util.ImageUtil;
 import org.openremote.android.console.util.NumberFormat;
+import org.openremote.android.console.view.seekbar.vertical.VerticalSeekBar;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.FrameLayout;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TableRow;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
 /**
@@ -47,13 +51,22 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
  * @author handy 2010-05-12
  *
  */
-public class SliderView extends SensoryControlView implements OnSeekBarChangeListener {
+public class SliderView extends SensoryControlView implements OnSeekBarChangeListener, VerticalSeekBar.OnSeekBarChangeListener {
    private static final int SEEK_BAR_PROGRESS_INIT_VALUE = 0;
    private static final int SEEK_BAR_PROGRESS_MAX = 100;
    
+   private static final int SEEK_BAR_MIN_WIDTH = 26;
+   private static final int SEEK_BAR_MIN_HEIGHT = 26;
+   
+   private static final int SEEK_BAR_MIN_IMAGE_WIDTH = 20;
+   private static final int SEEK_BAR_MIN_IMAGE_HEIGHT = 20;
+   private static final int SEEK_BAR_MAX_IMAGE_WIDTH = 20;
+   private static final int SEEK_BAR_MAX_IMAGE_HEIGHT = 20;
+   
    private Context context;
    private Slider slider;
-   private SeekBar seekBar;
+   private SeekBar horizontalSeekBar;
+   private VerticalSeekBar verticalSeekBar;
    private int slideToBusinessValue = 0;
 
    protected SliderView(Context context, Slider slider) {
@@ -72,42 +85,131 @@ public class SliderView extends SensoryControlView implements OnSeekBarChangeLis
    }
 
    private void initSeekBar() {
-      setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.FILL_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
-      
+      LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
       // isVertical
-//      LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//      if (slider.isVertical()) {
-//         seekBar = (SeekBar) inflater.inflate(R.layout.seek_bar_vertical, (ViewGroup) findViewById(R.id.seek_bar_vertical));
-//      } else {
-//         seekBar = (SeekBar) inflater.inflate(R.layout.seek_bar_horizontal, (ViewGroup) findViewById(R.id.seek_bar_horizontal));
-//      }
-      seekBar = new SeekBar(context);
-      seekBar.setMax(SEEK_BAR_PROGRESS_MAX);
+      if (slider.isVertical()) {
+         initVerticalSeekBar(inflater);
+      } else {
+         initHorizontalSeekBar(inflater);
+      }
+   }
+
+   private void initVerticalSeekBar(LayoutInflater inflater) {
+      // Get the rootView(TableLayout) of seekbar. 
+      // Because of minValueImage and maxValueImage, the seekbar is layouted in TableLayout.
+      ViewGroup seekBarRootView = (ViewGroup) inflater.inflate(R.layout.vertical_seekbar,
+            (ViewGroup) findViewById(R.id.vertical_seekbar_root_layout));
       
-      //maxTrackImage
-//      seekBar.setBackgroundResource(R.drawable.progress_bg);
-      
-      seekBar.setMax(SEEK_BAR_PROGRESS_MAX);
-      seekBar.setProgress(getProgressOfBusinessValue(SEEK_BAR_PROGRESS_INIT_VALUE));
-      
-      // isPassive
+      // Get the seekbar instance from rootView(TableLayout).
+      verticalSeekBar = (VerticalSeekBar) seekBarRootView.findViewById(R.id.vertical_seekbar);
+      verticalSeekBar.setMax(SEEK_BAR_PROGRESS_MAX);
+      verticalSeekBar.setProgress(getProgressOfBusinessValue(SEEK_BAR_PROGRESS_INIT_VALUE));
       if (slider.isPassive()) {
-         seekBar.setEnabled(false);
+         verticalSeekBar.setEnabled(false);
+      }
+
+      // Set the default layoutparams for seekbar. Set the width and height for seekbar.
+      // slider.getFrameHeight() means the height of vertical seekbar no minValueImage and maxValueImage
+      verticalSeekBar.setLayoutParams(new TableRow.LayoutParams(SEEK_BAR_MIN_WIDTH, slider.getFrameHeight()));
+      if (slider.getThumbImage() != null) {
+         Drawable thumbDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+               + slider.getThumbImage().getSrc());
+         verticalSeekBar.setThumb(thumbDrawable);
       }
       
-      // thumbImage
-      Image thumbImage = slider.getThumbImage();
-      if (thumbImage != null) {
-         Drawable thumb = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + thumbImage.getSrc());
-         seekBar.setThumb(thumb);
+      if (slider.getMinImage() != null) {
+         Drawable minValueDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+               + slider.getMinImage().getSrc());
+         ImageView minValueImageView = (ImageView) seekBarRootView.findViewById(R.id.vertical_seekbar_minvalue_image);
+         minValueImageView.setImageDrawable(minValueDrawable);
+         
+         // Limit the width and height of minValueImage
+         minValueImageView.setLayoutParams(new TableRow.LayoutParams(SEEK_BAR_MIN_IMAGE_WIDTH,
+               SEEK_BAR_MIN_IMAGE_HEIGHT));
+         
+         // Set the height of vertical seekbar no maxImageHeight
+         verticalSeekBar.setLayoutParams(new TableRow.LayoutParams(SEEK_BAR_MIN_WIDTH, slider.getFrameHeight()
+               - SEEK_BAR_MIN_IMAGE_HEIGHT));
+         
+      }
+
+      if (slider.getMaxImage() != null) {
+         Drawable maxValueDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+               + slider.getMaxImage().getSrc());
+         
+         ImageView maxValueImageView = (ImageView) seekBarRootView.findViewById(R.id.vertical_seekbar_maxvalue_image);
+         maxValueImageView.setImageDrawable(maxValueDrawable);
+         
+         // Limit the width and height of maxValueImage
+         maxValueImageView.setLayoutParams(new TableRow.LayoutParams(SEEK_BAR_MAX_IMAGE_WIDTH,
+               SEEK_BAR_MAX_IMAGE_HEIGHT));
+         
+         if (slider.getMinImage() != null) {
+            // Set the height of vertical seekbar exists minValueImage and maxValueImage
+            verticalSeekBar.setLayoutParams(new TableRow.LayoutParams(SEEK_BAR_MIN_WIDTH, slider.getFrameHeight()
+                  - SEEK_BAR_MIN_IMAGE_HEIGHT - SEEK_BAR_MAX_IMAGE_HEIGHT));
+         } else {
+            // Set the height of vertical seekbar no minImageHeight
+            verticalSeekBar.setLayoutParams(new TableRow.LayoutParams(SEEK_BAR_MIN_WIDTH, slider.getFrameHeight()
+                  - SEEK_BAR_MAX_IMAGE_HEIGHT));
+         }
+      }
+
+      verticalSeekBar.setOnSeekBarChangeListener(this);
+      this.addView(seekBarRootView);
+   }
+
+   private void initHorizontalSeekBar(LayoutInflater inflater) {
+      ViewGroup seekBarRootView = (ViewGroup) inflater.inflate(R.layout.horizontal_seekbar,
+            (ViewGroup) findViewById(R.id.horizontal_seekbar_root_layout));
+      
+      horizontalSeekBar = (SeekBar) seekBarRootView.findViewById(R.id.horizontal_seekbar);
+      horizontalSeekBar.setMax(SEEK_BAR_PROGRESS_MAX);
+      horizontalSeekBar.setProgress(getProgressOfBusinessValue(SEEK_BAR_PROGRESS_INIT_VALUE));
+      if (slider.isPassive()) {
+         horizontalSeekBar.setEnabled(false);
+      }
+
+      horizontalSeekBar.setLayoutParams(new TableRow.LayoutParams(slider.getFrameWidth(), SEEK_BAR_MIN_HEIGHT));
+      if (slider.getThumbImage() != null) {
+         Drawable thumbDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+               + slider.getThumbImage().getSrc());
+         horizontalSeekBar.setThumb(thumbDrawable);
       }
       
-      // minImage
-      // maxImage
-      // minTrackImage
-      // maxTrackImage
-      seekBar.setOnSeekBarChangeListener(this);
-      this.addView(seekBar);
+      if (slider.getMinImage() != null) {
+         Drawable minValueDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+               + slider.getMinImage().getSrc());
+         
+         ImageView minValueImageView = (ImageView) seekBarRootView.findViewById(R.id.horizontal_seekbar_minvalue_image);
+         minValueImageView.setImageDrawable(minValueDrawable);
+         minValueImageView.setLayoutParams(new TableRow.LayoutParams(SEEK_BAR_MIN_IMAGE_WIDTH,
+               SEEK_BAR_MIN_IMAGE_HEIGHT));
+         
+         horizontalSeekBar.setLayoutParams(new TableRow.LayoutParams(slider.getFrameWidth() - SEEK_BAR_MIN_IMAGE_WIDTH,
+               SEEK_BAR_MIN_HEIGHT));
+      }
+
+      if (slider.getMaxImage() != null) {
+         Drawable maxValueDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+               + slider.getMaxImage().getSrc());
+         
+         ImageView maxValueImageView = (ImageView) seekBarRootView.findViewById(R.id.horizontal_seekbar_maxvalue_image);
+         maxValueImageView.setImageDrawable(maxValueDrawable);
+         maxValueImageView.setLayoutParams(new TableRow.LayoutParams(SEEK_BAR_MAX_IMAGE_WIDTH,
+               SEEK_BAR_MAX_IMAGE_HEIGHT));
+         
+         if (slider.getMinImage() != null) {
+            horizontalSeekBar.setLayoutParams(new TableRow.LayoutParams(slider.getFrameWidth()
+                  - SEEK_BAR_MIN_IMAGE_WIDTH - SEEK_BAR_MAX_IMAGE_WIDTH, SEEK_BAR_MIN_HEIGHT));
+         } else {
+            horizontalSeekBar.setLayoutParams(new TableRow.LayoutParams(slider.getFrameWidth()
+                  - SEEK_BAR_MAX_IMAGE_WIDTH, SEEK_BAR_MIN_HEIGHT));
+         }
+      }
+
+      horizontalSeekBar.setOnSeekBarChangeListener(this);
+      this.addView(seekBarRootView);
    }
    
    private int getProgressOfBusinessValue(int businessValue) {
@@ -144,12 +246,16 @@ public class SliderView extends SensoryControlView implements OnSeekBarChangeLis
       public void handleMessage(Message msg) {
          int businessValue = msg.what;
          int progress = getProgressOfBusinessValue(businessValue);
-         seekBar.setProgress(progress);
+         if(slider.isVertical()) {
+            verticalSeekBar.setProgress(progress);
+         } else {
+            horizontalSeekBar.setProgress(progress);
+         }
          super.handleMessage(msg);
       }
   };
    
-   // The following three overided methods are for onSeekBarChangeListener
+   // The following three overided methods are for SeekBar.
    @Override
    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
       slideToBusinessValue = (int)(((float)progress/SEEK_BAR_PROGRESS_MAX) * (slider.getMaxValue() - slider.getMinValue()) + slider.getMinValue());
@@ -161,8 +267,22 @@ public class SliderView extends SensoryControlView implements OnSeekBarChangeLis
 
    @Override
    public void onStopTrackingTouch(SeekBar seekBar) {
-      Log.e("INFO onStopTrackingTouch", "Slide to business value " + slideToBusinessValue);
+      Log.e("INFO horizontal onStopTrackingTouch", "Horizontally slide to business value " + slideToBusinessValue);
       sendCommandRequest(String.valueOf(slideToBusinessValue));
    }
 
+   @Override
+   public void onProgressChanged(VerticalSeekBar seekBar, int progress, boolean fromUser) {
+      slideToBusinessValue = (int)(((float)progress/SEEK_BAR_PROGRESS_MAX) * (slider.getMaxValue() - slider.getMinValue()) + slider.getMinValue());
+   }
+
+   @Override
+   public void onStartTrackingTouch(VerticalSeekBar seekBar) {
+   }
+
+   @Override
+   public void onStopTrackingTouch(VerticalSeekBar seekBar) {
+      Log.e("INFO vertical onStopTrackingTouch", "Horizontally slide to business value " + slideToBusinessValue);
+      sendCommandRequest(String.valueOf(slideToBusinessValue));
+   }
 }

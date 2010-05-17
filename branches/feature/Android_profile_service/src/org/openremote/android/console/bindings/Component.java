@@ -26,6 +26,9 @@ import org.w3c.dom.Node;
 public class Component extends BusinessEntity {
 
    private int componentId;
+   private int frameWidth;
+   private int frameHeight;
+   
    public static Component buildWithXML(Node node) {
       Component component = null;
       if (LABEL.equals(node.getNodeName())) {
@@ -43,6 +46,18 @@ public class Component extends BusinessEntity {
    }
    public void setComponentId(int componentId) {
       this.componentId = componentId;
+   }
+   public int getFrameWidth() {
+      return frameWidth;
+   }
+   public void setFrameWidth(int frameWidth) {
+      this.frameWidth = frameWidth;
+   }
+   public int getFrameHeight() {
+      return frameHeight;
+   }
+   public void setFrameHeight(int frameHeight) {
+      this.frameHeight = frameHeight;
    }
 
 }
