@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
- * Copyright 2009, OpenRemote Inc.
+ * Copyright 2008-2010, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -32,6 +32,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -82,8 +83,12 @@ public class Main extends Activity {
     
     private void checkNetType() {
        ConnectivityManager conn = (ConnectivityManager)(this).getSystemService(Context.CONNECTIVITY_SERVICE);
-       if ("mobile".equals(conn.getActiveNetworkInfo().getTypeName().toLowerCase())) {
-          IPAutoDiscoveryClient.IS_EMULATOR = true;
+       NetworkInfo info = conn.getActiveNetworkInfo();
+       String type = info.getTypeName();
+       if ("mobile".equals(type.toLowerCase())) {
+          IPAutoDiscoveryClient.isNetworkTypeWIFI = false;
+       } else  {
+          IPAutoDiscoveryClient.isNetworkTypeWIFI = true;
        }
     }
     

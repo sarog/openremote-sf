@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -27,7 +27,8 @@ import org.openremote.android.console.Constants;
 
 public class IPAutoDiscoveryClient implements Runnable {
    
-   public static boolean IS_EMULATOR;
+   public static boolean isNetworkTypeWIFI;
+   
    public void run() {
       try {
          DatagramSocket socket = new DatagramSocket();
@@ -42,9 +43,9 @@ public class IPAutoDiscoveryClient implements Runnable {
    }
    
    public static String getMulticastAddress() {
-      if (IS_EMULATOR) {
-         return Constants.EMULATOR_MULTICAST_ADDRESS;
+      if (isNetworkTypeWIFI) {
+         return Constants.MULTICAST_ADDRESS;
       }
-      return Constants.MULTICAST_ADDRESS;
+      return Constants.NON_WIFI_MULTICAST_ADDRESS;
    }
 }
