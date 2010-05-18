@@ -131,11 +131,13 @@ public class ScreenView extends AbsoluteLayout {
       if (!screen.getPollingComponentsIds().isEmpty()) {
          polling = new PollingHelper(screen.getPollingComponentsIds(), getContext());
       }
-      new Thread(new Runnable() {
-         public void run() {
-            polling.requestCurrentStatusAndStartPolling();
-         }
-      }).start(); 
+      if (polling != null) {
+         new Thread(new Runnable() {
+            public void run() {
+               polling.requestCurrentStatusAndStartPolling();
+            }
+         }).start(); 
+      }
    }
    
    public void cancelPolling() {
