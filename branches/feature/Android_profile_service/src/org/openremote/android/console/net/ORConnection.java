@@ -39,6 +39,7 @@ import org.openremote.android.console.util.SecurityUtil;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
 
@@ -62,18 +63,7 @@ public class ORConnection {
     * and then the caller can deal with the httprequest result within ORConnectionDelegate instance.
     */
    public ORConnection (final Context context, ORHttpMethod httpMethod, boolean isNeedHttpBasicAuth, String url, ORConnectionDelegate delegateParam) {
-      handler = new Handler() {
-         @Override
-         public void handleMessage(Message msg) {
-            int statusCode = msg.what;
-            if (statusCode == 0) {
-               connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail."));
-            } else {
-               dealWithResponse();
-            }
-         }
-     };
-      
+      initHandler(context);
       delegate = delegateParam;
       this.context = context;
       HttpParams params = new BasicHttpParams();
@@ -94,6 +84,22 @@ public class ORConnection {
          SecurityUtil.addCredentialToHttpRequest(context, httpRequest);
       }
       execute();
+   }
+
+   private void initHandler(final Context context) {
+      HandlerThread handlerThread = new HandlerThread(Math.random()+"");  
+      handlerThread.start();  
+      handler = new Handler(handlerThread.getLooper()) {
+         @Override
+         public void handleMessage(Message msg) {
+            int statusCode = msg.what;
+            if (statusCode == 0) {
+               connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail."));
+            } else {
+               dealWithResponse();
+            }
+         }
+     };
    }
 
    /** Execute the http request.*/
