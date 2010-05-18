@@ -55,8 +55,8 @@ public class SliderView extends SensoryControlView implements OnSeekBarChangeLis
    private static final int SEEK_BAR_PROGRESS_INIT_VALUE = 0;
    private static final int SEEK_BAR_PROGRESS_MAX = 100;
    
-   private static final int SEEK_BAR_MIN_WIDTH = 26;
-   private static final int SEEK_BAR_MIN_HEIGHT = 26;
+   private static final int SEEK_BAR_MIN_WIDTH = 29;
+   private static final int SEEK_BAR_MIN_HEIGHT = 29;
    
    private static final int SEEK_BAR_MIN_IMAGE_WIDTH = 20;
    private static final int SEEK_BAR_MIN_IMAGE_HEIGHT = 20;
