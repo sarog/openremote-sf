@@ -88,7 +88,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
 
    private boolean useLocalCache;
    private boolean isNavigetionBackward;
-   private boolean landscape;
+   private boolean isLandscape = false;
 
     private SensorManager mSensorManager;
    /* sensor simulator begin */
@@ -111,7 +111,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
 
       Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
       if (display != null && display.getOrientation() == 1) {
-         landscape = true;
+         isLandscape = true;
       }
       orientation = OROrientation.UIInterfaceOrientationPortrait;
       this.gestureScanner = new GestureDetector(this);
@@ -126,7 +126,13 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
       /* sensor simulator begin */
 //      mSensorManager = SensorManagerSimulator.getSystemService(this, SENSOR_SERVICE);
-//      mSensorManager.connectSimulator();
+//      try {
+//         mSensorManager.connectSimulator();
+//      } catch (NumberFormatException e) {
+//         Log.e("sensor simulator error", "the SensorSimulator.jar has not running", e);
+//      } catch (NullPointerException e) {
+//         Log.e("sensor simulator error", "not use SensorSimulatorSettings.apk to config ip", e);
+//      }
       /* sensor simulator end */
 
       recoverLastGroupScreen();
@@ -162,25 +168,27 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       if (lastGroup == null) {
          lastGroup = XMLEntityDataBase.getFirstGroup();
       }
-      if (lastGroup == null) {
+      if (lastGroup == null || lastGroup.getScreens().size() == 0) {
          if (!useLocalCache) {
             ViewHelper.showAlertViewWithSetting(this, "No Group Found", "please config Settings again");
          }
          return;
       }
-      screenSize = lastGroup.getScreenSizeByOrientation(landscape);
+      
+      screenSize = lastGroup.getScreenSizeByOrientation(isLandscape);
       if (screenSize == 0) {
-         return;
-         // landscape = !landscape;
-         // screenSize = lastGroup.getScreenSizeByOrientation(landscape);
+         ViewHelper.showAlertViewWithTitle(this, "Info", "The group " + lastGroup.getName() + " has no " + (isLandscape ? "landscape" : "portrait") + " screen.");
+         isLandscape = !isLandscape;
+         screenSize = lastGroup.getScreenSizeByOrientation(isLandscape);
       }
+      
       currentGroupView = new GroupView(this, lastGroup);
       groupViews.put(lastGroup.getGroupId(), currentGroupView);
-      currentScreenViewFlipper = currentGroupView.getScreenViewFlipperByOrientation(landscape);
+      currentScreenViewFlipper = currentGroupView.getScreenViewFlipperByOrientation(isLandscape);
 
       int lastScreenID = UserCache.getLastScreenId(this);
-      if (lastScreenID > 0 && lastGroup.canfindScreenByIdAndOrientation(lastScreenID, landscape)) {
-         currentScreenViewFlipper.setDisplayedChild(getScreenIndex(lastScreenID, landscape));
+      if (lastScreenID > 0 && lastGroup.canfindScreenByIdAndOrientation(lastScreenID, isLandscape)) {
+         currentScreenViewFlipper.setDisplayedChild(getScreenIndex(lastScreenID, isLandscape));
       }
       linearLayout = new LinearLayout(this);
       linearLayout.addView(currentScreenViewFlipper);
@@ -268,7 +276,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
 
    private void onScreenGestureEvent(int gestureType) {
       currentScreen = ((ScreenView) currentScreenViewFlipper.getCurrentView()).getScreen();
-      gestureType = Gesture.switchGestureTypeByOrientation(gestureType, orientation);
+//      gestureType = Gesture.switchGestureTypeByOrientation(gestureType, orientation);
       Gesture gesture = currentScreen.getGestureByType(gestureType);
       if (gesture != null) {
          if (gesture.isHasControlCommand()) {
@@ -439,8 +447,8 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
             Navigate backward = navigationHistory.get(navigationHistory.size() - 1);
             if (backward.getFromGroup() > 0 && backward.getFromScreen() > 0) {
                if (backward.getFromGroup() == getCurrentGroupId()) {
-                  isNavigetionBackward = getScreenIndex(backward.getFromScreen(), landscape) < getScreenIndex(
-                        currentScreen.getScreenId(), landscape);
+                  isNavigetionBackward = getScreenIndex(backward.getFromScreen(), isLandscape) < getScreenIndex(
+                        currentScreen.getScreenId(), isLandscape);
                }
                navigateToGroup(backward.getFromGroup(), backward.getFromScreen());
             }
@@ -473,33 +481,38 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       Group targetGroup = XMLEntityDataBase.getGroup(toGroupId);
       if (targetGroup != null) {
          cancelCurrentPolling();
+         boolean currentOrientation = currentScreen.isLandscape();
+         
          if (currentGroupView.getGroup().getGroupId() != toGroupId) {
             GroupView targetGroupView = groupViews.get(toGroupId);
             if (targetGroupView == null) {
                targetGroupView = new GroupView(this, targetGroup);
                groupViews.put(toGroupId, targetGroupView);
             }
-            if (!targetGroup.hasOrientationScreens(landscape)) {
+            if (targetGroup.getScreens().size() == 0) {
                return false;
             }
+            
+            if (targetGroup.hasOrientationScreens(isLandscape)) {
+               currentOrientation = isLandscape;
+            }
+            
             linearLayout.removeView(currentScreenViewFlipper);
-            currentScreenViewFlipper = targetGroupView.getScreenViewFlipperByOrientation(landscape);
+            currentScreenViewFlipper = targetGroupView.getScreenViewFlipperByOrientation(currentOrientation);
             currentGroupView = targetGroupView;
             linearLayout.addView(currentScreenViewFlipper);
-            if (toScreenId > 0 && targetGroup.canfindScreenByIdAndOrientation(toScreenId, landscape)) {
-               currentScreenViewFlipper.setDisplayedChild(getScreenIndex(toScreenId, landscape));
+            if (toScreenId > 0 && targetGroup.canfindScreenByIdAndOrientation(toScreenId, currentOrientation)) {
+               currentScreenViewFlipper.setDisplayedChild(getScreenIndex(toScreenId, currentOrientation));
             }
-            screenSize = targetGroup.getScreenSizeByOrientation(landscape);
-         } else {
+            screenSize = targetGroup.getScreenSizeByOrientation(currentOrientation);
+         } else if (toScreenId > 0 && targetGroup.canfindScreenByIdAndOrientation(toScreenId, currentOrientation)) {
             // in same group.
-            if (toScreenId > 0) {
-               if (isNavigetionBackward) {
-                  currentScreenViewFlipper.setToPreviousAnimation();
-               } else {
-                  currentScreenViewFlipper.setToNextAnimation();
-               }
-               currentScreenViewFlipper.setDisplayedChild(getScreenIndex(toScreenId, landscape));
+            if (isNavigetionBackward) {
+               currentScreenViewFlipper.setToPreviousAnimation();
+            } else {
+               currentScreenViewFlipper.setToNextAnimation();
             }
+            currentScreenViewFlipper.setDisplayedChild(getScreenIndex(toScreenId, currentOrientation));
          }
          startCurrentPolling();
          currentScreen = ((ScreenView) currentScreenViewFlipper.getCurrentView()).getScreen();
@@ -515,7 +528,10 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       Navigate historyNavigate = new Navigate();
       if (currentGroupView.getGroup() != null) {
          historyNavigate.setFromGroup(currentGroupView.getGroup().getGroupId());
-         ScreenView sv = (ScreenView) currentGroupView.getScreenViewFlipperByOrientation(landscape).getCurrentView();
+         if (currentScreenViewFlipper == null) {
+            return;
+         }
+         ScreenView sv = (ScreenView) currentScreenViewFlipper.getCurrentView();
          if (sv == null) {
             return;
          } else {
@@ -523,7 +539,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
          }
          if (navigateTo(navigate)) {
             UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(),
-                  ((ScreenView) currentGroupView.getScreenViewFlipperByOrientation(landscape).getCurrentView())
+                  ((ScreenView) currentGroupView.getScreenViewFlipperByOrientation(isLandscape).getCurrentView())
                         .getScreen().getScreenId());
             navigationHistory.add(historyNavigate);
          }
@@ -582,14 +598,14 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
                } else {
                   orientation = OROrientation.UIInterfaceOrientationLandscapeRight;
                }
-               landscape = true;
+               isLandscape = true;
             } else {
                if (pitch < 0) {
                   orientation = OROrientation.UIInterfaceOrientationPortrait;
                } else {
                   orientation = OROrientation.UIInterfaceOrientationPortraitUpsideDown;
                }
-               landscape = false;
+               isLandscape = false;
             }
          }
 
@@ -602,7 +618,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
 
       }
    }
-
+   
    private boolean canRotateToInterfaceOrientation() {
       if (currentScreen != null && currentScreen.getScreenId() > 0) {
          return currentScreen.getInverseScreenId() > 0;
@@ -615,12 +631,14 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       if (currentGroupView != null) {
          cancelCurrentPolling();
          linearLayout.removeView(currentScreenViewFlipper);
-         currentScreenViewFlipper = currentGroupView.getScreenViewFlipperByOrientation(landscape);
+         currentScreenViewFlipper = currentGroupView.getScreenViewFlipperByOrientation(isLandscape);
          linearLayout.addView(currentScreenViewFlipper);
-         currentScreenViewFlipper.setDisplayedChild(getScreenIndex(inverseScreenId, landscape));
+         currentScreenViewFlipper.setDisplayedChild(getScreenIndex(inverseScreenId, isLandscape));
          startCurrentPolling();
          if (currentGroupView.getGroup() != null) {
-            screenSize = currentGroupView.getGroup().getScreenSizeByOrientation(landscape);
+            screenSize = currentGroupView.getGroup().getScreenSizeByOrientation(isLandscape);
+            UserCache.saveLastGroupIdAndScreenId(GroupActivity.this, currentGroupView.getGroup().getGroupId(),
+                  ((ScreenView) currentScreenViewFlipper.getCurrentView()).getScreen().getScreenId());
          }
       }
    }

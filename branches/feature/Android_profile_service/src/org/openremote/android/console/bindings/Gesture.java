@@ -27,9 +27,9 @@ import org.w3c.dom.NodeList;
 public class Gesture extends Control {
 
    private int swipeType;
-   public static final int GESTURE_SWIPE_TYPE_TOP2BOTTOM = 0;
-   public static final int GESTURE_SWIPE_TYPE_BOTTOM2TOP = 1;
-   public static final int GESTURE_SWIPE_TYPE_LEFT2RIGHT = 2;
+   public static final int GESTURE_SWIPE_TYPE_BOTTOM2TOP = 0;
+   public static final int GESTURE_SWIPE_TYPE_LEFT2RIGHT = 1;
+   public static final int GESTURE_SWIPE_TYPE_TOP2BOTTOM = 2;
    public static final int GESTURE_SWIPE_TYPE_RIGHT2LEFT = 3;
    
    private boolean hasControlCommand;
@@ -77,19 +77,4 @@ public class Gesture extends Control {
       return navigate;
    }
    
-   public static int switchGestureTypeByOrientation(int type, OROrientation orientation) {
-      switch (orientation) {
-      case UIInterfaceOrientationPortrait:
-         return type;
-      case UIInterfaceOrientationLandscapeLeft:
-         return (type - 1 + 4) % 4;
-      case UIInterfaceOrientationLandscapeRight:
-         return (type + 1) % 4;
-      case UIInterfaceOrientationPortraitUpsideDown:
-         return (type + 2) % 4;
-      default:
-         return type;
-      }
-
-   }
 }
