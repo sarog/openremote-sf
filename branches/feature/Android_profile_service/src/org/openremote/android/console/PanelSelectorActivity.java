@@ -124,7 +124,7 @@ public class PanelSelectorActivity extends ListActivity implements ORConnectionD
       
       setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, panelsName));
 
-      final ListView listView = getListView();
+      ListView listView = getListView();
       listView.setItemsCanFocus(false);
       listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
       listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
