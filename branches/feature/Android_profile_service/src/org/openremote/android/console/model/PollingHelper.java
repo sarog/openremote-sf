@@ -81,7 +81,7 @@ public class PollingHelper {
          @Override
          public void handleMessage(Message msg) {
             int statusCode = msg.what;
-            ViewHelper.showAlertViewWithTitle(context, "Send Request Error", ControllerException
+            ViewHelper.showAlertViewWithTitle(context, "Polling Failed", ControllerException
                   .exceptionMessageOfCode(statusCode));
          }
       };
@@ -142,7 +142,7 @@ public class PollingHelper {
             Log.i("POLLING", "last polling [" + pollingStatusIds +"] has been shut down");
          } catch (IOException e) {
             isPolling = false;
-            Log.e("POLLING", "polling failed.", e);
+            Log.i("POLLING", "last polling [" + pollingStatusIds +"] already aborted");
          }
       }
    }
