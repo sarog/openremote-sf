@@ -56,7 +56,7 @@ public class ORConnection {
    private HttpResponse httpResponse;
    private ORConnectionDelegate delegate;
    private Context context;
-   private Handler handler;
+   protected Handler handler;
    
    /** 
     * Establish the HttpBasicAuthentication httpconnection depend on param <b>isNeedHttpBasicAuth</b> with url for caller,<br />
@@ -86,10 +86,8 @@ public class ORConnection {
       execute();
    }
 
-   private void initHandler(final Context context) {
-      HandlerThread handlerThread = new HandlerThread(Math.random()+"");  
-      handlerThread.start();  
-      handler = new Handler(handlerThread.getLooper()) {
+   protected void initHandler(final Context context) {
+      handler = new Handler() {
          @Override
          public void handleMessage(Message msg) {
             int statusCode = msg.what;
@@ -121,7 +119,7 @@ public class ORConnection {
    }
    
    /** Deal with the response while httpconnection of android console to controller success. */
-   private void dealWithResponse() {
+   protected void dealWithResponse() {
       connectionDidReceiveResponse();
       connectionDidReceiveData();
    }
@@ -133,7 +131,7 @@ public class ORConnection {
     * and sends a notification to delegate with <b>urlConnectionDidFailWithException</b> method calling and
     * switching the connection of android console to a available controller server in groupmembers of self.
     */
-   private void connectionDidFailWithException(Context context, ORConnectionException e) {
+   protected void connectionDidFailWithException(Context context, ORConnectionException e) {
       delegate.urlConnectionDidFailWithException(e);
       ORControllerServerSwitcher.doSwitch(context);
    }

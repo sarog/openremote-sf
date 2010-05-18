@@ -28,9 +28,9 @@ import org.openremote.android.console.bindings.Switch;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ViewHelper;
-import org.openremote.android.console.net.ORConnection;
 import org.openremote.android.console.net.ORConnectionDelegate;
 import org.openremote.android.console.net.ORHttpMethod;
+import org.openremote.android.console.net.ORUnBlockConnection;
 
 import android.content.Context;
 
@@ -56,7 +56,7 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
    }
 
    public boolean sendCommandRequest(String commandType) {
-      new ORConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel
+      new ORUnBlockConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel
 //            .getCurrentServer(getContext())
             .getCurrentSecuredServer(getContext())
             + "/rest/control/" + getComponent().getComponentId() + "/" + commandType, this);
