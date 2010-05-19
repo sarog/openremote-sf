@@ -26,6 +26,7 @@ import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.UserCache;
 import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.console.util.AsyncResourceLoader;
+import org.openremote.android.console.util.ImageUtil;
 
 import android.app.Activity;
 import android.content.Context;
@@ -36,6 +37,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -70,7 +72,7 @@ public class Main extends Activity {
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        this.setContentView(R.layout.welcome_view);
+        ImageUtil.setContentViewQuietly(this, R.layout.welcome_view);
         
         checkNetType();
         readDisplayMetrics();        
@@ -98,11 +100,13 @@ public class Main extends Activity {
     }
     
     private boolean toLogginOrSetting () {
+       Log.i("toLogginOrSetting", AppSettingsModel.getCurrentServer(this) + "," + AppSettingsModel.getCurrentPanelIdentity(this));
        Intent intent = new Intent();
        if (TextUtils.isEmpty(UserCache.getUsername(this)) || TextUtils.isEmpty(UserCache.getPassword(this))) {
           intent.setClass(this, LoginViewActivity.class);
           intent.setData(Uri.parse(LOAD_RESOURCE));
-       } else if (TextUtils.isEmpty(AppSettingsModel.getCurrentServer(this)) || TextUtils.isEmpty(AppSettingsModel.getCurrentPanelIdentity(this))) {
+       } else if (TextUtils.isEmpty(AppSettingsModel.getCurrentServer(this)) || 
+             TextUtils.isEmpty(AppSettingsModel.getCurrentPanelIdentity(this))) {
           intent.setClass(this, AppSettingsActivity.class);
        } else {
           return false;
