@@ -60,6 +60,7 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
 
    private ArrayAdapter<String> arrayAdapter;
    private static final String  CHOOSE_PANEL = "choose panel";
+   private static final String  NONE = "None";
    private boolean isSending;
    
    public PanelSelectSpinnerView(Context context) {
@@ -108,6 +109,7 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
          }
 
          public void onNothingSelected(AdapterView<?> parent) {
+            //nothing
          }
          
       });
@@ -124,6 +126,7 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
    public void urlConnectionDidReceiveData(InputStream data) {
       isSending = false;
       arrayAdapter.clear();
+      arrayAdapter.add(NONE);
       try {
          DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
          DocumentBuilder builder = factory.newDocumentBuilder();
@@ -145,7 +148,6 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
          Log.e("PANEL LIST", "Parse data error", e);
          return;
       }
-      Log.e("arrayAdapter", "arrayAdapter count:" + arrayAdapter.getCount());
       String panel = AppSettingsModel.getCurrentPanelIdentity(getContext());
       int panelCount = arrayAdapter.getCount();
       if (!TextUtils.isEmpty(panel)) {
