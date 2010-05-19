@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -29,6 +29,14 @@ import java.util.ArrayList;
 
 import org.openremote.android.console.Constants;
 
+import android.util.Log;
+
+/**
+ * Controller IP auto discovery server, this is a TCP server receiving IP from Controllers.
+ * 
+ * @author Tomsky Wang
+ *
+ */
 public class IPAutoDiscoveryServer implements Runnable {
 
    public static ArrayList<String> autoServers = new ArrayList<String>();
@@ -41,7 +49,7 @@ public class IPAutoDiscoveryServer implements Runnable {
          autoServers.clear();
          srvr.setSoTimeout(1000);
       } catch (IOException e1) {
-         e1.printStackTrace();
+         Log.e("AUTO DISCOVER", "auto discovery server setup failed", e1);
       }
       while (moreQuotes) {
          try {
@@ -52,6 +60,7 @@ public class IPAutoDiscoveryServer implements Runnable {
                autoServers.add(line);
             }
             connectionSocket.close();
+            Log.i("AUTO DISCOVER", "auto discovery result: " + autoServers);
             Thread.sleep(3);
          } catch (SocketTimeoutException e) {
             moreQuotes = false;
@@ -64,7 +73,7 @@ public class IPAutoDiscoveryServer implements Runnable {
       try {
          srvr.close();
       } catch (IOException e) {
-         e.printStackTrace();
+         Log.e("AUTO DISCOVER", "auto discovery ServerSocket close failed " , e);
       }
    }
 
