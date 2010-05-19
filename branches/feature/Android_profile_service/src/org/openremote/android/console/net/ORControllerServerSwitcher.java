@@ -82,7 +82,8 @@ public class ORControllerServerSwitcher {
       HttpGet httpGet = new HttpGet(AppSettingsModel.getCurrentServer(context) + "/rest/servers");
 		
 		if (httpGet == null) {
-			throw new ORConnectionException("Create HttpRequest fail.");
+			Log.e("GROUP MEMBER", "Create HttpRequest fail.");
+			return false;
 		}
 		SecurityUtil.addCredentialToHttpRequest(context, httpGet);		
 	   try {
