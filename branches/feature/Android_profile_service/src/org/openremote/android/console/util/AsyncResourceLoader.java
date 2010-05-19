@@ -79,7 +79,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
       if (isControllerAvailable) {
          int downLoadPanelXMLStatusCode = HTTPUtil.downLoadPanelXml(activity, serverUrl, panelName);
          if (downLoadPanelXMLStatusCode != Constants.HTTP_SUCCESS) { // download panel xml fail.
-            Log.e("INFO", "Download file panel.xml fail.");
+            Log.i("DOWNLOAD", "Download file panel.xml fail.");
             if (downLoadPanelXMLStatusCode == ControllerException.UNAUTHORIZED) {
              result.setAction(TO_LOGIN);
              result.setStatusCode(downLoadPanelXMLStatusCode);
@@ -87,23 +87,23 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
             }
             
             if (activity.getFileStreamPath(Constants.PANEL_XML).exists()) {
-               Log.e("INFO", "Download file panel.xml fail, so use local cache.");
+               Log.i("DOWNLOAD", "Download file panel.xml fail, so use local cache.");
                FileUtil.parsePanelXML(activity);
                result.setCanUseLocalCache(true);
                result.setStatusCode(downLoadPanelXMLStatusCode);
                result.setAction(TO_GROUP);
             } else {
-               Log.e("INFO", "No local cache is available, ready to switch controller.");
+               Log.i("DOWNLOAD", "No local cache is available, ready to switch controller.");
                result.setAction(SWITCH_TO_OTHER_CONTROLER);
                return result;
             }
          } else { // download panel xml success.
-            Log.e("INFO", "Download file panel.xml successfully.");
+            Log.i("DOWNLOAD", "Download file panel.xml successfully.");
             if (activity.getFileStreamPath(Constants.PANEL_XML).exists()) {
                FileUtil.parsePanelXML(activity);
                result.setAction(TO_GROUP);
             } else {
-               Log.e("INFO","No local cache is available authouth downloaded file panel.xml successfully, ready to switch controller.");
+               Log.i("DOWNLOAD","No local cache is available authouth downloaded file panel.xml successfully, ready to switch controller.");
                result.setAction(SWITCH_TO_OTHER_CONTROLER);
                return result;
             }
@@ -124,7 +124,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
          }
          
          if (activity.getFileStreamPath(Constants.PANEL_XML).exists()) {
-            Log.e("INFO", "Current controller server isn't available, so use local cache.");
+            Log.i("DOWNLOAD", "Current controller server isn't available, so use local cache.");
             FileUtil.parsePanelXML(activity);
             result.setCanUseLocalCache(true);
             result.setAction(TO_GROUP);
@@ -134,7 +134,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
                result.setStatusCode(checkResponse.getStatusLine().getStatusCode());
             }
          } else {
-            Log.e("INFO", "No local cache is available, ready to switch controller.");
+            Log.i("DOWNLOAD", "No local cache is available, ready to switch controller.");
             result.setAction(SWITCH_TO_OTHER_CONTROLER);
             return result;
          }
