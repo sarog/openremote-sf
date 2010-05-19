@@ -19,6 +19,7 @@
 */
 package org.openremote.android.console.util;
 
+import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
@@ -47,6 +48,22 @@ public class ImageUtil {
          Log.e("OutOfMemoryError", pathName + ": bitmap size exceeds VM budget");
       }
       return d;
+   }
+   
+   /**
+    * Call Activity.setContentView(int layoutResID), but catch OutOfMemoryError and do nothing.
+    * 
+    * @param activity
+    *           an activity
+    * @param layoutResID
+    *           Resource ID to be inflated.
+    */
+   public static void setContentViewQuietly(Activity activity, int layoutResID) {
+      try {
+         activity.setContentView(layoutResID);
+      } catch (OutOfMemoryError e) {
+         Log.e("OutOfMemoryError", "unable to setContentView, bitmap size exceeds VM budget");
+      }
    }
 
 }
