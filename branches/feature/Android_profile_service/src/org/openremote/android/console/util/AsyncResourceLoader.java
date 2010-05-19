@@ -152,7 +152,11 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
    protected void onProgressUpdate(String... values) {
       RelativeLayout loadingView = (RelativeLayout) (activity.findViewById(R.id.welcome_view));
       if (!bgImageUpdated) {
-         loadingView.setBackgroundResource(R.drawable.loading);
+         try {
+            loadingView.setBackgroundResource(R.drawable.loading);
+         } catch (OutOfMemoryError e) {
+            Log.e("OutOfMemoryError",  "loading.png bitmap size exceeds VM budget");
+         }
          bgImageUpdated = true;
       }
       TextView loadingText = (TextView)(activity.findViewById(R.id.loading_text));
