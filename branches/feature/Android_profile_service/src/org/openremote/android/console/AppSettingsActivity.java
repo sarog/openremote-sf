@@ -25,12 +25,12 @@ import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.util.FileUtil;
 import org.openremote.android.console.util.StringUtil;
+import org.openremote.android.console.view.PanelSelectSpinnerView;
 
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -63,7 +63,6 @@ public class AppSettingsActivity extends Activity{
 
    private LinearLayout appSettingsView;
    private ListView customeListView;
-   private Button choosePanelButton;
    private int currentCustomServerIndex = -1;
    private boolean autoMode;
    
@@ -84,8 +83,6 @@ public class AppSettingsActivity extends Activity{
       appSettingsView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
       appSettingsView.setOrientation(LinearLayout.VERTICAL);
       
-      initialChosePanelButton();
-      
       appSettingsView.addView(createAutoLayout());
       appSettingsView.addView(createChooseControllerLabel());
       if (autoMode) {
@@ -94,7 +91,7 @@ public class AppSettingsActivity extends Activity{
          appSettingsView.addView(constructCustomeServersView());
       }
       appSettingsView.addView(createChoosePanelLabel());
-      appSettingsView.addView(choosePanelButton);
+      appSettingsView.addView(new PanelSelectSpinnerView(this));
       appSettingsView.addView(createClearImageCacheButton());
       appSettingsView.addView(createDoneAndCancelLayout());
       scroll.addView(appSettingsView);
@@ -159,30 +156,6 @@ public class AppSettingsActivity extends Activity{
       });
    }
 
-   /**
-    * 
-    */
-   private void initialChosePanelButton() {
-      choosePanelButton = new Button(this);
-      choosePanelButton.setText("choose panel");
-      String currentPanel = AppSettingsModel.getCurrentPanelIdentity(AppSettingsActivity.this);
-      if (!TextUtils.isEmpty(currentPanel)) {
-         choosePanelButton.setText(currentPanel);
-      }
-      choosePanelButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-      choosePanelButton.setOnClickListener(new OnClickListener() {
-         public void onClick(View v) {
-            String currentServer = AppSettingsModel.getCurrentServer(AppSettingsActivity.this);
-            if (!TextUtils.isEmpty(currentServer)) {
-               Intent intent = new Intent();
-               intent.setData(Uri.parse(currentServer));
-               intent.setClass(AppSettingsActivity.this, PanelSelectorActivity.class);
-               startActivityForResult(intent, Constants.REQUEST_CODE);
-            }
-         }
-      });
-   }
-   
    private Button createClearImageCacheButton() {
       Button clearImgCacheBtn = new Button(this);
       clearImgCacheBtn.setText("Clear Image Cache");
@@ -344,8 +317,6 @@ public class AppSettingsActivity extends Activity{
             if (Constants.RESULT_CONTROLLER_URL == resultCode) {
                ((ArrayAdapter<String>) customeListView.getAdapter()).add("http://" + result);
                writeCustomServerToFile();
-            } else if (Constants.RESULT_PANEL_SELECTED == resultCode) {
-               choosePanelButton.setText(result);
             }
          }
       }

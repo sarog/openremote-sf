@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.http.HttpResponse;
-import org.openintents.sensorsimulator.hardware.SensorManagerSimulator;
 import org.openremote.android.console.bindings.Gesture;
 import org.openremote.android.console.bindings.Group;
 import org.openremote.android.console.bindings.Navigate;
@@ -38,9 +37,9 @@ import org.openremote.android.console.model.ORListenerManager;
 import org.openremote.android.console.model.UserCache;
 import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.model.XMLEntityDataBase;
-import org.openremote.android.console.net.ORConnection;
 import org.openremote.android.console.net.ORConnectionDelegate;
 import org.openremote.android.console.net.ORHttpMethod;
+import org.openremote.android.console.net.ORRoundRobinConnection;
 import org.openremote.android.console.util.ImageUtil;
 import org.openremote.android.console.view.GroupView;
 import org.openremote.android.console.view.ScreenView;
@@ -280,7 +279,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       Gesture gesture = currentScreen.getGestureByType(gestureType);
       if (gesture != null) {
          if (gesture.isHasControlCommand()) {
-            new ORConnection(this, ORHttpMethod.POST, true, AppSettingsModel.getCurrentServer(this) + "/rest/control/"
+            new ORRoundRobinConnection(this, ORHttpMethod.POST, true, AppSettingsModel.getCurrentServer(this) + "/rest/control/"
                   + gesture.getComponentId() + "/swipe", this);
          }
          if (gesture.getNavigate() != null) {

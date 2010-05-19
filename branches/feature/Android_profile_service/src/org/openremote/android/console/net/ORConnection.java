@@ -53,9 +53,12 @@ public class ORConnection {
    private HttpClient httpClient;
    private HttpRequestBase httpRequest;
    private HttpResponse httpResponse;
-   private ORConnectionDelegate delegate;
+   protected ORConnectionDelegate delegate;
    private Context context;
    protected Handler handler;
+   
+   public static final int SUCCESS = 1;
+   public static final int ERROR = 0;
    
    /** 
     * Establish the HttpBasicAuthentication httpconnection depend on param <b>isNeedHttpBasicAuth</b> with url for caller,<br />
@@ -66,8 +69,8 @@ public class ORConnection {
       delegate = delegateParam;
       this.context = context;
       HttpParams params = new BasicHttpParams();
-      HttpConnectionParams.setConnectionTimeout(params, 50 * 1000);
-      HttpConnectionParams.setSoTimeout(params, 50 * 1000);
+      HttpConnectionParams.setConnectionTimeout(params, 4 * 1000);
+      HttpConnectionParams.setSoTimeout(params, 5 * 1000);
       httpClient = new DefaultHttpClient(params);
       if (ORHttpMethod.POST.equals(httpMethod)) {
          httpRequest = new HttpPost(url);
@@ -89,8 +92,8 @@ public class ORConnection {
       handler = new Handler() {
          @Override
          public void handleMessage(Message msg) {
-            int statusCode = msg.what;
-            if (statusCode == 0) {
+            int message = msg.what;
+            if (message == ERROR) {
                connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail."));
             } else {
                dealWithResponse();
@@ -105,14 +108,14 @@ public class ORConnection {
          public void run() {
             try {
                httpResponse = httpClient.execute(httpRequest);
+               handler.sendEmptyMessage(SUCCESS);
             } catch (SocketTimeoutException e) {
-               handler.sendEmptyMessage(0);
+               handler.sendEmptyMessage(ERROR);
             } catch (ClientProtocolException e) {
-               handler.sendEmptyMessage(0);
+               handler.sendEmptyMessage(ERROR);
             } catch (IOException e) {
-               handler.sendEmptyMessage(0);
+               handler.sendEmptyMessage(ERROR);
             }
-            handler.sendEmptyMessage(200);
          }
       }).start(); 
    }
@@ -127,12 +130,10 @@ public class ORConnection {
    
    /** 
     * This method is invoked by self while the connection of android console to controller was failed,
-    * and sends a notification to delegate with <b>urlConnectionDidFailWithException</b> method calling and
-    * switching the connection of android console to a available controller server in groupmembers of self.
+    * and sends a notification to delegate with <b>urlConnectionDidFailWithException</b> method calling.
     */
    protected void connectionDidFailWithException(Context context, ORConnectionException e) {
       delegate.urlConnectionDidFailWithException(e);
-      ORControllerServerSwitcher.doSwitch(context);
    }
    
    /** 
