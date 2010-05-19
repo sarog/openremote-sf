@@ -22,7 +22,6 @@ package org.openremote.android.console;
 import java.util.List;
 
 import org.openremote.android.console.bindings.Screen;
-import org.openremote.android.console.image.ImageLoader;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.UserCache;
 import org.openremote.android.console.net.IPAutoDiscoveryClient;
@@ -63,7 +62,6 @@ import android.widget.ListView;
 public class Main extends Activity {
 
     LinearLayout activitiesListView;
-    public static ImageLoader imageLoader;
     public static final String LOAD_RESOURCE = "loadResource";
     
     /** Called when the activity is first created. */
