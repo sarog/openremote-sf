@@ -25,6 +25,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.UUID;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -36,6 +37,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.Main;
+import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.console.net.ORControllerServerSwitcher;
 import org.openremote.android.console.util.SecurityUtil;
 
@@ -183,7 +185,11 @@ public class PollingHelper {
    private static void readDeviceId(Context context) {
       if (deviceId == null) {
          TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-         deviceId = tm.getDeviceId();
+         if (IPAutoDiscoveryClient.isNetworkTypeWIFI) {
+            deviceId = tm.getDeviceId();
+         } else {
+            deviceId = UUID.randomUUID().toString();
+         }
       }
    }
 
