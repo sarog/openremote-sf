@@ -79,7 +79,8 @@ public class ORConnection {
       }
       
       if (httpRequest == null) {
-         throw new ORConnectionException("Create HttpRequest fail.");
+         Log.e("ORConnection", "Create HttpRequest fail:" + url);
+         return;
       }
       
       if (isNeedHttpBasicAuth) {
@@ -153,20 +154,20 @@ public class ORConnection {
          if (httpResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
             delegate.urlConnectionDidReceiveData(httpResponse.getEntity().getContent());
          } else {
-            new ORConnectionException("Get the entity's content of httpresponse fail."); 
+            Log.e("ORConnection", "Get the entity's content of httpresponse fail."); 
          }
       } catch (IllegalStateException e) {
-         throw new ORConnectionException("Get the entity's content of httpresponse fail.", e);
+         Log.e("ORConnection", "Get the entity's content of httpresponse fail.", e);
       } catch (IOException e) {
-         throw new ORConnectionException("Get the entity's content of httpresponse fail.", e);
+         Log.e("ORConnection", "Get the entity's content of httpresponse fail.", e);
       }
    }
    
    /** 
     * Establish the httpconnection with url for caller<br />
     * and then the caller can deal with the httprequest result within ORConnectionDelegate instance.
+    * if check failed, return null.
     */
-   @SuppressWarnings("finally")
    public static HttpResponse checkURLWithHTTPProtocol (Context context, ORHttpMethod httpMethod, String url, boolean isNeedBasicAuth) {
       HttpRequestBase request = null;
       HttpResponse response = null;
@@ -182,24 +183,23 @@ public class ORConnection {
       }
       
       if (request == null) {
-         throw new ORConnectionException("Create HttpRequest fail.");
+         Log.i("ORConnection", "checking URL creation failed:" + url);
+         return null;
       }
       if (isNeedBasicAuth) {
          SecurityUtil.addCredentialToHttpRequest(context, request);
       }
       
-        try {
+      try {
          response = client.execute(request);
-         return response;
       } catch (ClientProtocolException e) {
-         Log.e("ERROR", "ClientProtocolException while checking URLWithHTTPProtocol.");
+         Log.i("ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
       } catch (SocketTimeoutException e) {
-         Log.e("ERROR", "SocketTimeoutException while checking URLWithHTTPProtocol.");
+         Log.i("ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
       } catch (IOException e) {
-         Log.e("ERROR", "IOException while checking URLWithHTTPProtocol.");
-      } finally {
-         return response;
+         Log.i("ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
       }
+      return response;
    }
    
 }
