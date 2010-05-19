@@ -21,6 +21,7 @@ package org.openremote.android.console;
 
 import java.util.ArrayList;
 
+import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.util.FileUtil;
@@ -73,9 +74,14 @@ public class AppSettingsActivity extends Activity{
       setTitle(R.string.settings);
       
       this.autoMode = AppSettingsModel.isAutoMode(AppSettingsActivity.this);
+      
+      LinearLayout mainLayout = new LinearLayout(this);
+      mainLayout.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+      mainLayout.setOrientation(LinearLayout.VERTICAL);
+      
       ScrollView scroll = new ScrollView(this);
-      scroll.setVerticalScrollBarEnabled(false);
-      scroll.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+      scroll.setVerticalScrollBarEnabled(true);
+      scroll.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, Screen.SCREEN_HEIGHT - 75));
       
       appSettingsView = new LinearLayout(this);
       appSettingsView.setBackgroundColor(0);
@@ -92,21 +98,32 @@ public class AppSettingsActivity extends Activity{
       }
       appSettingsView.addView(createChoosePanelLabel());
       appSettingsView.addView(new PanelSelectSpinnerView(this));
+      
+      appSettingsView.addView(createCacheText());
       appSettingsView.addView(createClearImageCacheButton());
-      appSettingsView.addView(createDoneAndCancelLayout());
       scroll.addView(appSettingsView);
       
-      setContentView(scroll);
+      mainLayout.addView(scroll);
+      mainLayout.addView(createDoneAndCancelLayout());
+      
+      setContentView(mainLayout);
       addOnclickListenerOnDoneButton();
       addOnclickListenerOnCancelButton();
    }
 
+   private TextView createCacheText() {
+      TextView cacheText = new TextView(this);
+      cacheText.setPadding(10, 5, 0, 5);
+      cacheText.setText("Image Cache:");
+      cacheText.setBackgroundColor(Color.DKGRAY);
+      return cacheText;
+   }
    /**
     * @return
     */
    private TextView createChoosePanelLabel() {
       TextView choosePanelInfo = new TextView(this);
-      choosePanelInfo.setPadding(10, 10, 0, 5);
+      choosePanelInfo.setPadding(10, 5, 0, 5);
       choosePanelInfo.setText("Choose Panel Identity:");
       choosePanelInfo.setBackgroundColor(Color.DKGRAY);
       return choosePanelInfo;
@@ -156,11 +173,15 @@ public class AppSettingsActivity extends Activity{
       });
    }
 
-   private Button createClearImageCacheButton() {
+   private RelativeLayout createClearImageCacheButton() {
+      RelativeLayout clearImageView = new RelativeLayout(this);
+      clearImageView.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+      
       Button clearImgCacheBtn = new Button(this);
       clearImgCacheBtn.setText("Clear Image Cache");
-      clearImgCacheBtn.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT));
+      RelativeLayout.LayoutParams clearButtonLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+      clearButtonLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+      clearImgCacheBtn.setLayoutParams(clearButtonLayout);
       clearImgCacheBtn.setOnClickListener(new OnClickListener() {
          public void onClick(View v) {
             ViewHelper.showAlertViewWithTitleYesOrNo(AppSettingsActivity.this, "",
@@ -172,7 +193,9 @@ public class AppSettingsActivity extends Activity{
 
          }
       });
-      return clearImgCacheBtn;
+      
+      clearImageView.addView(clearImgCacheBtn);
+      return clearImageView;
    }
 
    /**
