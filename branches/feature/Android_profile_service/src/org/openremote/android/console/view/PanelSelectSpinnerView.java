@@ -29,6 +29,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.LoginDialog;
+import org.openremote.android.console.R;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ViewHelper;
@@ -65,7 +66,7 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
       super(context);
       setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT));
-      arrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item);
+      arrayAdapter = new ArrayAdapter<String>(context, R.layout.simple_spinner_item_center);
       arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
       setAdapter(arrayAdapter);
       String currentPanel = AppSettingsModel.getCurrentPanelIdentity(context);
