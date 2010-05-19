@@ -25,6 +25,15 @@ import java.net.InetAddress;
 
 import org.openremote.android.console.Constants;
 
+import android.util.Log;
+
+/**
+ * Controller IP auto discovery client, this is a Multicast UDP client broadcasting request to Controllers for asking
+ * their IPs.
+ * 
+ * @author Tomsky Wang
+ * 
+ */
 public class IPAutoDiscoveryClient implements Runnable {
    
    public static boolean isNetworkTypeWIFI;
@@ -36,8 +45,10 @@ public class IPAutoDiscoveryClient implements Runnable {
          DatagramPacket dgram;
          dgram = new DatagramPacket(b, b.length, InetAddress.getByName(getMulticastAddress()), Constants.MULTICAST_PORT);
          socket.send(dgram);
+         Log.i("AUTO DISCOVER", "auto discovery on " + getMulticastAddress() + ":" + Constants.MULTICAST_PORT);
       } catch (Exception e) {
-         e.printStackTrace();
+         Log.e("AUTO DISCOVER", "auto discovery on " + getMulticastAddress() + ":" + Constants.MULTICAST_PORT
+               + " failed", e);
       }
 
    }
