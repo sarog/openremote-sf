@@ -50,6 +50,7 @@ public class IPAutoDiscoveryServer implements Runnable {
          srvr.setSoTimeout(1000);
       } catch (IOException e1) {
          Log.e("AUTO DISCOVER", "auto discovery server setup failed", e1);
+         return;
       }
       while (moreQuotes) {
          try {
