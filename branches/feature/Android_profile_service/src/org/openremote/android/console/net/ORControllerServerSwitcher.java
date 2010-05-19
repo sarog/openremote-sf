@@ -178,6 +178,7 @@ public class ORControllerServerSwitcher {
 		} else {
 			Log.i("GROUP MEMBER", "Didn't get a available controller url from groupmembers " + allGroupMembers + ". Try to detect groupmembers again.");
 			if (!detectGroupMembers(context)) {
+			   ViewHelper.showAlertViewWithSetting(context, "Update fail", "There's no controller server available. Leave this problem?");
 			   return SWITCH_CONTROLLER_FAIL;
 			}
 			availableGroupMemberURL = getOneAvailableFromGroupMemberURLs(context);

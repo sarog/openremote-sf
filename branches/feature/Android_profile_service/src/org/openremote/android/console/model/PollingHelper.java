@@ -36,6 +36,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.Main;
+import org.openremote.android.console.net.ORControllerServerSwitcher;
 import org.openremote.android.console.util.SecurityUtil;
 
 import android.content.Context;
@@ -80,9 +81,8 @@ public class PollingHelper {
       handler = new Handler() {
          @Override
          public void handleMessage(Message msg) {
-            int statusCode = msg.what;
-            ViewHelper.showAlertViewWithTitle(context, "Polling Failed", ControllerException
-                  .exceptionMessageOfCode(statusCode));
+            isPolling = false;
+            ORControllerServerSwitcher.doSwitch(context);
          }
       };
    }
@@ -124,6 +124,7 @@ public class PollingHelper {
             } else {
                handleServerErrorWithStatusCode(statusCode);
             }
+            return;
          } catch (SocketTimeoutException e) {
             isPolling = false;
             Log.e("POLLING", "polling socket timeout.");
@@ -131,12 +132,15 @@ public class PollingHelper {
          } catch (ClientProtocolException e) {
             isPolling = false;
             Log.e("POLLING", "polling failed.");
+            handler.sendEmptyMessage(0);
          } catch (SocketException e) {
             isPolling = false;
             Log.e("POLLING", "polling failed.", e);
+            handler.sendEmptyMessage(0);
          } catch (IllegalArgumentException e) {
             isPolling = false;
             Log.e("POLLING", "polling failed", e);
+            handler.sendEmptyMessage(0);
          } catch (InterruptedIOException e) {
             isPolling = false;
             Log.i("POLLING", "last polling [" + pollingStatusIds +"] has been shut down");
@@ -144,6 +148,7 @@ public class PollingHelper {
             isPolling = false;
             Log.i("POLLING", "last polling [" + pollingStatusIds +"] already aborted");
          }
+         
       }
    }
    
