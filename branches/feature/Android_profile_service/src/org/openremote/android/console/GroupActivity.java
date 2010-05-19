@@ -314,7 +314,6 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    }
 
    public boolean onOptionsItemSelected(MenuItem item) {
-      Log.e("item selected", "item selected");
       handleMenu(item);
       return true;
    }
