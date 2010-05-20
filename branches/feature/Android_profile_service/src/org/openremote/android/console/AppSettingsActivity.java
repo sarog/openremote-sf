@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ViewHelper;
+import org.openremote.android.console.net.IPAutoDiscoveryServer;
 import org.openremote.android.console.util.FileUtil;
 import org.openremote.android.console.util.StringUtil;
 import org.openremote.android.console.view.PanelSelectSpinnerView;
@@ -222,8 +223,10 @@ public class AppSettingsActivity extends GenericActivity {
          public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             appSettingsView.removeViewAt(2);
             if (isChecked) {
+               IPAutoDiscoveryServer.isInterrupted = false;
                appSettingsView.addView(constructAutoServersView(), 2);
             } else {
+               IPAutoDiscoveryServer.isInterrupted = true;
                appSettingsView.addView(constructCustomeServersView(), 2);
             }
             AppSettingsModel.setAutoMode(AppSettingsActivity.this, isChecked);
@@ -368,9 +371,6 @@ public class AppSettingsActivity extends GenericActivity {
       return lv;
    }
 
-   /**
-    * 
-    */
    private void writeCustomServerToFile() {
       int customServerCount = customeListView.getCount();
       if (customServerCount > 0) {

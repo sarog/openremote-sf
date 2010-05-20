@@ -22,6 +22,7 @@ package org.openremote.android.console.net;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -40,7 +41,7 @@ import android.util.Log;
 public class IPAutoDiscoveryServer implements Runnable {
 
    public static ArrayList<String> autoServers = new ArrayList<String>();
-
+   public static boolean isInterrupted;
    public void run() {
       boolean moreQuotes = true;
       ServerSocket srvr = null;
@@ -48,11 +49,16 @@ public class IPAutoDiscoveryServer implements Runnable {
          srvr = new ServerSocket(Constants.LOCAL_SERVER_PORT);
          autoServers.clear();
          srvr.setSoTimeout(1000);
-      } catch (IOException e1) {
-         Log.e("AUTO DISCOVER", "auto discovery server setup failed", e1);
+      } catch (BindException e) {
+         Log.e("AUTO DISCOVER", "auto discovery server setup failed, the address is already in use");
+         autoServers.clear();
+         return;
+      } catch (IOException e) {
+         Log.e("AUTO DISCOVER", "auto discovery server setup failed", e);
+         autoServers.clear();
          return;
       }
-      while (moreQuotes) {
+      while (moreQuotes && !isInterrupted) {
          try {
             Socket connectionSocket = srvr.accept();
             BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
